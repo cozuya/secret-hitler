@@ -1,0 +1,241 @@
+$werewolfteam: #DC6969;
+$villageteam: #4B6A90;
+$tannerteam: #DCB469;
+$notification: #FBBD08;
+$selection: #DB2828;
+$proceed: #2185D0;
+$lteal: #097892;
+$dteal: #034f61;
+
+
+body {
+	background-image: url('../images/pw_maze_white.png');
+	// min-width: 624px;
+	overflow-x: auto;
+}
+
+html {
+	height: auto;
+}
+
+.clearfix:after {
+	display: table;
+	content: '';
+	clear: both;
+}
+
+.team-werewolf {
+	color: $werewolfteam !important;
+}
+
+.team-village {
+	color: $villageteam !important;
+}
+
+.team-tanner {
+	color: $tannerteam !important;
+}
+
+#header-container {
+	text-align: center;
+	margin-top: 55px;
+	background: radial-gradient(ellipse at center, #056e8e 0%, #002323 100%);
+	background-color: #002323;
+
+	h1.ui.header {
+		color: #eee;
+		font-size: 44px;
+		font-family: 'raleway', 'lato', helvetica, arial, sans-serif;
+		text-shadow: 3px 3px #000;
+	}
+}
+
+p {
+	font-size: 16px;
+}
+
+span.emphasis {
+	font-weight: 700;
+}
+
+#top-menu {
+	.left.menu .button {
+		background: $werewolfteam none !important;
+		color: #fff;
+	}
+
+	.ui.button {
+		background: $lteal none !important;
+		color: #fff;
+	}
+}
+
+@media only screen and (min-width: 1200px) {
+	#top-menu {
+		width: 1127px;
+		margin-left: -563px !important;
+		left: 50%;
+	}
+}
+
+@media only screen and (max-width: 617px) {
+	#top-menu > a {
+		padding-left: 2px;
+		padding-right: 2px;
+	}
+}
+
+@media only screen and (max-width: 514px) {
+	#top-menu > a {
+		display: none;
+	}
+}
+
+.ui.grid.mainpage {
+	background: #eee;
+	box-shadow: 0px 3px 4px 1px #ccc;
+
+	h2 {
+		font-size: 30px;
+		padding-left: 10%;
+		padding-right: 10%;
+		text-align: center;
+	}
+}
+
+#general-info {
+	.news {
+		border: 1px solid #aaa;
+		background: $tannerteam;
+		border-radius: 5px;
+	}
+
+	img {
+		margin-top: 40px;
+	}
+}
+
+#general-info, #top-menu{
+	background: #fefefe;
+}
+
+.signin-modal, .signup-modal {
+	margin-left: -125px !important;
+	left: 38% !important;
+}
+
+.ui.container.rules-container {
+	box-shadow: 0px 3px 4px 1px #ccc;
+	margin: 50px 0 0 0;
+	padding: 10px 0;
+	background: #fefefe;
+
+	h1 {
+		margin-bottom: 10px;
+	}
+
+	h2 {
+		margin: 20px 0 !important;
+
+		& ~ p {
+			font-size: 18px;
+		}
+	}
+}
+
+.ui.container.howtoplay-container {
+	box-shadow: 0px 3px 4px 1px #ccc;
+	margin: 50px 0 0 0;
+	padding: 10px 0;
+	background: #fefefe;
+
+	img {
+		max-width: 90%;
+		display: block;
+		box-shadow: 0px 3px 4px 1px #ccc;
+		margin: 0 auto 10px auto;
+	}
+
+	h1 {
+		margin-bottom: 10px;
+	}
+
+	h2 {
+		margin: 20px 0 !important;
+
+		& ~ p {
+			font-size: 18px;
+		}
+	}
+}
+
+.role-container {
+	margin-bottom: 20px;
+	
+	h3 {
+		margin: 0 auto !important;
+	}
+
+	img {
+		float: left;
+		margin: 0 30px 30px 0;
+	}
+}
+
+.role-container:nth-of-type(odd) img {
+	float: right;
+	margin: 0 0 30px 30px;
+}
+
+.about-container {
+	box-shadow: 0px 3px 4px 1px #ccc;
+	margin: 50px 0 0 0;
+	padding: 10px 0;
+	background: #fefefe;
+
+	h1 {
+		margin-bottom: 60px !important;
+	}
+}
+
+.verified-yes {
+	color: $villageteam !important;
+}
+
+.verified-no {
+	color: $werewolfteam !important;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+::-webkit-scrollbar-thumb {
+  background: #717171;
+  border: 0px none #ffffff;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #191919;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #c4c4c4;
+}
+::-webkit-scrollbar-track {
+  background: #bfbfbf;
+  border: 0px none #ffffff;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-track:hover {
+  background: #666666;
+}
+::-webkit-scrollbar-track:active {
+  background: #a4a4a4;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

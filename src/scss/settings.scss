@@ -1,0 +1,16 @@
+.settings {
+
+	padding: 2%;
+
+	.remove.icon {
+		cursor: pointer;
+		position: absolute;
+		font-size: 30px;
+		left: 670px;
+		opacity: .3;
+	}
+
+	> .ui.header {
+		text-align: center;
+	}
+}

@@ -1,0 +1,211 @@
+$werewolfteam: #DC6969;
+$villageteam: #4B6A90;
+$tannerteam: #DCB469;
+$notification: #FBBD08;
+$selection: #DB2828;
+$proceed: #2185D0;
+$lteal: #097892;
+$dteal: #034f61;
+
+@import 'semantic.scss';
+@import 'creategame.scss';
+@import 'leftsidebar.scss';
+@import 'game.scss';
+@import 'gameroles.scss';
+@import 'settings.scss';
+@import 'table.scss';
+@import 'eliminator.scss';
+@import 'rightsidebar.scss';
+
+body {
+	background-image: url('../images/pw_maze_white.png');
+
+	> .ui.container {
+		width: 1127px;
+		margin-left: auto;
+		margin-right: auto;
+		max-width: inherit !important;
+	}
+}
+
+.app-hidden {
+	display: none !important;
+}
+
+.app-visibility-hidden {
+	visibility: hidden !important;
+}
+
+.clearfix:after {
+	display: table;
+	content: '';
+	clear: both;
+}
+
+.team-werewolf {
+	color: $werewolfteam;
+}
+
+.team-village {
+	color: $villageteam;
+}
+
+.team-tanner {
+	color: $tannerteam;
+}
+
+#game-container .ui.menu {
+	border-radius: 0;
+	border: 0;
+	box-shadow: none;
+	overflow-x: hidden;
+
+	> img {
+		margin-left: 10px;
+		margin-top: 12px;
+		width: 30px;
+		height: 30px;
+	}
+
+	> p {
+		max-height: 45px;
+		margin: 5px 0 0 10px;
+		width: 100%;
+		font-size: 32px;
+		font-weight: 700;
+		font-family: "Raleway", "Lato", Helvetica, Arial, sans-serif;
+
+		a {
+			color: $lteal;
+		}
+	}
+
+	div {
+		color: #fff;
+	}
+
+	.item.right {
+		padding: 3px 10px;
+
+		a:hover {
+			color: #000;
+			text-decoration: underline;
+		}
+	}
+
+	.loggedin {
+		color: #000;
+		display: inline-block;
+
+		.playername {
+			font-weight: bold;
+			color: #16AB39;
+		}
+	}
+
+	i {
+		cursor: pointer;
+	}
+
+	i.disabled {
+		cursor: not-allowed;
+	}
+
+	.ui.button:hover, .ui.button:active {
+		color: #fff;
+		background: $dteal;
+	}
+}
+
+#game-container .section-main {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.section-left, .section-right, .section-main {
+	box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);
+	background: #fff;
+}
+
+.section-main > section {
+	min-height: 555px;
+	border-top: 1px solid #eee;
+}
+
+.defaultmid {
+	background: #fdfdfd;
+}
+
+#game-container {
+	.section-main {
+		padding-bottom: 0;
+	}
+
+	> .ui.grid {
+		border-top: 1px solid #ddd;
+	}
+}
+
+.section-main > .menu {
+	margin: 0;
+}
+.header-container {
+	text-align: center;
+	height: 400px;
+	background-image: url('../images/1127X400.jpeg');
+	margin-top: 45px;
+}
+
+#general-info, #top-menu{
+	background: #eee;
+}
+
+.signin-modal, .signup-modal {
+	margin-left: -125px !important;
+}
+
+.signinnag {
+	margin-left: -237px;
+}
+
+.verified-yes {
+	color: $villageteam;
+}
+
+.verified-no {
+	color: $werewolfteam;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+::-webkit-scrollbar-thumb {
+  background: #717171;
+  border: 0px none #ffffff;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #191919;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #c4c4c4;
+}
+::-webkit-scrollbar-track {
+  background: #bfbfbf;
+  border: 0px none #ffffff;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-track:hover {
+  background: #666666;
+}
+::-webkit-scrollbar-track:active {
+  background: #a4a4a4;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

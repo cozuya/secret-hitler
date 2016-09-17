@@ -1,0 +1,86 @@
+extends layout
+block content
+	nav.ui.secondary.pointing.top.fixed.menu#top-menu
+		.left.menu
+			if username
+				a.ui.button(href="/game") Play Now
+			else
+				a.ui.button(href="/observe") Observe Now
+		a.item(href="/") Home
+		a.item(href="/rules") Rules
+		a.item(href="/how-to-play") How to Play
+		a.item(href="/about") About
+		div.item.right
+			a.right#logout(href="#", style="margin-right: 20px;") Logout
+			a.right(href="/account")
+				= username + '\'s account'
+	.ui.container.howtoplay-container
+		h1.ui.centered.header My account
+		h3.ui.centered.header Account verification status: 
+			if verified
+				span.verified-yes Verified
+			else
+				span.verified-no Not verified
+			if email
+				p.current-email Current Email: 
+					span(style="color: blue")
+						= email
+				button#change-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your email address
+				if !verified
+					button#request-verification.ui.primary.button(style="display: block; margin: 5px auto 0;") Request a new verification email
+			else
+				button#add-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Add an email address (sends verification email)
+
+		button#change-password.ui.primary.button(style="display: block; margin: 0 auto;") Change your password
+
+	section.passwordchange-modal.ui.modal.small.segment.column
+		h2.header Change your password
+		form.ui.form
+			.field
+				.ui.left.icon.input
+					i.lock.icon
+					input#passwordchange-password(placeholder="New password", type="password")
+			.field
+				.ui.left.icon.input
+					i.lock.icon
+					input#passwordchange-confirmpassword(placeholder="Confirm new password", type="password")
+			button.ui.primary.button.fluid.large#passwordchange-submit Submit
+			.ui.dimmer.inverted
+				.ui.text.loader Changing your password..
+			.ui.negative.hidden.message
+			.ui.hidden.message Successfully changed your password!
+
+	section.emailchange-modal.ui.modal.small.segment.column
+		h2.header Change your email
+		form.ui.form
+			.field
+				.ui.left.icon.input
+					i.lock.icon
+					input#emailchange-email(placeholder="New email")
+			.field
+				.ui.left.icon.input
+					i.lock.icon
+					input#emailchange-confirmemail(placeholder="Confirm new email")
+			button.ui.primary.button.fluid.large#emailchange-submit Submit
+			.ui.dimmer.inverted
+				.ui.text.loader Changing your email..
+			.ui.negative.hidden.message
+			.ui.hidden.message Successfully changed your email!
+
+	section.requestemail-modal.ui.modal.small.segment.column
+		h2.header Email sent!
+		p Please check your email to verify your account.
+
+	section.deleteaccount-modal.ui.modal.small.segment.column
+		h2.header Delete your account
+		.ui.warning.message This cannot be undone.
+		form.ui.form
+			.field
+				.ui.left.icon.input
+					i.lock.icon
+					input#deleteaccount-password(placeholder="Your current password")
+			button.ui.primary.button.fluid.large#deleteaccount-submit Submit
+			.ui.dimmer.inverted
+				.ui.text.loader Deleting your account..
+			.ui.negative.hidden.message
+			.ui.hidden.message Successfully deleted your account

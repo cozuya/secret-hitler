@@ -1,0 +1,94 @@
+#main .leftsidebar {
+	padding: 10px 0 0;
+
+	> .button {
+		width: 85%;
+		margin: 10px auto 5px;
+		display: block;
+	}
+
+	.vertical.segment {
+		cursor: pointer;
+		border: none;
+		padding: 0;
+		margin-bottom: 10px;
+		&:hover {
+			font-weight: 700;
+			box-shadow: 0px 0px 3px 3px $werewolfteam;
+		}
+
+		> div:first-child {
+			> span {
+				float: right;
+			}
+
+			.seatedcount {
+				margin-right: 15px;
+			}
+
+			.gamename {
+				float: left;
+			}
+
+			.kobk {
+				color: $werewolfteam;
+			}
+
+			&:after {
+				display: block;
+				content: '';
+				clear: both;
+			}
+		}
+
+		.rolelist {
+			font-family: "Raleway", "Lato", Helvetica, Arial, sans-serif;
+			font-weight: 700;
+
+			> div {
+				text-align: center;
+
+				div {
+					width: 20%;
+					float: left;
+					padding: 2px 0;
+					border: 1px solid #eee;
+				}
+
+				.village {
+					color: #fff;
+					background: $villageteam;
+				}
+
+				.werewolf {
+					background: $werewolfteam;
+				}
+				
+				.tanner {
+					background: $tannerteam;
+				}
+
+				&:after {
+					display: block;
+					content: '';
+					clear: both;
+				}
+			}
+		}
+	}
+
+	.vertical.segment.inprogress {
+		background: $notification;
+	}
+
+	.vertical.segment.completed {
+		background: $proceed;
+		color: #fff;
+	}
+
+	.games-container {
+		padding: 5px 10px 0 15px;
+		height: 550px;
+		overflow-y: auto;
+	}
+}

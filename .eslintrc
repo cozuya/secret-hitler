@@ -1,0 +1,40 @@
+{
+	"extends": "google",
+	"rules": {
+		"indent": ["error", "tab"],
+		"linebreak-style": "off",
+		"eol-last": "off",
+		"max-len": "off",
+		"one-var": ["warn", "always"],
+		"no-use-before-define": ["warn", {"functions": true, "classes": true}],
+		"no-warning-comments": "off",
+		"no-nested-ternary": "off",
+		"no-mixed-requires": "off",
+		"no-negated-condition": "off",
+		"camelcase": "off",
+		"quote-props": "off",
+		"space-before-function-paren": "off",
+		"guard-for-in": "off",
+		"max-nested-callbacks": "off",
+		"react/jsx-indent": ["error", "tab"],
+		"react/jsx-uses-vars": "error",
+		"react/jsx-indent-props": ["error", "tab"]
+	},
+	"globals": {
+		"io": true,
+		"app": true,
+		"document": true,
+		"window": true,
+		"expect": true,
+		"describe": true,
+		"it": true
+	},
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		}
+	},
+	"plugins": [
+		"react"
+	]
+}

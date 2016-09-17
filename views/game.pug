@@ -1,0 +1,7 @@
+extends layout
+
+block content
+	if user
+		section#game-container(class=`username-${user}`)
+	else
+		section#game-container

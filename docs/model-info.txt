@@ -1,0 +1,56 @@
+gameState
+	isStarted bool - startGameCountdown
+	cardsDealt bool  - startGame
+	isCompleted bool - ?
+	isDay bool - ?
+	maxSecondsLeftInNight - nightphases
+	secondsLeftInNight - nightphases
+	eliminations array
+		seatNumber string (0-6 of what seat this seat is pointing at)
+		transparent bool
+	reportedGame 0-6
+		0 bool
+		...
+chats array
+	chat array
+	gameChat bool
+	timestamp time
+	userName string
+kobk bool
+name string
+roles array of strings (10)
+seated
+	seat0
+		connected bool
+		userName string
+	...
+status string
+tableState (see internals)
+time string
+uid string
+internals
+	centerRoles array of strings of roles (3)
+	soloMinion bool
+	seatedPlayers array 7
+		seatNumber number 0-6
+		trueRole string
+		originalRole string
+		selectedForElimination string
+		gameChats array of chat objects
+		tableState
+			reported bool
+			isNight bool - beginNightPhases
+			isVotable - dayPhase
+				enabled bool
+				selectedForElimination number 0-6
+			nightaction
+				stuff
+			seats array 0-9
+				seat0
+					highlight string (notify select proceed)
+					isFlipped bool (shows card, can't have it on role)
+					role string (assigns role class to card)
+					claim string of roles
+					swappedWithSeat number 0-6
+				...
+		...

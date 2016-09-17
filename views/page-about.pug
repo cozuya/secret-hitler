@@ -1,0 +1,40 @@
+extends layout
+block content
+	nav.ui.secondary.pointing.top.fixed.menu#top-menu
+		.left.menu
+			if username
+				a.ui.button(href="/game") Play Now
+			else
+				a.ui.button(href="/observe") Observe Now
+		a.item(href="/") Home
+		a.item(href="/rules") Rules
+		a.item(href="/how-to-play") How to Play
+		a.active.item About
+		if username
+			div.item.right
+				a.right#logout(href="#", style="margin-right: 20px;") Logout
+				a.right(href="/account")
+					= username + '\'s account'
+		else
+			.right.menu
+				.ui.buttons
+					button.ui.button#signin Sign In
+					.or
+					button.ui.button#signup Sign Up
+	.ui.container.about-container
+		.ui.text.container
+			h1.ui.centered.header About Secret Hitler
+			p Application developed by #[a(href="http://www.TwoLongOs.com") Chris Ozols] with CSS assistance by Christine Ozols.  Due to a fairly complicated UI and text-driven gameplay this application is not mobile-optimized.  Source code available for perusal at #[a(href="//github.com/cozuya/secret-hitler") github].  Bugs/issues?  Email chris.v.ozols at gmail.com or open an issue on github.
+			h4.ui.header Front end
+			p React, Redux, Sass, SemanticUI, jQuery, SocketIO.
+			h4.ui.header Back end
+			p NodeJS v6, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
+			h4.ui.header Build
+			p Gulp, Browserify, Babel (front end).
+			h4.ui.header Privacy Policy
+			p We securely store your encrypted password that is not accessible by anyone including admins.  Your user name is not publicly accessible.
+			h4.ui.header Terms of Use
+			p Don't cheat.  Don't be a jerk.  Don't try to turn away newbies from your games.  Don't attempt to circumvent things like not being able to select text from the gamechat.
+			h4.ui.header Attribution
+			p Secret Hitler is designed by Max Temkin (Cards Against Humanity, Humans vs. Zombies) Mike Boxleiter (Solipskier, TouchTone), Tommy Maranges (Philosophy Bro) and illustrated by Mackenzie Schubert (Letter Tycoon, Penny Press).
+			p This game is attributed as per the #[a(href="//creativecommons.org/licenses/by-nc-sa/4.0/") Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International] license.

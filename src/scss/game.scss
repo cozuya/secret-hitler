@@ -1,0 +1,186 @@
+.game > .ui.grid {
+	margin: 0;
+
+	> .row:first-child {
+		height: 440px;
+		padding: 0;
+	}
+
+	.chat-container {
+		background: #f6f6f6;
+		padding: 0;
+
+		.gamestatus {
+			font-size: 22px;
+			font-style: italic;
+			color: #eee;
+			background: $lteal;
+			padding: 3px 0px 7px 8px;
+		}
+
+		.gamechat {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			margin: 0;
+			background: #f6f6f6;
+
+			.pointing.menu {
+				margin: 0;
+				min-height: initial;
+				overflow-x: initial !important;
+
+				.item {
+					padding: 7px 8px 6px;		
+				}
+
+				.icon {
+					margin: 4px 0 0 180px;
+					opacity: .5;
+					cursor: pointer;
+				}
+			}
+
+			.chats {
+				height: 345px;
+				position: relative;
+				background: #F9FAFF;
+				font-size: 18px;
+				cursor: not-allowed;
+				
+				.ui.list {
+					padding-left: 5px;
+					overflow-y: auto;
+					position: absolute;
+					bottom: 0;
+					line-height: 1.18;
+					max-height: 345px;
+					width: 350px;
+				}
+
+				.item {
+					word-wrap: break-word;
+					line-height: inherit;
+					padding: 0;
+				}
+
+				.chat-user {
+					color: $lteal;
+
+					.chat-timestamp {
+						color: #21792A;
+						font-size: 12px;
+					}
+				}
+
+				.chat-user--game .chat-timestamp {
+					font-size: 12px;
+				}
+
+				.chat-user--game, .game-chat, .chat-user--game .chat-timestamp {
+					color: #8B8B8B;
+				}
+
+				.chat-role--village {
+					font-weight: 700;
+					color: $villageteam;
+				}
+
+				.chat-role--werewolf {
+					font-weight: 700;
+					color: $werewolfteam;
+				}
+
+				.chat-role--tanner {
+					font-weight: 700;
+					color: $tannerteam;
+				}
+
+				.chat-player {
+					color: #000;
+					font-weight: 700;
+				}
+			}
+
+			.inputbar {
+				.expando-container {
+					position: relative;
+					top: 7px;
+					left: 4px;
+					float: left;
+					cursor: pointer;
+					
+					.hotkey-container {
+						position: absolute;
+						width: 150px;
+						height: 70px;
+						right: 35px;
+						background: #eee;
+						bottom: 0;
+						border: 1px solid #bbb;
+
+						> div:hover {
+							font-weight: bold;
+							color: $lteal;
+						}
+
+						div:first-child {
+							width: 75px;
+							border-right: 1px solid #bbb;
+						}
+
+						div {
+							width: 73px;
+							float: left;
+							height: 70px;
+							font-size: 16px;
+							text-align: center;
+							padding-top: 8px;
+						}
+					}
+				}
+
+				span {
+					padding-left: 20px;
+				}
+
+
+				.input {
+					float: left;
+					width: 320px;
+					
+					button {
+						padding: 0px 10px;
+					}
+				}
+
+				> .icon {
+					float: left;
+					position: relative;
+					top: 10px;
+					cursor: pointer;
+				}
+			}
+		}
+	}
+
+
+	.gameroles-container {
+		background: #eee;
+	}
+}
+
+.game > .ui.grid .eight.chat-container .gamechat .inputbar .input {
+	width: 548px;
+}
+
+.game > .ui.grid .eight.chat-container .gamechat .chats .ui.list {
+	width: 577px;
+}
+
+.game > .ui.grid .eight.chat-container .gamechat .pointing.menu .icon {
+	margin: 7px 0 0 410px;
+}
