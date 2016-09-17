@@ -1,6 +1,9 @@
 'use strict';
 
 import $ from 'jquery';
+import Modal from 'semantic-ui-modal';
+import Dimmer from 'semantic-ui-dimmer';
+import Transition from 'semantic-ui-transition';
 
 $.fn.transition = Transition;
 $.fn.modal = Modal;
@@ -22,7 +25,7 @@ export default () => {
 			password2 = $('#signup-password2').val(),
 			$loader = $(this).next(),
 			$message = $loader.next(),
-			submitErr = (message) => {
+			submitErr = message => {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
 			};
@@ -72,7 +75,7 @@ export default () => {
 
 	$('body').on('focus', '#signup-password1', function () {
 		$(this).parent().next().text('6-255 characters.').slideDown();
-	});	
+	});
 
 	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function () {
 		$(this).parent().next().slideUp();
@@ -84,7 +87,7 @@ export default () => {
 			password = $('#signin-password').val(),
 			$loader = $(this).next(),
 			$message = $loader.next(),
-			submitErr = (message) => {
+			submitErr = message => {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
 			};
@@ -116,7 +119,7 @@ export default () => {
 
 	$('a#logout').on('click', function(event) {
 		event.preventDefault();
-		
+
 		$.ajax({
 			url: '/account/logout',
 			method: 'POST',
@@ -134,7 +137,7 @@ export default () => {
 
 	$('button#passwordchange-submit').on('click', function (event) {
 		event.preventDefault();
-		
+
 		const newPassword = $('#passwordchange-password').val(),
 			newPasswordConfirm = $('#passwordchange-confirmpassword').val(),
 			$loader = $(this).next(),
@@ -146,7 +149,7 @@ export default () => {
 			});
 
 		$loader.addClass('active');
-		
+
 		$.ajax({
 			url: '/account/change-password',
 			method: 'POST',
@@ -159,7 +162,6 @@ export default () => {
 					if (!$errMessage.hasClass('hidden')) {
 						$errMessage.addClass('hidden');
 					}
-
 				},
 				401() {
 					$loader.removeClass('active');
@@ -170,7 +172,7 @@ export default () => {
 				}
 			}
 		});
-	});	
+	});
 
 	$('button#delete-account').on('click', function(event) {
 		$('section.deleteaccount-modal')
@@ -179,43 +181,43 @@ export default () => {
 	});
 
 	$('button#deleteaccount-submit').on('click', function (event) {
-		return; // todo-release
-		event.preventDefault();
-		
-		const password = $('#deleteaccount-password').val(),
-			$loader = $(this).next(),
-			$errMessage = $loader.next(),
-			$successMessage = $errMessage.next(),
-			data = JSON.stringify({password});
+		// todo-release
+		// event.preventDefault();
 
-		$loader.addClass('active');
+		// const password = $('#deleteaccount-password').val(),
+		// 	$loader = $(this).next(),
+		// 	$errMessage = $loader.next(),
+		// 	$successMessage = $errMessage.next(),
+		// 	data = JSON.stringify({password});
 
-		$.ajax({
-			url: '/account/delete-account',
-			method: 'POST',
-			contentType: 'application/json; charset=UTF-8',
-			data,
-			statusCode: {
-				200() {
-					$loader.removeClass('active');
-					$successMessage.removeClass('hidden');
-					setTimeout(function () {
-						window.location.reload();
-					}, 3000);
-					if (!$errMessage.hasClass('hidden')) {
-						$errMessage.addClass('hidden');
-					}
-				},
-				400() {
-					$loader.removeClass('active');
-					$errMessage.text('Your password did not match.').removeClass('hidden');
-					if (!$successMessage.hasClass('hidden')) {
-						$successMessage.addClass('hidden');
-					}
-				}
-			}
-		});
-	});	
+		// $loader.addClass('active');
+
+		// $.ajax({
+		// 	url: '/account/delete-account',
+		// 	method: 'POST',
+		// 	contentType: 'application/json; charset=UTF-8',
+		// 	data,
+		// 	statusCode: {
+		// 		200() {
+		// 			$loader.removeClass('active');
+		// 			$successMessage.removeClass('hidden');
+		// 			setTimeout(function () {
+		// 				window.location.reload();
+		// 			}, 3000);
+		// 			if (!$errMessage.hasClass('hidden')) {
+		// 				$errMessage.addClass('hidden');
+		// 			}
+		// 		},
+		// 		400() {
+		// 			$loader.removeClass('active');
+		// 			$errMessage.text('Your password did not match.').removeClass('hidden');
+		// 			if (!$successMessage.hasClass('hidden')) {
+		// 				$successMessage.addClass('hidden');
+		// 			}
+		// 		}
+		// 	}
+		// });
+	});
 
 	// dev: autologin crap remove later
 

@@ -26,7 +26,7 @@ gulp.task('watch', () => {
 	livereload.listen();
 	gulp.watch('./src/scss/*.scss', ['styles', 'styles-web', 'styles-light']);
 	gulp.watch(['./src/frontend-scripts/**/*.js*', './routes/**/*.js', './__test__/*.js'], e => {
-		file = process.platform === 'win32' ? `./${e.path.split('E:\\apps\\one-night-werewolf\\')[1].split('\\').join('/')}` : `./${e.path.split('/Users/Coz/one-night-werewolf/')[1]}`;
+		file = process.platform === 'win32' ? `./${e.path.split('E:\\apps\\secret-hitler\\')[1].split('\\').join('/')}` : `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
 		gulp.start('lint');
 	});
 	gulp.watch(['./src/frontend-scripts/**/*.js*'], ['scripts']);
