@@ -1,0 +1,5 @@
+create game:
+
+input - name (optional)
+slider - # of players (5-10)
+checkbox - start game if minimum players are seated after a delay

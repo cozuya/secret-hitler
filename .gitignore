@@ -21,3 +21,4 @@ data/mongod.lock
 misc/*
 public/scripts/bundle.js
 npm-debug.log.*
+npm-debug.log
