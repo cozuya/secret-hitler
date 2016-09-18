@@ -24,39 +24,45 @@ html(lang="en")
 		title Secret Hitler
 	body
 		#main.container
-			nav.navbar.navbar-dark.bg-faded
+			nav.navbar.navbar-dark.bg-inverse
 				ul.nav.navbar-nav
-					li
-					if username
-						a(href="/game") Play Now
+					li.nav-item
+						if username
+							a.nav-link(href="/game") Play Now
+						else
+							a.nav-link(href="/observe") Observe Now
+					if home
+						li.nav-item.active
 					else
-						a(href="/observe") Observe Now
-				if home
-					li.nav-item.active Home
-				else
-					li.nav-item Home
-				if howtoplay
-					li.nav-item.active How to Play
-				else
-					li.nav-item How to Play
-				if rules
-					li.nav-item.active Rules
-				else
-					li.nav-item Rules
-				if about
-					li.nav-item.active About
-				else
-					li.nav-item About
-				if username
-					li
-						a#logout(href="#", style="margin-right: 20px;") Logout
-						a(href="/account")
-							= username + '\'s account'
-				else
-					li
-						button.ui.button#signin Sign In
-						.or
-						button.ui.button#signup Sign Up
+						li.nav-item
+							
+							a.nav-link(href="/") Home
+					if howtoplay
+						li.nav-item.active
+					else
+						li.nav-item
+
+							a.nav-link(href="/how-to-play") How to Play
+					if rules
+						li.nav-item.active
+					else
+						li.nav-item
+
+							a.nav-link(href="/rules") Rules
+					if about
+						li.nav-item.active
+					else
+						li.nav-item
+
+							a.nav-link(href="/about") About
+					li.nav-item.pull-right
+						if username
+							a.nav-link#logout(href="#", style="margin-right: 20px;") Logout
+							a.nav-link(href="/account")
+								= username + '\'s account'
+						else
+							a#signin Sign In
+							a#signup Sign Up
 			block content
 
 		section.signin-modal.ui.modal.small.segment.column

@@ -93,8 +93,6 @@ module.exports = () => {
 				created: new Date()
 			};
 
-		// todo-alpha prevent players from making an account that ends in '88'...
-
 		if (!/^[a-z0-9]+$/i.test(username)) {
 			res.status(401).json({message: 'Sorry, your username can only be alphanumeric.'});
 		} else if (username.length < 3) {
@@ -107,6 +105,8 @@ module.exports = () => {
 			res.status(401).json({message: 'Sorry, your password is too long.'});
 		} else if (password !== password2) {
 			res.status(401).json({message: 'Sorry, your passwords did not match.'});
+		} else if (/88$/i.test(username)) {
+			res.status(401).json({message: 'Sorry, usernames that end with 88 are not allowed.'});
 		} else {
 			Account.findOne({username}, (err, account) => {
 				if (err) {
