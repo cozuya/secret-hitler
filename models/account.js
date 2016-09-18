@@ -13,8 +13,8 @@ let mongoose = require('mongoose'),
 		gameSettings: {
 			disablePopups: Boolean,
 			enableTimestamps: Boolean,
-			disableRightSidebarInGame: Boolean,
-			enableDarkTheme: Boolean
+			enableRightSidebarInGame: Boolean,
+			enableLightTheme: Boolean
 		},
 		verification: {
 			email: String,

@@ -1,8 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
 
-$.fn.popup = Popup;
-
 export default class Gameroles extends React.Component {
 	constructor() {
 		super();

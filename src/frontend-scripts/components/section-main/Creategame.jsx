@@ -1,10 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
 
-$.fn.dropdown = Dropdown;
-$.fn.popup = Popup;
-$.fn.progress = Progress;
-
 export default class Creategame extends React.Component {
 	constructor() {
 		super();

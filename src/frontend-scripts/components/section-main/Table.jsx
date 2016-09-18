@@ -2,8 +2,6 @@ import React from 'react';
 import $ from 'jquery';
 import _ from 'lodash';
 
-$.fn.popup = Popup;
-
 export default class Table extends React.Component {
 	constructor() {
 		super();

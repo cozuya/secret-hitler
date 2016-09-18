@@ -4,7 +4,7 @@ export default class Defaultmid extends React.Component {
 	render() {
 		return (
 			<section className="defaultmid">
-				<img src="images/ww-logo-fs2.png" alt="One Night Werewolf Online logo" style={{position: 'absolute', left: '50%', marginLeft: '-275px', top: '70px', opacity: '0.05', width: '550px'}} width="550" height="550" />
+				<img src="" alt="Secret Hitler logo" style={{position: 'absolute', left: '50%', marginLeft: '-275px', top: '70px', opacity: '0.05', width: '550px'}} width="550" height="550" />
 				<br />
 				<button style={{padding: '5px', width: '80px'}} data-name="Uther" className="loginquick">Uther</button>
 				<br />

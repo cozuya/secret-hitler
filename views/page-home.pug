@@ -1,33 +1,11 @@
 extends layout
 block content
-	nav.ui.secondary.pointing.top.fixed.menu#top-menu
-		.left.menu
-			if username
-				a.ui.button(href="/game") Play Now
-			else
-				a.ui.button(href="/observe") Observe Now
-		a.active.item Home
-		a.item(href="/rules") Rules
-		a.item(href="/how-to-play") How to Play
-		a.item(href="/about") About
-		if username
-			div.item.right
-				a.right#logout(href="#", style="margin-right: 20px;") Logout
-				a.right(href="/account")
-					= username + '\'s account'
-		else
-			.right.menu
-				.ui.buttons
-					button.ui.button#signin Sign In
-					.or
-					button.ui.button#signup Sign Up
-	#header-container.ui.segment
-		h1.ui.header Secret Hitler
-	.ui.segment
-		.ui.grid.mainpage
-			.row#general-info
-				.ten.wide.column
-					h2.ui.header A multiplayer web game of deception and deduction
-					p Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists. Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late. Read #[a(href="/rules") the rules] to learn more, #[a(href="/how-to-play") how to play] to learn about the UI, or hop into the #[a(href="/observe") the game] itself right now.
-				.six.wide.column.news
-					h3.ui.header News
+	#header-container
+		h1 Secret Hitler
+	.container.mainpage
+		.row#general-info
+			.col-sm-8
+				h2 A multiplayer web game of deception and deduction
+				p Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists. Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late. Read #[a(href="/rules") the rules] to learn more, #[a(href="/how-to-play") how to play] to learn about the UI, or hop into the #[a(href="/observe") the game] itself right now.
+			.col-sm-4
+				h3 News

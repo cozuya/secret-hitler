@@ -16,7 +16,10 @@ module.exports = () => {
 
 	app.get('/', (req, res) => {
 		if (req.user) {
-			res.render('page-home', {username: req.user.username});
+			res.render('page-home', {
+				username: req.user.username,
+				home: true
+			});
 		} else {
 			res.render('page-home');
 		}

@@ -5,7 +5,7 @@ Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930'
 
 <!-- ![Screenshot](http://todo) -->
 
-Front end: React, Redux, Sass, SemanticUI, jQuery, SocketIO.
+Front end: React, Redux, Sass, Bootstrap 4, jQuery, SocketIO.
 
 Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 
@@ -19,9 +19,9 @@ Install node v6.x.
 
 Install mongodb, have it in your path.
 
-> git clone https://github.com/cozuya/one-night-werewolf.git
+> git clone https://github.com/cozuya/secret-hitler.git
 
-> cd one-night-werewolf
+> cd secret-hitler
 
 > npm i -g gulp nodemon
 
@@ -38,8 +38,6 @@ For installation on windows, you may need to do a few extra steps if you are get
 > npm i --msvs_version=2013
 
 instead of the npm install found above.
-
-On occasion semantic-ui itself will attempt to install for some reason - you can safely control-c at the prompt.
 
 ## Running in dev mode ##
 

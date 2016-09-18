@@ -2,28 +2,61 @@ doctype html
 html(lang="en")
 	head
 		meta(charset="utf-8")
-		meta(http-equiv="X-UA-Compatible" content="IE=edge,chrome=1")
-		meta(name="theme-color" content="#aaa")
-		meta(name="description" content="Secret Hitler Online")
+		meta(http-equiv="X-UA-Compatible", content="IE=edge")
+		meta(name="theme-color", content="#aaa")
+		meta(name="description", content="Secret Hitler Online")
 		if game
 			if isLight
 				link(rel="stylesheet", type="text/css", href="/styles/style-light.css")
 			else
 				link(rel="stylesheet", type="text/css", href="/styles/style.css")
 		else
-			meta(name="viewport", content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1")
-			link(rel="stylesheet", type="text/css", href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css")
+			meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+			link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css", integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj", crossorigin="anonymous")
 			link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
-		link(href="//fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css")
-		link(rel="author" href="humans.txt")
-		link(rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png")
-		link(rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png")
-		link(rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png")
-		link(rel="mask-icon" href="/safari-pinned-tab.svg" color="#aaa")
-		link(rel="manifest" href="/manifest.json")
+		link(href="//fonts.googleapis.com/css?family=Raleway", rel="stylesheet", type="text/css")
+		link(rel="author", href="humans.txt")
+		link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
+		link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
+		link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
+		link(rel="mask-icon", href="/safari-pinned-tab.svg", color="#aaa")
+		link(rel="manifest", href="/manifest.json")
 		title Secret Hitler
 	body
-		#main.ui.container
+		#main.container
+			nav.navbar.navbar-dark.bg-faded
+				ul.nav.navbar-nav
+					li
+					if username
+						a(href="/game") Play Now
+					else
+						a(href="/observe") Observe Now
+				if home
+					li.nav-item.active Home
+				else
+					li.nav-item Home
+				if howtoplay
+					li.nav-item.active How to Play
+				else
+					li.nav-item How to Play
+				if rules
+					li.nav-item.active Rules
+				else
+					li.nav-item Rules
+				if about
+					li.nav-item.active About
+				else
+					li.nav-item About
+				if username
+					li
+						a#logout(href="#", style="margin-right: 20px;") Logout
+						a(href="/account")
+							= username + '\'s account'
+				else
+					li
+						button.ui.button#signin Sign In
+						.or
+						button.ui.button#signup Sign Up
 			block content
 
 		section.signin-modal.ui.modal.small.segment.column
@@ -82,10 +115,12 @@ html(lang="en")
 				.ui.dimmer.inverted
 					.ui.text.loader Signing up..
 				.ui.negative.hidden.message
+		
 		if game
 			script(src="/scripts/bundle.js")
 		else
 			script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
-			script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
 			script(src="/scripts/site.js")
+		script(src="//cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js", integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB", crossorigin="anonymous")
+		script(src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js", integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU", crossorigin="anonymous")
 		block footer

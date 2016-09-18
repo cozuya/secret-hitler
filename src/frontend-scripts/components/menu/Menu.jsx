@@ -142,7 +142,7 @@ export default class Menu extends React.Component {
 		return (
 			<section className="ui menu nav-menu">
 				<p>
-					<a href="/" target="_blank" rel="noopener noreferrer">One Night Werewolf</a>
+					<a href="/" target="_blank" rel="noopener noreferrer">Secret Hitler</a>
 				</p>
 				<div className="item right">
 				{(() => {

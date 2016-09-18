@@ -1,10 +1,7 @@
 gameState
 	isStarted bool
-	playerCount number
-	isCompleted bool - ?
-	reportedGame 0-6
-		0 bool
-		...
+	isCompleted bool
+	phase string
 chats array
 	chat array
 	gameChat bool
@@ -32,13 +29,22 @@ private
 	seatedPlayers array 5-10
 		role string
 		gameChats array of chat objects
+		isPresident bool
+		isChancellor bool
+		isSelectingChancellor bool
 		isSelectingPresidentDiscard bool
 		isSelectingChancellorDiscard bool
+		needsToVote bool
+		reportedGame bool
 		playersState array 5-10
 			obj
-				displayedRole string
+				displayedCard string
 				isFlipped bool
 				isDead bool
 				isAlsoFascist bool
 				isHitler bool
 				isBeingIndicated bool
+				isChancellor bool
+				isPresident bool
+				isTyping bool
+				hasVoted bool

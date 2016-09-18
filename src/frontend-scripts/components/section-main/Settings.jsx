@@ -1,9 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
 
-$.fn.popup = Popup;
-$.fn.checkbox = Checkbox;
-
 export default class Settings extends React.Component {
 	constructor() {
 		super();
@@ -13,65 +10,6 @@ export default class Settings extends React.Component {
 	componentDidMount() {
 		const {socket} = this.props;
 
-		$(this.popups).popup({
-			inline: true,
-			hoverable: true,
-			position: 'bottom left',
-			delay: {
-				show: 300,
-				hide: 800
-			}
-		}).checkbox({
-			onChecked() {
-				socket.emit('updateGameSettings', {
-					disablePopups: true
-				});
-			},
-			onUnchecked() {
-				socket.emit('updateGameSettings', {
-					disablePopups: false
-				});
-			}
-		});
-
-		$(this.timestamps).checkbox({
-			onChecked() {
-				socket.emit('updateGameSettings', {
-					enableTimestamps: true
-				});
-			},
-			onUnchecked() {
-				socket.emit('updateGameSettings', {
-					enableTimestamps: false
-				});
-			}
-		});
-
-		$(this.sidebar).checkbox({
-			onChecked() {
-				socket.emit('updateGameSettings', {
-					disableRightSidebarInGame: true
-				});
-			},
-			onUnchecked() {
-				socket.emit('updateGameSettings', {
-					disableRightSidebarInGame: false
-				});
-			}
-		});
-
-		$(this.theme).checkbox({
-			onChecked() {
-				socket.emit('updateGameSettings', {
-					enableDarkTheme: true
-				});
-			},
-			onUnchecked() {
-				socket.emit('updateGameSettings', {
-					enableDarkTheme: false
-				});
-			}
-		});
 	}
 
 	leaveSettings() {
