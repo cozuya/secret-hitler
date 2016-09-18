@@ -1,6 +1,7 @@
 $werewolfteam: #DC6969;
 $villageteam: #4B6A90;
 $tannerteam: #DCB469;
+$fascistteam: #e36248;
 $notification: #FBBD08;
 $selection: #DB2828;
 $proceed: #2185D0;
@@ -18,7 +19,7 @@ $dteal: #034f61;
 @import 'rightsidebar.scss';
 
 body {
-	background-image: url('../images/pw_maze_white.png');
+	background-image: url('../images/footer_lodyas.png');
 
 	> .ui.container {
 		width: 1127px;
@@ -40,18 +41,6 @@ body {
 	display: table;
 	content: '';
 	clear: both;
-}
-
-.team-werewolf {
-	color: $werewolfteam;
-}
-
-.team-village {
-	color: $villageteam;
-}
-
-.team-tanner {
-	color: $tannerteam;
 }
 
 #game-container .ui.menu {
@@ -169,11 +158,9 @@ body {
 }
 
 .verified-yes {
-	color: $villageteam;
 }
 
 .verified-no {
-	color: $werewolfteam;
 }
 
 ::-webkit-scrollbar {

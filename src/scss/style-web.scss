@@ -1,16 +1,15 @@
 $werewolfteam: #DC6969;
 $villageteam: #4B6A90;
 $tannerteam: #DCB469;
+$fascistteam: #e36248;
 $notification: #FBBD08;
 $selection: #DB2828;
 $proceed: #2185D0;
 $lteal: #097892;
 $dteal: #034f61;
 
-
 body {
-	background-image: url('../images/pw_maze_white.png');
-	// min-width: 624px;
+	background-image: url('../images/footer_lodyas.png');
 	overflow-x: auto;
 }
 
@@ -60,7 +59,7 @@ span.emphasis {
 
 #top-menu {
 	.left.menu .button {
-		background: $werewolfteam none !important;
+		background: $fascistteam none !important;
 		color: #fff;
 	}
 
@@ -92,10 +91,11 @@ span.emphasis {
 }
 
 .ui.grid.mainpage {
-	background: #eee;
-	box-shadow: 0px 3px 4px 1px #ccc;
+	background: #333;
+	color: #ddd;
 
 	h2 {
+		color: #ddd;
 		font-size: 30px;
 		padding-left: 10%;
 		padding-right: 10%;
@@ -113,10 +113,6 @@ span.emphasis {
 	img {
 		margin-top: 40px;
 	}
-}
-
-#general-info, #top-menu{
-	background: #fefefe;
 }
 
 .signin-modal, .signup-modal {

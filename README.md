@@ -5,7 +5,7 @@ Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930'
 
 <!-- ![Screenshot](http://todo) -->
 
-Front end: React, Redux, Sass, Bootstrap 4, jQuery, SocketIO.
+Front end: React, Redux, Sass, Semantic UI, jQuery, SocketIO.
 
 Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 

@@ -12,7 +12,7 @@ html(lang="en")
 				link(rel="stylesheet", type="text/css", href="/styles/style.css")
 		else
 			meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
-			link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css", integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj", crossorigin="anonymous")
+			link(rel="stylesheet", type="text/css", href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css")
 			link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
 		link(href="//fonts.googleapis.com/css?family=Raleway", rel="stylesheet", type="text/css")
 		link(rel="author", href="humans.txt")
@@ -24,45 +24,43 @@ html(lang="en")
 		title Secret Hitler
 	body
 		#main.container
-			nav.navbar.navbar-dark.bg-inverse
-				ul.nav.navbar-nav
-					li.nav-item
+			nav.ui.secondary.pointing.top.fixed.inverted.menu#top-menu
+					.left.menu
 						if username
-							a.nav-link(href="/game") Play Now
+							a.ui.button(href="/game") Play Now
 						else
-							a.nav-link(href="/observe") Observe Now
+							a.ui.button(href="/observe") Observe Now
 					if home
-						li.nav-item.active
+						a.active.item Home
 					else
-						li.nav-item
-							
-							a.nav-link(href="/") Home
-					if howtoplay
-						li.nav-item.active
-					else
-						li.nav-item
-
-							a.nav-link(href="/how-to-play") How to Play
+						a.item(href="/") Home
+					
 					if rules
-						li.nav-item.active
+						a.active.item Rules
 					else
-						li.nav-item
+						a.item(href="/rules") Rules
 
-							a.nav-link(href="/rules") Rules
+					if howtoplay
+						a.active.item How to Play
+					else
+						a.item(href="/how-to-play") How to Play
+
 					if about
-						li.nav-item.active
+						a.active.item About
 					else
-						li.nav-item
+						a.item(href="/about") About
 
-							a.nav-link(href="/about") About
-					li.nav-item.pull-right
-						if username
-							a.nav-link#logout(href="#", style="margin-right: 20px;") Logout
-							a.nav-link(href="/account")
+					if username
+						div.item.right
+							a.right#logout(href="#", style="margin-right: 20px;") Logout
+							a.right(href="/account")
 								= username + '\'s account'
-						else
-							a#signin Sign In
-							a#signup Sign Up
+					else
+						.right.menu
+							.ui.buttons
+								button.ui.button#signin Sign In
+								.or
+								button.ui.button#signup Sign Up
 			block content
 
 		section.signin-modal.ui.modal.small.segment.column
@@ -126,7 +124,6 @@ html(lang="en")
 			script(src="/scripts/bundle.js")
 		else
 			script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
+			script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
 			script(src="/scripts/site.js")
-		script(src="//cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js", integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB", crossorigin="anonymous")
-		script(src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js", integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU", crossorigin="anonymous")
 		block footer
