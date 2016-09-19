@@ -1,26 +1,5 @@
 extends layout
 block content
-	nav.ui.secondary.pointing.top.fixed.menu#top-menu
-		.left.menu
-			if username
-				a.ui.button(href="/game") Play Now
-			else
-				a.ui.button(href="/observe") Observe Now
-		a.item(href="/") Home
-		a.item(href="/rules") Rules
-		a.active.item How to Play
-		a.item(href="/about") About
-		if username
-			div.item.right
-				a.right#logout(href="#", style="margin-right: 20px;") Logout
-				a.right(href="/account")
-					= username + '\'s account'
-		else
-			.right.menu
-				.ui.buttons
-					button.ui.button#signin Sign In
-					.or
-					button.ui.button#signup Sign Up
 	.ui.container.howtoplay-container
 		h1.ui.centered.header How to play Secret Hitler
 		h2.ui.centered.header The default view
