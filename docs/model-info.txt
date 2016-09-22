@@ -11,12 +11,13 @@ general
 	name string
 	isAutostart bool
 	maxPlayersCount number 5-10
+	status string
+	uid string
 seatedPlayers array 5-10
 	obj
 		connected bool
 		userName string
 	...
-status string
 trackState
 	liberalTrack
 		liberalPolicyCount number
@@ -24,7 +25,6 @@ trackState
 	fascistTrack
 		fascistTrackCount number
 playersState (see private)
-uid string
 private
 	seatedPlayers array 5-10
 		role string
@@ -46,5 +46,4 @@ private
 				isBeingIndicated bool
 				isChancellor bool
 				isPresident bool
-				isTyping bool
 				hasVoted bool

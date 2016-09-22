@@ -30,9 +30,9 @@
     "pug": "^2.0.0-beta6",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
-    "react-redux": "^4.4.5",
-    "redux": "^3.6.0",
-    "redux-devtools": "^3.3.1",
+    "mobx": "^2.5.0",
+    "mobx-react": "^3.5.5",
+    "mobx-react-devtools": "^4.2.5",
     "semantic-ui-checkbox": "^2.2.3",
     "semantic-ui-dimmer": "^2.2.3",
     "semantic-ui-dropdown": "^2.2.3",
@@ -74,7 +74,6 @@
   },
   "scripts": {
     "test": "jest",
-    "db": "mongod --dbpath logs",
-    "start": "nodemon bin/dev"
+    "start": "mongod --dbpath logs | nodemon bin/dev"
   }
 }
