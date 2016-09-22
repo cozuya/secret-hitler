@@ -27,7 +27,10 @@ module.exports = () => {
 
 	app.get('/rules', (req, res) => {
 		if (req.user) {
-			res.render('page-rules', {username: req.user.username});
+			res.render('page-rules', {
+				username: req.user.username,
+				rules: true
+			});
 		} else {
 			res.render('page-rules');
 		}
@@ -35,7 +38,10 @@ module.exports = () => {
 
 	app.get('/how-to-play', (req, res) => {
 		if (req.user) {
-			res.render('page-howtoplay', {username: req.user.username});
+			res.render('page-howtoplay', {
+				username: req.user.username,
+				howtoplay: true
+			});
 		} else {
 			res.render('page-howtoplay');
 		}
@@ -43,7 +49,10 @@ module.exports = () => {
 
 	app.get('/about', (req, res) => {
 		if (req.user) {
-			res.render('page-about', {username: req.user.username});
+			res.render('page-about', {
+				username: req.user.username,
+				about: true
+			});
 		} else {
 			res.render('page-about');
 		}
@@ -53,7 +62,7 @@ module.exports = () => {
 		res.render('game', {
 			user: req.user.username,
 			game: true,
-			isDark: req.user.gameSettings.enableDarkTheme
+			isLight: req.user.gameSettings.enableLightTheme
 		});
 	});
 
