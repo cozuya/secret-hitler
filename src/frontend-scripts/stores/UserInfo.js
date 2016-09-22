@@ -3,11 +3,11 @@ import {extendObservable} from 'mobx';
 export default class UserInfo {
 	constructor() {
 		extendObservable(this, {
-			userInfo: {}
+			user: {}
 		});
 	}
 
-	updateUserinfo(userInfo) {
-		this.userInfo = userInfo;
+	updateUserInfo(user) {
+		this.user = user;
 	}
 }

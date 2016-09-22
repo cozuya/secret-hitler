@@ -23,6 +23,6 @@ export default class RightSidebar extends React.Component {
 RightSidebar.propTypes = {
 	userInfo: React.PropTypes.object,
 	socket: React.PropTypes.object,
-	generalChats: React.PropTypes.array,
+	generalChats: React.PropTypes.object,
 	userList: React.PropTypes.object
 };

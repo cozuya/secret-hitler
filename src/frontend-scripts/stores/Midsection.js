@@ -3,11 +3,11 @@ import {extendObservable} from 'mobx';
 export default class Midsection {
 	constructor() {
 		extendObservable(this, {
-			midsection: 'default'
+			section: 'default'
 		});
 	}
 
-	changeMidsection(midsection) {
-		this.midsection = midsection;
+	updateMidsection(section) {
+		this.section = section;
 	}
 }

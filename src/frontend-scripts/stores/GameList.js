@@ -3,11 +3,11 @@ import {extendObservable} from 'mobx';
 export default class GameList {
 	constructor() {
 		extendObservable(this, {
-			gameList: []
+			list: []
 		});
 	}
 
-	updateGameList(gameList) {
-		this.gameList = gameList;
+	updateGameList(list) {
+		this.list = list;
 	}
 }

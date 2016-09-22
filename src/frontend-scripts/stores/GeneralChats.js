@@ -3,11 +3,11 @@ import {extendObservable} from 'mobx';
 export default class GeneralChats {
 	constructor() {
 		extendObservable(this, {
-			generalChats: []
+			chats: []
 		});
 	}
 
-	updateGeneralChats(generalChats) {
-		this.generalChats = generalChats;
+	updateGeneralChats(chats) {
+		this.chats = chats;
 	}
 }
