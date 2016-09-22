@@ -1,20 +1,17 @@
 import sock from 'socket.io-client';
 import React from 'react';
-import {connect} from 'react-redux';
 import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
-import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats} from '../actions/actions.js';
 
 const socket = sock({
-		reconnection: false
-	}),
-	select = state => state;
+	reconnection: false
+});
 
-export class App extends React.Component {
+export default class App extends React.Component {
 	constructor() {
 		super();
-		this.handleRoute = this.handleRoute.bind(this);
+
 		this.handleCreateGameSubmit = this.handleCreateGameSubmit.bind(this);
 		this.handleRoute = this.handleRoute.bind(this);
 		this.handleSeatingUser = this.handleSeatingUser.bind(this);
@@ -23,15 +20,14 @@ export class App extends React.Component {
 	}
 
 	componentWillMount() {
-		const {dispatch} = this.props,
-			{classList} = document.getElementById('game-container');
+		const {classList} = document.getElementById('game-container');
+
+		console.log(this.props);
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1];
 
-			console.log(this.props);
-
-			dispatch(updateUser({userName: username}));
+			// dispatch(updateUser({userName: username}));
 			socket.emit('getUserGameSettings', username);
 		}
 
@@ -47,59 +43,57 @@ export class App extends React.Component {
 			const {userInfo} = this.props;
 
 			userInfo.gameSettings = settings;
-			dispatch(updateUser(userInfo));
+			// dispatch(updateUser(userInfo));
 		});
 
 		socket.on('gameList', list => {
-			dispatch(updateGameList(list));
+			// dispatch(updateGameList(list));
 		});
 
 		socket.on('gameUpdate', (game, isSettings) => {
 			if (this.props.midSection !== 'game' && Object.keys(game).length) {
-				dispatch(updateGameInfo(game));
-				dispatch(updateMidsection('game'));
+				// dispatch(updateGameInfo(game));
+				// dispatch(updateMidsection('game'));
 			} else if (!Object.keys(game).length) {
 				if (isSettings) {
-					dispatch(updateMidsection('settings'));
+					// dispatch(updateMidsection('settings'));
 				} else {
-					dispatch(updateMidsection('default'));
+					// dispatch(updateMidsection('default'));
 				}
-				dispatch(updateGameInfo(game));
+				// dispatch(updateGameInfo(game));
 			} else {
-				dispatch(updateGameInfo(game));
+				// dispatch(updateGameInfo(game));
 			}
 		});
 
 		socket.on('userList', list => {
-			dispatch(updateUserList(list));
+			// dispatch(updateUserList(list));
 		});
 
 		socket.on('updateSeatForUser', seatNumber => {
 			const {userInfo} = this.props;
 
 			userInfo.seatNumber = seatNumber;
-			dispatch(updateUser(userInfo));
+			// dispatch(updateUser(userInfo));
 		});
 
 		socket.on('generalChats', chats => {
-			dispatch(updateGeneralChats(chats));
+			// dispatch(updateGeneralChats(chats));
 		});
 	}
 
 	handleRoute(route) {
-		const {dispatch} = this.props;
-
-		dispatch(updateMidsection(route));
+		// dispatch(updateMidsection(route));
 	}
 
 	handleCreateGameSubmit(game) {
-		const {dispatch, userInfo} = this.props;
+		// const {dispatch, userInfo} = this.props;
 
-		userInfo.seatNumber = '0';
-		dispatch(updateGameInfo(game));
-		dispatch(updateMidsection('game'));
-		dispatch(updateUser(userInfo));
-		socket.emit('addNewGame', game);
+		// userInfo.seatNumber = '0';
+		// dispatch(updateGameInfo(game));
+		// dispatch(updateMidsection('game'));
+		// dispatch(updateUser(userInfo));
+		// socket.emit('addNewGame', game);
 	}
 
 	// ***** begin dev helpers *****
@@ -128,7 +122,7 @@ export class App extends React.Component {
 	// }
 
 	makeQuickDefault() {
-		const {dispatch, userInfo} = this.props,
+		const {userInfo} = this.props,
 			game = {
 				kobk: false,
 				name: 'New Game',
@@ -164,16 +158,16 @@ export class App extends React.Component {
 			};
 
 		userInfo.seatNumber = '0';
-		dispatch(updateGameInfo(game));
-		dispatch(updateMidsection('game'));
-		dispatch(updateUser(userInfo));
+		// dispatch(updateGameInfo(game));
+		// dispatch(updateMidsection('game'));
+		// dispatch(updateUser(userInfo));
 		socket.emit('addNewGame', game);
 	}
 
 	// ***** end dev helpers *****
 
 	handleSeatingUser(seatNumber) {
-		const {gameInfo, dispatch, userInfo} = this.props,
+		const {gameInfo, userInfo} = this.props,
 			data = {
 				uid: gameInfo.uid,
 				seatNumber,
@@ -182,15 +176,15 @@ export class App extends React.Component {
 
 		userInfo.seatNumber = seatNumber;
 		socket.emit('updateSeatedUser', data);
-		dispatch(updateUser(userInfo));
+		// dispatch(updateUser(userInfo));
 	}
 
 	handleLeaveGame(seatNumber, isSettings = false) {
-		const {dispatch, userInfo} = this.props;
+		const {userInfo} = this.props;
 
 		if (userInfo.seatNumber) {
 			userInfo.seatNumber = '';
-			dispatch(updateUser(userInfo));
+			// dispatch(updateUser(userInfo));
 		}
 
 		socket.emit('leaveGame', {
@@ -211,23 +205,23 @@ export class App extends React.Component {
 								userInfo={this.props.userInfo}
 								midSection={this.props.midSection}
 								gameList={this.props.gameList}
-								onCreateGameButtonClick={this.handleRoute}
+								// onCreateGameButtonClick={this.handleRoute}
 								socket={socket}
 							/>
 						);
 					}
 				})()}
 				<Main
-					userInfo={this.props.userInfo}
 					midSection={this.props.midSection}
-					onCreateGameSubmit={this.handleCreateGameSubmit}
-					onLeaveCreateGame={this.handleRoute}
+					userInfo={this.props.userInfo}
 					gameInfo={this.props.gameInfo}
-					onLeaveSettings={this.handleRoute}
-					onSeatingUser={this.handleSeatingUser}
-					onLeaveGame={this.handleLeaveGame}
-					quickDefault={this.makeQuickDefault}
-					onSettingsButtonClick={this.handleRoute}
+					// onCreateGameSubmit={this.handleCreateGameSubmit}
+					// onLeaveCreateGame={this.handleRoute}
+					// onLeaveSettings={this.handleRoute}
+					// onSeatingUser={this.handleSeatingUser}
+					// onLeaveGame={this.handleLeaveGame}
+					// quickDefault={this.makeQuickDefault}
+					// onSettingsButtonClick={this.handleRoute}
 					socket={socket}
 				/>
 				{(() => {
@@ -256,5 +250,3 @@ App.propTypes = {
 	generalChats: React.PropTypes.array,
 	userList: React.PropTypes.object
 };
-
-export default connect(select)(App);

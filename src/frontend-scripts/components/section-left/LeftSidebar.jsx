@@ -8,7 +8,7 @@ export default class LeftSidebar extends React.Component {
 	}
 
 	createGameClick() {
-		this.props.onCreateGameButtonClick('createGame');
+		// this.props.onCreateGameButtonClick('createGame');
 	}
 
 	render() {
@@ -21,7 +21,7 @@ export default class LeftSidebar extends React.Component {
 					return (userName && !gameBeingCreated) ? <button className="ui button primary" onClick={this.createGameClick}>Create a new game</button> : <button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>;
 				})()}
 				<div className="games-container">
-					{this.props.gameList.sort((a, b) => {
+					{this.props.gameList.gameList.sort((a, b) => {
 						if (!a.gameState.isStarted && b.gameState.isStarted) {
 							return -1;
 						} else if (a.gameState.isStarted && !b.gameState.isStarted) {

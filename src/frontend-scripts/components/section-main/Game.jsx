@@ -1,11 +1,9 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import Table from './Table.jsx';
 import Gamechat from './Gamechat.jsx';
 import Gameroles from './Gameroles.jsx';
-import {updateExpandoInfo, updateClickedGamerole, updateClickedPlayer} from '../../actions/actions.js';
 
-class Game extends React.Component {
+export default class Game extends React.Component {
 	constructor() {
 		super();
 
@@ -15,15 +13,15 @@ class Game extends React.Component {
 	}
 
 	roleState(state) {
-		this.props.dispatch(updateExpandoInfo(state));
+		// this.props.dispatch(updateExpandoInfo(state));
 	}
 
 	selectedGamerole(state) {
-		this.props.dispatch(updateClickedGamerole(state));
+		// this.props.dispatch(updateClickedGamerole(state));
 	}
 
 	selectedPlayer(state) {
-		this.props.dispatch(updateClickedPlayer(state));
+		// this.props.dispatch(updateClickedPlayer(state));
 	}
 
 	render() {
@@ -117,10 +115,6 @@ class Game extends React.Component {
 		);
 	}
 }
-
-const select = state => state;
-
-export default connect(select)(Game);
 
 Game.propTypes = {
 	onUserNightActionEventSubmit: React.PropTypes.func,

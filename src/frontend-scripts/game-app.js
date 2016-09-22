@@ -1,14 +1,16 @@
 'use strict';
 
-import account from './account';
-import AppComponent from './components/App.jsx';
+import $ from 'jquery';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import {render} from 'react-dom';
-import {createStore} from 'redux';
-import {Provider} from 'react-redux';
-import wwapp from './reducers/ww-app';
+import account from './account';
+import AppComponent from './components/App.jsx';
 import polyfills from '../../iso/polyfills.js';
-import $ from 'jquery';
+import Midsection from './stores/Midsection.js';
+import UserInfo from './stores/UserInfo.js';
+import GameInfo from './stores/GameInfo.js';
+import GeneralChats from './stores/GeneralChats.js';
+import GameList from './stores/GameList.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const container = document.getElementById('game-container');
@@ -19,13 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	console.log('%c%s', 'color: teal; background: #eee; font-size: 14px; font-style: italic; font-family: verdana', 'Secret Hitler');
 
 	if (container) {
-		const store = createStore(wwapp);
-
 		render(
-			<Provider store={store}>
-				<AppComponent />
-			</Provider>,
-		container);
+			<AppComponent
+				midsection={new Midsection()}
+				userInfo={new UserInfo()}
+				gameInfo={new GameInfo()}
+				generalChats={new GeneralChats()}
+				gameList={new GameList()}
+			/>
+		, container);
 	}
 
 	$(document).keydown(function(e) {
