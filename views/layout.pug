@@ -24,7 +24,8 @@ html(lang="en")
 		title Secret Hitler
 	body
 		#main.container
-			nav.ui.secondary.pointing.top.fixed.inverted.menu#top-menu
+			if !game
+				nav.ui.secondary.pointing.top.fixed.inverted.menu#top-menu
 					.left.menu
 						if username
 							a.ui.button(href="/game") Play Now
