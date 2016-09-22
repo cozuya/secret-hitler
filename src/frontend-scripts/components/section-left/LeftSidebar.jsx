@@ -15,7 +15,7 @@ export default class LeftSidebar extends React.Component {
 		return (
 			<section className="section-left three wide column leftsidebar">
 				{(() => {
-					const {userName} = this.props.userInfo.user,
+					const {userName} = this.props.userInfo,
 						gameBeingCreated = this.props.midSection.section === 'createGame';
 
 					return (userName && !gameBeingCreated) ? <button className="ui button primary" onClick={this.createGameClick}>Create a new game</button> : <button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>;

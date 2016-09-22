@@ -8,6 +8,7 @@ export default class Midsection {
 	}
 
 	updateMidsection(section) {
+		console.log(section);
 		this.section = section;
 	}
 }

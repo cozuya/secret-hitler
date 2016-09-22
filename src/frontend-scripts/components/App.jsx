@@ -26,16 +26,13 @@ class App extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log(this.props.userInfo);
-
 		const {classList} = document.getElementById('game-container');
 
 		if (classList.length) {
 			const userName = classList[0].split('username-')[1];
 
-			this.props.userInfo.updateUserInfo({userName});
-			this.props.midSection.updateMidsection('test');
-			// socket.emit('getUserGameSettings', userName);
+			this.props.userInfo.updateUserName(userName);
+			socket.emit('getUserGameSettings', userName);
 		}
 
 		socket.on('manualDisconnection', () => {
@@ -47,10 +44,7 @@ class App extends React.Component {
 		});
 
 		socket.on('gameSettings', settings => {
-			// const {userInfo} = this.props;
-
-			// userInfo.user.gameSettings = settings;
-			// userInfo.updateUserInfo(userInfo);
+			this.props.userInfo.updateUserGameSettings(settings);
 		});
 
 		socket.on('gameList', list => {

@@ -3,11 +3,16 @@ import {extendObservable} from 'mobx';
 export default class UserInfo {
 	constructor() {
 		extendObservable(this, {
-			user: {}
+			userName: '',
+			gameSettings: {}
 		});
 	}
 
-	updateUserInfo(user) {
-		this.user = user;
+	updateUserName(userName) {
+		this.userName = userName;
+	}
+
+	updateUserGameSettings(settings) {
+		this.gameSettings = settings;
 	}
 }
