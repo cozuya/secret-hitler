@@ -41,17 +41,13 @@ instead of the npm install found above.
 
 ## Running in dev mode ##
 
-start mongo:
-
-> npm run db
-
-start server:
-
-> npm start
-
 build assets (first time only):
 
 > gulp build
+
+start server and mongo:
+
+> npm start
 
 start development task runner:
 

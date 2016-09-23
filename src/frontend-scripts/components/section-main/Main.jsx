@@ -81,7 +81,7 @@ export default class Main extends React.Component {
 }
 
 Main.propTypes = {
-	midSection: React.PropTypes.object,
+	midSection: React.PropTypes.string,
 	// onCreateGameSubmit: React.PropTypes.func,
 	// onLeaveCreateGame: React.PropTypes.func,
 	// onLeaveSettings: React.PropTypes.func,

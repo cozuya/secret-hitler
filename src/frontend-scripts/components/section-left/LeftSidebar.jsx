@@ -16,12 +16,12 @@ export default class LeftSidebar extends React.Component {
 			<section className="section-left three wide column leftsidebar">
 				{(() => {
 					const {userName} = this.props.userInfo,
-						gameBeingCreated = this.props.midSection.section === 'createGame';
+						gameBeingCreated = this.props.midSection === 'createGame';
 
 					return (userName && !gameBeingCreated) ? <button className="ui button primary" onClick={this.createGameClick}>Create a new game</button> : <button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>;
 				})()}
 				<div className="games-container">
-					{this.props.gameList.list.sort((a, b) => {
+					{this.props.gameList.sort((a, b) => {
 						if (!a.gameState.isStarted && b.gameState.isStarted) {
 							return -1;
 						} else if (a.gameState.isStarted && !b.gameState.isStarted) {
@@ -62,8 +62,8 @@ export default class LeftSidebar extends React.Component {
 
 LeftSidebar.propTypes = {
 	userInfo: React.PropTypes.object,
-	midSection: React.PropTypes.object,
-	gameList: React.PropTypes.object,
+	midSection: React.PropTypes.string,
+	gameList: React.PropTypes.array,
 	onCreateGameButtonClick: React.PropTypes.func,
 	socket: React.PropTypes.object
 };

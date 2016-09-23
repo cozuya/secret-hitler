@@ -51,7 +51,7 @@ export default class Generalchat extends React.Component {
 	}
 
 	processChats() {
-		return this.props.generalChats.chats.map((chat, i) => {
+		return this.props.generalChats.map((chat, i) => {
 			return (
 				<div className="item" key={i}>
 					<span className={chat.userName === 'coz' ? 'chat-user admin' : chat.userName === 'stine' ? 'chat-user admin' : 'chat-user'}>{chat.userName}: </span>
@@ -95,5 +95,5 @@ export default class Generalchat extends React.Component {
 Generalchat.propTypes = {
 	userInfo: React.PropTypes.object,
 	socket: React.PropTypes.object,
-	generalChats: React.PropTypes.object
+	generalChats: React.PropTypes.array
 };
