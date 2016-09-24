@@ -9,7 +9,7 @@ html(lang="en")
 			if isLight
 				link(rel="stylesheet", type="text/css", href="/styles/style-light.css")
 			else
-				link(rel="stylesheet", type="text/css", href="/styles/style.css")
+				link(rel="stylesheet", type="text/css", href="/styles/style-dark.css")
 		else
 			meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 			link(rel="stylesheet", type="text/css", href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css")
@@ -23,7 +23,7 @@ html(lang="en")
 		link(rel="manifest", href="/manifest.json")
 		title Secret Hitler
 	body
-		#main.container
+		#main
 			block content
 
 		section.signin-modal.ui.modal.small.segment.column

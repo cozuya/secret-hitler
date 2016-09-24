@@ -63,7 +63,7 @@ export default class Playerlist extends React.Component {
 									</div>
 								</div>
 							);
-						});						
+						});
 					}
 				})()}
 				</div>

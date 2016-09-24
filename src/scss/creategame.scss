@@ -18,9 +18,11 @@
 		margin-bottom: 5px;
 	}
 
-	.gamename {
+	.grid > div {
 		text-align: center;
+	}
 
+	.gamename {
 		h4 small {
 			margin-left: 8px;
 		}
@@ -31,29 +33,13 @@
 
 	}
 
-	.selectdefaults {
-		text-align: center;
-
-		.button {
-			margin: 0 auto;
-			width: 50%;
-		}
-
-		// .popup {
-		// 	width: 270px;
-		// 	max-width: inherit;
-		// }
+	.minplayers {
 	}
 
-	.timeofgame {
-		text-align: center;
+	.maxplayers {
 	}
 
-	.killorbekilled {
-		.popup {
-			width: 195px;
-		}
-
+	.private {
 		.checkbox {
 			width: 55px;
 			margin: 0 auto;
@@ -65,145 +51,5 @@
 		box-shadow: 0 0 0 1px rgba(34,36,38,.15) inset;
 		padding: 8px 7px 9px 8px;
 		border-radius: .28571429rem;
-	}
-
-	.pickroles .column {
-		height: 120px;
-		width:  81px !important;
-		margin: 0 3.75% !important;
-		padding: 0 !important;
-		text-align: center;
-
-		.info-popup {
-			height: 110px;
-			margin-bottom: 5px;
-			border-radius: 4px;
-		}
-
-		> span {
-			font-size: 20px;
-			margin: 0 4%;
-		}
-
-		div[data-role="werewolf"] {
-			background: url('../images/cards/card-werewolf.png');
-		}
-
-		div[data-role="minion"] {
-			background: url('../images/cards/card-minion.png');
-		}
-
-		div[data-role="mason"] {
-			background: url('../images/cards/card-mason.png');
-		}
-
-		div[data-role="seer"] {
-			background: url('../images/cards/card-seer.png');
-		}
-
-		div[data-role="robber"] {
-			background: url('../images/cards/card-robber.png');
-		}
-
-		div[data-role="troublemaker"] {
-			background: url('../images/cards/card-troublemaker.png');
-		}
-
-		div[data-role="insomniac"] {
-			background: url('../images/cards/card-insomniac.png');
-		}
-
-		div[data-role="hunter"] {
-			background: url('../images/cards/card-hunter.png');
-		}
-
-		div[data-role="tanner"] {
-			background: url('../images/cards/card-tanner.png');
-		}
-
-		div[data-role="villager"] {
-			background: url('../images/cards/card-villager.png');
-		}
-	}
-
-	.pickroles {
-		-webkit-touch-callout: none;
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-		.row:first-child {
-			display: block;
-			padding-bottom: 0;
-
-			> div {
-				float: right;
-				margin-right: 30px;
-				cursor: pointer;
-
-				&:hover {
-					text-decoration: underline;
-				}
-			}
-
-		 	.disabled {
-		 		visibility: hidden;
-		 	}
-		}
-
-		.row:nth-child(2) {
-			padding-top: 3px;
-		}
-
-		.row:last-child {
-			margin-bottom: 20px;
-			margin-top: 20px;
-		}
-
-		> .row {
-			padding: 0 20px;
-		}
-		
-		i {
-			cursor: pointer;
-		}
-
-		.werewolf p, .minion p {
-			background: $werewolfteam;
-		}
-
-		.tanner p {
-			background: $tannerteam;
-		}
-
-		.popup {
-			width: 330px;
-			max-width: inherit;
-
-			> span {
-				color: $villageteam;
-			}
-		}
-
-		.werewolf .popup, .minion .popup {
-			> span {
-				color: $werewolfteam;
-			}
-		}
-		
-		.tanner .popup {
-			span {
-				color: #000;
-			}
-			
-			> .tanner-inner {
-				color: $tannerteam;
-			}
-		}
-	}
-
-	.footer > .twelve {
-		margin-top: 7px;
 	}
 }

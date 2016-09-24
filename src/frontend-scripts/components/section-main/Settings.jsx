@@ -1,5 +1,5 @@
 import React from 'react';
-import $ from 'jquery';
+// import $ from 'jquery';
 
 export default class Settings extends React.Component {
 	constructor() {
@@ -8,8 +8,7 @@ export default class Settings extends React.Component {
 	}
 
 	componentDidMount() {
-		const {socket} = this.props;
-
+		// const {socket} = this.props;
 	}
 
 	leaveSettings() {

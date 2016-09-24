@@ -19,12 +19,12 @@ const gulp = require('gulp'),
 
 let file;
 
-gulp.task('default', ['watch', 'scripts', 'styles', 'styles-web', 'styles-light', 'lint-all']);
+gulp.task('default', ['watch', 'scripts', 'styles-dark', 'styles-web', 'styles-light', 'lint-all']);
 
 gulp.task('watch', () => {
 	process.env.NODE_ENV = 'development';
 	livereload.listen();
-	gulp.watch('./src/scss/*.scss', ['styles', 'styles-web', 'styles-light']);
+	gulp.watch('./src/scss/*.scss', ['styles-dark', 'styles-web', 'styles-light']);
 	gulp.watch(['./src/frontend-scripts/**/*.js*', './routes/**/*.js', './__test__/*.js'], e => {
 		file = process.platform === 'win32' ? `./${e.path.split('E:\\apps\\secret-hitler\\')[1].split('\\').join('/')}` : `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
 		gulp.start('lint');
@@ -58,8 +58,8 @@ gulp.task('imagemin', () => {
 		.pipe(gulp.dest('./public/images'));
 });
 
-gulp.task('styles', () => {
-	return gulp.src('./src/scss/style.scss')
+gulp.task('styles-dark', () => {
+	return gulp.src('./src/scss/style-dark.scss')
 		.pipe(plumber())
 		.pipe(sourcemaps.init())
 		.pipe(sass({outputStyle: 'compressed'}).on('error', () => {

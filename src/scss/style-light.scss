@@ -1,3 +1,8 @@
+$lred: #e36248;
+$lightliberalteam: #bfd8ee;
+$lightfascistteam: #e4bcba;
+$darkliberalteam: #608cb3;
+$darkfascistteam: #c36563;
 $werewolfteam: #DC6969;
 $villageteam: #4B6A90;
 $tannerteam: #DCB469;
@@ -17,104 +22,8 @@ $dteal: #034f61;
 @import 'eliminator.scss';
 @import 'rightsidebar.scss';
 
-#main {
-	.section-main, .section-main > .nav-menu, .defaultmid {
-		background: #1c1c1c;
-	}
-
-	.section-main > section {
-		border-top: 1px solid #1b1b1b;
-	}
-
-	.leftsidebar, .generalchat, .section-right {
-		background: #1b1b1b;
-	}
-
-	.playerlist {
-		background: #202020;
-	}
-
-	.generalchat .inputbar input, #gameChatInput {
-		background: #686868;
-	}
-
-	.remove.icon {
-		color: #ccc;
-	}
-
-	.genchat-container .chat-user + span, #game-container .ui.menu .loggedin, .playerlist-header > div > div > span, #game-container .ui.menu .item.right a:hover, .playerlist-body > div > span, .settings .sub.header, .games-container > div > div > span, .gameinformation-container > span, .seat-container .username, .chats .chat-user + span, .creategame .pickroles .column>span, .clearroles {
-		color: #bfbfbf;
-	}
-
-	.table-container .ui.fitted.toggle.checkbox.truncate-game label, .table-container .ui.fitted.toggle.checkbox.showclaims label {
-		color: #bfbfbf !important;
-	}
-
-	.game>.ui.grid .chat-container .gamechat .chats .chat-player {
-		color: #fff;
-	}
-
-	.seat:hover .username {
-		color: $werewolfteam;
-	}
-
-	.table-container {
-		background: #333;
-	}
-
-	.gameroles-container .gameroles {
-		background: #222;
-	}
-
-	.table-container .table .tableimage {
-		background-image: url('../images/tweed.png');
-		box-shadow: 0px 0px 2px 1px #222;
-	}
-
-	.game>.ui.grid .chat-container .gamechat .chats, .game-chat {
-		background: #3d3d3d;
-	}
-
-	.game>.ui.grid .chat-container .gamechat .inputbar .expando-container .hotkey-container {
-		background: #7c7c7c;
-	}
-
-	.gameroles-container .gameroles>.label {
-		background: #0c0c0c;
-		color: #bfbfbf;
-	}
-
-	.gamechat .ui.pointing.menu {
-		background: #212121;
-
-		.item {
-			color: #bfbfbf;
-		}
-	}
-
-	.selectdefaults .info-popup, .timeofgame .ui.dropdown {
-		background-color: #fff !important;
-	}
-
-	.ui.toggle.checkbox ~ input .box:before, .ui.toggle.checkbox input ~ label:before {
-		background: #444;
-	}
-
-	.ui.pointing.menu .item:after {
-		border-bottom: 1px solid #111;
-		border-right: 1px solid #111;
-	}
-}
-
 body {
 	background-image: url('../images/dark_embroidery.png');
-
-	> .ui.container {
-		width: 1127px;
-		margin-left: auto;
-		margin-right: auto;
-		max-width: inherit !important;
-	}
 }
 
 .app-hidden {

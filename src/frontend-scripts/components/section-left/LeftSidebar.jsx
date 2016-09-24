@@ -8,7 +8,7 @@ export default class LeftSidebar extends React.Component {
 	}
 
 	createGameClick() {
-		// this.props.onCreateGameButtonClick('createGame');
+		this.props.onCreateGameButtonClick('createGame');
 	}
 
 	render() {

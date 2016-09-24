@@ -30,8 +30,10 @@ export default class SidebarGame extends React.Component {
 
 // todo-release take closer look at functionality re: negative ternairy @ line 44
 
+		const {game} = this.props;
+
 		return (
-			<div className={gameClasses()} data-uid={game.uid} onClick={this.routeToGame}>
+			<div data-uid={game.uid} onClick={this.routeToGame}>
 				<div>
 					<span className={game.kobk ? 'gamename kobk' : 'gamename'}>{game.name}</span>
 					<span className="gamelength">{game.time}</span>
