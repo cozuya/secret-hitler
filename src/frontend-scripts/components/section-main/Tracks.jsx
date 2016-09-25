@@ -15,15 +15,15 @@ export default class Tracks extends React.Component {
 	// componentDidUpdate(prevProps) {
 	// }
 
-	// leaveGame() {
-	// 	let seatNumber;
+	leaveGame() {
+		let seatNumber;
 
-	// 	if (this.props.userInfo.seatNumber) {
-	// 		seatNumber = this.props.userInfo.seatNumber;
-	// 	}
+		if (this.props.userInfo.seatNumber) {
+			seatNumber = this.props.userInfo.seatNumber;
+		}
 
-	// 	this.props.onLeaveGame(seatNumber);
-	// }
+		this.props.onLeaveGame(seatNumber);
+	}
 
 	// handleClickedReportGame() {
 	// 	this.props.socket.emit('updateReportGame', {

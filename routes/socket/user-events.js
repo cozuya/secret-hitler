@@ -92,7 +92,7 @@ const {games, userList, generalChats} = require('./models'),
 
 		if (passport && Object.keys(passport).length) {
 			const userIndex = userList.findIndex(user => user.userName === passport.user),
-				game = games.find(game => Object.keys(game.seated).find(seatName => game.seated[seatName].userName === passport.user));
+				game = games.find(game => game.seatedPlayers.find(player => player.userName === passport.user));
 
 			socket.emit('manualDisconnection');
 			if (userIndex !== -1) {
@@ -102,26 +102,26 @@ const {games, userList, generalChats} = require('./models'),
 			}
 
 			if (game) {
-				const seatNames = Object.keys(game.seated),
-					userSeatName = seatNames.find(seatName => game.seated[seatName].userName === passport.user),
-					{gameState} = game;
+				// const seatNames = Object.keys(game.seated),
+				// 	userSeatName = seatNames.find(seatName => game.seated[seatName].userName === passport.user),
+				// 	{gameState} = game;
 
-				if (gameState.isStarted && !gameState.isCompleted) {
-					game.seated[userSeatName].connected = false;
-					sendInProgressGameUpdate(game);
-				} else if (gameState.isCompleted && Object.keys(game.seated).filter(seat => !game.seated[seat].connected).length === 6) {
-					saveGame(game);
-					games.splice(games.indexOf(game), 1);
-				} else if (seatNames.length === 1) {
-					games.splice(games.indexOf(game), 1);
-				} else if (!gameState.isStarted) {
-					// todo-release kick out observer sockets/route to default?
-					delete game.seated[userSeatName];
-					io.sockets.in(game.uid).emit('gameUpdate', game);
-				} else if (gameState.isCompleted) {
-					game.seated[userSeatName].connected = false;
-					sendInProgressGameUpdate(game);
-				}
+				// if (gameState.isStarted && !gameState.isCompleted) {
+				// 	game.seated[userSeatName].connected = false;
+				// 	sendInProgressGameUpdate(game);
+				// } else if (gameState.isCompleted && Object.keys(game.seated).filter(seat => !game.seated[seat].connected).length === 6) {
+				// 	saveGame(game);
+				// 	games.splice(games.indexOf(game), 1);
+				// } else if (seatNames.length === 1) {
+				// 	games.splice(games.indexOf(game), 1);
+				// } else if (!gameState.isStarted) {
+				// 	// todo-release kick out observer sockets/route to default?
+				// 	delete game.seated[userSeatName];
+				// 	io.sockets.in(game.uid).emit('gameUpdate', game);
+				// } else if (gameState.isCompleted) {
+				// 	game.seated[userSeatName].connected = false;
+				// 	sendInProgressGameUpdate(game);
+				// }
 				sendGameList();
 			}
 		}

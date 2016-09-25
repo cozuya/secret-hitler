@@ -24,14 +24,12 @@ module.exports.sendUserGameSettings = (socket, username) => {
 
 module.exports.sendGameList = socket => {
 	const formattedGames = games.map(game => ({
-		kobk: game.kobk,
-		time: game.time,
-		name: game.name,
-		gameState: game.gameState,
-		roles: game.roles,
-		seatedCount: Object.keys(game.seated).length,
-		inProgress: game.gameState.isStarted,
-		uid: game.uid
+		name: game.general.name,
+		gameStatus: game.gameState.isCompleted ? 'isCompleted' : game.gameState.isStarted ? 'isStarted' : 'notStarted',
+		seatedCount: game.seatedPlayers.length,
+		minPlayersCount: game.general.minPlayersCount,
+		maxPlayersCount: game.general.maxPlayersCount,
+		uid: game.general.uid
 	}));
 
 	if (socket) {

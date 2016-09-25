@@ -9,6 +9,7 @@ chats array
 	userName string
 general
 	name string
+	minPlayersCount number 5-10
 	maxPlayersCount number 5-10
 	status string
 	uid string
