@@ -129,53 +129,6 @@ const {games, userList, generalChats} = require('./models'),
 		sendUserList();
 	};
 
-module.exports.handleUpdatedTruncateGame = data => {
-	const game = games.find(el => el.uid === data.uid),
-		chat = {
-			gameChat: true,
-			timestamp: new Date()
-		};
-
-	// todo-release this game check shouldn't be necessary but saw a crash some how - added debugging
-
-	if (game && !game.internals.truncated) {
-		if (!data.truncate && game.internals.truncateGameCount !== 0) {
-			game.internals.truncateGameCount--;
-			chat.chat = [
-				{
-					text: `${data.userName}`,
-					type: 'playerName'
-				},
-				{text: ` has removed their vote to end the game early. [${game.internals.truncateGameCount} / 4]`}
-			];
-		} else if (game) {
-			game.internals.truncateGameCount++;
-			chat.chat = [
-				{
-					text: `${data.userName}`,
-					type: 'playerName'
-				},
-				{text: ` has voted to end the game early. [${game.internals.truncateGameCount} / 4]`}
-			];
-
-			if (game.internals.truncateGameCount === 4) {
-				chat.chat = [
-					{text: 'The majority of players have voted to end the game early.'}
-				];
-				game.internals.truncateGame = true;
-				game.internals.truncated = true;
-			}
-		}
-
-		if (game) {
-			game.chats.push(chat);
-			sendInProgressGameUpdate(game);
-		} else {
-			console.log(data, 'Truncate game returned no game on its find');
-		}
-	}
-};
-
 module.exports.handleUpdatedReportGame = (socket, data) => {
 	const game = games.find(el => el.uid === data.uid),
 		seatNumber = parseInt(data.seatNumber, 10);
@@ -190,15 +143,14 @@ module.exports.handleUpdatedReportGame = (socket, data) => {
 };
 
 module.exports.handleAddNewGame = (socket, data) => {
-	data.internals = {
-		unSeatedGameChats: [],  // todo-release clean up this mess
-		seatedPlayers: [{gameChats: [], tableState: {seats: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]}}, {gameChats: [], tableState: {seats: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]}}, {gameChats: [], tableState: {seats: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]}}, {gameChats: [], tableState: {seats: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]}}, {gameChats: [], tableState: {seats: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]}}, {gameChats: [], tableState: {seats: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]}}, {gameChats: [], tableState: {seats: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]}}],
-		truncateGameCount: 0
+	data.private = {
+		unSeatedGameChats: [],
+		seatedPlayers: data.seatedPlayers
 	};
 
 	games.push(data);
 	sendGameList();
-	socket.join(data.uid);
+	socket.join(data.general.uid);
 };
 
 module.exports.handleAddNewGameChat = (data, uid) => {
@@ -206,22 +158,6 @@ module.exports.handleAddNewGameChat = (data, uid) => {
 
 	data.timestamp = new Date();
 	game.chats.push(data);
-
-	if (data.claim) {
-		const player = game.internals.seatedPlayers.find(player => player.userName === data.userName);
-
-		game.internals.seatedPlayers.forEach(seatedPlayer => {
-			const claimSeat = seatedPlayer.tableState.seats[player.seatNumber];
-
-			if (claimSeat.swappedWithSeat === 0 || claimSeat.swappedWithSeat) {
-				seatedPlayer.tableState.seats[claimSeat.swappedWithSeat].claim = data.claim;
-			} else {
-				seatedPlayer.tableState.seats[player.seatNumber].claim = data.claim;
-			}
-		});
-
-		game.tableState.seats[player.seatNumber].claim = data.claim;
-	}
 
 	if (game.gameState.isStarted) {
 		sendInProgressGameUpdate(game);

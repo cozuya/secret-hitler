@@ -1,15 +1,14 @@
 gameState
 	isStarted bool
 	isCompleted bool
-	phase string
+	phase string ?
 chats array
-	chat array
+	chat string
 	gameChat bool
 	timestamp time
 	userName string
 general
 	name string
-	isAutostart bool
 	maxPlayersCount number 5-10
 	status string
 	uid string
@@ -19,14 +18,17 @@ seatedPlayers array 5-10
 		userName string
 	...
 trackState
-	liberalTrack
-		liberalPolicyCount number
-		electionTrackerCount number
-	fascistTrack
-		fascistTrackCount number
+	liberalPolicyCount number
+	electionTrackerCount number
+	fascistTrackCount number
 playersState (see private)
 private
+	unSeatedGameChats array
+		chat string
+		timestamp time
 	seatedPlayers array 5-10
+		userName string
+		connected bool
 		role string
 		gameChats array of chat objects
 		isPresident bool
