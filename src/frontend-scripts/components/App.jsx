@@ -127,39 +127,7 @@ export class App extends React.Component {
 
 	makeQuickDefault() {
 		const {dispatch, userInfo} = this.props,
-			game = {
-				kobk: false,
-				name: 'New Game',
-				// roles: ['werewolf', 'werewolf', 'villager', 'villager', 'villager', 'villager', 'villager', 'villager', 'villager', 'villager'],
-				roles: ['werewolf', 'minion', 'seer', 'mason', 'robber', 'troublemaker', 'hunter', 'villager', 'tanner', 'insomniac'],
-				// roles: ['werewolf', 'werewolf', 'werewolf', 'troublemaker', 'mason', 'minion', 'werewolf', 'mason', 'werewolf', 'werewolf'],
-				seated: {
-					seat0: {
-						userName: userInfo.userName,
-						connected: true
-					}
-				},
-				status: 'Waiting for more players..',
-				chats: [],
-				gameState: {
-					reportedGame: {
-						0: false,
-						1: false,
-						2: false,
-						3: false,
-						4: false,
-						5: false,
-						6: false
-					}
-				},
-				tableState: {
-					seats: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
-				},
-				time: ':16',
-				// time: '40:00',
-				// uid: Math.random().toString(36).substring(2)
-				uid: 'devgame'
-			};
+			game = {};
 
 		userInfo.seatNumber = '0';
 		dispatch(updateGameInfo(game));

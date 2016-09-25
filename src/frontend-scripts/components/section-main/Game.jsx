@@ -1,24 +1,14 @@
 import React from 'react';
-import Table from './Table.jsx';
+import Tracks from './Tracks.jsx';
 import Gamechat from './Gamechat.jsx';
-import Gameroles from './Gameroles.jsx';
+import Players from './Players.jsx';
 
 export default class Game extends React.Component {
-	constructor() {
-		super();
+	// constructor() {
+	// 	super();
 
-		this.selectedPlayer = this.selectedPlayer.bind(this);
-		this.roleState = this.roleState.bind(this);
-		this.selectedGamerole = this.selectedGamerole.bind(this);
-	}
-
-	roleState(state) {
-		// this.props.dispatch(updateExpandoInfo(state));
-	}
-
-	selectedGamerole(state) {
-		// this.props.dispatch(updateClickedGamerole(state));
-	}
+	// 	this.selectedPlayer = this.selectedPlayer.bind(this);
+	// }
 
 	selectedPlayer(state) {
 		// this.props.dispatch(updateClickedPlayer(state));
@@ -40,22 +30,14 @@ export default class Game extends React.Component {
 										classes = 'ten ';
 									}
 
-									classes += 'wide column table-container';
+									classes += 'wide column tracks-container';
 
 									return classes;
 								})()
 					}>
-							<Table
-								onUserNightActionEventSubmit={this.props.onUserNightActionEventSubmit}
-								onUpdateTruncateGameSubmit={this.props.onUpdateTruncateGameSubmit}
-								onUpdateSelectedForEliminationSubmit={this.props.onUpdateSelectedForEliminationSubmit}
-								onUpdateReportGame={this.props.onUpdateReportGame}
-								onSeatingUser={this.props.onSeatingUser}
-								onLeaveGame={this.props.onLeaveGame}
-								selectedPlayer={this.selectedPlayer}
+							<Tracks
+								// selectedPlayer={this.selectedPlayer}
 								gameInfo={this.props.gameInfo}
-								userInfo={this.props.userInfo}
-								socket={this.props.socket}
 							/>
 						</div>
 						<div
@@ -63,7 +45,7 @@ export default class Game extends React.Component {
 							(() => {
 								let classes;
 
-								if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableRightSidebarInGame) {
+								if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
 									classes = 'eight ';
 								} else {
 									classes = 'six ';
@@ -75,17 +57,15 @@ export default class Game extends React.Component {
 							})()
 					}>
 							<section className="gamestatus">
-								{this.props.gameInfo.status}
+								{this.props.gameInfo.general.status}
 							</section>
 							<Gamechat
 								gameInfo={this.props.gameInfo}
 								userInfo={this.props.userInfo}
 								onNewGameChat={this.props.onNewGameChat}
-								clickedGameRole={this.props.gameRoleInfo}
-								clickedPlayer={this.props.clickedPlayerInfo}
-								roleState={this.roleState}
-								selectedGamerole={this.props.clickedGamerole}
-								selectedPlayer={this.props.clickedPlayer}
+								// clickedPlayer={this.props.clickedPlayerInfo}
+								// roleState={this.roleState}
+								// selectedPlayer={this.props.clickedPlayer}
 								socket={this.props.socket}
 							/>
 						</div>
@@ -94,7 +74,7 @@ export default class Game extends React.Component {
 				<div
 					className={
 						(() => {
-							let classes = 'row gameroles-container';
+							let classes = 'row players-container';
 
 							if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableRightSidebarInGame) {
 								classes += ' disabledrightsidebar';
@@ -103,11 +83,8 @@ export default class Game extends React.Component {
 							return classes;
 						})()
 			}>
-					<Gameroles
+					<Players
 						userInfo={this.props.userInfo}
-						roles={this.props.gameInfo.roles}
-						roleState={this.props.expandoInfo}
-						selectedGamerole={this.selectedGamerole}
 						gameInfo={this.props.gameInfo}
 					/>
 				</div>
