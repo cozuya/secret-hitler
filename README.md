@@ -45,7 +45,11 @@ build assets (first time only):
 
 > gulp build
 
-start server and mongo:
+start mongo:
+
+> npm run db
+
+start express server:
 
 > npm start
 

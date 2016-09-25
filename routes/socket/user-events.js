@@ -153,16 +153,17 @@ module.exports.handleAddNewGame = (socket, data) => {
 	socket.join(data.general.uid);
 };
 
-module.exports.handleAddNewGameChat = (data, uid) => {
-	const game = games.find(el => el.uid === uid);
+module.exports.handleAddNewGameChat = data => {
+	const game = games.find(el => el.general.uid === data.uid);
 
 	data.timestamp = new Date();
+	console.log(game);
 	game.chats.push(data);
 
 	if (game.gameState.isStarted) {
 		sendInProgressGameUpdate(game);
 	} else {
-		io.in(uid).emit('gameUpdate', secureGame(game));
+		io.in(data.uid).emit('gameUpdate', secureGame(game));
 	}
 };
 
@@ -248,7 +249,7 @@ module.exports.checkUserStatus = socket => {
 	if (passport && Object.keys(passport).length) {
 		const {user} = passport,
 			{sockets} = io.sockets,
-			game = games.find(game => Object.keys(game.seated).find(seat => game.seated[seat].userName === user)),
+			game = games.find(game => game.seatedPlayers.find(player => player.userName === passport.user)),
 			oldSocketID = Object.keys(sockets).find(socketID => ((sockets[socketID].handshake.session.passport && Object.keys(sockets[socketID].handshake.session.passport).length) && (sockets[socketID].handshake.session.passport.user === user && socketID !== socket.id)));
 
 		if (oldSocketID && sockets[oldSocketID]) {
@@ -257,10 +258,11 @@ module.exports.checkUserStatus = socket => {
 		}
 
 		if (game && game.gameState.isStarted && !game.gameState.isCompleted) {
-			const internalPlayer = getInternalPlayerInGameByUserName(game, user),
-				userSeatName = Object.keys(game.seated).find(seatName => game.seated[seatName].userName === user);
-
-			game.seated[userSeatName].connected = true;
+			const internalPlayer = getInternalPlayerInGameByUserName(game, user)
+				// ,
+				// userSeatName = Object.keys(game.seated).find(seatName => game.seated[seatName].userName === user);
+				;
+			// game.seated[userSeatName].connected = true;
 			socket.join(game.uid);
 			socket.emit('updateSeatForUser', internalPlayer.seatNumber.toString());
 			sendInProgressGameUpdate(game);

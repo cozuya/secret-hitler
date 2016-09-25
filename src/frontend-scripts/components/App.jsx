@@ -94,9 +94,9 @@ export class App extends React.Component {
 		const {dispatch, userInfo} = this.props;
 
 		userInfo.seatNumber = '0';
-		dispatch(updateGameInfo(game));
-		dispatch(updateMidsection('game'));
 		dispatch(updateUser(userInfo));
+		dispatch(updateMidsection('game'));
+		dispatch(updateGameInfo(game));
 		socket.emit('addNewGame', game);
 	}
 

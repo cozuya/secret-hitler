@@ -2,10 +2,10 @@ import React from 'react';
 // import $ from 'jquery';
 
 export default class Players extends React.Component {
-	constructor() {
-		super();
-		this.handlePlayerClick = this.handlePlayerClick.bind(this);
-	}
+	// constructor() {
+	// 	super();
+	// 	this.handlePlayerClick = this.handlePlayerClick.bind(this);
+	// }
 
 	// componentDidMount() {
 

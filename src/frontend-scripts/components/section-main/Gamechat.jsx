@@ -1,6 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-import _ from 'lodash';
+// import _ from 'lodash';
 
 export default class Gamechat extends React.Component {
 	constructor() {
@@ -10,9 +10,6 @@ export default class Gamechat extends React.Component {
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
-		this.handleLeftHotkeyClick = this.handleLeftHotkeyClick.bind(this);
-		this.handleRightHotkeyClick = this.handleRightHotkeyClick.bind(this);
-
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
@@ -26,165 +23,17 @@ export default class Gamechat extends React.Component {
 		this.scrollChats();
 	}
 
-	componentDidUpdate(prevProps) {
-		const $input = $(this.gameChatInput),
-			{selectedGamerole, selectedPlayer} = this.props,
-			currentValue = this.state.inputValue;
-
+	componentDidUpdate() {
+		// const $input = $(this.gameChatInput)
+		// 	// ,
+		// 	// {selectedPlayer} = this.props,
+		// 	// currentValue = this.state.inputValue
+		// 	;
 		this.scrollChats();
-
-		if (prevProps && !prevProps.gameInfo.gameState.cardsDealt && this.props.gameInfo.gameState.cardsDealt) {
-			this.setState({inputValue: ''});
-			$input.blur();
-		}
-
-		if (prevProps && prevProps.selectedGamerole.random !== selectedGamerole.random && selectedGamerole.role) {
-			switch (currentValue) {
-			case 'I claim to be the ':
-				this.setState({
-					hotkey: selectedGamerole.role,
-					inputValue: `${currentValue}${selectedGamerole.role}`
-				});
-				break;
-
-			case 'I claim to be the seer and I looked two of the center cards and they were a ':
-				this.setState({inputValue: `${this.state.inputValue}${selectedGamerole.role} and a `});
-				break;
-
-			default:
-				this.setState({inputValue: `${currentValue}${selectedGamerole.role}`});
-			}
-
-			if (this.state.hotkey === 'insomniac' && /^(I claim to be the insomniac and when I awoke, I was the)/i.test(currentValue)) {
-				this.setState({altClaim: selectedGamerole.role});
-			}
-
-			if (this.state.hotkey === 'robber' && /^(I claim to be the robber and I swapped my card with the card of )/i.test(currentValue)) {
-				this.setState({altClaim: selectedGamerole.role});
-			}
-		}
-
-		if (prevProps && prevProps.selectedPlayer.random !== selectedPlayer.random && selectedPlayer.playerName.length) {
-			switch (currentValue) {
-			case 'I claim to be the troublemaker and I swapped the cards between ':
-				this.setState({inputValue: `${currentValue}${selectedPlayer.playerName} and `});
-				break;
-
-			case 'I think that ':
-				this.setState({inputValue: `${currentValue}${selectedPlayer.playerName} is a `});
-				break;
-
-			case 'I claim to be the seer and I looked at the card of ':
-				this.setState({inputValue: `${currentValue}${selectedPlayer.playerName} and they were a `});
-				break;
-
-			case 'I claim to be the robber and I swapped my card with the card of ':
-				this.setState({inputValue: `${currentValue}${selectedPlayer.playerName} and am now a `});
-				break;
-
-			default:
-				this.setState({inputValue: `${currentValue}${selectedPlayer.playerName}`});
-			}
-		}
-	}
-
-	createHotkeys() {
-		let textLeft, textRight;
-
-		switch (this.state.hotkey) {
-		case 'troublemaker':
-			textLeft = 'reset';
-			textRight = 'I swapped..';
-			break;
-
-		case 'mason':
-			textLeft = 'reset';
-			textRight = 'others..';
-			break;
-
-		case 'seer':
-			textLeft = 'center';
-			textRight = 'player';
-			break;
-
-		case 'insomniac':
-			textLeft = 'reset';
-			textRight = 'woke to..';
-			break;
-
-		case 'robber':
-			textLeft = 'reset';
-			textRight = 'switched..';
-			break;
-
-		default:
-			textLeft = 'I claim..';
-			textRight = 'I think..';
-		}
-
-		return (
-			<div className="hotkey-container">
-				<div className="hotkey-left" onClick={this.handleLeftHotkeyClick}>
-					{textLeft}
-				</div>
-				<div className="hotkey-right" onClick={this.handleRightHotkeyClick}>
-					{textRight}
-				</div>
-			</div>
-		);
-	}
-
-	handleLeftHotkeyClick() {
-		switch (this.state.hotkey) {
-		case 'init':
-			this.setState({
-				inputValue: 'I claim to be the ',
-				altClaim: ''
-			});
-			this.props.roleState('notify');
-			setTimeout(() => {
-				this.props.roleState('');
-			}, 1000);
-			break;
-
-		case 'seer':
-			this.setState({inputValue: `${this.state.inputValue} and I looked two of the center cards and they were a `});
-			break;
-
-		default:
-			this.setState({
-				inputValue: '',
-				altClaim: '',
-				hotkey: 'init'
-			});
-		}
-	}
-
-	handleRightHotkeyClick() {
-		switch (this.state.hotkey) {
-		case 'troublemaker':
-			this.setState({inputValue: `${this.state.inputValue} and I swapped the cards between `});
-			break;
-
-		case 'mason':
-			this.setState({inputValue: `${this.state.inputValue} and the other mason(s) were `});
-			break;
-
-		case 'seer':
-			this.setState({inputValue: `${this.state.inputValue} and I looked at the card of `});
-			break;
-
-		case 'insomniac':
-			this.setState({inputValue: `${this.state.inputValue} and when I awoke, I was the `});
-			break;
-
-		case 'robber':
-			this.setState({inputValue: `${this.state.inputValue} and I swapped my card with the card of `});
-			break;
-
-		default:
-			this.setState({inputValue: 'I think that '});
-		}
+		// if (prevProps && !prevProps.gameInfo.gameState.cardsDealt && this.props.gameInfo.gameState.cardsDealt) {
+		// 	this.setState({inputValue: ''});
+		// 	$input.blur();
+		// }
 	}
 
 	handleChatClearClick() {
@@ -201,25 +50,27 @@ export default class Gamechat extends React.Component {
 
 	handleSubmit(e) {
 		const currentValue = this.state.inputValue,
-			{gameInfo, userInfo} = this.props,
-			{hotkey, altClaim} = this.state;
+			{gameInfo, userInfo} = this.props
+			// ,
+			// {hotkey, altClaim} = this.state
+		;
 
 		e.preventDefault();
 
 		if (currentValue.length) {
 			const chat = {
-				userName: this.props.userInfo.userName,
+				userName: userInfo.userName,
 				chat: currentValue,
 				gameChat: false,
-				uid: gameInfo.uid,
-				inProgress: gameInfo.inProgress
+				uid: gameInfo.general.uid,
+				inProgress: gameInfo.gameState.isStarted
 			};
 
-			if (gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && userInfo.seatNumber && hotkey !== 'init') {
-				chat.claim = altClaim || hotkey;
-			}
+			// if (gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && userInfo.seatNumber && hotkey !== 'init') {
+			// 	chat.claim = altClaim || hotkey;
+			// }
 
-			this.props.socket.emit('addNewGameChat', chat, this.props.gameInfo.uid);
+			this.props.socket.emit('addNewGameChat', chat);
 			this.setState({
 				inputValue: '',
 				altClaim: '',
@@ -279,16 +130,18 @@ export default class Gamechat extends React.Component {
 						};
 					}),
 					isSeated = () => Boolean(Object.keys(gameInfo.seated).find(seatName => gameInfo.seated[seatName].userName === chat.userName)),
-					roles = [{
-						name: 'masons',
-						team: 'village'
-					}, ..._.uniq(gameInfo.roles).map(name => ({ // javascript!
-						name,
-						team: ''
-					})),
+					roles = [
 						{
-							name: 'werewolves',
-							team: 'werewolf'
+							name: 'liberal',
+							team: 'liberal'
+						},
+						{
+							name: 'fascist',
+							team: 'fascist'
+						},
+						{
+							name: 'hitler',
+							team: 'fascist'
 						}
 					];
 
