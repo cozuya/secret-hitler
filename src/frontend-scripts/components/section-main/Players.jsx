@@ -14,30 +14,25 @@ export default class Players extends React.Component {
 	render() {
 		return (
 			<section className="players">
-				<div className="ui right pointing label">
-					label
-				</div>
 					{(() => {
-						// return this.props.players.map((role, i) => {
-						// 	return (
-						// 		<div key={i}>
-						// 			<div
-						// 				onClick={this.handlePlayerClick}
-						// 				ref={c => {
-						// 					this.popups = c;
-						// 				}}
-						// 				className={
-						// 				(() => {
-						// 					const notifyClass = this.props.roleState === 'notify' ? 'notify' : '';
-
-						// 					return `roles role-${role} ${this.props.roleState} ${notifyClass}`;
-						// 				})()
-						// 			}
-						// 			/>
-						// 		</div>
-						// 	);
-						// });
+						return this.props.gameInfo.seatedPlayers.map((player, i) => {
+							return (
+								<div key={i} className="player-container">
+									<div
+										// onClick={this.handlePlayerClick}
+										className={
+										(() => {
+											return 'player-name';
+										})()
+									}
+									>{player.userName}</div>
+								</div>
+							);
+						});
 					})()}
+				<div className="ui left pointing label">
+					Take a seat
+				</div>
 			</section>
 		);
 	}

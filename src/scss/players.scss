@@ -1,24 +1,27 @@
-.players-container .gameroles {
-	background: #f5f5f5;
+.players-container .players {
+	background: #6f6f6f;
 	height: 115px;
-	cursor: pointer;
 
 	> .label {
-		float: left;
+		float: right;
 		width: 50px;
 		margin: 28px 0 0 10px;
 		font-size: 16px;
 		padding: 4px;
 	}
 
-	> div > .roles {
+	> .player-container {
 		width: 70px;
 		height: 95px;
 		float: left;
 		margin: 9px 7px 9px 9px;
 		border-radius: 4px;
-		background-size: cover;
-		background-repeat: no-repeat;
+		background-image: url(../images/tweed.png);
+
+		.player-name {
+			color: #ddd;
+			text-align: center;
+		}
 
 		&:hover {
 			box-shadow: 0 0 2px 2px $notification;
@@ -30,6 +33,6 @@
 	}
 }
 
-.gameroles-container.disabledrightsidebar .gameroles > div > .roles {
+.players-container.disabledrightsidebar .players > div > .roles {
 	margin: 9px 0px 9px 36px;
 }
