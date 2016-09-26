@@ -157,7 +157,6 @@ module.exports.handleAddNewGameChat = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
 	data.timestamp = new Date();
-	console.log(game);
 	game.chats.push(data);
 
 	if (game.gameState.isStarted) {

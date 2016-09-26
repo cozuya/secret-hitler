@@ -1,123 +1,135 @@
 .tracks-container {
-	background: #fafafa;
+	background-color: #52393b;
+	max-width: 650px;
 	padding: 0 !important;
-	overflow: hidden;
 
 	.tracks {
 		position: relative;
 
-		.tracks-uid {
-			position: absolute;
-			top: 415px;
-			left: 180px;
-			color: #c2c2c2;
-
-			i {
-				cursor: pointer;
-			}
-
-			.report-game-clicked {
-				color: red !important;
-			}
+		.track {
+			background-size: contain;
+			background-repeat: no-repeat;
+			height: 220px;
 		}
 
-		.tableimage {
-			position: absolute;
-			top: 90px;
-			left: 70px;
-			box-shadow: 0px 0px 2px 1px #ddd;
-			width: 440px;
-			height: 280px;
-			border-radius: 50%;
-			background-image: url('../images/crossword.png');
-			background-repeat: repeat;
+		.top-track {
+			background-image: url('../images/liberal-logo.png');
+			background-position: center;
 		}
 
-		.card {
-			top: 190px;
-			left: 260px;
-			position: absolute;
-			perspective: 1000;
-			-webkit-perspective: 1000;
-			transition-property: top, left;
-			transition-duration: 1.5s;
-			cursor: pointer;
-
-			.card-flipper {
-				width: 59px;
-				height: 80px;
-				transition-duration: 1s;
-				transition-property: transform;
-				transform-style: preserve-3d;
-				position: relative;
-			}
-
-			.card-flipper.flip {
-				transform: rotateY(180deg);
-			}
-
-			.card-front, .card-back, .claim {
-				border-radius: 4px;
-				-webkit-backface-visibility: hidden;  // thanks osx safari
-				backface-visibility: hidden;
-				border: 1px solid #eee;
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 59px;
-				height: 80px;
-			}
-
-			.card-front {
-				transform: rotateY(180deg);
-				background-size: cover;
-			}
-
-			.card-back {
-				z-index: 2;
-				transform: rotateY(0deg);
-				background-image: url('../images/vertical_cloth.png');
-			}
+		.top-track.flipped {
+			background-image: url('../images/tracks/liberaltrack.png');
 		}
 
-		.card.notransition {
-			transition: none;
+		.bottom-track {
+			background-image: url('../images/fascist-logo.png');
+			background-position: center;
 		}
 
-		.card.flipped {
-			transform: rotateY(180deg);
+		.bottom-track.flipped {
+			background-image: url('../images/tracks/fascisttrack56.png');
 		}
 
-		.remove.icon {
-			position: absolute;
-			top: 10px;
-			left: 545px;
-			opacity: 0.3;
-			cursor: pointer;
-			font-size: 30px;
-		}
+		// .tracks-uid {
+		// 	position: absolute;
+		// 	top: 415px;
+		// 	left: 180px;
+		// 	color: #c2c2c2;
 
-		.card-notify {
-			box-shadow: 0 0 4px 4px $notification;
-		}
+		// 	i {
+		// 		cursor: pointer;
+		// 	}
 
-		.card-select {
-			box-shadow: 0 0 4px 4px $selection;
-		}
+		// 	.report-game-clicked {
+		// 		color: red !important;
+		// 	}
+		// }
 
-		.card-proceed {
-			box-shadow: 0 0 4px 4px $proceed;
-		}
+		// .card {
+		// 	top: 190px;
+		// 	left: 260px;
+		// 	position: absolute;
+		// 	perspective: 1000;
+		// 	-webkit-perspective: 1000;
+		// 	transition-property: top, left;
+		// 	transition-duration: 1.5s;
+		// 	cursor: pointer;
 
-		.gameinformation-container {
-			position: absolute;
-			top: 10px;
-			left: 10px;
+		// 	.card-flipper {
+		// 		width: 59px;
+		// 		height: 80px;
+		// 		transition-duration: 1s;
+		// 		transition-property: transform;
+		// 		transform-style: preserve-3d;
+		// 		position: relative;
+		// 	}
 
-			.game-name {
-				margin-right: 25px;
-			}
-		}
+		// 	.card-flipper.flip {
+		// 		transform: rotateY(180deg);
+		// 	}
+
+		// 	.card-front, .card-back, .claim {
+		// 		border-radius: 4px;
+		// 		-webkit-backface-visibility: hidden;  // thanks osx safari
+		// 		backface-visibility: hidden;
+		// 		border: 1px solid #eee;
+		// 		position: absolute;
+		// 		top: 0;
+		// 		left: 0;
+		// 		width: 59px;
+		// 		height: 80px;
+		// 	}
+
+		// 	.card-front {
+		// 		transform: rotateY(180deg);
+		// 		background-size: cover;
+		// 	}
+
+		// 	.card-back {
+		// 		z-index: 2;
+		// 		transform: rotateY(0deg);
+		// 		background-image: url('../images/vertical_cloth.png');
+		// 	}
+		// }
+
+		// .card.notransition {
+		// 	transition: none;
+		// }
+
+		// .card.flipped {
+		// 	transform: rotateY(180deg);
+		// }
+
+		// .remove.icon {
+		// 	position: absolute;
+		// 	top: 10px;
+		// 	left: 545px;
+		// 	opacity: 0.3;
+		// 	cursor: pointer;
+		// 	font-size: 30px;
+		// }
+
+		// .card-notify {
+		// 	box-shadow: 0 0 4px 4px $notification;
+		// }
+
+		// .card-select {
+		// 	box-shadow: 0 0 4px 4px $selection;
+		// }
+
+		// .card-proceed {
+		// 	box-shadow: 0 0 4px 4px $proceed;
+		// }
+
+		// .gameinformation-container {
+		// 	position: absolute;
+		// 	top: 10px;
+		// 	left: 10px;
+
+		// 	.game-name {
+		// 		margin-right: 25px;
+		// 	}
+		// }
 	}
 
 	.ui.fitted.toggle.checkbox.truncate-game {

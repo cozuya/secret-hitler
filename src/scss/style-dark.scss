@@ -17,10 +17,9 @@ $dteal: #034f61;
 @import 'creategame.scss';
 @import 'leftsidebar.scss';
 @import 'game.scss';
-@import 'gameroles.scss';
+@import 'players.scss';
 @import 'settings.scss';
-@import 'table.scss';
-@import 'eliminator.scss';
+@import 'tracks.scss';
 @import 'rightsidebar.scss';
 
 #main {
@@ -127,6 +126,7 @@ $dteal: #034f61;
 body {
 	background-image: url('../images/footer_lodyas.png');
 	margin: 0 1%;
+	min-width: 1127px;
 }
 
 .app-hidden {

@@ -75,14 +75,33 @@ export default class Tracks extends React.Component {
 	render() {
 		// const {gameInfo, userInfo} = this.props;
 
+		// if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
+		// 	return <i onClick={this.leaveGame} className="remove icon" />;
+		// }
 		return (
 			<section className="tracks">
-				{(() => {
-					// if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
-					// 	return <i onClick={this.leaveGame} className="remove icon" />;
-					// }
-				})()}
-				{this.createReportGame()}
+				<div className={
+					(() => {
+						let classes = 'track top-track';
+
+						if (this.props.gameInfo.gameState.isStarted) {
+							classes += ' flipped';
+						}
+
+						return classes;
+					})()
+				} />
+				<div className={
+					(() => {
+						let classes = 'track bottom-track';
+
+						if (this.props.gameInfo.gameState.isStarted) {
+							classes += ' flipped';
+						}
+
+						return classes;
+					})()
+				} />
 				<div className="ui basic small modal signinnag" ref={c => {
 					this.signinModal = c;
 				}}>

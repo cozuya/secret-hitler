@@ -14,7 +14,7 @@ module.exports = () => {
 			handleSocketDisconnect(socket);
 		}).on('updateTruncateGame', data => {
 			handleUpdatedTruncateGame(data);
-		}).on('addNewGameChat', (data) => {
+		}).on('addNewGameChat', data => {
 			handleAddNewGameChat(data);
 		}).on('updateReportGame', data => {
 			handleUpdatedReportGame(socket, data);

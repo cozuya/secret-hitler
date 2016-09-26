@@ -62,8 +62,9 @@ gulp.task('styles-dark', () => {
 	return gulp.src('./src/scss/style-dark.scss')
 		.pipe(plumber())
 		.pipe(sourcemaps.init())
-		.pipe(sass({outputStyle: 'compressed'}).on('error', () => {
-			notifier.notify({title: 'SASS Error', message: ' '});
+		.pipe(sass({outputStyle: 'compressed'}).on('error', (err) => {
+			console.log(err);
+			notifier.notify({title: 'SASS Error', message: err});
 		}))
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest('./public/styles/'))

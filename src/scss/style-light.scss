@@ -16,14 +16,14 @@ $dteal: #034f61;
 @import 'creategame.scss';
 @import 'leftsidebar.scss';
 @import 'game.scss';
-@import 'gameroles.scss';
+@import 'players.scss';
 @import 'settings.scss';
-@import 'table.scss';
-@import 'eliminator.scss';
+@import 'tracks.scss';
 @import 'rightsidebar.scss';
 
 body {
 	background-image: url('../images/dark_embroidery.png');
+	min-width: 1127px;
 }
 
 .app-hidden {
