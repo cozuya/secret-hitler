@@ -84,6 +84,7 @@ export default class Game extends React.Component {
 						})()
 			}>
 					<Players
+						onClickedTakeSeat={this.props.onClickedTakeSeat}
 						userInfo={this.props.userInfo}
 						gameInfo={this.props.gameInfo}
 					/>

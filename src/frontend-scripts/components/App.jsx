@@ -102,51 +102,47 @@ export class App extends React.Component {
 
 	// ***** begin dev helpers *****
 
-	// componentDidUpdate(prevProps) {  // note: this breaks everything if these players try to leave a finished game
-	// 	const autoPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera'],
-	// 		{ userInfo, gameInfo, dispatch } = this.props;
-
-	// 	let prevSeatedNames;
-
-	// 		if (Object.keys(prevProps).length && prevProps.gameInfo && prevProps.gameInfo.seated) {
-	// 			prevSeatedNames = Object.keys(prevProps.gameInfo.seated).map((seatName) => {
-	// 				return prevProps.gameInfo.seated[seatName].userName;
-	// 			});
-	// 		}
-
-	// 	if (prevSeatedNames && !prevSeatedNames.indexOf(userInfo.userName) !== -1 && autoPlayers.indexOf(userInfo.userName) !== -1 && !Object.keys(gameInfo).length) {
-	// 		userInfo.seatNumber = (autoPlayers.indexOf(userInfo.userName) + 1).toString();
-	// 		dispatch(updateUser(userInfo));
-	// 		socket.emit('updateSeatedUsers', {
-	// 			uid: 'devgame',
-	// 			seatNumber: userInfo.seatNumber,
-	// 			userInfo
-	// 		});
-	// 	}
-	// }
-
 	makeQuickDefault() {
 		const {dispatch, userInfo} = this.props,
-			game = {};
+			game = {
+				gameState: {},
+				chats: [],
+				general: {
+					uid: Math.random().toString(36).substring(6),
+					name: 'New Game',
+					minPlayersCount: 5,
+					maxPlayersCount: 5,
+					private: false,
+					status: 'Waiting for more players..'
+				},
+				seatedPlayers: [{
+					userName: this.props.userInfo.userName,
+					connected: true
+				}],
+				trackState: {
+					liberalPolicyCount: 0,
+					fascistPolicyCount: 0,
+					electionTrackerCount: 0
+				}
+			};
 
 		userInfo.seatNumber = '0';
-		dispatch(updateGameInfo(game));
-		dispatch(updateMidsection('game'));
 		dispatch(updateUser(userInfo));
+		dispatch(updateMidsection('game'));
+		dispatch(updateGameInfo(game));
 		socket.emit('addNewGame', game);
 	}
 
 	// ***** end dev helpers *****
 
-	handleSeatingUser(seatNumber) {
+	handleSeatingUser() {
 		const {gameInfo, dispatch, userInfo} = this.props,
 			data = {
-				uid: gameInfo.uid,
-				seatNumber,
+				uid: gameInfo.general.uid,
 				userName: userInfo.userName
 			};
 
-		userInfo.seatNumber = seatNumber;
+		userInfo.seatNumber = (gameInfo.seatedPlayers.length + 1).toString();
 		socket.emit('updateSeatedUser', data);
 		dispatch(updateUser(userInfo));
 	}
@@ -178,6 +174,7 @@ export class App extends React.Component {
 								midSection={this.props.midSection}
 								gameList={this.props.gameList}
 								onCreateGameButtonClick={this.handleRoute}
+								onGameClick={this.handleGameClick}
 								socket={socket}
 							/>
 						);
@@ -194,6 +191,7 @@ export class App extends React.Component {
 					onLeaveGame={this.handleLeaveGame}
 					quickDefault={this.makeQuickDefault}
 					onSettingsButtonClick={this.handleRoute}
+					onClickedTakeSeat={this.handleSeatingUser}
 					socket={socket}
 				/>
 				{(() => {

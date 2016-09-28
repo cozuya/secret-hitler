@@ -23,6 +23,10 @@ $dteal: #034f61;
 @import 'rightsidebar.scss';
 
 #main {
+	.ui.header {
+		font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+	}
+
 	.section-main, .section-main > .nav-menu, .defaultmid {
 		background: #1c1c1c;
 	}
@@ -157,12 +161,9 @@ body {
 	}
 
 	> p {
-		max-height: 45px;
-		margin: 5px 0 0 10px;
-		width: 100%;
-		font-size: 32px;
-		font-weight: 700;
-		font-family: "Raleway", "Lato", Helvetica, Arial, sans-serif;
+		margin: 0 0 0 10px;
+		font-size: 42px;
+		font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
 
 		a {
 			color: $darkfascistteam;

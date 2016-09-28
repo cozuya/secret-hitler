@@ -58,7 +58,7 @@ module.exports.sendUserList = socket => {
 };
 
 module.exports.sendGameInfo = (socket, uid) => {
-	const game = games.find(el => el.uid === uid);
+	const game = games.find(el => el.general.uid === uid);
 
 	socket.join(uid);
 	socket.emit('gameUpdate', secureGame(game));

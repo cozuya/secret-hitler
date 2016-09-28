@@ -33,6 +33,7 @@ export default class Creategame extends React.Component {
 				name: $creategame.find('div.gamename input').val() || 'New Game',
 				minPlayersCount: parseInt($creategame.find('div.minplayers div.dropdown > span').text(), 10),
 				maxPlayersCount: parseInt($creategame.find('div.maxplayers div.dropdown > span').text(), 10),
+				status: 'Waiting for more players..',
 				private: false
 			},
 			seatedPlayers: [{

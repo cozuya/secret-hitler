@@ -11,6 +11,49 @@ export default class LeftSidebar extends React.Component {
 		this.props.onCreateGameButtonClick('createGame');
 	}
 
+	renderGameList() {
+		const {gameList} = this.props;
+
+		if (gameList.length) {
+			return gameList.sort((a, b) => {
+				const aGameStatus = a.gameStatus,
+					bGameStatus = b.gameStatus;
+
+				if (aGameStatus === 'completed' && bGameStatus !== 'completed') {
+					return 1;
+				} else if (bGameStatus === 'completed' && aGameStatus !== 'completed') {
+					return -1;
+				}
+
+				if (!aGameStatus === 'started' && bGameStatus === 'started') {
+					return -1;
+				} else if (aGameStatus === 'started' && !bGameStatus === 'started') {
+					return 1;
+				} else if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
+					return b.seatedCount - a.seatedCount;
+				}
+
+				// if (a.gameState.isStarted && !a.gameState.isCompleted) {
+				// 	return b.gameState.isStarted ? -1 : 1;
+				// }
+
+				// if (b.gameState.isStarted && !b.gameState.isCompleted) {
+				// 	return a.gameState.isStarted ? 1 : -1;
+				// }
+
+				return 0;
+			}).map((game, index) => {
+				return (
+					<SidebarGame
+						key={index}
+						game={game}
+						socket={this.props.socket}
+					/>
+				);
+			});
+		}
+	}
+
 	render() {
 		return (
 			<section className="section-left three wide column leftsidebar">
@@ -21,39 +64,7 @@ export default class LeftSidebar extends React.Component {
 					return (userName && !gameBeingCreated) ? <button className="ui button primary" onClick={this.createGameClick}>Create a new game</button> : <button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>;
 				})()}
 				<div className="games-container">
-					{this.props.gameList.sort((a, b) => {
-						if (!a.gameState.isStarted && b.gameState.isStarted) {
-							return -1;
-						} else if (a.gameState.isStarted && !b.gameState.isStarted) {
-							return 1;
-						} else if (!a.gameState.isStarted && !b.gameState.isStarted) {
-							return b.seatedCount - a.seatedCount;
-						}
-
-						if (a.gameState.isStarted && !a.gameState.isCompleted) {
-							return b.gameState.isStarted ? -1 : 1;
-						}
-
-						if (b.gameState.isStarted && !b.gameState.isCompleted) {
-							return a.gameState.isStarted ? 1 : -1;
-						}
-
-						if (a.gameState.isCompleted && !b.gameState.isCompleted) {
-							return 1;
-						} else if (b.gameState.isCompleted && !a.gameState.isCompleted) {
-							return -1;
-						}
-
-						return 0;
-					}).map((game, index) => {
-						return (
-							<SidebarGame
-								key={index}
-								game={game}
-								socket={this.props.socket}
-							/>
-						);
-					})}
+					{this.renderGameList()}
 				</div>
 			</section>
 		);

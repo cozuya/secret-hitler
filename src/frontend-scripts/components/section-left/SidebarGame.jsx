@@ -11,39 +11,24 @@ export default class SidebarGame extends React.Component {
 	}
 
 	render() {
-		// const setClass = role => roleMap[role].team,
-		// 	renderRoles = roles => roles.map((role, i) => <div key={i} className={setClass(role)}>{roleMap[role].initial}</div>),
-		// 	{game} = this.props,
-		// 	gameClasses = () => {
-		// 		let classes = 'ui vertical segment';
+		const {game} = this.props,
+			gameClasses = () => {
+				let classes = 'ui vertical segment';
 
-		// 		if (game.gameState.isStarted && !game.gameState.isCompleted) {
-		// 			classes += ' inprogress';
-		// 		}
+				if (game.gameStatus === 'started') {
+					classes += ' inprogress';
+				} else if (game.gameStatus === 'completed') {
+					classes += ' completed';
+				}
 
-		// 		if (game.gameState.isCompleted) {
-		// 			classes += ' completed';
-		// 		}
-
-		// 		return classes;
-		// 	};
-
-// todo-release take closer look at functionality re: negative ternairy @ line 44
-
-		const {game} = this.props;
+				return classes;
+			};
 
 		return (
-			<div data-uid={game.uid} onClick={this.routeToGame}>
+			<div data-uid={game.uid} onClick={this.routeToGame} className={gameClasses()}>
 				<div>
-					<span className={game.kobk ? 'gamename kobk' : 'gamename'}>{game.name}</span>
-					<span className="gamelength">{game.time}</span>
-					<span className="seatedcount">{game.seatedCount ? game.seatedCount.toString() : ''}/7</span>
-				</div>
-				<div className="rolelist">
-					<div>
-					</div>
-					<div>
-					</div>
+					<span className="gamename">{game.name}</span>
+					<span className="seatedcount">{game.seatedCount ? game.seatedCount.toString() : ''}</span>
 				</div>
 			</div>
 		);

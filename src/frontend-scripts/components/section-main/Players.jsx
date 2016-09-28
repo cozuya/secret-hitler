@@ -2,37 +2,49 @@ import React from 'react';
 // import $ from 'jquery';
 
 export default class Players extends React.Component {
-	// constructor() {
-	// 	super();
-	// 	this.handlePlayerClick = this.handlePlayerClick.bind(this);
-	// }
+	constructor() {
+		super();
+		this.clickedTakeSeat = this.clickedTakeSeat.bind(this);
+	}
 
 	// componentDidMount() {
 
 	// }
 
+	renderPlayers() {
+		return this.props.gameInfo.seatedPlayers.map((player, i) => {
+			return (
+				<div key={i} className="player-container">
+					<div
+						// onClick={this.handlePlayerClick}
+						className={
+						(() => {
+							return 'player-name';
+						})()
+					}
+					>{player.userName}</div>
+				</div>
+			);
+		});
+	}
+
+	renderTakeSeat() {
+		const {userInfo, gameInfo} = this.props;
+
+		if (userInfo.userName && !userInfo.seatNumber && !gameInfo.gameState.isStarted) {
+			return <div className="ui left pointing label" onClick={this.clickedTakeSeat}>Take a seat</div>;
+		}
+	}
+
+	clickedTakeSeat() {
+		this.props.onClickedTakeSeat();
+	}
+
 	render() {
 		return (
 			<section className="players">
-					{(() => {
-						return this.props.gameInfo.seatedPlayers.map((player, i) => {
-							return (
-								<div key={i} className="player-container">
-									<div
-										// onClick={this.handlePlayerClick}
-										className={
-										(() => {
-											return 'player-name';
-										})()
-									}
-									>{player.userName}</div>
-								</div>
-							);
-						});
-					})()}
-				<div className="ui left pointing label">
-					Take a seat
-				</div>
+				{this.renderPlayers()}
+				{this.renderTakeSeat()}
 			</section>
 		);
 	}

@@ -129,23 +129,72 @@ const {games, userList, generalChats} = require('./models'),
 		sendUserList();
 	};
 
-module.exports.handleUpdatedReportGame = (socket, data) => {
-	const game = games.find(el => el.uid === data.uid),
-		seatNumber = parseInt(data.seatNumber, 10);
+module.exports.updateSeatedUser = data => {
+	const game = games.find(el => el.general.uid === data.uid),
+		{seatedPlayers} = game;
 
-	if (game.gameState.reportedGame[seatNumber]) {
-		game.gameState.reportedGame[seatNumber] = false;
-	} else {
-		game.gameState.reportedGame[seatNumber] = true;
+	seatedPlayers.push({
+		userName: data.userName,
+		connected: true
+	});
+
+	io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
+
+	if (seatedPlayers.length === game.general.maxPlayersCount) {
+		console.log('start game here');
 	}
 
-	sendInProgressGameUpdate(game);
+	// if (Object.keys(game.seated).length === 7) {
+	// 	let startGamePause = 5;
+
+	// 	game.gameState.isStarted = true;
+
+	// 	Object.keys(game.seated).forEach((seat, index) => {
+	// 		const userName = game.seated[`seat${index}`].userName;
+
+	// 		game.internals.seatedPlayers[index].userName = userName;
+	// 		game.internals.seatedPlayers[index].seatNumber = index;
+	// 		game.internals.seatedPlayers[index].gameChats.push({
+	// 			gameChat: true,
+	// 			userName,
+	// 			chat: [{text: 'The table is full and the game will begin.'}],
+	// 			timestamp: new Date()
+	// 		});
+	// 	});
+
+	// 	const countDown = setInterval(() => {
+	// 		if (startGamePause === 0) {
+	// 			clearInterval(countDown);
+	// 			startGame(game);
+	// 		} else {
+	// 			game.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
+	// 			sendInProgressGameUpdate(game);
+	// 		}
+	// 		startGamePause--;
+	// 	}, 1000);
+	// } else {
+	// 	io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
+	// }
+
+	sendGameList();
 };
+
+// module.exports.handleUpdatedReportGame = (socket, data) => {
+// 	const game = games.find(el => el.uid === data.uid),
+// 		seatNumber = parseInt(data.seatNumber, 10);
+
+// 	if (game.gameState.reportedGame[seatNumber]) {
+// 		game.gameState.reportedGame[seatNumber] = false;
+// 	} else {
+// 		game.gameState.reportedGame[seatNumber] = true;
+// 	}
+
+// 	sendInProgressGameUpdate(game);
+// };
 
 module.exports.handleAddNewGame = (socket, data) => {
 	data.private = {
-		unSeatedGameChats: [],
-		seatedPlayers: data.seatedPlayers
+		unSeatedGameChats: []
 	};
 
 	games.push(data);
