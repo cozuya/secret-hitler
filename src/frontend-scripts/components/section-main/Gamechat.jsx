@@ -5,7 +5,6 @@ import $ from 'jquery';
 export default class Gamechat extends React.Component {
 	constructor() {
 		super();
-
 		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
@@ -13,8 +12,6 @@ export default class Gamechat extends React.Component {
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
-			hotkey: 'init',
-			altClaim: '',
 			inputValue: ''
 		};
 	}
@@ -24,24 +21,11 @@ export default class Gamechat extends React.Component {
 	}
 
 	componentDidUpdate() {
-		// const $input = $(this.gameChatInput)
-		// 	// ,
-		// 	// {selectedPlayer} = this.props,
-		// 	// currentValue = this.state.inputValue
-		// 	;
 		this.scrollChats();
-		// if (prevProps && !prevProps.gameInfo.gameState.cardsDealt && this.props.gameInfo.gameState.cardsDealt) {
-		// 	this.setState({inputValue: ''});
-		// 	$input.blur();
-		// }
 	}
 
 	handleChatClearClick() {
-		this.setState({
-			inputValue: '',
-			altClaim: '',
-			hotkey: 'init'
-		});
+		this.setState({inputValue: ''});
 	}
 
 	handleInputChange(e) {
@@ -50,10 +34,7 @@ export default class Gamechat extends React.Component {
 
 	handleSubmit(e) {
 		const currentValue = this.state.inputValue,
-			{gameInfo, userInfo} = this.props
-			// ,
-			// {hotkey, altClaim} = this.state
-		;
+			{gameInfo, userInfo} = this.props;
 
 		e.preventDefault();
 
@@ -66,31 +47,21 @@ export default class Gamechat extends React.Component {
 				inProgress: gameInfo.gameState.isStarted
 			};
 
-			// if (gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && userInfo.seatNumber && hotkey !== 'init') {
-			// 	chat.claim = altClaim || hotkey;
-			// }
-
 			this.props.socket.emit('addNewGameChat', chat);
 			this.setState({
-				inputValue: '',
-				altClaim: '',
-				hotkey: 'init'
+				inputValue: ''
 			});
 		}
 	}
 
 	scrollChats() {
-		const chatsContainer = document.querySelector('section.segment.chats > .ui.list');
-
 		if (!this.state.lock) {
-			chatsContainer.scrollTop = 99999999;
+			document.querySelector('section.segment.chats > .ui.list').scrollTop = 99999999;
 		}
 	}
 
 	handleChatFilterClick(e) {
-		this.setState({
-			chatFilter: $(e.currentTarget).text()
-		});
+		this.setState({chatFilter: $(e.currentTarget).text()});
 	}
 
 	handleTimestamps(timestamp) {
@@ -100,11 +71,7 @@ export default class Gamechat extends React.Component {
 			const minutes = (`0${new Date(timestamp).getMinutes()}`).slice(-2),
 				seconds = (`0${new Date(timestamp).getSeconds()}`).slice(-2);
 
-			return (
-				<span className="chat-timestamp">
-					({minutes}: {seconds})
-				</span>
-			);
+			return <span className="chat-timestamp">({minutes}: {seconds})</span>;
 		}
 	}
 
@@ -124,26 +91,12 @@ export default class Gamechat extends React.Component {
 			.filter(chat => ((chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All'))) || (!chat.gameChat && chatFilter !== 'Game'))
 			.map((chat, i) => {
 				const chatContents = chat.chat,
-					players = Object.keys(gameInfo.seated).map(seatName => {
-						return {
-							name: gameInfo.seated[seatName].userName
-						};
-					}),
-					isSeated = () => Boolean(Object.keys(gameInfo.seated).find(seatName => gameInfo.seated[seatName].userName === chat.userName)),
-					roles = [
-						{
-							name: 'liberal',
-							team: 'liberal'
-						},
-						{
-							name: 'fascist',
-							team: 'fascist'
-						},
-						{
-							name: 'hitler',
-							team: 'fascist'
-						}
-					];
+					// players = Object.keys(gameInfo.seated).map(seatName => {
+					// 	return {
+					// 		name: gameInfo.seated[seatName].userName
+					// 	};
+					// }),
+					isSeated = () => Boolean(gameInfo.seatedPlayers.find(player => player.userName === chat.userName));
 
 				return chat.gameChat ? (
 					<div className="item" key={i}>
@@ -156,9 +109,10 @@ export default class Gamechat extends React.Component {
 
 										if (chatSegment.type === 'playerName') {
 											classes = 'chat-player';
-										} else {
-											classes = `chat-role--${roles.find(role => role.name === chatSegment.text).team}`;
 										}
+										// else {
+										// 	classes = `chat-role--${roles.find(role => role.name === chatSegment.text).team}`;
+										// }
 
 										return <span key={index} className={classes}>{chatSegment.text}</span>;
 									}
@@ -172,95 +126,7 @@ export default class Gamechat extends React.Component {
 			(
 					<div className="item" key={i}>
 						<span className="chat-user">{chat.userName}{isSeated() ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
-						<span>
-							{(() => {
-								const toProcessChats = [],
-									splitChat = chatContents.split((() => {
-										const toRegex = players.map(player => {
-											return player.name;
-										}).concat(roles.map(role => {
-											return role.name;
-										})).join('|');
-
-										return new RegExp(toRegex, 'i');
-									})()),
-									combinedToProcess = roles.concat(players);
-
-								combinedToProcess.forEach(item => {
-									const split = chatContents.split(new RegExp(item.name, 'i'));
-
-									if (split.length > 1) {
-										split.forEach((piece, i) => {
-											if (i < split.length - 1) {
-												const processor = { // todo-alpha there's a bug here with chats that go (playername)(rolename)(same rolename) but it will have to wait until I have some time to dig into it
-													text: item.name,
-													index: (() => {
-														let _index = i;
-
-														/**
-															* Recusively processes split chunks.
-														* @param {int} splitIndex The index of the split to process
-														* @return {int} tbd
-														*/
-														function processSplits(splitIndex) {
-															if (typeof split[_index - 1] !== 'undefined' && !split[splitIndex].length && split[splitIndex - 1].substr(0, item.name.length) !== item.name) {
-																return processSplits(_index--);
-															}
-															const spliceSplit = split.splice(0, splitIndex || splitIndex + 1),
-																reducedSplit = spliceSplit.length > 1 ? spliceSplit.reduce((prev, curr) => {
-																	return !prev.length ? item.name.length : 0 + !curr.length ? item.name.length : curr.length;
-																}) : spliceSplit[splitIndex].length ? spliceSplit[splitIndex].length : item.name.length;
-
-															// console.log(spliceSplit);
-
-															// console.log(reducedSplit);
-
-															// console.log(split[splitIndex].length);
-
-															// return split[splitIndex].length ?
-
-															return split[splitIndex].length || reducedSplit ? reducedSplit : item.name.length;
-														}
-
-														// return split[index].length;
-														return processSplits(_index);
-													})(),
-													type: item.team ? 'roleName' : 'playerName'
-												};
-
-												// console.log(processor);
-
-												// seer seer robber seer == seer seer seer robber
-
-												if (item.team) {
-													processor.team = item.team;
-												}
-
-												toProcessChats.push(processor);
-											}
-										});
-									}
-								});
-
-								toProcessChats.sort((a, b) => {
-									return a.index - b.index;
-								});
-
-								return splitChat.map((piece, index) => {
-									if (index) {
-										const item = toProcessChats[index - 1];
-
-										return (
-											<span key={index}>
-												<span className={item.team ? `chat-role--${item.team}` : 'chat-player'}>{item.text}</span>{piece}
-											</span>
-										);
-									}
-
-									return piece;
-								});
-							})()}
-						</span>
+						<span>{chatContents}</span>
 					</div>
 				);
 			});
