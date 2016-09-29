@@ -37,6 +37,8 @@ export default class Game extends React.Component {
 					}>
 							<Tracks
 								// selectedPlayer={this.selectedPlayer}
+								onLeaveGame={this.props.onLeaveGame}
+								userInfo={this.props.userInfo}
 								gameInfo={this.props.gameInfo}
 							/>
 						</div>

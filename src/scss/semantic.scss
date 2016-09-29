@@ -688,7 +688,6 @@ input::selection {
   outline: none;
   border: none;
   vertical-align: baseline;
-  background: #097892 none;
   color: rgba(0, 0, 0, 0.6);
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   margin: 0em 0.25em 0em 0em;
@@ -4175,7 +4174,6 @@ input::selection {
 
 .ui.primary.buttons .button,
 .ui.primary.button {
-  background-color: #097892;
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
@@ -4187,28 +4185,24 @@ input::selection {
 
 .ui.primary.buttons .button:hover,
 .ui.primary.button:hover {
-  background-color: #097892;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.primary.buttons .button:focus,
 .ui.primary.button:focus {
-  background-color: #097892;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.primary.buttons .button:active,
 .ui.primary.button:active {
-  background-color: #034f61;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.primary.buttons .active.button,
 .ui.primary.active.button {
-  background-color: #1279c6;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -6866,7 +6860,6 @@ a.ui.inverted.grey.header:hover {
 }
 
 i.icon {
-  color: #034f61;
   display: inline-block;
   opacity: 1;
   margin: 0em 0.25rem 0em 0em;

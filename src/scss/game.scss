@@ -14,7 +14,7 @@
 			font-size: 22px;
 			font-style: italic;
 			color: #eee;
-			background: $lteal;
+			background: $darkfascistteam;
 			padding: 3px 0px 7px 8px;
 		}
 
@@ -39,7 +39,6 @@
 
 				.icon {
 					margin: 4px 0 0 180px;
-					opacity: .5;
 					cursor: pointer;
 				}
 			}
@@ -56,7 +55,7 @@
 					overflow-y: auto;
 					position: absolute;
 					bottom: 0;
-					line-height: 1.18;
+					line-height: 1.2;
 					max-height: 345px;
 					width: 350px;
 				}
@@ -68,7 +67,7 @@
 				}
 
 				.chat-user {
-					color: $lteal;
+					color: $darkliberalteam;
 
 					.chat-timestamp {
 						color: #21792A;

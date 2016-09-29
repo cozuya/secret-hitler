@@ -95,6 +95,7 @@ $dteal: #034f61;
 
 	.gamechat .ui.pointing.menu {
 		background: #212121;
+		overflow: visible;
 
 		.item {
 			color: #bfbfbf;
@@ -113,6 +114,14 @@ $dteal: #034f61;
 		border-bottom: 1px solid #111;
 		border-right: 1px solid #111;
 	}
+
+	i.icon {
+		color: $darkfascistteam;
+	}
+
+	a {
+		color: $darkliberalteam;
+	}
 }
 
 .ui.header {
@@ -125,6 +134,14 @@ $dteal: #034f61;
 
 .ui.primary.button, .ui.primary.buttons .button{
 	background-color: $darkfascistteam;
+}
+
+.ui.disabled.button {
+	background: $lightfascistteam;
+}
+
+.ui.button {
+	background: $darkfascistteam;
 }
 
 body {
@@ -151,7 +168,7 @@ body {
 	border-radius: 0;
 	border: 0;
 	box-shadow: none;
-	overflow-x: hidden;
+	overflow: hidden;
 
 	> img {
 		margin-left: 10px;
@@ -161,6 +178,7 @@ body {
 	}
 
 	> p {
+		line-height: 1;
 		margin: 0 0 0 10px;
 		font-size: 42px;
 		font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
@@ -186,6 +204,7 @@ body {
 	.loggedin {
 		color: #000;
 		display: inline-block;
+		vertical-align: middle;
 
 		.playername {
 			font-weight: bold;
@@ -203,7 +222,7 @@ body {
 
 	.ui.button:hover, .ui.button:active {
 		color: #fff;
-		background: $darkfascistteam;
+		background: $lred;
 	}
 }
 

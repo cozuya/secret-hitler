@@ -57,12 +57,13 @@
 			}
 
 			> div {
-				padding: 3px 5px;
+				padding: 2px 5px 0;
 			}
 		}
 
 		.ui.input {
-			width: 186px;
+			width: 85%;
+			margin-right: 4px;
 
 			input {
 				padding: 2px;
@@ -74,7 +75,6 @@
 			}
 
 			+ i {
-				font-style: 19px;
 				cursor: pointer;
 			}
 		}
@@ -96,7 +96,7 @@
 				}
 
 				.chat-user {
-					color: $lteal;
+					color: $darkliberalteam;
 				}
 
 				.admin {

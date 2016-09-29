@@ -31,7 +31,7 @@ export default class Players extends React.Component {
 	renderTakeSeat() {
 		const {userInfo, gameInfo} = this.props;
 
-		if (userInfo.userName && !userInfo.seatNumber && !gameInfo.gameState.isStarted) {
+		if (!userInfo.seatNumber && !gameInfo.gameState.isStarted) {
 			return <div className="ui left pointing label" onClick={this.clickedTakeSeat}>Take a seat</div>;
 		}
 	}
@@ -45,6 +45,11 @@ export default class Players extends React.Component {
 			<section className="players">
 				{this.renderPlayers()}
 				{this.renderTakeSeat()}
+				<div className="ui basic small modal signinnag" ref={c => {
+					this.signinModal = c;
+				}}>
+					<div className="ui header">You will need to sign in or sign up for an account to play.</div>
+				</div>
 			</section>
 		);
 	}

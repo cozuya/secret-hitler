@@ -5,10 +5,8 @@ import React from 'react';
 export default class Tracks extends React.Component {
 	constructor() {
 		super();
-
 		this.leaveGame = this.leaveGame.bind(this);
 		// this.handleClickedReportGame = this.handleClickedReportGame.bind(this);
-
 		this.state = {};
 	}
 
@@ -73,7 +71,7 @@ export default class Tracks extends React.Component {
 	// }
 
 	render() {
-		// const {gameInfo, userInfo} = this.props;
+		const {gameInfo, userInfo} = this.props;
 
 		// if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
 		// 	return <i onClick={this.leaveGame} className="remove icon" />;
@@ -84,7 +82,7 @@ export default class Tracks extends React.Component {
 					(() => {
 						let classes = 'track top-track';
 
-						if (this.props.gameInfo.gameState.isStarted) {
+						if (gameInfo.gameState.isStarted) {
 							classes += ' flipped';
 						}
 
@@ -95,18 +93,18 @@ export default class Tracks extends React.Component {
 					(() => {
 						let classes = 'track bottom-track';
 
-						if (this.props.gameInfo.gameState.isStarted) {
+						if (gameInfo.gameState.isStarted) {
 							classes += ' flipped';
 						}
 
 						return classes;
 					})()
 				} />
-				<div className="ui basic small modal signinnag" ref={c => {
-					this.signinModal = c;
-				}}>
-					<div className="ui header">You will need to sign in or sign up for an account to play.</div>
-				</div>
+				{(() => {
+					if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
+						return <i onClick={this.leaveGame} className="remove icon" />;
+					}
+				})()}
 			</section>
 		);
 	}
