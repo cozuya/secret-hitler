@@ -110,14 +110,15 @@ export class App extends React.Component {
 				general: {
 					uid: Math.random().toString(36).substring(6),
 					name: 'New Game',
-					minPlayersCount: 5,
-					maxPlayersCount: 5,
+					minPlayersCount: 2,
+					maxPlayersCount: 2,
 					private: false,
 					status: 'Waiting for more players..'
 				},
 				seatedPlayers: [{
 					userName: this.props.userInfo.userName,
-					connected: true
+					connected: true,
+					gameChats: []
 				}],
 				trackState: {
 					liberalPolicyCount: 0,
@@ -148,7 +149,7 @@ export class App extends React.Component {
 	}
 
 	handleLeaveGame(seatNumber, isSettings = false) {
-		const {dispatch, userInfo} = this.props;
+		const {dispatch, userInfo, gameInfo} = this.props;
 
 		if (userInfo.seatNumber) {
 			userInfo.seatNumber = '';
@@ -159,7 +160,7 @@ export class App extends React.Component {
 			userName: userInfo.userName,
 			seatNumber,
 			isSettings,
-			uid: this.props.gameInfo.uid
+			uid: gameInfo.general.uid
 		});
 	}
 

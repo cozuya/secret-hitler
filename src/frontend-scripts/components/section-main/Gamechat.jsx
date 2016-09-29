@@ -172,11 +172,6 @@ export default class Gamechat extends React.Component {
 									}
 									onClick={this.handleChatClearClick}
 								/>
-								{(() => {
-									if (gameInfo.gameState.isStarted && userInfo.seatNumber) {
-										return this.createHotkeys();
-									}
-								})()}
 							</div>
 						);
 					})()}
