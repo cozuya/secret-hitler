@@ -44,8 +44,11 @@ private
 		reportedGame bool
 		playersState array 5-10
 			obj
-				displayedCard string
-				isFlipped bool
+				cardStatus
+					cardDisplayed bool
+					isFlipped bool
+					cardFront string
+					cardBack string
 				isDead bool
 				isAlsoFascist bool
 				isHitler bool
