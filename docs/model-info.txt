@@ -30,7 +30,10 @@ private
 	seatedPlayers array 5-10
 		userName string
 		connected bool
-		role string
+		role obj
+			icon number
+			roleName string
+			team string
 		gameChats array of chat objects
 		isPresident bool
 		isChancellor bool

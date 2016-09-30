@@ -80,7 +80,7 @@ export default class Tracks extends React.Component {
 			<section className="tracks">
 				<div className={
 					(() => {
-						let classes = 'track top-track';
+						let classes = 'track-flipper track-flipper-top';
 
 						if (gameInfo.gameState.isStarted) {
 							classes += ' flipped';
@@ -88,10 +88,13 @@ export default class Tracks extends React.Component {
 
 						return classes;
 					})()
-				} />
+				}>
+					<div className="track top-track-front" />
+					<div className="track top-track-back" />
+				</div>
 				<div className={
 					(() => {
-						let classes = 'track bottom-track';
+						let classes = 'track-flipper track-flipper-bottom';
 
 						if (gameInfo.gameState.isStarted) {
 							classes += ' flipped';
@@ -99,7 +102,10 @@ export default class Tracks extends React.Component {
 
 						return classes;
 					})()
-				} />
+				}>
+					<div className="track bottom-track-front" />
+					<div className="track bottom-track-back" />
+				</div>
 				{(() => {
 					if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
 						return <i onClick={this.leaveGame} className="remove icon" />;

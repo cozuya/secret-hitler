@@ -6,9 +6,7 @@
 	.tracks {
 		position: relative;
 
-		.track {
-			background-size: contain;
-			background-repeat: no-repeat;
+		.track-flipper {
 			height: 220px;
 			transition-duration: 1s;
 			transition-property: transform;
@@ -22,21 +20,38 @@
 			transform: rotateX(180deg);
 		}
 
-		.top-track {
+
+		.track {
+			background-size: contain;
+			background-repeat: no-repeat;
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 220px;
+			width: 100%;
+		}
+
+		.top-track-front {
 			background-image: url('../images/liberal-logo.png');
 			background-position: center;
 		}
 
-		.top-track.flipped {
+		.top-track-back {
+			-webkit-backface-visibility: hidden;  // thanks osx safari
+			backface-visibility: hidden;
+			transform: rotateX(180deg);
 			background-image: url('../images/tracks/liberaltrack.png');
 		}
 
-		.bottom-track {
+		.bottom-track-front {
 			background-image: url('../images/fascist-logo.png');
 			background-position: center;
 		}
 
-		.bottom-track.flipped {
+		.bottom-track-back {
+			-webkit-backface-visibility: hidden;  // thanks osx safari
+			backface-visibility: hidden;
+			transform: rotateX(180deg);
 			background-image: url('../images/tracks/fascisttrack56.png');
 		}
 
