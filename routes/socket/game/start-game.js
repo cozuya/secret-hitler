@@ -71,13 +71,10 @@ module.exports = game => {
 	game.private.seatedPlayers.forEach((player, i) => {
 		const index = Math.floor(Math.random() * roles.length);
 
-		player.gameChats = [];
 		player.role = roles[index];
 		roles.splice(index, 1);
 
-		player.playersState = _.range(0, game.seatedPlayers.length).map(play => {
-			return {};
-		});
+		player.playersState = _.range(0, game.seatedPlayers.length).map(play => ({}));
 
 		player.playersState.forEach((play, index) => {
 			play.cardStatus = {
@@ -92,9 +89,31 @@ module.exports = game => {
 				play.cardStatus.cardBack = '';
 			}
 		});
+
+		player.gameChats = [];
+
+		// player.gameChats = [{
+		// 	gameChat: true,
+		// 	chatSegments: ['The game begins and you receive the ', {
+		// 		chatSegment: player.role.roleName,
+		// 		type: player.role.roleName
+		// 	}, ' role.']
+		// }];
 	});
-	console.log(game.seatedPlayers);
-	console.log(game.private.seatedPlayers[0].playersState[0].cardStatus);
-	console.log(game.private.seatedPlayers[0].playersState[1].cardStatus);
+
+	sendInProgressGameUpdate(game);
+
+	setTimeout(() => {
+		game.private.seatedPlayers.forEach((player, i) => {
+			player.playersState[i].cardStatus.isFlipped = true;
+		});
+	}, 2000);
+
+	// setTimeout(() => {
+	// 	game.private.seatedPlayers.forEach((player, i) => {
+	// 		player.playersState[i].cardStatus.isFlipped = false;
+	// 	});
+	// }, 5000);
+
 	sendInProgressGameUpdate(game);
 };

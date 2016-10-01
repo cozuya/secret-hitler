@@ -33,7 +33,7 @@ export default class Menu extends React.Component {
 					}
 				},
 				random: function () {
-					var effects = ['grow', 'fade', 'jumble', 'slide', 'dropdown'];
+					var effects = ['fade', 'jumble', 'slide', 'dropdown'];
 					this[effects[(Math.floor(Math.random() * effects.length))]]();
 				},
 				slide: function () {
@@ -45,10 +45,6 @@ export default class Menu extends React.Component {
 					var offscreen = this.$elem.offset().top + this.$elem.height() * 1.1;  // little extra padding
 					this.setup('position: relative; bottom: ' + offscreen + 'px;');
 					this.run('bottom', 0);			
-				},
-				grow: function () {
-					this.setup('font-size: 0px;');
-					this.run('fontSize', this.$elem.css('fontSize'));
 				},
 				fade: function () {
 					this.setup(this.$elem[0].style.opacity !== undefined ? 'opacity: 0;' : 'filter: alpha(opacity=0); display: inline-block;');

@@ -1,6 +1,7 @@
 .players-container .players {
 	background: #6f6f6f;
 	height: 115px;
+	overflow: hidden;
 
 	> .label {
 		width: 50px;
@@ -17,6 +18,48 @@
 		margin: 9px 7px 9px 9px;
 		border-radius: 4px;
 		background-image: url(../images/tweed.png);
+		position: relative;
+
+		.card-container {
+			width: 70px;
+			height: 95px;
+			top: 75px;
+			left: 0;
+			transition-duration: 1s;
+			transition-property: transform, top;
+			transform-style: preserve-3d;
+			position: relative;
+			-webkit-backface-visibility: hidden;  // thanks osx safari
+			backface-visibility: hidden;
+
+			.flipped {
+				transform: rotateX(180deg);
+			}
+
+			.card {
+				background-size: contain;
+				background-repeat: no-repeat;
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 95px;
+				width: 100%;
+			}
+
+			.card.secretrole {
+				background-image: url('../images/cards/secretrole.png');
+			}
+
+			.card-back {
+				-webkit-backface-visibility: hidden;  // thanks osx safari
+				backface-visibility: hidden;
+				transform: rotateX(180deg);
+			}
+		}
+
+		.card-container.showing {
+			top: -20px;
+		}
 
 		.player-name {
 			font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;

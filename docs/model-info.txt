@@ -4,9 +4,9 @@ gameState
 	phase string ?
 chats array
 	chat string
+	type string
 	gameChat bool
 	timestamp time
-	userName string
 general
 	name string
 	minPlayersCount number 5-10

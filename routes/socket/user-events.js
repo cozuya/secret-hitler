@@ -89,8 +89,7 @@ module.exports.updateSeatedUser = data => {
 
 	seatedPlayers.push({
 		userName: data.userName,
-		connected: true,
-		gameChats: []
+		connected: true
 	});
 
 	io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));

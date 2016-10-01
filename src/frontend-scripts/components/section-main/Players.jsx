@@ -12,17 +12,59 @@ export default class Players extends React.Component {
 	// }
 
 	renderPlayers() {
+		const {playersState} = this.props.gameInfo;
+
 		return this.props.gameInfo.seatedPlayers.map((player, i) => {
 			return (
-				<div key={i} className="player-container">
+				// onClick={this.handlePlayerClick}
+				<div key={i} className="player-container" >
 					<div
-						// onClick={this.handlePlayerClick}
 						className={
 						(() => {
 							return 'player-name';
 						})()
 					}
 					>{player.userName}</div>
+					<div
+						className={
+						(() => {
+							let classes = 'card-container';
+
+							if (playersState && playersState[i].cardStatus.cardDisplayed) {
+								classes += ' showing';
+							}
+
+							if (playersState && playersState[i].cardStatus.isFlipped) {
+								classes += ' flipped';
+							}
+							return classes;
+						})()
+					}>
+						<div
+							className={
+							(() => {
+								let classes = 'card card-front';
+
+								if (playersState && playersState[i].cardStatus.cardFront) {
+									classes = `${classes} ${playersState[i].cardStatus.cardFront}`;
+								}
+
+								return classes;
+							})()
+						} />
+						<div
+							className={
+							(() => {
+								let classes = 'card card-back';
+
+								if (playersState && playersState[i].cardBack) {
+									classes = `${classes} ${playersState[i].cardBack}`;
+								}
+
+								return classes;
+							})()
+						} />
+					</div>
 				</div>
 			);
 		});
