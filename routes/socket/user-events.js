@@ -248,30 +248,30 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 };
 
 module.exports.checkUserStatus = socket => {
-	const {passport} = socket.handshake.session;
+	// const {passport} = socket.handshake.session;
 
-	if (passport && Object.keys(passport).length) {
-		const {user} = passport,
-			{sockets} = io.sockets,
-			game = games.find(game => game.seatedPlayers.find(player => player.userName === passport.user)),
-			oldSocketID = Object.keys(sockets).find(socketID => ((sockets[socketID].handshake.session.passport && Object.keys(sockets[socketID].handshake.session.passport).length) && (sockets[socketID].handshake.session.passport.user === user && socketID !== socket.id)));
+	// if (passport && Object.keys(passport).length) {
+	// 	const {user} = passport,
+	// 		{sockets} = io.sockets,
+	// 		game = games.find(game => game.seatedPlayers.find(player => player.userName === passport.user)),
+	// 		oldSocketID = Object.keys(sockets).find(socketID => ((sockets[socketID].handshake.session.passport && Object.keys(sockets[socketID].handshake.session.passport).length) && (sockets[socketID].handshake.session.passport.user === user && socketID !== socket.id)));
 
-		if (oldSocketID && sockets[oldSocketID]) {
-			sockets[oldSocketID].emit('manualDisconnection');
-			delete sockets[oldSocketID];
-		}
+	// 	if (oldSocketID && sockets[oldSocketID]) {
+	// 		sockets[oldSocketID].emit('manualDisconnection');
+	// 		delete sockets[oldSocketID];
+	// 	}
 
-		if (game && game.gameState.isStarted && !game.gameState.isCompleted) {
-			const internalPlayer = getPrivatePlayerInGameByUserName(game, user)
-				// ,
-				// userSeatName = Object.keys(game.seated).find(seatName => game.seated[seatName].userName === user);
-				;
-			// game.seated[userSeatName].connected = true;
-			socket.join(game.uid);
-			socket.emit('updateSeatForUser', internalPlayer.seatNumber.toString());
-			sendInProgressGameUpdate(game);
-		}
-	}
+	// 	if (game && game.gameState.isStarted && !game.gameState.isCompleted) {
+	// 		const internalPlayer = getPrivatePlayerInGameByUserName(game, user)
+	// 			// ,
+	// 			// userSeatName = Object.keys(game.seated).find(seatName => game.seated[seatName].userName === user);
+	// 			;
+	// 		// game.seated[userSeatName].connected = true;
+	// 		socket.join(game.uid);
+	// 		socket.emit('updateSeatForUser', internalPlayer.seatNumber.toString());
+	// 		sendInProgressGameUpdate(game);
+	// 	}
+	// }
 
 	sendUserList();
 	sendGeneralChats(socket);

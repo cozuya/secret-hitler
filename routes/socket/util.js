@@ -15,11 +15,7 @@ module.exports.sendInProgressGameUpdate = game => { // todo-release make this ac
 				player = getPrivatePlayerInGameByUserName(game, userName);
 			}
 
-			console.log(player);
-			console.log(game.private);
-			const gameChats = player ? player.gameChats : game.private.unSeatedGameChats;
-
-			return gameChats.concat(game.chats);
+			return player ? player.gameChats.concat(game.chats) : game.private.unSeatedGameChats.concat(game.chats);
 		};
 
 	let roomSockets, playerSockets, observerSockets;

@@ -65,21 +65,36 @@ module.exports = game => {
 	}
 
 	game.gameState.isStarted = true;
-	game.private.seatedPlayers = game.seatedPlayers = _.shuffle(game.seatedPlayers);
+	game.seatedPlayers = _.shuffle(game.seatedPlayers);
+	game.private.seatedPlayers = _.cloneDeep(game.seatedPlayers);
 	game.general.status = 'Dealing roles..';
-	game.private.seatedPlayers.forEach(player => {
+	game.private.seatedPlayers.forEach((player, i) => {
 		const index = Math.floor(Math.random() * roles.length);
 
+		player.gameChats = [];
 		player.role = roles[index];
 		roles.splice(index, 1);
-		player.playersState.forEach(play => {
+
+		player.playersState = _.range(0, game.seatedPlayers.length).map(play => {
+			return {};
+		});
+
+		player.playersState.forEach((play, index) => {
 			play.cardStatus = {
 				cardDisplayed: true,
 				isFlipped: false,
-				cardFront: 'secretrole',
-				cardBack: ''
+				cardFront: 'secretrole'
 			};
+
+			if (index === game.seatedPlayers.findIndex(pla => pla.userName === player.userName)) {
+				play.cardStatus.cardBack = player.role;
+			} else {
+				play.cardStatus.cardBack = '';
+			}
 		});
 	});
+	console.log(game.seatedPlayers);
+	console.log(game.private.seatedPlayers[0].playersState[0].cardStatus);
+	console.log(game.private.seatedPlayers[0].playersState[1].cardStatus);
 	sendInProgressGameUpdate(game);
 };

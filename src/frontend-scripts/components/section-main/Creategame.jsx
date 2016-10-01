@@ -38,8 +38,7 @@ export default class Creategame extends React.Component {
 			},
 			seatedPlayers: [{
 				userName: this.props.userInfo.userName,
-				connected: true,
-				gameChats: []
+				connected: true
 			}],
 			trackState: {
 				liberalPolicyCount: 0,
