@@ -12,7 +12,7 @@ export default class Players extends React.Component {
 	// }
 
 	componentDidUpdate() {
-		console.log(this.props.gameInfo.playersState);
+		// console.log(this.props.gameInfo.playersState);
 	}
 
 	renderPlayers() {
@@ -61,8 +61,10 @@ export default class Players extends React.Component {
 							(() => {
 								let classes = 'card card-back';
 
-								if (playersState && playersState[i].cardBack) {
-									classes = `${classes} ${playersState[i].cardBack}`;
+								console.log(playersState);
+
+								if (playersState && Object.keys(playersState[i].cardStatus.cardBack).length) {
+									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
 								}
 
 								return classes;

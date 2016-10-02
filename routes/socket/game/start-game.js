@@ -4,17 +4,17 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 module.exports = game => {
 	let roles = _.range(0, 3).map(el => {
 		return {
-			roleName: 'liberal',
+			cardName: 'liberal',
 			icon: el,
 			team: 'liberal'
 		};
 	}).concat([{
-		roleName: 'fascist',
+		cardName: 'fascist',
 		icon: 0,
 		team: 'fascist'
 	},
 		{
-			roleName: 'hitler',
+			cardName: 'hitler',
 			icon: 0,
 			team: 'fascist'
 		}]
@@ -24,7 +24,7 @@ module.exports = game => {
 
 	if (game.seatedPlayers.length > 5) {
 		roles = roles.concat([{
-			roleName: 'liberal',
+			cardName: 'liberal',
 			icon: 4,
 			team: 'liberal'
 		}]);
@@ -32,7 +32,7 @@ module.exports = game => {
 
 	if (game.seatedPlayers.length > 6) {
 		roles = roles.concat([{
-			roleName: 'fascist',
+			cardName: 'fascist',
 			icon: 1,
 			team: 'fascist'
 		}]);
@@ -41,7 +41,7 @@ module.exports = game => {
 
 	if (game.seatedPlayers.length > 7) {
 		roles = roles.concat([{
-			roleName: 'liberal',
+			cardName: 'liberal',
 			icon: 5,
 			team: 'liberal'
 		}]);
@@ -49,7 +49,7 @@ module.exports = game => {
 
 	if (game.seatedPlayers.length > 8) {
 		roles = roles.concat([{
-			roleName: 'fascist',
+			cardName: 'fascist',
 			icon: 2,
 			team: 'fascist'
 		}]);
@@ -58,7 +58,7 @@ module.exports = game => {
 
 	if (game.seatedPlayers.length > 9) {
 		roles = roles.concat([{
-			roleName: 'liberal',
+			cardName: 'liberal',
 			icon: 4,
 			team: 'liberal'
 		}]);
@@ -86,7 +86,7 @@ module.exports = game => {
 			if (index === game.seatedPlayers.findIndex(pla => pla.userName === player.userName)) {
 				play.cardStatus.cardBack = player.role;
 			} else {
-				play.cardStatus.cardBack = '';
+				play.cardStatus.cardBack = {};
 			}
 		});
 
@@ -95,8 +95,8 @@ module.exports = game => {
 		// player.gameChats = [{
 		// 	gameChat: true,
 		// 	chatSegments: ['The game begins and you receive the ', {
-		// 		chatSegment: player.role.roleName,
-		// 		type: player.role.roleName
+		// 		chatSegment: player.role.cardName,
+		// 		type: player.role.cardName
 		// 	}, ' role.']
 		// }];
 	});
@@ -106,7 +106,6 @@ module.exports = game => {
 	setTimeout(() => {
 		game.private.seatedPlayers.forEach((player, i) => {
 			player.playersState[i].cardStatus.isFlipped = true;
-			console.log(player.playersState[i]);
 		});
 		sendInProgressGameUpdate(game);
 	}, 2000);
