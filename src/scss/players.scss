@@ -32,10 +32,6 @@
 			-webkit-backface-visibility: hidden;  // thanks osx safari
 			backface-visibility: hidden;
 
-			.flipped {
-				transform: rotateX(180deg);
-			}
-
 			.card {
 				background-size: contain;
 				background-repeat: no-repeat;
@@ -53,12 +49,16 @@
 			.card-back {
 				-webkit-backface-visibility: hidden;  // thanks osx safari
 				backface-visibility: hidden;
-				transform: rotateX(180deg);
+				transform: rotateY(180deg);
 			}
 		}
 
 		.card-container.showing {
 			top: -20px;
+		}
+
+		.card-container.flipped {
+			transform: rotateY(180deg);
 		}
 
 		.player-name {

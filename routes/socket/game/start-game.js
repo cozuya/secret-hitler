@@ -106,7 +106,9 @@ module.exports = game => {
 	setTimeout(() => {
 		game.private.seatedPlayers.forEach((player, i) => {
 			player.playersState[i].cardStatus.isFlipped = true;
+			console.log(player.playersState[i]);
 		});
+		sendInProgressGameUpdate(game);
 	}, 2000);
 
 	// setTimeout(() => {
@@ -114,6 +116,4 @@ module.exports = game => {
 	// 		player.playersState[i].cardStatus.isFlipped = false;
 	// 	});
 	// }, 5000);
-
-	sendInProgressGameUpdate(game);
 };

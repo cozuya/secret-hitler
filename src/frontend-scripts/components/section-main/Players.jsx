@@ -11,6 +11,10 @@ export default class Players extends React.Component {
 
 	// }
 
+	componentDidUpdate() {
+		console.log(this.props.gameInfo.playersState);
+	}
+
 	renderPlayers() {
 		const {playersState} = this.props.gameInfo;
 
