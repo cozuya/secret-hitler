@@ -81,6 +81,7 @@ module.exports = game => {
 				isFlipped: false,
 				cardFront: 'secretrole'
 			};
+			play.notificationStatus = play.nameStatus = '';
 
 			if (index === game.seatedPlayers.findIndex(pla => pla.userName === player.userName)) {
 				play.cardStatus.cardBack = player.role;
@@ -108,6 +109,130 @@ module.exports = game => {
 
 	setTimeout(() => {
 		game.private.seatedPlayers.forEach((player, i) => {
+			const playerCountInGame = game.seatedPlayers.length,
+				{seatedPlayers} = game.private,
+				{cardName} = player.role;
+
+			if (cardName === 'fascist') {
+				if (playerCountInGame > 6 && playerCountInGame < 9) {
+					const otherFascist = seatedPlayers.find(player => player.role.cardName === 'fascist');
+
+					player.gameChats.push({
+						gameChat: true,
+						chat: [{
+							text: 'You see that the other '
+						},
+						{
+							text: 'fascist',
+							type: 'fascist'
+						},
+						{
+							text: 'in this game is '
+						},
+						{
+							text: otherFascist.userName,
+							type: 'player'
+
+						},
+						{
+							text: '.'
+						}]
+					});
+
+					player.playersState[seatedPlayers.indexOf(otherFascist)].notificationStatus = player.playersState[seatedPlayers.indexOf(otherFascist)].nameStatus = 'fascist';
+				} else if (playerCountInGame > 8) {
+					const otherFascists = seatedPlayers.filter(player => player.role.cardName === 'fascist');
+
+					player.gameChats.push({
+						gameChat: true,
+						chat: [{
+							text: 'You see that the other '
+						},
+						{
+							text: 'fascists',
+							type: 'fascist'
+						},
+						{
+							text: 'in this game are '
+						},
+						{
+							text: otherFascists[0].userName,
+							type: 'player'
+
+						},
+						{
+							text: ' and '
+						},
+						{
+							text: otherFascists[1].userName,
+							type: 'player'
+						},
+						{
+							text: '.'
+						}]
+					});
+
+					otherFascists.forEach(fascistPlayer => {
+						player.playersState[seatedPlayers.indexOf(fascistPlayer)].notificationStatus = player.playersState[seatedPlayers.indexOf(fascistPlayer)].nameStatus = 'fascist';
+					});
+				} else {
+					const hitlerPlayer = seatedPlayers.filter(player => player.role.cardName === 'hitler');
+					console.log(hitlerPlayer);
+					console.log(seatedPlayers);
+					player.gameChats.push({
+						gameChat: true,
+						chat: [{
+							text: 'You see that '
+						},
+						{
+							text: 'hitler',
+							type: 'hitler'
+						},
+						{
+							text: 'in this game is '
+						},
+						{
+							text: hitlerPlayer[0].userName,
+							type: 'player'
+
+						},
+						{
+							text: '. He or she also sees that you are a fascist.'
+						}]
+					});
+
+					player.playersState[seatedPlayers.indexOf(hitlerPlayer)].notificationStatus = player.playersState[seatedPlayers.indexOf(hitlerPlayer)].nameStatus = 'hitler';
+				}
+			} else if (cardName === 'hitler' && playerCountInGame < 7) { // not super dry but fuck it
+				const otherFascist = seatedPlayers.find(player => player.role.cardName === 'fascist');
+
+				player.gameChats.push({
+					gameChat: true,
+					chat: [{
+						text: 'You see that the other '
+					},
+					{
+						text: 'fascist',
+						type: 'fascist'
+					},
+					{
+						text: 'in this game is '
+					},
+					{
+						text: otherFascist.userName,
+						type: 'player'
+
+					},
+					{
+						text: '.  He or she knows who you are.'
+					}]
+				});
+
+				player.playersState[seatedPlayers.indexOf(otherFascist)].notificationStatus = player.playersState[seatedPlayers.indexOf(otherFascist)].nameStatus = 'fascist';
+			} else {
+				player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'liberal';
+			}
+
 			player.playersState[i].cardStatus.isFlipped = true;
 		});
 		sendInProgressGameUpdate(game);
@@ -120,12 +245,12 @@ module.exports = game => {
 		sendInProgressGameUpdate(game);
 	}, 5000);
 
-	setTimeout(() => {
-		game.private.seatedPlayers.forEach((player, i) => {
-			player.playersState.forEach(play => {
-				play.cardStatus.cardDisplayed = false;
-			});
-		});
-		sendInProgressGameUpdate(game);
-	}, 8000);
+	// setTimeout(() => {
+	// 	game.private.seatedPlayers.forEach((player, i) => {
+	// 		player.playersState.forEach(play => {
+	// 			play.cardStatus.cardDisplayed = false;
+	// 		});
+	// 	});
+	// 	sendInProgressGameUpdate(game);
+	// }, 8000);
 };

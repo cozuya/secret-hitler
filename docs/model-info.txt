@@ -49,10 +49,9 @@ private
 					isFlipped bool
 					cardFront string
 					cardBack string
+				notificationStatus string outline around player
 				isDead bool
-				isAlsoFascist bool
-				isHitler bool
-				isBeingIndicated bool
+				nameStatus string fascist hitler disabled liberal
 				isChancellor bool
 				isPresident bool
 				hasVoted bool
