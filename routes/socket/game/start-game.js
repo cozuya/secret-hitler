@@ -73,7 +73,6 @@ module.exports = game => {
 
 		player.role = roles[index];
 		roles.splice(index, 1);
-
 		player.playersState = _.range(0, game.seatedPlayers.length).map(play => ({}));
 
 		player.playersState.forEach((play, index) => {
@@ -90,15 +89,19 @@ module.exports = game => {
 			}
 		});
 
-		player.gameChats = [];
-
-		// player.gameChats = [{
-		// 	gameChat: true,
-		// 	chatSegments: ['The game begins and you receive the ', {
-		// 		chatSegment: player.role.cardName,
-		// 		type: player.role.cardName
-		// 	}, ' role.']
-		// }];
+		player.gameChats = [{
+			gameChat: true,
+			chat: [{
+				text: 'The game begins and you receive the '
+			},
+			{
+				text: player.role.cardName,
+				type: player.role.cardName
+			},
+			{
+				text: ' role.'
+			}]
+		}];
 	});
 
 	sendInProgressGameUpdate(game);
@@ -110,9 +113,19 @@ module.exports = game => {
 		sendInProgressGameUpdate(game);
 	}, 2000);
 
-	// setTimeout(() => {
-	// 	game.private.seatedPlayers.forEach((player, i) => {
-	// 		player.playersState[i].cardStatus.isFlipped = false;
-	// 	});
-	// }, 5000);
+	setTimeout(() => {
+		game.private.seatedPlayers.forEach((player, i) => {
+			player.playersState[i].cardStatus.isFlipped = false;
+		});
+		sendInProgressGameUpdate(game);
+	}, 5000);
+
+	setTimeout(() => {
+		game.private.seatedPlayers.forEach((player, i) => {
+			player.playersState.forEach(play => {
+				play.cardStatus.cardDisplayed = false;
+			});
+		});
+		sendInProgressGameUpdate(game);
+	}, 8000);
 };

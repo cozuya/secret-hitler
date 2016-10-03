@@ -67,7 +67,7 @@
 				}
 
 				.chat-user {
-					color: $darkliberalteam;
+					color: #eee;
 
 					.chat-timestamp {
 						color: #21792A;
@@ -83,23 +83,23 @@
 					color: #8B8B8B;
 				}
 
-				.chat-role--village {
+				.chat-role--liberal {
 					font-weight: 700;
-					color: $villageteam;
+					color: $darkliberalteam;
 				}
 
-				.chat-role--werewolf {
+				.chat-role--hitler {
 					font-weight: 700;
-					color: $werewolfteam;
+					color: #be0804;
 				}
 
-				.chat-role--tanner {
+				.chat-role--fascist {
 					font-weight: 700;
-					color: $tannerteam;
+					color: $darkfascistteam;
 				}
 
 				.chat-player {
-					color: #000;
+					color: #eee;
 					font-weight: 700;
 				}
 			}

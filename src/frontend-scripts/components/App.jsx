@@ -110,8 +110,8 @@ export class App extends React.Component {
 				general: {
 					uid: Math.random().toString(36).substring(6),
 					name: 'New Game',
-					minPlayersCount: 2,
-					maxPlayersCount: 2,
+					minPlayersCount: 5,
+					maxPlayersCount: 5,
 					private: false,
 					status: 'Waiting for more players..'
 				},

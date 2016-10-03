@@ -61,8 +61,6 @@ export default class Players extends React.Component {
 							(() => {
 								let classes = 'card card-back';
 
-								console.log(playersState);
-
 								if (playersState && Object.keys(playersState[i].cardStatus.cardBack).length) {
 									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
 								}

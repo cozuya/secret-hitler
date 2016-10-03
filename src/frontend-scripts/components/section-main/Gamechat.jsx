@@ -109,10 +109,9 @@ export default class Gamechat extends React.Component {
 
 										if (chatSegment.type === 'playerName') {
 											classes = 'chat-player';
+										} else {
+											classes = `chat-role--${chatSegment.type}`;
 										}
-										// else {
-										// 	classes = `chat-role--${roles.find(role => role.name === chatSegment.text).team}`;
-										// }
 
 										return <span key={index} className={classes}>{chatSegment.text}</span>;
 									}
