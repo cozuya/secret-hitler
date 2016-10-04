@@ -77,20 +77,20 @@ module.exports.selectChancellor = data => {
 		player.cardFlingerState = [
 			{
 				position: 'middle-left',
+				notificationStatus: '',
 				cardStatus: {
 					isFlipped: false,
 					cardFront: 'ballot',
-					cardBack: 'ja',
-					notificationStatus: 'notify'
+					cardBack: 'ja'
 				}
 			},
 			{
 				position: 'middle-right',
+				notificationStatus: '',
 				cardStatus: {
 					isFlipped: false,
 					cardFront: 'ballot',
-					cardBack: 'nein',
-					notificationStatus: 'notify'
+					cardBack: 'nein'
 				}
 			}
 		];

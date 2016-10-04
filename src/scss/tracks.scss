@@ -65,107 +65,6 @@
 			font-size: 30px;
 			cursor: pointer;
 		}
-
-		// .tracks-uid {
-		// 	position: absolute;
-		// 	top: 415px;
-		// 	left: 180px;
-		// 	color: #c2c2c2;
-
-		// 	i {
-		// 		cursor: pointer;
-		// 	}
-
-		// 	.report-game-clicked {
-		// 		color: red !important;
-		// 	}
-		// }
-
-		// .card {
-		// 	top: 190px;
-		// 	left: 260px;
-		// 	position: absolute;
-		// 	perspective: 1000;
-		// 	-webkit-perspective: 1000;
-		// 	transition-property: top, left;
-		// 	transition-duration: 1.5s;
-		// 	cursor: pointer;
-
-		// 	.card-flipper {
-		// 		width: 59px;
-		// 		height: 80px;
-		// 		transition-duration: 1s;
-		// 		transition-property: transform;
-		// 		transform-style: preserve-3d;
-		// 		position: relative;
-		// 	}
-
-		// 	.card-flipper.flip {
-		// 		transform: rotateY(180deg);
-		// 	}
-
-		// 	.card-front, .card-back, .claim {
-		// 		border-radius: 4px;
-		// 		-webkit-backface-visibility: hidden;  // thanks osx safari
-		// 		backface-visibility: hidden;
-		// 		border: 1px solid #eee;
-		// 		position: absolute;
-		// 		top: 0;
-		// 		left: 0;
-		// 		width: 59px;
-		// 		height: 80px;
-		// 	}
-
-		// 	.card-front {
-		// 		transform: rotateY(180deg);
-		// 		background-size: cover;
-		// 	}
-
-		// 	.card-back {
-		// 		z-index: 2;
-		// 		transform: rotateY(0deg);
-		// 		background-image: url('../images/vertical_cloth.png');
-		// 	}
-		// }
-
-		// .card.notransition {
-		// 	transition: none;
-		// }
-
-		// .card.flipped {
-		// 	transform: rotateY(180deg);
-		// }
-
-		// .remove.icon {
-		// 	position: absolute;
-		// 	top: 10px;
-		// 	left: 545px;
-		// 	opacity: 0.3;
-		// 	cursor: pointer;
-		// 	font-size: 30px;
-		// }
-
-		// .card-notify {
-		// 	box-shadow: 0 0 4px 4px $notification;
-		// }
-
-		// .card-select {
-		// 	box-shadow: 0 0 4px 4px $selection;
-		// }
-
-		// .card-proceed {
-		// 	box-shadow: 0 0 4px 4px $proceed;
-		// }
-
-		// .gameinformation-container {
-		// 	position: absolute;
-		// 	top: 10px;
-		// 	left: 10px;
-
-		// 	.game-name {
-		// 		margin-right: 25px;
-		// 	}
-		// }
 	}
 
 	.tracks.blurred {
@@ -179,6 +78,33 @@
 		left: -120px;
 		width: 120px;
 		height: 167px;
+		z-index: 2;
+		transition-property: left;
+		transition-delay: .2s;
+		transition-duration: 1s;
+		transform-style: preserve-3d;
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+	}
+
+	.cardflinger-card-container.middle-far-left.active {
+		left: 75px;
+	}
+
+	.cardflinger-card-container.middle-center.active {
+		left: 265px;
+	}
+
+	.cardflinger-card-container.middle-far-right.active {
+		left: 455px;
+	}
+
+	.cardflinger-card-container.middle-left.active {
+		left: 165px;
+	}
+
+	.cardflinger-card-container.middle-right.active {
+		left: 365px;
 	}
 
 	.ui.fitted.toggle.checkbox.truncate-game {

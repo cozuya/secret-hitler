@@ -68,6 +68,7 @@ private
 		cardflingerState array
 			obj
 				position string middle-far-left middle-left middle-center middle-right middle-far-right
+				notificationStatus
 				cardStatus
 					isFlipped bool
 					cardFront string
