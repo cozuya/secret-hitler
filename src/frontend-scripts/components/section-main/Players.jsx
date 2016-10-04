@@ -1,44 +1,89 @@
 import React from 'react';
-// import $ from 'jquery';
+import $ from 'jquery';
 
 export default class Players extends React.Component {
 	constructor() {
 		super();
 		this.clickedTakeSeat = this.clickedTakeSeat.bind(this);
+		this.handlePlayerClick = this.handlePlayerClick.bind(this);
 	}
 
-	// componentDidMount() {
+	handlePlayerClick(e) {
+		const {userInfo, gameInfo, socket} = this.props,
+			{gameState} = gameInfo,
+			{phase, clickActionInfo} = gameState,
+			index = parseInt($(e.currentTarget).attr('data-index'), 10);
 
-	// }
+		if (phase === 'selectingChancellor' && userInfo.userName) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+				socket.emit('presidentSelectedChancellor', {
+					chancellorIndex: index,
+					uid: gameInfo.general.uid
+				});
+			}
+		}
+	}
 
-	componentDidUpdate() {
-		// console.log(this.props.gameInfo.playersState);
+	renderGovtToken(i) {
+		const {publicPlayersState} = this.props.gameInfo;
+
+		if (publicPlayersState && publicPlayersState[i].governmentStatus) {
+			return <div	className={`government-token ${publicPlayersState[i].governmentStatus}`} />;
+		}
+	}
+
+	renderSpinner(i) {
+		const {publicPlayersState} = this.props.gameInfo;
+
+		if (publicPlayersState && publicPlayersState[i].isLoader) {
+			return <div className="ui active tiny inverted loader" />;
+		}
 	}
 
 	renderPlayers() {
-		const {playersState} = this.props.gameInfo;
+		const {playersState, publicPlayersState} = this.props.gameInfo;
 
 		return this.props.gameInfo.seatedPlayers.map((player, i) => {
 			return (
-				// onClick={this.handlePlayerClick}
-				<div key={i} className="player-container" >
+				<div key={i}
+					data-index={i}
+					onClick={this.handlePlayerClick}
+					className={
+						(() => {
+							let classes = 'player-container';
+
+							if (playersState && playersState[i].notificationStatus) {
+								classes = `${classes} notifier ${playersState[i].notificationStatus}`;
+							}
+
+							return classes;
+						})()
+					}>
 					<div
 						className={
 						(() => {
-							return 'player-name';
+							let classes = 'player-name';
+
+							if (playersState && playersState[i].nameStatus) {
+								classes = `${classes} ${playersState[i].nameStatus}`;
+							}
+
+							return classes;
 						})()
 					}
 					>{player.userName}</div>
+					{this.renderSpinner(i)}
+					{this.renderGovtToken(i)}
 					<div
 						className={
 						(() => {
 							let classes = 'card-container';
 
-							if (playersState && playersState[i].cardStatus.cardDisplayed) {
+							if (playersState && playersState[i].cardStatus.cardDisplayed || (publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)) {
 								classes += ' showing';
 							}
 
-							if (playersState && playersState[i].cardStatus.isFlipped) {
+							if (playersState && playersState[i].cardStatus.isFlipped || (publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)) {
 								classes += ' flipped';
 							}
 							return classes;
@@ -51,6 +96,8 @@ export default class Players extends React.Component {
 
 								if (playersState && playersState[i].cardStatus.cardFront) {
 									classes = `${classes} ${playersState[i].cardStatus.cardFront}`;
+								} else if (publicPlayersState && publicPlayersState[i].cardStatus.cardFront) {
+									classes = `${classes} ${publicPlayersState[i].cardStatus.cardFront}`;
 								}
 
 								return classes;
@@ -63,6 +110,8 @@ export default class Players extends React.Component {
 
 								if (playersState && Object.keys(playersState[i].cardStatus.cardBack).length) {
 									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
+								} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
+									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
 								}
 
 								return classes;

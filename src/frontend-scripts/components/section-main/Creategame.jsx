@@ -26,7 +26,9 @@ export default class Creategame extends React.Component {
 		const $creategame = $('section.creategame');
 
 		this.props.onCreateGameSubmit({
-			gameState: {},
+			gameState: {
+				previousElectedGovernment: []
+			},
 			chats: [],
 			general: {
 				uid: Math.random().toString(36).substring(6),
@@ -34,7 +36,8 @@ export default class Creategame extends React.Component {
 				minPlayersCount: parseInt($creategame.find('div.minplayers div.dropdown > span').text(), 10),
 				maxPlayersCount: parseInt($creategame.find('div.maxplayers div.dropdown > span').text(), 10),
 				status: 'Waiting for more players..',
-				private: false
+				private: false,
+				electionCount: 0
 			},
 			seatedPlayers: [{
 				userName: this.props.userInfo.userName,

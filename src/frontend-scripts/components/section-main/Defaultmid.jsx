@@ -6,6 +6,8 @@ export default class Defaultmid extends React.Component {
 			<section className="defaultmid">
 				<img src="" alt="Secret Hitler logo" style={{position: 'absolute', left: '50%', marginLeft: '-275px', top: '70px', opacity: '0.05', width: '550px'}} width="550" height="550" />
 				<br />
+				<button style={{padding: '5px', background: '#333', color: 'white'}} data-name="h" onClick={this.props.quickDefault}>default game</button>
+				<br />
 				<button style={{padding: '5px', width: '80px'}} data-name="Uther" className="loginquick">Uther</button>
 				<br />
 				<button style={{padding: '5px', width: '80px'}} data-name="Jaina" className="loginquick">Jaina</button>
@@ -35,8 +37,6 @@ export default class Defaultmid extends React.Component {
 				<button style={{padding: '5px', width: '80px'}} data-name="ggg" className="loginquick">ggg</button>
 				<br />
 				<button style={{padding: '5px', width: '80px'}} data-name="hhh" className="loginquick">hhh</button>
-				<br />
-				<button style={{padding: '5px', background: '#333', color: 'white'}} data-name="h" onClick={this.props.quickDefault}>default game</button>
 			</section>
 		);
 	}

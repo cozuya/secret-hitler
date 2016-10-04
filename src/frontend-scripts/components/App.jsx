@@ -27,10 +27,27 @@ export class App extends React.Component {
 			{classList} = document.getElementById('game-container');
 
 		if (classList.length) {
-			const username = classList[0].split('username-')[1];
+			const username = classList[0].split('username-')[1],
+				info = {userName: username};
 
-			dispatch(updateUser({userName: username}));
 			socket.emit('getUserGameSettings', username);
+
+			// ** begin devhelpers **
+			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian'];
+			if (devPlayers.includes(username)) {
+				const {userInfo} = this.props,
+					data = {
+						uid: 'devgame',
+						userName: username
+					};
+
+				info.seatNumber = (devPlayers.indexOf(username) + 1).toString();
+				socket.emit('updateSeatedUser', data);
+				socket.emit('getGameInfo', 'devgame');
+			}
+			dispatch(updateUser(info));
+
+			// ** end devhelpers **
 		}
 
 		socket.on('manualDisconnection', () => {
@@ -105,15 +122,18 @@ export class App extends React.Component {
 	makeQuickDefault() {
 		const {dispatch, userInfo} = this.props,
 			game = {
-				gameState: {},
+				gameState: {
+					previousElectedGovernment: []
+				},
 				chats: [],
 				general: {
-					uid: Math.random().toString(36).substring(6),
+					uid: 'devgame',
 					name: 'New Game',
 					minPlayersCount: 5,
 					maxPlayersCount: 5,
 					private: false,
-					status: 'Waiting for more players..'
+					status: 'Waiting for more players..',
+					electionCount: 0
 				},
 				seatedPlayers: [{
 					userName: this.props.userInfo.userName,

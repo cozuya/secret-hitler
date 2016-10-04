@@ -65,9 +65,6 @@ export default class Game extends React.Component {
 								gameInfo={this.props.gameInfo}
 								userInfo={this.props.userInfo}
 								onNewGameChat={this.props.onNewGameChat}
-								// clickedPlayer={this.props.clickedPlayerInfo}
-								// roleState={this.roleState}
-								// selectedPlayer={this.props.clickedPlayer}
 								socket={this.props.socket}
 							/>
 						</div>
@@ -89,6 +86,7 @@ export default class Game extends React.Component {
 						onClickedTakeSeat={this.props.onClickedTakeSeat}
 						userInfo={this.props.userInfo}
 						gameInfo={this.props.gameInfo}
+						socket={this.props.socket}
 					/>
 				</div>
 			</section>

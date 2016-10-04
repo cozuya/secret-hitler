@@ -2,6 +2,8 @@ gameState
 	isStarted bool
 	isCompleted bool
 	phase string ?
+	previousElectedGovernment array of numbers, 1st is pres 2nd is chanc,
+	presidentIndex number
 chats array
 	chat string
 	type string
@@ -13,6 +15,8 @@ general
 	maxPlayersCount number 5-10
 	status string
 	uid string
+	livingPlayerCount number
+	electionCount number, starts at 0
 seatedPlayers array 5-10
 	obj
 		connected bool
@@ -22,6 +26,14 @@ trackState
 	liberalPolicyCount number
 	electionTrackerCount number
 	fascistTrackCount number
+publicPlayersState array
+	obj
+		governmentStatus string isPendingPresident isPendingChancellor
+		cardStatus
+			cardDisplayed bool
+			isFlipped bool
+			cardFront string
+			cardBack string
 playersState (see private)
 private
 	unSeatedGameChats array
@@ -35,22 +47,17 @@ private
 			roleName string
 			team string
 		gameChats array of chat objects
-		isPresident bool
-		isChancellor bool
-		isSelectingChancellor bool
-		isSelectingPresidentDiscard bool
-		isSelectingChancellorDiscard bool
-		needsToVote bool
+		governmentStatus string isPresident isChancellor isSelectingChancellor isSelectingPresidentDiscard isSelectingChancellorDiscard 		needsToVote bool
 		reportedGame bool
 		playersState array 5-10
 			obj
 				cardStatus
-					cardDisplayed bool
 					isFlipped bool
 					cardFront string
 					cardBack string
 				notificationStatus string outline around player
 				isDead bool
+				isLoader bool
 				nameStatus string fascist hitler disabled liberal
 				isChancellor bool
 				isPresident bool

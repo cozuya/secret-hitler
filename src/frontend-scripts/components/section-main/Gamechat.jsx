@@ -91,11 +91,6 @@ export default class Gamechat extends React.Component {
 			.filter(chat => ((chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All'))) || (!chat.gameChat && chatFilter !== 'Game'))
 			.map((chat, i) => {
 				const chatContents = chat.chat,
-					// players = Object.keys(gameInfo.seated).map(seatName => {
-					// 	return {
-					// 		name: gameInfo.seated[seatName].userName
-					// 	};
-					// }),
 					isSeated = () => Boolean(gameInfo.seatedPlayers.find(player => player.userName === chat.userName));
 
 				return chat.gameChat ? (
@@ -107,7 +102,7 @@ export default class Gamechat extends React.Component {
 									if (chatSegment.type) {
 										let classes;
 
-										if (chatSegment.type === 'playerName') {
+										if (chatSegment.type === 'player') {
 											classes = 'chat-player';
 										} else {
 											classes = `chat-role--${chatSegment.type}`;
