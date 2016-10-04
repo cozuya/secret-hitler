@@ -35,11 +35,10 @@ export class App extends React.Component {
 			// ** begin devhelpers **
 			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian'];
 			if (devPlayers.includes(username)) {
-				const {userInfo} = this.props,
-					data = {
-						uid: 'devgame',
-						userName: username
-					};
+				const data = {
+					uid: 'devgame',
+					userName: username
+				};
 
 				info.seatNumber = (devPlayers.indexOf(username) + 1).toString();
 				socket.emit('updateSeatedUser', data);

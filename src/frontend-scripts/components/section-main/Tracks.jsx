@@ -17,12 +17,6 @@ export default class Tracks extends React.Component {
 		this.props.onLeaveGame(seatNumber);
 	}
 
-	componentDidUpdate(prevProps) {
-		if (this.props.gameInfo.trackState.blurred && !prevProps.gameInfo.trackState.blurred) {
-
-		}
-	}
-
 	// handleClickedReportGame() {
 	// 	this.props.socket.emit('updateReportGame', {
 	// 		seatNumber: this.props.userInfo.seatNumber,
