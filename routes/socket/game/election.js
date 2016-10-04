@@ -30,11 +30,32 @@ module.exports.startElection = game => {
 module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{chancellorIndex} = data,
-		presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingPresident');
+		presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingPresident'),
+		presidentPlayer = game.private.seatedPlayers[presidentIndex],
+		cardFlipperCards = [
+			{
+				position: 'middle-left',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'ballot',
+					cardBack: {},
+					notificationStatus: ''
+				}
+			},
+			{
+				position: 'middle-right',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'ballot',
+					cardBack: {},
+					notificationStatus: ''
+				}
+			}
+		];
 
 	game.publicPlayersState[presidentIndex].isLoader = false;
 
-	game.private.seatedPlayers[presidentIndex].playersState.forEach(player => {
+	presidentPlayer.playersState.forEach(player => {
 		player.notificationStatus = '';
 	});
 
@@ -72,8 +93,11 @@ module.exports.selectChancellor = data => {
 				text: '.'
 			}]
 		});
+
+		player.cardFlingerState = _.cloneDeep(cardFlipperCards);
 	});
 
 	game.trackState.blurred = true;
+	game.publicCardflingerState = _.cloneDeep(cardFlipperCards);
 	sendInProgressGameUpdate(game);
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import CardFlinger from './CardFlinger.jsx';
 
 export default class Tracks extends React.Component {
 	constructor() {
@@ -54,53 +55,60 @@ export default class Tracks extends React.Component {
 	}
 
 	render() {
-		const {gameInfo, userInfo} = this.props;
+		const {gameInfo, userInfo, socket} = this.props;
 
 		return (
-			<section className={
-				(() => {
-					let classes = 'tracks';
-
-					if (this.props.gameInfo.trackState.blurred) {
-						classes += ' blurred';
-					}
-
-					return classes;
-				})()
-			}>
-				<div className={
+			<section className="tracks-container">
+				<CardFlinger
+					userInfo={userInfo}
+					gameInfo={gameInfo}
+					socket={socket}
+				/>
+				<section className={
 					(() => {
-						let classes = 'track-flipper track-flipper-top';
+						let classes = 'tracks';
 
-						if (gameInfo.gameState.isStarted) {
-							classes += ' flipped';
+						if (this.props.gameInfo.trackState.blurred) {
+							classes += ' blurred';
 						}
 
 						return classes;
 					})()
 				}>
-					<div className="track top-track-front" />
-					<div className="track top-track-back" />
-				</div>
-				<div className={
-					(() => {
-						let classes = 'track-flipper track-flipper-bottom';
+					<div className={
+						(() => {
+							let classes = 'track-flipper track-flipper-top';
 
-						if (gameInfo.gameState.isStarted) {
-							classes += ' flipped';
+							if (gameInfo.gameState.isStarted) {
+								classes += ' flipped';
+							}
+
+							return classes;
+						})()
+					}>
+						<div className="track top-track-front" />
+						<div className="track top-track-back" />
+					</div>
+					<div className={
+						(() => {
+							let classes = 'track-flipper track-flipper-bottom';
+
+							if (gameInfo.gameState.isStarted) {
+								classes += ' flipped';
+							}
+
+							return classes;
+						})()
+					}>
+						<div className="track bottom-track-front" />
+						<div className="track bottom-track-back" />
+					</div>
+					{(() => {
+						if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
+							return <i onClick={this.leaveGame} className="remove icon" />;
 						}
-
-						return classes;
-					})()
-				}>
-					<div className="track bottom-track-front" />
-					<div className="track bottom-track-back" />
-				</div>
-				{(() => {
-					if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
-						return <i onClick={this.leaveGame} className="remove icon" />;
-					}
-				})()}
+					})()}
+				</section>
 			</section>
 		);
 	}

@@ -34,7 +34,10 @@ module.exports.sendInProgressGameUpdate = game => { // todo-release make this ac
 				{user} = sock.handshake.session.passport;
 
 			if (!game.gameState.isCompleted) {
-				_game.playersState = _game.private.seatedPlayers.find(player => user === player.userName).playersState;
+				const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
+
+				_game.playersState = privatePlayer.playersState;
+				_game.cardFlingerState = privatePlayer.cardFlingerState;
 			}
 
 			_game.chats = combineInProgressChats(_game, user);

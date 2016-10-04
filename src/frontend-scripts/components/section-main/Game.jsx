@@ -4,16 +4,6 @@ import Gamechat from './Gamechat.jsx';
 import Players from './Players.jsx';
 
 export default class Game extends React.Component {
-	// constructor() {
-	// 	super();
-
-	// 	this.selectedPlayer = this.selectedPlayer.bind(this);
-	// }
-
-	selectedPlayer(state) {
-		// this.props.dispatch(updateClickedPlayer(state));
-	}
-
 	render() {
 		return (
 			<section className="game">

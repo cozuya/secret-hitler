@@ -36,6 +36,8 @@ publicPlayersState array
 			cardFront string
 			cardBack string
 playersState (see private)
+publicCardflingerState object
+cardflingerState (see private)
 private
 	unSeatedGameChats array
 		chat string
@@ -55,7 +57,7 @@ private
 				cardStatus
 					isFlipped bool
 					cardFront string
-					cardBack string
+					cardBack object
 				notificationStatus string outline around player
 				isDead bool
 				isLoader bool
@@ -63,3 +65,10 @@ private
 				isChancellor bool
 				isPresident bool
 				hasVoted bool
+		cardflingerState array
+			obj
+				position string middle-far-left middle-left middle-center middle-right middle-far-right
+				cardStatus
+					isFlipped bool
+					cardFront string
+					cardBack object
