@@ -23,7 +23,7 @@ module.exports.startElection = game => {
 	game.publicPlayersState[presidentIndex].governmentStatus = 'isPendingPresident';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
-	game.gameState.clickActionInfo = [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...previousElectedGovernment)],
+	game.gameState.clickActionInfo = [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...previousElectedGovernment)];
 	sendInProgressGameUpdate(game);
 };
 
@@ -33,11 +33,14 @@ module.exports.selectChancellor = data => {
 		presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingPresident');
 
 	game.publicPlayersState[presidentIndex].isLoader = false;
+
 	game.private.seatedPlayers[presidentIndex].playersState.forEach(player => {
 		player.notificationStatus = '';
 	});
+
 	game.publicPlayersState[chancellorIndex].governmentStatus = 'isPendingChancellor';
 	game.general.status = `Vote on election #${game.general.electionCount} now.`;
+
 	game.publicPlayersState.forEach(player => {
 		player.isLoader = true;
 		player.cardStatus = {
@@ -45,8 +48,9 @@ module.exports.selectChancellor = data => {
 			isFlipped: false,
 			cardFront: 'ballot',
 			cardBack: {}
-		}
+		};
 	});
+
 	game.private.seatedPlayers.forEach(player => {
 		player.gameChats.push({
 			gameChat: true,
@@ -69,5 +73,7 @@ module.exports.selectChancellor = data => {
 			}]
 		});
 	});
+
+	game.trackState.blurred = true;
 	sendInProgressGameUpdate(game);
-}
+};

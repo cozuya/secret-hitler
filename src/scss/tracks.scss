@@ -4,6 +4,7 @@
 	padding: 0 !important;
 
 	.tracks {
+		transition: all 1s;
 		position: relative;
 
 		.track-flipper {
@@ -37,7 +38,7 @@
 		}
 
 		.top-track-back {
-			-webkit-backface-visibility: hidden;  // thanks osx safari
+			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
 			transform: rotateX(180deg);
 			background-image: url('../images/tracks/liberaltrack.png');
@@ -163,6 +164,11 @@
 		// 		margin-right: 25px;
 		// 	}
 		// }
+	}
+
+	.tracks.blurred {
+		filter: blur(5px);
+		opacity: .3;
 	}
 
 	.ui.fitted.toggle.checkbox.truncate-game {

@@ -1,17 +1,11 @@
 import React from 'react';
-// import $ from 'jquery';
-// import _ from 'lodash';
 
 export default class Tracks extends React.Component {
 	constructor() {
 		super();
 		this.leaveGame = this.leaveGame.bind(this);
 		// this.handleClickedReportGame = this.handleClickedReportGame.bind(this);
-		this.state = {};
 	}
-
-	// componentDidUpdate(prevProps) {
-	// }
 
 	leaveGame() {
 		let seatNumber;
@@ -21,6 +15,12 @@ export default class Tracks extends React.Component {
 		}
 
 		this.props.onLeaveGame(seatNumber);
+	}
+
+	componentDidUpdate(prevProps) {
+		if (this.props.gameInfo.trackState.blurred && !prevProps.gameInfo.trackState.blurred) {
+
+		}
 	}
 
 	// handleClickedReportGame() {
@@ -59,25 +59,21 @@ export default class Tracks extends React.Component {
 	// 	}
 	}
 
-	// createGameInformation() {
-	// 	const {gameInfo} = this.props;
-
-	// 	return (
-	// 		<div className="gameinformation-container">
-	// 			<span className="game-name">{gameInfo.name}</span>
-	// 			<span className="game-time">{gameInfo.time}</span>
-	// 		</div>
-	// 	);
-	// }
-
 	render() {
 		const {gameInfo, userInfo} = this.props;
 
-		// if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
-		// 	return <i onClick={this.leaveGame} className="remove icon" />;
-		// }
 		return (
-			<section className="tracks">
+			<section className={
+				(() => {
+					let classes = 'tracks';
+
+					if (this.props.gameInfo.trackState.blurred) {
+						classes += ' blurred';
+					}
+
+					return classes;
+				})()
+			}>
 				<div className={
 					(() => {
 						let classes = 'track-flipper track-flipper-top';

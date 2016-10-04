@@ -23,6 +23,7 @@ seatedPlayers array 5-10
 		userName string
 	...
 trackState
+	blurred bool
 	liberalPolicyCount number
 	electionTrackerCount number
 	fascistTrackCount number
