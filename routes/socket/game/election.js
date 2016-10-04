@@ -31,27 +31,7 @@ module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{chancellorIndex} = data,
 		presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingPresident'),
-		presidentPlayer = game.private.seatedPlayers[presidentIndex],
-		cardFlipperCards = [
-			{
-				position: 'middle-left',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'ballot',
-					cardBack: {},
-					notificationStatus: ''
-				}
-			},
-			{
-				position: 'middle-right',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'ballot',
-					cardBack: {},
-					notificationStatus: ''
-				}
-			}
-		];
+		presidentPlayer = game.private.seatedPlayers[presidentIndex];
 
 	game.publicPlayersState[presidentIndex].isLoader = false;
 
@@ -94,10 +74,28 @@ module.exports.selectChancellor = data => {
 			}]
 		});
 
-		player.cardFlingerState = _.cloneDeep(cardFlipperCards);
+		player.cardFlingerState = [
+			{
+				position: 'middle-left',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'ballot',
+					cardBack: 'ja',
+					notificationStatus: 'notify'
+				}
+			},
+			{
+				position: 'middle-right',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'ballot',
+					cardBack: 'nein',
+					notificationStatus: 'notify'
+				}
+			}
+		];
 	});
 
 	game.trackState.blurred = true;
-	game.publicCardflingerState = _.cloneDeep(cardFlipperCards);
 	sendInProgressGameUpdate(game);
 };

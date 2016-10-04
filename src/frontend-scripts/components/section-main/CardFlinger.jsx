@@ -1,24 +1,35 @@
 import React from 'react';
 
 export default class CardFlinger extends React.Component {
+	// componentDidUpdate(prevProps) {
+
+	// }
+
 	render() {
-		const {gameInfo, userInfo} = this.props;
+		const {cardFlingerState, userInfo} = this.props,
+			positions = ['middle-far-left', 'middle-left', 'middle-center', 'middle-right', 'middle-far-right'];
 
 		return (
-			<section className="cardflinger">
-				{
-					(() => {
+			<section className="cardflinger-container">
+			{(() => {
+				return positions.map((position, i) => {
+					let classes = `cardflinger-card-container ${position}`;
 
-
-					}
-				)}
+					return (
+						<div key={i} className={classes}>
+							<div className="cardflinger-card front" />
+							<div className="cardflinger-card back" />
+						</div>
+					);
+				});
+			})()}
 			</section>
 		);
 	}
 }
 
-Tracks.propTypes = {
+CardFlinger.propTypes = {
 	userInfo: React.PropTypes.object,
-	gameInfo: React.PropTypes.object,
+	cardFlingerState: React.PropTypes.object,
 	socket: React.PropTypes.object
 };

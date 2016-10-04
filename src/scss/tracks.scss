@@ -2,6 +2,8 @@
 	background-color: #52393b;
 	max-width: 650px;
 	padding: 0 !important;
+	overflow: hidden !important;
+	position: relative;
 
 	.tracks {
 		transition: all 1s;
@@ -169,6 +171,14 @@
 	.tracks.blurred {
 		filter: blur(5px);
 		opacity: .3;
+	}
+
+	.cardflinger-card-container {
+		position: absolute;
+		top: 130px;
+		left: -120px;
+		width: 120px;
+		height: 167px;
 	}
 
 	.ui.fitted.toggle.checkbox.truncate-game {

@@ -61,7 +61,7 @@ export default class Tracks extends React.Component {
 			<section className="tracks-container">
 				<CardFlinger
 					userInfo={userInfo}
-					gameInfo={gameInfo}
+					cardFlingerState={gameInfo.cardFlingerState}
 					socket={socket}
 				/>
 				<section className={
