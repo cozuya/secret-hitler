@@ -43,6 +43,7 @@ export default class Creategame extends React.Component {
 				userName: this.props.userInfo.userName,
 				connected: true
 			}],
+			cardFlingerState: [],
 			trackState: {
 				liberalPolicyCount: 0,
 				fascistPolicyCount: 0,

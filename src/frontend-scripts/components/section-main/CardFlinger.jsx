@@ -6,19 +6,45 @@ export default class CardFlinger extends React.Component {
 	// }
 
 	render() {
-		const {cardFlingerState, userInfo} = this.props,
+		const {cardFlingerState} = this.props,
 			positions = ['middle-far-left', 'middle-left', 'middle-center', 'middle-right', 'middle-far-right'];
 
 		return (
 			<section className="cardflinger-container">
 			{(() => {
 				return positions.map((position, i) => {
-					let classes = `cardflinger-card-container ${position}`;
+					const stateObj = cardFlingerState.find(flinger => flinger.position === position);
+
+					let frontClasses = 'cardflinger-card front',
+						backClasses = 'cardflinger-card back',
+						containerClasses = `cardflinger-card-container ${position}`;
+
+					if (stateObj && Object.keys(stateObj).length) {
+						if (stateObj.cardStatus.isFlipped) {
+							containerClasses += ' flipped';
+						}
+
+						if (stateObj.action) {
+							containerClasses = `${containerClasses} ${stateObj.action}`;
+						}
+
+						if (stateObj.notificationStatus) {
+							containerClasses = `${containerClasses} ${stateObj.notificationStatus}`;
+						}
+
+						if (stateObj.cardStatus.cardFront) {
+							frontClasses = `${frontClasses} ${stateObj.cardStatus.cardFront}`;
+						}
+
+						if (stateObj.cardStatus.cardBack) {
+							backClasses = `${backClasses} ${stateObj.cardStatus.cardBack}`;
+						}
+					}
 
 					return (
-						<div key={i} className={classes}>
-							<div className="cardflinger-card front" />
-							<div className="cardflinger-card back" />
+						<div key={i} className={containerClasses}>
+							<div className={frontClasses} />
+							<div className={backClasses} />
 						</div>
 					);
 				});
@@ -30,6 +56,6 @@ export default class CardFlinger extends React.Component {
 
 CardFlinger.propTypes = {
 	userInfo: React.PropTypes.object,
-	cardFlingerState: React.PropTypes.object,
+	cardFlingerState: React.PropTypes.array,
 	socket: React.PropTypes.object
 };

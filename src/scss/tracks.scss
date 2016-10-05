@@ -19,11 +19,6 @@
 			backface-visibility: hidden;
 		}
 
-		.flipped {
-			transform: rotateX(180deg);
-		}
-
-
 		.track {
 			background-size: contain;
 			background-repeat: no-repeat;
@@ -107,6 +102,10 @@
 		left: 365px;
 	}
 
+	.cardflinger-card.ballot {
+		background-image: url('../images/cards/ballot-l.png');
+	}
+
 	.ui.fitted.toggle.checkbox.truncate-game {
 		position: absolute;
 		top: 388px;
@@ -117,6 +116,10 @@
 			padding-left: 52px !important;
 		}
 	}
+}
+
+.flipped {
+	transform: rotateX(180deg);
 }
 
 

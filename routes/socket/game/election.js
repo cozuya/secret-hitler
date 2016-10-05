@@ -78,6 +78,7 @@ module.exports.selectChancellor = data => {
 			{
 				position: 'middle-left',
 				notificationStatus: '',
+				action: 'active',
 				cardStatus: {
 					isFlipped: false,
 					cardFront: 'ballot',
@@ -86,6 +87,7 @@ module.exports.selectChancellor = data => {
 			},
 			{
 				position: 'middle-right',
+				action: 'active',
 				notificationStatus: '',
 				cardStatus: {
 					isFlipped: false,

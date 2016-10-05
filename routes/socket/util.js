@@ -37,7 +37,7 @@ module.exports.sendInProgressGameUpdate = game => { // todo-release make this ac
 				const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
 
 				_game.playersState = privatePlayer.playersState;
-				_game.cardFlingerState = privatePlayer.cardFlingerState;
+				_game.cardFlingerState = privatePlayer.cardFlingerState || [];
 			}
 
 			_game.chats = combineInProgressChats(_game, user);
