@@ -1,6 +1,6 @@
 const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser} = require('./user-events'),
 	{sendGameInfo, sendUserGameSettings, sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
-	{selectChancellor} = require('./game/election.js');
+	{selectChancellor, selectVoting} = require('./game/election.js');
 
 module.exports = () => {
 	io.on('connection', socket => {
@@ -47,6 +47,9 @@ module.exports = () => {
 
 		.on('presidentSelectedChancellor', data => {
 			selectChancellor(data);
+		})
+		.on('selectedVoting', data => {
+			selectVoting(data);
 		});
 	});
 };

@@ -28,10 +28,6 @@
 			z-index: 1;
 		}
 
-		@keyframes fadeIn { 
-			from { opacity: 0; } 
-		}
-
 		.government-token.isPendingPresident, .government-token.isPendingChancellor {
 			animation: fadeIn 1.5s infinite alternate;
 		}
@@ -116,6 +112,14 @@
 
 			.card.ballot {
 				background-image: url('../images/cards/ballot.png');
+			}
+
+			.card.ja {
+				background-image: url('../images/cards/ja.png');
+			}
+
+			.card.nein {
+				background-image: url('../images/cards/nein.png');
 			}
 
 			.card-back {

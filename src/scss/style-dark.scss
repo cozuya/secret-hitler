@@ -125,6 +125,10 @@ $dteal: #034f61;
 	}
 }
 
+@keyframes fadeIn { 
+	from { opacity: 0; } 
+}
+
 .ui.header {
 	color: $darkfascistteam;
 }

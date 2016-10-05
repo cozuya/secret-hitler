@@ -30,6 +30,7 @@ export default class Game extends React.Component {
 								onLeaveGame={this.props.onLeaveGame}
 								userInfo={this.props.userInfo}
 								gameInfo={this.props.gameInfo}
+								socket={this.props.socket}
 							/>
 						</div>
 						<div

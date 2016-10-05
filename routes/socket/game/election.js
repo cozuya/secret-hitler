@@ -106,15 +106,48 @@ module.exports.selectChancellor = data => {
 
 	setTimeout(() => {
 		sendInProgressGameUpdate(game);
-	}, 2000);
+	}, 1000);
 
 	setTimeout(() => {
+		game.gameState.phase = 'voting';
 		seatedPlayers.forEach(player => {
 			player.cardFlingerState[0].cardStatus.isFlipped = true;
-			player.cardFlingerState[0].notificationStatus = 'notify';
+			player.cardFlingerState[0].notificationStatus = 'notification';
 			player.cardFlingerState[1].cardStatus.isFlipped = true;
-			player.cardFlingerState[1].notificationStatus = 'notify';
+			player.cardFlingerState[1].notificationStatus = 'notification';
+			player.voteStatus = {
+				hasVoted: false
+			};
 		});
 		sendInProgressGameUpdate(game);
-	}, 5000);
+	}, 3000);
+};
+
+module.exports.selectVoting = data => {
+	const game = games.find(el => el.general.uid === data.uid),
+		{seatedPlayers} = game.private,
+		player = seatedPlayers.find(player => player.userName === data.userName),
+		playerIndex = seatedPlayers.findIndex(play => play.userName === data.userName);
+
+	player.voteStatus.hasVoted = true;
+	player.voteStatus.didVoteYes = data.vote;
+	game.publicPlayersState[playerIndex].isLoader = false;
+	sendInProgressGameUpdate(game);
+
+	if (seatedPlayers.filter(play => play.voteStatus.hasVoted).length === game.general.livingPlayerCount) {
+		// const didPassElection = seatedPlayers.filter(play => play.voteStatus.didVoteYes).length / game.general.livingPlayerCount > 0.5;
+
+		game.publicPlayersState.forEach((play, i) => {
+			play.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? 'ja' : 'nein';
+			play.cardStatus.isFlipped = true;
+		});
+
+		sendInProgressGameUpdate(game);
+
+		// setTimeout(() => {
+		// 	game.publicPlayersState.forEach((play, i) => {
+		// 		play.cardStatus.isFlipped = false;
+		// 	});
+		// }, 5000);
+	}
 };

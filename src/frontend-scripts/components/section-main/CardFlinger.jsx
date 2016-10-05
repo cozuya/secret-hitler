@@ -1,12 +1,29 @@
 import React from 'react';
+import $ from 'jquery';
 
 export default class CardFlinger extends React.Component {
-	// componentDidUpdate(prevProps) {
+	constructor() {
+		super();
+		this.handleCardClick = this.handleCardClick.bind(this);
+	}
 
-	// }
+	handleCardClick(e) {
+		const {gameInfo, socket} = this.props,
+			{gameState} = gameInfo,
+			{phase} = gameState,
+			index = parseInt($(e.currentTarget).attr('data-index'), 10);
+
+		if (phase === 'voting') {
+			socket.emit('selectedVoting', {
+				vote: index === 1,
+				userName: this.props.userInfo.userName,
+				uid: gameInfo.general.uid
+			});
+		}
+	}
 
 	render() {
-		const {cardFlingerState} = this.props,
+		const {cardFlingerState} = this.props.gameInfo,
 			positions = ['middle-far-left', 'middle-left', 'middle-center', 'middle-right', 'middle-far-right'];
 
 		return (
@@ -21,7 +38,7 @@ export default class CardFlinger extends React.Component {
 
 					if (stateObj && Object.keys(stateObj).length) {
 						if (stateObj.cardStatus.isFlipped) {
-							containerClasses += ' flipped';
+							containerClasses += ' flippedY';
 						}
 
 						if (stateObj.action) {
@@ -29,7 +46,7 @@ export default class CardFlinger extends React.Component {
 						}
 
 						if (stateObj.notificationStatus) {
-							containerClasses = `${containerClasses} ${stateObj.notificationStatus}`;
+							containerClasses = `${containerClasses} notifier ${stateObj.notificationStatus}`;
 						}
 
 						if (stateObj.cardStatus.cardFront) {
@@ -42,7 +59,7 @@ export default class CardFlinger extends React.Component {
 					}
 
 					return (
-						<div key={i} className={containerClasses}>
+						<div key={i} data-index={i} className={containerClasses} onClick={this.handleCardClick}>
 							<div className={frontClasses} />
 							<div className={backClasses} />
 						</div>
@@ -56,6 +73,6 @@ export default class CardFlinger extends React.Component {
 
 CardFlinger.propTypes = {
 	userInfo: React.PropTypes.object,
-	cardFlingerState: React.PropTypes.array,
+	gameInfo: React.PropTypes.object,
 	socket: React.PropTypes.object
 };

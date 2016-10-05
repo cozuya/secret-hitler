@@ -67,6 +67,13 @@
 		opacity: .3;
 	}
 
+	.cardflinger-container {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+	}
+
 	.cardflinger-card-container {
 		position: absolute;
 		top: 130px;
@@ -74,17 +81,30 @@
 		width: 120px;
 		height: 167px;
 		z-index: 2;
-		transition-property: left;
+		transition-property: all;
 		transition-delay: 1s;
 		transition-duration: 1s;
 		transform-style: preserve-3d;
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
+		// -webkit-backface-visibility: hidden;
+		// backface-visibility: hidden;
 		box-shadow: 0px 0px 4px 3px #969696;
 	}
 
 	.cardflinger-card {
+		background-size: contain;
+		background-repeat: no-repeat;
 		height: 167px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+	}
+
+	.cardflinger-card.back {
+		transform: rotateY(180deg);
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+		cursor: pointer;
 	}
 
 	.cardflinger-card-container.middle-far-left.active {
@@ -111,6 +131,14 @@
 		background-image: url('../images/cards/ballot-l.png');
 	}
 
+	.cardflinger-card.nein {
+		background-image: url('../images/cards/nein-l.png');
+	}
+
+	.cardflinger-card.ja {
+		background-image: url('../images/cards/ja-l.png');
+	}
+
 	.ui.fitted.toggle.checkbox.truncate-game {
 		position: absolute;
 		top: 388px;
@@ -127,7 +155,24 @@
 	transform: rotateX(180deg);
 }
 
+.flippedY {
+	transform: rotateY(180deg);
+}
 
 .eight.tracks-container .tracks .remove.icon {
 	left: 540px;
+}
+
+.cardflinger-card-container.notifier::after {
+	content: '';
+	width: 120px;
+	height: 167px;
+	top: 0;
+	left: 0;
+	position: absolute;
+	animation: fadeIn .7s infinite alternate;
+}
+
+.cardflinger-card-container.notification::after {
+	box-shadow: 0 0 4px 4px #FBBD08;
 }
