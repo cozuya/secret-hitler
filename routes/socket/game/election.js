@@ -7,7 +7,7 @@ module.exports.startElection = game => {
 		{presidentIndex, previousElectedGovernment} = game.gameState,
 		pendingPresidentPlayer = game.private.seatedPlayers[presidentIndex];
 
-	game.general.electionCount++;
+	game.general.electionCount = 0;
 	game.general.status = `Election #${game.general.electionCount} begins`;
 	pendingPresidentPlayer.gameChats.push({
 		gameChat: true,
@@ -144,10 +144,26 @@ module.exports.selectVoting = data => {
 
 		sendInProgressGameUpdate(game);
 
-		// setTimeout(() => {
-		// 	game.publicPlayersState.forEach((play, i) => {
-		// 		play.cardStatus.isFlipped = false;
-		// 	});
-		// }, 5000);
+		setTimeout(() => {
+			game.publicPlayersState.forEach((play, i) => {
+				play.cardStatus.isFlipped = false;
+			});
+			// todo-alpha gamechat
+
+			sendInProgressGameUpdate(game);
+			if (seatedPlayers.filter(play => play.voteStatus.didVoteYes).length / game.general.livingPlayerCount > 0.5) {
+				passedElection();
+			} else {
+				failedElection();
+			}
+		}, 4000);
+	}
+
+	function failedElection () {
+
+	}
+
+	function passedElection () {
+
 	}
 };

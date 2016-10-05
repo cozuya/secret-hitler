@@ -108,13 +108,17 @@ export default class Players extends React.Component {
 							(() => {
 								let classes = 'card card-back';
 
-								if (playersState && Object.keys(playersState[i].cardStatus.cardBack).length) {
-									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
-								} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
+								if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
 									if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
 										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
 									} else {
 										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
+									}
+								} else if (playersState && Object.keys(playersState[i].cardStatus.cardBack).length) {
+									if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
+										classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
+									} else {
+										classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
 									}
 								}
 
