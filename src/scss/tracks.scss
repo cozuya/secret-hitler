@@ -70,16 +70,21 @@
 	.cardflinger-card-container {
 		position: absolute;
 		top: 130px;
-		left: -120px;
+		left: -140px;
 		width: 120px;
 		height: 167px;
 		z-index: 2;
 		transition-property: left;
-		transition-delay: .2s;
+		transition-delay: 1s;
 		transition-duration: 1s;
 		transform-style: preserve-3d;
 		-webkit-backface-visibility: hidden;
 		backface-visibility: hidden;
+		box-shadow: 0px 0px 4px 3px #969696;
+	}
+
+	.cardflinger-card {
+		height: 167px;
 	}
 
 	.cardflinger-card-container.middle-far-left.active {

@@ -31,7 +31,9 @@ module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{chancellorIndex} = data,
 		presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingPresident'),
-		presidentPlayer = game.private.seatedPlayers[presidentIndex];
+		{seatedPlayers} = game.private,
+		presidentPlayer = game.private.seatedPlayers[presidentIndex],
+		chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
 
 	game.publicPlayersState[presidentIndex].isLoader = false;
 
@@ -52,21 +54,23 @@ module.exports.selectChancellor = data => {
 		};
 	});
 
-	game.private.seatedPlayers.forEach(player => {
+	sendInProgressGameUpdate(game);
+
+	seatedPlayers.forEach(player => {
 		player.gameChats.push({
 			gameChat: true,
 			chat: [{
 				text: 'You must vote for the election of president '
 			},
 			{
-				text: game.seatedPlayers[presidentIndex].userName,
+				text: presidentPlayer.userName,
 				type: 'player'
 			},
 			{
 				text: ' and chancellor '
 			},
 			{
-				text: game.seatedPlayers[chancellorIndex].userName,
+				text: chancellorPlayer.userName,
 				type: 'player'
 			},
 			{
@@ -99,5 +103,18 @@ module.exports.selectChancellor = data => {
 	});
 
 	game.trackState.blurred = true;
-	sendInProgressGameUpdate(game);
+
+	setTimeout(() => {
+		sendInProgressGameUpdate(game);
+	}, 2000);
+
+	setTimeout(() => {
+		seatedPlayers.forEach(player => {
+			player.cardFlingerState[0].cardStatus.isFlipped = true;
+			player.cardFlingerState[0].notificationStatus = 'notify';
+			player.cardFlingerState[1].cardStatus.isFlipped = true;
+			player.cardFlingerState[1].notificationStatus = 'notify';
+		});
+		sendInProgressGameUpdate(game);
+	}, 5000);
 };
