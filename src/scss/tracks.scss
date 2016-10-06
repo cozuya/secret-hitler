@@ -9,6 +9,29 @@
 		transition: all 1s;
 		position: relative;
 
+		.electiontracker {
+			position: absolute;
+			width: 25px;
+			height: 25px;
+			background-color: #2f2fbe;
+			border-radius: 50%;
+			top: 176px;
+			left: 214px;
+			transition: all 2s;
+		}
+
+		.electiontracker.fail1 {
+			left: 278px;
+		}
+
+		.electiontracker.fail2 {
+			left: 340px;
+		}
+
+		.electiontracker.fail3 {
+			left: 402px;
+		}
+
 		.track-flipper {
 			height: 220px;
 			transition-duration: 1s;
@@ -174,5 +197,9 @@
 }
 
 .cardflinger-card-container.notification::after {
-	box-shadow: 0 0 4px 4px #FBBD08;
+	box-shadow: 0 0 2px 8px #FBBD08;
+}
+
+.cardflinger-card-container.selected::after {
+	box-shadow: 0 0 2px 8px #c36563;
 }

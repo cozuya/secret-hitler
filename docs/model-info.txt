@@ -23,7 +23,6 @@ seatedPlayers array 5-10
 		userName string
 	...
 trackState
-	blurred bool
 	liberalPolicyCount number
 	electionTrackerCount number
 	fascistTrackCount number
@@ -34,7 +33,10 @@ publicPlayersState array
 			cardDisplayed bool
 			isFlipped bool
 			cardFront string
-			cardBack string
+			cardBack
+				icon number
+				roleName string
+				team string
 playersState (see private)
 publicCardflingerState object
 cardflingerState (see private)
@@ -50,7 +52,9 @@ private
 			roleName string
 			team string
 		gameChats array of chat objects
-		governmentStatus string isPresident isChancellor isSelectingChancellor isSelectingPresidentDiscard isSelectingChancellorDiscard 		needsToVote bool
+		governmentStatus string isPresident isChancellor isSelectingChancellor isSelectingPresidentDiscard isSelectingChancellorDiscard 		voteStatus
+			hasVoted bool
+			didVoteYes bool
 		reportedGame bool
 		playersState array 5-10
 			obj
@@ -65,7 +69,7 @@ private
 				isChancellor bool
 				isPresident bool
 				hasVoted bool
-		cardflingerState array
+		cardFlingerState array
 			obj
 				position string middle-far-left middle-left middle-center middle-right middle-far-right
 				notificationStatus

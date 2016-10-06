@@ -2,12 +2,12 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{games} = require('../models.js'),
 	_ = require('lodash');
 
-module.exports.startElection = game => {
+function startElection (game) {
 	const {seatedPlayers} = game.private,
 		{presidentIndex, previousElectedGovernment} = game.gameState,
 		pendingPresidentPlayer = game.private.seatedPlayers[presidentIndex];
 
-	game.general.electionCount = 0;
+	game.general.electionCount++;
 	game.general.status = `Election #${game.general.electionCount} begins`;
 	pendingPresidentPlayer.gameChats.push({
 		gameChat: true,
@@ -20,12 +20,17 @@ module.exports.startElection = game => {
 		player.notificationStatus = 'notification';
 	});
 
+	game.publicPlayersState.forEach(player => {
+		player.cardStatus.cardDisplayed = false;
+		player.governmentStatus = '';
+	});
+
 	game.publicPlayersState[presidentIndex].governmentStatus = 'isPendingPresident';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
-	game.gameState.clickActionInfo = [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...previousElectedGovernment)];
+	game.gameState.clickActionInfo = [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...previousElectedGovernment)]; // todo-alpha bugged.  also does not account for dead players.
 	sendInProgressGameUpdate(game);
-};
+}
 
 module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid),
@@ -102,8 +107,6 @@ module.exports.selectChancellor = data => {
 		];
 	});
 
-	game.trackState.blurred = true;
-
 	setTimeout(() => {
 		sendInProgressGameUpdate(game);
 	}, 1000);
@@ -132,11 +135,32 @@ module.exports.selectVoting = data => {
 	player.voteStatus.hasVoted = true;
 	player.voteStatus.didVoteYes = data.vote;
 	game.publicPlayersState[playerIndex].isLoader = false;
+
+	if (data.vote) {
+		player.cardFlingerState[0].notificationStatus = 'selected';
+		player.cardFlingerState[1].notificationStatus = '';
+	} else {
+		player.cardFlingerState[0].notificationStatus = '';
+		player.cardFlingerState[1].notificationStatus = 'selected';
+	}
+
+	player.cardFlingerState[0].action = player.cardFlingerState[1].action = '';
+	player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = false;
+
 	sendInProgressGameUpdate(game);
 
-	if (seatedPlayers.filter(play => play.voteStatus.hasVoted).length === game.general.livingPlayerCount) {
-		// const didPassElection = seatedPlayers.filter(play => play.voteStatus.didVoteYes).length / game.general.livingPlayerCount > 0.5;
+	setTimeout(() => {
+		player.cardFlingerState = [];
+		sendInProgressGameUpdate(game);
+	}, 2000);
 
+	if (seatedPlayers.filter(play => play.voteStatus.hasVoted).length === game.general.livingPlayerCount) {
+		setTimeout(() => {
+			flipBallotCards();
+		}, 4000);
+	}
+
+	function flipBallotCards () {
 		game.publicPlayersState.forEach((play, i) => {
 			play.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? 'ja' : 'nein';
 			play.cardStatus.isFlipped = true;
@@ -145,25 +169,62 @@ module.exports.selectVoting = data => {
 		sendInProgressGameUpdate(game);
 
 		setTimeout(() => {
+			seatedPlayers.forEach(play => {
+				play.cardFlingerState = [];
+			});
+			sendInProgressGameUpdate(game);
+		}, 2000);
+
+		setTimeout(() => {
+			const chat = {
+				gameChat: true
+			};
+
 			game.publicPlayersState.forEach((play, i) => {
 				play.cardStatus.isFlipped = false;
 			});
-			// todo-alpha gamechat
 
-			sendInProgressGameUpdate(game);
 			if (seatedPlayers.filter(play => play.voteStatus.didVoteYes).length / game.general.livingPlayerCount > 0.5) {
+				chat.chat = [{text: 'The election passes.'}];
+
+				seatedPlayers.forEach(player => {
+					player.gameChats.push(chat);
+				});
+
+				game.private.unSeatedGameChats.push(chat);
 				passedElection();
 			} else {
+				chat.chat = [{text: 'The election fails and the election tracker moves forward.'}];
+
+				seatedPlayers.forEach(player => {
+					player.gameChats.push(chat);
+				});
+
+				game.private.unSeatedGameChats.push(chat);
 				failedElection();
 			}
-		}, 4000);
+
+			sendInProgressGameUpdate(game);
+		}, 6000);
 	}
 
 	function failedElection () {
+		game.trackState.electionTrackerCount++;
 
+		if (game.trackState.electionTrackerCount === 4) {
+
+		} else {
+			game.trackState.electionTrackerCount++;
+			game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 1 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
+			setTimeout(() => {
+				startElection(game);
+			}, 2000);
+		}
 	}
 
 	function passedElection () {
 
 	}
 };
+
+module.exports.startElection = startElection;

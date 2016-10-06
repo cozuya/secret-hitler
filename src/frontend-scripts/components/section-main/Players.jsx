@@ -52,7 +52,7 @@ export default class Players extends React.Component {
 						(() => {
 							let classes = 'player-container';
 
-							if (playersState && playersState[i].notificationStatus) {
+							if (Object.keys(playersState).length && playersState[i].notificationStatus) {
 								classes = `${classes} notifier ${playersState[i].notificationStatus}`;
 							}
 
@@ -64,7 +64,7 @@ export default class Players extends React.Component {
 						(() => {
 							let classes = 'player-name';
 
-							if (playersState && playersState[i].nameStatus) {
+							if (Object.keys(playersState).length && playersState[i].nameStatus) {
 								classes = `${classes} ${playersState[i].nameStatus}`;
 							}
 
@@ -79,11 +79,11 @@ export default class Players extends React.Component {
 						(() => {
 							let classes = 'card-container';
 
-							if (playersState && playersState[i].cardStatus.cardDisplayed || (publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)) {
+							if (Object.keys(playersState).length && playersState[i].cardStatus.cardDisplayed || (publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)) {
 								classes += ' showing';
 							}
 
-							if (playersState && playersState[i].cardStatus.isFlipped || (publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)) {
+							if (Object.keys(playersState).length && playersState[i].cardStatus.isFlipped || (publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)) {
 								classes += ' flipped';
 							}
 							return classes;
@@ -94,7 +94,7 @@ export default class Players extends React.Component {
 							(() => {
 								let classes = 'card card-front';
 
-								if (playersState && playersState[i].cardStatus.cardFront) {
+								if (Object.keys(playersState).length && playersState[i].cardStatus.cardFront) {
 									classes = `${classes} ${playersState[i].cardStatus.cardFront}`;
 								} else if (publicPlayersState && publicPlayersState[i].cardStatus.cardFront) {
 									classes = `${classes} ${publicPlayersState[i].cardStatus.cardFront}`;
@@ -114,7 +114,7 @@ export default class Players extends React.Component {
 									} else {
 										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
 									}
-								} else if (playersState && Object.keys(playersState[i].cardStatus.cardBack).length) {
+								} else if (Object.keys(playersState).length && Object.keys(playersState[i].cardStatus.cardBack).length) {
 									if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
 										classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
 									} else {

@@ -5,6 +5,7 @@ export default class Tracks extends React.Component {
 	constructor() {
 		super();
 		this.leaveGame = this.leaveGame.bind(this);
+		this.renderElectionTracker = this.renderElectionTracker.bind(this);
 		// this.handleClickedReportGame = this.handleClickedReportGame.bind(this);
 	}
 
@@ -16,6 +17,22 @@ export default class Tracks extends React.Component {
 		}
 
 		this.props.onLeaveGame(seatNumber);
+	}
+
+	renderElectionTracker() {
+		const {gameInfo} = this.props;
+
+		let classes = 'electiontracker';
+
+		if (gameInfo.trackState.electionTrackerCount === 2) {
+			classes += ' fail1';
+		} else if (gameInfo.trackState.electionTrackerCount === 3) {
+			classes += ' fail2';
+		} else if (gameInfo.trackState.electionTrackerCount === 4) {
+			classes += ' fail3';
+		}
+
+		return <div className={classes} />;
 	}
 
 	// handleClickedReportGame() {
@@ -68,7 +85,7 @@ export default class Tracks extends React.Component {
 					(() => {
 						let classes = 'tracks';
 
-						if (this.props.gameInfo.trackState.blurred) {
+						if (this.props.gameInfo.cardFlingerState.length) {
 							classes += ' blurred';
 						}
 
@@ -103,6 +120,7 @@ export default class Tracks extends React.Component {
 						<div className="track bottom-track-front" />
 						<div className="track bottom-track-back" />
 					</div>
+					{this.renderElectionTracker()}
 					{(() => {
 						if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
 							return <i onClick={this.leaveGame} className="remove icon" />;
