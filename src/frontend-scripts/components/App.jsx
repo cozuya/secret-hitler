@@ -124,7 +124,8 @@ export class App extends React.Component {
 				gameState: {
 					previousElectedGovernment: [],
 					undrawnPolicyCount: 17,
-					discardedPolicyCount: 0
+					discardedPolicyCount: 0,
+					presidentIndex: 0
 				},
 				chats: [],
 				general: {

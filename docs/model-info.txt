@@ -17,6 +17,7 @@ general
 	maxPlayersCount number 5-10
 	status string
 	uid string
+	type number refers to fasctrack
 	livingPlayerCount number
 	electionCount number, starts at 0
 seatedPlayers array 5-10
@@ -27,7 +28,7 @@ seatedPlayers array 5-10
 trackState
 	liberalPolicyCount number
 	electionTrackerCount number
-	fascistTrackCount number
+	fascistPolicyCount number
 	enactedPolicies array
 		location string offscreen center liberal0 ... fascist0 ...
 publicPlayersState array
@@ -55,6 +56,7 @@ private
 	seatedPlayers array 5-10
 		userName string
 		connected bool
+		isDead
 		role obj
 			icon number
 			roleName string
@@ -67,6 +69,7 @@ private
 		playersState array 5-10
 			obj
 				cardStatus
+					cardDisplayed bool
 					isFlipped bool
 					cardFront string
 					cardBack object

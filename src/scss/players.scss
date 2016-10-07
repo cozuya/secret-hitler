@@ -9,6 +9,7 @@
 		font-size: 16px;
 		padding: 6px;
 		text-align: center;
+		cursor: pointer;
 	}
 
 	> .player-container {
@@ -122,6 +123,18 @@
 				background-image: url('../images/cards/nein.png');
 			}
 
+			.card.partymembership {
+				background-image: url('../images/cards/partymembership.png');
+			}
+
+			.card.membership-liberal {
+				background-image: url('../images/cards/membership-liberal.png');
+			}
+
+			.card.membership-fascist {
+				background-image: url('../images/cards/membership-fascist.png');
+			}
+
 			.card-back {
 				-webkit-backface-visibility: hidden;  // thanks osx safari
 				backface-visibility: hidden;
@@ -164,6 +177,7 @@
 		left: 0;
 		position: absolute;
 		animation: fadeIn .6s infinite alternate;
+		cursor: pointer;
 	}
 
 	.player-container.fascist::after {

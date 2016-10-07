@@ -25,15 +25,17 @@ export default class Tracks extends React.Component {
 
 		let classes = 'electiontracker';
 
-		if (gameInfo.trackState.electionTrackerCount === 2) {
+		if (gameInfo.trackState.electionTrackerCount === 1) {
 			classes += ' fail1';
-		} else if (gameInfo.trackState.electionTrackerCount === 3) {
+		} else if (gameInfo.trackState.electionTrackerCount === 2) {
 			classes += ' fail2';
-		} else if (gameInfo.trackState.electionTrackerCount === 4) {
+		} else if (gameInfo.trackState.electionTrackerCount === 3) {
 			classes += ' fail3';
 		}
 
-		return <div className={classes} />;
+		if (gameInfo.gameState.isStarted) {
+			return <div className={classes} />;
+		}
 	}
 
 	// handleClickedReportGame() {

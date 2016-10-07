@@ -100,6 +100,7 @@ module.exports = game => {
 		});
 
 		player.gameChats = [{
+			timestamp: new Date(),
 			gameChat: true,
 			chat: [{
 				text: 'The game begins and you receive the '
@@ -116,6 +117,7 @@ module.exports = game => {
 
 	game.private.unSeatedGameChats = [{
 		gameChat: true,
+		timestamp: new Date(),
 		chat: [{
 			text: 'The game begins.'
 		}]
@@ -134,6 +136,7 @@ module.exports = game => {
 					const otherFascist = seatedPlayers.find(player => player.role.cardName === 'fascist');
 
 					player.gameChats.push({
+						timestamp: new Date(),
 						gameChat: true,
 						chat: [{
 							text: 'You see that the other '
@@ -161,6 +164,7 @@ module.exports = game => {
 					const otherFascists = seatedPlayers.filter(player => player.role.cardName === 'fascist');
 
 					player.gameChats.push({
+						timestamp: new Date(),
 						gameChat: true,
 						chat: [{
 							text: 'You see that the other '
@@ -197,6 +201,7 @@ module.exports = game => {
 					const hitlerPlayer = seatedPlayers.find(player => player.role.cardName === 'hitler');
 
 					player.gameChats.push({
+						timestamp: new Date(),
 						gameChat: true,
 						chat: [{
 							text: 'You see that '
@@ -232,6 +237,7 @@ module.exports = game => {
 				const otherFascist = seatedPlayers.find(player => player.role.cardName === 'fascist');
 
 				player.gameChats.push({
+					timestamp: new Date(),
 					gameChat: true,
 					chat: [{
 						text: 'You see that the other '

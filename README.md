@@ -65,8 +65,12 @@ You'll most likely need a browser extension such as Chrome's Multilogin to have 
 
 > npm test
 
-## Attribution ##
+## License and Attribution ##
 
 Secret Hitler is designed by Max Temkin (Cards Against Humanity, Humans vs. Zombies) Mike Boxleiter (Solipskier, TouchTone), Tommy Maranges (Philosophy Bro) and illustrated by Mackenzie Schubert (Letter Tycoon, Penny Press).
 
 This game is attributed as per the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/) license.
+
+## Alterations to this game ##
+
+None minus minor image alterations.

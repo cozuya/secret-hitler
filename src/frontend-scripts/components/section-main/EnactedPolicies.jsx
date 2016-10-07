@@ -6,7 +6,7 @@ export default class EnactedPolicies extends React.Component {
 		return (
 			<section className="enactedpolicies-container">
 			{(() => {
-				return _.range(1, 13).map((num, i) => {
+				return _.range(1, 12).map((num, i) => {
 					const stateObj = this.props.gameInfo.trackState.enactedPolicies[i];
 
 					let frontClasses = 'enactedpolicies-card front',
@@ -41,5 +41,5 @@ export default class EnactedPolicies extends React.Component {
 }
 
 EnactedPolicies.propTypes = {
-	gameInfo: React.PropTypes.object,
+	gameInfo: React.PropTypes.object
 };
