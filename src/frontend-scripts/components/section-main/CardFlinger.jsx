@@ -7,7 +7,7 @@ export default class CardFlinger extends React.Component {
 		this.handleCardClick = this.handleCardClick.bind(this);
 	}
 
-	handleCardClick(e) {
+	handleCardClick(e) {  // todo-alpha one time someone clicked fast and it didn't go through to the back end or something
 		const {gameInfo, socket} = this.props,
 			{gameState} = gameInfo,
 			{phase} = gameState,
@@ -18,6 +18,22 @@ export default class CardFlinger extends React.Component {
 				vote: index === 1,
 				userName: this.props.userInfo.userName,
 				uid: gameInfo.general.uid
+			});
+		}
+
+		if (phase === 'presidentSelectingPolicy') {
+			socket.emit('selectedPresidentPolicy', {
+				userName: this.props.userInfo.userName,
+				uid: gameInfo.general.uid,
+				selection: index ? index === 2 ? 1 : 2 : 0
+			});
+		}
+
+		if (phase === 'chancellorSelectingPolicy') {
+			socket.emit('selectedChancellorPolicy', {
+				userName: this.props.userInfo.userName,
+				uid: gameInfo.general.uid,
+				selection: index ? 1 : 0
 			});
 		}
 	}

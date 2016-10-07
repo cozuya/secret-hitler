@@ -4,6 +4,8 @@ gameState
 	phase string ?
 	previousElectedGovernment array of numbers, 1st is pres 2nd is chanc,
 	presidentIndex number
+	undrawnPolicyCount number
+	discardedPolicyCount number
 chats array
 	chat string
 	type string
@@ -26,9 +28,13 @@ trackState
 	liberalPolicyCount number
 	electionTrackerCount number
 	fascistTrackCount number
+	enactedPolicies array
+		location string offscreen center liberal0 ... fascist0 ...
 publicPlayersState array
 	obj
 		governmentStatus string isPendingPresident isPendingChancellor
+		isDead
+		isLoader
 		cardStatus
 			cardDisplayed bool
 			isFlipped bool
@@ -41,6 +47,8 @@ playersState (see private)
 publicCardflingerState object
 cardflingerState (see private)
 private
+	policies array
+	currentElectionPolicies array
 	unSeatedGameChats array
 		chat string
 		timestamp time
@@ -63,11 +71,7 @@ private
 					cardFront string
 					cardBack object
 				notificationStatus string outline around player
-				isDead bool
-				isLoader bool
 				nameStatus string fascist hitler disabled liberal
-				isChancellor bool
-				isPresident bool
 				hasVoted bool
 		cardFlingerState array
 			obj
@@ -76,4 +80,4 @@ private
 				cardStatus
 					isFlipped bool
 					cardFront string
-					cardBack object
+					cardBack string

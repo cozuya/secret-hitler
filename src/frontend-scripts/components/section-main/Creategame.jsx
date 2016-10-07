@@ -27,7 +27,9 @@ export default class Creategame extends React.Component {
 
 		this.props.onCreateGameSubmit({
 			gameState: {
-				previousElectedGovernment: []
+				previousElectedGovernment: [],
+				undrawnPolicyCount: 17,
+				discardedPolicyCount: 0
 			},
 			chats: [],
 			general: {
@@ -48,7 +50,8 @@ export default class Creategame extends React.Component {
 			trackState: {
 				liberalPolicyCount: 0,
 				fascistPolicyCount: 0,
-				electionTrackerCount: 0
+				electionTrackerCount: 0,
+				enactedPolicies: []
 			}
 		});
 	}

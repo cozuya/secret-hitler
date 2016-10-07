@@ -69,6 +69,7 @@ module.exports = game => {
 	game.gameState.isStarted = true;
 	game.seatedPlayers = _.shuffle(game.seatedPlayers);
 	game.private.seatedPlayers = _.cloneDeep(game.seatedPlayers);
+	game.private.policies = _.shuffle(_.range(1, 12).map(num => 'fascist').concat(_.range(1, 7).map(num => 'liberal')));
 	game.general.status = 'Dealing roles..';
 	game.publicPlayersState = game.private.seatedPlayers.map(player => ({
 		cardStatus: {

@@ -122,7 +122,9 @@ export class App extends React.Component {
 		const {dispatch, userInfo} = this.props,
 			game = {
 				gameState: {
-					previousElectedGovernment: []
+					previousElectedGovernment: [],
+					undrawnPolicyCount: 17,
+					discardedPolicyCount: 0
 				},
 				chats: [],
 				general: {
@@ -144,7 +146,8 @@ export class App extends React.Component {
 				trackState: {
 					liberalPolicyCount: 0,
 					fascistPolicyCount: 0,
-					electionTrackerCount: 0
+					electionTrackerCount: 0,
+					enactedPolicies: []
 				}
 			};
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import CardFlinger from './CardFlinger.jsx';
+import EnactedPolicies from './EnactedPolicies.jsx';
 
 export default class Tracks extends React.Component {
 	constructor() {
@@ -80,6 +81,9 @@ export default class Tracks extends React.Component {
 					userInfo={userInfo}
 					gameInfo={gameInfo}
 					socket={socket}
+				/>
+				<EnactedPolicies
+					gameInfo={gameInfo}
 				/>
 				<section className={
 					(() => {

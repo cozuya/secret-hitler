@@ -1,5 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
+import Policies from './Policies.jsx';
 
 export default class Players extends React.Component {
 	constructor() {
@@ -32,7 +33,7 @@ export default class Players extends React.Component {
 		}
 	}
 
-	renderSpinner(i) {
+	renderLoader(i) {
 		const {publicPlayersState} = this.props.gameInfo;
 
 		if (publicPlayersState && publicPlayersState[i].isLoader) {
@@ -72,7 +73,7 @@ export default class Players extends React.Component {
 						})()
 					}
 					>{player.userName}</div>
-					{this.renderSpinner(i)}
+					{this.renderLoader(i)}
 					{this.renderGovtToken(i)}
 					<div
 						className={
@@ -148,11 +149,15 @@ export default class Players extends React.Component {
 			<section className="players">
 				{this.renderPlayers()}
 				{this.renderTakeSeat()}
+
 				<div className="ui basic small modal signinnag" ref={c => {
 					this.signinModal = c;
 				}}>
 					<div className="ui header">You will need to sign in or sign up for an account to play.</div>
 				</div>
+				<Policies
+					gameInfo={this.props.gameInfo}
+				/>
 			</section>
 		);
 	}
