@@ -28,7 +28,7 @@ module.exports.selectPolicyInvestigate = data => {
 		{seatedPlayers} = game.private,
 		president = seatedPlayers[presidentIndex],
 		playersTeam = game.private.seatedPlayers[playerIndex].role.team;
-	console.log(data);
+
 	president.playersState.forEach(player => {
 		player.notificationStatus = '';
 	});
@@ -45,6 +45,7 @@ module.exports.selectPolicyInvestigate = data => {
 	setTimeout(() => {
 		president.playersState[playerIndex].cardStatus = {
 			cardDisplayed: true,
+			isFlipped: true,
 			cardFront: 'partymembership',
 			cardBack: {
 				cardName: `membership-${playersTeam}`
@@ -52,4 +53,14 @@ module.exports.selectPolicyInvestigate = data => {
 		}
 		sendInProgressGameUpdate(game);
 	}, 2000);
+
+	setTimeout(() => {
+		president.playersState[playerIndex].cardStatus.isFlipped = false;
+		sendInProgressGameUpdate(game);
+	}, 4000);
+
+	setTimeout(() => {
+		game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
+		sendInProgressGameUpdate(game);
+	}, 6000);
 };
