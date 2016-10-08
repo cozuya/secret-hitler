@@ -1,6 +1,8 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
-	{games} = require('../models.js'),
-	_ = require('lodash');
+	{games} = require('../models.js')
+	// ,
+	// _ = require('lodash')
+;
 
 module.exports.policyPeek = game => {
 	const {seatedPlayers} = game.private,
@@ -50,6 +52,45 @@ module.exports.selectPolicies = data => {
 				}
 			}
 		];
+		sendInProgressGameUpdate(game);
+
+		setTimeout(() => {
+			president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = true;
+			sendInProgressGameUpdate(game);
+		}, 2000);
+
+		setTimeout(() => {
+			president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
+			president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
+			sendInProgressGameUpdate(game);
+		}, 4000);
+
+		setTimeout(() => {
+			president.cardFlingerState = [];
+			president.gameChats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{text: 'You peek at the top 3 policies and see that they are a '},
+					{
+						text: policies[0],
+						type: policies[0]
+					},
+					{text: ', a '},
+					{
+						text: policies[1],
+						type: policies[1]
+					},
+					{text: ', and a '},
+					{
+						text: policies[2],
+						type: policies[2]
+					},
+					{text: ' policy.'}
+				]
+			});
+			sendInProgressGameUpdate(game);
+		}, 6000);
 	} else {
 		// todo-alpha
 	}

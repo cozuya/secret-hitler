@@ -10,8 +10,8 @@ export default class Policies extends React.Component {
 	clickedDraw() {
 		const {gameInfo, userInfo, socket} = this.props;
 
-		if (userInfo.userName && gameInfo.playersState.find(player => player.userName === userInfo.userName).policyNotification) {
-			socket.emit('clickedPolicies', {uid: gameInfo.general.uid});
+		if (userInfo.userName && gameInfo.playersState[gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
+			socket.emit('selectedPolicies', {uid: gameInfo.general.uid});
 		}
 	}
 

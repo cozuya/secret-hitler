@@ -142,7 +142,7 @@ export class App extends React.Component {
 					connected: true,
 					gameChats: []
 				}],
-				playersState: {},
+				playersState: [],
 				cardFlingerState: [],
 				trackState: {
 					liberalPolicyCount: 0,
