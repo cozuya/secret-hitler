@@ -76,6 +76,7 @@ private
 				notificationStatus string outline around player
 				nameStatus string fascist hitler disabled liberal
 				hasVoted bool
+				policyNotification bool
 		cardFlingerState array
 			obj
 				position string middle-far-left middle-left middle-center middle-right middle-far-right

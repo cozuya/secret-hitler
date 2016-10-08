@@ -3,7 +3,56 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	_ = require('lodash');
 
 module.exports.policyPeek = game => {
+	const {seatedPlayers} = game.private,
+		{presidentIndex} = game.gameState,
+		president = seatedPlayers[presidentIndex];
+
 	game.general.status = 'Waiting for President to peek at policies';
+	game.publicPlayersState[presidentIndex].isLoader = true;
+	president.playersState[presidentIndex].policyNotification = true;
+	sendInProgressGameUpdate(game);
+};
+
+module.exports.selectPolicies = data => {
+	const game = games.find(el => el.general.uid === data.uid),
+		{presidentIndex} = game.gameState,
+		{seatedPlayers} = game.private,
+		president = seatedPlayers[presidentIndex],
+		{policies} = game.private;
+
+	if (policies.length > 2) {
+		president.cardFlingerState = [
+			{
+				position: 'middle-far-left',
+				action: 'active',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'policy',
+					cardBack: `${policies[0]}p`
+				}
+			},
+			{
+				position: 'middle-center',
+				action: 'active',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'policy',
+					cardBack: `${policies[1]}p`
+				}
+			},
+			{
+				position: 'middle-far-right',
+				action: 'active',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'policy',
+					cardBack: `${policies[2]}p`
+				}
+			}
+		];
+	} else {
+		// todo-alpha
+	}
 };
 
 module.exports.investigateLoyalty = game => {

@@ -23,7 +23,7 @@ export default class Players extends React.Component {
 				});
 			}
 		}
-		console.log(clickActionInfo);
+
 		if (phase === 'selectingPolicyInvestigate' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectPolicyInvestigate', {
@@ -166,6 +166,8 @@ export default class Players extends React.Component {
 				</div>
 				<Policies
 					gameInfo={this.props.gameInfo}
+					userInfo={this.props.userInfo}
+					socket={this.props.socket}
 				/>
 			</section>
 		);
