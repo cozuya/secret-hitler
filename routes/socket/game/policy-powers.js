@@ -9,14 +9,14 @@ module.exports.policyPeek = game => {
 module.exports.investigateLoyalty = game => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex} = game.gameState,
-		president = seatedPlayers[game.gameState.presidentIndex];
+		president = seatedPlayers[presidentIndex];
 
 	game.general.status = 'Waiting for President to investigate.';
 	president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).forEach(player => {
 		player.notificationStatus = 'notification';
 	});
 	game.publicPlayersState[presidentIndex].isLoader = true;
-	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map((player, i) => i)];  // todo-alpha broken
+	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))];
 	game.gameState.phase = 'selectingPolicyInvestigate';
 	sendInProgressGameUpdate(game);
 };
@@ -56,23 +56,17 @@ module.exports.selectPolicyInvestigate = data => {
 		};
 
 		seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
-			chat.chat = [{
-				text: 'President '
-			},
+			chat.chat = [{text: 'President '},
 			{
 				text: president.userName,
 				type: 'player'
 			},
-			{
-				text: ' investigates the party membership of '
-			},
+			{text: ' investigates the party membership of '},
 			{
 				text: seatedPlayers[playerIndex].userName,
 				type: 'player'
 			},
-			{
-				text: '.'
-			}];
+			{text: '.'}];
 
 			player.gameChats.push(chat);
 		});
@@ -82,25 +76,17 @@ module.exports.selectPolicyInvestigate = data => {
 		president.gameChats.push({
 			timestamp: new Date(),
 			gameChat: true,
-			chat: [
-				{
-					text: 'You investigate the party membership of '
-				},
-				{
-					text: seatedPlayers[playerIndex].userName,
-					type: 'player'
-				},
-				{
-					text: ' and determine that he or she is on the '
-				},
-				{
-					text: playersTeam,
-					type: playersTeam
-				},
-				{
-					text: ' team.'
-				}
-			]
+			chat: [{text: 'You investigate the party membership of '},
+			{
+				text: seatedPlayers[playerIndex].userName,
+				type: 'player'
+			},
+			{text: ' and determine that he or she is on the '},
+			{
+				text: playersTeam,
+				type: playersTeam
+			},
+			{text: ' team.'}]
 		});
 
 		sendInProgressGameUpdate(game);

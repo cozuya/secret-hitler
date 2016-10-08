@@ -121,10 +121,8 @@ module.exports.selectChancellor = data => {
 	setTimeout(() => {
 		game.gameState.phase = 'voting';
 		seatedPlayers.forEach(player => {
-			player.cardFlingerState[0].cardStatus.isFlipped = true;
-			player.cardFlingerState[0].notificationStatus = 'notification';
-			player.cardFlingerState[1].cardStatus.isFlipped = true;
-			player.cardFlingerState[1].notificationStatus = 'notification';
+			player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = true;
+			player.cardFlingerState[0].notificationStatus = player.cardFlingerState[1].notificationStatus = 'notification';
 			player.voteStatus = {
 				hasVoted: false
 			};
@@ -433,16 +431,12 @@ function enactPolicy (game, team) {
 		const chat = {
 				timestamp: new Date(),
 				gameChat: true,
-				chat: [{
-					text: 'A '
-				},
+				chat: [{text: 'A '},
 					{
 						text: team === 'liberal' ? 'liberal' : 'fascist',
 						type: team === 'liberal' ? 'liberal' : 'fascist'
 					},
-					{
-						text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`
-					}]
+					{text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`}]
 			},
 			chat2 = {
 				timestamp: new Date(),
@@ -471,7 +465,7 @@ function enactPolicy (game, team) {
 			// ],
 			presidentPowers = [
 				{
-					0: investigateLoyalty
+					0: policyPeek
 				}
 			],
 			powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
@@ -483,7 +477,6 @@ function enactPolicy (game, team) {
 		});
 
 		game.private.unSeatedGameChats.push(chat, chat2);
-
 		sendInProgressGameUpdate(game);
 		// todo-alpha check for exec actions
 		game.previousElectedGovernment = [game.gameState.presidentIndex, game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')];
