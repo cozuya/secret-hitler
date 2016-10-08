@@ -16,7 +16,7 @@ module.exports.investigateLoyalty = game => {
 		player.notificationStatus = 'notification';
 	});
 	game.publicPlayersState[presidentIndex].isLoader = true;
-	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map((player, i) => i)];
+	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map((player, i) => i)];  // todo-alpha broken
 	game.gameState.phase = 'selectingPolicyInvestigate';
 	sendInProgressGameUpdate(game);
 };
@@ -43,14 +43,66 @@ module.exports.selectPolicyInvestigate = data => {
 	sendInProgressGameUpdate(game);
 
 	setTimeout(() => {
+		const chat = {
+			timestamp: new Date(),
+			gameChat: true
+		};
+
 		president.playersState[playerIndex].cardStatus = {
-			cardDisplayed: true,
 			isFlipped: true,
-			cardFront: 'partymembership',
 			cardBack: {
 				cardName: `membership-${playersTeam}`
 			}
-		}
+		};
+
+		seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
+			chat.chat = [{
+				text: 'President '
+			},
+			{
+				text: president.userName,
+				type: 'player'
+			},
+			{
+				text: ' investigates the party membership of '
+			},
+			{
+				text: seatedPlayers[playerIndex].userName,
+				type: 'player'
+			},
+			{
+				text: '.'
+			}];
+
+			player.gameChats.push(chat);
+		});
+
+		game.private.unSeatedGameChats.push(chat);
+
+		president.gameChats.push({
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'You investigate the party membership of '
+				},
+				{
+					text: seatedPlayers[playerIndex].userName,
+					type: 'player'
+				},
+				{
+					text: ' and determine that he or she is on the '
+				},
+				{
+					text: playersTeam,
+					type: playersTeam
+				},
+				{
+					text: ' team.'
+				}
+			]
+		});
+
 		sendInProgressGameUpdate(game);
 	}, 2000);
 
@@ -61,6 +113,7 @@ module.exports.selectPolicyInvestigate = data => {
 
 	setTimeout(() => {
 		game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
+		game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
 		sendInProgressGameUpdate(game);
 	}, 6000);
 };

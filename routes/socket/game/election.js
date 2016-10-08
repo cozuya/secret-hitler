@@ -444,24 +444,29 @@ function enactPolicy (game, team) {
 						text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`
 					}]
 			},
+			chat2 = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [{text: 'The president must investigate another player\'s party membership.'}]
+			},
 			// presidentPowers = [
 			// 	{
-			// 		2: 'policyPeek',
-			// 		3: 'killPlayer',
-			// 		4: 'killPlayer'
+			// 		2: policyPeek,
+			// 		3: killPlayer,
+			// 		4: killPlayer
 			// 	},
 			// 	{
-			// 		1: 'investigateLoyalty',
-			// 		2: 'specialElection',
-			// 		3: 'killPlayer',
-			// 		4: 'killPlayer'
+			// 		1: investigateLoyalty,
+			// 		2: specialElection,
+			// 		3: killPlayer'
+			// 		4: killPlayer
 			// 	},
 			// 	{
-			// 		0: 'investigateLoyalty',
-			// 		1: 'investigateLoyalty',
-			// 		2: 'specialElection',
-			// 		3: 'killPlayer',
-			// 		4: 'killPlayer'
+			// 		0: investigateLoyalty,
+			// 		1: investigateLoyalty,
+			// 		2: specialElection,
+			// 		3: killPlayer
+			// 		4: killPlayer
 			// 	}
 			// ],
 			presidentPowers = [
@@ -474,10 +479,10 @@ function enactPolicy (game, team) {
 		game.trackState.enactedPolicies[index].position = team === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;
 
 		game.private.seatedPlayers.forEach(player => {
-			player.gameChats.push(chat);
+			player.gameChats.push(chat, chat2);
 		});
 
-		game.private.unSeatedGameChats.push(chat);
+		game.private.unSeatedGameChats.push(chat, chat2);
 
 		sendInProgressGameUpdate(game);
 		// todo-alpha check for exec actions
