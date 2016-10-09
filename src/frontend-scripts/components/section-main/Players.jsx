@@ -32,6 +32,14 @@ export default class Players extends React.Component {
 				});
 			}
 		}
+		if (phase === 'selectingPolicyInvestigate' && userInfo.userName) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+				socket.emit('selectPolicyInvestigate', {
+					playerIndex: index,
+					uid: gameInfo.general.uid
+				});
+			}
+		}
 	}
 
 	renderGovtToken(i) {

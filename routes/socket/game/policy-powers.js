@@ -9,7 +9,7 @@ module.exports.policyPeek = game => {
 		{presidentIndex} = game.gameState,
 		president = seatedPlayers[presidentIndex];
 
-	game.general.status = 'Waiting for President to peek at policies';
+	game.general.status = 'President to peek at policies';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	president.playersState[presidentIndex].policyNotification = true;
 	sendInProgressGameUpdate(game);
@@ -192,4 +192,94 @@ module.exports.selectPolicyInvestigate = data => {
 		game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
 		sendInProgressGameUpdate(game);
 	}, 6000);
+};
+
+module.exports.specialElection = game => {
+	const {seatedPlayers} = game.private,
+		{presidentIndex} = game.gameState,
+		president = seatedPlayers[presidentIndex];
+
+	game.general.status = 'President to select special election';
+	game.publicPlayersState[presidentIndex].isLoader = true;
+	// game.gameState.nextStandardPresidentIndex = (() => {
+		// const nonDeadPlayers = seatedPlayers.filter(player => !player.isDead);
+
+		// const nextNonDeadPlayer = seatedPlayers.find((player, index) => )
+
+	// })();
+
+	president.playersState.filter((player, index) => index !== presidentIndex).forEach(player => {
+		player.notificationStatus = 'notification';
+	});
+
+	sendInProgressGameUpdate(game);
+};
+
+module.exports.executePlayer = game => {
+	const {seatedPlayers} = game.private,
+		{presidentIndex} = game.gameState,
+		president = seatedPlayers[presidentIndex];
+
+	game.general.status = 'President to execute a player';
+	game.publicPlayersState[presidentIndex].isLoader = true;
+
+	president.gameChats.push({
+		gameChat: true,
+		timestamp: new Date(),
+		chat: [
+			{text: 'You must select a player to execute.'}
+		]
+	});
+
+	president.playersState.filter((player, index) => index !== presidentIndex && !player.isDead).forEach(player => {
+		player.notificationStatus = 'notification';
+	});
+
+	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))];
+	console.log(game.gameState.clickActionInfo);
+	game.gameState.phase = 'execution';
+	sendInProgressGameUpdate(game);
+};
+
+module.exports.selectPlayerToExecute = data => {
+	const game = games.find(el => el.general.uid === data.uid),
+		{playerIndex} = data,
+		{presidentIndex} = game.gameState,
+		{seatedPlayers} = game.private,
+		president = seatedPlayers[presidentIndex],
+		nonPresidentChat = {
+			gameChat: true,
+			timestamp: new Date(),
+			chat: [{text: 'President '},
+				{
+					text: president.userName,
+					type: 'player'
+				},
+				{text: ' selects to execute '},
+				{
+					text: seatedPlayers[playerIndex].userName,
+					type: 'player'
+				},
+				{text: '.'}]
+		};
+
+	seatedPlayers[playerIndex].isDead = true;
+	game.publicPlayersState[playerIndex].isDead = true;
+	seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
+		player.gameChats.push(nonPresidentChat);
+	});
+	game.private.unSeatedGameChats.push(nonPresidentChat);
+
+	president.gameChats.push({
+		gameChat: true,
+		timestamp: new Date(),
+		chat: [{text: 'You select to execute '},
+		{
+			text: seatedPlayers[playerIndex].userName,
+			type: 'player'
+		},
+		{text: '.'}]
+	});
+
+	sendInProgressGameUpdate(game);
 };

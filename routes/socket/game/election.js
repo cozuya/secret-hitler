@@ -1,5 +1,5 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
-	{policyPeek, investigateLoyalty} = require('./policy-powers.js'),
+	{policyPeek, investigateLoyalty, executePlayer} = require('./policy-powers.js'),
 	{games} = require('../models.js'),
 	_ = require('lodash');
 
@@ -446,26 +446,26 @@ function enactPolicy (game, team) {
 			// presidentPowers = [
 			// 	{
 			// 		2: policyPeek,
-			// 		3: killPlayer,
-			// 		4: killPlayer
+			// 		3: executePlayer,
+			// 		4: executePlayer
 			// 	},
 			// 	{
 			// 		1: investigateLoyalty,
 			// 		2: specialElection,
-			// 		3: killPlayer'
-			// 		4: killPlayer
+			// 		3: executePlayer'
+			// 		4: executePlayer
 			// 	},
 			// 	{
 			// 		0: investigateLoyalty,
 			// 		1: investigateLoyalty,
 			// 		2: specialElection,
-			// 		3: killPlayer
-			// 		4: killPlayer
+			// 		3: executePlayer
+			// 		4: executePlayer
 			// 	}
 			// ],
 			presidentPowers = [
 				{
-					0: policyPeek
+					0: executePlayer
 				}
 			],
 			powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
