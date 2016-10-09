@@ -236,7 +236,6 @@ module.exports.executePlayer = game => {
 	});
 
 	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))];
-	console.log(game.gameState.clickActionInfo);
 	game.gameState.phase = 'execution';
 	sendInProgressGameUpdate(game);
 };
@@ -263,12 +262,11 @@ module.exports.selectPlayerToExecute = data => {
 				{text: '.'}]
 		};
 
-	seatedPlayers[playerIndex].isDead = true;
-	game.publicPlayersState[playerIndex].isDead = true;
+	game.private.unSeatedGameChats.push(nonPresidentChat);
+
 	seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
 		player.gameChats.push(nonPresidentChat);
 	});
-	game.private.unSeatedGameChats.push(nonPresidentChat);
 
 	president.gameChats.push({
 		gameChat: true,
@@ -280,6 +278,9 @@ module.exports.selectPlayerToExecute = data => {
 		},
 		{text: '.'}]
 	});
+
+	seatedPlayers[playerIndex].isDead = true;
+	game.publicPlayersState[playerIndex].isDead = true;
 
 	sendInProgressGameUpdate(game);
 };
