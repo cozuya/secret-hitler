@@ -383,7 +383,7 @@ module.exports.selectChancellorPolicy = data => {
 		enactedPolicy = game.private.currentElectionPolicies[data.selection];
 
 	game.publicPlayersState[chancellorIndex].isLoader = false;
-
+	console.log(data.selection, 'selectiondata');
 	if (data.selection) {
 		chancellor.cardFlingerState[0].notificationStatus = '';
 		chancellor.cardFlingerState[1].notificationStatus = 'selected';

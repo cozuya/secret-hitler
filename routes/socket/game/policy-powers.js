@@ -245,6 +245,8 @@ module.exports.selectPlayerToExecute = data => {
 		{playerIndex} = data,
 		{presidentIndex} = game.gameState,
 		{seatedPlayers} = game.private,
+		selectedPlayer = seatedPlayers[playerIndex],
+		publicSelectedPlayer = game.publicPlayersState[playerIndex],
 		president = seatedPlayers[presidentIndex],
 		nonPresidentChat = {
 			gameChat: true,
@@ -256,7 +258,7 @@ module.exports.selectPlayerToExecute = data => {
 				},
 				{text: ' selects to execute '},
 				{
-					text: seatedPlayers[playerIndex].userName,
+					text: selectedPlayer.userName,
 					type: 'player'
 				},
 				{text: '.'}]
@@ -273,14 +275,32 @@ module.exports.selectPlayerToExecute = data => {
 		timestamp: new Date(),
 		chat: [{text: 'You select to execute '},
 		{
-			text: seatedPlayers[playerIndex].userName,
+			text: selectedPlayer.userName,
 			type: 'player'
 		},
 		{text: '.'}]
 	});
 
-	seatedPlayers[playerIndex].isDead = true;
-	game.publicPlayersState[playerIndex].isDead = true;
+	president.playersState.forEach(player => {
+		player.notificationStatus = ''
+	});
 
+	publicSelectedPlayer.cardStatus.cardDisplayed = true;
+	publicSelectedPlayer.cardStatus.cardFront = 'secretrole';
+	publicSelectedPlayer.notificationStatus = 'danger';
 	sendInProgressGameUpdate(game);
+
+	setTimeout(() => {
+		selectedPlayer.isDead = publicSelectedPlayer.isDead = true;
+
+		if (selectedPlayer.role.cardName === 'hitler') {
+			publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
+			publicSelectedPlayer.cardStatus.isFlipped = true;
+			// todo-alpha end game
+		} else {
+			publicSelectedPlayer.cardStatus.cardDisplayed = false;
+		}
+		publicSelectedPlayer.notificationStatus = '';
+		sendInProgressGameUpdate(game);
+	}, 5000);
 };

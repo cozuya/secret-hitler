@@ -32,6 +32,7 @@ export default class Players extends React.Component {
 				});
 			}
 		}
+
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedPlayerToExecute', {
@@ -72,6 +73,12 @@ export default class Players extends React.Component {
 
 							if (Object.keys(playersState).length && playersState[i].notificationStatus) {
 								classes = `${classes} notifier ${playersState[i].notificationStatus}`;
+							} else if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].notificationStatus) {
+								classes = `${classes} notifier ${publicPlayersState[i].notificationStatus}`;
+							}
+
+							if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].isDead) {
+								classes = `${classes} isDead`;
 							}
 
 							return classes;

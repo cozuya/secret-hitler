@@ -60,7 +60,7 @@ private
 		isDead
 		role obj
 			icon number
-			roleName string
+			cardName string
 			team string
 		gameChats array of chat objects
 		governmentStatus string isPresident isChancellor isSelectingChancellor isSelectingPresidentDiscard isSelectingChancellorDiscard 		voteStatus

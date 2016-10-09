@@ -12,7 +12,8 @@
 		cursor: pointer;
 	}
 
-	> .player-container {
+
+	.player-container {
 		width: 70px;
 		height: 95px;
 		float: left;
@@ -169,6 +170,10 @@
 		}
 	}
 
+	.player-container.isDead {
+		background-image: url('../images/deadplayer.png');
+	}
+
 	.notifier::after {
 		content: '';
 		width: 70px;
@@ -194,6 +199,10 @@
 
 	.player-container.notification::after {
 		box-shadow: 0 0 4px 4px #FBBD08;
+	}
+
+	.player-container.danger::after {
+		box-shadow: 0 0 4px 4px #be0804;
 	}
 }
 
