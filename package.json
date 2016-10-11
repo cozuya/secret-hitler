@@ -3,8 +3,16 @@
   "description": "A dramatic game of political intrigue and betrayal set in 1930's Germany.",
   "version": "0.0.1",
   "license": "CC-BY-NC-SA-4.0",
-  "repository": "https://github.com/cozuya/secret-hitler.git",
-  "author": "Chris Ozols <chris.v.ozols@gmail.com>",
+  "repository": {
+    "url": "https://github.com/cozuya/secret-hitler.git",
+    "type": "git"
+  },
+  "author": "Chris Ozols <chris.v.ozols@gmail.com> (http://twolongos.com)",
+  "homepage": "https://secrethitler.io",
+  "bugs": "https://github.com/cozuya/secret-hitler/issues",
+  "engines": {
+    "node": ">=6.0"
+  },
   "dependencies": {
     "babel-core": "^6.14.0",
     "babel-polyfill": "^6.13.0",
@@ -16,6 +24,11 @@
     "express": "^4.14.0",
     "express-session": "^1.14.1",
     "express-socket.io-session": "^1.3.1",
+    "gulp-imagemin": "^3.0.3",
+    "imagemin-gifsicle": "^5.1.0",
+    "imagemin-jpegtran": "^5.0.2",
+    "imagemin-optipng": "^5.2.1",
+    "imagemin-svgo": "^5.2.0",
     "jest-cli": "^15.1.1",
     "jquery": "^3.1.1",
     "lodash": "^4.15.0",
@@ -78,5 +91,6 @@
     "test": "jest",
     "db": "mongod --dbpath logs",
     "start": "nodemon bin/dev"
-  }
+  },
+  "main": "index.js"
 }

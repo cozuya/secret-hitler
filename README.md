@@ -23,21 +23,9 @@ Install mongodb, have it in your path.
 
 > cd secret-hitler
 
-> npm i -g gulp nodemon
+> yarn add global gulp nodemon
 
-> npm i
-
-At this point you may receive an error regarding node-sass so you'll need to do
-
-> npm rebuild node-sass
-
-For installation on windows, you may need to do a few extra steps if you are getting node-gyp errors, specifically installing the required MS programs referred to on node-gyp's github, and then possibly doing:
-
-> set GYP_MSVS_VERSION=2013
-
-> npm i --msvs_version=2013
-
-instead of the npm install found above.
+> yarn
 
 ## Running in dev mode ##
 
@@ -47,11 +35,11 @@ build assets (first time only):
 
 start mongo:
 
-> npm run db
+> yarn run db
 
 start express server:
 
-> npm start
+> yarn start
 
 start development task runner:
 
@@ -63,7 +51,7 @@ You'll most likely need a browser extension such as Chrome's Multilogin to have 
 
 ## Tests ##
 
-> npm test
+> yarn test
 
 ## License and Attribution ##
 
@@ -71,6 +59,8 @@ Secret Hitler is designed by Max Temkin (Cards Against Humanity, Humans vs. Zomb
 
 This game is attributed as per the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/) license.
 
-## Alterations to this game ##
+## Alterations to the original game ##
 
-None minus minor image alterations.
+Minor image alterations and editing.
+
+Players are able to speak/communicate during the selection of policies.  This may be disabled later.
