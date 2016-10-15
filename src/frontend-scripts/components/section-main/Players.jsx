@@ -14,7 +14,7 @@ export default class Players extends React.Component {
 			{gameState} = gameInfo,
 			{phase, clickActionInfo} = gameState,
 			index = parseInt($(e.currentTarget).attr('data-index'), 10);
-
+``
 		if (phase === 'selectingChancellor' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('presidentSelectedChancellor', {
@@ -135,7 +135,7 @@ export default class Players extends React.Component {
 
 								if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
 									if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
-										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
+										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
 									} else {
 										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
 									}
