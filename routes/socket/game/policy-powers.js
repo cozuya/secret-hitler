@@ -4,10 +4,20 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	// _ = require('lodash')
 ;
 
-module.exports.policyPeek = game => {
+let startElec;
+
+function prepareNextElection (game) {
+	game.previousElectedGovernment = [game.gameState.presidentIndex, game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')];
+	game.trackState.electionTrackerCount = 0;
+	game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
+}
+
+module.exports.policyPeek = (game, startElection) => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex} = game.gameState,
 		president = seatedPlayers[presidentIndex];
+
+	startElec = startElection;
 
 	game.general.status = 'President to peek at policies';
 	game.publicPlayersState[presidentIndex].isLoader = true;
@@ -90,6 +100,8 @@ module.exports.selectPolicies = data => {
 				]
 			});
 			sendInProgressGameUpdate(game);
+			prepareNextElection(game);
+			startElec(game);
 		}, 6000);
 	} else {
 		// todo-alpha

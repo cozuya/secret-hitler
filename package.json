@@ -89,7 +89,7 @@
   },
   "scripts": {
     "test": "jest",
-    "db": "mongod --dbpath logs",
+    "db": "mongod --dbpath data",
     "start": "nodemon bin/dev"
   },
   "main": "index.js"
