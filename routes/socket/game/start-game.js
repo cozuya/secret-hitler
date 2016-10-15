@@ -3,13 +3,11 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{startElection} = require('./election.js');
 
 module.exports = game => {
-	let roles = _.range(0, 3).map(el => {
-		return {
-			cardName: 'liberal',
-			icon: el,
-			team: 'liberal'
-		};
-	}).concat([{
+	let roles = _.range(0, 3).map(el => ({
+		cardName: 'liberal',
+		icon: el,
+		team: 'liberal'
+	})).concat([{
 		cardName: 'fascist',
 		icon: 0,
 		team: 'fascist'

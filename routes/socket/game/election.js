@@ -465,7 +465,7 @@ function enactPolicy (game, team) {
 			// ],
 			presidentPowers = [
 				{
-					0: executePlayer
+					0: policyPeek
 				}
 			],
 			powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
@@ -483,7 +483,7 @@ function enactPolicy (game, team) {
 		game.trackState.electionTrackerCount = 0;
 
 		if (powerToEnact) {
-			powerToEnact(game);
+			powerToEnact(game, startElection);
 		} else {
 			game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
 			startElection(game);
