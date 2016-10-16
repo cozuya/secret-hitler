@@ -55,9 +55,21 @@ export default class Policies extends React.Component {
 	}
 
 	render() {
+		const {gameInfo, userInfo} = this.props;
+
 		return (
 			<section className="policies-container">
-				<div className="draw" title={`${this.props.gameInfo.gameState.undrawnPolicyCount} policy cards remain`} onClick={this.clickedDraw}>
+				<div className={
+					(() => {
+						let classes = 'draw';
+
+							if (userInfo.userName && userInfo.seatNumber && gameInfo.gameState.isStarted && gameInfo.playersState[gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
+								classes += ' notifier';
+							}
+
+						return classes;
+					})()
+				} title={`${this.props.gameInfo.gameState.undrawnPolicyCount} policy cards remain`} onClick={this.clickedDraw}>
 					{this.renderUndrawn()}
 				</div>
 				<div className="discard" title={`${this.props.gameInfo.gameState.discardedPolicyCount} policy cards discarded`}>

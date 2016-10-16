@@ -240,6 +240,18 @@
 	.discard {
 		background: url('../images/cards/discard.png') no-repeat;
 	}
+
+	.notifier::after {
+		content: '';
+		width: 82px;
+		height: 115px;
+		top: 0;
+		left: 0;
+		position: absolute;
+		animation: fadeIn .6s infinite alternate;
+		cursor: pointer;
+		box-shadow: 0 0 4px 4px #FBBD08 inset;
+	}
 }
 
 .players-container.disabledrightsidebar .players > div > .roles {

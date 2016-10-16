@@ -30,6 +30,7 @@ export default class CardFlinger extends React.Component {
 		}
 
 		if (phase === 'chancellorSelectingPolicy') {
+			console.log(index);
 			socket.emit('selectedChancellorPolicy', {
 				userName: this.props.userInfo.userName,
 				uid: gameInfo.general.uid,

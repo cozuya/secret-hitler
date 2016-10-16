@@ -58,6 +58,7 @@ private
 		userName string
 		connected bool
 		isDead
+		policyNotification bool
 		role obj
 			icon number
 			cardName string
