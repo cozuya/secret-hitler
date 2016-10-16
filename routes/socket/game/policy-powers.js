@@ -29,6 +29,8 @@ module.exports.selectPolicies = data => {
 		president = seatedPlayers[presidentIndex],
 		{policies} = game.private;
 
+	game.publicPlayersState[presidentIndex].isLoader = false;
+	
 	if (policies.length > 2) {
 		president.cardFlingerState = [
 			{

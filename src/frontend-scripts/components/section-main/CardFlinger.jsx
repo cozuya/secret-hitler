@@ -12,6 +12,7 @@ export default class CardFlinger extends React.Component {
 			{gameState} = gameInfo,
 			{phase} = gameState,
 			index = parseInt($(e.currentTarget).attr('data-index'), 10);
+		// todo alpha need checking against multiple clicks taking over other actions i.e. presiddent clicked twice on cards fast and was able to have chancellor skip his turn to discard.  I think
 
 		if (phase === 'voting') {
 			socket.emit('selectedVoting', {
@@ -22,6 +23,7 @@ export default class CardFlinger extends React.Component {
 		}
 
 		if (phase === 'presidentSelectingPolicy') {
+			console.log(index);
 			socket.emit('selectedPresidentPolicy', {
 				userName: this.props.userInfo.userName,
 				uid: gameInfo.general.uid,

@@ -14,7 +14,7 @@ export default class Players extends React.Component {
 			{gameState} = gameInfo,
 			{phase, clickActionInfo} = gameState,
 			index = parseInt($(e.currentTarget).attr('data-index'), 10);
-``
+
 		if (phase === 'selectingChancellor' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('presidentSelectedChancellor', {
