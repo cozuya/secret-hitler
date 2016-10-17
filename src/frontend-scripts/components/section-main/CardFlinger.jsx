@@ -36,7 +36,9 @@ export default class CardFlinger extends React.Component {
 			socket.emit('selectedChancellorPolicy', {
 				userName: this.props.userInfo.userName,
 				uid: gameInfo.general.uid,
-				selection: index ? 1 : 0
+				// todo-alpha remove
+				// selection: gameInfo.trackState.fascistPolicyCount === 5 ? index : index ? 1 : 0
+				selection: gameInfo.trackState.fascistPolicyCount === 0 ? index : index ? 1 : 0
 			});
 		}
 	}
