@@ -3,23 +3,23 @@ const Account = require('../../models/account'),
 	{secureGame} = require('./util');
 
 module.exports.sendUserGameSettings = (socket, username) => {
-	Account.findOne({username}, (err, account) => {
-		if (err) {
+	Account.findOne({username})
+		.then(account => {
+			socket.emit('gameSettings', account.gameSettings);
+			userList.push({
+				userName: username,
+				wins: account.wins,
+				losses: account.losses
+			});
+
+			io.sockets.emit('userList', {
+				list: userList,
+				totalSockets: Object.keys(io.sockets.sockets).length
+			});
+		})
+		.catch(err => {
 			console.log(err);
-		}
-
-		socket.emit('gameSettings', account.gameSettings);
-		userList.push({
-			userName: username,
-			wins: account.wins,
-			losses: account.losses
 		});
-
-		io.sockets.emit('userList', {
-			list: userList,
-			totalSockets: Object.keys(io.sockets.sockets).length
-		});
-	});
 };
 
 module.exports.sendGameList = socket => {

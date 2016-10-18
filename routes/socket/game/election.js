@@ -265,18 +265,18 @@ module.exports.selectVoting = data => {
 			setTimeout(() => {
 				game.gameState.undrawnPolicyCount--;
 				sendInProgressGameUpdate(game);
-			}, 2200);
+			}, 200);
 			setTimeout(() => {
 				game.gameState.undrawnPolicyCount--;
 				sendInProgressGameUpdate(game);
-			}, 2400);
+			}, 400);
 			setTimeout(() => {
 				game.private.seatedPlayers[presidentIndex].cardFlingerState[0].cardStatus.isFlipped = game.private.seatedPlayers[presidentIndex].cardFlingerState[1].cardStatus.isFlipped = game.private.seatedPlayers[presidentIndex].cardFlingerState[2].cardStatus.isFlipped = true;
 				game.private.seatedPlayers[presidentIndex].cardFlingerState[0].notificationStatus = game.private.seatedPlayers[presidentIndex].cardFlingerState[1].notificationStatus = game.private.seatedPlayers[presidentIndex].cardFlingerState[2].notificationStatus = 'notification';
 				game.gameState.phase = 'presidentSelectingPolicy';
 				game.gameState.previousElectedGovernment = [presidentIndex, chancellorIndex];
 				sendInProgressGameUpdate(game);
-			}, 2000);
+			}, 1000);
 		} else {
 			// todo-alpha
 		}
@@ -502,7 +502,8 @@ function enactPolicy (game, team) {
 	setTimeout(() => {
 		game.trackState.enactedPolicies[index].isFlipped = true;
 		sendInProgressGameUpdate(game);
-	}, 4000);
+	// }, 4000);
+	}, 1000);
 
 	setTimeout(() => {
 		const chat = {
@@ -565,7 +566,8 @@ function enactPolicy (game, team) {
 			game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
 			startElection(game);
 		}
-	}, 7000);
+	// }, 7000);
+	}, 2000);
 
 	// todo-alpha check for end game
 }
