@@ -69,6 +69,7 @@ module.exports = game => {
 	game.private.seatedPlayers = _.cloneDeep(game.seatedPlayers);
 	game.private.policies = _.shuffle(_.range(1, 12).map(num => 'fascist').concat(_.range(1, 7).map(num => 'liberal')));
 	game.general.status = 'Dealing roles..';
+
 	game.publicPlayersState = game.private.seatedPlayers.map(player => ({
 		cardStatus: {
 			cardDisplayed: true,
@@ -77,6 +78,7 @@ module.exports = game => {
 			cardBack: {}
 		}
 	}));
+
 	game.private.seatedPlayers.forEach((player, i) => {
 		const index = Math.floor(Math.random() * roles.length);
 
@@ -88,13 +90,9 @@ module.exports = game => {
 			play.cardStatus = {
 				isFlipped: false
 			};
-			play.notificationStatus = play.nameStatus = '';
 
-			if (index === game.seatedPlayers.findIndex(pla => pla.userName === player.userName)) {
-				play.cardStatus.cardBack = player.role;
-			} else {
-				play.cardStatus.cardBack = {};
-			}
+			play.notificationStatus = play.nameStatus = '';
+			play.cardStatus.cardBack = index === game.seatedPlayers.findIndex(pla => pla.userName === player.userName) ? player.role : {};
 		});
 
 		player.gameChats = [{
@@ -266,7 +264,8 @@ module.exports = game => {
 			player.playersState[i].cardStatus.isFlipped = true;
 		});
 		sendInProgressGameUpdate(game);
-	}, 2000);
+	}, 500);
+	// }, 2000);
 
 	setTimeout(() => {
 		game.private.seatedPlayers.forEach((player, i) => {
@@ -276,17 +275,20 @@ module.exports = game => {
 			});
 		});
 		sendInProgressGameUpdate(game);
-	}, 5000);
+	}, 1600);
+	// }, 5000);
 
 	setTimeout(() => {
 		game.publicPlayersState.forEach(player => {
 			player.cardStatus.cardDisplayed = false;
 		});
 		sendInProgressGameUpdate(game);
-	}, 7000);
+	}, 2700);
+	// }, 7000);
 
 	setTimeout(() => {
 		game.gameState.presidentIndex = 0;
 		startElection(game);
-	}, 9000);
+	}, 2800);
+	// }, 9000);
 };
