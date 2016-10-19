@@ -35,8 +35,9 @@ trackState
 publicPlayersState array
 	obj
 		governmentStatus string isPendingPresident isPendingChancellor
-		isDead
-		isLoader
+		isDead bool
+		connected bool
+		isLoader bool
 		cardStatus
 			cardDisplayed bool
 			isFlipped bool
@@ -57,7 +58,6 @@ private
 	seatedPlayers array 5-10
 		userName string
 		connected bool
-		isDead
 		policyNotification bool
 		role obj
 			icon number

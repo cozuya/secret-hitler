@@ -93,6 +93,10 @@ export default class Players extends React.Component {
 								classes = `${classes} ${playersState[i].nameStatus}`;
 							}
 
+							if (!this.props.gameInfo.seatedPlayers[i].connected) {
+								classes = `${classes} disconnected`;
+							}
+
 							return classes;
 						})()
 					}

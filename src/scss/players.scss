@@ -157,6 +157,10 @@
 			text-align: center;
 		}
 
+		.player-name.disconnected {
+			opacity: .3;
+		}
+
 		.player-name.liberal {
 			color: #608cb3;
 		}
