@@ -39,7 +39,7 @@ const {games, userList, generalChats} = require('./models'),
 	// 	gameToSave.save();
 	// },
 	startGame = require('./game/start-game.js'),
-	{getPrivatePlayerInGameByUserName, secureGame} = require('./util.js'),
+	{secureGame} = require('./util.js'),
 	{sendInProgressGameUpdate} = require('./util.js'),
 	handleSocketDisconnect = socket => {
 		const {passport} = socket.handshake.session;
@@ -239,8 +239,6 @@ module.exports.checkUserStatus = socket => {
 		}
 
 		if (game && game.gameState.isStarted && !game.gameState.isCompleted) {
-			const internalPlayer = getPrivatePlayerInGameByUserName(game, user)
-
 			game.seatedPlayers.find(player => player.userName === user).connected = true;
 			socket.join(game.general.uid);
 			socket.emit('updateSeatForUser', true);

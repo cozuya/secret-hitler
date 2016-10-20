@@ -1,7 +1,7 @@
 const _ = require('lodash'),
 	{sendInProgressGameUpdate} = require('../util.js');
 
-module.exports.startElection = (game) => {
+module.exports.startElection = game => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex, previousElectedGovernment} = game.gameState,
 		pendingPresidentPlayer = game.private.seatedPlayers[presidentIndex];

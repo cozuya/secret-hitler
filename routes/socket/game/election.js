@@ -362,7 +362,7 @@ module.exports.selectPresidentPolicy = data => {
 				cardBack: `${game.private.currentElectionPolicies[nonDiscardedPolicies[1]]}p`
 			}
 		}];
-		game.general.status = 'Waiting on chancellor enactment.';	
+		game.general.status = 'Waiting on chancellor enactment.';
 	}
 
 	game.gameState.phase = 'chancellorSelectingPolicy';
@@ -393,7 +393,7 @@ module.exports.selectChancellorPolicy = data => {
 		enactedPolicy = (() => {
 			const {currentElectionPolicies} = game.private,
 				policy = currentElectionPolicies[data.selection];
-			
+
 			// todo-alpha remove
 			if (game.trackState.fascistPolicyCount === 5) {
 			// if (game.trackState.fascistPolicyCount === 0) {
@@ -405,20 +405,16 @@ module.exports.selectChancellorPolicy = data => {
 					return policy || currentElectionPolicies[2];
 				} else if (data.selection === 4) {
 					return policy;
-				} else {
-					return currentElectionPolicies[2];
 				}
-			} else {
-				if (data.selection === 0) {
-					return policy || currentElectionPolicies[1];
-				} else if (data.selection === 1) {
-					return policy || currentElectionPolicies[2];
-				} else {
-					return policy;
-				}
+				return currentElectionPolicies[2];
+			} else if (data.selection === 0) {
+				return policy || currentElectionPolicies[1];
+			} else if (data.selection === 1) {
+				return policy || currentElectionPolicies[2];
 			}
+			return policy;
 		})();
-
+		// pres selected #3, chanc selected #1, #2 turned red/was probably enacted
 	if (enactedPolicy === 'veto') {
 		const chat = {
 			timestamp: new Date(),
@@ -426,10 +422,10 @@ module.exports.selectChancellorPolicy = data => {
 			chat: [
 				{text: 'Chancellor '},
 				{
-				text: chancellor.userName,
-				type: 'player'
+					text: chancellor.userName,
+					type: 'player'
 				},
-				{text:' has voted to veto this election'}]
+				{text: ' has voted to veto this election'}]
 		};
 
 		game.private.unSeatedGameChats.push(chat);
@@ -460,9 +456,7 @@ module.exports.selectChancellorPolicy = data => {
 				}
 			}
 		];
-
 		// todo-alpha finish this functionality
-		
 	} else {
 		game.publicPlayersState[chancellorIndex].isLoader = false;
 		if (data.selection) {
@@ -507,43 +501,38 @@ function enactPolicy (game, team) {
 
 	setTimeout(() => {
 		const chat = {
-			timestamp: new Date(),
-			gameChat: true,
-			chat: [{text: 'A '},
-				{
-					text: team === 'liberal' ? 'liberal' : 'fascist',
-					type: team === 'liberal' ? 'liberal' : 'fascist'
-				},
-				{text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`}]
-			},
-			chat2 = {
 				timestamp: new Date(),
 				gameChat: true,
-				chat: [{text: 'The president must investigate another player\'s party membership.'}]
+				chat: [{text: 'A '},
+					{
+						text: team === 'liberal' ? 'liberal' : 'fascist',
+						type: team === 'liberal' ? 'liberal' : 'fascist'
+					},
+				{text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`}]
 			},
 			presidentPowers = [
 				{
-					2: policyPeek,
-					3: executePlayer,
-					4: executePlayer
+					2: [policyPeek, 'The president must examine the top 3 policies.'],
+					3: [executePlayer, 'The president must select a player for execution.'],
+					4: [executePlayer, 'The president must select a player for execution.']
 				},
 				{
-					1: investigateLoyalty,
-					2: specialElection,
-					3: executePlayer,
-					4: executePlayer
+					1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+					2: [specialElection, 'The president must select a player for a special election'],
+					3: [executePlayer, 'The president must select a player for execution.'],
+					4: [executePlayer, 'The president must select a player for execution.']
 				},
 				{
-					0: investigateLoyalty,
-					1: investigateLoyalty,
-					2: specialElection,
-					3: executePlayer,
-					4: executePlayer
+					0: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+					1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+					2: [specialElection, 'The president must select a player for a special election'],
+					3: [executePlayer, 'The president must select a player for execution.'],
+					4: [executePlayer, 'The president must select a player for execution.']
 				}
 			],
 			// presidentPowers = [
 			// 	{
-			// 		0: policyPeek
+			// 		0: [policyPeek, 'The president must examine the top 3 policies.']
 			// 	}
 			// ],
 			powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
@@ -551,17 +540,32 @@ function enactPolicy (game, team) {
 		game.trackState.enactedPolicies[index].position = team === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;
 
 		game.private.seatedPlayers.forEach(player => {
-			player.gameChats.push(chat, chat2);
+			player.gameChats.push(chat);
 		});
 
-		game.private.unSeatedGameChats.push(chat, chat2);
+		game.private.unSeatedGameChats.push(chat);
+
+		if (powerToEnact) {
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: powerToEnact[1]
+			};
+
+			game.private.seatedPlayers.forEach(player => {
+				player.gameChats.push(chat);
+			});
+
+			game.private.unSeatedGameChats.push(chat);
+		}
+
 		sendInProgressGameUpdate(game);
 		// todo-alpha check for exec actions
 		game.previousElectedGovernment = [game.gameState.presidentIndex, game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')];
 		game.trackState.electionTrackerCount = 0;
 
 		if (powerToEnact) {
-			powerToEnact(game, startElection);
+			powerToEnact[0](game, startElection);
 		} else {
 			game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
 			startElection(game);
