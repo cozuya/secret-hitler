@@ -9,9 +9,6 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				expandoInfo: 'empty',
-				clickedGamerole: {},
-				clickedPlayer: {},
 				generalChats: []
 			});
 		});
@@ -28,9 +25,6 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				expandoInfo: 'empty',
-				clickedGamerole: {},
-				clickedPlayer: {},
 				generalChats: []
 			});
 		});
@@ -47,9 +41,6 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				expandoInfo: 'empty',
-				clickedGamerole: {},
-				clickedPlayer: {},
 				generalChats: []
 			});
 		});
@@ -66,9 +57,6 @@ describe('reducers', () => {
 				gameList,
 				gameInfo: {},
 				userList: {},
-				expandoInfo: 'empty',
-				clickedGamerole: {},
-				clickedPlayer: {},
 				generalChats: []
 			});
 		});
@@ -85,9 +73,6 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo,
 				userList: {},
-				expandoInfo: 'empty',
-				clickedGamerole: {},
-				clickedPlayer: {},
 				generalChats: []
 			});
 		});
@@ -104,9 +89,6 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList,
-				expandoInfo: 'empty',
-				clickedGamerole: {},
-				clickedPlayer: {},
 				generalChats: []
 			});
 		});
@@ -123,9 +105,6 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				expandoInfo: info,
-				clickedGamerole: {},
-				clickedPlayer: {},
 				generalChats: []
 			});
 		});
@@ -142,9 +121,6 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				expandoInfo: 'empty',
-				clickedGamerole: info,
-				clickedPlayer: {},
 				generalChats: []
 			});
 		});
@@ -161,9 +137,6 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				expandoInfo: 'empty',
-				clickedGamerole: {},
-				clickedPlayer: info,
 				generalChats: []
 			});
 		});
@@ -180,9 +153,6 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				expandoInfo: 'empty',
-				clickedGamerole: {},
-				clickedPlayer: {},
 				generalChats: info
 			});
 		});

@@ -43,33 +43,6 @@ export function updateUserList(userList) {
 	}
 }
 
-export const UPDATE_EXPANDOINFO = 'UPDATE_EXPANDOINFO';
-
-export function updateExpandoInfo(info) {
-	return {
-		type: UPDATE_EXPANDOINFO,
-		info
-	}
-}
-
-export const UPDATE_CLICKEDGAMEROLE = 'UPDATE_CLICKEDGAMEROLE';
-
-export function updateClickedGamerole(info) {
-	return {
-		type: UPDATE_CLICKEDGAMEROLE,
-		info
-	}
-}
-
-export const UPDATE_CLICKEDPLAYER = 'UPDATE_CLICKEDPLAYER';
-
-export function updateClickedPlayer(info) {
-	return {
-		type: UPDATE_CLICKEDPLAYER,
-		info
-	}
-}
-
 export const UPDATE_GENERALCHATS = 'UPDATE_GENERALCHATS';
 
 export function updateGeneralChats(info) {

@@ -4,9 +4,6 @@ import {
 	updateGameList,
 	updateGameInfo,
 	updateUserList,
-	updateExpandoInfo,
-	updateClickedGamerole,
-	updateClickedPlayer,
 	updateGeneralChats
 } from '../../src/frontend-scripts/actions/actions.js';
 
@@ -68,42 +65,6 @@ describe('actions', () => {
 			const userList = [{userName: 'foo'}];
 
 			expect(updateUserList(userList).userList).toEqual(userList);
-		});
-	});
-
-	describe('updateExpandoInfo', () => {
-		it('should have a type of UPDATE_EXPANDOINFO', () => {
-			expect(updateExpandoInfo().type).toEqual('UPDATE_EXPANDOINFO');
-		});
-
-		it('should update the text being held by the expando block that we pass in', () => {
-			const info = 'foo';
-
-			expect(updateExpandoInfo(info).info).toEqual(info);
-		});
-	});
-
-	describe('updateClickedGamerole', () => {
-		it('should have a type of UPDATE_CLICKEDGAMEROLE', () => {
-			expect(updateClickedGamerole().type).toEqual('UPDATE_CLICKEDGAMEROLE');
-		});
-
-		it('should update the gamerole that was clicked by a user that we pass in', () => {
-			const gameRole = 'werewolf';
-
-			expect(updateClickedGamerole(gameRole).info).toEqual(gameRole);
-		});
-	});
-
-	describe('updateClickedPlayer', () => {
-		it('should have a type of UPDATE_CLICKEDPLAYER', () => {
-			expect(updateClickedPlayer().type).toEqual('UPDATE_CLICKEDPLAYER');
-		});
-
-		it('should update the name of the player that was clicked by a user that we pass in', () => {
-			const player = 'foo';
-
-			expect(updateClickedPlayer(player).info).toEqual(player);
 		});
 	});
 

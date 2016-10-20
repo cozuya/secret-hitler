@@ -6,10 +6,7 @@ import { UPDATE_MIDSECTION, updateMidsection } from '../actions/actions.js';
 import { UPDATE_GAMELIST, updateGameList } from '../actions/actions.js';
 import { UPDATE_GAMEINFO, updateGameInfo } from '../actions/actions.js';
 import { UPDATE_USERLIST, updateUserList } from '../actions/actions.js';
-import { UPDATE_EXPANDOINFO, updateExpandoInfo } from '../actions/actions.js';
-import { UPDATE_CLICKEDGAMEROLE, updateClickedGamerole } from '../actions/actions.js';
 import { UPDATE_GENERALCHATS, updateGeneralChats } from '../actions/actions.js';
-import { UPDATE_CLICKEDPLAYER, updateClickedPlayer } from '../actions/actions.js';
 
 const userInfo = (state = {}, action) => {
 	switch (action.type) {
@@ -56,33 +53,6 @@ const userList = (state = {}, action) => {
 	}
 };
 
-const expandoInfo = (state = 'empty', action) => {
-	switch (action.type) {
-		case UPDATE_EXPANDOINFO:
-			return state = action.info;
-		default:
-			return state;
-	}
-};
-
-const clickedGamerole = (state = {}, action) => {
-	switch (action.type) {
-		case UPDATE_CLICKEDGAMEROLE:
-			return state = action.info;
-		default:
-			return state;
-	}
-};
-
-const clickedPlayer = (state = {}, action) => {
-	switch (action.type) {
-		case UPDATE_CLICKEDPLAYER:
-			return state = action.info;
-		default:
-			return state;
-	}
-};
-
 const generalChats = (state = [], action) => {
 	switch (action.type) {
 		case UPDATE_GENERALCHATS:
@@ -98,8 +68,5 @@ export default combineReducers({
 	gameList,
 	gameInfo,
 	userList,
-	expandoInfo,
-	clickedGamerole,
-	clickedPlayer,
 	generalChats
 });
