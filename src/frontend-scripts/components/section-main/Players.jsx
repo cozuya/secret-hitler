@@ -60,9 +60,10 @@ export default class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const {gameState, playersState, publicPlayersState} = this.props.gameInfo;
+		const {gameInfo, userInfo} = this.props,
+			{gameState, playersState, publicPlayersState} = gameInfo;
 
-		return this.props.gameInfo.seatedPlayers.map((player, i) => {
+		return gameInfo.seatedPlayers.map((player, i) => {
 			return (
 				<div key={i}
 					data-index={i}
@@ -84,12 +85,22 @@ export default class Players extends React.Component {
 							return classes;
 						})()
 					}>
-					<div className="player-number">
-						{(() => {
-							if (gameState.isStarted) {
-								return i + 1;
+					<div className={
+						(() => {
+							let classes = 'player-number';
+
+							if (userInfo.userName && gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName) === i) {
+								classes = `${classes} seated-user`;									
 							}
-						})()}
+
+							return classes;
+						})()
+					}>
+					{(() => {
+						if (gameState.isStarted) {
+							return i + 1;
+						}
+					})()}
 					</div>
 					<div
 						className={

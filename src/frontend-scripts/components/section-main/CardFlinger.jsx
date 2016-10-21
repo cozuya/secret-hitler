@@ -23,7 +23,6 @@ export default class CardFlinger extends React.Component {
 		}
 
 		if (phase === 'presidentSelectingPolicy') {
-			console.log(index);
 			socket.emit('selectedPresidentPolicy', {
 				userName: this.props.userInfo.userName,
 				uid: gameInfo.general.uid,
@@ -32,7 +31,6 @@ export default class CardFlinger extends React.Component {
 		}
 
 		if (phase === 'chancellorSelectingPolicy') {
-			console.log(index);
 			socket.emit('selectedChancellorPolicy', {
 				userName: this.props.userInfo.userName,
 				uid: gameInfo.general.uid,

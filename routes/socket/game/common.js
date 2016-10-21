@@ -1,5 +1,5 @@
-const _ = require('lodash'),
-	{sendInProgressGameUpdate} = require('../util.js');
+const {sendInProgressGameUpdate} = require('../util.js'),
+	_ = require('lodash');
 
 module.exports.startElection = game => {
 	const {seatedPlayers} = game.private,
@@ -34,4 +34,10 @@ module.exports.startElection = game => {
 	game.gameState.phase = 'selectingChancellor';
 	game.gameState.clickActionInfo = [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...game.gameState.previousElectedGovernment)]; // todo-alpha bugged for 2nd and on election.  also does not account for dead players.
 	sendInProgressGameUpdate(game);
+};
+
+module.exports.shufflePolicies = (game, remainingPolicies = []) => {
+	const count = _.countBy(remainingPolicies);
+
+	return _.shuffle(_.range(1, 12 - (count.fascist || 0)).map(num => 'fascist').concat(_.range(1, 7 - (count.liberal || 0)).map(num => 'liberal')));
 };

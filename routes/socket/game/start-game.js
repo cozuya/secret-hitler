@@ -1,6 +1,7 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
 	_ = require('lodash'),
-	{startElection} = require('./election.js');
+	{startElection} = require('./election.js'),
+	{shufflePolicies} = require('./common.js');
 
 module.exports = game => {
 	let roles = _.range(0, 3).map(el => ({
@@ -67,7 +68,8 @@ module.exports = game => {
 	game.gameState.isStarted = true;
 	game.seatedPlayers = _.shuffle(game.seatedPlayers);
 	game.private.seatedPlayers = _.cloneDeep(game.seatedPlayers);
-	game.private.policies = _.shuffle(_.range(1, 12).map(num => 'fascist').concat(_.range(1, 7).map(num => 'liberal')));
+	game.private.policies = shufflePolicies(game);
+	console.log(game.private.policies);
 	game.general.status = 'Dealing roles..';
 
 	game.publicPlayersState = game.private.seatedPlayers.map(player => ({

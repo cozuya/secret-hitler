@@ -1,5 +1,5 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
-	{startElection} = require('./common.js'),
+	{startElection, shufflePolicies} = require('./common.js'),
 	{specialElection, policyPeek, investigateLoyalty, executePlayer} = require('./policy-powers.js'),
 	{games} = require('../models.js'),
 	_ = require('lodash');
@@ -310,10 +310,7 @@ module.exports.selectPresidentPolicy = data => {
 	president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 	president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
 	game.gameState.discardedPolicyCount++;
-	console.log(nonDiscardedPolicies);
-	game.private.currentElectionPolicies[data.selection] = undefined;
-	console.log(game.private.currentElectionPolicies);
-	console.log(game.trackState);
+	game.private.currentElectionPolicies.splice(data.selection, 1);
 	// todo-alpha remove this
 	if (game.trackState.fascistPolicyCount === 5) {
 	// if (game.trackState.fascistPolicyCount === 0) {
@@ -394,29 +391,27 @@ module.exports.selectChancellorPolicy = data => {
 		president = game.private.seatedPlayers[game.gameState.presidentIndex],
 		enactedPolicy = (() => {
 			const {currentElectionPolicies} = game.private,
-				policy = currentElectionPolicies[data.selection];
+				policy = currentElectionPolicies[data.selection === 1 ? 0 : 1];
 
-			// todo-alpha remove
 			if (game.trackState.fascistPolicyCount === 5) {
+			// todo-alpha remove
 			// if (game.trackState.fascistPolicyCount === 0) {
-				// todo-alpha double check this logic..
-				console.log(data.selection, 'selection');
-				if (data.selection === 0) {
-					return policy || currentElectionPolicies[1];
-				} else if (data.selection === 2) {
-					return policy || currentElectionPolicies[2];
-				} else if (data.selection === 4) {
-					return policy;
-				}
-				return currentElectionPolicies[2];
-			} else if (data.selection === 0) {
-				return policy || currentElectionPolicies[1];
-			} else if (data.selection === 1) {
-				return policy || currentElectionPolicies[2];
+				// todo-alpha fix this, doesn't work at all.
+				// if (data.selection === 1) {
+				// 	return policy || currentElectionPolicies[1];
+				// } else if (data.selection === 2) {
+				// 	return policy || currentElectionPolicies[2];
+				// } else if (data.selection === 4) {
+				// 	return policy;
+				// }
+				// return currentElectionPolicies[2];
+			// } else if (data.selection === 1) {
+			// 	return policy || currentElectionPolicies[1];
+			// } else if (data.selection === 1) {
+			// 	return policy || currentElectionPolicies[2];
 			}
 			return policy;
 		})();
-		// pres selected #3, chanc selected #1, #2 turned red/was probably enacted
 	if (enactedPolicy === 'veto') {
 		const chat = {
 			timestamp: new Date(),
@@ -462,7 +457,7 @@ module.exports.selectChancellorPolicy = data => {
 	} else {
 		game.publicPlayersState[chancellorIndex].isLoader = false;
 		game.general.status = 'A policy is being enacted.';
-		if (data.selection) {
+		if (data.selection === 3) {
 			chancellor.cardFlingerState[0].notificationStatus = '';
 			chancellor.cardFlingerState[1].notificationStatus = 'selected';
 		} else {
@@ -568,7 +563,7 @@ function enactPolicy (game, team) {
 		game.trackState.electionTrackerCount = 0;
 
 		if (powerToEnact) {
-			powerToEnact[0](game, startElection);
+			powerToEnact[0](game);
 		} else {
 			game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
 			startElection(game);
