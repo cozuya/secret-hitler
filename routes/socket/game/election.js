@@ -126,6 +126,8 @@ module.exports.selectVoting = data => {
 	}, 2000);
 
 	if (seatedPlayers.filter(play => play.voteStatus.hasVoted).length === game.general.livingPlayerCount) {
+		game.general.status = 'Tallying results of ballots..';
+		sendInProgressGameUpdate(game);
 		setTimeout(() => {
 			flipBallotCards();
 		}, 4000);
@@ -459,6 +461,7 @@ module.exports.selectChancellorPolicy = data => {
 		// todo-alpha finish this functionality
 	} else {
 		game.publicPlayersState[chancellorIndex].isLoader = false;
+		game.general.status = 'A policy is being enacted.';
 		if (data.selection) {
 			chancellor.cardFlingerState[0].notificationStatus = '';
 			chancellor.cardFlingerState[1].notificationStatus = 'selected';
@@ -475,9 +478,9 @@ module.exports.selectChancellorPolicy = data => {
 		sendInProgressGameUpdate(game);
 		setTimeout(() => {
 			chancellor.cardFlingerState = [];
-			game.general.status = 'A policy is being enacted.';
 			enactPolicy(game, enactedPolicy);
-		}, 4000);
+		// }, 4000);
+		}, 1000);
 	}
 };
 

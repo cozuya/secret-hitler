@@ -11,7 +11,7 @@ module.exports.startElection = game => {
 	}
 
 	game.general.electionCount++;
-	game.general.status = `Election #${game.general.electionCount} begins`;
+	game.general.status = `Election #${game.general.electionCount}: president to select chancellor.`;
 	pendingPresidentPlayer.gameChats.push({
 		gameChat: true,
 		timestamp: new Date(),

@@ -17,10 +17,18 @@
 		width: 70px;
 		height: 95px;
 		float: left;
-		margin: 9px 5px;
+		margin: 18px 5px 0;
 		border-radius: 4px;
 		background-image: url('../images/tweed.png');
 		position: relative;
+
+		.player-number {
+			position: absolute;
+			left: 30px;
+			top: -20px;
+			color: #fff;
+			font-weight: bold;
+		}
 
 		.government-token {
 			width: 100%;

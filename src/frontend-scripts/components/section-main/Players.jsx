@@ -60,7 +60,7 @@ export default class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const {playersState, publicPlayersState} = this.props.gameInfo;
+		const {gameState, playersState, publicPlayersState} = this.props.gameInfo;
 
 		return this.props.gameInfo.seatedPlayers.map((player, i) => {
 			return (
@@ -84,6 +84,13 @@ export default class Players extends React.Component {
 							return classes;
 						})()
 					}>
+					<div className="player-number">
+						{(() => {
+							if (gameState.isStarted) {
+								return i + 1;
+							}
+						})()}
+					</div>
 					<div
 						className={
 						(() => {
