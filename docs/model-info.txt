@@ -38,6 +38,7 @@ publicPlayersState array
 		isDead bool
 		connected bool
 		isLoader bool
+		userName string
 		cardStatus
 			cardDisplayed bool
 			isFlipped bool
@@ -59,6 +60,7 @@ private
 		userName string
 		connected bool
 		policyNotification bool
+		wonGame bool
 		role obj
 			icon number
 			cardName string

@@ -36,8 +36,8 @@ module.exports.startElection = game => {
 	sendInProgressGameUpdate(game);
 };
 
-module.exports.shufflePolicies = (game, remainingPolicies = []) => {
+module.exports.shufflePolicies = (remainingPolicies = []) => {
 	const count = _.countBy(remainingPolicies);
 
-	return _.shuffle(_.range(1, 12 - (count.fascist || 0)).map(num => 'fascist').concat(_.range(1, 7 - (count.liberal || 0)).map(num => 'liberal')));
+	return remainingPolicies.concat(_.shuffle((_.range(1, 12 - (count.fascist || 0)).map(num => 'fascist').concat(_.range(1, 7 - (count.liberal || 0)).map(num => 'liberal')))));
 };

@@ -68,11 +68,11 @@ module.exports = game => {
 	game.gameState.isStarted = true;
 	game.seatedPlayers = _.shuffle(game.seatedPlayers);
 	game.private.seatedPlayers = _.cloneDeep(game.seatedPlayers);
-	game.private.policies = shufflePolicies(game);
-	console.log(game.private.policies);
+	game.private.policies = shufflePolicies();
 	game.general.status = 'Dealing roles..';
 
 	game.publicPlayersState = game.private.seatedPlayers.map(player => ({
+		userName: player.userName,
 		cardStatus: {
 			cardDisplayed: true,
 			isFlipped: false,
@@ -149,7 +149,6 @@ module.exports = game => {
 						{
 							text: otherFascist.userName,
 							type: 'player'
-
 						},
 						{
 							text: '.'

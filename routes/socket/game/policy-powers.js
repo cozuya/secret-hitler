@@ -1,6 +1,6 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
 	{games} = require('../models.js'),
-	{startElection} = require('./common.js')
+	{startElection, shufflePolicies} = require('./common.js')
 	// ,
 	// _ = require('lodash')
 	;
@@ -15,6 +15,11 @@ module.exports.policyPeek = game => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex} = game.gameState,
 		president = seatedPlayers[presidentIndex];
+
+	if (game.gameState.undrawnPolicyCount < 3) {
+		game.private.policies = shufflePolicies(game.private.policies);
+		game.gameState.undrawnPolicyCount = 17;
+	}
 
 	game.general.status = 'President to peek at policies';
 	game.publicPlayersState[presidentIndex].isLoader = true;
@@ -31,82 +36,78 @@ module.exports.selectPolicies = data => {
 
 	game.publicPlayersState[presidentIndex].isLoader = false;
 
-	if (policies.length > 2) {
-		president.cardFlingerState = [
-			{
-				position: 'middle-far-left',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${policies[0]}p`
-				}
-			},
-			{
-				position: 'middle-center',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${policies[1]}p`
-				}
-			},
-			{
-				position: 'middle-far-right',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${policies[2]}p`
-				}
+	president.cardFlingerState = [
+		{
+			position: 'middle-far-left',
+			action: 'active',
+			cardStatus: {
+				isFlipped: false,
+				cardFront: 'policy',
+				cardBack: `${policies[0]}p`
 			}
-		];
+		},
+		{
+			position: 'middle-center',
+			action: 'active',
+			cardStatus: {
+				isFlipped: false,
+				cardFront: 'policy',
+				cardBack: `${policies[1]}p`
+			}
+		},
+		{
+			position: 'middle-far-right',
+			action: 'active',
+			cardStatus: {
+				isFlipped: false,
+				cardFront: 'policy',
+				cardBack: `${policies[2]}p`
+			}
+		}
+	];
 
-		president.playersState[presidentIndex].policyNotification = false;
+	president.playersState[presidentIndex].policyNotification = false;
+	sendInProgressGameUpdate(game);
+
+	setTimeout(() => {
+		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = true;
 		sendInProgressGameUpdate(game);
+	}, 2000);
 
-		setTimeout(() => {
-			president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = true;
-			sendInProgressGameUpdate(game);
-		}, 2000);
+	setTimeout(() => {
+		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
+		president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
+		sendInProgressGameUpdate(game);
+	}, 4000);
 
-		setTimeout(() => {
-			president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
-			president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
-			sendInProgressGameUpdate(game);
-		}, 4000);
-
-		setTimeout(() => {
-			president.cardFlingerState = [];
-			president.gameChats.push({
-				gameChat: true,
-				timestamp: new Date(),
-				chat: [
-					{text: 'You peek at the top 3 policies and see that they are a '},
-					{
-						text: policies[0],
-						type: policies[0]
-					},
-					{text: ', a '},
-					{
-						text: policies[1],
-						type: policies[1]
-					},
-					{text: ', and a '},
-					{
-						text: policies[2],
-						type: policies[2]
-					},
-					{text: ' policy.'}
-				]
-			});
-			sendInProgressGameUpdate(game);
-			prepareNextElection(game);
-			startElection(game);
-		}, 6000);
-	} else {
-		// todo-alpha
-	}
+	setTimeout(() => {
+		president.cardFlingerState = [];
+		president.gameChats.push({
+			gameChat: true,
+			timestamp: new Date(),
+			chat: [
+				{text: 'You peek at the top 3 policies and see that they are a '},
+				{
+					text: policies[0],
+					type: policies[0]
+				},
+				{text: ', a '},
+				{
+					text: policies[1],
+					type: policies[1]
+				},
+				{text: ', and a '},
+				{
+					text: policies[2],
+					type: policies[2]
+				},
+				{text: ' policy.'}
+			]
+		});
+		sendInProgressGameUpdate(game);
+		prepareNextElection(game);
+		startElection(game);
+	}, 6000);
 };
 
 module.exports.investigateLoyalty = game => {
@@ -120,11 +121,11 @@ module.exports.investigateLoyalty = game => {
 	});
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))];
-	game.gameState.phase = 'selectingPolicyInvestigate';
+	game.gameState.phase = 'selectPartyMembershipInvestigate';
 	sendInProgressGameUpdate(game);
 };
 
-module.exports.selectPolicyInvestigate = data => {
+module.exports.selectPartyMembershipInvestigate = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{playerIndex} = data,
 		{presidentIndex} = game.gameState,

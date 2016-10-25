@@ -22,7 +22,7 @@ export class App extends React.Component {
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		const {dispatch} = this.props,
 			{classList} = document.getElementById('game-container');
 

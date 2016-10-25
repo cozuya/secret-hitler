@@ -205,7 +205,7 @@
 		box-shadow: 0 0 4px 4px #c36563;
 	}
 
-	.player-container.hitler::after {
+	.player-container.hitler::after, .player-container.danger::after {
 		box-shadow: 0 0 4px 4px #be0804;
 	}
 
@@ -217,8 +217,8 @@
 		box-shadow: 0 0 4px 4px #FBBD08;
 	}
 
-	.player-container.danger::after {
-		box-shadow: 0 0 4px 4px #be0804;
+	.player-container.success::after {
+		box-shadow: 0 0 4px 4px #2185D0;
 	}
 }
 
