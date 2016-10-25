@@ -15,5 +15,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 		player.wonGame = true;
 	});
 
+	game.general.status = winningTeamName === 'fascist' ? 'Fascists win the game.' : 'Liberals win the game.';
 	sendInProgressGameUpdate(game);
 };

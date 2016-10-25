@@ -91,7 +91,7 @@ export default class Gamechat extends React.Component {
 			.filter(chat => ((chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All'))) || (!chat.gameChat && chatFilter !== 'Game'))
 			.map((chat, i) => {
 				const chatContents = chat.chat,
-					isSeated = () => Boolean(gameInfo.seatedPlayers.find(player => player.userName === chat.userName));
+					isSeated = Boolean(gameInfo.seatedPlayers.find(player => player.userName === chat.userName));
 
 				return chat.gameChat ? (
 					<div className="item" key={i}>
@@ -118,10 +118,10 @@ export default class Gamechat extends React.Component {
 					</div>
 			) :
 			(
-					<div className="item" key={i}>
-						<span className="chat-user">{chat.userName}{isSeated() ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
-						<span>{chatContents}</span>
-					</div>
+				<div className="item" key={i}>
+					<span className="chat-user">{chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
+					<span>{chatContents}</span>
+				</div>
 				);
 			});
 	}

@@ -1,6 +1,7 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
 	{games} = require('../models.js'),
-	{startElection, shufflePolicies} = require('./common.js')
+	{startElection, shufflePolicies} = require('./common.js'),
+	{completeGame} = require('./end-game.js')
 	// ,
 	// _ = require('lodash')
 	;
@@ -279,6 +280,7 @@ module.exports.selectPlayerToExecute = data => {
 		};
 
 	game.private.unSeatedGameChats.push(nonPresidentChat);
+	game.publicPlayersState[presidentIndex].isLoader = false;
 
 	seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
 		player.gameChats.push(nonPresidentChat);
@@ -308,9 +310,40 @@ module.exports.selectPlayerToExecute = data => {
 		selectedPlayer.isDead = publicSelectedPlayer.isDead = true;
 
 		if (selectedPlayer.role.cardName === 'hitler') {
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [{text: 'Hitler has been executed and the '},
+					{
+						text: 'liberals',
+						type: 'liberal'
+					},
+					{text: ' win the game.'}]
+			};
+
 			publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
 			publicSelectedPlayer.cardStatus.isFlipped = true;
-			// todo-alpha end game
+
+			seatedPlayers.forEach((player, i) => {
+				player.gameChats.push(chat);
+			});
+
+			game.private.unSeatedGameChats.push(chat);
+
+			setTimeout(() => {
+				game.publicPlayersState.forEach((player, i) => {
+					player.cardStatus.cardDisplayed = true;
+					player.cardStatus.cardBack = seatedPlayers[i].role;
+				});
+				sendInProgressGameUpdate(game);
+			}, 2000);
+
+			setTimeout(() => {
+				game.publicPlayersState.forEach(player => {
+					player.cardStatus.isFlipped = true;
+				});
+				completeGame(game, 'liberal');
+			}, 3000);
 		} else {
 			publicSelectedPlayer.cardStatus.cardDisplayed = false;
 		}

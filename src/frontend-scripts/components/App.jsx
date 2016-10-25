@@ -33,7 +33,7 @@ export class App extends React.Component {
 			socket.emit('getUserGameSettings', username);
 
 			// ** begin devhelpers **
-			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian'];
+			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall'];
 			if (devPlayers.includes(username)) {
 				const data = {
 					uid: 'devgame',
