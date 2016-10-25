@@ -6,12 +6,6 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	// _ = require('lodash')
 	;
 
-function prepareNextElection (game) {
-	game.previousElectedGovernment = [game.gameState.presidentIndex, game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')];
-	game.trackState.electionTrackerCount = 0;
-	game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
-}
-
 module.exports.policyPeek = game => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex} = game.gameState,
@@ -106,7 +100,6 @@ module.exports.selectPolicies = data => {
 			]
 		});
 		sendInProgressGameUpdate(game);
-		prepareNextElection(game);
 		startElection(game);
 	}, 6000);
 };
@@ -308,17 +301,15 @@ module.exports.selectPlayerToExecute = data => {
 
 	setTimeout(() => {
 		selectedPlayer.isDead = publicSelectedPlayer.isDead = true;
+		publicSelectedPlayer.notificationStatus = '';
+		game.general.livingPlayerCount--;
+		sendInProgressGameUpdate(game);
 
 		if (selectedPlayer.role.cardName === 'hitler') {
 			const chat = {
 				timestamp: new Date(),
 				gameChat: true,
-				chat: [{text: 'Hitler has been executed and the '},
-					{
-						text: 'liberals',
-						type: 'liberal'
-					},
-					{text: ' win the game.'}]
+				chat: [{text: 'Hitler has been executed.'}]
 			};
 
 			publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
@@ -346,8 +337,11 @@ module.exports.selectPlayerToExecute = data => {
 			}, 3000);
 		} else {
 			publicSelectedPlayer.cardStatus.cardDisplayed = false;
+			sendInProgressGameUpdate(game);
+			setTimeout(() => {
+				console.log('Hello World!');
+				startElection(game);
+			}, 2000);
 		}
-		publicSelectedPlayer.notificationStatus = '';
-		sendInProgressGameUpdate(game);
 	}, 5000);
 };

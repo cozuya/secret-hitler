@@ -186,12 +186,7 @@ module.exports.selectVoting = data => {
 					const chat = {
 						timestamp: new Date(),
 						gameChat: true,
-						chat: [{text: 'Hitler has been elected chancellor and the '},
-							{
-								text: 'fascists',
-								type: 'fascist'
-							},
-						{text: ' win the game.'}]
+						chat: [{text: 'Hitler has been elected chancellor after the 3rd fascist policy has been enacted.'}]
 					};
 
 					setTimeout(() => {
@@ -322,7 +317,7 @@ module.exports.selectVoting = data => {
 			game.private.seatedPlayers[presidentIndex].cardFlingerState[0].cardStatus.isFlipped = game.private.seatedPlayers[presidentIndex].cardFlingerState[1].cardStatus.isFlipped = game.private.seatedPlayers[presidentIndex].cardFlingerState[2].cardStatus.isFlipped = true;
 			game.private.seatedPlayers[presidentIndex].cardFlingerState[0].notificationStatus = game.private.seatedPlayers[presidentIndex].cardFlingerState[1].notificationStatus = game.private.seatedPlayers[presidentIndex].cardFlingerState[2].notificationStatus = 'notification';
 			game.gameState.phase = 'presidentSelectingPolicy';
-			game.gameState.previousElectedGovernment = [presidentIndex, chancellorIndex];
+			game.gameState.previousElectedGovernment = game.general.livingPlayerCount > 5 ? [presidentIndex, chancellorIndex] : [presidentIndex];
 			sendInProgressGameUpdate(game);
 		}, 1000);
 	}
@@ -353,9 +348,6 @@ module.exports.selectPresidentPolicy = data => {
 	president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 	president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
 	game.gameState.discardedPolicyCount++;
-	console.log(data);
-	console.log(game.private.currentElectionPolicies);
-	game.private.currentElectionPolicies.splice(data.selection, 1);
 	// todo-alpha remove this
 	if (game.trackState.fascistPolicyCount === 5) {
 	// if (game.trackState.fascistPolicyCount === 0) {
@@ -413,7 +405,7 @@ module.exports.selectPresidentPolicy = data => {
 	chancellor.gameChats.push({
 		timestamp: new Date(),
 		gameChat: true,
-		chat: [{text: game.trackState.fascistPolicyCount === 5 ? 'As chancellor, you must select one policy to enact or veto this election.' : 'As chancellor, you must select a policy to enact.'}]
+		chat: [{text: 'As chancellor, you must select a policy to enact.'}]
 	});
 
 	sendInProgressGameUpdate(game);
@@ -435,27 +427,11 @@ module.exports.selectChancellorPolicy = data => {
 		chancellor = game.private.seatedPlayers[chancellorIndex],
 		president = game.private.seatedPlayers[game.gameState.presidentIndex],
 		enactedPolicy = (() => {
-			const {currentElectionPolicies} = game.private,
-				policy = currentElectionPolicies[data.selection === 1 ? 0 : 1];
-
 			if (game.trackState.fascistPolicyCount === 5) {
-			// todo-alpha remove
-			// if (game.trackState.fascistPolicyCount === 0) {
-				// todo-alpha fix this, doesn't work at all.
-				// if (data.selection === 1) {
-				// 	return policy || currentElectionPolicies[1];
-				// } else if (data.selection === 2) {
-				// 	return policy || currentElectionPolicies[2];
-				// } else if (data.selection === 4) {
-				// 	return policy;
-				// }
-				// return currentElectionPolicies[2];
-			// } else if (data.selection === 1) {
-			// 	return policy || currentElectionPolicies[1];
-			// } else if (data.selection === 1) {
-			// 	return policy || currentElectionPolicies[2];
+			// todo-alpha implement
+			
 			}
-			return policy;
+			return data.policy;
 		})();
 	if (enactedPolicy === 'veto') {
 		const chat = {
@@ -601,15 +577,23 @@ function enactPolicy (game, team) {
 
 			game.private.unSeatedGameChats.push(chat);
 			powerToEnact[0](game);
-		} else if (game.trackState.liberalPolicyCount === 1) {
-		// } else if (game.trackState.liberalPolicyCount === 5) {
+		} else if (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) {
+		// } else if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
+			game.publicPlayersState.forEach((player, i) => {
+				player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+				player.cardStatus.cardDisplayed = true;
+			});
+			sendInProgressGameUpdate(game);
 
-		} else if (game.trackState.fascistPolicyCount === 1) {
-		// } else if (game.trackState.fascistPolicyCount === 6) {
-
+			setTimeout(() => {
+				game.publicPlayersState.forEach((player, i) => {
+					player.cardStatus.isFlipped = true;
+				});
+				completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
+				// completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
+			}, 2000);
 		} else {
 			sendInProgressGameUpdate(game);
-			game.previousElectedGovernment = [game.gameState.presidentIndex, game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')];
 			game.trackState.electionTrackerCount = 0;
 			game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
 			startElection(game);

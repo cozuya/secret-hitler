@@ -218,7 +218,7 @@
 	}
 
 	.player-container.success::after {
-		box-shadow: 0 0 4px 4px #2185D0;
+		box-shadow: 0 0 4px 4px #2185D0 inset;
 		cursor: auto;
 	}
 }

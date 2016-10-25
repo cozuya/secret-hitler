@@ -125,7 +125,7 @@ export class App extends React.Component {
 					previousElectedGovernment: [],
 					undrawnPolicyCount: 17,
 					discardedPolicyCount: 0,
-					presidentIndex: 0
+					presidentIndex: -1
 				},
 				chats: [],
 				general: {

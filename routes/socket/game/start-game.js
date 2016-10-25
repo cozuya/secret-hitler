@@ -288,7 +288,7 @@ module.exports = game => {
 	// }, 7000);
 
 	setTimeout(() => {
-		game.gameState.presidentIndex = 0;
+		game.gameState.presidentIndex = -1;
 		startElection(game);
 	}, 2800);
 	// }, 9000);

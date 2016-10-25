@@ -30,13 +30,15 @@ export default class CardFlinger extends React.Component {
 			});
 		}
 
+		// todo-alpha fucked up horribly when browser reloaded while waiting for chancellor policy click
+		console.log($(e.currentTarget));
+
 		if (phase === 'chancellorSelectingPolicy') {
 			socket.emit('selectedChancellorPolicy', {
 				userName: this.props.userInfo.userName,
 				uid: gameInfo.general.uid,
-				// todo-alpha remove
-				// selection: gameInfo.trackState.fascistPolicyCount === 5 ? index : index ? 1 : 0
-				selection: gameInfo.trackState.fascistPolicyCount === 0 ? index : index ? 1 : 0
+				selection: gameInfo.trackState.fascistPolicyCount === 0 ? index : index ? 1 : 0,
+				policy: $(e.currentTarget).find('.back').hasClass('liberalp') ? 'liberal' : 'fascist'
 			});
 		}
 	}
