@@ -151,24 +151,24 @@ export default class Menu extends React.Component {
 					<a href="/" target="_blank" rel="noopener noreferrer">Can you find and stop the..</a>
 				</p>
 				<div className="item right">
-				{(() => {
-					const {gameInfo, userInfo} = this.props,
-						iconClasses = () => {
-							let classes = 'setting icon large';
+					{(() => {
+						const {gameInfo, userInfo} = this.props,
+							iconClasses = () => {
+								let classes = 'setting icon large';
 
-							if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
-								classes += ' disabled';
-							}
+								if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
+									classes += ' disabled';
+								}
 
-							return classes;
-						};
+								return classes;
+							};
 
-					return !userInfo.userName ? (
-						<div className="ui buttons">
-							<div className="ui button" id="signin">Sign in</div>
-							<div className="or" />
-							<div className="ui button" id="signup">Sign up</div>
-						</div>
+						return !userInfo.userName ? (
+							<div className="ui buttons">
+								<div className="ui button" id="signin">Sign in</div>
+								<div className="or" />
+								<div className="ui button" id="signup">Sign up</div>
+							</div>
 					) : (
 						<div>
 							<div className="loggedin">
@@ -177,16 +177,16 @@ export default class Menu extends React.Component {
 							<i className={iconClasses()} onClick={this.clickSettingsButton} />
 						</div>
 					);
-				})()}
-				{(() => {
-					if (this.props.userInfo.userName) {
-						return (
-							<div className="item right">
-								<a href="/observe">Logout</a>
-							</div>
-						);
-					}
-				})()}
+					})()}
+					{(() => {
+						if (this.props.userInfo.userName) {
+							return (
+								<div className="item right">
+									<a href="/observe">Logout</a>
+								</div>
+							);
+						}
+					})()}
 				</div>
 			</section>
 		);

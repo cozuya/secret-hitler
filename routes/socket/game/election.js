@@ -602,11 +602,10 @@ function enactPolicy (game, team) {
 			game.private.unSeatedGameChats.push(chat);
 			powerToEnact[0](game);
 		} else if (game.trackState.liberalPolicyCount === 1) {
-		//} else if (game.trackState.liberalPolicyCount === 5) {
+		// } else if (game.trackState.liberalPolicyCount === 5) {
 
-			
-		} else if (game.trackState.fascistPolicyCount === 1) {		
-		//} else if (game.trackState.fascistPolicyCount === 6) {
+		} else if (game.trackState.fascistPolicyCount === 1) {
+		// } else if (game.trackState.fascistPolicyCount === 6) {
 
 		} else {
 			sendInProgressGameUpdate(game);

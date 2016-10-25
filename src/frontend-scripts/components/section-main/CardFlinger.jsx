@@ -47,44 +47,44 @@ export default class CardFlinger extends React.Component {
 
 		return (
 			<section className="cardflinger-container">
-			{(() => {
-				return positions.map((position, i) => {
-					const stateObj = cardFlingerState.find(flinger => flinger.position === position);
+				{(() => {
+					return positions.map((position, i) => {
+						const stateObj = cardFlingerState.find(flinger => flinger.position === position);
 
-					let frontClasses = 'cardflinger-card front',
-						backClasses = 'cardflinger-card back',
-						containerClasses = `cardflinger-card-container ${position}`;
+						let frontClasses = 'cardflinger-card front',
+							backClasses = 'cardflinger-card back',
+							containerClasses = `cardflinger-card-container ${position}`;
 
-					if (stateObj && Object.keys(stateObj).length) {
-						if (stateObj.cardStatus.isFlipped) {
-							containerClasses += ' flippedY';
+						if (stateObj && Object.keys(stateObj).length) {
+							if (stateObj.cardStatus.isFlipped) {
+								containerClasses += ' flippedY';
+							}
+
+							if (stateObj.action) {
+								containerClasses = `${containerClasses} ${stateObj.action}`;
+							}
+
+							if (stateObj.notificationStatus) {
+								containerClasses = `${containerClasses} notifier ${stateObj.notificationStatus}`;
+							}
+
+							if (stateObj.cardStatus.cardFront) {
+								frontClasses = `${frontClasses} ${stateObj.cardStatus.cardFront}`;
+							}
+
+							if (stateObj.cardStatus.cardBack) {
+								backClasses = `${backClasses} ${stateObj.cardStatus.cardBack}`;
+							}
 						}
 
-						if (stateObj.action) {
-							containerClasses = `${containerClasses} ${stateObj.action}`;
-						}
-
-						if (stateObj.notificationStatus) {
-							containerClasses = `${containerClasses} notifier ${stateObj.notificationStatus}`;
-						}
-
-						if (stateObj.cardStatus.cardFront) {
-							frontClasses = `${frontClasses} ${stateObj.cardStatus.cardFront}`;
-						}
-
-						if (stateObj.cardStatus.cardBack) {
-							backClasses = `${backClasses} ${stateObj.cardStatus.cardBack}`;
-						}
-					}
-
-					return (
-						<div key={i} data-index={i} className={containerClasses} onClick={this.handleCardClick}>
-							<div className={frontClasses} />
-							<div className={backClasses} />
-						</div>
-					);
-				});
-			})()}
+						return (
+							<div key={i} data-index={i} className={containerClasses} onClick={this.handleCardClick}>
+								<div className={frontClasses} />
+								<div className={backClasses} />
+							</div>
+						);
+					});
+				})()}
 			</section>
 		);
 	}

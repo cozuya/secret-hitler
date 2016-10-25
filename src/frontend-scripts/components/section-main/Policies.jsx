@@ -63,9 +63,9 @@ export default class Policies extends React.Component {
 					(() => {
 						let classes = 'draw';
 
-							if (userInfo.userName && userInfo.seatNumber && gameInfo.gameState.isStarted && gameInfo.playersState[gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName)] && gameInfo.playersState[gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
-								classes += ' notifier';
-							}
+						if (userInfo.userName && userInfo.seatNumber && gameInfo.gameState.isStarted && gameInfo.playersState[gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName)] && gameInfo.playersState[gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
+							classes += ' notifier';
+						}
 
 						return classes;
 					})()

@@ -90,17 +90,17 @@ export default class Players extends React.Component {
 							let classes = 'player-number';
 
 							if (userInfo.userName && gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName) === i) {
-								classes = `${classes} seated-user`;									
+								classes = `${classes} seated-user`;
 							}
 
 							return classes;
 						})()
 					}>
-					{(() => {
-						if (gameState.isStarted) {
-							return i + 1;
-						}
-					})()}
+						{(() => {
+							if (gameState.isStarted) {
+								return i + 1;
+							}
+						})()}
 					</div>
 					<div
 						className={
