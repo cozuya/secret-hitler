@@ -2,27 +2,23 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	_ = require('lodash');
 
 module.exports.startElection = game => {
+	const ineligableIndexes = game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(game.gameState.previousElectedGovernment);
+
 	game.trackState.electionTrackerCount = 0;
 	game.gameState.presidentIndex = (() => {
-		const findNext = index => index > game.seatedPlayers.length ? 0 : index,
-			ineligableIndexes = game.publicPlayersState.filter(player => player.isDead).map((player, i) => {
-				let index;
-
-				game.publicPlayersState.find((play, index) => play.userName === player.userName))
-			}).concat(game.gameState.previousElectedGovernment);
+		const findNext = index => index > game.seatedPlayers.length ? 0 : index + 1;
 
 		let index = game.gameState.presidentIndex + 1,
 			notDeadPresident = false;
-		console.log('hi2u');
+
 		while (!notDeadPresident) {
-		console.log('loop?');
-			if (!game.private.seatedPlayers[index].isDead) {
+			if (!ineligableIndexes.includes(index)) {
 				notDeadPresident = true;
 			} else {
 				index = findNext(index);
 			}
 		}
-		console.log(index);
+
 		return index;
 	})();
 
@@ -44,8 +40,8 @@ module.exports.startElection = game => {
 		}]
 	});
 
-	pendingPresidentPlayer.playersState.filter((player, index) => index !== presidentIndex && !game.gameState.previousElectedGovernment.includes(index)).forEach(player => {
-		player.notificationStatus = 'notification'; // todo-alpha does not account for dead players.
+	pendingPresidentPlayer.playersState.filter((player, index) => index !== presidentIndex && !ineligableIndexes.includes(index)).forEach(player => {
+		player.notificationStatus = 'notification';
 	});
 
 	game.publicPlayersState.forEach(player => {

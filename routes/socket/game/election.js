@@ -551,7 +551,7 @@ function enactPolicy (game, team) {
 			// ],
 			presidentPowers = [
 				{
-					0: [executePlayer, 'The president must select a player for execution.']
+					0: [investigateLoyalty, 'x']
 				}
 			],
 			powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;

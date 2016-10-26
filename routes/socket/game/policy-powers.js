@@ -339,7 +339,6 @@ module.exports.selectPlayerToExecute = data => {
 			publicSelectedPlayer.cardStatus.cardDisplayed = false;
 			sendInProgressGameUpdate(game);
 			setTimeout(() => {
-				console.log('Hello World!');
 				startElection(game);
 			}, 2000);
 		}
