@@ -1,15 +1,36 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
 	_ = require('lodash');
 
-module.exports.startElection = game => {
-	const ineligableIndexes = game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(game.gameState.previousElectedGovernment);
+module.exports.startElection = (game, specialElectionPresidentIndex) => {
+	const ineligableIndexes = (() => {
+		const {specialElectionFormerPresidentIndex, previousElectedGovernment} = game.gameState;
 
-	game.trackState.electionTrackerCount = 0;
+		let toConcat = [];
+
+		if (!specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex !== 0) {
+			toConcat = previousElectedGovernment;
+		}
+
+		return game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(toConcat);
+	})();
+
 	game.gameState.presidentIndex = (() => {
-		const findNext = index => index > game.seatedPlayers.length ? 0 : index + 1;
+		const findNext = index => index > game.seatedPlayers.length ? 0 : index + 1,
+			{presidentIndex} = game.gameState;
 
-		let index = game.gameState.presidentIndex + 1,
+		let index = presidentIndex + 1,
+			{specialElectionFormerPresidentIndex} = game.gameState,
 			notDeadPresident = false;
+
+		if (specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex === 0) {
+			index = specialElectionFormerPresidentIndex + 1;
+			specialElectionFormerPresidentIndex = null;
+		}
+
+		if (specialElectionPresidentIndex || specialElectionPresidentIndex === 0) {
+			specialElectionFormerPresidentIndex = presidentIndex;
+			return specialElectionPresidentIndex;
+		}
 
 		while (!notDeadPresident) {
 			if (!ineligableIndexes.includes(index)) {
@@ -52,7 +73,7 @@ module.exports.startElection = game => {
 	game.publicPlayersState[presidentIndex].governmentStatus = 'isPendingPresident';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
-	game.gameState.clickActionInfo = [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...game.gameState.previousElectedGovernment)]; // todo-alpha does not account for dead players.
+	game.gameState.clickActionInfo = [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...game.gameState.previousElectedGovernment).filter(num => !seatedPlayers[num].isDead)];
 	sendInProgressGameUpdate(game);
 };
 

@@ -6,7 +6,7 @@ gameState
 	presidentIndex number
 	undrawnPolicyCount number
 	discardedPolicyCount number
-	nextStandardPresidentIndex number
+	specialElectionFormerPresidentIndex number
 chats array
 	chat string
 	type string

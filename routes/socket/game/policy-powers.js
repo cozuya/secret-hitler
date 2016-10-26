@@ -100,6 +100,7 @@ module.exports.selectPolicies = data => {
 			]
 		});
 		sendInProgressGameUpdate(game);
+		game.trackState.electionTrackerCount = 0;
 		startElection(game);
 	}, 6000);
 };
@@ -197,30 +198,49 @@ module.exports.selectPartyMembershipInvestigate = data => {
 
 	setTimeout(() => {
 		game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
-		game.gameState.presidentIndex = game.gameState.presidentIndex === game.general.livingPlayerCount ? 0 : game.gameState.presidentIndex + 1; // todo-alpha skip dead players
 		sendInProgressGameUpdate(game);
+		startElection(game);
 	}, 6000);
 };
 
 module.exports.specialElection = game => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex} = game.gameState,
-		president = seatedPlayers[presidentIndex];
+		president = seatedPlayers[presidentIndex],
+		chat = {
+			gameChat: true,
+			timestamp: new Date(),
+			chat: [{text: 'The president must call for a special election.'}]
+		},
+		presidentChat = {
+			gameChat: true,
+			timestamp: new Date(),
+			chat: [{text: 'You must select a player for a special election.'}]
+		};
 
-	game.general.status = 'President to select special election';
-	game.publicPlayersState[presidentIndex].isLoader = true;
-	// game.gameState.nextStandardPresidentIndex = (() => {
-		// const nonDeadPlayers = seatedPlayers.filter(player => !player.isDead);
-
-		// const nextNonDeadPlayer = seatedPlayers.find((player, index) => )
-
-	// })();
-
-	president.playersState.filter((player, index) => index !== presidentIndex).forEach(player => {
-		player.notificationStatus = 'notification';
+	seatedPlayers.filter((player, i) => i !== presidentIndex).forEach(player => {
+		player.gameChats.push(chat);
 	});
 
+	game.private.unSeatedGameChats.push(chat);
+	president.gameChats.push(presidentChat);
+	game.general.status = 'President to select special election';
+	game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
+	president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
+		player.notificationStatus = 'notification';
+	});
+	game.gameState.phase = 'specialElection';
+	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))];
 	sendInProgressGameUpdate(game);
+};
+
+module.exports.selectSpecialElection = data => {
+	const game = games.find(el => el.general.uid === data.uid);
+
+	game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
+		player.notificationStatus = '';
+	});
+	startElection(game, data.playerIndex);
 };
 
 module.exports.executePlayer = game => {
@@ -239,7 +259,7 @@ module.exports.executePlayer = game => {
 		]
 	});
 
-	president.playersState.filter((player, index) => index !== presidentIndex && !player.isDead).forEach(player => {
+	president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
 		player.notificationStatus = 'notification';
 	});
 
@@ -297,6 +317,7 @@ module.exports.selectPlayerToExecute = data => {
 	publicSelectedPlayer.cardStatus.cardDisplayed = true;
 	publicSelectedPlayer.cardStatus.cardFront = 'secretrole';
 	publicSelectedPlayer.notificationStatus = 'danger';
+	publicSelectedPlayer.isDead = true;
 	sendInProgressGameUpdate(game);
 
 	setTimeout(() => {
@@ -339,6 +360,7 @@ module.exports.selectPlayerToExecute = data => {
 			publicSelectedPlayer.cardStatus.cardDisplayed = false;
 			sendInProgressGameUpdate(game);
 			setTimeout(() => {
+				game.trackState.electionTrackerCount = 0;
 				startElection(game);
 			}, 2000);
 		}

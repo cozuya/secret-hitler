@@ -174,9 +174,14 @@ export default class Gamechat extends React.Component {
 							(() => {
 								let classes = 'ui action input';
 
-								const {gameState} = this.props.gameInfo;
+								const {gameState, publicPlayersState} = this.props.gameInfo,
+									isDead = (() => {
+										if (this.props.userInfo.seatNumber && publicPlayersState) {
+											return publicPlayersState.find(player => this.props.userInfo.userName === player.userName).isDead;
+										}
+									})();
 
-								if (!this.props.userInfo.userName || (gameState.cardsDealt && !gameState.isDay)) {
+								if (!this.props.userInfo.userName || (gameState.cardsDealt && !gameState.isDay) || (isDead && !gameState.isCompleted)) {
 									classes += ' disabled';
 								}
 

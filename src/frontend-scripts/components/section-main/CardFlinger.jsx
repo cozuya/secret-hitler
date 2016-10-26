@@ -31,8 +31,6 @@ export default class CardFlinger extends React.Component {
 		}
 
 		// todo-alpha fucked up horribly when browser reloaded while waiting for chancellor policy click
-		console.log($(e.currentTarget));
-
 		if (phase === 'chancellorSelectingPolicy') {
 			socket.emit('selectedChancellorPolicy', {
 				userName: this.props.userInfo.userName,

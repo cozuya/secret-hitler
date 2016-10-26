@@ -9,28 +9,29 @@ const {sendInProgressGameUpdate} = require('../util.js')
  */
 module.exports.completeGame = (game, winningTeamName) => {
 	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName),
+		{seatedPlayers} = game.private,
+		{publicPlayersState} = game,
 		chat = {
 			gameChat: true,
 			timestamp: new Date(),
 			chat: [
 				{
 					text: winningTeamName === 'fascist' ? 'Fascists' : 'Liberals',
-					type: winningTeamName === 'fascist' ? 'fascist' : 'liberal',
+					type: winningTeamName === 'fascist' ? 'fascist' : 'liberal'
 				},
 				{text: ' win the game.'}
 			]
 		};
 
-	// todo-alpha reenable dead player's chats.
-
 	winningPrivatePlayers.forEach((player, index) => {
-		game.publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
+		publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
 		player.wonGame = true;
 	});
 
 	game.general.status = winningTeamName === 'fascist' ? 'Fascists win the game.' : 'Liberals win the game.';
+	game.gameState.isCompleted = true;
 
-	game.private.seatedPlayers.forEach(player => {
+	seatedPlayers.forEach(player => {
 		player.gameChats.push(chat);
 	});
 

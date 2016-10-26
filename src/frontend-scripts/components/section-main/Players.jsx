@@ -26,7 +26,7 @@ export default class Players extends React.Component {
 
 		if (phase === 'selectPartyMembershipInvestigate' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
-				socket.emit('selectPolicyInvestigate', {
+				socket.emit('selectPartyMembershipInvestigate', {
 					playerIndex: index,
 					uid: gameInfo.general.uid
 				});
@@ -36,6 +36,15 @@ export default class Players extends React.Component {
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedPlayerToExecute', {
+					playerIndex: index,
+					uid: gameInfo.general.uid
+				});
+			}
+		}
+
+		if (phase === 'specialElection' && userInfo.userName) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+				socket.emit('selectedSpecialElection', {
 					playerIndex: index,
 					uid: gameInfo.general.uid
 				});
