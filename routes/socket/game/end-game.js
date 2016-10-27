@@ -1,7 +1,7 @@
-const {sendInProgressGameUpdate} = require('../util.js')
-	// ,
-	// _ = require('lodash')
-	;
+const {sendInProgressGameUpdate} = require('../util.js'),
+	{userList} = require('../models.js'),
+	{sendUserList} = require('../user-requests.js'),
+	Account = require('../../../models/account.js');
 
 /**
  * @param {object} game - game to act on.
@@ -37,4 +37,38 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	game.private.unSeatedGameChats.push(chat);
 	sendInProgressGameUpdate(game);
+
+	Account.find({username: {$in: seatedPlayers.map(player => player.userName)}})
+		.then(results => {
+			const winningPlayerNames = winningPrivatePlayers.map(player => player.userName);
+
+			results.forEach(player => {
+				let winner = false;
+
+				if (winningPlayerNames.includes(player.username)) {
+					player.wins++;
+					winner = true;
+				} else {
+					player.losses++;
+				}
+
+				player.games.push(game.uid);
+				player.save(() => {
+					const userEntry = userList.find(user => user.userName === player.username);
+
+					if (userEntry) {
+						if (winner) {
+							userEntry.wins++;
+						} else {
+							userEntry.losses++;
+						}
+
+						sendUserList();
+					}
+				});
+			});
+		})
+	.catch(err => {
+		console.log(err);
+	});
 };

@@ -1,17 +1,15 @@
 'use strict';
 
 let mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
+	{Schema} = mongoose,
 	Game = new Schema({
 		uid: String,
-		time: String,
 		date: Date,
-		roles: Array,
+		playerNumber: Number,
 		winningPlayers: Array,
 		losingPlayers: Array,
 		reports: Array,
-		chats: Array,
-		kobk: Boolean
+		chats: Array
 	});
 
 module.exports = mongoose.model('Game', Game);
