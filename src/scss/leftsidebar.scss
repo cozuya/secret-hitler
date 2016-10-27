@@ -12,70 +12,35 @@
 		border: none;
 		padding: 0;
 		margin-bottom: 10px;
+		color: #ddd;
+	    box-shadow: 0px 0px 1px 1px #555;
+	    background-image: url(../images/tweed.png);
 		&:hover {
-			font-weight: 700;
-			box-shadow: 0px 0px 3px 3px $werewolfteam;
+			box-shadow: 0px 0px 3px 3px $darkfascistteam;
 		}
 
-		> div:first-child {
-			> span {
-				float: right;
-			}
-
-			.seatedcount {
-				margin-right: 15px;
-			}
-
-			.gamename {
-				float: left;
-			}
-
-			.kobk {
-				color: $werewolfteam;
-			}
-
-			&:after {
-				display: block;
-				content: '';
-				clear: both;
-			}
-		}
-
-		.rolelist {
+		.gamename {
+			text-align: center;
 			font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
-			font-weight: 700;
+			font-size: 20px;
+			padding: 3px 0;
+		}
 
-			> div {
-				text-align: center;
-
-				div {
-					width: 20%;
-					float: left;
-					padding: 2px 0;
-					border: 1px solid #eee;
-				}
-
-				.village {
-					color: #fff;
-					background: $villageteam;
-				}
-
-				.werewolf {
-					background: $werewolfteam;
-				}
-				
-				.tanner {
-					background: $tannerteam;
-				}
-
-				&:after {
-					display: block;
-					content: '';
-					clear: both;
-				}
-			}
+		.lower-row {
+			text-align: center;
+			padding: 0 0 3px;
+			color: #608cb3;
 		}
 	}
+
+			// &:after {
+			// 	display: block;
+			// 	content: '';
+			// 	clear: both;
+			// }
+
+			// font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+
 
 	.vertical.segment.inprogress {
 		background: $notification;

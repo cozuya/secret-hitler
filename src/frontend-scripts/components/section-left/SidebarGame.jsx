@@ -19,17 +19,34 @@ export default class SidebarGame extends React.Component {
 					classes += ' inprogress';
 				} else if (game.gameStatus === 'completed') {
 					classes += ' completed';
+				} else {
+					classes += ' notstarted';
 				}
 
 				return classes;
-			};
+			},
+			playersCount = () => game.minPlayersCount === game.maxPlayersCount ? `${game.minPlayersCount} players` : `${game.minPlayersCount} - ${game.maxPlayersCount} players`;
 
 		return (
 			<div data-uid={game.uid} onClick={this.routeToGame} className={gameClasses()}>
-				<div>
-					<span className="gamename">{game.name}</span>
-					<span className="seatedcount">{game.seatedCount ? game.seatedCount.toString() : ''}</span>
-				</div>
+				{(() => {
+					return game.gameStatus === 'notStarted' ?
+						(
+							<div>
+								<div className="gamename">{game.name}</div>
+								<div className="lower-row">
+									<span className="allowed-players">{playersCount()} </span>
+									<span className="divider">|</span>
+									<span className="seatedcount"> {game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'} seated</span>
+								</div>
+							</div>
+						) :
+						(
+							<div>
+								<span className="gamename">{game.name}</span>
+							</div>
+						);
+				})()}
 			</div>
 		);
 	}

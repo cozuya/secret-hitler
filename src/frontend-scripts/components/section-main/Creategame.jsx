@@ -1,8 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-import Dropdown from 'semantic-ui-dropdown';
-
-$.fn.dropdown = Dropdown;
+import Slider from 'rc-slider';
 
 export default class Creategame extends React.Component {
 	constructor() {
@@ -10,12 +8,12 @@ export default class Creategame extends React.Component {
 
 		this.leaveCreateGame = this.leaveCreateGame.bind(this);
 		this.createNewGame = this.createNewGame.bind(this);
+		this.sliderChange = this.sliderChange.bind(this);
+		this.state = {sliderValues: [5, 10]};
 	}
 
-	componentDidMount() {
-		$('div.ui.dropdown', 'section.creategame').dropdown({
-			on: 'hover'
-		});
+	sliderChange(event) {
+		this.setState({sliderValues: event});
 	}
 
 	leaveCreateGame() {
@@ -36,8 +34,8 @@ export default class Creategame extends React.Component {
 			general: {
 				uid: Math.random().toString(36).substring(6),
 				name: $creategame.find('div.gamename input').val() || 'New Game',
-				minPlayersCount: parseInt($creategame.find('div.minplayers div.dropdown > span').text(), 10),
-				maxPlayersCount: parseInt($creategame.find('div.maxplayers div.dropdown > span').text(), 10),
+				minPlayersCount: this.state.sliderValues[0],
+				maxPlayersCount: this.state.sliderValues[1],
 				status: 'Waiting for more players..',
 				private: false,
 				electionCount: 0
@@ -68,44 +66,14 @@ export default class Creategame extends React.Component {
 				</div>
 				<div className="ui grid">
 					<div className="four wide column gamename">
-						<h4 className="ui header">Game name<small>*Optional</small></h4>
+						<h4 className="ui header">Game name<small>(optional)</small></h4>
 						<div className="ui input">
 							<input maxLength="14" placeholder="New Game" />
 						</div>
 					</div>
-					<div className="four wide column minplayers">
-						<h4 className="ui header">Minimum players</h4>
-						<div className="ui dropdown">
-							<span className="text">5</span>
-							<i className="dropdown icon">
-								<div className="menu" />
-							</i>
-							<div className="menu">
-								<div className="item">5</div>
-								<div className="item">6</div>
-								<div className="item">7</div>
-								<div className="item">8</div>
-								<div className="item">9</div>
-								<div className="item">10</div>
-							</div>
-						</div>
-					</div>
-					<div className="four wide column maxplayers">
-						<h4 className="ui header">Maximum players</h4>
-						<div className="ui dropdown">
-							<span className="text">5</span>
-							<i className="dropdown icon">
-								<div className="menu" />
-							</i>
-							<div className="menu">
-								<div className="item">5</div>
-								<div className="item">6</div>
-								<div className="item">7</div>
-								<div className="item">8</div>
-								<div className="item">9</div>
-								<div className="item">10</div>
-							</div>
-						</div>
+					<div className="eight wide column slider">
+						<h4 className="ui header">Number of players</h4>
+						<Slider onChange={this.sliderChange} min={5} max={10} range defaultValue={[5, 10]} marks={{5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10'}} />
 					</div>
 					<div className="four wide column privategame">
 						<h4 className="ui header">Private game</h4>

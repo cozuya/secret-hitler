@@ -21,6 +21,7 @@ $dteal: #034f61;
 @import 'players.scss';
 @import 'settings.scss';
 @import 'tracks.scss';
+@import 'rcslider.scss';
 @import 'rightsidebar.scss';
 
 #main {
@@ -38,7 +39,7 @@ $dteal: #034f61;
 	}
 
 	.section-main > section {
-		border-top: 1px solid #1b1b1b;
+		border-top: 1px solid #3a3a3a;
 	}
 
 	.leftsidebar, .generalchat, .section-right {

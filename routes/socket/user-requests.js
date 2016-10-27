@@ -29,6 +29,9 @@ module.exports.sendGameList = socket => {
 		seatedCount: game.seatedPlayers.length,
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount,
+		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
+		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
+		electionCount: game.general.electionCount,
 		uid: game.general.uid
 	}));
 
