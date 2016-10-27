@@ -15,13 +15,17 @@ Latest version: pre-alpha
 
 ## Installation ##
 
-Install node v6.x.
+Install node v6 or higher.
 
 Install mongodb, have it in your path.
 
 > git clone https://github.com/cozuya/secret-hitler.git
 
 > cd secret-hitler
+
+You pass butter.
+
+> npm i -g yarn
 
 > yarn add global gulp nodemon
 
@@ -47,7 +51,7 @@ start development task runner:
 
 navigate to: http://localhost:8080
 
-You'll most likely need a browser extension such as Chrome's Multilogin to have multiple sessions on the same browser.  No, incognito will not work.
+You'll most likely need a browser extension such as Chrome's openMultiLogin to have multiple sessions on the same browser.  No, incognito will not work.
 
 ## Tests ##
 
@@ -63,4 +67,4 @@ This game is attributed as per the [Creative Commons Attribution-NonCommercial-S
 
 Minor image alterations and editing.
 
-Players are able to speak/communicate during the selection of policies.  This may be disabled later.
+Players are able to speak/communicate during the selection of policies.  This may be disabled later.  Veto power is slightly adjusted so that chancellor's need to select a policy prior to saying yes or no to vetoing that power.
