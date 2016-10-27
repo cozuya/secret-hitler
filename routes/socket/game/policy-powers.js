@@ -248,6 +248,11 @@ module.exports.executePlayer = game => {
 		{presidentIndex} = game.gameState,
 		president = seatedPlayers[presidentIndex];
 
+	// if (game.trackState.fascistPolicyCount === 5) {
+	if (game.trackState.fascistPolicyCount === 1) {
+		game.gameState.isVetoEnabled = true;
+	}
+
 	game.general.status = 'President to execute a player';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 

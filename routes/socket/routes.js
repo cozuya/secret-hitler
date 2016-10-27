@@ -1,6 +1,6 @@
 const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser} = require('./user-events'),
 	{sendGameInfo, sendUserGameSettings, sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
-	{selectChancellor, selectVoting, selectPresidentPolicy, selectChancellorPolicy} = require('./game/election.js'),
+	{selectChancellor, selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto} = require('./game/election.js'),
 	{selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute} = require('./game/policy-powers.js');
 
 module.exports = () => {
@@ -42,6 +42,8 @@ module.exports = () => {
 			sendGeneralChats(socket);
 		}).on('getUserGameSettings', data => {
 			sendUserGameSettings(socket, data);
+		}).on('selectedChancellorVoteOnVeto', data => {
+			selectChancellorVoteOnVeto(data);
 		})
 
 		// election
@@ -57,6 +59,9 @@ module.exports = () => {
 		})
 		.on('selectedChancellorPolicy', data => {
 			selectChancellorPolicy(data);
+		})
+		.on('selectedPresidentVoteOnVeto', data => {
+			selectPresidentVoteOnVeto(data);
 		})
 
 		// policy-powers

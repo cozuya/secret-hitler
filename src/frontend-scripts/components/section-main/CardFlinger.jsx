@@ -39,6 +39,22 @@ export default class CardFlinger extends React.Component {
 				policy: $(e.currentTarget).find('.back').hasClass('liberalp') ? 'liberal' : 'fascist'
 			});
 		}
+
+		if (phase === 'chancellorVoteOnVeto') {
+			socket.emit('selectedChancellorVoteOnVeto', {
+				vote: index === 1,
+				userName: this.props.userInfo.userName,
+				uid: gameInfo.general.uid
+			});
+		}
+
+		if (phase === 'presidentVoteOnVeto') {
+			socket.emit('selectedPresidentVoteOnVeto', {
+				vote: index === 1,
+				userName: this.props.userInfo.userName,
+				uid: gameInfo.general.uid
+			});
+		}
 	}
 
 	render() {
