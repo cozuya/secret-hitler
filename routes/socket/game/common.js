@@ -1,4 +1,5 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
+	{sendGameList} = require('../user-requests.js'),
 	_ = require('lodash');
 
 module.exports.startElection = (game, specialElectionPresidentIndex) => {
@@ -52,6 +53,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	}
 
 	game.general.electionCount++;
+	sendGameList();
 	game.general.status = `Election #${game.general.electionCount}: president to select chancellor.`;
 	pendingPresidentPlayer.gameChats.push({
 		gameChat: true,

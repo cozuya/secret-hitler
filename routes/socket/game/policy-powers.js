@@ -67,13 +67,13 @@ module.exports.selectPolicies = data => {
 	setTimeout(() => {
 		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = true;
 		sendInProgressGameUpdate(game);
-	}, 2000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 
 	setTimeout(() => {
 		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
 		president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 		sendInProgressGameUpdate(game);
-	}, 4000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 4000);
 
 	setTimeout(() => {
 		president.cardFlingerState = [];
@@ -102,7 +102,7 @@ module.exports.selectPolicies = data => {
 		sendInProgressGameUpdate(game);
 		game.trackState.electionTrackerCount = 0;
 		startElection(game);
-	}, 6000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 6000);
 };
 
 module.exports.investigateLoyalty = game => {
@@ -189,18 +189,18 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		});
 
 		sendInProgressGameUpdate(game);
-	}, 2000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 
 	setTimeout(() => {
 		president.playersState[playerIndex].cardStatus.isFlipped = false;
 		sendInProgressGameUpdate(game);
-	}, 4000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 4000);
 
 	setTimeout(() => {
 		game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
 		sendInProgressGameUpdate(game);
 		startElection(game);
-	}, 6000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 6000);
 };
 
 module.exports.specialElection = game => {
@@ -353,21 +353,21 @@ module.exports.selectPlayerToExecute = data => {
 					player.cardStatus.cardBack = seatedPlayers[i].role;
 				});
 				sendInProgressGameUpdate(game);
-			}, 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 
 			setTimeout(() => {
 				game.publicPlayersState.forEach(player => {
 					player.cardStatus.isFlipped = true;
 				});
 				completeGame(game, 'liberal');
-			}, 3000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 3000);
 		} else {
 			publicSelectedPlayer.cardStatus.cardDisplayed = false;
 			sendInProgressGameUpdate(game);
 			setTimeout(() => {
 				game.trackState.electionTrackerCount = 0;
 				startElection(game);
-			}, 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		}
-	}, 5000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 5000);
 };

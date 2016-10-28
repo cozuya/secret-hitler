@@ -1,5 +1,6 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
 	{startElection, shufflePolicies} = require('./common.js'),
+	{sendGameList} = require('../user-requests.js'),
 	{specialElection, policyPeek, investigateLoyalty, executePlayer} = require('./policy-powers.js'),
 	{completeGame} = require('./end-game.js'),
 	{games} = require('../models.js'),
@@ -83,7 +84,7 @@ module.exports.selectChancellor = data => {
 
 	setTimeout(() => {
 		sendInProgressGameUpdate(game);
-	}, 1000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 1000);
 
 	setTimeout(() => {
 		game.gameState.phase = 'voting';
@@ -95,7 +96,7 @@ module.exports.selectChancellor = data => {
 			};
 		});
 		sendInProgressGameUpdate(game);
-	}, 1500);
+	}, process.env.NODE_ENV === 'development' ? 100 : 1500);
 };
 
 module.exports.selectVoting = data => {
@@ -131,8 +132,7 @@ module.exports.selectVoting = data => {
 		sendInProgressGameUpdate(game);
 		setTimeout(() => {
 			flipBallotCards();
-		// }, 4000);
-		}, 1000);
+		}, process.env.NODE_ENV === 'development' ? 100 : 4000);
 	}
 
 	function flipBallotCards () {
@@ -150,7 +150,7 @@ module.exports.selectVoting = data => {
 				play.cardFlingerState = [];
 			});
 			sendInProgressGameUpdate(game);
-		}, 2000);
+		}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 
 		setTimeout(() => {
 			const chat = {
@@ -167,7 +167,7 @@ module.exports.selectVoting = data => {
 					play.cardStatus.isFlipped = false;
 				});
 				sendInProgressGameUpdate(game);
-			}, 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 
 			if (seatedPlayers.filter(play => play.voteStatus.didVoteYes && !play.isDead).length / game.general.livingPlayerCount > 0.5) {
 				const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingChancellor'),
@@ -183,8 +183,7 @@ module.exports.selectVoting = data => {
 
 				game.private.unSeatedGameChats.push(chat);
 
-				// if (game.trackState.fascistPolicyCount > 3 && game.private.seatedPlayers[game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingChancellor')].role.cardName === 'hitler') {
-				if (true && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler') {
+				if (process.env.NODE_ENV !== 'development' && game.trackState.fascistPolicyCount > 3 && game.private.seatedPlayers[game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingChancellor')].role.cardName === 'hitler' || (process.env.NODE_ENV === 'development' && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler')) {
 					const chat = {
 						timestamp: new Date(),
 						gameChat: true,
@@ -208,14 +207,14 @@ module.exports.selectVoting = data => {
 
 						game.private.unSeatedGameChats.push(chat);
 						sendInProgressGameUpdate(game);
-					}, 3000);
+					}, process.env.NODE_ENV === 'development' ? 100 : 3000);
 
 					setTimeout(() => {
 						game.publicPlayersState.forEach(player => {
 							player.cardStatus.isFlipped = true;
 						});
 						completeGame(game, 'fascist');
-					}, 4000);
+					}, process.env.NODE_ENV === 'development' ? 100 : 4000);
 				} else {
 					passedElection();
 				}
@@ -231,8 +230,7 @@ module.exports.selectVoting = data => {
 			}
 
 			sendInProgressGameUpdate(game);
-		// }, 6000);
-		}, 2100);
+		}, process.env.NODE_ENV === 'development' ? 2100 : 6000);
 	}
 
 	function failedElection () {
@@ -254,11 +252,11 @@ module.exports.selectVoting = data => {
 			game.gameState.undrawnPolicyCount--;
 			setTimeout(() => {
 				enactPolicy(game, game.private.policies.shift());
-			}, 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		} else {
 			setTimeout(() => {
 				startElection(game);
-			}, 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		}
 	}
 
@@ -393,7 +391,7 @@ module.exports.selectPresidentPolicy = data => {
 			cardFlinger.notificationStatus = 'notification';
 		});
 		sendInProgressGameUpdate(game);
-	}, 2000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 };
 
 module.exports.selectChancellorPolicy = data => {
@@ -459,8 +457,8 @@ module.exports.selectChancellorPolicy = data => {
 				chancellor.cardFlingerState[0].notificationStatus = chancellor.cardFlingerState[1].notificationStatus = 'notification';
 				game.gameState.phase = 'chancellorVoteOnVeto';
 				sendInProgressGameUpdate(game);
-			}, 1000);
-		}, 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 1000);
+		}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 	} else {
 		game.private.currentElectionPolicies = [];
 		game.gameState.phase = 'enactPolicy';
@@ -468,8 +466,7 @@ module.exports.selectChancellorPolicy = data => {
 		setTimeout(() => {
 			chancellor.cardFlingerState = [];
 			enactPolicy(game, enactedPolicy);
-		// }, 4000);
-		}, 1000);
+		}, process.env.NODE_ENV === 'development' ? 100 : 4000);
 	}
 };
 
@@ -562,15 +559,15 @@ module.exports.selectChancellorVoteOnVeto = data => {
 				game.publicPlayersState[game.gameState.presidentIndex].isLoader = true;
 				game.gameState.phase = 'presidentVoteOnVeto';
 				sendInProgressGameUpdate(game);
-			}, 1000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 1000);
 		} else {
 			setTimeout(() => {
 				publicChancellor.cardStatus.cardDisplayed = false;
 				chancellor.cardFlingerState = [];
 				enactPolicy(game, game.private.currentElectionPolicies[0]);
-			}, 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		}
-	}, 2000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 };
 
 module.exports.selectPresidentVoteOnVeto = data => {
@@ -641,16 +638,16 @@ module.exports.selectPresidentVoteOnVeto = data => {
 			setTimeout(() => {
 				president.cardFlingerState = [];
 				startElection(game);
-			}, 3000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 3000);
 		} else {
 			setTimeout(() => {
 				publicPresident.cardStatus.cardDisplayed = false;
 				publicChancellor.cardStatus.cardDisplayed = false;
 				president.cardFlingerState = [];
 				enactPolicy(game, game.private.currentElectionPolicies[0]);
-			}, 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		}
-	}, 2000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 };
 
 function enactPolicy (game, team) {
@@ -658,6 +655,7 @@ function enactPolicy (game, team) {
 
 	game.general.status = 'A policy is being enacted.';
 	game.trackState[`${team}PolicyCount`]++;
+	sendGameList();
 	game.trackState.enactedPolicies.push({
 		position: 'middle',
 		cardBack: team,
@@ -669,8 +667,7 @@ function enactPolicy (game, team) {
 	setTimeout(() => {
 		game.trackState.enactedPolicies[index].isFlipped = true;
 		sendInProgressGameUpdate(game);
-	// }, 4000);
-	}, 1000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 4000);
 
 	setTimeout(() => {
 		const chat = {
@@ -737,8 +734,8 @@ function enactPolicy (game, team) {
 
 			game.private.unSeatedGameChats.push(chat);
 			powerToEnact[0](game);
-		} else if (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) {
 		// } else if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
+		} else if (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) {
 			game.publicPlayersState.forEach((player, i) => {
 				player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
 				player.cardStatus.cardDisplayed = true;
@@ -751,14 +748,13 @@ function enactPolicy (game, team) {
 				});
 				completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
 				// completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
-			}, 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		} else {
 			sendInProgressGameUpdate(game);
 			game.trackState.electionTrackerCount = 0;
 			startElection(game);
 		}
-	// }, 7000);
-	}, 2000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 7000);
 }
 
 module.exports.startElection = startElection;

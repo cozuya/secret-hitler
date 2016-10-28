@@ -22,3 +22,4 @@ misc/*
 public/scripts/bundle.js
 npm-debug.log.*
 npm-debug.log
+yarn-error.log

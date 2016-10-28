@@ -29,26 +29,65 @@
 		.lower-row {
 			text-align: center;
 			padding: 0 0 3px;
+			color: #16AB39;
+		}
+
+		.liberal-count {
+			width: 80px;
+			margin: 0 auto;
+		}
+
+		.fascist-count {
+			width: 98px;
+			margin: 0 auto;
+		}
+
+		.box {
+			display: inline-block;
+			width: 10px;
+			height: 10px;
+			margin: 0 3px;
+		}
+
+		.liberal-box {
+			box-shadow: 0px 0px 1px 2px #608cb3;
+		}
+
+		.liberal-box.filled {
+			background-color: #608cb3;
+		}
+
+		.fascist-box {
+			box-shadow: 0px 0px 1px 2px #c36563;
+		}
+
+		.fascist-box.filled {
+			background-color: #c36563;
+		}
+	}
+
+	.vertical.segment.inprogress {
+		box-shadow: 0px 0px 27px -3px #FBBD08 inset;
+
+		.lower-row {
+			color: #FBBD08;
+		}
+	}
+
+	.vertical.segment.liberal {
+		box-shadow: 0px 0px 27px -3px #608cb3 inset;
+
+		.lower-row {
 			color: #608cb3;
 		}
 	}
 
-			// &:after {
-			// 	display: block;
-			// 	content: '';
-			// 	clear: both;
-			// }
+	.vertical.segment.fascist {
+		box-shadow: 0px 0px 27px -3px #c36563 inset;
 
-			// font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
-
-
-	.vertical.segment.inprogress {
-		background: $notification;
-	}
-
-	.vertical.segment.completed {
-		background: $proceed;
-		color: #fff;
+		.lower-row {
+			color: #c36563;
+		}
 	}
 
 	.games-container {

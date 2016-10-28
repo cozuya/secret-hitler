@@ -25,7 +25,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 module.exports.sendGameList = socket => {
 	const formattedGames = games.map(game => ({
 		name: game.general.name,
-		gameStatus: game.gameState.isCompleted ? 'isCompleted' : game.gameState.isStarted ? 'isStarted' : 'notStarted',
+		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isStarted ? 'isStarted' : 'notStarted',
 		seatedCount: game.seatedPlayers.length,
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount,

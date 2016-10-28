@@ -265,8 +265,7 @@ module.exports = game => {
 			player.playersState[i].cardStatus.isFlipped = true;
 		});
 		sendInProgressGameUpdate(game);
-	}, 500);
-	// }, 2000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 
 	setTimeout(() => {
 		game.private.seatedPlayers.forEach((player, i) => {
@@ -276,20 +275,17 @@ module.exports = game => {
 			});
 		});
 		sendInProgressGameUpdate(game);
-	}, 1600);
-	// }, 5000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 5000);
 
 	setTimeout(() => {
 		game.publicPlayersState.forEach(player => {
 			player.cardStatus.cardDisplayed = false;
 		});
 		sendInProgressGameUpdate(game);
-	}, 2700);
-	// }, 7000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 7000);
 
 	setTimeout(() => {
 		game.gameState.presidentIndex = -1;
 		startElection(game);
-	}, 2800);
-	// }, 9000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 9000);
 };

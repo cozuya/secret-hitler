@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 
 export default class SidebarGame extends React.Component {
 	constructor() {
@@ -15,10 +16,12 @@ export default class SidebarGame extends React.Component {
 			gameClasses = () => {
 				let classes = 'ui vertical segment';
 
-				if (game.gameStatus === 'started') {
+				if (game.gameStatus === 'isStarted') {
 					classes += ' inprogress';
-				} else if (game.gameStatus === 'completed') {
-					classes += ' completed';
+				} else if (game.gameStatus === 'fascist') {
+					classes += ' fascist';
+				} else if (game.gameStatus === 'liberal') {
+					classes += ' liberal';
 				} else {
 					classes += ' notstarted';
 				}
@@ -29,8 +32,7 @@ export default class SidebarGame extends React.Component {
 
 		return (
 			<div data-uid={game.uid} onClick={this.routeToGame} className={gameClasses()}>
-				{(() => {
-					return game.gameStatus === 'notStarted' ?
+				{(() => game.gameStatus === 'notStarted' ?
 						(
 							<div>
 								<div className="gamename">{game.name}</div>
@@ -43,10 +45,25 @@ export default class SidebarGame extends React.Component {
 						) :
 						(
 							<div>
-								<span className="gamename">{game.name}</span>
+								<div className="gamename">{game.name}</div>
+								<div className="liberal-count">
+									{(() => {
+										return _.range(1, 6).map(num => <div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />);
+									})()}
+								</div>
+								<div className="fascist-count">
+									{(() => {
+										return _.range(1, 7).map(num => <div key={num} className={num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'} />);
+									})()}
+								</div>
+								<div className="lower-row">
+									<span className="allowed-players">Election #{game.electionCount} </span>
+									<span className="divider">|</span>
+									<span className="seatedcount"> {game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'} seated</span>
+								</div>
 							</div>
 						);
-				})()}
+				)()}
 			</div>
 		);
 	}

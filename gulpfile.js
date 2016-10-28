@@ -22,7 +22,6 @@ let file;
 gulp.task('default', ['watch', 'scripts', 'styles-dark', 'styles-web', 'styles-light', 'lint-all']);
 
 gulp.task('watch', () => {
-	process.env.NODE_ENV = 'development';
 	livereload.listen();
 	gulp.watch('./src/scss/*.scss', ['styles-dark', 'styles-web', 'styles-light']);
 	gulp.watch(['./src/frontend-scripts/**/*.js*', './routes/**/*.js', './__test__/*.js'], e => {
@@ -137,7 +136,6 @@ gulp.task('makelogs', () => {
 });
 
 gulp.task('build-js', () => {
-	process.env.NODE_ENV = 'production';
 	gulp.src('./src/frontend-scripts/game-app.js')
 		.pipe(through2.obj((file, enc, next) => {
 			browserify(file.path)

@@ -1,6 +1,6 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
 	{userList} = require('../models.js'),
-	{sendUserList} = require('../user-requests.js'),
+	{sendUserList, sendGameList} = require('../user-requests.js'),
 	Account = require('../../../models/account.js');
 
 /**
@@ -29,7 +29,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 	});
 
 	game.general.status = winningTeamName === 'fascist' ? 'Fascists win the game.' : 'Liberals win the game.';
-	game.gameState.isCompleted = true;
+	game.gameState.isCompleted = winningTeamName;
+	sendGameList();
 
 	seatedPlayers.forEach(player => {
 		player.gameChats.push(chat);

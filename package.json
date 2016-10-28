@@ -91,7 +91,7 @@
   "scripts": {
     "test": "jest",
     "db": "mongod --dbpath data",
-    "start": "nodemon bin/dev"
+    "start": "set NODE_ENV=development&&nodemon bin/dev"
   },
   "main": "index.js"
 }
