@@ -38,8 +38,18 @@
 				}
 
 				.icon {
-					margin: 4px 0 0 180px;
+					margin-top: 4px;
 					cursor: pointer;
+				}
+
+				> .button {
+					padding: 2px 0px;
+					font-size: 12px;
+					width: 42px;
+					margin-left: 186px;
+					font-size: 11px;
+					background: #FBBD08 !important;
+					color: black !important;
 				}
 			}
 
@@ -57,7 +67,6 @@
 					bottom: 0;
 					line-height: 1.2;
 					max-height: 345px;
-					width: 390px;
 				}
 
 				.item {
@@ -70,7 +79,7 @@
 					color: #eee;
 
 					.chat-timestamp {
-						color: #21792A;
+						color: #848484;
 						font-size: 12px;
 					}
 				}
@@ -182,4 +191,12 @@
 
 .game > .ui.grid .eight.chat-container .gamechat .pointing.menu .icon {
 	margin: 7px 0 0 410px;
+}
+
+.sixteen.wide .game > .ui.grid .six.chat-container {
+	width: 630px !important;
+
+	.inputbar .input {
+		width: 580px !important;
+	}
 }

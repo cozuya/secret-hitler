@@ -127,11 +127,17 @@ gulp.task('reload', () => {
 		.pipe(livereload());
 });
 
-gulp.task('build', ['build-css', 'build-css-light', 'build-js', 'makelogs']);
+gulp.task('build', ['build-css', 'build-css-light', 'build-js', 'makelogs', 'makedata']);
 
 gulp.task('makelogs', () => {
 	if (!fs.existsSync('./logs')) {
 		fs.mkdirSync('./logs');
+	}
+});
+
+gulp.task('makedata', () => {
+	if (!fs.existsSync('./data')) {
+		fs.mkdirSync('./data');
 	}
 });
 

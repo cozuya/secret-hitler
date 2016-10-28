@@ -9,11 +9,22 @@ export default class Gamechat extends React.Component {
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
+		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
 			inputValue: ''
 		};
+	}
+
+	handleClickedLeaveGame() {
+		let seatNumber;
+
+		if (this.props.userInfo.seatNumber) {
+			seatNumber = this.props.userInfo.seatNumber;
+		}
+
+		this.props.onLeaveGame(seatNumber);
 	}
 
 	componentDidMount() {
@@ -127,6 +138,8 @@ export default class Gamechat extends React.Component {
 	}
 
 	render() {
+		const {userInfo, gameInfo} = this.props;
+
 		return (
 			<section className="gamechat">
 				<section className="ui pointing menu">
@@ -134,6 +147,17 @@ export default class Gamechat extends React.Component {
 					<a className={this.state.chatFilter === 'Chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>Chat</a>
 					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>Game</a>
 					<i className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'} onClick={this.handleChatLockClick} />
+					<div className={
+						(() => {
+							let classes = 'ui primary button';
+
+							if (userInfo.seatNumber && (gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted)) {
+								classes += ' disabled';
+							}
+
+							return classes;
+						})()
+					} onClick={this.handleClickedLeaveGame}>Leave Game</div>
 				</section>
 				<section className="segment chats">
 					<div className="ui list">

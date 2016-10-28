@@ -14,8 +14,8 @@ export default class Game extends React.Component {
 								(() => {
 									let classes;
 
-									if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableRightSidebarInGame) {
-										classes = 'eight ';
+									if (this.props.userInfo.gameSettings && !this.props.userInfo.gameSettings.enableRightSidebarInGame) {
+										classes = 'ten ';
 									} else {
 										classes = 'ten ';
 									}
@@ -26,8 +26,6 @@ export default class Game extends React.Component {
 								})()
 					}>
 							<Tracks
-								// selectedPlayer={this.selectedPlayer}
-								onLeaveGame={this.props.onLeaveGame}
 								userInfo={this.props.userInfo}
 								gameInfo={this.props.gameInfo}
 								socket={this.props.socket}
@@ -39,7 +37,7 @@ export default class Game extends React.Component {
 								let classes;
 
 								if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
-									classes = 'eight ';
+									classes = 'six ';
 								} else {
 									classes = 'six ';
 								}
@@ -55,6 +53,7 @@ export default class Game extends React.Component {
 							<Gamechat
 								gameInfo={this.props.gameInfo}
 								userInfo={this.props.userInfo}
+								onLeaveGame={this.props.onLeaveGame}
 								onNewGameChat={this.props.onNewGameChat}
 								socket={this.props.socket}
 							/>

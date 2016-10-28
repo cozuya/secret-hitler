@@ -176,10 +176,6 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 			account.save(() => {
 				socket.emit('gameSettings', account.gameSettings);
-
-				if (Object.keys(data)[0] === 'enableDarkTheme') {
-					socket.emit('manualReload');
-				}
 			});
 		})
 		.catch(err => {

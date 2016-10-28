@@ -391,7 +391,7 @@ module.exports.selectPresidentPolicy = data => {
 			cardFlinger.notificationStatus = 'notification';
 		});
 		sendInProgressGameUpdate(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+	}, 2000);
 };
 
 module.exports.selectChancellorPolicy = data => {
@@ -466,7 +466,7 @@ module.exports.selectChancellorPolicy = data => {
 		setTimeout(() => {
 			chancellor.cardFlingerState = [];
 			enactPolicy(game, enactedPolicy);
-		}, process.env.NODE_ENV === 'development' ? 100 : 4000);
+		}, 2000);
 	}
 };
 

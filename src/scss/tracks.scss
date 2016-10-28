@@ -108,7 +108,6 @@
 		transition-delay: .3s;
 		transition-duration: 1s;
 		transform-style: preserve-3d;
-		box-shadow: 0px 0px 4px 3px #969696;
 	}
 
 	.cardflinger-card {
@@ -170,21 +169,6 @@
 
 	.cardflinger-card.fascistp {
 		background-image: url('../images/cards/fascistp-l.png');
-	}
-
-	.cardflinger-card.veto {
-		background-image: url('../images/cards/veto-l.png');
-	}
-
-	.ui.fitted.toggle.checkbox.truncate-game {
-		position: absolute;
-		top: 388px;
-		left: 0px;
-		width: 170px;
-
-		label {
-			padding-left: 52px !important;
-		}
 	}
 
 	.enactedpolicies-card-container {
@@ -305,10 +289,6 @@
 	transform: rotateY(180deg);
 }
 
-.eight.tracks-container .tracks .remove.icon {
-	left: 540px;
-}
-
 .cardflinger-card-container.notifier::after {
 	content: '';
 	width: 120px;
@@ -326,4 +306,13 @@
 
 .cardflinger-card-container.selected::after {
 	box-shadow: 0 0 2px 8px #c36563;
+}
+
+.cardflinger-card-container.selected {
+	// top: -180px;
+    left: 670px;
+}
+
+.cardflinger-card-container.active {
+	box-shadow: 0px 0px 4px 3px #969696;
 }

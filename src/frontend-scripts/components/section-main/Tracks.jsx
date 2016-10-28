@@ -5,19 +5,8 @@ import EnactedPolicies from './EnactedPolicies.jsx';
 export default class Tracks extends React.Component {
 	constructor() {
 		super();
-		this.leaveGame = this.leaveGame.bind(this);
 		this.renderElectionTracker = this.renderElectionTracker.bind(this);
 		// this.handleClickedReportGame = this.handleClickedReportGame.bind(this);
-	}
-
-	leaveGame() {
-		let seatNumber;
-
-		if (this.props.userInfo.seatNumber) {
-			seatNumber = this.props.userInfo.seatNumber;
-		}
-
-		this.props.onLeaveGame(seatNumber);
 	}
 
 	renderElectionTracker() {
@@ -127,11 +116,6 @@ export default class Tracks extends React.Component {
 						<div className="track bottom-track-back" />
 					</div>
 					{this.renderElectionTracker()}
-					{(() => {
-						if (!userInfo.seatNumber || !gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted) {
-							return <i onClick={this.leaveGame} className="remove icon" />;
-						}
-					})()}
 				</section>
 			</section>
 		);

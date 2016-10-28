@@ -14,10 +14,10 @@ export default class Main extends React.Component {
 						let classes;
 
 						if (this.props.midSection === 'game') {
-							if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableRightSidebarInGame) {
-								classes = 'sixteen';
-							} else {
+							if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
 								classes = 'thirteen';
+							} else {
+								classes = 'sixteen';
 							}
 						} else {
 							classes = 'ten';

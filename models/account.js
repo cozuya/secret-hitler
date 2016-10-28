@@ -1,6 +1,4 @@
-'use strict';
-
-let mongoose = require('mongoose'),
+const mongoose = require('mongoose'),
 	passportLocalMongoose = require('passport-local-mongoose'),
 	{Schema} = mongoose,
 	Account = new Schema({
@@ -11,10 +9,8 @@ let mongoose = require('mongoose'),
 		},
 		password: String,
 		gameSettings: {
-			disablePopups: Boolean,
 			enableTimestamps: Boolean,
-			enableRightSidebarInGame: Boolean,
-			enableLightTheme: Boolean
+			enableRightSidebarInGame: Boolean
 		},
 		verification: {
 			email: String,

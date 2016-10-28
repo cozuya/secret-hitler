@@ -47,14 +47,12 @@ export default class SidebarGame extends React.Component {
 							<div>
 								<div className="gamename">{game.name}</div>
 								<div className="liberal-count">
-									{(() => {
-										return _.range(1, 6).map(num => <div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />);
-									})()}
+									{(() => _.range(1, 6).map(num => <div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />)
+									)()}
 								</div>
 								<div className="fascist-count">
-									{(() => {
-										return _.range(1, 7).map(num => <div key={num} className={num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'} />);
-									})()}
+									{(() => _.range(1, 7).map(num => <div key={num} className={num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'} />)
+									)()}
 								</div>
 								<div className="lower-row">
 									<span className="allowed-players">Election #{game.electionCount} </span>
@@ -62,7 +60,7 @@ export default class SidebarGame extends React.Component {
 									<span className="seatedcount"> {game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'} seated</span>
 								</div>
 							</div>
-						);
+						)
 				)()}
 			</div>
 		);
