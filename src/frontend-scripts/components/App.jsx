@@ -221,7 +221,7 @@ export class App extends React.Component {
 					socket={socket}
 				/>
 				{(() => {
-					if ((this.props.midSection === 'game' && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) || !this.props.userInfo.userName || this.props.midSection !== 'game') {
+					if ((this.props.midSection === 'game' && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) || this.props.midSection !== 'game') {
 						return (
 							<RightSidebar
 								userInfo={this.props.userInfo}

@@ -22,9 +22,23 @@ export default class Gamechat extends React.Component {
 
 		if (this.props.userInfo.seatNumber) {
 			seatNumber = this.props.userInfo.seatNumber;
+
+			if (this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
+				$(this.leaveGameModal)
+					.modal({
+						onDeny(e) {
+							console.log(e);
+						},
+						onApprove(e) {
+							console.log('Hello World!');
+							console.log(e);
+						}
+					})
+					.modal('show')
+			}
 		}
 
-		this.props.onLeaveGame(seatNumber);
+		// this.props.onLeaveGame(seatNumber);
 	}
 
 	componentDidMount() {
@@ -152,12 +166,21 @@ export default class Gamechat extends React.Component {
 							let classes = 'ui primary button';
 
 							if (userInfo.seatNumber && (gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted)) {
-								classes += ' disabled';
+								classes += ' ui-disabled';
 							}
 
 							return classes;
 						})()
 					} onClick={this.handleClickedLeaveGame}>Leave Game</div>
+					<div className="ui basic fullscreen modal leavegamemodals" ref={c => {
+						this.leaveGameModal = c;
+					}}>
+						<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players.  Do this only in the case of a game already ruined by an AFK player or if someone has already left.</h2>
+						<div className="ui ok green basic inverted button">
+							<i className="checkmark icon"></i>
+							Leave anyways
+						</div>
+					</div>
 				</section>
 				<section className="segment chats">
 					<div className="ui list">

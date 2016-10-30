@@ -51,6 +51,12 @@
 					background: #FBBD08 !important;
 					color: black !important;
 				}
+
+				> .button.ui-disabled {
+					opacity: 0.45 !important;
+    				box-shadow: none !important;
+    				cursor: pointer;
+				}
 			}
 
 			.chats {

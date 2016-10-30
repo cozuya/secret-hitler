@@ -204,7 +204,6 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	// }
 	// else
 	if (data.seatNumber && !game.gameState.isStarted) {
-		// todo-alpha unstart min player countdown if 5th player leaves seat
 		seatedPlayers.splice(game.seatedPlayers.findIndex(player => player.userName === data.userName), 1);
 	}
 

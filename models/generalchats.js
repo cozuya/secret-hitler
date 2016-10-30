@@ -1,6 +1,4 @@
-'use strict';
-
-let mongoose = require('mongoose'),
+const mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	Generalchats = new Schema({
 		chats: Array

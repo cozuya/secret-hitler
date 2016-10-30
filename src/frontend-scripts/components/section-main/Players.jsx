@@ -196,7 +196,11 @@ export default class Players extends React.Component {
 	}
 
 	clickedTakeSeat() {
-		this.props.onClickedTakeSeat();
+		if (this.props.userInfo.userName) {
+			this.props.onClickedTakeSeat();
+		} else {
+			$(this.signinModal).modal('show');
+		}
 	}
 
 	render() {

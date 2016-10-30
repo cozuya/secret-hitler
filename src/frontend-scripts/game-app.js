@@ -7,7 +7,7 @@ import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 import AppComponent from './components/App.jsx';
 import account from './account';
-import wwapp from './reducers/ww-app';
+import shapp from './reducers/sh-app';
 import polyfills from '../../iso/polyfills.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	console.log('%c%s', 'color: teal; background: #eee; font-size: 14px; font-style: italic; font-family: verdana', 'Secret Hitler');
 
 	if (container) {
-		const store = createStore(wwapp);
+		const store = createStore(shapp);
 
 		render(
 			<Provider store={store}>
