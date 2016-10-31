@@ -18,31 +18,18 @@ export default class Gamechat extends React.Component {
 	}
 
 	handleClickedLeaveGame() {
-		let seatNumber;
-
-		if (this.props.userInfo.seatNumber) {
-			seatNumber = this.props.userInfo.seatNumber;
-
-			if (this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
-				$(this.leaveGameModal)
-					.modal({
-						onDeny(e) {
-							console.log(e);
-						},
-						onApprove(e) {
-							console.log('Hello World!');
-							console.log(e);
-						}
-					})
-					.modal('show')
-			}
+		if (this.props.userInfo.seatNumber && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
+			$(this.leaveGameModal).modal('show');
 		}
-
-		// this.props.onLeaveGame(seatNumber);
 	}
 
 	componentDidMount() {
 		this.scrollChats();
+
+		$(this.leaveGameModal).on('click', '.leave-game.button', () => {  // modal methods dont seem to work.
+			this.props.onLeaveGame(this.props.userInfo.seatNumber);
+			$(this.leaveGameModal).modal('hide');
+		});
 	}
 
 	componentDidUpdate() {
@@ -175,8 +162,8 @@ export default class Gamechat extends React.Component {
 					<div className="ui basic fullscreen modal leavegamemodals" ref={c => {
 						this.leaveGameModal = c;
 					}}>
-						<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players.  Do this only in the case of a game already ruined by an AFK player or if someone has already left.</h2>
-						<div className="ui ok green basic inverted button">
+						<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players.  Do this only in the case of a game already ruined by an AFK/disconnected player or if someone has already left.</h2>
+						<div className="ui green positive inverted leave-game button">
 							<i className="checkmark icon"></i>
 							Leave anyways
 						</div>

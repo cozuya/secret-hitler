@@ -102,6 +102,10 @@ export default class Players extends React.Component {
 								classes = `${classes} seated-user`;
 							}
 
+							if (!this.props.gameInfo.seatedPlayers[i].connected) {
+								classes = `${classes} disconnected`;
+							}
+
 							return classes;
 						})()
 					}>
