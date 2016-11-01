@@ -43,14 +43,14 @@ module.exports.selectChancellor = data => {
 				text: 'You must vote for the election of president '
 			},
 			{
-				text: presidentPlayer.userName,
+				text: `${presidentPlayer.userName} {${presidentIndex + 1}}`,
 				type: 'player'
 			},
 			{
 				text: ' and chancellor '
 			},
 			{
-				text: chancellorPlayer.userName,
+				text: `${chancellorPlayer.userName} {${chancellorIndex + 1}}`,
 				type: 'player'
 			},
 			{
@@ -507,7 +507,7 @@ module.exports.selectChancellorVoteOnVeto = data => {
 			chat: [
 				{text: 'Chancellor '},
 				{
-					text: data.userName,
+					text: `${data.userName} {${chancellorIndex + 1}}`,
 					type: 'player'
 				},
 				{text: data.vote ? ' has voted to veto this election.' : ' has voted not to veto this election.'}]
@@ -607,7 +607,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 			chat: [
 				{text: 'President '},
 				{
-					text: data.userName,
+					text: `${data.userName} {${game.gameStatus.presidentIndex + 1}}`,
 					type: 'player'
 				},
 				{text: data.vote ? ' has voted to veto this election.' : ' has voted not to veto this election.'}]

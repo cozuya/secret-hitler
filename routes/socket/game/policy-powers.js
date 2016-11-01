@@ -1,10 +1,7 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
 	{games} = require('../models.js'),
 	{startElection, shufflePolicies} = require('./common.js'),
-	{completeGame} = require('./end-game.js')
-	// ,
-	// _ = require('lodash')
-	;
+	{completeGame} = require('./end-game.js');
 
 module.exports.policyPeek = game => {
 	const {seatedPlayers} = game.private,
@@ -157,12 +154,12 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
 			chat.chat = [{text: 'President '},
 			{
-				text: president.userName,
+				text: `${president.userName} {${presidentIndex + 1}}`,
 				type: 'player'
 			},
 			{text: ' investigates the party membership of '},
 			{
-				text: seatedPlayers[playerIndex].userName,
+				text: `${seatedPlayers[playerIndex].userName} {${seatedPlayers[playerIndex] + 1}}`,
 				type: 'player'
 			},
 			{text: '.'}];
@@ -177,7 +174,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 			gameChat: true,
 			chat: [{text: 'You investigate the party membership of '},
 			{
-				text: seatedPlayers[playerIndex].userName,
+				text: `${seatedPlayers[playerIndex].userName} {${seatedPlayers[playerIndex] + 1}}`,
 				type: 'player'
 			},
 			{text: ' and determine that he or she is on the '},
@@ -248,6 +245,7 @@ module.exports.executePlayer = game => {
 		{presidentIndex} = game.gameState,
 		president = seatedPlayers[presidentIndex];
 
+	// todo-alpha replace with env check
 	// if (game.trackState.fascistPolicyCount === 5) {
 	if (game.trackState.fascistPolicyCount === 1) {
 		game.gameState.isVetoEnabled = true;
@@ -286,12 +284,12 @@ module.exports.selectPlayerToExecute = data => {
 			timestamp: new Date(),
 			chat: [{text: 'President '},
 				{
-					text: president.userName,
+					text: `${president.userName} {${presidentIndex + 1}}`,
 					type: 'player'
 				},
 				{text: ' selects to execute '},
 				{
-					text: selectedPlayer.userName,
+					text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
 					type: 'player'
 				},
 				{text: '.'}]
@@ -309,7 +307,7 @@ module.exports.selectPlayerToExecute = data => {
 		timestamp: new Date(),
 		chat: [{text: 'You select to execute '},
 		{
-			text: selectedPlayer.userName,
+			text: `${selectedPlayer.userName} {${playerIndex}}`,
 			type: 'player'
 		},
 		{text: '.'}]
@@ -335,7 +333,12 @@ module.exports.selectPlayerToExecute = data => {
 			const chat = {
 				timestamp: new Date(),
 				gameChat: true,
-				chat: [{text: 'Hitler has been executed.'}]
+				chat: [
+					{
+						text: 'Hitler',
+						type: 'hitler'
+					},
+					{text: '  has been executed.'}]
 			};
 
 			publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;

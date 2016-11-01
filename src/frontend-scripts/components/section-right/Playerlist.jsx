@@ -8,12 +8,12 @@ export default class Playerlist extends React.Component {
 					<div className="clearfix">
 						<h3 className="ui header">Lobby</h3>
 						{(() => {
-							if (this.props.userList.length) {
+							if (Object.keys(this.props.userList).length) {
 								return (
 									<div>
-										<span>{this.props.userList.length}</span>
+										<span>{this.props.userList.list.length}</span>
 										<i className="large user icon" />
-										<span>{this.props.userList.totalSockets - this.props.userList.length}</span>
+										<span>{this.props.userList.totalSockets - this.props.userList.list.length}</span>
 										<i className="large unhide icon" />
 									</div>
 								);
@@ -24,10 +24,9 @@ export default class Playerlist extends React.Component {
 				</div>
 				<div className="playerlist-body">
 					{(() => {
-						const {userList} = this.props,
-							{list} = userList;
+						if (Object.keys(this.props.userList).length) {
+							const {list} = this.props.userList;
 
-						if (Object.keys(userList).length) {
 							list.sort((a, b) => {
 								const aTotal = a.wins + a.losses,
 									bTotal = b.wins + b.losses;

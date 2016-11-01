@@ -147,7 +147,7 @@ module.exports = game => {
 							text: 'in this game is '
 						},
 						{
-							text: otherFascist.userName,
+							text: `${otherFascist.userName} {${seatedPlayers.indexOf(otherFascist) + 1}}`,
 							type: 'player'
 						},
 						{
@@ -174,7 +174,7 @@ module.exports = game => {
 							text: 'in this game are '
 						},
 						{
-							text: otherFascists[0].userName,
+							text: `${otherFascists[0].userName} {${seatedPlayers.indexOf(otherFascists[0]) + 1}}`,
 							type: 'player'
 
 						},
@@ -182,7 +182,7 @@ module.exports = game => {
 							text: ' and '
 						},
 						{
-							text: otherFascists[1].userName,
+							text: `${otherFascists[1].userName} {${seatedPlayers.indexOf(otherFascists[1]) + 1}}`,
 							type: 'player'
 						},
 						{
@@ -211,7 +211,7 @@ module.exports = game => {
 							text: ' in this game is '
 						},
 						{
-							text: hitlerPlayer.userName,
+							text: `${hitlerPlayer.userName} {${seatedPlayers.indexOf(hitlerPlayer) + 1}}`,
 							type: 'player'
 
 						},
@@ -247,7 +247,7 @@ module.exports = game => {
 						text: ' in this game is '
 					},
 					{
-						text: otherFascist.userName,
+						text: `${otherFascist.userName} {${seatedPlayers.indexOf(otherFascist) + 1}}`,
 						type: 'player'
 
 					},
