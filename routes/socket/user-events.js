@@ -203,7 +203,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		// }
 	// }
 	// else
-	if (data.seatNumber && !game.gameState.isStarted) {
+	if (data.isSeated && !game.gameState.isStarted) {
 		seatedPlayers.splice(game.seatedPlayers.findIndex(player => player.userName === data.userName), 1);
 	}
 

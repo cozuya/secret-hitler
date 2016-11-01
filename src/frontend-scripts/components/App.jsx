@@ -40,7 +40,7 @@ export class App extends React.Component {
 					userName: username
 				};
 
-				info.seatNumber = (devPlayers.indexOf(username) + 1).toString();
+				info.isSeated = true;
 				socket.emit('updateSeatedUser', data);
 				socket.emit('getGameInfo', 'devgame');
 			}
@@ -88,10 +88,10 @@ export class App extends React.Component {
 			dispatch(updateUserList(list));
 		});
 
-		socket.on('updateSeatForUser', seatNumber => {
+		socket.on('updateSeatForUser', () => {
 			const {userInfo} = this.props;
 
-			userInfo.seatNumber = seatNumber;
+			userInfo.isSeated = true;
 			dispatch(updateUser(userInfo));
 		});
 
@@ -109,7 +109,7 @@ export class App extends React.Component {
 	handleCreateGameSubmit(game) {
 		const {dispatch, userInfo} = this.props;
 
-		userInfo.seatNumber = '0';
+		userInfo.isSeated = true;
 		dispatch(updateUser(userInfo));
 		dispatch(updateMidsection('game'));
 		dispatch(updateGameInfo(game));
@@ -152,7 +152,7 @@ export class App extends React.Component {
 				}
 			};
 
-		userInfo.seatNumber = '0';
+		userInfo.isSeated = true;
 		dispatch(updateUser(userInfo));
 		dispatch(updateMidsection('game'));
 		dispatch(updateGameInfo(game));
@@ -168,22 +168,22 @@ export class App extends React.Component {
 				userName: userInfo.userName
 			};
 
-		userInfo.seatNumber = (gameInfo.seatedPlayers.length + 1).toString();
+		userInfo.isSeated = true;
 		socket.emit('updateSeatedUser', data);
 		dispatch(updateUser(userInfo));
 	}
 
-	handleLeaveGame(seatNumber, isSettings = false) {
+	handleLeaveGame(isSeated, isSettings = false) {
 		const {dispatch, userInfo, gameInfo} = this.props;
 
-		if (userInfo.seatNumber) {
-			userInfo.seatNumber = '';
+		if (userInfo.isSeated) {
+			userInfo.isSeated = false;
 			dispatch(updateUser(userInfo));
 		}
 
 		socket.emit('leaveGame', {
 			userName: userInfo.userName,
-			seatNumber,
+			isSeated,
 			isSettings,
 			uid: gameInfo.general.uid
 		});

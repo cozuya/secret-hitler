@@ -18,8 +18,10 @@ export default class Gamechat extends React.Component {
 	}
 
 	handleClickedLeaveGame() {
-		if (this.props.userInfo.seatNumber && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
+		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
+		} else {
+			this.props.onLeaveGame(this.props.userInfo.isSeated);
 		}
 	}
 
@@ -27,7 +29,7 @@ export default class Gamechat extends React.Component {
 		this.scrollChats();
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {  // modal methods dont seem to work.
-			this.props.onLeaveGame(this.props.userInfo.seatNumber);
+			this.props.onLeaveGame(this.props.userInfo.isSeated);
 			$(this.leaveGameModal).modal('hide');
 		});
 	}
@@ -152,7 +154,7 @@ export default class Gamechat extends React.Component {
 						(() => {
 							let classes = 'ui primary button';
 
-							if (userInfo.seatNumber && (gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted)) {
+							if (userInfo.isSeated && (gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted)) {
 								classes += ' ui-disabled';
 							}
 
@@ -180,7 +182,7 @@ export default class Gamechat extends React.Component {
 
 						let classes = 'expando-container';
 
-						if (!userInfo.seatNumber || gameInfo.gameState.isNight || gameInfo.gameState.isCompleted || (gameInfo.gameState.isStarted && !gameInfo.gameState.isDay)) {
+						if (!userInfo.isSeated || gameInfo.gameState.isNight || gameInfo.gameState.isCompleted || (gameInfo.gameState.isStarted && !gameInfo.gameState.isDay)) {
 							classes += ' app-visibility-hidden';
 						}
 
@@ -210,7 +212,7 @@ export default class Gamechat extends React.Component {
 
 								const {gameState, publicPlayersState} = this.props.gameInfo,
 									isDead = (() => {
-										if (this.props.userInfo.seatNumber && publicPlayersState) {
+										if (this.props.userInfo.isSeated && publicPlayersState) {
 											return publicPlayersState.find(player => this.props.userInfo.userName === player.userName).isDead;
 										}
 									})();

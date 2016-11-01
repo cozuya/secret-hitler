@@ -137,8 +137,8 @@ export default class Menu extends React.Component {
 		const {gameInfo, userInfo} = this.props,
 			{gameState} = gameInfo;
 
-		if ((gameState && gameState.isCompleted && userInfo.seatNumber) || (gameState && !userInfo.seatNumber) || (gameState && !gameState.isStarted)) {
-			this.props.onLeaveGame(userInfo.seatNumber, true);
+		if ((gameState && gameState.isCompleted && userInfo.seatNumber) || (gameState && !userInfo.isSeated) || (gameState && !gameState.isStarted)) {
+			this.props.onLeaveGame(userInfo.isSeated, true);
 		} else if (!gameState) {
 			this.props.onSettingsButtonClick('settings');
 		}

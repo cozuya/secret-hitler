@@ -194,7 +194,7 @@ export default class Players extends React.Component {
 	renderTakeSeat() {
 		const {userInfo, gameInfo} = this.props;
 
-		if (!userInfo.seatNumber && !gameInfo.gameState.isStarted) {
+		if (!userInfo.isSeated && !gameInfo.gameState.isStarted) {
 			return <div className="ui left pointing label" onClick={this.clickedTakeSeat}>Take a seat</div>;
 		}
 	}

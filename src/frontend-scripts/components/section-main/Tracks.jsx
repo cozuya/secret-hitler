@@ -27,42 +27,6 @@ export default class Tracks extends React.Component {
 		}
 	}
 
-	// handleClickedReportGame() {
-	// 	this.props.socket.emit('updateReportGame', {
-	// 		seatNumber: this.props.userInfo.seatNumber,
-	// 		uid: this.props.gameInfo.uid
-	// 	});
-	// }
-
-	createReportGame() {
-	// 	const {gameInfo, userInfo} = this.props,
-	// 		{gameState} = gameInfo;
-
-	// 	if (userInfo.seatNumber && gameState.isStarted) {
-	// 		const iconClasses = () => {
-	// 			let classes = 'warning sign icon';
-
-	// 			if (gameState.reportedGame[parseInt(userInfo.seatNumber, 10)]) {
-	// 				classes += ' report-game-clicked';
-	// 			}
-
-	// 			return classes;
-	// 		};
-
-	// 		return (
-	// 			<div className="table-uid">
-	// 				Game ID: {gameInfo.uid}
-	// 				<i onClick={this.handleClickedReportGame} ref={c => {
-	// 					this.reportIcon = c;
-	// 				}} className={iconClasses()} />
-	// 				<div className="ui popup transition hidden">
-	// 						Player abuse? Mark this game for reporting to the administrators for review.  Found a bug?  Send us an email.
-	// 				</div>
-	// 			</div>
-	// 		);
-	// 	}
-	}
-
 	render() {
 		const {gameInfo, userInfo, socket} = this.props;
 
