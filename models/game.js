@@ -3,11 +3,11 @@ const mongoose = require('mongoose'),
 	Game = new Schema({
 		uid: String,
 		date: Date,
-		playerNumber: Number,
+		playerCount: Number,
 		winningPlayers: Array,
 		losingPlayers: Array,
-		reports: Array,
-		chats: Array
+		chats: Array,
+		winningTeam: String
 	});
 
 module.exports = mongoose.model('Game', Game);

@@ -19,6 +19,7 @@ general
 	maxPlayersCount number 5-10
 	status string
 	uid string
+	playerCount number 5-10
 	type number refers to fasctrack
 	livingPlayerCount number
 	electionCount number, starts at 0

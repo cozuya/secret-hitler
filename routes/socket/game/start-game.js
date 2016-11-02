@@ -21,7 +21,7 @@ module.exports = game => {
 	);
 
 	game.general.type = 0; // different fascist tracks
-	game.general.livingPlayerCount = game.publicPlayersState.length;
+	game.general.playerCount = game.general.livingPlayerCount = game.publicPlayersState.length;
 
 	if (game.publicPlayersState.length > 5) {
 		roles = roles.concat([{

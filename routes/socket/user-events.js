@@ -2,42 +2,40 @@ let generalChatCount = 0;
 
 const {games, userList, generalChats} = require('./models'),
 	{sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
-	// Game = require('../../models/game'),
+	Game = require('../../models/game'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
-	// saveGame = game => {
-	// 	const gameToSave = new Game({
-	// 		uid: game.uid,
-	// 		time: game.time,
-	// 		date: new Date(),
-	// 		roles: game.roles,
-	// 		winningPlayers: game.internals.seatedPlayers.filter(player => player.wonGame).map(player => (
-	// 			{
-	// 				userName: player.userName,
-	// 				originalRole: player.originalRole,
-	// 				trueRole: player.trueRole
-	// 			}
-	// 		)),
-	// 		losingPlayers: game.internals.seatedPlayers.filter(player => !player.wonGame).map(player => (
-	// 			{
-	// 				userName: player.userName,
-	// 				originalRole: player.originalRole,
-	// 				trueRole: player.trueRole
-	// 			}
-	// 		)),
-	// 		reports: Object.keys(game.gameState.reportedGame).filter(seatNumber => game.gameState.reportedGame[seatNumber]).map(seatNumber => game.internals.seatedPlayers[seatNumber].userName),
-	// 		chats: game.chats.filter(chat => !chat.gameChat).map(chat => (
-	// 			{
-	// 				timestamp: chat.timestamp,
-	// 				chat: chat.chat,
-	// 				userName: chat.userName
-	// 			}
-	// 		)),
-	// 		kobk: game.kobk
-	// 	});
+	saveGame = game => {
+		const gameToSave = new Game({
+			uid: game.general.uid,
+			date: new Date(),
+			winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => (
+				{
+					userName: player.userName,
+					team: player.role.team,
+					role: player.role.cardName
+				}
+			)),
+			losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => (
+				{
+					userName: player.userName,
+					team: player.role.team,
+					role: player.role.cardName
+				}
+			)),
+			chats: game.chats.filter(chat => !chat.gameChat).map(chat => (
+				{
+					timestamp: chat.timestamp,
+					chat: chat.chat,
+					userName: chat.userName
+				}
+			)),
+			winningTeam: game.gameState.isCompleted,
+			playerCount: game.general.playerCount
+		});
 
-	// 	gameToSave.save();
-	// },
+		gameToSave.save();
+	},
 	startGame = require('./game/start-game.js'),
 	{secureGame} = require('./util.js'),
 	{sendInProgressGameUpdate} = require('./util.js'),
@@ -62,6 +60,7 @@ const {games, userList, generalChats} = require('./models'),
 				if (gameState.isStarted && !gameState.isCompleted) {
 					publicPlayersState[playerIndex].connected = false;
 					sendInProgressGameUpdate(game);
+				// todo-alpha
 				// } else if (gameState.isCompleted && Object.keys(game.seated).filter(seat => !game.seated[seat].connected).length === 6) {
 				// 	saveGame(game);
 				// 	games.splice(games.indexOf(game), 1);
@@ -197,18 +196,23 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		socket.leave(game.uid);
 	}
 
-	// if (game && game.gameState.isCompleted && data.isSeated) {
-	// 	const playerSeat = Object.keys(game.seated).find(seatName => game.seated[seatName].userName === data.userName);
+	if (game && game.gameState.isStarted && data.isSeated) {
+		const playerIndex = game.private.seatedPlayers.findIndex(player => player.userName === data.userName);
 
-	// 	game.seated[playerSeat].connected = false;
+		publicPlayersState[playerIndex].leftGame = true;
 
-	// 	completedGameLeftPlayerCount = Object.keys(game.seated).filter(seat => !game.seated[seat].connected).length;
+		if (publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+			if (game.gameState.isCompleted) {
+				console.log('Hello World!');
+				saveGame(game);
+			}
 
-	// 	if (completedGameLeftPlayerCount === 7) {
-	// 		saveGame(game);
-	// 	}
-	// }
-	// else
+			console.log('splice 1');
+
+			games.splice(games.indexOf(game), 1);
+		}
+	}
+
 	if (data.isSeated && !game.gameState.isStarted) {
 		publicPlayersState.splice(publicPlayersState.findIndex(player => player.userName === data.userName), 1);
 	}
@@ -217,6 +221,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		socket.emit('gameUpdate', {}, data.isSettings);
 		io.sockets.in(data.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
+		console.log('splice2');
 	} else {
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 		socket.emit('gameUpdate', {}, data.isSettings);
@@ -231,7 +236,7 @@ module.exports.checkUserStatus = socket => {
 	if (passport && Object.keys(passport).length) {
 		const {user} = passport,
 			{sockets} = io.sockets,
-			game = games.find(game => game.publicPlayersState.find(player => player.userName === user)),
+			game = games.find(game => game.publicPlayersState.find(player => player.userName === user && !player.leftGame)),
 			oldSocketID = Object.keys(sockets).find(socketID => ((sockets[socketID].handshake.session.passport && Object.keys(sockets[socketID].handshake.session.passport).length) && (sockets[socketID].handshake.session.passport.user === user && socketID !== socket.id)));
 
 		if (oldSocketID && sockets[oldSocketID]) {

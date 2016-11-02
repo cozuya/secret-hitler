@@ -33,10 +33,6 @@ module.exports.selectChancellor = data => {
 		};
 	});
 
-	// game.private.seatedPlayers.filter(player => !player.isDead).forEach(player => {
-	// 	player.cardStatus.cardBack = {};
-	// });
-
 	sendInProgressGameUpdate(game);
 
 	seatedPlayers.forEach(player => {
@@ -378,8 +374,10 @@ module.exports.selectPresidentPolicy = data => {
 			cardBack: `${game.private.currentElectionPolicies[nonDiscardedPolicies[1]]}p`
 		}
 	}];
+
 	game.general.status = 'Waiting on chancellor enactment.';
 	game.gameState.phase = 'chancellorSelectingPolicy';
+
 	chancellor.gameChats.push({
 		timestamp: new Date(),
 		gameChat: true,
@@ -387,6 +385,7 @@ module.exports.selectPresidentPolicy = data => {
 	});
 
 	sendInProgressGameUpdate(game);
+
 	setTimeout(() => {
 		president.cardFlingerState = [];
 		chancellor.cardFlingerState.forEach(cardFlinger => {
@@ -422,6 +421,7 @@ module.exports.selectChancellorPolicy = data => {
 		game.private.currentElectionPolicies = [data.policy];
 		game.general.status = 'Chancellor to vote on policy veto.';
 		sendInProgressGameUpdate(game);
+
 		setTimeout(() => {
 			const chat = {
 				gameChat: true,
@@ -661,6 +661,7 @@ function enactPolicy (game, team) {
 	game.general.status = 'A policy is being enacted.';
 	game.trackState[`${team}PolicyCount`]++;
 	sendGameList();
+
 	game.trackState.enactedPolicies.push({
 		position: 'middle',
 		cardBack: team,
@@ -739,8 +740,7 @@ function enactPolicy (game, team) {
 
 			game.private.unSeatedGameChats.push(chat);
 			powerToEnact[0](game);
-		// } else if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
-		} else if (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) {
+		} else if (process.env.NODE_ENV === 'development' && (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) || (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6)) {
 			game.publicPlayersState.forEach((player, i) => {
 				player.cardStatus.cardFront = 'secretrole';
 				player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
@@ -752,8 +752,11 @@ function enactPolicy (game, team) {
 				game.publicPlayersState.forEach((player, i) => {
 					player.cardStatus.isFlipped = true;
 				});
-				completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
-				// completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
+				if (process.env.NODE_ENV === 'development') {
+					completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
+				} else {
+					completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
+				}
 			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		} else {
 			sendInProgressGameUpdate(game);

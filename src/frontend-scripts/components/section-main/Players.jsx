@@ -102,7 +102,7 @@ export default class Players extends React.Component {
 								classes = `${classes} seated-user`;
 							}
 
-							if (!publicPlayersState[i].connected) {
+							if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
 								classes = `${classes} disconnected`;
 							}
 
@@ -124,7 +124,7 @@ export default class Players extends React.Component {
 								classes = `${classes} ${playersState[i].nameStatus}`;
 							}
 
-							if (!publicPlayersState[i].connected) {
+							if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
 								classes = `${classes} disconnected`;
 							}
 
@@ -165,8 +165,6 @@ export default class Players extends React.Component {
 							className={
 							(() => {
 								let classes = 'card card-back';
-
-								console.log(playersState);
 
 								if (playersState.length && Object.keys(playersState[i]).length && Object.keys(playersState[i].cardStatus).length && Object.keys(playersState[i].cardStatus.cardBack).length) {
 									if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {

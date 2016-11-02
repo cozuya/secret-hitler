@@ -16,7 +16,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	})();
 
 	game.gameState.presidentIndex = (() => {
-		const findNext = index => index > game.seatedPlayers.length ? 0 : index + 1,
+		const findNext = index => index >= game.general.playerCount ? 0 : index + 1,
 			{presidentIndex} = game.gameState;
 
 		let index = presidentIndex + 1,
@@ -41,12 +41,13 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			}
 		}
 
+		console.log(index, 'presidentindex in common js');
 		return index;
 	})();
 
 	const {seatedPlayers} = game.private,
 		{presidentIndex, previousElectedGovernment} = game.gameState,
-		pendingPresidentPlayer = game.private.seatedPlayers[presidentIndex];
+		pendingPresidentPlayer = seatedPlayers[presidentIndex];
 
 	if (game.general.livingPlayerCount < 6 && previousElectedGovernment.length) {
 		game.gameState.previousElectedGovernment = [previousElectedGovernment[0]];
