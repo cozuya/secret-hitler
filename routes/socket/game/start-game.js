@@ -20,8 +20,7 @@ module.exports = game => {
 		}]
 	);
 
-	game.general.type = 0; // different fascist tracks
-	game.general.playerCount = game.general.livingPlayerCount = game.publicPlayersState.length;
+	game.general.livingPlayerCount = game.publicPlayersState.length;
 
 	if (game.publicPlayersState.length > 5) {
 		roles = roles.concat([{
@@ -64,9 +63,8 @@ module.exports = game => {
 			team: 'liberal'
 		}]);
 	}
-	// console.log(_.shuffle(game.publicPlayersState));
+	game.general.type = game.general.playerCount < 7 ? 0 : game.general.playerCount < 9 ? 1 : 2; // different fascist tracks
 	game.publicPlayersState = _.shuffle(game.publicPlayersState);
-	// console.log(game.publicPlayersState);
 	game.private.seatedPlayers = _.cloneDeep(game.publicPlayersState);
 	game.private.policies = shufflePolicies();
 	game.gameState.discardedPolicyCount = 0;
@@ -87,8 +85,6 @@ module.exports = game => {
 			play.notificationStatus = play.nameStatus = '';
 			play.cardStatus = i === index ? {cardBack: player.role} : {};
 		});
-
-		// console.log(player.playersState);
 
 		player.gameChats = [{
 			timestamp: new Date(),
@@ -114,7 +110,6 @@ module.exports = game => {
 		}]
 	}];
 
-	game.gameState.isStarted = true;
 	sendInProgressGameUpdate(game);
 
 	setTimeout(() => {

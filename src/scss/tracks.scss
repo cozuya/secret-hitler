@@ -73,7 +73,18 @@
 			-webkit-backface-visibility: hidden;  // thanks osx safari
 			backface-visibility: hidden;
 			transform: rotateX(180deg);
+		}
+
+		.track0 {
 			background-image: url('../images/tracks/fascisttrack56.png');
+		}
+
+		.track1 {
+			background-image: url('../images/tracks/fascisttrack78.png');
+		}
+
+		.track2 {
+			background-image: url('../images/tracks/fascisttrack910.png');
 		}
 
 		.remove.icon {

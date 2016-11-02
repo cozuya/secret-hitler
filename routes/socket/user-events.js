@@ -99,19 +99,22 @@ module.exports.updateSeatedUser = data => {
 	io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 
 	if (publicPlayersState.length === game.general.maxPlayersCount) {
-	// 	let startGamePause = 5;
-	// 	const countDown = setInterval(() => {
-	// 		if (startGamePause === 0) {
-	// 			clearInterval(countDown);
-	// 			startGame(game);
-	// 		} else {
-	// 			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
-	// 			sendInProgressGameUpdate(game);
-	// 		}
-	// 		startGamePause--;
-	// 	}, 1000);
+		let startGamePause = 5;
 
-		startGame(game);
+		game.gameState.isStarted = true;
+		game.general.playerCount = publicPlayersState.length;
+		const countDown = setInterval(() => {
+			if (startGamePause === 0) {
+				clearInterval(countDown);
+				startGame(game);
+			} else {
+				game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
+				io.in(game.general.uid).emit('gameUpdate', secureGame(game));
+			}
+			startGamePause--;
+		}, 1000);
+
+		// startGame(game);
 	}
 
 	sendGameList();

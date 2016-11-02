@@ -77,7 +77,21 @@ export default class Tracks extends React.Component {
 						})()
 					}>
 						<div className="track bottom-track-front" />
-						<div className="track bottom-track-back" />
+						<div className={
+							(() => {
+								let classes = 'track bottom-track-back';
+
+								if (gameInfo.general.playerCount < 7) {
+									classes += ' track0';
+								} else if (gameInfo.general.playerCount < 9) {
+									classes += ' track1';
+								} else {
+									classes += ' track2';
+								}
+
+								return classes;
+							})()
+						} />
 					</div>
 					{this.renderElectionTracker()}
 				</section>
