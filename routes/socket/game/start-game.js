@@ -69,6 +69,7 @@ module.exports = game => {
 	// console.log(game.publicPlayersState);
 	game.private.seatedPlayers = _.cloneDeep(game.publicPlayersState);
 	game.private.policies = shufflePolicies();
+	game.gameState.discardedPolicyCount = 0;
 	game.general.status = 'Dealing roles..';
 
 	game.publicPlayersState.forEach(player => {

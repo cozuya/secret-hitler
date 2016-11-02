@@ -11,6 +11,7 @@ module.exports.policyPeek = game => {
 	if (game.gameState.undrawnPolicyCount < 3) {
 		game.private.policies = shufflePolicies(game.private.policies);
 		game.gameState.undrawnPolicyCount = 17;
+		game.gameState.discardedPolicyCount = 0;
 	}
 
 	game.general.status = 'President to peek at policies';
@@ -245,9 +246,7 @@ module.exports.executePlayer = game => {
 		{presidentIndex} = game.gameState,
 		president = seatedPlayers[presidentIndex];
 
-	// todo-alpha replace with env check
-	// if (game.trackState.fascistPolicyCount === 5) {
-	if (game.trackState.fascistPolicyCount === 1) {
+	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || game.trackState.fascistPolicyCount === 5) {
 		game.gameState.isVetoEnabled = true;
 	}
 

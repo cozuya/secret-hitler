@@ -16,10 +16,10 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	})();
 
 	game.gameState.presidentIndex = (() => {
-		const findNext = index => index >= game.general.playerCount ? 0 : index + 1,
+		const findNext = index => index + 1 === game.general.playerCount ? 0 : index + 1,
 			{presidentIndex} = game.gameState;
 
-		let index = presidentIndex + 1,
+		let index = presidentIndex,
 			{specialElectionFormerPresidentIndex} = game.gameState,
 			notDeadPresident = false;
 
@@ -34,14 +34,13 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		}
 
 		while (!notDeadPresident) {
+			index = findNext(index);
+
 			if (!ineligableIndexes.includes(index)) {
 				notDeadPresident = true;
-			} else {
-				index = findNext(index);
 			}
 		}
 
-		console.log(index, 'presidentindex in common js');
 		return index;
 	})();
 

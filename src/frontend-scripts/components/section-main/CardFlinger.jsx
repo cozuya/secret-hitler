@@ -12,9 +12,8 @@ export default class CardFlinger extends React.Component {
 			{gameState} = gameInfo,
 			{phase} = gameState,
 			index = parseInt($(e.currentTarget).attr('data-index'), 10);
-		// todo alpha need checking against multiple clicks taking over other actions i.e. presiddent clicked twice on cards fast and was able to have chancellor skip his turn to discard.  I think
 
-		if (phase === 'voting') {
+		if (phase === 'voting' && gameInfo.cardFlingerState[0].action === 'active') {
 			socket.emit('selectedVoting', {
 				vote: index === 1,
 				userName: this.props.userInfo.userName,
@@ -22,7 +21,7 @@ export default class CardFlinger extends React.Component {
 			});
 		}
 
-		if (phase === 'presidentSelectingPolicy') {
+		if (phase === 'presidentSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
 			socket.emit('selectedPresidentPolicy', {
 				userName: this.props.userInfo.userName,
 				uid: gameInfo.general.uid,
@@ -31,7 +30,7 @@ export default class CardFlinger extends React.Component {
 		}
 
 		// todo-alpha fucked up horribly when browser reloaded while waiting for chancellor policy click
-		if (phase === 'chancellorSelectingPolicy') {
+		if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
 			socket.emit('selectedChancellorPolicy', {
 				userName: this.props.userInfo.userName,
 				uid: gameInfo.general.uid,
@@ -40,7 +39,7 @@ export default class CardFlinger extends React.Component {
 			});
 		}
 
-		if (phase === 'chancellorVoteOnVeto') {
+		if (phase === 'chancellorVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
 			socket.emit('selectedChancellorVoteOnVeto', {
 				vote: index === 1,
 				userName: this.props.userInfo.userName,
@@ -48,7 +47,7 @@ export default class CardFlinger extends React.Component {
 			});
 		}
 
-		if (phase === 'presidentVoteOnVeto') {
+		if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
 			socket.emit('selectedPresidentVoteOnVeto', {
 				vote: index === 1,
 				userName: this.props.userInfo.userName,
