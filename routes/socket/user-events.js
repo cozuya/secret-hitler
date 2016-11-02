@@ -68,6 +68,7 @@ const {games, userList, generalChats} = require('./models'),
 					games.splice(games.indexOf(game), 1);
 				} else if (!gameState.isStarted) {
 					// todo-release kick out observer sockets/route to default?
+					// todo-alpha suspend/reset > 5 < 20 countdown dealy if below min players
 					publicPlayersState.splice(playerIndex, 1);
 					io.sockets.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted) {
@@ -83,7 +84,23 @@ const {games, userList, generalChats} = require('./models'),
 
 module.exports.updateSeatedUser = data => {
 	const game = games.find(el => el.general.uid === data.uid),
-		{publicPlayersState} = game;
+		{publicPlayersState} = game,
+		startGameTimer = () => {
+			let startGamePause = 5;
+
+			game.gameState.isStarted = true;
+			game.general.playerCount = publicPlayersState.length;
+			const countDown = setInterval(() => {
+				if (startGamePause === 0) {
+					clearInterval(countDown);
+					startGame(game);
+				} else {
+					game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
+					io.in(game.general.uid).emit('gameUpdate', secureGame(game));
+				}
+				startGamePause--;
+			}, 1000);
+		};
 
 	publicPlayersState.push({
 		userName: data.userName,
@@ -98,23 +115,25 @@ module.exports.updateSeatedUser = data => {
 
 	io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 
-	if (publicPlayersState.length === game.general.maxPlayersCount) {
-		let startGamePause = 5;
+	if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.pendingCountdown) { // sloppy but not trivial to get around
+		startGameTimer();
+	}
 
-		game.gameState.isStarted = true;
-		game.general.playerCount = publicPlayersState.length;
+	if (publicPlayersState.length === game.general.minPlayersCount) {
+		let startGamePause = 20;
+
+		game.gameState.pendingCountdown = true;
 		const countDown = setInterval(() => {
-			if (startGamePause === 0) {
+			if (startGamePause === 4) {
 				clearInterval(countDown);
-				startGame(game);
+				game.gameState.pendingCountdown = false;
+				startGameTimer();
 			} else {
 				game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
 				io.in(game.general.uid).emit('gameUpdate', secureGame(game));
 			}
 			startGamePause--;
 		}, 1000);
-
-		// startGame(game);
 	}
 
 	sendGameList();
@@ -198,7 +217,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	if (game && io.sockets.adapter.rooms[game.uid]) {
 		socket.leave(game.uid);
 	}
-
+	// todo-alpha suspend/reset > 5 < 20 countdown dealy if below min players
 	if (game && game.gameState.isStarted && data.isSeated) {
 		const playerIndex = game.private.seatedPlayers.findIndex(player => player.userName === data.userName);
 
@@ -206,7 +225,6 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 
 		if (publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 			if (game.gameState.isCompleted) {
-				console.log('Hello World!');
 				saveGame(game);
 			}
 

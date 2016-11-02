@@ -67,6 +67,7 @@ export class App extends React.Component {
 		socket.on('gameList', list => {
 			dispatch(updateGameList(list));
 		});
+		
 
 		socket.on('gameUpdate', (game, isSettings) => {
 			if (this.props.midSection !== 'game' && Object.keys(game).length) {
@@ -130,8 +131,8 @@ export class App extends React.Component {
 				general: {
 					uid: 'devgame',
 					name: 'New Game',
-					minPlayersCount: 9,
-					maxPlayersCount: 9,
+					minPlayersCount: 7,
+					maxPlayersCount: 7,
 					private: false,
 					status: 'Waiting for more players..',
 					electionCount: 0
