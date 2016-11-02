@@ -46,7 +46,7 @@ const {games, userList, generalChats} = require('./models'),
 
 		if (passport && Object.keys(passport).length) {
 			const userIndex = userList.findIndex(user => user.userName === passport.user),
-				game = games.find(game => game.seatedPlayers.find(player => player.userName === passport.user));
+				game = games.find(game => game.publicPlayersState.find(player => player.userName === passport.user));
 
 			socket.emit('manualDisconnection');
 			if (userIndex !== -1) {
@@ -56,23 +56,23 @@ const {games, userList, generalChats} = require('./models'),
 			}
 
 			if (game) {
-				const {gameState, seatedPlayers} = game,
-					playerIndex = game.seatedPlayers.findIndex(player => player.userName === passport.user);
+				const {gameState, publicPlayersState} = game,
+					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
 				if (gameState.isStarted && !gameState.isCompleted) {
-					seatedPlayers[playerIndex].connected = false;
+					publicPlayersState[playerIndex].connected = false;
 					sendInProgressGameUpdate(game);
 				// } else if (gameState.isCompleted && Object.keys(game.seated).filter(seat => !game.seated[seat].connected).length === 6) {
 				// 	saveGame(game);
 				// 	games.splice(games.indexOf(game), 1);
-				} else if (seatedPlayers.length === 1) {
+				} else if (publicPlayersState.length === 1) {
 					games.splice(games.indexOf(game), 1);
 				} else if (!gameState.isStarted) {
 					// todo-release kick out observer sockets/route to default?
-					seatedPlayers.splice(playerIndex, 1);
+					publicPlayersState.splice(playerIndex, 1);
 					io.sockets.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted) {
-					seatedPlayers[playerIndex].connected = false;
+					publicPlayersState[playerIndex].connected = false;
 					sendInProgressGameUpdate(game);
 				}
 				sendGameList();
@@ -84,16 +84,22 @@ const {games, userList, generalChats} = require('./models'),
 
 module.exports.updateSeatedUser = data => {
 	const game = games.find(el => el.general.uid === data.uid),
-		{seatedPlayers} = game;
+		{publicPlayersState} = game;
 
-	seatedPlayers.push({
+	publicPlayersState.push({
 		userName: data.userName,
-		connected: true
+		connected: true,
+		cardStatus: {
+			cardDisplayed: false,
+			isFlipped: false,
+			cardFront: 'secretrole',
+			cardBack: {}
+		}
 	});
 
 	io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 
-	if (seatedPlayers.length === game.general.maxPlayersCount) {
+	if (publicPlayersState.length === game.general.maxPlayersCount) {
 	// 	let startGamePause = 5;
 	// 	const countDown = setInterval(() => {
 	// 		if (startGamePause === 0) {
@@ -185,29 +191,29 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
-		{seatedPlayers} = game;
+		{publicPlayersState} = game;
 
 	if (game && io.sockets.adapter.rooms[game.uid]) {
 		socket.leave(game.uid);
 	}
 
-	// if (game && game.gameState.isCompleted && data.seatNumber) {
-		// const playerSeat = Object.keys(game.seated).find(seatName => game.seated[seatName].userName === data.userName);
+	// if (game && game.gameState.isCompleted && data.isSeated) {
+	// 	const playerSeat = Object.keys(game.seated).find(seatName => game.seated[seatName].userName === data.userName);
 
-		// game.seated[playerSeat].connected = false;
+	// 	game.seated[playerSeat].connected = false;
 
-		// completedGameLeftPlayerCount = Object.keys(game.seated).filter(seat => !game.seated[seat].connected).length;
+	// 	completedGameLeftPlayerCount = Object.keys(game.seated).filter(seat => !game.seated[seat].connected).length;
 
-		// if (completedGameLeftPlayerCount === 7) {
-		// 	saveGame(game);
-		// }
+	// 	if (completedGameLeftPlayerCount === 7) {
+	// 		saveGame(game);
+	// 	}
 	// }
 	// else
 	if (data.isSeated && !game.gameState.isStarted) {
-		seatedPlayers.splice(game.seatedPlayers.findIndex(player => player.userName === data.userName), 1);
+		publicPlayersState.splice(publicPlayersState.findIndex(player => player.userName === data.userName), 1);
 	}
 
-	if (game && !game.seatedPlayers.length) {
+	if (game && !game.publicPlayersState.length) {
 		socket.emit('gameUpdate', {}, data.isSettings);
 		io.sockets.in(data.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
@@ -225,7 +231,7 @@ module.exports.checkUserStatus = socket => {
 	if (passport && Object.keys(passport).length) {
 		const {user} = passport,
 			{sockets} = io.sockets,
-			game = games.find(game => game.seatedPlayers.find(player => player.userName === user)),
+			game = games.find(game => game.publicPlayersState.find(player => player.userName === user)),
 			oldSocketID = Object.keys(sockets).find(socketID => ((sockets[socketID].handshake.session.passport && Object.keys(sockets[socketID].handshake.session.passport).length) && (sockets[socketID].handshake.session.passport.user === user && socketID !== socket.id)));
 
 		if (oldSocketID && sockets[oldSocketID]) {
@@ -234,7 +240,7 @@ module.exports.checkUserStatus = socket => {
 		}
 
 		if (game && game.gameState.isStarted && !game.gameState.isCompleted) {
-			game.seatedPlayers.find(player => player.userName === user).connected = true;
+			game.publicPlayersState.find(player => player.userName === user).connected = true;
 			socket.join(game.general.uid);
 			socket.emit('updateSeatForUser', true);
 			sendInProgressGameUpdate(game);

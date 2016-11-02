@@ -10,7 +10,7 @@ export default class Policies extends React.Component {
 	clickedDraw() {
 		const {gameInfo, userInfo, socket} = this.props;
 
-		if (userInfo.userName && gameInfo.playersState[gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
+		if (userInfo.userName && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
 			socket.emit('selectedPolicies', {uid: gameInfo.general.uid});
 		}
 	}
@@ -63,7 +63,7 @@ export default class Policies extends React.Component {
 					(() => {
 						let classes = 'draw';
 
-						if (userInfo.userName && userInfo.isSeated && gameInfo.gameState.isStarted && gameInfo.playersState[gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName)] && gameInfo.playersState[gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
+						if (userInfo.userName && userInfo.isSeated && gameInfo.gameState.isStarted && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)] && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
 							classes += ' notifier';
 						}
 

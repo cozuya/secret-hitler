@@ -73,11 +73,7 @@ private
 		reportedGame bool
 		playersState array 5-10
 			obj
-				cardStatus
-					cardDisplayed bool
-					isFlipped bool
-					cardFront string
-					cardBack object
+				cardBack object
 				notificationStatus string outline around player
 				nameStatus string fascist hitler disabled liberal
 				hasVoted bool

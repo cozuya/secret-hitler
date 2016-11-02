@@ -33,6 +33,10 @@ module.exports.selectChancellor = data => {
 		};
 	});
 
+	// game.private.seatedPlayers.filter(player => !player.isDead).forEach(player => {
+	// 	player.cardStatus.cardBack = {};
+	// });
+
 	sendInProgressGameUpdate(game);
 
 	seatedPlayers.forEach(player => {
@@ -197,6 +201,7 @@ module.exports.selectVoting = data => {
 
 					setTimeout(() => {
 						game.publicPlayersState.forEach((player, i) => {
+							player.cardStatus.cardFront = 'secretrole';
 							player.cardStatus.cardDisplayed = true;
 							player.cardStatus.cardBack = seatedPlayers[i].role;
 						});
@@ -737,6 +742,7 @@ function enactPolicy (game, team) {
 		// } else if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
 		} else if (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) {
 			game.publicPlayersState.forEach((player, i) => {
+				player.cardStatus.cardFront = 'secretrole';
 				player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
 				player.cardStatus.cardDisplayed = true;
 			});

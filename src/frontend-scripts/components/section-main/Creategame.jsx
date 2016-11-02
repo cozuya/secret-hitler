@@ -40,9 +40,15 @@ export default class Creategame extends React.Component {
 				private: false,
 				electionCount: 0
 			},
-			seatedPlayers: [{
+			publicPlayersState: [{
 				userName: this.props.userInfo.userName,
-				connected: true
+				connected: true,
+				cardStatus: {
+					cardDisplayed: false,
+					isFlipped: false,
+					cardFront: 'secretrole',
+					cardBack: {}
+				}
 			}],
 			playersState: [],
 			cardFlingerState: [],

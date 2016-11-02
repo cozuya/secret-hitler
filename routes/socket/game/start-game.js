@@ -21,9 +21,9 @@ module.exports = game => {
 	);
 
 	game.general.type = 0; // different fascist tracks
-	game.general.livingPlayerCount = game.seatedPlayers.length;
+	game.general.livingPlayerCount = game.publicPlayersState.length;
 
-	if (game.seatedPlayers.length > 5) {
+	if (game.publicPlayersState.length > 5) {
 		roles = roles.concat([{
 			cardName: 'liberal',
 			icon: 4,
@@ -31,7 +31,7 @@ module.exports = game => {
 		}]);
 	}
 
-	if (game.seatedPlayers.length > 6) {
+	if (game.publicPlayersState.length > 6) {
 		roles = roles.concat([{
 			cardName: 'fascist',
 			icon: 1,
@@ -40,7 +40,7 @@ module.exports = game => {
 		game.general.type = 1;
 	}
 
-	if (game.seatedPlayers.length > 7) {
+	if (game.publicPlayersState.length > 7) {
 		roles = roles.concat([{
 			cardName: 'liberal',
 			icon: 5,
@@ -48,7 +48,7 @@ module.exports = game => {
 		}]);
 	}
 
-	if (game.seatedPlayers.length > 8) {
+	if (game.publicPlayersState.length > 8) {
 		roles = roles.concat([{
 			cardName: 'fascist',
 			icon: 2,
@@ -57,45 +57,37 @@ module.exports = game => {
 		game.general.type = 2;
 	}
 
-	if (game.seatedPlayers.length > 9) {
+	if (game.publicPlayersState.length > 9) {
 		roles = roles.concat([{
 			cardName: 'liberal',
 			icon: 4,
 			team: 'liberal'
 		}]);
 	}
-
-	game.gameState.isStarted = true;
-	game.seatedPlayers = _.shuffle(game.seatedPlayers);
-	game.private.seatedPlayers = _.cloneDeep(game.seatedPlayers);
+	// console.log(_.shuffle(game.publicPlayersState));
+	game.publicPlayersState = _.shuffle(game.publicPlayersState);
+	// console.log(game.publicPlayersState);
+	game.private.seatedPlayers = _.cloneDeep(game.publicPlayersState);
 	game.private.policies = shufflePolicies();
 	game.general.status = 'Dealing roles..';
 
-	game.publicPlayersState = game.private.seatedPlayers.map(player => ({
-		userName: player.userName,
-		cardStatus: {
-			cardDisplayed: true,
-			isFlipped: false,
-			cardFront: 'secretrole',
-			cardBack: {}
-		}
-	}));
+	game.publicPlayersState.forEach(player => {
+		player.cardStatus.cardDisplayed = true;
+	});
 
 	game.private.seatedPlayers.forEach((player, i) => {
 		const index = Math.floor(Math.random() * roles.length);
 
 		player.role = roles[index];
 		roles.splice(index, 1);
-		player.playersState = _.range(0, game.seatedPlayers.length).map(play => ({}));
+		player.playersState = _.range(0, game.publicPlayersState.length).map(play => ({}));
 
 		player.playersState.forEach((play, index) => {
-			play.cardStatus = {
-				isFlipped: false
-			};
-
 			play.notificationStatus = play.nameStatus = '';
-			play.cardStatus.cardBack = index === game.seatedPlayers.findIndex(pla => pla.userName === player.userName) ? player.role : {};
+			play.cardStatus = i === index ? {cardBack: player.role} : {};
 		});
+
+		// console.log(player.playersState);
 
 		player.gameChats = [{
 			timestamp: new Date(),
@@ -121,11 +113,12 @@ module.exports = game => {
 		}]
 	}];
 
+	game.gameState.isStarted = true;
 	sendInProgressGameUpdate(game);
 
 	setTimeout(() => {
 		game.private.seatedPlayers.forEach((player, i) => {
-			const playerCountInGame = game.seatedPlayers.length,
+			const playerCountInGame = game.private.seatedPlayers.length,
 				{seatedPlayers} = game.private,
 				{cardName} = player.role;
 
@@ -285,6 +278,11 @@ module.exports = game => {
 	}, process.env.NODE_ENV === 'development' ? 100 : 7000);
 
 	setTimeout(() => {
+		game.private.seatedPlayers.forEach(player => {
+			player.playersState.forEach(state => {
+				state.cardStatus = {};
+			});
+		});
 		game.gameState.presidentIndex = -1;
 		startElection(game);
 	}, process.env.NODE_ENV === 'development' ? 100 : 9000);

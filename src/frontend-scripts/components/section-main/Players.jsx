@@ -70,9 +70,9 @@ export default class Players extends React.Component {
 
 	renderPlayers() {
 		const {gameInfo, userInfo} = this.props,
-			{gameState, playersState, publicPlayersState} = gameInfo;
+			{playersState, gameState, publicPlayersState} = gameInfo;
 
-		return gameInfo.seatedPlayers.map((player, i) => {
+		return publicPlayersState.map((player, i) => {
 			return (
 				<div key={i}
 					data-index={i}
@@ -98,11 +98,11 @@ export default class Players extends React.Component {
 						(() => {
 							let classes = 'player-number';
 
-							if (userInfo.userName && gameInfo.seatedPlayers.findIndex(player => player.userName === userInfo.userName) === i) {
+							if (userInfo.userName && publicPlayersState.findIndex(player => player.userName === userInfo.userName) === i) {
 								classes = `${classes} seated-user`;
 							}
 
-							if (!this.props.gameInfo.seatedPlayers[i].connected) {
+							if (!publicPlayersState[i].connected) {
 								classes = `${classes} disconnected`;
 							}
 
@@ -124,7 +124,7 @@ export default class Players extends React.Component {
 								classes = `${classes} ${playersState[i].nameStatus}`;
 							}
 
-							if (!this.props.gameInfo.seatedPlayers[i].connected) {
+							if (!publicPlayersState[i].connected) {
 								classes = `${classes} disconnected`;
 							}
 
@@ -154,9 +154,7 @@ export default class Players extends React.Component {
 							(() => {
 								let classes = 'card card-front';
 
-								if (Object.keys(playersState).length && playersState[i].cardStatus.cardFront) {
-									classes = `${classes} ${playersState[i].cardStatus.cardFront}`;
-								} else if (publicPlayersState && publicPlayersState[i].cardStatus.cardFront) {
+								if (Object.keys(publicPlayersState[i]).length && publicPlayersState[i].cardStatus.cardFront) {
 									classes = `${classes} ${publicPlayersState[i].cardStatus.cardFront}`;
 								}
 
@@ -168,17 +166,19 @@ export default class Players extends React.Component {
 							(() => {
 								let classes = 'card card-back';
 
-								if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
-									if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
-										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
-									} else {
-										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
-									}
-								} else if (Object.keys(playersState).length && Object.keys(playersState[i].cardStatus.cardBack).length) {
+								console.log(playersState);
+
+								if (playersState.length && Object.keys(playersState[i]).length && Object.keys(playersState[i].cardStatus).length && Object.keys(playersState[i].cardStatus.cardBack).length) {
 									if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
 										classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
 									} else {
 										classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
+									}
+								} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
+									if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
+										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
+									} else {
+										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
 									}
 								}
 

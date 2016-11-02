@@ -137,10 +137,15 @@ export class App extends React.Component {
 					status: 'Waiting for more players..',
 					electionCount: 0
 				},
-				seatedPlayers: [{
+				publicPlayersState: [{
 					userName: this.props.userInfo.userName,
 					connected: true,
-					gameChats: []
+					cardStatus: {
+						cardDisplayed: false,
+						isFlipped: false,
+						cardFront: 'secretrole',
+						cardBack: {}
+					}
 				}],
 				playersState: [],
 				cardFlingerState: [],
