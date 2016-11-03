@@ -33,7 +33,7 @@ export class App extends React.Component {
 			socket.emit('getUserGameSettings', username);
 
 			// ** begin devhelpers **
-			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall'];
+			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb'];
 			if (devPlayers.includes(username)) {
 				const data = {
 					uid: 'devgame',
@@ -67,7 +67,6 @@ export class App extends React.Component {
 		socket.on('gameList', list => {
 			dispatch(updateGameList(list));
 		});
-		
 
 		socket.on('gameUpdate', (game, isSettings) => {
 			if (this.props.midSection !== 'game' && Object.keys(game).length) {
@@ -131,8 +130,8 @@ export class App extends React.Component {
 				general: {
 					uid: 'devgame',
 					name: 'New Game',
-					minPlayersCount: 7,
-					maxPlayersCount: 7,
+					minPlayersCount: 9,
+					maxPlayersCount: 9,
 					private: false,
 					status: 'Waiting for more players..',
 					electionCount: 0

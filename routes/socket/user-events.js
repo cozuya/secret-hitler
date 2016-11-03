@@ -86,7 +86,7 @@ module.exports.updateSeatedUser = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{publicPlayersState} = game,
 		startGameTimer = () => {
-			let startGamePause = 5;
+			let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 5;
 
 			game.gameState.isStarted = true;
 			game.general.playerCount = publicPlayersState.length;
@@ -117,9 +117,7 @@ module.exports.updateSeatedUser = data => {
 
 	if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.pendingCountdown) { // sloppy but not trivial to get around
 		startGameTimer();
-	}
-
-	if (publicPlayersState.length === game.general.minPlayersCount) {
+	} else if (publicPlayersState.length === game.general.minPlayersCount) {
 		let startGamePause = 20;
 
 		game.gameState.pendingCountdown = true;

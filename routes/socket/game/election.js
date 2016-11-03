@@ -15,8 +15,6 @@ module.exports.selectChancellor = data => {
 		presidentPlayer = game.private.seatedPlayers[presidentIndex],
 		chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
 
-	game.gameState.isVetoEnabled = true;
-
 	if (!isAlreadySelected) {
 		game.publicPlayersState[presidentIndex].isLoader = false;
 
@@ -267,7 +265,7 @@ module.exports.selectVoting = data => {
 
 	function passedElection () {
 		const {presidentIndex} = game.gameState,
-			chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingChancellor');
+			chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 
 		let {policies} = game.private;
 
@@ -569,7 +567,7 @@ module.exports.selectChancellorVoteOnVeto = data => {
 				game.publicPlayersState[game.gameState.presidentIndex].isLoader = true;
 				game.gameState.phase = 'presidentVoteOnVeto';
 				sendInProgressGameUpdate(game);
-			}, process.env.NODE_ENV === 'development' ? 100 : 1000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 1000); // todo-alpha instaflip? (prod)
 		} else {
 			setTimeout(() => {
 				publicChancellor.cardStatus.cardDisplayed = false;
@@ -709,7 +707,7 @@ function enactPolicy (game, team) {
 				{
 					0: null,
 					1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-					2: [specialElection, 'The president must select a player for a special election'],
+					2: [specialElection, 'The president must select a player for a special election.'],
 					3: [executePlayer, 'The president must select a player for execution.'],
 					4: [executePlayer, 'The president must select a player for execution.'],
 					5: null
@@ -717,7 +715,7 @@ function enactPolicy (game, team) {
 				{
 					0: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
 					1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-					2: [specialElection, 'The president must select a player for a special election'],
+					2: [specialElection, 'The president must select a player for a special election.'],
 					3: [executePlayer, 'The president must select a player for execution.'],
 					4: [executePlayer, 'The president must select a player for execution.'],
 					5: null

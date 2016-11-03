@@ -160,7 +160,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 			},
 			{text: ' investigates the party membership of '},
 			{
-				text: `${seatedPlayers[playerIndex].userName} {${seatedPlayers[playerIndex] + 1}}`,
+				text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
 				type: 'player'
 			},
 			{text: '.'}];
@@ -175,7 +175,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 			gameChat: true,
 			chat: [{text: 'You investigate the party membership of '},
 			{
-				text: `${seatedPlayers[playerIndex].userName} {${seatedPlayers[playerIndex] + 1}}`,
+				text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
 				type: 'player'
 			},
 			{text: ' and determine that he or she is on the '},
@@ -192,13 +192,13 @@ module.exports.selectPartyMembershipInvestigate = data => {
 	setTimeout(() => {
 		president.playersState[playerIndex].cardStatus.isFlipped = false;
 		sendInProgressGameUpdate(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 4000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 6000);
 
 	setTimeout(() => {
 		game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
 		sendInProgressGameUpdate(game);
 		startElection(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 6000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 8000);
 };
 
 module.exports.specialElection = game => {
@@ -209,7 +209,7 @@ module.exports.specialElection = game => {
 			gameChat: true,
 			timestamp: new Date(),
 			chat: [{text: 'The president must call for a special election.'}]
-		},
+		}, // todo-alpha chats messed up
 		presidentChat = {
 			gameChat: true,
 			timestamp: new Date(),
@@ -238,6 +238,7 @@ module.exports.selectSpecialElection = data => {
 	game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
 		player.notificationStatus = '';
 	});
+	// todo-alpha didn't work when spec elec pres was next pres and then killed someone - skipped over, should ahve gone twice
 	startElection(game, data.playerIndex);
 };
 
@@ -245,10 +246,6 @@ module.exports.executePlayer = game => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex} = game.gameState,
 		president = seatedPlayers[presidentIndex];
-
-	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || game.trackState.fascistPolicyCount === 5) {
-		game.gameState.isVetoEnabled = true;
-	}
 
 	game.general.status = 'President to execute a player';
 	game.publicPlayersState[presidentIndex].isLoader = true;
