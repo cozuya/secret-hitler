@@ -130,8 +130,8 @@ export class App extends React.Component {
 				general: {
 					uid: 'devgame',
 					name: 'New Game',
-					minPlayersCount: 9,
-					maxPlayersCount: 9,
+					minPlayersCount: 5,
+					maxPlayersCount: 5,
 					private: false,
 					status: 'Waiting for more players..',
 					electionCount: 0

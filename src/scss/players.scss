@@ -173,15 +173,15 @@
 			opacity: .3;
 		}
 
-		.player-name.liberal {
+		.player-name.liberal, .player-number.liberal {
 			color: #608cb3;
 		}
 
-		.player-name.fascist {
+		.player-name.fascist, .player-number.fascist {
 			color: #c36563;
 		}
 
-		.player-name.hitler {
+		.player-name.hitler, .player-number.hitler {
 			color: #be0804;
 		}
 	}

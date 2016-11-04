@@ -67,8 +67,8 @@ module.exports = game => {
 	game.general.type = game.general.playerCount < 7 ? 0 : game.general.playerCount < 9 ? 1 : 2; // different fascist tracks
 	game.publicPlayersState = _.shuffle(game.publicPlayersState);
 	game.private.seatedPlayers = _.cloneDeep(game.publicPlayersState);
-	game.private.policies = shufflePolicies();
-	game.gameState.discardedPolicyCount = 0;
+	game.private.policies = [];
+	shufflePolicies(game);
 	game.general.status = 'Dealing roles..';
 
 	game.publicPlayersState.forEach(player => {

@@ -32,6 +32,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 	game.gameState.isCompleted = winningTeamName;
 	sendGameList();
 
+	publicPlayersState.forEach((publicPlayer, index) => {
+		publicPlayer.nameStatus = seatedPlayers[index].role.cardName;
+	});
+
 	seatedPlayers.forEach(player => {
 		player.gameChats.push(chat);
 	});

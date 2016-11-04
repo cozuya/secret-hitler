@@ -185,7 +185,7 @@ module.exports.selectVoting = data => {
 
 				game.private.unSeatedGameChats.push(chat);
 
-				// todo-alpha crash during normal gameplay (fpc == 4) at game.private.seatedPlayers[chancellorIndex].role is undefined ??
+				// todo-release crash during normal gameplay (fpc == 4) at game.private.seatedPlayers[chancellorIndex].role is undefined ??  bump up if this happens again
 				if (process.env.NODE_ENV !== 'development' && game.trackState.fascistPolicyCount > 3 && game.private.seatedPlayers[game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingChancellor')].role.cardName === 'hitler' || (process.env.NODE_ENV === 'development' && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler')) {
 					const chat = {
 						timestamp: new Date(),
@@ -247,12 +247,20 @@ module.exports.selectVoting = data => {
 				chat: [{text: 'The third consecutive election has failed and the top policy is enacted.'}]
 			};
 
+			let {undrawnPolicyCount} = game.gameState;
+
 			game.gameState.previousElectedGovernment = [];
 			game.private.unSeatedGameChats.push(chat);
+
 			seatedPlayers.forEach(player => {
 				player.gameChats.push(chat);
 			});
-			game.gameState.undrawnPolicyCount--;
+
+			if (!undrawnPolicyCount) {
+				shufflePolicies(game);
+			}
+
+			undrawnPolicyCount--;
 			setTimeout(() => {
 				enactPolicy(game, game.private.policies.shift());
 			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
@@ -267,8 +275,6 @@ module.exports.selectVoting = data => {
 		const {presidentIndex} = game.gameState,
 			chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 
-		let {policies} = game.private;
-
 		game.general.status = 'Waiting on presidential discard.';
 		game.publicPlayersState[presidentIndex].isLoader = true;
 		seatedPlayers[presidentIndex].gameChats.push({
@@ -278,13 +284,11 @@ module.exports.selectVoting = data => {
 		});
 
 		if (game.gameState.undrawnPolicyCount < 3) { // todo-alpha had an undefined policy card in late game
-			policies = shufflePolicies(policies);
-			game.gameState.undrawnPolicyCount = 17;
-			game.gameState.discardedPolicyCount = 0;
+			shufflePolicies(game);
 		}
 
 		game.gameState.undrawnPolicyCount--;
-		game.private.currentElectionPolicies = [policies.shift(), policies.shift(), policies.shift()];
+		game.private.currentElectionPolicies = [game.private.policies.shift(), game.private.policies.shift(), game.private.policies.shift()];
 		seatedPlayers[presidentIndex].cardFlingerState = [
 			{
 				position: 'middle-far-left',
@@ -647,7 +651,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 				president.cardFlingerState = [];
 				if (game.gameState.discardedPolicyCount === 3) {
 					game.gameState.previousElectedGovernment = [];
-					game.gameState.undrawnPolicyCount--; // todo-alpha check against this
+					game.gameState.discardedPolicyCount++;
 					enactPolicy(game, game.private.policies.shift());
 				} else {
 					startElection(game);
@@ -676,6 +680,8 @@ function enactPolicy (game, team) {
 		cardBack: team,
 		isFlipped: false
 	});
+
+	console.log(game.private.policies);
 
 	sendInProgressGameUpdate(game);
 

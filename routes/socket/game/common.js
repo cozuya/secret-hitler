@@ -6,7 +6,6 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const {publicPlayersState} = game,
 		ineligableIndexes = (() => {
 			const {specialElectionFormerPresidentIndex, previousElectedGovernment} = game.gameState;
-			console.log(previousElectedGovernment);
 
 			let toConcat = [];
 
@@ -85,8 +84,10 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	sendInProgressGameUpdate(game);
 };
 
-module.exports.shufflePolicies = (remainingPolicies = []) => {
-	const count = _.countBy(remainingPolicies);
+module.exports.shufflePolicies = game => {
+	const count = _.countBy(game.private.policies);
 
-	return remainingPolicies.concat(_.shuffle((_.range(1, 12 - (count.fascist || 0)).map(num => 'fascist').concat(_.range(1, 7 - (count.liberal || 0)).map(num => 'liberal')))));
+	game.private.policies = game.private.policies.concat(_.shuffle((_.range(1, 12 - (count.fascist + game.trackState.fascistPolicyCount || 0)).map(num => 'fascist').concat(_.range(1, 7 - (count.liberal + game.trackState.liberalPolicyCounter || 0)).map(num => 'liberal')))));
+	game.gameState.undrawnPolicyCount = game.private.policies.length;
+	game.gameState.discardedPolicyCount = 0;
 };

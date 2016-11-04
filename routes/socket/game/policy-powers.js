@@ -9,9 +9,7 @@ module.exports.policyPeek = game => {
 		president = seatedPlayers[presidentIndex];
 
 	if (game.gameState.undrawnPolicyCount < 3) {
-		game.private.policies = shufflePolicies(game.private.policies);
-		game.gameState.undrawnPolicyCount = 17;
-		game.gameState.discardedPolicyCount = 0;
+		shufflePolicies(game);
 	}
 
 	game.general.status = 'President to peek at policies';
@@ -29,6 +27,7 @@ module.exports.selectPolicies = data => {
 
 	game.publicPlayersState[presidentIndex].isLoader = false;
 
+	// todo-alpha make sure this works when undrawn policies are less than 3
 	president.cardFlingerState = [
 		{
 			position: 'middle-far-left',
@@ -185,6 +184,8 @@ module.exports.selectPartyMembershipInvestigate = data => {
 			},
 			{text: ' team.'}]
 		});
+
+		president.playerState[presidentIndex].nameStatus = playersTeam;
 
 		sendInProgressGameUpdate(game);
 	}, process.env.NODE_ENV === 'development' ? 100 : 2000);

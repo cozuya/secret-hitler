@@ -106,6 +106,12 @@ export default class Players extends React.Component {
 								classes = `${classes} disconnected`;
 							}
 
+							if (Object.keys(playersState).length && playersState[i].nameStatus) {
+								classes = `${classes} ${playersState[i].nameStatus}`;
+							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
+							}
+
 							return classes;
 						})()
 					}>
@@ -122,6 +128,8 @@ export default class Players extends React.Component {
 
 							if (Object.keys(playersState).length && playersState[i].nameStatus) {
 								classes = `${classes} ${playersState[i].nameStatus}`;
+							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
 							}
 
 							if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
