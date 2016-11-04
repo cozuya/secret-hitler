@@ -7,7 +7,7 @@ export default class CardFlinger extends React.Component {
 		this.handleCardClick = this.handleCardClick.bind(this);
 	}
 
-	handleCardClick(e) {  // todo-alpha one time someone clicked fast and it didn't go through to the back end or something
+	handleCardClick(e) {
 		const {gameInfo, socket} = this.props,
 			{gameState} = gameInfo,
 			{phase} = gameState,
@@ -29,7 +29,6 @@ export default class CardFlinger extends React.Component {
 			});
 		}
 
-		// todo-alpha fucked up horribly when browser reloaded while waiting for chancellor policy click
 		if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
 			socket.emit('selectedChancellorPolicy', {
 				userName: this.props.userInfo.userName,

@@ -22,12 +22,14 @@ module.exports.selectPolicies = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{presidentIndex} = game.gameState,
 		{seatedPlayers} = game.private,
-		president = seatedPlayers[presidentIndex],
-		{policies} = game.private;
+		president = seatedPlayers[presidentIndex];
 
 	game.publicPlayersState[presidentIndex].isLoader = false;
 
-	// todo-alpha make sure this works when undrawn policies are less than 3
+	if (game.private.policies.length < 3) {
+		shufflePolicies(game);
+	}
+
 	president.cardFlingerState = [
 		{
 			position: 'middle-far-left',
@@ -35,7 +37,7 @@ module.exports.selectPolicies = data => {
 			cardStatus: {
 				isFlipped: false,
 				cardFront: 'policy',
-				cardBack: `${policies[0]}p`
+				cardBack: `${game.private.policies[0]}p`
 			}
 		},
 		{
@@ -44,7 +46,7 @@ module.exports.selectPolicies = data => {
 			cardStatus: {
 				isFlipped: false,
 				cardFront: 'policy',
-				cardBack: `${policies[1]}p`
+				cardBack: `${game.private.policies[1]}p`
 			}
 		},
 		{
@@ -53,7 +55,7 @@ module.exports.selectPolicies = data => {
 			cardStatus: {
 				isFlipped: false,
 				cardFront: 'policy',
-				cardBack: `${policies[2]}p`
+				cardBack: `${game.private.policies[2]}p`
 			}
 		}
 	];
@@ -80,18 +82,18 @@ module.exports.selectPolicies = data => {
 			chat: [
 				{text: 'You peek at the top 3 policies and see that they are a '},
 				{
-					text: policies[0],
-					type: policies[0]
+					text: game.private.policies[0],
+					type: game.private.policies[0]
 				},
 				{text: ', a '},
 				{
-					text: policies[1],
-					type: policies[1]
+					text: game.private.policies[1],
+					type: game.private.policies[1]
 				},
 				{text: ', and a '},
 				{
-					text: policies[2],
-					type: policies[2]
+					text: game.private.policies[2],
+					type: game.private.policies[2]
 				},
 				{text: ' policy.'}
 			]
@@ -185,7 +187,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 			{text: ' team.'}]
 		});
 
-		president.playerState[presidentIndex].nameStatus = playersTeam;
+		president.playersState[playerIndex].nameStatus = playersTeam;
 
 		sendInProgressGameUpdate(game);
 	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
@@ -210,7 +212,7 @@ module.exports.specialElection = game => {
 			gameChat: true,
 			timestamp: new Date(),
 			chat: [{text: 'The president must call for a special election.'}]
-		}, // todo-alpha chats messed up
+		},
 		presidentChat = {
 			gameChat: true,
 			timestamp: new Date(),
@@ -239,7 +241,7 @@ module.exports.selectSpecialElection = data => {
 	game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
 		player.notificationStatus = '';
 	});
-	// todo-alpha didn't work when spec elec pres was next pres and then killed someone - skipped over, should ahve gone twice
+	// todo-alpha didn't work when spec elec pres was next pres and then killed someone - skipped over, should have gone twice
 	startElection(game, data.playerIndex);
 };
 

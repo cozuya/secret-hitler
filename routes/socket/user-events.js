@@ -60,19 +60,16 @@ const {games, userList, generalChats} = require('./models'),
 				if (gameState.isStarted && !gameState.isCompleted) {
 					publicPlayersState[playerIndex].connected = false;
 					sendInProgressGameUpdate(game);
-				// todo-alpha
-				// } else if (gameState.isCompleted && Object.keys(game.seated).filter(seat => !game.seated[seat].connected).length === 6) {
-				// 	saveGame(game);
-				// 	games.splice(games.indexOf(game), 1);
+				} else if (gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1) {
+					saveGame(game);
+					games.splice(games.indexOf(game), 1);
 				} else if (publicPlayersState.length === 1) {
 					games.splice(games.indexOf(game), 1);
 				} else if (!gameState.isStarted) {
-					// todo-release kick out observer sockets/route to default?
-					// todo-alpha suspend/reset > 5 < 20 countdown dealy if below min players
 					publicPlayersState.splice(playerIndex, 1);
 					io.sockets.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted) {
-					publicPlayersState[playerIndex].connected = false;
+					publicPlayersState[playerIndex].leftGame = true;
 					sendInProgressGameUpdate(game);
 				}
 				sendGameList();
@@ -88,7 +85,7 @@ module.exports.updateSeatedUser = data => {
 		startGameTimer = () => {
 			let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 5;
 
-			game.gameState.isStarted = true;
+			game.gameState.isTracksFlipped = true;
 			game.general.playerCount = publicPlayersState.length;
 			const countDown = setInterval(() => {
 				if (startGamePause === 0) {
@@ -115,16 +112,16 @@ module.exports.updateSeatedUser = data => {
 
 	io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 
-	if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.pendingCountdown) { // sloppy but not trivial to get around
+	if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.isStarted) { // sloppy but not trivial to get around
+		game.gameState.isStarted = true;
 		startGameTimer();
 	} else if (publicPlayersState.length === game.general.minPlayersCount) {
 		let startGamePause = 20;
 
-		game.gameState.pendingCountdown = true;
+		game.gameState.isStarted = true;
 		const countDown = setInterval(() => {
 			if (startGamePause === 4) {
 				clearInterval(countDown);
-				game.gameState.pendingCountdown = false;
 				startGameTimer();
 			} else {
 				game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
@@ -136,19 +133,6 @@ module.exports.updateSeatedUser = data => {
 
 	sendGameList();
 };
-
-// module.exports.handleUpdatedReportGame = (socket, data) => {
-// 	const game = games.find(el => el.uid === data.uid),
-// 		seatNumber = parseInt(data.seatNumber, 10);
-
-// 	if (game.gameState.reportedGame[seatNumber]) {
-// 		game.gameState.reportedGame[seatNumber] = false;
-// 	} else {
-// 		game.gameState.reportedGame[seatNumber] = true;
-// 	}
-
-// 	sendInProgressGameUpdate(game);
-// };
 
 module.exports.handleAddNewGame = (socket, data) => {
 	data.private = {
@@ -212,10 +196,10 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{publicPlayersState} = game;
 
-	if (game && io.sockets.adapter.rooms[game.uid]) {
-		socket.leave(game.uid);
+	if (game && io.sockets.adapter.rooms[game.general.uid]) {
+		socket.leave(game.general.uid);
 	}
-	// todo-alpha suspend/reset > 5 < 20 countdown dealy if below min players
+
 	if (game && game.gameState.isStarted && data.isSeated) {
 		const playerIndex = game.private.seatedPlayers.findIndex(player => player.userName === data.userName);
 
@@ -225,8 +209,6 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 			if (game.gameState.isCompleted) {
 				saveGame(game);
 			}
-
-			console.log('splice 1');
 
 			games.splice(games.indexOf(game), 1);
 		}
@@ -240,7 +222,6 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		socket.emit('gameUpdate', {}, data.isSettings);
 		io.sockets.in(data.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
-		console.log('splice2');
 	} else {
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 		socket.emit('gameUpdate', {}, data.isSettings);

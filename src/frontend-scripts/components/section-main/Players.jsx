@@ -100,23 +100,21 @@ export default class Players extends React.Component {
 
 							if (userInfo.userName && publicPlayersState.findIndex(player => player.userName === userInfo.userName) === i) {
 								classes = `${classes} seated-user`;
+							} else if (Object.keys(playersState).length && playersState[i].nameStatus) {
+								classes = `${classes} ${playersState[i].nameStatus}`;
+							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
 							}
 
 							if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
 								classes = `${classes} disconnected`;
 							}
 
-							if (Object.keys(playersState).length && playersState[i].nameStatus) {
-								classes = `${classes} ${playersState[i].nameStatus}`;
-							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
-								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
-							}
-
 							return classes;
 						})()
 					}>
 						{(() => {
-							if (gameState.isStarted) {
+							if (gameState.isTracksFlipped) {
 								return i + 1;
 							}
 						})()}
@@ -200,7 +198,7 @@ export default class Players extends React.Component {
 	renderTakeSeat() {
 		const {userInfo, gameInfo} = this.props;
 
-		if (!userInfo.isSeated && !gameInfo.gameState.isStarted) {
+		if (!userInfo.isSeated && !gameInfo.gameState.isTracksFlipped) {
 			return <div className="ui left pointing label" onClick={this.clickedTakeSeat}>Take a seat</div>;
 		}
 	}

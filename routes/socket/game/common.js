@@ -3,20 +3,19 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	_ = require('lodash');
 
 module.exports.startElection = (game, specialElectionPresidentIndex) => {
-	const {publicPlayersState} = game,
-		ineligableIndexes = (() => {
-			const {specialElectionFormerPresidentIndex, previousElectedGovernment} = game.gameState;
+	const ineligableIndexes = (() => {
+		const {specialElectionFormerPresidentIndex, previousElectedGovernment} = game.gameState;
 
-			let toConcat = [];
+		let toConcat = [];
 
-			if (!specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex !== 0) {
-				toConcat = previousElectedGovernment.length ? previousElectedGovernment[0] : [];
-			}
+		if (!specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex !== 0) {
+			toConcat = previousElectedGovernment.length ? previousElectedGovernment : [];
+		}
 
-			return game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(toConcat);
-		})();
+		return game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(toConcat);
+	})();
 
-	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || publicPlayersState.filter(player => player.isDead).length === 2) {
+	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || game.trackState.fascistPolicyCount === 5) {
 		game.gameState.isVetoEnabled = true;
 	}
 

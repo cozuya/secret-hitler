@@ -40,6 +40,7 @@ publicPlayersState array
 		isDead bool
 		connected bool
 		isLoader bool
+		leftGame bool
 		userName string
 		cardStatus
 			cardDisplayed bool

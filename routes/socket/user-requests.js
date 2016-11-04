@@ -25,7 +25,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 module.exports.sendGameList = socket => {
 	const formattedGames = games.map(game => ({
 		name: game.general.name,
-		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isStarted ? 'isStarted' : 'notStarted',
+		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
 		seatedCount: game.publicPlayersState.length,
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount,
@@ -61,7 +61,12 @@ module.exports.sendUserList = socket => {
 };
 
 module.exports.sendGameInfo = (socket, uid) => {
-	const game = games.find(el => el.general.uid === uid);
+	const game = games.find(el => el.general.uid === uid),
+		{passport} = socket.handshake.session;
+
+	if (passport && Object.keys(passport).length && game.publicPlayersState.find(player => player.userName === passport.user)) {
+		game.publicPlayersState.find(player => player.userName === passport.user).leftGame = false;
+	}
 
 	socket.join(uid);
 	socket.emit('gameUpdate', secureGame(game));

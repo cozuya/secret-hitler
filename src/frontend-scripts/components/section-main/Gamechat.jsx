@@ -34,8 +34,14 @@ export default class Gamechat extends React.Component {
 		});
 	}
 
-	componentDidUpdate() {
+	componentDidUpdate(prevProps) {
+		const {userInfo, gameInfo} = this.props;
 		this.scrollChats();
+
+		if (prevProps && userInfo.userName && prevProps.gameInfo.publicPlayersState.filter(player => player.isDead).length !== gameInfo.publicPlayersState.filter(player => player.isDead).length && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead) {
+			this.setState({inputValue: ''});
+			$(this.gameChatInput).blur();
+		}
 	}
 
 	handleChatClearClick() {
@@ -164,7 +170,7 @@ export default class Gamechat extends React.Component {
 					<div className="ui basic fullscreen modal leavegamemodals" ref={c => {
 						this.leaveGameModal = c;
 					}}>
-						<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players.  Do this only in the case of a game already ruined by an AFK/disconnected player or if someone has already left.</h2>
+						<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players (unless you've been executed).  Do this only in the case of a game already ruined by an AFK/disconnected player or if someone has already left.</h2>
 						<div className="ui green positive inverted leave-game button">
 							<i className="checkmark icon"></i>
 							Leave anyways

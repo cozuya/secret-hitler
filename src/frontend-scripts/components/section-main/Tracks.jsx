@@ -22,7 +22,7 @@ export default class Tracks extends React.Component {
 			classes += ' fail3';
 		}
 
-		if (gameInfo.gameState.isStarted) {
+		if (gameInfo.gameState.isTracksFlipped) {
 			return <div className={classes} />;
 		}
 	}
@@ -55,7 +55,7 @@ export default class Tracks extends React.Component {
 						(() => {
 							let classes = 'track-flipper track-flipper-top';
 
-							if (gameInfo.gameState.isStarted) {
+							if (gameInfo.gameState.isTracksFlipped) {
 								classes += ' flipped';
 							}
 
@@ -69,7 +69,7 @@ export default class Tracks extends React.Component {
 						(() => {
 							let classes = 'track-flipper track-flipper-bottom';
 
-							if (gameInfo.gameState.isStarted) {
+							if (gameInfo.gameState.isTracksFlipped) {
 								classes += ' flipped';
 							}
 

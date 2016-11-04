@@ -120,6 +120,8 @@ module.exports = game => {
 				{cardName} = player.role;
 
 			if (cardName === 'fascist') {
+				player.playersState[i].nameStatus = 'fascist';
+
 				if (playerCount > 6 && playerCount < 9) {
 					const otherFascist = seatedPlayers.find(play => play.role.cardName === 'fascist' && play.userName !== player.userName),
 						otherFascistIndex = seatedPlayers.indexOf(otherFascist);
@@ -146,7 +148,7 @@ module.exports = game => {
 						}]
 					});
 
-					player.playersState[otherFascistIndex].notificationStatus = player.playersState[i].nameStatus = player.playersState[otherFascistIndex].nameStatus = 'fascist';
+					player.playersState[otherFascistIndex].notificationStatus = player.playersState[otherFascistIndex].nameStatus = 'fascist';
 				} else if (playerCount > 8) {
 					const otherFascists = seatedPlayers.filter(player => player.role.cardName === 'fascist');
 
@@ -183,7 +185,6 @@ module.exports = game => {
 					otherFascists.forEach(fascistPlayer => {
 						player.playersState[seatedPlayers.indexOf(fascistPlayer)].notificationStatus = player.playersState[seatedPlayers.indexOf(fascistPlayer)].nameStatus = 'fascist';
 					});
-					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'fascist';
 				}
 
 				const hitlerPlayer = seatedPlayers.find(player => player.role.cardName === 'hitler'),
