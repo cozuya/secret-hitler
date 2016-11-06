@@ -43,6 +43,8 @@ export default class Players extends React.Component {
 		}
 
 		if (phase === 'specialElection' && userInfo.userName) {
+			console.log(clickActionInfo);
+			console.log(index);
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedSpecialElection', {
 					playerIndex: index,

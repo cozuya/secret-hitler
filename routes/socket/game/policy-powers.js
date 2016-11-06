@@ -241,7 +241,9 @@ module.exports.selectSpecialElection = data => {
 	game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
 		player.notificationStatus = '';
 	});
-	// todo-alpha didn't work when spec elec pres was next pres and then killed someone - skipped over, should have gone twice
+
+	// todo-alpha the spec elec president's clicked chancellor's card is flipped while it the ballots come up.
+
 	startElection(game, data.playerIndex);
 };
 

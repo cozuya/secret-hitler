@@ -8,7 +8,9 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 
 		let toConcat = [];
 
-		if (!specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex !== 0) {
+		console.log(specialElectionFormerPresidentIndex, 'spec elc form pres i');
+
+		if (!specialElectionFormerPresidentIndex) {
 			toConcat = previousElectedGovernment.length ? previousElectedGovernment : [];
 		}
 
@@ -28,12 +30,13 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			notDeadPresident = false;
 
 		if (specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex === 0) {
-			index = specialElectionFormerPresidentIndex + 1;
+			index = specialElectionFormerPresidentIndex;
 			specialElectionFormerPresidentIndex = null;
+			console.log(index, 'spec elec form pres index');
 		}
 
 		if (specialElectionPresidentIndex || specialElectionPresidentIndex === 0) {
-			specialElectionFormerPresidentIndex = presidentIndex;
+			// specialElectionFormerPresidentIndex = presidentIndex;
 			return specialElectionPresidentIndex;
 		}
 
