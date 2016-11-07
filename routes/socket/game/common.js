@@ -2,7 +2,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{sendGameList} = require('../user-requests.js'),
 	_ = require('lodash');
 
-module.exports.startElection = (game, specialElectionPresidentIndex) => {
+module.exports.startElection = (game, specialElectionPresidentIndex) => {  // todo-alpha pres 3 selected 4 for spec elec, 4 executed 5 and 6 and then was pendingPres for a 3rd time in a row instead of going to 7...
 	const ineligableIndexes = (() => {
 		const {specialElectionFormerPresidentIndex, previousElectedGovernment} = game.gameState;
 

@@ -185,9 +185,6 @@ module.exports.selectVoting = data => {
 
 				game.private.unSeatedGameChats.push(chat);
 
-				// todo-alpha crash during normal gameplay (fpc == 4) at game.private.seatedPlayers[chancellorIndex].role is undefined ??
-				console.log(chancellorIndex, 'ci');
-				console.log(game.publicPlayersState);
 				if (process.env.NODE_ENV !== 'development' && game.trackState.fascistPolicyCount > 3 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler' || (process.env.NODE_ENV === 'development' && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler')) {
 					const chat = {
 						timestamp: new Date(),
@@ -413,7 +410,7 @@ module.exports.selectChancellorPolicy = data => {
 		chancellor = game.private.seatedPlayers[chancellorIndex],
 		enactedPolicy = data.policy;
 
-	// todo-release selects (red outline) wrong policy, maybe only if done fast.  flings to wrong side.
+	// todo-release selects (red outline) wrong policy, maybe only if done fast.  also flings to wrong side.
 
 	if (data.selection === 3) {
 		chancellor.cardFlingerState[0].notificationStatus = '';
@@ -656,10 +653,14 @@ module.exports.selectPresidentVoteOnVeto = data => {
 			game.gameState.discardedPolicyCount++;
 			setTimeout(() => {
 				president.cardFlingerState = [];
-				if (game.gameState.discardedPolicyCount === 3) {
+				if (game.gameState.electionTrackerCount === 3) {
 					game.gameState.previousElectedGovernment = [];
-					game.gameState.discardedPolicyCount++;
-					enactPolicy(game, game.private.policies.shift());
+					if (game.gameState.undrawnPolicyCount) {
+						enactPolicy(game, game.private.policies.shift());
+					} else {
+						shufflePolicies(game);
+						enactPolicy(game, game.private.policies.shift());
+					}
 				} else {
 					startElection(game);
 				}
@@ -678,6 +679,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 function enactPolicy (game, team) {
 	const index = game.trackState.enactedPolicies.length;
 
+	game.trackState.electionTrackerCount = 0;
 	game.general.status = 'A policy is being enacted.';
 	game.trackState[`${team}PolicyCount`]++;
 	sendGameList();
@@ -706,37 +708,37 @@ function enactPolicy (game, team) {
 					},
 				{text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`}]
 			},
-			// presidentPowers = [
-			// 	{
-			// 		0: null,
-			// 		1: null,
-			// 		2: [policyPeek, 'The president must examine the top 3 policies.'],
-			// 		3: [executePlayer, 'The president must select a player for execution.'],
-			// 		4: [executePlayer, 'The president must select a player for execution.'],
-			// 		5: null
-			// 	},
-			// 	{
-			// 		0: null,
-			// 		1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-			// 		2: [specialElection, 'The president must select a player for a special election.'],
-			// 		3: [executePlayer, 'The president must select a player for execution.'],
-			// 		4: [executePlayer, 'The president must select a player for execution.'],
-			// 		5: null
-			// 	},
-			// 	{
-			// 		0: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-			// 		1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-			// 		2: [specialElection, 'The president must select a player for a special election.'],
-			// 		3: [executePlayer, 'The president must select a player for execution.'],
-			// 		4: [executePlayer, 'The president must select a player for execution.'],
-			// 		5: null
-			// 	}
-			// ],
 			presidentPowers = [
 				{
-					1: [specialElection, 'y']
+					0: null,
+					1: null,
+					2: [policyPeek, 'The president must examine the top 3 policies.'],
+					3: [executePlayer, 'The president must select a player for execution.'],
+					4: [executePlayer, 'The president must select a player for execution.'],
+					5: null
+				},
+				{
+					0: null,
+					1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+					2: [specialElection, 'The president must select a player for a special election.'],
+					3: [executePlayer, 'The president must select a player for execution.'],
+					4: [executePlayer, 'The president must select a player for execution.'],
+					5: null
+				},
+				{
+					0: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+					1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+					2: [specialElection, 'The president must select a player for a special election.'],
+					3: [executePlayer, 'The president must select a player for execution.'],
+					4: [executePlayer, 'The president must select a player for execution.'],
+					5: null
 				}
 			],
+			// presidentPowers = [
+			// 	{
+			// 		1: [specialElection, 'y']
+			// 	}
+			// ],
 			powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
 
 		game.trackState.enactedPolicies[index].position = team === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;
