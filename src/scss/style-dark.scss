@@ -34,7 +34,18 @@ $dteal: #034f61;
 		font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
 	}
 
-	.section-main, .section-main > .nav-menu, .defaultmid {
+	.section-main > .nav-menu {
+		background: #000000;
+		background: -moz-linear-gradient(left,  #000000 0%, #1c1c1c 50%, #000000 100%);
+		background: -webkit-linear-gradient(left,  #000000 0%,#1c1c1c 50%,#000000 100%);
+		background: linear-gradient(to right,  #000000 0%,#1c1c1c 50%,#000000 100%);
+	}
+
+	.section-main {
+		background: #000;
+	}
+
+	.defaultmid {
 		background: #141210;
 	}
 

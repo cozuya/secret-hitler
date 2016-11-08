@@ -734,14 +734,14 @@ function enactPolicy (game, team) {
 			],
 			// presidentPowers = [
 			// 	{
-			// 		0: null,
-			// 		1: [specialElection, 'y']
-			// 	},
-			// 	{
-			// 		0: [specialElection, 'y'],
-			// 		1: [executePlayer, 'The president must select a player for execution.'],
-			// 		2: [executePlayer, 'The president must select a player for execution.']
+			// 		0: [specialElection, 'The president must select a player for a special election.']
 			// 	}
+				// ,
+				// {
+				// 	0: [specialElection, 'y'],
+				// 	1: [executePlayer, 'The president must select a player for execution.'],
+				// 	2: [executePlayer, 'The president must select a player for execution.']
+				// }
 			// ],
 			powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
 

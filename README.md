@@ -3,7 +3,7 @@ secret-hitler
 
 Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists. Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late.
 
-<!-- ![Screenshot](http://todo) -->
+![Screenshot](http://i.imgur.com/6M56f6I.jpg)
 
 Front end: React, Redux, Sass, Semantic UI, jQuery, SocketIO.
 

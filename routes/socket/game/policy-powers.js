@@ -291,7 +291,7 @@ module.exports.selectPlayerToExecute = data => {
 		timestamp: new Date(),
 		chat: [{text: 'You select to execute '},
 		{
-			text: `${selectedPlayer.userName} {${playerIndex}}`,
+			text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
 			type: 'player'
 		},
 		{text: '.'}]

@@ -64,7 +64,7 @@
     "babel-preset-stage-1": "^6.13.0",
     "babelify": "^7.3.0",
     "browserify": "^13.1.0",
-    "eslint": "^3.5.0",
+    "eslint": "^3.9.1",
     "eslint-config-google": "^0.6.0",
     "eslint-plugin-import": "^1.15.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
