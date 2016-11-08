@@ -412,8 +412,6 @@ module.exports.selectChancellorPolicy = data => {
 		chancellor = game.private.seatedPlayers[chancellorIndex],
 		enactedPolicy = data.policy;
 
-	// todo-alpha right card selects (red outline) wrong policy, maybe only if done fast.  also flings to wrong side. is correct card to enact though
-
 	if (data.selection === 3) {
 		chancellor.cardFlingerState[0].notificationStatus = '';
 		chancellor.cardFlingerState[1].notificationStatus = 'selected';
@@ -680,7 +678,6 @@ module.exports.selectPresidentVoteOnVeto = data => {
 function enactPolicy (game, team) {
 	const index = game.trackState.enactedPolicies.length;
 
-	game.trackState.electionTrackerCount = 0;
 	game.general.status = 'A policy is being enacted.';
 	game.trackState[`${team}PolicyCount`]++;
 	sendGameList();
@@ -790,9 +787,10 @@ function enactPolicy (game, team) {
 			powerToEnact[0](game);
 		} else {
 			sendInProgressGameUpdate(game);
-			game.trackState.electionTrackerCount = 0;
 			startElection(game);
 		}
+
+		game.trackState.electionTrackerCount = 0;
 	}, process.env.NODE_ENV === 'development' ? 100 : 7000);
 }
 

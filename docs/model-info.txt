@@ -2,6 +2,7 @@ gameState
 	isStarted bool
 	isCompleted bool
 	isVetoEnabled bool
+	isTracksFlipped bool
 	phase string ?
 	previousElectedGovernment array of numbers, 1st is pres 2nd is chanc,
 	presidentIndex number

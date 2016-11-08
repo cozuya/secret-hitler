@@ -19,7 +19,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		game.gameState.isVetoEnabled = true;
 	}
 
-	game.gameState.presidentIndex = (() => {
+	game.gameState.presidentIndex = (() => { // todo-alpha, elec after spec elec did not "bounce" back
 		const findNext = index => index + 1 === game.general.playerCount ? 0 : index + 1,
 			{presidentIndex} = game.gameState;
 
