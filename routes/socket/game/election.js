@@ -271,7 +271,8 @@ module.exports.selectVoting = data => {
 	}
 
 	function passedElection () {
-		const {presidentIndex} = game.gameState,
+		const {gameState} = game,
+			{presidentIndex} = gameState,
 			chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 
 		game.general.status = 'Waiting on presidential discard.';
@@ -282,11 +283,11 @@ module.exports.selectVoting = data => {
 			chat: [{text: 'As president, you must select one policy to discard.'}]
 		});
 
-		if (game.gameState.undrawnPolicyCount < 3) {
+		if (gameState.undrawnPolicyCount < 3) {
 			shufflePolicies(game);
 		}
 
-		game.gameState.undrawnPolicyCount--;
+		gameState.undrawnPolicyCount--;
 		game.private.currentElectionPolicies = [game.private.policies.shift(), game.private.policies.shift(), game.private.policies.shift()];
 		seatedPlayers[presidentIndex].cardFlingerState = [
 			{
@@ -319,17 +320,18 @@ module.exports.selectVoting = data => {
 		];
 		sendInProgressGameUpdate(game);
 		setTimeout(() => {
-			game.gameState.undrawnPolicyCount--;
+			gameState.undrawnPolicyCount--;
 			sendInProgressGameUpdate(game);
 		}, 200);
 		setTimeout(() => {
-			game.gameState.undrawnPolicyCount--;
+			gameState.undrawnPolicyCount--;
 			sendInProgressGameUpdate(game);
 		}, 400);
 		setTimeout(() => {
 			seatedPlayers[presidentIndex].cardFlingerState[0].cardStatus.isFlipped = seatedPlayers[presidentIndex].cardFlingerState[1].cardStatus.isFlipped = seatedPlayers[presidentIndex].cardFlingerState[2].cardStatus.isFlipped = true;
 			seatedPlayers[presidentIndex].cardFlingerState[0].notificationStatus = seatedPlayers[presidentIndex].cardFlingerState[1].notificationStatus = seatedPlayers[presidentIndex].cardFlingerState[2].notificationStatus = 'notification';
-			game.gameState.phase = 'presidentSelectingPolicy';
+			gameState.phase = 'presidentSelectingPolicy';
+
 			game.gameState.previousElectedGovernment = game.general.livingPlayerCount > 5 ? [presidentIndex, chancellorIndex] : [presidentIndex];
 			sendInProgressGameUpdate(game);
 		}, 600);
@@ -410,7 +412,7 @@ module.exports.selectChancellorPolicy = data => {
 		chancellor = game.private.seatedPlayers[chancellorIndex],
 		enactedPolicy = data.policy;
 
-	// todo-release selects (red outline) wrong policy, maybe only if done fast.  also flings to wrong side.
+	// todo-alpha right card selects (red outline) wrong policy, maybe only if done fast.  also flings to wrong side. is correct card to enact though
 
 	if (data.selection === 3) {
 		chancellor.cardFlingerState[0].notificationStatus = '';
@@ -654,7 +656,6 @@ module.exports.selectPresidentVoteOnVeto = data => {
 			setTimeout(() => {
 				president.cardFlingerState = [];
 				if (game.gameState.electionTrackerCount === 3) {
-					game.gameState.previousElectedGovernment = [];
 					if (game.gameState.undrawnPolicyCount) {
 						enactPolicy(game, game.private.policies.shift());
 					} else {
@@ -736,7 +737,13 @@ function enactPolicy (game, team) {
 			],
 			// presidentPowers = [
 			// 	{
+			// 		0: null,
 			// 		1: [specialElection, 'y']
+			// 	},
+			// 	{
+			// 		0: [specialElection, 'y'],
+			// 		1: [executePlayer, 'The president must select a player for execution.'],
+			// 		2: [executePlayer, 'The president must select a player for execution.']
 			// 	}
 			// ],
 			powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;

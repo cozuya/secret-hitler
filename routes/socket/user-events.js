@@ -81,23 +81,7 @@ const {games, userList, generalChats} = require('./models'),
 
 module.exports.updateSeatedUser = data => {
 	const game = games.find(el => el.general.uid === data.uid),
-		{publicPlayersState} = game,
-		startGameTimer = () => {
-			let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 5;
-
-			game.gameState.isTracksFlipped = true;
-			game.general.playerCount = publicPlayersState.length;
-			const countDown = setInterval(() => {
-				if (startGamePause === 0) {
-					clearInterval(countDown);
-					startGame(game);
-				} else {
-					game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
-					io.in(game.general.uid).emit('gameUpdate', secureGame(game));
-				}
-				startGamePause--;
-			}, 1000);
-		};
+		{publicPlayersState} = game;
 
 	publicPlayersState.push({
 		userName: data.userName,
@@ -114,7 +98,7 @@ module.exports.updateSeatedUser = data => {
 
 	if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.isStarted) { // sloppy but not trivial to get around
 		game.gameState.isStarted = true;
-		startGameTimer();
+		startGame(game);
 	} else if (publicPlayersState.length === game.general.minPlayersCount) {
 		let startGamePause = 20;
 
@@ -122,7 +106,7 @@ module.exports.updateSeatedUser = data => {
 		const countDown = setInterval(() => {
 			if (startGamePause === 4) {
 				clearInterval(countDown);
-				startGameTimer();
+				startGame(game);
 			} else {
 				game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
 				io.in(game.general.uid).emit('gameUpdate', secureGame(game));

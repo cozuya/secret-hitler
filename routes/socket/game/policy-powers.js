@@ -199,7 +199,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 
 	setTimeout(() => {
 		game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
-		president.playersState[playerIndex].cardStatus.cardBack = {}; // todo-alpha - after selecting a player for this function, the next election the cardback was the resulting "party membership" card not the results of their vote, hopefully this fixes it.
+		president.playersState[playerIndex].cardStatus.cardBack = {};
 		sendInProgressGameUpdate(game);
 		startElection(game);
 	}, process.env.NODE_ENV === 'development' ? 100 : 8000);
@@ -208,24 +208,8 @@ module.exports.selectPartyMembershipInvestigate = data => {
 module.exports.specialElection = game => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex} = game.gameState,
-		president = seatedPlayers[presidentIndex],
-		chat = {
-			gameChat: true,
-			timestamp: new Date(),
-			chat: [{text: 'The president must call for a special election.'}]
-		},
-		presidentChat = {
-			gameChat: true,
-			timestamp: new Date(),
-			chat: [{text: 'You must select a player for a special election.'}]
-		};
+		president = seatedPlayers[presidentIndex];
 
-	seatedPlayers.filter((player, i) => i !== presidentIndex).forEach(player => {
-		player.gameChats.push(chat);
-	});
-
-	game.private.unSeatedGameChats.push(chat);
-	president.gameChats.push(presidentChat);
 	game.general.status = 'President to select special election';
 	game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
 	president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
@@ -242,10 +226,6 @@ module.exports.selectSpecialElection = data => {
 	game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
 		player.notificationStatus = '';
 	});
-
-	// todo-alpha the spec elec president's clicked chancellor's card is flipped while it the ballots come up.
-
-	// todo-alpha pres 5 with chanc 8 selected 6 for spec election, 6 could not click on 8 to be his chanc - should clear prev elected govt here I think
 
 	startElection(game, data.playerIndex);
 };

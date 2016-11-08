@@ -27,6 +27,7 @@ export default class Creategame extends React.Component {
 			gameState: {
 				previousElectedGovernment: [],
 				undrawnPolicyCount: 17,
+				discardedPolicyCount: 0,
 				presidentIndex: -1
 			},
 			chats: [],

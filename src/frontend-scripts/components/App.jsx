@@ -124,20 +124,21 @@ export class App extends React.Component {
 				gameState: {
 					previousElectedGovernment: [],
 					undrawnPolicyCount: 17,
+					discardedPolicyCount: 0,
 					presidentIndex: -1
 				},
 				chats: [],
 				general: {
 					uid: 'devgame',
 					name: 'New Game',
-					minPlayersCount: 9,
-					maxPlayersCount: 9,
+					minPlayersCount: 7,
+					maxPlayersCount: 8,
 					private: false,
 					status: 'Waiting for more players..',
 					electionCount: 0
 				},
 				publicPlayersState: [{
-					userName: this.props.userInfo.userName,
+					userName: userInfo.userName,
 					connected: true,
 					cardStatus: {
 						cardDisplayed: false,

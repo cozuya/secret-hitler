@@ -2,16 +2,14 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{sendGameList} = require('../user-requests.js'),
 	_ = require('lodash');
 
-module.exports.startElection = (game, specialElectionPresidentIndex) => {  // todo-alpha pres 3 selected 4 for spec elec, 4 executed 5 and 6 and then was pendingPres for a 3rd time in a row instead of going to 7...
+module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const ineligableIndexes = (() => {
 		const {specialElectionFormerPresidentIndex, previousElectedGovernment} = game.gameState;
 
 		let toConcat = [];
 
-		console.log(specialElectionFormerPresidentIndex, 'spec elc form pres i');
-
-		if (!specialElectionFormerPresidentIndex) {
-			toConcat = previousElectedGovernment.length ? previousElectedGovernment : [];
+		if (!specialElectionFormerPresidentIndex && specialElectionFormerPresidentIndex !== 0) {
+			toConcat = previousElectedGovernment.length ? previousElectedGovernment[0] : [];
 		}
 
 		return game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(toConcat);
@@ -29,14 +27,12 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {  // to
 			{specialElectionFormerPresidentIndex} = game.gameState,
 			notDeadPresident = false;
 
-		if (specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex === 0) {
+		if (!specialElectionPresidentIndex && (specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex === 0)) {
 			index = specialElectionFormerPresidentIndex;
-			specialElectionFormerPresidentIndex = null;
-			console.log(index, 'spec elec form pres index');
+			game.gameState.specialElectionFormerPresidentIndex = null;
 		}
 
 		if (specialElectionPresidentIndex || specialElectionPresidentIndex === 0) {
-			// specialElectionFormerPresidentIndex = presidentIndex;
 			return specialElectionPresidentIndex;
 		}
 
@@ -70,9 +66,12 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {  // to
 		}]
 	});
 
-	pendingPresidentPlayer.playersState.filter((player, index) => index !== presidentIndex && !ineligableIndexes.includes(index)).forEach(player => {
-		player.notificationStatus = 'notification';
-	});
+	// todo-alpha if spec election fails, next president shows the prev government with notification blink (but is not clickable).
+
+	pendingPresidentPlayer.playersState.filter((player, index) => (((!specialElectionPresidentIndex && game.gameState.previousElectedGovernment.length === 2 ? !ineligableIndexes.concat([game.gameState.previousElectedGovernment[1]]).includes(index) : !ineligableIndexes.includes(index)) || specialElectionPresidentIndex) && index !== presidentIndex))
+		.forEach(player => {
+			player.notificationStatus = 'notification';
+		});
 
 	game.publicPlayersState.forEach(player => {
 		player.cardStatus.cardDisplayed = false;
@@ -82,7 +81,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {  // to
 	game.publicPlayersState[presidentIndex].governmentStatus = 'isPendingPresident';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
-	game.gameState.clickActionInfo = [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...game.gameState.previousElectedGovernment).filter(num => !seatedPlayers[num].isDead)];
+	game.gameState.clickActionInfo = specialElectionPresidentIndex ? [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex).filter(num => !seatedPlayers[num].isDead)] : [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...game.gameState.previousElectedGovernment).filter(num => !seatedPlayers[num].isDead)];
 	sendInProgressGameUpdate(game);
 };
 
