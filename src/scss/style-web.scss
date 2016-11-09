@@ -1,6 +1,9 @@
-$werewolfteam: #DC6969;
-$villageteam: #4B6A90;
-$tannerteam: #DCB469;
+$lred: #e36248;
+$lightliberalteam: #bfd8ee;
+$lightfascistteam: #e4bcba;
+$darkliberalteam: #608cb3;
+$darkfascistteam: #c36563;
+$hitlerteam: #be0804;
 $fascistteam: #e36248;
 $notification: #FBBD08;
 $selection: #DB2828;
@@ -11,6 +14,8 @@ $dteal: #034f61;
 body {
 	background-image: url('../images/footer_lodyas.png');
 	overflow-x: auto;
+	max-width: 1253px;
+	margin: 0 auto;
 }
 
 html {
@@ -23,30 +28,27 @@ html {
 	clear: both;
 }
 
-.team-werewolf {
-	color: $werewolfteam !important;
-}
-
-.team-village {
-	color: $villageteam !important;
-}
-
-.team-tanner {
-	color: $tannerteam !important;
-}
-
 #header-container {
-	text-align: center;
-	margin-top: 55px;
-	background: radial-gradient(ellipse at center, #056e8e 0%, #002323 100%);
-	background-color: #002323;
+	height: 460px;
+	width: 100%;
+	margin: 55px auto 0;
+	background: no-repeat top center url('../images/banner-s.png') #141210;
 
-	h1.ui.header {
-		color: #eee;
-		font-size: 44px;
-		font-family: 'Josefin Sans', 'lato', helvetica, arial, sans-serif;
-		text-shadow: 3px 3px #000;
+	+ .segment {
+		border: 1px solid #5e5e5e;
 	}
+}
+
+.ui.buttons * {
+	background: #608cb3;
+
+	&:hover {
+		background: #608cb3;		
+	}
+}
+
+a.ui.button {
+	background: #e36248;
 }
 
 p {
@@ -58,13 +60,17 @@ span.emphasis {
 }
 
 #top-menu {
+	background: #141210;
+
 	.left.menu .button {
-		background: $fascistteam none !important;
 		color: #fff;
+
+		&:hover {
+			background: #e36248;
+		}
 	}
 
 	.ui.button {
-		background: $lteal none !important;
 		color: #fff;
 	}
 }
@@ -101,13 +107,20 @@ span.emphasis {
 		padding-right: 10%;
 		text-align: center;
 	}
+
+	> div {
+		border: 1px solid #111;
+	}
 }
 
 #general-info {
+	border: 1px solid #333;
+
 	.news {
 		border: 1px solid #aaa;
-		background: $tannerteam;
+		background: #DCB469;
 		border-radius: 5px;
+		color: #222;
 	}
 
 	img {
@@ -192,14 +205,6 @@ span.emphasis {
 	h1 {
 		margin-bottom: 60px !important;
 	}
-}
-
-.verified-yes {
-	color: $villageteam !important;
-}
-
-.verified-no {
-	color: $werewolfteam !important;
 }
 
 ::-webkit-scrollbar {

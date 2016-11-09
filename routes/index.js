@@ -47,6 +47,17 @@ module.exports = () => {
 		}
 	});
 
+	app.get('/stats', (req, res) => {
+		if (req.user) {
+			res.render('page-stats', {
+				username: req.user.username,
+				howtoplay: true
+			});
+		} else {
+			res.render('page-stats');
+		}
+	});
+
 	app.get('/about', (req, res) => {
 		if (req.user) {
 			res.render('page-about', {

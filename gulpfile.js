@@ -88,7 +88,8 @@ gulp.task('styles-web', () => {
 	return gulp.src('./src/scss/style-web.scss')
 		.pipe(plumber())
 		.pipe(sourcemaps.init())
-		.pipe(sass({outputStyle: 'compressed'}).on('error', () => {
+		.pipe(sass({outputStyle: 'compressed'}).on('error', (err) => {
+			console.log(err);
 			notifier.notify({title: 'SASS Error', message: ' '});
 		}))
 		.pipe(sourcemaps.write())
