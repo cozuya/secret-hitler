@@ -51,7 +51,7 @@ module.exports = () => {
 		if (req.user) {
 			res.render('page-stats', {
 				username: req.user.username,
-				howtoplay: true
+				stats: true
 			});
 		} else {
 			res.render('page-stats');
