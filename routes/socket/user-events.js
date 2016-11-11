@@ -80,7 +80,7 @@ const {games, userList, generalChats} = require('./models'),
 	};
 
 module.exports.updateSeatedUser = data => {
-	const game = games.find(el => el.general.uid === data.uid;
+	const game = games.find(el => el.general.uid === data.uid);
 
 	if (game) {
 		const {publicPlayersState} = game;
