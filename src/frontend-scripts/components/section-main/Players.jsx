@@ -43,8 +43,6 @@ export default class Players extends React.Component {
 		}
 
 		if (phase === 'specialElection' && userInfo.userName) {
-			console.log(clickActionInfo);
-			console.log(index);
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedSpecialElection', {
 					playerIndex: index,
@@ -83,7 +81,7 @@ export default class Players extends React.Component {
 						(() => {
 							let classes = 'player-container';
 
-							if (Object.keys(playersState).length && playersState[i].notificationStatus) {
+							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 								classes = `${classes} notifier ${playersState[i].notificationStatus}`;
 							} else if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].notificationStatus) {
 								classes = `${classes} notifier ${publicPlayersState[i].notificationStatus}`;
@@ -102,7 +100,7 @@ export default class Players extends React.Component {
 
 							if (userInfo.userName && publicPlayersState.findIndex(player => player.userName === userInfo.userName) === i) {
 								classes = `${classes} seated-user`;
-							} else if (Object.keys(playersState).length && playersState[i].nameStatus) {
+							} else if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
 								classes = `${classes} ${playersState[i].nameStatus}`;
 							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
 								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
@@ -126,7 +124,7 @@ export default class Players extends React.Component {
 						(() => {
 							let classes = 'player-name';
 
-							if (Object.keys(playersState).length && playersState[i].nameStatus) {
+							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
 								classes = `${classes} ${playersState[i].nameStatus}`;
 							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
 								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
@@ -147,11 +145,11 @@ export default class Players extends React.Component {
 						(() => {
 							let classes = 'card-container';
 
-							if (Object.keys(playersState).length && playersState[i].cardStatus.cardDisplayed || (publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)) {
+							if (playersState && Object.keys(playersState).length && playersState[i].cardStatus.cardDisplayed || (publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)) {
 								classes += ' showing';
 							}
 
-							if (Object.keys(playersState).length && playersState[i].cardStatus.isFlipped || (publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)) {
+							if (playersState && Object.keys(playersState).length && playersState[i].cardStatus.isFlipped || (publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)) {
 								classes += ' flipped';
 							}
 							return classes;
@@ -174,7 +172,7 @@ export default class Players extends React.Component {
 							(() => {
 								let classes = 'card card-back';
 
-								if (playersState.length && Object.keys(playersState[i]).length && Object.keys(playersState[i].cardStatus).length && Object.keys(playersState[i].cardStatus.cardBack).length) {
+								if (playersState && playersState.length && Object.keys(playersState[i]).length && Object.keys(playersState[i].cardStatus).length && Object.keys(playersState[i].cardStatus.cardBack).length) {
 									if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
 										classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
 									} else {

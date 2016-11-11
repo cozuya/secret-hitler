@@ -14,7 +14,7 @@ $dteal: #034f61;
 body {
 	background-image: url('../images/footer_lodyas.png');
 	overflow-x: auto;
-	max-width: 1253px;
+	max-width: 1127px;
 	margin: 0 auto;
 }
 
@@ -99,6 +99,7 @@ span.emphasis {
 .ui.grid.mainpage {
 	background: #3f2725;
 	color: #ddd;
+	padding: 10px;
 
 	h2 {
 		color: #ddd;
@@ -228,10 +229,14 @@ span.emphasis {
 }
 
 .about-container {
-	box-shadow: 0px 3px 4px 1px #ccc;
 	margin: 50px 0 0 0;
 	padding: 10px 0;
-	background: #fefefe;
+	background: #222;
+	color: #eee;
+
+	h1, h2, h3, h4 {
+		color: #eee !important;
+	}
 
 	h1 {
 		margin-bottom: 60px !important;

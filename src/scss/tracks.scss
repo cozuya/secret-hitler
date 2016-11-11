@@ -113,7 +113,7 @@
 		top: 130px;
 		left: -140px;
 		width: 120px;
-		height: 167px;
+		height: 164px;
 		z-index: 3;
 		transition-property: all;
 		transition-delay: .3s;
@@ -191,7 +191,7 @@
 		z-index: 2;
 		transition-property: left, top, width, height, transform;
 		transition-delay: .5s, .5s, 3s, 3s, 1s;
-		transition-duration: 3s, 3s, 4s, 4s, 1s;
+		transition-duration: 2s, 2s, 3s, 3s, 1s;
 		transform-style: preserve-3d;
 		box-shadow: 0px 0px 4px 3px #969696;
 	}

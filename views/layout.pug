@@ -84,7 +84,7 @@ html(lang="en")
 				.ui.dimmer.inverted
 					.ui.text.loader Signing in..
 				.ui.negative.hidden.message
-				a#reset-password(style="cursor: pointer;") Forget your password?
+				//- a#reset-password(style="cursor: pointer;") Forget your password?
 
 		section.password-reset-modal.ui.modal.small.segment.column
 			h2.header Request a password reset
@@ -117,10 +117,10 @@ html(lang="en")
 						i.lock.icon
 						input#signup-password2(placeholder="Repeat password", type="password", maxlength="255")
 					.ui.info.message.hidden
-				.field
-					.ui.left.icon.input
-						i.mail.icon
-						input#signup-email(placeholder="Email (optional)", maxlength="100", spellcheck="false")
+				//- .field
+				//- 	.ui.left.icon.input
+				//- 		i.mail.icon
+				//- 		input#signup-email(placeholder="Email (optional)", maxlength="100", spellcheck="false")
 				button.ui.primary.button.fluid.large.signup-submit Submit
 				.ui.dimmer.inverted
 					.ui.text.loader Signing up..

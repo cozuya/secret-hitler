@@ -64,10 +64,16 @@ module.exports.sendGameInfo = (socket, uid) => {
 	const game = games.find(el => el.general.uid === uid),
 		{passport} = socket.handshake.session;
 
-	if (passport && Object.keys(passport).length && game.publicPlayersState.find(player => player.userName === passport.user)) {
-		game.publicPlayersState.find(player => player.userName === passport.user).leftGame = false;
-	}
+	if (game) {
+		const _game = Object.assign({}, game);
 
-	socket.join(uid);
-	socket.emit('gameUpdate', secureGame(game));
+		if (passport && Object.keys(passport).length && game.publicPlayersState.find(player => player.userName === passport.user)) {
+			game.publicPlayersState.find(player => player.userName === passport.user).leftGame = false;
+		}
+
+		// todo-release - doesn't work right for players who left game and then comes back into the old game - no gamechats
+		_game.chats = _game.chats.concat(_game.private.unSeatedGameChats);
+		socket.join(uid);
+		socket.emit('gameUpdate', secureGame(_game));
+	}
 };

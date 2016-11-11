@@ -336,18 +336,19 @@ module.exports.selectPlayerToExecute = data => {
 
 			setTimeout(() => {
 				game.publicPlayersState.forEach((player, i) => {
+					player.cardStatus.cardFront = 'secretrole';
 					player.cardStatus.cardDisplayed = true;
 					player.cardStatus.cardBack = seatedPlayers[i].role;
 				});
 				sendInProgressGameUpdate(game);
-			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 1000);
 
 			setTimeout(() => {
 				game.publicPlayersState.forEach(player => {
 					player.cardStatus.isFlipped = true;
 				});
 				completeGame(game, 'liberal');
-			}, process.env.NODE_ENV === 'development' ? 100 : 3000);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		} else {
 			publicSelectedPlayer.cardStatus.cardDisplayed = false;
 			sendInProgressGameUpdate(game);
@@ -356,5 +357,5 @@ module.exports.selectPlayerToExecute = data => {
 				startElection(game);
 			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		}
-	}, process.env.NODE_ENV === 'development' ? 100 : 5000);
+	}, process.env.NODE_ENV === 'development' ? 100 : 4000);
 };

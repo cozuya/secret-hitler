@@ -17,22 +17,23 @@ export default class Policies extends React.Component {
 
 	renderUndrawn() {
 		const {gameInfo, userInfo} = this.props,
+			{playersState} = gameInfo,
 			count = gameInfo.gameState.undrawnPolicyCount;
 
 		let playerIndex;
 
-		if (userInfo.userName) {
-			playerIndex = gameInfo.playersState.find(player => player.userName === userInfo.userName);
+		if (userInfo.userName && playersState) {
+			playerIndex = playersState.find(player => player.userName === userInfo.userName);
 		}
 
 		return _.range(1, 18).map(num => {
 			let classes = `policy-card policy-draw policy-card-${num}`;
 
-			if (num > count || !this.props.gameInfo.gameState.isStarted) {
+			if (num > count || !gameInfo.gameState.isStarted) {
 				classes += ' offscreen';
 			}
 
-			if (playerIndex && gameInfo.playersState[playerIndex].policyNotification) {
+			if (playerIndex && playersState[playerIndex].policyNotification) {
 				classes += ' notification';
 			}
 
@@ -63,7 +64,7 @@ export default class Policies extends React.Component {
 					(() => {
 						let classes = 'draw';
 
-						if (userInfo.userName && userInfo.isSeated && gameInfo.gameState.isStarted && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)] && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
+						if (userInfo.userName && userInfo.isSeated && gameInfo.gameState.isStarted && gameInfo.playersState && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)] && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
 							classes += ' notifier';
 						}
 

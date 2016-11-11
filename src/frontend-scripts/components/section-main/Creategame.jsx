@@ -74,7 +74,7 @@ export default class Creategame extends React.Component {
 					<div className="four wide column gamename">
 						<h4 className="ui header">Game name<small>(optional)</small></h4>
 						<div className="ui input">
-							<input maxLength="14" placeholder="New Game" />
+							<input maxLength="20" placeholder="New Game" />
 						</div>
 					</div>
 					<div className="eight wide column slider">

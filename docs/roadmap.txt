@@ -1,0 +1,11 @@
+version 0.1.0 released 11/11/2016 (alpha)
+all known game breaking bugs eliminated
+
+version 0.2.0 (beta)
+fix/address issues found in alpha
+
+version 0.3.0
+implement automated claim system
+
+version 1.0.0
+implement email address saving, token based verification, and password reset via emails

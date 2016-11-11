@@ -134,7 +134,7 @@ module.exports.handleAddNewGameChat = data => {
 	data.timestamp = new Date();
 	game.chats.push(data);
 
-	if (game.gameState.isStarted) {
+	if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	} else {
 		io.in(data.uid).emit('gameUpdate', secureGame(game));
@@ -177,19 +177,18 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 };
 
 module.exports.handleUserLeaveGame = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid),
-		{publicPlayersState} = game;
+	const game = games.find(el => el.general.uid === data.uid);
 
-	if (game && io.sockets.adapter.rooms[game.general.uid]) {
+	if (io.sockets.adapter.rooms[data.uid]) {
 		socket.leave(game.general.uid);
 	}
 
 	if (game && game.gameState.isStarted && data.isSeated) {
 		const playerIndex = game.private.seatedPlayers.findIndex(player => player.userName === data.userName);
 
-		publicPlayersState[playerIndex].leftGame = true;
+		game.publicPlayersState[playerIndex].leftGame = true;
 
-		if (publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 			if (game.gameState.isCompleted) {
 				saveGame(game);
 			}
@@ -198,19 +197,18 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		}
 	}
 
-	if (data.isSeated && !game.gameState.isStarted) {
-		publicPlayersState.splice(publicPlayersState.findIndex(player => player.userName === data.userName), 1);
+	if (game && data.isSeated && !game.gameState.isStarted) {
+		game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
 	}
 
 	if (game && !game.publicPlayersState.length) {
-		socket.emit('gameUpdate', {}, data.isSettings);
 		io.sockets.in(data.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
-	} else {
-		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
-		socket.emit('gameUpdate', {}, data.isSettings);
+	} else if (game && game.gameState.isStarted) {
+		sendInProgressGameUpdate(game);
 	}
 
+	socket.emit('gameUpdate', {}, data.isSettings);
 	sendGameList();
 };
 

@@ -7,6 +7,7 @@ export default class Gamechat extends React.Component {
 		super();
 		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleChatLockClick = this.handleChatLockClick.bind(this);
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);

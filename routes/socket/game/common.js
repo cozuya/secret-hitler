@@ -19,7 +19,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		game.gameState.isVetoEnabled = true;
 	}
 
-	game.gameState.presidentIndex = (() => { // todo-alpha, elec after spec elec did not "bounce" back
+	game.gameState.presidentIndex = (() => {
 		const findNext = index => index + 1 === game.general.playerCount ? 0 : index + 1,
 			{presidentIndex} = game.gameState;
 
@@ -66,7 +66,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		}]
 	});
 
-	// todo-alpha if spec election fails, next president shows the prev government with notification blink (but is not clickable).
+	// todo-release if spec election fails, next president shows the prev government with notification blink (but is not clickable).
 
 	pendingPresidentPlayer.playersState.filter((player, index) => (((!specialElectionPresidentIndex && game.gameState.previousElectedGovernment.length === 2 ? !ineligableIndexes.concat([game.gameState.previousElectedGovernment[1]]).includes(index) : !ineligableIndexes.includes(index)) || specialElectionPresidentIndex) && index !== presidentIndex))
 		.forEach(player => {

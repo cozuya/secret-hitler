@@ -14,59 +14,36 @@ module.exports = () => {
 	accounts();
 	socketRoutes();
 
-	app.get('/', (req, res) => {
+	const renderPage = (req, res, pageName, varName) => {
+		const renderObj = {};
+
+		renderObj[varName] = true;
+
 		if (req.user) {
-			res.render('page-home', {
-				username: req.user.username,
-				home: true
-			});
-		} else {
-			res.render('page-home');
+			renderObj.username = req.user.username;
 		}
+
+		res.render(pageName, renderObj);
+	};
+
+	app.get('/', (req, res) => {
+		renderPage(req, res, 'page-home', 'home');
 	});
 
 	app.get('/rules', (req, res) => {
-		if (req.user) {
-			res.render('page-rules', {
-				username: req.user.username,
-				rules: true
-			});
-		} else {
-			res.render('page-rules');
-		}
+		renderPage(req, res, 'page-rules', 'rules');
 	});
 
 	app.get('/how-to-play', (req, res) => {
-		if (req.user) {
-			res.render('page-howtoplay', {
-				username: req.user.username,
-				howtoplay: true
-			});
-		} else {
-			res.render('page-howtoplay');
-		}
+		renderPage(req, res, 'page-howtoplay', 'howtoplay');
 	});
 
 	app.get('/stats', (req, res) => {
-		if (req.user) {
-			res.render('page-stats', {
-				username: req.user.username,
-				stats: true
-			});
-		} else {
-			res.render('page-stats');
-		}
+		renderPage(req, res, 'page-stats', 'stats');
 	});
 
 	app.get('/about', (req, res) => {
-		if (req.user) {
-			res.render('page-about', {
-				username: req.user.username,
-				about: true
-			});
-		} else {
-			res.render('page-about');
-		}
+		renderPage(req, res, 'page-about', 'about');
 	});
 
 	app.get('/game', ensureAuthenticated, (req, res) => {

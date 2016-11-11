@@ -79,7 +79,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 				play.cardStatus = i === index ? {cardBack: player.role} : {};
 			});
 
-			player.gameChats = [{
+			player.gameChats.push({
 				timestamp: new Date(),
 				gameChat: true,
 				chat: [{
@@ -92,7 +92,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 					{
 						text: ' role.'
 					}]
-			}];
+			});
 		});
 
 		game.private.unSeatedGameChats = [{
@@ -299,12 +299,15 @@ module.exports = game => {
 		}
 	}, 1000);
 
-	game.gameState.isTracksFlipped = true;
 	game.general.playerCount = game.publicPlayersState.length;
 	game.general.livingPlayerCount = game.publicPlayersState.length;
 	game.general.type = game.general.playerCount < 7 ? 0 : game.general.playerCount < 9 ? 1 : 2; // different fascist tracks
 	game.publicPlayersState = _.shuffle(game.publicPlayersState);
 	game.private.seatedPlayers = _.cloneDeep(game.publicPlayersState);
+	game.private.seatedPlayers.forEach(player => {
+		player.gameChats = [];
+	});
+	game.gameState.isTracksFlipped = true;
 	game.private.policies = [];
 	shufflePolicies(game);
 };

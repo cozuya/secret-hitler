@@ -4,7 +4,126 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{specialElection, policyPeek, investigateLoyalty, executePlayer} = require('./policy-powers.js'),
 	{completeGame} = require('./end-game.js'),
 	{games} = require('../models.js'),
-	_ = require('lodash');
+	_ = require('lodash'),
+	enactPolicy = (game, team) => {
+		const index = game.trackState.enactedPolicies.length;
+
+		game.general.status = 'A policy is being enacted.';
+		game.trackState[`${team}PolicyCount`]++;
+		sendGameList();
+
+		game.trackState.enactedPolicies.push({
+			position: 'middle',
+			cardBack: team,
+			isFlipped: false
+		});
+
+		sendInProgressGameUpdate(game);
+
+		setTimeout(() => {
+			game.trackState.enactedPolicies[index].isFlipped = true;
+			sendInProgressGameUpdate(game);
+		}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+
+		setTimeout(() => {
+			const chat = {
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [{text: 'A '},
+						{
+							text: team === 'liberal' ? 'liberal' : 'fascist',
+							type: team === 'liberal' ? 'liberal' : 'fascist'
+						},
+					{text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`}]
+				},
+				presidentPowers = [
+					{
+						0: null,
+						1: null,
+						2: [policyPeek, 'The president must examine the top 3 policies.'],
+						3: [executePlayer, 'The president must select a player for execution.'],
+						4: [executePlayer, 'The president must select a player for execution.'],
+						5: null
+					},
+					{
+						0: null,
+						1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+						2: [specialElection, 'The president must select a player for a special election.'],
+						3: [executePlayer, 'The president must select a player for execution.'],
+						4: [executePlayer, 'The president must select a player for execution.'],
+						5: null
+					},
+					{
+						0: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+						1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+						2: [specialElection, 'The president must select a player for a special election.'],
+						3: [executePlayer, 'The president must select a player for execution.'],
+						4: [executePlayer, 'The president must select a player for execution.'],
+						5: null
+					}
+				],
+				// presidentPowers = [
+				// 	{
+				// 		0: [specialElection, 'The president must select a player for a special election.']
+				// 	}
+					// ,
+					// {
+					// 	0: [specialElection, 'y'],
+					// 	1: [executePlayer, 'The president must select a player for execution.'],
+					// 	2: [executePlayer, 'The president must select a player for execution.']
+					// }
+				// ],
+				powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
+
+			game.trackState.enactedPolicies[index].position = team === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;
+
+			game.private.seatedPlayers.forEach(player => {
+				player.gameChats.push(chat);
+			});
+
+			game.private.unSeatedGameChats.push(chat);
+
+			// if (process.env.NODE_ENV === 'development' && (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) || (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6)) {
+			if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
+				game.publicPlayersState.forEach((player, i) => {
+					player.cardStatus.cardFront = 'secretrole';
+					player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+					player.cardStatus.cardDisplayed = true;
+					player.cardStatus.isFlipped = false;
+				});
+				sendInProgressGameUpdate(game);
+
+				setTimeout(() => {
+					game.publicPlayersState.forEach((player, i) => {
+						player.cardStatus.isFlipped = true;
+					});
+					if (process.env.NODE_ENV === 'development') {
+						completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
+					} else {
+						completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
+					}
+				}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+			} else if (powerToEnact && game.trackState.electionTrackerCount !== 3) {
+				const chat = {
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [{text: powerToEnact[1]}]
+				};
+
+				game.private.seatedPlayers.forEach(player => {
+					player.gameChats.push(chat);
+				});
+
+				game.private.unSeatedGameChats.push(chat);
+				powerToEnact[0](game);
+			} else {
+				sendInProgressGameUpdate(game);
+				startElection(game);
+			}
+
+			game.trackState.electionTrackerCount = 0;
+		}, process.env.NODE_ENV === 'development' ? 100 : 5000);
+	};
 
 module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid),
@@ -106,7 +225,203 @@ module.exports.selectVoting = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{seatedPlayers} = game.private,
 		player = seatedPlayers.find(player => player.userName === data.userName),
-		playerIndex = seatedPlayers.findIndex(play => play.userName === data.userName);
+		playerIndex = seatedPlayers.findIndex(play => play.userName === data.userName),
+		failedElection = () => {
+			game.trackState.electionTrackerCount++;
+
+			if (game.trackState.electionTrackerCount === 3) {
+				const chat = {
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [{text: 'The third consecutive election has failed and the top policy is enacted.'}]
+				};
+
+				let {undrawnPolicyCount} = game.gameState;
+
+				game.gameState.previousElectedGovernment = [];
+				game.private.unSeatedGameChats.push(chat);
+
+				seatedPlayers.forEach(player => {
+					player.gameChats.push(chat);
+				});
+
+				if (!undrawnPolicyCount) {
+					shufflePolicies(game);
+				}
+
+				undrawnPolicyCount--;
+				setTimeout(() => {
+					enactPolicy(game, game.private.policies.shift());
+				}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+			} else {
+				setTimeout(() => {
+					startElection(game);
+				}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+			}
+		},
+		passedElection = () => {
+			const {gameState} = game,
+				{presidentIndex} = gameState,
+				chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
+
+			game.general.status = 'Waiting on presidential discard.';
+			game.publicPlayersState[presidentIndex].isLoader = true;
+			seatedPlayers[presidentIndex].gameChats.push({
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [{text: 'As president, you must select one policy to discard.'}]
+			});
+
+			if (gameState.undrawnPolicyCount < 3) {
+				shufflePolicies(game);
+			}
+
+			gameState.undrawnPolicyCount--;
+			game.private.currentElectionPolicies = [game.private.policies.shift(), game.private.policies.shift(), game.private.policies.shift()];
+			seatedPlayers[presidentIndex].cardFlingerState = [
+				{
+					position: 'middle-far-left',
+					action: 'active',
+					cardStatus: {
+						isFlipped: false,
+						cardFront: 'policy',
+						cardBack: `${game.private.currentElectionPolicies[0]}p`
+					}
+				},
+				{
+					position: 'middle-center',
+					action: 'active',
+					cardStatus: {
+						isFlipped: false,
+						cardFront: 'policy',
+						cardBack: `${game.private.currentElectionPolicies[1]}p`
+					}
+				},
+				{
+					position: 'middle-far-right',
+					action: 'active',
+					cardStatus: {
+						isFlipped: false,
+						cardFront: 'policy',
+						cardBack: `${game.private.currentElectionPolicies[2]}p`
+					}
+				}
+			];
+			sendInProgressGameUpdate(game);
+			setTimeout(() => {
+				gameState.undrawnPolicyCount--;
+				sendInProgressGameUpdate(game);
+			}, 200);
+			setTimeout(() => {
+				gameState.undrawnPolicyCount--;
+				sendInProgressGameUpdate(game);
+			}, 400);
+			setTimeout(() => {
+				seatedPlayers[presidentIndex].cardFlingerState[0].cardStatus.isFlipped = seatedPlayers[presidentIndex].cardFlingerState[1].cardStatus.isFlipped = seatedPlayers[presidentIndex].cardFlingerState[2].cardStatus.isFlipped = true;
+				seatedPlayers[presidentIndex].cardFlingerState[0].notificationStatus = seatedPlayers[presidentIndex].cardFlingerState[1].notificationStatus = seatedPlayers[presidentIndex].cardFlingerState[2].notificationStatus = 'notification';
+				gameState.phase = 'presidentSelectingPolicy';
+
+				game.gameState.previousElectedGovernment = game.general.livingPlayerCount > 5 ? [presidentIndex, chancellorIndex] : [presidentIndex];
+				sendInProgressGameUpdate(game);
+			}, 600);
+		},
+		flipBallotCards = () => {
+			game.publicPlayersState.forEach((player, i) => {
+				if (!player.isDead) {
+					player.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? 'ja' : 'nein';
+					player.cardStatus.isFlipped = true;
+				}
+			});
+
+			sendInProgressGameUpdate(game);
+
+			setTimeout(() => {
+				seatedPlayers.forEach(play => {
+					play.cardFlingerState = [];
+				});
+				sendInProgressGameUpdate(game);
+			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+
+			setTimeout(() => {
+				const chat = {
+					timestamp: new Date(),
+					gameChat: true
+				};
+
+				game.publicPlayersState.forEach((play, i) => {
+					play.cardStatus.cardDisplayed = false;
+				});
+
+				setTimeout(() => {
+					game.publicPlayersState.forEach((play, i) => {
+						play.cardStatus.isFlipped = false;
+					});
+					sendInProgressGameUpdate(game);
+				}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+
+				if (seatedPlayers.filter(play => play.voteStatus.didVoteYes && !play.isDead).length / game.general.livingPlayerCount > 0.5) {
+					const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingChancellor'),
+						{presidentIndex} = game.gameState;
+					game.publicPlayersState[presidentIndex].governmentStatus = 'isPresident';
+					game.publicPlayersState[chancellorIndex].governmentStatus = 'isChancellor';
+					chat.chat = [{text: 'The election passes.'}];
+
+					seatedPlayers.forEach(player => {
+						player.gameChats.push(chat);
+					});
+
+					game.private.unSeatedGameChats.push(chat);
+
+					if (process.env.NODE_ENV !== 'development' && game.trackState.fascistPolicyCount > 3 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler' || (process.env.NODE_ENV === 'development' && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler')) {
+						const chat = {
+							timestamp: new Date(),
+							gameChat: true,
+							chat: [
+								{
+									text: 'Hitler',
+									type: 'hitler'
+								},
+								{text: ' has been elected chancellor after the 3rd fascist policy has been enacted.'}]
+						};
+
+						setTimeout(() => {
+							game.publicPlayersState.forEach((player, i) => {
+								player.cardStatus.cardFront = 'secretrole';
+								player.cardStatus.cardDisplayed = true;
+								player.cardStatus.cardBack = seatedPlayers[i].role;
+							});
+
+							seatedPlayers.forEach(player => {
+								player.gameChats.push(chat);
+							});
+
+							game.private.unSeatedGameChats.push(chat);
+							sendInProgressGameUpdate(game);
+						}, process.env.NODE_ENV === 'development' ? 100 : 3000);
+
+						setTimeout(() => {
+							game.publicPlayersState.forEach(player => {
+								player.cardStatus.isFlipped = true;
+							});
+							completeGame(game, 'fascist');
+						}, process.env.NODE_ENV === 'development' ? 100 : 4000);
+					} else {
+						passedElection();
+					}
+				} else {
+					chat.chat = [{text: 'The election fails and the election tracker moves forward.'}];
+
+					seatedPlayers.forEach(player => {
+						player.gameChats.push(chat);
+					});
+
+					game.private.unSeatedGameChats.push(chat);
+					failedElection();
+				}
+
+				sendInProgressGameUpdate(game);
+			}, process.env.NODE_ENV === 'development' ? 2100 : 4000);
+		};
 
 	player.voteStatus.hasVoted = true;
 	player.voteStatus.didVoteYes = data.vote;
@@ -136,205 +451,6 @@ module.exports.selectVoting = data => {
 		setTimeout(() => {
 			flipBallotCards();
 		}, process.env.NODE_ENV === 'development' ? 100 : 2000);
-	}
-
-	function flipBallotCards () {
-		game.publicPlayersState.forEach((player, i) => {
-			if (!player.isDead) {
-				player.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? 'ja' : 'nein';
-				player.cardStatus.isFlipped = true;
-			}
-		});
-
-		sendInProgressGameUpdate(game);
-
-		setTimeout(() => {
-			seatedPlayers.forEach(play => {
-				play.cardFlingerState = [];
-			});
-			sendInProgressGameUpdate(game);
-		}, process.env.NODE_ENV === 'development' ? 100 : 2000);
-
-		setTimeout(() => {
-			const chat = {
-				timestamp: new Date(),
-				gameChat: true
-			};
-
-			game.publicPlayersState.forEach((play, i) => {
-				play.cardStatus.cardDisplayed = false;
-			});
-
-			setTimeout(() => {
-				game.publicPlayersState.forEach((play, i) => {
-					play.cardStatus.isFlipped = false;
-				});
-				sendInProgressGameUpdate(game);
-			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
-
-			if (seatedPlayers.filter(play => play.voteStatus.didVoteYes && !play.isDead).length / game.general.livingPlayerCount > 0.5) {
-				const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingChancellor'),
-					{presidentIndex} = game.gameState;
-				game.publicPlayersState[presidentIndex].governmentStatus = 'isPresident';
-				game.publicPlayersState[chancellorIndex].governmentStatus = 'isChancellor';
-				chat.chat = [{text: 'The election passes.'}];
-
-				seatedPlayers.forEach(player => {
-					player.gameChats.push(chat);
-				});
-
-				game.private.unSeatedGameChats.push(chat);
-
-				if (process.env.NODE_ENV !== 'development' && game.trackState.fascistPolicyCount > 3 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler' || (process.env.NODE_ENV === 'development' && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler')) {
-					const chat = {
-						timestamp: new Date(),
-						gameChat: true,
-						chat: [
-							{
-								text: 'Hitler',
-								type: 'hitler'
-							},
-							{text: ' has been elected chancellor after the 3rd fascist policy has been enacted.'}]
-					};
-
-					setTimeout(() => {
-						game.publicPlayersState.forEach((player, i) => {
-							player.cardStatus.cardFront = 'secretrole';
-							player.cardStatus.cardDisplayed = true;
-							player.cardStatus.cardBack = seatedPlayers[i].role;
-						});
-
-						seatedPlayers.forEach(player => {
-							player.gameChats.push(chat);
-						});
-
-						game.private.unSeatedGameChats.push(chat);
-						sendInProgressGameUpdate(game);
-					}, process.env.NODE_ENV === 'development' ? 100 : 3000);
-
-					setTimeout(() => {
-						game.publicPlayersState.forEach(player => {
-							player.cardStatus.isFlipped = true;
-						});
-						completeGame(game, 'fascist');
-					}, process.env.NODE_ENV === 'development' ? 100 : 4000);
-				} else {
-					passedElection();
-				}
-			} else {
-				chat.chat = [{text: 'The election fails and the election tracker moves forward.'}];
-
-				seatedPlayers.forEach(player => {
-					player.gameChats.push(chat);
-				});
-
-				game.private.unSeatedGameChats.push(chat);
-				failedElection();
-			}
-
-			sendInProgressGameUpdate(game);
-		}, process.env.NODE_ENV === 'development' ? 2100 : 4000);
-	}
-
-	function failedElection () {
-		game.trackState.electionTrackerCount++;
-
-		if (game.trackState.electionTrackerCount === 3) {
-			const chat = {
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [{text: 'The third consecutive election has failed and the top policy is enacted.'}]
-			};
-
-			let {undrawnPolicyCount} = game.gameState;
-
-			game.gameState.previousElectedGovernment = [];
-			game.private.unSeatedGameChats.push(chat);
-
-			seatedPlayers.forEach(player => {
-				player.gameChats.push(chat);
-			});
-
-			if (!undrawnPolicyCount) {
-				shufflePolicies(game);
-			}
-
-			undrawnPolicyCount--;
-			setTimeout(() => {
-				enactPolicy(game, game.private.policies.shift());
-			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
-		} else {
-			setTimeout(() => {
-				startElection(game);
-			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
-		}
-	}
-
-	function passedElection () {
-		const {gameState} = game,
-			{presidentIndex} = gameState,
-			chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
-
-		game.general.status = 'Waiting on presidential discard.';
-		game.publicPlayersState[presidentIndex].isLoader = true;
-		seatedPlayers[presidentIndex].gameChats.push({
-			timestamp: new Date(),
-			gameChat: true,
-			chat: [{text: 'As president, you must select one policy to discard.'}]
-		});
-
-		if (gameState.undrawnPolicyCount < 3) {
-			shufflePolicies(game);
-		}
-
-		gameState.undrawnPolicyCount--;
-		game.private.currentElectionPolicies = [game.private.policies.shift(), game.private.policies.shift(), game.private.policies.shift()];
-		seatedPlayers[presidentIndex].cardFlingerState = [
-			{
-				position: 'middle-far-left',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${game.private.currentElectionPolicies[0]}p`
-				}
-			},
-			{
-				position: 'middle-center',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${game.private.currentElectionPolicies[1]}p`
-				}
-			},
-			{
-				position: 'middle-far-right',
-				action: 'active',
-				cardStatus: {
-					isFlipped: false,
-					cardFront: 'policy',
-					cardBack: `${game.private.currentElectionPolicies[2]}p`
-				}
-			}
-		];
-		sendInProgressGameUpdate(game);
-		setTimeout(() => {
-			gameState.undrawnPolicyCount--;
-			sendInProgressGameUpdate(game);
-		}, 200);
-		setTimeout(() => {
-			gameState.undrawnPolicyCount--;
-			sendInProgressGameUpdate(game);
-		}, 400);
-		setTimeout(() => {
-			seatedPlayers[presidentIndex].cardFlingerState[0].cardStatus.isFlipped = seatedPlayers[presidentIndex].cardFlingerState[1].cardStatus.isFlipped = seatedPlayers[presidentIndex].cardFlingerState[2].cardStatus.isFlipped = true;
-			seatedPlayers[presidentIndex].cardFlingerState[0].notificationStatus = seatedPlayers[presidentIndex].cardFlingerState[1].notificationStatus = seatedPlayers[presidentIndex].cardFlingerState[2].notificationStatus = 'notification';
-			gameState.phase = 'presidentSelectingPolicy';
-
-			game.gameState.previousElectedGovernment = game.general.livingPlayerCount > 5 ? [presidentIndex, chancellorIndex] : [presidentIndex];
-			sendInProgressGameUpdate(game);
-		}, 600);
 	}
 };
 
@@ -580,6 +696,9 @@ module.exports.selectChancellorVoteOnVeto = data => {
 			setTimeout(() => {
 				publicChancellor.cardStatus.cardDisplayed = false;
 				chancellor.cardFlingerState = [];
+				setTimeout(() => {
+					publicChancellor.cardStatus.isFlipped = false;
+				}, 1000);
 				enactPolicy(game, game.private.currentElectionPolicies[0]);
 			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		}
@@ -670,128 +789,12 @@ module.exports.selectPresidentVoteOnVeto = data => {
 				publicChancellor.cardStatus.cardDisplayed = false;
 				president.cardFlingerState = [];
 				enactPolicy(game, game.private.currentElectionPolicies[0]);
+				setTimeout(() => {
+					publicChancellor.cardStatus.isFlipped = publicPresident.cardStatus.isFlipped = false;
+				}, 1000);
 			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 		}
 	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 };
-
-function enactPolicy (game, team) {
-	const index = game.trackState.enactedPolicies.length;
-
-	game.general.status = 'A policy is being enacted.';
-	game.trackState[`${team}PolicyCount`]++;
-	sendGameList();
-
-	game.trackState.enactedPolicies.push({
-		position: 'middle',
-		cardBack: team,
-		isFlipped: false
-	});
-
-	sendInProgressGameUpdate(game);
-
-	setTimeout(() => {
-		game.trackState.enactedPolicies[index].isFlipped = true;
-		sendInProgressGameUpdate(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 4000);
-
-	setTimeout(() => {
-		const chat = {
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [{text: 'A '},
-					{
-						text: team === 'liberal' ? 'liberal' : 'fascist',
-						type: team === 'liberal' ? 'liberal' : 'fascist'
-					},
-				{text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`}]
-			},
-			presidentPowers = [
-				{
-					0: null,
-					1: null,
-					2: [policyPeek, 'The president must examine the top 3 policies.'],
-					3: [executePlayer, 'The president must select a player for execution.'],
-					4: [executePlayer, 'The president must select a player for execution.'],
-					5: null
-				},
-				{
-					0: null,
-					1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-					2: [specialElection, 'The president must select a player for a special election.'],
-					3: [executePlayer, 'The president must select a player for execution.'],
-					4: [executePlayer, 'The president must select a player for execution.'],
-					5: null
-				},
-				{
-					0: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-					1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-					2: [specialElection, 'The president must select a player for a special election.'],
-					3: [executePlayer, 'The president must select a player for execution.'],
-					4: [executePlayer, 'The president must select a player for execution.'],
-					5: null
-				}
-			],
-			// presidentPowers = [
-			// 	{
-			// 		0: [specialElection, 'The president must select a player for a special election.']
-			// 	}
-				// ,
-				// {
-				// 	0: [specialElection, 'y'],
-				// 	1: [executePlayer, 'The president must select a player for execution.'],
-				// 	2: [executePlayer, 'The president must select a player for execution.']
-				// }
-			// ],
-			powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
-
-		game.trackState.enactedPolicies[index].position = team === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;
-
-		game.private.seatedPlayers.forEach(player => {
-			player.gameChats.push(chat);
-		});
-
-		game.private.unSeatedGameChats.push(chat);
-
-		// if (process.env.NODE_ENV === 'development' && (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) || (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6)) {
-		if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
-			game.publicPlayersState.forEach((player, i) => {
-				player.cardStatus.cardFront = 'secretrole';
-				player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-				player.cardStatus.cardDisplayed = true;
-			});
-			sendInProgressGameUpdate(game);
-
-			setTimeout(() => {
-				game.publicPlayersState.forEach((player, i) => {
-					player.cardStatus.isFlipped = true;
-				});
-				if (process.env.NODE_ENV === 'development') {
-					completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
-				} else {
-					completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
-				}
-			}, process.env.NODE_ENV === 'development' ? 100 : 2000);
-		} else if (powerToEnact && game.trackState.electionTrackerCount !== 3) {
-			const chat = {
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [{text: powerToEnact[1]}]
-			};
-
-			game.private.seatedPlayers.forEach(player => {
-				player.gameChats.push(chat);
-			});
-
-			game.private.unSeatedGameChats.push(chat);
-			powerToEnact[0](game);
-		} else {
-			sendInProgressGameUpdate(game);
-			startElection(game);
-		}
-
-		game.trackState.electionTrackerCount = 0;
-	}, process.env.NODE_ENV === 'development' ? 100 : 7000);
-}
 
 module.exports.startElection = startElection;
