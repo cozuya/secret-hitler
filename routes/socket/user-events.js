@@ -80,42 +80,45 @@ const {games, userList, generalChats} = require('./models'),
 	};
 
 module.exports.updateSeatedUser = data => {
-	const game = games.find(el => el.general.uid === data.uid),
-		{publicPlayersState} = game;
+	const game = games.find(el => el.general.uid === data.uid;
 
-	publicPlayersState.push({
-		userName: data.userName,
-		connected: true,
-		cardStatus: {
-			cardDisplayed: false,
-			isFlipped: false,
-			cardFront: 'secretrole',
-			cardBack: {}
-		}
-	});
+	if (game) {
+		const {publicPlayersState} = game;
 
-	io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
-
-	if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.isStarted) { // sloppy but not trivial to get around
-		game.gameState.isStarted = true;
-		startGame(game);
-	} else if (publicPlayersState.length === game.general.minPlayersCount) {
-		let startGamePause = 20;
-
-		game.gameState.isStarted = true;
-		const countDown = setInterval(() => {
-			if (startGamePause === 4) {
-				clearInterval(countDown);
-				startGame(game);
-			} else {
-				game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
-				io.in(game.general.uid).emit('gameUpdate', secureGame(game));
+		publicPlayersState.push({
+			userName: data.userName,
+			connected: true,
+			cardStatus: {
+				cardDisplayed: false,
+				isFlipped: false,
+				cardFront: 'secretrole',
+				cardBack: {}
 			}
-			startGamePause--;
-		}, 1000);
-	}
+		});
 
-	sendGameList();
+		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
+
+		if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.isStarted) { // sloppy but not trivial to get around
+			game.gameState.isStarted = true;
+			startGame(game);
+		} else if (publicPlayersState.length === game.general.minPlayersCount) {
+			let startGamePause = 20;
+
+			game.gameState.isStarted = true;
+			const countDown = setInterval(() => {
+				if (startGamePause === 4) {
+					clearInterval(countDown);
+					startGame(game);
+				} else {
+					game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
+					io.in(game.general.uid).emit('gameUpdate', secureGame(game));
+				}
+				startGamePause--;
+			}, 1000);
+		}
+
+		sendGameList();
+	}	
 };
 
 module.exports.handleAddNewGame = (socket, data) => {
