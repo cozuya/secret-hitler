@@ -140,6 +140,7 @@ export class App extends React.Component {
 				publicPlayersState: [{
 					userName: userInfo.userName,
 					connected: true,
+					isDead: false,
 					cardStatus: {
 						cardDisplayed: false,
 						isFlipped: false,

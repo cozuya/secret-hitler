@@ -88,6 +88,7 @@ module.exports.updateSeatedUser = data => {
 		publicPlayersState.push({
 			userName: data.userName,
 			connected: true,
+			isDead: false,
 			cardStatus: {
 				cardDisplayed: false,
 				isFlipped: false,

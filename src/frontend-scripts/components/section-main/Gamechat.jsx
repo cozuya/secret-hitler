@@ -219,7 +219,7 @@ export default class Gamechat extends React.Component {
 
 								const {gameState, publicPlayersState} = this.props.gameInfo,
 									isDead = (() => {
-										if (this.props.userInfo.isSeated && publicPlayersState) {
+										if (this.props.userInfo.isSeated && publicPlayersState.length && publicPlayersState.find(player => this.props.userInfo.userName === player.userName).length) {
 											return publicPlayersState.find(player => this.props.userInfo.userName === player.userName).isDead;
 										}
 									})();
