@@ -36,7 +36,7 @@ export default class Creategame extends React.Component {
 				name: $creategame.find('div.gamename input').val() || 'New Game',
 				minPlayersCount: this.state.sliderValues[0],
 				maxPlayersCount: this.state.sliderValues[1],
-				status: 'Waiting for more players..',
+				status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
 				private: false,
 				electionCount: 0
 			},

@@ -97,8 +97,6 @@ module.exports.updateSeatedUser = data => {
 			}
 		});
 
-		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
-
 		if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.isStarted) { // sloppy but not trivial to get around
 			game.gameState.isStarted = true;
 			startGame(game);
@@ -116,7 +114,11 @@ module.exports.updateSeatedUser = data => {
 				}
 				startGamePause--;
 			}, 1000);
+		} else if (!game.gameState.isStarted) {
+			game.general.status = `Waiting for ${game.general.minPlayersCount - publicPlayersState.length} more players..`;
 		}
+
+		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 
 		sendGameList();
 	}
