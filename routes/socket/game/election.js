@@ -321,7 +321,7 @@ module.exports.selectVoting = data => {
 				seatedPlayers[presidentIndex].cardFlingerState[0].notificationStatus = seatedPlayers[presidentIndex].cardFlingerState[1].notificationStatus = seatedPlayers[presidentIndex].cardFlingerState[2].notificationStatus = 'notification';
 				gameState.phase = 'presidentSelectingPolicy';
 
-				game.gameState.previousElectedGovernment = game.general.livingPlayerCount > 5 ? [presidentIndex, chancellorIndex] : [presidentIndex];
+				game.gameState.previousElectedGovernment = game.general.livingPlayerCount > 5 ? [presidentIndex, chancellorIndex] : [chancellorIndex];
 				sendInProgressGameUpdate(game);
 			}, 600);
 		},

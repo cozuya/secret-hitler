@@ -8,6 +8,7 @@
 	.tracks {
 		transition: all 1s;
 		position: relative;
+		filter: saturate(80%);
 
 		.electiontracker {
 			position: absolute;
@@ -97,7 +98,7 @@
 	}
 
 	.tracks.blurred {
-		filter: blur(5px);
+		filter: blur(5px) saturate(80%);
 		opacity: .3;
 	}
 
