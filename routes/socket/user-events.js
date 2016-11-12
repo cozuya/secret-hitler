@@ -118,7 +118,7 @@ module.exports.updateSeatedUser = data => {
 		}
 
 		sendGameList();
-	}	
+	}
 };
 
 module.exports.handleAddNewGame = (socket, data) => {
@@ -183,7 +183,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 
 	if (io.sockets.adapter.rooms[data.uid]) {
-		socket.leave(game.general.uid);
+		socket.leave(data.uid);
 	}
 
 	if (game && game.gameState.isStarted && data.isSeated) {

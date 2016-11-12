@@ -143,6 +143,7 @@ gulp.task('makedata', () => {
 });
 
 gulp.task('build-js', () => {
+	process.env.NODE_ENV = 'production';
 	gulp.src('./src/frontend-scripts/game-app.js')
 		.pipe(through2.obj((file, enc, next) => {
 			browserify(file.path)
@@ -166,7 +167,7 @@ gulp.task('build-js', () => {
 });
 
 gulp.task('build-css', () => {
-	return gulp.src('./src/scss/style.scss')
+	return gulp.src('./src/scss/style-dark.scss')
 		.pipe(plumber())
 		.pipe(sass({outputStyle: 'compressed'}).on('error', () => {
 			notifier.notify({title: 'SASS Error', message: ' '});
