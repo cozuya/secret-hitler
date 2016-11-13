@@ -9,7 +9,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			let toConcat = [];
 
 			if (!specialElectionFormerPresidentIndex && specialElectionFormerPresidentIndex !== 0) {
-				toConcat = previousElectedGovernment.length ? previousElectedGovernment[0] : [];
+				toConcat = previousElectedGovernment.length ? game.general.livingPlayerCount < 6 ? [] : previousElectedGovernment[0] : [];
 			}
 
 			return game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(toConcat);
