@@ -4,16 +4,17 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 
 module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const ineligableIndexes = (() => {
-		const {specialElectionFormerPresidentIndex, previousElectedGovernment} = game.gameState;
+			const {specialElectionFormerPresidentIndex, previousElectedGovernment} = game.gameState;
 
-		let toConcat = [];
+			let toConcat = [];
 
-		if (!specialElectionFormerPresidentIndex && specialElectionFormerPresidentIndex !== 0) {
-			toConcat = previousElectedGovernment.length ? previousElectedGovernment[0] : [];
-		}
+			if (!specialElectionFormerPresidentIndex && specialElectionFormerPresidentIndex !== 0) {
+				toConcat = previousElectedGovernment.length ? previousElectedGovernment[0] : [];
+			}
 
-		return game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(toConcat);
-	})();
+			return game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(toConcat);
+		})(),
+		{experiencedMode} = game.general;
 
 	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || game.trackState.fascistPolicyCount === 5) {
 		game.gameState.isVetoEnabled = true;
@@ -58,13 +59,15 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	game.general.electionCount++;
 	sendGameList();
 	game.general.status = `Election #${game.general.electionCount}: president to select chancellor.`;
-	pendingPresidentPlayer.gameChats.push({
-		gameChat: true,
-		timestamp: new Date(),
-		chat: [{
-			text: 'You are president and must select a chancellor.'
-		}]
-	});
+	if (!experiencedMode) {
+		pendingPresidentPlayer.gameChats.push({
+			gameChat: true,
+			timestamp: new Date(),
+			chat: [{
+				text: 'You are president and must select a chancellor.'
+			}]
+		});
+	}
 
 	// todo-release if spec election fails, next president shows the prev government with notification blink (but is not clickable).
 

@@ -1,15 +1,33 @@
 import React from 'react';
 import $ from 'jquery';
 import Slider from 'rc-slider';
+import Checkbox from 'semantic-ui-checkbox';
+
+$.fn.checkbox = Checkbox;
 
 export default class Creategame extends React.Component {
 	constructor() {
 		super();
-
 		this.leaveCreateGame = this.leaveCreateGame.bind(this);
 		this.createNewGame = this.createNewGame.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
-		this.state = {sliderValues: [5, 10]};
+		this.state = {
+			sliderValues: [5, 10],
+			experiencedmode: false
+		};
+	}
+
+	componentDidMount() {
+		const self = this;
+
+		$(this.experiencedmode).checkbox({
+			onChecked() {
+				self.setState({experiencedmode: true});
+			},
+			onUnchecked() {
+				self.setState({experiencedmode: false});
+			}
+		});
 	}
 
 	sliderChange(event) {
@@ -37,6 +55,7 @@ export default class Creategame extends React.Component {
 				minPlayersCount: this.state.sliderValues[0],
 				maxPlayersCount: this.state.sliderValues[1],
 				status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
+				experiencedMode: this.state.experiencedmode,
 				private: false,
 				electionCount: 0
 			},
@@ -71,20 +90,32 @@ export default class Creategame extends React.Component {
 					</div>
 				</div>
 				<div className="ui grid">
-					<div className="four wide column gamename">
-						<h4 className="ui header">Game name<small>(optional)</small></h4>
-						<div className="ui input">
-							<input maxLength="20" placeholder="New Game" />
+					<div className="row">
+						<div className="four wide column gamename">
+							<h4 className="ui header">Game name<small>(optional)</small></h4>
+							<div className="ui input">
+								<input maxLength="20" placeholder="New Game" />
+							</div>
+						</div>
+						<div className="eight wide column slider">
+							<h4 className="ui header">Number of players</h4>
+							<Slider onChange={this.sliderChange} min={5} max={10} range defaultValue={[5, 10]} marks={{5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10'}} />
+						</div>
+						<div className="four wide column privategame">
+							<h4 className="ui header">Private game</h4>
+							<h5 className="ui header">Coming soon!</h5>
+							<div className="ui checkbox disabled" />
 						</div>
 					</div>
-					<div className="eight wide column slider">
-						<h4 className="ui header">Number of players</h4>
-						<Slider onChange={this.sliderChange} min={5} max={10} range defaultValue={[5, 10]} marks={{5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10'}} />
-					</div>
-					<div className="four wide column privategame">
-						<h4 className="ui header">Private game</h4>
-						<h5 className="ui header">Coming soon!</h5>
-						<div className="ui checkbox disabled" />
+					<div className="row">
+						<div className="four wide column experiencedmode">
+							<h4 className="ui header">Experienced mode - most animations and pauses greatly reduced and fewer gamechats</h4>
+							<div className="ui fitted toggle checkbox" ref={c => {
+								this.experiencedmode = c;
+							}}>
+								<input type="checkbox" name="experiencedmode" defaultChecked={false} />
+							</div>
+						</div>
 					</div>
 				</div>
 				<div className="ui grid footer">

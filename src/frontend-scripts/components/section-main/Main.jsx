@@ -11,13 +11,17 @@ export default class Main extends React.Component {
 			<section
 				className={
 					(() => {
-						let classes;
+						let classes = '';
 
 						if (this.props.midSection === 'game') {
+							if (this.props.gameInfo.general.experiencedMode) {
+								classes = 'experienced ';
+							}
+
 							if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
-								classes = 'thirteen';
+								classes += 'thirteen';
 							} else {
-								classes = 'sixteen';
+								classes += 'sixteen';
 							}
 						} else {
 							classes = 'ten';
@@ -83,19 +87,7 @@ export default class Main extends React.Component {
 
 Main.propTypes = {
 	midSection: React.PropTypes.string,
-	// onCreateGameSubmit: React.PropTypes.func,
-	// onLeaveCreateGame: React.PropTypes.func,
-	// onLeaveSettings: React.PropTypes.func,
-	// onSeatingUser: React.PropTypes.func,
-	// onLeaveGame: React.PropTypes.func,
-	// quickDefault: React.PropTypes.func,
-	// onSettingsButtonClick: React.PropTypes.func,
 	userInfo: React.PropTypes.object,
 	gameInfo: React.PropTypes.object,
 	socket: React.PropTypes.object
-	// onUserNightActionEventSubmit: React.PropTypes.func,
-	// onUpdateTruncateGameSubmit: React.PropTypes.func,
-	// onUpdateSelectedForEliminationSubmit: React.PropTypes.func,
-	// onUpdateReportGame: React.PropTypes.func,
-	// onNewGameChat: React.PropTypes.func
 };

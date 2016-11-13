@@ -81,34 +81,12 @@ $dteal: #034f61;
 		color: #ddd;
 	}
 
-	.seat:hover .username {
-		color: $werewolfteam;
-	}
-
-	.table-container {
-		background: #333;
-	}
-
-	.gameroles-container .gameroles {
-		background: #222;
-	}
-
-	.table-container .table .tableimage {
-		background-image: url('../images/tweed.png');
-		box-shadow: 0px 0px 2px 1px #222;
-	}
-
 	.game>.ui.grid .chat-container .gamechat .chats, .game-chat {
 		background: #3d3d3d;
 	}
 
 	.game>.ui.grid .chat-container .gamechat .inputbar .expando-container .hotkey-container {
 		background: #7c7c7c;
-	}
-
-	.gameroles-container .gameroles>.label {
-		background: #0c0c0c;
-		color: #bfbfbf;
 	}
 
 	.gamechat .ui.pointing.menu {

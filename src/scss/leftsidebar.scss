@@ -25,10 +25,22 @@
 			padding: 3px 0;
 		}
 
+		.experienced {
+			text-align: center;
+			font-size: 11px;
+			line-height: 0.6;
+			font-style: italic;
+			color: #c36563;
+		}
+
 		.lower-row {
 			text-align: center;
 			padding: 0 0 3px;
 			color: #16AB39;
+
+			.allowed-players {
+				color: #608cb3;
+			}
 		}
 
 		.liberal-count {

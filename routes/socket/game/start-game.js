@@ -3,6 +3,8 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{startElection} = require('./election.js'),
 	{shufflePolicies} = require('./common.js'),
 	beginGame = game => {
+		const {experiencedMode} = game.general;
+
 		let roles = _.range(0, 3).map(el => ({
 			cardName: 'liberal',
 			icon: el,
@@ -255,7 +257,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 				player.playersState[i].cardStatus.isFlipped = true;
 			});
 			sendInProgressGameUpdate(game);
-		}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000);
 
 		setTimeout(() => {
 			game.private.seatedPlayers.forEach((player, i) => {
@@ -272,7 +274,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 				player.cardStatus.cardDisplayed = false;
 			});
 			sendInProgressGameUpdate(game);
-		}, process.env.NODE_ENV === 'development' ? 100 : 7000);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5200 : 7000);
 
 		setTimeout(() => {
 			game.private.seatedPlayers.forEach(player => {
@@ -282,7 +284,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 			});
 			game.gameState.presidentIndex = -1;
 			startElection(game);
-		}, process.env.NODE_ENV === 'development' ? 100 : 9000);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5400 : 9000);
 	};
 
 module.exports = game => {

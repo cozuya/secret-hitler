@@ -112,32 +112,8 @@ export default class Players extends React.Component {
 
 							return classes;
 						})()
-					}>
-						{(() => {
-							if (gameState.isTracksFlipped) {
-								return i + 1;
-							}
-						})()}
+					}>{gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
 					</div>
-					<div
-						className={
-						(() => {
-							let classes = 'player-name';
-
-							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
-								classes = `${classes} ${playersState[i].nameStatus}`;
-							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
-								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
-							}
-
-							if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
-								classes = `${classes} disconnected`;
-							}
-
-							return classes;
-						})()
-					}
-					>{player.userName}</div>
 					{this.renderLoader(i)}
 					{this.renderGovtToken(i)}
 					<div

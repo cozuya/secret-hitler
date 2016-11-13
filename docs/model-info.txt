@@ -20,6 +20,7 @@ general
 	maxPlayersCount number 5-10
 	status string
 	uid string
+	experiencedMode bool
 	playerCount number 5-10
 	type number refers to fasctrack
 	livingPlayerCount number

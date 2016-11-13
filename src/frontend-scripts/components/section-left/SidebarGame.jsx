@@ -36,6 +36,11 @@ export default class SidebarGame extends React.Component {
 						(
 							<div>
 								<div className="gamename">{game.name}</div>
+								{(() => {
+									if (game.experiencedMode) {
+										return <div className="experienced">Experienced</div>;
+									}
+								})()}
 								<div className="lower-row">
 									<span className="allowed-players">{playersCount()} </span>
 									<span className="divider">|</span>

@@ -8,7 +8,7 @@
 	.tracks {
 		transition: all 1s;
 		position: relative;
-		filter: saturate(80%);
+		filter: saturate(60%);
 
 		.electiontracker {
 			position: absolute;
@@ -71,7 +71,7 @@
 		}
 
 		.bottom-track-back {
-			-webkit-backface-visibility: hidden;  // thanks osx safari
+			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
 			transform: rotateX(180deg);
 		}
@@ -98,7 +98,7 @@
 	}
 
 	.tracks.blurred {
-		filter: blur(5px) saturate(80%);
+		filter: blur(5px) saturate(60%);
 		opacity: .3;
 	}
 
@@ -321,10 +321,26 @@
 }
 
 .cardflinger-card-container.selected {
-	// top: -180px;
     left: 670px;
 }
 
 .cardflinger-card-container.active {
 	box-shadow: 0px 0px 4px 3px #969696;
+}
+
+.experienced .tracks-container {
+	.tracks {
+		transition: all .2s;
+	}
+
+	.cardflinger-card-container {
+		transition-property: all;
+		transition-delay: .1s;
+		transition-duration: .2s;
+	}
+
+	.enactedpolicies-card-container {
+		transition-delay: .5s, .5s, 1s, 1s, .5s;
+		transition-duration: .5s, .5s, 1s, 1s, 1s;
+	}
 }

@@ -21,6 +21,7 @@ module.exports.policyPeek = game => {
 module.exports.selectPolicies = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{presidentIndex} = game.gameState,
+		{experiencedMode} = game.general,
 		{seatedPlayers} = game.private,
 		president = seatedPlayers[presidentIndex];
 
@@ -66,13 +67,13 @@ module.exports.selectPolicies = data => {
 	setTimeout(() => {
 		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = true;
 		sendInProgressGameUpdate(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
 
 	setTimeout(() => {
 		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
 		president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 		sendInProgressGameUpdate(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 4000);
+	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1500 : 4000);
 
 	setTimeout(() => {
 		president.cardFlingerState = [];
@@ -101,7 +102,7 @@ module.exports.selectPolicies = data => {
 		sendInProgressGameUpdate(game);
 		game.trackState.electionTrackerCount = 0;
 		startElection(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 6000);
+	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 2000 : 6000);
 };
 
 module.exports.investigateLoyalty = game => {
@@ -122,6 +123,7 @@ module.exports.investigateLoyalty = game => {
 module.exports.selectPartyMembershipInvestigate = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{playerIndex} = data,
+		{experiencedMode} = game.general,
 		{presidentIndex} = game.gameState,
 		{seatedPlayers} = game.private,
 		president = seatedPlayers[presidentIndex],
@@ -190,19 +192,19 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		president.playersState[playerIndex].nameStatus = playersTeam;
 
 		sendInProgressGameUpdate(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000);
 
 	setTimeout(() => {
 		president.playersState[playerIndex].cardStatus.isFlipped = false;
 		sendInProgressGameUpdate(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 6000);
+	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4000 : 6000);
 
 	setTimeout(() => {
 		game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
 		president.playersState[playerIndex].cardStatus.cardBack = {};
 		sendInProgressGameUpdate(game);
 		startElection(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : 8000);
+	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4200 : 8000);
 };
 
 module.exports.specialElection = game => {
