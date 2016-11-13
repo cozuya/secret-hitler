@@ -70,10 +70,20 @@ export default class Policies extends React.Component {
 
 						return classes;
 					})()
-				} title={`${this.props.gameInfo.gameState.undrawnPolicyCount} policy cards remain`} onClick={this.clickedDraw}>
+				} title={`${gameInfo.gameState.undrawnPolicyCount} policy cards remain`} onClick={this.clickedDraw}>
+					{(() => {
+						if (gameInfo.gameState.isTracksFlipped && gameInfo.gameState.undrawnPolicyCount) {
+							return <div className="card-count">{gameInfo.gameState.undrawnPolicyCount}</div>;
+						}
+					})()}
 					{this.renderUndrawn()}
 				</div>
-				<div className="discard" title={`${this.props.gameInfo.gameState.discardedPolicyCount} policy cards discarded`}>
+				<div className="discard" title={`${gameInfo.gameState.discardedPolicyCount} policy cards discarded`}>
+					{(() => {
+						if (gameInfo.gameState.isTracksFlipped && gameInfo.gameState.discardedPolicyCount) {
+							return <div className="card-count">{gameInfo.gameState.discardedPolicyCount}</div>;
+						}
+					})()}
 					{this.renderDiscard()}
 				</div>
 			</section>

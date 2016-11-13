@@ -1,5 +1,5 @@
 .players-container .players {
-	background: #6f6f6f;
+	background: #000;
 	height: 115px;
 	overflow: hidden;
 
@@ -31,6 +31,8 @@
 
 		.player-number.seated-user {
 			color: #16AB39;
+			overflow: hidden;
+			white-space: nowrap;
 		}
 
 		.government-token {
@@ -226,6 +228,17 @@
 		height: inherit;
 		display: inline-block;
 		position: relative;
+	}
+
+	.card-count {
+		position: absolute;
+		z-index: 1;
+		background: #333;
+		color: #eee;
+		width: 18px;
+		text-align: center;
+		top: 0;
+		left: 0;
 	}
 
 	.policy-card {

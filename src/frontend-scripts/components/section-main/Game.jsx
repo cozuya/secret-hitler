@@ -4,6 +4,19 @@ import Gamechat from './Gamechat.jsx';
 import Players from './Players.jsx';
 
 export default class Game extends React.Component {
+	componentDidUpdate(prevProps) {
+		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState && this.props.gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) {
+			const sound = document.createElement('audio');
+
+			sound.setAttribute('src', 'alarm.mp3');
+			sound.play();
+
+			setTimeout(() => {
+				sound.pause();
+			}, 1350);
+		}
+	}
+
 	render() {
 		return (
 			<section className="game">

@@ -115,7 +115,9 @@ module.exports.updateSeatedUser = data => {
 				startGamePause--;
 			}, 1000);
 		} else if (!game.gameState.isStarted) {
-			game.general.status = `Waiting for ${game.general.minPlayersCount - publicPlayersState.length} more players..`;
+			const count = game.general.minPlayersCount - publicPlayersState.length;
+
+			game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 		}
 
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
