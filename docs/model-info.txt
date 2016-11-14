@@ -44,6 +44,7 @@ publicPlayersState array
 		isLoader bool
 		leftGame bool
 		userName string
+		previousGovernmentStatus string wasPresident wasChancellor
 		cardStatus
 			cardDisplayed bool
 			isFlipped bool

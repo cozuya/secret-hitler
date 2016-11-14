@@ -11,7 +11,7 @@ Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 
 Build: Gulp, Browserify, Babel (front end).
 
-Latest version: 0.1.3
+Latest version: 0.1.4
 
 ## Installation ##
 
@@ -67,6 +67,6 @@ This game is attributed as per the [Creative Commons Attribution-NonCommercial-S
 
 Minor image alterations and editing.
 
-Players are able to speak/communicate during the selection of policies.  This may be disabled later.  Veto power is slightly adjusted so that chancellors need to select a policy prior to saying yes or no to vetoing that policy.
+Veto power is slightly adjusted so that chancellors need to select a policy prior to saying yes or no to vetoing that policy.
 
 Adapted the rules slightly to account for online vs physical play.
