@@ -39,7 +39,8 @@ export default class Gamechat extends React.Component {
 		const {userInfo, gameInfo} = this.props;
 		this.scrollChats();
 
-		if (prevProps && userInfo.userName && prevProps.gameInfo.publicPlayersState.filter(player => player.isDead).length !== gameInfo.publicPlayersState.filter(player => player.isDead).length && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead) {
+		if (prevProps && userInfo.userName && prevProps.gameInfo.publicPlayersState.filter(player => player.isDead).length !== gameInfo.publicPlayersState.filter(player => player.isDead).length && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead ||
+			(prevProps && userInfo.userName && gameInfo.gameState.phase === 'presidentSelectingPolicy' && (gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isPresident' || gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isChancellor') && prevProps.gameInfo.gameState.phase !== 'presidentSelectingPolicy')) {
 			this.setState({inputValue: ''});
 			$(this.gameChatInput).blur();
 		}
@@ -218,13 +219,19 @@ export default class Gamechat extends React.Component {
 								let classes = 'ui action input';
 
 								const {gameState, publicPlayersState} = this.props.gameInfo,
+									{userName} = this.props.userInfo,
 									isDead = (() => {
-										if (this.props.userInfo.isSeated && publicPlayersState.length && publicPlayersState.find(player => this.props.userInfo.userName === player.userName)) {
-											return publicPlayersState.find(player => this.props.userInfo.userName === player.userName).isDead;
+										if (this.props.userInfo.isSeated && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
+											return publicPlayersState.find(player => userName === player.userName).isDead;
+										}
+									})(),
+									isGovernmentDuringPolicySelection = (() => {
+										if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName) {
+											return publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' || publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor';
 										}
 									})();
 
-								if (!this.props.userInfo.userName || (gameState.cardsDealt && !gameState.isDay) || (isDead && !gameState.isCompleted)) {
+								if (!this.props.userInfo.userName || (gameState.cardsDealt && !gameState.isDay) || (isDead && !gameState.isCompleted) || isGovernmentDuringPolicySelection) {
 									classes += ' disabled';
 								}
 

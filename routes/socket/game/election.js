@@ -340,13 +340,6 @@ module.exports.selectVoting = data => {
 
 			sendInProgressGameUpdate(game);
 
-			// setTimeout(() => {
-				// seatedPlayers.forEach(play => {  not needed?
-				// 	play.cardFlingerState = [];
-				// });
-			// 	sendInProgressGameUpdate(game);
-			// }, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
-
 			setTimeout(() => {
 				const chat = {
 					timestamp: new Date(),

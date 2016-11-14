@@ -172,6 +172,10 @@
 					}
 				}
 
+				.input.disabled {
+					cursor: not-allowed;
+				}
+
 				> .icon {
 					float: left;
 					position: relative;

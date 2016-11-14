@@ -13,7 +13,7 @@ export default class Game extends React.Component {
 
 			setTimeout(() => {
 				sound.pause();
-			}, 1350);
+			}, 2400);
 		}
 	}
 
