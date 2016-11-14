@@ -14,7 +14,8 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 
 			return game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(toConcat);
 		})(),
-		{experiencedMode} = game.general;
+		{experiencedMode} = game.general,
+		pastChancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 
 	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || game.trackState.fascistPolicyCount === 5) {
 		game.gameState.isVetoEnabled = true;
@@ -71,7 +72,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 
 	// todo-release if spec election fails, next president shows the prev government with notification blink (but is not clickable).
 
-	pendingPresidentPlayer.playersState.filter((player, index) => (((!specialElectionPresidentIndex && game.gameState.previousElectedGovernment.length === 2 ? !ineligableIndexes.concat([game.gameState.previousElectedGovernment[1]]).includes(index) : !ineligableIndexes.includes(index)) || specialElectionPresidentIndex) && index !== presidentIndex))
+	pendingPresidentPlayer.playersState.filter((player, index) => (((!specialElectionPresidentIndex && game.gameState.previousElectedGovernment.length === 2 ? !ineligableIndexes.concat([game.gameState.previousElectedGovernment[1]]).includes(index) : !ineligableIndexes.includes(index)) || specialElectionPresidentIndex) && index !== presidentIndex && index !== pastChancellorIndex))
 		.forEach(player => {
 			player.notificationStatus = 'notification';
 		});

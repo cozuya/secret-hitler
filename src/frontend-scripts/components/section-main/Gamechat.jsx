@@ -141,7 +141,7 @@ export default class Gamechat extends React.Component {
 			) :
 			(
 				<div className="item" key={i}>
-					<span className="chat-user">{gameInfo.gameState.isTracksFlipped ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
+					<span className="chat-user">{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
 					<span>{chatContents}</span>
 				</div>
 				);

@@ -43,15 +43,20 @@
 			z-index: 1;
 		}
 
+		.previous-government-token {
+			top: 0;
+			opacity: 0.2;
+		}
+
 		.government-token.isPendingPresident, .government-token.isPendingChancellor {
 			animation: fadeIn 1.5s infinite alternate;
 		}
 
-		.government-token.isPendingPresident, .government-token.isPresident {
+		.government-token.isPendingPresident, .government-token.isPresident, .government-token.wasPresident {
 			background-image: url('../images/president-token.png');
 		}
 
-		.government-token.isPendingChancellor, .government-token.isChancellor {
+		.government-token.isPendingChancellor, .government-token.isChancellor, .government-token.wasChancellor {
 			background-image: url('../images/chancellor-token.png');
 		}		
 

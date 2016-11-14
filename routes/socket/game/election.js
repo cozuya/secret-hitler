@@ -118,6 +118,14 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 				game.private.unSeatedGameChats.push(chat);
 				powerToEnact[0](game);
 			} else {
+				game.publicPlayersState.forEach(player => {
+					if (player.previousGovernmentStatus) {
+						player.previousGovernmentStatus = '';
+					}
+				});
+
+				game.publicPlayersState[game.gameState.presidentIndex].previousGovernmentStatus = 'wasPresident';
+				game.publicPlayersState[game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')].previousGovernmentStatus = 'wasChancellor';
 				sendInProgressGameUpdate(game);
 				startElection(game);
 			}
@@ -450,7 +458,7 @@ module.exports.selectVoting = data => {
 		sendInProgressGameUpdate(game);
 		setTimeout(() => {
 			flipBallotCards();
-		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
 	}
 };
 

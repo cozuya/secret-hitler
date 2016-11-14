@@ -51,6 +51,13 @@ export default class Players extends React.Component {
 			}
 		}
 	}
+	renderPreviousGovtToken(i) {
+		const {publicPlayersState} = this.props.gameInfo;
+
+		if (publicPlayersState && publicPlayersState[i].previousGovernmentStatus) {
+			return <div	className={`government-token previous-government-token ${publicPlayersState[i].previousGovernmentStatus}`} />;
+		}
+	}
 
 	renderGovtToken(i) {
 		const {publicPlayersState} = this.props.gameInfo;
@@ -114,6 +121,7 @@ export default class Players extends React.Component {
 						})()
 					}>{gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
 					</div>
+					{this.renderPreviousGovtToken(i)}
 					{this.renderLoader(i)}
 					{this.renderGovtToken(i)}
 					<div
