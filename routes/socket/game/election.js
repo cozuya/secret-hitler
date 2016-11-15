@@ -518,6 +518,7 @@ module.exports.selectPresidentPolicy = data => {
 		});
 	}
 
+	president.playersState[presidentIndex].claim = 'wasPresident';
 	sendInProgressGameUpdate(game);
 
 	setTimeout(() => {

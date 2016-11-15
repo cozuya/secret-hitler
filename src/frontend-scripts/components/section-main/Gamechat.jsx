@@ -11,6 +11,7 @@ export default class Gamechat extends React.Component {
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
+		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
@@ -103,6 +104,10 @@ export default class Gamechat extends React.Component {
 		} else {
 			this.setState({lock: true});
 		}
+	}
+
+	handleClickedClaimButton() {
+		console.log('Hello World!');
 	}
 
 	processChats() {
@@ -244,6 +249,11 @@ export default class Gamechat extends React.Component {
 						}} onChange={this.handleInputChange} maxLength="300" />
 						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
+					{(() => {
+						if (gameInfo.playersState.length && userInfo.userName && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim) {
+							return <div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>C</div>;
+						}
+					})()}
 				</form>
 			</section>
 		);

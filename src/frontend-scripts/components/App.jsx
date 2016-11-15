@@ -33,17 +33,17 @@ export class App extends React.Component {
 			socket.emit('getUserGameSettings', username);
 
 			// ** begin devhelpers **
-			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb'];
-			if (devPlayers.includes(username)) {
-				const data = {
-					uid: 'devgame',
-					userName: username
-				};
+			// const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb'];
+			// if (devPlayers.includes(username)) {
+			// 	const data = {
+			// 		uid: 'devgame',
+			// 		userName: username
+			// 	};
 
-				info.isSeated = true;
-				socket.emit('updateSeatedUser', data);
-				socket.emit('getGameInfo', 'devgame');
-			}
+			// 	info.isSeated = true;
+			// 	socket.emit('updateSeatedUser', data);
+			// 	socket.emit('getGameInfo', 'devgame');
+			// }
 			dispatch(updateUser(info));
 
 			// ** end devhelpers **

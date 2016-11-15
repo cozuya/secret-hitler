@@ -121,6 +121,29 @@
 			}
 
 			.inputbar {
+				.claim-button {
+					float: left;
+					color: #fff;
+					padding: 8px 3px 8px 3px;
+					font-size: 20px;
+					font-weight: 700;
+					z-index: 1;
+					cursor: pointer;
+					position: relative;
+
+					&:after {
+						content: '';
+						display: table;
+						animation: fadeIn .6s infinite alternate;
+						top: 0;
+						left: 0;
+						position: absolute;
+						width: 20px;
+						height: 35px;
+						box-shadow: 0 0 3px 5px #FBBD08;
+					}
+				}
+
 				.expando-container {
 					position: relative;
 					top: 7px;
