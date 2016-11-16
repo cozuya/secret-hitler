@@ -120,6 +120,55 @@
 				}
 			}
 
+			.chats.blurred {
+				filter: blur(4px);
+			}
+			
+			.claim-container {
+				position: absolute;
+				top: 80px;
+				left: 0;
+				width: 630px;
+				opacity: 0;
+				transition: opacity 1s;
+
+				p {
+					font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+					font-size: 44px;
+					color: #fbbd08;
+					text-align: center;
+					margin-bottom: 15px;
+				}
+
+				.ui.button {
+					text-align: center;
+					color: #eee;
+					display: block;
+					width: 230px;
+					margin: 0 auto 15px;
+				}
+
+				.threefascist {
+					background: #c36563;
+				}
+
+				.twofascistoneliberal {
+					background: #e4bcba;
+				}
+
+				.twoliberalonefascist {
+					background: #bfd8ee;
+				}
+
+				.threeliberal {
+					background: #608cb3;
+				}
+			}
+
+			.claim-container.active {
+				opacity: 1;
+			}
+
 			.inputbar {
 				.claim-button {
 					float: left;

@@ -44,9 +44,8 @@ export class App extends React.Component {
 			// 	socket.emit('updateSeatedUser', data);
 			// 	socket.emit('getGameInfo', 'devgame');
 			// }
-			dispatch(updateUser(info));
-
 			// ** end devhelpers **
+			dispatch(updateUser(info));
 		}
 
 		socket.on('manualDisconnection', () => {

@@ -12,10 +12,12 @@ export default class Gamechat extends React.Component {
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
 		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
+		this.handleClaimButtonClick = this.handleClaimButtonClick.bind(this);
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
-			inputValue: ''
+			inputValue: '',
+			claim: ''
 		};
 	}
 
@@ -107,7 +109,10 @@ export default class Gamechat extends React.Component {
 	}
 
 	handleClickedClaimButton() {
-		console.log('Hello World!');
+		const {gameInfo, userInfo} = this.props,
+			playerIndex = gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName);
+
+		this.setState({claim: gameInfo.playersState[playerIndex].claim});
 	}
 
 	processChats() {
@@ -153,6 +158,10 @@ export default class Gamechat extends React.Component {
 			});
 	}
 
+	handleClaimButtonClick(e) {
+
+	}
+
 	render() {
 		const {userInfo, gameInfo} = this.props;
 
@@ -184,10 +193,48 @@ export default class Gamechat extends React.Component {
 						</div>
 					</div>
 				</section>
-				<section className="segment chats">
+				<section className={
+					(() => {
+						let classes = 'segment chats';
+
+						if (this.state.claim) {
+							classes += ' blurred';
+						}
+
+						return classes;
+					})()
+				}>
 					<div className="ui list">
 						{this.processChats()}
 					</div>
+				</section>
+				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
+					{(() => {
+						if (this.state.claim) {
+							switch (this.state.claim) {
+							case 'wasPresident':
+								return (
+									<div>
+										<p> As president, I drew...</p>
+										<button onClick={this.handleClaimButtonClick} data-claimtype="fascist" className="ui button threefascist">3 Fascist policies</button>
+										<button onClick={this.handleClaimButtonClick} data-claimtype="twofascistoneliberal" className="ui button twofascistoneliberal">2 Fascist and a Liberal policy</button>
+										<button onClick={this.handleClaimButtonClick} data-claimtype="twoliberalonefascist" className="ui button twoliberalonefascist">2 Liberal and a Fascist policy</button>
+										<button onClick={this.handleClaimButtonClick} data-claimtype="threeliberal" className="ui button threeliberal">3 Liberal policies</button>
+									</div>
+								);
+							case 'wasChancellor':
+									
+								break;
+							case 'didInvestigateLoyalty':
+									
+								break;
+							case 'didPolicyPeek':
+
+								break;
+							default:
+							}
+						}
+					})()}
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
 					{(() => {
