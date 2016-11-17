@@ -88,7 +88,13 @@ module.exports.shufflePolicies = game => {
 	console.log(game.private.policies, 'p1');
 	console.log(count);
 
-	game.private.policies = game.private.policies.concat(_.shuffle(_.range(1, 12 - (count.fascist + game.trackState.fascistPolicyCount) || 0)).map(num => 'fascist').concat(_.range(1, 7 - (count.liberal + game.trackState.liberalPolicyCount) || 0)).map(num => 'liberal'));
+	game.private.policies = game.private.policies.concat(
+		_.shuffle(
+		_.range(1, 12 - (game.trackState.fascistPolicyCount + (count.fascist || 0))).map(num => 'fascist')
+		.concat(
+		_.range(1, 7 - (game.trackState.liberalPolicyCount + (count.liberal || 0))).map(num => 'liberal'))
+		));
+
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
 	console.log(game.private.policies);
 	console.log(game.private.policies.length);

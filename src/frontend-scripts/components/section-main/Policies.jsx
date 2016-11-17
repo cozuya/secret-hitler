@@ -42,7 +42,8 @@ export default class Policies extends React.Component {
 	}
 
 	renderDiscard() {
-		const count = this.props.gameInfo.gameState.discardedPolicyCount;
+		const {gameInfo} = this.props,
+			count = 17 - (gameInfo.gameState.undrawnPolicyCount + gameInfo.trackState.liberalPolicyCount + gameInfo.trackState.fascistPolicyCount);
 
 		return _.range(1, 10).map(num => {
 			let classes = `policy-card policy-discard policy-card-${num}`;
@@ -57,7 +58,7 @@ export default class Policies extends React.Component {
 
 	render() {
 		const {gameInfo, userInfo} = this.props,
-			discardedPolicyCount = 17 - gameInfo.gameState.undrawnPolicyCount + gameInfo.trackState.liberalPolicyCount + gameInfo.trackState.fascistPolicyCount;
+			discardedPolicyCount = 17 - (gameInfo.gameState.undrawnPolicyCount + gameInfo.trackState.liberalPolicyCount + gameInfo.trackState.fascistPolicyCount);
 
 		return (
 			<section className="policies-container">
