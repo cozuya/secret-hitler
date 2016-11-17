@@ -3,21 +3,10 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	_ = require('lodash');
 
 module.exports.startElection = (game, specialElectionPresidentIndex) => {
-	const ineligableIndexes = (() => {
-			const {specialElectionFormerPresidentIndex, previousElectedGovernment} = game.gameState;
+	const ineligableIndexes = game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)),
+		{experiencedMode} = game.general;
 
-			let toConcat = [];
-
-			if (!specialElectionFormerPresidentIndex && specialElectionFormerPresidentIndex !== 0) {
-				toConcat = previousElectedGovernment.length ? game.general.livingPlayerCount < 6 ? [] : previousElectedGovernment[0] : [];
-			}
-
-			return game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)).concat(toConcat);
-		})(),
-		{experiencedMode} = game.general,
-		pastChancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
-
-	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || game.trackState.fascistPolicyCount === 5) {
+	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || game.trackState.fascistPolicyCount >= 5) {
 		game.gameState.isVetoEnabled = true;
 	}
 
@@ -53,10 +42,6 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		{presidentIndex, previousElectedGovernment} = game.gameState,
 		pendingPresidentPlayer = seatedPlayers[presidentIndex];
 
-	if (game.general.livingPlayerCount < 6 && previousElectedGovernment.length) {
-		game.gameState.previousElectedGovernment = [previousElectedGovernment[0]];
-	}
-
 	game.general.electionCount++;
 	sendGameList();
 	game.general.status = `Election #${game.general.electionCount}: president to select chancellor.`;
@@ -72,7 +57,11 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 
 	// todo-release if spec election fails, next president shows the prev government with notification blink (but is not clickable).
 
-	pendingPresidentPlayer.playersState.filter((player, index) => (((!specialElectionPresidentIndex && game.gameState.previousElectedGovernment.length === 2 ? !ineligableIndexes.concat([game.gameState.previousElectedGovernment[1]]).includes(index) : !ineligableIndexes.includes(index)) || specialElectionPresidentIndex) && index !== presidentIndex && index !== pastChancellorIndex))
+	pendingPresidentPlayer.playersState.filter((player, index) =>
+		!seatedPlayers[index].isDead &&
+		((specialElectionPresidentIndex && index !== presidentIndex) ||
+				index !== presidentIndex &&
+				(game.general.livingPlayerCount > 5 ? !previousElectedGovernment.includes(index) : previousElectedGovernment[1] !== index)))
 		.forEach(player => {
 			player.notificationStatus = 'notification';
 		});
@@ -85,7 +74,12 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	game.publicPlayersState[presidentIndex].governmentStatus = 'isPendingPresident';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
-	game.gameState.clickActionInfo = specialElectionPresidentIndex ? [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex).filter(num => !seatedPlayers[num].isDead)] : [pendingPresidentPlayer.userName, _.without(_.range(0, seatedPlayers.length), presidentIndex, ...game.gameState.previousElectedGovernment).filter(num => !seatedPlayers[num].isDead)];
+	game.gameState.clickActionInfo = specialElectionPresidentIndex ?
+		[pendingPresidentPlayer.userName, seatedPlayers.filter((player, index) => !player.isDead && index !== presidentIndex).map(el => seatedPlayers.indexOf(el))] :
+		game.general.livingPlayerCount > 5 ?
+		[pendingPresidentPlayer.userName, seatedPlayers.filter((player, index) => !player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index)).map(el => seatedPlayers.indexOf(el))] :
+		[pendingPresidentPlayer.userName, seatedPlayers.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index).map(el => seatedPlayers.indexOf(el))];
+	console.log(game.gameState.clickActionInfo);
 	sendInProgressGameUpdate(game);
 };
 
