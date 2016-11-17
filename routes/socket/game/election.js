@@ -254,8 +254,6 @@ module.exports.selectVoting = data => {
 					chat: [{text: 'The third consecutive election has failed and the top policy is enacted.'}]
 				};
 
-				let {undrawnPolicyCount} = game.gameState;
-
 				game.gameState.previousElectedGovernment = [];
 				game.private.unSeatedGameChats.push(chat);
 
@@ -263,11 +261,11 @@ module.exports.selectVoting = data => {
 					player.gameChats.push(chat);
 				});
 
-				if (!undrawnPolicyCount) {
+				if (!game.gameState.undrawnPolicyCount) {
 					shufflePolicies(game);
 				}
 
-				undrawnPolicyCount--;
+				game.gameState.undrawnPolicyCount--;
 				setTimeout(() => {
 					enactPolicy(game, game.private.policies.shift());
 				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
@@ -493,7 +491,6 @@ module.exports.selectPresidentPolicy = data => {
 
 	president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 	president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
-	game.gameState.discardedPolicyCount++;
 
 	chancellor.cardFlingerState = [{
 		position: 'middle-left',
@@ -554,7 +551,6 @@ module.exports.selectChancellorPolicy = data => {
 		chancellor.cardFlingerState[1].notificationStatus = '';
 	}
 
-	game.gameState.discardedPolicyCount++;
 	game.publicPlayersState[chancellorIndex].isLoader = false;
 	chancellor.cardFlingerState[0].action = chancellor.cardFlingerState[1].action = '';
 	chancellor.cardFlingerState[0].cardStatus.isFlipped = chancellor.cardFlingerState[1].cardStatus.isFlipped = false;
@@ -789,7 +785,6 @@ module.exports.selectPresidentVoteOnVeto = data => {
 				player.gameChats.push(chat);
 			});
 
-			game.gameState.discardedPolicyCount++;
 			setTimeout(() => {
 				president.cardFlingerState = [];
 				if (game.gameState.electionTrackerCount >= 3) {

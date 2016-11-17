@@ -56,7 +56,8 @@ export default class Policies extends React.Component {
 	}
 
 	render() {
-		const {gameInfo, userInfo} = this.props;
+		const {gameInfo, userInfo} = this.props,
+			discardedPolicyCount = 17 - gameInfo.gameState.undrawnPolicyCount + gameInfo.trackState.liberalPolicyCount + gameInfo.trackState.fascistPolicyCount;
 
 		return (
 			<section className="policies-container">
@@ -78,10 +79,10 @@ export default class Policies extends React.Component {
 					})()}
 					{this.renderUndrawn()}
 				</div>
-				<div className="discard" title={`${gameInfo.gameState.discardedPolicyCount} policy cards discarded`}>
+				<div className="discard" title={`${discardedPolicyCount} policy cards discarded`}>
 					{(() => {
-						if (gameInfo.gameState.isTracksFlipped && gameInfo.gameState.discardedPolicyCount) {
-							return <div className="card-count">{gameInfo.gameState.discardedPolicyCount}</div>;
+						if (gameInfo.gameState.isTracksFlipped && discardedPolicyCount) {
+							return <div className="card-count">{discardedPolicyCount}</div>;
 						}
 					})()}
 					{this.renderDiscard()}

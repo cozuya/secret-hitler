@@ -7,7 +7,6 @@ gameState
 	previousElectedGovernment array of numbers, 1st is pres 2nd is chanc,
 	presidentIndex number
 	undrawnPolicyCount number
-	discardedPolicyCount number
 	specialElectionFormerPresidentIndex number
 chats array
 	chat string

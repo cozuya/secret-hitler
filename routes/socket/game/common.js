@@ -79,14 +79,17 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		game.general.livingPlayerCount > 5 ?
 		[pendingPresidentPlayer.userName, seatedPlayers.filter((player, index) => !player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index)).map(el => seatedPlayers.indexOf(el))] :
 		[pendingPresidentPlayer.userName, seatedPlayers.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index).map(el => seatedPlayers.indexOf(el))];
-	console.log(game.gameState.clickActionInfo);
 	sendInProgressGameUpdate(game);
 };
 
 module.exports.shufflePolicies = game => {
 	const count = _.countBy(game.private.policies);
 
-	game.private.policies = game.private.policies.concat(_.shuffle((_.range(1, 12 - (count.fascist + game.trackState.fascistPolicyCount || 0)).map(num => 'fascist').concat(_.range(1, 7 - (count.liberal + game.trackState.liberalPolicyCount || 0)).map(num => 'liberal')))));
+	console.log(game.private.policies, 'p1');
+	console.log(count);
+
+	game.private.policies = game.private.policies.concat(_.shuffle(_.range(1, 12 - (count.fascist + game.trackState.fascistPolicyCount) || 0)).map(num => 'fascist').concat(_.range(1, 7 - (count.liberal + game.trackState.liberalPolicyCount) || 0)).map(num => 'liberal'));
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
-	game.gameState.discardedPolicyCount = 0;
+	console.log(game.private.policies);
+	console.log(game.private.policies.length);
 };
