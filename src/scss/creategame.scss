@@ -22,6 +22,10 @@
 		text-align: center;
 	}
 
+	.sliderrow .ui.header {
+		min-height: 80px;
+	}
+
 	.gamename {
 		h4 small {
 			margin-left: 8px;
@@ -31,12 +35,6 @@
 			width: 80%;
 		}
 
-	}
-
-	.minplayers {
-	}
-
-	.maxplayers {
 	}
 
 	.private {

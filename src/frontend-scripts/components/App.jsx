@@ -135,6 +135,8 @@ export class App extends React.Component {
 					maxPlayersCount: 5,
 					private: false,
 					experiencedMode: true,
+					disableChat: this.state.disablechat,
+					disableGamechat: this.state.disablegamechat,
 					status: 'Waiting for more players..',
 					electionCount: 0
 				},

@@ -77,28 +77,32 @@ module.exports.selectPolicies = data => {
 
 	setTimeout(() => {
 		president.cardFlingerState = [];
-		president.gameChats.push({
-			gameChat: true,
-			timestamp: new Date(),
-			chat: [
-				{text: 'You peek at the top 3 policies and see that they are a '},
-				{
-					text: game.private.policies[0],
-					type: game.private.policies[0]
-				},
-				{text: ', a '},
-				{
-					text: game.private.policies[1],
-					type: game.private.policies[1]
-				},
-				{text: ', and a '},
-				{
-					text: game.private.policies[2],
-					type: game.private.policies[2]
-				},
-				{text: ' policy.'}
-			]
-		});
+
+		if (!game.general.disableGamechat) {
+			president.gameChats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{text: 'You peek at the top 3 policies and see that they are a '},
+					{
+						text: game.private.policies[0],
+						type: game.private.policies[0]
+					},
+					{text: ', a '},
+					{
+						text: game.private.policies[1],
+						type: game.private.policies[1]
+					},
+					{text: ', and a '},
+					{
+						text: game.private.policies[2],
+						type: game.private.policies[2]
+					},
+					{text: ' policy.'}
+				]
+			});
+		}
+
 		sendInProgressGameUpdate(game);
 		game.trackState.electionTrackerCount = 0;
 		startElection(game);
@@ -155,39 +159,41 @@ module.exports.selectPartyMembershipInvestigate = data => {
 			}
 		};
 
-		seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
-			chat.chat = [{text: 'President '},
-			{
-				text: `${president.userName} {${presidentIndex + 1}}`,
-				type: 'player'
-			},
-			{text: ' investigates the party membership of '},
-			{
-				text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-				type: 'player'
-			},
-			{text: '.'}];
+		if (!game.general.disableGamechat) {
+			seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
+				chat.chat = [{text: 'President '},
+				{
+					text: `${president.userName} {${presidentIndex + 1}}`,
+					type: 'player'
+				},
+				{text: ' investigates the party membership of '},
+				{
+					text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+					type: 'player'
+				},
+				{text: '.'}];
 
-			player.gameChats.push(chat);
-		});
+				player.gameChats.push(chat);
+			});
 
-		game.private.unSeatedGameChats.push(chat);
+			game.private.unSeatedGameChats.push(chat);
 
-		president.gameChats.push({
-			timestamp: new Date(),
-			gameChat: true,
-			chat: [{text: 'You investigate the party membership of '},
-			{
-				text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-				type: 'player'
-			},
-			{text: ' and determine that he or she is on the '},
-			{
-				text: playersTeam,
-				type: playersTeam
-			},
-			{text: ' team.'}]
-		});
+			president.gameChats.push({
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [{text: 'You investigate the party membership of '},
+				{
+					text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+					type: 'player'
+				},
+				{text: ' and determine that he or she is on the '},
+				{
+					text: playersTeam,
+					type: playersTeam
+				},
+				{text: ' team.'}]
+			});
+		}
 
 		president.playersState[playerIndex].nameStatus = playersTeam;
 
@@ -240,13 +246,15 @@ module.exports.executePlayer = game => {
 	game.general.status = 'President to execute a player';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 
-	president.gameChats.push({
-		gameChat: true,
-		timestamp: new Date(),
-		chat: [
-			{text: 'You must select a player to execute.'}
-		]
-	});
+	if (!game.general.disableGamechat) {
+		president.gameChats.push({
+			gameChat: true,
+			timestamp: new Date(),
+			chat: [
+				{text: 'You must select a player to execute.'}
+			]
+		});
+	}
 
 	president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
 		player.notificationStatus = 'notification';
@@ -281,23 +289,26 @@ module.exports.selectPlayerToExecute = data => {
 				{text: '.'}]
 		};
 
-	game.private.unSeatedGameChats.push(nonPresidentChat);
+	if (!game.general.disableGamechat) {
+		game.private.unSeatedGameChats.push(nonPresidentChat);
+
+		seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
+			player.gameChats.push(nonPresidentChat);
+		});
+
+		president.gameChats.push({
+			gameChat: true,
+			timestamp: new Date(),
+			chat: [{text: 'You select to execute '},
+			{
+				text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
+				type: 'player'
+			},
+			{text: '.'}]
+		});
+	}
+
 	game.publicPlayersState[presidentIndex].isLoader = false;
-
-	seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
-		player.gameChats.push(nonPresidentChat);
-	});
-
-	president.gameChats.push({
-		gameChat: true,
-		timestamp: new Date(),
-		chat: [{text: 'You select to execute '},
-		{
-			text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
-			type: 'player'
-		},
-		{text: '.'}]
-	});
 
 	president.playersState.forEach(player => {
 		player.notificationStatus = '';

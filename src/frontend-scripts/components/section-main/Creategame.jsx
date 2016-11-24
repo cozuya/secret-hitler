@@ -13,7 +13,9 @@ export default class Creategame extends React.Component {
 		this.sliderChange = this.sliderChange.bind(this);
 		this.state = {
 			sliderValues: [5, 10],
-			experiencedmode: false
+			experiencedmode: false,
+			disablechat: false,
+			disablegamechat: false
 		};
 	}
 
@@ -26,6 +28,24 @@ export default class Creategame extends React.Component {
 			},
 			onUnchecked() {
 				self.setState({experiencedmode: false});
+			}
+		});
+
+		$(this.disablechat).checkbox({
+			onChecked() {
+				self.setState({disablechat: true});
+			},
+			onUnchecked() {
+				self.setState({disablechat: false});
+			}
+		});
+
+		$(this.disablegamechat).checkbox({
+			onChecked() {
+				self.setState({disablegamechat: true});
+			},
+			onUnchecked() {
+				self.setState({disablegamechat: false});
 			}
 		});
 	}
@@ -56,6 +76,8 @@ export default class Creategame extends React.Component {
 				maxPlayersCount: this.state.sliderValues[1],
 				status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
 				experiencedMode: this.state.experiencedmode,
+				disableChat: this.state.disablechat,
+				disableGamechat: this.state.disablegamechat,
 				private: false,
 				electionCount: 0
 			},
@@ -107,13 +129,29 @@ export default class Creategame extends React.Component {
 							<div className="ui checkbox disabled" />
 						</div>
 					</div>
-					<div className="row">
+					<div className="row sliderrow">
 						<div className="four wide column experiencedmode">
 							<h4 className="ui header">Experienced mode - most animations and pauses greatly reduced and fewer gamechats</h4>
 							<div className="ui fitted toggle checkbox" ref={c => {
 								this.experiencedmode = c;
 							}}>
 								<input type="checkbox" name="experiencedmode" defaultChecked={false} />
+							</div>
+						</div>
+						<div className="four wide column disablechat">
+							<h4 className="ui header">Disable player chat - use this for voice-only games</h4>
+							<div className="ui fitted toggle checkbox" ref={c => {
+								this.disablechat = c;
+							}}>
+								<input type="checkbox" name="disablechat" defaultChecked={false} />
+							</div>
+						</div>
+						<div className="four wide column disablegamechat">
+							<h4 className="ui header">Disable game chats - you're on your own to remember what happened over the course of the game</h4>
+							<div className="ui fitted toggle checkbox" ref={c => {
+								this.disablegamechat = c;
+							}}>
+								<input type="checkbox" name="disablegamechat" defaultChecked={false} />
 							</div>
 						</div>
 					</div>
