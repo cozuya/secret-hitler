@@ -62,6 +62,10 @@ module.exports = () => {
 		res.render('game', {game: true});
 	});
 
+	app.get('/googleccea3bf80b28ed88.html', (req, res) => {
+		res.send('google-site-verification: googleccea3bf80b28ed88.html');
+	});
+
 	app.get('*', (req, res) => {
 		res.render('404');
 	});

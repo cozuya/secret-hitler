@@ -43,7 +43,7 @@ export default class Gamechat extends React.Component {
 		this.scrollChats();
 
 		if (prevProps && userInfo.userName && prevProps.gameInfo.publicPlayersState.filter(player => player.isDead).length !== gameInfo.publicPlayersState.filter(player => player.isDead).length && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead ||
-			(prevProps && userInfo.userName && gameInfo.gameState.phase === 'presidentSelectingPolicy' && (gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isPresident' || gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isChancellor') && prevProps.gameInfo.gameState.phase !== 'presidentSelectingPolicy')) {
+			(prevProps && userInfo.userName && gameInfo.gameState.phase === 'presidentSelectingPolicy' && (gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName) && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isPresident' || gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName) && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isChancellor') && prevProps.gameInfo.gameState.phase !== 'presidentSelectingPolicy')) {
 			this.setState({inputValue: ''});
 			$(this.gameChatInput).blur();
 		}
@@ -283,7 +283,7 @@ export default class Gamechat extends React.Component {
 										}
 									})();
 
-								if (!this.props.userInfo.userName || (gameState.cardsDealt && !gameState.isDay) || (isDead && !gameState.isCompleted) || isGovernmentDuringPolicySelection) {
+								if (!this.props.userInfo.userName || (gameState.cardsDealt && !gameState.isDay) || (isDead && !gameState.isCompleted) || isGovernmentDuringPolicySelection || this.props.gameInfo.general.disableChat) {
 									classes += ' disabled';
 								}
 

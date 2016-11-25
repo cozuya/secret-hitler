@@ -30,6 +30,8 @@ module.exports.sendGameList = socket => {
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount,
 		experiencedMode: game.general.experiencedMode,
+		disableChat: game.general.disableChat,
+		disableGamechat: game.general.disableGamechat,
 		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
 		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
 		electionCount: game.general.electionCount,

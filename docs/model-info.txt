@@ -7,7 +7,6 @@ gameState
 	previousElectedGovernment array of numbers, 1st is pres 2nd is chanc,
 	presidentIndex number
 	undrawnPolicyCount number
-	discardedPolicyCount number
 	specialElectionFormerPresidentIndex number
 chats array
 	chat string
@@ -21,6 +20,8 @@ general
 	status string
 	uid string
 	experiencedMode bool
+	disableChat bool
+	disableGamechat bool
 	playerCount number 5-10
 	type number refers to fasctrack
 	livingPlayerCount number

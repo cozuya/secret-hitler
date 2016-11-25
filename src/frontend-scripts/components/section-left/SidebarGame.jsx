@@ -37,8 +37,28 @@ export default class SidebarGame extends React.Component {
 							<div>
 								<div className="gamename">{game.name}</div>
 								{(() => {
+									let status = '';
+
 									if (game.experiencedMode) {
-										return <div className="experienced">Experienced</div>;
+										status = 'Experienced';
+									}
+
+									if (game.disableChat) {
+										if (status) {
+											status += ' | ';
+										}
+										status += 'No chat';
+									}
+
+									if (game.disableGamechat) {
+										if (status) {
+											status += ' | ';
+										}
+										status += 'No gamechat';
+									}
+
+									if (status) {
+										return <div className="experienced">{status}</div>;
 									}
 								})()}
 								<div className="lower-row">
