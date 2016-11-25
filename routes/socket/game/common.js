@@ -20,7 +20,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 
 		if (!specialElectionPresidentIndex && (specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex === 0)) {
 			index = specialElectionFormerPresidentIndex;
-			game.gameState.specialElectionFormerPresidentIndex = null; // let copies by reference?!
+			game.gameState.specialElectionFormerPresidentIndex = null;
 		}
 
 		if (specialElectionPresidentIndex || specialElectionPresidentIndex === 0) {
@@ -85,9 +85,6 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 module.exports.shufflePolicies = game => {
 	const count = _.countBy(game.private.policies);
 
-	console.log(game.private.policies, 'p1');
-	console.log(count);
-
 	game.private.policies = game.private.policies.concat(
 		_.shuffle(
 		_.range(1, 12 - (game.trackState.fascistPolicyCount + (count.fascist || 0))).map(num => 'fascist')
@@ -96,6 +93,4 @@ module.exports.shufflePolicies = game => {
 		));
 
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
-	console.log(game.private.policies);
-	console.log(game.private.policies.length);
 };

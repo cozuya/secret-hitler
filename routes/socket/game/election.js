@@ -49,43 +49,43 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 						game.publicPlayersState[game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')].previousGovernmentStatus = 'wasChancellor';
 					}
 				},
-				// presidentPowers = [
-				// 	{
-				// 		0: null,
-				// 		1: null,
-				// 		2: [policyPeek, 'The president must examine the top 3 policies.'],
-				// 		3: [executePlayer, 'The president must select a player for execution.'],
-				// 		4: [executePlayer, 'The president must select a player for execution.'],
-				// 		5: null
-				// 	},
-				// 	{
-				// 		0: null,
-				// 		1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-				// 		2: [specialElection, 'The president must select a player for a special election.'],
-				// 		3: [executePlayer, 'The president must select a player for execution.'],
-				// 		4: [executePlayer, 'The president must select a player for execution.'],
-				// 		5: null
-				// 	},
-				// 	{
-				// 		0: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-				// 		1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
-				// 		2: [specialElection, 'The president must select a player for a special election.'],
-				// 		3: [executePlayer, 'The president must select a player for execution.'],
-				// 		4: [executePlayer, 'The president must select a player for execution.'],
-				// 		5: null
-				// 	}
-				// ],
 				presidentPowers = [
 					{
-						0: [specialElection, 'The president must select a player for a special election.']
-					}
-					,
+						0: null,
+						1: null,
+						2: [policyPeek, 'The president must examine the top 3 policies.'],
+						3: [executePlayer, 'The president must select a player for execution.'],
+						4: [executePlayer, 'The president must select a player for execution.'],
+						5: null
+					},
 					{
-						0: [specialElection, 'y'],
-						1: [executePlayer, 'The president must select a player for execution.'],
-						2: [executePlayer, 'The president must select a player for execution.']
+						0: null,
+						1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+						2: [specialElection, 'The president must select a player for a special election.'],
+						3: [executePlayer, 'The president must select a player for execution.'],
+						4: [executePlayer, 'The president must select a player for execution.'],
+						5: null
+					},
+					{
+						0: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+						1: [investigateLoyalty, 'The president must investigate another player\'s party membership.'],
+						2: [specialElection, 'The president must select a player for a special election.'],
+						3: [executePlayer, 'The president must select a player for execution.'],
+						4: [executePlayer, 'The president must select a player for execution.'],
+						5: null
 					}
 				],
+				// presidentPowers = [
+				// 	{
+				// 		0: [specialElection, 'The president must select a player for a special election.']
+				// 	}
+				// 	,
+				// 	{
+				// 		0: [specialElection, 'y'],
+				// 		1: [executePlayer, 'The president must select a player for execution.'],
+				// 		2: [executePlayer, 'The president must select a player for execution.']
+				// 	}
+				// ],
 				powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
 
 			game.trackState.enactedPolicies[index].position = team === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;
@@ -394,7 +394,8 @@ module.exports.selectVoting = data => {
 						game.private.unSeatedGameChats.push(chat);
 					}
 
-					if (process.env.NODE_ENV !== 'development' && game.trackState.fascistPolicyCount > 2 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler' || (process.env.NODE_ENV === 'development' && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler')) {
+					if (process.env.NODE_ENV !== 'development' && game.trackState.fascistPolicyCount > 2 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler') {
+						// || (process.env.NODE_ENV === 'development' && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler')) {
 						const chat = {
 							timestamp: new Date(),
 							gameChat: true,

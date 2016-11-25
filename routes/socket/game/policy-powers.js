@@ -195,7 +195,9 @@ module.exports.selectPartyMembershipInvestigate = data => {
 			});
 		}
 
-		president.playersState[playerIndex].nameStatus = playersTeam;
+		if (!game.general.disableGamechat) {
+			president.playersState[playerIndex].nameStatus = playersTeam;
+		}
 
 		sendInProgressGameUpdate(game);
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000);
@@ -220,6 +222,7 @@ module.exports.specialElection = game => {
 
 	game.general.status = 'President to select special election';
 	game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
+	game.publicPlayersState[presidentIndex].isLoader = true;
 	president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
 		player.notificationStatus = 'notification';
 	});
@@ -230,6 +233,8 @@ module.exports.specialElection = game => {
 
 module.exports.selectSpecialElection = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	game.publicPlayersState[game.gameState.presidentIndex].isLoader = false;
 
 	game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
 		player.notificationStatus = '';
