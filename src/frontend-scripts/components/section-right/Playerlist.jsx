@@ -13,7 +13,7 @@ export default class Playerlist extends React.Component {
 									<div>
 										<span>{this.props.userList.list.length}</span>
 										<i className="large user icon" />
-										<span>{this.props.userList.totalSockets - this.props.userList.list.length}</span>
+										<span>{this.props.userList.totalSockets - this.props.userList.list.length >= 0 ? this.props.userList.totalSockets - this.props.userList.list.length : 0}</span>
 										<i className="large unhide icon" />
 									</div>
 								);
