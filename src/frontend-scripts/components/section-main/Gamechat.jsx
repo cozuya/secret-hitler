@@ -158,7 +158,7 @@ export default class Gamechat extends React.Component {
 			});
 	}
 
-	handleClaimButtonClick(e) {
+	handleSelectedClaimButtonClick(e) {
 
 	}
 
@@ -216,17 +216,17 @@ export default class Gamechat extends React.Component {
 								return (
 									<div>
 										<p> As president, I drew...</p>
-										<button onClick={this.handleClaimButtonClick} data-claimtype="fascist" className="ui button threefascist">3 Fascist policies</button>
-										<button onClick={this.handleClaimButtonClick} data-claimtype="twofascistoneliberal" className="ui button twofascistoneliberal">2 Fascist and a Liberal policy</button>
-										<button onClick={this.handleClaimButtonClick} data-claimtype="twoliberalonefascist" className="ui button twoliberalonefascist">2 Liberal and a Fascist policy</button>
-										<button onClick={this.handleClaimButtonClick} data-claimtype="threeliberal" className="ui button threeliberal">3 Liberal policies</button>
+										<button onClick={this.handleSelectedClaimButtonClick} data-claimtype="fascist" className="ui button threefascist">3 Fascist policies</button>
+										<button onClick={this.handleSelectedClaimButtonClick} data-claimtype="twofascistoneliberal" className="ui button twofascistoneliberal">2 Fascist and a Liberal policy</button>
+										<button onClick={this.handleSelectedClaimButtonClick} data-claimtype="twoliberalonefascist" className="ui button twoliberalonefascist">2 Liberal and a Fascist policy</button>
+										<button onClick={this.handleSelectedClaimButtonClick} data-claimtype="threeliberal" className="ui button threeliberal">3 Liberal policies</button>
 									</div>
 								);
 							case 'wasChancellor':
-									
+
 								break;
 							case 'didInvestigateLoyalty':
-									
+
 								break;
 							case 'didPolicyPeek':
 
