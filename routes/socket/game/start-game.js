@@ -157,7 +157,8 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 						}
 						player.playersState[otherFascistIndex].notificationStatus = 'fascist';
 					} else if (playerCount > 8) {
-						const otherFascists = seatedPlayers.filter(player => player.role.cardName === 'fascist');
+						const otherFascists = seatedPlayers.filter(play => 
+							play.role.cardName === 'fascist' && play.userName !== player.userName);
 
 						if (!game.general.disableGamechat) {
 							player.gameChats.push({
