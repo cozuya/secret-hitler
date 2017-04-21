@@ -131,6 +131,11 @@ module.exports.handleAddNewGame = (socket, data) => {
 		unSeatedGameChats: []
 	};
 
+	if (data.general.private) {
+		data.private.privatePassword = data.general.private;
+		data.general.private = true;
+	}
+
 	games.push(data);
 	sendGameList();
 	socket.join(data.general.uid);

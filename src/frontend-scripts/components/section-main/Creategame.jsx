@@ -15,7 +15,8 @@ export default class Creategame extends React.Component {
 			sliderValues: [5, 10],
 			experiencedmode: false,
 			disablechat: false,
-			disablegamechat: false
+			disablegamechat: false,
+			privateShowing: false
 		};
 	}
 
@@ -48,6 +49,15 @@ export default class Creategame extends React.Component {
 				self.setState({disablegamechat: false});
 			}
 		});
+
+		$(this.privategame).checkbox({
+			onChecked() {
+				self.setState({privateShowing: true});
+			},
+			onUnchecked() {
+				self.setState({privateShowing: false});
+			}
+		});
 	}
 
 	sliderChange(event) {
@@ -78,7 +88,7 @@ export default class Creategame extends React.Component {
 				experiencedMode: this.state.experiencedmode,
 				disableChat: this.state.disablechat,
 				disableGamechat: this.state.disablegamechat,
-				private: false,
+				private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 				electionCount: 0
 			},
 			publicPlayersState: [{
@@ -125,8 +135,22 @@ export default class Creategame extends React.Component {
 						</div>
 						<div className="four wide column privategame">
 							<h4 className="ui header">Private game</h4>
-							<h5 className="ui header">Coming soon!</h5>
-							<div className="ui checkbox disabled" />
+							<div className="ui fitted toggle checkbox" ref={c => {
+								this.privategame = c;
+							}}>
+								<input type="checkbox" name="privategame" defaultChecked={false} />
+							</div>
+							{(() => {
+								if (this.state.privateShowing) {
+									return (
+										<div className="ui input">
+											<input maxLength="20" placeholder="Password" ref={c => {
+												this.privategamepassword = c;
+											}}/>
+										</div>
+									);
+								}
+							})()}
 						</div>
 					</div>
 					<div className="row sliderrow">

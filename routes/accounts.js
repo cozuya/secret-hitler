@@ -124,10 +124,8 @@ module.exports = () => {
 						passport.authenticate('local')(req, res, () => {
 							if (email) {
 								verifyAccount.sendToken(req.body.username, req.body.email);
-								res.send();
-							} else {
-								res.send();
 							}
+							res.send();
 						});
 					});
 				}

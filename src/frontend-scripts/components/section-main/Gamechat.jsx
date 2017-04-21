@@ -231,7 +231,7 @@ export default class Gamechat extends React.Component {
 										}
 									})();
 
-								if (!this.props.userInfo.userName || (gameState.cardsDealt && !gameState.isDay) || (isDead && !gameState.isCompleted) || isGovernmentDuringPolicySelection || this.props.gameInfo.general.disableChat) {
+								if (!this.props.userInfo.userName || (gameState.cardsDealt && !gameState.isDay) || (isDead && !gameState.isCompleted) || isGovernmentDuringPolicySelection || this.props.gameInfo.general.disableChat || (gameState.isPrivate && !publicPlayersState.find(player => player.userName === userName))) {
 									classes += ' disabled';
 								}
 

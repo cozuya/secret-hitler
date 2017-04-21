@@ -19,6 +19,7 @@ general
 	maxPlayersCount number 5-10
 	status string
 	uid string
+  private bool
 	experiencedMode bool
 	disableChat bool
 	disableGamechat bool
@@ -60,6 +61,7 @@ cardflingerState (see private)
 private
 	policies array
 	currentElectionPolicies array
+  privatePassword string
 	unSeatedGameChats array
 		chat string
 		timestamp time
