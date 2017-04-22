@@ -28,7 +28,7 @@ module.exports = () => {
 		}).on('leaveGame', data => {
 			handleUserLeaveGame(socket, data);
 		}).on('updateSeatedUser', data => {
-			updateSeatedUser(data);
+			updateSeatedUser(socket, data);
 		})
 		// user-requests
 

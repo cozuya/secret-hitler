@@ -79,10 +79,10 @@ const {games, userList, generalChats} = require('./models'),
 		sendUserList();
 	};
 
-module.exports.updateSeatedUser = data => {
+module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (game) {
+	if (game && game.publicPlayersState.length < game.general.maxPlayersCount && (!game.general.private || (game.general.private && data.password === game.private.privatePassword))) {
 		const {publicPlayersState} = game;
 
 		publicPlayersState.push({
@@ -96,6 +96,8 @@ module.exports.updateSeatedUser = data => {
 				cardBack: {}
 			}
 		});
+
+		socket.emit('updateSeatForUser', true);
 
 		if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.isStarted) { // sloppy but not trivial to get around
 			game.gameState.isStarted = true;

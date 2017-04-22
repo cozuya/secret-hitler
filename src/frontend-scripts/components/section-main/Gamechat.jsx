@@ -226,12 +226,16 @@ export default class Gamechat extends React.Component {
 										}
 									})(),
 									isGovernmentDuringPolicySelection = (() => {
-										if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName) {
+										if ((gameState.phase === 'presidentSelectingPolicy'
+											|| gameState.phase === 'chancellorSelectingPolicy') && userName) {
 											return publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' || publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor';
 										}
 									})();
 
-								if (!this.props.userInfo.userName || (gameState.cardsDealt && !gameState.isDay) || (isDead && !gameState.isCompleted) || isGovernmentDuringPolicySelection || this.props.gameInfo.general.disableChat || (gameState.isPrivate && !publicPlayersState.find(player => player.userName === userName))) {
+								if (!this.props.userInfo.userName || (isDead && !gameState.isCompleted)
+									|| isGovernmentDuringPolicySelection
+									|| this.props.gameInfo.general.disableChat
+									|| (this.props.gameInfo.general.private && !this.props.userInfo.isSeated)) {
 									classes += ' disabled';
 								}
 

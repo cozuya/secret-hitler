@@ -14,12 +14,11 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 			icon: 0,
 			team: 'fascist'
 		},
-			{
-				cardName: 'hitler',
-				icon: 0,
-				team: 'fascist'
-			}]
-		);
+		{
+			cardName: 'hitler',
+			icon: 0,
+			team: 'fascist'
+		}]);
 
 		if (game.publicPlayersState.length > 5) {
 			roles = roles.concat([{
@@ -157,8 +156,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 						}
 						player.playersState[otherFascistIndex].notificationStatus = 'fascist';
 					} else if (playerCount > 8) {
-						const otherFascists = seatedPlayers.filter(play => 
-							play.role.cardName === 'fascist' && play.userName !== player.userName);
+						const otherFascists = seatedPlayers.filter(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 
 						if (!game.general.disableGamechat) {
 							player.gameChats.push({

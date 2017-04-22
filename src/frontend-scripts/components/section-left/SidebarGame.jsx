@@ -50,6 +50,14 @@ export default class SidebarGame extends React.Component {
 										status += 'No chat';
 									}
 
+									if (game.private) {
+										if (status) {
+											status += ' | ';
+										}
+										status += 'Private';
+									}
+
+
 									if (game.disableGamechat) {
 										if (status) {
 											status += ' | ';

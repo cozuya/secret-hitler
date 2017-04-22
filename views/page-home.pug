@@ -9,8 +9,15 @@ block content
 				.six.wide.column.news
 					h3.ui.header News
 					p 11-12-2016 alpha begins.  Issues/bugs can be reported at #[a(href="//goo.gl/forms/IxDi9f1fKyGhefDx2") this link.] or open a github issue.
-					p Verion 0.1.6 released 11-24-2016
+					p Version 0.1.9 released 4-22-2017
+					h4 New version
+					p New feature: private games
 					ul 
-						li Added 2 new modes to creategame: disable player chat (good for voice-only games) and disable gamechat (and name colors) - you're on your own with this one as the game will not prompt you with what you saw during actions, so more like a tabletop game.
-						li Fixed bug with special election.
-						li Next on horizon: automated claim system.  After that I'm redoing the UI (optionally inside of player settings) to look more like a "game table".
+						li When making a game, select the "private game" slider and you will be prompted for the game's password
+						li Players can only be seated in a private game if they enter the correct password.
+						li While not totally private (observers can still watch), observers cannot chat.
+					p Bug fixes
+					ul
+						li Fix (I hope) to the "11 player game" crash bug, as the way players are seated was redone to be more safe.  This is not easy to reproduce so please update me if it still exists.
+						li Fix to the gamechat in 9 and 10 player games not getting the other fascists right, thanks to pull request from @jbasrai on github.
+					p Next release: private messaging (outside of in-progress games).  I realize that without that private games aren't super helpful, so that will be my next priority for this project.
