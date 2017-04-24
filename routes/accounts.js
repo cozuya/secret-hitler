@@ -1,7 +1,7 @@
 const passport = require('passport'),
 	Account = require('../models/account'),
-	verifyAccount = require('./verify-account'),
-	resetPassword = require('./reset-password'),
+	// verifyAccount = require('./verify-account'),
+	// resetPassword = require('./reset-password'),
 	ensureAuthenticated = (req, res, next) => {
 		if (req.isAuthenticated()) {
 			return next();
@@ -11,8 +11,8 @@ const passport = require('passport'),
 	};
 
 module.exports = () => {
-	verifyAccount.setRoutes();
-	resetPassword.setRoutes();
+	// verifyAccount.setRoutes();
+	// resetPassword.setRoutes();
 
 	app.get('/account', ensureAuthenticated, (req, res) => {
 		res.render('page-account', {

@@ -79,6 +79,7 @@ private
 			hasVoted bool
 			didVoteYes bool
 		reportedGame bool
+		wasInvestigated bool
 		playersState array 5-10
 			obj
 				cardBack object

@@ -162,16 +162,16 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		if (!game.general.disableGamechat) {
 			seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
 				chat.chat = [{text: 'President '},
-				{
-					text: `${president.userName} {${presidentIndex + 1}}`,
-					type: 'player'
-				},
-				{text: ' investigates the party membership of '},
-				{
-					text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-					type: 'player'
-				},
-				{text: '.'}];
+					{
+						text: `${president.userName} {${presidentIndex + 1}}`,
+						type: 'player'
+					},
+					{text: ' investigates the party membership of '},
+					{
+						text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+						type: 'player'
+					},
+					{text: '.'}];
 
 				player.gameChats.push(chat);
 			});
@@ -182,16 +182,16 @@ module.exports.selectPartyMembershipInvestigate = data => {
 				timestamp: new Date(),
 				gameChat: true,
 				chat: [{text: 'You investigate the party membership of '},
-				{
-					text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-					type: 'player'
-				},
-				{text: ' and determine that he or she is on the '},
-				{
-					text: playersTeam,
-					type: playersTeam
-				},
-				{text: ' team.'}]
+					{
+						text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+						type: 'player'
+					},
+					{text: ' and determine that he or she is on the '},
+					{
+						text: playersTeam,
+						type: playersTeam
+					},
+					{text: ' team.'}]
 			});
 		}
 
@@ -305,11 +305,11 @@ module.exports.selectPlayerToExecute = data => {
 			gameChat: true,
 			timestamp: new Date(),
 			chat: [{text: 'You select to execute '},
-			{
-				text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
-				type: 'player'
-			},
-			{text: '.'}]
+				{
+					text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
+					type: 'player'
+				},
+				{text: '.'}]
 		});
 	}
 

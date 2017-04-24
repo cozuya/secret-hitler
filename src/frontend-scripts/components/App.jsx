@@ -231,6 +231,7 @@ export class App extends React.Component {
 					if ((this.props.midSection === 'game' && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) || this.props.midSection !== 'game') {
 						return (
 							<RightSidebar
+								gameInfo={this.props.gameInfo}
 								userInfo={this.props.userInfo}
 								userList={this.props.userList}
 								generalChats={this.props.generalChats}

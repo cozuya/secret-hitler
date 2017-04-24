@@ -11,11 +11,16 @@ export default class Gamechat extends React.Component {
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
+		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
 			inputValue: ''
 		};
+	}
+
+	handleWhitelistPlayers() {
+		$(this.whitelistModal).modal('show');
 	}
 
 	handleClickedLeaveGame() {
@@ -39,8 +44,9 @@ export default class Gamechat extends React.Component {
 		const {userInfo, gameInfo} = this.props;
 		this.scrollChats();
 
-		if (prevProps && userInfo.userName && prevProps.gameInfo.publicPlayersState.filter(player => player.isDead).length !== gameInfo.publicPlayersState.filter(player => player.isDead).length && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead ||
-			(prevProps && userInfo.userName && gameInfo.gameState.phase === 'presidentSelectingPolicy' && (gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName) && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isPresident' || gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName) && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isChancellor') && prevProps.gameInfo.gameState.phase !== 'presidentSelectingPolicy')) {
+		if (prevProps && userInfo.userName && prevProps.gameInfo.publicPlayersState.filter(player => player.isDead).length !== gameInfo.publicPlayersState.filter(player => player.isDead).length && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead
+			|| (prevProps && userInfo.userName && gameInfo.gameState.phase === 'presidentSelectingPolicy' && (gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName) && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isPresident'
+			|| gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName) && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isChancellor') && prevProps.gameInfo.gameState.phase !== 'presidentSelectingPolicy')) {
 			this.setState({inputValue: ''});
 			$(this.gameChatInput).blur();
 		}
@@ -158,6 +164,17 @@ export default class Gamechat extends React.Component {
 					<a className={this.state.chatFilter === 'Chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>Chat</a>
 					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>Game</a>
 					<i className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'} onClick={this.handleChatLockClick} />
+					{(() => {
+						if (userInfo.isSeated && gameInfo.general.private && !gameInfo.gameState.isStarted) {
+							return <div className='ui button' onClick={this.handleWhitelistPlayers} style={{'float': 'right'}}>Whitelist Players</div>;
+						}
+					})()}
+					<div className="ui basic fullscreen modal whitelistmodal" ref={c => {
+						this.whitelistModal = c;
+					}}>
+						<h2 className="ui header">Select player(s) below to whitelist for seating in this private game.</h2>
+						<div className="ui green positive inverted whitelist-submit button">Submit</div>
+					</div>
 					<div className={
 						(() => {
 							let classes = 'ui primary button';
