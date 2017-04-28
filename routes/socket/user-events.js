@@ -57,7 +57,10 @@ const {games, userList, generalChats} = require('./models'),
 				const {gameState, publicPlayersState} = game,
 					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-				if (gameState.isStarted && !gameState.isCompleted) {
+				if (gameState.isTracksFlipped && !gameState.isCompleted) {
+					publicPlayersState[playerIndex].connected = false;
+					sendInProgressGameUpdate(game);
+				} else if (gameState.isStarted && !gameState.isCompleted) {
 					publicPlayersState[playerIndex].connected = false;
 					io.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1) {
