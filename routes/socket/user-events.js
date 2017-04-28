@@ -82,6 +82,12 @@ const {games, userList, generalChats} = require('./models'),
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 
+	// prevents race condition between 1) taking a seat and 2) the game starting
+	if (game && game.gameState.isTracksFlipped) {
+		console.warn('player joined too late');
+		return;
+	}
+
 	if (game && game.publicPlayersState.length < game.general.maxPlayersCount && (!game.general.private || (game.general.private && data.password === game.private.privatePassword))) {
 		const {publicPlayersState} = game;
 
