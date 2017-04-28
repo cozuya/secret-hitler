@@ -59,7 +59,7 @@ const {games, userList, generalChats} = require('./models'),
 
 				if (gameState.isStarted && !gameState.isCompleted) {
 					publicPlayersState[playerIndex].connected = false;
-					sendInProgressGameUpdate(game);
+					io.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1) {
 					saveGame(game);
 					games.splice(games.indexOf(game), 1);
@@ -199,7 +199,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	}
 
 	if (game && game.gameState.isStarted && data.isSeated) {
-		const playerIndex = game.private.seatedPlayers.findIndex(player => player.userName === data.userName);
+		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
 
 		game.publicPlayersState[playerIndex].leftGame = true;
 
@@ -219,7 +219,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	if (game && !game.publicPlayersState.length) {
 		io.sockets.in(data.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
-	} else if (game && game.gameState.isStarted) {
+	} else if (game && game.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
 
