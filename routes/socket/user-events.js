@@ -57,9 +57,12 @@ const {games, userList, generalChats} = require('./models'),
 				const {gameState, publicPlayersState} = game,
 					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-				if (gameState.isStarted && !gameState.isCompleted) {
+				if (gameState.isTracksFlipped && !gameState.isCompleted) {
 					publicPlayersState[playerIndex].connected = false;
 					sendInProgressGameUpdate(game);
+				} else if (gameState.isStarted && !gameState.isCompleted) {
+					publicPlayersState[playerIndex].connected = false;
+					io.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1) {
 					saveGame(game);
 					games.splice(games.indexOf(game), 1);
@@ -82,9 +85,13 @@ const {games, userList, generalChats} = require('./models'),
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (game
-		&& game.publicPlayersState.length < game.general.maxPlayersCount
-		&& (!game.general.private || (game.general.private && data.password === game.private.privatePassword || game.general.private && game.general.whitelistedPlayers.includes(data.userName)))) {
+	// prevents race condition between 1) taking a seat and 2) the game starting
+	if (game && game.gameState.isTracksFlipped) {
+		console.warn('player joined too late');
+		return;
+	}
+
+	if (game && game.publicPlayersState.length < game.general.maxPlayersCount && (!game.general.private || (game.general.private && data.password === game.private.privatePassword))) {
 		const {publicPlayersState} = game;
 
 		publicPlayersState.push({
@@ -208,7 +215,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	}
 
 	if (game && game.gameState.isStarted && data.isSeated) {
-		const playerIndex = game.private.seatedPlayers.findIndex(player => player.userName === data.userName);
+		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
 
 		game.publicPlayersState[playerIndex].leftGame = true;
 
@@ -229,7 +236,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	if (game && !game.publicPlayersState.length) {
 		io.sockets.in(data.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
-	} else if (game && game.gameState.isStarted) {
+	} else if (game && game.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
 
