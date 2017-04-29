@@ -91,7 +91,9 @@ module.exports.updateSeatedUser = (socket, data) => {
 		return;
 	}
 
-	if (game && game.publicPlayersState.length < game.general.maxPlayersCount && (!game.general.private || (game.general.private && data.password === game.private.privatePassword))) {
+	if (game
+    && game.publicPlayersState.length < game.general.maxPlayersCount
+    && (!game.general.private || (game.general.private && data.password === game.private.privatePassword || game.general.private && game.general.whitelistedPlayers.includes(data.userName)))) {
 		const {publicPlayersState} = game;
 
 		publicPlayersState.push({
