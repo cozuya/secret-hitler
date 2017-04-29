@@ -33,11 +33,11 @@ export default class Generalchat extends React.Component {
 		const {inputValue} = this.state;
 
 		e.preventDefault();
-
 		if (inputValue) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
-				chat: inputValue
+				chat: inputValue,
+				private: Object.keys(this.props.gameInfo).length ? this.props.gameInfo.general.private : null
 			});
 
 			this.setState({inputValue: ''});
@@ -93,6 +93,7 @@ export default class Generalchat extends React.Component {
 }
 
 Generalchat.propTypes = {
+	gameInfo: React.PropTypes.object,
 	userInfo: React.PropTypes.object,
 	socket: React.PropTypes.object,
 	generalChats: React.PropTypes.array

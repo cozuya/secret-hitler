@@ -9,8 +9,14 @@ block content
 				.six.wide.column.news
 					h3.ui.header News
 					p 11-12-2016 alpha begins.  Issues/bugs can be reported at #[a(href="//goo.gl/forms/IxDi9f1fKyGhefDx2") this link.] or open a github issue.
-					p Verion 0.1.6 released 11-24-2016
+					p Version 0.1.10 "yellow" released 4-29-2017
+					p New feature: whitelisting for private games
 					ul 
-						li Added 2 new modes to creategame: disable player chat (good for voice-only games) and disable gamechat (and name colors) - you're on your own with this one as the game will not prompt you with what you saw during actions, so more like a tabletop game.
-						li Fixed bug with special election.
-						li Next on horizon: automated claim system.  After that I'm redoing the UI (optionally inside of player settings) to look more like a "game table".
+						li While seated in a private game that has not started yet, click on "whitelist players" next to "leave game" to be able to whitelist players for this game.
+						li A player who has been whitelisted will be able to get seated in this game without being prompted for the password.
+						li This should prevent griefers/trolls from ruining games, without the need for an abusable private messaging system.  Please do not use this to exclude new players.
+					p Bug fixes
+					ul
+						li CRASH FIXES - @jbasrai has identified and resolved 2 scenarios, I am diligent about wanting to bring this project to stability and will be analyzing logs etc.  Please bear with us.
+						li Thanks to a bug report, a issue has been fixed with the "investigate loyalty" power - it can no longer be used twice on the same player.
+					p Next up: automated claim system, and further investigation/fixes of crash problems.

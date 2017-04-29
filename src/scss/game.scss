@@ -42,7 +42,7 @@
 					cursor: pointer;
 				}
 
-				> .button {
+				.button {
 					padding: 2px 0px;
 					font-size: 12px;
 					width: 42px;
@@ -52,7 +52,7 @@
 					color: black !important;
 				}
 
-				> .button.ui-disabled {
+				.button.ui-disabled {
 					opacity: 0.45 !important;
     				box-shadow: none !important;
     				cursor: pointer;
@@ -290,4 +290,39 @@
 
 .sixteen.wide .game > .ui.grid .six.chat-container .unlock.icon + .primary.button {
 	margin-left: 425px;
+}
+
+.sixteen.wide .game > .ui.grid .six.chat-container .whitelist {
+	float: right;
+	margin-left: 370px;
+	background: #fff !important;
+	width: 60px;
+}
+
+.sixteen.wide .game > .ui.grid .six.chat-container .whitelist + .button {
+	margin-left: 10px;
+}
+
+.thirteen.wide .game > .ui.grid .six.chat-container .whitelist {
+	float: right;
+	margin-left: 150px;
+	background: #fff !important;
+	width: 60px;
+}
+
+.thirteen.wide .game > .ui.grid .six.chat-container .whitelist + .button {
+	margin-left: 10px;
+}
+
+.whitelistmodal {
+	margin-top: 0 !important;
+	top: 50px !important;
+	
+	ul {
+		list-style-type: none;
+
+		li, li input, li label {
+			cursor: pointer;
+		}
+	}
 }

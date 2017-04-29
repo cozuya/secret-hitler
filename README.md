@@ -11,7 +11,7 @@ Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 
 Build: Gulp, Browserify, Babel (front end).
 
-Latest version: 0.1.6
+Latest version: 0.1.10
 
 ## Installation ##
 
@@ -65,7 +65,7 @@ This game is attributed as per the [Creative Commons Attribution-NonCommercial-S
 
 ## Alterations to the original game ##
 
-Minor image alterations and editing.
+Minor image alterations and editing (from scans, assets available upon request).
 
 Veto power is slightly adjusted so that chancellors need to select a policy prior to saying yes or no to vetoing that policy.
 

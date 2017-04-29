@@ -18,7 +18,9 @@ general
 	minPlayersCount number 5-10
 	maxPlayersCount number 5-10
 	status string
+	whitelistedPlayers array of strings (userNames)
 	uid string
+  private bool
 	experiencedMode bool
 	disableChat bool
 	disableGamechat bool
@@ -60,6 +62,7 @@ cardflingerState (see private)
 private
 	policies array
 	currentElectionPolicies array
+  privatePassword string
 	unSeatedGameChats array
 		chat string
 		timestamp time
@@ -77,6 +80,7 @@ private
 			hasVoted bool
 			didVoteYes bool
 		reportedGame bool
+		wasInvestigated bool
 		playersState array 5-10
 			obj
 				cardBack object

@@ -7,6 +7,10 @@ export default class Players extends React.Component {
 		super();
 		this.clickedTakeSeat = this.clickedTakeSeat.bind(this);
 		this.handlePlayerClick = this.handlePlayerClick.bind(this);
+		this.handlePasswordSubmit = this.handlePasswordSubmit.bind(this);
+		this.state = {
+			passwordValue: ''
+		};
 	}
 
 	handlePlayerClick(e) {
@@ -51,6 +55,7 @@ export default class Players extends React.Component {
 			}
 		}
 	}
+
 	renderPreviousGovtToken(i) {
 		const {publicPlayersState} = this.props.gameInfo;
 
@@ -187,15 +192,32 @@ export default class Players extends React.Component {
 		}
 	}
 
+	handlePasswordSubmit(e) {
+		e.preventDefault();
+
+		this.props.onClickedTakeSeat(this.state.passwordValue);
+		$(this.passwordModal).modal('hide');
+	}
+
 	clickedTakeSeat() {
-		if (this.props.userInfo.userName) {
-			this.props.onClickedTakeSeat();
+		const {gameInfo, userInfo, onClickedTakeSeat} = this.props;
+
+		if (userInfo.userName) {
+			if (gameInfo.general.private && !(gameInfo.general.whitelistedPlayers.includes(userInfo.userName))) {
+				$(this.passwordModal).modal('show');
+			} else {
+				onClickedTakeSeat();
+			}
 		} else {
 			$(this.signinModal).modal('show');
 		}
 	}
 
 	render() {
+		const handlePasswordInputChange = (e) => {
+			this.setState({passwordValue: `${e.target.value}`});
+		};
+
 		return (
 			<section className="players">
 				{this.renderPlayers()}
@@ -205,6 +227,19 @@ export default class Players extends React.Component {
 					this.signinModal = c;
 				}}>
 					<div className="ui header">You will need to sign in or sign up for an account to play.</div>
+				</div>
+				<div className="ui basic small modal passwordmodal" ref={c => {
+					this.passwordModal = c;
+				}}>
+					<div className="ui header">Private game password:</div>
+					<div className="ui input">
+						<form onSubmit={this.handlePasswordSubmit}>
+							<input maxLength="20" placeholder="Password" onChange={handlePasswordInputChange} value={this.state.passwordValue} autoFocus ref={c => {
+								this.privategamepassword = c;
+							}} />
+							<div onClick={this.handlePasswordSubmit} className="ui button primary">Submit</div>
+						</form>
+					</div>
 				</div>
 				<Policies
 					gameInfo={this.props.gameInfo}

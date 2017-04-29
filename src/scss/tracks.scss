@@ -1,324 +1,278 @@
 .tracks-container {
-	background-color: #52393b;
-	max-width: 650px;
-	padding: 0 !important;
-	overflow: hidden !important;
-	position: relative;
-
-	.tracks {
-		transition: all 1s;
-		position: relative;
-		filter: saturate(60%);
-
-		.electiontracker {
-			position: absolute;
-			width: 25px;
-			height: 25px;
-			background-color: #2f2fbe;
-			border-radius: 50%;
-			top: 176px;
-			left: 214px;
-			transition: all 2s;
-		}
-
-		.electiontracker.fail1 {
-			left: 278px;
-		}
-
-		.electiontracker.fail2 {
-			left: 340px;
-		}
-
-		.electiontracker.fail3 {
-			left: 402px;
-		}
-
-		.track-flipper {
-			height: 220px;
-			transition-duration: 1s;
-			transition-property: transform;
-			transform-style: preserve-3d;
-			position: relative;
-			-webkit-backface-visibility: hidden;  // thanks osx safari
-			backface-visibility: hidden;
-		}
-
-		.track {
-			transform: rotateX(0deg);
-			background-size: contain;
-			background-repeat: no-repeat;
-			position: absolute;
-			top: 0;
-			left: 0;
-			height: 220px;
-			width: 100%;
-		}
-
-		.top-track-front {
-			background-image: url('../images/liberal-logo.png');
-			background-position: center;
-		}
-
-		.top-track-back {
-			-webkit-backface-visibility: hidden;
-			backface-visibility: hidden;
-			transform: rotateX(180deg);
-			background-image: url('../images/tracks/liberaltrack.png');
-		}
-
-		.bottom-track-front {
-			background-image: url('../images/fascist-logo.png');
-			background-position: center;
-		}
-
-		.bottom-track-back {
-			-webkit-backface-visibility: hidden;
-			backface-visibility: hidden;
-			transform: rotateX(180deg);
-		}
-
-		.track0 {
-			background-image: url('../images/tracks/fascisttrack56.png');
-		}
-
-		.track1 {
-			background-image: url('../images/tracks/fascisttrack78.png');
-		}
-
-		.track2 {
-			background-image: url('../images/tracks/fascisttrack910.png');
-		}
-
-		.remove.icon {
-			position: absolute;
-			top: 10px;
-			right: 0;
-			font-size: 30px;
-			cursor: pointer;
-		}
-	}
-
-	.tracks.blurred {
-		filter: blur(5px) saturate(60%);
-		opacity: .3;
-	}
-
-	.cardflinger-container {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-	}
-
-	.cardflinger-card-container {
-		position: absolute;
-		top: 130px;
-		left: -140px;
-		width: 120px;
-		height: 164px;
-		z-index: 3;
-		transition-property: all;
-		transition-delay: .3s;
-		transition-duration: 1s;
-		transform-style: preserve-3d;
-	}
-
-	.cardflinger-card {
-		background-size: contain;
-		background-repeat: no-repeat;
-		height: 167px;
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-	}
-
-	.cardflinger-card.back {
-		transform: rotateY(180deg);
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-		cursor: pointer;
-	}
-
-	.cardflinger-card-container.middle-far-left.active {
-		left: 75px;
-	}
-
-	.cardflinger-card-container.middle-center.active {
-		left: 265px;
-	}
-
-	.cardflinger-card-container.middle-far-right.active {
-		left: 455px;
-	}
-
-	.cardflinger-card-container.middle-left.active {
-		left: 165px;
-	}
-
-	.cardflinger-card-container.middle-right.active {
-		left: 365px;
-	}
-
-	.cardflinger-card.ballot {
-		background-image: url('../images/cards/ballot-l.png');
-	}
-
-	.cardflinger-card.nein {
-		background-image: url('../images/cards/nein-l.png');
-	}
-
-	.cardflinger-card.ja {
-		background-image: url('../images/cards/ja-l.png');
-	}
-
-	.cardflinger-card.policy {
-		background-image: url('../images/cards/policy-l.png');
-	}
-
-	.cardflinger-card.liberalp {
-		background-image: url('../images/cards/liberalp-l.png');
-	}
-
-	.cardflinger-card.fascistp {
-		background-image: url('../images/cards/fascistp-l.png');
-	}
-
-	.enactedpolicies-card-container {
-		position: absolute;
-		top: 130px;
-		left: -140px;
-		width: 120px;
-		height: 167px;
-		z-index: 2;
-		transition-property: left, top, width, height, transform;
-		transition-delay: .5s, .5s, 3s, 3s, 1s;
-		transition-duration: 2s, 2s, 3s, 3s, 1s;
-		transform-style: preserve-3d;
-		box-shadow: 0px 0px 4px 3px #969696;
-	}
-
-	.enactedpolicies-card {
-		background-size: contain;
-		background-repeat: no-repeat;
-		height: 167px;
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-	}
-
-	.enactedpolicies-card.back {
-		transform: rotateY(180deg);
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-		cursor: pointer;
-	}
-
-	.enactedpolicies-card.front {
-		background-image: url('../images/cards/policy-l.png');
-	}
-
-	.enactedpolicies-card.back.liberal {
-		background-image: url('../images/cards/liberalp-l.png');
-	}
-
-	.enactedpolicies-card.back.fascist {
-		background-image: url('../images/cards/fascistp-l.png');
-	}
-
-	.enactedpolicies-card-container.middle {
-		left: 260px;
-		top: 130px;
-	}
-
-	.enactedpolicies-card-container.inplace {
-		width: 90px;
-		background-size: contain;
-		height: 124px;
-	}
-
-	.enactedpolicies-card-container.liberal1 {
-		left: 95px;
-		top: 46px;
-	}
-
-	.enactedpolicies-card-container.liberal2 {
-		left: 188px;
-		top: 46px;
-	}
-
-	.enactedpolicies-card-container.liberal3 {
-		left: 280px;
-		top: 46px;
-	}
-
-	.enactedpolicies-card-container.liberal4 {
-		left: 374px;
-		top: 46px;
-	}
-
-	.enactedpolicies-card-container.liberal5 {
-		left: 466px;
-		top: 46px;
-	}
-
-	.enactedpolicies-card-container.fascist1 {
-		left: 46px;
-		top: 266px;
-	}
-
-	.enactedpolicies-card-container.fascist2 {
-		left: 140px;
-		top: 266px;
-	}
-
-	.enactedpolicies-card-container.fascist3 {
-		left: 234px;
-		top: 266px;
-	}
-
-	.enactedpolicies-card-container.fascist4 {
-		left: 326px;
-		top: 266px;
-	}
-
-	.enactedpolicies-card-container.fascist5 {
-		left: 418px;
-		top: 266px;
-	}
-
-	.enactedpolicies-card-container.fascist6 {
-		left: 510px;
-		top: 266px;
-	}
+    background-color: #52393b;
+    max-width: 650px;
+    padding: 0 !important;
+    overflow: hidden !important;
+    position: relative;
+    .tracks {
+        transition: all 1s;
+        position: relative;
+        filter: saturate(60%);
+        .electiontracker {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-color: #2f2fbe;
+            border-radius: 50%;
+            top: 176px;
+            left: 214px;
+            transition: all 2s;
+        }
+        .electiontracker.fail1 {
+            left: 278px;
+        }
+        .electiontracker.fail2 {
+            left: 340px;
+        }
+        .electiontracker.fail3 {
+            left: 402px;
+        }
+        .track-flipper {
+            height: 220px;
+            transition-duration: 1s;
+            transition-property: transform;
+            transform-style: preserve-3d;
+            position: relative;
+            -webkit-backface-visibility: hidden; // thanks osx safari
+            backface-visibility: hidden;
+        }
+        .track {
+            transform: rotateX(0deg);
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 220px;
+            width: 100%;
+        }
+        .top-track-front {
+            background-image: url('../images/liberal-logo.png');
+            background-position: center;
+        }
+        .top-track-back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: rotateX(180deg);
+            background-image: url('../images/tracks/liberaltrack.png');
+        }
+        .bottom-track-front {
+            background-image: url('../images/fascist-logo.png');
+            background-position: center;
+        }
+        .bottom-track-back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: rotateX(180deg);
+        }
+        .track0 {
+            background-image: url('../images/tracks/fascisttrack56.png');
+        }
+        .track1 {
+            background-image: url('../images/tracks/fascisttrack78.png');
+        }
+        .track2 {
+            background-image: url('../images/tracks/fascisttrack910.png');
+        }
+        .remove.icon {
+            position: absolute;
+            top: 10px;
+            right: 0;
+            font-size: 30px;
+            cursor: pointer;
+        }
+    }
+    .tracks.blurred {
+        filter: blur(5px) saturate(60%);
+        opacity: .3;
+    }
+    .cardflinger-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+    }
+    .cardflinger-card-container {
+        position: absolute;
+        top: 130px;
+        left: -140px;
+        width: 120px;
+        height: 164px;
+        z-index: 3;
+        transition-property: all;
+        transition-delay: .3s;
+        transition-duration: 1s;
+        transform-style: preserve-3d;
+    }
+    .cardflinger-card {
+        background-size: contain;
+        background-repeat: no-repeat;
+        height: 167px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+    .cardflinger-card.back {
+        transform: rotateY(180deg);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        cursor: pointer;
+    }
+    .cardflinger-card-container.middle-far-left.active {
+        left: 75px;
+    }
+    .cardflinger-card-container.middle-center.active {
+        left: 265px;
+    }
+    .cardflinger-card-container.middle-far-right.active {
+        left: 455px;
+    }
+    .cardflinger-card-container.middle-left.active {
+        left: 165px;
+    }
+    .cardflinger-card-container.middle-right.active {
+        left: 365px;
+    }
+    .cardflinger-card.ballot {
+        background-image: url('../images/cards/ballot-l.png');
+    }
+    .cardflinger-card.nein {
+        background-image: url('../images/cards/nein-l.png');
+    }
+    .cardflinger-card.ja {
+        background-image: url('../images/cards/ja-l.png');
+    }
+    .cardflinger-card.policy {
+        background-image: url('../images/cards/policy-l.png');
+    }
+    .cardflinger-card.liberalp {
+        background-image: url('../images/cards/liberalp-l.png');
+    }
+    .cardflinger-card.fascistp {
+        background-image: url('../images/cards/fascistp-l.png');
+    }
+    .enactedpolicies-card-container {
+        position: absolute;
+        top: 130px;
+        left: -140px;
+        width: 120px;
+        height: 167px;
+        z-index: 2;
+        transition-property: left, top, width, height, transform;
+        transition-delay: .5s, .5s, 3s, 3s, 1s;
+        transition-duration: 2s, 2s, 3s, 3s, 1s;
+        transform-style: preserve-3d;
+        box-shadow: 0px 0px 4px 3px #969696;
+    }
+    .enactedpolicies-card {
+        background-size: contain;
+        background-repeat: no-repeat;
+        height: 167px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+    .enactedpolicies-card.back {
+        transform: rotateY(180deg);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        cursor: pointer;
+    }
+    .enactedpolicies-card.front {
+        background-image: url('../images/cards/policy-l.png');
+    }
+    .enactedpolicies-card.back.liberal {
+        background-image: url('../images/cards/liberalp-l.png');
+    }
+    .enactedpolicies-card.back.fascist {
+        background-image: url('../images/cards/fascistp-l.png');
+    }
+    .enactedpolicies-card-container.middle {
+        left: 260px;
+        top: 130px;
+    }
+    .enactedpolicies-card-container.inplace {
+        width: 90px;
+        background-size: contain;
+        height: 124px;
+    }
+    .enactedpolicies-card-container.liberal1 {
+        left: 95px;
+        top: 46px;
+    }
+    .enactedpolicies-card-container.liberal2 {
+        left: 188px;
+        top: 46px;
+    }
+    .enactedpolicies-card-container.liberal3 {
+        left: 280px;
+        top: 46px;
+    }
+    .enactedpolicies-card-container.liberal4 {
+        left: 374px;
+        top: 46px;
+    }
+    .enactedpolicies-card-container.liberal5 {
+        left: 466px;
+        top: 46px;
+    }
+    .enactedpolicies-card-container.fascist1 {
+        left: 46px;
+        top: 266px;
+    }
+    .enactedpolicies-card-container.fascist2 {
+        left: 140px;
+        top: 266px;
+    }
+    .enactedpolicies-card-container.fascist3 {
+        left: 234px;
+        top: 266px;
+    }
+    .enactedpolicies-card-container.fascist4 {
+        left: 326px;
+        top: 266px;
+    }
+    .enactedpolicies-card-container.fascist5 {
+        left: 418px;
+        top: 266px;
+    }
+    .enactedpolicies-card-container.fascist6 {
+        left: 510px;
+        top: 266px;
+    }
 }
 
 .flipped {
-	transform: rotateX(180deg);
+    transform: rotateX(180deg);
 }
 
 .flippedY {
-	transform: rotateY(180deg);
+    transform: rotateY(180deg);
 }
 
 .cardflinger-card-container.notifier::after {
-	content: '';
-	width: 120px;
-	height: 167px;
-	top: 0;
-	left: 0;
-	position: absolute;
-	animation: fadeIn .7s infinite alternate;
-	cursor: pointer;
+    content: '';
+    width: 120px;
+    height: 167px;
+    top: 0;
+    left: 0;
+    position: absolute;
+    animation: fadeIn .7s infinite alternate;
+    cursor: pointer;
 }
 
 .cardflinger-card-container.notification::after {
-	box-shadow: 0 0 2px 8px #FBBD08;
+    box-shadow: 0 0 2px 8px #FBBD08;
 }
 
 .cardflinger-card-container.selected::after {
-	box-shadow: 0 0 2px 8px #c36563;
+    box-shadow: 0 0 2px 8px #c36563;
 }
 
 .cardflinger-card-container.selected {
@@ -326,22 +280,20 @@
 }
 
 .cardflinger-card-container.active {
-	box-shadow: 0px 0px 4px 3px #969696;
+    box-shadow: 0px 0px 4px 3px #969696;
 }
 
 .experienced .tracks-container {
-	.tracks {
-		transition: all .2s;
-	}
-
-	.cardflinger-card-container {
-		transition-property: all;
-		transition-delay: .1s;
-		transition-duration: .2s;
-	}
-
-	.enactedpolicies-card-container {
-		transition-delay: .5s, .5s, 1s, 1s, .5s;
-		transition-duration: .5s, .5s, 1s, 1s, 1s;
-	}
+    .tracks {
+        transition: all .2s;
+    }
+    .cardflinger-card-container {
+        transition-property: all;
+        transition-delay: .1s;
+        transition-duration: .2s;
+    }
+    .enactedpolicies-card-container {
+        transition-delay: .5s, .5s, 1s, 1s, .5s;
+        transition-duration: .5s, .5s, 1s, 1s, 1s;
+    }
 }

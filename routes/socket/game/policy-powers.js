@@ -115,11 +115,11 @@ module.exports.investigateLoyalty = game => {
 		president = seatedPlayers[presidentIndex];
 
 	game.general.status = 'Waiting for President to investigate.';
-	president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).forEach(player => {
+	president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).forEach(player => {
 		player.notificationStatus = 'notification';
 	});
 	game.publicPlayersState[presidentIndex].isLoader = true;
-	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))];
+	game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).map(player => seatedPlayers.indexOf(player))];
 	game.gameState.phase = 'selectPartyMembershipInvestigate';
 	sendInProgressGameUpdate(game);
 };
@@ -144,6 +144,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		cardBack: {}
 	};
 
+	seatedPlayers[playerIndex].wasInvestigated = true;
 	sendInProgressGameUpdate(game);
 
 	setTimeout(() => {
@@ -162,16 +163,16 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		if (!game.general.disableGamechat) {
 			seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
 				chat.chat = [{text: 'President '},
-				{
-					text: `${president.userName} {${presidentIndex + 1}}`,
-					type: 'player'
-				},
-				{text: ' investigates the party membership of '},
-				{
-					text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-					type: 'player'
-				},
-				{text: '.'}];
+					{
+						text: `${president.userName} {${presidentIndex + 1}}`,
+						type: 'player'
+					},
+					{text: ' investigates the party membership of '},
+					{
+						text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+						type: 'player'
+					},
+					{text: '.'}];
 
 				player.gameChats.push(chat);
 			});
@@ -182,16 +183,16 @@ module.exports.selectPartyMembershipInvestigate = data => {
 				timestamp: new Date(),
 				gameChat: true,
 				chat: [{text: 'You investigate the party membership of '},
-				{
-					text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-					type: 'player'
-				},
-				{text: ' and determine that he or she is on the '},
-				{
-					text: playersTeam,
-					type: playersTeam
-				},
-				{text: ' team.'}]
+					{
+						text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+						type: 'player'
+					},
+					{text: ' and determine that he or she is on the '},
+					{
+						text: playersTeam,
+						type: playersTeam
+					},
+					{text: ' team.'}]
 			});
 		}
 
@@ -305,11 +306,11 @@ module.exports.selectPlayerToExecute = data => {
 			gameChat: true,
 			timestamp: new Date(),
 			chat: [{text: 'You select to execute '},
-			{
-				text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
-				type: 'player'
-			},
-			{text: '.'}]
+				{
+					text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
+					type: 'player'
+				},
+				{text: '.'}]
 		});
 	}
 

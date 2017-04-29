@@ -35,6 +35,7 @@ module.exports.sendGameList = socket => {
 		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
 		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
 		electionCount: game.general.electionCount,
+		private: game.general.private,
 		uid: game.general.uid
 	}));
 

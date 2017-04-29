@@ -33,17 +33,17 @@ export class App extends React.Component {
 			socket.emit('getUserGameSettings', username);
 
 			// ** begin devhelpers **
-			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb'];
-			if (devPlayers.includes(username)) {
-				const data = {
-					uid: 'devgame',
-					userName: username
-				};
+			// const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb'];
+			// if (devPlayers.includes(username)) {
+			// 	const data = {
+			// 		uid: 'devgame',
+			// 		userName: username
+			// 	};
 
-				info.isSeated = true;
-				socket.emit('updateSeatedUser', data);
-				socket.emit('getGameInfo', 'devgame');
-			}
+			// 	info.isSeated = true;
+			// 	socket.emit('updateSeatedUser', data);
+			// 	socket.emit('getGameInfo', 'devgame');
+			// }
 			// ** end devhelpers **
 			dispatch(updateUser(info));
 		}
@@ -132,7 +132,7 @@ export class App extends React.Component {
 					name: 'New Game',
 					minPlayersCount: 5,
 					maxPlayersCount: 5,
-					private: false,
+					private: 'a',
 					experiencedMode: true,
 					disableChat: true,
 					disableGamechat: true,
@@ -169,16 +169,15 @@ export class App extends React.Component {
 
 	// ***** end dev helpers *****
 
-	handleSeatingUser() {
-		const {gameInfo, dispatch, userInfo} = this.props,
+	handleSeatingUser(password) {
+		const {gameInfo, userInfo} = this.props,
 			data = {
 				uid: gameInfo.general.uid,
-				userName: userInfo.userName
+				userName: userInfo.userName,
+				password
 			};
 
-		userInfo.isSeated = true;
 		socket.emit('updateSeatedUser', data);
-		dispatch(updateUser(userInfo));
 	}
 
 	handleLeaveGame(isSeated, isSettings = false) {
@@ -226,12 +225,14 @@ export class App extends React.Component {
 					quickDefault={this.makeQuickDefault}
 					onSettingsButtonClick={this.handleRoute}
 					onClickedTakeSeat={this.handleSeatingUser}
+					userList={this.props.userList}
 					socket={socket}
 				/>
 				{(() => {
 					if ((this.props.midSection === 'game' && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) || this.props.midSection !== 'game') {
 						return (
 							<RightSidebar
+								gameInfo={this.props.gameInfo}
 								userInfo={this.props.userInfo}
 								userList={this.props.userList}
 								generalChats={this.props.generalChats}

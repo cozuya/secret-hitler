@@ -14,12 +14,11 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 			icon: 0,
 			team: 'fascist'
 		},
-			{
-				cardName: 'hitler',
-				icon: 0,
-				team: 'fascist'
-			}]
-		);
+		{
+			cardName: 'hitler',
+			icon: 0,
+			team: 'fascist'
+		}]);
 
 		if (game.publicPlayersState.length > 5) {
 			roles = roles.concat([{
@@ -88,13 +87,13 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 					chat: [{
 						text: 'The game begins and you receive the '
 					},
-						{
-							text: player.role.cardName,
-							type: player.role.cardName
-						},
-						{
-							text: ' role.'
-						}]
+					{
+						text: player.role.cardName,
+						type: player.role.cardName
+					},
+					{
+						text: ' role.'
+					}]
 				});
 			} else {
 				player.gameChats.push({
@@ -137,27 +136,27 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 								chat: [{
 									text: 'You see that the other '
 								},
-									{
-										text: 'fascist',
-										type: 'fascist'
-									},
-									{
-										text: ' in this game is '
-									},
-									{
-										text: `${otherFascist.userName} {${otherFascistIndex + 1}}`,
-										type: 'player'
-									},
-									{
-										text: '.'
-									}]
+								{
+									text: 'fascist',
+									type: 'fascist'
+								},
+								{
+									text: ' in this game is '
+								},
+								{
+									text: `${otherFascist.userName} {${otherFascistIndex + 1}}`,
+									type: 'player'
+								},
+								{
+									text: '.'
+								}]
 							});
 
 							player.playersState[otherFascistIndex].nameStatus = 'fascist';
 						}
 						player.playersState[otherFascistIndex].notificationStatus = 'fascist';
 					} else if (playerCount > 8) {
-						const otherFascists = seatedPlayers.filter(player => player.role.cardName === 'fascist');
+						const otherFascists = seatedPlayers.filter(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 
 						if (!game.general.disableGamechat) {
 							player.gameChats.push({
@@ -166,28 +165,28 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 								chat: [{
 									text: 'You see that the other '
 								},
-									{
-										text: 'fascists',
-										type: 'fascist'
-									},
-									{
-										text: ' in this game are '
-									},
-									{
-										text: `${otherFascists[0].userName} {${seatedPlayers.indexOf(otherFascists[0]) + 1}}`,
-										type: 'player'
+								{
+									text: 'fascists',
+									type: 'fascist'
+								},
+								{
+									text: ' in this game are '
+								},
+								{
+									text: `${otherFascists[0].userName} {${seatedPlayers.indexOf(otherFascists[0]) + 1}}`,
+									type: 'player'
 
-									},
-									{
-										text: ' and '
-									},
-									{
-										text: `${otherFascists[1].userName} {${seatedPlayers.indexOf(otherFascists[1]) + 1}}`,
-										type: 'player'
-									},
-									{
-										text: '.'
-									}]
+								},
+								{
+									text: ' and '
+								},
+								{
+									text: `${otherFascists[1].userName} {${seatedPlayers.indexOf(otherFascists[1]) + 1}}`,
+									type: 'player'
+								},
+								{
+									text: '.'
+								}]
 							});
 
 							otherFascists.forEach(fascistPlayer => {
@@ -206,17 +205,17 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 							chat: [{
 								text: 'You see that '
 							},
-								{
-									text: 'hitler',
-									type: 'hitler'
-								},
-								{
-									text: ' in this game is '
-								},
-								{
-									text: `${hitlerPlayer.userName} {${seatedPlayers.indexOf(hitlerPlayer) + 1}}`,
-									type: 'player'
-								}]
+							{
+								text: 'hitler',
+								type: 'hitler'
+							},
+							{
+								text: ' in this game is '
+							},
+							{
+								text: `${hitlerPlayer.userName} {${seatedPlayers.indexOf(hitlerPlayer) + 1}}`,
+								type: 'player'
+							}]
 						};
 
 					if (!game.general.disableGamechat) {
@@ -253,21 +252,21 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 								chat: [{
 									text: 'You see that the other '
 								},
-									{
-										text: 'fascist',
-										type: 'fascist'
-									},
-									{
-										text: ' in this game is '
-									},
-									{
-										text: `${otherFascist.userName} {${seatedPlayers.indexOf(otherFascist) + 1}}`,
-										type: 'player'
+								{
+									text: 'fascist',
+									type: 'fascist'
+								},
+								{
+									text: ' in this game is '
+								},
+								{
+									text: `${otherFascist.userName} {${seatedPlayers.indexOf(otherFascist) + 1}}`,
+									type: 'player'
 
-									},
-									{
-										text: '.  He or she knows who you are.'
-									}]
+								},
+								{
+									text: '.  He or she knows who you are.'
+								}]
 							});
 
 							player.playersState[seatedPlayers.indexOf(otherFascist)].nameStatus = 'fascist';

@@ -39,9 +39,10 @@ gulp.task('lint', () => {
 		.pipe(plumber())
 		.pipe(eslint.format())
 		.pipe(eslint.failAfterError())
-		.on('error', () => {
-			notifier.notify({title: 'ESLint Error', message: ' '});
-		});
+		// .on('error', () => {
+		// 	notifier.notify({title: 'ESLint Error', message: ' '});
+		// })
+		;
 });
 
 gulp.task('lint-all', () => {

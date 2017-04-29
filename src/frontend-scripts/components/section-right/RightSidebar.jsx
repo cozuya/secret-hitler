@@ -11,6 +11,7 @@ export default class RightSidebar extends React.Component {
 				/>
 				<div className="ui divider right-sidebar-divider" />
 				<Generalchat
+					gameInfo={this.props.gameInfo}
 					socket={this.props.socket}
 					generalChats={this.props.generalChats}
 					userInfo={this.props.userInfo}
@@ -21,6 +22,7 @@ export default class RightSidebar extends React.Component {
 }
 
 RightSidebar.propTypes = {
+	gameInfo: React.PropTypes.object,
 	userInfo: React.PropTypes.object,
 	socket: React.PropTypes.object,
 	generalChats: React.PropTypes.array,

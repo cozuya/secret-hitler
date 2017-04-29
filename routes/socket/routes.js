@@ -1,4 +1,4 @@
-const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser} = require('./user-events'),
+const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser, handleUpdateWhitelist} = require('./user-events'),
 	{sendGameInfo, sendUserGameSettings, sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
 	{selectChancellor, selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto} = require('./game/election.js'),
 	{selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute} = require('./game/policy-powers.js');
@@ -13,6 +13,8 @@ module.exports = () => {
 
 		.on('disconnect', () => {
 			handleSocketDisconnect(socket);
+		}).on('updateGameWhitelist', data => {
+			handleUpdateWhitelist(data);
 		}).on('updateTruncateGame', data => {
 			handleUpdatedTruncateGame(data);
 		}).on('addNewGameChat', data => {
@@ -28,7 +30,7 @@ module.exports = () => {
 		}).on('leaveGame', data => {
 			handleUserLeaveGame(socket, data);
 		}).on('updateSeatedUser', data => {
-			updateSeatedUser(data);
+			updateSeatedUser(socket, data);
 		})
 		// user-requests
 
