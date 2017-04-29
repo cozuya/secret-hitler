@@ -61,6 +61,7 @@ export default class Main extends React.Component {
 								onLeaveGame={this.props.onLeaveGame}
 								userInfo={this.props.userInfo}
 								gameInfo={this.props.gameInfo}
+								userList={this.props.userList}
 								socket={this.props.socket}
 							/>
 						);
@@ -89,5 +90,6 @@ Main.propTypes = {
 	midSection: React.PropTypes.string,
 	userInfo: React.PropTypes.object,
 	gameInfo: React.PropTypes.object,
-	socket: React.PropTypes.object
+	socket: React.PropTypes.object,
+	userList: React.PropTypes.object
 };

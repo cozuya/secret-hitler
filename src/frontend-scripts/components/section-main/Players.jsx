@@ -55,6 +55,7 @@ export default class Players extends React.Component {
 			}
 		}
 	}
+
 	renderPreviousGovtToken(i) {
 		const {publicPlayersState} = this.props.gameInfo;
 
@@ -199,11 +200,13 @@ export default class Players extends React.Component {
 	}
 
 	clickedTakeSeat() {
-		if (this.props.userInfo.userName) {
-			if (this.props.gameInfo.general.private) {
+		const {gameInfo, userInfo, onClickedTakeSeat} = this.props;
+
+		if (userInfo.userName) {
+			if (gameInfo.general.private && !(gameInfo.general.whitelistedPlayers.includes(userInfo.userName))) {
 				$(this.passwordModal).modal('show');
 			} else {
-				this.props.onClickedTakeSeat();
+				onClickedTakeSeat();
 			}
 		} else {
 			$(this.signinModal).modal('show');
@@ -234,9 +237,7 @@ export default class Players extends React.Component {
 							<input maxLength="20" placeholder="Password" onChange={handlePasswordInputChange} value={this.state.passwordValue} autoFocus ref={c => {
 								this.privategamepassword = c;
 							}} />
-							<div onClick={this.handlePasswordSubmit} className="ui button primary">
-                Submit
-              </div>
+							<div onClick={this.handlePasswordSubmit} className="ui button primary">Submit</div>
 						</form>
 					</div>
 				</div>

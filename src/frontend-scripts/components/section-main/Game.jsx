@@ -64,6 +64,7 @@ export default class Game extends React.Component {
 								{this.props.gameInfo.general.status}
 							</section>
 							<Gamechat
+								userList={this.props.userList}
 								gameInfo={this.props.gameInfo}
 								userInfo={this.props.userInfo}
 								onLeaveGame={this.props.onLeaveGame}
@@ -113,5 +114,6 @@ Game.propTypes = {
 	clickedGamerole: React.PropTypes.object,
 	clickedPlayer: React.PropTypes.object,
 	expandoInfo: React.PropTypes.string,
-	dispatch: React.PropTypes.func
+	dispatch: React.PropTypes.func,
+	userList: React.PropTypes.object
 };

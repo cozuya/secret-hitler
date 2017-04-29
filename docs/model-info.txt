@@ -18,6 +18,7 @@ general
 	minPlayersCount number 5-10
 	maxPlayersCount number 5-10
 	status string
+	whitelistedPlayers array of strings (userNames)
 	uid string
   private bool
 	experiencedMode bool

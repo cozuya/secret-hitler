@@ -80,6 +80,7 @@ export default class Creategame extends React.Component {
 			},
 			chats: [],
 			general: {
+				whitelistedPlayers: [],
 				uid: Math.random().toString(36).substring(6),
 				name: $creategame.find('div.gamename input').val() || 'New Game',
 				minPlayersCount: this.state.sliderValues[0],

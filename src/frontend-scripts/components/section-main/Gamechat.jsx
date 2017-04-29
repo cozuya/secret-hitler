@@ -15,11 +15,16 @@ export default class Gamechat extends React.Component {
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
-			inputValue: ''
+			inputValue: '',
+			playersToWhitelist: []
 		};
 	}
 
 	handleWhitelistPlayers() {
+		this.setState({
+			playersToWhitelist: this.props.userList.list.filter(user => user.userName !== this.props.userInfo.userName).map(user => ({userName: user.userName, isSelected: true}))
+		});
+
 		$(this.whitelistModal).modal('show');
 	}
 
@@ -155,7 +160,23 @@ export default class Gamechat extends React.Component {
 	}
 
 	render() {
-		const {userInfo, gameInfo} = this.props;
+		const {userInfo, gameInfo} = this.props,
+			selectedWhitelistplayer = (playerName) => {
+				const {playersToWhitelist} = this.state,
+					playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
+
+				playersToWhitelist[playerIndex].isSelected = !playersToWhitelist[playerIndex].isSelected;
+
+				this.setState(playersToWhitelist);
+			},
+			submitWhitelist = () => {
+				const whitelistPlayers = this.state.playersToWhitelist.filter(player => player.isSelected).map(player => player.userName);
+				this.props.socket.emit('updateGameWhitelist', {
+					uid: gameInfo.general.uid,
+					whitelistPlayers
+				});
+				$(this.whitelistModal).modal('hide');
+			};
 
 		return (
 			<section className="gamechat">
@@ -166,15 +187,9 @@ export default class Gamechat extends React.Component {
 					<i className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'} onClick={this.handleChatLockClick} />
 					{(() => {
 						if (userInfo.isSeated && gameInfo.general.private && !gameInfo.gameState.isStarted) {
-							return <div className='ui button' onClick={this.handleWhitelistPlayers} style={{'float': 'right'}}>Whitelist Players</div>;
+							return <div className='ui button whitelist' onClick={this.handleWhitelistPlayers}>Whitelist Players</div>;
 						}
 					})()}
-					<div className="ui basic fullscreen modal whitelistmodal" ref={c => {
-						this.whitelistModal = c;
-					}}>
-						<h2 className="ui header">Select player(s) below to whitelist for seating in this private game.</h2>
-						<div className="ui green positive inverted whitelist-submit button">Submit</div>
-					</div>
 					<div className={
 						(() => {
 							let classes = 'ui primary button';
@@ -186,15 +201,6 @@ export default class Gamechat extends React.Component {
 							return classes;
 						})()
 					} onClick={this.handleClickedLeaveGame}>Leave Game</div>
-					<div className="ui basic fullscreen modal leavegamemodals" ref={c => {
-						this.leaveGameModal = c;
-					}}>
-						<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players (unless you've been executed).  Do this only in the case of a game already ruined by an AFK/disconnected player or if someone has already left.</h2>
-						<div className="ui green positive inverted leave-game button">
-							<i className="checkmark icon"></i>
-							Leave anyways
-						</div>
-					</div>
 				</section>
 				<section className="segment chats">
 					<div className="ui list">
@@ -238,7 +244,9 @@ export default class Gamechat extends React.Component {
 								const {gameState, publicPlayersState} = this.props.gameInfo,
 									{userName} = this.props.userInfo,
 									isDead = (() => {
-										if (this.props.userInfo.isSeated && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
+										if (this.props.userInfo.isSeated
+											&& publicPlayersState.length
+											&& publicPlayersState.find(player => userName === player.userName)) {
 											return publicPlayersState.find(player => userName === player.userName).isDead;
 										}
 									})(),
@@ -249,7 +257,8 @@ export default class Gamechat extends React.Component {
 										}
 									})();
 
-								if (!this.props.userInfo.userName || (isDead && !gameState.isCompleted)
+								if (!this.props.userInfo.userName
+									|| (isDead && !gameState.isCompleted)
 									|| isGovernmentDuringPolicySelection
 									|| this.props.gameInfo.general.disableChat
 									|| (this.props.gameInfo.general.private && !this.props.userInfo.isSeated)) {
@@ -266,6 +275,35 @@ export default class Gamechat extends React.Component {
 						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
 				</form>
+				<div className="ui basic fullscreen modal leavegamemodals" ref={c => {
+					this.leaveGameModal = c;
+				}}>
+					<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players (unless you've been executed).  Do this only in the case of a game already ruined by an AFK/disconnected player or if someone has already left.</h2>
+					<div className="ui green positive inverted leave-game button">
+						<i className="checkmark icon"></i>
+						Leave anyways
+					</div>
+				</div>
+				<div className="ui basic fullscreen modal whitelistmodal" ref={c => {
+					this.whitelistModal = c;
+				}}>
+					<h2 className="ui header">Select player(s) below to whitelist for seating in this private game.</h2>
+					<ul>
+						{this.state.playersToWhitelist.map((player, index) => {
+							const uid = Math.random().toString(36).substring(2);
+
+							return (
+								<li key={index}>
+									<input type="checkbox" id={uid} defaultChecked={true} onChange={() => {
+										selectedWhitelistplayer(player.userName);
+									}}/>
+									<label htmlFor={uid}>{player.userName}</label>
+								</li>
+							);
+						})}
+					</ul>
+					<div className="ui green positive inverted whitelist-submit button" onClick={submitWhitelist}>Submit</div>
+				</div>
 			</section>
 		);
 	}
@@ -280,5 +318,6 @@ Gamechat.propTypes = {
 	selectedPlayer: React.PropTypes.object,
 	userInfo: React.PropTypes.object,
 	gameInfo: React.PropTypes.object,
-	socket: React.PropTypes.object
+	socket: React.PropTypes.object,
+	userList: React.PropTypes.object
 };

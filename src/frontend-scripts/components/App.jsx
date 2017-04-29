@@ -132,7 +132,7 @@ export class App extends React.Component {
 					name: 'New Game',
 					minPlayersCount: 5,
 					maxPlayersCount: 5,
-					private: false,
+					private: 'a',
 					experiencedMode: true,
 					disableChat: true,
 					disableGamechat: true,
@@ -225,6 +225,7 @@ export class App extends React.Component {
 					quickDefault={this.makeQuickDefault}
 					onSettingsButtonClick={this.handleRoute}
 					onClickedTakeSeat={this.handleSeatingUser}
+					userList={this.props.userList}
 					socket={socket}
 				/>
 				{(() => {
