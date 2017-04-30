@@ -221,7 +221,9 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	if (game && game.gameState.isStarted && data.isSeated) {
 		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
 
-		game.publicPlayersState[playerIndex].leftGame = true; // crash here
+		if (playerIndex > -1) { // crash protection.  Presumably race condition causes this to fire twice, causing crash?
+			game.publicPlayersState[playerIndex].leftGame = true;
+		}
 
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 			if (game.gameState.isCompleted) {
