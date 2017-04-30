@@ -6,6 +6,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{games} = require('../models.js'),
 	_ = require('lodash'),
 	enactPolicy = (game, team) => {
+		console.log('enactPolicy fired');
 		const index = game.trackState.enactedPolicies.length,
 			{experiencedMode} = game.general;
 
@@ -46,6 +47,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 
 					if (game.trackState.electionTrackerCount <= 2) {
 						game.publicPlayersState[game.gameState.presidentIndex].previousGovernmentStatus = 'wasPresident';
+						console.log(game.publicPlayersState, 'pps');
 						game.publicPlayersState[game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')].previousGovernmentStatus = 'wasChancellor';
 					}
 				},

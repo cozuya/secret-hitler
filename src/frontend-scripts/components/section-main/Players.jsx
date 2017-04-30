@@ -187,7 +187,9 @@ export default class Players extends React.Component {
 	renderTakeSeat() {
 		const {userInfo, gameInfo} = this.props;
 
-		if (!userInfo.isSeated && !gameInfo.gameState.isTracksFlipped) {
+		if (!userInfo.isSeated
+			&& !gameInfo.gameState.isTracksFlipped
+			&& (!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName))) {
 			return <div className="ui left pointing label" onClick={this.clickedTakeSeat}>Take a seat</div>;
 		}
 	}

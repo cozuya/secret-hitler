@@ -36,8 +36,7 @@ export default class Generalchat extends React.Component {
 		if (inputValue) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
-				chat: inputValue,
-				private: Object.keys(this.props.gameInfo).length ? this.props.gameInfo.general.private : null
+				chat: inputValue
 			});
 
 			this.setState({inputValue: ''});

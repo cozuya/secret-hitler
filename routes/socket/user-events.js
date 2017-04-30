@@ -69,6 +69,7 @@ const {games, userList, generalChats} = require('./models'),
 				} else if (publicPlayersState.length === 1) {
 					games.splice(games.indexOf(game), 1);
 				} else if (!gameState.isStarted) {
+					console.log(playerIndex, '!gameState.isStarted if clause in handleSocketDisconnect fired that spliced PPS');
 					publicPlayersState.splice(playerIndex, 1);
 					io.sockets.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted) {
@@ -93,6 +94,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 
 	if (game
     && game.publicPlayersState.length < game.general.maxPlayersCount
+		&& !game.publicPlayersState.find(player => player.userName === data.userName)
     && (!game.general.private || (game.general.private && data.password === game.private.privatePassword || game.general.private && game.general.whitelistedPlayers.includes(data.userName)))) {
 		const {publicPlayersState} = game;
 
@@ -219,7 +221,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	if (game && game.gameState.isStarted && data.isSeated) {
 		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
 
-		game.publicPlayersState[playerIndex].leftGame = true;
+		game.publicPlayersState[playerIndex].leftGame = true; // crash here
 
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 			if (game.gameState.isCompleted) {
@@ -231,6 +233,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	}
 
 	if (game && data.isSeated && !game.gameState.isStarted) {
+		console.log('publicPlayerState splice in handleUserLeaveGame fired that spliced PPS');
 		game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
 		io.sockets.in(data.uid).emit('gameUpdate', game);
 	}

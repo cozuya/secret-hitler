@@ -12,7 +12,6 @@ export default class Gamechat extends React.Component {
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
 		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
-		this.handleClaimButtonClick = this.handleClaimButtonClick.bind(this);
 		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
 
 		this.state = {
@@ -22,22 +21,6 @@ export default class Gamechat extends React.Component {
 			claim: '',
 			playersToWhitelist: []
 		};
-	}
-
-	handleWhitelistPlayers() {
-		this.setState({
-			playersToWhitelist: this.props.userList.list.filter(user => user.userName !== this.props.userInfo.userName).map(user => ({userName: user.userName, isSelected: true}))
-		});
-
-		$(this.whitelistModal).modal('show');
-	}
-
-	handleClickedLeaveGame() {
-		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
-			$(this.leaveGameModal).modal('show');
-		} else {
-			this.props.onLeaveGame(this.props.userInfo.isSeated);
-		}
 	}
 
 	componentDidMount() {
@@ -58,6 +41,22 @@ export default class Gamechat extends React.Component {
 			|| gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName) && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isChancellor') && prevProps.gameInfo.gameState.phase !== 'presidentSelectingPolicy')) {
 			this.setState({inputValue: ''});
 			$(this.gameChatInput).blur();
+		}
+	}
+
+	handleWhitelistPlayers() {
+		this.setState({
+			playersToWhitelist: this.props.userList.list.filter(user => user.userName !== this.props.userInfo.userName).map(user => ({userName: user.userName, isSelected: true}))
+		});
+
+		$(this.whitelistModal).modal('show');
+	}
+
+	handleClickedLeaveGame() {
+		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
+			$(this.leaveGameModal).modal('show');
+		} else {
+			this.props.onLeaveGame(this.props.userInfo.isSeated);
 		}
 	}
 
@@ -170,10 +169,6 @@ export default class Gamechat extends React.Component {
 			});
 	}
 
-	handleSelectedClaimButtonClick(e) {
-
-	}
-
 	render() {
 		const {userInfo, gameInfo} = this.props,
 			selectedWhitelistplayer = (playerName) => {
@@ -235,15 +230,29 @@ export default class Gamechat extends React.Component {
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
 					{(() => {
 						if (this.state.claim) {
+							const handleClaimButtonClick = (e, claim) => {
+								console.log('Hello, World!');
+								console.log(e);
+								console.log(claim);
+							};
+
 							switch (this.state.claim) {
 							case 'wasPresident':
 								return (
 									<div>
 										<p> As president, I drew...</p>
-										<button onClick={this.handleSelectedClaimButtonClick} data-claimtype="fascist" className="ui button threefascist">3 Fascist policies</button>
-										<button onClick={this.handleSelectedClaimButtonClick} data-claimtype="twofascistoneliberal" className="ui button twofascistoneliberal">2 Fascist and a Liberal policy</button>
-										<button onClick={this.handleSelectedClaimButtonClick} data-claimtype="twoliberalonefascist" className="ui button twoliberalonefascist">2 Liberal and a Fascist policy</button>
-										<button onClick={this.handleSelectedClaimButtonClick} data-claimtype="threeliberal" className="ui button threeliberal">3 Liberal policies</button>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'fascist');
+										}} className="ui button threefascist">3 Fascist policies</button>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'twofascistoneliberal');
+										}} className="ui button twofascistoneliberal">2 Fascist and a Liberal policy</button>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'twoliberalonefascist');
+										}} className="ui button twoliberalonefascist">2 Liberal and a Fascist policy</button>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'threeliberal');
+										}} className="ui button threeliberal">3 Liberal policies</button>
 									</div>
 								);
 							case 'wasChancellor':
@@ -255,7 +264,6 @@ export default class Gamechat extends React.Component {
 							case 'didPolicyPeek':
 
 								break;
-							default:
 							}
 						}
 					})()}
@@ -310,7 +318,7 @@ export default class Gamechat extends React.Component {
 										}
 									})();
 
-								if (!this.props.userInfo.userName
+								if (!userName
 									|| (isDead && !gameState.isCompleted)
 									|| isGovernmentDuringPolicySelection
 									|| this.props.gameInfo.general.disableChat
