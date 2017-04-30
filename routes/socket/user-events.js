@@ -86,14 +86,12 @@ module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 
 	// prevents race condition between 1) taking a seat and 2) the game starting
-	if (game && game.gameState.isTracksFlipped) {
-		console.warn('player joined too late');
-		return;
-	}
+	if (game && game.gameState.isTracksFlipped) return;
 
 	if (game
-    && game.publicPlayersState.length < game.general.maxPlayersCount
-    && (!game.general.private || (game.general.private && data.password === game.private.privatePassword || game.general.private && game.general.whitelistedPlayers.includes(data.userName)))) {
+	    && game.publicPlayersState.length < game.general.maxPlayersCount
+	    && (!game.general.private || (game.general.private && data.password === game.private.privatePassword || game.general.private && game.general.whitelistedPlayers.includes(data.userName)))) {
+		
 		const {publicPlayersState} = game;
 
 		publicPlayersState.push({
@@ -238,7 +236,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	if (game && !game.publicPlayersState.length) {
 		io.sockets.in(data.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
-	} else if (game && game.isTracksFlipped) {
+	} else if (game && game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
 
