@@ -68,8 +68,8 @@ const {games, userList, generalChats} = require('./models'),
 					games.splice(games.indexOf(game), 1);
 				} else if (publicPlayersState.length === 1) {
 					games.splice(games.indexOf(game), 1);
-				} else if (!gameState.isStarted) {
-					console.log(playerIndex, '!gameState.isStarted if clause in handleSocketDisconnect fired that spliced PPS');
+				} else if (!gameState.isStarted && playerIndex > -1) {
+					// console.log(playerIndex, '!gameState.isStarted if clause in handleSocketDisconnect fired that spliced PPS');
 					publicPlayersState.splice(playerIndex, 1);
 					io.sockets.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted) {
@@ -221,7 +221,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	if (game && game.gameState.isStarted && data.isSeated) {
 		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
 
-		if (playerIndex > -1) { // crash protection.  Presumably race condition causes this to fire twice, causing crash?
+		if (playerIndex > -1) { // crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 
@@ -234,8 +234,8 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		}
 	}
 
-	if (game && data.isSeated && !game.gameState.isStarted) {
-		console.log('publicPlayerState splice in handleUserLeaveGame fired that spliced PPS');
+	if (game && data.isSeated && !game.gameState.isStarted && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
+		// console.log('publicPlayerState splice in handleUserLeaveGame fired that spliced PPS');
 		game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
 		io.sockets.in(data.uid).emit('gameUpdate', game);
 	}
