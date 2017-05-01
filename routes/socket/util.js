@@ -7,11 +7,11 @@ const getPrivatePlayerInGameByUserName = (game, userName) => game.private.seated
 	};
 
 module.exports.sendInProgressGameUpdate = game => { // todo-release make this accept a socket argument and emit only to it if it exists
-	const seatedPlayerNames = game.private.seatedPlayers.map(player => player.userName),
+	const seatedPlayerNames = game.publicPlayersState.map(player => player.userName),
 		combineInProgressChats = (game, userName) => {
 			let player;
 
-			if (userName) {
+			if (userName && game.gameState.isTracksFlipped) {
 				player = getPrivatePlayerInGameByUserName(game, userName);
 			}
 
@@ -33,7 +33,7 @@ module.exports.sendInProgressGameUpdate = game => { // todo-release make this ac
 			const _game = Object.assign({}, game),
 				{user} = sock.handshake.session.passport;
 
-			if (!game.gameState.isCompleted) {
+			if (!game.gameState.isCompleted && game.gameState.isTracksFlipped) {
 				const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
 
 				_game.playersState = privatePlayer.playersState;

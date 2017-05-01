@@ -459,15 +459,50 @@ module.exports.selectVoting = data => {
 
 	if (data.vote) {
 		// crashes here some times
-		player.cardFlingerState[0].notificationStatus = 'selected';
-		player.cardFlingerState[1].notificationStatus = '';
+		player.cardFlingerState = [
+			{
+				position: 'middle-left',
+				notificationStatus: 'selected',
+				action: '',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'ballot',
+					cardBack: 'ja'
+				}
+			}, {
+				position: 'middle-right',
+				notificationStatus: '',
+				action: '',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'ballot',
+					cardBack: 'nein'
+				}
+			}
+		];
 	} else {
-		player.cardFlingerState[0].notificationStatus = '';
-		player.cardFlingerState[1].notificationStatus = 'selected';
+		player.cardFlingerState = [
+			{
+				position: 'middle-left',
+				notificationStatus: '',
+				action: '',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'ballot',
+					cardBack: 'ja'
+				}
+			}, {
+				position: 'middle-right',
+				notificationStatus: 'selected',
+				action: '',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'ballot',
+					cardBack: 'nein'
+				}
+			}
+		];
 	}
-
-	player.cardFlingerState[0].action = player.cardFlingerState[1].action = '';
-	player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = false;
 
 	sendInProgressGameUpdate(game);
 
