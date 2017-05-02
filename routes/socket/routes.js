@@ -16,7 +16,7 @@ module.exports = () => {
 			const isGameFound = uid && games.find(g => g.general.uid === uid);
 
 			if (!uid || isGameFound) return next();
-			else socket.emit('gameUpdate', {}, data.isSettings);
+			else socket.emit('gameUpdate', {});
 		});
 
 		socket
