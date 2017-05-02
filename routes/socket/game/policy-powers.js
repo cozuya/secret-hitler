@@ -133,87 +133,90 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		president = seatedPlayers[presidentIndex],
 		playersTeam = game.private.seatedPlayers[playerIndex].role.team;
 
-	president.playersState.forEach(player => {
-		player.notificationStatus = '';
-	});
+	if (!seatedPlayers[playerIndex].wasInvestigated) {
+		seatedPlayers[playerIndex].wasInvestigated = true;
 
-	game.publicPlayersState[presidentIndex].isLoader = false;
-	game.publicPlayersState[playerIndex].cardStatus = {
-		cardDisplayed: true,
-		cardFront: 'partymembership',
-		cardBack: {}
-	};
+		president.playersState.forEach(player => {
+			player.notificationStatus = '';
+		});
 
-	seatedPlayers[playerIndex].wasInvestigated = true;
-	sendInProgressGameUpdate(game);
-
-	setTimeout(() => {
-		const chat = {
-			timestamp: new Date(),
-			gameChat: true
+		game.publicPlayersState[presidentIndex].isLoader = false;
+		game.publicPlayersState[playerIndex].cardStatus = {
+			cardDisplayed: true,
+			cardFront: 'partymembership',
+			cardBack: {}
 		};
 
-		president.playersState[playerIndex].cardStatus = {
-			isFlipped: true,
-			cardBack: {
-				cardName: `membership-${playersTeam}`
-			}
-		};
+		sendInProgressGameUpdate(game);
 
-		if (!game.general.disableGamechat) {
-			seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
-				chat.chat = [{text: 'President '},
-					{
-						text: `${president.userName} {${presidentIndex + 1}}`,
-						type: 'player'
-					},
-					{text: ' investigates the party membership of '},
-					{
-						text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-						type: 'player'
-					},
-					{text: '.'}];
-
-				player.gameChats.push(chat);
-			});
-
-			game.private.unSeatedGameChats.push(chat);
-
-			president.gameChats.push({
+		setTimeout(() => {
+			const chat = {
 				timestamp: new Date(),
-				gameChat: true,
-				chat: [{text: 'You investigate the party membership of '},
-					{
-						text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-						type: 'player'
-					},
-					{text: ' and determine that he or she is on the '},
-					{
-						text: playersTeam,
-						type: playersTeam
-					},
-					{text: ' team.'}]
-			});
-		}
+				gameChat: true
+			};
 
-		if (!game.general.disableGamechat) {
-			president.playersState[playerIndex].nameStatus = playersTeam;
-		}
+			president.playersState[playerIndex].cardStatus = {
+				isFlipped: true,
+				cardBack: {
+					cardName: `membership-${playersTeam}`
+				}
+			};
 
-		sendInProgressGameUpdate(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000);
+			if (!game.general.disableGamechat) {
+				seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
+					chat.chat = [{text: 'President '},
+						{
+							text: `${president.userName} {${presidentIndex + 1}}`,
+							type: 'player'
+						},
+						{text: ' investigates the party membership of '},
+						{
+							text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+							type: 'player'
+						},
+						{text: '.'}];
 
-	setTimeout(() => {
-		president.playersState[playerIndex].cardStatus.isFlipped = false;
-		sendInProgressGameUpdate(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4000 : 6000);
+					player.gameChats.push(chat);
+				});
 
-	setTimeout(() => {
-		game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
-		president.playersState[playerIndex].cardStatus.cardBack = {};
-		sendInProgressGameUpdate(game);
-		startElection(game);
-	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4200 : 8000);
+				game.private.unSeatedGameChats.push(chat);
+
+				president.gameChats.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [{text: 'You investigate the party membership of '},
+						{
+							text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+							type: 'player'
+						},
+						{text: ' and determine that he or she is on the '},
+						{
+							text: playersTeam,
+							type: playersTeam
+						},
+						{text: ' team.'}]
+				});
+			}
+
+			if (!game.general.disableGamechat) {
+				president.playersState[playerIndex].nameStatus = playersTeam;
+			}
+
+			sendInProgressGameUpdate(game);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000);
+
+		setTimeout(() => {
+			president.playersState[playerIndex].cardStatus.isFlipped = false;
+			sendInProgressGameUpdate(game);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4000 : 6000);
+
+		setTimeout(() => {
+			game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
+			president.playersState[playerIndex].cardStatus.cardBack = {};
+			sendInProgressGameUpdate(game);
+			startElection(game);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4200 : 8000);
+	}
 };
 
 module.exports.specialElection = game => {
