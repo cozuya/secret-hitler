@@ -60,9 +60,10 @@ playersState (see private)
 publicCardflingerState object
 cardflingerState (see private)
 private
+	timeout object
 	policies array
 	currentElectionPolicies array
-  privatePassword string
+  	privatePassword string
 	unSeatedGameChats array
 		chat string
 		timestamp time

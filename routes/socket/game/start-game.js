@@ -1,4 +1,6 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
+	{games} = require('../models.js'),
+	{sendGameList} = require('../user-requests.js'),
 	_ = require('lodash'),
 	{startElection} = require('./election.js'),
 	{shufflePolicies} = require('./common.js'),
@@ -335,5 +337,29 @@ module.exports = game => {
 	});
 	game.gameState.isTracksFlipped = true;
 	game.private.policies = [];
+
+	// remove idle games, timeout is reset on game updates
+	game.private.timeout = (function() {
+		// 10 minutes
+		const maxIdleTime = process.env.NODE_ENV === 'development' ? 
+			10000 : 1000 * 60 * 10;
+
+		const timeout = function() {
+			return setTimeout(() => {
+				games.splice(games.indexOf(game), 1);
+				sendGameList();
+			}, maxIdleTime);
+		};
+
+		let id = timeout();
+
+		return {
+			reset: () => {
+				clearTimeout(id);
+				id = timeout();
+			}
+		};
+	})();
+
 	shufflePolicies(game);
 };
