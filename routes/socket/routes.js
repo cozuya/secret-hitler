@@ -12,9 +12,10 @@ module.exports = () => {
 		// defensively check if game exists
 		socket.use((packet, next) => {
 			const data = packet[1];
-			const isGameFound = data.uid && games.find(g => g.general.uid === data.uid);
+			const uid = data && data.uid;
+			const isGameFound = uid && games.find(g => g.general.uid === uid);
 
-			if (!data.uid || isGameFound) return next();
+			if (!uid || isGameFound) return next();
 			else socket.emit('gameUpdate', {}, data.isSettings);
 		});
 
