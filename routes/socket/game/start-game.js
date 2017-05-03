@@ -339,17 +339,12 @@ module.exports = game => {
 	game.private.policies = [];
 
 	// remove idle games, timeout is reset on game updates
-	game.private.timeout = (function() {
+	game.private.timeout = (() => {
 		// 10 minutes
-		const maxIdleTime = process.env.NODE_ENV === 'development' ? 
-			10000 : 1000 * 60 * 10;
-
-		const timeout = function() {
-			return setTimeout(() => {
-				games.splice(games.indexOf(game), 1);
-				sendGameList();
-			}, maxIdleTime);
-		};
+		const timeout = () => setTimeout(() => {
+			games.splice(games.indexOf(game), 1);
+			sendGameList();
+		}, 600000);
 
 		let id = timeout();
 
