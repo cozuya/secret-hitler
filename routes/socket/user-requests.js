@@ -5,12 +5,16 @@ const Account = require('../../models/account'),
 module.exports.sendUserGameSettings = (socket, username) => {
 	Account.findOne({username})
 		.then(account => {
+			const userListNames = userList.map(user => user.userName);
 			socket.emit('gameSettings', account.gameSettings);
-			userList.push({
-				userName: username,
-				wins: account.wins,
-				losses: account.losses
-			});
+
+			if (!userListNames.includes(username)) {
+				userList.push({
+					userName: username,
+					wins: account.wins,
+					losses: account.losses
+				});
+			}
 
 			io.sockets.emit('userList', {
 				list: userList,
