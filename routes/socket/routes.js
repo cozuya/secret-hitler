@@ -1,11 +1,26 @@
 const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser, handleUpdateWhitelist} = require('./user-events'),
 	{sendGameInfo, sendUserGameSettings, sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
 	{selectChancellor, selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto} = require('./game/election.js'),
-	{selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute} = require('./game/policy-powers.js');
+	{selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute} = require('./game/policy-powers.js'),
+	{games} = require('./models');
+
 
 module.exports = () => {
 	io.on('connection', socket => {
 		checkUserStatus(socket);
+
+		// defensively check if game exists
+		socket.use((packet, next) => {
+			const data = packet[1],
+				uid = data && data.uid,
+				isGameFound = uid && games.find(g => g.general.uid === uid);
+
+			if (!uid || isGameFound) {
+				return next();
+			} else {
+				socket.emit('gameUpdate', {});
+			}
+		});
 
 		socket
 

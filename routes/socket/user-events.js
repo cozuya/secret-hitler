@@ -2,40 +2,8 @@ let generalChatCount = 0;
 
 const {games, userList, generalChats} = require('./models'),
 	{sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
-	Game = require('../../models/game'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
-	saveGame = game => {
-		const gameToSave = new Game({
-			uid: game.general.uid,
-			date: new Date(),
-			winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => (
-				{
-					userName: player.userName,
-					team: player.role.team,
-					role: player.role.cardName
-				}
-			)),
-			losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => (
-				{
-					userName: player.userName,
-					team: player.role.team,
-					role: player.role.cardName
-				}
-			)),
-			chats: game.chats.filter(chat => !chat.gameChat).map(chat => (
-				{
-					timestamp: chat.timestamp,
-					chat: chat.chat,
-					userName: chat.userName
-				}
-			)),
-			winningTeam: game.gameState.isCompleted,
-			playerCount: game.general.playerCount
-		});
-
-		gameToSave.save();
-	},
 	startGame = require('./game/start-game.js'),
 	{secureGame} = require('./util.js'),
 	{sendInProgressGameUpdate} = require('./util.js'),
@@ -64,7 +32,6 @@ const {games, userList, generalChats} = require('./models'),
 					publicPlayersState[playerIndex].connected = false;
 					io.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1) {
-					saveGame(game);
 					games.splice(games.indexOf(game), 1);
 				} else if (publicPlayersState.length === 1) {
 					games.splice(games.indexOf(game), 1);
@@ -226,10 +193,6 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		}
 
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			if (game.gameState.isCompleted) {
-				saveGame(game);
-			}
-
 			games.splice(games.indexOf(game), 1);
 		}
 	}

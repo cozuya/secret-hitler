@@ -1,7 +1,39 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
 	{userList} = require('../models.js'),
 	{sendUserList, sendGameList} = require('../user-requests.js'),
-	Account = require('../../../models/account.js');
+	Account = require('../../../models/account.js'),
+	Game = require('../../../models/game'),
+	saveGame = game => {
+		const gameToSave = new Game({
+			uid: game.general.uid,
+			date: new Date(),
+			winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => (
+				{
+					userName: player.userName,
+					team: player.role.team,
+					role: player.role.cardName
+				}
+			)),
+			losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => (
+				{
+					userName: player.userName,
+					team: player.role.team,
+					role: player.role.cardName
+				}
+			)),
+			chats: game.chats.filter(chat => !chat.gameChat).map(chat => (
+				{
+					timestamp: chat.timestamp,
+					chat: chat.chat,
+					userName: chat.userName
+				}
+			)),
+			winningTeam: game.gameState.isCompleted,
+			playerCount: game.general.playerCount
+		});
+
+		gameToSave.save();
+	};
 
 /**
  * @param {object} game - game to act on.
@@ -42,6 +74,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	game.private.unSeatedGameChats.push(chat);
 	sendInProgressGameUpdate(game);
+
+	saveGame(game);
 
 	Account.find({username: {$in: seatedPlayers.map(player => player.userName)}})
 		.then(results => {
