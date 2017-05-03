@@ -11,7 +11,7 @@ Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 
 Build: Gulp, Browserify, Babel (front end).
 
-Latest version: 0.1.11
+Latest version: 0.1.12
 
 ## Installation ##
 

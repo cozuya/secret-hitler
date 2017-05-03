@@ -9,13 +9,11 @@ block content
 				.six.wide.column.news
 					h3.ui.header News
 					p 11-12-2016 alpha begins.  Issues/bugs can be reported at #[a(href="//goo.gl/forms/IxDi9f1fKyGhefDx2") this link]. Or open a github issue.
-					p Version 0.1.11 "mustard" released 5-1-2017
-					p Bug fixes
+					p Version 0.1.12 "pumpkin" released 5-2-2017
+					h3 Server status: so the previous patch significantly helped with downtime.  However, the games that would have previously crashed now just uh glitch out, in strange ways.  So still lots of work to be done.  But at least other player's games are not ruined, and you don't need to re-login, you can just jump ship on the game.
+					p Bug fixes in 0.1.12
 					ul
-						li CRASH FIXES - Some fixes have been identified and addressed, some more have "defensive" programming to try to resolve them.  Again, they are my highest priority and will be working on this every day until I figure these out and get this app stable.  Please bear with us.
-						li (#10) Fixed a bug (finally!) that caused Chrome on Mac OS to not show flipped cards correctly.
-						li (#24) Fixed a bug where a president could mess up the whole game by clicking multiple times on a player during "investigate loyalty" policy power.
-						li (#23) Fixed a bug where a player could be seated in a game >20 seconds and <5 seconds, leave, come back, and be double-seated in that game, breaking everything.
-						li (#16) Fixed a bug where a long player's name (not the logged-in player) would cause the "players" section to wrap and display poorly.
-						li (#7) Fixed a display bug where double-digit elections caused the status bar to wrap.
-					p Next up: automated claim system, and further investigation/fixes of crash problems.
+						li (#2) Fix to gamelist sorted incorrectly (I hope, hard to test).
+						li (#20) Fix to players showing up multiple times in the gamelist/lobby.
+						li Fix to idle/completed games never going away on the sidebar, cluttering it up.
+					p Next up: automated claim system, and further investigation/fixes of crash/glitch game problems.

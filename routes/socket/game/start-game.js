@@ -344,7 +344,7 @@ module.exports = game => {
 		const timeout = () => setTimeout(() => {
 			games.splice(games.indexOf(game), 1);
 			sendGameList();
-		}, 600000);
+		}, 300000);
 
 		let id = timeout();
 
