@@ -4,6 +4,7 @@ import Defaultmid from './Defaultmid.jsx';
 import Creategame from './Creategame.jsx';
 import Settings from './Settings.jsx';
 import Game from './Game.jsx';
+import Profile from './Profile.jsx';
 
 export default class Main extends React.Component {
 	render() {
@@ -73,6 +74,8 @@ export default class Main extends React.Component {
 								socket={this.props.socket}
 							/>
 						);
+					case 'profile':
+						return <Profile />;
 					default:
 						return (
 							<Defaultmid

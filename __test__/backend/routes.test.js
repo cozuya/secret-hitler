@@ -1,6 +1,6 @@
-import index from '../../routes/index.js';
+// import index from '../../routes/index.js';
 
-const i = index();
+// const i = index();
 
 describe('routes', () => {
 	describe('index', function() {

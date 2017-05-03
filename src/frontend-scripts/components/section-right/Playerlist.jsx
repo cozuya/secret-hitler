@@ -1,6 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { fetchProfile } from '../../actions/actions';
 
-export default class Playerlist extends React.Component {
+const mapDispatchToProps = dispatch => ({
+	fetchProfile: username => dispatch(fetchProfile(username))
+});
+
+class Playerlist extends React.Component {
 	render() {
 		return (
 			<section className="playerlist">
@@ -56,7 +62,12 @@ export default class Playerlist extends React.Component {
 
 								return (
 									<div key={i}>
-										<span style={{color: user.userName === 'coz' ? 'red' : user.userName === 'stine' ? 'red' : ''}}>{user.userName}</span>
+										<span
+											className="user"
+											onClick={this.props.fetchProfile.bind(null, user.userName)}
+											style={{color: user.userName === 'coz' ? 'red' : user.userName === 'stine' ? 'red' : ''}}>
+											{user.userName}
+										</span>
 										<div className="userlist-stats-container">(
 											<span className="userlist-stats">{user.wins}</span> / <span className="userlist-stats">{user.losses}</span>) <span className="userlist-stats"> {percentDisplay}</span>
 										</div>
@@ -74,3 +85,8 @@ export default class Playerlist extends React.Component {
 Playerlist.propTypes = {
 	userList: React.PropTypes.object
 };
+
+export default connect(
+	null,
+	mapDispatchToProps
+)(Playerlist);

@@ -30,6 +30,12 @@
                 float: right;
             }
         }
+        .user {
+            &:hover {
+                color: #608cb3 !important;
+                cursor: pointer;
+            }
+        }
     }
     .right-sidebar-divider {
         margin: 0;

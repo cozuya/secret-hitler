@@ -60,9 +60,9 @@ module.exports.updateSeatedUser = (socket, data) => {
 	}
 
 	if (game
-    && game.publicPlayersState.length < game.general.maxPlayersCount
+	&& game.publicPlayersState.length < game.general.maxPlayersCount
 		&& !game.publicPlayersState.find(player => player.userName === data.userName)
-    && (!game.general.private || (game.general.private && data.password === game.private.privatePassword || game.general.private && game.general.whitelistedPlayers.includes(data.userName)))) {
+	&& (!game.general.private || (game.general.private && data.password === game.private.privatePassword || game.general.private && game.general.whitelistedPlayers.includes(data.userName)))) {
 		const {publicPlayersState} = game;
 
 		publicPlayersState.push({
@@ -142,6 +142,10 @@ module.exports.handleAddNewClaim = (data) => {
 				];
 				switch (data.claimState) {
 				case 'threefascist':
+					game.private.summary = game.private.summary.updateLog({
+						presidentClaim: { reds: 3, blues: 0 }
+					});
+
 					text.push({
 						text: 'claims '
 					}, {
@@ -153,6 +157,10 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				case 'twofascistoneliberal':
+					game.private.summary = game.private.summary.updateLog({
+						presidentClaim: { reds: 2, blues: 1 }
+					});
+
 					text.push({
 						text: 'claims '
 					}, {
@@ -167,6 +175,10 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				case 'twoliberalonefascist':
+					game.private.summary = game.private.summary.updateLog({
+						presidentClaim: { reds: 1, blues: 2 }
+					});
+
 					text.push({
 						text: 'claims '
 					}, {
@@ -181,6 +193,10 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				case 'threeliberal':
+					game.private.summary = game.private.summary.updateLog({
+						presidentClaim: { reds: 0, blues: 3 }
+					});
+
 					text.push({
 						text: 'claims '
 					}, {
@@ -204,6 +220,10 @@ module.exports.handleAddNewClaim = (data) => {
 				];
 				switch (data.claimState) {
 				case 'twofascist':
+					game.private.summary = game.private.summary.updateLog({
+						chancellorClaim: { reds: 2, blues: 0 }
+					});
+
 					text.push({
 						text: 'claims '
 					}, {
@@ -215,6 +235,10 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				case 'onefascistoneliberal':
+					game.private.summary = game.private.summary.updateLog({
+						chancellorClaim: { reds: 1, blues: 1 }
+					});
+
 					text.push({
 						text: 'claims '
 					}, {
@@ -229,6 +253,10 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				case 'twoliberal':
+					game.private.summary = game.private.summary.updateLog({
+						chancellorClaim: { reds: 0, blues: 2 }
+					});
+
 					text.push({
 						text: 'claims '
 					}, {
@@ -251,6 +279,10 @@ module.exports.handleAddNewClaim = (data) => {
 				];
 				switch (data.claimState) {
 				case 'threefascist':
+					game.private.summary = game.private.summary.updateLog({
+						policyPeek: { reds: 3, blues: 0 }
+					});
+
 					text.push({
 						text: 'claims to have peeked at '
 					}, {
@@ -262,6 +294,10 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				case 'twofascistoneliberal':
+					game.private.summary = game.private.summary.updateLog({
+						policyPeek: { reds: 2, blues: 1 }
+					});
+
 					text.push({
 						text: 'claims to have peeked at '
 					}, {
@@ -276,6 +312,10 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				case 'twoliberalonefascist':
+					game.private.summary = game.private.summary.updateLog({
+						policyPeek: { reds: 1, blues: 2 }
+					});
+
 					text.push({
 						text: 'claims to have peeked at '
 					}, {
@@ -290,6 +330,10 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				case 'threeliberal':
+					game.private.summary = game.private.summary.updateLog({
+						policyPeek: { reds: 0, blues: 3 }
+					});
+
 					text.push({
 						text: 'claims to have peeked at '
 					}, {
@@ -312,6 +356,10 @@ module.exports.handleAddNewClaim = (data) => {
 						text: 'claims to see a party membership of the'
 					}
 				];
+
+				game.private.summary = game.private.summary.updateLog({
+					investigationClaim: data.claimState
+				});
 				switch (data.claimState) {
 				case 'fascist':
 					text.push({

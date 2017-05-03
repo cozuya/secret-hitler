@@ -1,9 +1,10 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
-	{games} = require('../models.js'),
-	{sendGameList} = require('../user-requests.js'),
+	// {games} = require('../models.js'),
+	// {sendGameList} = require('../user-requests.js'),
 	_ = require('lodash'),
 	{startElection} = require('./election.js'),
 	{shufflePolicies} = require('./common.js'),
+	GameSummaryBuilder = require('../../../models/game-summary/GameSummaryBuilder'),
 	beginGame = game => {
 		const {experiencedMode} = game.general;
 
@@ -107,6 +108,15 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 				});
 			}
 		});
+
+		game.private.summary = new GameSummaryBuilder(
+			game.general.uid,
+			new Date(),
+			game.private.seatedPlayers.map(p => ({
+				username: p.userName,
+				role: p.role.cardName
+			}))
+		);
 
 		game.private.unSeatedGameChats = [{
 			gameChat: true,

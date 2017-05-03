@@ -1,3 +1,5 @@
+import fetch from 'isomorphic-fetch';
+
 export const UPDATE_USER = 'UPDATE_USER';
 
 export function updateUser(user) {
@@ -50,4 +52,21 @@ export function updateGeneralChats(info) {
 		type: UPDATE_GENERALCHATS,
 		info
 	}
+}
+
+export const updateActiveStats = activeStat => ({
+	type: 'UPDATE_ACTIVE_STATS',
+	activeStat
+});
+
+export const fetchProfile = username => dispatch => {
+	dispatch(updateMidsection('profile'));
+	dispatch({ type: 'REQUEST_PROFILE' });
+
+	return fetch(`/profile?username=${username}`)
+		.then(response => response.json())
+		.then(profile => dispatch({
+			type: 'RECEIVE_PROFILE',
+			profile
+		}));
 }

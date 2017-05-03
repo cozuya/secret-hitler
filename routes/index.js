@@ -1,5 +1,6 @@
 let passport = require('passport'), // eslint-disable-line no-unused-vars
 	Account = require('../models/account'), // eslint-disable-line no-unused-vars
+	Profile = require('../models/profile'),
 	socketRoutes = require('./socket/routes'),
 	accounts = require('./accounts'),
 	ensureAuthenticated = (req, res, next) => {
@@ -60,6 +61,14 @@ module.exports = () => {
 			req.logout();
 		}
 		res.render('game', {game: true});
+	});
+
+	app.get('/profile', (req, res) => {
+		const username = req.query.username;
+
+		Profile.findById(username, (err, profile) => {
+			res.json(profile);
+		});
 	});
 
 	app.get('/googleccea3bf80b28ed88.html', (req, res) => {
