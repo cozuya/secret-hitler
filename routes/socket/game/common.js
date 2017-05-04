@@ -3,39 +3,32 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	_ = require('lodash');
 
 module.exports.startElection = (game, specialElectionPresidentIndex) => {
-	const ineligableIndexes = game.publicPlayersState.filter(player => player.isDead).map(player => game.publicPlayersState.indexOf(player)),
-		{experiencedMode} = game.general;
+	const {experiencedMode} = game.general;
 
 	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || game.trackState.fascistPolicyCount >= 5) {
 		game.gameState.isVetoEnabled = true;
 	}
 
 	game.gameState.presidentIndex = (() => {
-		const findNext = index => index + 1 === game.general.playerCount ? 0 : index + 1,
-			{presidentIndex} = game.gameState;
+		const {presidentIndex, specialElectionFormerPresidentIndex} = game.gameState,
+			nextPresidentIndex = index => {
+				const nextIndex = index + 1 === game.general.playerCount ? 0 : index + 1;
 
-		let index = presidentIndex,
-			{specialElectionFormerPresidentIndex} = game.gameState,
-			notDeadPresident = false;
+				if (game.publicPlayersState[nextIndex].isDead) {
+					return nextPresidentIndex(nextIndex);
+				} else {
+					return nextIndex;
+				}
+			};
 
-		if (!specialElectionPresidentIndex && (specialElectionFormerPresidentIndex || specialElectionFormerPresidentIndex === 0)) {
-			index = specialElectionFormerPresidentIndex;
-			game.gameState.specialElectionFormerPresidentIndex = null;
-		}
-
-		if (specialElectionPresidentIndex || specialElectionPresidentIndex === 0) {
+		if (Number.isInteger(specialElectionPresidentIndex)) {
 			return specialElectionPresidentIndex;
+		} else if (Number.isInteger(specialElectionFormerPresidentIndex)) {
+			game.gameState.specialElectionFormerPresidentIndex = null;
+			return nextPresidentIndex(specialElectionFormerPresidentIndex);
+		} else {
+			return nextPresidentIndex(presidentIndex);
 		}
-
-		while (!notDeadPresident) {
-			index = findNext(index);
-
-			if (!ineligableIndexes.includes(index)) {
-				notDeadPresident = true;
-			}
-		}
-
-		return index;
 	})();
 
 	const {seatedPlayers} = game.private,
