@@ -1,9 +1,10 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
-	{games} = require('../models.js'),
-	{sendGameList} = require('../user-requests.js'),
+	// {games} = require('../models.js'),
+	// {sendGameList} = require('../user-requests.js'),
 	_ = require('lodash'),
 	{startElection} = require('./election.js'),
 	{shufflePolicies} = require('./common.js'),
+	debug = require('debug')('game'),
 	beginGame = game => {
 		const {experiencedMode} = game.general;
 
@@ -340,11 +341,12 @@ module.exports = game => {
 
 	// remove idle games, timeout is reset on game updates
 	game.private.timeout = (() => {
-		// 10 minutes
+		// 1 minute
 		const timeout = () => setTimeout(() => {
-			games.splice(games.indexOf(game), 1);
-			sendGameList();
-		}, 300000);
+			// games.splice(games.indexOf(game), 1);
+			// sendGameList();
+			debug('Removing game: %s', game.general.uid);
+		}, 60000);
 
 		let id = timeout();
 
