@@ -133,7 +133,7 @@ export class App extends React.Component {
 					minPlayersCount: 5,
 					maxPlayersCount: 5,
 					private: false,
-					experiencedMode: false,
+					experiencedMode: true,
 					disableChat: false,
 					disableGamechat: false,
 					status: 'Waiting for more players..',

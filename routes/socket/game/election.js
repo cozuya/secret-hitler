@@ -6,7 +6,6 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{games} = require('../models.js'),
 	_ = require('lodash'),
 	enactPolicy = (game, team) => {
-		// console.log('enactPolicy fired');
 		const index = game.trackState.enactedPolicies.length,
 			{experiencedMode} = game.general;
 
@@ -290,6 +289,11 @@ module.exports.selectVoting = data => {
 			const {gameState} = game,
 				{presidentIndex} = gameState,
 				chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
+
+			if (game.gameState.previousElectedGovernment.length) {
+				game.private.seatedPlayers[game.gameState.previousElectedGovernment[0]].playersState[game.gameState.previousElectedGovernment[0]].claim = '';
+				game.private.seatedPlayers[game.gameState.previousElectedGovernment[1]].playersState[game.gameState.previousElectedGovernment[1]].claim = '';
+			}
 
 			game.general.status = 'Waiting on presidential discard.';
 			game.publicPlayersState[presidentIndex].isLoader = true;
@@ -575,7 +579,6 @@ module.exports.selectPresidentPolicy = data => {
 		});
 	}
 
-	president.playersState[presidentIndex].claim = 'wasPresident';
 	sendInProgressGameUpdate(game);
 
 	setTimeout(() => {
@@ -593,6 +596,8 @@ module.exports.selectPresidentPolicy = data => {
 module.exports.selectChancellorPolicy = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{experiencedMode} = game.general,
+		presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPresident'),
+		president = game.private.seatedPlayers[presidentIndex],
 		chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor'),
 		chancellor = game.private.seatedPlayers[chancellorIndex],
 		enactedPolicy = data.policy;
@@ -665,6 +670,8 @@ module.exports.selectChancellorPolicy = data => {
 		sendInProgressGameUpdate(game);
 		setTimeout(() => {
 			chancellor.cardFlingerState = [];
+			president.playersState[presidentIndex].claim = 'wasPresident';
+			chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
 			enactPolicy(game, enactedPolicy);
 		}, experiencedMode ? 200 : 2000);
 	}

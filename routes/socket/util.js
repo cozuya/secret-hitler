@@ -7,7 +7,7 @@ const getPrivatePlayerInGameByUserName = (game, userName) => game.private.seated
 	};
 
 module.exports.sendInProgressGameUpdate = game => { // todo-release make this accept a socket argument and emit only to it if it exists
-	game.private.timeout.reset();
+	// game.private.timeout.reset();
 
 	const seatedPlayerNames = game.publicPlayersState.map(player => player.userName),
 		combineInProgressChats = (game, userName) => {

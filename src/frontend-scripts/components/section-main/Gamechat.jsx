@@ -123,7 +123,7 @@ export default class Gamechat extends React.Component {
 		const {gameInfo, userInfo} = this.props,
 			playerIndex = gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName);
 
-		this.setState({claim: gameInfo.playersState[playerIndex].claim});
+		this.setState({claim: this.state.claim ? '' : gameInfo.playersState[playerIndex].claim});
 	}
 
 	processChats() {
@@ -159,8 +159,30 @@ export default class Gamechat extends React.Component {
 							})()}
 						</span>
 					</div>
-			) :
-			(
+			) : chat.isClaim ? (
+				<div className="item" key={i}>
+					<span className="chat-user--claim">[CLAIM] {this.handleTimestamps(chat.timestamp)}: </span>
+					<span className="claim-chat">
+						{(() => {
+							return chatContents.map((chatSegment, index) => {
+								if (chatSegment.type) {
+									let classes;
+
+									if (chatSegment.type === 'player') {
+										classes = 'chat-player';
+									} else {
+										classes = `chat-role--${chatSegment.type}`;
+									}
+
+									return <span key={index} className={classes}>{chatSegment.text}</span>;
+								}
+
+								return chatSegment.text;
+							});
+						})()}
+					</span>
+				</div>
+			) :	(
 				<div className="item" key={i}>
 					<span className="chat-user">{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
 					<span>{chatContents}</span>
@@ -231,9 +253,17 @@ export default class Gamechat extends React.Component {
 					{(() => {
 						if (this.state.claim) {
 							const handleClaimButtonClick = (e, claim) => {
-								console.log('Hello, World!');
-								console.log(e);
-								console.log(claim);
+								const chat = {
+									userName: userInfo.userName,
+									claimState: claim,
+									claim: this.state.claim,
+									uid: gameInfo.general.uid
+								};
+
+								e.preventDefault();
+
+								this.props.socket.emit('addNewClaim', chat);
+								this.setState({claim: ''});
 							};
 
 							switch (this.state.claim) {
@@ -242,7 +272,7 @@ export default class Gamechat extends React.Component {
 									<div>
 										<p> As president, I drew...</p>
 										<button onClick={(e) => {
-											handleClaimButtonClick(e, 'fascist');
+											handleClaimButtonClick(e, 'threefascist');
 										}} className="ui button threefascist">3 Fascist policies</button>
 										<button onClick={(e) => {
 											handleClaimButtonClick(e, 'twofascistoneliberal');
@@ -256,8 +286,20 @@ export default class Gamechat extends React.Component {
 									</div>
 								);
 							case 'wasChancellor':
-
-								break;
+								return (
+									<div>
+										<p> As chancellor, I received...</p>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'twofascist');
+										}} className="ui button threefascist">2 Fascist policies</button>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'onefascistoneliberal');
+										}} className="ui button onefascistoneliberal">A Fascist and a Liberal policy</button>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'twoliberal');
+										}} className="ui button threeliberal">2 Liberal policies</button>
+									</div>
+								);
 							case 'didInvestigateLoyalty':
 
 								break;

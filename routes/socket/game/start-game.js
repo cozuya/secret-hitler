@@ -339,22 +339,22 @@ module.exports = game => {
 	game.private.policies = [];
 
 	// remove idle games, timeout is reset on game updates
-	game.private.timeout = (() => {
-		// 10 minutes
-		const timeout = () => setTimeout(() => {
-			games.splice(games.indexOf(game), 1);
-			sendGameList();
-		}, 300000);
+	// game.private.timeout = (() => {
+	// 	// 10 minutes
+	// 	const timeout = () => setTimeout(() => {
+	// 		games.splice(games.indexOf(game), 1);
+	// 		sendGameList();
+	// 	}, 300000);
 
-		let id = timeout();
+	// 	let id = timeout();
 
-		return {
-			reset: () => {
-				clearTimeout(id);
-				id = timeout();
-			}
-		};
-	})();
+	// 	return {
+	// 		reset: () => {
+	// 			clearTimeout(id);
+	// 			id = timeout();
+	// 		}
+	// 	};
+	// })();
 
 	shufflePolicies(game);
 };

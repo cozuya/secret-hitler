@@ -123,6 +123,140 @@ module.exports.handleAddNewGame = (socket, data) => {
 	socket.join(data.general.uid);
 };
 
+module.exports.handleAddNewClaim = (data) => {
+	const game = games.find(el => el.general.uid === data.uid),
+		playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName),
+		chat = (() => {
+			let text;
+
+			switch (data.claim) {
+			case 'wasPresident':
+				text = [
+					{
+						text: 'President '
+					}, {
+						text: `${data.userName} {${playerIndex + 1}} `,
+						type: 'player'
+					}
+				];
+				switch (data.claimState) {
+				case 'threefascist':
+					text.push({
+						text: 'claims to have been dealt 3 '
+					}, {
+						text: 'fascist ',
+						type: 'fascist'
+					}, {
+						text: 'policies.'
+					});
+
+					return text;
+				case 'twofascistoneliberal':
+					text.push({
+						text: 'claims to have been dealt 2 '
+					}, {
+						text: 'fascist ',
+						type: 'fascist'
+					}, {
+						text: 'and 1 '
+					}, {
+						text: 'liberal ',
+						type: 'liberal'
+					}, {
+						text: 'policy.'
+					});
+
+					return text;
+				case 'twoliberalonefascist':
+					text.push({
+						text: 'claims to have been dealt 1 '
+					}, {
+						text: 'fascist ',
+						type: 'fascist'
+					}, {
+						text: 'and 2 '
+					}, {
+						text: 'liberal ',
+						type: 'liberal'
+					}, {
+						text: 'policies.'
+					});
+
+					return text;
+				case 'threeliberal':
+					text.push({
+						text: 'claims to have been dealt 3 '
+					}, {
+						text: 'liberal ',
+						type: 'liberal'
+					}, {
+						text: 'policies.'
+					});
+
+					return text;
+				}
+
+			case 'wasChancellor':
+				text = [
+					{
+						text: 'Chancellor '
+					}, {
+						text: `${data.userName} {${playerIndex + 1}} `,
+						type: 'player'
+					}
+				];
+				switch (data.claimState) {
+				case 'twofascist':
+					text.push({
+						text: 'claims to have received 2 '
+					}, {
+						text: 'fascist ',
+						type: 'fascist'
+					}, {
+						text: 'policies.'
+					});
+
+					return text;
+				case 'onefascistoneliberal':
+					text.push({
+						text: 'claims to have received a '
+					}, {
+						text: 'fascist ',
+						type: 'fascist'
+					}, {
+						text: 'and a '
+					}, {
+						text: 'liberal ',
+						type: 'liberal'
+					}, {
+						text: 'policy.'
+					});
+
+					return text;
+				case 'twoliberal':
+					text.push({
+						text: 'claims to have received 2 '
+					}, {
+						text: 'liberal ',
+						type: 'liberal'
+					}, {
+						text: 'policies.'
+					});
+
+					return text;
+				}
+			}
+		})();
+
+	data.chat = chat;
+	data.isClaim = true;
+	data.timestamp = new Date();
+
+	game.chats.push(data);
+	game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+	sendInProgressGameUpdate(game);
+};
+
 module.exports.handleAddNewGameChat = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
