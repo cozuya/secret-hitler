@@ -245,6 +245,71 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				}
+			case 'didPolicyPeek':
+				text = [
+					{
+						text: 'President '
+					}, {
+						text: `${data.userName} {${playerIndex + 1}} `,
+						type: 'player'
+					}
+				];
+				switch (data.claimState) {
+				case 'threefascist':
+					text.push({
+						text: 'claims to have peeked at 3 '
+					}, {
+						text: 'fascist ',
+						type: 'fascist'
+					}, {
+						text: 'policies.'
+					});
+
+					return text;
+				case 'twofascistoneliberal':
+					text.push({
+						text: 'claims to have peeked at 2 '
+					}, {
+						text: 'fascist ',
+						type: 'fascist'
+					}, {
+						text: 'and 1 '
+					}, {
+						text: 'liberal ',
+						type: 'liberal'
+					}, {
+						text: 'policy.'
+					});
+
+					return text;
+				case 'twoliberalonefascist':
+					text.push({
+						text: 'claims to have peeked at 1 '
+					}, {
+						text: 'fascist ',
+						type: 'fascist'
+					}, {
+						text: 'and 2 '
+					}, {
+						text: 'liberal ',
+						type: 'liberal'
+					}, {
+						text: 'policies.'
+					});
+
+					return text;
+				case 'threeliberal':
+					text.push({
+						text: 'claims to have peeked at 3 '
+					}, {
+						text: 'liberal ',
+						type: 'liberal'
+					}, {
+						text: 'policies.'
+					});
+
+					return text;
+				}
 			}
 		})();
 

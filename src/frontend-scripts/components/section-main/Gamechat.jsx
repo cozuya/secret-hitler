@@ -304,8 +304,23 @@ export default class Gamechat extends React.Component {
 
 								break;
 							case 'didPolicyPeek':
-
-								break;
+								return (
+									<div>
+										<p> As president, I peeked and saw... </p>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'threefascist');
+										}} className="ui button threefascist">3 Fascist policies</button>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'twofascistoneliberal');
+										}} className="ui button twofascistoneliberal">2 Fascist and a Liberal policy</button>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'twoliberalonefascist');
+										}} className="ui button twoliberalonefascist">2 Liberal and a Fascist policy</button>
+										<button onClick={(e) => {
+											handleClaimButtonClick(e, 'threeliberal');
+										}} className="ui button threeliberal">3 Liberal policies</button>
+									</div>
+								);
 							}
 						}
 					})()}

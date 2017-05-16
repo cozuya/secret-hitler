@@ -105,6 +105,7 @@ module.exports.selectPolicies = data => {
 
 		sendInProgressGameUpdate(game);
 		game.trackState.electionTrackerCount = 0;
+		president.playersState[presidentIndex].claim = 'didPolicyPeek';
 		startElection(game);
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 2000 : 6000);
 };
