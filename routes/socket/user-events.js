@@ -310,6 +310,37 @@ module.exports.handleAddNewClaim = (data) => {
 
 					return text;
 				}
+			case 'didInvestigateLoyalty':
+				text = [
+					{
+						text: 'President '
+					}, {
+						text: `${data.userName} {${playerIndex + 1}} `,
+						type: 'player'
+					}, {
+						text: 'claims to have investigated the party membership and saw that he or she were on the '
+					}
+				];
+				switch (data.claimState) {
+				case 'fascist':
+					text.push({
+						text: 'fascist ',
+						type: 'fascist'
+					}, {
+						text: 'team.'
+					});
+
+					return text;
+				case 'liberal':
+					text.push({
+						text: 'liberal ',
+						type: 'liberal'
+					}, {
+						text: 'team.'
+					});
+
+					return text;
+				}
 			}
 		})();
 

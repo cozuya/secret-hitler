@@ -214,6 +214,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		setTimeout(() => {
 			game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
 			president.playersState[playerIndex].cardStatus.cardBack = {};
+			president.playersState[presidentIndex].claim = 'didInvestigateLoyalty';
 			sendInProgressGameUpdate(game);
 			startElection(game);
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4200 : 8000);
