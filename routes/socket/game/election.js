@@ -164,6 +164,7 @@ module.exports.selectChancellor = data => {
 		});
 
 		game.publicPlayersState[chancellorIndex].governmentStatus = 'isPendingChancellor';
+		game.gameState.pendingChancellorIndex = chancellorIndex;
 		game.general.status = `Vote on election #${game.general.electionCount} now.`;
 
 		game.publicPlayersState.filter(player => !player.isDead).forEach(player => {
@@ -386,10 +387,16 @@ module.exports.selectVoting = data => {
 				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
 
 				if (seatedPlayers.filter(play => play.voteStatus.didVoteYes && !play.isDead).length / game.general.livingPlayerCount > 0.5) {
-					const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPendingChancellor'),
+					const chancellorIndex = game.gameState.pendingChancellorIndex,
 						{presidentIndex} = game.gameState;
 					game.publicPlayersState[presidentIndex].governmentStatus = 'isPresident';
-					game.publicPlayersState[chancellorIndex].governmentStatus = 'isChancellor';
+
+					if (!Number.isInteger(chancellorIndex)) {
+						console.log('crashing at undefined pending chancellor issue in flipBallotCards, publicplayersstatebelow');
+						console.log(game.publicPlayersState);
+					}
+
+					game.publicPlayersState[chancellorIndex].governmentStatus = 'isChancellor';  // CRASHES HERE
 					chat.chat = [{text: 'The election passes.'}];
 
 					if (!experiencedMode && !game.general.disableGamechat) {

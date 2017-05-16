@@ -7,6 +7,8 @@
     .chat-container {
         background: #f6f6f6;
         padding: 0;
+        display: flex;
+        flex-direction: column;
         .gamestatus {
             font-size: 22px;
             font-style: italic;
@@ -23,6 +25,11 @@
             user-select: none;
             margin: 0;
             background: #f6f6f6;
+            display: flex;
+            flex-direction: column;
+            form {
+                background: #3d3d3d;
+            }
             .pointing.menu {
                 margin: 0;
                 min-height: initial;
@@ -50,6 +57,8 @@
                 }
             }
             .chats {
+                display: flex;
+                flex-direction: column-reverse;
                 height: 345px;
                 position: relative;
                 background: #F9FAFF;
@@ -135,9 +144,15 @@
                 }
                 .twofascistoneliberal {
                     background: #e4bcba;
+                    color: #333 !important;
+                }
+                .onefascistoneliberal {
+                    background: #fff;
+                    color: #333 !important;
                 }
                 .twoliberalonefascist {
                     background: #bfd8ee;
+                    color: #333 !important;
                 }
                 .threeliberal {
                     background: #608cb3;
@@ -205,7 +220,8 @@
                 }
                 .input {
                     float: left;
-                    width: 320px;
+                    // width: 320px;
+                    width: 340px;
                     button {
                         padding: 0px 10px;
                     }

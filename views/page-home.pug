@@ -4,16 +4,32 @@ block content
 	.ui.segment
 		.ui.grid.mainpage
 			.row#general-info
-				.ten.wide.column
+				.eight.wide.column
 					p Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists. Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late. Read #[a(href="/rules") the rules] to learn more, #[a(href="/how-to-play") how to play] to learn about the UI, or hop into the #[a(href="/observe") the game lobby] itself right now.
-				.six.wide.column.news
-					h3.ui.header News
-					p 11-12-2016 alpha begins.  Issues/bugs can be reported at #[a(href="//goo.gl/forms/IxDi9f1fKyGhefDx2") this link]. Or open a github issue.
-					p Version 0.1.12 "pumpkin" released 5-2-2017
-					h3 Server status: so the previous patch significantly helped with downtime.  However, the games that would have previously crashed now just uh glitch out, in strange ways.  So still lots of work to be done.  But at least other player's games are not ruined, and you don't need to re-login, you can just jump ship on the game.
-					p Bug fixes in 0.1.12
+				.eight.wide.column.news
+					h2(style="color: #000").ui.header News
+					p 11-12-2016 alpha begins.  Issues/bugs can be reported at #[a(href="//goo.gl/forms/IxDi9f1fKyGhefDx2") this link]. Or open a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
+					p Version 0.2.0 "violet" released 5-16-2017
+					h3 New feature: automated claim system
+					p After the following actions:
 					ul
-						li (#2) Fix to gamelist sorted incorrectly (I hope, hard to test).
-						li (#20) Fix to players showing up multiple times in the gamelist/lobby.
-						li Fix to idle/completed games never going away on the sidebar, cluttering it up.
-					p Next up: automated claim system, and further investigation/fixes of crash/glitch game problems.
+						li President receives 3 policies and chancellor completes his or her discard
+						li Chancellor receives 2 policies and completes his or her discard
+						li President peeks at the top 3 policies
+						li President examines party loyalty
+					p A glowing "C" will show up in the lower right corner of chat for those players.
+					div(style="text-align: center")
+						img(src="images/claim-button.png", style="margin-top: 0")
+					p Click that, and the chat window will be overlaid with a new modal.
+					img(src="images/claim-modal.png", style="margin-top: 0; text-align: center")
+					P Click your action (or click the C again to dismiss) and a new type of chat will appear, informing players about what you say happened.  You have until the next election to do this action.
+					img(src="images/claim-text.png", style="margin-top: 0; text-align: center")
+					p Let me know if you like/hate this, and any issues or requests about it.
+					h3 CRASH FIX
+					p I feel like I owe some explanation about these.  The gist of it is, shockingly, an asynchronous application that takes in tons of requests per minute is hard to cover all edge cases for.  I know where it crashes, and I've been slowly addressing them, but reproduction steps are very hard!  The main crash bug (right now) involves the system right after an election passing trying to assign chancellor to a player but cannot find the pendingchancellor player.. which should always exist if it got that far!  So anyways this patch includes a "defensive" way to prevent those crashes - there is some chance it will work perfectly, there is some chance it will break everything.  I will be monitoring and will revert/fix appropriately.  Please continue to use the bug form.
+					h4 Bug fixes in 0.2.0
+					ul
+						li (#26) Fix to next president being wrong person after a special election where seat #1 was picked (finally).
+						li (#34) Fix to too long status bar text wrapping to next line that causes the input bar to get pushed down (finally).
+						li Fix to width of generalchat.
+					p Next up: fix to left sidebar problems of being sorted incorrectly and games not disappearing, and then working on the stats page which will be fun.

@@ -1,112 +1,89 @@
 .section-right {
-	padding-left: 0 !important;
-	padding-right: 0 !important;
-	padding-bottom: 0 !important;
-
-	.playerlist {
-		background: #F8F8F8;
-		padding: 5px 0 10px;
-
-		.userlist-stats-container {
-			float: right;
-			color: #bdbdbd;
-			margin-right: 3px;
-		}
-
-		.divider {
-			margin-top: 3px;
-			margin-bottom: 0;
-		}
-
-		i {
-			margin-top: -5px;
-		}
-
-		.playerlist-body {
-			height: 250px;
-			overflow-y: auto;
-			padding-left: 5px;
-		}
-
-		.ui.header {
-			padding-left: 5px;
-			float: left;
-			margin-bottom: 0;
-
-			~ div {
-				float: right;
-			}
-		}
-	}
-
-	.right-sidebar-divider {
-		margin: 0;
-	}
-
-	.generalchat {
-
-		.generalchat-header {
-			h3 {
-				float: left;
-				margin: 0;
-			}
-
-			i {
-				float: right;
-				cursor: pointer;
-			}
-
-			> div {
-				padding: 2px 5px 0;
-			}
-		}
-
-		.ui.input {
-			width: 85%;
-			margin-right: 4px;
-
-			input {
-				padding: 2px;
-			}
-
-
-			button {
-				padding: 2px;
-			}
-
-			+ i {
-				cursor: pointer;
-			}
-		}
-
-		.chats {
-			height: 254px;
-			padding-left: 5px;
-			position: relative;
-
-			> .ui.list {
-				overflow-y: auto;
-				position: absolute;
-				bottom: 0;
-				max-height: 254px;
-				width: 211px;
-
-				.item {
-					padding: 0;
-				}
-
-				.chat-user {
-					color: $darkliberalteam;
-				}
-
-				.admin {
-					color: red;
-				}
-
-				span {
-					word-wrap: break-word;
-				}
-			}
-		}
-	}
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+    .playerlist {
+        background: #F8F8F8;
+        padding: 5px 0 10px;
+        .userlist-stats-container {
+            float: right;
+            color: #bdbdbd;
+            margin-right: 3px;
+        }
+        .divider {
+            margin-top: 3px;
+            margin-bottom: 0;
+        }
+        i {
+            margin-top: -5px;
+        }
+        .playerlist-body {
+            height: 250px;
+            overflow-y: auto;
+            padding-left: 5px;
+        }
+        .ui.header {
+            padding-left: 5px;
+            float: left;
+            margin-bottom: 0;
+            ~div {
+                float: right;
+            }
+        }
+    }
+    .right-sidebar-divider {
+        margin: 0;
+    }
+    .generalchat {
+        .generalchat-header {
+            h3 {
+                float: left;
+                margin: 0;
+            }
+            i {
+                float: right;
+                cursor: pointer;
+            }
+            >div {
+                padding: 2px 5px 0;
+            }
+        }
+        .ui.input {
+            width: 85%;
+            margin-right: 4px;
+            input {
+                padding: 2px;
+            }
+            button {
+                padding: 2px;
+            }
+            +i {
+                cursor: pointer;
+            }
+        }
+        .chats {
+            height: 254px;
+            padding-left: 5px;
+            position: relative;
+            >.ui.list {
+                overflow-y: auto;
+                position: absolute;
+                bottom: 0;
+                max-height: 254px;
+                width: 235px;
+                .item {
+                    padding: 0;
+                }
+                .chat-user {
+                    color: $darkliberalteam;
+                }
+                .admin {
+                    color: red;
+                }
+                span {
+                    word-wrap: break-word;
+                }
+            }
+        }
+    }
 }
