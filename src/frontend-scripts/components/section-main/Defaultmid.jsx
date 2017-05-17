@@ -4,7 +4,7 @@ export default class Defaultmid extends React.Component {
 	render() {
 		return (
 			<section className="defaultmid">
-				<img src="images/lizard6.png" alt="Secret Hitler logo" style={{position: 'absolute', left: '50%', marginLeft: '-200px', top: '140px'}} width="400" height="400" />
+				<img src="images/lizard7.png" alt="Secret Hitler logo" style={{position: 'absolute', left: '50%', marginLeft: '-200px', top: '140px'}} width="400" height="400" />
 				<br />
 				<button style={{padding: '5px', background: '#333', color: 'white'}} data-name="h" onClick={this.props.quickDefault}>default game</button>
 				<br />
