@@ -110,7 +110,8 @@ module.exports.updateSeatedUser = (socket, data) => {
 
 module.exports.handleAddNewGame = (socket, data) => {
 	data.private = {
-		unSeatedGameChats: []
+		unSeatedGameChats: [],
+		lock: {}
 	};
 
 	if (data.general.private) {
@@ -142,55 +143,51 @@ module.exports.handleAddNewClaim = (data) => {
 				switch (data.claimState) {
 				case 'threefascist':
 					text.push({
-						text: 'claims to have been dealt 3 '
+						text: 'claims '
 					}, {
-						text: 'fascist ',
+						text: 'RRR',
 						type: 'fascist'
 					}, {
-						text: 'policies.'
+						text: '.'
 					});
 
 					return text;
 				case 'twofascistoneliberal':
 					text.push({
-						text: 'claims to have been dealt 2 '
+						text: 'claims '
 					}, {
-						text: 'fascist ',
+						text: 'RR',
 						type: 'fascist'
 					}, {
-						text: 'and 1 '
-					}, {
-						text: 'liberal ',
+						text: 'B',
 						type: 'liberal'
 					}, {
-						text: 'policy.'
+						text: '.'
 					});
 
 					return text;
 				case 'twoliberalonefascist':
 					text.push({
-						text: 'claims to have been dealt 1 '
+						text: 'claims '
 					}, {
-						text: 'fascist ',
+						text: 'R',
 						type: 'fascist'
 					}, {
-						text: 'and 2 '
-					}, {
-						text: 'liberal ',
+						text: 'BB',
 						type: 'liberal'
 					}, {
-						text: 'policies.'
+						text: '.'
 					});
 
 					return text;
 				case 'threeliberal':
 					text.push({
-						text: 'claims to have been dealt 3 '
+						text: 'claims '
 					}, {
-						text: 'liberal ',
+						text: 'BBB',
 						type: 'liberal'
 					}, {
-						text: 'policies.'
+						text: '.'
 					});
 
 					return text;
@@ -208,39 +205,37 @@ module.exports.handleAddNewClaim = (data) => {
 				switch (data.claimState) {
 				case 'twofascist':
 					text.push({
-						text: 'claims to have received 2 '
+						text: 'claims '
 					}, {
-						text: 'fascist ',
+						text: 'RR',
 						type: 'fascist'
 					}, {
-						text: 'policies.'
+						text: '.'
 					});
 
 					return text;
 				case 'onefascistoneliberal':
 					text.push({
-						text: 'claims to have received a '
+						text: 'claims '
 					}, {
-						text: 'fascist ',
+						text: 'R',
 						type: 'fascist'
 					}, {
-						text: 'and a '
-					}, {
-						text: 'liberal ',
+						text: 'B',
 						type: 'liberal'
 					}, {
-						text: 'policy.'
+						text: '.'
 					});
 
 					return text;
 				case 'twoliberal':
 					text.push({
-						text: 'claims to have received 2 '
+						text: 'claims '
 					}, {
-						text: 'liberal ',
+						text: 'BB',
 						type: 'liberal'
 					}, {
-						text: 'policies.'
+						text: '.'
 					});
 
 					return text;
@@ -257,55 +252,51 @@ module.exports.handleAddNewClaim = (data) => {
 				switch (data.claimState) {
 				case 'threefascist':
 					text.push({
-						text: 'claims to have peeked at 3 '
+						text: 'claims to have peeked at '
 					}, {
-						text: 'fascist ',
+						text: 'RRR',
 						type: 'fascist'
 					}, {
-						text: 'policies.'
+						text: '.'
 					});
 
 					return text;
 				case 'twofascistoneliberal':
 					text.push({
-						text: 'claims to have peeked at 2 '
+						text: 'claims to have peeked at '
 					}, {
-						text: 'fascist ',
+						text: 'RR',
 						type: 'fascist'
 					}, {
-						text: 'and 1 '
-					}, {
-						text: 'liberal ',
+						text: 'B',
 						type: 'liberal'
 					}, {
-						text: 'policy.'
+						text: '.'
 					});
 
 					return text;
 				case 'twoliberalonefascist':
 					text.push({
-						text: 'claims to have peeked at 1 '
+						text: 'claims to have peeked at '
 					}, {
-						text: 'fascist ',
+						text: 'R',
 						type: 'fascist'
 					}, {
-						text: 'and 2 '
-					}, {
-						text: 'liberal ',
+						text: 'BB',
 						type: 'liberal'
 					}, {
-						text: 'policies.'
+						text: '.'
 					});
 
 					return text;
 				case 'threeliberal':
 					text.push({
-						text: 'claims to have peeked at 3 '
+						text: 'claims to have peeked at '
 					}, {
-						text: 'liberal ',
+						text: 'BBB',
 						type: 'liberal'
 					}, {
-						text: 'policies.'
+						text: '.'
 					});
 
 					return text;
@@ -318,7 +309,7 @@ module.exports.handleAddNewClaim = (data) => {
 						text: `${data.userName} {${playerIndex + 1}} `,
 						type: 'player'
 					}, {
-						text: 'claims to have investigated the party membership and saw that he or she were on the '
+						text: 'claims to see a party membership of the'
 					}
 				];
 				switch (data.claimState) {
