@@ -6,6 +6,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{shufflePolicies} = require('./common.js'),
 	beginGame = game => {
 		const {experiencedMode} = game.general;
+		game.general.timeStarted = new Date().getTime()
 
 		let roles = _.range(0, 3).map(el => ({
 			cardName: 'liberal',
