@@ -17,8 +17,6 @@ const {games, userList, generalChats} = require('./models'),
 			socket.emit('manualDisconnection');
 			if (userIndex !== -1) {
 				userList.splice(userIndex, 1);
-			} else {
-				console.log('userIndex returned -1');
 			}
 
 			if (game) {
@@ -55,7 +53,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 
 	// prevents race condition between 1) taking a seat and 2) the game starting
 	if (game && game.gameState.isTracksFlipped) {
-		console.warn('player joined too late');
 		return;
 	}
 
