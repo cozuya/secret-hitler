@@ -67,13 +67,12 @@ module.exports = class EnhancedGameSummary {
 	isWinner(identifier) {
 		if (this.lastTurn.execution === this.hitlerIndex) {
 			return this.loyaltyOf(identifier) === 'liberal';
-		} else if (this.lastTurn.chancellorId === this.hitlerIndex 
+		} else if (this.lastTurn.chancellorId === this.hitlerIndex
 			&& this.lastTurn.votes.filter(v => v) > this.playerSize / 2) {
 			return this.loyaltyOf(identifier) === 'fascist';
 		} else {
 			return this.loyaltyOf(identifier) === this.lastTurn.enactedPolicy;
 		}
-
 	}
 
 	// different from `roleOf()`
