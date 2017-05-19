@@ -1,6 +1,6 @@
 # Enhanced game summary
 
-Represents a human-friendly game
+Represents a human-readable game
 
 - playerSize
 - numberOfTurns
@@ -34,7 +34,6 @@ Represents a human-friendly game
 ### Arguments
 
 1. identifier (`String` | `Int`): username or player index
-2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
@@ -45,7 +44,6 @@ Represents a human-friendly game
 ### Arguments
 
 1. identifier (`String` | `Int`): username or player index
-2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
@@ -56,7 +54,6 @@ Represents a human-friendly game
 ### Arguments
 
 1. identifier (`String` | `Int`): username or player index
-2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
@@ -67,7 +64,6 @@ Represents a human-friendly game
 ### Arguments
 
 1. identifier (`String` | `Int`): username or player index
-2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
@@ -78,7 +74,6 @@ Represents a human-friendly game
 ### Arguments
 
 1. identifier (`String` | `Int`): username or player index
-2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
@@ -89,7 +84,6 @@ Represents a human-friendly game
 ### Arguments
 
 1. identifier (`String` | `Int`): username or player index
-2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 

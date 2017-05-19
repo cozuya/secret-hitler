@@ -1,6 +1,4 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
-	// {games} = require('../models.js'),
-	// {sendGameList} = require('../user-requests.js'),
 	_ = require('lodash'),
 	{startElection} = require('./election.js'),
 	{shufflePolicies} = require('./common.js'),

@@ -1,3 +1,8 @@
+/*
+ * Represents a human-readable game. Feel free to add more convenience methods.
+ * Refer to `/docs/enhanced-game-summary.md` for API documentation.
+ */
+
 module.exports = class EnhancedGameSummary {
 
 	constructor(summary) {
