@@ -282,7 +282,7 @@ module.exports.selectChancellor = data => {
 						hasVoted: false
 					};
 				} else {
-					console.log(player, 'attempted crash @ election:281');
+					console.log(player, 'player for attempted crash @ election:281');
 				}
 			});
 			sendInProgressGameUpdate(game);
