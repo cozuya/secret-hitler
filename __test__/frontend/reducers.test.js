@@ -1,4 +1,4 @@
-import combinedReducers from '../../src/frontend-scripts/reducers/ww-app.js';
+import combinedReducers from '../../src/frontend-scripts/reducers/sh-app.js';
 
 describe('reducers', () => {
 	describe('mainReducer', function() {
@@ -9,7 +9,8 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				generalChats: []
+				generalChats: [],
+				profile: { status: "INITIAL" }
 			});
 		});
 
@@ -25,7 +26,8 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				generalChats: []
+				generalChats: [],
+				profile: { status: "INITIAL" }
 			});
 		});
 
@@ -41,7 +43,8 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				generalChats: []
+				generalChats: [],
+				profile: { status: "INITIAL" }
 			});
 		});
 
@@ -57,7 +60,8 @@ describe('reducers', () => {
 				gameList,
 				gameInfo: {},
 				userList: {},
-				generalChats: []
+				generalChats: [],
+				profile: { status: "INITIAL" }
 			});
 		});
 
@@ -73,7 +77,8 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo,
 				userList: {},
-				generalChats: []
+				generalChats: [],
+				profile: { status: "INITIAL" }
 			});
 		});
 
@@ -89,7 +94,8 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList,
-				generalChats: []
+				generalChats: [],
+				profile: { status: "INITIAL" }
 			});
 		});
 
@@ -105,7 +111,8 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				generalChats: []
+				generalChats: [],
+				profile: { status: "INITIAL" }
 			});
 		});
 
@@ -121,7 +128,8 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				generalChats: []
+				generalChats: [],
+				profile: { status: "INITIAL" }
 			});
 		});
 
@@ -137,7 +145,8 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				generalChats: []
+				generalChats: [],
+				profile: { status: "INITIAL" }
 			});
 		});
 
@@ -153,7 +162,8 @@ describe('reducers', () => {
 				gameList: [],
 				gameInfo: {},
 				userList: {},
-				generalChats: info
+				generalChats: info,
+				profile: { status: "INITIAL" }
 			});
 		});
 	});

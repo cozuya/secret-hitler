@@ -49,7 +49,7 @@ describe('EnhancedGameSummary', () => {
 
 	it('should get votes from player', () => {
 		const votes = game.votesOf('Jaina');
-		// expect(votes).toHaveLength(8);
+		expect(votes).toHaveLength(8);
 		expect(votes[0].vote).toBe(true);
 		expect(votes[5].vote).toBe(false);
 	});
