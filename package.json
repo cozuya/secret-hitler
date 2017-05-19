@@ -87,7 +87,7 @@
     "test": "jest",
     "db": "mongod --dbpath data",
     "start": "set NODE_ENV=development&&nodemon bin/dev",
-    "recalculateProfiles": "DEBUG=game:profile node recalculateProfiles.js"
+    "recalculateProfiles": "DEBUG=game:profile node models/profile/recalculateProfiles.js"
   },
   "main": "index.js"
 }

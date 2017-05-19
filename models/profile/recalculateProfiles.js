@@ -1,9 +1,9 @@
 const
     mongoose = require('mongoose'),
-    GameSummary = require('./models/game-summary'),
-    EnhancedGameSummary = require('./models/game-summary/EnhancedGameSummary'),
-    { updateProfiles } = require('./models/profile/utils'),
-    Profile = require('./models/profile'),
+    GameSummary = require('../game-summary'),
+    EnhancedGameSummary = require('../game-summary/EnhancedGameSummary'),
+    { updateProfiles } = require('./utils'),
+    Profile = require('./'),
     debug = require('debug')('game:profile');
 
 mongoose.Promise = global.Promise;
