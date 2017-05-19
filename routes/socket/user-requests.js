@@ -1,5 +1,6 @@
 const Account = require('../../models/account'),
-	{games, userList, generalChats} = require('./models'),
+	{games, userList, generalChats, profiles} = require('./models'),
+	{ getProfile } = require('../../models/profile/utils'),
 	{secureGame} = require('./util');
 
 module.exports.sendUserGameSettings = (socket, username) => {
@@ -14,6 +15,10 @@ module.exports.sendUserGameSettings = (socket, username) => {
 					wins: account.wins,
 					losses: account.losses
 				});
+			}
+
+			if (!profiles.get(username)) {
+				getProfile(username).then(profile => profiles.push(profile));
 			}
 
 			io.sockets.emit('userList', {

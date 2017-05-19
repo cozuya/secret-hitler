@@ -12,7 +12,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 
 		debug('Saving game: %O', summary);
 
-		updateProfiles(enhanced);
+		updateProfiles(enhanced, { cache: true });
 		summary.save();
 	};
 

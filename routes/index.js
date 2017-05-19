@@ -1,6 +1,6 @@
 let passport = require('passport'), // eslint-disable-line no-unused-vars
 	Account = require('../models/account'), // eslint-disable-line no-unused-vars
-	Profile = require('../models/profile'),
+	{ getProfile } = require('../models/profile/utils'),
 	socketRoutes = require('./socket/routes'),
 	accounts = require('./accounts'),
 	ensureAuthenticated = (req, res, next) => {
@@ -66,8 +66,9 @@ module.exports = () => {
 	app.get('/profile', (req, res) => {
 		const username = req.query.username;
 
-		Profile.findById(username, (err, profile) => {
-			res.json(profile);
+		getProfile(username).then(profile => {
+			if (!profile) res.status(404).send('Profile not found');
+			else res.json(profile);
 		});
 	});
 

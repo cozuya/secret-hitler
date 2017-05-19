@@ -1,8 +1,10 @@
 const
 	Profile = require('./index'),
 	Account = require('../account'),
+	{ profiles } = require('../../routes/socket/models'),
 	debug = require('debug')('game:profile');
 
+// handles all stat computation logic
 function profileDelta(username, game) {
 	const
 		{ playerSize, date } = game,
@@ -62,8 +64,11 @@ function profileDelta(username, game) {
 	};
 }
 
-function updateProfile(username, game, version = false) {
-	const delta = profileDelta(username, game);
+// username: String, game: EnhancedGameSummary, options: { version: String, cache: Boolean }
+function updateProfile(username, game, options = {}) {
+	const
+		{ version, cache } = options,
+		delta = profileDelta(username, game);
 
 	return Profile
 		.findByIdAndUpdate(username, {
@@ -101,12 +106,12 @@ function updateProfile(username, game, version = false) {
 				return profile
 					.update({ version }, { overwrite: true })
 					.exec()
-					.then(() => updateProfile(username, game));
+					.then(() => updateProfile(username, game, options));
 			} else {
 				return profile;
 			}
 		})
-		// the first time a profile is saved, fetch the account creation date
+		// fetch account creation date when profile is first added
 		.then(profile => {
 			if (!profile.created) {
 				return Account
@@ -119,16 +124,39 @@ function updateProfile(username, game, version = false) {
 			} else {
 				return profile;
 			}
-		});
+		})
+		.then(profile => {
+			if (cache) return profiles.push(profile);
+			else return profile;
+		})
+		.catch(err => debug(err));
 }
 
-function updateProfiles(game, version = false) {
+// game: EnhancedGameSummary, options: { version: String, cache: Boolean }
+function updateProfiles(game, options = {}) {
 	debug('Updating profiles for: %s', game.uid);
 
 	return Promise.all(game.players
 		.map(p => p.username)
-		.map(username => updateProfile(username, game, version)));
+		.map(username => updateProfile(username, game, options)));
+}
+
+// side effect: caches profile
+function getProfile(username) {
+	const profile = profiles.get(username);
+
+	if (profile) {
+		debug('Cache hit for: %s', username);
+		return Promise.resolve(profile);
+	} else {
+		debug('Cache miss for: %s', username);
+		return Profile
+			.findById(username)
+			.exec()
+			.then(profile => profiles.push(profile));
+	}
 }
 
 module.exports.updateProfiles = updateProfiles;
 module.exports.profileDelta = profileDelta;
+module.exports.getProfile = getProfile;

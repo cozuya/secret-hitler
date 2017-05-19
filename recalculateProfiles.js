@@ -25,7 +25,7 @@ function recalculateAllProfiles() {
         .find(null, null, { sort: { date: 'asc' }})
         .cursor()
         .map(game => new EnhancedGameSummary(game))
-        .eachAsync(game => updateProfiles(game, version))
+        .eachAsync(game => updateProfiles(game, { version }))
         .then(() => {
             debug('Player profiles recalculated');
             mongoose.connection.close();
