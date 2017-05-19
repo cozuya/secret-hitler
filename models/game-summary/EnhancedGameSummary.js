@@ -11,6 +11,8 @@ module.exports = class EnhancedGameSummary {
 		// derived
 		this.playerSize = this.players.length;
 
+		this.hitlerIndex = this.players.findIndex(p => p.role === 'hitler');
+
 		this.numberOfTurns = this.logs.length;
 
 		this.lastTurn = this.logs.slice(-1)[0];
@@ -63,7 +65,15 @@ module.exports = class EnhancedGameSummary {
 	}
 
 	isWinner(identifier) {
-		return this.loyaltyOf(identifier) === this.lastTurn.enactedPolicy;
+		if (this.lastTurn.execution === this.hitlerIndex) {
+			return this.loyaltyOf(identifier) === 'liberal';
+		} else if (this.lastTurn.chancellorId === this.hitlerIndex 
+			&& this.lastTurn.votes.filter(v => v) > this.playerSize / 2) {
+			return this.loyaltyOf(identifier) === 'fascist';
+		} else {
+			return this.loyaltyOf(identifier) === this.lastTurn.enactedPolicy;
+		}
+
 	}
 
 	// different from `roleOf()`
