@@ -36,35 +36,39 @@ module.exports = class EnhancedGameSummary {
 		})();
 
 		// bind own methods
+		this._isId = this._isId.bind(this);
 		this.playerOf = this.playerOf.bind(this);
 		this.indexOf = this.indexOf.bind(this);
 		this.loyaltyOf = this.loyaltyOf.bind(this);
 	}
 
-	playerOf(username, isId = false) {
-		if (isId) {
-			return this.players[username];
+	_isId(identifier) {
+		return Number.isInteger(identifier);
+	}
+
+	playerOf(identifier) {
+		if (this._isId(identifier)) {
+			return this.players[identifier];
 		} else {
-			return this.players.find(p => p.username === username);
+			return this.players.find(p => p.username === identifier);
 		}
 	}
 
-	indexOf(username, isId = false) {
-		if (isId) {
-			return username;
+	indexOf(identifier) {
+		if (this._isId(identifier)) {
+			return identifier;
 		} else {
-			return this.players.findIndex(p => p.username === username);
+			return this.players.findIndex(p => p.username === identifier);
 		}
 	}
 
-	isWinner(username, isId = false) {
-		return this.loyaltyOf(username, isId) === this.lastTurn.enactedPolicy;
+	isWinner(identifier) {
+		return this.loyaltyOf(identifier) === this.lastTurn.enactedPolicy;
 	}
 
 	// different from `roleOf()`
-	// RETURNS: 'liberal' | 'fascist'
-	loyaltyOf(username, isId = false) {
-		const player = this.playerOf(username, isId);
+	loyaltyOf(identifier) {
+		const player = this.playerOf(identifier);
 
 		if (player.role === 'fascist' || player.role === 'hitler') {
 			return 'fascist';
@@ -73,13 +77,14 @@ module.exports = class EnhancedGameSummary {
 		}
 	}
 
-	roleOf(username, isId = false) {
-		const player = this.playerOf(username, isId);
+	// different from `loyaltyOf()`
+	roleOf(identifier) {
+		const player = this.playerOf(identifier);
 		return player.role;
 	}
 
-	votesOf(username, isId = false) {
-		const playerIndex = this.indexOf(username, isId);
+	votesOf(identifier) {
+		const playerIndex = this.indexOf(identifier);
 
 		return this.logs.map(log => {
 			const { presidentId, chancellorId, votes } = log;
@@ -92,8 +97,8 @@ module.exports = class EnhancedGameSummary {
 		});
 	}
 
-	shotsOf(username, isId = false) {
-		const playerIndex = this.indexOf(username, isId);
+	shotsOf(identifier) {
+		const playerIndex = this.indexOf(identifier);
 
 		return this.logs
 			.filter(log => log.presidentId === playerIndex && Number.isInteger(log.execution))

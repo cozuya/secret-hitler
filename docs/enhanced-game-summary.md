@@ -29,68 +29,68 @@ Represents a human-friendly game
 
 (`Int`): the index of the turn right after 3 fascist policies are enacted
 
-## playerOf(username | id, [isId])
+## playerOf(identifier)
 
 ### Arguments
 
-1. username | id (`String` | `Int`)
+1. identifier (`String` | `Int`): username or player index
 2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
 (`Player`)
 
-## indexOf(username | id, [isId])
+## indexOf(identifier)
 
 ### Arguments
 
-1. username | id (`String` | `Int`)
+1. identifier (`String` | `Int`): username or player index
 2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
 (`Int`)
 
-## loyaltyOf(username | id, [isId])
+## loyaltyOf(identifier)
 
 ### Arguments
 
-1. username | id (`String` | `Int`)
+1. identifier (`String` | `Int`): username or player index
 2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
 (`String`): either *"liberal"* or *"fascist"*
 
-## roleOf(username | id, [isId])
+## roleOf(identifier)
 
 ### Arguments
 
-1. username | id (`String` | `Int`)
+1. identifier (`String` | `Int`): username or player index
 2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
 (`String`): either *"liberal"*, *"fascist"*, or *"hitler"*
 
-## votesOf(username | id, [isId])
+## votesOf(identifier)
 
 ### Arguments
 
-1. username | id (`String` | `Int`)
+1. identifier (`String` | `Int`): username or player index
 2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
 (`Array[{ vote: Boolean, presidentId: Int, chancellorId: Int }]`)
 
-## shotsOf(username | id, [isId])
+## shotsOf(identifier)
 
 ### Arguments
 
-1. username | id (`String` | `Int`)
+1. identifier (`String` | `Int`): username or player index
 2. isId (`Boolean`): defaults to *false*
 
 ### Returns
 
-(`Array[Int]`): list of player ids
+(`Array[Int]`): list of player indexes that have been executed by player
