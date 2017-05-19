@@ -66,7 +66,7 @@ $(document).ready(function () {  // yay ES5
 
 	$('body').on('focus', '#signup-password1', function () {
 		$(this).parent().next().text('6-255 characters.').slideDown();
-	});	
+	});
 
 	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function () {
 		$(this).parent().next().slideUp();
@@ -151,12 +151,12 @@ $(document).ready(function () {  // yay ES5
 					submitErr('Sorry, we don\'t have an account associated with that verified email address.');
 				}
 			}
-		});		
+		});
 	});
 
 	$('a#logout').on('click', function(event) {
 		event.preventDefault();
-		
+
 		$.ajax({
 			url: '/account/logout',
 			method: 'POST',
@@ -283,7 +283,7 @@ $(document).ready(function () {  // yay ES5
 	$('button#deleteaccount-submit').on('click', function (event) {
 		return; // todo-release
 		event.preventDefault();
-		
+
 		var password = $('#deleteaccount-password').val(),
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
@@ -317,5 +317,5 @@ $(document).ready(function () {  // yay ES5
 				}
 			}
 		});
-	});	
+	});
 });
