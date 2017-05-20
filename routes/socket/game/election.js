@@ -275,11 +275,15 @@ module.exports.selectChancellor = data => {
 		setTimeout(() => {
 			game.gameState.phase = 'voting';
 			seatedPlayers.forEach(player => {
-				player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = true;
-				player.cardFlingerState[0].notificationStatus = player.cardFlingerState[1].notificationStatus = 'notification';
-				player.voteStatus = {
-					hasVoted: false
-				};
+				if (player.cardFlingerState && player.cardFlingerState.length) {
+					player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = true;
+					player.cardFlingerState[0].notificationStatus = player.cardFlingerState[1].notificationStatus = 'notification';
+					player.voteStatus = {
+						hasVoted: false
+					};
+				} else {
+					console.log(player, 'player for attempted crash @ election:281');
+				}
 			});
 			sendInProgressGameUpdate(game);
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1500);
@@ -508,7 +512,7 @@ module.exports.selectVoting = data => {
 		game.private.lock.selectChancellor = false;
 	}
 
-	if (seatedPlayers.length !== seatedPlayers.filter(play => play.voteStatus.hasVoted).length) {
+	if (seatedPlayers.length !== seatedPlayers.filter(play => play.voteStatus.hasVoted).length && player) {
 		player.voteStatus.hasVoted = true;
 		player.voteStatus.didVoteYes = data.vote;
 		game.publicPlayersState[playerIndex].isLoader = false;

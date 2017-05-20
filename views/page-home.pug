@@ -9,6 +9,10 @@ block content
 				.eight.wide.column.news
 					h2(style="color: #000").ui.header News
 					p 11-12-2016 alpha begins.  Issues/bugs can be reported at #[a(href="//goo.gl/forms/IxDi9f1fKyGhefDx2") this link]. Or open a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
+					p Version 0.2.2 "mauve" released 5-18-2017
+					p Small patch to remove the completed/abandoned games from the game list on the left sidebar.  Effectively new games are deleted 30 minutes after they are started, and the system checks for those games every 5 minutes.  Too short/long?  Let me know.  Also I think there's a (rare) front-end bug/crash happening at points, if it happens to you, your UI will look wonky - please open your console via F12 on windows or command option i on mac and copy and paste the red error code that you see into a bug report.
+					h3 CRASH FIXES
+					p Well orchid was very effective on positive uptime.  I'm only see 2 places its been crashing today, and I'm attempting to address both in mauve.  This is almost looking like a real application..
 					p Version 0.2.1 "orchid" released 5-17-2017
 					p Small patch to attempt to address the crashing problems in a new way.  Also made the claim system much less verbose by request.  Feedback is great thanks.
 					p Version 0.2.0 "violet" released 5-16-2017
@@ -27,8 +31,6 @@ block content
 					P Click your action (or click the C again to dismiss) and a new type of chat will appear, informing players about what you say happened.  You have until the next election to do this action.
 					img(src="images/claim-text.png", style="margin-top: 0; text-align: center")
 					p Let me know if you like/hate this, and any issues or requests about it.
-					h3 CRASH FIX
-					p I feel like I owe some explanation about these.  The gist of it is, shockingly, an asynchronous application that takes in tons of requests per minute is hard to cover all edge cases for.  I know where it crashes, and I've been slowly addressing them, but reproduction steps are very hard!  The main crash bug (right now) involves the system right after an election passing trying to assign chancellor to a player but cannot find the pendingchancellor player.. which should always exist if it got that far!  So anyways this patch includes a "defensive" way to prevent those crashes - there is some chance it will work perfectly, there is some chance it will break everything.  I will be monitoring and will revert/fix appropriately.  Please continue to use the bug form.
 					h4 Bug fixes in 0.2.0
 					ul
 						li (#26) Fix to next president being wrong person after a special election where seat #1 was picked (finally).

@@ -1,11 +1,23 @@
 const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser, handleUpdateWhitelist, handleAddNewClaim} = require('./user-events'),
 	{sendGameInfo, sendUserGameSettings, sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
-	{selectChancellor, selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto} = require('./game/election.js'),
-	{selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute} = require('./game/policy-powers.js'),
-	{games} = require('./models');
+	{selectChancellor, selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto} = require('./game/election'),
+	{selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute} = require('./game/policy-powers'),
+	{games} = require('./models'),
+	gamesGarbageCollector = () => {
+		const currentTime = new Date().getTime(),
+			toRemoveIndexes = games.filter((game, index) => game.general.timeStarted && game.general.timeStarted + 1800000 < currentTime).map(game => games.indexOf(game)).reverse();
+
+		games.forEach((game, index) => {
+			if (toRemoveIndexes.includes(index)) {
+				games.splice(index, 1);
+			}
+		});
+	};
 
 
 module.exports = () => {
+	setInterval(gamesGarbageCollector, 300000);
+
 	io.on('connection', socket => {
 		checkUserStatus(socket);
 

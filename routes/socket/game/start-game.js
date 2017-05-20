@@ -5,6 +5,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	GameSummaryBuilder = require('../../../models/game-summary/GameSummaryBuilder'),
 	beginGame = game => {
 		const {experiencedMode} = game.general;
+		game.general.timeStarted = new Date().getTime();
 
 		let roles = _.range(0, 3).map(el => ({
 			cardName: 'liberal',
