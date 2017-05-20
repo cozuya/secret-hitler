@@ -9,7 +9,8 @@ export default class Generalchat extends React.Component {
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.state = {
 			lock: false,
-			inputValue: ''
+			inputValue: '',
+			disabled: false
 		};
 	}
 
@@ -39,7 +40,16 @@ export default class Generalchat extends React.Component {
 				chat: inputValue
 			});
 
-			this.setState({inputValue: ''});
+			this.setState({
+				inputValue: '',
+				disabled: true
+			});
+
+			this.input.blur();
+			setTimeout(() => {
+				this.setState({disabled: false});
+				this.input.focus();
+			}, 150);
 		}
 	}
 
@@ -80,8 +90,10 @@ export default class Generalchat extends React.Component {
 					</div>
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div className={this.props.userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
-						<input placeholder="Chat.." value={this.state.inputValue} onChange={this.handleInputChange} maxLength="300" spellCheck="false"/>
+					<div className={this.props.userInfo.userName ? !this.state.disabled ? 'ui action input' : 'ui action input disabled' : 'ui action input disabled'}>
+						<input placeholder="Chat.." value={this.state.inputValue} onChange={this.handleInputChange} maxLength="300" spellCheck="false" ref={c => {
+							this.input = c;
+						}}/>
 						<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
 					<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-hidden'} onClick={this.handleChatClearClick} />

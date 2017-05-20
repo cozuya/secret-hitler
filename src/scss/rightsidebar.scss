@@ -10,6 +10,7 @@
             color: #bdbdbd;
             margin-right: 3px;
         }
+
         .divider {
             margin-top: 3px;
             margin-bottom: 0;
@@ -21,6 +22,25 @@
             height: 250px;
             overflow-y: auto;
             padding-left: 5px;
+							.admin {
+							color: red !important;
+						}
+
+						.contributer {
+							color: orange !important;
+						}
+
+						.experienced {
+							color: #b3eab3 !important;
+						}
+
+						.veryexperienced {
+							color: #7cd17c !important;
+						}
+
+						.experienced.onfire, .veryexperienced.onfire {
+							color: #da65e5 !important;
+						}
         }
         .ui.header {
             padding-left: 5px;

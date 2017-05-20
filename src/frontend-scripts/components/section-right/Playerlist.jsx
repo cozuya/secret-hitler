@@ -1,4 +1,5 @@
 import React from 'react';
+import cn from 'classnames';
 
 export default class Playerlist extends React.Component {
 	render() {
@@ -52,11 +53,18 @@ export default class Playerlist extends React.Component {
 
 							return list.map((user, i) => {
 								const percent = ((user.wins / (user.wins + user.losses)) * 100).toFixed(0),
-									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '';
+									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '',
+									classes = cn({
+										admin: user.userName === 'coz' || user.userName === 'coz',
+										contributer: user.userName === 'jbasrai',
+										experienced: user.wins + user.losses > 50,
+										veryexperienced: user.wins + user.losses > 100,
+										onfire: user.wins / (user.wins + user.losses) > .6
+									});
 
 								return (
 									<div key={i}>
-										<span style={{color: user.userName === 'coz' ? 'red' : user.userName === 'stine' ? 'red' : ''}}>{user.userName}</span>
+										<span className={classes}>{user.userName}</span>
 										<div className="userlist-stats-container">(
 											<span className="userlist-stats">{user.wins}</span> / <span className="userlist-stats">{user.losses}</span>) <span className="userlist-stats"> {percentDisplay}</span>
 										</div>

@@ -19,7 +19,8 @@ export default class Gamechat extends React.Component {
 			lock: false,
 			inputValue: '',
 			claim: '',
-			playersToWhitelist: []
+			playersToWhitelist: [],
+			disabled: false
 		};
 	}
 
@@ -85,8 +86,14 @@ export default class Gamechat extends React.Component {
 
 			this.props.socket.emit('addNewGameChat', chat);
 			this.setState({
-				inputValue: ''
+				inputValue: '',
+				disabled: true
 			});
+			this.gameChatInput.blur();
+			setTimeout(() => {
+				this.setState({disabled: false});
+				this.gameChatInput.focus();
+			}, 150);
 		}
 	}
 
@@ -385,6 +392,7 @@ export default class Gamechat extends React.Component {
 									})();
 
 								if (!userName
+									|| this.state.disabled
 									|| (isDead && !gameState.isCompleted)
 									|| isGovernmentDuringPolicySelection
 									|| this.props.gameInfo.general.disableChat
@@ -396,7 +404,7 @@ export default class Gamechat extends React.Component {
 							})()
 						}
 					>
-						<input value={this.state.inputValue} autoComplete="off" placeholder="Chat.." id="gameChatInput" ref={c => {
+						<input value={this.state.inputValue} autoComplete="off" spellCheck="false" placeholder="Chat.." id="gameChatInput" ref={c => {
 							this.gameChatInput = c;
 						}} onChange={this.handleInputChange} maxLength="300" />
 						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>

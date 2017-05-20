@@ -9,12 +9,20 @@ block content
 				.eight.wide.column.news
 					h2(style="color: #000").ui.header News
 					p 11-12-2016 alpha begins.  Issues/bugs can be reported at #[a(href="//goo.gl/forms/IxDi9f1fKyGhefDx2") this link]. Or open a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
-					p Version 0.2.2 "mauve" released 5-18-2017
-					p Small patch to remove the completed/abandoned games from the game list on the left sidebar.  Effectively new games are deleted 30 minutes after they are started, and the system checks for those games every 5 minutes.  Too short/long?  Let me know.  Also I think there's a (rare) front-end bug/crash happening at points, if it happens to you, your UI will look wonky - please open your console via F12 on windows or command option i on mac and copy and paste the red error code that you see into a bug report.
-					h3 CRASH FIXES
-					p Well orchid was very effective on positive uptime.  I'm only see 2 places its been crashing today, and I'm attempting to address both in mauve.  This is almost looking like a real application..
-					p Version 0.2.1 "orchid" released 5-17-2017
-					p Small patch to attempt to address the crashing problems in a new way.  Also made the claim system much less verbose by request.  Feedback is great thanks.
+					p Version 0.2.3 "plum" released 5-20-2017
+					p Several small changes and fixes:
+					ul
+						li Fixed the last (??) crash bug.  Stability should be achieved!  Until someone finds more.
+						li Added a 150 millisecond #[a(href="https://davidwalsh.name/javascript-debounce-function" rel="nofollow") debounce] to both general and game chat.  Effectively users can not spam uncontrollably.  Should help with troll problems.  If this is too much/little please give feedback.
+						li Players names in the userlist in upper right corner now have some special colors:
+							ul
+								li >50 games played: light blue
+								li >100 games played: darker blue
+								li >60% win rate: purple
+								li contributer (code): orange
+								li admin: red
+						li Games that have not started yet are sorted to the top of the game list on left sidebar.  It should have always been this way but was broken in a dumb way..
+						li Fix to garbage collected games bugging out the UI before they are updated?  I think.
 					p Version 0.2.0 "violet" released 5-16-2017
 					h3 New feature: automated claim system
 					p After the following actions:

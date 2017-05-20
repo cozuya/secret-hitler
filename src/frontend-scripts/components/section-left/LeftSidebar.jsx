@@ -19,15 +19,17 @@ export default class LeftSidebar extends React.Component {
 				const aGameStatus = a.gameStatus,
 					bGameStatus = b.gameStatus;
 
+				console.log(aGameStatus);
+				console.log(bGameStatus);
 				if (aGameStatus === 'completed' && bGameStatus !== 'completed') {
 					return 1;
 				} else if (bGameStatus === 'completed' && aGameStatus !== 'completed') {
 					return -1;
 				}
 
-				if (aGameStatus !== 'started' && bGameStatus === 'started') {
+				if (aGameStatus !== 'isStarted' && bGameStatus === 'isStarted') {
 					return -1;
-				} else if (aGameStatus === 'started' && bGameStatus !== 'started') {
+				} else if (aGameStatus === 'isStarted' && bGameStatus !== 'isStarted') {
 					return 1;
 				} else if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
 					return b.seatedCount - a.seatedCount;
