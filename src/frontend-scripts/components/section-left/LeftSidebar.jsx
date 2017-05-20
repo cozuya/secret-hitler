@@ -19,8 +19,6 @@ export default class LeftSidebar extends React.Component {
 				const aGameStatus = a.gameStatus,
 					bGameStatus = b.gameStatus;
 
-				console.log(aGameStatus);
-				console.log(bGameStatus);
 				if (aGameStatus === 'completed' && bGameStatus !== 'completed') {
 					return 1;
 				} else if (bGameStatus === 'completed' && aGameStatus !== 'completed') {
