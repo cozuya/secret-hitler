@@ -47,28 +47,28 @@ module.exports = () => {
 							})()
 						};
 					};
-//  { 
-        //     _id: '591b7091fe5420358baab297', 
-        //     uid: 'devgame', 
-        //     date: '2017-05-13T21:35:13.446Z', 
-        //     winningTeam: 'fascist', 
-        //     playerCount: 5, 
-        //     __v: 0, 
-        //     chats: [{ 
-        //       timestamp: '2017-05-16T21:33:06.282Z', 
-        //       chat: [], 
-        //       userName: 'Thrall'} 
-        //     ], 
-        //     losingPlayers: [ 
-        //       {userName: 'Malfurian', team: 'liberal', role: 'liberal'}, 
-        //       {userName: 'Uther', team: 'liberal', role: 'liberal'}, 
-        //       {userName: 'Rexxar', team: 'liberal', role: 'liberal'} 
-        //     ], 
-        //     winningPlayers: [ 
-        //       {userName: 'Thrall', team: 'fascist', role: 'fascist'}, 
-        //       {userName: 'Jaina', team: 'fascist', role: 'hitler'} 
+//  {
+        //     _id: '591b7091fe5420358baab297',
+        //     uid: 'devgame',
+        //     date: '2017-05-13T21:35:13.446Z',
+        //     winningTeam: 'fascist',
+        //     playerCount: 5,
+        //     __v: 0,
+        //     chats: [{
+        //       timestamp: '2017-05-16T21:33:06.282Z',
+        //       chat: [],
+        //       userName: 'Thrall'}
+        //     ],
+        //     losingPlayers: [
+        //       {userName: 'Malfurian', team: 'liberal', role: 'liberal'},
+        //       {userName: 'Uther', team: 'liberal', role: 'liberal'},
+        //       {userName: 'Rexxar', team: 'liberal', role: 'liberal'}
+        //     ],
+        //     winningPlayers: [
+        //       {userName: 'Thrall', team: 'fascist', role: 'fascist'},
+        //       {userName: 'Jaina', team: 'fascist', role: 'hitler'}
 // +
-        //     ] 
+        //     ]
         //   }
 				gamesData = {
 					completedGames,
