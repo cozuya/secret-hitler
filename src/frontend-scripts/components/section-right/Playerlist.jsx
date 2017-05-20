@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
+import cn from 'classnames';
 
 const mapDispatchToProps = dispatch => ({
 	fetchProfile: username => dispatch(fetchProfile(username))
@@ -58,14 +59,20 @@ class Playerlist extends React.Component {
 
 							return list.map((user, i) => {
 								const percent = ((user.wins / (user.wins + user.losses)) * 100).toFixed(0),
-									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '';
+									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '',
+									classes = cn({
+										admin: user.userName === 'coz' || user.userName === 'coz',
+										contributer: user.userName === 'sethe',
+										experienced: user.wins + user.losses > 50,
+										veryexperienced: user.wins + user.losses > 100,
+										onfire: user.wins / (user.wins + user.losses) > .6
+									}, 'user');
 
 								return (
 									<div key={i}>
 										<span
-											className="user"
-											onClick={this.props.fetchProfile.bind(null, user.userName)}
-											style={{color: user.userName === 'coz' ? 'red' : user.userName === 'stine' ? 'red' : ''}}>
+											className={classes}
+											onClick={this.props.fetchProfile.bind(null, user.userName)}>
 											{user.userName}
 										</span>
 										<div className="userlist-stats-container">(

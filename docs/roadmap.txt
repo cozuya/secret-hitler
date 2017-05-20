@@ -1,11 +1,19 @@
 version 0.1.0 released 11/11/2016 (alpha)
 all known game breaking bugs eliminated
 
-version 0.2.0 (beta)
+version 0.2.0
 fix/address issues found in alpha
 implement automated claims system
-implement stats page
-convert to webpack
+
+version 0.3.0
+implement stats page and graphs
+implement in-game player stats @jbasrai?
+
+version 0.4.0
+convert to webpack/create-react-app for builds
 
 version 1.0.0
+all crash bugs fixed, everything else working.
+
+version 2.0.0
 implement email address saving, token based verification, and password reset via emails

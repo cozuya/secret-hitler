@@ -692,7 +692,7 @@ module.exports.selectChancellorPolicy = data => {
 		enactedPolicy = data.policy;
 
 	game.private.lock.selectPresidentPolicy = false;
-	if (!game.private.lock.selectChancellorPolicy) {
+	if (!game.private.lock.selectChancellorPolicy && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
 		game.private.lock.selectChancellorPolicy = true;
 
 		if (data.selection === 3) {

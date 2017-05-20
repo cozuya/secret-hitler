@@ -12,11 +12,12 @@ const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, han
 				games.splice(index, 1);
 			}
 		});
+		sendGameList();
 	};
 
 
 module.exports = () => {
-	setInterval(gamesGarbageCollector, 300000);
+	setInterval(gamesGarbageCollector, 100000);
 
 	io.on('connection', socket => {
 		checkUserStatus(socket);
