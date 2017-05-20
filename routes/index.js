@@ -18,152 +18,65 @@ module.exports = () => {
 	const getData = () => {
 		Game.find({})
 			.then(data => {
-				// const d = [
-				// 	{
-				// 		_id: '591b7091fe5420358baab297',
-				// 		uid: 'devgame',
-				// 		date: '2017-05-13T21:35:13.446Z',
-				// 		winningTeam: 'fascist',
-				// 		playerCount: 5,
-				// 		__v: 0,
-				// 		chats: [{
-				// 			timestamp: '2017-05-16T21:33:06.282Z',
-				// 			chat: [],
-				// 			userName: 'Thrall'}
-				// 		],
-				// 		losingPlayers: [
-				// 			{userName: 'Malfurian', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Uther', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Rexxar', team: 'liberal', role: 'liberal'}
-				// 		],
-				// 		winningPlayers: [
-				// 			{userName: 'Thrall', team: 'fascist', role: 'fascist'},
-				// 			{userName: 'Jaina', team: 'fascist', role: 'hitler'}
-				// 		]
-				// 	}, {
-				// 		_id: '591b7091fe5420358baab297',
-				// 		uid: 'devgame',
-				// 		date: '2017-05-16T21:35:13.446Z',
-				// 		winningTeam: 'fascist',
-				// 		playerCount: 5,
-				// 		__v: 0,
-				// 		chats: [{
-				// 			timestamp: '2017-05-16T21:33:06.282Z',
-				// 			chat: [],
-				// 			userName: 'Thrall'}
-				// 		],
-				// 		losingPlayers: [
-				// 			{userName: 'Malfurian', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Uther', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Rexxar', team: 'liberal', role: 'liberal'}
-				// 		],
-				// 		winningPlayers: [
-				// 			{userName: 'Thrall', team: 'fascist', role: 'fascist'},
-				// 			{userName: 'Jaina', team: 'fascist', role: 'hitler'}
-				// 		]
-				// 	}, {
-				// 		_id: '591b7091fe5420358baab297',
-				// 		uid: 'devgame',
-				// 		date: '2017-05-16T21:35:13.446Z',
-				// 		winningTeam: 'fascist',
-				// 		playerCount: 5,
-				// 		__v: 0,
-				// 		chats: [{
-				// 			timestamp: '2017-05-16T21:33:06.282Z',
-				// 			chat: [],
-				// 			userName: 'Thrall'}
-				// 		],
-				// 		losingPlayers: [
-				// 			{userName: 'Malfurian', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Uther', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Rexxar', team: 'liberal', role: 'liberal'}
-				// 		],
-				// 		winningPlayers: [
-				// 			{userName: 'Thrall', team: 'fascist', role: 'fascist'},
-				// 			{userName: 'Jaina', team: 'fascist', role: 'hitler'}
-				// 		]
-				// 	}, {
-				// 		_id: '591b7091fe5420358baab297',
-				// 		uid: 'devgame',
-				// 		date: '2017-05-18T21:35:13.446Z',
-				// 		winningTeam: 'fascist',
-				// 		playerCount: 5,
-				// 		__v: 0,
-				// 		chats: [{
-				// 			timestamp: '2017-05-18T21:33:06.282Z',
-				// 			chat: [],
-				// 			userName: 'Thrall'}
-				// 		],
-				// 		losingPlayers: [
-				// 			{userName: 'Malfurian', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Uther', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Rexxar', team: 'liberal', role: 'liberal'}
-				// 		],
-				// 		winningPlayers: [
-				// 			{userName: 'Thrall', team: 'fascist', role: 'fascist'},
-				// 			{userName: 'Jaina', team: 'fascist', role: 'hitler'}
-				// 		]
-				// 	}, {
-				// 		_id: '591b7091fe5420358baab297',
-				// 		uid: 'devgame',
-				// 		date: '2017-05-21T21:35:13.446Z',
-				// 		winningTeam: 'fascist',
-				// 		playerCount: 5,
-				// 		__v: 0,
-				// 		chats: [{
-				// 			timestamp: '2017-05-16T21:33:06.282Z',
-				// 			chat: [],
-				// 			userName: 'Thrall'}
-				// 		],
-				// 		losingPlayers: [
-				// 			{userName: 'Malfurian', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Uther', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Rexxar', team: 'liberal', role: 'liberal'}
-				// 		],
-				// 		winningPlayers: [
-				// 			{userName: 'Thrall', team: 'fascist', role: 'fascist'},
-				// 			{userName: 'Jaina', team: 'fascist', role: 'hitler'}
-				// 		]
-				// 	}, {
-				// 		_id: '591b7091fe5420358baab297',
-				// 		uid: 'devgame',
-				// 		date: '2017-05-21T21:35:13.446Z',
-				// 		winningTeam: 'fascist',
-				// 		playerCount: 5,
-				// 		__v: 0,
-				// 		chats: [{
-				// 			timestamp: '2017-05-16T21:33:06.282Z',
-				// 			chat: [],
-				// 			userName: 'Thrall'}
-				// 		],
-				// 		losingPlayers: [
-				// 			{userName: 'Malfurian', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Uther', team: 'liberal', role: 'liberal'},
-				// 			{userName: 'Rexxar', team: 'liberal', role: 'liberal'}
-				// 		],
-				// 		winningPlayers: [
-				// 			{userName: 'Thrall', team: 'fascist', role: 'fascist'},
-				// 			{userName: 'Jaina', team: 'fascist', role: 'hitler'}
-				// 		]
-				// 	}
-				// ];
-
 				const completedGames = (() => {
-					const dates = data.map(game => moment(new Date(game.date)).format('l')),
-						labels = _.uniq(dates),
-						series = new Array(labels.length).fill(0);
+						const dates = data.map(game => moment(new Date(game.date)).format('l')).filter(date => date !== '5/13/2017'),  // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
+							labels = _.uniq(dates),
+							series = new Array(labels.length).fill(0);
 
-					dates.forEach(date => {
-						series[labels.indexOf(date)]++;
-					});
-					return {
-						labels,
-						series
+						dates.forEach(date => {
+							series[labels.indexOf(date)]++;
+						});
+						return {
+							labels,
+							series
+						};
+					})(),
+					getDataOnGameByPlayerCount = (count) => {
+						const games = data.filter(game => game.losingPlayers.length + game.winningPlayers.length === count),
+							fascistWinCount = games.filter(game => game.winningTeam === 'fascist').length,
+							totalGameCount = games.length;
+						// console.log(games);
+						return {
+							fascistWinCount,
+							totalGameCount,
+							expectedFascistWinCount: (() => {
+								if (games.length) {
+									return games[games.length - 1].losingPlayers.length / games[games.length - 1].playerCount;
+								}
+							})()
+						};
 					};
-				})();
-
+//  { 
+        //     _id: '591b7091fe5420358baab297', 
+        //     uid: 'devgame', 
+        //     date: '2017-05-13T21:35:13.446Z', 
+        //     winningTeam: 'fascist', 
+        //     playerCount: 5, 
+        //     __v: 0, 
+        //     chats: [{ 
+        //       timestamp: '2017-05-16T21:33:06.282Z', 
+        //       chat: [], 
+        //       userName: 'Thrall'} 
+        //     ], 
+        //     losingPlayers: [ 
+        //       {userName: 'Malfurian', team: 'liberal', role: 'liberal'}, 
+        //       {userName: 'Uther', team: 'liberal', role: 'liberal'}, 
+        //       {userName: 'Rexxar', team: 'liberal', role: 'liberal'} 
+        //     ], 
+        //     winningPlayers: [ 
+        //       {userName: 'Thrall', team: 'fascist', role: 'fascist'}, 
+        //       {userName: 'Jaina', team: 'fascist', role: 'hitler'} 
+// +
+        //     ] 
+        //   }
 				gamesData = {
-					completedGames
+					completedGames,
+					fivePlayerGameData: getDataOnGameByPlayerCount(5),
+					sixPlayerGameData: getDataOnGameByPlayerCount(6),
+					sevenPlayerGameData: getDataOnGameByPlayerCount(7),
+					eightPlayerGameData: getDataOnGameByPlayerCount(8),
+					ninePlayerGameData: getDataOnGameByPlayerCount(9),
+					tenPlayerGameData: getDataOnGameByPlayerCount(10)
 				};
 			});
 	};
