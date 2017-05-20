@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { updateActiveStats } from '../../actions/actions';
+import { updateActiveStats, updateMidsection } from '../../actions/actions';
 import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 
@@ -7,7 +7,8 @@ const
 	mapStateToProps = ({ profile }) => ({ profile }),
 
 	mapDispatchToProps = dispatch => ({
-		updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat))
+		updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
+		exit: () => dispatch(updateMidsection('default'))
 	}),
 
 	formatDateString = dateString => {
@@ -114,10 +115,10 @@ const
 	},
 
 	Profile = ({ profile, updateActiveStats }) => (
-		<section id="profile" className="ui segment">
+		<div>
 			<div className="ui grid">
 				<h1 className="ui header ten wide column">{profile._id}</h1>
-				<div className="ui right aligned six wide column">
+				<div className="ui right aligned five wide column">
 					<span><strong><em>Created: </em></strong></span>
 					<span>{formatDateString(profile.created)}</span>
 				</div>
@@ -134,25 +135,41 @@ const
 					<RecentGames recentGames={profile.recentGames} />
 				</div>
 			</div>
-		</section>
+		</div>
 	),
 
 	Loading = () => (
-		<section id="profile" className="ui segment">
-			<div className="ui active dimmer">
-				<div className="ui huge text loader">Loading</div>
-			</div>
-		</section>
+		<div className="ui active dimmer">
+			<div className="ui huge text loader">Loading</div>
+		</div>
 	),
 
-	ProfileWrapper = ({ profile, updateActiveStats }) => {
-		switch (profile.status) {
-		case 'INITIAL':
-		case 'LOADING':
-			return <Loading />;
-		case 'READY':
-			return <Profile profile={profile} updateActiveStats={updateActiveStats} />;
-		}
+	NotFound = () => (
+		<h1 className="not-found ui icon center aligned header">
+			<i className="settings icon" />
+			<div className="content">Profile not found</div>
+		</h1>
+	),
+
+	ProfileWrapper = ({ profile, updateActiveStats, exit }) => {
+		const children = (() => {
+			switch (profile.status) {
+			case 'INITIAL':
+			case 'LOADING':
+				return <Loading />;
+			case 'NOT_FOUND':
+				return <NotFound />;
+			case 'READY':
+				return <Profile profile={profile} updateActiveStats={updateActiveStats} />;
+			}
+		})();
+
+		return (
+			<section id="profile" className="ui segment">
+				<i className="remove icon" onClick={exit} />
+				{ children }
+			</section>
+		);
 	};
 
 export default connect(

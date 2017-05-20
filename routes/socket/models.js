@@ -20,7 +20,8 @@ module.exports.profiles = (() => {
 		push = profile => {
 			if (!profile) return profile;
 			remove(profile._id);
-			profiles.unshift(profile).splice(MAX_SIZE);
+			profiles.unshift(profile);
+			profiles.splice(MAX_SIZE);
 			return profile;
 		};
 

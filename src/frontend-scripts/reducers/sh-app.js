@@ -59,6 +59,8 @@ const userInfo = (state = {}, action) => {
 	    switch (action.type) {
         case 'REQUEST_PROFILE':
             return { status: 'LOADING' };
+        case 'PROFILE_NOT_FOUND':
+        	return { status: 'NOT_FOUND' };
         case 'RECEIVE_PROFILE':
             return Object.assign({}, action.profile, { 
                 status: 'READY',

@@ -68,5 +68,8 @@ export const fetchProfile = username => dispatch => {
 		.then(profile => dispatch({
 			type: 'RECEIVE_PROFILE',
 			profile
+		}))
+		.catch(err => dispatch({
+			type: 'PROFILE_NOT_FOUND'
 		}));
 }

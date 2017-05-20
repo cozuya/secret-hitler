@@ -1,7 +1,7 @@
 #profile {
-
     border: 0;
     border-radius: 0;
+    margin-top: 0;
     background-color: #222; 
     padding: 20px;
     color: #eee;
@@ -20,5 +20,18 @@
             margin-bottom: 0;
             margin-right: 10px;
         }
+    }
+
+    .not-found {
+        position: relative;
+        top: 150px;
+    }
+
+    .remove.icon {
+        cursor: pointer;
+        position: absolute;
+        font-size: 30px;
+        left: 760px;
+        opacity: .3;
     }
 }

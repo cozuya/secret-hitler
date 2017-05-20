@@ -277,7 +277,7 @@ module.exports.handleAddNewClaim = (data) => {
 				switch (data.claimState) {
 				case 'threefascist':
 					game.private.summary = game.private.summary.updateLog({
-						policyPeek: { reds: 3, blues: 0 }
+						policyPeekClaim: { reds: 3, blues: 0 }
 					});
 
 					text.push({
@@ -292,7 +292,7 @@ module.exports.handleAddNewClaim = (data) => {
 					return text;
 				case 'twofascistoneliberal':
 					game.private.summary = game.private.summary.updateLog({
-						policyPeek: { reds: 2, blues: 1 }
+						policyPeekClaim: { reds: 2, blues: 1 }
 					});
 
 					text.push({
@@ -310,7 +310,7 @@ module.exports.handleAddNewClaim = (data) => {
 					return text;
 				case 'twoliberalonefascist':
 					game.private.summary = game.private.summary.updateLog({
-						policyPeek: { reds: 1, blues: 2 }
+						policyPeekClaim: { reds: 1, blues: 2 }
 					});
 
 					text.push({
@@ -328,7 +328,7 @@ module.exports.handleAddNewClaim = (data) => {
 					return text;
 				case 'threeliberal':
 					game.private.summary = game.private.summary.updateLog({
-						policyPeek: { reds: 0, blues: 3 }
+						policyPeekClaim: { reds: 0, blues: 3 }
 					});
 
 					text.push({

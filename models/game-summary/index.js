@@ -45,6 +45,10 @@ const mongoose = require('mongoose'),
 				reds: Number,
 				blues: Number
 			},
+			policyPeekClaim: {
+				reds: Number,
+				blues: Number
+			},
 			investigationId: Number,
 			investigationClaim: String,
 			specialElection: Number,

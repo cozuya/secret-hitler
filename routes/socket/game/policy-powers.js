@@ -36,6 +36,16 @@ module.exports.selectPolicies = data => {
 			shufflePolicies(game);
 		}
 
+		game.private.summary = game.private.summary.updateLog({
+			policyPeek: game.private.policies.slice(0, 3).reduce((peek, policy) => {
+				if (policy === 'fascist') {
+					return Object.assign({}, peek, { reds: peek.reds + 1 });
+				} else {
+					return Object.assign({}, peek, { blues: peek.blues + 1 });
+				}
+			}, { reds: 0, blues: 0 })
+		});
+
 		president.cardFlingerState = [
 			{
 				position: 'middle-far-left',
