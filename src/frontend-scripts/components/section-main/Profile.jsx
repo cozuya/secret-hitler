@@ -69,7 +69,12 @@ const
 
 		return (
 			<div>
-				<h2 className="ui header">Stats</h2>
+				<div className="column-name">
+					<h2 className="ui header">Stats</h2>
+					<a href="https://github.com/jbasrai/secret-hitler/blob/profiles/docs/stats.md">
+						<i className="large help circle icon"></i>
+					</a>
+				</div>
 				<div className="ui top attached menu">
 					<a
 						className={`${toActive('MATCHES')} item`}

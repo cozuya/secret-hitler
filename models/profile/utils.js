@@ -18,15 +18,15 @@ function profileDelta(username, game) {
 		accurateVotes = votes.filter(v => {
 			const
 				{ presidentId, chancellorId, vote } = v,
-				presidentLoyalty = game.loyaltyOf(presidentId, true),
-				chancellorRole = game.roleOf(chancellorId, true);
+				presidentLoyalty = game.loyaltyOf(presidentId),
+				chancellorRole = game.roleOf(chancellorId);
 
 			return !(vote && (presidentLoyalty === 'fascist' || chancellorRole === 'hitler'));
 		}),
 
 		shots = game.shotsOf(username),
 
-		accurateShots = shots.filter(id => game.loyaltyOf(id, true) === 'fascist');
+		accurateShots = shots.filter(id => game.loyaltyOf(id) === 'fascist');
 
 	return {
 		stats: {

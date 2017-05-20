@@ -11,4 +11,14 @@
         border: 1px solid #D4D4D5 !important;
     }
 
+    .column-name {
+        display: flex;
+        align-items: flex-start;
+
+        h2 {
+            display: inline-block;
+            margin-bottom: 0;
+            margin-right: 10px;
+        }
+    }
 }
