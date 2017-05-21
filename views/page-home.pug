@@ -16,10 +16,11 @@ block content
 						li Added a 150 millisecond #[a(href="https://davidwalsh.name/javascript-debounce-function" rel="nofollow") debounce] to both general and game chat.  Effectively users can not spam uncontrollably.  Should help with troll problems.  If this is too much/little please give feedback.
 						li Players names in the userlist in upper right corner now have some special colors:
 							ul
-								li >50 games played: light blue
-								li >100 games played: darker blue
+								li >50 games played: light green
+								li >100 games played: darker green
+								li >200 games played: even darker green
 								li >60% win rate: purple
-								li contributer (code): orange
+								li contributer (code): orange.  If you know even a bit of javascript and want to make some changes to this game, please feel free to contact me/submit a pull request.
 								li admin: red
 						li Games that have not started yet are sorted to the top of the game list on left sidebar.  It should have always been this way but was broken in a dumb way..
 						li Fix to garbage collected games bugging out the UI before they are updated?  I think.
@@ -39,9 +40,4 @@ block content
 					P Click your action (or click the C again to dismiss) and a new type of chat will appear, informing players about what you say happened.  You have until the next election to do this action.
 					img(src="images/claim-text.png", style="margin-top: 0; text-align: center")
 					p Let me know if you like/hate this, and any issues or requests about it.
-					h4 Bug fixes in 0.2.0
-					ul
-						li (#26) Fix to next president being wrong person after a special election where seat #1 was picked (finally).
-						li (#34) Fix to too long status bar text wrapping to next line that causes the input bar to get pushed down (finally).
-						li Fix to width of generalchat.
-					p Next up: fix to left sidebar problems of being sorted incorrectly and games not disappearing, and then working on the stats page which will be fun.
+					p Next up: stats page.

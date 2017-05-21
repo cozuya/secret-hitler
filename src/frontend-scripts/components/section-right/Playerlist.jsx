@@ -1,5 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
+import {ADMINS, CONTRIBUTORS} from '../../constants';
 
 export default class Playerlist extends React.Component {
 	render() {
@@ -32,19 +33,19 @@ export default class Playerlist extends React.Component {
 								const aTotal = a.wins + a.losses,
 									bTotal = b.wins + b.losses;
 
-								if (a.userName === 'coz' || a.userName === 'stine') {
+								if (ADMINS.includes(a.userName)) {
 									return -1;
 								}
 
-								if (b.userName === 'coz' || b.userName === 'stine') {
+								if (ADMINS.includes(b.userName)) {
 									return 1;
 								}
 
-								if (aTotal > 9 && bTotal > 9) {
+								if (aTotal > 29 && bTotal > 29) {
 									return (b.wins / bTotal) - (a.wins / aTotal);
-								} else if (aTotal > 9) {
+								} else if (aTotal > 29) {
 									return -1;
-								} else if (bTotal > 9) {
+								} else if (bTotal > 29) {
 									return 1;
 								}
 
@@ -55,10 +56,11 @@ export default class Playerlist extends React.Component {
 								const percent = ((user.wins / (user.wins + user.losses)) * 100).toFixed(0),
 									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '',
 									classes = cn({
-										admin: user.userName === 'coz' || user.userName === 'coz',
-										contributer: user.userName === 'jbasrai',
+										admin: ADMINS.includes(user.userName),
+										contributer: CONTRIBUTORS.includes(user.userName),
 										experienced: user.wins + user.losses > 50,
 										veryexperienced: user.wins + user.losses > 100,
+										veryveryexperienced: user.wins + user.losses > 200,
 										onfire: user.wins / (user.wins + user.losses) > .6
 									});
 
