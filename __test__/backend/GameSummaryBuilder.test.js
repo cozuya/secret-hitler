@@ -31,6 +31,17 @@ describe('GameSummaryBuilder', () => {
 		expect(firstPresidentId).toBe(0);
 	});
 
+	it('should update penultimate log', () => {
+		const presidentClaim = { reds: 2, blues: 1};
+
+		gsb = gsb
+			.nextTurn()
+			.updateLog({ presidentClaim }, true);
+
+		expect(gsb.logs[1].presidentClaim).toBeUndefined();
+		expect(gsb.logs[0].presidentClaim).toEqual(presidentClaim);
+	});
+
 	it('should publish a GameSummary', () => {
 		const gs = gsb.publish();
 
