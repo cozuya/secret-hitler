@@ -17,9 +17,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 				});
 			}
 
-			if (!profiles.get(username)) {
-				getProfile(username).then(profile => profiles.push(profile));
-			}
+			getProfile(username);
 
 			io.sockets.emit('userList', {
 				list: userList,
