@@ -4,9 +4,24 @@ import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
 import {ADMINS, CONTRIBUTORS} from '../../constants';
 
-const mapDispatchToProps = dispatch => ({
-	fetchProfile: username => dispatch(fetchProfile(username))
-});
+const
+	mapStateToProps = ({ midSection }) => ({ midSection }),
+
+	mapDispatchToProps = dispatch => ({
+		fetchProfile: username => dispatch(fetchProfile(username))
+	}),
+
+	mergeProps = (stateProps, dispatchProps, ownProps) => {
+		const
+			userIsClickable = stateProps.midSection !== 'game',
+
+			fetchProfile = username => {
+				if (!userIsClickable) return;
+				else dispatchProps.fetchProfile(username);
+			};
+
+		return Object.assign({}, ownProps, { userIsClickable, fetchProfile });
+	};
 
 class Playerlist extends React.Component {
 	render() {
@@ -67,7 +82,8 @@ class Playerlist extends React.Component {
 										experienced: user.wins + user.losses > 50,
 										veryexperienced: user.wins + user.losses > 100,
 										veryveryexperienced: user.wins + user.losses > 200,
-										onfire: user.wins / (user.wins + user.losses) > .6
+										onfire: user.wins / (user.wins + user.losses) > .6,
+										clickable: this.props.userIsClickable
 									}, 'user');
 
 								return (
@@ -96,6 +112,7 @@ Playerlist.propTypes = {
 };
 
 export default connect(
-	null,
-	mapDispatchToProps
+	mapStateToProps,
+	mapDispatchToProps,
+	mergeProps
 )(Playerlist);
