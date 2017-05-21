@@ -1,10 +1,16 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { fetchProfile } from '../../actions/actions';
 import $ from 'jquery';
 import Checkbox from 'semantic-ui-checkbox';
 
 $.fn.checkbox = Checkbox;
 
-export default class Settings extends React.Component {
+const mapDispatchToProps = dispatch => ({
+	fetchProfile: username => dispatch(fetchProfile(username))
+});
+
+class Settings extends React.Component {
 	constructor() {
 		super();
 		this.leaveSettings = this.leaveSettings.bind(this);
@@ -56,8 +62,8 @@ export default class Settings extends React.Component {
 						</div>
 					</div>
 				</div>
-				<div className="ui grid">
-					<div className="eight wide column popups">
+				<div className="ui equal width centered grid">
+					<div className="column">
 						<h4 className="ui header">Add timestamps to in-game chats</h4>
 						<div className="ui fitted toggle checkbox" ref={c => {
 							this.timestamps = c;
@@ -65,13 +71,20 @@ export default class Settings extends React.Component {
 							<input type="checkbox" name="timestamps" defaultChecked={this.props.userInfo.gameSettings.enableTimestamps} />
 						</div>
 					</div>
-					<div className="eight wide column popups">
+					<div className="column">
 						<h4 className="ui header">Show right sidebar while in games</h4>
 						<div className="ui fitted toggle checkbox" ref={c => {
 							this.sidebar = c;
 						}}>
 							<input type="checkbox" name="sidebar" defaultChecked={this.props.userInfo.gameSettings.enableRightSidebarInGame} />
 						</div>
+					</div>
+					<div className="column">
+						<button 
+							className="ui button"
+							onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
+							View your profile
+						</button>
 					</div>
 				</div>
 			</section>
@@ -84,3 +97,8 @@ Settings.propTypes = {
 	userInfo: React.PropTypes.object,
 	socket: React.PropTypes.object
 };
+
+export default connect(
+	null,
+	mapDispatchToProps
+)(Settings);
