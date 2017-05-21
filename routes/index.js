@@ -15,93 +15,74 @@ let passport = require('passport'), // eslint-disable-line no-unused-vars
 
 module.exports = () => {
 	let gamesData;
-	const getData = () => {
-		Game.find({})
-			.then(data => {
-				const completedGames = (() => {
-						const dates = data.map(game => moment(new Date(game.date)).format('l')).filter(date => date !== '5/13/2017'),  // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
-							labels = _.uniq(dates),
-							series = new Array(labels.length).fill(0);
+	const renderPage = (req, res, pageName, varName) => {
+			const renderObj = {};
 
-						dates.forEach(date => {
-							series[labels.indexOf(date)]++;
-						});
+			renderObj[varName] = true;
 
-						return {
-							labels,
-							series
+			if (req.user) {
+				renderObj.username = req.user.username;
+			}
+
+			res.render(pageName, renderObj);
+		},
+		getData = () => {
+			Game.find({})
+				.then(data => {
+					const completedGames = (() => {
+							const dates = data.map(game => moment(new Date(game.date)).format('l')).filter(date => date !== '5/13/2017'),  // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
+								labels = _.uniq(dates),
+								series = new Array(labels.length).fill(0);
+
+							dates.forEach(date => {
+								series[labels.indexOf(date)]++;
+							});
+
+							return {
+								labels: (() => {
+									return labels;
+									// return [labels[0], labels[Math.round(labels.length / 1.5)], labels[Math.round(labels.length / 2)], labels[Math.round(labels.length /2.5)], labels[labels.length - 1]];
+								})(),
+								series
+							};
+						})(),
+						getDataOnGameByPlayerCount = (count) => {
+							const games = count ? data.filter(game => game.losingPlayers.length + game.winningPlayers.length === count) : data,
+								fascistWinCount = games.filter(game => game.winningTeam === 'fascist').length,
+								totalGameCount = games.length;
+
+							return {
+								fascistWinCount,
+								totalGameCount,
+								expectedFascistWinCount: (() => {
+									if (games.length) {
+										const game = games.find(game => game.winningTeam === 'fascist'),
+											fascistCount = game.winningPlayers.length,
+											{playerCount} = game;
+
+										return (fascistCount / playerCount) * 100;
+									}
+								})()
+							};
 						};
-					})(),
-					getDataOnGameByPlayerCount = (count) => {
-						const games = data.filter(game => game.losingPlayers.length + game.winningPlayers.length === count),
-							fascistWinCount = games.filter(game => game.winningTeam === 'fascist').length,
-							totalGameCount = games.length;
 
-						return {
-							fascistWinCount,
-							totalGameCount,
-							expectedFascistWinCount: (() => {
-								if (games.length) {
-									const game = games.find(game => game.winningTeam === 'fascist'),
-										fascistCount = game.winningPlayers.length,
-										{playerCount} = game;
-
-									return (fascistCount / playerCount) * 100;
-								}
-							})()
-						};
+					gamesData = {
+						completedGames,
+						allPlayerGameData: getDataOnGameByPlayerCount(),
+						fivePlayerGameData: getDataOnGameByPlayerCount(5),
+						sixPlayerGameData: getDataOnGameByPlayerCount(6),
+						sevenPlayerGameData: getDataOnGameByPlayerCount(7),
+						eightPlayerGameData: getDataOnGameByPlayerCount(8),
+						ninePlayerGameData: getDataOnGameByPlayerCount(9),
+						tenPlayerGameData: getDataOnGameByPlayerCount(10)
 					};
-//  { 
-        //     _id: '591b7091fe5420358baab297', 
-        //     uid: 'devgame', 
-        //     date: '2017-05-13T21:35:13.446Z', 
-        //     winningTeam: 'fascist', 
-        //     playerCount: 5, 
-        //     __v: 0, 
-        //     chats: [{ 
-        //       timestamp: '2017-05-16T21:33:06.282Z', 
-        //       chat: [], 
-        //       userName: 'Thrall'} 
-        //     ], 
-        //     losingPlayers: [ 
-        //       {userName: 'Malfurian', team: 'liberal', role: 'liberal'}, 
-        //       {userName: 'Uther', team: 'liberal', role: 'liberal'}, 
-        //       {userName: 'Rexxar', team: 'liberal', role: 'liberal'} 
-        //     ], 
-        //     winningPlayers: [ 
-        //       {userName: 'Thrall', team: 'fascist', role: 'fascist'}, 
-        //       {userName: 'Jaina', team: 'fascist', role: 'hitler'} 
-// +
-        //     ] 
-        //   }
-				gamesData = {
-					completedGames,
-					fivePlayerGameData: getDataOnGameByPlayerCount(5),
-					sixPlayerGameData: getDataOnGameByPlayerCount(6),
-					sevenPlayerGameData: getDataOnGameByPlayerCount(7),
-					eightPlayerGameData: getDataOnGameByPlayerCount(8),
-					ninePlayerGameData: getDataOnGameByPlayerCount(9),
-					tenPlayerGameData: getDataOnGameByPlayerCount(10)
-				};
-			});
-	};
+				});
+		};
 
 	accounts();
 	socketRoutes();
 	getData();
 	setInterval(getData, 3600000);
-
-	const renderPage = (req, res, pageName, varName) => {
-		const renderObj = {};
-
-		renderObj[varName] = true;
-
-		if (req.user) {
-			renderObj.username = req.user.username;
-		}
-
-		res.render(pageName, renderObj);
-	};
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
