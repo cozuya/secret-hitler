@@ -244,7 +244,21 @@ span.emphasis {
 }
 
 .ct-label {
+	fill: #fff;
 	color: #fff;
+	font-size: 20px;
+}
+
+.ct-series-b .ct-slice-pie {
+	fill: $darkliberalteam;
+}
+
+.ct-series-a .ct-slice-pie {
+	fill: $fascistteam;
+}
+
+.chart {
+	text-align: center;
 }
 
 ::-webkit-scrollbar {

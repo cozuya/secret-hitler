@@ -27,6 +27,7 @@ module.exports = () => {
 						dates.forEach(date => {
 							series[labels.indexOf(date)]++;
 						});
+
 						return {
 							labels,
 							series
@@ -36,13 +37,17 @@ module.exports = () => {
 						const games = data.filter(game => game.losingPlayers.length + game.winningPlayers.length === count),
 							fascistWinCount = games.filter(game => game.winningTeam === 'fascist').length,
 							totalGameCount = games.length;
-						// console.log(games);
+
 						return {
 							fascistWinCount,
 							totalGameCount,
 							expectedFascistWinCount: (() => {
 								if (games.length) {
-									return games[games.length - 1].losingPlayers.length / games[games.length - 1].playerCount;
+									const game = games.find(game => game.winningTeam === 'fascist'),
+										fascistCount = game.winningPlayers.length,
+										{playerCount} = game;
+
+									return (fascistCount / playerCount) * 100;
 								}
 							})()
 						};
