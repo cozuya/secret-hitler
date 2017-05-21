@@ -272,6 +272,10 @@ span.emphasis {
 	fill: $fascistteam;
 }
 
+#chart-completed-games .ct-label.ct-horizontal {
+	display: none;
+}
+
 .chart {
 	text-align: center;
 }
