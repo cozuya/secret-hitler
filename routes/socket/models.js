@@ -14,7 +14,7 @@ module.exports.profiles = (() => {
 
 		remove = username => {
 			const i = profiles.findIndex(p => p._id === username);
-			if (i) return profiles.splice(i, 1)[0];
+			if (i > -1) return profiles.splice(i, 1)[0];
 		},
 
 		push = profile => {
