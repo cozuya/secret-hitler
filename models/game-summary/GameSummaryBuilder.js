@@ -18,6 +18,7 @@ module.exports = class GameSummaryBuilder {
 		return new GameSummary({ uid, date, players, logs });
 	}
 
+	// applyToPreviousTurn gets set to true for claims that are made after the start of the next turn
 	updateLog(update, applyToPreviousTurn = false) {
 		const
 			init = this.logs.slice(0, -1),
