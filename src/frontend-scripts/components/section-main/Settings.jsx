@@ -80,7 +80,7 @@ class Settings extends React.Component {
 						</div>
 					</div>
 					<div className="column">
-						<button 
+						<button
 							className="ui button"
 							onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
 							View your profile

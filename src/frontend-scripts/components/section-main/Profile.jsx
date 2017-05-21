@@ -72,7 +72,9 @@ const
 			<div>
 				<div className="column-name">
 					<h2 className="ui header">Stats</h2>
-					<a target="_blank" href="https://github.com/jbasrai/secret-hitler/blob/profiles/docs/stats.md">
+					<a
+						target="_blank"
+						href="/player-profiles">
 						<i className="large help circle icon"></i>
 					</a>
 				</div>

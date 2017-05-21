@@ -124,6 +124,10 @@ module.exports = () => {
 		renderPage(req, res, 'page-about', 'about');
 	});
 
+	app.get('/player-profiles', (req, res) => {
+		renderPage(req, res, 'page-player-profiles', 'playerProfiles');
+	});
+
 	app.get('/game', ensureAuthenticated, (req, res) => {
 		res.render('game', {
 			user: req.user.username,
