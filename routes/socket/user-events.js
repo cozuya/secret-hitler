@@ -352,7 +352,7 @@ module.exports.handleAddNewClaim = (data) => {
 						text: `${data.userName} {${playerIndex + 1}} `,
 						type: 'player'
 					}, {
-						text: 'claims to see a party membership of the'
+						text: 'claims to see a party membership of the '
 					}
 				];
 

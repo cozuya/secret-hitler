@@ -1,5 +1,5 @@
 const Account = require('../../models/account'),
-	{games, userList, generalChats, profiles} = require('./models'),
+	{games, userList, generalChats} = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
 	{secureGame} = require('./util');
 
