@@ -56,21 +56,21 @@ const userInfo = (state = {}, action) => {
 		return state;
 	},
 	profile = (state = { status: 'INITIAL' }, action) => {
-	    switch (action.type) {
-        case 'REQUEST_PROFILE':
-            return { status: 'LOADING' };
-        case 'PROFILE_NOT_FOUND':
-        	return { status: 'NOT_FOUND' };
-        case 'RECEIVE_PROFILE':
-            return Object.assign({}, action.profile, { 
-                status: 'READY',
-                activeStat: 'MATCHES' 
-            });
-        case 'UPDATE_ACTIVE_STATS':
-            return Object.assign({}, state, { activeStat: action.activeStat })
-        default:
-            return state;
-	    }
+		switch (action.type) {
+		case 'REQUEST_PROFILE':
+			return { status: 'LOADING' };
+		case 'PROFILE_NOT_FOUND':
+			return { status: 'NOT_FOUND' };
+		case 'RECEIVE_PROFILE':
+			return Object.assign({}, action.profile, { 
+				status: 'READY',
+				activeStat: 'MATCHES' 
+			});
+		case 'UPDATE_ACTIVE_STATS':
+			return Object.assign({}, state, { activeStat: action.activeStat })
+		default:
+			return state;
+		}
 	};
 
 export default combineReducers({

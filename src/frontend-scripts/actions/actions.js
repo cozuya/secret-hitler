@@ -61,7 +61,6 @@ export const updateActiveStats = activeStat => ({
 
 export const fetchProfile = username => dispatch => {
 	dispatch(updateMidsection('profile'));
-	console.log('FETCH PROFILE FOR', username)
 	dispatch({ type: 'REQUEST_PROFILE' });
 
 	return fetch(`/profile?username=${username}`)
