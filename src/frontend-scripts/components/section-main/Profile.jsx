@@ -18,7 +18,7 @@ const
 	},
 
 	successRate = (trials, outcomes) => (
-		trials > 0 ? parseFloat(outcomes / trials * 100).toFixed(2) + '%' : '---'
+		trials > 0 ? parseFloat((outcomes / trials * 100).toFixed(2)) + '%' : '---'
 	),
 
 	successRow = (name, trials, outcomes) => (
