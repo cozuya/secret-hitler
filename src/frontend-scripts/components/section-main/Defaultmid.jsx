@@ -1,10 +1,20 @@
 import React from 'react';
 
 export default class Defaultmid extends React.Component {
+	constructor() {
+		super();
+		this.changelogClicked = this.changelogClicked.bind(this);
+	}
+
+	changelogClicked(e) {
+		e.preventDefault();
+	}
+
 	render() {
 		return (
 			<section className="defaultmid">
-				<img src="images/lizard9.png" alt="Secret Hitler logo" style={{position: 'absolute', left: '50%', marginLeft: '-200px', top: '140px'}} width="400" height="400" />
+				<img src="images/lizard9.png" alt="Secret Hitler logo" width="400" height="400" />
+				<p>sh.io version 0.2.4 "teal" released 5/xx/2017 <a onClick={this.changelogClicked}>changelog</a> <a href="https://github.com/cozuya/secret-hitler/issues">open issues and upcoming features</a></p>
 				<br />
 				<button style={{padding: '5px', background: '#333', color: 'white'}} data-name="h" onClick={this.props.quickDefault}>default game</button>
 				<br />

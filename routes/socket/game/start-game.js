@@ -1,12 +1,11 @@
 const {sendInProgressGameUpdate} = require('../util.js'),
-	{games} = require('../models.js'),
-	{sendGameList} = require('../user-requests.js'),
 	_ = require('lodash'),
 	{startElection} = require('./election.js'),
 	{shufflePolicies} = require('./common.js'),
 	beginGame = game => {
 		const {experiencedMode} = game.general;
-		game.general.timeStarted = new Date().getTime()
+
+		game.general.timeStarted = new Date().getTime();
 
 		let roles = _.range(0, 3).map(el => ({
 			cardName: 'liberal',
@@ -338,24 +337,6 @@ module.exports = game => {
 	});
 	game.gameState.isTracksFlipped = true;
 	game.private.policies = [];
-
-	// remove idle games, timeout is reset on game updates
-	// game.private.timeout = (() => {
-	// 	// 10 minutes
-	// 	const timeout = () => setTimeout(() => {
-	// 		games.splice(games.indexOf(game), 1);
-	// 		sendGameList();
-	// 	}, 300000);
-
-	// 	let id = timeout();
-
-	// 	return {
-	// 		reset: () => {
-	// 			clearTimeout(id);
-	// 			id = timeout();
-	// 		}
-	// 	};
-	// })();
 
 	shufflePolicies(game);
 };
