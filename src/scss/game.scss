@@ -64,6 +64,8 @@
                 background: #F9FAFF;
                 font-size: 18px;
                 cursor: not-allowed;
+								overflow: hidden;
+
                 .ui.list {
                     padding-left: 5px;
                     overflow-y: auto;

@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(event) {
+	// this page/code is total shit but I would need to get a different graphing library to make it better.
+
 	const processWinrateData = data => {
 		const fWins = Math.round((data.fascistWinCount / data.totalGameCount) * 100000) / 1000,
 			lWins = Math.round((data.totalGameCount - data.fascistWinCount) / data.totalGameCount * 100000) / 1000;
@@ -20,11 +22,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			setTimeout(() => {
 				const {labels} = data.completedGames,
 					$labels = $('#chart-completed-games .ct-label.ct-horizontal'),
-					// showingLabelIndexes = [0, Math.round(labels.length / 2.5), Math.round(labels.length / 2), Math.round(labels.length / 1.5), labels.length - 1],
-					showingLabelIndexes = [0, Math.round(labels.length / 3), Math.round(labels.length / 2), Math.round(labels.length / 4), labels.length - 1],
+					showingLabelIndexes = [0, Math.round(labels.length / 4), Math.round(labels.length / 2), Math.round(labels.length / 1.5), labels.length - 1],
 					$shownlabels = $labels.filter((index) => showingLabelIndexes.includes(index));
 
-				$shownlabels.show();
+				$shownlabels.show();  // barf
 			}, 500);
 
 			new Chartist.Pie('#chart-allplayer-games-winrate', processWinrateData(data.allPlayerGameData), {width: '400px', height: '400px'});
