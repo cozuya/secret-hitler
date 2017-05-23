@@ -200,7 +200,8 @@ export class App extends React.Component {
 		return (
 			<section className="ui grid">
 				{(() => {
-					if (this.props.midSection !== 'game') {
+					if (this.props.midSection !== 'game'
+						&& this.props.midSection !== 'replay') {
 						return (
 							<LeftSidebar
 								userInfo={this.props.userInfo}
@@ -229,7 +230,7 @@ export class App extends React.Component {
 					socket={socket}
 				/>
 				{(() => {
-					if ((this.props.midSection === 'game' && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) || this.props.midSection !== 'game') {
+					if (((this.props.midSection === 'game' || this.props.midSection === 'replay') && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)) {
 						return (
 							<RightSidebar
 								gameInfo={this.props.gameInfo}

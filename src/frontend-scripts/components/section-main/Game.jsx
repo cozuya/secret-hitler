@@ -37,7 +37,7 @@ export default class Game extends React.Component {
 
 									return classes;
 								})()
-					}>
+						}>
 							<Tracks
 								userInfo={this.props.userInfo}
 								gameInfo={this.props.gameInfo}
@@ -59,7 +59,7 @@ export default class Game extends React.Component {
 
 								return classes;
 							})()
-					}>
+						}>
 							<section className="gamestatus">
 								{this.props.gameInfo.general.status}
 							</section>

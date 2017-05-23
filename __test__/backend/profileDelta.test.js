@@ -1,9 +1,10 @@
 import { profileDelta } from '../../models/profile/utils';
 import mockGameSummary from '../mocks/mockGameSummary';
-import EnhancedGameSummary from '../../models/game-summary/EnhancedGameSummary';
+import buildEnhancedGameSummary from '../../models/game-summary/buildEnhancedGameSummary';
+import matchers from '../matchers'; // eslint-disable-line no-unused-vars
 
 describe('profileDelta', () => {
-	const game = new EnhancedGameSummary(mockGameSummary);
+	const game = buildEnhancedGameSummary(mockGameSummary);
 
 	it('should calculate the correct delta for Jaina', () => {
 		const delta = profileDelta('Jaina', game);
@@ -17,8 +18,8 @@ describe('profileDelta', () => {
 		expect(delta.stats.matches.fascist.events).toBe(0);
 		expect(delta.stats.matches.fascist.successes).toBe(0);
 
-		expect(delta.stats.actions.voteAccuracy.events).toBe(5);
-		expect(delta.stats.actions.voteAccuracy.successes).toBe(5);
+		expect(delta.stats.actions.voteAccuracy.events).toBe(2);
+		expect(delta.stats.actions.voteAccuracy.successes).toBe(2);
 
 		expect(delta.stats.actions.shotAccuracy.events).toBe(1);
 		expect(delta.stats.actions.shotAccuracy.successes).toBe(1);
@@ -65,8 +66,8 @@ describe('profileDelta', () => {
 		expect(delta.stats.matches.fascist.events).toBe(0);
 		expect(delta.stats.matches.fascist.successes).toBe(0);
 
-		expect(delta.stats.actions.voteAccuracy.events).toBe(5);
-		expect(delta.stats.actions.voteAccuracy.successes).toBe(3);
+		expect(delta.stats.actions.voteAccuracy.events).toBe(2);
+		expect(delta.stats.actions.voteAccuracy.successes).toBe(0);
 
 		expect(delta.stats.actions.shotAccuracy.events).toBe(0);
 		expect(delta.stats.actions.shotAccuracy.successes).toBe(0);

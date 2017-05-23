@@ -22,7 +22,7 @@ export default class Tracks extends React.Component {
 			classes += ' fail3';
 		}
 
-		if (gameInfo.gameState.isTracksFlipped) {
+		if (gameInfo.gameState.isTracksFlipped && (gameInfo.trackState && !gameInfo.trackState.isHidden)) {
 			return <div className={classes} />;
 		}
 	}
@@ -44,7 +44,7 @@ export default class Tracks extends React.Component {
 					(() => {
 						let classes = 'tracks';
 
-						if (this.props.gameInfo.cardFlingerState.length) {
+						if (this.props.gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
 							classes += ' blurred';
 						}
 

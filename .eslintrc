@@ -5,7 +5,7 @@
 		"linebreak-style": "off",
 		"eol-last": "off",
 		"max-len": "off",
-		"one-var": ["warn", "always"],
+		"one-var": "off",
 		"no-use-before-define": ["warn", {"functions": true, "classes": true}],
 		"no-warning-comments": "off",
 		"no-nested-ternary": "off",
@@ -24,7 +24,8 @@
 		"react/jsx-uses-vars": "error",
 		"react/jsx-indent-props": ["error", "tab"],
 		"object-curly-spacing": "off",
-		"array-bracket-spacing": "off"
+		"array-bracket-spacing": "off",
+		"new-cap": "off"
 	},
 	"globals": {
 		"io": true,

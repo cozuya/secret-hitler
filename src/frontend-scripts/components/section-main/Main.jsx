@@ -5,6 +5,7 @@ import Creategame from './Creategame.jsx';
 import Settings from './Settings.jsx';
 import Game from './Game.jsx';
 import Profile from './Profile.jsx';
+import Replay from './Replay.jsx';
 
 export default class Main extends React.Component {
 	render() {
@@ -24,6 +25,8 @@ export default class Main extends React.Component {
 							} else {
 								classes += 'sixteen';
 							}
+						} else if (this.props.midSection === 'replay') {
+							classes += 'sixteen';
 						} else {
 							classes = 'ten';
 						}
@@ -76,13 +79,11 @@ export default class Main extends React.Component {
 						);
 					case 'profile':
 						return <Profile />;
+					case 'replay':
+						return <Replay />;
 					default:
-						return (
-							<Defaultmid
-								quickDefault={this.props.quickDefault}
-							/>
-						);
-					}
+						return <Defaultmid quickDefault={this.props.quickDefault} />;
+					};
 				})()}
 			</section>
 		);

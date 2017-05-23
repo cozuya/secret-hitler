@@ -3,13 +3,13 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{sendUserList, sendGameList} = require('../user-requests.js'),
 	Account = require('../../../models/account.js'),
 	Game = require('../../../models/game'),
-	EnhancedGameSummary = require('../../../models/game-summary/EnhancedGameSummary'),
+	buildEnhancedGameSummary = require('../../../models/game-summary/buildEnhancedGameSummary'),
 	{updateProfiles} = require('../../../models/profile/utils'),
 	debug = require('debug')('game'),
 	saveGame = game => {
 		const
 			summary = game.private.summary.publish(),
-			enhanced = new EnhancedGameSummary(summary),
+			enhanced = buildEnhancedGameSummary(summary),
 			gameToSave = new Game({
 				uid: game.general.uid,
 				date: new Date(),

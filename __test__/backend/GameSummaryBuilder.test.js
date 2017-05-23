@@ -1,5 +1,6 @@
 import GameSummaryBuilder from '../../models/game-summary/GameSummaryBuilder';
 import GameSummary from '../../models/game-summary';
+import matchers from '../matchers'; // eslint-disable-line no-unused-vars
 
 describe('GameSummaryBuilder', () => {
 	let gsb;

@@ -1,0 +1,169 @@
+.replay {
+	.ui.grid > .column {
+		padding: 0;
+	}
+
+	.card-group {
+		margin-bottom: 30px;
+
+		> h1 {
+			color: white;
+			font-size: 26px;
+			font-family: 'Josefin Sans';
+			margin-bottom: 10px;
+		}
+
+		.card {
+			margin-right: 15px;
+		}
+	}
+
+	.card {
+		width: 90px;
+		height: 124px;
+		background-size: contain;
+		display: inline-block;
+		box-shadow: 0 0 4px 3px #969696;
+
+		&.fascist {
+			background-image: url('../images/cards/fascistp-l.png');
+		}
+
+		&.liberal {
+			background-image: url('../images/cards/liberalp-l.png');
+		}
+
+		&.discarded {
+			box-shadow: 0 0 4px 3px red;
+		}
+
+		& > i {
+			position: absolute;
+		}
+	}
+
+	.track-pieces {
+		* {
+			z-index: 2;
+		}
+
+		&.blurred > * {
+			filter: blur(5px) saturate(60%);
+			opacity: .3;
+		}
+
+		.enacted {
+			position: absolute;
+
+			.card {
+				margin-right: 2px;
+			}
+
+			&.fascist-policies {
+				top: 264px;
+				left: 43px;
+			}
+
+			&.liberal-policies {
+				top: 44px;
+				left: 89px;
+			}
+		}
+
+		.election-tracker {
+			position: absolute;
+			width: 25px;
+			height: 25px;
+			background-color: #2f2fbe;
+			border-radius: 50%;
+
+			&.zero {
+				top: 173px;
+				left: 211px;
+			}
+
+			&.one {
+				top: 173px;
+				left: 273px;
+			}
+	
+			&.two {
+				top: 173px;
+				left: 335px;
+			}
+
+			&.three {
+				top: 173px;
+				left: 397px;
+			}
+		}
+		.electiontracker.fail1 {
+			left: 278px;
+		}
+		.electiontracker.fail2 {
+			left: 340px;
+		}
+		.electiontracker.fail3 {
+			left: 402px;
+		}
+	}
+
+	.replay-overlay {
+		.legislation {
+			position: absolute;
+			top: 20px;
+			left: 180px;
+			z-index: 3;
+
+			& > .hand > h1::after {
+				content: ' Hand:'
+			}
+
+			& > .claim > h1::after {
+				content: ' Claim:'
+			}
+
+			& > .card-group > h1 {
+				text-transform: capitalize;
+			}
+		}
+
+	}
+
+	.replay-controls {
+		height: 100%;
+		padding: 20px 30px;
+		background-color: black;
+
+		h1 {
+			color: #c36563;
+			font-size: 26px;
+			font-family: 'Josefin Sans';
+		}
+
+		.info {
+			h1 {
+				display: inline-block;
+				width: 150px;
+
+				&::after {
+					content: ":";
+				}
+			}
+
+			span {
+				font-family: 'Josefin Sans';
+				color: #eee;
+				font-size: 24px;
+			}
+		}
+
+		.playback {
+			margin-top: 50px;
+
+			button.ui.button {
+				background-color: white;
+			}
+		}
+	}
+}

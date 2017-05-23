@@ -1,5 +1,15 @@
 import {combineReducers} from 'redux';
 import {UPDATE_USER, UPDATE_MIDSECTION, UPDATE_GAMELIST, UPDATE_GAMEINFO, UPDATE_USERLIST, UPDATE_GENERALCHATS} from '../actions/actions.js';
+import mockGameSummary from '../../../__test__/mocks/mockGameSummary';
+import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
+import buildReplay from '../replay/buildReplay';
+
+const game = buildEnhancedGameSummary(mockGameSummary)
+
+const mock = {
+	ticks: buildReplay(game),
+	position: 0
+}
 
 const userInfo = (state = {}, action) => {
 		switch (action.type) {
@@ -10,7 +20,7 @@ const userInfo = (state = {}, action) => {
 		}
 		return state;
 	},
-	midSection = (state = 'default', action) => {
+	midSection = (state = 'replay', action) => {
 		switch (action.type) {
 		case UPDATE_MIDSECTION:
 			state = action.midSection;
@@ -71,7 +81,21 @@ const userInfo = (state = {}, action) => {
 		default:
 			return state;
 		}
-	};
+	},
+	replay = (state = mock, action) => {
+		switch (action.type) {
+			case 'REPLAY_NEXT_TICK':
+				return Object.assign({}, state, {
+					position: state.position + 1
+				})
+			case 'REPLAY_PREV_TICK':
+				return Object.assign({}, state, {
+					position: state.position - 1
+				})
+			default:
+				return state;
+		}
+	}
 
 export default combineReducers({
 	userInfo,
@@ -80,5 +104,6 @@ export default combineReducers({
 	gameInfo,
 	userList,
 	generalChats,
-	profile
+	profile,
+	replay
 });

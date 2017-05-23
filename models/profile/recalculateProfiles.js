@@ -1,7 +1,7 @@
 const
 	mongoose = require('mongoose'),
 	GameSummary = require('../game-summary'),
-	EnhancedGameSummary = require('../game-summary/EnhancedGameSummary'),
+	buildEnhancedGameSummary = require('../game-summary/buildEnhancedGameSummary'),
 	{ updateProfiles } = require('./utils'),
 	debug = require('debug')('game:profile');
 
@@ -21,7 +21,7 @@ mongoose.connect('mongodb://localhost/secret-hitler-app');
 	GameSummary
 		.find(null, null, { sort: { date: 'asc' }})
 		.cursor()
-		.map(game => new EnhancedGameSummary(game))
+		.map(game => buildEnhancedGameSummary(game))
 		.eachAsync(game => updateProfiles(game, { version }))
 		.then(() => {
 			debug('Player profiles recalculated');
