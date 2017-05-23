@@ -19,6 +19,7 @@ $dteal: #034f61;
 @import 'game.scss';
 @import 'players.scss';
 @import 'settings.scss';
+@import 'changelog.scss';
 @import 'tracks.scss';
 @import 'rcslider.scss';
 @import 'rightsidebar.scss';
@@ -47,6 +48,20 @@ $dteal: #034f61;
             margin-left: -200px;
             top: 140px;
         }
+				p {
+					position: absolute;
+					bottom: 0;
+					left: 15%;
+					color: #bbb;
+					
+					a {
+						color: lightblue;
+						cursor: pointer;
+					}
+					a:first-child {
+						color: yellow;
+					}
+				}
     }
     .section-main>section {
         border-top: 1px solid #3a3a3a;

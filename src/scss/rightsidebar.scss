@@ -42,8 +42,18 @@
 							color: #48d348 !important;
 						}
 
-						.experienced.onfire, .veryexperienced.onfire, .veryveryexperienced.onfire {
+						.superexperienced {
+							color:#19d119 !important;
+							font-weight: bold;
+						}
+
+						.experienced.sortaonfire, .veryexperienced.sortaonfire, .veryveryexperienced.sortaonfire .superexperienced.sortaonfire {
+							color: #d9aade !important;
+						}
+
+						.experienced.onfire, .veryexperienced.onfire, .veryveryexperienced.onfire .superexperienced.onfire {
 							color: #da65e5 !important;
+							font-weight: bold;
 						}
         }
         .ui.header {

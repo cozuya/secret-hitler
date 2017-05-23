@@ -8,13 +8,14 @@ export default class Defaultmid extends React.Component {
 
 	changelogClicked(e) {
 		e.preventDefault();
+		this.props.onChangelogButtonClick('changelog');
 	}
 
 	render() {
 		return (
 			<section className="defaultmid">
-				<img src="images/lizard9.png" alt="Secret Hitler logo" width="400" height="400" />
-				<p>sh.io version 0.2.4 "teal" released 5/xx/2017 <a onClick={this.changelogClicked}>changelog</a> <a href="https://github.com/cozuya/secret-hitler/issues">open issues and upcoming features</a></p>
+				<img src="images/lizard10.png" alt="Secret Hitler logo" width="400" height="400" />
+				<p>sh.io version 0.3.0 "teal" released 5/23/2017 | <a onClick={this.changelogClicked}>changelog</a> | <a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">open issues and upcoming features</a></p>
 				<br />
 				<button style={{padding: '5px', background: '#333', color: 'white'}} data-name="h" onClick={this.props.quickDefault}>default game</button>
 				<br />
