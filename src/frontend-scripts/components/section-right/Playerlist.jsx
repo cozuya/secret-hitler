@@ -63,7 +63,8 @@ export default class Playerlist extends React.Component {
 										veryveryexperienced: user.wins + user.losses > 200,
 										superexperienced: user.wins + user.losses > 300,
 										sortaonfire: user.wins / (user.wins + user.losses) > .55,
-										onfire: user.wins / (user.wins + user.losses) > .6
+										onfire: user.wins / (user.wins + user.losses) > .6,
+										veryonfire: user.wins / (user.wins + user.losses) > .65,
 									});
 
 								return (

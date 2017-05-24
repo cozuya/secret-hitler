@@ -333,6 +333,8 @@ module.exports.selectVoting = data => {
 				{presidentIndex} = gameState,
 				chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 
+			game.private._chancellorPlayerName = game.private.seatedPlayers[chancellorIndex].userName;
+
 			if (game.gameState.previousElectedGovernment.length) {
 				game.private.seatedPlayers[game.gameState.previousElectedGovernment[0]].playersState[game.gameState.previousElectedGovernment[0]].claim = '';
 				game.private.seatedPlayers[game.gameState.previousElectedGovernment[1]].playersState[game.gameState.previousElectedGovernment[1]].claim = '';
@@ -745,7 +747,7 @@ module.exports.selectChancellorVoteOnVeto = data => {
 		{experiencedMode} = game.general,
 		president = game.private.seatedPlayers[game.gameState.presidentIndex],
 		chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor'),
-		chancellor = game.private.seatedPlayers[chancellorIndex],
+		chancellor = game.private.seatedPlayers.find(player => player.userName === game.private._chancellorPlayerName),
 		publicChancellor = game.publicPlayersState[chancellorIndex];
 
 	game.private.lock.selectPresidentVoteOnVeto = false;

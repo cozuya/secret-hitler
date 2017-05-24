@@ -41,7 +41,6 @@ module.exports = () => {
 							return {
 								labels: (() => {
 									return labels;
-									// return [labels[0], labels[Math.round(labels.length / 1.5)], labels[Math.round(labels.length / 2)], labels[Math.round(labels.length /2.5)], labels[labels.length - 1]];
 								})(),
 								series
 							};
