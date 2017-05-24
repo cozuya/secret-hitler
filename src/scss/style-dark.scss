@@ -299,9 +299,42 @@ body {
     margin-left: -237px;
 }
 
-.verified-yes {}
+.admin {
+	color: red !important;
+}
 
-.verified-no {}
+.contributer {
+	color: orange !important;
+}
+
+.experienced {
+	color: #b3eab3 !important;
+}
+
+.veryexperienced {
+	color: #7cd17c !important;
+}
+
+.veryexperienced {
+	color: #48d348 !important;
+}
+
+.superexperienced {
+	color:#19d119 !important;
+	font-weight: bold;
+}
+
+.experienced.sortaonfire, .veryexperienced.sortaonfire, .veryveryexperienced.sortaonfire .superexperienced.sortaonfire {
+	color: #d9aade !important;
+}
+
+.experienced.onfire, .veryexperienced.onfire, .veryveryexperienced.onfire .superexperienced.onfire {
+	color: #da65e5 !important;
+}
+
+.experienced.veryonfire, .veryexperienced.veryonfire, .veryveryexperienced.veryonfire .superexperienced.veryonfire {
+	color: #b703a7 !important;
+}
 
 ::-webkit-scrollbar {
     width: 3px;

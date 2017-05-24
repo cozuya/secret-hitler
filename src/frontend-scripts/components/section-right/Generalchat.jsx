@@ -1,4 +1,5 @@
 import React from 'react';
+import {PLAYERCOLORS} from '../../constants';
 
 export default class Generalchat extends React.Component {
 	constructor() {
@@ -61,9 +62,11 @@ export default class Generalchat extends React.Component {
 
 	processChats() {
 		return this.props.generalChats.map((chat, i) => {
+			const playerListPlayer = this.props.userList.list.find(player => player.userName === chat.userName);
+
 			return (
 				<div className="item" key={i}>
-					<span className={chat.userName === 'coz' ? 'chat-user admin' : chat.userName === 'stine' ? 'chat-user admin' : 'chat-user'}>{chat.userName}: </span>
+					<span className={playerListPlayer ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user' }>{chat.userName}: </span>
 					<span>{chat.chat}</span>
 				</div>
 			);
@@ -107,5 +110,6 @@ Generalchat.propTypes = {
 	gameInfo: React.PropTypes.object,
 	userInfo: React.PropTypes.object,
 	socket: React.PropTypes.object,
-	generalChats: React.PropTypes.array
+	generalChats: React.PropTypes.array,
+	userList: React.PropTypes.object
 };

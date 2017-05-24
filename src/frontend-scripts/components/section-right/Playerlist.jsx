@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import {ADMINS, CONTRIBUTORS} from '../../constants';
+import {ADMINS, PLAYERCOLORS} from '../../constants';
 
 export default class Playerlist extends React.Component {
 	render() {
@@ -54,22 +54,11 @@ export default class Playerlist extends React.Component {
 
 							return list.map((user, i) => {
 								const percent = ((user.wins / (user.wins + user.losses)) * 100).toFixed(0),
-									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '',
-									classes = cn({
-										admin: ADMINS.includes(user.userName),
-										contributer: CONTRIBUTORS.includes(user.userName),
-										experienced: user.wins + user.losses > 50,
-										veryexperienced: user.wins + user.losses > 100,
-										veryveryexperienced: user.wins + user.losses > 200,
-										superexperienced: user.wins + user.losses > 300,
-										sortaonfire: user.wins / (user.wins + user.losses) > .55,
-										onfire: user.wins / (user.wins + user.losses) > .6,
-										veryonfire: user.wins / (user.wins + user.losses) > .65,
-									});
+									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '';
 
 								return (
 									<div key={i}>
-										<span className={classes}>{user.userName}</span>
+										<span className={PLAYERCOLORS(user)}>{user.userName}</span>
 										<div className="userlist-stats-container">(
 											<span className="userlist-stats">{user.wins}</span> / <span className="userlist-stats">{user.losses}</span>) <span className="userlist-stats"> {percentDisplay}</span>
 										</div>
