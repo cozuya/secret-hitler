@@ -223,7 +223,9 @@ export class App extends React.Component {
 					onSeatingUser={this.handleSeatingUser}
 					onLeaveGame={this.handleLeaveGame}
 					quickDefault={this.makeQuickDefault}
+					onLeaveChangelog={this.handleRoute}
 					onSettingsButtonClick={this.handleRoute}
+					onChangelogButtonClick={this.handleRoute}
 					onClickedTakeSeat={this.handleSeatingUser}
 					userList={this.props.userList}
 					socket={socket}

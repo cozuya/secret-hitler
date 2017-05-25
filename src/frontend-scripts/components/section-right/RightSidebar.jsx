@@ -15,6 +15,7 @@ export default class RightSidebar extends React.Component {
 					socket={this.props.socket}
 					generalChats={this.props.generalChats}
 					userInfo={this.props.userInfo}
+					userList={this.props.userList}
 				/>
 			</section>
 		);

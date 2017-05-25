@@ -5,6 +5,7 @@ import Creategame from './Creategame.jsx';
 import Settings from './Settings.jsx';
 import Game from './Game.jsx';
 import Profile from './Profile.jsx';
+import Changelog from './Changelog.jsx';
 
 export default class Main extends React.Component {
 	render() {
@@ -49,6 +50,12 @@ export default class Main extends React.Component {
 								onLeaveCreateGame={this.props.onLeaveCreateGame}
 							/>
 						);
+					case 'changelog':
+						return (
+							<Changelog
+								onLeaveChangelog={this.props.onLeaveChangelog}
+							/>
+						);
 					case 'game':
 						return (
 							<Game
@@ -79,6 +86,7 @@ export default class Main extends React.Component {
 					default:
 						return (
 							<Defaultmid
+								onChangelogButtonClick={this.props.onChangelogButtonClick}
 								quickDefault={this.props.quickDefault}
 							/>
 						);

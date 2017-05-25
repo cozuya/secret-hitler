@@ -22,29 +22,6 @@
             height: 250px;
             overflow-y: auto;
             padding-left: 5px;
-							.admin {
-							color: red !important;
-						}
-
-						.contributer {
-							color: orange !important;
-						}
-
-						.experienced {
-							color: #b3eab3 !important;
-						}
-
-						.veryexperienced {
-							color: #7cd17c !important;
-						}
-
-						.veryexperienced {
-							color: #48d348 !important;
-						}
-
-						.experienced.onfire, .veryexperienced.onfire, .veryveryexperienced.onfire {
-							color: #da65e5 !important;
-						}
         }
         .ui.header {
             padding-left: 5px;
@@ -105,7 +82,7 @@
                     padding: 0;
                 }
                 .chat-user {
-                    color: $darkliberalteam;
+                    color: #888;	
                 }
                 .admin {
                     color: red;

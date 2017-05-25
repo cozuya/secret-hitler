@@ -5,6 +5,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	GameSummaryBuilder = require('../../../models/game-summary/GameSummaryBuilder'),
 	beginGame = game => {
 		const {experiencedMode} = game.general;
+
 		game.general.timeStarted = new Date().getTime();
 
 		let roles = _.range(0, 3).map(el => ({
@@ -346,24 +347,6 @@ module.exports = game => {
 	});
 	game.gameState.isTracksFlipped = true;
 	game.private.policies = [];
-
-	// remove idle games, timeout is reset on game updates
-	// game.private.timeout = (() => {
-	// 	// 10 minutes
-	// 	const timeout = () => setTimeout(() => {
-	// 		games.splice(games.indexOf(game), 1);
-	// 		sendGameList();
-	// 	}, 300000);
-
-	// 	let id = timeout();
-
-	// 	return {
-	// 		reset: () => {
-	// 			clearTimeout(id);
-	// 			id = timeout();
-	// 		}
-	// 	};
-	// })();
 
 	shufflePolicies(game);
 };

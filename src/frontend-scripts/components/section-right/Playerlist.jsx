@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import {ADMINS, CONTRIBUTORS} from '../../constants';
+import {ADMINS, PLAYERCOLORS} from '../../constants';
 
 const
 	mapStateToProps = ({ midSection }) => ({ midSection }),
@@ -75,16 +75,14 @@ class Playerlist extends React.Component {
 
 							return list.map((user, i) => {
 								const percent = ((user.wins / (user.wins + user.losses)) * 100).toFixed(0),
+
 									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '',
-									classes = cn({
-										admin: ADMINS.includes(user.userName),
-										contributer: CONTRIBUTORS.includes(user.userName),
-										experienced: user.wins + user.losses > 50,
-										veryexperienced: user.wins + user.losses > 100,
-										veryveryexperienced: user.wins + user.losses > 200,
-										onfire: user.wins / (user.wins + user.losses) > .6,
-										clickable: this.props.userIsClickable
-									}, 'user');
+
+									classes = cn(
+										PLAYERCOLORS(user), 
+										{ clickable: this.props.userIsClickable },
+										'user'
+									);
 
 								return (
 									<div key={i}>

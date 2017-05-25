@@ -296,8 +296,6 @@ module.exports.selectChancellor = data => {
 					player.voteStatus = {
 						hasVoted: false
 					};
-				} else {
-					console.log(player, 'player for attempted crash @ election:281');
 				}
 			});
 			sendInProgressGameUpdate(game);
@@ -349,6 +347,8 @@ module.exports.selectVoting = data => {
 			const {gameState} = game,
 				{presidentIndex} = gameState,
 				chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
+
+			game.private._chancellorPlayerName = game.private.seatedPlayers[chancellorIndex].userName;
 
 			if (game.gameState.previousElectedGovernment.length) {
 				game.private.seatedPlayers[game.gameState.previousElectedGovernment[0]].playersState[game.gameState.previousElectedGovernment[0]].claim = '';
@@ -692,7 +692,7 @@ module.exports.selectChancellorPolicy = data => {
 		enactedPolicy = data.policy;
 
 	game.private.lock.selectPresidentPolicy = false;
-	if (!game.private.lock.selectChancellorPolicy && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
+	if (!game.private.lock.selectChancellorPolicy && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
 		game.private.lock.selectChancellorPolicy = true;
 
 		if (data.selection === 3) {
@@ -776,7 +776,7 @@ module.exports.selectChancellorVoteOnVeto = data => {
 		{experiencedMode} = game.general,
 		president = game.private.seatedPlayers[game.gameState.presidentIndex],
 		chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor'),
-		chancellor = game.private.seatedPlayers[chancellorIndex],
+		chancellor = game.private.seatedPlayers.find(player => player.userName === game.private._chancellorPlayerName),
 		publicChancellor = game.publicPlayersState[chancellorIndex];
 
 	game.private.lock.selectPresidentVoteOnVeto = false;

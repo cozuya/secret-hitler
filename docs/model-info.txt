@@ -61,6 +61,7 @@ playersState (see private)
 publicCardflingerState object
 cardflingerState (see private)
 private
+	_chancellorPlayerName string (bug resolution)
 	timeout object
 	policies array
 	currentElectionPolicies array

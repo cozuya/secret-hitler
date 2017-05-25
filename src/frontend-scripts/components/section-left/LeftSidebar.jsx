@@ -19,29 +19,27 @@ export default class LeftSidebar extends React.Component {
 				const aGameStatus = a.gameStatus,
 					bGameStatus = b.gameStatus;
 
-				if (aGameStatus === 'completed' && bGameStatus !== 'completed') {
+				if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
+					return a.seatedCount - b.seatedCount;
+				}
+
+				if (aGameStatus === 'notStarted' && bGameStatus !== 'notStarted') {
+					return -1;
+				}
+
+				if (aGameStatus !== 'notStated' && bGameStatus === 'notStarted') {
 					return 1;
-				} else if (bGameStatus === 'completed' && aGameStatus !== 'completed') {
+				}
+
+				if (aGameStatus === 'isStarted' && bGameStatus !== 'isStarted') {
 					return -1;
 				}
 
 				if (aGameStatus !== 'isStarted' && bGameStatus === 'isStarted') {
-					return -1;
-				} else if (aGameStatus === 'isStarted' && bGameStatus !== 'isStarted') {
 					return 1;
-				} else if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
-					return b.seatedCount - a.seatedCount;
 				}
 
-				// if (a.gameState.isStarted && !a.gameState.isCompleted) {
-				// 	return b.gameState.isStarted ? -1 : 1;
-				// }
-
-				// if (b.gameState.isStarted && !b.gameState.isCompleted) {
-				// 	return a.gameState.isStarted ? 1 : -1;
-				// }
-
-				return 0;
+				return 1;
 			}).map((game, index) => {
 				return (
 					<SidebarGame

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
 			new Chartist.Pie('#chart-allplayer-games-winrate', processWinrateData(data.allPlayerGameData), {width: '400px', height: '400px'});
 
-			$('#chart-allplayer-games-winrate').after(`<p style="text-align: center">Total games played: ${data.fivePlayerGameData.totalGameCount}</p>`);
+			$('#chart-allplayer-games-winrate').after(`<p style="text-align: center">Total games played: ${data.allPlayerGameData.totalGameCount}</p>`);
 
 			new Chartist.Pie('#chart-fiveplayer-games-winrate', processWinrateData(data.fivePlayerGameData), {width: '400px', height: '400px'});
 

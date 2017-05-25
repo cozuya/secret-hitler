@@ -1,6 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-// import _ from 'lodash';
+import {PLAYERCOLORS} from '../../constants';
 
 export default class Gamechat extends React.Component {
 	constructor() {
@@ -141,7 +141,8 @@ export default class Gamechat extends React.Component {
 			.filter(chat => ((chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All'))) || (!chat.gameChat && chatFilter !== 'Game'))
 			.map((chat, i) => {
 				const chatContents = chat.chat,
-					isSeated = Boolean(gameInfo.publicPlayersState.find(player => player.userName === chat.userName));
+					isSeated = Boolean(gameInfo.publicPlayersState.find(player => player.userName === chat.userName)),
+					playerListPlayer = this.props.userList.list.find(player => player.userName === chat.userName);
 
 				return chat.gameChat ? (
 					<div className="item" key={i}>
@@ -191,7 +192,7 @@ export default class Gamechat extends React.Component {
 				</div>
 			) :	(
 				<div className="item" key={i}>
-					<span className="chat-user">{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
+					<span className={playerListPlayer ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
 					<span>{chatContents}</span>
 				</div>
 				);
