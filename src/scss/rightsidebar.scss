@@ -31,6 +31,11 @@
                 float: right;
             }
         }
+        .user {
+            &:hover {
+                cursor: not-allowed;
+            }
+        }
         .clickable.user {
             &:hover {
                 color: #608cb3 !important;
