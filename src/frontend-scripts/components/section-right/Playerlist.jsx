@@ -70,11 +70,11 @@ export default class Playerlist extends React.Component {
 									return 1;
 								}
 
-								if (aTotal > 29 && bTotal > 29) {
+								if (aTotal > 49 && bTotal > 49) {
 									return (b.wins / bTotal) - (a.wins / aTotal);
-								} else if (aTotal > 29) {
+								} else if (aTotal > 49) {
 									return -1;
-								} else if (bTotal > 29) {
+								} else if (bTotal > 49) {
 									return 1;
 								}
 

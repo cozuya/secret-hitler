@@ -26,8 +26,9 @@ export default class Changelog extends React.Component {
 					<li>Fix to "chancellor in veto zone can't click a card, hanging the entire game" bug that to be honest I have no idea where it came from, but it should be working now.  Sorry about that.</li>
 					<li>Looks like there was one crash bug left and only happened a couple times per day, this patch will attempt to fix that. Without further breaking stuff.</li>
 					<li>Fix to gamelist sort bouncing around like crazy (I hope, this is like the 3rd time I've tried to fix it).</li>
-					<li>Stats page only refreshes once per day now.</li>
 					<li>Enhanced the player colors a bit, and took out bolded player names as it was a bit much.</li>
+					<li>Increased threshold for being in the "top tier" on the playerlist from 30 to 50.  This will put only "colored" (bad choice of words..) players on the top.  I think this incentivizes people a bit.</li>
+					<li>Stats page only refreshes once per day now.</li>
 				</ul>
 				<div className="ui header">
 					<p>Version 0.3.0 "teal" released 5-23-2017</p>
