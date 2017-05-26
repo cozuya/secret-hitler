@@ -29,7 +29,7 @@ export default class Playerlist extends React.Component {
 					<div className="clearfix">
 						<h3 className="ui header">Lobby</h3>
 						<i className="info circle icon" onClick={this.clickInfoIcon} />
-						<div className="ui modal playerlistinfo">
+						<div className="ui basic modal playerlistinfo">
 							<div className="header">Lobby and player color info</div>
 							<h4>Players in the lobby, general chat, and game chat are grey/white until:</h4>
 							<p>50 games played: <span className="experienced">light green</span></p>
