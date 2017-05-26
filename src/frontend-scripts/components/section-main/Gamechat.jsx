@@ -134,7 +134,7 @@ export default class Gamechat extends React.Component {
 	}
 
 	processChats() {
-		const {gameInfo, userInfo} = this.props,
+		const {gameInfo, userInfo, userList} = this.props,
 			{chatFilter} = this.state;
 
 		return gameInfo.chats.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
@@ -142,7 +142,7 @@ export default class Gamechat extends React.Component {
 			.map((chat, i) => {
 				const chatContents = chat.chat,
 					isSeated = Boolean(gameInfo.publicPlayersState.find(player => player.userName === chat.userName)),
-					playerListPlayer = this.props.userList.list.find(player => player.userName === chat.userName);
+					playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 
 				return chat.gameChat ? (
 					<div className="item" key={i}>
