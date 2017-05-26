@@ -116,6 +116,8 @@ module.exports.handleAddNewGame = (socket, data) => {
 		data.general.private = true;
 	}
 
+	data.general.timeCreated = new Date().getTime();
+
 	games.push(data);
 	sendGameList();
 	socket.join(data.general.uid);
