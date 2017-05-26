@@ -922,6 +922,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 					chat: [{text: 'The President and Chancellor have voted to veto this election and the election tracker moves forward.'}]
 				};
 
+				game.private.lock.selectChancellorPolicy = game.private.lock.selectPresidentVoteOnVeto = game.private.lock.selectChancellorVoteOnVeto = false;
 				game.trackState.electionTrackerCount++;
 
 				if (!game.general.disableGamechat) {
