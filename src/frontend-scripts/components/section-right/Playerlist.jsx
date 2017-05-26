@@ -2,6 +2,7 @@ import React from 'react';
 import {ADMINS, PLAYERCOLORS} from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
+import classnames from 'classnames';
 
 $.fn.modal = Modal;
 
@@ -15,6 +16,10 @@ export default class Playerlist extends React.Component {
 		$('.playerlistinfo')
 			.modal('setting', 'transition', 'scale')
 			.modal('show');
+	}
+
+	routeToGame(gameId) {
+		this.props.socket.emit('getGameInfo', gameId);
 	}
 
 	render() {
@@ -83,11 +88,34 @@ export default class Playerlist extends React.Component {
 
 							return list.map((user, i) => {
 								const percent = ((user.wins / (user.wins + user.losses)) * 100).toFixed(0),
-									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '';
+
+									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '',
+
+									renderStatus = () => {
+										const status = user.status;
+
+										if (!status || status === 'none') {
+											return null;
+										} else {
+											const iconClasses = classnames(
+												'status',
+												{ search: status.type === 'observing' },
+												{ game: status.type === 'playing' },
+												'icon'
+											);
+
+											return (
+												<i
+													className={iconClasses}
+													onClick={this.routeToGame.bind(this, status.gameId)} />
+											);
+										}
+									};
 
 								return (
 									<div key={i}>
 										<span className={PLAYERCOLORS(user)}>{user.userName}</span>
+										{renderStatus()}
 										<div className="userlist-stats-container">(
 											<span className="userlist-stats">{user.wins}</span> / <span className="userlist-stats">{user.losses}</span>) <span className="userlist-stats"> {percentDisplay}</span>
 										</div>
