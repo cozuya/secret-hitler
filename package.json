@@ -1,7 +1,7 @@
 {
   "name": "secret-hitler",
   "description": "A dramatic game of political intrigue and betrayal set in 1930's Germany.",
-  "version": "0.2.3",
+  "version": "0.3.1",
   "license": "CC-BY-NC-SA-4.0",
   "repository": {
     "url": "https://github.com/cozuya/secret-hitler.git",
@@ -28,8 +28,6 @@
     "lodash": "^4.17.4",
     "mongoose": "^4.9.1",
     "morgan": "^1.8.1",
-    "nodemailer": "^3.1.8",
-    "nodemailer-mailgun-transport": "^1.2.4",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^4.0.0",
