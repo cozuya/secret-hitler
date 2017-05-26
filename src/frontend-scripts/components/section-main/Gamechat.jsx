@@ -134,7 +134,7 @@ export default class Gamechat extends React.Component {
 	}
 
 	processChats() {
-		const {gameInfo} = this.props,
+		const {gameInfo, userInfo} = this.props,
 			{chatFilter} = this.state;
 
 		return gameInfo.chats.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
@@ -146,7 +146,7 @@ export default class Gamechat extends React.Component {
 
 				return chat.gameChat ? (
 					<div className="item" key={i}>
-						<span className="chat-user--game">[GAME] {this.handleTimestamps(chat.timestamp)}: </span>
+						<span className="chat-user--game">[GAME]{this.handleTimestamps(chat.timestamp)}: </span>
 						<span className="game-chat">
 							{(() => {
 								return chatContents.map((chatSegment, index) => {
@@ -169,7 +169,7 @@ export default class Gamechat extends React.Component {
 					</div>
 			) : chat.isClaim ? (
 				<div className="item" key={i}>
-					<span className="chat-user--claim">[CLAIM] {this.handleTimestamps(chat.timestamp)}: </span>
+					<span className="chat-user--claim">[CLAIM]{this.handleTimestamps(chat.timestamp)}: </span>
 					<span className="claim-chat">
 						{(() => {
 							return chatContents.map((chatSegment, index) => {
@@ -192,7 +192,7 @@ export default class Gamechat extends React.Component {
 				</div>
 			) :	(
 				<div className="item" key={i}>
-					<span className={playerListPlayer ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
+					<span className={playerListPlayer ? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) ? 'chat-user' : `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
 					<span>{chatContents}</span>
 				</div>
 				);

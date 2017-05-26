@@ -12,6 +12,7 @@
 		"no-mixed-requires": "off",
 		"no-negated-condition": "off",
 		"camelcase": "off",
+		"new-cap": "off",
 		"quote-props": "off",
 		"space-before-function-paren": "off",
 		"guard-for-in": "off",

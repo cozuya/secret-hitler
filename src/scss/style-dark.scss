@@ -49,9 +49,10 @@ $dteal: #034f61;
             top: 140px;
         }
 				p {
+					font-family: 'Josefin Sans', sans-serif;
 					position: absolute;
 					bottom: 0;
-					left: 4%;
+					left: 9%;
 					color: #bbb;
 					
 					a {
@@ -315,13 +316,16 @@ body {
 	color: #7cd17c !important;
 }
 
-.veryexperienced {
+.veryveryexperienced {
 	color: #48d348 !important;
 }
 
 .superexperienced {
-	color:#19d119 !important;
-	font-weight: bold;
+	color:#11c811 !important;
+}
+
+.supersuperexperienced {
+	color: #00a100;
 }
 
 .experienced.sortaonfire, .veryexperienced.sortaonfire, .veryveryexperienced.sortaonfire .superexperienced.sortaonfire {

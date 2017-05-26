@@ -18,10 +18,21 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 0.3.1 "mint" released 5-26-2017</p>
+				</div>
+				<h3>New feature (sorta): player colors in both game and general chat.  This can be disabled with a new player setting in the settings menu (click "gear" icon while not in a game).  Note that because of the "unorthodox" way I did this, players who are no longer logged in will have their previous chats revert to the default.</h3>
+				<ul>
+					<li>A new info component is in the lobby/playerlist.  Click it to get details on the player name color schemes.</li>
+					<li>Fix to "chancellor in veto zone can't click a card, hanging the entire game" bug that to be honest I have no idea where it came from, but it should be working now.  Sorry about that.</li>
+					<li>Looks like there was one crash bug left and only happened a couple times per day, this patch will attempt to fix that. Without further breaking stuff.</li>
+					<li>Fix to gamelist sort bouncing around like crazy (I hope, this is like the 3rd time I've tried to fix it).</li>
+					<li>Stats page only refreshes once per day now.</li>
+					<li>Enhanced the player colors a bit, and took out bolded player names as it was a bit much.</li>
+				</ul>
+				<div className="ui header">
 					<p>Version 0.3.0 "teal" released 5-23-2017</p>
 				</div>
 				<h3>New feature <a target="_blank" href="/stats">game stats</a>. Pretty basic to start, but interesting.  Will expand more on that later.</h3>
-				<p>Other changes:</p>
 				<ul>
 					<li>Fixed the last crash bug for real this time.  I mean it.  Associated to that bug, fixed the "can't select ja or nein while chancellor during veto phase" bug.</li>
 					<li>More fun name color stuff:</li>

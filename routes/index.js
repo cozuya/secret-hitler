@@ -81,7 +81,7 @@ module.exports = () => {
 	accounts();
 	socketRoutes();
 	getData();
-	setInterval(getData, 3600000);
+	setInterval(getData, 86400000);
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
