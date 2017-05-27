@@ -16,7 +16,8 @@ export default class Creategame extends React.Component {
 			experiencedmode: false,
 			disablechat: false,
 			disablegamechat: false,
-			privateShowing: false
+			privateShowing: false,
+			rainbowgame: false
 		};
 	}
 
@@ -56,6 +57,15 @@ export default class Creategame extends React.Component {
 			},
 			onUnchecked() {
 				self.setState({privateShowing: false});
+			}
+		});
+
+		$(this.rainbowgame).checkbox({
+			onChecked() {
+				self.setState({rainbowgame: true});
+			},
+			onUnchecked() {
+				self.setState({rainbowgame: false});
 			}
 		});
 	}
@@ -180,6 +190,20 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					</div>
+					{(() => {
+						return (
+							<div className="row">
+								<div className="sixteen wide column experiencedmode">
+									<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
+									<div className="ui fitted toggle checkbox" ref={c => {
+										this.rainbowgame = c;
+									}}>
+										<input type="checkbox" name="rainbowgame" defaultChecked={false} />
+									</div>
+								</div>
+							</div>
+						);
+					})()}
 				</div>
 				<div className="ui grid footer">
 					<div onClick={this.createNewGame} className="ui button primary" style={{'marginLeft': '15px'}}>
@@ -194,5 +218,6 @@ export default class Creategame extends React.Component {
 Creategame.propTypes = {
 	onCreateGameSubmit: React.PropTypes.func,
 	onLeaveCreateGame: React.PropTypes.func,
-	userInfo: React.PropTypes.object
+	userInfo: React.PropTypes.object,
+	userList: React.PropTypes.object
 };
