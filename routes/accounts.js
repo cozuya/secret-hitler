@@ -2,6 +2,7 @@ const passport = require('passport'),
 	Account = require('../models/account'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
+	blacklistedWords = require('../iso/blacklistwords'),
 	ensureAuthenticated = (req, res, next) => {
 		if (req.isAuthenticated()) {
 			return next();
@@ -108,28 +109,38 @@ module.exports = () => {
 		} else if (/88$/i.test(username)) {
 			res.status(401).json({message: 'Sorry, usernames that end with 88 are not allowed.'});
 		} else {
-			Account.findOne({username}, (err, account) => {
-				if (err) {
-					return next(err);
-				}
-
-				if (account) {
-					res.status(401).json({message: 'Sorry, that account already exists.'});
-				} else {
-					Account.register(new Account(save), password, err => {
-						if (err) {
-							return next(err);
-						}
-
-						passport.authenticate('local')(req, res, () => {
-							if (email) {
-								verifyAccount.sendToken(req.body.username, req.body.email);
-							}
-							res.send();
-						});
-					});
+			let doesContainBadWord = false;
+			blacklistedWords.forEach(word => {
+				if (new RegExp(word, 'i').test(username)) {
+					doesContainBadWord = true;
 				}
 			});
+			if (doesContainBadWord) {
+				res.status(401).json({message: 'Sorry, your username contains a naughty word or part of a naughty word.'});
+			} else {
+				Account.findOne({username}, (err, account) => {
+					if (err) {
+						return next(err);
+					}
+
+					if (account) {
+						res.status(401).json({message: 'Sorry, that account already exists.'});
+					} else {
+						Account.register(new Account(save), password, err => {
+							if (err) {
+								return next(err);
+							}
+
+							passport.authenticate('local')(req, res, () => {
+								if (email) {
+									verifyAccount.sendToken(req.body.username, req.body.email);
+								}
+								res.send();
+							});
+						});
+					}
+				});
+			}
 		}
 	});
 
