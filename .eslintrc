@@ -23,7 +23,9 @@
 		"arrow-parens": "off",
 		"react/jsx-indent": ["error", "tab"],
 		"react/jsx-uses-vars": "error",
-		"react/jsx-indent-props": ["error", "tab"]
+		"react/jsx-indent-props": ["error", "tab"],
+		"object-curly-spacing": off,
+		"array-bracket-spacing": off
 	},
 	"globals": {
 		"io": true,
