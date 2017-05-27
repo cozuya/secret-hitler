@@ -88,9 +88,15 @@ export default class Playerlist extends React.Component {
 								return (
 									<div key={i}>
 										<span className={PLAYERCOLORS(user)}>{user.userName}</span>
-										<div className="userlist-stats-container">(
-											<span className="userlist-stats">{user.wins}</span> / <span className="userlist-stats">{user.losses}</span>) <span className="userlist-stats"> {percentDisplay}</span>
-										</div>
+										{(() => {
+											if (!ADMINS.includes(user.userName)) {
+												return (
+													<div className="userlist-stats-container">(
+														<span className="userlist-stats">{user.wins}</span> / <span className="userlist-stats">{user.losses}</span>) <span className="userlist-stats"> {percentDisplay}</span>
+													</div>
+												);
+											}
+										})()}
 									</div>
 								);
 							});
