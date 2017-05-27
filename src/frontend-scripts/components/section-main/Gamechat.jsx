@@ -377,7 +377,7 @@ export default class Gamechat extends React.Component {
 								let classes = 'ui action input';
 
 								const {gameState, publicPlayersState} = this.props.gameInfo,
-									{userName} = this.props.userInfo,
+									{userName, isSeated} = this.props.userInfo,
 									isDead = (() => {
 										if (this.props.userInfo.isSeated
 											&& publicPlayersState.length
@@ -387,7 +387,7 @@ export default class Gamechat extends React.Component {
 									})(),
 									isGovernmentDuringPolicySelection = (() => {
 										if ((gameState.phase === 'presidentSelectingPolicy'
-											|| gameState.phase === 'chancellorSelectingPolicy') && userName) {
+											|| gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
 											return publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' || publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor';
 										}
 									})();

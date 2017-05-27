@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {ADMINS, PLAYERCOLORS} from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
@@ -6,7 +7,16 @@ import classnames from 'classnames';
 
 $.fn.modal = Modal;
 
-export default class Playerlist extends React.Component {
+const
+	mapStateToProps = ({ midSection }) => ({ midSection }),
+
+	mergeProps = (stateProps, dispatchProps, ownProps) => {
+		const isUserClickable = stateProps.midSection !== 'game';
+
+		return Object.assign({}, ownProps, { isUserClickable });
+	};
+
+class Playerlist extends React.Component {
 	constructor() {
 		super();
 		this.clickInfoIcon = this.clickInfoIcon.bind(this);
@@ -91,6 +101,13 @@ export default class Playerlist extends React.Component {
 
 									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '',
 
+									disableIfUnclickable = f => {
+										if (this.props.isUserClickable)
+											return f;
+
+										return () => null;
+									},
+
 									renderStatus = () => {
 										const status = user.status;
 
@@ -99,6 +116,7 @@ export default class Playerlist extends React.Component {
 										} else {
 											const iconClasses = classnames(
 												'status',
+												{ unclickable: !this.props.isUserClickable },
 												{ search: status.type === 'observing' },
 												{ game: status.type === 'playing' },
 												'icon'
@@ -107,7 +125,7 @@ export default class Playerlist extends React.Component {
 											return (
 												<i
 													className={iconClasses}
-													onClick={this.routeToGame.bind(this, status.gameId)} />
+													onClick={disableIfUnclickable(this.routeToGame).bind(this, status.gameId)} />
 											);
 										}
 									};
@@ -133,3 +151,9 @@ export default class Playerlist extends React.Component {
 Playerlist.propTypes = {
 	userList: React.PropTypes.object
 };
+
+export default connect(
+	mapStateToProps,
+	null,
+	mergeProps
+)(Playerlist);

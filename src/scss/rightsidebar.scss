@@ -44,9 +44,14 @@
                 float: right;
             }
         }
-        .status {
+        .status.icon {
             margin-left: 5px;
-            cursor: pointer;
+            &:hover {
+                cursor: pointer;
+            }
+            &.unclickable:hover {
+                cursor: not-allowed;
+            }
         }
     }
     .right-sidebar-divider {
