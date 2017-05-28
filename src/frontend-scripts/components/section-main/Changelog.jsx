@@ -18,6 +18,15 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 0.3.2 "avocado" released 5-28-2017</p>
+				</div>
+				<h3>New feature: player status icons in the lobby.  Players in game will have a "SH" icon.  Players observing will have a magnifying glass icon.  Click both (while not in a game) to go to the game that player is in.</h3>
+				<ul>
+					<li>Irritating private games that never get started now get deleted after 10 minutes.</li>
+					<li>Fix to a front-end issue with observer chat.</li>
+					<li>Another attempt to fix gamelist sort.</li>
+				</ul>
+				<div className="ui header">
 					<p>Version 0.3.1 "mint" released 5-26-2017</p>
 				</div>
 				<h3>New feature (sorta): player colors in both game and general chat.  This can be disabled with a new player setting in the settings menu (click "gear" icon while not in a game).  Note that because of the "unorthodox" way I did this, players who are no longer logged in will have their previous chats revert to the default.</h3>

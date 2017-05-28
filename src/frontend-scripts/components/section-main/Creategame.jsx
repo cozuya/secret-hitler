@@ -2,6 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import Slider from 'rc-slider';
 import Checkbox from 'semantic-ui-checkbox';
+import blacklistedWords from '../../../../iso/blacklistwords';
 
 $.fn.checkbox = Checkbox;
 
@@ -17,6 +18,7 @@ export default class Creategame extends React.Component {
 			disablechat: false,
 			disablegamechat: false,
 			privateShowing: false,
+			containsBadWord: false,
 			rainbowgame: false
 		};
 	}
@@ -80,47 +82,58 @@ export default class Creategame extends React.Component {
 
 	createNewGame() {
 		const $creategame = $('section.creategame');
+		let containsBadWord = false;
 
-		this.props.onCreateGameSubmit({
-			gameState: {
-				previousElectedGovernment: [],
-				undrawnPolicyCount: 17,
-				discardedPolicyCount: 0,
-				presidentIndex: -1
-			},
-			chats: [],
-			general: {
-				whitelistedPlayers: [],
-				uid: Math.random().toString(36).substring(6),
-				name: $creategame.find('div.gamename input').val() || 'New Game',
-				minPlayersCount: this.state.sliderValues[0],
-				maxPlayersCount: this.state.sliderValues[1],
-				status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
-				experiencedMode: this.state.experiencedmode,
-				disableChat: this.state.disablechat,
-				disableGamechat: this.state.disablegamechat,
-				private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
-				electionCount: 0
-			},
-			publicPlayersState: [{
-				userName: this.props.userInfo.userName,
-				connected: true,
-				cardStatus: {
-					cardDisplayed: false,
-					isFlipped: false,
-					cardFront: 'secretrole',
-					cardBack: {}
-				}
-			}],
-			playersState: [],
-			cardFlingerState: [],
-			trackState: {
-				liberalPolicyCount: 0,
-				fascistPolicyCount: 0,
-				electionTrackerCount: 0,
-				enactedPolicies: []
+		blacklistedWords.forEach(word => {
+			if (new RegExp(word, 'i').test($creategame.find('div.gamename input').val())) {
+				containsBadWord = true;
 			}
 		});
+
+		if (containsBadWord) {
+			this.setState({containsBadWord: true});
+		} else {
+			this.props.onCreateGameSubmit({
+				gameState: {
+					previousElectedGovernment: [],
+					undrawnPolicyCount: 17,
+					discardedPolicyCount: 0,
+					presidentIndex: -1
+				},
+				chats: [],
+				general: {
+					whitelistedPlayers: [],
+					uid: Math.random().toString(36).substring(6),
+					name: $creategame.find('div.gamename input').val() || 'New Game',
+					minPlayersCount: this.state.sliderValues[0],
+					maxPlayersCount: this.state.sliderValues[1],
+					status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
+					experiencedMode: this.state.experiencedmode,
+					disableChat: this.state.disablechat,
+					disableGamechat: this.state.disablegamechat,
+					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
+					electionCount: 0
+				},
+				publicPlayersState: [{
+					userName: this.props.userInfo.userName,
+					connected: true,
+					cardStatus: {
+						cardDisplayed: false,
+						isFlipped: false,
+						cardFront: 'secretrole',
+						cardBack: {}
+					}
+				}],
+				playersState: [],
+				cardFlingerState: [],
+				trackState: {
+					liberalPolicyCount: 0,
+					fascistPolicyCount: 0,
+					electionTrackerCount: 0,
+					enactedPolicies: []
+				}
+			});
+		}
 	}
 
 	render() {
@@ -139,6 +152,11 @@ export default class Creategame extends React.Component {
 							<div className="ui input">
 								<input maxLength="20" placeholder="New Game" />
 							</div>
+							{(() => {
+								if (this.state.containsBadWord) {
+									return <p className="contains-bad-word">This game name has a banned word or word fragment.</p>;
+								}
+							})()}
 						</div>
 						<div className="eight wide column slider">
 							<h4 className="ui header">Number of players</h4>
@@ -195,6 +213,7 @@ export default class Creategame extends React.Component {
 							<div className="row">
 								<div className="sixteen wide column experiencedmode">
 									<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
+									<h4 className="ui header">Coming soon</h4>
 									<div className="ui fitted toggle checkbox" ref={c => {
 										this.rainbowgame = c;
 									}}>
