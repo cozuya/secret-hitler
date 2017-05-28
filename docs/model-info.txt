@@ -46,6 +46,7 @@ publicPlayersState array
 	obj
 		governmentStatus string isPendingPresident isPendingChancellor
 		isDead bool
+		isConfetti bool
 		connected bool
 		isLoader bool
 		leftGame bool

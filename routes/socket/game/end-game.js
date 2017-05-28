@@ -57,8 +57,16 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	winningPrivatePlayers.forEach((player, index) => {
 		publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
+		publicPlayersState.find(play => play.userName === player.userName).isConfetti = true;
 		player.wonGame = true;
 	});
+
+	setTimeout(() =>{
+		winningPrivatePlayers.forEach((player, index) => {
+			publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
+		});
+		sendInProgressGameUpdate(game);
+	}, 5000);
 
 	game.general.status = winningTeamName === 'fascist' ? 'Fascists win the game.' : 'Liberals win the game.';
 	game.gameState.isCompleted = winningTeamName;

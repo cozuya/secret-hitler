@@ -20,11 +20,13 @@ export default class Changelog extends React.Component {
 				<div className="ui header">
 					<p>Version 0.3.2 "avocado" released 5-28-2017</p>
 				</div>
-				<h3>New feature: player status icons in the lobby.  Players in game will have a "SH" icon.  Players observing will have a magnifying glass icon.  Click both (while not in a game) to go to the game that player is in.</h3>
+				<h3>New feature: player status icons in the lobby.  Players in game will have a "SH" icon.  Players observing will have a magnifying glass icon.  Click either (while not in a game) to be routed to the game that player is in.  Feature courtesy of jbasrai @github.  Contribute to this open source project to get a cool orange name!</h3>
 				<ul>
 					<li>Irritating private games that never get started now get deleted after 10 minutes.</li>
 					<li>Fix to a front-end issue with observer chat.</li>
 					<li>Another attempt to fix gamelist sort.</li>
+					<li>A small global black list of "bad words" and word fragments for user names and game names has been implemented.  While this is a (very mildly) adult-themed game, some stuff is not cool.  Tongue-in-cheek Nazi references and swear words?  Probably fine.  Racism/sexism/homophobia/antisemitism?  No thanks.</li>
+					<li>Something special now happens when you win a game..</li>
 				</ul>
 				<div className="ui header">
 					<p>Version 0.3.1 "mint" released 5-26-2017</p>

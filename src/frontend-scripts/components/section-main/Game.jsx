@@ -2,10 +2,13 @@ import React from 'react';
 import Tracks from './Tracks.jsx';
 import Gamechat from './Gamechat.jsx';
 import Players from './Players.jsx';
+import Confetti from './Confetti.jsx';
 
 export default class Game extends React.Component {
 	componentDidUpdate(prevProps) {
-		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState && this.props.gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) {
+		const {userInfo, gameInfo} = this.props;
+
+		if (userInfo.isSeated && gameInfo.gameState && gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) {
 			const sound = document.createElement('audio');
 
 			sound.setAttribute('src', 'alarm.mp3');
@@ -74,6 +77,13 @@ export default class Game extends React.Component {
 						</div>
 					</div>
 				</div>
+				{(() => {
+					const {userInfo, gameInfo} = this.props;
+
+					if (userInfo.userName && gameInfo && gameInfo.publicPlayersState && gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) && gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti) {
+						return <Confetti />;
+					}
+				})()}
 				<div
 					className={
 						(() => {
