@@ -8,7 +8,7 @@
 const mongoose = require('mongoose'),
 	{Schema} = mongoose,
 	gameSummary = new Schema({
-		uid: String,
+		_id: String,
 		date: Date,
 		players: [{
 			username: String,

@@ -7,7 +7,7 @@ const
 // handles all stat computation logic
 function profileDelta(username, game) {
 	const
-		{ playerSize, date } = game,
+		{ playerSize, date, id } = game,
 		isWinner = game.isWinner(username),
 		loyalty = game.loyaltyOf(username),
 		isLiberal = loyalty === 'liberal',
@@ -56,6 +56,7 @@ function profileDelta(username, game) {
 			}
 		},
 		recentGames: {
+			_id: id,
 			loyalty,
 			playerSize,
 			isWinner,
@@ -134,7 +135,7 @@ function updateProfile(username, game, options = {}) {
 
 // game: EnhancedGameSummary, options: { version: String, cache: Boolean }
 function updateProfiles(game, options = {}) {
-	debug('Updating profiles for: %s', game.uid);
+	debug('Updating profiles for: %s', game.id);
 
 	return Promise.all(game.players
 		.map(p => p.username)

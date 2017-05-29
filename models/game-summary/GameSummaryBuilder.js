@@ -5,7 +5,7 @@ const
 module.exports = class GameSummaryBuilder {
 
 	constructor(uid, date, players, logs = []) {
-		this.uid = uid;
+		this._id = uid;
 		this.date = date;
 		this.players = players;
 		this.logs = logs;
@@ -14,8 +14,8 @@ module.exports = class GameSummaryBuilder {
 	}
 
 	publish() {
-		const { uid, date, players, logs } = this;
-		return new GameSummary({ uid, date, players, logs });
+		const { _id, date, players, logs } = this;
+		return new GameSummary({ _id, date, players, logs });
 	}
 
 	// applyToPreviousTurn gets set to true for claims that are made after the start of the next turn
@@ -34,11 +34,11 @@ module.exports = class GameSummaryBuilder {
 				}
 			})();
 
-		return new GameSummaryBuilder(this.uid, this.date, this.players, nextLogs);
+		return new GameSummaryBuilder(this._id, this.date, this.players, nextLogs);
 	}
 
 	nextTurn() {
-		return new GameSummaryBuilder(this.uid, this.date, this.players, this.logs.concat({}));
+		return new GameSummaryBuilder(this._id, this.date, this.players, this.logs.concat({}));
 	}
 
 };

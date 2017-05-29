@@ -8,7 +8,7 @@ module.exports = class EnhancedGameSummary {
 	constructor(summary) {
 		// from summary
 		this.summary = summary;
-		this.uid = summary.uid;
+		this.id = summary._id;
 		this.date = summary.date;
 		this.players = summary.players;
 		this.logs = summary.logs;

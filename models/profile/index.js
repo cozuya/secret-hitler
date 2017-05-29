@@ -32,6 +32,7 @@ const mongoose = require('mongoose'),
 		},
 		recentGames: {
 			type: [{
+				_id: String,
 				loyalty: String,
 				playerSize: Number,
 				isWinner: Boolean,
