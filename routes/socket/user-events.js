@@ -1,7 +1,7 @@
 let generalChatCount = 0;
 
 const {games, userList, generalChats} = require('./models'),
-	{sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
+	{sendGameList, sendGeneralChats, sendUserList, updateUserStatus} = require('./user-requests'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
 	startGame = require('./game/start-game.js'),
@@ -34,7 +34,6 @@ const {games, userList, generalChats} = require('./models'),
 				} else if (publicPlayersState.length === 1) {
 					games.splice(games.indexOf(game), 1);
 				} else if (!gameState.isStarted && playerIndex > -1) {
-					// console.log(playerIndex, '!gameState.isStarted if clause in handleSocketDisconnect fired that spliced PPS');
 					publicPlayersState.splice(playerIndex, 1);
 					io.sockets.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted) {
@@ -99,6 +98,8 @@ module.exports.updateSeatedUser = (socket, data) => {
 			game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 		}
 
+		updateUserStatus(data.userName, 'playing', data.uid);
+
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 
 		sendGameList();
@@ -106,6 +107,8 @@ module.exports.updateSeatedUser = (socket, data) => {
 };
 
 module.exports.handleAddNewGame = (socket, data) => {
+	const username = socket.handshake.session.passport.user;
+
 	data.private = {
 		unSeatedGameChats: [],
 		lock: {}
@@ -115,6 +118,9 @@ module.exports.handleAddNewGame = (socket, data) => {
 		data.private.privatePassword = data.general.private;
 		data.general.private = true;
 	}
+
+	data.general.timeCreated = new Date().getTime();
+	updateUserStatus(username, 'playing', data.general.uid);
 
 	games.push(data);
 	sendGameList();
@@ -477,6 +483,8 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	} else if (game && game.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
+
+	updateUserStatus(data.userName, 'none', data.uid);
 
 	socket.emit('gameUpdate', {}, data.isSettings);
 	sendGameList();

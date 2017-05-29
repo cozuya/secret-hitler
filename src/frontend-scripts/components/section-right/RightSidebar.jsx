@@ -8,6 +8,7 @@ export default class RightSidebar extends React.Component {
 			<section className="section-right three wide column">
 				<Playerlist
 					userList={this.props.userList}
+					socket={this.props.socket}
 				/>
 				<div className="ui divider right-sidebar-divider" />
 				<Generalchat

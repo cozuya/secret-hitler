@@ -39,7 +39,7 @@ export default class LeftSidebar extends React.Component {
 					return 1;
 				}
 
-				return 1;
+				return 0;
 			}).map((game, index) => {
 				return (
 					<SidebarGame

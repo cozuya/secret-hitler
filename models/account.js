@@ -10,7 +10,8 @@ const mongoose = require('mongoose'),
 		password: String,
 		gameSettings: {
 			enableTimestamps: Boolean,
-			enableRightSidebarInGame: Boolean
+			enableRightSidebarInGame: Boolean,
+			disablePlayerColorsInChat: Boolean
 		},
 		verification: {
 			email: String,

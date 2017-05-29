@@ -613,7 +613,7 @@ module.exports.selectPresidentPolicy = data => {
 		chancellor = game.private.seatedPlayers[chancellorIndex],
 		nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
-	if (!game.private.lock.selectPresidentPolicy) {
+	if (!game.private.lock.selectPresidentPolicy && president && president.cardFlingerState && president.cardFlingerState.length) {
 		game.private.lock.selectPresidentPolicy = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 		game.publicPlayersState[chancellorIndex].isLoader = true;
@@ -622,7 +622,7 @@ module.exports.selectPresidentPolicy = data => {
 			president.cardFlingerState[0].notificationStatus = 'selected';
 			president.cardFlingerState[1].notificationStatus = president.cardFlingerState[2].notificationStatus = '';
 		} else if (data.selection === 1) {
-			president.cardFlingerState[0].notificationStatus = president.cardFlingerState[2].notificationStatus = '';
+			president.cardFlingerState[0].notificationStatus = president.cardFlingerState[2].notificationStatus = '';  // crash here
 			president.cardFlingerState[1].notificationStatus = 'selected';
 		} else {
 			president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = '';
@@ -951,6 +951,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 					chat: [{text: 'The President and Chancellor have voted to veto this election and the election tracker moves forward.'}]
 				};
 
+				game.private.lock.selectChancellorPolicy = game.private.lock.selectPresidentVoteOnVeto = game.private.lock.selectChancellorVoteOnVeto = false;
 				game.trackState.electionTrackerCount++;
 
 				if (!game.general.disableGamechat) {

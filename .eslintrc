@@ -12,6 +12,7 @@
 		"no-mixed-requires": "off",
 		"no-negated-condition": "off",
 		"camelcase": "off",
+		"new-cap": "off",
 		"quote-props": "off",
 		"space-before-function-paren": "off",
 		"guard-for-in": "off",
@@ -23,8 +24,8 @@
 		"react/jsx-indent": ["error", "tab"],
 		"react/jsx-uses-vars": "error",
 		"react/jsx-indent-props": ["error", "tab"],
-		"object-curly-spacing": "off",
-		"array-bracket-spacing": "off"
+		"object-curly-spacing": off,
+		"array-bracket-spacing": off
 	},
 	"globals": {
 		"io": true,

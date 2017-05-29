@@ -18,10 +18,33 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 0.3.2 "avocado" released 5-28-2017</p>
+				</div>
+				<h3>New feature: player status icons in the lobby.  Players in game will have a "SH" icon.  Players observing will have a magnifying glass icon.  Click either (while not in a game) to be routed to the game that player is in.  Feature courtesy of jbasrai @github.  Contribute to this open source project to get a cool orange name!</h3>
+				<ul>
+					<li>Irritating private games that never get started now get deleted after 10 minutes.</li>
+					<li>Fix to a front-end issue with observer chat.</li>
+					<li>Another attempt to fix gamelist sort.</li>
+					<li>A small global black list of "bad words" and word fragments for user names and game names has been implemented.  While this is a (very mildly) adult-themed game, some stuff is not cool.  Tongue-in-cheek Nazi references and swear words?  Probably fine.  Racism/sexism/homophobia/antisemitism?  No thanks.</li>
+					<li>Something special now happens when you win a game..</li>
+				</ul>
+				<div className="ui header">
+					<p>Version 0.3.1 "mint" released 5-26-2017</p>
+				</div>
+				<h3>New feature (sorta): player colors in both game and general chat.  This can be disabled with a new player setting in the settings menu (click "gear" icon while not in a game).  Note that because of the "unorthodox" way I did this, players who are no longer logged in will have their previous chats revert to the default.</h3>
+				<ul>
+					<li>A new info component is in the lobby/playerlist.  Click it to get details on the player name color schemes.</li>
+					<li>Fix to "chancellor in veto zone can't click a card, hanging the entire game" bug that to be honest I have no idea where it came from, but it should be working now.  Sorry about that.</li>
+					<li>Looks like there was one crash bug left and only happened a couple times per day, this patch will attempt to fix that. Without further breaking stuff.</li>
+					<li>Fix to gamelist sort bouncing around like crazy (I hope, this is like the 3rd time I've tried to fix it).</li>
+					<li>Enhanced the player colors a bit, and took out bolded player names as it was a bit much.</li>
+					<li>Increased threshold for being in the "top tier" on the playerlist from 30 to 50.  This will put only "colored" (bad choice of words..) players on the top.  I think this incentivizes people a bit.</li>
+					<li>Stats page only refreshes once per day now.</li>
+				</ul>
+				<div className="ui header">
 					<p>Version 0.3.0 "teal" released 5-23-2017</p>
 				</div>
 				<h3>New feature <a target="_blank" href="/stats">game stats</a>. Pretty basic to start, but interesting.  Will expand more on that later.</h3>
-				<p>Other changes:</p>
 				<ul>
 					<li>Fixed the last crash bug for real this time.  I mean it.  Associated to that bug, fixed the "can't select ja or nein while chancellor during veto phase" bug.</li>
 					<li>More fun name color stuff:</li>

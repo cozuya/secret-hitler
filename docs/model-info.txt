@@ -22,6 +22,8 @@ general
 	whitelistedPlayers array of strings (userNames)
 	uid string
   private bool
+	timeStarted date
+	timeCreated date
 	experiencedMode bool
 	disableChat bool
 	disableGamechat bool
@@ -44,6 +46,7 @@ publicPlayersState array
 	obj
 		governmentStatus string isPendingPresident isPendingChancellor
 		isDead bool
+		isConfetti bool
 		connected bool
 		isLoader bool
 		leftGame bool

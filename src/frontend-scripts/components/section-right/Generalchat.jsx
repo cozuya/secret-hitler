@@ -61,12 +61,14 @@ export default class Generalchat extends React.Component {
 	}
 
 	processChats() {
+		const {userInfo} = this.props;
+
 		return this.props.generalChats.map((chat, i) => {
 			const playerListPlayer = this.props.userList.list.find(player => player.userName === chat.userName);
 
 			return (
 				<div className="item" key={i}>
-					<span className={playerListPlayer ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user' }>{chat.userName}: </span>
+					<span className={playerListPlayer ? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) ? 'chat-user' : `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>{chat.userName}: </span>
 					<span>{chat.chat}</span>
 				</div>
 			);
