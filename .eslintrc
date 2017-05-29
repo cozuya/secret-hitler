@@ -8,6 +8,7 @@
 		"one-var": ["warn", "always"],
 		"no-use-before-define": ["warn", {"functions": true, "classes": true}],
 		"no-warning-comments": "off",
+		"brace-style": "off",
 		"no-nested-ternary": "off",
 		"no-mixed-requires": "off",
 		"no-negated-condition": "off",
@@ -24,8 +25,8 @@
 		"react/jsx-indent": ["error", "tab"],
 		"react/jsx-uses-vars": "error",
 		"react/jsx-indent-props": ["error", "tab"],
-		"object-curly-spacing": off,
-		"array-bracket-spacing": off
+		"object-curly-spacing": "off",
+		"array-bracket-spacing": "off"
 	},
 	"globals": {
 		"io": true,

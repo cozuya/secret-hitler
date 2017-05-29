@@ -13,12 +13,14 @@ export default class Gamechat extends React.Component {
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
 		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
 		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
+		this.handleBadKarmaCheck = this.handleBadKarmaCheck.bind(this);
 
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
 			inputValue: '',
 			claim: '',
+			badKarma: '',
 			playersToWhitelist: [],
 			disabled: false
 		};
@@ -28,7 +30,7 @@ export default class Gamechat extends React.Component {
 		this.scrollChats();
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {  // modal methods dont seem to work.
-			this.props.onLeaveGame(this.props.userInfo.isSeated);
+			this.props.onLeaveGame(this.props.userInfo.isSeated, false, this.state.badKarma);
 			$(this.leaveGameModal).modal('hide');
 		});
 	}
@@ -43,6 +45,10 @@ export default class Gamechat extends React.Component {
 			this.setState({inputValue: ''});
 			$(this.gameChatInput).blur();
 		}
+	}
+
+	handleBadKarmaCheck(playerName) {
+		this.setState({badKarma: playerName});
 	}
 
 	handleWhitelistPlayers() {
@@ -420,9 +426,21 @@ export default class Gamechat extends React.Component {
 					this.leaveGameModal = c;
 				}}>
 					<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players (unless you've been executed).  Do this only in the case of a game already ruined by an AFK/disconnected player or if someone has already left.</h2>
+					<h3>Are you leaving because of a griefing player?  Click on them below to report them for bad karma.</h3>
+					<ul>
+					{(() => {
+						const playerNames = gameInfo.publicPlayersState.map(player => player.userName);
+
+						return playerNames.map((player, index) => {
+							if (player !== userInfo.userName) {
+								return <li key={index}><label><input type="radio" name="karmaradio" onChange={() => { this.handleBadKarmaCheck(player);}} />{player}{`{${index + 1}}`}</label></li>;
+							}
+						});
+					})()}
+					</ul>
 					<div className="ui green positive inverted leave-game button">
 						<i className="checkmark icon"></i>
-						Leave anyways
+						Leave game
 					</div>
 				</div>
 				<div className="ui basic fullscreen modal whitelistmodal" ref={c => {

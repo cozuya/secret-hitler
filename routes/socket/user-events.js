@@ -404,6 +404,7 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
+	console.log(data);
 
 	if (io.sockets.adapter.rooms[data.uid]) {
 		socket.leave(data.uid);
@@ -422,7 +423,6 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	}
 
 	if (game && data.isSeated && !game.gameState.isStarted && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
-		// console.log('publicPlayerState splice in handleUserLeaveGame fired that spliced PPS');
 		game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
 		io.sockets.in(data.uid).emit('gameUpdate', game);
 	}
