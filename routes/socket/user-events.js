@@ -8,6 +8,7 @@ const {games, userList, generalChats} = require('./models'),
 	reports = [],
 	{secureGame} = require('./util.js'),
 	{sendInProgressGameUpdate} = require('./util.js'),
+	{PLAYERCOLORS} = require('../../src/frontend-scripts/constants'),
 	handleSocketDisconnect = socket => {
 		const {passport} = socket.handshake.session;
 
@@ -376,8 +377,12 @@ module.exports.handleNewGeneralChat = data => {
 		generalChatCount = 0;
 	}
 
+	const user = userList.find(u => data.userName === u.userName),
+		color = user ? PLAYERCOLORS(user) : '';
+
 	generalChatCount++;
 	data.time = new Date();
+	data.color = color;
 	generalChats.push(data);
 
 	if (generalChats.length > 99) {
