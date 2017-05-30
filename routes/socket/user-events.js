@@ -5,6 +5,7 @@ const {games, userList, generalChats} = require('./models'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
 	startGame = require('./game/start-game.js'),
+	reports = [],
 	{secureGame} = require('./util.js'),
 	{sendInProgressGameUpdate} = require('./util.js'),
 	handleSocketDisconnect = socket => {
@@ -405,6 +406,25 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 	console.log(data);
+	if (data.badKarma) {
+		const report = reports.find(report => report.uid === data.uid);
+
+		if (report) {
+			if (report[badKarma]) {
+				report[badKarma]++;
+			} else {
+				report[badKarma] = 0;
+			}
+			if (report[badKarma] > 3) {
+				
+			}
+		} else {
+			const newReport = {};
+			newReport.uid = data.uid;
+			newReport[badKarma] = 0;
+			reports.push(newReport);
+		}
+	}
 
 	if (io.sockets.adapter.rooms[data.uid]) {
 		socket.leave(data.uid);
