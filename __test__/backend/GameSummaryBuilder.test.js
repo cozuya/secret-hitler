@@ -11,7 +11,7 @@ describe('GameSummaryBuilder', () => {
 			[ 'liberal', 'fascist', 'liberal', 'fascist', 'liberal' ]
 		);
 
-		expect(gsb.uid).toBeDefined();
+		expect(gsb._id).toBeDefined();
 		expect(gsb.date).toBeDefined();
 		expect(gsb.players).toHaveLength(5);
 		expect(gsb.logs).toHaveLength(0);
