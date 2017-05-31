@@ -205,7 +205,9 @@ export default class Players extends React.Component {
 		const {gameInfo, userInfo, onClickedTakeSeat} = this.props;
 
 		if (userInfo.userName) {
-			if (gameInfo.general.private && !(gameInfo.general.whitelistedPlayers.includes(userInfo.userName))) {
+			if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
+				window.alert('Sorry, this service is currently unavailable.');
+			} else if (gameInfo.general.private && !(gameInfo.general.whitelistedPlayers.includes(userInfo.userName))) {
 				$(this.passwordModal).modal('show');
 			} else {
 				onClickedTakeSeat();

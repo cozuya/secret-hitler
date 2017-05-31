@@ -7,13 +7,17 @@ implement automated claims system
 
 version 0.3.0
 implement stats page and graphs
-implement in-game player stats @jbasrai?
 
 version 0.4.0
+implement karma system
+implement in-game player stats @jbasrai
+
+version 0.5.0
 convert to webpack/create-react-app for builds
+upgrade dependencies
 
 version 1.0.0
-all crash bugs fixed, everything else working.
+all desired features in all bugs fixed
 
 version 2.0.0
 implement email address saving, token based verification, and password reset via emails
