@@ -27,7 +27,7 @@ You pass butter.
 
 > npm i -g yarn
 
-> yarn add global gulp nodemon
+> yarn global add gulp nodemon
 
 > yarn
 

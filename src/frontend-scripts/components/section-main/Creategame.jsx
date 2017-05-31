@@ -81,7 +81,9 @@ export default class Creategame extends React.Component {
 	}
 
 	createNewGame() {
-		const $creategame = $('section.creategame');
+		const $creategame = $('section.creategame'),
+			{userInfo} = this.props;
+
 		let containsBadWord = false;
 
 		blacklistedWords.forEach(word => {
@@ -92,6 +94,8 @@ export default class Creategame extends React.Component {
 
 		if (containsBadWord) {
 			this.setState({containsBadWord: true});
+		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
+			window.alert('Sorry, this service is currently unavailable.');
 		} else {
 			this.props.onCreateGameSubmit({
 				gameState: {

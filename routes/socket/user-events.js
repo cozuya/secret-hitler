@@ -109,24 +109,26 @@ module.exports.updateSeatedUser = (socket, data) => {
 };
 
 module.exports.handleAddNewGame = (socket, data) => {
-	const username = socket.handshake.session.passport.user;
+	if (socket.handshake.session.passport) { // seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
+		const username = socket.handshake.session.passport.user;
 
-	data.private = {
-		unSeatedGameChats: [],
-		lock: {}
-	};
+		data.private = {
+			unSeatedGameChats: [],
+			lock: {}
+		};
 
-	if (data.general.private) {
-		data.private.privatePassword = data.general.private;
-		data.general.private = true;
+		if (data.general.private) {
+			data.private.privatePassword = data.general.private;
+			data.general.private = true;
+		}
+
+		data.general.timeCreated = new Date().getTime();
+		updateUserStatus(username, 'playing', data.general.uid);
+
+		games.push(data);
+		sendGameList();
+		socket.join(data.general.uid);
 	}
-
-	data.general.timeCreated = new Date().getTime();
-	updateUserStatus(username, 'playing', data.general.uid);
-
-	games.push(data);
-	sendGameList();
-	socket.join(data.general.uid);
 };
 
 module.exports.handleAddNewClaim = (data) => {
@@ -409,24 +411,46 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 };
 
 module.exports.handleUserLeaveGame = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
-	console.log(data);
-	if (data.badKarma) {
+	const game = games.find(el => el.general.uid === data.uid),
+		{badKarma} = data;
+
+	if (badKarma) {
 		const report = reports.find(report => report.uid === data.uid);
 
 		if (report) {
 			if (report[badKarma]) {
 				report[badKarma]++;
 			} else {
-				report[badKarma] = 0;
+				report[badKarma] = 1;
 			}
-			if (report[badKarma] > 3) {
-				
+			// if (report[badKarma] > 3) {
+			if (report[badKarma] > 0) {
+				Account.findOne({username: data.badKarma})
+					.then(account => {
+						let {karmaCount} = account;
+						const unbannedTimeMap = {
+							1: new Date().getTime() + 900000,
+							2: new Date().getTime() + 7200000,
+							3: new Date().getTime() + 31556952000
+						};
+
+						karmaCount = !karmaCount ? 1 : karmaCount + 1;
+						account.karmaCount = karmaCount;
+						account.gameSettings.unbanTime = unbannedTimeMap[karmaCount];
+						account.save(() => {
+							const bannedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === badKarma);
+
+							io.sockets.sockets[bannedSocketId].emit('gameSettings', account.gameSettings);
+						});
+					})
+					.catch(err => {
+						console.log(err);
+					});
 			}
 		} else {
 			const newReport = {};
 			newReport.uid = data.uid;
-			newReport[badKarma] = 0;
+			newReport[badKarma] = 1;
 			reports.push(newReport);
 		}
 	}

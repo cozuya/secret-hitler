@@ -382,8 +382,9 @@ export default class Gamechat extends React.Component {
 							(() => {
 								let classes = 'ui action input';
 
-								const {gameState, publicPlayersState} = this.props.gameInfo,
-									{userName, isSeated} = this.props.userInfo,
+								const {userInfo, gameInfo} = this.props,
+									{gameState, publicPlayersState} = gameInfo,
+									{gameSettings, userName, isSeated} = userInfo,
 									isDead = (() => {
 										if (this.props.userInfo.isSeated
 											&& publicPlayersState.length
@@ -402,8 +403,9 @@ export default class Gamechat extends React.Component {
 									|| this.state.disabled
 									|| (isDead && !gameState.isCompleted)
 									|| isGovernmentDuringPolicySelection
-									|| this.props.gameInfo.general.disableChat
-									|| (this.props.gameInfo.general.private && !this.props.userInfo.isSeated)) {
+									|| gameInfo.general.disableChat
+									|| (gameInfo.general.private && !userInfo.isSeated)
+									|| (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())) {
 									classes += ' disabled';
 								}
 
