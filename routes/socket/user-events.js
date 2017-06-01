@@ -5,7 +5,6 @@ const {games, userList, generalChats} = require('./models'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
 	startGame = require('./game/start-game.js'),
-	reports = [],
 	{secureGame} = require('./util.js'),
 	{sendInProgressGameUpdate} = require('./util.js'),
 	{PLAYERCOLORS} = require('../../src/frontend-scripts/constants'),
@@ -113,6 +112,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 		const username = socket.handshake.session.passport.user;
 
 		data.private = {
+			reports: {},
 			unSeatedGameChats: [],
 			lock: {}
 		};
@@ -415,16 +415,9 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		{badKarma} = data;
 
 	if (badKarma) {
-		const report = reports.find(report => report.uid === data.uid);
-
-		if (report) {
-			if (report[badKarma]) {
-				report[badKarma]++;
-			} else {
-				report[badKarma] = 1;
-			}
-			// if (report[badKarma] > 3) {
-			if (report[badKarma] > 0) {
+		if (game.private.reports[badKarma]) {
+			game.private.reports[badKarma]++;
+			if (game.private.reports[badKarma] > 4) {
 				Account.findOne({username: data.badKarma})
 					.then(account => {
 						let {karmaCount} = account;
@@ -448,10 +441,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 					});
 			}
 		} else {
-			const newReport = {};
-			newReport.uid = data.uid;
-			newReport[badKarma] = 1;
-			reports.push(newReport);
+			game.private.reports[badKarma] = 1;
 		}
 	}
 
