@@ -141,13 +141,14 @@ export default class Gamechat extends React.Component {
 
 	processChats() {
 		const {gameInfo, userInfo, userList} = this.props,
+			seatedUserNames = gameInfo.publicPlayersState.map(player => player.userName),
 			{chatFilter} = this.state;
 
 		return gameInfo.chats.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-			.filter(chat => ((chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All'))) || (!chat.gameChat && chatFilter !== 'Game'))
+			.filter(chat => (chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) || (chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All')) || (!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat'))
 			.map((chat, i) => {
 				const chatContents = chat.chat,
-					isSeated = Boolean(gameInfo.publicPlayersState.find(player => player.userName === chat.userName)),
+					isSeated = seatedUserNames.includes(chat.userName),
 					playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 
 				return chat.gameChat ? (
@@ -230,6 +231,7 @@ export default class Gamechat extends React.Component {
 					<a className={this.state.chatFilter === 'All' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>All</a>
 					<a className={this.state.chatFilter === 'Chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>Chat</a>
 					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>Game</a>
+					<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>No observer chat</a>
 					<i className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'} onClick={this.handleChatLockClick} />
 					{(() => {
 						if (userInfo.isSeated && gameInfo.general.private && !gameInfo.gameState.isStarted) {
