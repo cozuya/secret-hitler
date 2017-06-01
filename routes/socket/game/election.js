@@ -751,7 +751,7 @@ module.exports.selectChancellorVoteOnVeto = data => {
 		publicChancellor = game.publicPlayersState[chancellorIndex];
 
 	game.private.lock.selectPresidentVoteOnVeto = false;
-	if (!game.private.lock.selectChancellorVoteOnVeto) {
+	if (!game.private.lock.selectChancellorVoteOnVeto && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
 		game.private.lock.selectChancellorVoteOnVeto = true;
 
 		game.publicPlayersState[chancellorIndex].isLoader = false;
