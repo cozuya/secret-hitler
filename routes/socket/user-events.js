@@ -432,8 +432,9 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 						account.gameSettings.unbanTime = unbannedTimeMap[karmaCount];
 						account.save(() => {
 							const bannedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === badKarma);
-
-							io.sockets.sockets[bannedSocketId].emit('gameSettings', account.gameSettings);
+							if (io.sockets.sockets[bannedSocketId]) {
+								io.sockets.sockets[bannedSocketId].emit('gameSettings', account.gameSettings);
+							}
 						});
 					})
 					.catch(err => {
