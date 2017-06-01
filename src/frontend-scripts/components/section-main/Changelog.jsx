@@ -18,6 +18,31 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 0.3.3 "jade" released 5-31-2017</p>
+				</div>
+				<h3>New feature: karma system aka player reporting system.</h3>
+				<p>When you leave in-progress games you will now see a list of players with radio buttons on the modal.</p>
+				<div style={{textAlign: 'center'}}>
+					<img src="images/badkarma.png" />
+				</div>
+				<p>If you are leaving because of a griefing player aka someone who afks intentionally, who spams chat, or does not play with the intent of winning, select that person from this list.</p>
+				<p>If they receive enough votes in that game, they will take a karma hit which results in:</p>
+				<ul>
+					<li>1st offense: 15 minute ban from playing or chatting.</li>
+					<li>2nd offense: 2 hour ban from playing or chatting.</li>
+					<li>3rd offense: indefinite ban from playing or chatting.</li>
+				</ul>
+				<strong>I cannot stress enough that this is for griefers only, not purples, not people who say "idiot" in chat, not people who lie to you (duh).  This will be watched.</strong>
+				<h3>New Feature: no observer chat filter</h3>
+				<div style={{textAlign: 'center'}}>
+					<img src="images/noobserver.png" />
+				</div>
+				<p>Use this if someone is griefing you via observer chat</p>
+				<ul>
+					<li>Player colors should now persist after that player logs out.</li>
+					<li>Despite calling it stable, 2 crashes occurred in the 3 days that avocado was out.  1 was a miss, other one was pretty bizarre.. someone not logged in tried to make a game.  You can't even do that..</li>
+				</ul>
+				<div className="ui header">
 					<p>Version 0.3.2 "avocado" released 5-28-2017</p>
 				</div>
 				<h3>New feature: player status icons in the lobby.  Players in game will have a "SH" icon.  Players observing will have a magnifying glass icon.  Click either (while not in a game) to be routed to the game that player is in.  Feature courtesy of jbasrai @github.  Contribute to this open source project to get a cool orange name!</h3>
@@ -27,19 +52,6 @@ export default class Changelog extends React.Component {
 					<li>Another attempt to fix gamelist sort.</li>
 					<li>A small global black list of "bad words" and word fragments for user names and game names has been implemented.  While this is a (very mildly) adult-themed game, some stuff is not cool.  Tongue-in-cheek Nazi references and swear words?  Probably fine.  Racism/sexism/homophobia/antisemitism?  No thanks.</li>
 					<li>Something special now happens when you win a game..</li>
-				</ul>
-				<div className="ui header">
-					<p>Version 0.3.1 "mint" released 5-26-2017</p>
-				</div>
-				<h3>New feature (sorta): player colors in both game and general chat.  This can be disabled with a new player setting in the settings menu (click "gear" icon while not in a game).  Note that because of the "unorthodox" way I did this, players who are no longer logged in will have their previous chats revert to the default.</h3>
-				<ul>
-					<li>A new info component is in the lobby/playerlist.  Click it to get details on the player name color schemes.</li>
-					<li>Fix to "chancellor in veto zone can't click a card, hanging the entire game" bug that to be honest I have no idea where it came from, but it should be working now.  Sorry about that.</li>
-					<li>Looks like there was one crash bug left and only happened a couple times per day, this patch will attempt to fix that. Without further breaking stuff.</li>
-					<li>Fix to gamelist sort bouncing around like crazy (I hope, this is like the 3rd time I've tried to fix it).</li>
-					<li>Enhanced the player colors a bit, and took out bolded player names as it was a bit much.</li>
-					<li>Increased threshold for being in the "top tier" on the playerlist from 30 to 50.  This will put only "colored" (bad choice of words..) players on the top.  I think this incentivizes people a bit.</li>
-					<li>Stats page only refreshes once per day now.</li>
 				</ul>
 				<div className="ui header">
 					<p>Version 0.3.0 "teal" released 5-23-2017</p>
