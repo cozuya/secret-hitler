@@ -54,6 +54,7 @@ export default class Main extends React.Component {
 						return (
 							<Changelog
 								onLeaveChangelog={this.props.onLeaveChangelog}
+								version={this.props.version}
 							/>
 						);
 					case 'game':
@@ -83,10 +84,7 @@ export default class Main extends React.Component {
 						);
 					default:
 						return (
-							<Defaultmid
-								onChangelogButtonClick={this.props.onChangelogButtonClick}
-								quickDefault={this.props.quickDefault}
-							/>
+							<Defaultmid quickDefault={this.props.quickDefault} />
 						);
 					}
 				})()}

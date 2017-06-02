@@ -5,7 +5,7 @@
 		"linebreak-style": "off",
 		"eol-last": "off",
 		"max-len": "off",
-		"one-var": ["warn", "always"],
+		"one-var": "off",
 		"no-use-before-define": ["warn", {"functions": true, "classes": true}],
 		"no-warning-comments": "off",
 		"brace-style": "off",

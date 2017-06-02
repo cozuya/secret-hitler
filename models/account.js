@@ -30,7 +30,8 @@ const mongoose = require('mongoose'),
 		games: Array,
 		wins: Number,
 		losses: Number,
-		created: Date
+		created: Date,
+		lastVersionSeen: String
 	});
 
 Account.plugin(passportLocalMongoose);

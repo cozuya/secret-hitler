@@ -5,6 +5,7 @@ let passport = require('passport'), // eslint-disable-line no-unused-vars
 	_ = require('lodash'),
 	socketRoutes = require('./socket/routes'),
 	accounts = require('./accounts'),
+	version = require('../version'),
 	ensureAuthenticated = (req, res, next) => {
 		if (req.isAuthenticated()) {
 			return next();
@@ -121,5 +122,16 @@ module.exports = () => {
 
 	app.get('/data', (req, res) => {
 		res.json(gamesData);
+	});
+
+	app.get('/viewPatchNotes', ensureAuthenticated, (req, res) => {
+		Account.updateOne(
+			{ username: req.user.username },
+			{ lastVersionSeen: version.number },
+			(err) => {
+				if (err) res.sendStatus(404);
+				else res.sendStatus(200);
+			}
+		);
 	});
 };

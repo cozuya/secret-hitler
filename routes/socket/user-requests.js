@@ -1,6 +1,7 @@
 const Account = require('../../models/account'),
 	{games, userList, generalChats} = require('./models'),
-	{secureGame} = require('./util');
+	{secureGame} = require('./util'),
+	version = require('../../version');
 
 module.exports.sendUserGameSettings = (socket, username) => {
 	Account.findOne({username})
@@ -19,6 +20,11 @@ module.exports.sendUserGameSettings = (socket, username) => {
 					}
 				});
 			}
+
+			socket.emit('version', {
+				current: version,
+				lastSeen: account.lastVersionSeen || 'none'
+			});
 
 			io.sockets.emit('userList', {
 				list: userList,

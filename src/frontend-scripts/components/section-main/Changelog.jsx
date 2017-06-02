@@ -11,6 +11,8 @@ export default class Changelog extends React.Component {
 	}
 
 	render() {
+		const version = this.props.version.current;
+
 		return (
 			<section className="changelog">
 				<i className="remove icon" onClick={this.leaveChangelog} />
@@ -18,7 +20,7 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 0.3.3 "jade" released 5-31-2017</p>
+					<p>{`Version ${version.number} "${version.color}" released ${version.date}`}</p>
 				</div>
 				<h3>New feature: karma system aka player reporting system.</h3>
 				<p>When you leave in-progress games you will now see a list of players with radio buttons on the modal.</p>

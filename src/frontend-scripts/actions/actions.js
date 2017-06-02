@@ -51,3 +51,14 @@ export function updateGeneralChats(info) {
 		info
 	}
 }
+
+export function updateVersion(version) {
+	return {
+		type: 'UPDATE_VERSION',
+		version
+	};
+};
+
+export function viewPatchNotes() {
+	return { type: 'VIEW_PATCH_NOTES' }
+};
