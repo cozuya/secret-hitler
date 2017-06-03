@@ -1,7 +1,14 @@
+.playerlistinfo {
+	background-color: #111 !important;
+	padding: 20px;
+}
+
 .section-right {
     padding-left: 0 !important;
     padding-right: 0 !important;
     padding-bottom: 0 !important;
+
+
     .playerlist {
         background: #F8F8F8;
         padding: 5px 0 10px;
@@ -10,6 +17,12 @@
             color: #bdbdbd;
             margin-right: 3px;
         }
+
+				.circle.icon {
+					margin-left: 10px;
+					font-size: 16px;
+					cursor: pointer;
+				}
 
         .divider {
             margin-top: 3px;
@@ -22,28 +35,12 @@
             height: 250px;
             overflow-y: auto;
             padding-left: 5px;
-							.admin {
-							color: red !important;
-						}
 
-						.contributer {
-							color: orange !important;
-						}
-
-						.experienced {
-							color: #b3eab3 !important;
-						}
-
-						.veryexperienced {
-							color: #7cd17c !important;
-						}
-
-						.veryexperienced {
-							color: #48d348 !important;
-						}
-
-						.experienced.onfire, .veryexperienced.onfire, .veryveryexperienced.onfire {
-							color: #da65e5 !important;
+						.fav {
+							background: url('../favicon-16x16.png') no-repeat;
+    					width: 16px;
+    					height: 16px;
+    					vertical-align: text-bottom;
 						}
         }
         .ui.header {
@@ -54,10 +51,21 @@
                 float: right;
             }
         }
-        .clickable.user {
-            &:hover {
-                color: #608cb3 !important;
+        .user {
+            .clickable:hover {
                 cursor: pointer;
+
+                &.username {
+                    color: #608cb3 !important;
+                }
+            }
+
+            .unclickable:hover {
+                cursor: not-allowed;
+            }
+
+            .status.icon {
+                margin-left: 5px;
             }
         }
     }
@@ -105,7 +113,7 @@
                     padding: 0;
                 }
                 .chat-user {
-                    color: $darkliberalteam;
+                    color: #888;	
                 }
                 .admin {
                     color: red;

@@ -27,6 +27,8 @@ function buildEnhancedGameSummary(_summary) {
 		}
 	});
 
+	const id = summary._id;
+
 	const date = summary.date;
 
 	const players = (() => {
@@ -138,7 +140,7 @@ function buildEnhancedGameSummary(_summary) {
 		return loyaltyOf(username).map(l => l === winningTeam);
 	};
 
-	return { summary, date, players, turns, playerSize, hitlerZone, winningTeam,
+	return { summary, id, date, players, turns, playerSize, hitlerZone, winningTeam,
 		usernameOf, tagOf, indexOf, loyaltyOf, roleOf, votesOf, shotsOf, isWinner };
 };
 

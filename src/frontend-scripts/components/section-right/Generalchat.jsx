@@ -1,4 +1,5 @@
 import React from 'react';
+import classnames from 'classnames';
 
 export default class Generalchat extends React.Component {
 	constructor() {
@@ -60,10 +61,17 @@ export default class Generalchat extends React.Component {
 	}
 
 	processChats() {
+		const {userInfo} = this.props;
+
 		return this.props.generalChats.map((chat, i) => {
+			const userClasses = classnames(
+				{ [chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) },
+				'chat-user'
+			);
+
 			return (
 				<div className="item" key={i}>
-					<span className={chat.userName === 'coz' ? 'chat-user admin' : chat.userName === 'stine' ? 'chat-user admin' : 'chat-user'}>{chat.userName}: </span>
+					<span className={userClasses}>{chat.userName}: </span>
 					<span>{chat.chat}</span>
 				</div>
 			);
@@ -107,5 +115,6 @@ Generalchat.propTypes = {
 	gameInfo: React.PropTypes.object,
 	userInfo: React.PropTypes.object,
 	socket: React.PropTypes.object,
-	generalChats: React.PropTypes.array
+	generalChats: React.PropTypes.array,
+	userList: React.PropTypes.object
 };

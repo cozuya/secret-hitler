@@ -13,7 +13,11 @@ module.exports.sendUserGameSettings = (socket, username) => {
 				userList.push({
 					userName: username,
 					wins: account.wins,
-					losses: account.losses
+					losses: account.losses,
+					status: {
+						type: 'none',
+						gameId: null
+					}
 				});
 			}
 
@@ -57,7 +61,7 @@ module.exports.sendGeneralChats = socket => {
 	socket.emit('generalChats', generalChats);
 };
 
-module.exports.sendUserList = socket => {
+const sendUserList = module.exports.sendUserList = socket => { // eslint-disable-line one-var
 	if (socket) {
 		socket.emit('userList', {
 			list: userList,
@@ -71,6 +75,14 @@ module.exports.sendUserList = socket => {
 	}
 };
 
+const updateUserStatus = module.exports.updateUserStatus = (username, type, gameId) => { // eslint-disable-line one-var
+	const u = userList.find(u => u.userName === username);
+	if (u) {
+		u.status = { type, gameId };
+		sendUserList();
+	}
+};
+
 module.exports.sendGameInfo = (socket, uid) => {
 	const game = games.find(el => el.general.uid === uid),
 		{passport} = socket.handshake.session;
@@ -78,8 +90,15 @@ module.exports.sendGameInfo = (socket, uid) => {
 	if (game) {
 		const _game = Object.assign({}, game);
 
-		if (passport && Object.keys(passport).length && game.publicPlayersState.find(player => player.userName === passport.user)) {
-			game.publicPlayersState.find(player => player.userName === passport.user).leftGame = false;
+		if (passport && Object.keys(passport).length) {
+			const player = game.publicPlayersState.find(player => player.userName === passport.user);
+
+			if (player) {
+				player.leftGame = false;
+				updateUserStatus(passport.user, 'playing', uid);
+			} else {
+				updateUserStatus(passport.user, 'observing', uid);
+			}
 		}
 
 		// todo-release - doesn't work right for players who left game and then comes back into the old game - no gamechats

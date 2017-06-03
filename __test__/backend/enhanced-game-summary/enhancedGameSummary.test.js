@@ -15,7 +15,7 @@ describe('build enhanced game summary', () => {
 
 		// general
 		expect(summary).toBeTypeOf('object');
-		expect(summary.uid).toBeTypeOf('string');
+		expect(summary._id).toBeTypeOf('string');
 		expect(summary.date).toBeInstanceOf(Date);
 		expect(summary.players).toBeAList();
 

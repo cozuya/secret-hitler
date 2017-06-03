@@ -5,7 +5,7 @@ const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, han
 	{games} = require('./models'),
 	gamesGarbageCollector = () => {
 		const currentTime = new Date().getTime(),
-			toRemoveIndexes = games.filter((game, index) => game.general.timeStarted && game.general.timeStarted + 1800000 < currentTime).map(game => games.indexOf(game)).reverse();
+			toRemoveIndexes = games.filter(game => (game.general.timeStarted && game.general.timeStarted + 1800000 < currentTime) || (game.general.timeCreated && game.general.timeCreated + 600000 < currentTime && game.general.private && game.publicPlayersState.length < 3)).map(game => games.indexOf(game)).reverse();
 
 		games.forEach((game, index) => {
 			if (toRemoveIndexes.includes(index)) {

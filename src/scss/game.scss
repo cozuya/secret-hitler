@@ -266,10 +266,14 @@
 
 .thirteen.wide .game>.ui.grid .six.chat-container .unlock.icon+.primary.button {
     margin-left: 186px;
+		position: relative;
+		z-index: 100;
 }
 
 .sixteen.wide .game>.ui.grid .six.chat-container .unlock.icon+.primary.button {
     margin-left: 425px;
+		position: relative;
+		z-index: 100;
 }
 
 .sixteen.wide .game>.ui.grid .six.chat-container .whitelist {
@@ -309,4 +313,14 @@
             cursor: pointer;
         }
     }
+}
+
+.leavegamemodals {
+	ul {
+		list-style-type: none;
+
+		li {
+			margin: 8px 0;
+		}
+	}
 }

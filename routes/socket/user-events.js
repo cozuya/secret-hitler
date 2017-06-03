@@ -1,12 +1,14 @@
 let generalChatCount = 0;
 
 const {games, userList, generalChats} = require('./models'),
-	{sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
+	{sendGameList, sendGeneralChats, sendUserList, updateUserStatus} = require('./user-requests'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
 	startGame = require('./game/start-game.js'),
+	reports = [],
 	{secureGame} = require('./util.js'),
 	{sendInProgressGameUpdate} = require('./util.js'),
+	{PLAYERCOLORS} = require('../../src/frontend-scripts/constants'),
 	handleSocketDisconnect = socket => {
 		const {passport} = socket.handshake.session;
 
@@ -34,7 +36,6 @@ const {games, userList, generalChats} = require('./models'),
 				} else if (publicPlayersState.length === 1) {
 					games.splice(games.indexOf(game), 1);
 				} else if (!gameState.isStarted && playerIndex > -1) {
-					// console.log(playerIndex, '!gameState.isStarted if clause in handleSocketDisconnect fired that spliced PPS');
 					publicPlayersState.splice(playerIndex, 1);
 					io.sockets.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isCompleted) {
@@ -99,6 +100,8 @@ module.exports.updateSeatedUser = (socket, data) => {
 			game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 		}
 
+		updateUserStatus(data.userName, 'playing', data.uid);
+
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 
 		sendGameList();
@@ -106,19 +109,26 @@ module.exports.updateSeatedUser = (socket, data) => {
 };
 
 module.exports.handleAddNewGame = (socket, data) => {
-	data.private = {
-		unSeatedGameChats: [],
-		lock: {}
-	};
+	if (socket.handshake.session.passport) { // seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
+		const username = socket.handshake.session.passport.user;
 
-	if (data.general.private) {
-		data.private.privatePassword = data.general.private;
-		data.general.private = true;
+		data.private = {
+			unSeatedGameChats: [],
+			lock: {}
+		};
+
+		if (data.general.private) {
+			data.private.privatePassword = data.general.private;
+			data.general.private = true;
+		}
+
+		data.general.timeCreated = new Date().getTime();
+		updateUserStatus(username, 'playing', data.general.uid);
+
+		games.push(data);
+		sendGameList();
+		socket.join(data.general.uid);
 	}
-
-	games.push(data);
-	sendGameList();
-	socket.join(data.general.uid);
 };
 
 module.exports.handleAddNewClaim = (data) => {
@@ -419,8 +429,12 @@ module.exports.handleNewGeneralChat = data => {
 		generalChatCount = 0;
 	}
 
+	const user = userList.find(u => data.userName === u.userName),
+		color = user ? PLAYERCOLORS(user) : '';
+
 	generalChatCount++;
 	data.time = new Date();
+	data.color = color;
 	generalChats.push(data);
 
 	if (generalChats.length > 99) {
@@ -447,7 +461,49 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 };
 
 module.exports.handleUserLeaveGame = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
+	const game = games.find(el => el.general.uid === data.uid),
+		{badKarma} = data;
+
+	if (badKarma) {
+		const report = reports.find(report => report.uid === data.uid);
+
+		if (report) {
+			if (report[badKarma]) {
+				report[badKarma]++;
+			} else {
+				report[badKarma] = 1;
+			}
+			// if (report[badKarma] > 3) {
+			if (report[badKarma] > 0) {
+				Account.findOne({username: data.badKarma})
+					.then(account => {
+						let {karmaCount} = account;
+						const unbannedTimeMap = {
+							1: new Date().getTime() + 900000,
+							2: new Date().getTime() + 7200000,
+							3: new Date().getTime() + 31556952000
+						};
+
+						karmaCount = !karmaCount ? 1 : karmaCount + 1;
+						account.karmaCount = karmaCount;
+						account.gameSettings.unbanTime = unbannedTimeMap[karmaCount];
+						account.save(() => {
+							const bannedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === badKarma);
+
+							io.sockets.sockets[bannedSocketId].emit('gameSettings', account.gameSettings);
+						});
+					})
+					.catch(err => {
+						console.log(err);
+					});
+			}
+		} else {
+			const newReport = {};
+			newReport.uid = data.uid;
+			newReport[badKarma] = 1;
+			reports.push(newReport);
+		}
+	}
 
 	if (io.sockets.adapter.rooms[data.uid]) {
 		socket.leave(data.uid);
@@ -466,7 +522,6 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	}
 
 	if (game && data.isSeated && !game.gameState.isStarted && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
-		// console.log('publicPlayerState splice in handleUserLeaveGame fired that spliced PPS');
 		game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
 		io.sockets.in(data.uid).emit('gameUpdate', game);
 	}
@@ -477,6 +532,8 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	} else if (game && game.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
+
+	updateUserStatus(data.userName, 'none', data.uid);
 
 	socket.emit('gameUpdate', {}, data.isSettings);
 	sendGameList();

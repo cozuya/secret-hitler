@@ -44,6 +44,19 @@ class Settings extends React.Component {
 				});
 			}
 		});
+
+		$(this.playercolors).checkbox({
+			onChecked() {
+				socket.emit('updateGameSettings', {
+					disablePlayerColorsInChat: true
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateGameSettings', {
+					disablePlayerColorsInChat: false
+				});
+			}
+		});
 	}
 
 	leaveSettings() {
@@ -62,29 +75,37 @@ class Settings extends React.Component {
 						</div>
 					</div>
 				</div>
-				<div className="ui equal width centered grid">
-					<div className="column">
-						<h4 className="ui header">Add timestamps to in-game chats</h4>
+				<div className="ui grid">
+					<div className="four wide column popups">
+						<h4 className="ui header">Add timestamps to chats</h4>
 						<div className="ui fitted toggle checkbox" ref={c => {
 							this.timestamps = c;
 						}}>
 							<input type="checkbox" name="timestamps" defaultChecked={this.props.userInfo.gameSettings.enableTimestamps} />
 						</div>
 					</div>
-					<div className="column">
-						<h4 className="ui header">Show right sidebar while in games</h4>
+					<div className="four wide column popups">
+						<h4 className="ui header">Show right sidebar in games</h4>
 						<div className="ui fitted toggle checkbox" ref={c => {
 							this.sidebar = c;
 						}}>
 							<input type="checkbox" name="sidebar" defaultChecked={this.props.userInfo.gameSettings.enableRightSidebarInGame} />
 						</div>
 					</div>
-					<div className="column">
+					<div className="four wide column popups">
 						<button
 							className="ui button"
 							onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
 							View your profile
 						</button>
+					</div>
+					<div className="four wide column popups">
+						<h4 className="ui header">Disable player colors in chat</h4>
+						<div className="ui fitted toggle checkbox" ref={c => {
+							this.playercolors = c;
+						}}>
+							<input type="checkbox" name="playercolors" defaultChecked={this.props.userInfo.gameSettings.disablePlayerColorsInChat} />
+						</div>
 					</div>
 				</div>
 			</section>

@@ -180,7 +180,7 @@ export class App extends React.Component {
 		socket.emit('updateSeatedUser', data);
 	}
 
-	handleLeaveGame(isSeated, isSettings = false) {
+	handleLeaveGame(isSeated, isSettings = false, badKarma) {
 		const {dispatch, userInfo, gameInfo} = this.props;
 
 		if (userInfo.isSeated) {
@@ -192,7 +192,8 @@ export class App extends React.Component {
 			userName: userInfo.userName,
 			isSeated,
 			isSettings,
-			uid: gameInfo.general.uid
+			uid: gameInfo.general.uid,
+			badKarma
 		});
 	}
 
@@ -224,7 +225,9 @@ export class App extends React.Component {
 					onSeatingUser={this.handleSeatingUser}
 					onLeaveGame={this.handleLeaveGame}
 					quickDefault={this.makeQuickDefault}
+					onLeaveChangelog={this.handleRoute}
 					onSettingsButtonClick={this.handleRoute}
+					onChangelogButtonClick={this.handleRoute}
 					onClickedTakeSeat={this.handleSeatingUser}
 					userList={this.props.userList}
 					socket={socket}

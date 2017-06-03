@@ -6,6 +6,7 @@ import Settings from './Settings.jsx';
 import Game from './Game.jsx';
 import Profile from './Profile.jsx';
 import Replay from './Replay.jsx';
+import Changelog from './Changelog.jsx';
 
 export default class Main extends React.Component {
 	render() {
@@ -47,9 +48,16 @@ export default class Main extends React.Component {
 					case 'createGame':
 						return (
 							<Creategame
+								userList={this.props.userList}
 								userInfo={this.props.userInfo}
 								onCreateGameSubmit={this.props.onCreateGameSubmit}
 								onLeaveCreateGame={this.props.onLeaveCreateGame}
+							/>
+						);
+					case 'changelog':
+						return (
+							<Changelog
+								onLeaveChangelog={this.props.onLeaveChangelog}
 							/>
 						);
 					case 'game':
@@ -82,8 +90,13 @@ export default class Main extends React.Component {
 					case 'replay':
 						return <Replay />;
 					default:
-						return <Defaultmid quickDefault={this.props.quickDefault} />;
-					};
+						return (
+							<Defaultmid
+								onChangelogButtonClick={this.props.onChangelogButtonClick}
+								quickDefault={this.props.quickDefault}
+							/>
+						);
+					}
 				})()}
 			</section>
 		);

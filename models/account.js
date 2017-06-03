@@ -10,7 +10,9 @@ const mongoose = require('mongoose'),
 		password: String,
 		gameSettings: {
 			enableTimestamps: Boolean,
-			enableRightSidebarInGame: Boolean
+			enableRightSidebarInGame: Boolean,
+			disablePlayerColorsInChat: Boolean,
+			unbanTime: Date
 		},
 		verification: {
 			email: String,
@@ -19,6 +21,7 @@ const mongoose = require('mongoose'),
 			passwordResetToken: String,
 			passwordResetTokenExpiration: Date
 		},
+		karmaCount: Number,
 		resetPassword: {
 			resetToken: String,
 			resetTokenExpiration: Date
