@@ -2,6 +2,7 @@ let passport = require('passport'), // eslint-disable-line no-unused-vars
 	Account = require('../models/account'), // eslint-disable-line no-unused-vars
 	{ getProfile } = require('../models/profile/utils'),
 	Game = require('../models/game'),
+	GameSummary = require('../models/game-summary'),
 	moment = require('moment'),
 	_ = require('lodash'),
 	socketRoutes = require('./socket/routes'),
@@ -131,6 +132,19 @@ module.exports = () => {
 			if (!profile) res.status(404).send('Profile not found');
 			else res.json(profile);
 		});
+	});
+
+	app.get('/gameSummary', (req, res) => {
+		const id = req.query.id;
+
+		GameSummary.findById(id)
+			.lean()
+			.exec()
+			.then(gs => {
+				if (!gs) res.status(404).send('Game summary not found');
+				else res.json(gs);
+			})
+			.catch(err => debug(err));
 	});
 
 	app.get('/data', (req, res) => {

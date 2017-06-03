@@ -9,7 +9,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	saveGame = game => {
 		const
 			summary = game.private.summary.publish(),
-			enhanced = buildEnhancedGameSummary(summary),
+			enhanced = buildEnhancedGameSummary(summary.toObject()),
 			gameToSave = new Game({
 				uid: game.general.uid,
 				date: new Date(),

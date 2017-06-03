@@ -5,7 +5,8 @@ export default function toGameInfo(snapshot) {
 	};
 
 	const general = {
-		playerCount: snapshot.players.size
+		playerCount: snapshot.players.size,
+		experiencedMode: false
 	};
 
 	const cardFlingerState = [];
@@ -29,17 +30,17 @@ export default function toGameInfo(snapshot) {
 			);
 
 			const cardStatus = (() => {
-				const f = (cardDisplayed, isFlipped, cardFront, cardName) => ({
-					cardDisplayed, isFlipped, cardFront, cardBack: { cardName }
+				const f = (cardDisplayed, isFlipped, cardFront, cardBack) => ({
+					cardDisplayed, isFlipped, cardFront, cardBack
 				});
 
 				switch(snapshot.phase) {
 				case 'election':
-					return f(true, true, 'ballot',
-						snapshot.votes.get(i)
+					return f(true, true, 'ballot', {
+						cardName: snapshot.votes.get(i)
 							.map(x => x ? 'ja' : 'nein')
 							.valueOrElse(null)
-					);
+					});
 				case 'investigation':
 					const isInvTarget = i === snapshot.investigationId;
 
@@ -47,10 +48,15 @@ export default function toGameInfo(snapshot) {
 						isInvTarget,
 						isInvTarget,
 						'role',
-						isInvTarget && 'membership-' + p.loyalty
+						{ cardName: isInvTarget && 'membership-' + p.loyalty }
 					);
 				default:
-					return f(false, false, '', {});
+					return snapshot.gameOver
+						? f(true, true, '', {
+							cardName: p.role,
+							icon: 0
+						})
+						: f(false, false, '', {});
 				}
 			})();
 
@@ -70,8 +76,8 @@ export default function toGameInfo(snapshot) {
 		}).toArray();
 
 	const trackState = {
-		liberalPolicyCount: 0,
-		fascistPolicyCount: 0,
+		fascistPolicyCount: snapshot.track.reds,
+		liberalPolicyCount: snapshot.track.blues,
 		enactedPolicies: [],
 		isBlurred: [
 			'presidentLegislation',

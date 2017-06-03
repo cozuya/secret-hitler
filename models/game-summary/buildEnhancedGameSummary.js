@@ -2,19 +2,22 @@
 const { Map, isIndexed, fromJS } = require('immutable');
 const { fromNullable, some, none } = require('option');
 const buildTurns = require('./buildTurns');
+const debug = require('debug')('game:enhanced');
 
 /*
- * Represents a human-readable game. Feel free to add more convenience methods.
+ * Wraps a gameSummary to produce a more human-friendly representation.
+ * Feel free to add to this as needed.
  * Refer to `/docs/enhanced-game-summary.md` for API documentation.
  */
 function buildEnhancedGameSummary(_summary) {
-	// add immutable collections and options
+	// convert Arrays to Lists and some values to Options
 	const summary = fromJS(_summary, (key, value, path) => {
 		const options = [ 'presidentHand', 'chancellorHand', 'enactedPolicy',
 			'presidentClaim', 'chancellorClaim', 'policyPeek', 'policyPeekClaim',
 			'investigationId', 'investigationClaim', 'specialElection', 'execution' ];
 
 		if (key === 'logs') {
+			debug('LOGSASDF:', value)
 			return value.map(log => {
 				const logOptions = Map(options.map(o => {
 					const optValue = log[o] ? some(log[o]) : none;
@@ -27,10 +30,13 @@ function buildEnhancedGameSummary(_summary) {
 		}
 	});
 
+	// String
 	const id = summary._id;
 
+	// Date
 	const date = summary.date;
 
+	// List[{ id: Int, username: String, role: String, loyalty: String }]
 	const players = (() => {
 		const roleToLoyalty = Map({
 			liberal: 'liberal',
@@ -73,10 +79,6 @@ function buildEnhancedGameSummary(_summary) {
 		const i = turns.findIndex(t => t.beforeTrack.reds === 3);
 		return i > -1 ? some(i) : none;
 	})();
-
-	/******************
-	 * PLAYER QUERIES *
-	 ******************/
 
 	// Option[Int]
 	const indexOf = id => {

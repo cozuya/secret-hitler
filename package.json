@@ -88,7 +88,7 @@
   "scripts": {
     "test": "jest --watch __test__/backend/",
     "db": "mongod --dbpath data",
-    "start": "set NODE_ENV=development&&nodemon bin/dev",
+    "start": "DEBUG=game:* DEBUG_DEPTH=3 NODE_ENV=development nodemon bin/dev",
     "recalculateProfiles": "DEBUG=game:profile node models/profile/recalculateProfiles.js",
     "repopulateGames": "DEBUG=game:* node models/game-summary/repopulateGames.js"
   },

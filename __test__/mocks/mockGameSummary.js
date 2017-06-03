@@ -3,7 +3,7 @@
 // Jaina never votes for a fascist, kills a fascist
 // Valeera shoots a liberal
 // Uther always votes for a fascist
-export default {
+module.exports = {
 	"_id" : "generic-game",
 	"date" : new Date(),
 	"logs" : [
@@ -219,4 +219,4 @@ export default {
 			"role" : "liberal",
 		}
 	],
-}
+};

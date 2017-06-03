@@ -1,40 +1,164 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
+import { Range, List, OrderedMap, Map } from 'immutable';
+import classnames from 'classnames';
+import Slider from 'rc-slider';
 
-const ReplayControls = ({ gameDate, turnNum, phase, description, onNextTickClick, onPrevTickClick }) => (
-	<section className="replay-controls">
-		<div className="replay-deets info">
-			<h1>Replay</h1>
-			<span>Game played on </span>
-			<span>{gameDate}</span>
-		</div>
-		<div className="turn info">
+const TurnNav = ({ position, size, toTurn }) => {
+	const marks = Map(
+		Range(1, size + 1).map(i => [i, {
+			label: i,
+			style: { fontSize: '16px' }
+		}])
+	).toObject();
+
+	return (
+		<div className="turn-nav">
 			<h1>Turn</h1>
-			<span>{turnNum}</span>
+			<Slider
+				onChange={value => toTurn(value - 1)}
+				className="slider"
+				min={1}
+				max={size}
+				value={position + 1}
+				marks={marks}
+				dots />
 		</div>
-		<div className="phase info">
-			<h1>Phase</h1>
-			<span>{phase}</span>
-		</div>
-		<div className="description info">
-			<h1>Description</h1>
-			<span>{description}</span>
-		</div>
-		<div className="playback">
-			<h1>Playback Controls</h1>
-			<div className="ui horizontal segments">
-				<button
-					className="ui icon button segment"
-					onClick={onPrevTickClick}>
-					<i className="flipped play icon" />
-				</button>
-				<button
-					className="ui icon button segment"
-					onClick={onNextTickClick}>
-					<i className="play icon" />
-				</button>
+	);
+};
+
+const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation, toAction }) => {
+	const nav = OrderedMap({
+		election: List([ 'candidacy', 'nomination', 'election' ]),
+		legislation: List([ 'presidentLegislation', 'chancellorLegislation', 'topDeck', 'policyEnaction' ]),
+		action: List([ 'investigation', 'execution' ])
+	});
+
+	const events = Map({
+		election: toElection,
+		legislation: toLegislation,
+		action: toAction
+	});
+
+	const disabled = Map({
+		election: false,
+		legislation: !hasLegislation,
+		action: !hasAction
+	});
+
+	const Step = ({ title, description, isFilled, isDisabled, onClick }) => {
+		const classes = classnames({ 
+			filled: isFilled,
+			disabled: isDisabled
+		}, 'step');
+
+		return (
+			<div className={classes} onClick={onClick} >
+				<div className="content">
+					<div className="title">{title}</div>
+					<div className="description">{description}</div>
+				</div>
 			</div>
+		);
+	};
+
+	const Overlay = () => (
+		<div className="overlay-container">
+			<div className={classnames(phase, 'overlay')} />
 		</div>
-	</section>
+	);
+
+	const filled = (() => {
+		const phases = nav.valueSeq().flatten();
+		const i = phases.findIndex(p => p === phase);
+
+		const maxIndexes = Map({
+			election: 2,
+			legislation: 6,
+			action: 7
+		});
+
+		const filled = maxIndexes.map(max => max <= i)
+
+		return filled;
+	})();
+
+	const steps = nav.map((phases, block) => {
+		return <Step
+			key={block}
+			title={block}
+			description={phases.includes(phase) ? phase : ''}
+			isFilled={filled.get(block)}
+			isDisabled={disabled.get(block)}
+			onClick={events.get(block)} />
+	}).valueSeq();
+
+	return (
+		<div className="phase-nav">
+			<h1 className="ui header">Phase</h1>
+			<div className="ui three tiny steps">{steps}</div>
+			<Overlay />
+		</div>
+	);
+};
+
+const Description = ({ description }) => {
+	return (
+		<div className="description-container">
+			<h1 className="ui header">Description</h1>
+			<p className="content">{description}</p>
+		</div>
+	)
+};
+
+const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, end }) => (
+	<div className="playback">
+		<h1>Playback Controls</h1>
+		<div className="ui horizontal segments">
+			<button
+				className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')}
+				onClick={beginning}>
+				<i className="fast backward icon" />
+			</button>
+			<button
+				className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')}
+				onClick={backward}>
+				<i className="backward icon" />
+			</button>
+			<button
+				className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')}
+				onClick={prev}>
+				<i className="flipped play icon" />
+			</button>
+			<button
+				className={classnames('ui icon', { disabled: !hasNext }, 'button segment')}
+				onClick={next}>
+				<i className="play icon" />
+			</button>
+			<button
+				className={classnames('ui icon', { disabled: !hasNext }, 'button segment')}
+				onClick={forward}>
+				<i className="forward icon" />
+			</button>
+			<button
+				className={classnames('ui icon', { disabled: !hasNext }, 'button segment')}
+				onClick={end}>
+				<i className="fast forward icon" />
+			</button>
+		</div>
+	</div>
 );
+
+const ReplayControls = ({ turnsSize, turnNum, phase, description, playback }) => {
+	const { hasNext, hasPrev, toBeginning, toEnd, nextTick, prevTick, nextPhase, prevPhase, hasLegislation, hasAction, toElection, toLegislation, toAction, toTurn } = playback;
+
+	return (
+		<section className="replay-controls">
+			<TurnNav position={turnNum} size={turnsSize} toTurn={toTurn} />
+			<PhaseNav phase={phase} hasLegislation={hasLegislation} hasAction={hasAction} toElection={toElection} toLegislation={toLegislation} toAction={toAction} />
+			<Description description={description} />
+			<Playback hasNext={hasNext} hasPrev={hasPrev} beginning={toBeginning} end={toEnd} next={nextTick} prev={prevTick} forward={nextPhase} backward={prevPhase} />
+		</section>
+	);
+};
 
 export default ReplayControls;

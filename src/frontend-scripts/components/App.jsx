@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
-import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats} from '../actions/actions.js';
+import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, fetchReplay} from '../actions/actions.js';
 
 const socket = sock({
 		reconnection: false
@@ -47,6 +47,8 @@ export class App extends React.Component {
 			// ** end devhelpers **
 			dispatch(updateUser(info));
 		}
+
+		dispatch(fetchReplay('asdf'))
 
 		socket.on('manualDisconnection', () => {
 			window.location.pathname = '/observe';
@@ -233,7 +235,9 @@ export class App extends React.Component {
 					socket={socket}
 				/>
 				{(() => {
-					if (((this.props.midSection === 'game' || this.props.midSection === 'replay') && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)) {
+					if (this.props.midSection !== 'game' && this.props.midSection !== 'replay'
+						|| this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
+						
 						return (
 							<RightSidebar
 								gameInfo={this.props.gameInfo}

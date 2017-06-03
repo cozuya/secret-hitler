@@ -1,15 +1,14 @@
 // hitler elected
 // also a top deck happens
-export default {
-	"_id" : ObjectId("592bcebcfa7d7a764e6d0455"),
-	"uid" : "devgame",
-	"date" : ISODate("2017-05-29T07:28:46.682Z"),
+module.exports = {
+	"_id" : "hitler-elected-5p",
+	"date" : new Date(),
 	"logs" : [
+		// turn 0
 		{
 			"presidentId" : 0,
 			"chancellorId" : 4,
 			"enactedPolicy" : "fascist",
-			"_id" : ObjectId("592bcebcfa7d7a764e6d045c"),
 			"chancellorHand" : {
 				"reds" : 1,
 				"blues" : 1
@@ -26,10 +25,10 @@ export default {
 				true
 			]
 		},
+		// turn 1
 		{
 			"presidentId" : 1,
 			"chancellorId" : 3,
-			"_id" : ObjectId("592bcebcfa7d7a764e6d045b"),
 			"votes" : [
 				false,
 				false,
@@ -38,10 +37,10 @@ export default {
 				false
 			]
 		},
+		// turn 2
 		{
 			"presidentId" : 2,
 			"chancellorId" : 1,
-			"_id" : ObjectId("592bcebcfa7d7a764e6d045a"),
 			"votes" : [
 				false,
 				false,
@@ -50,11 +49,11 @@ export default {
 				false
 			]
 		},
+		// turn 3
 		{
 			"presidentId" : 3,
 			"chancellorId" : 2,
 			"enactedPolicy" : "fascist",
-			"_id" : ObjectId("592bcebcfa7d7a764e6d0459"),
 			"votes" : [
 				false,
 				false,
@@ -63,11 +62,11 @@ export default {
 				false
 			]
 		},
+		// turn 4
 		{
 			"presidentId" : 4,
 			"chancellorId" : 1,
 			"enactedPolicy" : "fascist",
-			"_id" : ObjectId("592bcebcfa7d7a764e6d0458"),
 			"policyPeek" : {
 				"reds" : 2,
 				"blues" : 1
@@ -88,10 +87,10 @@ export default {
 				true
 			]
 		},
+		// turn 5
 		{
 			"presidentId" : 0,
 			"chancellorId" : 3,
-			"_id" : ObjectId("592bcebcfa7d7a764e6d0457"),
 			"votes" : [
 				false,
 				false,
@@ -103,7 +102,6 @@ export default {
 		{
 			"presidentId" : 1,
 			"chancellorId" : 0,
-			"_id" : ObjectId("592bcebcfa7d7a764e6d0456"),
 			"votes" : [
 				true,
 				true,
@@ -117,28 +115,23 @@ export default {
 		{
 			"username" : "Uther",
 			"role" : "hitler",
-			"_id" : ObjectId("592bcebcfa7d7a764e6d0461")
 		},
 		{
 			"username" : "Jaina",
 			"role" : "fascist",
-			"_id" : ObjectId("592bcebcfa7d7a764e6d0460")
 		},
 		{
 			"username" : "Rexxar",
 			"role" : "liberal",
-			"_id" : ObjectId("592bcebcfa7d7a764e6d045f")
 		},
 		{
 			"username" : "Thrall",
 			"role" : "liberal",
-			"_id" : ObjectId("592bcebcfa7d7a764e6d045e")
 		},
 		{
 			"username" : "Malfurian",
 			"role" : "liberal",
-			"_id" : ObjectId("592bcebcfa7d7a764e6d045d")
 		}
 	],
 	"__v" : 0
-}
+};

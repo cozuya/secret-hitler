@@ -1,4 +1,7 @@
 import fetch from 'isomorphic-fetch';
+import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
+import buildReplay from '../replay/buildReplay';
+import mockGameSummary from '../../../__test__/mocks/mockGameSummary'
 
 export const UPDATE_USER = 'UPDATE_USER';
 
@@ -72,4 +75,23 @@ export const fetchProfile = username => dispatch => {
 		.catch(err => dispatch({
 			type: 'PROFILE_NOT_FOUND'
 		}));
+};
+
+export const fetchReplay = gameId => dispatch  => {
+	return fetch(`/gameSummary?id=${gameId}`)
+		.then(response => response.json())
+		.then(summary => buildEnhancedGameSummary(summary))
+		.then(game => buildReplay(game))
+		.then(replay => {
+			dispatch({
+				type: 'RECEIVE_REPLAY',
+				replay
+			})
+
+			dispatch(updateMidsection('replay'));
+		})
+		.catch(err => {
+			console.log(err);
+			dispatch({ type: 'REPLAY_NOT_FOUND' });
+		});
 };

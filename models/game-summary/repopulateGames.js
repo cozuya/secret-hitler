@@ -1,17 +1,38 @@
-const GameSummary = require('/index');
+const mongoose = require('mongoose');
+const GameSummary = require('./index');
 const mockGameSummary = require('../../__test__/mocks/mockGameSummary');
-// const claims = require('../../__test__/mocks/claims');
-// const hitlerElected = require('../../__test__/mocks/hitlerElected');
-// const hitlerKilled = require('../../__test__/mocks/hitlerKilled');
-// const policyPeek = require('../../__test__/mocks/policyPeek');
+const p5HitlerElected = require('../../__test__/mocks/p5HitlerElected');
+const p7HitlerKilled = require('../../__test__/mocks/p7HitlerKilled');
+const p7LiberalWin = require('../../__test__/mocks/p7LiberalWin');
 const { List } = require('immutable');
+const debug = require('debug')('game:summary');
 
-export default () => {
-    const mocks = List([
-        mockGameSummary
-    ]);
+/*
+ * This job replenishes the database with mock games.
+ * Useful for testing stuff related to profiles and replays.
+ *
+ * ONLY RUN ON DEV!
+ */
 
-    mocks.forEach(mock => {
-        new GameSummary(mock).save()
-    })
-}
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost/secret-hitler-app');
+
+debug('Repopulating mock games');
+
+const mocks = List([
+	mockGameSummary,
+	p5HitlerElected,
+    p7HitlerKilled,
+    p7LiberalWin
+]);
+
+const savePromises = mocks.map(m => {
+	debug('Saving %s', m._id)
+	return (new GameSummary(m)).save();
+});
+
+Promise.all(savePromises)
+	.then(() => {
+		debug('All games repopulated');
+		mongoose.connection.close();
+	});

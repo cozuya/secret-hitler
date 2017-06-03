@@ -214,8 +214,8 @@ describe('ReplayBuilder', () => {
 	});
 
 	it('should have a game over state', () => {
-		const snapshot = findPhase('gameOver', 7);
+		const snapshot = replay.last()
 		expect(snapshot).toBeDefined();
-		expect(snapshot.ending).toBe('fascistPolicy');
+		expect(snapshot.gameOver).toBe(true);
 	});
 });

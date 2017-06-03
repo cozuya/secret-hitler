@@ -21,7 +21,7 @@ mongoose.connect('mongodb://localhost/secret-hitler-app');
 	GameSummary
 		.find(null, null, { sort: { date: 'asc' }})
 		.cursor()
-		.map(game => buildEnhancedGameSummary(game))
+		.map(game => buildEnhancedGameSummary(game.toObject()))
 		.eachAsync(game => updateProfiles(game, { version }))
 		.then(() => {
 			debug('Player profiles recalculated');

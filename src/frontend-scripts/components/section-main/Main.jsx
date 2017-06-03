@@ -16,8 +16,8 @@ export default class Main extends React.Component {
 					(() => {
 						let classes = '';
 
-						if (this.props.midSection === 'game') {
-							if (this.props.gameInfo.general.experiencedMode) {
+						if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
+							if (this.props.gameInfo.general && this.props.gameInfo.general.experiencedMode) {
 								classes = 'experienced ';
 							}
 

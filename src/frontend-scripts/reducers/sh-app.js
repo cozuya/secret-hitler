@@ -6,11 +6,6 @@ import buildReplay from '../replay/buildReplay';
 
 const game = buildEnhancedGameSummary(mockGameSummary)
 
-const mock = {
-	ticks: buildReplay(game),
-	position: 0
-}
-
 const userInfo = (state = {}, action) => {
 		switch (action.type) {
 		case UPDATE_USER:
@@ -20,7 +15,7 @@ const userInfo = (state = {}, action) => {
 		}
 		return state;
 	},
-	midSection = (state = 'replay', action) => {
+	midSection = (state = '', action) => {
 		switch (action.type) {
 		case UPDATE_MIDSECTION:
 			state = action.midSection;
@@ -82,18 +77,20 @@ const userInfo = (state = {}, action) => {
 			return state;
 		}
 	},
-	replay = (state = mock, action) => {
+	replay = (state = { status: 'INITIAL' }, action) => {
 		switch (action.type) {
-			case 'REPLAY_NEXT_TICK':
-				return Object.assign({}, state, {
-					position: state.position + 1
-				})
-			case 'REPLAY_PREV_TICK':
-				return Object.assign({}, state, {
-					position: state.position - 1
-				})
-			default:
-				return state;
+		case 'RECEIVE_REPLAY':
+			return {
+				status: 'READY',
+				ticks: action.replay,
+				position: 0
+			};
+		case 'REPLAY_TO':
+			return Object.assign({}, state, { 
+				position: action.position
+			})
+		default:
+			return state;
 		}
 	}
 
