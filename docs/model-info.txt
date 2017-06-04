@@ -21,6 +21,7 @@ general
 	status string
 	whitelistedPlayers array of strings (userNames)
 	uid string
+	rainbowgame bool
   private bool
 	timeStarted date
 	timeCreated date

@@ -11,22 +11,41 @@
 
     .playerlist {
         background: #F8F8F8;
-        padding: 5px 0 10px;
+        padding-bottom: 10px;
         .userlist-stats-container {
             float: right;
             color: #bdbdbd;
             margin-right: 3px;
         }
 
+				.playerlist-header {
+					padding: 5px 0 3px;
+					background: #000;
+					.normal {
+							background: url('../favicon-16x16.png') no-repeat;
+    					width: 16px;
+    					height: 16px;
+    					vertical-align: text-bottom;
+							display: inline-block;
+						}
+
+					.rainbow {
+						background: url('../images/rainbow.png') no-repeat;
+						width: 16px;
+						height: 16px;
+						vertical-align: text-bottom;
+						display: inline-block;
+					}
+				}
+
 				.circle.icon {
-					margin-left: 10px;
+					margin-left: 5px;
 					font-size: 16px;
 					cursor: pointer;
 				}
 
         .divider {
-            margin-top: 3px;
-            margin-bottom: 0;
+            margin: 0;
         }
         i {
             margin-top: -5px;

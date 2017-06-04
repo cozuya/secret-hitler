@@ -13,6 +13,8 @@ module.exports.sendUserGameSettings = (socket, username) => {
 					userName: username,
 					wins: account.wins,
 					losses: account.losses,
+					rainbowWins: account.rainbowWins,
+					rainbowLosses: account.rainbowLosses,
 					status: {
 						type: 'none',
 						gameId: null

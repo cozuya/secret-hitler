@@ -147,6 +147,11 @@ module.exports = () => {
 	});
 
 	app.post('/account/signin', passport.authenticate('local'), (req, res) => {
+		Account.findOne({username: req.user.username})
+			.then(player => {
+				player.lastConnectedIP = req.headers['X-Real-IP'];
+				player.save();
+			});
 		res.send();
 	});
 

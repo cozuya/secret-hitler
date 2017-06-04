@@ -23,6 +23,7 @@ const mongoose = require('mongoose'),
 		},
 		karmaCount: Number,
 		signupIP: String,
+		lastConnectedIP: String,
 		resetPassword: {
 			resetToken: String,
 			resetTokenExpiration: Date
