@@ -76,26 +76,27 @@ module.exports = () => {
 						tenPlayerGameData: getDataOnGameByPlayerCount(10)
 					};
 				});
-		},
-		decrementKarma = () => {
-			Account.find({karmaCount: {$gt: 0}})
-				.then((err, accounts) => {
-					if (err) {
-						console.log(err, 'decrementKarma err');
-					}
-					accounts.map(account => {
-						account.karmaCount = account.karmaCount - 1;
-						return account;
-					});
-					accounts.save();
-				});
+		// }
+		// ,  // going to rethink this idea.
+		// decrementKarma = () => {
+		// 	Account.find({karmaCount: {$gt: 0}})
+		// 		.then((err, accounts) => {
+		// 			if (err) {
+		// 				console.log(err, 'decrementKarma err');
+		// 			}
+		// 			accounts.map(account => {
+		// 				account.karmaCount = account.karmaCount - 1;
+		// 				return account;
+		// 			});
+		// 			accounts.save();
+		// 		});
 		};
 
 	accounts();
 	socketRoutes();
 	getData();
 	setInterval(getData, 86400000); // once every 24 hours refresh the chart data
-	setInterval(decrementKarma, 86400000); // once every 48 hours reduce players with karma karmaCount by 1
+	// setInterval(decrementKarma, 86400000); // once every 48 hours reduce players with karma karmaCount by 1
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');

@@ -1,1 +1,1 @@
-module.exports = ['igger', 'igga', 'jew', 'iggr', 'faggot'];
+module.exports = ['igger', 'igga', 'jew', 'iggr', 'aggot', '1gger', 'lgger', 'juw'];

@@ -35,13 +35,12 @@ class Playerlist extends React.Component {
 
 	renderFilterIcons() {
 		const filterClick = filter => {
-			this.setState({userListFilter: filter});
+			this.setState({userListFilter: this.state.userListFilter === 'all' ? 'rainbow' : 'all'});
 		};
 
 		return (
-			<span>
-				<span className="normal" onClick={() => { filterClick('all');}} />
-				<span className="rainbow" onClick={() => { filterClick('rainbow');}} />
+			<span className="filter-container">
+				<span className={this.state.userListFilter} onClick={filterClick} />
 			</span>
 		);
 	}

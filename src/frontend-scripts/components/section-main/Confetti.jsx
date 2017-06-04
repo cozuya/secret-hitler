@@ -227,7 +227,7 @@ export default class Confetti extends React.Component {
 
 			setTimeout(() => {
 				DeactivateConfetti();
-			}, 5000);
+			}, 3000);
 
 			window.requestAnimFrame = (function () {
 					return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {

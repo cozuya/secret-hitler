@@ -185,11 +185,11 @@ export default class Players extends React.Component {
 	}
 
 	renderTakeSeat() {
-		const {userInfo, gameInfo} = this.props;
+		const {userInfo, gameInfo, userList} = this.props;
 
 		if (!userInfo.isSeated
 			&& !gameInfo.gameState.isTracksFlipped
-			
+			&& (!gameInfo.general.rainbowgame || userList.list.find(user => user.userName === userInfo.userName).wins + userList.list.find(user => user.userName === userInfo.userName).losses > 49)
 			&& (!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName))) {
 			return <div className="ui left pointing label" onClick={this.clickedTakeSeat}>Take a seat</div>;
 		}
@@ -261,5 +261,6 @@ Players.propTypes = {
 	userInfo: React.PropTypes.object,
 	gameInfo: React.PropTypes.object,
 	roleState: React.PropTypes.string,
+	userList: React.PropTypes.object,
 	selectedGamerole: React.PropTypes.func
 };

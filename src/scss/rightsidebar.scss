@@ -1,14 +1,12 @@
 .playerlistinfo {
-	background-color: #111 !important;
-	padding: 20px;
+    background-color: #111 !important;
+    padding: 20px;
 }
 
 .section-right {
     padding-left: 0 !important;
     padding-right: 0 !important;
     padding-bottom: 0 !important;
-
-
     .playerlist {
         background: #F8F8F8;
         padding-bottom: 10px;
@@ -17,33 +15,35 @@
             color: #bdbdbd;
             margin-right: 3px;
         }
-
-				.playerlist-header {
-					padding: 5px 0 3px;
-					background: #000;
-					.normal {
-							background: url('../favicon-16x16.png') no-repeat;
-    					width: 16px;
-    					height: 16px;
-    					vertical-align: text-bottom;
-							display: inline-block;
-						}
-
-					.rainbow {
-						background: url('../images/rainbow.png') no-repeat;
-						width: 16px;
-						height: 16px;
-						vertical-align: text-bottom;
-						display: inline-block;
-					}
-				}
-
-				.circle.icon {
-					margin-left: 5px;
-					font-size: 16px;
-					cursor: pointer;
-				}
-
+        .playerlist-header {
+            padding: 5px 0 3px;
+            background: #000;
+            .filter-container {
+                margin-left: 30px;
+                border-radius: 50%;
+                box-shadow: 0 0 4px 3px yellow;
+                cursor: pointer;
+            }
+            .all {
+                background: url('../favicon-16x16.png') no-repeat;
+                width: 16px;
+                height: 16px;
+                vertical-align: text-bottom;
+                display: inline-block;
+            }
+            .rainbow {
+                background: url('../images/rainbow.png') no-repeat;
+                width: 16px;
+                height: 16px;
+                vertical-align: text-bottom;
+                display: inline-block;
+            }
+        }
+        .circle.icon {
+            margin-left: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
         .divider {
             margin: 0;
         }
@@ -54,20 +54,18 @@
             height: 250px;
             overflow-y: auto;
             padding-left: 5px;
-
-						.fav {
-							background: url('../favicon-16x16.png') no-repeat;
-    					width: 16px;
-    					height: 16px;
-    					vertical-align: text-bottom;
-						}
-
-						.rainbow {
-							background: url('../images/rainbow.png') no-repeat;
-    					width: 16px;
-    					height: 16px;
-    					vertical-align: text-bottom;
-						}
+            .fav {
+                background: url('../favicon-16x16.png') no-repeat;
+                width: 16px;
+                height: 16px;
+                vertical-align: text-bottom;
+            }
+            .rainbow {
+                background: url('../images/rainbow.png') no-repeat;
+                width: 16px;
+                height: 16px;
+                vertical-align: text-bottom;
+            }
         }
         .ui.header {
             padding-left: 5px;
@@ -131,7 +129,7 @@
                     padding: 0;
                 }
                 .chat-user {
-                    color: #888;	
+                    color: #888;
                 }
                 .admin {
                     color: red;
