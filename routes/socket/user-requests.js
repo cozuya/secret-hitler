@@ -44,7 +44,8 @@ module.exports.sendGameList = socket => {
 		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
 		electionCount: game.general.electionCount,
 		private: game.general.private,
-		uid: game.general.uid
+		uid: game.general.uid,
+		rainbowgame: game.general.rainbowgame
 	}));
 
 	if (socket) {
@@ -73,9 +74,14 @@ const sendUserList = module.exports.sendUserList = socket => { // eslint-disable
 };
 
 const updateUserStatus = module.exports.updateUserStatus = (username, type, gameId) => { // eslint-disable-line one-var
-	const u = userList.find(u => u.userName === username);
-	if (u) {
-		u.status = { type, gameId };
+	const user = userList.find(user => user.userName === username);
+
+	if (user) {
+		user.status = {
+			type,
+			gameId
+		};
+
 		sendUserList();
 	}
 };

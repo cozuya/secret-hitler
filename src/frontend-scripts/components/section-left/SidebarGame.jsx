@@ -35,7 +35,7 @@ export default class SidebarGame extends React.Component {
 				{(() => game.gameStatus === 'notStarted' ?
 						(
 							<div>
-								<div className="gamename">{game.name}</div>
+								<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}>{game.name}</div>
 								{(() => {
 									let status = '';
 

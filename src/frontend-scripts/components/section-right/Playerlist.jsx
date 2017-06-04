@@ -117,6 +117,7 @@ class Playerlist extends React.Component {
 												{ unclickable: !this.props.isUserClickable },
 												{ search: status.type === 'observing' },
 												{ fav: status.type === 'playing' },
+												{ rainbow: status.type === 'rainbow' },
 												'icon'
 											);
 

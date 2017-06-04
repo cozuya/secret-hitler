@@ -18,6 +18,16 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 0.3.4 "</p>
+				</div>
+				<h3>New feature: rainbow games.</h3>
+				<p>While creating a game, players with more than 50 completed games ("rainbow players") will now be able to create games that only other rainbow players can be seated in. These games have a special symbol in the sidebar.</p>
+				<div style={{textAlign: 'center'}}>
+					<img src="images/gamelist-rainbow.png" />
+				</div>
+				<p>In the near future, you will be able to toggle the lobby to the rainbow "board" stats.  And maybe other ideas with to go with the concept.  Got a good one?  Message me.</p>
+				<p>Also in this release, the karma system has been tweaked.  The ban time is now 15 minutes, 2 hours, 8 hours, 1 year.  More importantly, karma degrades by 1 every 48 hours.  So players will not have to worry about accidently getting permabanned.  In addition, players with more than 100 games played cannot take karma hits.  If there are "problem" players over that threshold, I will deal with it myself.  I might regret this.</p>
+				<div className="ui header">
 					<p>Version 0.3.3 "jade" released 5-31-2017</p>
 				</div>
 				<h3>New feature: karma system aka player reporting system.</h3>
