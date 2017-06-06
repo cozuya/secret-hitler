@@ -96,6 +96,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 				if (winningPlayerNames.includes(player.username)) {
 					if (isRainbow) {
 						player.rainbowWins = player.rainbowWins ? player.rainbowWins + 1 : 1;
+						player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses : 0;
 					} else {
 						player.wins++;
 					}
@@ -103,6 +104,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 				} else {
 					if (isRainbow) {
 						player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses + 1 : 1;
+						player.rainbowWins = player.rainbowWins ? player.rainbowWins : 0;
 					}
 					player.losses++;
 				}
@@ -115,14 +117,12 @@ module.exports.completeGame = (game, winningTeamName) => {
 						if (winner) {
 							if (isRainbow) {
 								userEntry.rainbowWins = userEntry.rainbowWins ? userEntry.rainbowWins + 1 : 1;
-								userEntry.rainbowWins++;
 							} else {
 								userEntry.wins++;
 							}
 						} else {
 							if (isRainbow) {
 								userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses + 1 : 1;
-								userEntry.rainbowLosses++;
 							} else {
 								userEntry.losses++;
 							}

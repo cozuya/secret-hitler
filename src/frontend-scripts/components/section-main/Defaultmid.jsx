@@ -16,7 +16,7 @@ export default class Defaultmid extends React.Component {
 		return (
 			<section className="defaultmid">
 				<img src="images/lizard14.png" alt="Secret Hitler logo" width="400" height="400" />
-				<p>sh.io version 0.4.0 "chestnut" released 6/4/2017 | <a onClick={this.changelogClicked}>changelog</a> | <a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">open issues and upcoming features</a> | <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf_pq4xipbxyb8s84eGaazK0itPZmdKSTvMAH9eIHj2hyz0BQ/viewform?c=0&w=1&usp=send_form">bug and feedback form</a></p>
+				<p>sh.io version 0.4.0 "chestnut" released 6/5/2017 | <a onClick={this.changelogClicked}>changelog</a> | <a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">open issues and upcoming features</a> | <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSf_pq4xipbxyb8s84eGaazK0itPZmdKSTvMAH9eIHj2hyz0BQ/viewform?c=0&w=1&usp=send_form">bug and feedback form</a></p>
 				<br />
 				<button style={{padding: '5px', background: '#333', color: 'white'}} data-name="h" onClick={this.props.quickDefault}>default game</button>
 				<br />

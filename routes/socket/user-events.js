@@ -411,7 +411,7 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
-		{badKarma} = data;
+		{badKarma} = false;
 
 	if (badKarma) {
 		if (game.private.reports[badKarma]) {

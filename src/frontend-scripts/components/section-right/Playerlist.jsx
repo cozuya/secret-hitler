@@ -39,7 +39,7 @@ class Playerlist extends React.Component {
 		};
 
 		return (
-			<span className="filter-container">
+			<span className="filter-container" title="Click this to toggle the userlist filter between regular and rainbow games">
 				<span className={this.state.userListFilter} onClick={filterClick} />
 			</span>
 		);

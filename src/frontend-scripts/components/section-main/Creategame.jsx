@@ -215,9 +215,7 @@ export default class Creategame extends React.Component {
 					</div>
 					{(() => {
 						const user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName),
-							// isRainbow = user.wins + user.losses > 49;
-							isRainbow = user.wins + user.losses > -1;
-
+							isRainbow = user.wins + user.losses > 49;
 
 						if (isRainbow) {
 							return (

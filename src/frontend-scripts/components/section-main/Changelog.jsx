@@ -18,15 +18,16 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 0.3.4 "</p>
+					<p>Version 0.4.0 "chestnut" released 6-5-2017</p>
 				</div>
-				<h3>New feature: rainbow games.</h3>
+				<h3>New feature: Rainbow games.</h3>
 				<p>While creating a game, players with more than 50 completed games ("rainbow players") will now be able to create games that only other rainbow players can be seated in. These games have a special symbol in the sidebar.</p>
 				<div style={{textAlign: 'center'}}>
 					<img src="images/gamelist-rainbow.png" />
 				</div>
-				<p>In the near future, you will be able to toggle the lobby to the rainbow "board" stats.  And maybe other ideas with to go with the concept.  Got a good one?  Message me.</p>
-				<p>Also in this release, the karma system has been tweaked.  The ban time is now 15 minutes, 2 hours, 8 hours, 1 year.  More importantly, karma degrades by 1 every 48 hours.  So players will not have to worry about accidently getting permabanned.  In addition, players with more than 100 games played cannot take karma hits.  If there are "problem" players over that threshold, I will deal with it myself.  I might regret this.</p>
+				<p>In the lobby, a new icon appears showing what game style you are filter and sorting the userlist by.  Click it to switch between "regular" and "rainbow". Effectively, rainbow players get to "start over" in an optional hard mode with a 0-0 score.</p>
+				<p><b>For rainbow games, your wins and losses are in a different tier, that does not affect your regular game winrate or player color.</b>  "Rainbow rewards" may come in at some point.</p>
+				<p>Also in this release, the karma system has been temporarily disabled due to griefers exploiting it.  The next major feature is <b>player moderation</b>, where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls.  This isn't all that hard and will be coming soon, and hopefully guarantee a better playing experience for everyone.  Please check the github issue if you are interested in helping out.</p>
 				<div className="ui header">
 					<p>Version 0.3.3 "jade" released 5-31-2017</p>
 				</div>

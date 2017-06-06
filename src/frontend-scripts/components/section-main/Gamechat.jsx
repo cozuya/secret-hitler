@@ -430,18 +430,6 @@ export default class Gamechat extends React.Component {
 					this.leaveGameModal = c;
 				}}>
 					<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players (unless you've been executed).  Do this only in the case of a game already ruined by an AFK/disconnected player or if someone has already left.</h2>
-					<h3>Are you leaving because of a griefing player?  Click on them below to report them for bad karma.</h3>
-					<ul>
-					{(() => {
-						const playerNames = gameInfo.publicPlayersState.map(player => player.userName);
-
-						return playerNames.map((player, index) => {
-							if (player !== userInfo.userName) {
-								return <li key={index}><label><input type="radio" name="karmaradio" onChange={() => { this.handleBadKarmaCheck(player);}} />{player}{`{${index + 1}}`}</label></li>;
-							}
-						});
-					})()}
-					</ul>
 					<div className="ui green positive inverted leave-game button">
 						<i className="checkmark icon"></i>
 						Leave game
