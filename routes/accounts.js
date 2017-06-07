@@ -72,7 +72,7 @@ module.exports = () => {
 
 	app.post('/account/signup', (req, res, next) => {
 		const {username, password, password2, email} = req.body,
-			signupIP = req.headers['X-Real-IP'],
+			signupIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress,
 			save = {
 				username,
 				gameSettings: {
@@ -149,7 +149,7 @@ module.exports = () => {
 	app.post('/account/signin', passport.authenticate('local'), (req, res) => {
 		Account.findOne({username: req.user.username})
 			.then(player => {
-				player.lastConnectedIP = req.headers['X-Real-IP'];
+				player.lastConnectedIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
 				player.save();
 			});
 		res.send();
