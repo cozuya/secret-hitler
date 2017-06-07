@@ -1,6 +1,26 @@
 const Account = require('../../models/account'),
+	ModAction = require('../../models/modAction'),
 	{games, userList, generalChats} = require('./models'),
 	{secureGame} = require('./util');
+
+module.exports.sendModInfo = socket => {
+	const userNames = userList.map(user => user.userName);
+
+	Account.find({username: userNames})
+		.then(users => {
+			ModAction.find({})
+				.then(actions => {
+					socket.emit('modInfo', {
+						modReports: actions,
+						userList: users.map(user => ({
+							isRainbow: user.wins + user.losses > 49,
+							userName: user.username,
+							ip: user.lastConnectedIP || user.signupIP
+						}))
+					});
+				});
+		});
+};
 
 module.exports.sendUserGameSettings = (socket, username) => {
 	Account.findOne({username})

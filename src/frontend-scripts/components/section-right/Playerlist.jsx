@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {ADMINS, PLAYERCOLORS} from '../../constants';
+import {ADMINS, PLAYERCOLORS, MODERATORS} from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -45,6 +45,14 @@ class Playerlist extends React.Component {
 		);
 	}
 
+	renderModerationButton() {
+		const {userInfo} = this.props;
+
+		if (userInfo && userInfo.userName && MODERATORS.includes(userInfo.userName)) {
+			return <a onClick={() => {this.props.onModerationButtonClick('moderation');}} className="mod-button">M</a>;
+		}
+	}
+
 	render() {
 		return (
 			<section className="playerlist">
@@ -53,6 +61,7 @@ class Playerlist extends React.Component {
 						<h3 className="ui header">Lobby</h3>
 						<i className="info circle icon" onClick={this.clickInfoIcon} />
 						{this.renderFilterIcons()}
+						{this.renderModerationButton()}
 						<div className="ui basic modal playerlistinfo">
 							<div className="header">Lobby and player color info</div>
 							<h4>Players in the lobby, general chat, and game chat are grey/white until:</h4>
@@ -174,7 +183,9 @@ class Playerlist extends React.Component {
 }
 
 Playerlist.propTypes = {
-	userList: React.PropTypes.object
+	userInfo: React.PropTypes.object,
+	userList: React.PropTypes.object,
+	onModerationButtonClick: React.PropTypes.func,
 };
 
 export default connect(

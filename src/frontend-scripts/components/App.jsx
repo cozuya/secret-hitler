@@ -240,6 +240,7 @@ export class App extends React.Component {
 								userInfo={this.props.userInfo}
 								userList={this.props.userList}
 								generalChats={this.props.generalChats}
+								onModerationButtonClick={this.handleRoute}
 								socket={socket}
 							/>
 						);

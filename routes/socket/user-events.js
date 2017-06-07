@@ -6,8 +6,9 @@ const {games, userList, generalChats} = require('./models'),
 	Generalchats = require('../../models/generalchats'),
 	startGame = require('./game/start-game.js'),
 	{secureGame} = require('./util.js'),
+	crypto = require('crypto'),
 	{sendInProgressGameUpdate} = require('./util.js'),
-	{PLAYERCOLORS} = require('../../src/frontend-scripts/constants'),
+	{PLAYERCOLORS, MODERATORS} = require('../../src/frontend-scripts/constants'),
 	handleSocketDisconnect = socket => {
 		const {passport} = socket.handshake.session;
 
@@ -407,6 +408,28 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 		.catch(err => {
 			console.log(err);
 		});
+};
+
+module.exports.handleModerationAction = (socket, data) => {
+	const {passport} = socket.handshake.session,
+		affectedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName);
+
+	if (passport && MODERATORS.includes(passport.user)) {
+		switch (data.action) {
+		case 'ban':
+			Account.findOne({username: data.userName})
+				.then(account => {
+					account.hash = crypto.randomBytes(20).toString('hex');
+					account.salt = crypto.randomBytes(20).toString('hex');
+					account.save(() => {
+						if (io.sockets.sockets[affectedSocketId]) {
+							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+						}
+					});
+				});
+			break;
+		}
+	}
 };
 
 module.exports.handleUserLeaveGame = (socket, data) => {

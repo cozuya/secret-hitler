@@ -18,6 +18,16 @@
         .playerlist-header {
             padding: 5px 0 3px;
             background: #000;
+
+						.mod-button {
+							color: red !important;
+							margin-left: 10px;
+							font-weight: 700;
+							cursor: pointer;
+							border: 2px solid red;
+							border-radius: 50%;
+							padding: 2px;
+						}
             .filter-container {
                 margin-left: 30px;
                 border-radius: 50%;

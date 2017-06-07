@@ -7,8 +7,10 @@ export default class RightSidebar extends React.Component {
 		return (
 			<section className="section-right three wide column">
 				<Playerlist
+					userInfo={this.props.userInfo}
 					userList={this.props.userList}
 					socket={this.props.socket}
+					onModerationButtonClick={this.props.onModerationButtonClick}
 				/>
 				<div className="ui divider right-sidebar-divider" />
 				<Generalchat
@@ -28,5 +30,6 @@ RightSidebar.propTypes = {
 	userInfo: React.PropTypes.object,
 	socket: React.PropTypes.object,
 	generalChats: React.PropTypes.array,
-	userList: React.PropTypes.object
+	userList: React.PropTypes.object,
+	onModerationButtonClick: React.PropTypes.func
 };
