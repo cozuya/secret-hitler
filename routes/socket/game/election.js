@@ -935,7 +935,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 
 				setTimeout(() => {
 					president.cardFlingerState = [];
-					if (game.gameState.electionTrackerCount >= 3) {
+					if (game.trackState.electionTrackerCount >= 3) {
 						if (!game.gameState.undrawnPolicyCount) {
 							shufflePolicies(game);
 						}
