@@ -1,0 +1,23 @@
+.moderation {
+		color: $fascistteam;
+		h2 {
+			text-align: center;
+		}
+		ul {
+			list-style-type: none;
+			li label {
+				cursor: pointer;
+			}
+		}
+		button {
+			color: black;
+		}
+
+		.multi {
+			color: yellow;
+		}
+
+		.ip {
+			color: orange;
+		}
+}

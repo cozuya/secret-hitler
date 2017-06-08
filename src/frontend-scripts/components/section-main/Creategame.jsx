@@ -115,6 +115,7 @@ export default class Creategame extends React.Component {
 					experiencedMode: this.state.experiencedmode,
 					disableChat: this.state.disablechat,
 					disableGamechat: this.state.disablegamechat,
+					rainbowgame: this.state.rainbowgame,
 					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 					electionCount: 0
 				},
@@ -213,19 +214,23 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 					{(() => {
-						return (
-							<div className="row">
-								<div className="sixteen wide column experiencedmode">
-									<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
-									<h4 className="ui header">Coming soon</h4>
-									<div className="ui fitted toggle checkbox" ref={c => {
-										this.rainbowgame = c;
-									}}>
-										<input type="checkbox" name="rainbowgame" defaultChecked={false} />
+						const user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName),
+							isRainbow = user.wins + user.losses > 49;
+
+						if (isRainbow) {
+							return (
+								<div className="row">
+									<div className="sixteen wide column experiencedmode">
+										<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
+										<div className="ui fitted toggle checkbox" ref={c => {
+											this.rainbowgame = c;
+										}}>
+											<input type="checkbox" name="rainbowgame" defaultChecked={false} />
+										</div>
 									</div>
 								</div>
-							</div>
-						);
+							);
+						}
 					})()}
 				</div>
 				<div className="ui grid footer">

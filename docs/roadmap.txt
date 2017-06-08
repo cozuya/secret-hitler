@@ -10,9 +10,12 @@ implement stats page and graphs
 
 version 0.4.0
 implement karma system
-implement in-game player stats @jbasrai
+implement rainbow games
 
 version 0.5.0
+implement in-game player stats @jbasrai
+
+version 0.6.0
 convert to webpack/create-react-app for builds
 upgrade dependencies
 
@@ -21,3 +24,5 @@ all desired features in all bugs fixed
 
 version 2.0.0
 implement email address saving, token based verification, and password reset via emails
+
+NIGGERST

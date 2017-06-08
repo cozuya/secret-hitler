@@ -22,6 +22,8 @@ const mongoose = require('mongoose'),
 			passwordResetTokenExpiration: Date
 		},
 		karmaCount: Number,
+		signupIP: String,
+		lastConnectedIP: String,
 		resetPassword: {
 			resetToken: String,
 			resetTokenExpiration: Date
@@ -30,6 +32,8 @@ const mongoose = require('mongoose'),
 		games: Array,
 		wins: Number,
 		losses: Number,
+		rainbowWins: Number,
+		rainbowLosses: Number,
 		created: Date
 	});
 

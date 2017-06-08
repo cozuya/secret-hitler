@@ -72,6 +72,7 @@ module.exports = () => {
 
 	app.post('/account/signup', (req, res, next) => {
 		const {username, password, password2, email} = req.body,
+			signupIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress,
 			save = {
 				username,
 				gameSettings: {
@@ -91,7 +92,8 @@ module.exports = () => {
 				games: [],
 				wins: 0,
 				losses: 0,
-				created: new Date()
+				created: new Date(),
+				signupIP
 			};
 
 		if (!/^[a-z0-9]+$/i.test(username)) {
@@ -132,9 +134,9 @@ module.exports = () => {
 							}
 
 							passport.authenticate('local')(req, res, () => {
-								if (email) {
-									verifyAccount.sendToken(req.body.username, req.body.email);
-								}
+								// if (email) {
+								// 	verifyAccount.sendToken(req.body.username, req.body.email);
+								// }
 								res.send();
 							});
 						});
@@ -145,6 +147,11 @@ module.exports = () => {
 	});
 
 	app.post('/account/signin', passport.authenticate('local'), (req, res) => {
+		Account.findOne({username: req.user.username})
+			.then(player => {
+				player.lastConnectedIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
+				player.save();
+			});
 		res.send();
 	});
 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Tracks from './Tracks.jsx';
 import Gamechat from './Gamechat.jsx';
@@ -98,6 +99,7 @@ export default class Game extends React.Component {
 			}>
 					<Players
 						onClickedTakeSeat={this.props.onClickedTakeSeat}
+						userList={this.props.userList}
 						userInfo={this.props.userInfo}
 						gameInfo={this.props.gameInfo}
 						socket={this.props.socket}
