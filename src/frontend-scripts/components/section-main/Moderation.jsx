@@ -9,7 +9,8 @@ export default class Moderation extends React.Component {
 		this.state = {
 			selectedUser: '',
 			userList: [],
-			actionTextValue: ''
+			actionTextValue: '',
+			log: []
 		};
 	}
 
@@ -18,7 +19,10 @@ export default class Moderation extends React.Component {
 
 		this.props.socket.on('modInfo', info => {
 			console.log(info);
-			this.setState({userList: info.userList});
+			this.setState({
+				userList: info.userList,
+				log: info.modReports
+			});
 		});
 	}
 
@@ -30,12 +34,13 @@ export default class Moderation extends React.Component {
 		const radioChange = userName => {
 				this.setState({selectedUser: userName});
 			},
+			{userName} = this.props.userInfo,
 			{userList} = this.state,
 			ips = userList.map(user => user.ip),
 			multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
 
 		return userList
-			.filter(user => !MODERATORS.includes(user.userName) && (ADMINS.includes(this.props.userInfo.userName) || !user.isRainbow))
+			.filter(user => ADMINS.includes(userName) || !user.isRainbow)
 			.sort((a, b) => (a.losses + a.wins) + (b.losses + b.wins))
 			.map((user, index) => <li key={index} className={multiIPs.includes(user.ip) ? 'multi' : ''}><label><input type="radio" name="users" onChange={() => {radioChange(user.userName);}} />{user.userName} <span className="ip">{user.ip}</span></label></li>);
 	}
@@ -45,6 +50,7 @@ export default class Moderation extends React.Component {
 			this.props.socket.emit('updateModAction', {
 				modName: this.props.userInfo.userName,
 				userName: this.state.selectedUser,
+				comment: this.state.actionTextValue,
 				action
 			});
 			this.setState({selectedUser: ''});
@@ -55,33 +61,55 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="button-container">
-				<button disabled={!this.state.selectedUser} onClick={() => {takeModAction('ban');}}>Ban user</button>
+				<button className="ui button primary" disabled={!this.state.selectedUser || !this.state.actionTextValue} onClick={() => {takeModAction('ban');}}>Ban user</button>
+				<button className="ui button secondary" disabled={!this.state.actionTextValue} onClick={() => {takeModAction('comment');}}>Comment to mod log without taking an action</button>
 			</div>
 		);
 	}
 
-	renderModReports() {
-
+	renderModLog() {
+		return (
+			<div>
+				<table className="ui celled table">
+					<thead>
+						<tr>
+							<th>Mod</th>
+							<th>Date</th>
+							<th>Action</th>
+							<th>User</th>
+							<th>Comment</th>
+						</tr>
+					</thead>
+					<tbody>
+						{this.state.log.map((report, index) => <tr key={index}><td>{report.modUserName}</td><td>{report.date}</td><td>{report.actionTaken}</td><td>{report.userActedOn}</td><td>{report.modNotes}</td></tr>)}
+					</tbody>
+				</table>
+			</div>
+		);
 	}
 
 	renderActionText() {
 		const handleTextChange = e => {
-			this.setState({inputValue: `${e.target.value}`});
+			this.setState({actionTextValue: `${e.target.value}`});
 		};
 
-		return <textarea value={this.state.actionTextValue} onChange={handleTextChange} spellcheck="false" />;
+		return <textarea placeholder="Comment" value={this.state.actionTextValue} onChange={handleTextChange} spellCheck="false" />;
 	}
 
 	render() {
 		return (
 			<section className="moderation">
 				<h2>Moderation</h2>
-				<ul className="userlist">
-					{this.renderUserlist()}
-				</ul>
-				{this.renderModReports()}
-				{this.renderButtons()}
-				{this.renderActionText()}
+				<div>
+					<ul className="userlist">
+						{this.renderUserlist()}
+					</ul>
+					{this.renderActionText()}
+					{this.renderButtons()}
+				</div>
+				<div>
+					{this.renderModLog()}
+				</div>
 			</section>
 		);
 	}
