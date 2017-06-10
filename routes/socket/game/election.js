@@ -734,9 +734,18 @@ module.exports.selectChancellorPolicy = data => {
 			sendInProgressGameUpdate(game);
 			setTimeout(() => {
 				chancellor.cardFlingerState = [];
-				president.playersState[presidentIndex].claim = 'wasPresident';
-				chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
 				enactPolicy(game, enactedPolicy);
+
+				if (experiencedMode) {
+					president.playersState[presidentIndex].claim = 'wasPresident';
+					chancellor.playersState[chancellorIndex].claim = 'wasChancellor';					
+				} else {
+					setTimeout(() => {
+						president.playersState[presidentIndex].claim = 'wasPresident';
+						chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
+						sendInProgressGameUpdate(game);
+					}, 3000);
+				}
 			}, experiencedMode ? 200 : 2000);
 		}
 	}
@@ -935,7 +944,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 
 				setTimeout(() => {
 					president.cardFlingerState = [];
-					if (game.gameState.electionTrackerCount >= 3) {
+					if (game.trackState.electionTrackerCount >= 3) {
 						if (!game.gameState.undrawnPolicyCount) {
 							shufflePolicies(game);
 						}

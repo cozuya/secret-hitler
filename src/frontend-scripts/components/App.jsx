@@ -137,6 +137,7 @@ export class App extends React.Component {
 					minPlayersCount: 5,
 					maxPlayersCount: 5,
 					private: false,
+					rainbowgame: true,
 					experiencedMode: true,
 					disableChat: false,
 					disableGamechat: false,
@@ -230,6 +231,8 @@ export class App extends React.Component {
 					quickDefault={this.makeQuickDefault}
 					onLeaveChangelog={this.handleRoute}
 					onSettingsButtonClick={this.handleRoute}
+					onChangelogButtonClick={this.handleRoute}
+					onLeaveModeration={this.handleRoute}
 					onClickedTakeSeat={this.handleSeatingUser}
 					userList={this.props.userList}
 					socket={socket}
@@ -243,6 +246,7 @@ export class App extends React.Component {
 								userInfo={this.props.userInfo}
 								userList={this.props.userList}
 								generalChats={this.props.generalChats}
+								onModerationButtonClick={this.handleRoute}
 								socket={socket}
 							/>
 						);

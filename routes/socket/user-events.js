@@ -4,11 +4,13 @@ const {games, userList, generalChats} = require('./models'),
 	{sendGameList, sendGeneralChats, sendUserList, updateUserStatus} = require('./user-requests'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
+	ModAction = require('../../models/modAction'),
 	startGame = require('./game/start-game.js'),
 	{secureGame} = require('./util.js'),
+	crypto = require('crypto'),
 	{sendInProgressGameUpdate} = require('./util.js'),
-	{PLAYERCOLORS} = require('../../src/frontend-scripts/constants'),
 	version = require('../../version'),
+	{PLAYERCOLORS, MODERATORS, ADMINS} = require('../../src/frontend-scripts/constants'),
 	handleSocketDisconnect = socket => {
 		const {passport} = socket.handshake.session;
 
@@ -100,7 +102,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 			game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 		}
 
-		updateUserStatus(data.userName, 'playing', data.uid);
+		updateUserStatus(data.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
 
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 
@@ -124,8 +126,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 		}
 
 		data.general.timeCreated = new Date().getTime();
-		updateUserStatus(username, 'playing', data.general.uid);
-
+		updateUserStatus(username, data.general.rainbowgame ? 'rainbow': 'playing', data.general.uid);
 		games.push(data);
 		sendGameList();
 		socket.join(data.general.uid);
@@ -396,47 +397,85 @@ module.exports.handleNewGeneralChat = data => {
 };
 
 module.exports.handleUpdatedGameSettings = (socket, data) => {
-	Account.findOne({username: socket.handshake.session.passport.user})
-		.then(account => {
-			for (const setting in data) {
-				account.gameSettings[setting] = data[setting];
-			}
+	if (socket.handshake.session.passport) {  // yes, even THIS crashed the game once.
+		Account.findOne({username: socket.handshake.session.passport.user})
+			.then(account => {
+				for (const setting in data) {
+					account.gameSettings[setting] = data[setting];
+				}
 
-			account.save(() => {
-				socket.emit('gameSettings', account.gameSettings);
+				account.save(() => {
+					socket.emit('gameSettings', account.gameSettings);
+				});
+			})
+			.catch(err => {
+				console.log(err);
 			});
-		})
-		.catch(err => {
-			console.log(err);
+	}
+};
+
+module.exports.handleModerationAction = (socket, data) => {
+	const {passport} = socket.handshake.session,
+		affectedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName);
+
+	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
+		const modaction = new ModAction({
+			date: new Date(),
+			modUserName: passport.user,
+			userActedOn: data.userName,
+			modNotes: data.comment,
+			ip: data.ip,
+			actionTaken: data.action
 		});
+
+		modaction.save();
+		switch (data.action) {
+		case 'ban':
+			Account.findOne({username: data.userName})
+				.then(account => {
+					account.hash = crypto.randomBytes(20).toString('hex');
+					account.salt = crypto.randomBytes(20).toString('hex');
+					account.save(() => {
+						if (io.sockets.sockets[affectedSocketId]) {
+							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+						}
+					});
+				});
+			break;
+		}
+	}
 };
 
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
-		{badKarma} = data;
+		{badKarma} = false;
 
 	if (badKarma) {
 		if (game.private.reports[badKarma]) {
 			game.private.reports[badKarma]++;
-			if (game.private.reports[badKarma] > 4) {
+			if (game.private.reports[badKarma] === 4) {
 				Account.findOne({username: data.badKarma})
 					.then(account => {
-						let {karmaCount} = account;
-						const unbannedTimeMap = {
-							1: new Date().getTime() + 900000,
-							2: new Date().getTime() + 7200000,
-							3: new Date().getTime() + 31556952000
-						};
+						if (account.wins + account.losses < 101) {
+							let {karmaCount} = account;
+							const unbannedTimeMap = {
+								1: new Date().getTime() + 900000,
+								2: new Date().getTime() + 7200000,
+								3: new Date().getTime() + 28800000,
+								4: new Date().getTime() + 31556952000
+							};
 
-						karmaCount = !karmaCount ? 1 : karmaCount + 1;
-						account.karmaCount = karmaCount;
-						account.gameSettings.unbanTime = unbannedTimeMap[karmaCount];
-						account.save(() => {
-							const bannedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === badKarma);
-							if (io.sockets.sockets[bannedSocketId]) {
-								io.sockets.sockets[bannedSocketId].emit('gameSettings', account.gameSettings);
-							}
-						});
+							karmaCount = !karmaCount ? 1 : karmaCount + 1;
+							account.karmaCount = karmaCount;
+							account.gameSettings.unbanTime = unbannedTimeMap[karmaCount];
+							account.save(() => {
+								const bannedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === badKarma);
+
+								if (io.sockets.sockets[bannedSocketId]) {
+									io.sockets.sockets[bannedSocketId].emit('gameSettings', account.gameSettings);
+								}
+							});
+						}
 					})
 					.catch(err => {
 						console.log(err);

@@ -1,6 +1,8 @@
 const cn = require('classnames');
 
-const ADMINS = module.exports.ADMINS = ['coz'];
+module.exports.MODERATORS = ['sethe', 'maki2'];
+
+const ADMINS = module.exports.ADMINS = ['coz', 'Stine'];
 
 const CONTRIBUTORS = module.exports.CONTRIBUTORS = ['jbasrai'];
 

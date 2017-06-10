@@ -7,7 +7,8 @@ const mongoose = require('mongoose'),
 		winningPlayers: Array,
 		losingPlayers: Array,
 		chats: Array,
-		winningTeam: String
+		winningTeam: String,
+		isRainbow: Boolean
 	});
 
 module.exports = mongoose.model('Game', Game);

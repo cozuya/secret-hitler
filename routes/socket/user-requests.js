@@ -1,7 +1,28 @@
 const Account = require('../../models/account'),
+	ModAction = require('../../models/modAction'),
 	{games, userList, generalChats} = require('./models'),
 	{secureGame} = require('./util'),
 	version = require('../../version');
+
+module.exports.sendModInfo = socket => {
+	const userNames = userList.map(user => user.userName);
+
+	Account.find({username: userNames})
+		.then(users => {
+			ModAction.find({})
+				.then(actions => {
+					console.log(actions);
+					socket.emit('modInfo', {
+						modReports: actions,
+						userList: users.map(user => ({
+							isRainbow: user.wins + user.losses > 49,
+							userName: user.username,
+							ip: user.lastConnectedIP || user.signupIP
+						}))
+					});
+				});
+		});
+};
 
 module.exports.sendUserGameSettings = (socket, username) => {
 	Account.findOne({username})
@@ -14,6 +35,8 @@ module.exports.sendUserGameSettings = (socket, username) => {
 					userName: username,
 					wins: account.wins,
 					losses: account.losses,
+					rainbowWins: account.rainbowWins,
+					rainbowLosses: account.rainbowLosses,
 					status: {
 						type: 'none',
 						gameId: null
@@ -50,7 +73,8 @@ module.exports.sendGameList = socket => {
 		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
 		electionCount: game.general.electionCount,
 		private: game.general.private,
-		uid: game.general.uid
+		uid: game.general.uid,
+		rainbowgame: game.general.rainbowgame
 	}));
 
 	if (socket) {
@@ -79,9 +103,14 @@ const sendUserList = module.exports.sendUserList = socket => { // eslint-disable
 };
 
 const updateUserStatus = module.exports.updateUserStatus = (username, type, gameId) => { // eslint-disable-line one-var
-	const u = userList.find(u => u.userName === username);
-	if (u) {
-		u.status = { type, gameId };
+	const user = userList.find(user => user.userName === username);
+
+	if (user) {
+		user.status = {
+			type,
+			gameId
+		};
+
 		sendUserList();
 	}
 };

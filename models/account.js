@@ -22,6 +22,8 @@ const mongoose = require('mongoose'),
 			passwordResetTokenExpiration: Date
 		},
 		karmaCount: Number,
+		signupIP: String,
+		lastConnectedIP: String,
 		resetPassword: {
 			resetToken: String,
 			resetTokenExpiration: Date
@@ -30,8 +32,10 @@ const mongoose = require('mongoose'),
 		games: Array,
 		wins: Number,
 		losses: Number,
-		created: Date,
-		lastVersionSeen: String
+		rainbowWins: Number,
+		rainbowLosses: Number,
+		lastVersionSeen: String,
+		created: Date
 	});
 
 Account.plugin(passportLocalMongoose);

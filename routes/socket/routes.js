@@ -1,5 +1,5 @@
-const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser, handleUpdateWhitelist, handleAddNewClaim} = require('./user-events'),
-	{sendGameInfo, sendUserGameSettings, sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
+const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser, handleUpdateWhitelist, handleAddNewClaim, handleModerationAction} = require('./user-events'),
+	{sendGameInfo, sendUserGameSettings, sendModInfo, sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
 	{selectChancellor, selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto} = require('./game/election'),
 	{selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute} = require('./game/policy-powers'),
 	{games} = require('./models'),
@@ -41,6 +41,10 @@ module.exports = () => {
 
 		.on('disconnect', () => {
 			handleSocketDisconnect(socket);
+		}).on('getModInfo', () => {
+			sendModInfo(socket);
+		}).on('updateModAction', (data) => {
+			handleModerationAction(socket, data);
 		}).on('addNewClaim', (data) => {
 			handleAddNewClaim(data);
 		}).on('updateGameWhitelist', data => {

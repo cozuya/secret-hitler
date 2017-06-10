@@ -5,6 +5,7 @@ import Creategame from './Creategame.jsx';
 import Settings from './Settings.jsx';
 import Game from './Game.jsx';
 import Changelog from './Changelog.jsx';
+import Moderation from './Moderation.jsx';
 
 export default class Main extends React.Component {
 	render() {
@@ -72,6 +73,15 @@ export default class Main extends React.Component {
 								gameInfo={this.props.gameInfo}
 								userList={this.props.userList}
 								socket={this.props.socket}
+							/>
+						);
+					case 'moderation':
+						return (
+							<Moderation
+								userInfo={this.props.userInfo}
+								socket={this.props.socket}
+								userList={this.props.userList}
+								onLeaveModeration={this.props.onLeaveModeration} 
 							/>
 						);
 					case 'settings':

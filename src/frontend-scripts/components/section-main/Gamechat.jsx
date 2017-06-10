@@ -1,6 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-import {PLAYERCOLORS} from '../../constants';
+import {PLAYERCOLORS, MODERATORS} from '../../constants';
 
 export default class Gamechat extends React.Component {
 	constructor() {
@@ -199,8 +199,10 @@ export default class Gamechat extends React.Component {
 				</div>
 			) :	(
 				<div className="item" key={i}>
-					<span className={playerListPlayer ? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) ? 'chat-user' : `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
-					<span>{chatContents}</span>
+					<span className={playerListPlayer ? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) ? 'chat-user' : `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>
+						{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : MODERATORS.includes(chat.userName) ? <span><span className="moderator-name"> (M)</span><span className="observer-chat"> (Observer)</span></span> : <span className="observer-chat"> (Observer)</span>}{this.handleTimestamps(chat.timestamp)}:
+					</span>
+					<span> {chatContents}</span>
 				</div>
 				);
 			});
@@ -388,7 +390,7 @@ export default class Gamechat extends React.Component {
 									{gameState, publicPlayersState} = gameInfo,
 									{gameSettings, userName, isSeated} = userInfo,
 									isDead = (() => {
-										if (this.props.userInfo.isSeated
+										if (userName
 											&& publicPlayersState.length
 											&& publicPlayersState.find(player => userName === player.userName)) {
 											return publicPlayersState.find(player => userName === player.userName).isDead;
@@ -430,18 +432,6 @@ export default class Gamechat extends React.Component {
 					this.leaveGameModal = c;
 				}}>
 					<h2 className="ui header">DANGER.  Leaving an in-progress game will ruin it for the other players (unless you've been executed).  Do this only in the case of a game already ruined by an AFK/disconnected player or if someone has already left.</h2>
-					<h3>Are you leaving because of a griefing player?  Click on them below to report them for bad karma.</h3>
-					<ul>
-					{(() => {
-						const playerNames = gameInfo.publicPlayersState.map(player => player.userName);
-
-						return playerNames.map((player, index) => {
-							if (player !== userInfo.userName) {
-								return <li key={index}><label><input type="radio" name="karmaradio" onChange={() => { this.handleBadKarmaCheck(player);}} />{player}{`{${index + 1}}`}</label></li>;
-							}
-						});
-					})()}
-					</ul>
 					<div className="ui green positive inverted leave-game button">
 						<i className="checkmark icon"></i>
 						Leave game

@@ -23,6 +23,7 @@ $dteal: #034f61;
 @import 'tracks.scss';
 @import 'rcslider.scss';
 @import 'rightsidebar.scss';
+@import 'moderation.scss';
 #main {
 	width: 1253px;
 	margin-left: auto;
@@ -57,13 +58,13 @@ $dteal: #034f61;
 			animation-direction: alternate;
 
 			@keyframes pulse {
-			    0% {
-			        border-color: whitesmoke;
-			    }
+				0% {
+					border-color: whitesmoke;
+				}
 
-			    100% {
-			        border-color: gold;
-			    }
+				100% {
+					border-color: gold;
+				}
 			}
 		}
 
@@ -73,28 +74,25 @@ $dteal: #034f61;
 			margin-left: -200px;
 			top: 140px;
 		}
+				p {
+					font-family: 'Josefin Sans', sans-serif;
+					position: absolute;
+					bottom: 0;
+					left: 3%;
+					color: #bbb;
+					
+					a {
+						color: lightblue;
+						cursor: pointer;
+					}
+					a:first-child {
+						color: yellow;
+					}
 
-		p {
-			font-family: 'Josefin Sans', sans-serif;
-			position: absolute;
-			bottom: 0;
-			left: 9%;
-			color: #bbb;
-			
-			a {
-				color: lightblue;
-				cursor: pointer;
-			}
-			a:first-child {
-				color: yellow;
-			}
-
-			a:last-child {
-				color: #d86363;
-			}
-		}
-
-
+					a:last-child {
+						color: #d86363;
+					}
+				}
 	}
 	.section-main>section {
 		border-top: 1px solid #3a3a3a;
@@ -374,6 +372,10 @@ body {
 	width: 100%;
 	height: 100%;
 	z-index: 99;
+}
+
+.moderator-name { 
+  color: red; 
 }
 
 ::-webkit-scrollbar {

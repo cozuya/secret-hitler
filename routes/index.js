@@ -31,7 +31,7 @@ module.exports = () => {
 			Game.find({})
 				.then(data => {
 					const completedGames = (() => {
-							const dates = data.map(game => moment(new Date(game.date)).format('l')).filter(date => date !== '5/13/2017'),  // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
+							const dates = data.map(game => moment(new Date(game.date)).format('l')).filter(date => date !== '5/13/2017' && date !== moment(new Date()).format('l')),  // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
 								labels = _.uniq(dates),
 								series = new Array(labels.length).fill(0);
 
@@ -77,12 +77,27 @@ module.exports = () => {
 						tenPlayerGameData: getDataOnGameByPlayerCount(10)
 					};
 				});
+		// }
+		// ,  // going to rethink this idea.
+		// decrementKarma = () => {
+		// 	Account.find({karmaCount: {$gt: 0}})
+		// 		.then((err, accounts) => {
+		// 			if (err) {
+		// 				console.log(err, 'decrementKarma err');
+		// 			}
+		// 			accounts.map(account => {
+		// 				account.karmaCount = account.karmaCount - 1;
+		// 				return account;
+		// 			});
+		// 			accounts.save();
+		// 		});
 		};
 
 	accounts();
 	socketRoutes();
 	getData();
-	setInterval(getData, 86400000);
+	setInterval(getData, 86400000); // once every 24 hours refresh the chart data
+	// setInterval(decrementKarma, 86400000); // once every 48 hours reduce players with karma karmaCount by 1
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
