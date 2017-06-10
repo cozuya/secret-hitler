@@ -78,7 +78,7 @@ export default class SidebarGame extends React.Component {
 						) :
 						(
 							<div>
-								<div className="gamename">{game.name}</div>
+								<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}>{game.name}</div>
 								<div className="liberal-count">
 									{(() => _.range(1, 6).map(num => <div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />)
 									)()}

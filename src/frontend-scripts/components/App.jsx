@@ -228,6 +228,7 @@ export class App extends React.Component {
 					onLeaveChangelog={this.handleRoute}
 					onSettingsButtonClick={this.handleRoute}
 					onChangelogButtonClick={this.handleRoute}
+					onLeaveModeration={this.handleRoute}
 					onClickedTakeSeat={this.handleSeatingUser}
 					userList={this.props.userList}
 					socket={socket}

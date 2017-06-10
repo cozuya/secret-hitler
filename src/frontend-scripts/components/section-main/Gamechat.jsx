@@ -1,6 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-import {PLAYERCOLORS} from '../../constants';
+import {PLAYERCOLORS, MODERATORS} from '../../constants';
 
 export default class Gamechat extends React.Component {
 	constructor() {
@@ -199,8 +199,10 @@ export default class Gamechat extends React.Component {
 				</div>
 			) :	(
 				<div className="item" key={i}>
-					<span className={playerListPlayer ? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) ? 'chat-user' : `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : ' (Observer)'}{this.handleTimestamps(chat.timestamp)}: </span>
-					<span>{chatContents}</span>
+					<span className={playerListPlayer ? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) ? 'chat-user' : `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>
+						{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : MODERATORS.includes(chat.userName) ? <span><span className="moderator-name"> (M)</span><span className="observer-chat"> (Observer)</span></span> : <span className="observer-chat"> (Observer)</span>}{this.handleTimestamps(chat.timestamp)}:
+					</span>
+					<span> {chatContents}</span>
 				</div>
 				);
 			});
@@ -388,7 +390,7 @@ export default class Gamechat extends React.Component {
 									{gameState, publicPlayersState} = gameInfo,
 									{gameSettings, userName, isSeated} = userInfo,
 									isDead = (() => {
-										if (this.props.userInfo.isSeated
+										if (userName
 											&& publicPlayersState.length
 											&& publicPlayersState.find(player => userName === player.userName)) {
 											return publicPlayersState.find(player => userName === player.userName).isDead;

@@ -4,11 +4,12 @@ const {games, userList, generalChats} = require('./models'),
 	{sendGameList, sendGeneralChats, sendUserList, updateUserStatus} = require('./user-requests'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
+	ModAction = require('../../models/modAction'),
 	startGame = require('./game/start-game.js'),
 	{secureGame} = require('./util.js'),
 	crypto = require('crypto'),
 	{sendInProgressGameUpdate} = require('./util.js'),
-	{PLAYERCOLORS, MODERATORS} = require('../../src/frontend-scripts/constants'),
+	{PLAYERCOLORS, MODERATORS, ADMINS} = require('../../src/frontend-scripts/constants'),
 	handleSocketDisconnect = socket => {
 		const {passport} = socket.handshake.session;
 
@@ -445,26 +446,38 @@ module.exports.handleNewGeneralChat = data => {
 };
 
 module.exports.handleUpdatedGameSettings = (socket, data) => {
-	Account.findOne({username: socket.handshake.session.passport.user})
-		.then(account => {
-			for (const setting in data) {
-				account.gameSettings[setting] = data[setting];
-			}
+	if (socket.handshake.session.passport) {  // yes, even THIS crashed the game once.
+		Account.findOne({username: socket.handshake.session.passport.user})
+			.then(account => {
+				for (const setting in data) {
+					account.gameSettings[setting] = data[setting];
+				}
 
-			account.save(() => {
-				socket.emit('gameSettings', account.gameSettings);
+				account.save(() => {
+					socket.emit('gameSettings', account.gameSettings);
+				});
+			})
+			.catch(err => {
+				console.log(err);
 			});
-		})
-		.catch(err => {
-			console.log(err);
-		});
+	}
 };
 
 module.exports.handleModerationAction = (socket, data) => {
 	const {passport} = socket.handshake.session,
 		affectedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName);
 
-	if (passport && MODERATORS.includes(passport.user)) {
+	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
+		const modaction = new ModAction({
+			date: new Date(),
+			modUserName: passport.user,
+			userActedOn: data.userName,
+			modNotes: data.comment,
+			ip: data.ip,
+			actionTaken: data.action
+		});
+
+		modaction.save();
 		switch (data.action) {
 		case 'ban':
 			Account.findOne({username: data.userName})
