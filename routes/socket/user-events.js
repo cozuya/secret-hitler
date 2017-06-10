@@ -9,6 +9,7 @@ const {games, userList, generalChats} = require('./models'),
 	{secureGame} = require('./util.js'),
 	crypto = require('crypto'),
 	{sendInProgressGameUpdate} = require('./util.js'),
+	version = require('../../version'),
 	{PLAYERCOLORS, MODERATORS, ADMINS} = require('../../src/frontend-scripts/constants'),
 	handleSocketDisconnect = socket => {
 		const {passport} = socket.handshake.session;
@@ -590,6 +591,8 @@ module.exports.checkUserStatus = socket => {
 			sendInProgressGameUpdate(game);
 		}
 	}
+
+	socket.emit('version', { current: version });
 
 	sendUserList();
 	sendGeneralChats(socket);

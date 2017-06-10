@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
-import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats} from '../actions/actions.js';
+import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, updateVersion} from '../actions/actions.js';
 
 const socket = sock({
 		reconnection: false
@@ -65,6 +65,10 @@ export class App extends React.Component {
 
 		socket.on('gameList', list => {
 			dispatch(updateGameList(list));
+		});
+
+		socket.on('version', v => {
+			dispatch(updateVersion(v));
 		});
 
 		socket.on('gameUpdate', (game, isSettings) => {
@@ -232,6 +236,7 @@ export class App extends React.Component {
 					onClickedTakeSeat={this.handleSeatingUser}
 					userList={this.props.userList}
 					socket={socket}
+					version={this.props.version}
 				/>
 				{(() => {
 					if ((this.props.midSection === 'game' && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) || this.props.midSection !== 'game') {

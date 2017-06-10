@@ -67,7 +67,17 @@ const userInfo = (state = {}, action) => {
 				activeStat: 'MATCHES' 
 			});
 		case 'UPDATE_ACTIVE_STATS':
-			return Object.assign({}, state, { activeStat: action.activeStat })
+			return Object.assign({}, state, { activeStat: action.activeStat });
+		default:
+			return state;
+		}
+	},
+	version = (state = { current: { number: '', color: '', date: '' }, lastSeen: '' }, action) => {
+		switch(action.type) {
+		case 'UPDATE_VERSION':
+			return action.version;
+		case 'VIEW_PATCH_NOTES':
+			return Object.assign({}, state, { lastSeen: state.current.number });
 		default:
 			return state;
 		}
@@ -80,5 +90,6 @@ export default combineReducers({
 	gameInfo,
 	userList,
 	generalChats,
-	profile
+	profile,
+	version
 });

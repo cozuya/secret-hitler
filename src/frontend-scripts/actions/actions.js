@@ -73,3 +73,14 @@ export const fetchProfile = username => dispatch => {
 			type: 'PROFILE_NOT_FOUND'
 		}));
 }
+
+export function updateVersion(version) {
+	return {
+		type: 'UPDATE_VERSION',
+		version
+	};
+};
+
+export function viewPatchNotes() {
+	return { type: 'VIEW_PATCH_NOTES' }
+};
