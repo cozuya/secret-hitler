@@ -1,3 +1,6 @@
+process.env['NODE_ENV'] = 'development';
+process.env['DEBUG'] = 'game:profile';
+
 const
 	mongoose = require('mongoose'),
 	GameSummary = require('../game-summary'),

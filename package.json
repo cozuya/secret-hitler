@@ -88,7 +88,8 @@
     "test": "jest",
     "db": "mongod --dbpath data",
     "start": "set NODE_ENV=development&&nodemon bin/dev",
-    "recalculateProfiles": "DEBUG=game:profile node models/profile/recalculateProfiles.js"
+    "recalculateProfiles": "node models/profile/recalculateProfiles.js",
+    "removeRainbowLosses": "node scripts/removeRainbowLosses"
   },
   "main": "index.js"
 }

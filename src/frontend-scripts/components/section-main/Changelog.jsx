@@ -20,11 +20,6 @@ export default class Changelog extends React.Component {
 				<div className="ui header">
 					<p>Version 0.5.0 "glow" released 6-10-2017</p>
 				</div>
-				<h3>New feature (contribution by player sethe): Player profiles</h3>
-				<p></p>
-				<div style={{textAlign: 'center'}}>
-					<img src="images/gamelist-rainbow.png" />
-				</div>
 				<h3>New feature: Player moderation</h3>
 				<p>Some players have volunteered to be moderators.  They are empowered to have the ability to ban non-rainbow players for griefing and trolling, and to check for cheating. Hopefully this (and some more advanced powers from admins) will be a permanent solution to problems that may come up.  Moderators will have a red (M) next to their names.</p>
 				<h4>Other updates</h4>
@@ -36,7 +31,7 @@ export default class Changelog extends React.Component {
 					<li>A fix to rainbow losses also adding to normal losses, but not the other way around.  I'll see if there's a way to credit those.</li>
 					<li>Contribution by player sethe: a fix to the (relatively rare) problem of the election tracker not working right with vetos and neins.</li>
 				</ul>
-				<p>Up next: road to 1.0!  This means all bugs fixed, and all necessary/desired features implemented.  After that, who knows!</p>
+				<p>Up next: player profiles.  This is just about ready to go and will be released within the next 2 days.</p>
 				<div className="ui header">
 					<p>Version 0.4.0 "chestnut" released 6-5-2017</p>
 				</div>
