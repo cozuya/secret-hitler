@@ -10,9 +10,8 @@ module.exports.sendModInfo = socket => {
 		.then(users => {
 			ModAction.find({})
 				.then(actions => {
-					console.log(actions);
 					socket.emit('modInfo', {
-						modReports: actions,
+						modReports: actions.reverse(),
 						userList: users.map(user => ({
 							isRainbow: user.wins + user.losses > 49,
 							userName: user.username,

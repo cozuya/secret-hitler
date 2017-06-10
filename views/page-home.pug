@@ -9,6 +9,21 @@ block content
 				.eight.wide.column.news
 					h2(style="color: #000").ui.header News
 					p Issues/bugs can be reported at #[a(href="//goo.gl/forms/IxDi9f1fKyGhefDx2") this link]. Or open a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
+					p Version 0.5.0 "glow" released 6-10-2017
+					h3 New feature (contribution by player sethe): Player profiles
+					div(style="text-align: center")
+						img(src="images/gamelist-rainbow.png", style="width: 100%")
+					h3 New feature: Player moderation
+					p Some players have volunteered to be moderators.  They are empowered to have the ability to ban non-rainbow players for griefing and trolling, and to check for cheating. Hopefully this (and some more advanced powers from admins) will be a permanent solution to problems that may come up.  Moderators will have a red (M) next to their names.
+					h4 Other updates
+					ul
+						li A fix to the rainbow game icon on the gamelist only being there for games that haven't started yet.
+						li A fix (finally) to dead players being able to chat by leaving the game and coming back.
+						li A 3 second delay has been implemented between the inactment of a policy by the chancellor, and the ability for the government to make a claim (for non-experienced games only).  This should change game play a lot I think..
+						li Various tooltips have been added to some items and will continue to be addded in the future.
+						li A fix to rainbow losses also adding to normal losses, but not the other way around.  I'll see if there's a way to credit those.
+						li Contribution by player sethe: a fix to the (relatively rare) problem of the election tracker not working right with vetos and neins.
+					p Up next: road to 1.0!  This means all bugs fixed, and all necessary/desired features implemented.  After that, who knows!
 					p Version 0.4.0 "chestnut" released 6-5-2017
 					h3 New feature: Rainbow games.
 					p While creating a game, players with more than 50 completed games ("rainbow players") will now be able to create games that only other rainbow players can be seated in. These games have a special symbol in the sidebar.
@@ -17,86 +32,3 @@ block content
 					p In the lobby, a new icon appears showing what game style you are filter and sorting the userlist by.  Click it to switch between "regular" and "rainbow".  Effectively, rainbow players get to "start over" in an optional hard mode with a 0-0 score.
 					p For rainbow games, your wins and losses are in a different tier, that does not affect your regular game winrate or player color.  "Rainbow rewards" may come in at some point.
 					p Also in this release, the karma system has been temporarily disabled due to griefers exploiting it.  The next major feature is player moderation, where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls.  This isn't all that hard and will be coming soon, and hopefully guarantee a better playing experience for everyone. Please check the github issue if you are interested in helping out.
-					p Version 0.3.3 "jade" released 5-31-2017
-					h3 New feature: karma system aka player reporting system.
-					p When you leave in-progress games you will now see a list of players with radio buttons on the modal.
-					div(style="text-align: center")
-						img(src="images/badkarma.png", style="width: 100%")
-					p If you are leaving because of a griefing player aka someone who afks intentionally, who spams chat, or does not play with the intent of winning, select that person from this list.
-					p If they receive enough votes in that game, they will take a karma hit which results in:
-					ul
-						li 1st offense: 15 minute ban from playing or chatting.
-						li 2nd offense: 2 hour ban from playing or chatting.
-						li 3rd offense: indefinite ban from playing or chatting.
-					strong I cannot stress enough that this is for griefers only, not purples, not people who say "idiot" in chat, not people who lie to you (duh).  This will be watched.
-					h3 New Feature: no observer chat filter
-					div(style="text-align: center")
-						img(src="images/noobserver.png")
-					p Use this if someone is griefing you via observer chat
-					ul
-						li Player colors should now persist after that player logs out.
-						li Despite calling it stable, 2 crashes occurred in the 3 days that avocado was out.  1 was a miss, other one was pretty bizarre.. someone not logged in tried to make a game.  You can't even do that..
-					p Version 0.3.2 "avocado" released 5-27-2017
-					h3 New feature: player status icons in the lobby.  Players in game will have a "SH" icon.  Players observing will have a magnifying glass icon.  Click either (while not in a game) to be routed to the game that player is in.  Feature courtesy of jbasrai @github.  Contribute to this open source project to get a cool orange name!
-					ul
-						li Irritating private games that never get started now get deleted after 10 minutes.
-						li Fix to a front-end issue with observer chat.
-						li Another attempt to fix gamelist sort.
-						li A small global black list of "bad words" and word fragments for user names and game names has been implemented.  While this is a (very mildly) adult-themed game, some stuff is not cool.  Tongue-in-cheek Nazi references and swear words?  Probably fine.  Racism/sexism/homophobia/antisemitism?  No thanks.
-						li Something special now happens when you win a game..
-					p Version 0.3.1 "mint" released 5-25-2017
-					h3 New feature (sorta): player colors in both game and general chat.  This can be disabled with a new player setting in the settings menu (click "gear" icon while not in a game).
-					ul
-						li A new info component is in the lobby/playerlist.  Click it to understand the player name color schemes.
-						li Fix to "chancellor in veto zone can't click a card, hanging the entire game" bug that to be honest I have no idea where it came from, but it should be working now.  Sorry about that.
-						li Looks like there was one crash bug left and only happened a couple times per day, this patch will attempt to fix that. Without further breaking stuff.
-						li Fix to gamelist sort bouncing around like crazy (I hope, this is like the 3rd time I've tried to fix it).
-						li Enhanced the player colors a bit, and took out bolded player names as it was a bit much.
-						li Increased threshold for being in the "top tier" on the playerlist from 30 to 50.  This will put only colored (bad choice of words..) players on the top.  I think this incentivizes people a bit.
-						li Stats page only refreshes once per day now.
-					p Version 0.3.0 "teal" released 5-23-2017
-					h3 New feature #[a(href="/stats") game stats].  Pretty basic to start, but interesting.  Will expand more on that later.
-					p Other changes:
-					ul
-						li Fixed the last crash bug for real this time.  I mean it.
-						li More fun name color stuff:
-						ul
-							li >55% win rate < 60% win rate: light purple
-							li >300 games played: very dark green
-							li The (immediate) above and the dark purple players are bolded.  Beware.
-						li also moved the 2nd tier of win rate from 10 minimum games to 30 minimum games if that makes sense.  Custom player name colors also appear in both general and game chat!  Wow your friends!
-						li Bug fix to (#34) when the status bar wrapped the styling was off slightly.
-						li Bug fix to (#2) left sidebar gamelist sorting.. I hope.  It SHOULD be: unstarted games on top, in progress games in the middle, completed games on the bottom.
-						li New component: "footer" on the bottom of the default/lizard screen that has a new "changelog" component and links to the github issues page.	
-					p Version 0.2.3 "plum" released 5-20-2017
-					p Several small changes and fixes:
-					ul
-						li Fixed the last (??) crash bug.  Stability should be achieved!  Until someone finds more.
-						li Added a 150 millisecond #[a(href="https://davidwalsh.name/javascript-debounce-function" rel="nofollow") debounce] to both general and game chat.  Effectively users can not spam uncontrollably.  Should help with troll problems.  If this is too much/little please give feedback.
-						li Players names in the userlist in upper right corner now have some special colors:
-							ul
-								li >50 games played: light green
-								li >100 games played: darker green
-								li >200 games played: even darker green
-								li >60% win rate: purple
-								li contributer (code): orange.  If you know even a bit of javascript and want to make some changes to this game, please feel free to contact me/submit a pull request.
-								li admin: red
-						li Games that have not started yet are sorted to the top of the game list on left sidebar.  It should have always been this way but was broken in a dumb way..
-						li Fix to garbage collected games bugging out the UI before they are updated?  I think.
-					p Version 0.2.0 "violet" released 5-16-2017
-					h3 New feature: automated claim system
-					p After the following actions:
-					ul
-						li President receives 3 policies and chancellor completes his or her discard
-						li Chancellor receives 2 policies and completes his or her discard
-						li President peeks at the top 3 policies
-						li President examines party loyalty
-					p A glowing "C" will show up in the lower right corner of chat for those players.
-					div(style="text-align: center")
-						img(src="images/claim-button.png", style="margin-top: 0")
-					p Click that, and the chat window will be overlaid with a new modal.
-					img(src="images/claim-modal.png", style="margin-top: 0; text-align: center")
-					P Click your action (or click the C again to dismiss) and a new type of chat will appear, informing players about what you say happened.  You have until the next election to do this action.
-					img(src="images/claim-text.png", style="margin-top: 0; text-align: center")
-					p Let me know if you like/hate this, and any issues or requests about it.
-					p Next up: stats page.

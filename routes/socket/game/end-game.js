@@ -105,8 +105,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 					if (isRainbow) {
 						player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses + 1 : 1;
 						player.rainbowWins = player.rainbowWins ? player.rainbowWins : 0;
+					} else {
+						player.losses++;
 					}
-					player.losses++;
 				}
 
 				player.games.push(game.uid);
