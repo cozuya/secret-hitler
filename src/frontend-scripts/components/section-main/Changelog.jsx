@@ -22,23 +22,18 @@ export default class Changelog extends React.Component {
 				<div className="ui header">
 					<p>{`Version ${version.number} "${version.color}" released ${version.date}`}</p>
 				</div>
-				<h3>New feature (contribution): Player profiles</h3>
-				<p></p>
-				<div style={{textAlign: 'center'}}>
-					<img src="images/gamelist-rainbow.png" />
-				</div>
-				<h3>New feature: Player moderators</h3>
-				<p>Please welcome our new player-moderators: </p>
-				<p>These players are empowered to have the ability to ban non-rainbow players for griefing and trolling, and to check for cheating. They will have a red (M) next to their name when they are not playing in a game.  Hopefully this (and some more advanced powers from admins) will be a permanent solution to problems that may come up.</p>
-				<h3>Other updates</h3>
+				<h3>New feature: Player moderation</h3>
+				<p>Some players have volunteered to be moderators.  They are empowered to have the ability to ban non-rainbow players for griefing and trolling, and to check for cheating. Hopefully this (and some more advanced powers from admins) will be a permanent solution to problems that may come up.  Moderators will have a red (M) next to their names.</p>
+				<h4>Other updates</h4>
 				<ul>
 					<li>A fix to the rainbow game icon on the gamelist only being there for games that haven't started yet.</li>
-					<li>A fix (finally) to dead players being able to leave the game and come back and chat.</li>
-					<li>A 3 second delay has been implemented between the inactment of a policy by the chancellor, and the ability for the government to make a claim.  This should change game play a lot I think..</li>
+					<li>A fix (finally) to dead players being able to chat by leaving the game and coming back.</li>
+					<li>A 3 second delay has been implemented between the inactment of a policy by the chancellor, and the ability for the government to make a claim (for non-experienced games only).  This should change game play a lot I think..</li>
 					<li>Various tooltips have been added to some items and will continue to be addded in the future.</li>
-					<li>Contribution: a fix to the (relatively rare) problem of the election tracker not working right with vetos and neins.</li>
-					<li>Contribution: as you've probably seen, the lizard pulses yellow until you've clicked on it, displaying this changelog (once).</li>
+					<li>A fix to rainbow losses also adding to normal losses, but not the other way around.  I'll see if there's a way to credit those.</li>
+					<li>Contribution by player sethe: a fix to the (relatively rare) problem of the election tracker not working right with vetos and neins.</li>
 				</ul>
+				<p>Up next: player profiles.  This is just about ready to go and will be released within the next 2 days.</p>
 				<div className="ui header">
 					<p>Version 0.4.0 "chestnut" released 6-5-2017</p>
 				</div>
