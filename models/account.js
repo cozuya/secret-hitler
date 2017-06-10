@@ -34,8 +34,9 @@ const mongoose = require('mongoose'),
 		losses: Number,
 		rainbowWins: Number,
 		rainbowLosses: Number,
+		created: Date,
 		lastVersionSeen: String,
-		created: Date
+		isFixed: Boolean
 	});
 
 Account.plugin(passportLocalMongoose);

@@ -85,7 +85,8 @@
   "scripts": {
     "test": "jest",
     "db": "mongod --dbpath data",
-    "start": "set NODE_ENV=development&&nodemon bin/dev"
+    "start": "set NODE_ENV=development&&nodemon bin/dev",
+    "removeRainbowLosses": "node scripts/removeRainbowLosses"
   },
   "main": "index.js"
 }
