@@ -6,20 +6,20 @@ mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/secret-hitler-app');
 
 /**
- * This is a job that scrolls through all users with rainbow game wins and adds them to their total account score.
+ * This is a job that scrolls through all users with rainbow game losses and subtracts them from their total account score.
  */
 
-debug('Recovering rainbow wins...');
+debug('Removing rainbow losses...');
 
 let numFixed = 0;
 
 Account
-    .find({ rainbowWins: { $gt: 0 } })
+    .find({ rainbowLosses: { $gt: 0 } })
     .cursor()
     .eachAsync(account => {
         // in case something goes wrong with the job and it needs to be run again
         if (!account.isFixed) {
-            account.wins += account.rainbowWins;
+            account.losses -= account.rainbowLosses;
             account.isFixed = true;
             return account.save().then(() => {
                 numFixed++;
@@ -28,6 +28,6 @@ Account
         }
     })
     .then(() => {
-        debug(`Rainbow wins recovered for ${numFixed} accounts. Job complete.`);
+        debug(`Rainbow losses removed for ${numFixed} accounts. Job complete.`);
         mongoose.connection.close();
     });

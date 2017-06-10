@@ -86,7 +86,7 @@
     "test": "jest",
     "db": "mongod --dbpath data",
     "start": "set NODE_ENV=development&&nodemon bin/dev",
-    "recoverRainbowWins": "DEBUG=game:scripts NODE_ENV=development node scripts/recoverRainbowWins"
+    "removeRainbowLosses": "DEBUG=game:scripts NODE_ENV=development node scripts/removeRainbowLosses"
   },
   "main": "index.js"
 }
