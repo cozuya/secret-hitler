@@ -19,13 +19,9 @@ export default class Moderation extends React.Component {
 		this.props.socket.emit('getModInfo');
 
 		this.props.socket.on('modInfo', info => {
-			// this.setState({
-			// 	userList: info.userList,
-			// 	log: info.modReports.reverse()
-			// });
 			this.setState({
-				userList: new Array(40).fill({ip: 'hi'}),
-				log: info.modReports.reverse()
+				userList: info.userList,
+				log: info.modReports
 			});
 		});
 	}
@@ -90,7 +86,7 @@ export default class Moderation extends React.Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.log.reverse().map((report, index) => <tr key={index}><td>{report.modUserName}</td><td>{moment(new Date(report.date)).format('l')}</td><td>{report.actionTaken}</td><td>{report.actionTaken === 'comment' ? '' : report.userActedOn}</td><td>{report.ip}</td><td>{report.modNotes}</td></tr>)}
+						{this.state.log.map((report, index) => <tr key={index}><td>{report.modUserName}</td><td>{moment(new Date(report.date)).format('l')}</td><td>{report.actionTaken}</td><td>{report.actionTaken === 'comment' ? '' : report.userActedOn}</td><td>{report.ip}</td><td>{report.modNotes}</td></tr>)}
 					</tbody>
 				</table>
 			</div>
