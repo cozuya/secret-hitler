@@ -174,7 +174,7 @@ export default class Menu extends React.Component {
 							<div className="loggedin">
 								Logged in as <span className="playername">{userInfo.userName}</span>
 							</div>
-							<i className={iconClasses()} onClick={this.clickSettingsButton} />
+							<i className={iconClasses()} title="Player settings screen" onClick={this.clickSettingsButton} /> 
 						</div>
 					);
 					})()}

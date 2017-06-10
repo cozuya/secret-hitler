@@ -48,7 +48,7 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const {userInfo} = this.props;
 
-		if (userInfo && userInfo.userName && MODERATORS.includes(userInfo.userName)) {
+		if (userInfo && userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))) {
 			return <a onClick={() => {this.props.onModerationButtonClick('moderation');}} className="mod-button">M</a>;
 		}
 	}
@@ -59,7 +59,7 @@ class Playerlist extends React.Component {
 				<div className="playerlist-header">
 					<div className="clearfix">
 						<h3 className="ui header">Lobby</h3>
-						<i className="info circle icon" onClick={this.clickInfoIcon} />
+						<i className="info circle icon" onClick={this.clickInfoIcon} title="Click to get information about player's colors" />
 						{this.renderFilterIcons()}
 						{this.renderModerationButton()}
 						<div className="ui basic modal playerlistinfo">
@@ -81,9 +81,9 @@ class Playerlist extends React.Component {
 								return (
 									<div>
 										<span>{this.props.userList.list.length}</span>
-										<i className="large user icon" />
+										<i className="large user icon" title="Number of players logged in" />
 										<span>{this.props.userList.totalSockets - this.props.userList.list.length >= 0 ? this.props.userList.totalSockets - this.props.userList.list.length : 0}</span>
-										<i className="large unhide icon" />
+										<i className="large unhide icon" title="Number of observers" />
 									</div>
 								);
 							}
@@ -106,6 +106,14 @@ class Playerlist extends React.Component {
 								}
 
 								if (ADMINS.includes(b.userName)) {
+									return 1;
+								}
+
+								if (MODERATORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
+									return -1;
+								}
+
+								if (MODERATORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
 									return 1;
 								}
 
@@ -149,6 +157,7 @@ class Playerlist extends React.Component {
 
 											return (
 												<i
+													title={status.type === 'playing' ? 'This player is playing in a standard game.' : status.type === 'observing' ? 'This player is observing a game.' : status.type === 'rainbow' ? 'This player is playing in a experienced-player-only game.' : ''}
 													className={iconClasses}
 													onClick={disableIfUnclickable(this.routeToGame).bind(this, status.gameId)} />
 											);
@@ -157,7 +166,13 @@ class Playerlist extends React.Component {
 
 								return (
 									<div key={i}>
-										<span className={PLAYERCOLORS(user)}>{user.userName}</span>
+										<span className={PLAYERCOLORS(user)}>{user.userName}
+											{(() => {
+												if (MODERATORS.includes(user.userName)) {
+													return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
+												}
+											})()}
+										</span>
 										{renderStatus()}
 										{(() => {
 											if (!ADMINS.includes(user.userName)) {

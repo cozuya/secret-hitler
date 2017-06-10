@@ -80,6 +80,7 @@ export default class Main extends React.Component {
 								userInfo={this.props.userInfo}
 								socket={this.props.socket}
 								userList={this.props.userList}
+								onLeaveModeration={this.props.onLeaveModeration} 
 							/>
 						);
 					case 'settings':

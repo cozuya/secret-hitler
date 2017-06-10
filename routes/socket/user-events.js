@@ -396,19 +396,21 @@ module.exports.handleNewGeneralChat = data => {
 };
 
 module.exports.handleUpdatedGameSettings = (socket, data) => {
-	Account.findOne({username: socket.handshake.session.passport.user})
-		.then(account => {
-			for (const setting in data) {
-				account.gameSettings[setting] = data[setting];
-			}
+	if (socket.handshake.session.passport) {  // yes, even THIS crashed the game once.
+		Account.findOne({username: socket.handshake.session.passport.user})
+			.then(account => {
+				for (const setting in data) {
+					account.gameSettings[setting] = data[setting];
+				}
 
-			account.save(() => {
-				socket.emit('gameSettings', account.gameSettings);
+				account.save(() => {
+					socket.emit('gameSettings', account.gameSettings);
+				});
+			})
+			.catch(err => {
+				console.log(err);
 			});
-		})
-		.catch(err => {
-			console.log(err);
-		});
+	}
 };
 
 module.exports.handleModerationAction = (socket, data) => {
@@ -421,9 +423,10 @@ module.exports.handleModerationAction = (socket, data) => {
 			modUserName: passport.user,
 			userActedOn: data.userName,
 			modNotes: data.comment,
+			ip: data.ip,
 			actionTaken: data.action
 		});
-		console.log('Hello, World!');
+
 		modaction.save();
 		switch (data.action) {
 		case 'ban':

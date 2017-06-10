@@ -30,7 +30,7 @@ module.exports = () => {
 			Game.find({})
 				.then(data => {
 					const completedGames = (() => {
-							const dates = data.map(game => moment(new Date(game.date)).format('l')).filter(date => date !== '5/13/2017'),  // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
+							const dates = data.map(game => moment(new Date(game.date)).format('l')).filter(date => date !== '5/13/2017' && date !== moment(new Date()).format('l')),  // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
 								labels = _.uniq(dates),
 								series = new Array(labels.length).fill(0);
 

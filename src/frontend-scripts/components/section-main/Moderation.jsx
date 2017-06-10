@@ -1,11 +1,12 @@
 import React from 'react';
-import {MODERATORS, ADMINS} from '../../constants';
+import {ADMINS} from '../../constants';
+import moment from 'moment';
 import _ from 'lodash';
 
 export default class Moderation extends React.Component {
 	constructor() {
 		super();
-
+		this.leaveModeration = this.leaveModeration.bind(this);
 		this.state = {
 			selectedUser: '',
 			userList: [],
@@ -18,10 +19,13 @@ export default class Moderation extends React.Component {
 		this.props.socket.emit('getModInfo');
 
 		this.props.socket.on('modInfo', info => {
-			console.log(info);
+			// this.setState({
+			// 	userList: info.userList,
+			// 	log: info.modReports.reverse()
+			// });
 			this.setState({
-				userList: info.userList,
-				log: info.modReports
+				userList: new Array(40).fill({ip: 'hi'}),
+				log: info.modReports.reverse()
 			});
 		});
 	}
@@ -50,10 +54,14 @@ export default class Moderation extends React.Component {
 			this.props.socket.emit('updateModAction', {
 				modName: this.props.userInfo.userName,
 				userName: this.state.selectedUser,
+				ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 				comment: this.state.actionTextValue,
 				action
 			});
-			this.setState({selectedUser: ''});
+			this.setState({
+				selectedUser: '',
+				actionTextValue: ''
+			});
 			setTimeout(() => {
 				this.props.socket.emit('getModInfo');
 			}, 500);
@@ -61,8 +69,8 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="button-container">
-				<button className="ui button primary" disabled={!this.state.selectedUser || !this.state.actionTextValue} onClick={() => {takeModAction('ban');}}>Ban user</button>
-				<button className="ui button secondary" disabled={!this.state.actionTextValue} onClick={() => {takeModAction('comment');}}>Comment to mod log without taking an action</button>
+				<button className={(!this.state.selectedUser || !this.state.actionTextValue) ? 'ui button primary disabled' : 'ui button primary'} onClick={() => {takeModAction('ban');}}>Ban user</button>
+				<button className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'} onClick={() => {takeModAction('comment');}}>Comment without action</button>
 			</div>
 		);
 	}
@@ -77,11 +85,12 @@ export default class Moderation extends React.Component {
 							<th>Date</th>
 							<th>Action</th>
 							<th>User</th>
+							<th>IP</th>
 							<th>Comment</th>
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.log.map((report, index) => <tr key={index}><td>{report.modUserName}</td><td>{report.date}</td><td>{report.actionTaken}</td><td>{report.userActedOn}</td><td>{report.modNotes}</td></tr>)}
+						{this.state.log.reverse().map((report, index) => <tr key={index}><td>{report.modUserName}</td><td>{moment(new Date(report.date)).format('l')}</td><td>{report.actionTaken}</td><td>{report.actionTaken === 'comment' ? '' : report.userActedOn}</td><td>{report.ip}</td><td>{report.modNotes}</td></tr>)}
 					</tbody>
 				</table>
 			</div>
@@ -96,19 +105,28 @@ export default class Moderation extends React.Component {
 		return <textarea placeholder="Comment" value={this.state.actionTextValue} onChange={handleTextChange} spellCheck="false" />;
 	}
 
+	leaveModeration() {
+		this.props.onLeaveModeration('default');
+	}
+
 	render() {
 		return (
 			<section className="moderation">
 				<h2>Moderation</h2>
+				<i className="remove icon" onClick={this.leaveModeration} />
 				<div>
-					<ul className="userlist">
-						{this.renderUserlist()}
-					</ul>
-					{this.renderActionText()}
-					{this.renderButtons()}
-				</div>
-				<div>
-					{this.renderModLog()}
+					<div className="modplayerlist">
+						<h3>Current player list</h3>
+						<ul className="userlist">
+							{this.renderUserlist()}
+						</ul>
+						{this.renderActionText()}
+						{this.renderButtons()}
+					</div>
+					<div className="modlog">
+						<h3>Moderation log</h3>
+						{this.renderModLog()}
+					</div>
 				</div>
 			</section>
 		);
@@ -117,5 +135,6 @@ export default class Moderation extends React.Component {
 
 Moderation.propTypes = {
 	userInfo: React.PropTypes.object,
-	socket: React.PropTypes.object
+	socket: React.PropTypes.object,
+	onLeaveModeration: React.PropTypes.func
 };
