@@ -3,35 +3,45 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{sendUserList, sendGameList} = require('../user-requests.js'),
 	Account = require('../../../models/account.js'),
 	Game = require('../../../models/game'),
+	EnhancedGameSummary = require('../../../models/game-summary/EnhancedGameSummary'),
+	{updateProfiles} = require('../../../models/profile/utils'),
+	debug = require('debug')('game'),
 	saveGame = game => {
-		const gameToSave = new Game({
-			uid: game.general.uid,
-			date: new Date(),
-			winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => (
-				{
-					userName: player.userName,
-					team: player.role.team,
-					role: player.role.cardName
-				}
-			)),
-			losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => (
-				{
-					userName: player.userName,
-					team: player.role.team,
-					role: player.role.cardName
-				}
-			)),
-			chats: game.chats.filter(chat => !chat.gameChat).map(chat => (
-				{
-					timestamp: chat.timestamp,
-					chat: chat.chat,
-					userName: chat.userName
-				}
-			)),
-			winningTeam: game.gameState.isCompleted,
-			playerCount: game.general.playerCount
-		});
+		const
+			summary = game.private.summary.publish(),
+			enhanced = new EnhancedGameSummary(summary),
+			gameToSave = new Game({
+				uid: game.general.uid,
+				date: new Date(),
+				winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => (
+					{
+						userName: player.userName,
+						team: player.role.team,
+						role: player.role.cardName
+					}
+				)),
+				losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => (
+					{
+						userName: player.userName,
+						team: player.role.team,
+						role: player.role.cardName
+					}
+				)),
+				chats: game.chats.filter(chat => !chat.gameChat).map(chat => (
+					{
+						timestamp: chat.timestamp,
+						chat: chat.chat,
+						userName: chat.userName
+					}
+				)),
+				winningTeam: game.gameState.isCompleted,
+				playerCount: game.general.playerCount
+			});
 
+		debug('Saving game: %O', summary);
+
+		updateProfiles(enhanced, { cache: true });
+		summary.save();
 		gameToSave.save();
 	};
 

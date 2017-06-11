@@ -11,6 +11,8 @@ export default class Changelog extends React.Component {
 	}
 
 	render() {
+		const version = this.props.version.current;
+
 		return (
 			<section className="changelog">
 				<i className="remove icon" onClick={this.leaveChangelog} />
@@ -18,7 +20,7 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 0.5.0 "glow" released 6-10-2017</p>
+					<p>{`Version ${version.number} "${version.color}" released ${version.date}`}</p>
 				</div>
 				<h3>New feature: Player moderation</h3>
 				<p>Some players have volunteered to be moderators.  They are empowered to have the ability to ban non-rainbow players for griefing and trolling, and to check for cheating. Hopefully this (and some more advanced powers from admins) will be a permanent solution to problems that may come up.  Moderators will have a red (M) next to their names.</p>

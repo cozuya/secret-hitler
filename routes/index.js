@@ -1,10 +1,12 @@
 let passport = require('passport'), // eslint-disable-line no-unused-vars
 	Account = require('../models/account'), // eslint-disable-line no-unused-vars
+	{ getProfile } = require('../models/profile/utils'),
 	Game = require('../models/game'),
 	moment = require('moment'),
 	_ = require('lodash'),
 	socketRoutes = require('./socket/routes'),
 	accounts = require('./accounts'),
+	version = require('../version'),
 	ensureAuthenticated = (req, res, next) => {
 		if (req.isAuthenticated()) {
 			return next();
@@ -118,6 +120,10 @@ module.exports = () => {
 		renderPage(req, res, 'page-about', 'about');
 	});
 
+	app.get('/player-profiles', (req, res) => {
+		renderPage(req, res, 'page-player-profiles', 'playerProfiles');
+	});
+
 	app.get('/game', ensureAuthenticated, (req, res) => {
 		res.render('game', {
 			user: req.user.username,
@@ -134,7 +140,27 @@ module.exports = () => {
 		res.render('game', {game: true});
 	});
 
+	app.get('/profile', (req, res) => {
+		const username = req.query.username;
+
+		getProfile(username).then(profile => {
+			if (!profile) res.status(404).send('Profile not found');
+			else res.json(profile);
+		});
+	});
+
 	app.get('/data', (req, res) => {
 		res.json(gamesData);
+	});
+
+	app.get('/viewPatchNotes', ensureAuthenticated, (req, res) => {
+		Account.updateOne(
+			{ username: req.user.username },
+			{ lastVersionSeen: version.number },
+			(err) => {
+				if (err) res.sendStatus(404);
+				else res.sendStatus(200);
+			}
+		);
 	});
 };

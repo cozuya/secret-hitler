@@ -23,6 +23,7 @@ $dteal: #034f61;
 @import 'tracks.scss';
 @import 'rcslider.scss';
 @import 'rightsidebar.scss';
+@import 'profile.scss';
 @import 'moderation.scss';
 #main {
     width: 1253px;
@@ -43,31 +44,50 @@ $dteal: #034f61;
     }
     .defaultmid {
         background: radial-gradient(ellipse at center, #000 0%, rgba(195, 101, 99, 0.23) 100%) #141210;
+        .patch-alert {
+            cursor: pointer;
+            z-index: 2;
+            position: absolute;
+            top: 154px;
+            left: 215px;
+            height: 370px;
+            width: 370px;
+            border: 17px solid #001F3F;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+            animation-direction: alternate;
+            @keyframes pulse {
+                0% {
+                    border-color: whitesmoke;
+                }
+                100% {
+                    border-color: gold;
+                }
+            }
+        }
         img {
             position: absolute;
             left: 50%;
             margin-left: -200px;
             top: 140px;
         }
-				p {
-					font-family: 'Josefin Sans', sans-serif;
-					position: absolute;
-					bottom: 0;
-					left: 3%;
-					color: #bbb;
-					
-					a {
-						color: lightblue;
-						cursor: pointer;
-					}
-					a:first-child {
-						color: yellow;
-					}
-
-					a:last-child {
-						color: #d86363;
-					}
-				}
+        p {
+            font-family: 'Josefin Sans', sans-serif;
+            position: absolute;
+            bottom: 0;
+            left: 2%;
+            color: #bbb;
+            a {
+                color: lightblue;
+                cursor: pointer;
+            }
+            a:first-child {
+                color: yellow;
+            }
+            a:last-child {
+                color: #d86363;
+            }
+        }
     }
     .section-main>section {
         border-top: 1px solid #3a3a3a;
@@ -302,55 +322,61 @@ body {
 }
 
 .admin {
-	color: red !important;
+    color: red !important;
 }
 
 .contributer {
-	color: orange !important;
+    color: orange !important;
 }
 
 .experienced {
-	color: #b3eab3 !important;
+    color: #b3eab3 !important;
 }
 
 .veryexperienced {
-	color: #7cd17c !important;
+    color: #7cd17c !important;
 }
 
 .veryveryexperienced {
-	color: #48d348 !important;
+    color: #48d348 !important;
 }
 
 .superexperienced {
-	color:#11c811 !important;
+    color: #11c811 !important;
 }
 
 .supersuperexperienced {
-	color: #00a100;
+    color: #00a100;
 }
 
-.experienced.sortaonfire, .veryexperienced.sortaonfire, .veryveryexperienced.sortaonfire .superexperienced.sortaonfire {
-	color: #d9aade !important;
+.experienced.sortaonfire,
+.veryexperienced.sortaonfire,
+.veryveryexperienced.sortaonfire .superexperienced.sortaonfire {
+    color: #d9aade !important;
 }
 
-.experienced.onfire, .veryexperienced.onfire, .veryveryexperienced.onfire .superexperienced.onfire {
-	color: #da65e5 !important;
+.experienced.onfire,
+.veryexperienced.onfire,
+.veryveryexperienced.onfire .superexperienced.onfire {
+    color: #da65e5 !important;
 }
 
-.experienced.veryonfire, .veryexperienced.veryonfire, .veryveryexperienced.veryonfire .superexperienced.veryonfire {
-	color: #b703a7 !important;
+.experienced.veryonfire,
+.veryexperienced.veryonfire,
+.veryveryexperienced.veryonfire .superexperienced.veryonfire {
+    color: #b703a7 !important;
 }
 
 #confetti {
-	position: absolute;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 99;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
 }
 
-.moderator-name { 
-  color: red; 
+.moderator-name {
+    color: red;
 }
 
 ::-webkit-scrollbar {

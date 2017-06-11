@@ -1,10 +1,12 @@
-import index from '../../routes/index.js';
+// import index from '../../routes/index.js';
 
-const i = index();
+// const i = index();
 
-describe('routes', () => {
-	describe('index', function() {
-		it('should return the rendered home page', () => {
-		});
-	});
-});
+// describe('routes', () => {
+// 	describe('index', function() {
+// 		it('should return the rendered home page', () => {
+// 		});
+// 	});
+// });
+
+it('TODO');

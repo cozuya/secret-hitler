@@ -243,6 +243,21 @@ span.emphasis {
 	}
 }
 
+.player-profiles-container {
+	margin: 50px 0 0 0;
+	padding: 30px 0;
+	background: #222;
+	color: #eee;
+
+	h1, h2 {
+		color: $darkfascistteam !important;
+	}
+
+	h3, h4 {
+		color: $fascistteam !important;
+	}
+}
+
 .ct-label {
 	fill: #fff;
 	color: #fff;

@@ -4,6 +4,7 @@ import Defaultmid from './Defaultmid.jsx';
 import Creategame from './Creategame.jsx';
 import Settings from './Settings.jsx';
 import Game from './Game.jsx';
+import Profile from './Profile.jsx';
 import Changelog from './Changelog.jsx';
 import Moderation from './Moderation.jsx';
 
@@ -55,6 +56,7 @@ export default class Main extends React.Component {
 						return (
 							<Changelog
 								onLeaveChangelog={this.props.onLeaveChangelog}
+								version={this.props.version}
 							/>
 						);
 					case 'game':
@@ -91,12 +93,11 @@ export default class Main extends React.Component {
 								socket={this.props.socket}
 							/>
 						);
+					case 'profile':
+						return <Profile />;
 					default:
 						return (
-							<Defaultmid
-								onChangelogButtonClick={this.props.onChangelogButtonClick}
-								quickDefault={this.props.quickDefault}
-							/>
+							<Defaultmid quickDefault={this.props.quickDefault} />
 						);
 					}
 				})()}

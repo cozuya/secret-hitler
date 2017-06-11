@@ -36,6 +36,16 @@ module.exports.selectPolicies = data => {
 			shufflePolicies(game);
 		}
 
+		game.private.summary = game.private.summary.updateLog({
+			policyPeek: game.private.policies.slice(0, 3).reduce((peek, policy) => {
+				if (policy === 'fascist') {
+					return Object.assign({}, peek, { reds: peek.reds + 1 });
+				} else {
+					return Object.assign({}, peek, { blues: peek.blues + 1 });
+				}
+			}, { reds: 0, blues: 0 })
+		});
+
 		president.cardFlingerState = [
 			{
 				position: 'middle-far-left',
@@ -153,6 +163,10 @@ module.exports.selectPartyMembershipInvestigate = data => {
 				player.notificationStatus = '';
 			});
 
+			game.private.summary = game.private.summary.updateLog({
+				investigationId: playerIndex
+			});
+
 			game.publicPlayersState[presidentIndex].isLoader = false;
 			game.publicPlayersState[playerIndex].cardStatus = {
 				cardDisplayed: true,
@@ -258,6 +272,10 @@ module.exports.selectSpecialElection = data => {
 	if (!game.private.lock.selectSpecialElection) {
 		game.private.lock.selectSpecialElection = true;
 
+		game.private.summary = game.private.summary.updateLog({
+			specialElection: data.playerIndex
+		});
+
 		game.publicPlayersState[game.gameState.presidentIndex].isLoader = false;
 
 		game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
@@ -327,6 +345,10 @@ module.exports.selectPlayerToExecute = data => {
 
 			seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
 				player.gameChats.push(nonPresidentChat);
+			});
+
+			game.private.summary = game.private.summary.updateLog({
+				execution: playerIndex
 			});
 
 			president.gameChats.push({

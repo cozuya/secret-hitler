@@ -85,13 +85,21 @@
                 float: right;
             }
         }
-        .status.icon {
-            margin-left: 5px;
-            &:hover {
+        .user {
+            .clickable:hover {
                 cursor: pointer;
+
+                &.username {
+                    color: #608cb3 !important;
+                }
             }
-            &.unclickable:hover {
+
+            .unclickable:hover {
                 cursor: not-allowed;
+            }
+
+            .status.icon {
+                margin-left: 5px;
             }
         }
     }

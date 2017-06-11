@@ -1,3 +1,5 @@
+import fetch from 'isomorphic-fetch';
+
 export const UPDATE_USER = 'UPDATE_USER';
 
 export function updateUser(user) {
@@ -51,3 +53,34 @@ export function updateGeneralChats(info) {
 		info
 	}
 }
+
+export const updateActiveStats = activeStat => ({
+	type: 'UPDATE_ACTIVE_STATS',
+	activeStat
+});
+
+export const fetchProfile = username => dispatch => {
+	dispatch(updateMidsection('profile'));
+	dispatch({ type: 'REQUEST_PROFILE' });
+
+	return fetch(`/profile?username=${username}`)
+		.then(response => response.json())
+		.then(profile => dispatch({
+			type: 'RECEIVE_PROFILE',
+			profile
+		}))
+		.catch(err => dispatch({
+			type: 'PROFILE_NOT_FOUND'
+		}));
+}
+
+export function updateVersion(version) {
+	return {
+		type: 'UPDATE_VERSION',
+		version
+	};
+};
+
+export function viewPatchNotes() {
+	return { type: 'VIEW_PATCH_NOTES' }
+};

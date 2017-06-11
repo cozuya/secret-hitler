@@ -1,10 +1,16 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { fetchProfile } from '../../actions/actions';
 import $ from 'jquery';
 import Checkbox from 'semantic-ui-checkbox';
 
 $.fn.checkbox = Checkbox;
 
-export default class Settings extends React.Component {
+const mapDispatchToProps = dispatch => ({
+	fetchProfile: username => dispatch(fetchProfile(username))
+});
+
+class Settings extends React.Component {
 	constructor() {
 		super();
 		this.leaveSettings = this.leaveSettings.bind(this);
@@ -87,6 +93,13 @@ export default class Settings extends React.Component {
 						</div>
 					</div>
 					<div className="four wide column popups">
+						<button
+							className="ui button"
+							onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
+							View your profile
+						</button>
+					</div>
+					<div className="four wide column popups">
 						<h4 className="ui header">Disable player colors in chat</h4>
 						<div className="ui fitted toggle checkbox" ref={c => {
 							this.playercolors = c;
@@ -105,3 +118,8 @@ Settings.propTypes = {
 	userInfo: React.PropTypes.object,
 	socket: React.PropTypes.object
 };
+
+export default connect(
+	null,
+	mapDispatchToProps
+)(Settings);

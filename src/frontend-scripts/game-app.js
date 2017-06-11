@@ -3,7 +3,8 @@
 import $ from 'jquery';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import {render} from 'react-dom';
-import {createStore} from 'redux';
+import {createStore, applyMiddleware} from 'redux';
+import thunk from 'redux-thunk';
 import {Provider} from 'react-redux';
 import AppComponent from './components/App.jsx';
 import account from './account';
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	console.log('%c%s', 'color: teal; background: #eee; font-size: 14px; font-style: italic; font-family: verdana', 'Secret Hitler');
 
 	if (container) {
-		const store = createStore(shapp);
+		const store = createStore(shapp, applyMiddleware(thunk));
 
 		render(
 			<Provider store={store}>

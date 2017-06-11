@@ -46,7 +46,11 @@ gulp.task('lint', () => {
 });
 
 gulp.task('lint-all', () => {
-	return gulp.src(['./routes/**/*.js', './src/frontend-scripts/**/*.jsx', './__test__/*.test.js'])
+	return gulp.src([
+			'./models/**/*.js',
+			'./routes/**/*.js', 
+			'./src/frontend-scripts/**/*.jsx', 
+			'./__test__/**/*.test.js'])
 		.pipe(eslint())
 		.pipe(eslint.format())
 		.pipe(eslint.failAfterError());
