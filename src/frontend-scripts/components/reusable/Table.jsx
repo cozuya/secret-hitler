@@ -1,5 +1,4 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
-import classnames from 'classnames';
 
 const TBody = ({ rows }) => {
 	return (

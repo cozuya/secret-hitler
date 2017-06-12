@@ -1,4 +1,20 @@
-.replay {
+#replay {
+	margin-top: 0px;
+    border: 0;
+    border-radius: 0;
+    background-color: #222; 
+    padding: 0px;
+
+    .not-found {
+    	margin-top: 150px;
+    }
+
+    .exit {
+    	position: absolute;
+    	right: 0px;
+    	z-index: 5;
+    }
+
 	.ui.grid > .column {
 		padding: 0;
 	}
@@ -75,15 +91,11 @@
 				z-index: 3;
 
 				& > .hand > h1::after {
-					content: ' Hand:'
+					content: ':'
 				}
 
 				& > .claim > h1::after {
-					content: ' Claim:'
-				}
-
-				& > .card-group > h1 {
-					text-transform: capitalize;
+					content: ':'
 				}
 			}
 		}
@@ -128,6 +140,8 @@
 		}
 
 		.phase-nav {
+			user-select: none;
+
 			.steps {
 				margin-top: 0;
 				cursor: pointer;
@@ -192,7 +206,7 @@
 		}
 	}
 
-	&.big {
+	.big {
 		.left-side {
 			.track-pieces {
 				.enacted {
@@ -243,7 +257,7 @@
 		}
 	}
 
-	&.small {
+	.small {
 		.left-side {
 			.tracks {
 				transition: none;

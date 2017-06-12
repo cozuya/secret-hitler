@@ -1,4 +1,4 @@
-import { filterOpt, flattenListOpts, mapOpt1, mapOpt2, handDiff, handToPolicy, policyToHand, handToString, capitalize, pushOpt } from '../../utils';
+import { filterOpt, flattenListOpts, mapOpt1, mapOpt2, handDiff, handToPolicy, handToPolicies, policyToHand, handToString, capitalize, pushOpt } from '../../utils';
 import { none, some } from 'option';
 import { List } from 'immutable';
 import matchers from '../matchers'; // eslint-disable-line no-unused-vars
@@ -76,6 +76,16 @@ describe('handToPolicy', () => {
 	expect(handToPolicy({ reds: 0, blues: 1 })).toBe('liberal');
 });
 
+describe('handToPolicies', () => {
+	expect(handToPolicies({ reds: 3, blues: 0 })).toImmutableEqual(List(['fascist', 'fascist', 'fascist']));
+	expect(handToPolicies({ reds: 2, blues: 1 })).toImmutableEqual(List(['fascist', 'fascist', 'liberal']));
+	expect(handToPolicies({ reds: 1, blues: 2 })).toImmutableEqual(List(['fascist', 'liberal', 'liberal']));
+	expect(handToPolicies({ reds: 0, blues: 3 })).toImmutableEqual(List(['liberal', 'liberal', 'liberal']));
+	expect(handToPolicies({ reds: 2, blues: 0 })).toImmutableEqual(List(['fascist', 'fascist']));
+	expect(handToPolicies({ reds: 1, blues: 1 })).toImmutableEqual(List(['fascist', 'liberal']));
+	expect(handToPolicies({ reds: 0, blues: 2 })).toImmutableEqual(List(['liberal', 'liberal']));
+});
+
 describe('policyToHand', () => {
 	expect(policyToHand('liberal')).toEqual({ reds: 0, blues: 1 });
 	expect(policyToHand('fascist')).toEqual({ reds: 1, blues: 0 });
@@ -95,12 +105,14 @@ describe('capitalize', () => {
 	expect(capitalize('')).toBe('');
 	expect(capitalize('a')).toBe('A');
 	expect(capitalize('asdf')).toBe('Asdf');
+	expect(capitalize('Asdf')).toBe('Asdf');
+	expect(capitalize('aSDF')).toBe('ASDF');
 	expect(capitalize('ASDF')).toBe('ASDF');
 });
 
 describe('pushOpt', () => {
 	expect(pushOpt(List(), some(1))).toImmutableEqual(List([1]));
 	expect(pushOpt(List(), none)).toImmutableEqual(List());
-	expect(pushOpt(List([1,2,3]), some(4))).toImmutableEqual(List([1,2,3,4]));
-	expect(pushOpt(List([1,2,3]), none)).toImmutableEqual(List([1,2,3]));
+	expect(pushOpt(List([1, 2, 3]), some(4))).toImmutableEqual(List([1, 2, 3, 4]));
+	expect(pushOpt(List([1, 2, 3]), none)).toImmutableEqual(List([1, 2, 3]));
 });

@@ -21,8 +21,7 @@ export default function buildReplay(game) {
 		const { turnNum, phase, gameOver } = tick;
 
 		const {
-			beforeTrack,
-			afterTrack,
+			beforeTrack, afterTrack,
 			beforePlayers,
 			afterPlayers,
 			beforeElectionTracker,
@@ -43,10 +42,11 @@ export default function buildReplay(game) {
 			jas,
 			neins,
 			execution,
-			isHitlerKilled,
-			isHitlerElected,
 			investigationId,
-			investigationClaim
+			investigationClaim,
+			policyPeek,
+			policyPeekClaim,
+			specialElection
 		} = game.turns.get(turnNum);
 
 
@@ -70,6 +70,8 @@ export default function buildReplay(game) {
 		});
 
 		const midEnactionAdd = add({
+			presidentId,
+			chancellorId,
 			players: beforePlayers,
 			track: beforeTrack,
 			electionTracker: afterElectionTracker,
@@ -77,6 +79,8 @@ export default function buildReplay(game) {
 		});
 
 		const postEnactionAdd = add({
+			presidentId,
+			chancellorId,
 			players: afterPlayers,
 			track: afterTrack,
 			electionTracker: afterElectionTracker,
@@ -86,65 +90,78 @@ export default function buildReplay(game) {
 		const handToStringOpt = mapOpt1(handToString);
 		const usernameOf = game.usernameOf;
 		const claimToValue = claim => handToStringOpt(claim).valueOrElse('nothing');
-		const gameOverText = text => text + ` ${capitalize(game.winningTeam)} win the game.`;
+		const gameOverText = text => text + ` ${capitalize(game.winningTeam)}s win the game.`;
 
 		switch(phase) {
 		case 'candidacy':
 			return preEnactionAdd({ presidentId,
-				description: `${usernameOf(presidentId).value()} is President`
+				description: `${usernameOf(presidentId).value()} is President.`
 			});
 		case 'nomination':
 			return preEnactionAdd({ presidentId, chancellorId,
-				description: `${usernameOf(presidentId).value()} nominates ${usernameOf(chancellorId).value()} as Chancellor`
+				description: `${usernameOf(presidentId).value()} nominates ${usernameOf(chancellorId).value()} as Chancellor.`
 			});
 		case 'election':
 			return preEnactionAdd({ presidentId, chancellorId, votes,
 				electionTracker: afterElectionTracker,
 				description: gameOver
 					? gameOverText('Hitler is elected.')
-					: `The vote ${isVotePassed ? 'passes' : 'fails'} ${jas} to ${neins}`
+					: `The vote ${isVotePassed ? 'passes' : 'fails'} ${jas} to ${neins}.`
 			});
 		case 'topDeck':
-			return midEnactionAdd({ presidentId, chancellorId,
+			return midEnactionAdd({
 				electionTracker: afterElectionTracker,
 				description: `The top policy is enacted.`
 			});
 		case 'presidentLegislation':
-			return midEnactionAdd({ presidentId, chancellorId, presidentClaim,
+			return midEnactionAdd({
+				presidentClaim,
 				presidentHand: presidentHand.value(),
 				presidentDiscard: presidentDiscard.value(),
-				description: `${usernameOf(presidentId).value()} draws 
+				description: `${usernameOf(presidentId).value()} draws
 					${handToString(presidentHand.value())}
-					and claims ${claimToValue(presidentClaim)}`
+					and claims ${claimToValue(presidentClaim)}.`
 			});
 		case 'chancellorLegislation':
-			return midEnactionAdd({ presidentId, chancellorId, chancellorClaim,
+			return midEnactionAdd({
+				chancellorClaim,
 				chancellorHand: chancellorHand.value(),
 				chancellorDiscard: chancellorDiscard.value(),
 				description: `${usernameOf(chancellorId).value()} draws
 					${handToString(chancellorHand.value())}
-					and claims ${claimToValue(chancellorClaim)}`
+					and claims ${claimToValue(chancellorClaim)}.`
 			});
 		case 'policyEnaction':
-			return postEnactionAdd({ presidentId, chancellorId,
+			return postEnactionAdd({
 				players: beforePlayers,
 				enactedPolicy: enactedPolicy.value(),
 				description: gameOver
 					? gameOverText(`The last ${enactedPolicy.value()} policy is played.`)
-					: `A ${enactedPolicy.value()} policy is enacted`
+					: `A ${enactedPolicy.value()} policy is enacted.`
 			});
 		case 'investigation':
-			return postEnactionAdd({ presidentId, chancellorId,
+			return postEnactionAdd({
 				investigationId: investigationId.value(),
 				investigationClaim: investigationClaim,
-				description: `${usernameOf(presidentId).value()} investigates ${usernameOf(investigationId.value()).value()} and claims ${investigationClaim.valueOrElse('nothing')}`
+				description: `${usernameOf(presidentId).value()} investigates ${usernameOf(investigationId.value()).value()} and claims ${investigationClaim.valueOrElse('nothing')}.`
+			});
+		case 'policyPeek':
+			return postEnactionAdd({
+				policyPeek: policyPeek.value(),
+				policyPeekClaim: policyPeekClaim,
+				description: `${usernameOf(presidentId).value()} peeks the deck.`
+			});
+		case 'specialElection':
+			return postEnactionAdd({
+				specialElection: specialElection.value(),
+				description: `${usernameOf(presidentId).value()} special elects ${usernameOf(specialElection.value()).value()}.`
 			});
 		case 'execution':
-			return postEnactionAdd({ presidentId, chancellorId,
+			return postEnactionAdd({
 				execution: execution.value(),
 				description: gameOver
 					? gameOverText('Hitler is killed.')
-					: `${usernameOf(presidentId).value()} executes ${usernameOf(execution.value()).value()}`
+					: `${usernameOf(presidentId).value()} executes ${usernameOf(execution.value()).value()}.`
 			});
 		}
 	}
@@ -159,6 +176,8 @@ export default function buildReplay(game) {
 			isHitlerElected,
 			isElectionTrackerMaxed,
 			isInvestigation,
+			isPolicyPeek,
+			isSpecialElection,
 			isExecution,
 			isHitlerKilled
 		} = game.turns.get(turnNum);
@@ -169,7 +188,7 @@ export default function buildReplay(game) {
 
 		const gameOver = () => {
 			return Object.assign({}, tick, { gameOver: true });
-		}
+		};
 
 		switch (phase) {
 		case 'candidacy':
@@ -190,9 +209,13 @@ export default function buildReplay(game) {
 		case 'policyEnaction':
 			if (isGameEndingPolicyEnacted) return gameOver();
 			else if (isInvestigation) return next('investigation');
+			else if (isPolicyPeek) return next('policyPeek');
+			else if (isSpecialElection) return next('specialElection');
 			else if (isExecution) return next('execution');
 			else return jump();
 		case 'investigation':
+		case 'policyPeek':
+		case 'specialElection':
 			return jump();
 		case 'execution':
 			if (isHitlerKilled) return gameOver();

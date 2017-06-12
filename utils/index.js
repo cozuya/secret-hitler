@@ -1,5 +1,9 @@
 const { some, none } = require('option');
-const { List } = require('immutable');
+const { Range, List } = require('immutable');
+
+/**************************
+ * IMMUTABLES AND OPTIONS *
+ ***************************/
 
 // (opt: Option[A], predicate: A => Boolean) => Option[A]
 exports.filterOpt = (opt, predicate) => {
@@ -10,6 +14,11 @@ exports.filterOpt = (opt, predicate) => {
 exports.flattenListOpts = xs => xs
 	.filter(x => x.isSome())
 	.map(x => x.value());
+
+// (xs: List[A], opt: Option[A]) => List[A]
+exports.pushOpt = (xs, opt) => {
+	return xs.concat(opt.map(x => List([x])).valueOrElse(List()))
+}
 
 // (x: A) => B => (x: Option[A]) => Option[B]
 exports.mapOpt1 = f => {
@@ -25,7 +34,19 @@ exports.mapOpt2 = f => {
 	};
 };
 
-// (hand: { reds: Int, blues: Int }) => { reds: Int, blues: Int }
+
+/*****************
+ * GAME ENTITIES *
+ *****************/
+
+/*
+ * ALIASES:
+ *
+ * Hand: { reds: Int, blues: Int }
+ * Policy: String ('fascist' | 'liberal')
+ */
+
+// (handX: Hand, handY: Hand) => Hand
 exports.handDiff = (handX, handY) => {
 	return { 
 		reds: handX.reds - handY.reds,
@@ -34,24 +55,38 @@ exports.handDiff = (handX, handY) => {
 };
 
 // expects hand to contain only a single card
-// (hand: { reds: Int, blues: Int }) => 'fascist' | 'liberal'
+// (hand: Hand) => Policy
 exports.handToPolicy = hand => {
+	if (hand.reds > 0 && hand.blues > 0)
+		throw new Error('Expected hand to contain only a single card');
+
 	return hand.reds > 0 ? 'fascist' : 'liberal';
 };
 
-// 'fascist' | 'liberal' => { reds: Int, blues: Int }
+// consistently ordered 'fascist' first, followed by 'liberal'
+// (hand: Hand) => List[Policy]
+exports.handToPolicies = hand => {
+	const toPolicies = (count, type) => Range(0, count).map(i => type).toList();
+
+	const reds = toPolicies(hand.reds, 'fascist');
+	const blues = toPolicies(hand.blues, 'liberal');
+
+	return reds.concat(blues).toList();
+};
+
+// (policy: Policy) => Hand
 exports.policyToHand = policy => {
 	return policy === 'fascist'
 		? { reds: 1, blues: 0 }
 		: { reds: 0, blues: 1 };
 };
 
-// (p: 'fascist' | 'liberal') => 'R' | 'B'
+// (policy: Policy) => String ('R' | 'B')
 exports.policyToString = policy => {
 	return policy === 'fascist' ? 'R' : 'B';
 };
 
-// (hand: { reds: Int, blues: Int }) => String
+// (hand: Hand) => String ('\d+R\d+B')
 exports.handToString = hand => {
 	const reds = hand.reds > 0 ? `${hand.reds}R` : '';
 	const blues = hand.blues > 0 ? `${hand.blues}B` : '';
@@ -59,12 +94,12 @@ exports.handToString = hand => {
 	return reds + blues;
 };
 
+
+/********
+ * MISC *
+ ********/
+
 // (s: String) => String
 exports.capitalize = s => {
 	return s.charAt(0).toUpperCase() + s.slice(1);
 };
-
-// (xs: List[A], opt: Option[A]) => List[A]
-exports.pushOpt = (xs, opt) => {
-	return xs.concat(opt.map(x => List([x])).valueOrElse(List()))
-}

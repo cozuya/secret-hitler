@@ -214,7 +214,7 @@ describe('ReplayBuilder', () => {
 	});
 
 	it('should have a game over state', () => {
-		const snapshot = replay.last()
+		const snapshot = replay.last();
 		expect(snapshot).toBeDefined();
 		expect(snapshot.gameOver).toBe(true);
 	});

@@ -17,14 +17,17 @@ export default function toGameInfo(snapshot) {
 				predicate ? { [field]: value } : {}
 			);
 
+			const isSpecialElection = Number.isInteger(snapshot.specialElection);
+
 			const maybePresident = maybe(
-				snapshot.presidentId === i,
+				!isSpecialElection && snapshot.presidentId === i
+				|| isSpecialElection && snapshot.specialElection === i,
 				'governmentStatus',
 				'isPresident'
 			);
 
 			const maybeChancellor = maybe(
-				snapshot.chancellorId === i,
+				!isSpecialElection && snapshot.chancellorId === i,
 				'governmentStatus',
 				'isChancellor'
 			);
@@ -33,6 +36,13 @@ export default function toGameInfo(snapshot) {
 				const f = (cardDisplayed, isFlipped, cardFront, cardBack) => ({
 					cardDisplayed, isFlipped, cardFront, cardBack
 				});
+
+				if (snapshot.gameOver) {
+					return f(true, true, '', {
+						cardName: p.role,
+						icon: 0
+					});
+				}
 
 				switch(snapshot.phase) {
 				case 'election':
@@ -51,12 +61,7 @@ export default function toGameInfo(snapshot) {
 						{ cardName: isInvTarget && 'membership-' + p.loyalty }
 					);
 				default:
-					return snapshot.gameOver
-						? f(true, true, '', {
-							cardName: p.role,
-							icon: 0
-						})
-						: f(false, false, '', {});
+					return f(false, false, '', {});
 				}
 			})();
 
@@ -81,7 +86,8 @@ export default function toGameInfo(snapshot) {
 		enactedPolicies: [],
 		isBlurred: [
 			'presidentLegislation',
-			'chancellorLegislation'
+			'chancellorLegislation',
+			'policyPeek'
 		].includes(snapshot.phase),
 		isHidden: true
 	};

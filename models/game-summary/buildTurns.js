@@ -80,6 +80,12 @@ const buildTurn = (prevTurnOpt, log, players) => {
 	// Boolean
 	const isInvestigation = log.investigationId.isSome();
 
+	// Boolean
+	const isPolicyPeek = log.policyPeek.isSome();
+
+	// Boolean
+	const isSpecialElection = log.specialElection.isSome();
+
 	// Int
 	const { beforeElectionTracker, afterElectionTracker } = (() => {
 		const beforeElectionTracker = prevTurn.afterElectionTracker === 3
@@ -202,6 +208,8 @@ const buildTurn = (prevTurnOpt, log, players) => {
 		isHitlerKilled,
 		isHitlerElected,
 		presidentDiscard,
-		chancellorDiscard
+		chancellorDiscard,
+		isSpecialElection,
+		isPolicyPeek
 	});
 };

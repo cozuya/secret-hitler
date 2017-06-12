@@ -48,7 +48,6 @@
                     padding: 2px 0px;
                     font-size: 12px;
                     width: 42px;
-                    margin-left: 186px;
                     font-size: 11px;
                     background: #FBBD08 !important;
                     color: black !important;
@@ -268,20 +267,17 @@
 }
 
 .thirteen.wide .game>.ui.grid .six.chat-container .unlock.icon+.primary.button {
-    margin-left: 65px;
 		position: relative;
 		z-index: 100;
 }
 
 .sixteen.wide .game>.ui.grid .six.chat-container .unlock.icon+.primary.button {
-    margin-left: 325px;
 		position: relative;
 		z-index: 100;
 }
 
 .sixteen.wide .game>.ui.grid .six.chat-container .whitelist {
     float: right;
-    margin-left: 370px;
     background: #fff !important;
     width: 60px;
 }
@@ -292,7 +288,6 @@
 
 .thirteen.wide .game>.ui.grid .six.chat-container .whitelist {
     float: right;
-    margin-left: 150px;
     background: #fff !important;
     width: 60px;
 }

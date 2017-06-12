@@ -2,7 +2,6 @@
 const { Map, isIndexed, fromJS } = require('immutable');
 const { fromNullable, some, none } = require('option');
 const buildTurns = require('./buildTurns');
-const debug = require('debug')('game:enhanced');
 
 /*
  * Wraps a gameSummary to produce a more human-friendly representation.
@@ -17,7 +16,6 @@ function buildEnhancedGameSummary(_summary) {
 			'investigationId', 'investigationClaim', 'specialElection', 'execution' ];
 
 		if (key === 'logs') {
-			debug('LOGSASDF:', value)
 			return value.map(log => {
 				const logOptions = Map(options.map(o => {
 					const optValue = log[o] ? some(log[o]) : none;

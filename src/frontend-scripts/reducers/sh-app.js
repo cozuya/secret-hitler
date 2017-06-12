@@ -1,10 +1,5 @@
 import {combineReducers} from 'redux';
 import {UPDATE_USER, UPDATE_MIDSECTION, UPDATE_GAMELIST, UPDATE_GAMEINFO, UPDATE_USERLIST, UPDATE_GENERALCHATS} from '../actions/actions.js';
-import mockGameSummary from '../../../__test__/mocks/mockGameSummary';
-import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
-import buildReplay from '../replay/buildReplay';
-
-const game = buildEnhancedGameSummary(mockGameSummary)
 
 const userInfo = (state = {}, action) => {
 		switch (action.type) {
@@ -15,7 +10,7 @@ const userInfo = (state = {}, action) => {
 		}
 		return state;
 	},
-	midSection = (state = '', action) => {
+	midSection = (state = 'default', action) => {
 		switch (action.type) {
 		case UPDATE_MIDSECTION:
 			state = action.midSection;
@@ -67,9 +62,9 @@ const userInfo = (state = {}, action) => {
 		case 'PROFILE_NOT_FOUND':
 			return { status: 'NOT_FOUND' };
 		case 'RECEIVE_PROFILE':
-			return Object.assign({}, action.profile, { 
+			return Object.assign({}, action.profile, {
 				status: 'READY',
-				activeStat: 'MATCHES' 
+				activeStat: 'MATCHES'
 			});
 		case 'UPDATE_ACTIVE_STATS':
 			return Object.assign({}, state, { activeStat: action.activeStat });
@@ -89,6 +84,10 @@ const userInfo = (state = {}, action) => {
 	},
 	replay = (state = { status: 'INITIAL' }, action) => {
 		switch (action.type) {
+		case 'REQUEST_REPLAY':
+			return { status: 'LOADING' };
+		case 'REPLAY_NOT_FOUND':
+			return { status: 'NOT_FOUND' };
 		case 'RECEIVE_REPLAY':
 			return {
 				status: 'READY',
@@ -96,13 +95,13 @@ const userInfo = (state = {}, action) => {
 				position: 0
 			};
 		case 'REPLAY_TO':
-			return Object.assign({}, state, { 
+			return Object.assign({}, state, {
 				position: action.position
-			})
+			});
 		default:
 			return state;
 		}
-	}
+	};
 
 export default combineReducers({
 	userInfo,

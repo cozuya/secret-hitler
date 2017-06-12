@@ -1,7 +1,9 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { Range, List, OrderedMap, Map } from 'immutable';
+import { fromNullable } from 'option';
 import classnames from 'classnames';
 import Slider from 'rc-slider';
+import { capitalize } from '../../../../../utils';
 
 const TurnNav = ({ position, size, toTurn }) => {
 	const marks = Map(
@@ -30,8 +32,22 @@ const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation,
 	const nav = OrderedMap({
 		election: List([ 'candidacy', 'nomination', 'election' ]),
 		legislation: List([ 'presidentLegislation', 'chancellorLegislation', 'topDeck', 'policyEnaction' ]),
-		action: List([ 'investigation', 'execution' ])
+		action: List([ 'investigation', 'policyPeek', 'specialElection', 'execution' ])
 	});
+
+	const localize = s => {
+		const custom = Map({
+			presidentLegislation: 'President',
+			chancellorLegislation: 'Chancellor',
+			topDeck: 'Top Deck',
+			policyEnaction: 'Policy Enaction',
+			policyPeek: 'Policy Peek',
+			specialElection: 'Special Election'
+		});
+
+		return fromNullable(custom.get(s))
+			.valueOrElse(capitalize(s));
+	};
 
 	const events = Map({
 		election: toElection,
@@ -46,7 +62,7 @@ const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation,
 	});
 
 	const Step = ({ title, description, isFilled, isDisabled, onClick }) => {
-		const classes = classnames({ 
+		const classes = classnames({
 			filled: isFilled,
 			disabled: isDisabled
 		}, 'step');
@@ -77,7 +93,7 @@ const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation,
 			action: 7
 		});
 
-		const filled = maxIndexes.map(max => max <= i)
+		const filled = maxIndexes.map(max => max <= i);
 
 		return filled;
 	})();
@@ -85,11 +101,11 @@ const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation,
 	const steps = nav.map((phases, block) => {
 		return <Step
 			key={block}
-			title={block}
-			description={phases.includes(phase) ? phase : ''}
+			title={localize(block)}
+			description={phases.includes(phase) ? localize(phase) : ''}
 			isFilled={filled.get(block)}
 			isDisabled={disabled.get(block)}
-			onClick={events.get(block)} />
+			onClick={events.get(block)} />;
 	}).valueSeq();
 
 	return (
@@ -107,7 +123,7 @@ const Description = ({ description }) => {
 			<h1 className="ui header">Description</h1>
 			<p className="content">{description}</p>
 		</div>
-	)
+	);
 };
 
 const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, end }) => (

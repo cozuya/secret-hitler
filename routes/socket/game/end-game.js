@@ -5,7 +5,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	Game = require('../../../models/game'),
 	buildEnhancedGameSummary = require('../../../models/game-summary/buildEnhancedGameSummary'),
 	{updateProfiles} = require('../../../models/profile/utils'),
-	debug = require('debug')('game'),
+	debug = require('debug')('game:summary'),
 	saveGame = game => {
 		const
 			summary = game.private.summary.publish(),
@@ -91,6 +91,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 	});
 
 	game.private.unSeatedGameChats.push(chat);
+
+	game.summary = game.private.summary;
+	debug('Final game summary: %O', game.summary.publish().toObject());
+
 	sendInProgressGameUpdate(game);
 
 	saveGame(game);

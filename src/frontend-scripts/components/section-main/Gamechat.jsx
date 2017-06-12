@@ -1,8 +1,15 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import $ from 'jquery';
 import {PLAYERCOLORS, MODERATORS} from '../../constants';
+import { loadReplay } from '../../actions/actions';
+import classnames from 'classnames';
 
-export default class Gamechat extends React.Component {
+const mapDispatchToProps = dispatch => ({
+	loadReplay: summary => dispatch(loadReplay(summary))
+});
+
+class Gamechat extends React.Component {
 	constructor() {
 		super();
 		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
@@ -225,6 +232,57 @@ export default class Gamechat extends React.Component {
 					whitelistPlayers
 				});
 				$(this.whitelistModal).modal('hide');
+			},
+			MenuButton = ({ children }) => (
+				<div className="item">{children}</div>
+			),
+			WhiteListButton = () => {
+				if (userInfo.isSeated && gameInfo.general.private && !gameInfo.gameState.isStarted) {
+					return (
+						<MenuButton>
+							<div
+								className="ui button whitelist"
+								onClick={this.handleWhitelistPlayers}>
+								Whitelist Players
+							</div>
+						</MenuButton>
+					);
+				} else {
+					return null;
+				}
+			},
+			WatchReplayButton = () => {
+				const { summary } = gameInfo;
+				const { loadReplay } = this.props;
+
+				if (summary) {
+					return (
+						<MenuButton>
+							<div
+								className="ui primary button"
+								onClick={loadReplay.bind(null, summary)}>
+								Watch Replay
+							</div>
+						</MenuButton>
+					);
+				} else {
+					return null;
+				}
+			},
+			LeaveGameButton = () => {
+				const classes = classnames('ui primary button', {
+					['ui-disabled']: userInfo.isSeated && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted
+				});
+
+				return (
+					<MenuButton>
+						<div
+							className={classes}
+							onClick={this.handleClickedLeaveGame}>
+							Leave Game
+						</div>
+					</MenuButton>
+				);
 			};
 
 		return (
@@ -235,22 +293,11 @@ export default class Gamechat extends React.Component {
 					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>Game</a>
 					<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>No observer chat</a>
 					<i className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'} onClick={this.handleChatLockClick} />
-					{(() => {
-						if (userInfo.isSeated && gameInfo.general.private && !gameInfo.gameState.isStarted) {
-							return <div className='ui button whitelist' onClick={this.handleWhitelistPlayers}>Whitelist Players</div>;
-						}
-					})()}
-					<div className={
-						(() => {
-							let classes = 'ui primary button';
-
-							if (userInfo.isSeated && (gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted)) {
-								classes += ' ui-disabled';
-							}
-
-							return classes;
-						})()
-					} onClick={this.handleClickedLeaveGame}>Leave Game</div>
+					<div className="right menu">
+						<WhiteListButton />
+						<WatchReplayButton />
+						<LeaveGameButton />
+					</div>
 				</section>
 				<section className={
 					(() => {
@@ -474,3 +521,8 @@ Gamechat.propTypes = {
 	socket: React.PropTypes.object,
 	userList: React.PropTypes.object
 };
+
+export default connect(
+	null,
+	mapDispatchToProps
+)(Gamechat);

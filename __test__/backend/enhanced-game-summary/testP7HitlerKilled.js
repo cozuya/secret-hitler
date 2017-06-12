@@ -9,6 +9,14 @@ export default () => {
 		const game = buildEnhancedGameSummary(p7HitlerKilled);
 		const { turns } = game;
 
+		it('should track special elections', () => {
+			expect(turns.get(0).isSpecialElection).toBe(false);
+			expect(turns.get(1).isSpecialElection).toBe(false);
+			expect(turns.get(2).isSpecialElection).toBe(false);
+			expect(turns.get(3).isSpecialElection).toBe(true);
+			expect(turns.get(4).isSpecialElection).toBe(false);
+		});
+
 		it('last turn should have hitler killed', () => {
 			expect(turns.last().isHitlerKilled).toBe(true);
 			expect(game.winningTeam).toBe('liberal');

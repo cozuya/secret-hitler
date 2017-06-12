@@ -5,7 +5,7 @@ import Creategame from './Creategame.jsx';
 import Settings from './Settings.jsx';
 import Game from './Game.jsx';
 import Profile from './Profile.jsx';
-import Replay from './Replay.jsx';
+import Replay from './replay/Replay.jsx';
 import Changelog from './Changelog.jsx';
 import Moderation from './Moderation.jsx';
 
@@ -85,7 +85,7 @@ export default class Main extends React.Component {
 								userInfo={this.props.userInfo}
 								socket={this.props.socket}
 								userList={this.props.userList}
-								onLeaveModeration={this.props.onLeaveModeration} 
+								onLeaveModeration={this.props.onLeaveModeration}
 							/>
 						);
 					case 'settings':

@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const GameSummary = require('./index');
-const mockGameSummary = require('../../__test__/mocks/mockGameSummary');
-const p5HitlerElected = require('../../__test__/mocks/p5HitlerElected');
-const p7HitlerKilled = require('../../__test__/mocks/p7HitlerKilled');
-const p7LiberalWin = require('../../__test__/mocks/p7LiberalWin');
+const GameSummary = require('../models/game-summary');
+const mockGameSummary = require('../__test__/mocks/mockGameSummary');
+const p5HitlerElected = require('../__test__/mocks/p5HitlerElected');
+const p7HitlerKilled = require('../__test__/mocks/p7HitlerKilled');
+const p7LiberalWin = require('../__test__/mocks/p7LiberalWin');
 const { List } = require('immutable');
 const debug = require('debug')('game:summary');
 
@@ -22,12 +22,12 @@ debug('Repopulating mock games');
 const mocks = List([
 	mockGameSummary,
 	p5HitlerElected,
-    p7HitlerKilled,
-    p7LiberalWin
+	p7HitlerKilled,
+	p7LiberalWin
 ]);
 
 const savePromises = mocks.map(m => {
-	debug('Saving %s', m._id)
+	debug('Saving %s', m._id);
 	return (new GameSummary(m)).save();
 });
 

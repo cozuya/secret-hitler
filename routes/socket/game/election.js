@@ -143,8 +143,8 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 				game.private.unSeatedGameChats.push(chat);
 			}
 
-			if (process.env.NODE_ENV === 'development' && (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) || (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6)) {
-			// if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
+			// if (process.env.NODE_ENV === 'development' && (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) || (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6)) {
+			if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
 				game.publicPlayersState.forEach((player, i) => {
 					player.cardStatus.cardFront = 'secretrole';
 					player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
@@ -767,7 +767,7 @@ module.exports.selectChancellorPolicy = data => {
 
 				if (experiencedMode) {
 					president.playersState[presidentIndex].claim = 'wasPresident';
-					chancellor.playersState[chancellorIndex].claim = 'wasChancellor';					
+					chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
 				} else {
 					setTimeout(() => {
 						president.playersState[presidentIndex].claim = 'wasPresident';
