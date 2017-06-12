@@ -613,7 +613,7 @@ module.exports.selectPresidentPolicy = data => {
 		chancellor = game.private.seatedPlayers[chancellorIndex],
 		nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
-	if (!game.private.lock.selectPresidentPolicy && president && president.cardFlingerState && president.cardFlingerState.length) {
+	if (!game.private.lock.selectPresidentPolicy && president && president.cardFlingerState && president.cardFlingerState.length && chancellorIndex && game.publicPlayersState[chancellorIndex]) {
 		game.private.lock.selectPresidentPolicy = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 		game.publicPlayersState[chancellorIndex].isLoader = true;
@@ -763,9 +763,18 @@ module.exports.selectChancellorPolicy = data => {
 			sendInProgressGameUpdate(game);
 			setTimeout(() => {
 				chancellor.cardFlingerState = [];
-				president.playersState[presidentIndex].claim = 'wasPresident';
-				chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
 				enactPolicy(game, enactedPolicy);
+
+				if (experiencedMode) {
+					president.playersState[presidentIndex].claim = 'wasPresident';
+					chancellor.playersState[chancellorIndex].claim = 'wasChancellor';					
+				} else {
+					setTimeout(() => {
+						president.playersState[presidentIndex].claim = 'wasPresident';
+						chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
+						sendInProgressGameUpdate(game);
+					}, 3000);
+				}
 			}, experiencedMode ? 200 : 2000);
 		}
 	}
@@ -780,7 +789,7 @@ module.exports.selectChancellorVoteOnVeto = data => {
 		publicChancellor = game.publicPlayersState[chancellorIndex];
 
 	game.private.lock.selectPresidentVoteOnVeto = false;
-	if (!game.private.lock.selectChancellorVoteOnVeto) {
+	if (!game.private.lock.selectChancellorVoteOnVeto && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
 		game.private.lock.selectChancellorVoteOnVeto = true;
 
 		game.publicPlayersState[chancellorIndex].isLoader = false;
@@ -964,7 +973,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 
 				setTimeout(() => {
 					president.cardFlingerState = [];
-					if (game.gameState.electionTrackerCount >= 3) {
+					if (game.trackState.electionTrackerCount >= 3) {
 						if (!game.gameState.undrawnPolicyCount) {
 							shufflePolicies(game);
 						}

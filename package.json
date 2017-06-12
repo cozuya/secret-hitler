@@ -1,7 +1,7 @@
 {
   "name": "secret-hitler",
   "description": "A dramatic game of political intrigue and betrayal set in 1930's Germany.",
-  "version": "0.3.2",
+  "version": "0.5.0",
   "license": "CC-BY-NC-SA-4.0",
   "repository": {
     "url": "https://github.com/cozuya/secret-hitler.git",
@@ -60,6 +60,7 @@
     "babelify": "^7.3.0",
     "browserify": "^14.3.0",
     "classnames": "^2.2.5",
+    "crypto": "0.0.3",
     "eslint": "^3.19.0",
     "eslint-config-google": "^0.7.1",
     "eslint-plugin-import": "^2.2.0",
@@ -88,9 +89,10 @@
   "scripts": {
     "test": "jest --watch __test__/backend/",
     "db": "mongod --dbpath data",
-    "start": "DEBUG=game:* DEBUG_DEPTH=3 NODE_ENV=development nodemon bin/dev",
-    "recalculateProfiles": "DEBUG=game:profile node models/profile/recalculateProfiles.js",
-    "repopulateGames": "DEBUG=game:* node models/game-summary/repopulateGames.js"
+    "start": "set NODE_ENV=development&&nodemon bin/dev",
+    "recalculateProfiles": "node models/profile/recalculateProfiles.js",
+    "repopulateGames": "DEBUG=game:* node models/game-summary/repopulateGames.js",
+    "removeRainbowLosses": "node scripts/removeRainbowLosses"
   },
   "main": "index.js"
 }

@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
-import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, fetchReplay} from '../actions/actions.js';
+import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, fetchReplay, updateVersion} from '../actions/actions.js';
 
 const socket = sock({
 		reconnection: false
@@ -67,6 +67,10 @@ export class App extends React.Component {
 
 		socket.on('gameList', list => {
 			dispatch(updateGameList(list));
+		});
+
+		socket.on('version', v => {
+			dispatch(updateVersion(v));
 		});
 
 		socket.on('gameUpdate', (game, isSettings) => {
@@ -135,6 +139,7 @@ export class App extends React.Component {
 					minPlayersCount: 5,
 					maxPlayersCount: 5,
 					private: false,
+					rainbowgame: true,
 					experiencedMode: true,
 					disableChat: false,
 					disableGamechat: false,
@@ -230,9 +235,11 @@ export class App extends React.Component {
 					onLeaveChangelog={this.handleRoute}
 					onSettingsButtonClick={this.handleRoute}
 					onChangelogButtonClick={this.handleRoute}
+					onLeaveModeration={this.handleRoute}
 					onClickedTakeSeat={this.handleSeatingUser}
 					userList={this.props.userList}
 					socket={socket}
+					version={this.props.version}
 				/>
 				{(() => {
 					if (this.props.midSection !== 'game' && this.props.midSection !== 'replay'
@@ -244,6 +251,7 @@ export class App extends React.Component {
 								userInfo={this.props.userInfo}
 								userList={this.props.userList}
 								generalChats={this.props.generalChats}
+								onModerationButtonClick={this.handleRoute}
 								socket={socket}
 							/>
 						);

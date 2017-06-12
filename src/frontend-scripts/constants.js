@@ -1,8 +1,10 @@
 const cn = require('classnames');
 
-const ADMINS = module.exports.ADMINS = ['coz'];
+module.exports.MODERATORS = ['sethe', 'maki2', 'Crazyuncle', 'nemonorm', 'Anna1999', 'Tenebrae'];
 
-const CONTRIBUTORS = module.exports.CONTRIBUTORS = ['sethe'];
+const ADMINS = module.exports.ADMINS = ['coz', 'Stine'];
+
+const CONTRIBUTORS = module.exports.CONTRIBUTORS = ['jbasrai', 'sethe'];
 
 module.exports.PLAYERCOLORS = (user) => cn({
 	admin: ADMINS.includes(user.userName),

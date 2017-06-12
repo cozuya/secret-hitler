@@ -11,6 +11,8 @@ export default class Changelog extends React.Component {
 	}
 
 	render() {
+		const version = this.props.version.current;
+
 		return (
 			<section className="changelog">
 				<i className="remove icon" onClick={this.leaveChangelog} />
@@ -18,71 +20,31 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 0.3.2 "avocado" released 5-28-2017</p>
+					<p>{`Version ${version.number} "${version.color}" released ${version.date}`}</p>
 				</div>
-				<h3>New feature: player status icons in the lobby.  Players in game will have a "SH" icon.  Players observing will have a magnifying glass icon.  Click either (while not in a game) to be routed to the game that player is in.  Feature courtesy of jbasrai @github.  Contribute to this open source project to get a cool orange name!</h3>
+				<h3>New feature: Player moderation</h3>
+				<p>Some players have volunteered to be moderators.  They are empowered to have the ability to ban non-rainbow players for griefing and trolling, and to check for cheating. Hopefully this (and some more advanced powers from admins) will be a permanent solution to problems that may come up.  Moderators will have a red (M) next to their names.</p>
+				<h4>Other updates</h4>
 				<ul>
-					<li>Irritating private games that never get started now get deleted after 10 minutes.</li>
-					<li>Fix to a front-end issue with observer chat.</li>
-					<li>Another attempt to fix gamelist sort.</li>
-					<li>A small global black list of "bad words" and word fragments for user names and game names has been implemented.  While this is a (very mildly) adult-themed game, some stuff is not cool.  Tongue-in-cheek Nazi references and swear words?  Probably fine.  Racism/sexism/homophobia/antisemitism?  No thanks.</li>
-					<li>Something special now happens when you win a game..</li>
+					<li>A fix to the rainbow game icon on the gamelist only being there for games that haven't started yet.</li>
+					<li>A fix (finally) to dead players being able to chat by leaving the game and coming back.</li>
+					<li>A 3 second delay has been implemented between the inactment of a policy by the chancellor, and the ability for the government to make a claim (for non-experienced games only).  This should change game play a lot I think..</li>
+					<li>Various tooltips have been added to some items and will continue to be addded in the future.</li>
+					<li>A fix to rainbow losses also adding to normal losses, but not the other way around.  I'll see if there's a way to credit those.</li>
+					<li>Contribution by player sethe: a fix to the (relatively rare) problem of the election tracker not working right with vetos and neins.</li>
 				</ul>
+				<p>Up next: player profiles.  This is just about ready to go and will be released within the next 2 days.</p>
 				<div className="ui header">
-					<p>Version 0.3.1 "mint" released 5-26-2017</p>
+					<p>Version 0.4.0 "chestnut" released 6-5-2017</p>
 				</div>
-				<h3>New feature (sorta): player colors in both game and general chat.  This can be disabled with a new player setting in the settings menu (click "gear" icon while not in a game).  Note that because of the "unorthodox" way I did this, players who are no longer logged in will have their previous chats revert to the default.</h3>
-				<ul>
-					<li>A new info component is in the lobby/playerlist.  Click it to get details on the player name color schemes.</li>
-					<li>Fix to "chancellor in veto zone can't click a card, hanging the entire game" bug that to be honest I have no idea where it came from, but it should be working now.  Sorry about that.</li>
-					<li>Looks like there was one crash bug left and only happened a couple times per day, this patch will attempt to fix that. Without further breaking stuff.</li>
-					<li>Fix to gamelist sort bouncing around like crazy (I hope, this is like the 3rd time I've tried to fix it).</li>
-					<li>Enhanced the player colors a bit, and took out bolded player names as it was a bit much.</li>
-					<li>Increased threshold for being in the "top tier" on the playerlist from 30 to 50.  This will put only "colored" (bad choice of words..) players on the top.  I think this incentivizes people a bit.</li>
-					<li>Stats page only refreshes once per day now.</li>
-				</ul>
-				<div className="ui header">
-					<p>Version 0.3.0 "teal" released 5-23-2017</p>
-				</div>
-				<h3>New feature <a target="_blank" href="/stats">game stats</a>. Pretty basic to start, but interesting.  Will expand more on that later.</h3>
-				<ul>
-					<li>Fixed the last crash bug for real this time.  I mean it.  Associated to that bug, fixed the "can't select ja or nein while chancellor during veto phase" bug.</li>
-					<li>More fun name color stuff:</li>
-					<ul>
-						<li>>55% win rate: light purple</li>
-						<li>>65% win rate: dark purple</li>
-						<li>>300 games played: very dark green</li>
-						<li>The 2 above are bolded. <b>Beware.</b></li>
-					</ul>
-					<li>also moved the 2nd tier of win rate from 10 minimum games to 30 minimum games if that makes sense.  Unfortunately due to an issue (PEBKAC), player colors in chat will be in the next release, not this one.</li>
-					<li>Bug fix to (#34) when the status bar wrapped the styling was off slightly.</li>
-					<li>Bug fix to (#2) left sidebar gamelist sorting.. I hope.  It SHOULD be: unstarted games on top, in progress games in the middle, completed games on the bottom.</li>
-					<li>New component: "footer" on the bottom of the default/lizard screen that has a new "changelog" component and links to the github issues page.</li>
-				</ul>
-				<div className="ui header">
-					<p>Version 0.2.0 "violet" released 5-16-2017</p>
-				</div>
-				<h3>New feature: automated claim system</h3>
-				<p>After the following actions:</p>
-				<ul>
-					<li>President receives 3 policies and chancellor completes his or her discard</li>
-					<li>Chancellor receives 2 policies and completes his or her discard</li>
-					<li>President peeks at the top 3 policies</li>
-					<li>President examines party loyalty</li>
-				</ul>
-				<p>A glowing "C" will show up in the lower right corner of chat for those players.</p>
+				<h3>New feature: Rainbow games.</h3>
+				<p>While creating a game, players with more than 50 completed games ("rainbow players") will now be able to create games that only other rainbow players can be seated in. These games have a special symbol in the sidebar.</p>
 				<div style={{textAlign: 'center'}}>
-					<img src="images/claim-button.png" style={{marginTop: 0}} />
+					<img src="images/gamelist-rainbow.png" />
 				</div>
-				<p>Click that, and the chat window will be overlaid with a new modal.</p>
-				<div style={{textAlign: 'center'}}>
-					<img src="images/claim-modal.png" style={{marginTop: 0, textAlign: 'center'}} />
-				</div>
-				<p>Click your action (or click the C again to dismiss) and a new type of chat will appear, informing players about what you say happened.  You have until the next election to do this action.</p>
-				<div style={{textAlign: 'center'}}>
-					<img src="images/claim-text.png" style={{marginTop: 0, textAlign: 'center'}} />
-				</div>
-				<p>Let me know if you like/hate this, and any issues or requests about it.</p>
+				<p>In the lobby, a new icon appears showing what game style you are filter and sorting the userlist by.  Click it to switch between "regular" and "rainbow". Effectively, rainbow players get to "start over" in an optional hard mode with a 0-0 score.</p>
+				<p><b>For rainbow games, your wins and losses are in a different tier, that does not affect your regular game winrate or player color.</b>  "Rainbow rewards" may come in at some point.</p>
+				<p>Also in this release, the karma system has been temporarily disabled due to griefers exploiting it.  The next major feature is <b>player moderation</b>, where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls.  This isn't all that hard and will be coming soon, and hopefully guarantee a better playing experience for everyone.  Please check the github issue if you are interested in helping out.</p>
 			</section>
 		);
 	}

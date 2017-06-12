@@ -1,5 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
+import {MODERATORS} from '../../constants';
 
 export default class Generalchat extends React.Component {
 	constructor() {
@@ -71,7 +72,13 @@ export default class Generalchat extends React.Component {
 
 			return (
 				<div className="item" key={i}>
-					<span className={userClasses}>{chat.userName}: </span>
+					<span className={userClasses}>{chat.userName}
+						{(() => {
+							if (MODERATORS.includes(chat.userName)) {
+								return <span className="moderator-name"> (M)</span>;
+							}
+						})()}
+					: </span>
 					<span>{chat.chat}</span>
 				</div>
 			);
@@ -88,7 +95,7 @@ export default class Generalchat extends React.Component {
 				<section className="generalchat-header">
 					<div className="clearfix">
 						<h3 className="ui header">Chat</h3>
-						<i className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'} onClick={this.handleChatLockClick} />
+						<i title="Click here to lock chat and prevent from scrolling" className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'} onClick={this.handleChatLockClick} />
 					</div>
 					<div className="ui divider right-sidebar-divider" />
 				</section>

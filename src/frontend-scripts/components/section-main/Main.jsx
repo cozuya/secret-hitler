@@ -7,6 +7,7 @@ import Game from './Game.jsx';
 import Profile from './Profile.jsx';
 import Replay from './Replay.jsx';
 import Changelog from './Changelog.jsx';
+import Moderation from './Moderation.jsx';
 
 export default class Main extends React.Component {
 	render() {
@@ -58,6 +59,7 @@ export default class Main extends React.Component {
 						return (
 							<Changelog
 								onLeaveChangelog={this.props.onLeaveChangelog}
+								version={this.props.version}
 							/>
 						);
 					case 'game':
@@ -77,6 +79,15 @@ export default class Main extends React.Component {
 								socket={this.props.socket}
 							/>
 						);
+					case 'moderation':
+						return (
+							<Moderation
+								userInfo={this.props.userInfo}
+								socket={this.props.socket}
+								userList={this.props.userList}
+								onLeaveModeration={this.props.onLeaveModeration} 
+							/>
+						);
 					case 'settings':
 						return (
 							<Settings
@@ -91,10 +102,7 @@ export default class Main extends React.Component {
 						return <Replay />;
 					default:
 						return (
-							<Defaultmid
-								onChangelogButtonClick={this.props.onChangelogButtonClick}
-								quickDefault={this.props.quickDefault}
-							/>
+							<Defaultmid quickDefault={this.props.quickDefault} />
 						);
 					}
 				})()}

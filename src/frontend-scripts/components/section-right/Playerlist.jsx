@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import {ADMINS, PLAYERCOLORS} from '../../constants';
+import {ADMINS, PLAYERCOLORS, MODERATORS} from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -25,6 +25,9 @@ class Playerlist extends React.Component {
 	constructor() {
 		super();
 		this.clickInfoIcon = this.clickInfoIcon.bind(this);
+		this.state = {
+			userListFilter: 'all'
+		};
 	}
 
 	clickInfoIcon() {
@@ -37,13 +40,35 @@ class Playerlist extends React.Component {
 		this.props.socket.emit('getGameInfo', gameId);
 	}
 
+	renderFilterIcons() {
+		const filterClick = filter => {
+			this.setState({userListFilter: this.state.userListFilter === 'all' ? 'rainbow' : 'all'});
+		};
+
+		return (
+			<span className="filter-container" title="Click this to toggle the userlist filter between regular and rainbow games">
+				<span className={this.state.userListFilter} onClick={filterClick} />
+			</span>
+		);
+	}
+
+	renderModerationButton() {
+		const {userInfo} = this.props;
+
+		if (userInfo && userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))) {
+			return <a onClick={() => {this.props.onModerationButtonClick('moderation');}} className="mod-button">M</a>;
+		}
+	}
+
 	render() {
 		return (
 			<section className="playerlist">
 				<div className="playerlist-header">
 					<div className="clearfix">
 						<h3 className="ui header">Lobby</h3>
-						<i className="info circle icon" onClick={this.clickInfoIcon} />
+						<i className="info circle icon" onClick={this.clickInfoIcon} title="Click to get information about player's colors" />
+						{this.renderFilterIcons()}
+						{this.renderModerationButton()}
 						<div className="ui basic modal playerlistinfo">
 							<div className="header">Lobby and player color info</div>
 							<h4>Players in the lobby, general chat, and game chat are grey/white until:</h4>
@@ -63,24 +88,25 @@ class Playerlist extends React.Component {
 								return (
 									<div>
 										<span>{this.props.userList.list.length}</span>
-										<i className="large user icon" />
+										<i className="large user icon" title="Number of players logged in" />
 										<span>{this.props.userList.totalSockets - this.props.userList.list.length >= 0 ? this.props.userList.totalSockets - this.props.userList.list.length : 0}</span>
-										<i className="large unhide icon" />
+										<i className="large unhide icon" title="Number of observers" />
 									</div>
 								);
 							}
 						})()}
 					</div>
-					<div className="ui divider" />
 				</div>
 				<div className="playerlist-body">
 					{(() => {
 						if (Object.keys(this.props.userList).length) {
-							const {list} = this.props.userList;
+							const {list} = this.props.userList,
+								w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins',
+								l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
 
 							list.sort((a, b) => {
-								const aTotal = a.wins + a.losses,
-									bTotal = b.wins + b.losses;
+								const aTotal = a[w] + a[l],
+									bTotal = b[w] + b[l];
 
 								if (ADMINS.includes(a.userName)) {
 									return -1;
@@ -90,21 +116,29 @@ class Playerlist extends React.Component {
 									return 1;
 								}
 
+								if (MODERATORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
+									return -1;
+								}
+
+								if (MODERATORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
+									return 1;
+								}
+
 								if (aTotal > 49 && bTotal > 49) {
-									return (b.wins / bTotal) - (a.wins / aTotal);
+									return (b[w] / bTotal) - (a[w] / aTotal);
 								} else if (aTotal > 49) {
 									return -1;
 								} else if (bTotal > 49) {
 									return 1;
 								}
 
-								return b.wins - a.wins;
+								return b[w] - a[w];
 							});
 
-							return list.map((user, i) => {
-								const percent = ((user.wins / (user.wins + user.losses)) * 100).toFixed(0),
+							return list.filter(player => this.state.userListFilter === 'all' || player.wins + player.losses > 49).map((user, i) => {
+								const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0),
 
-									percentDisplay = (user.wins + user.losses) > 9 ? `${percent}%` : '',
+									percentDisplay = (user[w] + user[l]) > 9 ? `${percent}%` : '',
 
 									disableIfUnclickable = f => {
 										if (this.props.isUserClickable)
@@ -132,11 +166,13 @@ class Playerlist extends React.Component {
 												{ clickable: this.props.isUserClickable },
 												{ search: status.type === 'observing' },
 												{ fav: status.type === 'playing' },
+												{ rainbow: status.type === 'rainbow' },
 												'icon'
 											);
 
 											return (
 												<i
+													title={status.type === 'playing' ? 'This player is playing in a standard game.' : status.type === 'observing' ? 'This player is observing a game.' : status.type === 'rainbow' ? 'This player is playing in a experienced-player-only game.' : ''}
 													className={iconClasses}
 													onClick={disableIfUnclickable(this.routeToGame).bind(this, status.gameId)} />
 											);
@@ -149,13 +185,21 @@ class Playerlist extends React.Component {
 											className={userClasses}
 											onClick={disableIfUnclickable(this.props.fetchProfile).bind(null, user.userName)}>
 											{user.userName}
+											{(() => {
+												if (MODERATORS.includes(user.userName)) {
+													return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
+												}
+											})()}
 										</span>
 										{renderStatus()}
 										{(() => {
 											if (!ADMINS.includes(user.userName)) {
+												const w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins',
+													l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
+
 												return (
 													<div className="userlist-stats-container">(
-														<span className="userlist-stats">{user.wins}</span> / <span className="userlist-stats">{user.losses}</span>) <span className="userlist-stats"> {percentDisplay}</span>
+														<span className="userlist-stats">{user[w]}</span> / <span className="userlist-stats">{user[l]}</span>) <span className="userlist-stats"> {percentDisplay}</span>
 													</div>
 												);
 											}
@@ -172,7 +216,9 @@ class Playerlist extends React.Component {
 }
 
 Playerlist.propTypes = {
-	userList: React.PropTypes.object
+	userInfo: React.PropTypes.object,
+	userList: React.PropTypes.object,
+	onModerationButtonClick: React.PropTypes.func,
 };
 
 export default connect(

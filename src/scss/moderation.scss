@@ -1,0 +1,67 @@
+#main .moderation {
+		color: $fascistteam;
+		h2 {
+			text-align: center;
+		}
+		.remove.icon {
+			cursor: pointer;
+			position: absolute;
+			font-size: 30px;
+			left: 94%;
+			opacity: .3;
+			top: 70px;
+		}
+		ul {
+			list-style-type: none;
+			li label {
+				cursor: pointer;
+			}
+		}
+		button {
+			color: black;
+		}
+		> div {
+			display: flex;
+			.modlog {
+				max-width: 60%;
+				width: 100%;
+				> div {
+					max-height: 470px;
+  				overflow-y: scroll;
+				}
+			}
+			.modplayerlist {
+				ul {
+					padding: 0 0 0 10px;
+					max-height: 370px;
+					overflow-y: scroll;
+				}
+			}
+			> div {
+				padding: 0 5px;
+			}
+			h3 {
+				text-align: center;
+			}
+		}
+		.multi {
+			color: yellow;
+		}
+		table {
+			font-size: 12px;
+
+			td {
+				padding: 2px;
+			}
+			
+			tr {
+				background: lightyellow;
+			}
+		}
+		textarea {
+			width: 100%;
+		}
+		.ip {
+			color: orange;
+		}
+}

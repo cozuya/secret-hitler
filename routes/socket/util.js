@@ -25,7 +25,7 @@ module.exports.sendInProgressGameUpdate = game => { // todo-release make this ac
 	if (io.sockets.adapter.rooms[game.general.uid]) {
 		roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
 
-		playerSockets = roomSockets.filter(socket => socket.handshake.session.passport && Object.keys(socket.handshake.session.passport).length && seatedPlayerNames.includes(socket.handshake.session.passport.user));
+		playerSockets = roomSockets.filter(socket => socket && socket.handshake.session.passport && Object.keys(socket.handshake.session.passport).length && seatedPlayerNames.includes(socket.handshake.session.passport.user));
 
 		observerSockets = roomSockets.filter(socket => !socket.handshake.session.passport || !seatedPlayerNames.includes(socket.handshake.session.passport.user));
 	}
