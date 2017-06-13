@@ -13,9 +13,12 @@ implement karma system
 implement rainbow games
 
 version 0.5.0
-implement in-game player stats @jbasrai
+implement moderation system
 
 version 0.6.0
+implement in-game player stats @jbasrai
+
+version 0.7.0
 convert to webpack/create-react-app for builds
 upgrade dependencies
 
