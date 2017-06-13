@@ -31,7 +31,11 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		}
 	})();
 
-	const {seatedPlayers} = game.private,
+	game.private.summary = game.private.summary
+		.nextTurn()
+		.updateLog({ presidentId: game.gameState.presidentIndex });
+
+	const {seatedPlayers} = game.private, // eslint-disable-line one-var
 		{presidentIndex, previousElectedGovernment} = game.gameState,
 		pendingPresidentPlayer = seatedPlayers[presidentIndex];
 

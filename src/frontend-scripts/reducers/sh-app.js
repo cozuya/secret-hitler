@@ -54,6 +54,33 @@ const userInfo = (state = {}, action) => {
 		default:
 		}
 		return state;
+	},
+	profile = (state = { status: 'INITIAL' }, action) => {
+		switch (action.type) {
+		case 'REQUEST_PROFILE':
+			return { status: 'LOADING' };
+		case 'PROFILE_NOT_FOUND':
+			return { status: 'NOT_FOUND' };
+		case 'RECEIVE_PROFILE':
+			return Object.assign({}, action.profile, { 
+				status: 'READY',
+				activeStat: 'MATCHES' 
+			});
+		case 'UPDATE_ACTIVE_STATS':
+			return Object.assign({}, state, { activeStat: action.activeStat });
+		default:
+			return state;
+		}
+	},
+	version = (state = { current: { number: '', color: '', date: '' }, lastSeen: '' }, action) => {
+		switch(action.type) {
+		case 'UPDATE_VERSION':
+			return action.version;
+		case 'VIEW_PATCH_NOTES':
+			return Object.assign({}, state, { lastSeen: state.current.number });
+		default:
+			return state;
+		}
 	};
 
 export default combineReducers({
@@ -62,5 +89,7 @@ export default combineReducers({
 	gameList,
 	gameInfo,
 	userList,
-	generalChats
+	generalChats,
+	profile,
+	version
 });

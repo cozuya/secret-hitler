@@ -1,7 +1,9 @@
 const Account = require('../../models/account'),
 	ModAction = require('../../models/modAction'),
 	{games, userList, generalChats} = require('./models'),
-	{secureGame} = require('./util');
+	{ getProfile } = require('../../models/profile/utils'),
+	{secureGame} = require('./util'),
+	version = require('../../version');
 
 module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
@@ -41,6 +43,13 @@ module.exports.sendUserGameSettings = (socket, username) => {
 					}
 				});
 			}
+
+			getProfile(username);
+
+			socket.emit('version', {
+				current: version,
+				lastSeen: account.lastVersionSeen || 'none'
+			});
 
 			io.sockets.emit('userList', {
 				list: userList,

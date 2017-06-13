@@ -35,6 +35,7 @@ const mongoose = require('mongoose'),
 		rainbowWins: Number,
 		rainbowLosses: Number,
 		created: Date,
+		lastVersionSeen: String,
 		isFixed: Boolean
 	});
 

@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { fetchProfile } from '../../actions/actions';
+import cn from 'classnames';
 import {ADMINS, PLAYERCOLORS, MODERATORS} from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
@@ -7,11 +9,16 @@ import classnames from 'classnames';
 
 $.fn.modal = Modal;
 
-const	mapStateToProps = ({ midSection }) => ({ midSection }),
+const mapStateToProps = ({ midSection }) => ({ midSection }),
+
+	mapDispatchToProps = dispatch => ({
+		fetchProfile: username => dispatch(fetchProfile(username))
+	}),
+
 	mergeProps = (stateProps, dispatchProps, ownProps) => {
 		const isUserClickable = stateProps.midSection !== 'game';
 
-		return Object.assign({}, ownProps, { isUserClickable });
+		return Object.assign({}, ownProps, dispatchProps, { isUserClickable });
 	};
 
 class Playerlist extends React.Component {
@@ -140,6 +147,13 @@ class Playerlist extends React.Component {
 										return () => null;
 									},
 
+									userClasses = cn(
+										PLAYERCOLORS(user),
+										{ unclickable: !this.props.isUserClickable },
+										{ clickable: this.props.isUserClickable },
+										'username'
+									),
+
 									renderStatus = () => {
 										const status = user.status;
 
@@ -149,6 +163,7 @@ class Playerlist extends React.Component {
 											const iconClasses = classnames(
 												'status',
 												{ unclickable: !this.props.isUserClickable },
+												{ clickable: this.props.isUserClickable },
 												{ search: status.type === 'observing' },
 												{ fav: status.type === 'playing' },
 												{ rainbow: status.type === 'rainbow' },
@@ -165,8 +180,11 @@ class Playerlist extends React.Component {
 									};
 
 								return (
-									<div key={i}>
-										<span className={PLAYERCOLORS(user)}>{user.userName}
+									<div key={i} className="user">
+										<span
+											className={userClasses}
+											onClick={disableIfUnclickable(this.props.fetchProfile).bind(null, user.userName)}>
+											{user.userName}
 											{(() => {
 												if (MODERATORS.includes(user.userName)) {
 													return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
@@ -205,6 +223,6 @@ Playerlist.propTypes = {
 
 export default connect(
 	mapStateToProps,
-	null,
+	mapDispatchToProps,
 	mergeProps
 )(Playerlist);
