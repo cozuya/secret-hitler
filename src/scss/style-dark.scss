@@ -301,14 +301,6 @@ body {
     margin-left: -237px;
 }
 
-.admin {
-	color: red !important;
-}
-
-.contributer {
-	color: orange !important;
-}
-
 .experienced {
 	color: #b3eab3 !important;
 }
@@ -339,6 +331,14 @@ body {
 
 .experienced.veryonfire, .veryexperienced.veryonfire, .veryveryexperienced.veryonfire .superexperienced.veryonfire {
 	color: #b703a7 !important;
+}
+
+.admin {
+	color: red !important;
+}
+
+.contributer {
+	color: orange !important;
 }
 
 #confetti {

@@ -7,11 +7,13 @@ export default class Moderation extends React.Component {
 	constructor() {
 		super();
 		this.leaveModeration = this.leaveModeration.bind(this);
+		this.togglePlayerList = this.togglePlayerList.bind(this);
 		this.state = {
 			selectedUser: '',
 			userList: [],
 			actionTextValue: '',
-			log: []
+			log: [],
+			playerListShown: true
 		};
 	}
 
@@ -30,6 +32,10 @@ export default class Moderation extends React.Component {
 		this.props.socket.off('modInfo');
 	}
 
+	togglePlayerList() {
+		this.setState({playerListShown: !this.state.playerListShown});
+	}
+
 	renderUserlist() {
 		const radioChange = userName => {
 				this.setState({selectedUser: userName});
@@ -40,7 +46,6 @@ export default class Moderation extends React.Component {
 			multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
 
 		return userList
-			.filter(user => ADMINS.includes(userName) || !user.isRainbow)
 			.sort((a, b) => (a.losses + a.wins) + (b.losses + b.wins))
 			.map((user, index) => <li key={index} className={multiIPs.includes(user.ip) ? 'multi' : ''}><label><input type="radio" name="users" onChange={() => {radioChange(user.userName);}} />{user.userName} <span className="ip">{user.ip}</span></label></li>);
 	}
@@ -110,16 +115,23 @@ export default class Moderation extends React.Component {
 			<section className="moderation">
 				<h2>Moderation</h2>
 				<i className="remove icon" onClick={this.leaveModeration} />
+				<span onClick={this.togglePlayerList} className="player-list-toggle">show/hide playerlist</span>
 				<div>
-					<div className="modplayerlist">
-						<h3>Current player list</h3>
-						<ul className="userlist">
-							{this.renderUserlist()}
-						</ul>
-						{this.renderActionText()}
-						{this.renderButtons()}
-					</div>
-					<div className="modlog">
+					{(() => {
+						if (this.state.playerListShown) {
+							return (
+								<div className="modplayerlist">
+									<h3>Current player list</h3>
+									<ul className="userlist">
+										{this.renderUserlist()}
+									</ul>
+									{this.renderActionText()}
+									{this.renderButtons()}
+								</div>
+							);
+						}
+					})()}
+					<div className="modlog" style={{maxWidth: this.state.playerListShown ? '60%' : '100%'}}>
 						<h3>Moderation log</h3>
 						{this.renderModLog()}
 					</div>

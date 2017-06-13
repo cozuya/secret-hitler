@@ -118,12 +118,14 @@ module.exports = () => {
 		renderPage(req, res, 'page-about', 'about');
 	});
 
-	app.get('/game', ensureAuthenticated, (req, res) => {
-		res.render('game', {
-			user: req.user.username,
-			game: true,
-			isLight: req.user.gameSettings.enableLightTheme
-		});
+	app.get('/game', ensureAuthenticated, (req, res) => { // naaaaaaaate.  Remove after IP bans go in.
+		if ((req.headers['X-Real-IP'] && req.headers['X-Real-IP'] !== '60.241.181.49') || (req.headers['x-forwarded-for'] && req.headers['x-forwarded-for'] !== '60.241.181.49') || (req.headers['X-Forwarded-For'] && req.headers['X-Forwarded-For'] !== '60.241.181.49') || (req.connection.remoteAddress && req.connection.remoteAddress !== '60.241.181.49')) {
+			res.render('game', {
+				user: req.user.username,
+				game: true,
+				isLight: req.user.gameSettings.enableLightTheme
+			});
+		}
 	});
 
 	app.get('/observe', (req, res) => {

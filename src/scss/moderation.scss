@@ -3,6 +3,14 @@
 		h2 {
 			text-align: center;
 		}
+		.player-list-toggle {
+			position: absolute;
+			color: lightblue;
+			text-decoration: underline;
+			right: 80px;
+			top: 70px;
+			cursor: pointer;
+		}
 		.remove.icon {
 			cursor: pointer;
 			position: absolute;
@@ -19,6 +27,7 @@
 		}
 		button {
 			color: black;
+			padding: 10px;
 		}
 		> div {
 			display: flex;
