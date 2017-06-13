@@ -26,9 +26,7 @@
 
 /* Border-Box */
 
-*,
-*:before,
-*:after {
+html *,*:before,*:after {
   box-sizing: inherit;
 }
 
