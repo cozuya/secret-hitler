@@ -25,6 +25,15 @@ $dteal: #034f61;
 @import 'rightsidebar.scss';
 @import 'profile.scss';
 @import 'moderation.scss';
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+}
+
 #main {
     width: 1253px;
     margin-left: auto;
