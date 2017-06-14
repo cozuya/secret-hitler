@@ -73,4 +73,18 @@
 		.ip {
 			color: orange;
 		}
+		.broadcast {
+			cursor: pointer;
+			position: absolute;
+			left: 5%;
+			top: 70px;
+			text-decoration: underline;
+		}
+}
+
+.broadcastmodal {
+	display: none !important;
+	input {
+		width: 600px;
+	}
 }

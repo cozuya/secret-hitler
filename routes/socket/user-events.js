@@ -492,6 +492,9 @@ module.exports.handleModerationAction = (socket, data) => {
 					});
 				});
 			break;
+		case 'broadcast':
+			console.log(data);
+			break;
 		}
 	}
 };
