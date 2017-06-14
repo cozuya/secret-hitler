@@ -493,7 +493,13 @@ module.exports.handleModerationAction = (socket, data) => {
 				});
 			break;
 		case 'broadcast':
-			console.log(data);
+			games.forEach(game => {
+				game.chats.push({
+					chat: data.comment,
+					isBroadcast: true,
+					timestamp: new Date()
+				});
+			});
 			break;
 		}
 	}
