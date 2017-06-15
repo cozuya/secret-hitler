@@ -147,7 +147,6 @@ export default class Gamechat extends React.Component {
 		return gameInfo.chats.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
 			.filter(chat => (chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) || (chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All')) || (!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat'))
 			.map((chat, i) => {
-				console.log(chat);
 				const chatContents = chat.chat,
 					isSeated = seatedUserNames.includes(chat.userName),
 					playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
@@ -258,7 +257,7 @@ export default class Gamechat extends React.Component {
 						})()
 					} onClick={this.handleClickedLeaveGame}>Leave Game</div>
 				</section>
-				<section className={
+				<section style={{fontSize: (userInfo.gameSettings && userInfo.gameSettings.fontSize) ? `${userInfo.gameSettings.fontSize}px` : '18px'}} className={
 					(() => {
 						let classes = 'segment chats';
 

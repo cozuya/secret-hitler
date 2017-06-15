@@ -12,7 +12,8 @@ const mongoose = require('mongoose'),
 			enableTimestamps: Boolean,
 			enableRightSidebarInGame: Boolean,
 			disablePlayerColorsInChat: Boolean,
-			unbanTime: Date
+			unbanTime: Date,
+			fontSize: Number
 		},
 		verification: {
 			email: String,
