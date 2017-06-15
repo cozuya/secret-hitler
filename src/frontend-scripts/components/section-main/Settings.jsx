@@ -128,7 +128,7 @@ class Settings extends React.Component {
 					<div className="row centered">
 						<div className="eight wide column slider">
 							<h4 className="ui header">Gamechat font size</h4>
-							<Slider onAfterChange={this.sliderDrop} onChange={this.sliderChange} min={8} max={28} range defaultValue={[18]} marks={{8: '8px', 18: '18px', 28: '28px'}} />
+							<Slider onAfterChange={this.sliderDrop} onChange={this.sliderChange} min={8} max={28} range defaultValue={this.props.userInfo.gameSettings.fontSize ? [this.props.userInfo.gameSettings.fontSize] : [18]} marks={{8: '8px', 18: '18px', 28: '28px'}} />
 						</div>
 					</div>
 					<div className="row centered">

@@ -180,18 +180,20 @@ class Playerlist extends React.Component {
 									};
 
 								return (
-									<div key={i} className="user">
-										<span
-											className={userClasses}
-											onClick={disableIfUnclickable(this.props.fetchProfile).bind(null, user.userName)}>
-											{user.userName}
-											{(() => {
-												if (MODERATORS.includes(user.userName)) {
-													return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
-												}
-											})()}
-										</span>
-										{renderStatus()}
+									<div key={i} className="user-container">
+										<div className="userlist-username">
+											<span
+												className={userClasses}
+												onClick={disableIfUnclickable(this.props.fetchProfile).bind(null, user.userName)}>
+												{user.userName}
+												{(() => {
+													if (MODERATORS.includes(user.userName)) {
+														return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
+													}
+												})()}
+												{renderStatus()}
+											</span>
+										</div>
 										{(() => {
 											if (!ADMINS.includes(user.userName)) {
 												const w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins',

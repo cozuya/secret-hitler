@@ -18,16 +18,15 @@
         .playerlist-header {
             padding: 5px 0 3px;
             background: #000;
-
-						.mod-button {
-							color: red !important;
-							margin-left: 10px;
-							font-weight: 700;
-							cursor: pointer;
-							border: 2px solid red;
-							border-radius: 50%;
-							padding: 2px;
-						}
+            .mod-button {
+                color: red !important;
+                margin-left: 10px;
+                font-weight: 700;
+                cursor: pointer;
+                border: 2px solid red;
+                border-radius: 50%;
+                padding: 2px;
+            }
             .filter-container {
                 margin-left: 30px;
                 border-radius: 50%;
@@ -85,19 +84,24 @@
                 float: right;
             }
         }
-        .user {
+        .user-container {
+            display: flex;
+            justify-content: space-between;
+            .userlist-username {
+                width: 60%;
+                white-space: nowrap;
+                overflow-x: hidden;
+                color: #bfbfbf;
+            }
             .clickable:hover {
                 cursor: pointer;
-
                 &.username {
                     color: #608cb3 !important;
                 }
             }
-
             .unclickable:hover {
                 cursor: not-allowed;
             }
-
             .status.icon {
                 margin-left: 5px;
             }
@@ -143,6 +147,12 @@
                 bottom: 0;
                 max-height: 254px;
                 width: 235px;
+                .chat-user--broadcast {
+                    color: lightsalmon;
+                }
+                .broadcast-chat {
+                    color: lightskyblue;
+                }
                 .item {
                     padding: 0;
                 }

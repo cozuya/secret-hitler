@@ -72,14 +72,14 @@ export default class Generalchat extends React.Component {
 
 			return (
 				<div className="item" key={i}>
-					<span className={userClasses}>{chat.userName}
+					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>{chat.userName}
 						{(() => {
 							if (MODERATORS.includes(chat.userName)) {
 								return <span className="moderator-name"> (M)</span>;
 							}
 						})()}
 					: </span>
-					<span>{chat.chat}</span>
+					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{chat.chat}</span>
 				</div>
 			);
 		});
