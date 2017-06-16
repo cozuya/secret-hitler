@@ -72,6 +72,7 @@ module.exports = {
 	},
 	output: {
 		path: path.resolve(__dirname, 'public/scripts/'),
+		publicPath: '/scripts/',
 		filename: '[name].js'
 	},
 	externals: {
