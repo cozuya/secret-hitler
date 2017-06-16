@@ -11,6 +11,8 @@ import account from './account';
 import shapp from './reducers/sh-app';
 import polyfills from '../../iso/polyfills.js';
 
+import 'scss/style-dark.scss';
+
 document.addEventListener('DOMContentLoaded', () => {
 	const container = document.getElementById('game-container');
 

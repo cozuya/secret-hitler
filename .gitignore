@@ -19,7 +19,7 @@ logs/*
 data/*
 data/mongod.lock
 misc/*
-public/scripts/bundle.js
+public/scripts/
 npm-debug.log.*
 npm-debug.log
 yarn-error.log
