@@ -44,7 +44,7 @@ export default class Menu extends React.Component {
 				dropdown: function () {
 					var offscreen = this.$elem.offset().top + this.$elem.height() * 1.1;  // little extra padding
 					this.setup('position: relative; bottom: ' + offscreen + 'px;');
-					this.run('bottom', 0);			
+					this.run('bottom', 0);
 				},
 				fade: function () {
 					this.setup(this.$elem[0].style.opacity !== undefined ? 'opacity: 0;' : 'filter: alpha(opacity=0); display: inline-block;');
@@ -174,7 +174,7 @@ export default class Menu extends React.Component {
 							<div className="loggedin">
 								Logged in as <span className="playername">{userInfo.userName}</span>
 							</div>
-							<i className={iconClasses()} title="Player settings screen" onClick={this.clickSettingsButton} /> 
+							<i className={iconClasses()} title="Player settings screen" onClick={this.clickSettingsButton} />
 						</div>
 					);
 					})()}

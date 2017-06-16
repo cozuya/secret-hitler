@@ -767,7 +767,7 @@ module.exports.selectChancellorPolicy = data => {
 
 				if (experiencedMode) {
 					president.playersState[presidentIndex].claim = 'wasPresident';
-					chancellor.playersState[chancellorIndex].claim = 'wasChancellor';					
+					chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
 				} else {
 					setTimeout(() => {
 						president.playersState[presidentIndex].claim = 'wasPresident';
