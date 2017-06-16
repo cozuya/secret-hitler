@@ -12,16 +12,6 @@ const socket = sock({
 	select = state => state;
 
 export class App extends React.Component {
-	constructor() {
-		super();
-		this.handleRoute = this.handleRoute.bind(this);
-		this.handleCreateGameSubmit = this.handleCreateGameSubmit.bind(this);
-		this.handleRoute = this.handleRoute.bind(this);
-		this.handleSeatingUser = this.handleSeatingUser.bind(this);
-		this.handleLeaveGame = this.handleLeaveGame.bind(this);
-		this.makeQuickDefault = this.makeQuickDefault.bind(this);
-	}
-
 	componentDidMount() {
 		const {dispatch} = this.props,
 			{classList} = document.getElementById('game-container');
@@ -33,7 +23,7 @@ export class App extends React.Component {
 			socket.emit('getUserGameSettings', username);
 
 			// ** begin devhelpers **
-			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var
+			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb'];
 			if (devPlayers.includes(username)) {
 				const data = {
 					uid: 'devgame',
@@ -103,13 +93,13 @@ export class App extends React.Component {
 		});
 	}
 
-	handleRoute(route) {
+	handleRoute = route => {
 		const {dispatch} = this.props;
 
 		dispatch(updateMidsection(route));
 	}
 
-	handleCreateGameSubmit(game) {
+	handleCreateGameSubmit = game => {
 		const {dispatch, userInfo} = this.props;
 
 		userInfo.isSeated = true;
@@ -121,7 +111,7 @@ export class App extends React.Component {
 
 	// ***** begin dev helpers *****
 
-	makeQuickDefault() {
+	makeQuickDefault = () => {
 		const {dispatch, userInfo} = this.props,
 			game = {
 				gameState: {
@@ -174,7 +164,7 @@ export class App extends React.Component {
 
 	// ***** end dev helpers *****
 
-	handleSeatingUser(password) {
+	handleSeatingUser = password => {
 		const {gameInfo, userInfo} = this.props,
 			data = {
 				uid: gameInfo.general.uid,
@@ -185,7 +175,7 @@ export class App extends React.Component {
 		socket.emit('updateSeatedUser', data);
 	}
 
-	handleLeaveGame(isSeated, isSettings = false, badKarma) {
+	handleLeaveGame = (isSeated, isSettings = false, badKarma) => {
 		const {dispatch, userInfo, gameInfo} = this.props;
 
 		if (userInfo.isSeated) {
