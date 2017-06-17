@@ -18,6 +18,21 @@ export default class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 0.6.1 "stained glass" released 6-17-2017</p>
+				</div>
+				<h3>New feature: player font size setting in game settings.</h3>
+				<p>Click the gear icon to change the size of the font in games.</p>
+				<h3>New feature: admin and mod broadcasts.</h3>
+				<p>Admins and mods have the ability to send a message to all games.  This should be used sparingly and really only for downtime announcements or if a particularly bad troll attack happens.</p>
+				<h4>Other updates</h4>
+				<ul>
+					<li>A fix to the general styling problems with profiles.</li>
+					<li>A fix to player's win rates being bumped down a line due to long usernames/icons.</li>
+					<li>Rainbow player's lobby is now sorted correctly.</li>
+				</ul>
+				<p>New morning mods: Faaiz1999 and DumbBullDoor.  We have pretty good mod coverage so closing mod applications for a bit, will reopen when needed.  Thanks!</p>
+				<p>Next up: more bug fixes in preparation for a 1.0 beta and release (all bugs fixed, all desired features in).</p>
+				<div className="ui header">
 					<p>Version 0.6.0 "noise" released 6-12-2017</p>
 				</div>
 				<h3>New feature: Player profiles</h3>
