@@ -4,7 +4,7 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 
-const IS_DEV = process.env.NODE_ENV === 'development'  // eslint-disable-line
+const IS_DEV = process.env.NODE_ENV === 'development'	// eslint-disable-line
 
 const plugins = [
 	new webpack.LoaderOptionsPlugin({
@@ -34,33 +34,37 @@ const plugins = [
 
 if (IS_DEV) {
 	plugins.push(
-    new webpack.NamedModulesPlugin()
-  );
+		new webpack.NamedModulesPlugin()
+	);
 } else {
-	plugins.push(new OptimizeCssAssetsPlugin({
-		cssProcessor: require('cssnano'),
-		cssProcessorOptions: { discardComments: { removeAll: true } },
-		canPrint: true
-	}), new webpack.LoaderOptionsPlugin({
-		minimize: true,
-		debug: false
-	}), new webpack.optimize.UglifyJsPlugin({
-		compress: {
-			warnings: false,
-			screw_ie8: true,
-			conditionals: true,
-			unused: true,
-			comparisons: true,
-			sequences: true,
-			dead_code: true,
-			evaluate: true,
-			if_return: true,
-			join_vars: true,
-		},
-		output: {
-			comments: false
-		}
-	}));
+	plugins.push(
+		new OptimizeCssAssetsPlugin({
+			cssProcessor: require('cssnano'),
+			cssProcessorOptions: { discardComments: { removeAll: true } },
+			canPrint: true
+		}),
+		new webpack.LoaderOptionsPlugin({
+			minimize: true,
+			debug: false
+		}),
+		new webpack.optimize.UglifyJsPlugin({
+			compress: {
+				warnings: false,
+				screw_ie8: true,
+				conditionals: true,
+				unused: true,
+				comparisons: true,
+				sequences: true,
+				dead_code: true,
+				evaluate: true,
+				if_return: true,
+				join_vars: true,
+			},
+			output: {
+				comments: false
+			}
+		})
+	);
 }
 
 module.exports = {
@@ -81,9 +85,17 @@ module.exports = {
 	module: {
 		loaders: [
 			{
+				enforce: 'pre',
+				test: /\.jsx?$/,
+				exclude: /node_modules/,
+				loader: 'eslint-loader',
+			}, {
 				test: /\.jsx?$/,
 				loader: 'babel-loader',
-				exclude: /node_modules/
+				exclude: /node_modules/,
+				options: {
+					cacheDirectory: true
+				}
 			}, {
 				test: /\.scss$/,
 				loaders: [
@@ -92,7 +104,17 @@ module.exports = {
 					{
 						loader: 'postcss-loader',
 						options: {
-							plugins: loader => [ require('autoprefixer')(), ]
+							plugins: loader => [
+								require('autoprefixer')({
+									browsers: [
+										'>1%',
+										'last 4 versions',
+										'Firefox ESR',
+										'not ie < 9', // React doesn't support IE8 anyway
+									],
+									flexbox: 'no-2009',
+								}),
+							]
 						}
 					},
 					'sass-loader'
@@ -109,7 +131,7 @@ module.exports = {
 							hash: 'sha512',
 							digest: 'hex',
 							name: '[name]-[hash].[ext]',
-							limit: 32000
+							limit: 10000
 						}
 					}, {
 						loader: 'image-webpack-loader',
