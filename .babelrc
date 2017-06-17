@@ -1,7 +1,43 @@
 {
-  "presets": [
-    "latest",
-    "react",
-    "babel-preset-stage-0"
-  ]
+  "env": {
+    "production": {
+      "presets": [
+        ["env", {
+          "targets": {
+            "ie": 9,
+            "uglify": true,
+          },
+          "modules": false
+        }],
+        "react",
+        "stage-1"
+      ]
+    },
+    "development": {
+      "presets": [
+        ["env", {
+            "targets": {
+              "chrome": 54
+            },
+            "loose": true,
+            "modules": false,
+            "include": ["transform-es2015-classes"]
+        }],
+        "react",
+        "stage-1"
+      ],
+      "plugins": [
+        "babel-plugin-transform-es2015-parameters",
+        "babel-plugin-transform-es2015-destructuring"
+      ]
+    },
+    "test": {
+      "sourceMap": "inline",
+      "presets": [
+        "latest",
+        "react",
+        "stage-1"
+      ]
+    }
+  }
 }

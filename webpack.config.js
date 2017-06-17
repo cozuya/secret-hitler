@@ -32,10 +32,87 @@ const plugins = [
 	})
 ];
 
+const loaders = [
+	{
+		test: /\.jsx?$/,
+		loader: 'babel-loader',
+		exclude: /node_modules/,
+		options: {
+			cacheDirectory: true
+		}
+	}, {
+		test: /\.scss$/,
+		loaders: [
+			'style-loader',
+			{ loader: 'css-loader', options: { importLoaders: 1 } },
+			{
+				loader: 'postcss-loader',
+				options: {
+					plugins: loader => [
+						require('autoprefixer')({
+							browsers: [
+								'>1%',
+								'last 4 versions',
+								'Firefox ESR',
+								'not ie < 9', // React doesn't support IE8 anyway
+							],
+							flexbox: 'no-2009',
+						}),
+					]
+				}
+			},
+			'sass-loader'
+		]
+	}, {
+		include: /\.json$/,
+		loaders: [ 'json-loader' ]
+	}, {
+		test: /\.(jpe?g|png|gif|svg)/,
+		loaders: [
+			{
+				loader: 'url-loader',
+				query: {
+					hash: 'sha512',
+					digest: 'hex',
+					name: '[name]-[hash].[ext]',
+					limit: 10000
+				}
+			}, {
+				loader: 'image-webpack-loader',
+				options: {
+					optipng: {
+						optimizationLevel: 7,
+					},
+					gifsicle: {
+						interlaced: false,
+					},
+					pngquant: {
+						quality: '65-90',
+						speed: 4
+					},
+					mozjpeg: {
+						quality: 65
+					}
+				}
+			}
+		]
+	}, {
+		test: /\.(woff|ttf|eot|svg)/,
+		loaders: [ 'file-loader' ]
+	}
+];
+
 if (IS_DEV) {
 	plugins.push(
 		new webpack.NamedModulesPlugin()
 	);
+
+	loaders.unshift({
+		enforce: 'pre',
+		test: /\.jsx?$/,
+		exclude: /node_modules/,
+		loader: 'eslint-loader',
+	});
 } else {
 	plugins.push(
 		new OptimizeCssAssetsPlugin({
@@ -82,82 +159,7 @@ module.exports = {
 	externals: {
 		'jquery': 'jQuery'
 	},
-	module: {
-		loaders: [
-			{
-				enforce: 'pre',
-				test: /\.jsx?$/,
-				exclude: /node_modules/,
-				loader: 'eslint-loader',
-			}, {
-				test: /\.jsx?$/,
-				loader: 'babel-loader',
-				exclude: /node_modules/,
-				options: {
-					cacheDirectory: true
-				}
-			}, {
-				test: /\.scss$/,
-				loaders: [
-					'style-loader',
-					{ loader: 'css-loader', options: { importLoaders: 1 } },
-					{
-						loader: 'postcss-loader',
-						options: {
-							plugins: loader => [
-								require('autoprefixer')({
-									browsers: [
-										'>1%',
-										'last 4 versions',
-										'Firefox ESR',
-										'not ie < 9', // React doesn't support IE8 anyway
-									],
-									flexbox: 'no-2009',
-								}),
-							]
-						}
-					},
-					'sass-loader'
-				]
-			}, {
-				include: /\.json$/,
-				loaders: [ 'json-loader' ]
-			}, {
-				test: /\.(jpe?g|png|gif|svg)/,
-				loaders: [
-					{
-						loader: 'url-loader',
-						query: {
-							hash: 'sha512',
-							digest: 'hex',
-							name: '[name]-[hash].[ext]',
-							limit: 10000
-						}
-					}, {
-						loader: 'image-webpack-loader',
-						options: {
-							optipng: {
-								optimizationLevel: 7,
-							},
-							gifsicle: {
-								interlaced: false,
-							},
-							pngquant: {
-								quality: '65-90',
-								speed: 4
-							},
-							mozjpeg: {
-								quality: 65
-							}
-						}
-					}
-				]
-			}, {
-				test: /\.(woff|ttf|eot|svg)/,
-				loaders: [ 'file-loader' ]
-			}
-		]
-	},
+	module: { loaders },
 	resolve: {
 		modules: [ './src', './node_modules' ]
 	},
