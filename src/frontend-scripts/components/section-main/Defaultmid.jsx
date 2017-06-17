@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateMidsection, viewPatchNotes } from '../../actions/actions';
 import fetch from 'isomorphic-fetch';
-import logo from 'images/lizard.png';
+import logo from 'images/lizard17.png';
 
 const mapStateToProps = ({ version }) => ({ version });
 
