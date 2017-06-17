@@ -1,0 +1,5 @@
+Hello and thanks for considering contributing to this project.  I only have two guidelines:
+
+1. Before working on a feature, a) make sure its an open, not "potential" issue on the github issue page and b) it is unassigned.
+
+2. Your code must pass lint.

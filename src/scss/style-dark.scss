@@ -290,6 +290,8 @@ body {
 #game-container {
     .section-main {
         padding-bottom: 0;
+				max-height: 610px;
+				overflow-y: scroll;
     }
     >.ui.grid {
         border-top: 1px solid #ddd;
@@ -342,21 +344,15 @@ body {
     color: #00a100;
 }
 
-.experienced.sortaonfire,
-.veryexperienced.sortaonfire,
-.veryveryexperienced.sortaonfire .superexperienced.sortaonfire {
+.sortaonfire {
     color: #d9aade !important;
 }
 
-.experienced.onfire,
-.veryexperienced.onfire,
-.veryveryexperienced.onfire .superexperienced.onfire {
+.onfire {
     color: #da65e5 !important;
 }
 
-.experienced.veryonfire,
-.veryexperienced.veryonfire,
-.veryveryexperienced.veryonfire .superexperienced.veryonfire {
+.veryonfire {
     color: #b703a7 !important;
 }
 

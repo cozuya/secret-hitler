@@ -51,7 +51,7 @@ export default class Generalchat extends React.Component {
 			setTimeout(() => {
 				this.setState({disabled: false});
 				this.input.focus();
-			}, 150);
+			}, 300);
 		}
 	}
 
