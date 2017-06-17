@@ -1,7 +1,7 @@
 {
   "presets": [
-  	"latest",
-  	"react",
+    "latest",
+    "react",
     "babel-preset-stage-0"
-	]
+  ]
 }

@@ -3,7 +3,7 @@ Author: Chris Ozols
 Design: Chris Ozols
 Site: todo
 Contact: chris.v.ozols@gmail.com
-IDE: Sublime Text 3
+IDE: Visual Studio Code
 Twitter: https://twitter.com/cozuya
 Location: Minneapolis, MN, USA
 
