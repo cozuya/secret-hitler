@@ -462,7 +462,6 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	if (generalChats.length > 99) {
 		generalChats.shift();
 	}
-
 	io.sockets.emit('generalChats', generalChats);
 };
 
@@ -520,6 +519,13 @@ module.exports.handleModerationAction = (socket, data) => {
 					timestamp: new Date()
 				});
 			});
+			generalChats.push({
+				userName: 'BROADCAST',
+				time: new Date(),
+				chat: data.comment,
+				isBroadcast: true
+			});
+			io.sockets.emit('generalChats', generalChats);
 			break;
 		}
 	}
