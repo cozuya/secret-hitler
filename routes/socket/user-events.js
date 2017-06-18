@@ -406,12 +406,16 @@ module.exports.handleAddNewClaim = (data) => {
 module.exports.handleAddNewGameChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
-	if (!passport || !passport.user || passport.user !== data.userName) return;
+
+	if (!passport || !passport.user || passport.user !== data.userName) {
+		return;
+	}
 
 	const game = games.find(el => el.general.uid === data.uid);
 	const player = game.publicPlayersState.find(player => player.userName === passport.user);
 
-	if (!player || player.isDead || player.leftGame) return;
+
+	if (!player || (player.isDead && !game.gameState.isCompleted) || player.leftGame) return;
 
 	data.timestamp = new Date();
 	game.chats.push(data);
