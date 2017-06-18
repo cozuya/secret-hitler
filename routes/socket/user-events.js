@@ -406,11 +406,12 @@ module.exports.handleAddNewClaim = (data) => {
 module.exports.handleAddNewGameChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
-	// Check that they are who they say they are.  Should this do, uh, whatever
-	// the ws equivalent of a 401 unauth is?
-	if (!passport || !passport.user || passport.user !== data.userName) { return; }
+	if (!passport || !passport.user || passport.user !== data.userName) return;
 
 	const game = games.find(el => el.general.uid === data.uid);
+	const player = game.publicPlayersState.find(player => player.userName === passport.user)
+
+	if (!player || player.isDead || player.leftGame) return;
 
 	data.timestamp = new Date();
 	game.chats.push(data);
