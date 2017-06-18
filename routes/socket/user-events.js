@@ -406,16 +406,16 @@ module.exports.handleAddNewClaim = (data) => {
 module.exports.handleAddNewGameChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
-
 	if (!passport || !passport.user || passport.user !== data.userName) {
 		return;
 	}
 
-	const game = games.find(el => el.general.uid === data.uid);
-	const player = game.publicPlayersState.find(player => player.userName === passport.user);
+	const game = games.find(el => el.general.uid === data.uid),
+		player = game.publicPlayersState.find(player => player.userName === passport.user);
 
-
-	if (!player || (player.isDead && !game.gameState.isCompleted) || player.leftGame) return;
+	if (!player || (player.isDead && !game.gameState.isCompleted) || player.leftGame) {
+		return;
+	}
 
 	data.timestamp = new Date();
 	game.chats.push(data);
@@ -439,13 +439,16 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 
 	// Check that they are who they say they are.  Should this do, uh, whatever
 	// the ws equivalent of a 401 unauth is?
-	if (!passport || !passport.user || passport.user !== data.userName) { return; }
+	if (!passport || !passport.user || passport.user !== data.userName) {
+		return;
+	}
 
 	if (generalChatCount === 100) {
 		const chats = new Generalchats({chats: generalChats});
 
-		chats.save();
-		generalChatCount = 0;
+		chats.save(() => {
+			generalChatCount = 0;
+		});
 	}
 
 	const user = userList.find(u => data.userName === u.userName),
