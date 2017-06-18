@@ -403,8 +403,19 @@ module.exports.handleAddNewClaim = (data) => {
 	sendInProgressGameUpdate(game);
 };
 
-module.exports.handleAddNewGameChat = data => {
-	const game = games.find(el => el.general.uid === data.uid);
+module.exports.handleAddNewGameChat = (socket, data) => {
+	const { passport } = socket.handshake.session;
+
+	if (!passport || !passport.user || passport.user !== data.userName) {
+		return;
+	}
+
+	const game = games.find(el => el.general.uid === data.uid),
+		player = game.publicPlayersState.find(player => player.userName === passport.user);
+
+	if (!player || (player.isDead && !game.gameState.isCompleted) || player.leftGame) {
+		return;
+	}
 
 	data.timestamp = new Date();
 	game.chats.push(data);
@@ -423,12 +434,21 @@ module.exports.handleUpdateWhitelist = data => {
 	io.in(data.uid).emit('gameUpdate', secureGame(game));
 };
 
-module.exports.handleNewGeneralChat = data => {
+module.exports.handleNewGeneralChat = (socket, data) => {
+	const { passport } = socket.handshake.session;
+
+	// Check that they are who they say they are.  Should this do, uh, whatever
+	// the ws equivalent of a 401 unauth is?
+	if (!passport || !passport.user || passport.user !== data.userName) {
+		return;
+	}
+
 	if (generalChatCount === 100) {
 		const chats = new Generalchats({chats: generalChats});
 
-		chats.save();
-		generalChatCount = 0;
+		chats.save(() => {
+			generalChatCount = 0;
+		});
 	}
 
 	const user = userList.find(u => data.userName === u.userName),
@@ -447,7 +467,7 @@ module.exports.handleNewGeneralChat = data => {
 };
 
 module.exports.handleUpdatedGameSettings = (socket, data) => {
-	if (socket.handshake.session.passport) {  // yes, even THIS crashed the game once.
+	if (socket.handshake.session.passport) { // yes, even THIS crashed the game once.
 		Account.findOne({username: socket.handshake.session.passport.user})
 			.then(account => {
 				for (const setting in data) {
