@@ -1,4 +1,5 @@
 const passport = require('passport'),
+	_ = require('lodash'),
 	Account = require('../models/account'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
@@ -120,7 +121,7 @@ module.exports = () => {
 			if (doesContainBadWord) {
 				res.status(401).json({message: 'Sorry, your username contains a naughty word or part of a naughty word.'});
 			} else {
-				Account.findOne({username}, (err, account) => {
+				Account.findOne({ username: new RegExp(_.escapeRegExp(username), 'i') }, (err, account) => {
 					if (err) {
 						return next(err);
 					}
@@ -147,7 +148,9 @@ module.exports = () => {
 	});
 
 	app.post('/account/signin', passport.authenticate('local'), (req, res) => {
-		Account.findOne({username: req.user.username})
+		Account.findOne({
+			username: new RegExp(_.escapeRegExp(req.user.username), 'i')
+		})
 			.then(player => {
 				player.lastConnectedIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
 				player.save();
