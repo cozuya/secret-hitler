@@ -14,6 +14,15 @@ export default class Changelog extends React.Component {
 			<section className="changelog">
 				<i className="remove icon" onClick={this.leaveChangelog} />
 				<div className="ui header">
+					<p>Version 0.6.2 "ssalg deniats" released 6-18-2017</p>
+				</div>
+				<ul>
+					<li>A fix to the userlist display issues.</li>
+					<li>A fix to non rainbows having purple names and colors.</li>
+					<li>Back end validation to chats, meaning dead players can't avoid the disabled filter & not logged in users can't chat.</li>
+					<li>Player names are now case insensitive, meaning that a player cannot make an account named "Valeera" if there's already an account called "valeera". If some accounts need to be deleted let me know.</li>
+				</ul>
+				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">

@@ -96,8 +96,8 @@ module.exports = () => {
 
 	accounts();
 	socketRoutes();
-	getData();
-	setInterval(getData, 86400000); // once every 24 hours refresh the chart data
+	// getData();
+	// setInterval(getData, 86400000); // once every 24 hours refresh the chart data
 	// setInterval(decrementKarma, 86400000); // once every 48 hours reduce players with karma karmaCount by 1
 
 	app.get('/', (req, res) => {
