@@ -6,10 +6,10 @@ const ADMINS = module.exports.ADMINS = ['coz', 'Stine'];
 
 const CONTRIBUTORS = module.exports.CONTRIBUTORS = ['jbasrai', 'sethe'];
 
-const NATEKILLER = 'Banana';
+// const NATEKILLER = 'Banana';
 
 module.exports.PLAYERCOLORS = (user) => cn({
-	natekiller: user.userName === NATEKILLER,
+	// natekiller: user.userName === NATEKILLER,
 	admin: ADMINS.includes(user.userName),
 	contributer: CONTRIBUTORS.includes(user.userName),
 	experienced: user.wins + user.losses > 50,

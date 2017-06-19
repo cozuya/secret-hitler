@@ -204,7 +204,14 @@ export default class Gamechat extends React.Component {
 				</div>
 			) : (
 				<div className="item" key={i}>
-					<span className={playerListPlayer ? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) ? 'chat-user' : `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>
+					<span className={
+						playerListPlayer
+						? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
+						? 'chat-user'
+						: (playerListPlayer.wins + playerListPlayer.losses > 49)
+						? `chat-user ${PLAYERCOLORS(playerListPlayer)}`
+						: 'chat-user'
+						: 'chat-user'}>
 						{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : MODERATORS.includes(chat.userName) ? <span><span className="moderator-name"> (M)</span><span className="observer-chat"> (Observer)</span></span> : <span className="observer-chat"> (Observer)</span>}{this.handleTimestamps(chat.timestamp)}:
 					</span>
 					<span> {chatContents}</span>
