@@ -191,8 +191,8 @@ class Playerlist extends React.Component {
 														return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
 													}
 												})()}
-												{renderStatus()}
 											</span>
+											{renderStatus()}
 										</div>
 										{(() => {
 											if (!ADMINS.includes(user.userName)) {
