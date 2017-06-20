@@ -1,3 +1,5 @@
+import '../scss/style-web.scss';
+
 $(document).ready(function () {  // yay ES5
 	$('body').on('click', '#signup', function(event) {
 		event.preventDefault();
@@ -197,7 +199,7 @@ $(document).ready(function () {  // yay ES5
 
 	$('button#passwordchange-submit').on('click', function (event) {
 		event.preventDefault();
-		
+
 		var newPassword = $('#passwordchange-password').val(),
 			newPasswordConfirm = $('#passwordchange-confirmpassword').val(),
 			$loader = $(this).next(),
@@ -209,7 +211,7 @@ $(document).ready(function () {  // yay ES5
 			});
 
 		$loader.addClass('active');
-		
+
 		$.ajax({
 			url: '/account/change-password',
 			method: 'POST',
@@ -236,7 +238,7 @@ $(document).ready(function () {  // yay ES5
 
 	$('button#emailchange-submit').on('click', function (event) {
 		event.preventDefault();
-		
+
 		var newEmail = $('#emailchange-email').val(),
 			newEmailConfirm = $('#emailchange-confirmemail').val(),
 			$loader = $(this).next(),
@@ -248,7 +250,7 @@ $(document).ready(function () {  // yay ES5
 			});
 
 		$loader.addClass('active');
-		
+
 		$.ajax({
 			url: '/account/change-email',
 			method: 'POST',

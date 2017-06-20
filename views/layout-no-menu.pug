@@ -5,15 +5,9 @@ html(lang="en")
 		meta(http-equiv="X-UA-Compatible", content="IE=edge")
 		meta(name="theme-color", content="#aaa")
 		meta(name="description", content="Secret Hitler Online")
-		if game
-			if isLight
-				link(rel="stylesheet", type="text/css", href="/styles/style-light.css")
-			else
-				link(rel="stylesheet", type="text/css", href="/styles/style-dark.css")
-		else
+		if !game
 			meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 			link(rel="stylesheet", type="text/css", href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css")
-			link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
 		link(href="//fonts.googleapis.com/css?family=Josefin+Sans:600i", rel="stylesheet", type="text/css")
 		link(rel="author", href="humans.txt")
 		link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
@@ -22,6 +16,14 @@ html(lang="en")
 		link(rel="mask-icon", href="/safari-pinned-tab.svg", color="#aaa")
 		link(rel="manifest", href="/manifest.json")
 		title Secret Hitler
+		script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
+		script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
+		
+		if game
+			script(src="/scripts/game.js")
+		else
+			script(src="/scripts/site.js")
+		block footer
 	body
 		#main
 			block content
@@ -82,11 +84,3 @@ html(lang="en")
 				.ui.dimmer.inverted
 					.ui.text.loader Signing up..
 				.ui.negative.hidden.message
-		
-		if game
-			script(src="/scripts/bundle.js")
-		else
-			script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
-			script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
-			script(src="/scripts/site.js")
-		block footer

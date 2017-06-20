@@ -1,12 +1,11 @@
 import React from 'react';
 
 export default class Changelog extends React.Component {
-	constructor() {
-		super();
-		this.leaveChangelog = this.leaveChangelog.bind(this);
+	static propTypes = {
+		onLeaveChangelog: React.PropTypes.func,
 	}
 
-	leaveChangelog() {
+	leaveChangelog = () => {
 		this.props.onLeaveChangelog('default');
 	}
 
@@ -85,7 +84,3 @@ export default class Changelog extends React.Component {
 		);
 	}
 }
-
-Changelog.propTypes = {
-	onLeaveChangelog: React.PropTypes.func,
-};

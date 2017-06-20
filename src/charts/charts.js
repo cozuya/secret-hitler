@@ -1,3 +1,5 @@
+import '../scss/style-web.scss';
+
 document.addEventListener('DOMContentLoaded', function(event) {
 	// this page/code is total shit but I would need to get a different graphing library to make it better.
 
