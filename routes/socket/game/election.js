@@ -475,7 +475,7 @@ module.exports.selectVoting = data => {
 						game.private.unSeatedGameChats.push(chat);
 					}
 
-					if (game.trackState.fascistPolicyCount > 2 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler') {
+					if (process.env.NODE_ENV !== 'development' && game.trackState.fascistPolicyCount > 2 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler') {
 						// || (process.env.NODE_ENV === 'development' && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler')) {
 						const chat = {
 							timestamp: new Date(),

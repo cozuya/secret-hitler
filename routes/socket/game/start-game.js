@@ -340,7 +340,7 @@ module.exports = game => {
 	game.general.playerCount = game.publicPlayersState.length;
 	game.general.livingPlayerCount = game.publicPlayersState.length;
 	game.general.type = game.general.playerCount < 7 ? 0 : game.general.playerCount < 9 ? 1 : 2; // different fascist tracks
-	// game.publicPlayersState = _.shuffle(game.publicPlayersState);
+	game.publicPlayersState = _.shuffle(game.publicPlayersState);
 	game.private.seatedPlayers = _.cloneDeep(game.publicPlayersState);
 	game.private.seatedPlayers.forEach(player => {
 		player.gameChats = [];

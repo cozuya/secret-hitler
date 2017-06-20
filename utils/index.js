@@ -1,4 +1,5 @@
-const { some, none } = require('option');
+/* eslint-disable spaced-comment */
+const { none } = require('option');
 const { Range, List } = require('immutable');
 
 /**************************
@@ -17,8 +18,8 @@ exports.flattenListOpts = xs => xs
 
 // (xs: List[A], opt: Option[A]) => List[A]
 exports.pushOpt = (xs, opt) => {
-	return xs.concat(opt.map(x => List([x])).valueOrElse(List()))
-}
+	return xs.concat(opt.map(x => List([x])).valueOrElse(List()));
+};
 
 // (x: A) => B => (x: Option[A]) => Option[B]
 exports.mapOpt1 = f => {
@@ -48,7 +49,7 @@ exports.mapOpt2 = f => {
 
 // (handX: Hand, handY: Hand) => Hand
 exports.handDiff = (handX, handY) => {
-	return { 
+	return {
 		reds: handX.reds - handY.reds,
 		blues: handX.blues - handY.blues
 	};
