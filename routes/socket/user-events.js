@@ -413,7 +413,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
 		player = game.publicPlayersState.find(player => player.userName === passport.user);
 
-	if (!player || (player.isDead && !game.gameState.isCompleted) || player.leftGame) {
+	if ((player && player.isDead && !game.gameState.isCompleted) || (player && player.leftGame)) {
 		return;
 	}
 
