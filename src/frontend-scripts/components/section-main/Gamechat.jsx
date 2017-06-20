@@ -204,9 +204,21 @@ class Gamechat extends React.Component {
 						})()}
 					</span>
 				</div>
-			) :	(
+			) :	chat.isBroadcast ? (
 				<div className="item" key={i}>
-					<span className={playerListPlayer ? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) ? 'chat-user' : `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'}>
+					<span className="chat-user--broadcast">[BROADCAST]{this.handleTimestamps(chat.timestamp)}: </span>
+					<span className="broadcast-chat">{chat.chat}</span>
+				</div>
+			) : (
+				<div className="item" key={i}>
+					<span className={
+						playerListPlayer
+						? (userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
+						? 'chat-user'
+						: (playerListPlayer.wins + playerListPlayer.losses > 49)
+						? `chat-user ${PLAYERCOLORS(playerListPlayer)}`
+						: 'chat-user'
+						: 'chat-user'}>
 						{gameInfo.gameState.isTracksFlipped ? isSeated ? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}` : chat.userName : chat.userName}{isSeated ? '' : MODERATORS.includes(chat.userName) ? <span><span className="moderator-name"> (M)</span><span className="observer-chat"> (Observer)</span></span> : <span className="observer-chat"> (Observer)</span>}{this.handleTimestamps(chat.timestamp)}:
 					</span>
 					<span> {chatContents}</span>
@@ -299,7 +311,7 @@ class Gamechat extends React.Component {
 						<LeaveGameButton />
 					</div>
 				</section>
-				<section className={
+				<section style={{fontSize: (userInfo.gameSettings && userInfo.gameSettings.fontSize) ? `${userInfo.gameSettings.fontSize}px` : '18px'}} className={
 					(() => {
 						let classes = 'segment chats';
 

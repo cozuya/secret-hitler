@@ -104,7 +104,7 @@ class Playerlist extends React.Component {
 								w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins',
 								l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
 
-							list.sort((a, b) => {
+							return list.sort((a, b) => {
 								const aTotal = a[w] + a[l],
 									bTotal = b[w] + b[l];
 
@@ -133,9 +133,9 @@ class Playerlist extends React.Component {
 								}
 
 								return b[w] - a[w];
-							});
-
-							return list.filter(player => this.state.userListFilter === 'all' || player.wins + player.losses > 49).map((user, i) => {
+							})
+							.filter(user => this.state.userListFilter === 'all' || user[w] + user[l] > 49)
+							.map((user, i) => {
 								const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0),
 
 									percentDisplay = (user[w] + user[l]) > 9 ? `${percent}%` : '',
@@ -180,18 +180,20 @@ class Playerlist extends React.Component {
 									};
 
 								return (
-									<div key={i} className="user">
-										<span
-											className={userClasses}
-											onClick={disableIfUnclickable(this.props.fetchProfile).bind(null, user.userName)}>
-											{user.userName}
-											{(() => {
-												if (MODERATORS.includes(user.userName)) {
-													return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
-												}
-											})()}
-										</span>
-										{renderStatus()}
+									<div key={i} className="user-container">
+										<div className="userlist-username">
+											<span
+												className={userClasses}
+												onClick={disableIfUnclickable(this.props.fetchProfile).bind(null, user.userName)}>
+												{user.userName}
+												{(() => {
+													if (MODERATORS.includes(user.userName)) {
+														return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
+													}
+												})()}
+												{renderStatus()}
+											</span>
+										</div>
 										{(() => {
 											if (!ADMINS.includes(user.userName)) {
 												const w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins',

@@ -613,7 +613,7 @@ module.exports.selectPresidentPolicy = data => {
 		chancellor = game.private.seatedPlayers[chancellorIndex],
 		nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
-	if (!game.private.lock.selectPresidentPolicy && president && president.cardFlingerState && president.cardFlingerState.length && chancellorIndex && game.publicPlayersState[chancellorIndex]) {
+	if (!game.private.lock.selectPresidentPolicy && president && president.cardFlingerState && president.cardFlingerState.length) {
 		game.private.lock.selectPresidentPolicy = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 		game.publicPlayersState[chancellorIndex].isLoader = true;

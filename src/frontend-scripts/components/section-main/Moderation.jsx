@@ -1,17 +1,22 @@
 import React from 'react';
-import {ADMINS} from '../../constants';
 import moment from 'moment';
 import _ from 'lodash';
+import $ from 'jquery';
 
 export default class Moderation extends React.Component {
 	constructor() {
 		super();
 		this.leaveModeration = this.leaveModeration.bind(this);
+		this.togglePlayerList = this.togglePlayerList.bind(this);
+		this.broadcastClick = this.broadcastClick.bind(this);
+		this.handleBroadcastSubmit = this.handleBroadcastSubmit.bind(this);
 		this.state = {
 			selectedUser: '',
 			userList: [],
 			actionTextValue: '',
-			log: []
+			log: [],
+			playerListShown: true,
+			broadcastText: ''
 		};
 	}
 
@@ -30,17 +35,19 @@ export default class Moderation extends React.Component {
 		this.props.socket.off('modInfo');
 	}
 
+	togglePlayerList() {
+		this.setState({playerListShown: !this.state.playerListShown});
+	}
+
 	renderUserlist() {
 		const radioChange = userName => {
 				this.setState({selectedUser: userName});
 			},
-			{userName} = this.props.userInfo,
 			{userList} = this.state,
 			ips = userList.map(user => user.ip),
 			multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
 
 		return userList
-			.filter(user => ADMINS.includes(userName) || !user.isRainbow)
 			.sort((a, b) => (a.losses + a.wins) + (b.losses + b.wins))
 			.map((user, index) => <li key={index} className={multiIPs.includes(user.ip) ? 'multi' : ''}><label><input type="radio" name="users" onChange={() => {radioChange(user.userName);}} />{user.userName} <span className="ip">{user.ip}</span></label></li>);
 	}
@@ -105,23 +112,71 @@ export default class Moderation extends React.Component {
 		this.props.onLeaveModeration('default');
 	}
 
+	broadcastClick(e) {
+		e.preventDefault();
+
+		$(this.bModal).modal('show');
+	}
+
+	handleBroadcastSubmit(e) {
+		e.preventDefault();
+		$(this.bModal).modal('hide');
+
+		this.props.socket.emit('updateModAction', {
+			modName: this.props.userInfo.userName,
+			comment: this.state.broadcastText,
+			action: 'broadcast'
+		});
+
+		this.setState({
+			broadcastText: ''
+		});
+	}
+
 	render() {
+		const broadcastKeyup = e => {
+			this.setState({
+				broadcastText: e.currentTarget.value
+			});
+		};
+
 		return (
 			<section className="moderation">
 				<h2>Moderation</h2>
+				<a className="broadcast" href="#" onClick={this.broadcastClick} >Broadcast to all players</a>
 				<i className="remove icon" onClick={this.leaveModeration} />
+				<span onClick={this.togglePlayerList} className="player-list-toggle">show/hide playerlist</span>
 				<div>
-					<div className="modplayerlist">
-						<h3>Current player list</h3>
-						<ul className="userlist">
-							{this.renderUserlist()}
-						</ul>
-						{this.renderActionText()}
-						{this.renderButtons()}
-					</div>
-					<div className="modlog">
+					{(() => {
+						if (this.state.playerListShown) {
+							return (
+								<div className="modplayerlist">
+									<h3>Current player list</h3>
+									<ul className="userlist">
+										{this.renderUserlist()}
+									</ul>
+									{this.renderActionText()}
+									{this.renderButtons()}
+								</div>
+							);
+						}
+					})()}
+					<div className="modlog" style={{maxWidth: this.state.playerListShown ? '60%' : '100%'}}>
 						<h3>Moderation log</h3>
 						{this.renderModLog()}
+					</div>
+				</div>
+				<div className="ui basic fullscreen modal broadcastmodal" ref={c => {
+					this.bModal = c;
+				}}>
+					<div className="ui header">Broadcast to all games:</div>
+					<div className="ui input">
+						<form onSubmit={this.handleBroadcastSubmit}>
+							<input maxLength="300" placeholder="Broadcast" onChange={broadcastKeyup} className="broadcast-input" autoFocus value={this.state.broadcastText} ref={c => {
+								this.broadcastText = c;
+							}} />
+							<div onClick={this.handleBroadcastSubmit} className={this.state.broadcastText ? 'ui button primary' : 'ui button primary disabled'}>Submit</div>
+						</form>
 					</div>
 				</div>
 			</section>

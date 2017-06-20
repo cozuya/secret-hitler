@@ -97,8 +97,8 @@ module.exports = () => {
 
 	accounts();
 	socketRoutes();
-	getData();
-	setInterval(getData, 86400000); // once every 24 hours refresh the chart data
+	// getData();
+	// setInterval(getData, 86400000); // once every 24 hours refresh the chart data
 	// setInterval(decrementKarma, 86400000); // once every 48 hours reduce players with karma karmaCount by 1
 
 	app.get('/', (req, res) => {
@@ -125,12 +125,14 @@ module.exports = () => {
 		renderPage(req, res, 'page-player-profiles', 'playerProfiles');
 	});
 
-	app.get('/game', ensureAuthenticated, (req, res) => {
-		res.render('game', {
-			user: req.user.username,
-			game: true,
-			isLight: req.user.gameSettings.enableLightTheme
-		});
+	app.get('/game', ensureAuthenticated, (req, res) => { // naaaaaaaate.  Remove after IP bans go in.
+		if ((req.headers['X-Real-IP'] && req.headers['X-Real-IP'] !== '60.241.181.49') || (req.headers['x-forwarded-for'] && req.headers['x-forwarded-for'] !== '60.241.181.49') || (req.headers['X-Forwarded-For'] && req.headers['X-Forwarded-For'] !== '60.241.181.49') || (req.connection.remoteAddress && req.connection.remoteAddress !== '60.241.181.49')) {
+			res.render('game', {
+				user: req.user.username,
+				game: true,
+				isLight: req.user.gameSettings.enableLightTheme
+			});
+		}
 	});
 
 	app.get('/observe', (req, res) => {

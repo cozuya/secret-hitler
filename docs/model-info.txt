@@ -13,6 +13,8 @@ chats array
 	chat string
 	type string
 	gameChat bool
+	isClaim bool
+	isBroadcast bool
 	timestamp time
 general
 	name string
