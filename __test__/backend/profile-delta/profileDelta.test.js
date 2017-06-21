@@ -1,4 +1,4 @@
-import matchers from '../../matchers'; // eslint-disable-line no-unused-vars
+import '../../matchers';
 
 // mock game tests
 import testGenericGame from './testGenericGame';

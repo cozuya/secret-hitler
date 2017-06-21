@@ -1,8 +1,8 @@
 import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
-import p7LiberalWin from '../../mocks/p7LiberalWin';
+import { p7LiberalWin } from '../../mocks';
 import { List, Range } from 'immutable';
 import { some, none } from 'option';
-import matches from '../../matchers';
+import '../../matchers';
 
 export default () => {
 	describe('Liberal win: 7p', () => {

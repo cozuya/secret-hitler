@@ -1,8 +1,8 @@
 import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
-import mockGameSummary from '../../mocks/mockGameSummary';
+import { mockGameSummary } from '../../mocks';
 import { List, Range } from 'immutable';
 import { some, none } from 'option';
-import matches from '../../matchers';
+import '../../matchers';
 
 export default () => {
 	const game = buildEnhancedGameSummary(mockGameSummary);

@@ -1,5 +1,5 @@
 import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
-import p7HitlerKilled from '../../mocks/p7HitlerKilled';
+import { p7HitlerKilled } from '../../mocks';
 import { List, Range } from 'immutable';
 import { some, none } from 'option';
 import matches from '../../matchers';

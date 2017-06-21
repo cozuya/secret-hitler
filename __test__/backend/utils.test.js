@@ -1,7 +1,7 @@
 import { filterOpt, flattenListOpts, mapOpt1, mapOpt2, handDiff, handToPolicy, handToPolicies, policyToHand, handToString, capitalize, pushOpt } from '../../utils';
 import { none, some } from 'option';
 import { List } from 'immutable';
-import matchers from '../matchers'; // eslint-disable-line no-unused-vars
+import '../matchers';
 
 describe('filterOpt given an option x and a predicate p', () => {
 	it('if x is none, returns none', () => {

@@ -1,6 +1,6 @@
 import { profileDelta } from '../../../models/profile/utils';
 import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
-import p7LiberalWin from '../../mocks/p7LiberalWin';
+import { p7LiberalWin } from '../../mocks';
 
 export default () => {
 	const game = buildEnhancedGameSummary(p7LiberalWin);

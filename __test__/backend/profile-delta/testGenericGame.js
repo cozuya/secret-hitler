@@ -1,6 +1,6 @@
 import { profileDelta } from '../../../models/profile/utils';
 import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
-import mockGameSummary from '../../mocks/mockGameSummary';
+import { mockGameSummary } from '../../mocks';
 
 export default () => {
 	const game = buildEnhancedGameSummary(mockGameSummary);

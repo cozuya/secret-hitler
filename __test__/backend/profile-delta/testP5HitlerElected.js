@@ -1,6 +1,6 @@
 import { profileDelta } from '../../../models/profile/utils';
 import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
-import p5HitlerElected from '../../mocks/p5HitlerElected';
+import { p5HitlerElected } from '../../mocks';
 
 export default () => {
 	const game = buildEnhancedGameSummary(p5HitlerElected);

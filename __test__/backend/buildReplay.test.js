@@ -3,7 +3,7 @@ import buildEnhancedGameSummary from '../../models/game-summary/buildEnhancedGam
 import mockGame from '../mocks/mockGameSummary';
 import { List, Range } from 'immutable';
 import { fromNullable, some, none } from 'option';
-import matchers from '../matchers'; // eslint-disable-line no-unused-vars
+import '../matchers';
 
 describe('ReplayBuilder', () => {
 	const game = buildEnhancedGameSummary(mockGame);

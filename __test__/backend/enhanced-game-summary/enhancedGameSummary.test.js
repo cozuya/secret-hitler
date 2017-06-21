@@ -1,6 +1,6 @@
 import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhancedGameSummary';
-import mockGameSummary from '../../mocks/mockGameSummary';
-import matchers from '../../matchers'; // eslint-disable-line no-unused-vars
+import { mockGameSummary } from '../../mocks';
+import '../../matchers';
 
 // mock game tests
 import testGenericGame from './testGenericGame';
