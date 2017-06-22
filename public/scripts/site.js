@@ -103,6 +103,9 @@ $(document).ready(function () {  // yay ES5
 				},
 				401: function () {
 					submitErr('Sorry, that was not the correct password for that username.');
+				},
+				403: function () {
+					submitErr('You\'re can no longer access this service.  If you believe this is in error, contact the administrators.');
 				}
 			}
 		});

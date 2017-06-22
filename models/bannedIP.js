@@ -7,3 +7,4 @@ const mongoose = require('mongoose'),
 	});
 
 module.exports = mongoose.model('BannedIP', BannedIP);
+// module.exports = BannedIP;

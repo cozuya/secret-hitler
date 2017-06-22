@@ -498,6 +498,7 @@ module.exports.handleModerationAction = (socket, data) => {
 				actionTaken: data.action
 			}),
 			banAccount = (username) => {
+				console.log('banAccount')
 				Account.findOne({username})
 				.then(account => {
 					account.hash = crypto.randomBytes(20).toString('hex');
@@ -538,9 +539,19 @@ module.exports.handleModerationAction = (socket, data) => {
 				ip: data.ip
 			});
 
-			banAccount(data.action);
+			banAccount(data.userName);
 			ipban.save();
+			break;
 		case 'ipbanlarge':
+			const ipbanl = new BannedIP({
+				bannedDate: new Date(),
+				type: 'big',
+				ip: data.ip
+			});
+
+			banAccount(data.userName);
+			ipbanl.save();
+			break;
 		}
 	}
 };

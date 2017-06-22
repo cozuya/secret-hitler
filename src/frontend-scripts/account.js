@@ -52,7 +52,7 @@ export default () => {
 				400() {
 					submitErr('Sorry, that request did not look right.');
 				},
-				401(xhr) {
+				403(xhr) {
 					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : 'Sorry, that username already exists and you did not provide the correct password.';
 
 					submitErr(message);
@@ -112,6 +112,9 @@ export default () => {
 				},
 				401() {
 					submitErr('Sorry, that was not the correct password for that username.');
+				},
+				403() {
+					submitErr('You\'re can no longer access this service.  If you believe this is in error, contact the administrators.');
 				}
 			}
 		});

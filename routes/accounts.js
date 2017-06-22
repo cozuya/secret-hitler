@@ -1,7 +1,7 @@
 const passport = require('passport'),
 	_ = require('lodash'),
 	Account = require('../models/account'),
-	BannedIP = require('../models/bannedIP'),
+	BannedIP = require('../models/BannedIP'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
 	blacklistedWords = require('../iso/blacklistwords'),
@@ -131,23 +131,33 @@ module.exports = () => {
 						res.status(401).json({message: 'Sorry, that account already exists.'});
 					} else {
 						BannedIP.findOne({ip: signupIP}, (err, ip) => {
-							if (ip) {
-								const date = new Date().getTime(),
-									unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
-									// todo
-							}
-						});
-						Account.register(new Account(save), password, err => {
+							let date, unbannedTime;
+
 							if (err) {
 								return next(err);
 							}
 
-							passport.authenticate('local')(req, res, () => {
-								// if (email) {
-								// 	verifyAccount.sendToken(req.body.username, req.body.email);
-								// }
-								res.send();
-							});
+							if (ip) {
+								date = new Date().getTime();
+								unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+							}
+
+							if (ip && unbannedTime > date) {
+								res.status(403).json({message: 'You\'re can no longer access this service.  If you believe this is in error, contact the administrators.'});
+							} else {
+								Account.register(new Account(save), password, err => {
+									if (err) {
+										return next(err);
+									}
+
+									passport.authenticate('local')(req, res, () => {
+										// if (email) {
+										// 	verifyAccount.sendToken(req.body.username, req.body.email);
+										// }
+										res.send();
+									});
+								});
+							}
 						});
 					}
 				});
@@ -155,16 +165,38 @@ module.exports = () => {
 		}
 	});
 
-	app.post('/account/signin', passport.authenticate('local'), (req, res) => {
-		Account.findOne({
-			username: new RegExp(_.escapeRegExp(req.user.username), 'i')
-		})
-			.then(player => {
-				player.lastConnectedIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
-				player.save();
-			});
-		res.send();
-	});
+	app.post('/account/signin', (req, res, next) => {
+		console.log('hi')
+		BannedIP.findOne({ip: req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress}, (err, ip) => {
+			let date, unbannedTime;
+
+			if (err) {
+				return next(err);
+			}
+
+			if (ip) {
+				date = new Date().getTime();
+				unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+			}
+			console.log('bannedip')
+			if (ip && unbannedTime > date) {
+				console.log('Hello, World!')
+				res.status(403).json({message: 'You\'re can no longer access this service.  If you believe this is in error, contact the administrators.'});
+			} else {
+				return next();
+			}
+		});
+	},
+		passport.authenticate('local'), (req, res) => {
+			Account.findOne({
+				username: new RegExp(_.escapeRegExp(req.user.username), 'i')
+			})
+				.then(player => {
+					player.lastConnectedIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
+					player.save();
+				});
+			res.send();
+		});
 
 	// todo-alpha, signed in on 404 page, nothing updated until moved page.
 
