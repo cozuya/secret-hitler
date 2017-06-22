@@ -123,7 +123,7 @@ export default class Menu extends React.Component {
 		});
 
 		setTimeout(function () {
-			$('section.nav-menu > p > a').css('fontSize', '42px').text('Secret Hitler').textEffect({
+			$('section.nav-menu > p > a').css('fontSize', '42px').text('S').textEffect({
 				effect: 'random',
 				effectSpeed: 100,
 				completionSpeed: Math.floor(Math.random() * 20000),
@@ -148,7 +148,7 @@ export default class Menu extends React.Component {
 		return (
 			<section className="ui menu nav-menu">
 				<p>
-					<a href="/" target="_blank" rel="noopener noreferrer">Can you find and stop the..</a>
+					<a href="/" target="_blank" rel="noopener noreferrer">C</a>
 				</p>
 				<div className="item right">
 					{(() => {

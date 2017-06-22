@@ -1,6 +1,7 @@
 const passport = require('passport'),
 	_ = require('lodash'),
 	Account = require('../models/account'),
+	BannedIP = require('../models/bannedIP'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
 	blacklistedWords = require('../iso/blacklistwords'),
@@ -129,6 +130,13 @@ module.exports = () => {
 					if (account) {
 						res.status(401).json({message: 'Sorry, that account already exists.'});
 					} else {
+						BannedIP.findOne({ip: signupIP}, (err, ip) => {
+							if (ip) {
+								const date = new Date().getTime(),
+									unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+									// todo
+							}
+						});
 						Account.register(new Account(save), password, err => {
 							if (err) {
 								return next(err);

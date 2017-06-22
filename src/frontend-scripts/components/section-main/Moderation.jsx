@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import $ from 'jquery';
+import {ADMINS} from '../../constants';
 
 export default class Moderation extends React.Component {
 	constructor() {
@@ -48,7 +49,15 @@ export default class Moderation extends React.Component {
 			multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
 
 		return userList
-			.sort((a, b) => (a.losses + a.wins) + (b.losses + b.wins))
+			.sort((a, b) => {
+				if (a.isRainbow && !b.isRainbow) {
+					return 1;
+				} else if (!a.isRainbow && b.isRainbow) {
+					return -1;
+				}
+
+				return a - b;
+			})
 			.map((user, index) => <li key={index} className={multiIPs.includes(user.ip) ? 'multi' : ''}><label><input type="radio" name="users" onChange={() => {radioChange(user.userName);}} />{user.userName} <span className="ip">{user.ip}</span></label></li>);
 	}
 
@@ -74,6 +83,8 @@ export default class Moderation extends React.Component {
 			<div className="button-container">
 				<button className={(!this.state.selectedUser || !this.state.actionTextValue) ? 'ui button primary disabled' : 'ui button primary'} onClick={() => {takeModAction('ban');}}>Ban user</button>
 				<button className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'} onClick={() => {takeModAction('comment');}}>Comment without action</button>
+				<button className={!this.state.actionTextValue ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipban');}}>Ban and IP ban for 18 hours</button>
+				<button className={(!this.state.actionTextValue && ADMINS.includes(this.props.userInfo.userName)) ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipbanlarge');}}>Ban and IP ban for 1 week</button>
 			</div>
 		);
 	}

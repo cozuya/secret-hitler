@@ -2,7 +2,7 @@ const cn = require('classnames');
 
 module.exports.MODERATORS = ['sethe', 'maki2', 'Crazyuncle', 'nemonorm', 'Anna1999', 'Tenebrae', 'jazz', 'Max', 'Faaiz1999', 'DumbBullDoor'];
 
-const ADMINS = module.exports.ADMINS = ['coz', 'Stine'];
+const ADMINS = module.exports.ADMINS = ['coz', 'Stine', 'hhh'];
 
 const CONTRIBUTORS = module.exports.CONTRIBUTORS = ['jbasrai', 'sethe'];
 
