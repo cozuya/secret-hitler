@@ -5,6 +5,7 @@ const {games, userList, generalChats} = require('./models'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
 	ModAction = require('../../models/modAction'),
+	BannedIP = require('../../models/BannedIP'),
 	startGame = require('./game/start-game.js'),
 	{secureGame} = require('./util.js'),
 	crypto = require('crypto'),
@@ -489,18 +490,15 @@ module.exports.handleModerationAction = (socket, data) => {
 
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
 		const modaction = new ModAction({
-			date: new Date(),
-			modUserName: passport.user,
-			userActedOn: data.userName,
-			modNotes: data.comment,
-			ip: data.ip,
-			actionTaken: data.action
-		});
-
-		modaction.save();
-		switch (data.action) {
-		case 'ban':
-			Account.findOne({username: data.userName})
+				date: new Date(),
+				modUserName: passport.user,
+				userActedOn: data.userName,
+				modNotes: data.comment,
+				ip: data.ip,
+				actionTaken: data.action
+			}),
+			banAccount = (username) => {
+				Account.findOne({username})
 				.then(account => {
 					account.hash = crypto.randomBytes(20).toString('hex');
 					account.salt = crypto.randomBytes(20).toString('hex');
@@ -510,6 +508,12 @@ module.exports.handleModerationAction = (socket, data) => {
 						}
 					});
 				});
+			};
+
+		modaction.save();
+		switch (data.action) {
+		case 'ban':
+			banAccount(data.userName);
 			break;
 		case 'broadcast':
 			games.forEach(game => {
@@ -526,6 +530,26 @@ module.exports.handleModerationAction = (socket, data) => {
 				isBroadcast: true
 			});
 			io.sockets.emit('generalChats', generalChats);
+			break;
+		case 'ipban':
+			const ipban = new BannedIP({
+				bannedDate: new Date(),
+				type: 'small',
+				ip: data.ip
+			});
+
+			banAccount(data.userName);
+			ipban.save();
+			break;
+		case 'ipbanlarge':
+			const ipbanl = new BannedIP({
+				bannedDate: new Date(),
+				type: 'big',
+				ip: data.ip
+			});
+
+			banAccount(data.userName);
+			ipbanl.save();
 			break;
 		}
 	}

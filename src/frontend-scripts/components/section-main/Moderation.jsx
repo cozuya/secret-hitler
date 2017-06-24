@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import $ from 'jquery';
+import {ADMINS} from '../../constants';
 
 export default class Moderation extends React.Component {
 	constructor() {
@@ -84,6 +85,8 @@ export default class Moderation extends React.Component {
 			<div className="button-container">
 				<button className={(!this.state.selectedUser || !this.state.actionTextValue) ? 'ui button primary disabled' : 'ui button primary'} onClick={() => {takeModAction('ban');}}>Ban user</button>
 				<button className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'} onClick={() => {takeModAction('comment');}}>Comment without action</button>
+				<button className={!this.state.actionTextValue ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipban');}}>Ban and IP ban for 18 hours</button>
+				<button className={(!this.state.actionTextValue && ADMINS.includes(this.props.userInfo.userName)) ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipbanlarge');}}>Ban and IP ban for 1 week</button>
 			</div>
 		);
 	}
