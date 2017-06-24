@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import {PLAYERCOLORS, MODERATORS} from '../../constants';
-import { updateMidsection, loadReplay } from '../../actions/actions';
+import { loadReplay } from '../../actions/actions';
 import classnames from 'classnames';
 
 const mapDispatchToProps = dispatch => ({

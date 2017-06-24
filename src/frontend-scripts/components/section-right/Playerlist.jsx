@@ -125,6 +125,10 @@ class Playerlist extends React.Component {
 									return 1;
 								}
 
+								if (MODERATORS.includes(a.userName) && MODERATORS.includes(b.userName)) {
+									return b[w] - a[w];
+								}
+
 								if (aTotal > 49 && bTotal > 49) {
 									return (b[w] / bTotal) - (a[w] / aTotal);
 								} else if (aTotal > 49) {
@@ -135,7 +139,7 @@ class Playerlist extends React.Component {
 
 								return b[w] - a[w];
 							})
-							.filter(user => this.state.userListFilter === 'all' || user[w] + user[l] > 49)
+							.filter(user => this.state.userListFilter === 'all' || user.wins + user.losses > 49)
 							.map((user, i) => {
 								const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0),
 
@@ -148,13 +152,12 @@ class Playerlist extends React.Component {
 										return () => null;
 									},
 
-									userClasses = cn(
+									userClasses = (user.wins + user.losses > 49) ? cn(
 										PLAYERCOLORS(user),
 										{ unclickable: !this.props.isUserClickable },
 										{ clickable: this.props.isUserClickable },
 										'username'
-									),
-
+									) : 'username',
 									renderStatus = () => {
 										const status = user.status;
 
@@ -207,8 +210,8 @@ class Playerlist extends React.Component {
 														return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
 													}
 												})()}
-												{renderStatus()}
 											</span>
+											{renderStatus()}
 										</div>
 										{(() => {
 											if (!ADMINS.includes(user.userName)) {

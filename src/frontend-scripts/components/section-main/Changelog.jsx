@@ -15,6 +15,24 @@ export default class Changelog extends React.Component {
 			<section className="changelog">
 				<i className="remove icon" onClick={this.leaveChangelog} />
 				<div className="ui header">
+					<h2>Changelog</h2>
+				</div>
+				<div className="ui header">
+					<p>Version 0.6.3 "conte" released 6-24-2017</p>
+				</div>
+				<h3>New feature: moderator IP bans.</h3>
+				<p>Obviously need to be used carefully, but this will prevent (hopefully) some of the worst offenders from repeatedly making accounts. All IP bans are temporary and go away relatively fast.</p>
+				<p>Other issues:</p>
+				<ul>
+					<li>Observer chat is back.</li>
+					<li>A fix to non rainbows having purple names in the userlist/lobby.</li>
+					<li>A fix to clicking on an icon in the userlist/lobby taking you to the profile instead of the game.</li>
+					<li>A fix to a general styling issue - seen most obviously by the yellow circle around the lizard being offset.</li>
+					<li>A fix to only rainbow players in a rainbow game showing up on the userlist/lobby as opposed to all rainbow players.</li>
+					<li>Thanks to a submission, tracks have been manually desaturated and replaced, most users won't see a change.</li>
+					<li>All images minified so should be a lot snappier on first load..</li>
+				</ul>
+				<div className="ui header">
 					<p>Version 0.6.2 "ssalg deniats" released 6-18-2017</p>
 				</div>
 				<ul>
@@ -23,9 +41,6 @@ export default class Changelog extends React.Component {
 					<li>Back end validation to chats, meaning dead players can't avoid the disabled filter & not logged in users can't chat.</li>
 					<li>Player names are now case insensitive, meaning that a player cannot make an account named "Valeera" if there's already an account called "valeera". If some accounts need to be deleted let me know.</li>
 				</ul>
-				<div className="ui header">
-					<h2>Changelog</h2>
-				</div>
 				<div className="ui header">
 					<p>Version 0.6.1 "stained glass" released 6-17-2017</p>
 				</div>

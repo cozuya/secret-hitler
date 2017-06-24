@@ -26,12 +26,8 @@
 
 /* Border-Box */
 
-html *,*:before,*:after {
-  box-sizing: inherit;
-}
-
-html {
-  box-sizing: border-box;
+html, html *, html *::before, html *::after {
+	box-sizing: border-box;
 }
 
 /* iPad Input Shadows */

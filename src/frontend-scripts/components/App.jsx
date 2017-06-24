@@ -1,4 +1,3 @@
-import sock from 'socket.io-client';
 import React from 'react';
 import {connect} from 'react-redux';
 import LeftSidebar from './section-left/LeftSidebar.jsx';
