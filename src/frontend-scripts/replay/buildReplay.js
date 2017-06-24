@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
 
 import { List } from 'immutable';
-import { handToString, mapOpt1, capitalize } from '../../../utils';
 
 export default function buildReplay(game) {
 	// iterates through a game stepwise by phase, generating a list of snapshots along the way
@@ -38,9 +37,6 @@ export default function buildReplay(game) {
 			chancellorClaim,
 			presidentDiscard,
 			chancellorDiscard,
-			isVotePassed,
-			jas,
-			neins,
 			execution,
 			investigationId,
 			investigationClaim,
@@ -87,81 +83,51 @@ export default function buildReplay(game) {
 			deckSize: afterDeckSize
 		});
 
-		const handToStringOpt = mapOpt1(handToString);
-		const usernameOf = game.usernameOf;
-		const claimToValue = claim => handToStringOpt(claim).valueOrElse('nothing');
-		const gameOverText = text => text + ` ${capitalize(game.winningTeam)}s win the game.`;
-
 		switch(phase) {
 		case 'candidacy':
-			return preEnactionAdd({ presidentId,
-				description: `${usernameOf(presidentId).value()} is President.`
-			});
+			return preEnactionAdd({ presidentId });
 		case 'nomination':
-			return preEnactionAdd({ presidentId, chancellorId,
-				description: `${usernameOf(presidentId).value()} nominates ${usernameOf(chancellorId).value()} as Chancellor.`
-			});
+			return preEnactionAdd({ presidentId, chancellorId });
 		case 'election':
 			return preEnactionAdd({ presidentId, chancellorId, votes,
-				electionTracker: afterElectionTracker,
-				description: gameOver
-					? gameOverText('Hitler is elected.')
-					: `The vote ${isVotePassed ? 'passes' : 'fails'} ${jas} to ${neins}.`
+				electionTracker: afterElectionTracker
 			});
 		case 'topDeck':
-			return midEnactionAdd({
-				electionTracker: afterElectionTracker,
-				description: `The top policy is enacted.`
-			});
+			return midEnactionAdd({});
 		case 'presidentLegislation':
 			return midEnactionAdd({
 				presidentClaim,
 				presidentHand: presidentHand.value(),
-				presidentDiscard: presidentDiscard.value(),
-				description: `${usernameOf(presidentId).value()} draws
-					${handToString(presidentHand.value())}
-					and claims ${claimToValue(presidentClaim)}.`
+				presidentDiscard: presidentDiscard.value()
 			});
 		case 'chancellorLegislation':
 			return midEnactionAdd({
 				chancellorClaim,
 				chancellorHand: chancellorHand.value(),
-				chancellorDiscard: chancellorDiscard.value(),
-				description: `${usernameOf(chancellorId).value()} draws
-					${handToString(chancellorHand.value())}
-					and claims ${claimToValue(chancellorClaim)}.`
+				chancellorDiscard: chancellorDiscard.value()
 			});
 		case 'policyEnaction':
 			return postEnactionAdd({
 				players: beforePlayers,
-				enactedPolicy: enactedPolicy.value(),
-				description: gameOver
-					? gameOverText(`The last ${enactedPolicy.value()} policy is played.`)
-					: `A ${enactedPolicy.value()} policy is enacted.`
+				enactedPolicy: enactedPolicy.value()
 			});
 		case 'investigation':
 			return postEnactionAdd({
 				investigationId: investigationId.value(),
-				investigationClaim: investigationClaim,
-				description: `${usernameOf(presidentId).value()} investigates ${usernameOf(investigationId.value()).value()} and claims ${investigationClaim.valueOrElse('nothing')}.`
+				investigationClaim: investigationClaim
 			});
 		case 'policyPeek':
 			return postEnactionAdd({
 				policyPeek: policyPeek.value(),
-				policyPeekClaim: policyPeekClaim,
-				description: `${usernameOf(presidentId).value()} peeks the deck.`
+				policyPeekClaim: policyPeekClaim
 			});
 		case 'specialElection':
 			return postEnactionAdd({
-				specialElection: specialElection.value(),
-				description: `${usernameOf(presidentId).value()} special elects ${usernameOf(specialElection.value()).value()}.`
+				specialElection: specialElection.value()
 			});
 		case 'execution':
 			return postEnactionAdd({
-				execution: execution.value(),
-				description: gameOver
-					? gameOverText('Hitler is killed.')
-					: `${usernameOf(presidentId).value()} executes ${usernameOf(execution.value()).value()}.`
+				execution: execution.value()
 			});
 		}
 	}

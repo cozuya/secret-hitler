@@ -23,7 +23,7 @@ function* loadReplay(action) {
 
 	const game = buildEnhancedGameSummary(summary);
 	const replay = buildReplay(game);
-	yield put({ type: 'RECEIVE_REPLAY', replay });
+	yield put({ type: 'RECEIVE_REPLAY', replay, game });
 	yield put(updateMidsection('replay'));
 }
 

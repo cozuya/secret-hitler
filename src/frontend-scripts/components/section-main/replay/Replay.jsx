@@ -2,6 +2,7 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { connect } from 'react-redux';
 import toGameInfo from '../../../replay/toGameInfo';
+import toDescription from '../../../replay/toDescription';
 import classnames from 'classnames';
 import { Map, List } from 'immutable';
 import { some, none, fromNullable } from 'option';
@@ -140,7 +141,7 @@ const buildPlayback = (replay, to) => {
 };
 
 const Replay = ({ replay, isSmall, to }) => {
-	const { ticks, position } = replay;
+	const { ticks, position, game } = replay;
 
 	const snapshot = ticks.get(position);
 
@@ -148,7 +149,8 @@ const Replay = ({ replay, isSmall, to }) => {
 	const gameInfo = toGameInfo(snapshot);
 	const userInfo = { username: '' };
 
-	const { phase, description } = snapshot;
+	const { phase } = snapshot;
+	const description = toDescription(snapshot, game);
 
 	return (
 		<section className={classnames({ small: isSmall, big: !isSmall }, 'game')}>

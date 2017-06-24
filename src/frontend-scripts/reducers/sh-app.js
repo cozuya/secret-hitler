@@ -92,6 +92,7 @@ const userInfo = (state = {}, action) => {
 			return {
 				status: 'READY',
 				ticks: action.replay,
+				game: action.game,
 				position: 0
 			};
 		case 'REPLAY_TO':

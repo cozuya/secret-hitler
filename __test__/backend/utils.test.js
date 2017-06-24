@@ -1,4 +1,4 @@
-import { filterOpt, flattenListOpts, mapOpt1, mapOpt2, handDiff, handToPolicy, handToPolicies, policyToHand, handToString, capitalize, pushOpt } from '../../utils';
+import { filterOpt, flattenListOpts, mapOpt1, mapOpt2, handDiff, handToPolicy, handToPolicies, policyToHand, text, handToText, capitalize, pushOpt } from '../../utils';
 import { none, some } from 'option';
 import { List } from 'immutable';
 import '../matchers';
@@ -91,14 +91,59 @@ describe('policyToHand', () => {
 	expect(policyToHand('fascist')).toEqual({ reds: 1, blues: 0 });
 });
 
-describe('handToString', () => {
-	expect(handToString({ reds: 3, blues: 0 })).toBe('3R');
-	expect(handToString({ reds: 2, blues: 1 })).toBe('2R1B');
-	expect(handToString({ reds: 1, blues: 2 })).toBe('1R2B');
-	expect(handToString({ reds: 0, blues: 3 })).toBe('3B');
-	expect(handToString({ reds: 2, blues: 0 })).toBe('2R');
-	expect(handToString({ reds: 1, blues: 1 })).toBe('1R1B');
-	expect(handToString({ reds: 0, blues: 2 })).toBe('2B');
+describe('handToText', () => {
+	expect(
+		handToText({ reds: 3, blues: 0 })
+	).toEqual([
+		text('fascist', 'R'),
+		text('fascist', 'R'),
+		text('fascist', 'R')
+	]);
+
+	expect(
+		handToText({ reds: 2, blues: 1 })
+	).toEqual([
+		text('fascist', 'R'),
+		text('fascist', 'R'),
+		text('liberal', 'B')
+	]);
+
+	expect(
+		handToText({ reds: 1, blues: 2 })
+	).toEqual([
+		text('fascist', 'R'),
+		text('liberal', 'B'),
+		text('liberal', 'B')
+	]);
+
+	expect(
+		handToText({ reds: 0, blues: 3 })
+	).toEqual([
+		text('liberal', 'B'),
+		text('liberal', 'B'),
+		text('liberal', 'B')
+	]);
+
+	expect(
+		handToText({ reds: 2, blues: 0 })
+	).toEqual([
+		text('fascist', 'R'),
+		text('fascist', 'R')
+	]);
+
+	expect(
+		handToText({ reds: 1, blues: 1 })
+	).toEqual([
+		text('fascist', 'R'),
+		text('liberal', 'B')
+	]);
+
+	expect(
+		handToText({ reds: 0, blues: 2 })
+	).toEqual([
+		text('liberal', 'B'),
+		text('liberal', 'B')
+	]);
 });
 
 describe('capitalize', () => {

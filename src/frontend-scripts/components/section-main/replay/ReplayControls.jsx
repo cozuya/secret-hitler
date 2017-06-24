@@ -4,6 +4,7 @@ import { fromNullable } from 'option';
 import classnames from 'classnames';
 import Slider from 'rc-slider';
 import { capitalize } from '../../../../../utils';
+import GameText from '../../reusable/GameText.jsx';
 
 const TurnNav = ({ position, size, toTurn }) => {
 	const marks = Map(
@@ -121,7 +122,9 @@ const Description = ({ description }) => {
 	return (
 		<div className="description-container">
 			<h1 className="ui header">Description</h1>
-			<p className="content">{description}</p>
+			<p className="content">
+				<GameText text={description} />
+			</p>
 		</div>
 	);
 };

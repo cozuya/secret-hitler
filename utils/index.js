@@ -23,16 +23,12 @@ exports.pushOpt = (xs, opt) => {
 
 // (x: A) => B => (x: Option[A]) => Option[B]
 exports.mapOpt1 = f => {
-	return x => {
-		return x.map(xx => f(xx));
-	};
+	return x => x.map(xx => f(xx));
 };
 
 // (x: A, y: B) => C => (x: Option[A], y: Option[B]) => Option[C]
 exports.mapOpt2 = f => {
-	return (x, y) => {
-		return x.flatMap(xx => y.map(yy => f(xx, yy)));
-	};
+	return (x, y) => x.flatMap(xx => y.map(yy => f(xx, yy)));
 };
 
 
@@ -66,7 +62,7 @@ exports.handToPolicy = hand => {
 
 // consistently ordered 'fascist' first, followed by 'liberal'
 // (hand: Hand) => List[Policy]
-exports.handToPolicies = hand => {
+const handToPolicies = exports.handToPolicies = hand => {
 	const toPolicies = (count, type) => Range(0, count).map(i => type).toList();
 
 	const reds = toPolicies(hand.reds, 'fascist');
@@ -87,12 +83,15 @@ exports.policyToString = policy => {
 	return policy === 'fascist' ? 'R' : 'B';
 };
 
-// (hand: Hand) => String ('\d+R\d+B')
-exports.handToString = hand => {
-	const reds = hand.reds > 0 ? `${hand.reds}R` : '';
-	const blues = hand.blues > 0 ? `${hand.blues}B` : '';
+const text = exports.text = (type, text, space) => ({ type, text, space });
 
-	return reds + blues;
+// (hand: Hand) => String ('R*B*')
+exports.handToText = hand => {
+	const policyToString = policy => policy === 'fascist' ? 'R' : 'B';
+
+	return handToPolicies(hand).map(policy =>
+		text(policy, policyToString(policy), false)
+	).concat(text('normal', '')).toArray();
 };
 
 
