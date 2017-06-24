@@ -124,6 +124,10 @@ class Playerlist extends React.Component {
 									return 1;
 								}
 
+								if (MODERATORS.includes(a.userName) && MODERATORS.includes(b.userName)) {
+									return b[w] - a[w];
+								}
+
 								if (aTotal > 49 && bTotal > 49) {
 									return (b[w] / bTotal) - (a[w] / aTotal);
 								} else if (aTotal > 49) {
@@ -134,7 +138,7 @@ class Playerlist extends React.Component {
 
 								return b[w] - a[w];
 							})
-							.filter(user => this.state.userListFilter === 'all' || user[w] + user[l] > 49)
+							.filter(user => this.state.userListFilter === 'all' || user.wins + user.losses > 49)
 							.map((user, i) => {
 								const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0),
 
