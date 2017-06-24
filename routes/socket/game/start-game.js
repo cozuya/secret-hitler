@@ -332,7 +332,7 @@ module.exports = game => {
 			beginGame(game);
 		} else {
 			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
-			io.in(game.general.uid).emit('gameUpdate', game);
+			sendInProgressGameUpdate(game);
 			startGamePause--;
 		}
 	}, 1000);
