@@ -599,9 +599,11 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		sendInProgressGameUpdate(game);
 	}
 
-	updateUserStatus(data.userName, 'none', data.uid);
+	if (!data.toReplay) {
+		updateUserStatus(data.userName, 'none', data.uid);
+	}
 
-	socket.emit('gameUpdate', {}, data.isSettings);
+	socket.emit('gameUpdate', {}, data.isSettings, data.toReplay);
 	sendGameList();
 };
 
@@ -632,6 +634,24 @@ module.exports.checkUserStatus = socket => {
 	sendUserList();
 	sendGeneralChats(socket);
 	sendGameList(socket);
+};
+
+module.exports.handleOpenReplay = (socket, gameId) => {
+	const { passport } = socket.handshake.session;
+
+	if (passport) {
+		const username = socket.handshake.session.passport.user;
+		updateUserStatus(username, 'replay', gameId);
+	}
+};
+
+module.exports.handleCloseReplay = (socket) => {
+	const { passport } = socket.handshake.session;
+
+	if (passport) {
+		const username = socket.handshake.session.passport.user;
+		updateUserStatus(username, 'none');
+	}
 };
 
 module.exports.handleSocketDisconnect = handleSocketDisconnect;

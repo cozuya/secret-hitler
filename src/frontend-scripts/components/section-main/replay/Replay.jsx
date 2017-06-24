@@ -19,7 +19,7 @@ const mapStateToProps = ({ replay, userInfo }) => ({
 
 const mapDispatchToProps = dispatch => ({
 	to: position => dispatch({ type: 'REPLAY_TO', position }),
-	exit: () => dispatch({ type: 'UPDATE_MIDSECTION', midSection: 'default' })
+	exit: () => dispatch({ type: 'CLOSE_REPLAY' })
 });
 
 const buildPlayback = (replay, to) => {

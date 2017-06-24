@@ -1,4 +1,4 @@
-const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser, handleUpdateWhitelist, handleAddNewClaim, handleModerationAction} = require('./user-events'),
+const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser, handleUpdateWhitelist, handleAddNewClaim, handleModerationAction, handleOpenReplay, handleCloseReplay} = require('./user-events'),
 	{sendGameInfo, sendUserGameSettings, sendModInfo, sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
 	{selectChancellor, selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto} = require('./game/election'),
 	{selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute} = require('./game/policy-powers'),
@@ -65,6 +65,10 @@ module.exports = () => {
 				handleUserLeaveGame(socket, data);
 			}).on('updateSeatedUser', data => {
 				updateSeatedUser(socket, data);
+			}).on('openReplay', gameId => {
+				handleOpenReplay(socket, gameId);
+			}).on('closeReplay', () => {
+				handleCloseReplay(socket);
 			})
 		// user-requests
 

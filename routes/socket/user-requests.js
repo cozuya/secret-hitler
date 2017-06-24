@@ -108,11 +108,7 @@ const updateUserStatus = module.exports.updateUserStatus = (username, type, game
 	const user = userList.find(user => user.userName === username);
 
 	if (user) {
-		user.status = {
-			type,
-			gameId
-		};
-
+		user.status = { type, gameId };
 		sendUserList();
 	}
 };

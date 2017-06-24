@@ -1,7 +1,8 @@
-import { put, call, takeLatest } from 'redux-saga/effects';
+import { put, call, take, takeLatest } from 'redux-saga/effects';
 import buildEnhancedGameSummary from '../../models/game-summary/buildEnhancedGameSummary';
 import buildReplay from './replay/buildReplay';
 import { updateMidsection } from './actions/actions';
+import socket from './socket';
 
 function* fetchProfile(action) {
 	const { username } = action;
@@ -18,11 +19,18 @@ function* fetchProfile(action) {
 	}
 }
 
+function* closeReplay() {
+	socket.emit('closeReplay');
+	yield put(updateMidsection('default'));
+}
+
 function* loadReplay(action) {
 	const { summary } = action;
 
 	const game = buildEnhancedGameSummary(summary);
 	const replay = buildReplay(game);
+
+	socket.emit('openReplay', game.id);
 	yield put({ type: 'RECEIVE_REPLAY', replay, game });
 	yield put(updateMidsection('replay'));
 }
@@ -46,4 +54,5 @@ export default function* rootSaga() {
 	yield takeLatest('FETCH_PROFILE', fetchProfile);
 	yield takeLatest('FETCH_REPLAY', fetchReplay);
 	yield takeLatest('LOAD_REPLAY', loadReplay);
+	yield takeLatest('CLOSE_REPLAY', closeReplay);
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import {PLAYERCOLORS, MODERATORS} from '../../constants';
-import { loadReplay } from '../../actions/actions';
+import { updateMidsection, loadReplay } from '../../actions/actions';
 import classnames from 'classnames';
 
 const mapDispatchToProps = dispatch => ({
@@ -265,21 +265,23 @@ class Gamechat extends React.Component {
 			},
 			WatchReplayButton = () => {
 				const { summary } = gameInfo;
-				const { loadReplay } = this.props;
 
 				if (summary) {
+					const onClick = () => {
+						this.props.loadReplay(summary, true);
+						this.props.onLeaveGame(this.props.userInfo.isSeated, false, this.state.badKarma, true);
+					};
+
 					return (
 						<MenuButton>
 							<div
 								className="ui primary button"
-								onClick={loadReplay.bind(null, summary)}>
+								onClick={onClick}>
 								Watch Replay
 							</div>
 						</MenuButton>
 					);
-				} else {
-					return null;
-				}
+				} else return null;
 			},
 			LeaveGameButton = () => {
 				const classes = classnames('ui primary button', {
