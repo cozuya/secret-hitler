@@ -147,13 +147,12 @@ class Playerlist extends React.Component {
 										return () => null;
 									},
 
-									userClasses = cn(
+									userClasses = (user.wins + user.losses > 49) ? cn(
 										PLAYERCOLORS(user),
 										{ unclickable: !this.props.isUserClickable },
 										{ clickable: this.props.isUserClickable },
 										'username'
-									),
-
+									) : 'username',
 									renderStatus = () => {
 										const status = user.status;
 
@@ -191,8 +190,8 @@ class Playerlist extends React.Component {
 														return <span className="moderator-name" title="This user is a moderator"> (M)</span>;
 													}
 												})()}
-												{renderStatus()}
 											</span>
+											{renderStatus()}
 										</div>
 										{(() => {
 											if (!ADMINS.includes(user.userName)) {
