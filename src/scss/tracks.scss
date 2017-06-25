@@ -48,6 +48,8 @@
         .top-track-front {
             background-image: url('../images/liberal-logo.png');
             background-position: center;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
         .top-track-back {
             -webkit-backface-visibility: hidden;
@@ -58,6 +60,8 @@
         .bottom-track-front {
             background-image: url('../images/fascist-logo.png');
             background-position: center;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
         .bottom-track-back {
             -webkit-backface-visibility: hidden;
