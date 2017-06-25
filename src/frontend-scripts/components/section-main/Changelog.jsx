@@ -30,6 +30,7 @@ export default class Changelog extends React.Component {
 					<li>A fix to a general styling issue - seen most obviously by the yellow circle around the lizard being offset.</li>
 					<li>A fix to only rainbow players in a rainbow game showing up on the userlist/lobby as opposed to all rainbow players.</li>
 					<li>Thanks to a submission, tracks have been manually desaturated and replaced, most users won't see a change.</li>
+					<li>The "delete started game" cleanup feature has been moved from 30 minutes after the game starts to 40 minutes, per request.</li>
 					<li>All images minified so should be a lot snappier on first load..</li>
 				</ul>
 				<div className="ui header">
