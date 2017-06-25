@@ -1,15 +1,12 @@
-import sock from 'socket.io-client';
 import React from 'react';
 import {connect} from 'react-redux';
 import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
 import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, updateVersion} from '../actions/actions.js';
+import socket from '../socket';
 
-const socket = sock({
-		reconnection: false
-	}),
-	select = state => state;
+const select = state => state;
 
 export class App extends React.Component {
 	constructor() {
@@ -71,14 +68,14 @@ export class App extends React.Component {
 			dispatch(updateVersion(v));
 		});
 
-		socket.on('gameUpdate', (game, isSettings) => {
+		socket.on('gameUpdate', (game, isSettings, toReplay=false) => {
 			if (this.props.midSection !== 'game' && Object.keys(game).length) {
 				dispatch(updateGameInfo(game));
 				dispatch(updateMidsection('game'));
 			} else if (!Object.keys(game).length) {
 				if (isSettings) {
 					dispatch(updateMidsection('settings'));
-				} else {
+				} else if (!toReplay) {
 					dispatch(updateMidsection('default'));
 				}
 				dispatch(updateGameInfo(game));
@@ -185,7 +182,7 @@ export class App extends React.Component {
 		socket.emit('updateSeatedUser', data);
 	}
 
-	handleLeaveGame(isSeated, isSettings = false, badKarma) {
+	handleLeaveGame(isSeated, isSettings = false, badKarma, toReplay) {
 		const {dispatch, userInfo, gameInfo} = this.props;
 
 		if (userInfo.isSeated) {
@@ -198,7 +195,8 @@ export class App extends React.Component {
 			isSeated,
 			isSettings,
 			uid: gameInfo.general.uid,
-			badKarma
+			badKarma,
+			toReplay
 		});
 	}
 
@@ -206,7 +204,8 @@ export class App extends React.Component {
 		return (
 			<section className="ui grid">
 				{(() => {
-					if (this.props.midSection !== 'game') {
+					if (this.props.midSection !== 'game'
+						&& this.props.midSection !== 'replay') {
 						return (
 							<LeftSidebar
 								userInfo={this.props.userInfo}
@@ -239,7 +238,9 @@ export class App extends React.Component {
 					version={this.props.version}
 				/>
 				{(() => {
-					if ((this.props.midSection === 'game' && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) || this.props.midSection !== 'game') {
+					if (this.props.midSection !== 'game' && this.props.midSection !== 'replay'
+						|| this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
+
 						return (
 							<RightSidebar
 								gameInfo={this.props.gameInfo}

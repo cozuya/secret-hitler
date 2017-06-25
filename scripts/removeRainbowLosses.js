@@ -1,6 +1,3 @@
-process.env['NODE_ENV'] = 'development';
-process.env['DEBUG'] = 'game:scripts';
-
 const mongoose = require('mongoose');
 const Account = require('../models/account');
 const debug = require('debug')('game:scripts');

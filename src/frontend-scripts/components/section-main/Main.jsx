@@ -5,6 +5,7 @@ import Creategame from './Creategame.jsx';
 import Settings from './Settings.jsx';
 import Game from './Game.jsx';
 import Profile from './Profile.jsx';
+import Replay from './replay/Replay.jsx';
 import Changelog from './Changelog.jsx';
 import Moderation from './Moderation.jsx';
 
@@ -16,8 +17,8 @@ export default class Main extends React.Component {
 					(() => {
 						let classes = '';
 
-						if (this.props.midSection === 'game') {
-							if (this.props.gameInfo.general.experiencedMode) {
+						if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
+							if (this.props.gameInfo.general && this.props.gameInfo.general.experiencedMode) {
 								classes = 'experienced ';
 							}
 
@@ -26,6 +27,8 @@ export default class Main extends React.Component {
 							} else {
 								classes += 'sixteen';
 							}
+						} else if (this.props.midSection === 'replay') {
+							classes += 'sixteen';
 						} else {
 							classes = 'ten';
 						}
@@ -95,6 +98,8 @@ export default class Main extends React.Component {
 						);
 					case 'profile':
 						return <Profile />;
+					case 'replay':
+						return <Replay />;
 					default:
 						return (
 							<Defaultmid quickDefault={this.props.quickDefault} />

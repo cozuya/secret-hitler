@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { updateActiveStats, updateMidsection } from '../../actions/actions';
+import { updateActiveStats, updateMidsection, fetchReplay } from '../../actions/actions';
 import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 
@@ -8,6 +8,7 @@ const
 
 	mapDispatchToProps = dispatch => ({
 		updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
+		fetchReplay: gameId => dispatch(fetchReplay(gameId)),
 		exit: () => dispatch(updateMidsection('default'))
 	}),
 
@@ -30,14 +31,14 @@ const
 			<Table
 				uiTable="top attached three column"
 				headers={[ 'All Matches', 'Matches', 'Winrate' ]}
-				body={[
+				rows={[
 					successRow('All Matches', matches.allMatches.events, matches.allMatches.successes)
 				]}
 			/>
 			<Table
 				uiTable="bottom attached three column"
 				headers={[ 'Loyalty', 'Matches', 'Winrate' ]}
-				body={[
+				rows={[
 					successRow('Liberal', matches.liberal.events, matches.liberal.successes),
 					successRow('Fascist', matches.fascist.events, matches.fascist.successes)
 				]}
@@ -48,7 +49,7 @@ const
 	Actions = ({ actions }) => (
 		<Table
 			headers={[ 'Action', 'Instances', 'Success Rate' ]}
-			body={[
+			rows={[
 				successRow('Vote Accuracy', actions.voteAccuracy.events, actions.voteAccuracy.successes),
 				successRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
 			]}
@@ -97,26 +98,30 @@ const
 		);
 	},
 
-	RecentGames = ({ recentGames }) => {
-		const body = recentGames.map(game => [
-			game.loyalty === 'liberal' ? 'Liberal' : 'Fascist',
-			game.playerSize,
-			game.isWinner ? 'Win' : 'Loss',
-			formatDateString(game.date)
-		]);
+	RecentGames = ({ recentGames, fetchReplay }) => {
+		const rows = recentGames.map(game => ({
+			onClick: fetchReplay.bind(null, game._id),
+			cells: [
+				game.loyalty === 'liberal' ? 'Liberal' : 'Fascist',
+				game.playerSize,
+				game.isWinner ? 'Win' : 'Loss',
+				formatDateString(game.date)
+			]
+		}));
 
 		return (
 			<div>
 				<h2 className="ui header">Recent Games</h2>
 				<Table
+					uiTable={'selectable'}
 					headers={[ 'Loyalty', 'Size', 'Result', 'Date' ]}
-					body={body}
+					rows={rows}
 				/>
 			</div>
 		);
 	},
 
-	Profile = ({ profile, updateActiveStats }) => (
+	Profile = ({ profile, fetchReplay, updateActiveStats }) => (
 		<div>
 			<div className="ui grid">
 				<h1 className="ui header ten wide column">{profile._id}</h1>
@@ -134,7 +139,7 @@ const
 					/>
 				</div>
 				<div className="column">
-					<RecentGames recentGames={profile.recentGames} />
+					<RecentGames fetchReplay={fetchReplay} recentGames={profile.recentGames} />
 				</div>
 			</div>
 		</div>
@@ -153,7 +158,7 @@ const
 		</h1>
 	),
 
-	ProfileWrapper = ({ profile, updateActiveStats, exit }) => {
+	ProfileWrapper = ({ profile, fetchReplay, updateActiveStats, exit }) => {
 		const children = (() => {
 			switch (profile.status) {
 			case 'INITIAL':
@@ -162,7 +167,7 @@ const
 			case 'NOT_FOUND':
 				return <NotFound />;
 			case 'READY':
-				return <Profile profile={profile} updateActiveStats={updateActiveStats} />;
+				return <Profile profile={profile} fetchReplay={fetchReplay} updateActiveStats={updateActiveStats} />;
 			}
 		})();
 

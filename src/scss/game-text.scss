@@ -1,0 +1,25 @@
+.game-text {
+	.normal {
+		color: #8B8B8B;
+	}
+
+	.liberal {
+		font-weight: 700;
+		color: $darkliberalteam;
+	}
+
+	.hitler {
+		font-weight: 700;
+		color: #be0804;
+	}
+
+	.fascist {
+		font-weight: 700;
+		color: $darkfascistteam;
+	}
+
+	.player {
+		color: #eee;
+		font-weight: 700;
+	}
+}

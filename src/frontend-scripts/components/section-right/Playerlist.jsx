@@ -12,11 +12,12 @@ $.fn.modal = Modal;
 const mapStateToProps = ({ midSection }) => ({ midSection }),
 
 	mapDispatchToProps = dispatch => ({
-		fetchProfile: username => dispatch(fetchProfile(username))
+		fetchProfile: username => dispatch(fetchProfile(username)),
+		fetchReplay: gameId => dispatch({ type: 'FETCH_REPLAY', gameId })
 	}),
 
 	mergeProps = (stateProps, dispatchProps, ownProps) => {
-		const isUserClickable = stateProps.midSection !== 'game';
+		const isUserClickable = stateProps.midSection !== 'game' && stateProps.midSection !== 'replay';
 
 		return Object.assign({}, ownProps, dispatchProps, { isUserClickable });
 	};
@@ -160,7 +161,7 @@ class Playerlist extends React.Component {
 									renderStatus = () => {
 										const status = user.status;
 
-										if (!status || status === 'none') {
+										if (!status || status.type === 'none') {
 											return null;
 										} else {
 											const iconClasses = classnames(
@@ -170,14 +171,29 @@ class Playerlist extends React.Component {
 												{ search: status.type === 'observing' },
 												{ fav: status.type === 'playing' },
 												{ rainbow: status.type === 'rainbow' },
+												{ record: status.type === 'replay' },
 												'icon'
 											);
 
+											const title = {
+												playing: 'This player is playing in a standard game.',
+												observing: 'This player is observing a game.',
+												rainbow: 'This player is playing in a experienced-player-only game.',
+												replay: 'This player is watching a replay.'
+											};
+
+											const onClick = {
+												playing: this.routeToGame,
+												observing: this.routeToGame,
+												rainbow: this.routeToGame,
+												replay: this.props.fetchReplay
+											};
+
 											return (
 												<i
-													title={status.type === 'playing' ? 'This player is playing in a standard game.' : status.type === 'observing' ? 'This player is observing a game.' : status.type === 'rainbow' ? 'This player is playing in a experienced-player-only game.' : ''}
+													title={title[status.type]}
 													className={iconClasses}
-													onClick={disableIfUnclickable(this.routeToGame).bind(this, status.gameId)} />
+													onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />
 											);
 										}
 									};

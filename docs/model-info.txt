@@ -1,4 +1,4 @@
-gameState
+	gameState
 	isStarted bool
 	isCompleted bool
 	isVetoEnabled bool

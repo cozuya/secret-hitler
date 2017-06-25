@@ -1,6 +1,28 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
 
-const Table = ({ headers, body, uiTable }) => (
+const TBody = ({ rows }) => {
+	return (
+		<tbody>
+			{ rows.map((row, i) => {
+				const isRich = !Array.isArray(row);
+				const noop = () => null;
+
+				const onClick = isRich && row.onClick ? row.onClick : noop;
+				const cells = isRich ? row.cells : row;
+
+				return (
+					<tr onClick={onClick} key={i} >
+						{ cells.map((cell, i) =>
+							<td key={i}>{ cell }</td>
+						)}
+					</tr>
+				);
+			})}
+		</tbody>
+	);
+};
+
+const Table = ({ headers, rows, uiTable }) => (
 	<table className={`ui ${uiTable} table`}>
 		<thead>
 			<tr>
@@ -9,15 +31,7 @@ const Table = ({ headers, body, uiTable }) => (
 				)}
 			</tr>
 		</thead>
-		<tbody>
-			{ body.map((row, i) =>
-				<tr key={i} >
-					{ row.map((cell, i) =>
-						<td key={i}>{ cell }</td>
-					)}
-				</tr>
-			)}
-		</tbody>
+		<TBody rows={rows} />
 	</table>
 );
 

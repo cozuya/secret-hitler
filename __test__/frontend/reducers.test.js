@@ -10,7 +10,9 @@ describe('reducers', () => {
 				gameInfo: {},
 				userList: {},
 				generalChats: [],
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
 			});
 		});
 
@@ -27,7 +29,9 @@ describe('reducers', () => {
 				gameInfo: {},
 				userList: {},
 				generalChats: [],
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
 			});
 		});
 
@@ -44,7 +48,9 @@ describe('reducers', () => {
 				gameInfo: {},
 				userList: {},
 				generalChats: [],
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
 			});
 		});
 
@@ -61,7 +67,9 @@ describe('reducers', () => {
 				gameInfo: {},
 				userList: {},
 				generalChats: [],
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
 			});
 		});
 
@@ -78,7 +86,9 @@ describe('reducers', () => {
 				gameInfo,
 				userList: {},
 				generalChats: [],
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
 			});
 		});
 
@@ -95,7 +105,9 @@ describe('reducers', () => {
 				gameInfo: {},
 				userList,
 				generalChats: [],
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
 			});
 		});
 
@@ -112,7 +124,9 @@ describe('reducers', () => {
 				gameInfo: {},
 				userList: {},
 				generalChats: [],
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
 			});
 		});
 
@@ -129,7 +143,9 @@ describe('reducers', () => {
 				gameInfo: {},
 				userList: {},
 				generalChats: [],
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
 			});
 		});
 
@@ -146,7 +162,9 @@ describe('reducers', () => {
 				gameInfo: {},
 				userList: {},
 				generalChats: [],
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
 			});
 		});
 
@@ -163,7 +181,80 @@ describe('reducers', () => {
 				gameInfo: {},
 				userList: {},
 				generalChats: info,
-				profile: { status: 'INITIAL' }
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
+			});
+		});
+
+		describe('replays', () => {
+			const dispatch = combinedReducers.bind(null, undefined);
+
+			const initialState = {
+				userInfo: {},
+				midSection: 'default',
+				gameList: [],
+				gameInfo: {},
+				userList: {},
+				generalChats: [],
+				profile: { status: 'INITIAL' },
+				replay: { status: 'INITIAL' },
+				version: { current: { number: '', color: '', date: '' }, lastSeen: '' }
+			};
+
+			const add = replay => Object.assign({}, initialState, { replay });
+
+			it('should start in the initial state', () => {
+				expect(dispatch({})).toEqual(add({ status: 'INITIAL' }));
+			});
+
+			it('should start loading replays', () => {
+				expect(dispatch({
+					type: 'REQUEST_REPLAY'
+				})).toEqual(add({ status: 'LOADING' }));
+			});
+
+			it('should start loading replays', () => {
+				expect(dispatch({
+					type: 'REQUEST_REPLAY'
+				})).toEqual(add({ status: 'LOADING' }));
+			});
+
+			it('should fail loading replays', () => {
+				expect(dispatch({
+					type: 'REPLAY_NOT_FOUND'
+				})).toEqual(add({ status: 'NOT_FOUND' }));
+			});
+
+			it('should receive replays', () => {
+				const mockReplay = {};
+
+				expect(dispatch({
+					type: 'RECEIVE_REPLAY',
+					replay: mockReplay
+				})).toEqual(add({
+					status: 'READY',
+					ticks: mockReplay,
+					position: 0
+				}));
+			});
+
+			it('should update positions', () => {
+				const mockReplay = {};
+
+				let state = dispatch({
+					type: 'RECEIVE_REPLAY',
+					replay: mockReplay
+				});
+
+				expect(combinedReducers(state, {
+					type: 'REPLAY_TO',
+					position: 7
+				})).toEqual(add({
+					status: 'READY',
+					ticks: mockReplay,
+					position: 7
+				}));
 			});
 		});
 	});

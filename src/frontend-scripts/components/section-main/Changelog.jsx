@@ -33,6 +33,16 @@ export default class Changelog extends React.Component {
 					<li>The "delete started game" cleanup feature has been moved from 30 minutes after the game starts to 40 minutes, per request.</li>
 					<li>All images minified so should be a lot snappier on first load..</li>
 				</ul>
+				<h3>New feature: Replays</h3>
+				<img src="/images/replay-demo.gif" width="750px" />
+				<ul>
+					<li>Replays are now available! They can be accessed from the post-game or from player profiles.</li>
+				</ul>
+				<h3>Misc. bug fixes</h3>
+				<ul>
+					<li>Fixed bug with Vote Accuracy, which was counting elections with Liberal presidents.</li>
+					<li>Fixed bug that was sometimes awarding false losses to profiles after a Liberal win.</li>
+				</ul>
 				<div className="ui header">
 					<p>Version 0.6.2 "ssalg deniats" released 6-18-2017</p>
 				</div>

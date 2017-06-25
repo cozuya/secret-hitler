@@ -2,31 +2,38 @@ const
 	Profile = require('./index'),
 	Account = require('../account'),
 	{ profiles } = require('../../routes/socket/models'),
-	debug = require('debug')('game:profile');
+	debug = require('debug')('game:profile'),
+	{ List } = require('immutable'),
+	{ flattenListOpts } = require('../../utils');
 
 // handles all stat computation logic
 function profileDelta(username, game) {
 	const
 		{ playerSize, date, id } = game,
-		isWinner = game.isWinner(username),
-		loyalty = game.loyaltyOf(username),
+		isWinner = game.isWinner(username).value(),
+		loyalty = game.loyaltyOf(username).value(),
 		isLiberal = loyalty === 'liberal',
 		isFascist = !isLiberal,
 
-		votes = game.hitlerZone > -1 ? game.votesOf(username).slice(game.hitlerZone) : [],
+		votes = game.hitlerZone.map(hz =>
+			flattenListOpts(game.votesOf(username).value()
+				.slice(hz))
+				.filter(v => game.loyaltyOf(v.presidentId).value() === 'fascist'
+					|| game.roleOf(v.chancellorId).value() === 'hitler')
+		).valueOrElse(List()),
 
-		accurateVotes = votes.filter(v => {
+		accurateVotes = votes.filterNot(v => {
 			const
-				{ presidentId, chancellorId, vote } = v,
-				presidentLoyalty = game.loyaltyOf(presidentId),
-				chancellorRole = game.roleOf(chancellorId);
+				{ presidentId, chancellorId, ja } = v,
+				presidentLoyalty = game.loyaltyOf(presidentId).value(),
+				chancellorRole = game.roleOf(chancellorId).value();
 
-			return !(vote && (presidentLoyalty === 'fascist' || chancellorRole === 'hitler'));
+			return ja && (presidentLoyalty === 'fascist' || chancellorRole === 'hitler');
 		}),
 
-		shots = game.shotsOf(username),
+		shots = game.shotsOf(username).value(),
 
-		accurateShots = shots.filter(id => game.loyaltyOf(id) === 'fascist');
+		accurateShots = shots.filter(id => game.loyaltyOf(id).value() === 'fascist');
 
 	return {
 		stats: {
@@ -46,12 +53,12 @@ function profileDelta(username, game) {
 			},
 			actions: {
 				voteAccuracy: {
-					events: isLiberal ? votes.length : 0,
-					successes: isLiberal ? accurateVotes.length : 0
+					events: isLiberal ? votes.size : 0,
+					successes: isLiberal ? accurateVotes.size : 0
 				},
 				shotAccuracy: {
-					events: isLiberal ? shots.length : 0,
-					successes: isLiberal ? accurateShots.length : 0
+					events: isLiberal ? shots.size : 0,
+					successes: isLiberal ? accurateShots.size : 0
 				}
 			}
 		},
@@ -65,7 +72,7 @@ function profileDelta(username, game) {
 	};
 }
 
-// username: String, game: EnhancedGameSummary, options: { version: String, cache: Boolean }
+// username: String, game: enhancedGameSummary, options: { version: String, cache: Boolean }
 function updateProfile(username, game, options = {}) {
 	const
 		{ version, cache } = options,
@@ -133,7 +140,7 @@ function updateProfile(username, game, options = {}) {
 		.catch(err => debug(err));
 }
 
-// game: EnhancedGameSummary, options: { version: String, cache: Boolean }
+// game: enhancedGameSummary, options: { version: String, cache: Boolean }
 function updateProfiles(game, options = {}) {
 	debug('Updating profiles for: %s', game.id);
 

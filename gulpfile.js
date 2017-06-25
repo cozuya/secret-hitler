@@ -28,7 +28,7 @@ gulp.task('watch', () => {
 		file = process.platform === 'win32' ? `./${e.path.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1].split('\\').join('/')}` : `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
 		gulp.start('lint');
 	});
-	gulp.watch(['./src/frontend-scripts/**/*.js*'], ['scripts']);
+	gulp.watch(['./src/frontend-scripts/**/*.js*', './src/models/**/*.js'], ['scripts']);
 	gulp.watch('./routes/*.js', ['reload']);
 	gulp.watch('./src/images/*', ['imagemin']);
 });
@@ -47,9 +47,10 @@ gulp.task('lint', () => {
 
 gulp.task('lint-all', () => {
 	return gulp.src([
+			'./utils/index.js',
 			'./models/**/*.js',
-			'./routes/**/*.js', 
-			'./src/frontend-scripts/**/*.jsx', 
+			'./routes/**/*.js',
+			'./src/frontend-scripts/**/*.js*',
 			'./__test__/**/*.test.js'])
 		.pipe(eslint())
 		.pipe(eslint.format())

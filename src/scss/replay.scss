@@ -1,0 +1,366 @@
+#replay {
+	margin-top: 0px;
+    border: 0;
+    border-radius: 0;
+    background-color: #222; 
+    padding: 0px;
+
+    .not-found {
+    	margin-top: 150px;
+    }
+
+    .exit {
+    	position: absolute;
+    	right: 0px;
+    	z-index: 5;
+    }
+
+	.ui.grid > .column {
+		padding: 0;
+	}
+
+	.left-side {
+		.card-group {
+			margin-bottom: 30px;
+
+			> h1 {
+				color: white;
+				font-size: 26px;
+				font-family: 'Josefin Sans';
+				margin-bottom: 10px;
+			}
+
+			.card {
+				margin-right: 15px;
+			}
+		}
+
+		.card {
+			width: 90px;
+			height: 124px;
+			background-size: contain;
+			display: inline-block;
+			box-shadow: 0 0 4px 3px #969696;
+
+			&.fascist {
+				background-image: url('../images/cards/fascistp-l.png');
+			}
+
+			&.liberal {
+				background-image: url('../images/cards/liberalp-l.png');
+			}
+
+			&.discarded {
+				box-shadow: 0 0 4px 3px red;
+			}
+
+			& > i {
+				position: absolute;
+			}
+		}
+
+		.track-pieces {
+			* {
+				z-index: 2;
+			}
+
+			&.blurred > * {
+				filter: blur(5px) saturate(60%);
+				opacity: .3;
+			}
+
+			.enacted {
+				position: absolute;
+
+			}
+
+			.election-tracker {
+				position: absolute;
+				width: 25px;
+				height: 25px;
+				background-color: #2f2fbe;
+				border-radius: 50%;
+			}
+		}
+
+		.replay-overlay {
+			.legislation {
+				position: absolute;
+				top: 20px;
+				left: 180px;
+				z-index: 3;
+
+				& > .hand > h1::after {
+					content: ':'
+				}
+
+				& > .claim > h1::after {
+					content: ':'
+				}
+			}
+		}
+
+	}
+
+	.replay-controls {
+		height: 100%;
+		padding: 20px 30px 0px 30px;
+		background-color: black;
+
+		h1 {
+			color: #c36563;
+			font-size: 26px;
+			font-family: 'Josefin Sans';
+		}
+
+		p {
+			font-family: 'Josefin Sans';
+			color: #eee;
+			font-size: 20px;
+		}
+
+		& > * {
+			&:not(:last-child) {
+				margin-bottom: 15px;
+			}
+
+			h1 {
+				margin-bottom: 5px;
+			}
+		}
+
+		.turn-nav {
+			min-height: 80px;
+
+			.slider {
+				margin-left: 10px;
+				width: 98%;
+				margin-bottom: 25px;
+			}
+		}
+
+		.phase-nav {
+			user-select: none;
+
+			.steps {
+				margin-top: 0;
+				cursor: pointer;
+
+				.filled.step:after {
+					background-color: #B3B3FF;
+				}
+			}
+
+			.overlay-container {
+				margin-top: -82px;
+				width: 100%;
+				height: 68px;
+
+				.overlay {
+					height: 100%;
+					background-color: blue;
+					opacity: 0.3;
+					pointer-events: none;
+
+					&.candidacy {
+						width: 11.11%;
+					}
+					&.nomination {
+						width: 22.22%;
+					}
+					&.election {
+						width: 33.33%;
+					}
+					&.presidentLegislation {
+						width: 44.44%;
+					}
+					&.chancellorLegislation {
+						width: 55.55%;
+					}
+					&.topDeck {
+						width: 50%;
+					}
+					&.policyEnaction {
+						width: 66.66%;
+					}
+					&.investigation, &.execution {
+						width: 100%;
+					}
+				}
+			}
+		}
+
+		.description-container {
+			.content {
+				border: 2px solid #c36563;
+				padding: 10px 20px;
+				white-space: nowrap;
+				overflow: auto;
+			}
+		}
+
+		.playback {
+			button.ui.button {
+				background-color: white;
+			}
+		}
+	}
+
+	.big {
+		.left-side {
+			.track-pieces {
+				.enacted {
+					.card {
+						margin-right: 2px;
+					}
+
+					&.fascist-policies {
+						top: 264px;
+						left: 43px;
+					}
+
+					&.liberal-policies {
+						top: 44px;
+						left: 89px;
+					}
+				}
+
+				.election-tracker {
+					&.zero {
+						top: 173px;
+						left: 211px;
+					}
+
+					&.one {
+						top: 173px;
+						left: 273px;
+					}
+			
+					&.two {
+						top: 173px;
+						left: 335px;
+					}
+
+					&.three {
+						top: 173px;
+						left: 397px;
+					}
+				}
+			}
+
+			.replay-overlay {
+				.legislation {
+					top: 20px;
+					left: 180px;
+				}
+			}
+		}
+	}
+
+	.small {
+		.left-side {
+			.tracks {
+				transition: none;
+				
+				.track-flipper, .track {
+					height: 175px;
+				}
+			}
+
+			.track-pieces {
+				.enacted {
+					.card {
+						margin-right: 5px;
+					}
+
+					.card {
+						width: 69px;
+						height: 96px;
+					}
+
+					&.fascist-policies {
+						top: 214px;
+						left: 38px;
+					}
+
+					&.liberal-policies {
+						top: 38px;
+						left: 76px;
+					}
+				}
+
+				.election-tracker {
+					&.zero {
+						top: 138px;
+						left: 167px;
+					}
+
+					&.one {
+						top: 138px;
+						left: 218px;
+					}
+			
+					&.two {
+						top: 138px;
+						left: 269px;
+					}
+
+					&.three {
+						top: 138px;
+						left: 320px;
+					}
+				}
+			}
+
+			.replay-overlay {
+				.legislation {
+					top: 4px;
+					left: 114px;
+
+					.card-group {
+						margin-bottom: 10px;
+					}
+
+					.card {
+						width: 85px;
+						height: 117px;
+					}
+				}
+			}
+		}
+
+		.right-side > .replay-controls {
+			padding: 5px 10px 0px 10px;
+
+			h1 {
+				font-size: 20px;
+			}
+
+			& > * {
+				&:not(:last-child) {
+					margin-bottom: 10px;
+				}
+
+				h1 {
+					margin-bottom: 2px;
+				}
+			}
+
+			.phase-nav {
+				margin-top: -25px;
+			}
+
+			.description {
+				.content {
+					padding: 5px 10px;
+					font-size: 16px;
+				}
+			}
+
+			.playback > .ui.horizontal.segments {
+				margin-top: 0px;
+				margin-bottom: 0px;
+			}
+		}
+	}
+}

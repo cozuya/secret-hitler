@@ -62,9 +62,9 @@ const userInfo = (state = {}, action) => {
 		case 'PROFILE_NOT_FOUND':
 			return { status: 'NOT_FOUND' };
 		case 'RECEIVE_PROFILE':
-			return Object.assign({}, action.profile, { 
+			return Object.assign({}, action.profile, {
 				status: 'READY',
-				activeStat: 'MATCHES' 
+				activeStat: 'MATCHES'
 			});
 		case 'UPDATE_ACTIVE_STATS':
 			return Object.assign({}, state, { activeStat: action.activeStat });
@@ -81,6 +81,29 @@ const userInfo = (state = {}, action) => {
 		default:
 			return state;
 		}
+	},
+	replay = (state = { status: 'INITIAL' }, action) => {
+		switch (action.type) {
+		case 'CLEAR_REPLAY':
+			return { status: 'INITIAL' };
+		case 'REQUEST_REPLAY':
+			return { status: 'LOADING' };
+		case 'REPLAY_NOT_FOUND':
+			return { status: 'NOT_FOUND' };
+		case 'RECEIVE_REPLAY':
+			return {
+				status: 'READY',
+				ticks: action.replay,
+				game: action.game,
+				position: 0
+			};
+		case 'REPLAY_TO':
+			return Object.assign({}, state, {
+				position: action.position
+			});
+		default:
+			return state;
+		}
 	};
 
 export default combineReducers({
@@ -91,5 +114,6 @@ export default combineReducers({
 	userList,
 	generalChats,
 	profile,
+	replay,
 	version
 });
