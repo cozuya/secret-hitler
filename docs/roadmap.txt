@@ -17,6 +17,7 @@ implement moderation system
 
 version 0.6.0
 implement in-game player stats @jbasrai
+implement replays @jbasrai
 
 version 0.7.0
 convert to webpack/create-react-app for builds

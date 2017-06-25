@@ -20,6 +20,9 @@ export default class Changelog extends React.Component {
 				<div className="ui header">
 					<p>Version 0.6.3 "conte" released 6-24-2017</p>
 				</div>
+				<h3>New feature: game replays.</h3>
+				<img style={{width: '100%'}} src="http://i.imgur.com/7ANlC7L.gif" />
+				<p>After a game, click on the new button next to leave game to check them out, or in your profile.</p>
 				<h3>New feature: moderator IP bans.</h3>
 				<p>Obviously need to be used carefully, but this will prevent (hopefully) some of the worst offenders from repeatedly making accounts. All IP bans are temporary and go away relatively fast.</p>
 				<p>Other issues:</p>

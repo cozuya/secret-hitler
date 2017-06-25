@@ -97,12 +97,10 @@
                 white-space: nowrap;
                 overflow-x: hidden;
                 color: #bfbfbf;
-            }
-            .clickable:hover {
-                cursor: pointer;
-                &.username {
-                    color: #608cb3 !important;
-                }
+								>span:hover {
+									color: #608cb3 !important;
+									cursor: pointer;
+								}
             }
             .unclickable:hover {
                 cursor: not-allowed;
