@@ -44,7 +44,7 @@ export default function(snapshot, game) {
 		}
 	case 'topDeck':
 		return [
-			text('normal', 'The election tracker is filled')
+			text('normal', 'The election tracker is maxed')
 		];
 	case 'presidentLegislation':
 		return [
@@ -88,16 +88,21 @@ export default function(snapshot, game) {
 			text('normal', 'investigates'),
 			text('player', usernameOf(snapshot.investigationId)),
 			text('normal', 'and claims'),
-			text(
-				snapshot.investigationClaim.valueOrElse('normal'),
-				claimToText(snapshot.investigationClaim.map(i => capitalize(i)))
-			)
+			claimToText(snapshot.investigationClaim.map(i =>
+				text(i, capitalize(i))
+			))
 		];
 	case 'policyPeek':
 		return [
 			text('player', usernameOf(snapshot.presidentId)),
-			text('normal', 'peeks the deck')
-		];
+			text('normal', 'peeks')
+		].concat(
+			handToText(snapshot.policyPeek)
+		).concat([
+			text('normal', 'and claims')
+		]).concat(
+			claimHandToText(snapshot.policyPeekClaim)
+		);
 	case 'specialElection':
 		return [
 			text('player', usernameOf(snapshot.presidentId)),

@@ -95,54 +95,61 @@ describe('handToText', () => {
 	expect(
 		handToText({ reds: 3, blues: 0 })
 	).toEqual([
-		text('fascist', 'R'),
-		text('fascist', 'R'),
-		text('fascist', 'R')
+		text('fascist', 'R', false),
+		text('fascist', 'R', false),
+		text('fascist', 'R', false),
+		text('normal', '')
 	]);
 
 	expect(
 		handToText({ reds: 2, blues: 1 })
 	).toEqual([
-		text('fascist', 'R'),
-		text('fascist', 'R'),
-		text('liberal', 'B')
+		text('fascist', 'R', false),
+		text('fascist', 'R', false),
+		text('liberal', 'B', false),
+		text('normal', '')
 	]);
 
 	expect(
 		handToText({ reds: 1, blues: 2 })
 	).toEqual([
-		text('fascist', 'R'),
-		text('liberal', 'B'),
-		text('liberal', 'B')
+		text('fascist', 'R', false),
+		text('liberal', 'B', false),
+		text('liberal', 'B', false),
+		text('normal', '')
 	]);
 
 	expect(
 		handToText({ reds: 0, blues: 3 })
 	).toEqual([
-		text('liberal', 'B'),
-		text('liberal', 'B'),
-		text('liberal', 'B')
+		text('liberal', 'B', false),
+		text('liberal', 'B', false),
+		text('liberal', 'B', false),
+		text('normal', '')
 	]);
 
 	expect(
 		handToText({ reds: 2, blues: 0 })
 	).toEqual([
-		text('fascist', 'R'),
-		text('fascist', 'R')
+		text('fascist', 'R', false),
+		text('fascist', 'R', false),
+		text('normal', '')
 	]);
 
 	expect(
 		handToText({ reds: 1, blues: 1 })
 	).toEqual([
-		text('fascist', 'R'),
-		text('liberal', 'B')
+		text('fascist', 'R', false),
+		text('liberal', 'B', false),
+		text('normal', '')
 	]);
 
 	expect(
 		handToText({ reds: 0, blues: 2 })
 	).toEqual([
-		text('liberal', 'B'),
-		text('liberal', 'B')
+		text('liberal', 'B', false),
+		text('liberal', 'B', false),
+		text('normal', '')
 	]);
 });
 

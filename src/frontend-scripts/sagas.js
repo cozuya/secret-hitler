@@ -55,4 +55,5 @@ export default function* rootSaga() {
 	yield takeLatest('FETCH_REPLAY', fetchReplay);
 	yield takeLatest('LOAD_REPLAY', loadReplay);
 	yield takeLatest('CLOSE_REPLAY', closeReplay);
+	yield takeLatest('UPDATE_MIDSECTION', updateMidsection);
 };

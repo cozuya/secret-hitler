@@ -84,6 +84,8 @@ const userInfo = (state = {}, action) => {
 	},
 	replay = (state = { status: 'INITIAL' }, action) => {
 		switch (action.type) {
+		case 'CLEAR_REPLAY':
+			return { status: 'INITIAL' };
 		case 'REQUEST_REPLAY':
 			return { status: 'LOADING' };
 		case 'REPLAY_NOT_FOUND':

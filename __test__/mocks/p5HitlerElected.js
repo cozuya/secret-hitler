@@ -71,6 +71,10 @@ module.exports = {
 				"reds" : 2,
 				"blues" : 1
 			},
+			"policyPeekClaim" : {
+				"reds" : 3,
+				"blues" : 0
+			},
 			"chancellorHand" : {
 				"reds" : 1,
 				"blues" : 1

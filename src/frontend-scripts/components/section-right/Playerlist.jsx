@@ -17,7 +17,7 @@ const mapStateToProps = ({ midSection }) => ({ midSection }),
 	}),
 
 	mergeProps = (stateProps, dispatchProps, ownProps) => {
-		const isUserClickable = stateProps.midSection !== 'game';
+		const isUserClickable = stateProps.midSection !== 'game' && stateProps.midSection !== 'replay';
 
 		return Object.assign({}, ownProps, dispatchProps, { isUserClickable });
 	};

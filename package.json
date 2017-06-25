@@ -90,7 +90,7 @@
     "test": "jest __test__",
     "test-watch": "jest --watch __test__",
     "db": "mongod --dbpath data",
-    "start": "set NODE_ENV=development&&nodemon bin/dev",
+    "start": "nodemon bin/dev",
     "dev": "NODE_ENV=development DEBUG=game:* nodemon bin/dev",
     "recalculateProfiles": "DEBUG=game:* node scripts/recalculateProfiles.js",
     "repopulateGames": "DEBUG=game:* node scripts/repopulateGames.js",
