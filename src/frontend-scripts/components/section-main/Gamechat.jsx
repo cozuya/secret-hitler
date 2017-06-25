@@ -484,7 +484,7 @@ class Gamechat extends React.Component {
 						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
 					{(() => {
-						if (gameInfo.playersState.length && userInfo.userName && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim) {
+						if (gameInfo.playersState && gameInfo.playersState.length && userInfo.userName && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim) {
 							return <div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>C</div>;
 						}
 					})()}
