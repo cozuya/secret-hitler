@@ -1,3 +1,5 @@
+import { mapOpt1 } from '../../../utils';
+
 export default function toGameInfo(snapshot) {
 	const gameState = {
 		isTracksFlipped: true,
@@ -37,6 +39,8 @@ export default function toGameInfo(snapshot) {
 					cardDisplayed, isFlipped, cardFront, cardBack
 				});
 
+				const blank = f(false, false, '', {});
+
 				if (snapshot.gameOver) {
 					return f(true, true, '', {
 						cardName: p.role,
@@ -60,8 +64,24 @@ export default function toGameInfo(snapshot) {
 						'role',
 						{ cardName: isInvTarget && 'membership-' + p.loyalty }
 					);
+				case 'veto':
+					const vetoCard = vote => f(
+						true,
+						true,
+						'ballot',
+						{ cardName: vote ? 'ja' : 'nein' }
+					);
+
+					if (i === snapshot.chancellorId) {
+						return vetoCard(snapshot.chancellorVeto);
+					} else if (i === snapshot.presidentId) {
+						return mapOpt1(vetoCard)(snapshot.presidentVeto)
+							.valueOrElse(blank);
+					} else {
+						return blank;
+					}
 				default:
-					return f(false, false, '', {});
+					return blank;
 				}
 			})();
 

@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 const GameSummary = require('../models/game-summary');
-const mockGameSummary = require('../__test__/mocks/mockGameSummary');
-const p5HitlerElected = require('../__test__/mocks/p5HitlerElected');
-const p7HitlerKilled = require('../__test__/mocks/p7HitlerKilled');
-const p7LiberalWin = require('../__test__/mocks/p7LiberalWin');
 const { List } = require('immutable');
 const debug = require('debug')('game:summary');
+const {
+	mockGameSummary,
+	p5HitlerElected,
+	p7HitlerKilled,
+	p7LiberalWin,
+	veto,
+	veto2
+} = require('../__test__/mocks');
 
 /*
  * This job replenishes the database with mock games.
@@ -23,7 +27,9 @@ const mocks = List([
 	mockGameSummary,
 	p5HitlerElected,
 	p7HitlerKilled,
-	p7LiberalWin
+	p7LiberalWin,
+	veto,
+	veto2
 ]);
 
 const savePromises = mocks.map(m => {

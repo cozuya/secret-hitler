@@ -68,6 +68,11 @@ export default function(snapshot, game) {
 		]).concat(
 			claimHandToText(snapshot.chancellorClaim)
 		);
+	case 'veto':
+		return [
+			text('normal', 'The veto'),
+			text('player', snapshot.isVetoSuccessful ? 'succeeds' : 'fails')
+		];
 	case 'policyEnaction':
 		if (snapshot.gameOver) {
 			return gameOverText([

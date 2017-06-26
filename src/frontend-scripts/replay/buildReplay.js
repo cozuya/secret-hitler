@@ -37,6 +37,9 @@ export default function buildReplay(game) {
 			chancellorClaim,
 			presidentDiscard,
 			chancellorDiscard,
+			presidentVeto,
+			chancellorVeto,
+			isVetoSuccessful,
 			execution,
 			investigationId,
 			investigationClaim,
@@ -103,8 +106,14 @@ export default function buildReplay(game) {
 		case 'chancellorLegislation':
 			return midEnactionAdd({
 				chancellorClaim,
+				chancellorDiscard,
 				chancellorHand: chancellorHand.value(),
-				chancellorDiscard: chancellorDiscard.value()
+			});
+		case 'veto':
+			return midEnactionAdd({
+				isVetoSuccessful,
+				presidentVeto,
+				chancellorVeto: chancellorVeto.value(),
 			});
 		case 'policyEnaction':
 			return postEnactionAdd({
@@ -145,7 +154,9 @@ export default function buildReplay(game) {
 			isPolicyPeek,
 			isSpecialElection,
 			isExecution,
-			isHitlerKilled
+			isHitlerKilled,
+			isVeto,
+			isVetoSuccessful
 		} = game.turns.get(turnNum);
 
 		const next = nextPhase => ({ turnNum, phase: nextPhase, gameOver: false });
@@ -171,7 +182,15 @@ export default function buildReplay(game) {
 		case 'presidentLegislation':
 			return next('chancellorLegislation');
 		case 'chancellorLegislation':
-			return next('policyEnaction');
+			if (isVeto) return next('veto');
+			else return next('policyEnaction');
+		case 'veto':
+			if (isVetoSuccessful) {
+				if (isElectionTrackerMaxed) return next('topDeck');
+				else return jump();
+			} else {
+				return next('policyEnaction');
+			}
 		case 'policyEnaction':
 			if (isGameEndingPolicyEnacted) return gameOver();
 			else if (isInvestigation) return next('investigation');

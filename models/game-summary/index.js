@@ -40,6 +40,9 @@ const mongoose = require('mongoose'),
 				blues: Number
 			},
 
+			presidentVeto: Boolean,
+			chancellorVeto: Boolean,
+
 			// actions
 			policyPeek: {
 				reds: Number,

@@ -475,8 +475,7 @@ module.exports.selectVoting = data => {
 						game.private.unSeatedGameChats.push(chat);
 					}
 
-					if (process.env.NODE_ENV !== 'development' && game.trackState.fascistPolicyCount > 2 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler') {
-						// || (process.env.NODE_ENV === 'development' && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler')) {
+					if (game.trackState.fascistPolicyCount > 2 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler') {
 						const chat = {
 							timestamp: new Date(),
 							gameChat: true,
@@ -788,6 +787,10 @@ module.exports.selectChancellorVoteOnVeto = data => {
 		chancellor = game.private.seatedPlayers.find(player => player.userName === game.private._chancellorPlayerName),
 		publicChancellor = game.publicPlayersState[chancellorIndex];
 
+	game.private.summary = game.private.summary.updateLog({
+		chancellorVeto: data.vote
+	});
+
 	game.private.lock.selectPresidentVoteOnVeto = false;
 	if (!game.private.lock.selectChancellorVoteOnVeto && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
 		game.private.lock.selectChancellorVoteOnVeto = true;
@@ -878,9 +881,6 @@ module.exports.selectChancellorVoteOnVeto = data => {
 					game.publicPlayersState[game.gameState.presidentIndex].isLoader = true;
 					game.gameState.phase = 'presidentVoteOnVeto';
 					sendInProgressGameUpdate(game);
-					setTimeout(() => {
-						president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = false;
-					}, 2000);
 				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
 			} else {
 				setTimeout(() => {
@@ -903,6 +903,10 @@ module.exports.selectPresidentVoteOnVeto = data => {
 		chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor'),
 		publicChancellor = game.publicPlayersState[chancellorIndex],
 		publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
+
+	game.private.summary = game.private.summary.updateLog({
+		presidentVeto: data.vote
+	});
 
 	if (!game.private.lock.selectPresidentVoteOnVeto) {
 		game.private.lock.selectPresidentVoteOnVeto = true;

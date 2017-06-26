@@ -2,7 +2,7 @@
 	margin-top: 0px;
     border: 0;
     border-radius: 0;
-    background-color: #222; 
+    background-color: #222;
     padding: 0px;
 
     .not-found {
@@ -180,6 +180,9 @@
 					&.topDeck {
 						width: 50%;
 					}
+					&.veto {
+						width: 66.66%;
+					}
 					&.policyEnaction {
 						width: 66.66%;
 					}
@@ -235,7 +238,7 @@
 						top: 173px;
 						left: 273px;
 					}
-			
+
 					&.two {
 						top: 173px;
 						left: 335px;
@@ -261,7 +264,7 @@
 		.left-side {
 			.tracks {
 				transition: none;
-				
+
 				.track-flipper, .track {
 					height: 175px;
 				}
@@ -299,7 +302,7 @@
 						top: 138px;
 						left: 218px;
 					}
-			
+
 					&.two {
 						top: 138px;
 						left: 269px;

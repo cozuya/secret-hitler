@@ -12,13 +12,14 @@ function buildEnhancedGameSummary(_summary) {
 	// convert Arrays to Lists and some values to Options
 	const summary = fromJS(_summary, (key, value, path) => {
 		const options = [ 'presidentHand', 'chancellorHand', 'enactedPolicy',
-			'presidentClaim', 'chancellorClaim', 'policyPeek', 'policyPeekClaim',
-			'investigationId', 'investigationClaim', 'specialElection', 'execution' ];
+			'presidentClaim', 'chancellorClaim', 'presidentVeto', 'chancellorVeto',
+			'policyPeek', 'policyPeekClaim', 'investigationId', 'investigationClaim',
+			'specialElection', 'execution' ];
 
 		if (key === 'logs') {
 			return value.map(log => {
 				const logOptions = Map(options.map(o => {
-					const optValue = log[o] ? some(log[o]) : none;
+					const optValue = log[o] !== undefined ? some(log[o]) : none;
 					return [o, optValue];
 				})).toObject();
 				return Object.assign({}, log, logOptions);
