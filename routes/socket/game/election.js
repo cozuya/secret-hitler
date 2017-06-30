@@ -120,17 +120,6 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 						5: null
 					}
 				],
-				// presidentPowers = [
-				// 	{
-				// 		0: [specialElection, 'The president must select a player for a special election.']
-				// 	}
-				// 	,
-				// 	{
-				// 		0: [specialElection, 'y'],
-				// 		1: [executePlayer, 'The president must select a player for execution.'],
-				// 		2: [executePlayer, 'The president must select a player for execution.']
-				// 	}
-				// ],
 				powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
 
 			game.trackState.enactedPolicies[index].position = team === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;
@@ -143,7 +132,6 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 				game.private.unSeatedGameChats.push(chat);
 			}
 
-			// if (process.env.NODE_ENV === 'development' && (game.trackState.liberalPolicyCount === 1 || game.trackState.fascistPolicyCount === 1) || (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6)) {
 			if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
 				game.publicPlayersState.forEach((player, i) => {
 					player.cardStatus.cardFront = 'secretrole';
@@ -190,11 +178,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 4000);
 	},
 	handToLog = hand => hand.reduce((hand, policy) => {
-		if (policy === 'fascist') {
-			return Object.assign({}, hand, { reds: hand.reds + 1 });
-		} else {
-			return Object.assign({}, hand, { blues: hand.blues + 1 });
-		}
+		return policy === 'fascist' ? Object.assign({}, hand, { reds: hand.reds + 1 }) : Object.assign({}, hand, { blues: hand.blues + 1 });
 	}, { reds: 0, blues: 0 });
 
 module.exports.selectChancellor = data => {

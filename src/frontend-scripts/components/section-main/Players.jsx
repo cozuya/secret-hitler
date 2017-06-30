@@ -1,6 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import Policies from './Policies.jsx';
+import {PLAYERCOLORS} from '../../constants';
 
 export default class Players extends React.Component {
 	constructor() {
@@ -91,7 +92,8 @@ export default class Players extends React.Component {
 					onClick={this.handlePlayerClick}
 					className={
 						(() => {
-							let classes = 'player-container';
+							let classes = 'player-container',
+								user = this.props.userList.list.find(user => user.userName === userInfo.userName);
 
 							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 								classes = `${classes} notifier ${playersState[i].notificationStatus}`;
@@ -101,6 +103,10 @@ export default class Players extends React.Component {
 
 							if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].isDead) {
 								classes = `${classes} isDead`;
+							}
+
+							if (user) {
+								classes = `${classes} ${PLAYERCOLORS(user)}`;
 							}
 
 							return classes;
