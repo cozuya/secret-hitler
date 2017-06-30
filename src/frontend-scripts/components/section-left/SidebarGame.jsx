@@ -35,6 +35,11 @@ export default class SidebarGame extends React.Component {
 				{(() => game.gameStatus === 'notStarted' ?
 						(
 							<div>
+								{(() => {
+									if (game.private) {
+										return <div className="private-game" title="This is a private game.  You can only be seated if you know the password, or are whitelisted">P</div>;
+									}
+								})()}
 								<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'} title={game.rainbowgame ? 'Rainbow game - only players with 50+ games played can be seated in this game.' : 'Click here to enter this game table.'}>{game.name}</div>
 								{(() => {
 									let status = '';
@@ -49,14 +54,6 @@ export default class SidebarGame extends React.Component {
 										}
 										status += 'No chat';
 									}
-
-									if (game.private) {
-										if (status) {
-											status += ' | ';
-										}
-										status += 'Private';
-									}
-
 
 									if (game.disableGamechat) {
 										if (status) {

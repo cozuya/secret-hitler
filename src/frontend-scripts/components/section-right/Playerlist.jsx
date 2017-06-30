@@ -67,7 +67,7 @@ class Playerlist extends React.Component {
 				<div className="playerlist-header">
 					<div className="clearfix">
 						<h3 className="ui header">Lobby</h3>
-						<i className="info circle icon" onClick={this.clickInfoIcon} title="Click to get information about player's colors" />
+						<i className="info circle icon" onClick={this.clickInfoIcon} title="Click to get information about player colors" />
 						{this.renderFilterIcons()}
 						{this.renderModerationButton()}
 						<div className="ui basic modal playerlistinfo">
@@ -142,16 +142,13 @@ class Playerlist extends React.Component {
 							.filter(user => this.state.userListFilter === 'all' || user.wins + user.losses > 49)
 							.map((user, i) => {
 								const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0),
-
 									percentDisplay = (user[w] + user[l]) > 9 ? `${percent}%` : '',
-
 									disableIfUnclickable = f => {
 										if (this.props.isUserClickable)
 											return f;
 
 										return () => null;
 									},
-
 									userClasses = (user.wins + user.losses > 49) ? cn(
 										PLAYERCOLORS(user),
 										{ unclickable: !this.props.isUserClickable },
