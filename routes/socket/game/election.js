@@ -81,6 +81,8 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 						},
 					{text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`}]
 				},
+				currentPresidentIndex = game.gameState.presidentIndex,
+				currentChancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor'),
 				addPreviousGovernmentStatus = () => {
 					game.publicPlayersState.forEach(player => {
 						if (player.previousGovernmentStatus) {
@@ -90,7 +92,6 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 
 					if (game.trackState.electionTrackerCount <= 2 && game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor') > -1) {
 						game.publicPlayersState[game.gameState.presidentIndex].previousGovernmentStatus = 'wasPresident';
-						// console.log(game.publicPlayersState, 'pps');
 						game.publicPlayersState[game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')].previousGovernmentStatus = 'wasChancellor';
 					}
 				},
@@ -166,8 +167,8 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 
 					game.private.unSeatedGameChats.push(chat);
 				}
+				powerToEnact[0](game, [currentPresidentIndex, currentChancellorIndex]); // this is the newly elected government indexes - needs to be the old ones to work right with special election eligibility.
 				addPreviousGovernmentStatus();
-				powerToEnact[0](game);
 			} else {
 				sendInProgressGameUpdate(game);
 				addPreviousGovernmentStatus();

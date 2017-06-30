@@ -93,7 +93,7 @@ export default class Players extends React.Component {
 					className={
 						(() => {
 							let classes = 'player-container',
-								user = this.props.userList.list.find(user => user.userName === userInfo.userName);
+								user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === player.userName) : null;
 
 							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 								classes = `${classes} notifier ${playersState[i].notificationStatus}`;
@@ -105,7 +105,7 @@ export default class Players extends React.Component {
 								classes = `${classes} isDead`;
 							}
 
-							if (user) {
+							if (user && user.wins + user.losses > 49) {
 								classes = `${classes} ${PLAYERCOLORS(user)}`;
 							}
 

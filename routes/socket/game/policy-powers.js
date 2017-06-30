@@ -14,7 +14,7 @@ module.exports.policyPeek = game => {
 			shufflePolicies(game);
 		}
 
-		game.general.status = 'President to peek at policies';
+		game.general.status = 'President to peek at policies.';
 		game.publicPlayersState[presidentIndex].isLoader = true;
 		president.playersState[presidentIndex].policyNotification = true;
 		sendInProgressGameUpdate(game);
@@ -248,18 +248,22 @@ module.exports.selectPartyMembershipInvestigate = data => {
 	}
 };
 
-module.exports.specialElection = game => {
+module.exports.specialElection = (game, prevGovernmentIndexes) => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex} = game.gameState,
 		president = seatedPlayers[presidentIndex];
+
 	if (!game.private.lock.specialElection) {
 		game.private.lock.specialElection = true;
-		game.general.status = 'President to select special election';
+		game.general.status = 'President to select special election.';
 		game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
 		game.publicPlayersState[presidentIndex].isLoader = true;
-		president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
+
+		console.log(prevGovernmentIndexes, 'pgi')
+		president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead && !prevGovernmentIndexes.includes(index)).forEach(player => {
 			player.notificationStatus = 'notification';
 		});
+
 		game.gameState.phase = 'specialElection';
 		game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))];
 		sendInProgressGameUpdate(game);
@@ -292,7 +296,7 @@ module.exports.executePlayer = game => {
 		president = seatedPlayers[presidentIndex];
 	if (!game.private.lock.executePlayer) {
 		game.private.lock.executePlayer = true;
-		game.general.status = 'President to execute a player';
+		game.general.status = 'President to execute a player.';
 		game.publicPlayersState[presidentIndex].isLoader = true;
 
 		if (!game.general.disableGamechat) {
