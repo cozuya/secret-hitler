@@ -134,7 +134,7 @@ gulp.task('reload', () => {
 		.pipe(livereload());
 });
 
-gulp.task('build', ['build-css', 'build-css-light', 'build-js', 'makelogs', 'makedata']);
+gulp.task('build', ['build-game-css', 'build-site-css', 'build-js', 'makelogs', 'makedata']);
 
 gulp.task('makelogs', () => {
 	if (!fs.existsSync('./logs')) {
@@ -172,7 +172,7 @@ gulp.task('build-js', () => {
 		.pipe(gulp.dest('./public/scripts'));
 });
 
-gulp.task('build-css', () => {
+gulp.task('build-game-css', () => {
 	return gulp.src('./src/scss/style-dark.scss')
 		.pipe(plumber())
 		.pipe(sass({outputStyle: 'compressed'}).on('error', () => {
@@ -182,8 +182,8 @@ gulp.task('build-css', () => {
 		.pipe(gulp.dest('./public/styles/'));
 });
 
-gulp.task('build-css-light', () => {
-	return gulp.src('./src/scss/style-light.scss')
+gulp.task('build-site-css', () => {
+	return gulp.src('./src/scss/style-web.scss')
 		.pipe(plumber())
 		.pipe(sass({outputStyle: 'compressed'}).on('error', () => {
 			notifier.notify({title: 'SASS Error', message: ' '});
