@@ -5,6 +5,9 @@ import {PLAYERCOLORS, MODERATORS} from '../../constants';
 import { loadReplay } from '../../actions/actions';
 import classnames from 'classnames';
 
+
+var chatScroll =0;
+
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary))
 });
@@ -24,7 +27,7 @@ class Gamechat extends React.Component {
 
 		this.state = {
 			chatFilter: 'All',
-			lock: false,
+			lock: true,
 			inputValue: '',
 			claim: '',
 			badKarma: '',
@@ -34,8 +37,7 @@ class Gamechat extends React.Component {
 	}
 
 	componentDidMount() {
-		this.scrollChats();
-
+		document.getElementById('chatDiv').scrollTop = 99999999;
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {  // modal methods dont seem to work.
 			this.props.onLeaveGame(this.props.userInfo.isSeated, false, this.state.badKarma);
 			$(this.leaveGameModal).modal('hide');
@@ -52,6 +54,10 @@ class Gamechat extends React.Component {
 			this.setState({inputValue: ''});
 			$(this.gameChatInput).blur();
 		}
+	}
+
+	handleScroll(e){
+		chatScroll= e.currentTarget.scrollTop;
 	}
 
 	handleBadKarmaCheck(playerName) {
@@ -113,7 +119,14 @@ class Gamechat extends React.Component {
 	scrollChats() {
 		if (!this.state.lock) {
 			document.querySelector('section.segment.chats > .ui.list').scrollTop = 99999999;
+		}else{
+			var viewTop=document.getElementById('chatContainer').offsetHeight - document.getElementById('chatDiv').offsetHeight
+			if ((viewTop-chatScroll)<40 ) {
+				document.getElementById('chatDiv').scrollTop = 99999999;
+			}
 		}
+
+
 	}
 
 	handleChatFilterClick(e) {
@@ -322,10 +335,12 @@ class Gamechat extends React.Component {
 						}
 
 						return classes;
-					})()
+					})() 
 				}>
-					<div className="ui list">
-						{this.processChats()}
+					<div className="ui list" id="chatDiv"  onScroll={this.handleScroll.bind(this)}>
+						<div id="chatContainer">
+							{this.processChats()}
+						</div>
 					</div>
 				</section>
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
