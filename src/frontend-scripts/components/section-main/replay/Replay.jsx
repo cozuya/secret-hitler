@@ -64,6 +64,7 @@ const buildPlayback = (replay, to) => {
 				presidentLegislation: List(['topDeck', 'election']),
 				chancellorLegislation: List(['topDeck', 'election']),
 				topDeck: List(['presidentLegislation', 'election']),
+				veto: List(['presidentLegislation', 'election']),
 				policyEnaction: List(['election']),
 				investigation: List(['policyEnaction', 'election']),
 				policyPeek: List(['policyEnaction', 'election']),
@@ -110,8 +111,9 @@ const buildPlayback = (replay, to) => {
 		const legislationPos = rotate(
 			Map({
 				presidentLegislation: List(['chancellorLegislation']),
-				chancellorLegislation: List(['policyEnaction']),
+				chancellorLegislation: List(['veto', 'policyEnaction']),
 				topDeck: List(['policyEnaction']),
+				veto: List(['policyEnaction', 'topDeck', 'presidentLegislation']),
 				policyEnaction: List(['presidentLegislation', 'topDeck']),
 			}),
 			List(['presidentLegislation', 'topDeck'])

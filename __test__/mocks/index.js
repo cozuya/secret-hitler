@@ -1,4 +1,7 @@
-export { default as mockGameSummary } from './mockGameSummary';
-export { default as p5HitlerElected } from './p5HitlerElected';
-export { default as p7HitlerKilled } from './p7HitlerKilled';
-export { default as p7LiberalWin } from './p7LiberalWin';
+exports.mockGameSummary = require('./mockGameSummary');
+exports.p5HitlerElected = require('./p5HitlerElected');
+exports.p7HitlerKilled = require('./p7HitlerKilled');
+exports.p7LiberalWin = require('./p7LiberalWin');
+exports.veto = require('./veto');
+exports.veto2 = require('./veto2');
+exports.hitlerKilledLiberalLoss = require('./hitlerKilledLiberalLoss');

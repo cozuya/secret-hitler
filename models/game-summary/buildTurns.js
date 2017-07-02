@@ -86,13 +86,28 @@ const buildTurn = (prevTurnOpt, log, players) => {
 	// Boolean
 	const isSpecialElection = log.specialElection.isSome();
 
+	// Boolean
+	const poorMansVeto = isVotePassed && log.enactedPolicy.isNone(); // backwards compatability before veto was tracked
+
+	// Option[Boolean]
+	const presidentVeto = poorMansVeto ? some(true) : log.presidentVeto;
+
+	// Option[Boolean]
+	const chancellorVeto = poorMansVeto ? some(true) : log.chancellorVeto;
+
+	// Boolean
+	const isVeto = chancellorVeto.isSome();
+
+	// Boolean
+	const isVetoSuccessful = chancellorVeto.valueOrElse(false) && presidentVeto.valueOrElse(false);
+
 	// Int
 	const { beforeElectionTracker, afterElectionTracker } = (() => {
 		const beforeElectionTracker = prevTurn.afterElectionTracker === 3
 			? 0
 			: prevTurn.afterElectionTracker;
 
-		const afterElectionTracker = isVotePassed
+		const afterElectionTracker = isVotePassed && !isVetoSuccessful
 			? 0
 			: beforeElectionTracker + 1;
 
@@ -210,6 +225,10 @@ const buildTurn = (prevTurnOpt, log, players) => {
 		presidentDiscard,
 		chancellorDiscard,
 		isSpecialElection,
-		isPolicyPeek
+		isPolicyPeek,
+		isVeto,
+		isVetoSuccessful,
+		presidentVeto,
+		chancellorVeto
 	});
 };

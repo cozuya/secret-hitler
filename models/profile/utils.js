@@ -110,7 +110,9 @@ function updateProfile(username, game, options = {}) {
 		.exec()
 		// drop the document when recalculating profiles
 		.then(profile => {
-			if (version && profile.version !== version) {
+			if (!profile) {
+				return null;
+			} else if (version && profile.version !== version) {
 				return profile
 					.update({ version }, { overwrite: true })
 					.exec()
@@ -121,20 +123,25 @@ function updateProfile(username, game, options = {}) {
 		})
 		// fetch account creation date when profile is first added
 		.then(profile => {
-			if (!profile.created) {
+			if (!profile) {
+				return null;
+			} else if (!profile.created) {
 				return Account
 					.findOne({ username: profile._id })
 					.exec()
 					.then(account => {
-						profile.created = account.created;
-						return profile.save();
+						if (account) {
+							profile.created = account.created;
+							return profile.save();
+						} else return null;
 					});
 			} else {
 				return profile;
 			}
 		})
 		.then(profile => {
-			if (cache) return profiles.push(profile);
+			if (!profile) return null;
+			else if (cache) return profiles.push(profile);
 			else return profile;
 		})
 		.catch(err => debug(err));

@@ -7,6 +7,9 @@ import testGenericGame from './testGenericGame';
 import testP5HitlerElected from './testP5HitlerElected';
 import testP7HitlerKilled from './testP7HitlerKilled';
 import testP7LiberalWin from './testP7LiberalWin';
+import testVeto from './testVeto';
+import testVeto2 from './testVeto2';
+import testHitlerKilledLiberalLoss from './testHitlerKilledLiberalLoss';
 
 describe('build enhanced game summary', () => {
 	const game = buildEnhancedGameSummary(mockGameSummary);
@@ -49,5 +52,8 @@ describe('build enhanced game summary', () => {
 		testP5HitlerElected();
 		testP7HitlerKilled();
 		testP7LiberalWin();
+		testVeto();
+		testVeto2();
+		testHitlerKilledLiberalLoss();
 	});
 });

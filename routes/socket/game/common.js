@@ -5,7 +5,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const {experiencedMode} = game.general;
 
-	if (process.env.NODE_ENV === 'development' && game.trackState.fascistPolicyCount >= 1 || game.trackState.fascistPolicyCount >= 5) {
+	if (game.trackState.fascistPolicyCount >= 5) {
 		game.gameState.isVetoEnabled = true;
 	}
 
