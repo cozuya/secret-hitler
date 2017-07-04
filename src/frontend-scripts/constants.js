@@ -17,7 +17,14 @@ module.exports.PLAYERCOLORS = user => cn({
 	veryveryexperienced: user.wins + user.losses > 200,
 	superexperienced: user.wins + user.losses > 300,
 	supersuperexperienced: user.wins + user.losses > 500,
-	sortaonfire: user.wins / (user.wins + user.losses) > 0.55,
-	onfire: user.wins / (user.wins + user.losses) > 0.6,
-	veryonfire: user.wins / (user.wins + user.losses) > 0.65,
+	onfire1: user.wins / (user.wins + user.losses) > 0.52,
+	onfire2: user.wins / (user.wins + user.losses) > 0.54,
+	onfire3: user.wins / (user.wins + user.losses) > 0.56,
+	onfire4: user.wins / (user.wins + user.losses) > 0.58,
+	onfire5: user.wins / (user.wins + user.losses) > 0.6,
+	onfire6: user.wins / (user.wins + user.losses) > 0.62,
+	onfire7: user.wins / (user.wins + user.losses) > 0.64,
+	onfire8: user.wins / (user.wins + user.losses) > 0.66,
+	onfire9: user.wins / (user.wins + user.losses) > 0.68,
+	onfire10: user.wins / (user.wins + user.losses) > 0.7
 });

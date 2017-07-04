@@ -299,8 +299,8 @@ body {
 }
 
 .changelog {
-	max-height: 554px;
-	overflow-y: scroll;
+    max-height: 554px;
+    overflow-y: scroll;
 }
 
 .section-main>.menu {
@@ -348,28 +348,22 @@ body {
     color: #00a100;
 }
 
-.sortaonfire {
-    color: #d9aade !important;
-}
-
-.onfire {
-    color: #da65e5 !important;
-}
-
-.veryonfire {
-    color: #b703a7 !important;
+@for $i from 10 through 1 {
+    .onfire#{$i} {
+        color: rgb(183, (10 - $i) * 15, 167) !important;
+    }
 }
 
 .natekiller {
-	color: #FFFF00 !important;
+    color: #FFFF00 !important;
 }
 
 .admin {
-	color: red !important;
+    color: red !important;
 }
 
 .contributer {
-	color: orange !important;
+    color: orange !important;
 }
 
 #confetti {

@@ -10,7 +10,7 @@ module.exports.sendModInfo = socket => {
 
 	Account.find({username: userNames})
 		.then(users => {
-			ModAction.find({})
+			ModAction.find({}) // todo: this should be filtered to be in the last week.  need to brush up on mongo queries.
 				.then(actions => {
 					socket.emit('modInfo', {
 						modReports: actions.reverse(),
