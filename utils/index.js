@@ -103,3 +103,11 @@ exports.handToText = hand => {
 exports.capitalize = s => {
 	return s.charAt(0).toUpperCase() + s.slice(1);
 };
+
+// (target: Object, subset: Object) => Boolean
+// compares attributes with strict equality
+exports.objectContains = (target, subset) => {
+	return Object.keys(subset).reduce((acc, key) => (
+		acc && target[key] === subset[key]
+	), true);
+};
