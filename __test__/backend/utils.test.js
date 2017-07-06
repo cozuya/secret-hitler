@@ -1,4 +1,4 @@
-import { filterOpt, flattenListOpts, mapOpt1, mapOpt2, handDiff, handToPolicy, handToPolicies, policyToHand, text, handToText, capitalize, pushOpt } from '../../utils';
+import { filterOpt, flattenListOpts, mapOpt1, mapOpt2, handDiff, handToPolicy, handToPolicies, policyToHand, text, handToText, capitalize, pushOpt, objectContains } from '../../utils';
 import { none, some } from 'option';
 import { List } from 'immutable';
 import '../matchers';
@@ -167,4 +167,12 @@ describe('pushOpt', () => {
 	expect(pushOpt(List(), none)).toImmutableEqual(List());
 	expect(pushOpt(List([1, 2, 3]), some(4))).toImmutableEqual(List([1, 2, 3, 4]));
 	expect(pushOpt(List([1, 2, 3]), none)).toImmutableEqual(List([1, 2, 3]));
+});
+
+describe('objectContains', () => {
+	expect(objectContains({}, {})).toBe(true);
+	expect(objectContains({}, { x: 1 })).toBe(false);
+	expect(objectContains({ x: 1 }, { x: 1 })).toBe(true);
+	expect(objectContains({ x: 1 }, { x: 1, y: 2 })).toBe(false);
+	expect(objectContains({ x: 1, y: 2 }, { x: 1, y: 2 })).toBe(true);
 });
