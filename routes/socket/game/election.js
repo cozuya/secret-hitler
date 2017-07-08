@@ -780,7 +780,11 @@ module.exports.selectChancellorVoteOnVeto = data => {
 	if (!game.private.lock.selectChancellorVoteOnVeto && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
 		game.private.lock.selectChancellorVoteOnVeto = true;
 
-		game.publicPlayersState[chancellorIndex].isLoader = false;
+		if (!game.publicPlayersState[chancellorIndex]) {
+			console.log('prevented crash at election:786');
+			return;
+		}
+		game.publicPlayersState[chancellorIndex].isLoader = false; // crashes here very rarily
 
 		chancellor.cardFlingerState[0].action = chancellor.cardFlingerState[1].action = '';
 		chancellor.cardFlingerState[0].cardStatus.isFlipped = chancellor.cardFlingerState[1].cardStatus.isFlipped = false;
