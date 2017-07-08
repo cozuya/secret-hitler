@@ -328,27 +328,13 @@ body {
     margin-left: -237px;
 }
 
-.experienced {
-    color: #b3eab3 !important;
+@for $i from 5 through 1 {
+    .experienced#{$i} {
+        color: rgb(19, (122 + ($i * 20)), 19) !important;
+    }
 }
 
-.veryexperienced {
-    color: #7cd17c !important;
-}
-
-.veryveryexperienced {
-    color: #48d348 !important;
-}
-
-.superexperienced {
-    color: #11c811 !important;
-}
-
-.supersuperexperienced {
-    color: #00a100;
-}
-
-@for $i from 10 through 1 {
+@for $i from 1 through 10 {
     .onfire#{$i} {
         color: rgb(183, (10 - $i) * 15, 167) !important;
     }

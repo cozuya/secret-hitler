@@ -10,29 +10,15 @@
         text-align: center;
         cursor: pointer;
     }
-    .player-container.experienced {
-        box-shadow: 0 0 5px 2px #b3eab3 !important;
+    @for $i from 1 through 5 {
+        .player-container.experienced#{$i} {
+            box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
+        }
     }
-    .player-container.veryexperienced {
-        box-shadow: 0 0 5px 2px #7cd17c !important;
-    }
-    .player-container.veryveryexperienced {
-        box-shadow: 0 0 5px 2px #48d348 !important;
-    }
-    .player-container.superexperienced {
-        box-shadow: 0 0 5px 2px #11c811 !important;
-    }
-    .player-container.supersuperexperienced {
-        box-shadow: 0 0 5px 2px #00a100;
-    }
-    .player-container.sortaonfire {
-        box-shadow: 0 0 5px 2px #d9aade !important;
-    }
-    .player-container.onfire {
-        box-shadow: 0 0 5px 2px #da65e5 !important;
-    }
-    .player-container.veryonfire {
-        box-shadow: 0 0 5px 2px #b703a7 !important;
+    @for $i from 1 through 10 {
+        .player-container.onfire#{$i} {
+            box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
+        }
     }
     .player-container.natekiller {
         box-shadow: 0 0 5px 2px #FFFF00 !important;
