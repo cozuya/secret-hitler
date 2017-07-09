@@ -1,5 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
+import PropTypes from 'prop-types';
 
 export default class Menu extends React.Component {
 	constructor() {
@@ -194,8 +195,8 @@ export default class Menu extends React.Component {
 }
 
 Menu.propTypes = {
-	userInfo: React.PropTypes.object,
-	gameInfo: React.PropTypes.object,
-	onLeaveGame: React.PropTypes.func,
-	onSettingsButtonClick: React.PropTypes.func
+	userInfo: PropTypes.object,
+	gameInfo: PropTypes.object,
+	onLeaveGame: PropTypes.func,
+	onSettingsButtonClick: PropTypes.func
 };

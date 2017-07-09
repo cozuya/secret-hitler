@@ -1,18 +1,10 @@
-import React from 'react';
+import React from 'react';  // eslint-disable-line
 import SidebarGame from './SidebarGame.jsx';
+import PropTypes from 'prop-types';
 
-export default class LeftSidebar extends React.Component {
-	constructor() {
-		super();
-		this.createGameClick = this.createGameClick.bind(this);
-	}
-
-	createGameClick() {
-		this.props.onCreateGameButtonClick('createGame');
-	}
-
-	renderGameList() {
-		const {gameList} = this.props;
+const LeftSidebar = props => {
+	const	renderGameList = () => {
+		const {gameList} = props;
 
 		if (gameList.length) {
 			return gameList.sort((a, b) => {
@@ -45,34 +37,34 @@ export default class LeftSidebar extends React.Component {
 					<SidebarGame
 						key={index}
 						game={game}
-						socket={this.props.socket}
+						socket={props.socket}
 					/>
 				);
 			});
 		}
-	}
+	};
 
-	render() {
-		return (
-			<section className="section-left three wide column leftsidebar">
-				{(() => {
-					const {userName} = this.props.userInfo,
-						gameBeingCreated = this.props.midSection === 'createGame';
+	return (
+		<section className="section-left three wide column leftsidebar">
+			{(() => {
+				const {userName} = props.userInfo,
+					gameBeingCreated = props.midSection === 'createGame';
 
-					return (userName && !gameBeingCreated) ? <button className="ui button primary" onClick={this.createGameClick}>Create a new game</button> : <button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>;
-				})()}
-				<div className="games-container">
-					{this.renderGameList()}
-				</div>
-			</section>
-		);
-	}
-}
+				return (userName && !gameBeingCreated) ? <button className="ui button primary" onClick={() => {props.onCreateGameButtonClick('createGame');}}>Create a new game</button> : <button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>;
+			})()}
+			<div className="games-container">
+				{renderGameList()}
+			</div>
+		</section>
+	);
+};
 
 LeftSidebar.propTypes = {
-	userInfo: React.PropTypes.object,
-	midSection: React.PropTypes.string,
-	gameList: React.PropTypes.array,
-	onCreateGameButtonClick: React.PropTypes.func,
-	socket: React.PropTypes.object
+	userInfo: PropTypes.object,
+	midSection: PropTypes.string,
+	gameList: PropTypes.array,
+	onCreateGameButtonClick: PropTypes.func,
+	socket: PropTypes.object
 };
+
+export default LeftSidebar;

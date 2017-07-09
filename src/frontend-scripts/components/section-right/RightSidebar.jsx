@@ -1,6 +1,7 @@
 import React from 'react';
 import Playerlist from './Playerlist.jsx';
 import Generalchat from './Generalchat.jsx';
+import PropTypes from 'prop-types';
 
 export default class RightSidebar extends React.Component {
 	render() {
@@ -26,10 +27,10 @@ export default class RightSidebar extends React.Component {
 }
 
 RightSidebar.propTypes = {
-	gameInfo: React.PropTypes.object,
-	userInfo: React.PropTypes.object,
-	socket: React.PropTypes.object,
-	generalChats: React.PropTypes.array,
-	userList: React.PropTypes.object,
-	onModerationButtonClick: React.PropTypes.func
+	gameInfo: PropTypes.object,
+	userInfo: PropTypes.object,
+	socket: PropTypes.object,
+	generalChats: PropTypes.array,
+	userList: PropTypes.object,
+	onModerationButtonClick: PropTypes.func
 };

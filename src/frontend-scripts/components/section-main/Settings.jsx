@@ -4,6 +4,7 @@ import { fetchProfile } from '../../actions/actions';
 import $ from 'jquery';
 import Slider from 'rc-slider';
 import Checkbox from 'semantic-ui-checkbox';
+import PropTypes from 'prop-types';
 
 $.fn.checkbox = Checkbox;
 
@@ -141,9 +142,9 @@ class Settings extends React.Component {
 }
 
 Settings.propTypes = {
-	onLeaveSettings: React.PropTypes.func,
-	userInfo: React.PropTypes.object,
-	socket: React.PropTypes.object
+	onLeaveSettings: PropTypes.func,
+	userInfo: PropTypes.object,
+	socket: PropTypes.object
 };
 
 export default connect(

@@ -17,7 +17,7 @@ Build: Gulp, Browserify, Babel (front end).
 
 ## Installation ##
 
-Install node.js.  Production is on node LTS currently v6.11.0 and is recommended you to your dev vs that for now.
+Install node.js.  Production is on node LTS currently v6.11.0 and is recommended you use that for development.
 
 Install mongodb, have it in your path.
 

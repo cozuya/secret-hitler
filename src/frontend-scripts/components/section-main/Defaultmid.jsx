@@ -1,7 +1,8 @@
-import React from 'react';
+import React from 'react'; // eslint-disable-line
 import { connect } from 'react-redux';
 import { updateMidsection, viewPatchNotes } from '../../actions/actions';
 import fetch from 'isomorphic-fetch';
+import PropTypes from 'prop-types';
 
 const mapStateToProps = ({ version }) => ({ version });
 
@@ -28,7 +29,7 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) => (
 		<PatchAlert
 			isActive={version.lastSeen && version.current.number !== version.lastSeen}
 			onClick={readPatchNotes} />
-		<img src="images/lizard18.png" alt="Secret Hitler logo" width="400" height="400" />
+		<img src="images/lizard19.png" alt="Secret Hitler logo" width="400" height="400" />
 		<p>
 			<span>{`sh.io version ${version.current.number} "${version.current.color}" released ${version.current.date} | `}</span>
 			<span><a onClick={readPatchNotes}>changelog</a> | <a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">open issues and upcoming features</a> | <a target="_blank" style={{color: 'brown'}} href="https://docs.google.com/forms/d/e/1FAIpQLSf_pq4xipbxyb8s84eGaazK0itPZmdKSTvMAH9eIHj2hyz0BQ/viewform?c=0&w=1&usp=send_form">bug and feedback form</a> | <a target="_blank" style={{fontWeight: 'bold', color: '#fff'}} href="https://discord.gg/qbc2DFb">discord</a></span>
@@ -69,7 +70,7 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) => (
 );
 
 Defaultmid.propTypes = {
-	quickDefault: React.PropTypes.func
+	quickDefault: PropTypes.func
 };
 
 export default connect(

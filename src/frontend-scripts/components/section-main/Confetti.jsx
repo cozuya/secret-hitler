@@ -1,5 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
+import PropTypes from 'prop-types';
 
 /* eslint-disable */
 
@@ -244,5 +245,5 @@ export default class Confetti extends React.Component {
 }
 
 Confetti.propTypes = {
-	isActive: React.PropTypes.bool
+	isActive: PropTypes.bool
 };

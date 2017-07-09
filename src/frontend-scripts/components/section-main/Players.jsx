@@ -2,6 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import Policies from './Policies.jsx';
 import {PLAYERCOLORS} from '../../constants';
+import PropTypes from 'prop-types';
 
 export default class Players extends React.Component {
 	constructor() {
@@ -264,10 +265,10 @@ export default class Players extends React.Component {
 }
 
 Players.propTypes = {
-	roles: React.PropTypes.array,
-	userInfo: React.PropTypes.object,
-	gameInfo: React.PropTypes.object,
-	roleState: React.PropTypes.string,
-	userList: React.PropTypes.object,
-	selectedGamerole: React.PropTypes.func
+	roles: PropTypes.array,
+	userInfo: PropTypes.object,
+	gameInfo: PropTypes.object,
+	roleState: PropTypes.string,
+	userList: PropTypes.object,
+	selectedGamerole: PropTypes.func
 };

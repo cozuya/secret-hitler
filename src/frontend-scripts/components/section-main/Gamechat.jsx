@@ -4,6 +4,7 @@ import $ from 'jquery';
 import {PLAYERCOLORS, MODERATORS} from '../../constants';
 import { loadReplay } from '../../actions/actions';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary))
@@ -524,16 +525,16 @@ class Gamechat extends React.Component {
 }
 
 Gamechat.propTypes = {
-	onNewGameChat: React.PropTypes.func,
-	clickedGameRole: React.PropTypes.object,
-	clickedPlayer: React.PropTypes.object,
-	roleState: React.PropTypes.func,
-	selectedGamerole: React.PropTypes.object,
-	selectedPlayer: React.PropTypes.object,
-	userInfo: React.PropTypes.object,
-	gameInfo: React.PropTypes.object,
-	socket: React.PropTypes.object,
-	userList: React.PropTypes.object
+	onNewGameChat: PropTypes.func,
+	clickedGameRole: PropTypes.object,
+	clickedPlayer: PropTypes.object,
+	roleState: PropTypes.func,
+	selectedGamerole: PropTypes.object,
+	selectedPlayer: PropTypes.object,
+	userInfo: PropTypes.object,
+	gameInfo: PropTypes.object,
+	socket: PropTypes.object,
+	userList: PropTypes.object
 };
 
 export default connect(

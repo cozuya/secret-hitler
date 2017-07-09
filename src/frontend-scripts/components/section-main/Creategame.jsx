@@ -3,6 +3,7 @@ import $ from 'jquery';
 import Slider from 'rc-slider';
 import Checkbox from 'semantic-ui-checkbox';
 import blacklistedWords from '../../../../iso/blacklistwords';
+import PropTypes from 'prop-types';
 
 $.fn.checkbox = Checkbox;
 
@@ -244,8 +245,8 @@ export default class Creategame extends React.Component {
 }
 
 Creategame.propTypes = {
-	onCreateGameSubmit: React.PropTypes.func,
-	onLeaveCreateGame: React.PropTypes.func,
-	userInfo: React.PropTypes.object,
-	userList: React.PropTypes.object
+	onCreateGameSubmit: PropTypes.func,
+	onLeaveCreateGame: PropTypes.func,
+	userInfo: PropTypes.object,
+	userList: PropTypes.object
 };

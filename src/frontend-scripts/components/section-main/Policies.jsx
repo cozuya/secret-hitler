@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 export default class Policies extends React.Component {
 	constructor() {
@@ -94,5 +95,5 @@ export default class Policies extends React.Component {
 }
 
 Policies.propTypes = {
-	gameInfo: React.PropTypes.object
+	gameInfo: PropTypes.object
 };

@@ -8,6 +8,7 @@ import Profile from './Profile.jsx';
 import Replay from './replay/Replay.jsx';
 import Changelog from './Changelog.jsx';
 import Moderation from './Moderation.jsx';
+import PropTypes from 'prop-types';
 
 export default class Main extends React.Component {
 	render() {
@@ -112,9 +113,9 @@ export default class Main extends React.Component {
 }
 
 Main.propTypes = {
-	midSection: React.PropTypes.string,
-	userInfo: React.PropTypes.object,
-	gameInfo: React.PropTypes.object,
-	socket: React.PropTypes.object,
-	userList: React.PropTypes.object
+	midSection: PropTypes.string,
+	userInfo: PropTypes.object,
+	gameInfo: PropTypes.object,
+	socket: PropTypes.object,
+	userList: PropTypes.object
 };

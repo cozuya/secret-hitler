@@ -81,8 +81,6 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 						},
 					{text: ` policy has been enacted. (${team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`}]
 				},
-				currentPresidentIndex = game.gameState.presidentIndex,
-				currentChancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor'),
 				addPreviousGovernmentStatus = () => {
 					game.publicPlayersState.forEach(player => {
 						if (player.previousGovernmentStatus) {
@@ -167,7 +165,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 
 					game.private.unSeatedGameChats.push(chat);
 				}
-				powerToEnact[0](game, [currentPresidentIndex, currentChancellorIndex]); // this is the newly elected government indexes - needs to be the old ones to work right with special election eligibility.
+				powerToEnact[0](game);
 				addPreviousGovernmentStatus();
 			} else {
 				sendInProgressGameUpdate(game);
@@ -443,11 +441,6 @@ module.exports.selectVoting = data => {
 					const chancellorIndex = game.gameState.pendingChancellorIndex,
 						{presidentIndex} = game.gameState;
 					game.publicPlayersState[presidentIndex].governmentStatus = 'isPresident';
-
-					if (!Number.isInteger(chancellorIndex)) {
-						console.log('crashing at undefined pending chancellor issue in flipBallotCards, publicplayersstatebelow');
-						console.log(game.publicPlayersState);
-					}
 
 					game.publicPlayersState[chancellorIndex].governmentStatus = 'isChancellor';  // CRASHES HERE
 					chat.chat = [{text: 'The election passes.'}];
@@ -777,14 +770,10 @@ module.exports.selectChancellorVoteOnVeto = data => {
 	});
 
 	game.private.lock.selectPresidentVoteOnVeto = false;
-	if (!game.private.lock.selectChancellorVoteOnVeto && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
+	if (!game.private.lock.selectChancellorVoteOnVeto && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length && game.publicPlayersState[chancellorIndex]) {
 		game.private.lock.selectChancellorVoteOnVeto = true;
 
-		if (!game.publicPlayersState[chancellorIndex]) {
-			console.log('prevented crash at election:786');
-			return;
-		}
-		game.publicPlayersState[chancellorIndex].isLoader = false; // crashes here very rarily
+		game.publicPlayersState[chancellorIndex].isLoader = false; // crashes here very rarily hopefully change @ :780 will address
 
 		chancellor.cardFlingerState[0].action = chancellor.cardFlingerState[1].action = '';
 		chancellor.cardFlingerState[0].cardStatus.isFlipped = chancellor.cardFlingerState[1].cardStatus.isFlipped = false;

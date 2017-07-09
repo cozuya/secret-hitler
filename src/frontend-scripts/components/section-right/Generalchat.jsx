@@ -1,6 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import {MODERATORS} from '../../constants';
+import PropTypes from 'prop-types';
 
 export default class Generalchat extends React.Component {
 	constructor() {
@@ -119,9 +120,9 @@ export default class Generalchat extends React.Component {
 }
 
 Generalchat.propTypes = {
-	gameInfo: React.PropTypes.object,
-	userInfo: React.PropTypes.object,
-	socket: React.PropTypes.object,
-	generalChats: React.PropTypes.array,
-	userList: React.PropTypes.object
+	gameInfo: PropTypes.object,
+	userInfo: PropTypes.object,
+	socket: PropTypes.object,
+	generalChats: PropTypes.array,
+	userList: PropTypes.object
 };

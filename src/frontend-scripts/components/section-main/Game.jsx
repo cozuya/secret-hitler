@@ -1,9 +1,9 @@
-
 import React from 'react';
 import Tracks from './Tracks.jsx';
 import Gamechat from './Gamechat.jsx';
 import Players from './Players.jsx';
 import Confetti from './Confetti.jsx';
+import PropTypes from 'prop-types';
 
 export default class Game extends React.Component {
 	componentDidUpdate(prevProps) {
@@ -111,21 +111,21 @@ export default class Game extends React.Component {
 }
 
 Game.propTypes = {
-	onUserNightActionEventSubmit: React.PropTypes.func,
-	onUpdateTruncateGameSubmit: React.PropTypes.func,
-	onUpdateSelectedForEliminationSubmit: React.PropTypes.func,
-	onUpdateReportGame: React.PropTypes.func,
-	onNewGameChat: React.PropTypes.func,
-	onSeatingUser: React.PropTypes.func,
-	onLeaveGame: React.PropTypes.func,
-	userInfo: React.PropTypes.object,
-	gameInfo: React.PropTypes.object,
-	socket: React.PropTypes.object,
-	gameRoleInfo: React.PropTypes.object,
-	clickedPlayerInfo: React.PropTypes.object,
-	clickedGamerole: React.PropTypes.object,
-	clickedPlayer: React.PropTypes.object,
-	expandoInfo: React.PropTypes.string,
-	dispatch: React.PropTypes.func,
-	userList: React.PropTypes.object
+	onUserNightActionEventSubmit: PropTypes.func,
+	onUpdateTruncateGameSubmit: PropTypes.func,
+	onUpdateSelectedForEliminationSubmit: PropTypes.func,
+	onUpdateReportGame: PropTypes.func,
+	onNewGameChat: PropTypes.func,
+	onSeatingUser: PropTypes.func,
+	onLeaveGame: PropTypes.func,
+	userInfo: PropTypes.object,
+	gameInfo: PropTypes.object,
+	socket: PropTypes.object,
+	gameRoleInfo: PropTypes.object,
+	clickedPlayerInfo: PropTypes.object,
+	clickedGamerole: PropTypes.object,
+	clickedPlayer: PropTypes.object,
+	expandoInfo: PropTypes.string,
+	dispatch: PropTypes.func,
+	userList: PropTypes.object
 };

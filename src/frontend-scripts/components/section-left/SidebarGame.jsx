@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 export default class SidebarGame extends React.Component {
 	constructor() {
@@ -98,6 +99,6 @@ export default class SidebarGame extends React.Component {
 }
 
 SidebarGame.propTypes = {
-	game: React.PropTypes.object,
-	socket: React.PropTypes.object
+	game: PropTypes.object,
+	socket: PropTypes.object
 };

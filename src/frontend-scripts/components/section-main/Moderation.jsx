@@ -3,6 +3,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import $ from 'jquery';
 import {ADMINS} from '../../constants';
+import PropTypes from 'prop-types';
 
 export default class Moderation extends React.Component {
 	constructor() {
@@ -198,7 +199,7 @@ export default class Moderation extends React.Component {
 }
 
 Moderation.propTypes = {
-	userInfo: React.PropTypes.object,
-	socket: React.PropTypes.object,
-	onLeaveModeration: React.PropTypes.func
+	userInfo: PropTypes.object,
+	socket: PropTypes.object,
+	onLeaveModeration: PropTypes.func
 };

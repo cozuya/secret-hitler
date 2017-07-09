@@ -1,5 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
+import PropTypes from 'prop-types';
 
 export default class CardFlinger extends React.Component {
 	constructor() {
@@ -105,7 +106,7 @@ export default class CardFlinger extends React.Component {
 }
 
 CardFlinger.propTypes = {
-	userInfo: React.PropTypes.object,
-	gameInfo: React.PropTypes.object,
-	socket: React.PropTypes.object
+	userInfo: PropTypes.object,
+	gameInfo: PropTypes.object,
+	socket: PropTypes.object
 };

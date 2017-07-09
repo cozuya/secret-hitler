@@ -6,6 +6,7 @@ import {ADMINS, PLAYERCOLORS, MODERATORS} from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 $.fn.modal = Modal;
 
@@ -72,17 +73,10 @@ class Playerlist extends React.Component {
 						{this.renderModerationButton()}
 						<div className="ui basic modal playerlistinfo">
 							<div className="header">Lobby and player color info</div>
-							<h4>Players in the lobby, general chat, and game chat are grey/white until:</h4>
-							<p>50 games played: <span className="experienced">light green</span></p>
-							<p>100 games played: <span className="veryexperienced">darker green</span></p>
-							<p>200 games played: <span className="veryveryexperienced">even darker green</span></p>
-							<p>300 games played: <span className="superexperienced">even darker green</span></p>
-							<p>500 games played: <span className="supersuperexperienced">really dark green</span></p>
-							<h4>Additionally, if a player has at least 50 games played and a win rate of</h4>
-							<p>greater than 55%: <span className="sortaonfire experienced">light purple</span></p>
-							<p>greater than 60%: <span className="onfire experienced">darker purple</span></p>
-							<p>greater than 65%: <span className="veryonfire experienced">really dark purple</span></p>
-							<h4>Also <span className="admin">admins</span> are always on top, and <span className="contributer">contributers</span> get a special color as well</h4>
+							<p>Players in the lobby, general chat, and game chat are grey/white until they reach 50 games played.  These are known as "rainbow players" and have access to play in special rainbow player only games.</p>
+							<p>After that, if they have less than 52% win rate, their player color varies between <span className="experienced1">light green</span> and <span className="experienced5">dark green</span>, depending on how many games played they have.</p>
+							<p>Additionally, if a player has at least 50 games played and a win rate of 52% or higher, their player color ranges from <span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how high it is.</p>
+							<p>Also <span className="admin">admins</span> are always on top, and <span className="contributer">contributers</span> get a special color as well.</p>
 						</div>
 						{(() => {
 							if (Object.keys(this.props.userList).length) {
@@ -234,9 +228,9 @@ class Playerlist extends React.Component {
 }
 
 Playerlist.propTypes = {
-	userInfo: React.PropTypes.object,
-	userList: React.PropTypes.object,
-	onModerationButtonClick: React.PropTypes.func,
+	userInfo: PropTypes.object,
+	userList: PropTypes.object,
+	onModerationButtonClick: PropTypes.func,
 };
 
 export default connect(

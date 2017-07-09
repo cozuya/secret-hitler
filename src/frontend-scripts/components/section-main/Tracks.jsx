@@ -1,6 +1,7 @@
 import React from 'react';
 import CardFlinger from './CardFlinger.jsx';
 import EnactedPolicies from './EnactedPolicies.jsx';
+import PropTypes from 'prop-types';
 
 export default class Tracks extends React.Component {
 	constructor() {
@@ -101,10 +102,10 @@ export default class Tracks extends React.Component {
 }
 
 Tracks.propTypes = {
-	onUpdateReportGame: React.PropTypes.func,
-	onSeatingUser: React.PropTypes.func,
-	onLeaveGame: React.PropTypes.func,
-	userInfo: React.PropTypes.object,
-	gameInfo: React.PropTypes.object,
-	socket: React.PropTypes.object
+	onUpdateReportGame: PropTypes.func,
+	onSeatingUser: PropTypes.func,
+	onLeaveGame: PropTypes.func,
+	userInfo: PropTypes.object,
+	gameInfo: PropTypes.object,
+	socket: PropTypes.object
 };

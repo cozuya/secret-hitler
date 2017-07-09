@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 export default class EnactedPolicies extends React.Component {
 	render() {
@@ -41,5 +42,5 @@ export default class EnactedPolicies extends React.Component {
 }
 
 EnactedPolicies.propTypes = {
-	gameInfo: React.PropTypes.object
+	gameInfo: PropTypes.object
 };

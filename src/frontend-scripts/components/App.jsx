@@ -5,6 +5,7 @@ import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
 import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, updateVersion} from '../actions/actions.js';
 import socket from '../socket';
+import PropTypes from 'prop-types';
 
 const select = state => state;
 
@@ -240,7 +241,6 @@ export class App extends React.Component {
 				{(() => {
 					if (this.props.midSection !== 'game' && this.props.midSection !== 'replay'
 						|| this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
-
 						return (
 							<RightSidebar
 								gameInfo={this.props.gameInfo}
@@ -259,13 +259,13 @@ export class App extends React.Component {
 }
 
 App.propTypes = {
-	dispatch: React.PropTypes.func,
-	userInfo: React.PropTypes.object,
-	midSection: React.PropTypes.string,
-	gameInfo: React.PropTypes.object,
-	gameList: React.PropTypes.array,
-	generalChats: React.PropTypes.array,
-	userList: React.PropTypes.object
+	dispatch: PropTypes.func,
+	userInfo: PropTypes.object,
+	midSection: PropTypes.string,
+	gameInfo: PropTypes.object,
+	gameList: PropTypes.array,
+	generalChats: PropTypes.array,
+	userList: PropTypes.object
 };
 
 export default connect(select)(App);

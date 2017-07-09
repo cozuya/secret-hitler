@@ -248,7 +248,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 	}
 };
 
-module.exports.specialElection = (game, prevGovernmentIndexes) => {
+module.exports.specialElection = game => {
 	const {seatedPlayers} = game.private,
 		{presidentIndex} = game.gameState,
 		president = seatedPlayers[presidentIndex];
@@ -259,7 +259,6 @@ module.exports.specialElection = (game, prevGovernmentIndexes) => {
 		game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
 		game.publicPlayersState[presidentIndex].isLoader = true;
 
-		console.log(prevGovernmentIndexes, 'pgi')
 		president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead && !prevGovernmentIndexes.includes(index)).forEach(player => {
 			player.notificationStatus = 'notification';
 		});
