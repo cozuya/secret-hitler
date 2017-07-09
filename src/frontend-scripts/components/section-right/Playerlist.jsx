@@ -11,7 +11,6 @@ import PropTypes from 'prop-types';
 $.fn.modal = Modal;
 
 const mapStateToProps = ({ midSection }) => ({ midSection }),
-
 	mapDispatchToProps = dispatch => ({
 		fetchProfile: username => dispatch(fetchProfile(username)),
 		fetchReplay: gameId => dispatch({ type: 'FETCH_REPLAY', gameId })
@@ -74,8 +73,8 @@ class Playerlist extends React.Component {
 						<div className="ui basic modal playerlistinfo">
 							<div className="header">Lobby and player color info</div>
 							<p>Players in the lobby, general chat, and game chat are grey/white until they reach 50 games played.  These are known as "rainbow players" and have access to play in special rainbow player only games.</p>
-							<p>After that, if they have less than 52% win rate, their player color varies between <span className="experienced1">light green</span> and <span className="experienced5">dark green</span>, depending on how many games played they have.</p>
-							<p>Additionally, if a player has at least 50 games played and a win rate of 52% or higher, their player color ranges from <span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how high it is.</p>
+							<p>After that, if they have less than 52% win rate, their player color varies between <span className="experienced5">light green</span> and <span className="experienced1">dark green</span>, depending on how many games played they have.</p>
+							<p>Additionally, if a player has at least 50 games played and a win rate of 52% or higher, their player color ranges from <span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how high it is.  The highest tier is 70%.</p>
 							<p>Also <span className="admin">admins</span> are always on top, and <span className="contributer">contributers</span> get a special color as well.</p>
 						</div>
 						{(() => {
@@ -138,7 +137,7 @@ class Playerlist extends React.Component {
 								const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0),
 									percentDisplay = (user[w] + user[l]) > 9 ? `${percent}%` : '',
 									disableIfUnclickable = f => {
-										if (this.props.isUserClickable)
+										if (this.props.isUserClickable && !ADMINS.includes(user.userName))
 											return f;
 
 										return () => null;
@@ -156,29 +155,27 @@ class Playerlist extends React.Component {
 											return null;
 										} else {
 											const iconClasses = classnames(
-												'status',
-												{ unclickable: !this.props.isUserClickable },
-												{ clickable: this.props.isUserClickable },
-												{ search: status.type === 'observing' },
-												{ fav: status.type === 'playing' },
-												{ rainbow: status.type === 'rainbow' },
-												{ record: status.type === 'replay' },
-												'icon'
-											);
-
-											const title = {
-												playing: 'This player is playing in a standard game.',
-												observing: 'This player is observing a game.',
-												rainbow: 'This player is playing in a experienced-player-only game.',
-												replay: 'This player is watching a replay.'
-											};
-
-											const onClick = {
-												playing: this.routeToGame,
-												observing: this.routeToGame,
-												rainbow: this.routeToGame,
-												replay: this.props.fetchReplay
-											};
+													'status',
+													{ unclickable: !this.props.isUserClickable },
+													{ clickable: this.props.isUserClickable },
+													{ search: status.type === 'observing' },
+													{ fav: status.type === 'playing' },
+													{ rainbow: status.type === 'rainbow' },
+													{ record: status.type === 'replay' },
+													'icon'
+												),
+												title = {
+													playing: 'This player is playing in a standard game.',
+													observing: 'This player is observing a game.',
+													rainbow: 'This player is playing in a experienced-player-only game.',
+													replay: 'This player is watching a replay.'
+												},
+												onClick = {
+													playing: this.routeToGame,
+													observing: this.routeToGame,
+													rainbow: this.routeToGame,
+													replay: this.props.fetchReplay
+												};
 
 											return (
 												<i

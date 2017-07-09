@@ -1,105 +1,95 @@
-import React from 'react';
+import React from 'react'; // eslint-disable-line
 import CardFlinger from './CardFlinger.jsx';
 import EnactedPolicies from './EnactedPolicies.jsx';
 import PropTypes from 'prop-types';
 
-export default class Tracks extends React.Component {
-	constructor() {
-		super();
-		this.renderElectionTracker = this.renderElectionTracker.bind(this);
-		// this.handleClickedReportGame = this.handleClickedReportGame.bind(this);
-	}
+const Tracks = props => {
+	const renderElectionTracker = () => {
+			const {gameInfo} = props;
+			let classes = 'electiontracker';
 
-	renderElectionTracker() {
-		const {gameInfo} = this.props;
+			if (gameInfo.trackState.electionTrackerCount === 1) {
+				classes += ' fail1';
+			} else if (gameInfo.trackState.electionTrackerCount === 2) {
+				classes += ' fail2';
+			} else if (gameInfo.trackState.electionTrackerCount === 3) {
+				classes += ' fail3';
+			}
 
-		let classes = 'electiontracker';
+			if (gameInfo.gameState.isTracksFlipped && (gameInfo.trackState && !gameInfo.trackState.isHidden)) {
+				return <div className={classes} />;
+			}
+		},
+		{gameInfo, userInfo, socket} = props;
 
-		if (gameInfo.trackState.electionTrackerCount === 1) {
-			classes += ' fail1';
-		} else if (gameInfo.trackState.electionTrackerCount === 2) {
-			classes += ' fail2';
-		} else if (gameInfo.trackState.electionTrackerCount === 3) {
-			classes += ' fail3';
-		}
+	return (
+		<section className="tracks-container">
+			<CardFlinger
+				userInfo={userInfo}
+				gameInfo={gameInfo}
+				socket={socket}
+			/>
+			<EnactedPolicies
+				gameInfo={gameInfo}
+			/>
+			<section className={
+				(() => {
+					let classes = 'tracks';
 
-		if (gameInfo.gameState.isTracksFlipped && (gameInfo.trackState && !gameInfo.trackState.isHidden)) {
-			return <div className={classes} />;
-		}
-	}
+					if (props.gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
+						classes += ' blurred';
+					}
 
-	render() {
-		const {gameInfo, userInfo, socket} = this.props;
-
-		return (
-			<section className="tracks-container">
-				<CardFlinger
-					userInfo={userInfo}
-					gameInfo={gameInfo}
-					socket={socket}
-				/>
-				<EnactedPolicies
-					gameInfo={gameInfo}
-				/>
-				<section className={
+					return classes;
+				})()
+			}>
+				<div className={
 					(() => {
-						let classes = 'tracks';
+						let classes = 'track-flipper track-flipper-top';
 
-						if (this.props.gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
-							classes += ' blurred';
+						if (gameInfo.gameState.isTracksFlipped) {
+							classes += ' flipped';
 						}
 
 						return classes;
 					})()
 				}>
+					<div className="track top-track-front" />
+					<div className="track top-track-back" />
+				</div>
+				<div className={
+					(() => {
+						let classes = 'track-flipper track-flipper-bottom';
+
+						if (gameInfo.gameState.isTracksFlipped) {
+							classes += ' flipped';
+						}
+
+						return classes;
+					})()
+				}>
+					<div className="track bottom-track-front" />
 					<div className={
 						(() => {
-							let classes = 'track-flipper track-flipper-top';
+							let classes = 'track bottom-track-back';
 
-							if (gameInfo.gameState.isTracksFlipped) {
-								classes += ' flipped';
+							if (gameInfo.general.playerCount < 7) {
+								classes += ' track0';
+							} else if (gameInfo.general.playerCount < 9) {
+								classes += ' track1';
+							} else {
+								classes += ' track2';
 							}
 
 							return classes;
 						})()
-					}>
-						<div className="track top-track-front" />
-						<div className="track top-track-back" />
-					</div>
-					<div className={
-						(() => {
-							let classes = 'track-flipper track-flipper-bottom';
-
-							if (gameInfo.gameState.isTracksFlipped) {
-								classes += ' flipped';
-							}
-
-							return classes;
-						})()
-					}>
-						<div className="track bottom-track-front" />
-						<div className={
-							(() => {
-								let classes = 'track bottom-track-back';
-
-								if (gameInfo.general.playerCount < 7) {
-									classes += ' track0';
-								} else if (gameInfo.general.playerCount < 9) {
-									classes += ' track1';
-								} else {
-									classes += ' track2';
-								}
-
-								return classes;
-							})()
-						} />
-					</div>
-					{this.renderElectionTracker()}
-				</section>
+					} />
+				</div>
+				{renderElectionTracker()}
 			</section>
-		);
-	}
-}
+		</section>
+	);
+};
 
 Tracks.propTypes = {
 	onUpdateReportGame: PropTypes.func,
@@ -109,3 +99,5 @@ Tracks.propTypes = {
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object
 };
+
+export default Tracks;
