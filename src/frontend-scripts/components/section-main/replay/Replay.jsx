@@ -178,6 +178,7 @@ const Replay = ({ replay, isSmall, to }) => {
 			</div>
 			<div className="row players-container">
 				<Players
+					userList={{}}
 					onClickedTakeSeat={null}
 					socket={null}
 					userInfo={userInfo}
