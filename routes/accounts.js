@@ -25,6 +25,14 @@ module.exports = () => {
 		});
 	});
 
+
+	app.get('/auth/discord', passport.authenticate('discord'));
+	app.get('/auth/discord/callback',
+		passport.authenticate('discord', { failureRedirect: '/observe' }),
+		function (req, res) {
+			res.redirect('/game');
+		});
+
 	app.post('/account/change-password', ensureAuthenticated, (req, res) => {
 		const {newPassword, newPasswordConfirm} = req.body,
 			{user} = req;

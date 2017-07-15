@@ -10,7 +10,10 @@ const fs = require('fs'),
 	passport = require('passport'),
 	mongoose = require('mongoose'),
 	compression = require('compression'),
+	config = require('./auth/_conf'),
+	auth = require('./auth/init'),
 	Strategy = require('passport-local').Strategy,
+	DiscordStrategy = require('passport-discord').Strategy,
 	Account = require('./models/account'),
 	routesIndex = require('./routes/index'),
 	session = require('express-session')({
@@ -39,6 +42,14 @@ io.use(socketSession(session, {
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new Strategy(Account.authenticate()));
+passport.use(new DiscordStrategy({
+  	clientID: config.discord.clientID,
+  	clientSecret: config.discord.clientSecret,
+  	callbackURL: config.discord.callbackURL,
+   	scope: ["identify"]
+	},
+  	function (token, tokenSecret, profile, done) { auth.authDiscord(token, tokenSecret, profile, done);}
+));
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 mongoose.connect('mongodb://localhost/secret-hitler-app'); // local
