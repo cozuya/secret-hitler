@@ -86,8 +86,8 @@ export default class Players extends React.Component {
 		const {gameInfo, userInfo} = this.props,
 			{playersState, gameState, publicPlayersState} = gameInfo;
 
-		return publicPlayersState.map((player, i) => {
-			return (
+		return publicPlayersState.map((player, i) =>
+			(
 				<div key={i}
 					data-index={i}
 					onClick={this.handlePlayerClick}
@@ -187,8 +187,7 @@ export default class Players extends React.Component {
 						} />
 					</div>
 				</div>
-			);
-		});
+			));
 	}
 
 	renderTakeSeat() {

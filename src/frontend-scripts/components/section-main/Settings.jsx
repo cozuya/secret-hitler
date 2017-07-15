@@ -4,6 +4,7 @@ import { fetchProfile } from '../../actions/actions';
 import $ from 'jquery';
 import Slider from 'rc-slider';
 import Checkbox from 'semantic-ui-checkbox';
+import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 
 $.fn.checkbox = Checkbox;
@@ -134,6 +135,12 @@ class Settings extends React.Component {
 					</div>
 					<div className="row centered">
 						<p style={{color: '#fff', fontSize: this.state.sliderValues.length > 1 ? '18px' : `${this.state.sliderValues[0]}px`}}>A sentence for demoing font size changes.</p>
+					</div>
+					<div className="row cardback-container">
+						<h4 className="ui header">Cardback</h4>
+						{this.props.userInfo.gameSettings.customCardback
+							? <div className="current-cardback" style={{background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.png) no-repeat`}} />
+							: <div className="current-cardback" />}
 					</div>
 				</div>
 			</section>

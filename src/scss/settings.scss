@@ -10,7 +10,17 @@
 		opacity: .3;
 	}
 
-	> .ui.header {
+	.cardback-container {
+		text-align: center;
+
+		.current-cardback {
+			width: 70px;
+			height: 95px;
+			background: url('../images/tweed.png')
+		}
+	}
+
+	.ui.header {
 		text-align: center;
 	}
 

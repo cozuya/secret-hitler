@@ -81,6 +81,7 @@
     "moment": "^2.18.1",
     "node-notifier": "^5.1.2",
     "rc-slider": "5.1.3",
+    "react-dropzone": "^3.13.3",
     "require-dot-file": "^0.4.0",
     "through2": "^2.0.3",
     "vinyl-transform": "^1.0.0",
