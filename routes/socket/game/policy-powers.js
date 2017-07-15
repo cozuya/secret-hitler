@@ -259,7 +259,7 @@ module.exports.specialElection = game => {
 		game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
 		game.publicPlayersState[presidentIndex].isLoader = true;
 
-		president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead && !prevGovernmentIndexes.includes(index)).forEach(player => {
+		president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
 			player.notificationStatus = 'notification';
 		});
 
