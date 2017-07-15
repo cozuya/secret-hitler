@@ -26,7 +26,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 		if (game.publicPlayersState.length > 5) {
 			roles = roles.concat([{
 				cardName: 'liberal',
-				icon: 4,
+				icon: 3,
 				team: 'liberal'
 			}]);
 		}
@@ -43,7 +43,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 		if (game.publicPlayersState.length > 7) {
 			roles = roles.concat([{
 				cardName: 'liberal',
-				icon: 5,
+				icon: 4,
 				team: 'liberal'
 			}]);
 		}
@@ -60,7 +60,7 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 		if (game.publicPlayersState.length > 9) {
 			roles = roles.concat([{
 				cardName: 'liberal',
-				icon: 4,
+				icon: 5,
 				team: 'liberal'
 			}]);
 		}
