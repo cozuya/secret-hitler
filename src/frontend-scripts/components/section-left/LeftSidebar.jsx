@@ -44,13 +44,20 @@ const LeftSidebar = props => {
 		}
 	};
 
+const handleDiscord = function() {
+    window.location = '/auth/discord';
+  };
+
 	return (
 		<section className="section-left three wide column leftsidebar">
 			{(() => {
 				const {userName} = props.userInfo,
 					gameBeingCreated = props.midSection === 'createGame';
 
-				return (userName && !gameBeingCreated) ? <button className="ui button primary" onClick={() => {props.onCreateGameButtonClick('createGame');}}>Create a new game</button> : <button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>;
+				return (userName && !gameBeingCreated) 
+				? <button className="ui button primary" onClick={() => {props.onCreateGameButtonClick('createGame');}}>Create a new game</button>
+				: <section><button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>
+				<button className="ui button primary" onClick={this.handleDiscord}>Login with Discord</button></section> ;
 			})()}
 			<div className="games-container">
 				{renderGameList()}
