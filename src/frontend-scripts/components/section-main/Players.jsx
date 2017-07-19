@@ -132,6 +132,51 @@ export default class Players extends React.Component {
 							return classes;
 						})()
 					}>{gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
+					</div>					<div className={
+						(() => {
+							let classes = 'avatar ';
+
+							if (userInfo.userName && publicPlayersState.findIndex(player => player.userName === userInfo.userName) === i) {
+								classes = `${classes} seated-user`;
+							} 
+							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+								classes = `${classes} ${playersState[i].nameStatus}`;
+							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
+							}
+
+							if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
+								classes = `${classes} disconnected`;
+							}
+
+							return classes;
+						})()
+						}>
+						<img style={
+								(() => {
+									
+									let style={display:'none', width: 'calc(4vw + 0px)', height: 'calc(4vw + 0px)', position: 'absolute', borderRadius:'0%'};
+									if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus && playersState[i].nameStatus !=='liberal') {
+										style.display="block";
+									}				
+										return style;
+								})()
+							}
+						    src={
+								(() => {
+									let badge='';
+									if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+										badge = playersState[i].nameStatus;
+									}				
+									if (badge=='fascist'){
+										return "/images/fascBadge.png";
+									}else if (badge=='hitler'){
+										return "/images/hittyBadge.png";
+									}else{
+										return '';
+									}
+								})()
+							}/>
 					</div>
 					{this.renderPreviousGovtToken(i)}
 					{this.renderLoader(i)}
