@@ -17,6 +17,7 @@ chats array
 	isBroadcast bool
 	timestamp time
 general
+	enabledPlayerCounts array of numbers 5-10
 	name string
 	minPlayersCount number 5-10
 	maxPlayersCount number 5-10
