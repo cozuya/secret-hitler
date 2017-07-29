@@ -134,6 +134,7 @@ export class App extends React.Component {
 					name: 'New Game',
 					minPlayersCount: 5,
 					maxPlayersCount: 5,
+					excludedPlayerCount: [],
 					private: false,
 					rainbowgame: true,
 					experiencedMode: true,

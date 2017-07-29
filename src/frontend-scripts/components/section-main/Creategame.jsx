@@ -75,11 +75,18 @@ export default class Creategame extends React.Component {
 	}
 
 	sliderChange(event) {
-		const {sliderValues, checkedSliderValues} = this.state,
-			firstSliderChanged = event[0] === sliderValues[0];
+		const newState = {
+			sliderValues: event
+		};
+		// todo make this uncheck boxes instead of just check
+		event.forEach(el => {
+			if (!this.state.checkedSliderValues[el - 5]) {
+				newState.checkedSliderValues = this.state.checkedSliderValues;
+				newState.checkedSliderValues[el - 5] = true;
+			}
+		});
 
-		console.log(event);
-		this.setState({sliderValues: event});
+		this.setState(newState);
 	}
 
 	leaveCreateGame() {
@@ -117,6 +124,7 @@ export default class Creategame extends React.Component {
 					uid: Math.random().toString(36).substring(6),
 					name: $creategame.find('div.gamename input').val() || 'New Game',
 					minPlayersCount: this.state.sliderValues[0],
+					excludedPlayerCount: this.state.checkedSliderValues.map((el, index) => el ? null : index + 5).filter(el => el),
 					maxPlayersCount: this.state.sliderValues[1],
 					status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
 					experiencedMode: this.state.experiencedmode,
@@ -150,9 +158,11 @@ export default class Creategame extends React.Component {
 
 	render() {
 		const sliderCheckboxClick = index => {
-			this.setState({
-				checkedSliderValues: this.state.checkedSliderValues.map((el, i) => i === index ? !el : el)
-			});
+			if (!this.state.sliderValues.includes(index + 5)) {
+				this.setState({
+					checkedSliderValues: this.state.checkedSliderValues.map((el, i) => i === index ? !el : el)
+				});
+			}
 		};
 
 		return (

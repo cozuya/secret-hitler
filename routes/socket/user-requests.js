@@ -68,6 +68,7 @@ module.exports.sendGameList = socket => {
 		seatedCount: game.publicPlayersState.length,
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount,
+		excludedPlayerCount: game.general.excludedPlayerCount,
 		experiencedMode: game.general.experiencedMode,
 		disableChat: game.general.disableChat,
 		disableGamechat: game.general.disableGamechat,

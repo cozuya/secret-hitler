@@ -62,7 +62,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 
 	if (game
 	&& game.publicPlayersState.length < game.general.maxPlayersCount
-		&& !game.publicPlayersState.find(player => player.userName === data.userName)
+	&& !game.publicPlayersState.find(player => player.userName === data.userName)
 	&& (!game.general.private || (game.general.private && data.password === game.private.privatePassword || game.general.private && game.general.whitelistedPlayers.includes(data.userName)))) {
 		const {publicPlayersState} = game;
 
@@ -104,9 +104,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 		}
 
 		updateUserStatus(data.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
-
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
-
 		sendGameList();
 	}
 };
