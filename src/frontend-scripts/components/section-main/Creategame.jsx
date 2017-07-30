@@ -74,19 +74,20 @@ export default class Creategame extends React.Component {
 		});
 	}
 
-	sliderChange(event) {
-		const newState = {
-			sliderValues: event
-		};
+	sliderChange(sliderValues) {
+		const {checkedSliderValues} = this.state;
 		// todo make this uncheck boxes instead of just check
-		event.forEach(el => {
-			if (!this.state.checkedSliderValues[el - 5]) {
-				newState.checkedSliderValues = this.state.checkedSliderValues;
-				newState.checkedSliderValues[el - 5] = true;
-			}
-		});
+		// event.forEach(el => {
+		// 	if (!this.state.checkedSliderValues[el - 5]) {
+		// 		newState.checkedSliderValues = this.state.checkedSliderValues;
+		// 		newState.checkedSliderValues[el - 5] = true;
+		// 	}
+		// });
 
-		this.setState(newState);
+		this.setState({
+			sliderValues,
+			checkedSliderValues: new Array(6).fill(true).map((el, index) => index + 5 >= sliderValues[0] && index + 5 <= sliderValues[1] && checkedSliderValues[index] || index + 5 === sliderValues[0] || index + 5 === sliderValues[1])
+		});
 	}
 
 	leaveCreateGame() {
@@ -192,7 +193,7 @@ export default class Creategame extends React.Component {
 							<div className="checkbox-container">
 								{new Array(6).fill(true).map((el, index) => (
 									<label key={index}>
-										<input type="checkbox" checked={this.state.checkedSliderValues[index]} onChange={() => {sliderCheckboxClick(index);}}/>
+										<input type="checkbox" checked={this.state.checkedSliderValues[index]} disabled={index + 5 <= this.state.sliderValues[0] || index + 5 >= this.state.sliderValues[1]} onChange={() => {sliderCheckboxClick(index);}}/>
 									</label>
 									)
 								)}

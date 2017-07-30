@@ -65,6 +65,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 	&& !game.publicPlayersState.find(player => player.userName === data.userName)
 	&& (!game.general.private || (game.general.private && data.password === game.private.privatePassword || game.general.private && game.general.whitelistedPlayers.includes(data.userName)))) {
 		const {publicPlayersState} = game;
+		let countDown;
 
 		publicPlayersState.push({
 			userName: data.userName,
@@ -83,12 +84,20 @@ module.exports.updateSeatedUser = (socket, data) => {
 		if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.isStarted) { // sloppy but not trivial to get around
 			game.gameState.isStarted = true;
 			startGame(game);
-		} else if (publicPlayersState.length === game.general.minPlayersCount) {
+		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length)) {
+			game.gameState.isStarted = false;
+			game.general.status = 'Waiting for more players..';
+			console.log('Hello, World!');
+		} else if (publicPlayersState.length === game.general.minPlayersCount
+			|| (publicPlayersState.length > game.general.minPlayersCount && !game.general.excludedPlayerCount.includes(publicPlayersState.length))) {
 			let startGamePause = 20;
 
 			game.gameState.isStarted = true;
-			const countDown = setInterval(() => {
-				if (startGamePause === 4) {
+			countDown = setInterval(() => {
+				if (!game.gameState.isStarted) {
+					console.log('hi');
+					clearInterval(countDown);
+				} else if (startGamePause === 4) {
 					clearInterval(countDown);
 					startGame(game);
 				} else {

@@ -12,13 +12,20 @@ const Changelog = props =>
 				<p>Version 0.6.5 "cutout" released 7-30-2017</p>
 			</div>
 			<h3>New feature: creategame player count exclusions.</h3>
-			<p>In the create game view, players now have the option to uncheck player counts from starting the game.  For example, if you really hated 7 player games but liked playing 5-10 player games, your new game would not start if there are 7 seated players.</p>
+			<div style={{textAlign: 'center'}}>
+				<img src="images/excludeplayers.png" style={{width: '50%'}}/>
+			</div>
+			<p>In the create game view, players now have the option to uncheck player counts from starting the game.  For example, if you really hated 7 player games but liked playing 5-10 player games, your new game would not start if there are 7 seated players. Hitting that threshold will cause your 20 second timer to restart, but that's unavoidable.</p>
+			<div style={{textAlign: 'center'}}>
+				<img src="images/no79.png" style={{width: '50%'}}/>
+			</div>
 			<p>Other issues:</p>
 			<ul>
+				<li>Your name in-game is no longer green - it is the color of your dealt role.  Somehow people were forgetting they're hitler..</li>
+				<li>Moderators have a new color.</li>
+				<li>Thanks to a contribution, track images have been redone from the original files and colored, unlike my crappy scans.</li>
 				<li>Bug fix: player replays are back.</li>
 				<li>Bug fix: green players are not all the same color green (based on played games).</li>
-				<li>Moderators have a blue color.</li>
-				<li>Thanks to a contribution, track images have been redone from the original files and colored, unlike my crappy scans.</li>
 			</ul>
 			<p>Next up: player uploaded cardback images!  Fun.  No nazi stuff please..</p>
 			<div className="ui header">

@@ -328,9 +328,9 @@ body {
     margin-left: -237px;
 }
 
-@for $i from 5 through 1 {
+@for $i from 1 through 5 {
     .experienced#{$i} {
-        color: rgb(19, (122 + ($i * 20)), 19) !important;
+        color: rgb(19, (222 - ($i * 20)), 19) !important;
     }
 }
 
@@ -340,8 +340,8 @@ body {
     }
 }
 
-.natekiller {
-    color: #FFFF00 !important;
+.moderatorcolor {
+	color:  #0F43FC !important;
 }
 
 .admin {

@@ -117,9 +117,7 @@ export default class Players extends React.Component {
 						(() => {
 							let classes = 'player-number';
 
-							if (userInfo.userName && publicPlayersState.findIndex(player => player.userName === userInfo.userName) === i) {
-								classes = `${classes} seated-user`;
-							} else if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
 								classes = `${classes} ${playersState[i].nameStatus}`;
 							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
 								classes = `${classes} ${publicPlayersState[i].nameStatus}`;

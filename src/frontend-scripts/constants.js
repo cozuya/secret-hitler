@@ -1,6 +1,6 @@
 const cn = require('classnames');
 
-module.exports.MODERATORS = ['sethe', 'maki2', 'Crazyuncle', 'nemonorm', 'Anna1999', 'Tenebrae', 'jazz', 'Max', 'Faaiz1999', 'DumbBullDoor', 'DFinn', 'wizzy'];
+const MODERATORS = module.exports.MODERATORS = ['sethe', 'maki2', 'Crazyuncle', 'nemonorm', 'Anna1999', 'Tenebrae', 'jazz', 'Max', 'Faaiz1999', 'DumbBullDoor', 'DFinn', 'wizzy'];
 
 const ADMINS = module.exports.ADMINS = ['coz', 'Stine'];
 
@@ -12,6 +12,7 @@ module.exports.PLAYERCOLORS = user => cn({
 	// natekiller: user.userName === NATEKILLER,
 	admin: ADMINS.includes(user.userName),
 	contributer: CONTRIBUTORS.includes(user.userName),
+	moderatorcolor: MODERATORS.includes(user.userName),
 	experienced1: user.wins + user.losses > 50,
 	experienced2: user.wins + user.losses > 100,
 	experienced3: user.wins + user.losses > 200,

@@ -26,8 +26,11 @@
 		text-align: center;
 	}
 
-	.sliderrow .ui.header {
-		min-height: 80px;
+	.sliderrow {
+		.ui.header {
+			min-height: 80px;
+		}
+		margin-top: 20px;
 	}
 
 	.gamename {
@@ -58,12 +61,14 @@
 		width: 104%;
     margin-left: -6px;
     position: relative;
-		top: 25px;
+		top: 30px;
 		display: flex;
 		justify-content: space-between;
 
 		input {
 			cursor: pointer;
+			width: 18px;
+			height: 18px;
 		}
 	}
 }
