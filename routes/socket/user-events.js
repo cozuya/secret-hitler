@@ -87,7 +87,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length)) {
 			game.gameState.isStarted = false;
 			game.general.status = 'Waiting for more players..';
-			console.log('Hello, World!');
 		} else if (publicPlayersState.length === game.general.minPlayersCount
 			|| (publicPlayersState.length > game.general.minPlayersCount && !game.general.excludedPlayerCount.includes(publicPlayersState.length))) {
 			let startGamePause = 20;
@@ -95,7 +94,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 			game.gameState.isStarted = true;
 			countDown = setInterval(() => {
 				if (!game.gameState.isStarted) {
-					console.log('hi');
 					clearInterval(countDown);
 				} else if (startGamePause === 4) {
 					clearInterval(countDown);
