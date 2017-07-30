@@ -28,8 +28,9 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) => (
 	<section className="defaultmid">
 		<PatchAlert
 			isActive={version.lastSeen && version.current.number !== version.lastSeen}
-			onClick={readPatchNotes} />
-		<img src="images/lizard19.png" alt="Secret Hitler logo" width="400" height="400" />
+			onClick={readPatchNotes}
+		/>
+		<img src="images/lizard20.png" alt="Secret Hitler logo" width="400" height="400" />
 		<p>
 			<span>{`sh.io version ${version.current.number} "${version.current.color}" released ${version.current.date} | `}</span>
 			<span><a onClick={readPatchNotes}>changelog</a> | <a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">open issues and upcoming features</a> | <a target="_blank" style={{color: 'brown'}} href="https://docs.google.com/forms/d/e/1FAIpQLSf_pq4xipbxyb8s84eGaazK0itPZmdKSTvMAH9eIHj2hyz0BQ/viewform?c=0&w=1&usp=send_form">bug and feedback form</a> | <a target="_blank" style={{fontWeight: 'bold', color: '#fff'}} href="https://discord.gg/qbc2DFb">discord</a></span>

@@ -9,18 +9,18 @@ const Changelog = props =>
 				<h2>Changelog</h2>
 			</div>
 			<div className="ui header">
-				<p>Version 0.6.4 "dry brush" released 7-9-2017</p>
+				<p>Version 0.6.5 "cutout" released 7-30-2017</p>
 			</div>
-			<h3>New feature: player color refactoring.</h3>
-			<p>Player colors have been changed in two ways: they are fixed by math as opposed to me randomly clicking colors, and there are many more shades (10) that change every 2% points for purples.  Also, purple starts at 52% as opposed to 55% (and highest tier is >70%, fyi). Check the "!" icon next to the lobby.</p>
-			<h3>New feature: player color on card in game.</h3>
+			<h3>New feature: creategame player count exclusions.</h3>
+			<p>In the create game view, players now have the option to uncheck player counts from starting the game.  For example, if you really hated 7 player games but liked playing 5-10 player games, your new game would not start if there are 7 seated players.</p>
 			<p>Other issues:</p>
 			<ul>
-				<li>There is one crash bug left that has happened once in the past 10 days and hopefully I've prevented it permanetly in this patch.</li>
-				<li>Some fixes to bugs in replays, and replays now have vetos.</li>
-				<li>The rules page for this site has been adjusted to account for online vs physical play.</li>
-				<li>Private games now have a new symbol in the gamelist as opposed to green text.</li>
+				<li>Bug fix: player replays are back.</li>
+				<li>Bug fix: green players are not all the same color green (based on played games).</li>
+				<li>Moderators have a blue color.</li>
+				<li>Thanks to a contribution, track images have been redone from the original files and colored, unlike my crappy scans.</li>
 			</ul>
+			<p>Next up: player uploaded cardback images!  Fun.  No nazi stuff please..</p>
 			<div className="ui header">
 				<p>Version 0.6.0 "noise" released 6-12-2017</p>
 			</div>
