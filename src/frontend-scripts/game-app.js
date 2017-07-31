@@ -19,8 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	account();
 	polyfills();
 
-	console.log('%c%s', 'color: teal; background: #eee; font-size: 14px; font-style: italic; font-family: verdana', 'Secret Hitler');
-
 	if (container) {
 		const sagaMiddleware = createSagaMiddleware();
 		const store = createStore(
