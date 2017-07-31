@@ -25,9 +25,9 @@ Install mongodb, have it in your path.
 
 > cd secret-hitler
 
-> npm i -g gulp nodemon || yarn global add gulp nodemon
+> npm i -g gulp nodemon
 
-> npm i || yarn
+> npm i
 
 ## Running in dev mode ##
 
@@ -37,11 +37,11 @@ build assets (first time only):
 
 start mongo:
 
-> npm run db || yarn db
+> npm run db
 
 start express server:
 
-> npm start || yarn start
+> npm start
 
 start development task runner:
 
@@ -57,7 +57,7 @@ I'll leave you to figure that out.
 
 ## Tests ##
 
-> npm test || yarn test
+> npm test
 
 ## License and Attribution ##
 

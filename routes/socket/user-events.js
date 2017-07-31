@@ -85,15 +85,18 @@ module.exports.updateSeatedUser = (socket, data) => {
 			game.gameState.isStarted = true;
 			startGame(game);
 		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length)) {
-			game.gameState.isStarted = false;
+			clearInterval(countDown);
+			game.gameState.cancellStart = true;
 			game.general.status = 'Waiting for more players..';
 		} else if (publicPlayersState.length === game.general.minPlayersCount
-			|| (publicPlayersState.length > game.general.minPlayersCount && !game.general.excludedPlayerCount.includes(publicPlayersState.length))) {
+			|| (publicPlayersState.length > game.general.minPlayersCount && !game.general.excludedPlayerCount.includes(publicPlayersState.length) && !game.gameState.isStarted)) {
 			let startGamePause = 20;
 
 			game.gameState.isStarted = true;
 			countDown = setInterval(() => {
-				if (!game.gameState.isStarted) {
+				if (game.gameState.cancellStart) {
+					game.gameState.cancellStart = false;
+					game.gameState.isStarted = false;
 					clearInterval(countDown);
 				} else if (startGamePause === 4) {
 					clearInterval(countDown);
