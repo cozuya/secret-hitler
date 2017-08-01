@@ -86,6 +86,9 @@ export default class Moderation extends React.Component {
 			<div className="button-container">
 				<button className={(!this.state.selectedUser || !this.state.actionTextValue) ? 'ui button primary disabled' : 'ui button primary'} onClick={() => {takeModAction('ban');}}>Ban user</button>
 				<button className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'} onClick={() => {takeModAction('comment');}}>Comment without action</button>
+				<button className={!this.state.actionTextValue || !this.state.selectedUser ? 'ui button disabled tier3' : 'ui button tier3'} onClick={() => {takeModAction('deleteUser');}}>Delete user</button>
+				<button className={!this.state.actionTextValue || !this.state.selectedUser ? 'ui button disabled tier3' : 'ui button tier3'} onClick={() => {takeModAction(`setWins${this.state.actionTextValue}`);}}>Set wins</button>
+				<button className={!this.state.actionTextValue || !this.state.selectedUser ? 'ui button disabled tier3' : 'ui button tier3'} onClick={() => {takeModAction(`setLosses${this.state.actionTextValue}`);}}>Set losses</button>
 				<button className={!this.state.actionTextValue || !this.state.selectedUser ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipban');}}>Ban and IP ban for 18 hours</button>
 				<button className={(!this.state.actionTextValue || !ADMINS.includes(this.props.userInfo.userName) || !this.state.selectedUser) ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipbanlarge');}}>Ban and IP ban for 1 week</button>
 			</div>

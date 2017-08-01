@@ -518,19 +518,26 @@ module.exports.handleModerationAction = (socket, data) => {
 
 		modaction.save();
 		switch (data.action) {
+		case 'deleteUser':
+			Account.findOne({username: data.userName}).remove(() => {
+				if (io.sockets.sockets[affectedSocketId]) {
+					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+				}
+			});
+			break;
 		case 'ban':
 			banAccount(data.userName);
 			break;
 		case 'broadcast':
 			games.forEach(game => {
 				game.chats.push({
-					chat: data.comment,
+					chat: `(${data.modName}) ${data.comment}`,
 					isBroadcast: true,
 					timestamp: new Date()
 				});
 			});
 			generalChats.push({
-				userName: 'BROADCAST',
+				userName: `BROADCAST (${data.modName})`,
 				time: new Date(),
 				chat: data.comment,
 				isBroadcast: true
@@ -557,6 +564,17 @@ module.exports.handleModerationAction = (socket, data) => {
 			banAccount(data.userName);
 			ipbanl.save();
 			break;
+		default:
+			const setType = /setWins/.test(data.action) ? 'wins' : 'losses',
+				number = setType === 'wins' ? parseInt(data.action.substr(7)) : parseInt(data.action.substr(9));
+
+			if (!isNaN(number)) {
+				Account.findOne({username: data.userName})
+					.then(account => {
+						account[setType] = number;
+						account.save();
+					});
+			}
 		}
 	}
 };
