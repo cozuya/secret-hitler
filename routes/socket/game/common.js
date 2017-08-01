@@ -2,11 +2,29 @@ const {sendInProgressGameUpdate} = require('../util.js'),
 	{sendGameList} = require('../user-requests.js'),
 	_ = require('lodash');
 
+
+const shufflePolicies = module.exports.shufflePolicies = game => {
+	const count = _.countBy(game.private.policies);
+
+	game.private.policies = game.private.policies.concat(
+		_.shuffle(
+		_.range(1, 12 - (game.trackState.fascistPolicyCount + (count.fascist || 0))).map(num => 'fascist')
+		.concat(
+		_.range(1, 7 - (game.trackState.liberalPolicyCount + (count.liberal || 0))).map(num => 'liberal'))
+		));
+
+	game.gameState.undrawnPolicyCount = game.private.policies.length;
+};
+
 module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const {experiencedMode} = game.general;
 
 	if (game.trackState.fascistPolicyCount >= 5) {
 		game.gameState.isVetoEnabled = true;
+	}
+
+	if (game.gameState.undrawnPolicyCount < 3) {
+		shufflePolicies(game);
 	}
 
 	game.gameState.presidentIndex = (() => {
@@ -77,17 +95,4 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		[pendingPresidentPlayer.userName, seatedPlayers.filter((player, index) => !player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index)).map(el => seatedPlayers.indexOf(el))] :
 		[pendingPresidentPlayer.userName, seatedPlayers.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index).map(el => seatedPlayers.indexOf(el))];
 	sendInProgressGameUpdate(game);
-};
-
-module.exports.shufflePolicies = game => {
-	const count = _.countBy(game.private.policies);
-
-	game.private.policies = game.private.policies.concat(
-		_.shuffle(
-		_.range(1, 12 - (game.trackState.fascistPolicyCount + (count.fascist || 0))).map(num => 'fascist')
-		.concat(
-		_.range(1, 7 - (game.trackState.liberalPolicyCount + (count.liberal || 0))).map(num => 'liberal'))
-		));
-
-	game.gameState.undrawnPolicyCount = game.private.policies.length;
 };
