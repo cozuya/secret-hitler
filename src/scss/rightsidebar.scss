@@ -129,8 +129,8 @@
         }
         .inputbar {
           display: flex;
-          input {
-            flex-grow: 1;
+          > div {
+						flex-grow: 1;
           }
           i {
             width: 20px;
