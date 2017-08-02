@@ -89,7 +89,7 @@ class Gamechat extends React.Component {
 
 		e.preventDefault();
 
-		if (currentValue.length) {
+		if (currentValue.length < 300) {
 			const chat = {
 				userName: userInfo.userName,
 				chat: currentValue,
@@ -108,6 +108,9 @@ class Gamechat extends React.Component {
 				this.setState({disabled: false});
 				this.gameChatInput.focus();
 			}, 150);
+		}
+		else {
+			e.preventDefault();
 		}
 	}
 
