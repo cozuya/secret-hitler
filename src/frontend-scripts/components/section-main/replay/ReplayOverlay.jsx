@@ -3,13 +3,14 @@ import { List } from 'immutable';
 import classnames from 'classnames';
 import CardGroup from '../../reusable/CardGroup.jsx';
 import { handToCards } from './replay-utils.jsx';
+import { some, none } from 'option';
 
 const Legislation = ({ type, handTitle, claimTitle, hand, discard, claim }) => (
 	<div className={classnames(type, 'legislation')}>
 		<CardGroup
 			className="hand"
 			title={handTitle}
-			cards={handToCards(hand, discard)} />
+			cards={handToCards(hand, discard.valueOrElse(null))} />
 		<CardGroup
 			className="claim"
 			title={claimTitle}
@@ -23,7 +24,7 @@ const PresidentLegislation = ({ hand, discard, claim }) => (
 		handTitle={'President Hand'}
 		claimTitle={'President Claim'}
 		hand={hand}
-		discard={discard}
+		discard={some(discard)}
 		claim={claim} />
 );
 
@@ -43,7 +44,8 @@ const PolicyPeek = ({ peek, claim }) => (
 		handTitle={'Policy Peek'}
 		claimTitle={'Claim'}
 		hand={peek}
-		claim={claim} />
+		claim={claim}
+		discard={none} />
 );
 
 const ReplayOverlay = ({ snapshot }) => {
