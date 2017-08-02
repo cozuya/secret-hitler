@@ -133,7 +133,7 @@ export class App extends React.Component {
 					uid: 'devgame',
 					name: 'New Game',
 					minPlayersCount: 5,
-					maxPlayersCount: 7,
+					maxPlayersCount: 5,
 					excludedPlayerCount: [6],
 					private: false,
 					rainbowgame: true,
