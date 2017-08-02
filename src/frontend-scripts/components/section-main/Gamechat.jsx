@@ -479,9 +479,9 @@ class Gamechat extends React.Component {
 							})()
 						}
 					>
-						<input value={this.state.inputValue} autoComplete="off" spellCheck="false" placeholder="Chat.." id="gameChatInput" ref={c => {
+						<input value={this.state.inputValue} onChange={this.handleInputChange} max="300" autoComplete="off" spellCheck="false" placeholder="Chat.." id="gameChatInput" ref={c => {
 							this.gameChatInput = c;
-						}}onChange={this.handleInputChange} max="300"/>
+						}}/>
 						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
 					{(() => {
