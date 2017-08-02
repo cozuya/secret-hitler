@@ -3,6 +3,8 @@ import { handToPolicies } from '../../../../../utils';
 import { fromNullable } from 'option';
 import Card from '../../reusable/Card.jsx';
 
+// hand: { reds: Int, blues: Int }
+// _discard: String ('fascist' | 'liberal')
 export const handToCards = (hand, _discard) => {
 	const discard = fromNullable(_discard);
 
