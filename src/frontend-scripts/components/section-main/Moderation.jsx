@@ -18,7 +18,8 @@ export default class Moderation extends React.Component {
 			actionTextValue: '',
 			log: [],
 			playerListShown: true,
-			broadcastText: ''
+			broadcastText: '',
+			playerInputText: ''
 		};
 	}
 
@@ -39,6 +40,18 @@ export default class Moderation extends React.Component {
 
 	togglePlayerList() {
 		this.setState({playerListShown: !this.state.playerListShown});
+	}
+
+	renderPlayerInput() {
+		const playerInputKeyup = e => {
+			this.setState({playerInputText: `${e.target.value}`});
+		};
+
+		return (
+			<div className="player-input">
+				<input placeholder="Player name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
+			</div>
+		);
 	}
 
 	renderUserlist() {
@@ -68,14 +81,15 @@ export default class Moderation extends React.Component {
 		const takeModAction = action => {
 			this.props.socket.emit('updateModAction', {
 				modName: this.props.userInfo.userName,
-				userName: this.state.selectedUser,
+				userName: this.state.playerInputText || this.state.selectedUser,
 				ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 				comment: this.state.actionTextValue,
 				action
 			});
 			this.setState({
 				selectedUser: '',
-				actionTextValue: ''
+				actionTextValue: '',
+				playerInputText: ''
 			});
 			setTimeout(() => {
 				this.props.socket.emit('getModInfo');
@@ -85,12 +99,13 @@ export default class Moderation extends React.Component {
 		return (
 			<div className="button-container">
 				<button className={(!this.state.selectedUser || !this.state.actionTextValue) ? 'ui button primary disabled' : 'ui button primary'} onClick={() => {takeModAction('ban');}}>Ban user</button>
-				<button className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'} onClick={() => {takeModAction('comment');}}>Comment without action</button>
-				<button className={!this.state.actionTextValue || !this.state.selectedUser ? 'ui button disabled tier3' : 'ui button tier3'} onClick={() => {takeModAction('deleteUser');}}>Delete user</button>
-				<button className={!this.state.actionTextValue || !this.state.selectedUser ? 'ui button disabled tier3' : 'ui button tier3'} onClick={() => {takeModAction(`setWins${this.state.actionTextValue}`);}}>Set wins</button>
-				<button className={!this.state.actionTextValue || !this.state.selectedUser ? 'ui button disabled tier3' : 'ui button tier3'} onClick={() => {takeModAction(`setLosses${this.state.actionTextValue}`);}}>Set losses</button>
-				<button className={!this.state.actionTextValue || !this.state.selectedUser ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipban');}}>Ban and IP ban for 18 hours</button>
-				<button className={(!this.state.actionTextValue || !ADMINS.includes(this.props.userInfo.userName) || !this.state.selectedUser) ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipbanlarge');}}>Ban and IP ban for 1 week</button>
+				<button className={(!this.state.actionTextValue || !this.state.playerInputText) ? 'ui button disabled' : 'ui button'} onClick={() => {takeModAction('comment');}}>Comment without action</button>
+				<br />
+				<button className={(!this.state.actionTextValue || !this.state.playerInputText) || !this.state.selectedUser ? 'ui button disabled tier3' : 'ui button tier3'} onClick={() => {takeModAction('deleteUser');}}>Delete user</button>
+				<button className={(!this.state.actionTextValue || !this.state.playerInputText) || !this.state.selectedUser ? 'ui button disabled tier3' : 'ui button tier3'} onClick={() => {takeModAction(`setWins${this.state.actionTextValue}`);}}>Set wins</button>
+				<button className={(!this.state.actionTextValue || !this.state.playerInputText) || !this.state.selectedUser ? 'ui button disabled tier3' : 'ui button tier3'} onClick={() => {takeModAction(`setLosses${this.state.actionTextValue}`);}}>Set losses</button>
+				<button className={(!this.state.actionTextValue || !this.state.playerInputText) || !this.state.selectedUser ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipban');}}>Ban and IP ban for 18 hours</button>
+				<button className={((!this.state.actionTextValue || !this.state.playerInputText) || !ADMINS.includes(this.props.userInfo.userName) || !this.state.selectedUser) ? 'ui button disabled ipban-button' : 'ui button ipban-button'} onClick={() => {takeModAction('ipbanlarge');}}>Ban and IP ban for 1 week</button>
 			</div>
 		);
 	}
@@ -172,6 +187,9 @@ export default class Moderation extends React.Component {
 									<ul className="userlist">
 										{this.renderUserlist()}
 									</ul>
+									<div className="ui horizontal divider">or</div>
+									{this.renderPlayerInput()}
+									<div className="ui horizontal divider">-</div>
 									{this.renderActionText()}
 									{this.renderButtons()}
 								</div>
