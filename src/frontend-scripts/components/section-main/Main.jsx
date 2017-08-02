@@ -34,6 +34,10 @@ const Main = props =>
 					}
 
 					classes += ' wide column section-main';  // yes semantic requires classes in specific order... ascii shrug
+
+					if (props.midSection === 'game') {
+						classes += ' ingame';
+					}
 					return classes;
 				})()
 			}

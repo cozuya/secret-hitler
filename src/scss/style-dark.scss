@@ -28,7 +28,7 @@ $dteal: #034f61;
 @import 'moderation.scss';
 @import 'game-text.scss';
 #main {
-    width: 1253px;
+    min-width: 1253px;
     margin-left: auto;
     margin-right: auto;
     max-width: inherit !important;
@@ -99,6 +99,18 @@ $dteal: #034f61;
     .section-right {
         background: #1b1b1b;
     }
+    .section-left {
+      width: 240px !important;
+    }
+    .section-main {
+      width: 800px !important;
+		}
+		.section-main.ingame {
+			width: 100% !important;
+		}
+    .section-right {
+      flex-grow: 1;
+    }
     .playerlist {
         background: #202020;
     }
@@ -132,7 +144,8 @@ $dteal: #034f61;
     }
     .game>.ui.grid .chat-container .gamechat .chats,
     .game-chat {
-        background: #3d3d3d;
+				background: #3d3d3d;
+				flex-grow: 1;
     }
     .game>.ui.grid .chat-container .gamechat .inputbar .expando-container .hotkey-container {
         background: #7c7c7c;
