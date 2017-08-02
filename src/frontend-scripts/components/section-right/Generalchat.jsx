@@ -37,7 +37,7 @@ export default class Generalchat extends React.Component {
 		const {inputValue} = this.state;
 
 		e.preventDefault();
-		if (inputValue) {
+		if (inputValue < 300) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
 				chat: inputValue
@@ -53,6 +53,9 @@ export default class Generalchat extends React.Component {
 				this.setState({disabled: false});
 				this.input.focus();
 			}, 300);
+		}
+		else {
+			e.preventDefault();
 		}
 	}
 
