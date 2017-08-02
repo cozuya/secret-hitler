@@ -37,7 +37,7 @@ export default class Generalchat extends React.Component {
 		const {inputValue} = this.state;
 
 		e.preventDefault();
-		if (inputValue < 300) {
+		if (inputValue.length < 300) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
 				chat: inputValue
@@ -53,9 +53,6 @@ export default class Generalchat extends React.Component {
 				this.setState({disabled: false});
 				this.input.focus();
 			}, 300);
-		}
-		else {
-			e.preventDefault();
 		}
 	}
 
@@ -110,7 +107,7 @@ export default class Generalchat extends React.Component {
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
 					<div className={this.props.userInfo.userName ? !this.state.disabled ? 'ui action input' : 'ui action input disabled' : 'ui action input disabled'}>
-						<input placeholder="Chat.." value={this.state.inputValue} onChange={this.handleInputChange} max="300" spellCheck="false" ref={c => {
+						<input placeholder="Chat.." value={this.state.inputValue} onChange={this.handleInputChange} maxLength="300" spellCheck="false" ref={c => {
 							this.input = c;
 						}}/>
 						<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>

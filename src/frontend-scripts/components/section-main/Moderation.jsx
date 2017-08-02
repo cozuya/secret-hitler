@@ -186,7 +186,7 @@ export default class Moderation extends React.Component {
 					<div className="ui header">Broadcast to all games:</div>
 					<div className="ui input">
 						<form onSubmit={this.handleBroadcastSubmit}>
-							<input max="300" placeholder="Broadcast" onChange={broadcastKeyup} className="broadcast-input" autoFocus value={this.state.broadcastText} ref={c => {
+							<input maxLength="300" placeholder="Broadcast" onChange={broadcastKeyup} className="broadcast-input" autoFocus value={this.state.broadcastText} ref={c => {
 								this.broadcastText = c;
 							}} />
 							<div onClick={this.handleBroadcastSubmit} className={this.state.broadcastText ? 'ui button primary' : 'ui button primary disabled'}>Submit</div>

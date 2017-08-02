@@ -109,9 +109,6 @@ class Gamechat extends React.Component {
 				this.gameChatInput.focus();
 			}, 150);
 		}
-		else {
-			e.preventDefault();
-		}
 	}
 
 	scrollChats() {
@@ -482,7 +479,7 @@ class Gamechat extends React.Component {
 							})()
 						}
 					>
-						<input value={this.state.inputValue} onChange={this.handleInputChange} max="300" autoComplete="off" spellCheck="false" placeholder="Chat.." id="gameChatInput" ref={c => {
+						<input value={this.state.inputValue} onChange={this.handleInputChange} maxLength="300" autoComplete="off" spellCheck="false" placeholder="Chat.." id="gameChatInput" ref={c => {
 							this.gameChatInput = c;
 						}}/>
 						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
