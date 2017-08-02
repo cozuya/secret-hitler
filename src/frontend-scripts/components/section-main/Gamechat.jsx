@@ -89,7 +89,7 @@ class Gamechat extends React.Component {
 
 		e.preventDefault();
 
-		if (currentValue.length) {
+		if (currentValue.length < 300) {
 			const chat = {
 				userName: userInfo.userName,
 				chat: currentValue,
@@ -479,9 +479,9 @@ class Gamechat extends React.Component {
 							})()
 						}
 					>
-						<input value={this.state.inputValue} autoComplete="off" spellCheck="false" placeholder="Chat.." id="gameChatInput" ref={c => {
+						<input value={this.state.inputValue} onChange={this.handleInputChange} maxLength="300" autoComplete="off" spellCheck="false" placeholder="Chat.." id="gameChatInput" ref={c => {
 							this.gameChatInput = c;
-						}} onChange={this.handleInputChange} maxLength="300" />
+						}}/>
 						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
 					{(() => {
