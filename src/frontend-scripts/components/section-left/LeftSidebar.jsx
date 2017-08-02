@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 const LeftSidebar = props => {
 	const	renderGameList = () => {
 		const {gameList} = props;
-
+		console.log(gameList);
 		if (gameList.length) {
 			return gameList.sort((a, b) => {
 				const aGameStatus = a.gameStatus,
@@ -31,7 +31,7 @@ const LeftSidebar = props => {
 					return 1;
 				}
 
-				return 0;
+				return a.name - b.name;
 			}).map((game, index) => {
 				return (
 					<SidebarGame
