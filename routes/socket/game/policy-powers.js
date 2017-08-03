@@ -225,7 +225,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 					});
 				}
 
-				if (!game.general.disableGamechat) {
+				if (!game.general.disableGamechat && !(game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' && president.role.team === 'fascist')) {
 					president.playersState[playerIndex].nameStatus = playersTeam;
 				}
 

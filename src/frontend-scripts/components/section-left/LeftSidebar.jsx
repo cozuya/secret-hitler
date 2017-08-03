@@ -31,7 +31,7 @@ const LeftSidebar = props => {
 					return 1;
 				}
 
-				return 0;
+				return a.name - b.name;
 			}).map((game, index) => {
 				return (
 					<SidebarGame
