@@ -48,7 +48,7 @@ export default class Moderation extends React.Component {
 			{userList} = this.state,
 			ips = userList.map(user => user.ip),
 			multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
-
+		console.log(userList)
 		return userList
 			.sort((a, b) => (() => {
 				if (a.isRainbow && !b.isRainbow) {
@@ -59,7 +59,7 @@ export default class Moderation extends React.Component {
 					return -1;
 				}
 
-				return b.userName - a.userName;
+				return a.ip - b.ip;
 			})())
 			.map((user, index) => <li key={index} className={multiIPs.includes(user.ip) ? 'multi' : ''}><label><input type="radio" name="users" onChange={() => {radioChange(user.userName);}} />{user.userName} <span className="ip">{user.ip}</span></label></li>);
 	}

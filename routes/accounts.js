@@ -1,6 +1,7 @@
 const passport = require('passport'),
 	_ = require('lodash'),
 	Account = require('../models/account'),
+	// BannedIP = require('../models/bannedIP'),
 	BannedIP = require('../models/BannedIP'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),

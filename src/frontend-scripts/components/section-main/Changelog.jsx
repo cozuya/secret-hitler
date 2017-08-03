@@ -9,6 +9,19 @@ const Changelog = props =>
 				<h2>Changelog</h2>
 			</div>
 			<div className="ui header">
+				<p>Version 0.6.6 "tuotuc" released 8-2-2017</p>
+			</div>
+			<h3>Small patch to fix a bug that could be used to crash the server thanks to player veggiemanz who now has a shiny orange name.  Also these things:</h3>
+			<ul>
+				<li>Shuffling of the deck when its less than 3 should now happen before any election, as per the rules.  This will prevent the "nein all" problem when there's few policies left.</li>
+				<li>As you probably saw, there is a notice on the sign in/sign up modals to use Chrome or Firefox for the best experience.</li>
+				<li>Fascists who investigate hitler will not have hitler's name change to fascist color.</li>
+				<li>Hid the cardback section on settings as that is work in progress.</li>
+				<li>Gamelist sort should be better and no longer bounce around as much.</li>
+				<li>Confetti should no longer prevent the winners from being able to type in chat while its raining down.</li>
+				<li>A fix to chancellor discards not showing up in replays.</li>
+			</ul>
+			<div className="ui header">
 				<p>Version 0.6.5 "cutout" released 7-30-2017</p>
 			</div>
 			<h3>New feature: creategame player count exclusions.</h3>

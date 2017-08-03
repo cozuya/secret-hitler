@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 const LeftSidebar = props => {
 	const	renderGameList = () => {
 		const {gameList} = props;
-		console.log(gameList);
+
 		if (gameList.length) {
 			return gameList.sort((a, b) => {
 				const aGameStatus = a.gameStatus,
