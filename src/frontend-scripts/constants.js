@@ -4,7 +4,7 @@ const MODERATORS = module.exports.MODERATORS = ['sethe', 'maki2', 'Crazyuncle', 
 
 const ADMINS = module.exports.ADMINS = ['coz', 'Stine'];
 
-const CONTRIBUTORS = module.exports.CONTRIBUTORS = ['jbasrai', 'sethe', 'veggiemanz'];
+const CONTRIBUTORS = module.exports.CONTRIBUTORS = ['jbasrai', 'sethe', 'veggiemanz', 'DFinn'];
 
 // const NATEKILLER = 'Banana';
 
