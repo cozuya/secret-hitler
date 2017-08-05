@@ -494,7 +494,7 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 module.exports.handleModerationAction = (socket, data) => {
 	const {passport} = socket.handshake.session,
 		affectedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName);
-
+	console.log(data, 'data');
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
 		const modaction = new ModAction({
 				date: new Date(),
@@ -519,19 +519,26 @@ module.exports.handleModerationAction = (socket, data) => {
 
 		modaction.save();
 		switch (data.action) {
+		case 'deleteUser':
+			Account.findOne({username: data.userName}).remove(() => {
+				if (io.sockets.sockets[affectedSocketId]) {
+					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+				}
+			});
+			break;
 		case 'ban':
 			banAccount(data.userName);
 			break;
 		case 'broadcast':
 			games.forEach(game => {
 				game.chats.push({
-					chat: data.comment,
+					chat: `(${data.modName}) ${data.comment}`,
 					isBroadcast: true,
 					timestamp: new Date()
 				});
 			});
 			generalChats.push({
-				userName: 'BROADCAST',
+				userName: `BROADCAST (${data.modName})`,
 				time: new Date(),
 				chat: data.comment,
 				isBroadcast: true
@@ -558,6 +565,17 @@ module.exports.handleModerationAction = (socket, data) => {
 			banAccount(data.userName);
 			ipbanl.save();
 			break;
+		default:
+			const setType = /setWins/.test(data.action) ? 'wins' : 'losses',
+				number = setType === 'wins' ? parseInt(data.action.substr(7)) : parseInt(data.action.substr(9));
+
+			if (!isNaN(number)) {
+				Account.findOne({username: data.userName})
+					.then(account => {
+						account[setType] = number;
+						account.save();
+					});
+			}
 		}
 	}
 };

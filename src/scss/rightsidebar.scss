@@ -127,8 +127,16 @@
                 padding: 2px 5px 0;
             }
         }
+        .inputbar {
+          display: flex;
+          > div {
+						flex-grow: 1;
+          }
+          i {
+            width: 20px;
+          }
+        }
         .ui.input {
-            width: 85%;
             margin-right: 4px;
             input {
                 padding: 2px;
@@ -171,4 +179,9 @@
             }
         }
     }
+}
+
+#main .ingame + .three.wide.section-right {
+	max-width: 235px;
+	min-width: initial;
 }

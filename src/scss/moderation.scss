@@ -1,5 +1,9 @@
 #main .moderation {
 		color: $fascistteam;
+		.player-input {
+			display: flex;
+			justify-content: center;
+		}
 		h2 {
 			text-align: center;
 		}
@@ -84,7 +88,11 @@
 			width: 100%;
 			background: darkred;
 			color: white;
-			margin: 5px 0;
+			margin: 2px 0;
+		}
+		.tier3 {
+			background: orange;
+			margin: 2px 3px 2px 0;
 		}
 }
 
@@ -93,4 +101,8 @@
 	input {
 		width: 600px;
 	}
+}
+
+.horizontal.divider {
+	color: white;
 }
