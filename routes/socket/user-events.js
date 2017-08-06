@@ -494,7 +494,8 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 module.exports.handleModerationAction = (socket, data) => {
 	const {passport} = socket.handshake.session,
 		affectedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName);
-	console.log(data, 'data');
+
+	// console.log(data, 'data');
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
 		const modaction = new ModAction({
 				date: new Date(),

@@ -188,10 +188,26 @@ module.exports = () => {
 
 		const {image} = req.body,
 			extension = image.split(';base64')[0].split('/')[1],
-			raw = image.split(',')[1];
+			raw = image.split(',')[1],
+			username = req.session.passport.user,
+			now = new Date(),
+			socketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username);
 
-		fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
-			console.log('done writing file');
+		Account.findOne({username}, (err, account) => {
+			if (account.wins + account.losses < 50) {
+				res.json({message: 'You need to have played 50 games to upload a cardback.'});
+			// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
+			// 	res.json({message: 'You can only change your cardback once every 18 hours.'});
+			} else {
+				fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
+					account.gameSettings.customCardback = extension;
+					account.gameSettings.customCardbackSaveTime = now;
+					account.save(() => {
+						res.json({message: 'Cardback successfully uploaded.'});
+						io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
+					});
+				});
+			}
 		});
 	});
 };

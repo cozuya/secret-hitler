@@ -21,7 +21,8 @@ class Settings extends React.Component {
 		this.sliderDrop = this.sliderDrop.bind(this);
 		this.state = {
 			sliderValues: [8, 28],
-			preview: ''
+			preview: '',
+			cardbackUploadStatus: ''
 		};
 	}
 
@@ -92,6 +93,9 @@ class Settings extends React.Component {
 
 				reader.readAsDataURL(files[0]);
 			},
+			displayCardbackInfoModal = () => {
+				console.log('todo');
+			},
 			previewSaveClick = () => {
 				$.ajax({
 					url: '/upload-cardback',
@@ -101,13 +105,17 @@ class Settings extends React.Component {
 					}
 				})
 				.then(data => {
-					console.log(data, 'success data');
+					this.setState({
+						cardbackUploadStatus: data.message,
+						preview: ''
+					});
 				})
 				.catch(err => {
 					console.log(err, 'err');
 				});
 			},
-			previewClearClick = () => {
+			previewClearClick = e => {
+				e.preventDefault;
 				this.setState({preview: ''});
 			};
 
@@ -168,13 +176,13 @@ class Settings extends React.Component {
 					<div className="row cardback-container">
 						<div className="ui grid">
 							<div className="row centered cardback-header-container">
-								<h4 className="ui header">Cardback</h4>
+								<h4 className="ui header">Cardback<i className="info circle icon" title="Click to get information about user uploaded cardbacks" onClick={displayCardbackInfoModal} /></h4>
 							</div>
 							<div className="row cardbacks-container">
 								<div className="current">
 									<h5 className="ui header">Current</h5>
 									{this.props.userInfo.gameSettings.customCardback
-										? <div className="current-cardback" style={{background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.png) no-repeat`}} />
+										? <div className="current-cardback" style={{background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${this.props.userInfo.gameSettings.customCardback}) no-repeat`}} />
 										: <div className="current-cardback" />}
 								</div>
 								<div className="upload">
@@ -185,7 +193,7 @@ class Settings extends React.Component {
 										multiple={false}
 										className='dropzone'
 									>
-										Click here or drag and drop an image
+										Click here or drag and drop a 70px by 95px image to upload
 									</Dropzone>
 								</div>
 								{(() => {
@@ -201,6 +209,7 @@ class Settings extends React.Component {
 									}
 								})()}
 							</div>
+							<div className="centered row cardback-message-container">{this.state.cardbackUploadStatus}</div>
 						</div>
 					</div>
 				</div>

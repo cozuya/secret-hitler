@@ -26,6 +26,7 @@ yarn-error.log
 .vscode/
 yarn.lock
 public/images/Thumbs.db
+public/images/custom-cardbacks
 public/Thumbs.db
 public/styles/style-dark.css
 public/styles/style-light.css
