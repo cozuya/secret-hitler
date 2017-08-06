@@ -20,7 +20,8 @@ class Settings extends React.Component {
 		this.sliderChange = this.sliderChange.bind(this);
 		this.sliderDrop = this.sliderDrop.bind(this);
 		this.state = {
-			sliderValues: [8, 28]
+			sliderValues: [8, 28],
+			preview: ''
 		};
 	}
 
@@ -82,6 +83,22 @@ class Settings extends React.Component {
 	}
 
 	render() {
+		const onDrop = files => {
+				const reader = new FileReader();
+
+				reader.onload = () => {
+					this.setState({preview: reader.result});
+				};
+
+				reader.readAsDataURL(files[0]);
+			},
+			previewSaveClick = () => {
+
+			},
+			previewClearClick = () => {
+				this.setState({preview: ''});
+			};
+
 		return (
 			<section className="settings">
 				<i className="remove icon" onClick={this.leaveSettings} />
@@ -137,10 +154,42 @@ class Settings extends React.Component {
 						<p style={{color: '#fff', fontSize: this.state.sliderValues.length > 1 ? '18px' : `${this.state.sliderValues[0]}px`}}>A sentence for demoing font size changes.</p>
 					</div>
 					<div className="row cardback-container">
-						<h4 className="ui header">Cardback</h4>
-						{this.props.userInfo.gameSettings.customCardback
-							? <div className="current-cardback" style={{background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.png) no-repeat`}} />
-							: <div className="current-cardback" />}
+						<div className="ui grid">
+							<div className="row centered cardback-header-container">
+								<h4 className="ui header">Cardback</h4>
+							</div>
+							<div className="row cardbacks-container">
+								<div className="current">
+									<h5 className="ui header">Current</h5>
+									{this.props.userInfo.gameSettings.customCardback
+										? <div className="current-cardback" style={{background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.png) no-repeat`}} />
+										: <div className="current-cardback" />}
+								</div>
+								<div className="upload">
+									<h5 className="ui header">New</h5>
+									<Dropzone
+										accept='image/png, image/jpg'
+										onDrop={onDrop}
+										multiple={false}
+										className='dropzone'
+									>
+										Click here or drag and drop an image
+									</Dropzone>
+								</div>
+								{(() => {
+									if (this.state.preview) {
+										return (
+											<div className="preview-container">
+												<h5 className="ui header">Preview</h5>
+												<img width="70" height="95" src={this.state.preview} />;
+												<button onClick={previewSaveClick} className="ui button">Save</button>
+												<a href="#" onClick={previewClearClick}>Clear</a>
+											</div>
+										);
+									}
+								})()}
+							</div>
+						</div>
 					</div>
 				</div>
 			</section>
