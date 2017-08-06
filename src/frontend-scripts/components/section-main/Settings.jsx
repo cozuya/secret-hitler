@@ -93,7 +93,19 @@ class Settings extends React.Component {
 				reader.readAsDataURL(files[0]);
 			},
 			previewSaveClick = () => {
-
+				$.ajax({
+					url: '/upload-cardback',
+					method: 'POST',
+					data: {
+						image: this.state.preview
+					}
+				})
+				.then(data => {
+					console.log(data, 'success data');
+				})
+				.catch(err => {
+					console.log(err, 'err');
+				});
 			},
 			previewClearClick = () => {
 				this.setState({preview: ''});

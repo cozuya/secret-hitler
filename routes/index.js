@@ -8,6 +8,7 @@ let passport = require('passport'), // eslint-disable-line no-unused-vars
 	socketRoutes = require('./socket/routes'),
 	accounts = require('./accounts'),
 	version = require('../version'),
+	fs = require('fs'),
 	ensureAuthenticated = (req, res, next) => {
 		if (req.isAuthenticated()) {
 			return next();
@@ -125,8 +126,8 @@ module.exports = () => {
 		renderPage(req, res, 'page-player-profiles', 'playerProfiles');
 	});
 
-	app.get('/game', ensureAuthenticated, (req, res) => { // naaaaaaaate.  Remove after IP bans go in.
-		if ((req.headers['X-Real-IP'] && req.headers['X-Real-IP'] !== '60.241.181.49') || (req.headers['x-forwarded-for'] && req.headers['x-forwarded-for'] !== '60.241.181.49') || (req.headers['X-Forwarded-For'] && req.headers['X-Forwarded-For'] !== '60.241.181.49') || (req.connection.remoteAddress && req.connection.remoteAddress !== '60.241.181.49')) {
+	app.get('/game', ensureAuthenticated, (req, res) => {
+		if (req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress) {
 			res.render('game', {
 				user: req.user.username,
 				game: true,
@@ -178,5 +179,19 @@ module.exports = () => {
 				else res.sendStatus(200);
 			}
 		);
+	});
+
+	app.post('/upload-cardback', ensureAuthenticated, (req, res) => {
+		if (!req.session.passport) {
+			return;
+		}
+
+		const {image} = req.body,
+			extension = image.split(';base64')[0].split('/')[1],
+			raw = image.split(',')[1];
+
+		fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
+			console.log('done writing file');
+		});
 	});
 };
