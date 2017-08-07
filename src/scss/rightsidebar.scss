@@ -22,36 +22,41 @@
         }
         .playerlist-header {
             padding: 5px 0 3px;
-            background: #000;
+						background: #000;
+						display: flex;
+						justify-content: space-between;
+						color: $darkfascistteam;
             .mod-button {
                 color: red !important;
-                margin-left: 10px;
                 font-weight: 700;
                 cursor: pointer;
                 border: 2px solid red;
                 border-radius: 50%;
                 padding: 2px;
             }
-            .filter-container {
-                margin-left: 30px;
-                border-radius: 50%;
-                box-shadow: 0 0 4px 3px yellow;
-                cursor: pointer;
-            }
             .all {
                 background: url('../favicon-16x16.png') no-repeat;
                 width: 16px;
                 height: 16px;
                 vertical-align: text-bottom;
-                display: inline-block;
+								display: inline-block;
+								border-radius: 50%;
+    						box-shadow: 0 0 4px 3px yellow;
+    						cursor: pointer;
             }
             .rainbow {
                 background: url('../images/rainbow.png') no-repeat;
                 width: 16px;
                 height: 16px;
                 vertical-align: text-bottom;
-                display: inline-block;
-            }
+								display: inline-block;
+								border-radius: 50%;
+    						box-shadow: 0 0 4px 3px yellow;
+    						cursor: pointer;
+						}
+						.header-name-container, .header-name-container h3 {
+							display: inline;
+						}
         }
         .circle.icon {
             margin-left: 5px;
@@ -62,7 +67,7 @@
             margin: 0;
         }
         i {
-            margin-top: -5px;
+            // margin-top: -5px;
         }
         .playerlist-body {
             height: 250px;
@@ -83,11 +88,7 @@
         }
         .ui.header {
             padding-left: 5px;
-            float: left;
             margin-bottom: 0;
-            ~div {
-                float: right;
-            }
         }
         .user-container {
             display: flex;
@@ -149,7 +150,7 @@
             }
         }
         .chats {
-            height: 254px;
+            height: 252px;
             padding-left: 5px;
             position: relative;
             >.ui.list {

@@ -192,9 +192,10 @@ module.exports = () => {
 			})
 				.then(player => {
 					player.lastConnectedIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
-					player.save();
+					player.save(() => {
+						res.send();
+					});
 				});
-			res.send();
 		});
 
 	// todo-alpha, signed in on 404 page, nothing updated until moved page.

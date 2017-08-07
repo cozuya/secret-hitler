@@ -12,7 +12,7 @@ const LeftSidebar = props => {
 					bGameStatus = b.gameStatus;
 
 				if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
-					return a.seatedCount - b.seatedCount;
+					return a.seatedCount === b.seatedCount ? -1 : a.seatedCount - b.seatedCount;
 				}
 
 				if (aGameStatus === 'notStarted' && bGameStatus !== 'notStarted') {
@@ -31,7 +31,11 @@ const LeftSidebar = props => {
 					return 1;
 				}
 
-				return a.name - b.name;
+				if (aGameStatus === 'isStarted' && bGameStatus === 'isStarted') {
+					return a.electionCount === b.electionCount ? a.seatedCount - b.seatedCount : a.electionCount - b.electionCount;
+				}
+
+				return a.uid - b.uid;
 			}).map((game, index) => {
 				return (
 					<SidebarGame

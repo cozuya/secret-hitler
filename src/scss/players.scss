@@ -35,8 +35,10 @@
         float: left;
         margin: 18px 5px 0;
         border-radius: 4px;
-        background-image: url('../images/tweed.png');
-        position: relative;
+				background-image: url('../images/tweed.png');
+				background-repeat: no-repeat;
+				position: relative;
+
         .player-number {
             overflow: hidden;
             white-space: nowrap;

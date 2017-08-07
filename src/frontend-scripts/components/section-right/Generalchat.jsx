@@ -37,7 +37,7 @@ export default class Generalchat extends React.Component {
 		const {inputValue} = this.state;
 
 		e.preventDefault();
-		if (inputValue.length < 300) {
+		if (inputValue.length < 300 && inputValue) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
 				chat: inputValue

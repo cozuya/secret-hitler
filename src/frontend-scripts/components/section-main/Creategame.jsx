@@ -122,7 +122,7 @@ export default class Creategame extends React.Component {
 				general: {
 					enabledPlayerCounts: this.state.checkedSliderValues.filter(el => el).map((el, i) => i + 5),
 					whitelistedPlayers: [],
-					uid: Math.random().toString(36).substring(6),
+					uid: Math.random().toString(36).substring(2),
 					name: $creategame.find('div.gamename input').val() || 'New Game',
 					minPlayersCount: this.state.sliderValues[0],
 					excludedPlayerCount: this.state.checkedSliderValues.map((el, index) => el ? null : index + 5).filter(el => el),
@@ -136,7 +136,9 @@ export default class Creategame extends React.Component {
 					electionCount: 0
 				},
 				publicPlayersState: [{
-					userName: this.props.userInfo.userName,
+					userName: userInfo.userName,
+					customCardback: userInfo.gameSettings.customCardback,
+					customCardbackUid: userInfo.gameSettings.customCardbackUid,
 					connected: true,
 					cardStatus: {
 						cardDisplayed: false,

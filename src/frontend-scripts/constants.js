@@ -11,7 +11,6 @@ const CONTRIBUTORS = module.exports.CONTRIBUTORS = ['jbasrai', 'sethe', 'veggiem
 module.exports.PLAYERCOLORS = user => cn({
 	// natekiller: user.userName === NATEKILLER,
 	admin: ADMINS.includes(user.userName),
-	contributer: CONTRIBUTORS.includes(user.userName),
 	moderatorcolor: MODERATORS.includes(user.userName),
 	experienced1: user.wins + user.losses > 50,
 	experienced2: user.wins + user.losses > 100,
@@ -27,5 +26,6 @@ module.exports.PLAYERCOLORS = user => cn({
 	onfire7: user.wins / (user.wins + user.losses) > 0.64,
 	onfire8: user.wins / (user.wins + user.losses) > 0.66,
 	onfire9: user.wins / (user.wins + user.losses) > 0.68,
-	onfire10: user.wins / (user.wins + user.losses) > 0.7
+	onfire10: user.wins / (user.wins + user.losses) > 0.7,
+	contributer: CONTRIBUTORS.includes(user.userName)
 });

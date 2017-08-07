@@ -83,109 +83,110 @@ export default class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const {gameInfo, userInfo} = this.props,
+		const {gameInfo} = this.props,
 			{playersState, gameState, publicPlayersState} = gameInfo;
 
-		return publicPlayersState.map((player, i) =>
-			(
-				<div key={i}
-					data-index={i}
-					onClick={this.handlePlayerClick}
+		return publicPlayersState.map((player, i) => (
+			<div key={i}
+				data-index={i}
+				onClick={this.handlePlayerClick}
+				style={player.customCardback ? {backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`} : {}}
+				className={
+					(() => {
+						let classes = 'player-container',
+							user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+
+						if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
+							classes = `${classes} notifier ${playersState[i].notificationStatus}`;
+						} else if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].notificationStatus) {
+							classes = `${classes} notifier ${publicPlayersState[i].notificationStatus}`;
+						}
+
+						if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].isDead) {
+							classes = `${classes} isDead`;
+						}
+
+						if (user && user.wins + user.losses > 49) {
+							classes = `${classes} ${PLAYERCOLORS(user)}`;
+						}
+
+						return classes;
+					})()
+				}>
+				<div className={
+					(() => {
+						let classes = 'player-number';
+
+						if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+							classes = `${classes} ${playersState[i].nameStatus}`;
+						} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+							classes = `${classes} ${publicPlayersState[i].nameStatus}`;
+						}
+
+						if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
+							classes = `${classes} disconnected`;
+						}
+
+						return classes;
+					})()
+				}>{gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
+				</div>
+				{this.renderPreviousGovtToken(i)}
+				{this.renderLoader(i)}
+				{this.renderGovtToken(i)}
+				<div
 					className={
-						(() => {
-							let classes = 'player-container',
-								user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+					(() => {
+						let classes = 'card-container';
 
-							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
-								classes = `${classes} notifier ${playersState[i].notificationStatus}`;
-							} else if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].notificationStatus) {
-								classes = `${classes} notifier ${publicPlayersState[i].notificationStatus}`;
-							}
+						if (playersState && Object.keys(playersState).length && playersState[i].cardStatus.cardDisplayed || (publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)) {
+							classes += ' showing';
+						}
 
-							if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].isDead) {
-								classes = `${classes} isDead`;
-							}
-
-							if (user && user.wins + user.losses > 49) {
-								classes = `${classes} ${PLAYERCOLORS(user)}`;
-							}
-
-							return classes;
-						})()
-					}>
-					<div className={
-						(() => {
-							let classes = 'player-number';
-
-							if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
-								classes = `${classes} ${playersState[i].nameStatus}`;
-							} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
-								classes = `${classes} ${publicPlayersState[i].nameStatus}`;
-							}
-
-							if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
-								classes = `${classes} disconnected`;
-							}
-
-							return classes;
-						})()
-					}>{gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
-					</div>
-					{this.renderPreviousGovtToken(i)}
-					{this.renderLoader(i)}
-					{this.renderGovtToken(i)}
+						if (playersState && Object.keys(playersState).length && playersState[i].cardStatus.isFlipped || (publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)) {
+							classes += ' flipped';
+						}
+						return classes;
+					})()
+				}>
 					<div
 						className={
 						(() => {
-							let classes = 'card-container';
+							let classes = 'card card-front';
 
-							if (playersState && Object.keys(playersState).length && playersState[i].cardStatus.cardDisplayed || (publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)) {
-								classes += ' showing';
+							if (Object.keys(publicPlayersState[i]).length && publicPlayersState[i].cardStatus.cardFront) {
+								classes = `${classes} ${publicPlayersState[i].cardStatus.cardFront}`;
 							}
 
-							if (playersState && Object.keys(playersState).length && playersState[i].cardStatus.isFlipped || (publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)) {
-								classes += ' flipped';
-							}
 							return classes;
 						})()
-					}>
-						<div
-							className={
-							(() => {
-								let classes = 'card card-front';
+					} />
+					<div
+						className={
+						(() => {
+							let classes = 'card card-back';
 
-								if (Object.keys(publicPlayersState[i]).length && publicPlayersState[i].cardStatus.cardFront) {
-									classes = `${classes} ${publicPlayersState[i].cardStatus.cardFront}`;
+							if (playersState && playersState.length && Object.keys(playersState[i]).length && Object.keys(playersState[i].cardStatus).length && Object.keys(playersState[i].cardStatus.cardBack).length) {
+								if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
+									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
+								} else {
+									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
 								}
-
-								return classes;
-							})()
-						} />
-						<div
-							className={
-							(() => {
-								let classes = 'card card-back';
-
-								if (playersState && playersState.length && Object.keys(playersState[i]).length && Object.keys(playersState[i].cardStatus).length && Object.keys(playersState[i].cardStatus.cardBack).length) {
-									if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
-										classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
-									} else {
-										classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
-									}
-								} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
-									if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
-										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
-									} else {
-										classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
-									}
+							} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
+								if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
+									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
+								} else {
+									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
 								}
+							}
 
-								return classes;
-							})()
-						} />
-					</div>
+							return classes;
+						})()
+					} />
 				</div>
-			));
+			</div>
+			)
+		);
 	}
 
 	renderTakeSeat() {

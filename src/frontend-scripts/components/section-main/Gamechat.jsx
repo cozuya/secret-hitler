@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import {PLAYERCOLORS, MODERATORS} from '../../constants';
+import {PLAYERCOLORS, MODERATORS, ADMINS} from '../../constants';
 import { loadReplay } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -89,7 +89,7 @@ class Gamechat extends React.Component {
 
 		e.preventDefault();
 
-		if (currentValue.length < 300) {
+		if (currentValue.length < 300 && currentValue) {
 			const chat = {
 				userName: userInfo.userName,
 				chat: currentValue,
@@ -470,7 +470,7 @@ class Gamechat extends React.Component {
 									|| (isDead && !gameState.isCompleted)
 									|| isGovernmentDuringPolicySelection
 									|| gameInfo.general.disableChat
-									|| (gameInfo.general.private && !userInfo.isSeated)
+									|| (gameInfo.general.private && !userInfo.isSeated && !MODERATORS.includes(userInfo.userName) && !ADMINS.includes(userInfo.userName))
 									|| (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())) {
 									classes += ' disabled';
 								}

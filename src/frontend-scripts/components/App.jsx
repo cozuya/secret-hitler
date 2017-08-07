@@ -147,6 +147,7 @@ export class App extends React.Component {
 					userName: userInfo.userName,
 					connected: true,
 					isDead: false,
+					customCardback: 'png',
 					cardStatus: {
 						cardDisplayed: false,
 						isFlipped: false,
@@ -178,6 +179,8 @@ export class App extends React.Component {
 			data = {
 				uid: gameInfo.general.uid,
 				userName: userInfo.userName,
+				customCardback: userInfo.gameSettings.customCardback,
+				customCardbackUid: userInfo.gameSettings.customCardbackUid,
 				password
 			};
 

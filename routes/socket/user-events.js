@@ -72,6 +72,8 @@ module.exports.updateSeatedUser = (socket, data) => {
 			userName: data.userName,
 			connected: true,
 			isDead: false,
+			customCardback: data.customCardback,
+			customCardbackUid: data.customCardbackUid,
 			cardStatus: {
 				cardDisplayed: false,
 				isFlipped: false,
@@ -495,7 +497,6 @@ module.exports.handleModerationAction = (socket, data) => {
 	const {passport} = socket.handshake.session,
 		affectedSocketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName);
 
-	// console.log(data, 'data');
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
 		const modaction = new ModAction({
 				date: new Date(),
@@ -565,6 +566,21 @@ module.exports.handleModerationAction = (socket, data) => {
 
 			banAccount(data.userName);
 			ipbanl.save();
+			break;
+		case 'deleteCardback':
+			Account.findOne({username: data.userName})
+				.then(account => {
+					account.gameSettings.customCardback = '';
+
+					account.save(() => {
+						if (io.sockets.sockets[affectedSocketId]) {
+							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+						}
+					});
+				})
+				.catch(err => {
+					console.log(err);
+				});
 			break;
 		default:
 			const setType = /setWins/.test(data.action) ? 'wins' : 'losses',

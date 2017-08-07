@@ -65,31 +65,29 @@ class Playerlist extends React.Component {
 		return (
 			<section className="playerlist">
 				<div className="playerlist-header">
-					<div className="clearfix">
+					<span className="header-name-container">
 						<h3 className="ui header">Lobby</h3>
 						<i className="info circle icon" onClick={this.clickInfoIcon} title="Click to get information about player colors" />
-						{this.renderFilterIcons()}
-						{this.renderModerationButton()}
-						<div className="ui basic modal playerlistinfo">
-							<div className="header">Lobby and player color info</div>
-							<p>Players in the lobby, general chat, and game chat are grey/white until they reach 50 games played.  These are known as "rainbow players" and have access to play in special rainbow player only games.</p>
-							<p>After that, if they have less than 52% win rate, their player color varies between <span className="experienced5">light green</span> and <span className="experienced1">dark green</span>, depending on how many games played they have.</p>
-							<p>Additionally, if a player has at least 50 games played and a win rate of 52% or higher, their player color ranges from <span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how high it is.  The highest tier is 70%.</p>
-							<p>Also <span className="admin">admins</span> are always on top, and <span className="contributer">contributors</span> get a special color as well.</p>
-						</div>
-						{(() => {
-							if (Object.keys(this.props.userList).length) {
-								return (
-									<div>
-										<span>{this.props.userList.list.length}</span>
-										<i className="large user icon" title="Number of players logged in" />
-										<span>{this.props.userList.totalSockets - this.props.userList.list.length >= 0 ? this.props.userList.totalSockets - this.props.userList.list.length : 0}</span>
-										<i className="large unhide icon" title="Number of observers" />
-									</div>
-								);
-							}
-						})()}
+					</span>
+					{this.renderFilterIcons()}
+					{this.renderModerationButton()}
+					<div className="ui basic modal playerlistinfo">
+						<div className="header">Lobby and player color info</div>
+						<p>Players in the lobby, general chat, and game chat are grey/white until they reach 50 games played.  These are known as "rainbow players" and have access to play in special rainbow player only games.</p>
+						<p>After that, if they have less than 52% win rate, their player color varies between <span className="experienced5">light green</span> and <span className="experienced1">dark green</span>, depending on how many games played they have.</p>
+						<p>Additionally, if a player has at least 50 games played and a win rate of 52% or higher, their player color ranges from <span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how high it is.  The highest tier is 70%.</p>
+						<p>Also <span className="admin">admins</span> are always on top, and <span className="contributer">contributors</span> get a special color as well.</p>
 					</div>
+					{(() => {
+						if (Object.keys(this.props.userList).length) {
+							return (
+								<span>
+									<span>{this.props.userList.list.length}</span>
+									<i className="large user icon" title="Number of players logged in" />
+								</span>
+							);
+						}
+					})()}
 				</div>
 				<div className="playerlist-body">
 					{(() => {

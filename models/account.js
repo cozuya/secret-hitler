@@ -11,6 +11,7 @@ const mongoose = require('mongoose'),
 		gameSettings: {
 			customCardback: String,
 			customCardbackSaveTime: Date,
+			customCardbackUid: String,
 			enableTimestamps: Boolean,
 			enableRightSidebarInGame: Boolean,
 			disablePlayerColorsInChat: Boolean,

@@ -3,11 +3,13 @@ import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import $ from 'jquery';
 import Slider from 'rc-slider';
+import Modal from 'semantic-ui-modal';
 import Checkbox from 'semantic-ui-checkbox';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 
 $.fn.checkbox = Checkbox;
+$.fn.modal = Modal;
 
 const mapDispatchToProps = dispatch => ({
 	fetchProfile: username => dispatch(fetchProfile(username))
@@ -22,7 +24,8 @@ class Settings extends React.Component {
 		this.state = {
 			sliderValues: [8, 28],
 			preview: '',
-			cardbackUploadStatus: ''
+			cardbackUploadStatus: '',
+			isUploaded: false
 		};
 	}
 
@@ -84,8 +87,22 @@ class Settings extends React.Component {
 	}
 
 	render() {
-		const onDrop = files => {
+		const onDrop = (files, rejectedFile) => {
 				const reader = new FileReader();
+
+				if (rejectedFile.length) {
+					this.setState({
+						cardbackUploadStatus: 'The file you selected has a wrong extension.  Only png jpg and jpeg are allowed.'
+					});
+					return;
+				}
+
+				if (files[0].size > 40000) {
+					this.setState({
+						cardbackUploadStatus: 'The file you selected is too big.  A maximum of 40kb is allowed.'
+					});
+					return;
+				}
 
 				reader.onload = () => {
 					this.setState({preview: reader.result});
@@ -94,7 +111,9 @@ class Settings extends React.Component {
 				reader.readAsDataURL(files[0]);
 			},
 			displayCardbackInfoModal = () => {
-				console.log('todo');
+				$('.cardbackinfo')
+					.modal('setting', 'transition', 'scale')
+					.modal('show');
 			},
 			previewSaveClick = () => {
 				$.ajax({
@@ -107,6 +126,7 @@ class Settings extends React.Component {
 				.then(data => {
 					this.setState({
 						cardbackUploadStatus: data.message,
+						isUploaded: data.message === 'You need to have played 50 games to upload a cardback.' ? '' : this.state.preview,
 						preview: ''
 					});
 				})
@@ -181,14 +201,24 @@ class Settings extends React.Component {
 							<div className="row cardbacks-container">
 								<div className="current">
 									<h5 className="ui header">Current</h5>
-									{this.props.userInfo.gameSettings.customCardback
-										? <div className="current-cardback" style={{background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${this.props.userInfo.gameSettings.customCardback}) no-repeat`}} />
-										: <div className="current-cardback" />}
+									{(() => {
+										if (this.state.isUploaded) {
+											return <img src={this.state.isUploaded} />;
+										}
+
+										if (this.props.userInfo.gameSettings.customCardback) {
+											const imageUid = Math.random().toString(36).substring(6);
+
+											return <div className="current-cardback" style={{background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${this.props.userInfo.gameSettings.customCardback}?${imageUid}) no-repeat`}} />;
+										}
+
+										return <div className="current-cardback" />;
+									})()}
 								</div>
 								<div className="upload">
 									<h5 className="ui header">New</h5>
 									<Dropzone
-										accept='image/png, image/jpg'
+										accept='image/png, image/jpg, image/jpeg'
 										onDrop={onDrop}
 										multiple={false}
 										className='dropzone'
@@ -201,13 +231,18 @@ class Settings extends React.Component {
 										return (
 											<div className="preview-container">
 												<h5 className="ui header">Preview</h5>
-												<img width="70" height="95" src={this.state.preview} />;
+												<img src={this.state.preview} />;
 												<button onClick={previewSaveClick} className="ui button">Save</button>
 												<a href="#" onClick={previewClearClick}>Clear</a>
 											</div>
 										);
 									}
 								})()}
+								<div className="ui basic modal cardbackinfo">
+									<div className="header">Cardback info and terms of use</div>
+									<p><strong>Image uploaded must be 70px by 95px, or it will not look right.  Do not trust the previewer - it will crunch to fit the box, the game itself won't do that.</strong> Rainbow players only. Can only upload an image once per 18 hours, be careful before hitting save. Only png, jpg, and jpeg are permitted.  Must be below 40kb.</p>
+									<p><strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong></p>
+								</div>
 							</div>
 							<div className="centered row cardback-message-container">{this.state.cardbackUploadStatus}</div>
 						</div>

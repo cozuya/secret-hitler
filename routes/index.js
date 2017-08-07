@@ -202,6 +202,7 @@ module.exports = () => {
 				fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
 					account.gameSettings.customCardback = extension;
 					account.gameSettings.customCardbackSaveTime = now;
+					account.gameSettings.customCardbackUid = Math.random().toString(36).substring(2);
 					account.save(() => {
 						res.json({message: 'Cardback successfully uploaded.'});
 						io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);

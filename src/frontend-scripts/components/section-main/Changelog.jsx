@@ -9,6 +9,28 @@ const Changelog = props =>
 				<h2>Changelog</h2>
 			</div>
 			<div className="ui header">
+				<p>Version 0.7.0 "black" released 8-5-2017</p>
+			</div>
+			<h3>New feature: player uploaded custom cardbacks!</h3>
+			<p>In the settings view (cog icon in upper right), players now have the option to upload a new cardback that will be shown in-game.  The details are:</p>
+			<ul>
+				<li><strong>Image uploaded must be 70px by 95px, or it will not look right.  Do not trust the previewer - it will crunch to fit the box, the game itself won't do that.</strong></li>
+				<li>Rainbow players only.</li>
+				<li>Can only upload an image once per 18 hours.  Be careful before hitting save.</li>
+				<li>Only png, jpg, and jpeg are permitted.  Must be below 40kb.</li>
+				<li><strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong> The terms of service page has been updated.</li>
+			</ul>
+			<h3>New feature: better support for large width monitors.</h3>
+			<p>The application is no longer fixed width, and will stretch to fit the entire screen.  Chat boxes will take up the remaining space.  I recommend turning "show right sidebar in game" on.</p>
+			<h3>New feature: enhanced moderator actions</h3>
+			<p>Mods can now delete users, set wins and losses, and delete cardbacks.  Also they can now type in player names to affect offline players.  Lets hope they're not fascists.</p>
+			<p>Other stuff:</p>
+			<ul>
+				<li>The "chat a blank line" bug was fixed.</li>
+				<li>Observer count was removed as it never worked right anyways.</li>
+				<li>Moderators can chat in observer chat in private games.</li>
+			</ul>
+			<div className="ui header">
 				<p>Version 0.6.6 "tuotuc" released 8-2-2017</p>
 			</div>
 			<h3>Small patch to fix a bug that could be used to crash the server thanks to player veggiemanz who now has a shiny orange name.  Also these things:</h3>
@@ -21,26 +43,6 @@ const Changelog = props =>
 				<li>Confetti should no longer prevent the winners from being able to type in chat while its raining down.</li>
 				<li>A fix to chancellor discards not showing up in replays.</li>
 			</ul>
-			<div className="ui header">
-				<p>Version 0.6.5 "cutout" released 7-30-2017</p>
-			</div>
-			<h3>New feature: creategame player count exclusions.</h3>
-			<div style={{textAlign: 'center'}}>
-				<img src="images/excludeplayers.png" style={{width: '50%'}}/>
-			</div>
-			<p>In the create game view, players now have the option to uncheck player counts from starting the game.  For example, if you really hated 7 player games but liked playing 5-10 player games, your new game would not start if there are 7 seated players. Hitting that threshold will cause your 20 second timer to restart, but that's unavoidable.</p>
-			<div style={{textAlign: 'center'}}>
-				<img src="images/no79.png" style={{width: '50%'}}/>
-			</div>
-			<p>Other issues:</p>
-			<ul>
-				<li>Your name in-game is no longer green - it is the color of your dealt role.  Somehow people were forgetting they're hitler..</li>
-				<li>Moderators have a new color.</li>
-				<li>Thanks to a contribution, track images have been redone from the original files and colored, unlike my crappy scans.</li>
-				<li>Bug fix: player replays are back.</li>
-				<li>Bug fix: green players are not all the same color green (based on played games).</li>
-			</ul>
-			<p>Next up: player uploaded cardback images!  Fun.  No nazi stuff please..</p>
 			<div className="ui header">
 				<p>Version 0.6.0 "noise" released 6-12-2017</p>
 			</div>
