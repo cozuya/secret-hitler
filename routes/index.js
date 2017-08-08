@@ -197,7 +197,8 @@ module.exports = () => {
 			if (account.wins + account.losses < 50) {
 				res.json({message: 'You need to have played 50 games to upload a cardback.'});
 			// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
-			// 	res.json({message: 'You can only change your cardback once every 18 hours.'});
+			} else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000)) {
+				res.json({message: 'You can only change your cardback once every 30 seconds.'});
 			} else {
 				fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
 					account.gameSettings.customCardback = extension;

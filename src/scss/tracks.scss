@@ -34,7 +34,13 @@
             position: relative;
             -webkit-backface-visibility: hidden; // thanks osx safari
             backface-visibility: hidden;
-        }
+				}
+				.track-flipper-top {
+					background-color: #90aeba;
+				}
+				.track-flipper-bottom {
+					background-color: #85393b;
+				}
         .track {
             transform: rotateX(0deg);
             background-size: contain;

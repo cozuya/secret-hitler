@@ -16,7 +16,7 @@ const Changelog = props =>
 			<ul>
 				<li><strong>Image uploaded must be 70px by 95px, or it will not look right.  Do not trust the previewer - it will crunch to fit the box, the game itself won't do that.</strong></li>
 				<li>Rainbow players only.</li>
-				<li>Can only upload an image once per 18 hours.  Be careful before hitting save.</li>
+				<li>For today only, you can upload an image every 30 seconds.  Then it will be limited to once upload an image once per 18 hours.  Be careful before hitting save.</li>
 				<li>Only png, jpg, and jpeg are permitted.  Must be below 40kb.</li>
 				<li><strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong> The terms of service page has been updated.</li>
 			</ul>
