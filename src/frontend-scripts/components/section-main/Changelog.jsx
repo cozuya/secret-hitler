@@ -9,7 +9,15 @@ const Changelog = props =>
 				<h2>Changelog</h2>
 			</div>
 			<div className="ui header">
-				<p>Version 0.7.0 "black" released 8-5-2017</p>
+				<p>Version 0.7.1 "black2" released 8-8-2017</p>
+			</div>
+			<ul>
+				<li>Players that have a custom cardback now correctly shows the red X when dead.</li>
+				<li>General chat width is now working correctly.</li>
+				<li>There's a new player setting slider to change the width of the application if you don't want it full screen. All the way to the left if you like it the old way.</li>
+			</ul>
+			<div className="ui header">
+				<p>Version 0.7.0 "black" released 8-7-2017</p>
 			</div>
 			<h3>New feature: player uploaded custom cardbacks!</h3>
 			<p>In the settings view (cog icon in upper right), players now have the option to upload a new cardback that will be shown in-game.  The details are:</p>

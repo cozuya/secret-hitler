@@ -178,7 +178,7 @@
         }
     }
     .player-container.isDead {
-        background-image: url('../images/deadplayer.png');
+        background-image: url('../images/deadplayer.png') !important;
     }
     .notifier::after {
         content: '';
