@@ -14,7 +14,6 @@ const Changelog = props =>
 			<ul>
 				<li>Players that have a custom cardback now correctly shows the red X when dead.</li>
 				<li>General chat width is now working correctly.</li>
-				<li>There's a new player setting slider to change the width of the application if you don't want it full screen. All the way to the left if you like it the old way.</li>
 			</ul>
 			<div className="ui header">
 				<p>Version 0.7.0 "black" released 8-7-2017</p>
