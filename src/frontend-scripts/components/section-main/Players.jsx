@@ -83,14 +83,14 @@ export default class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const {gameInfo} = this.props,
+		const {gameInfo, userInfo} = this.props,
 			{playersState, gameState, publicPlayersState} = gameInfo;
 
 		return publicPlayersState.map((player, i) => (
 			<div key={i}
 				data-index={i}
 				onClick={this.handlePlayerClick}
-				style={player.customCardback ? {backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`} : {}}
+				style={(player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings.disablePlayerCardbacks))) ? {backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`} : {}}
 				className={
 					(() => {
 						let classes = 'player-container',

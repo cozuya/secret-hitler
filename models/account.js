@@ -15,6 +15,7 @@ const mongoose = require('mongoose'),
 			enableTimestamps: Boolean,
 			enableRightSidebarInGame: Boolean,
 			disablePlayerColorsInChat: Boolean,
+			disablePlayerCardbacks: Boolean,
 			unbanTime: Date,
 			fontSize: Number
 		},

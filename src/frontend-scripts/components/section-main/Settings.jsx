@@ -45,6 +45,19 @@ class Settings extends React.Component {
 			}
 		});
 
+		$(this.cardbacks).checkbox({
+			onChecked() {
+				socket.emit('updateGameSettings', {
+					disablePlayerCardbacks: true
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateGameSettings', {
+					disablePlayerCardbacks: false
+				});
+			}
+		});
+
 		$(this.sidebar).checkbox({
 			onChecked() {
 				socket.emit('updateGameSettings', {
@@ -148,6 +161,11 @@ class Settings extends React.Component {
 						<div className="sub header">
 							Account settings can be found <a href="/account" target="_blank" rel="noopener noreferrer">here</a> (new tab).
 						</div>
+						<button
+							className="ui button"
+							onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
+							View your profile
+						</button>
 					</div>
 				</div>
 				<div className="ui grid">
@@ -169,11 +187,12 @@ class Settings extends React.Component {
 							</div>
 						</div>
 						<div className="four wide column popups">
-							<button
-								className="ui button"
-								onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
-								View your profile
-							</button>
+							<h4 className="ui header">Disable player cardbacks</h4>
+							<div className="ui fitted toggle checkbox" ref={c => {
+								this.cardbacks = c;
+							}}>
+								<input type="checkbox" name="cardbacks" defaultChecked={this.props.userInfo.gameSettings.disablePlayerCardbacks} />
+							</div>
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Disable player colors in chat</h4>

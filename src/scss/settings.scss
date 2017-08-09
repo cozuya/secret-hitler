@@ -1,9 +1,19 @@
 .settings {
 	padding: 2%;
+	.content > button {
+		position: absolute;
+    left: 50px;
+    top: 100px;
+    color: #fff;
+	}
 
-	.popups button {
-		margin-top: 20px;
-		color: #fff;
+	.popups {
+		text-align: center;
+	
+		button {
+			margin-top: 20px;
+			color: #fff;
+		}
 	}
 
 	.remove.icon {
@@ -52,19 +62,10 @@
 			color: yellow;
 		}
 
-		.preview-container {
-			button {
-				position: relative;
-				color: #ddd;
-				top: -60px;
-				left: 10px;
-			}
-
-			a {
-				position: relative;
-				top: -10px;
-				left: -48px;
-			}
+		.preview-container a {
+			position: relative;
+			top: -10px;
+			left: -48px;
 		}
 	}
 
