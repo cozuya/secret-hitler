@@ -95,6 +95,16 @@ class Settings extends React.Component {
 		});
 	}
 
+	widthSliderDrop(e) {
+		// this.props.socket.emit('updateGameSettings', {
+		// 	customWidth: this.state.sliderValues[0]
+		// });
+	}
+
+	widthSliderChange(e) {
+		// todo
+	}
+
 	leaveSettings() {
 		this.props.onLeaveSettings('default');
 	}
@@ -207,6 +217,12 @@ class Settings extends React.Component {
 						<div className="eight wide column slider">
 							<h4 className="ui header" style={{fontSize: this.state.sliderValues.length > 1 ? '18px' : `${this.state.sliderValues[0]}px`}}>Gamechat font size</h4>
 							<Slider onAfterChange={this.sliderDrop} onChange={this.sliderChange} min={8} max={28} range defaultValue={this.props.userInfo.gameSettings.fontSize ? [this.props.userInfo.gameSettings.fontSize] : [18]} marks={{8: '8px', 18: '18px', 28: '28px'}} />
+						</div>
+					</div>
+					<div className="row centered">
+						<div className="eight wide column slider">
+							<h4 className="ui header">Application width</h4>
+							<Slider onAfterChange={this.widthSliderDrop} onChange={this.widthSliderChange} min={50} max={100} range defaultValue={this.props.userInfo.gameSettings.customWidth ? [this.props.userInfo.gameSettings.customWidth] : [100]} marks={{50: '50%', 100: 'Full screen'}} />
 						</div>
 					</div>
 					<div className="row cardback-container">

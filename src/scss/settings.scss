@@ -62,10 +62,19 @@
 			color: yellow;
 		}
 
-		.preview-container a {
-			position: relative;
-			top: -10px;
-			left: -48px;
+		.preview-container {
+			button {
+				position: relative;
+				color: #ddd;
+				top: -60px;
+				left: 10px;
+			}
+
+			a {
+				position: relative;
+				top: -10px;
+				left: -48px;
+			}
 		}
 	}
 
