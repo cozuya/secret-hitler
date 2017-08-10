@@ -483,6 +483,8 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 					account.gameSettings[setting] = data[setting];
 				}
 
+				console.log(data, data);
+
 				account.save(() => {
 					socket.emit('gameSettings', account.gameSettings);
 				});

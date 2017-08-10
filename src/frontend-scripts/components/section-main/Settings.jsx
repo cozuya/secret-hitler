@@ -21,8 +21,11 @@ class Settings extends React.Component {
 		this.leaveSettings = this.leaveSettings.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
 		this.sliderDrop = this.sliderDrop.bind(this);
+		this.widthSliderChange = this.widthSliderChange.bind(this);
+		this.widthSliderDrop = this.widthSliderDrop.bind(this);
 		this.state = {
 			sliderValues: [8, 28],
+			widthSliderValue: '',
 			preview: '',
 			cardbackUploadStatus: '',
 			isUploaded: false
@@ -96,12 +99,15 @@ class Settings extends React.Component {
 	}
 
 	widthSliderDrop(e) {
-		// this.props.socket.emit('updateGameSettings', {
-		// 	customWidth: this.state.sliderValues[0]
-		// });
+		console.log('wsd');
+		this.props.socket.emit('updateGameSettings', {
+			customWidth: this.state.widthSliderValues[0]
+		});
 	}
 
-	widthSliderChange(e) {
+	widthSliderChange(event) {
+		$('#game-container').css('width', event[0] === 1853 ? 'inherit' : `${event[0]}px`);
+		this.setState({widthSliderValue: `${event[0]}px`});
 		// todo
 	}
 
@@ -222,7 +228,7 @@ class Settings extends React.Component {
 					<div className="row centered">
 						<div className="eight wide column slider">
 							<h4 className="ui header">Application width</h4>
-							<Slider onAfterChange={this.widthSliderDrop} onChange={this.widthSliderChange} min={50} max={100} range defaultValue={this.props.userInfo.gameSettings.customWidth ? [this.props.userInfo.gameSettings.customWidth] : [100]} marks={{50: '50%', 100: 'Full screen'}} />
+							<Slider onAfterChange={this.widthSliderDrop} onChange={this.widthSliderChange} min={1253} max={1853} range defaultValue={this.props.userInfo.gameSettings.customWidth ? [parseInt(this.props.userInfo.gameSettings.customWidth.split('px')[0])] : [1853]} marks={{1253: 'Minimum', 1853: 'Full screen'}} />
 						</div>
 					</div>
 					<div className="row cardback-container">

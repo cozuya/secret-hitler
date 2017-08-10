@@ -5,6 +5,7 @@ import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
 import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, updateVersion} from '../actions/actions.js';
 import socket from '../socket';
+import $ from 'jquery';
 import PropTypes from 'prop-types';
 
 const select = state => state;
@@ -56,7 +57,10 @@ export class App extends React.Component {
 
 		socket.on('gameSettings', settings => {
 			const {userInfo} = this.props;
-
+			console.log(settings);
+			if (settings.customWidth && settings.customWidth !== '1853px') {
+				$('#game-container').css('width', event[0] === 1853 ? 'inherit' : `${event[0]}px`);
+			}
 			userInfo.gameSettings = settings;
 			dispatch(updateUser(userInfo));
 		});
