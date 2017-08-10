@@ -1,5 +1,5 @@
 #game-container {
-	margin: 0 auto;
+    margin: 0 auto;
 }
 
 .game>.ui.grid {
@@ -32,22 +32,22 @@
             display: flex;
             flex-direction: column;
             form {
-								background: #3d3d3d;
-								display: flex;
-								position: relative;
-								z-index: 100;
+                background: #3d3d3d;
+                display: flex;
+                position: relative;
+                z-index: 100;
             }
             .pointing.menu {
-							 .observer-chat { 
-              		opacity: .75; 
-            		} 
+                .observer-chat {
+                    opacity: .75;
+                }
                 margin: 0;
                 min-height: initial;
                 overflow-x: initial !important;
                 .item {
-										padding: 7px 8px 6px;
-										position: relative;
-										z-index: 101;
+                    padding: 7px 8px 6px;
+                    position: relative;
+                    z-index: 101;
                 }
                 .icon {
                     margin-top: 4px;
@@ -75,8 +75,7 @@
                 background: #F9FAFF;
                 font-size: 18px;
                 cursor: not-allowed;
-								overflow: hidden;
-
+                overflow: hidden;
                 .ui.list {
                     padding-left: 5px;
                     overflow-y: auto;
@@ -111,12 +110,12 @@
                 {
                     color: #FBBD08;
                 }
-								.chat-user--broadcast {
-									color: lightsalmon;
-								}
-								.broadcast-chat {
-									color: lightskyblue;
-								}
+                .chat-user--broadcast {
+                    color: lightsalmon;
+                }
+                .broadcast-chat {
+                    color: lightskyblue;
+                }
                 .chat-role--liberal {
                     font-weight: 700;
                     color: $darkliberalteam;
@@ -187,7 +186,7 @@
                     padding: 8px 3px 8px 3px;
                     font-size: 20px;
                     font-weight: 700;
-                    z-index: 1;
+                    z-index: 102;
                     cursor: pointer;
                     position: relative;
                     &:after {
@@ -273,13 +272,13 @@
 }
 
 .thirteen.wide .game>.ui.grid .six.chat-container .unlock.icon+.primary.button {
-		position: relative;
-		z-index: 100;
+    position: relative;
+    z-index: 100;
 }
 
 .sixteen.wide .game>.ui.grid .six.chat-container .unlock.icon+.primary.button {
-		position: relative;
-		z-index: 100;
+    position: relative;
+    z-index: 100;
 }
 
 .sixteen.wide .game>.ui.grid .six.chat-container .whitelist {
@@ -320,11 +319,10 @@
 }
 
 .leavegamemodals {
-	ul {
-		list-style-type: none;
-
-		li {
-			margin: 8px 0;
-		}
-	}
+    ul {
+        list-style-type: none;
+        li {
+            margin: 8px 0;
+        }
+    }
 }
