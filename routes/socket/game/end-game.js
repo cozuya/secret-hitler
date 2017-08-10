@@ -76,8 +76,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 			publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
 		});
 		sendInProgressGameUpdate(game);
-	// }, 15000);
-	}, 11115000);
+	}, 15000);
 
 	game.general.status = winningTeamName === 'fascist' ? 'Fascists win the game.' : 'Liberals win the game.';
 	game.gameState.isCompleted = winningTeamName;

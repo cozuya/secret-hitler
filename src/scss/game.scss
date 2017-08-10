@@ -41,7 +41,9 @@
                 min-height: initial;
                 overflow-x: initial !important;
                 .item {
-                    padding: 7px 8px 6px;
+										padding: 7px 8px 6px;
+										position: relative;
+										z-index: 101;
                 }
                 .icon {
                     margin-top: 4px;
