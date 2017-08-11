@@ -90,7 +90,7 @@ export default class Players extends React.Component {
 			<div key={i}
 				data-index={i}
 				onClick={this.handlePlayerClick}
-				style={(player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings.disablePlayerCardbacks))) ? {backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`} : {}}
+				style={(player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) ? {backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`} : {}}
 				className={
 					(() => {
 						let classes = 'player-container',
