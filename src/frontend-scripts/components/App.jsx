@@ -57,9 +57,9 @@ export class App extends React.Component {
 
 		socket.on('gameSettings', settings => {
 			const {userInfo} = this.props;
-			console.log(settings);
+
 			if (settings.customWidth && settings.customWidth !== '1853px') {
-				$('#game-container').css('width', event[0] === 1853 ? 'inherit' : `${event[0]}px`);
+				$('#game-container').css('width', settings.customWidth === 1853 ? 'inherit' : settings.customWidth);
 			}
 			userInfo.gameSettings = settings;
 			dispatch(updateUser(userInfo));

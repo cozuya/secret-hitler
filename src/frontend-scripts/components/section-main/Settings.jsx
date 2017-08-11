@@ -99,9 +99,8 @@ class Settings extends React.Component {
 	}
 
 	widthSliderDrop(e) {
-		console.log('wsd');
 		this.props.socket.emit('updateGameSettings', {
-			customWidth: this.state.widthSliderValues[0]
+			customWidth: this.state.widthSliderValue
 		});
 	}
 

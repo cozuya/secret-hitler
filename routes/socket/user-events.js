@@ -476,23 +476,23 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 };
 
 module.exports.handleUpdatedGameSettings = (socket, data) => {
-	if (socket.handshake.session.passport) { // yes, even THIS crashed the game once.
-		Account.findOne({username: socket.handshake.session.passport.user})
-			.then(account => {
-				for (const setting in data) {
-					account.gameSettings[setting] = data[setting];
-				}
-
-				console.log(data, data);
-
-				account.save(() => {
-					socket.emit('gameSettings', account.gameSettings);
-				});
-			})
-			.catch(err => {
-				console.log(err);
-			});
+	if (!socket.handshake.session.passport) { // yes, even THIS crashed the game once.
+		return;
 	}
+
+	Account.findOne({username: socket.handshake.session.passport.user})
+		.then(account => {
+			for (const setting in data) {
+				account.gameSettings[setting] = data[setting];
+			}
+
+			account.save(() => {
+				socket.emit('gameSettings', account.gameSettings);
+			});
+		})
+		.catch(err => {
+			console.log(err);
+		});
 };
 
 module.exports.handleModerationAction = (socket, data) => {

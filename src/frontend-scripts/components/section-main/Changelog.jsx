@@ -9,7 +9,16 @@ const Changelog = props =>
 				<h2>Changelog</h2>
 			</div>
 			<div className="ui header">
-				<p>Version 0.7.1 "black2" released 8-8-2017</p>
+				<p>Version 0.7.2 "black3" released 8-10-2017</p>
+			</div>
+			<ul>
+				<li>New game setting: disable player cardbacks.  For those who find them distracting.</li>
+				<li>New game setting: application width slider.  Prefer the old (or custom) width of the application?  Move this slider as desired.</li>
+				<li>Bug fix: winning players can now click leave game as before.  Sorry about that!</li>
+				<li>New mods: snake69sus & Ecoturtle</li>
+			</ul>
+			<div className="ui header">
+				<p>Version 0.7.1 "black2" released 8-10-2017</p>
 			</div>
 			<ul>
 				<li>Players that have a custom cardback now correctly shows the red X when dead.</li>
