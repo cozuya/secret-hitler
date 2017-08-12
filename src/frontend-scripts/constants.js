@@ -1,6 +1,6 @@
 const cn = require('classnames');
 
-const MODERATORS = module.exports.MODERATORS = ['snake69sus', 'Ecoturtle', 'sethe', 'maki2', 'Crazyuncle', 'nemonorm', 'Tenebrae', 'jazz', 'Max', 'Faaiz1999', 'DumbBullDoor', 'DFinn', 'wizzy', 'cbell'];
+const MODERATORS = module.exports.MODERATORS = ['Knownall', 'safi', 'snake69sus', 'Ecoturtle', 'sethe', 'maki2', 'Crazyuncle', 'nemonorm', 'Tenebrae', 'jazz', 'Max', 'Faaiz1999', 'DumbBullDoor', 'DFinn', 'wizzy', 'cbell'];
 
 const ADMINS = module.exports.ADMINS = ['coz', 'Stine'];
 
