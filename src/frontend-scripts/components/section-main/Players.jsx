@@ -9,10 +9,17 @@ export default class Players extends React.Component {
 		super();
 		this.clickedTakeSeat = this.clickedTakeSeat.bind(this);
 		this.handlePlayerClick = this.handlePlayerClick.bind(this);
+		this.handlePlayerDoubleClick = this.handlePlayerDoubleClick.bind(this);
 		this.handlePasswordSubmit = this.handlePasswordSubmit.bind(this);
+		this.handleReportSubmit = this.handleReportSubmit.bind(this);
 		this.state = {
-			passwordValue: ''
+			passwordValue: '',
+			reportTextValue: ''
 		};
+	}
+
+	handlePlayerDoubleClick(e) {
+		$(this.reportModal).modal('show');
 	}
 
 	handlePlayerClick(e) {
@@ -113,7 +120,7 @@ export default class Players extends React.Component {
 						return classes;
 					})()
 				}>
-				<div className={
+				<div onDoubleClick={this.handlePlayerDoubleClick} className={
 					(() => {
 						let classes = 'player-number';
 
@@ -208,6 +215,13 @@ export default class Players extends React.Component {
 		$(this.passwordModal).modal('hide');
 	}
 
+	handleReportSubmit(e) {
+		e.preventDefault();
+
+		// this.props.onClickedTakeSeat(this.state.passwordValue);
+		$(this.passwordModal).modal('hide');
+	}
+
 	clickedTakeSeat() {
 		const {gameInfo, userInfo, onClickedTakeSeat} = this.props;
 
@@ -226,8 +240,11 @@ export default class Players extends React.Component {
 
 	render() {
 		const handlePasswordInputChange = (e) => {
-			this.setState({passwordValue: `${e.target.value}`});
-		};
+				this.setState({passwordValue: `${e.target.value}`});
+			},
+			handleReportTextChange = e => {
+				this.setState({reportTextValue: `${e.target.value}`});
+			};
 
 		return (
 			<section className="players">
@@ -239,6 +256,17 @@ export default class Players extends React.Component {
 				}}>
 					<div className="ui header">You will need to sign in or sign up for an account to play.</div>
 				</div>
+
+				<div className="ui basic small modal reportmodal" ref={c => {
+					this.reportModal = c;
+				}}>
+					<form onSubmit={this.handleReportSubmit}>
+						<div className="ui header">Report a player to the moderators</div>
+						<textarea placeholder="Report" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
+						<div onClick={this.handleReportSubmit} className="ui button primary">Submit</div>
+					</form>
+				</div>
+
 				<div className="ui basic small modal passwordmodal" ref={c => {
 					this.passwordModal = c;
 				}}>
