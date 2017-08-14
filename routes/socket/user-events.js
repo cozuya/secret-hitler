@@ -5,6 +5,7 @@ const {games, userList, generalChats} = require('./models'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
 	ModAction = require('../../models/modAction'),
+	PlayerReport = require('../../models/playerReport'),
 	// BannedIP = require('../../models/bannedIP'),
 	BannedIP = require('../../models/BannedIP'),
 	startGame = require('./game/start-game.js'),
@@ -597,6 +598,18 @@ module.exports.handleModerationAction = (socket, data) => {
 			}
 		}
 	}
+};
+
+module.exports.handlePlayerReport = data => {
+	// const playerReport = new PlayerReport({
+	// 	date: new Date(),
+	// 	modUserName: passport.user,
+	// 	userActedOn: data.userName,
+	// 	modNotes: data.comment,
+	// 	ip: data.ip,
+	// 	actionTaken: data.action
+	// });
+	console.log(data);
 };
 
 module.exports.handleUserLeaveGame = (socket, data) => {

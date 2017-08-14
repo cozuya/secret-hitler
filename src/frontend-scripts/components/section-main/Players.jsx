@@ -120,7 +120,7 @@ export default class Players extends React.Component {
 						return classes;
 					})()
 				}>
-				<div onDoubleClick={this.handlePlayerDoubleClick} className={
+				<div title="Double click to open a modal to report a player to the moderators" onDoubleClick={this.handlePlayerDoubleClick} className={
 					(() => {
 						let classes = 'player-number';
 
@@ -218,8 +218,10 @@ export default class Players extends React.Component {
 	handleReportSubmit(e) {
 		e.preventDefault();
 
-		// this.props.onClickedTakeSeat(this.state.passwordValue);
-		$(this.passwordModal).modal('hide');
+		this.props.socket.emit('playerReport', {
+			userName: this.props.userInfo.userName
+		});
+		$(this.reportModal).modal('hide');
 	}
 
 	clickedTakeSeat() {
@@ -296,5 +298,6 @@ Players.propTypes = {
 	gameInfo: PropTypes.object,
 	roleState: PropTypes.string,
 	userList: PropTypes.object,
+	socket: PropTypes.object,
 	selectedGamerole: PropTypes.func
 };
