@@ -63,7 +63,7 @@ html(lang="en")
 							a.right(href="/account")
 								= username + '\'s account'
 					else
-						.right.menu
+						button.signin-discord(onclick="window.location.href='/auth/discord'") Login With Discord						.right.menu
 							.ui.buttons
 								button.ui.button#signin Sign In
 								.or
