@@ -1,5 +1,8 @@
 {
-	"extends": "google",
+	"extends": [
+    "google",
+    "prettier"
+  ],
 	"rules": {
 		"indent": ["error", "tab"],
 		"linebreak-style": "off",
@@ -26,7 +29,8 @@
 		"react/jsx-uses-vars": "error",
 		"react/jsx-indent-props": ["error", "tab"],
 		"object-curly-spacing": "off",
-		"array-bracket-spacing": "off"
+    "array-bracket-spacing": "off",
+    "prettier/prettier": "error"
 	},
 	"globals": {
 		"io": true,
@@ -45,6 +49,7 @@
 		}
 	},
 	"plugins": [
-		"react"
+    "react",
+    "prettier"
 	]
 }
