@@ -1,7 +1,7 @@
 {
 	"extends": ["google"],
 	"rules": {
-		"indent": ["error", "tab"],
+		"indent": ["error", "tab", { "SwitchCase": 1 }],
 		"linebreak-style": "off",
 		"eol-last": "off",
 		"max-len": "off",
