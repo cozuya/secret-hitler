@@ -13,17 +13,16 @@ export default function toGameInfo(snapshot) {
 
 	const cardFlingerState = [];
 
-	const publicPlayersState =
-		snapshot.players.map((p, i) => {
-			const maybe = (predicate, field, value) => (
-				predicate ? { [field]: value } : {}
-			);
+	const publicPlayersState = snapshot.players
+		.map((p, i) => {
+			const maybe = (predicate, field, value) =>
+				predicate ? { [field]: value } : {};
 
 			const isSpecialElection = Number.isInteger(snapshot.specialElection);
 
 			const maybePresident = maybe(
-				!isSpecialElection && snapshot.presidentId === i
-				|| isSpecialElection && snapshot.specialElection === i,
+				(!isSpecialElection && snapshot.presidentId === i) ||
+					(isSpecialElection && snapshot.specialElection === i),
 				'governmentStatus',
 				'isPresident'
 			);
@@ -36,7 +35,10 @@ export default function toGameInfo(snapshot) {
 
 			const cardStatus = (() => {
 				const f = (cardDisplayed, isFlipped, cardFront, cardBack) => ({
-					cardDisplayed, isFlipped, cardFront, cardBack
+					cardDisplayed,
+					isFlipped,
+					cardFront,
+					cardBack
 				});
 
 				const blank = f(false, false, '', {});
@@ -48,40 +50,35 @@ export default function toGameInfo(snapshot) {
 					});
 				}
 
-				switch(snapshot.phase) {
-				case 'election':
-					return f(true, true, 'ballot', {
-						cardName: snapshot.votes.get(i)
-							.map(x => x ? 'ja' : 'nein')
-							.valueOrElse(null)
-					});
-				case 'investigation':
-					const isInvTarget = i === snapshot.investigationId;
+				switch (snapshot.phase) {
+					case 'election':
+						return f(true, true, 'ballot', {
+							cardName: snapshot.votes
+								.get(i)
+								.map(x => (x ? 'ja' : 'nein'))
+								.valueOrElse(null)
+						});
+					case 'investigation':
+						const isInvTarget = i === snapshot.investigationId;
 
-					return f(
-						isInvTarget,
-						isInvTarget,
-						'role',
-						{ cardName: isInvTarget && 'membership-' + p.loyalty }
-					);
-				case 'veto':
-					const vetoCard = vote => f(
-						true,
-						true,
-						'ballot',
-						{ cardName: vote ? 'ja' : 'nein' }
-					);
+						return f(isInvTarget, isInvTarget, 'role', {
+							cardName: isInvTarget && 'membership-' + p.loyalty
+						});
+					case 'veto':
+						const vetoCard = vote =>
+							f(true, true, 'ballot', { cardName: vote ? 'ja' : 'nein' });
 
-					if (i === snapshot.chancellorId) {
-						return vetoCard(snapshot.chancellorVeto);
-					} else if (i === snapshot.presidentId) {
-						return mapOpt1(vetoCard)(snapshot.presidentVeto)
-							.valueOrElse(blank);
-					} else {
+						if (i === snapshot.chancellorId) {
+							return vetoCard(snapshot.chancellorVeto);
+						} else if (i === snapshot.presidentId) {
+							return mapOpt1(vetoCard)(snapshot.presidentVeto).valueOrElse(
+								blank
+							);
+						} else {
+							return blank;
+						}
+					default:
 						return blank;
-					}
-				default:
-					return blank;
 				}
 			})();
 
@@ -93,12 +90,9 @@ export default function toGameInfo(snapshot) {
 				cardStatus
 			};
 
-			return Object.assign({},
-				base,
-				maybePresident,
-				maybeChancellor
-			);
-		}).toArray();
+			return Object.assign({}, base, maybePresident, maybeChancellor);
+		})
+		.toArray();
 
 	const trackState = {
 		fascistPolicyCount: snapshot.track.reds,
@@ -119,4 +113,4 @@ export default function toGameInfo(snapshot) {
 		general,
 		cardFlingerState
 	};
-};
+}

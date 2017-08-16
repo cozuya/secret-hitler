@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import $ from 'jquery';
-import {ADMINS} from '../../constants';
+import { ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
 
 export default class Moderation extends React.Component {
@@ -39,42 +39,64 @@ export default class Moderation extends React.Component {
 	}
 
 	togglePlayerList() {
-		this.setState({playerListShown: !this.state.playerListShown});
+		this.setState({ playerListShown: !this.state.playerListShown });
 	}
 
 	renderPlayerInput() {
 		const playerInputKeyup = e => {
-			this.setState({playerInputText: `${e.target.value}`});
+			this.setState({ playerInputText: `${e.target.value}` });
 		};
 
 		return (
 			<div className="player-input">
-				<input placeholder="Player name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
+				<input
+					placeholder="Player name"
+					onChange={playerInputKeyup}
+					className="player-input"
+					value={this.state.playerInputText}
+				/>
 			</div>
 		);
 	}
 
 	renderUserlist() {
 		const radioChange = userName => {
-				this.setState({selectedUser: userName});
+				this.setState({ selectedUser: userName });
 			},
-			{userList} = this.state,
+			{ userList } = this.state,
 			ips = userList.map(user => user.ip),
-			multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
+			multiIPs = _.uniq(
+				_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1))
+			);
 
 		return userList
-			.sort((a, b) => (() => {
-				if (a.isRainbow && !b.isRainbow) {
-					return 1;
-				}
+			.sort((a, b) =>
+				(() => {
+					if (a.isRainbow && !b.isRainbow) {
+						return 1;
+					}
 
-				if (b.isRainbow && !a.isRainbow) {
-					return -1;
-				}
+					if (b.isRainbow && !a.isRainbow) {
+						return -1;
+					}
 
-				return a.ip - b.ip;
-			})())
-			.map((user, index) => <li key={index} className={multiIPs.includes(user.ip) ? 'multi' : ''}><label><input type="radio" name="users" onChange={() => {radioChange(user.userName);}} />{user.userName} <span className="ip">{user.ip}</span></label></li>);
+					return a.ip - b.ip;
+				})()
+			)
+			.map((user, index) =>
+				<li key={index} className={multiIPs.includes(user.ip) ? 'multi' : ''}>
+					<label>
+						<input
+							type="radio"
+							name="users"
+							onChange={() => {
+								radioChange(user.userName);
+							}}
+						/>
+						{user.userName} <span className="ip">{user.ip}</span>
+					</label>
+				</li>
+			);
 	}
 
 	renderButtons() {
@@ -82,7 +104,11 @@ export default class Moderation extends React.Component {
 				this.props.socket.emit('updateModAction', {
 					modName: this.props.userInfo.userName,
 					userName: this.state.playerInputText || this.state.selectedUser,
-					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+					ip: this.state.selectedUser
+						? this.state.userList.find(
+								user => user.userName === this.state.selectedUser
+							).ip
+						: '',
 					comment: this.state.actionTextValue,
 					action
 				});
@@ -95,19 +121,107 @@ export default class Moderation extends React.Component {
 					this.props.socket.emit('getModInfo');
 				}, 500);
 			},
-			{selectedUser, actionTextValue, playerInputText} = this.state;
+			{ selectedUser, actionTextValue, playerInputText } = this.state;
 
 		return (
 			<div className="button-container">
-				<button className={((selectedUser || playerInputText) && actionTextValue) ? 'ui button primary' : 'ui button primary disabled'} onClick={() => {takeModAction('ban');}}>Ban user</button>
-				<button className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'} onClick={() => {takeModAction('comment');}}>Comment without action</button>
+				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button primary'
+							: 'ui button primary disabled'
+					}
+					onClick={() => {
+						takeModAction('ban');
+					}}
+				>
+					Ban user
+				</button>
+				<button
+					className={
+						!this.state.actionTextValue ? 'ui button disabled' : 'ui button'
+					}
+					onClick={() => {
+						takeModAction('comment');
+					}}
+				>
+					Comment without action
+				</button>
 				<br />
-				<button className={((selectedUser || playerInputText) && actionTextValue) ? 'ui button tier3' : 'ui button disabled tier3'} onClick={() => {takeModAction('deleteUser');}}>Delete user</button>
-				<button className={((selectedUser || playerInputText) && actionTextValue) ? 'ui button tier3' : 'ui button disabled tier3'} onClick={() => {takeModAction(`setWins${this.state.actionTextValue}`);}}>Set wins</button>
-				<button className={((selectedUser || playerInputText) && actionTextValue) ? 'ui button tier3' : 'ui button disabled tier3'} onClick={() => {takeModAction(`setLosses${this.state.actionTextValue}`);}}>Set losses</button>
-				<button className={((selectedUser || playerInputText) && actionTextValue) ? 'ui button cardback-button' : 'ui button disabled cardback-button'} onClick={() => {takeModAction('deleteCardback');}}>Delete player cardback and log them out</button>
-				<button className={((selectedUser || playerInputText) && actionTextValue) ? 'ui button ipban-button' : 'ui button disabled ipban-button'} onClick={() => {takeModAction('ipban');}}>Ban and IP ban for 18 hours</button>
-				<button className={((selectedUser || playerInputText) && actionTextValue && ADMINS.includes(this.props.userInfo.userName)) ? 'ui button ipban-button' : 'ui button disabled ipban-button'} onClick={() => {takeModAction('ipbanlarge');}}>Ban and IP ban for 1 week</button>
+				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
+					onClick={() => {
+						takeModAction('deleteUser');
+					}}
+				>
+					Delete user
+				</button>
+				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
+					onClick={() => {
+						takeModAction(`setWins${this.state.actionTextValue}`);
+					}}
+				>
+					Set wins
+				</button>
+				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
+					onClick={() => {
+						takeModAction(`setLosses${this.state.actionTextValue}`);
+					}}
+				>
+					Set losses
+				</button>
+				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button cardback-button'
+							: 'ui button disabled cardback-button'
+					}
+					onClick={() => {
+						takeModAction('deleteCardback');
+					}}
+				>
+					Delete player cardback and log them out
+				</button>
+				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('ipban');
+					}}
+				>
+					Ban and IP ban for 18 hours
+				</button>
+				<button
+					className={
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						ADMINS.includes(this.props.userInfo.userName)
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('ipbanlarge');
+					}}
+				>
+					Ban and IP ban for 1 week
+				</button>
 			</div>
 		);
 	}
@@ -127,7 +241,28 @@ export default class Moderation extends React.Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.log.map((report, index) => <tr key={index}><td>{report.modUserName}</td><td>{moment(new Date(report.date)).format('l')}</td><td>{report.actionTaken}</td><td>{report.actionTaken === 'comment' ? '' : report.userActedOn}</td><td>{report.ip}</td><td>{report.modNotes}</td></tr>)}
+						{this.state.log.map((report, index) =>
+							<tr key={index}>
+								<td>
+									{report.modUserName}
+								</td>
+								<td>
+									{moment(new Date(report.date)).format('l')}
+								</td>
+								<td>
+									{report.actionTaken}
+								</td>
+								<td>
+									{report.actionTaken === 'comment' ? '' : report.userActedOn}
+								</td>
+								<td>
+									{report.ip}
+								</td>
+								<td>
+									{report.modNotes}
+								</td>
+							</tr>
+						)}
 					</tbody>
 				</table>
 			</div>
@@ -136,10 +271,17 @@ export default class Moderation extends React.Component {
 
 	renderActionText() {
 		const handleTextChange = e => {
-			this.setState({actionTextValue: `${e.target.value}`});
+			this.setState({ actionTextValue: `${e.target.value}` });
 		};
 
-		return <textarea placeholder="Comment" value={this.state.actionTextValue} onChange={handleTextChange} spellCheck="false" />;
+		return (
+			<textarea
+				placeholder="Comment"
+				value={this.state.actionTextValue}
+				onChange={handleTextChange}
+				spellCheck="false"
+			/>
+		);
 	}
 
 	leaveModeration() {
@@ -177,9 +319,13 @@ export default class Moderation extends React.Component {
 		return (
 			<section className="moderation">
 				<h2>Moderation</h2>
-				<a className="broadcast" href="#" onClick={this.broadcastClick} >Broadcast to all players</a>
+				<a className="broadcast" href="#" onClick={this.broadcastClick}>
+					Broadcast to all players
+				</a>
 				<i className="remove icon" onClick={this.leaveModeration} />
-				<span onClick={this.togglePlayerList} className="player-list-toggle">show/hide playerlist</span>
+				<span onClick={this.togglePlayerList} className="player-list-toggle">
+					show/hide playerlist
+				</span>
 				<div>
 					{(() => {
 						if (this.state.playerListShown) {
@@ -198,21 +344,44 @@ export default class Moderation extends React.Component {
 							);
 						}
 					})()}
-					<div className="modlog" style={{maxWidth: this.state.playerListShown ? '60%' : '100%'}}>
+					<div
+						className="modlog"
+						style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}
+					>
 						<h3>Moderation log</h3>
 						{this.renderModLog()}
 					</div>
 				</div>
-				<div className="ui basic fullscreen modal broadcastmodal" ref={c => {
-					this.bModal = c;
-				}}>
+				<div
+					className="ui basic fullscreen modal broadcastmodal"
+					ref={c => {
+						this.bModal = c;
+					}}
+				>
 					<div className="ui header">Broadcast to all games:</div>
 					<div className="ui input">
 						<form onSubmit={this.handleBroadcastSubmit}>
-							<input maxLength="300" placeholder="Broadcast" onChange={broadcastKeyup} className="broadcast-input" autoFocus value={this.state.broadcastText} ref={c => {
-								this.broadcastText = c;
-							}} />
-							<div onClick={this.handleBroadcastSubmit} className={this.state.broadcastText ? 'ui button primary' : 'ui button primary disabled'}>Submit</div>
+							<input
+								maxLength="300"
+								placeholder="Broadcast"
+								onChange={broadcastKeyup}
+								className="broadcast-input"
+								autoFocus
+								value={this.state.broadcastText}
+								ref={c => {
+									this.broadcastText = c;
+								}}
+							/>
+							<div
+								onClick={this.handleBroadcastSubmit}
+								className={
+									this.state.broadcastText
+										? 'ui button primary'
+										: 'ui button primary disabled'
+								}
+							>
+								Submit
+							</div>
 						</form>
 					</div>
 				</div>

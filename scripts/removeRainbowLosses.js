@@ -13,21 +13,20 @@ debug('Removing rainbow losses...');
 
 let numFixed = 0;
 
-Account
-    .find({ rainbowLosses: { $gt: 0 } })
-    .cursor()
-    .eachAsync(account => {
-        // in case something goes wrong with the job and it needs to be run again
-        if (!account.isFixed) {
-            account.losses -= account.rainbowLosses;
-            account.isFixed = true;
-            return account.save().then(() => {
-                numFixed++;
-                debug(account.username);
-            });
-        }
-    })
-    .then(() => {
-        debug(`Rainbow losses removed for ${numFixed} accounts. Job complete.`);
-        mongoose.connection.close();
-    });
+Account.find({ rainbowLosses: { $gt: 0 } })
+	.cursor()
+	.eachAsync(account => {
+		// in case something goes wrong with the job and it needs to be run again
+		if (!account.isFixed) {
+			account.losses -= account.rainbowLosses;
+			account.isFixed = true;
+			return account.save().then(() => {
+				numFixed++;
+				debug(account.username);
+			});
+		}
+	})
+	.then(() => {
+		debug(`Rainbow losses removed for ${numFixed} accounts. Job complete.`);
+		mongoose.connection.close();
+	});

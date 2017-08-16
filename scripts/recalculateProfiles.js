@@ -1,5 +1,4 @@
-const
-	mongoose = require('mongoose'),
+const mongoose = require('mongoose'),
 	GameSummary = require('../models/game-summary'),
 	buildEnhancedGameSummary = require('../models/game-summary/buildEnhancedGameSummary'),
 	{ updateProfiles } = require('../models/profile/utils'),
@@ -18,8 +17,7 @@ mongoose.connect('mongodb://localhost/secret-hitler-app');
 
 	const version = Math.random().toString(36).substring(6);
 
-	GameSummary
-		.find(null, null, { sort: { date: 'asc' }})
+	GameSummary.find(null, null, { sort: { date: 'asc' } })
 		.cursor()
 		.map(game => buildEnhancedGameSummary(game.toObject()))
 		.eachAsync(game => updateProfiles(game, { version }))

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose'),
-	{Schema} = mongoose,
+	{ Schema } = mongoose,
 	ModAction = new Schema({
 		date: Date,
 		modUserName: String,

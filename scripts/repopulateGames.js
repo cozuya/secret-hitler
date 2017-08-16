@@ -34,11 +34,10 @@ const mocks = List([
 
 const savePromises = mocks.map(m => {
 	debug('Saving %s', m._id);
-	return (new GameSummary(m)).save();
+	return new GameSummary(m).save();
 });
 
-Promise.all(savePromises)
-	.then(() => {
-		debug('All games repopulated');
-		mongoose.connection.close();
-	});
+Promise.all(savePromises).then(() => {
+	debug('All games repopulated');
+	mongoose.connection.close();
+});

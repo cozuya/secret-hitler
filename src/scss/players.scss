@@ -1,277 +1,277 @@
 .players-container .players {
-    background: #000;
-    height: 115px;
-    overflow: hidden;
-    >.label {
-        width: 50px;
-        margin: 28px 0 0 10px;
-        font-size: 16px;
-        padding: 6px;
-        text-align: center;
-        cursor: pointer;
-    }
-    @for $i from 1 through 5 {
-        .player-container.experienced#{$i} {
-            box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
-        }
-    }
-    @for $i from 1 through 10 {
-        .player-container.onfire#{$i} {
-            box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
-        }
-    }
-    .player-container.natekiller {
-        box-shadow: 0 0 5px 2px #FFFF00 !important;
-    }
-    .player-container.admin {
-        box-shadow: 0 0 5px 2px red !important;
-    }
-    .player-container.contributer {
-        box-shadow: 0 0 5px 2px orange !important;
-    }
-    .player-container {
-        width: 70px;
-        height: 95px;
-        float: left;
-        margin: 18px 5px 0;
-        border-radius: 4px;
-				background-image: url('../images/tweed.png');
-				background-repeat: no-repeat;
-				position: relative;
+	background: #000;
+	height: 115px;
+	overflow: hidden;
+	> .label {
+		width: 50px;
+		margin: 28px 0 0 10px;
+		font-size: 16px;
+		padding: 6px;
+		text-align: center;
+		cursor: pointer;
+	}
+	@for $i from 1 through 5 {
+		.player-container.experienced#{$i} {
+			box-shadow: 0 0 5px 2px rgb(0,  (175 - ($i * 20)), 0) !important;
+		}
+	}
+	@for $i from 1 through 10 {
+		.player-container.onfire#{$i} {
+			box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
+		}
+	}
+	.player-container.natekiller {
+		box-shadow: 0 0 5px 2px #ffff00 !important;
+	}
+	.player-container.admin {
+		box-shadow: 0 0 5px 2px red !important;
+	}
+	.player-container.contributer {
+		box-shadow: 0 0 5px 2px orange !important;
+	}
+	.player-container {
+		width: 70px;
+		height: 95px;
+		float: left;
+		margin: 18px 5px 0;
+		border-radius: 4px;
+		background-image: url('../images/tweed.png');
+		background-repeat: no-repeat;
+		position: relative;
 
-        .player-number {
-						cursor: pointer;
-            overflow: hidden;
-            white-space: nowrap;
-            margin-top: -20px;
-            font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
-            color: #ddd;
-            text-align: center;
-        }
-        .player-number.seated-user {
-            color: #16AB39;
-        }
-        .government-token {
-            width: 100%;
-            height: 23px;
-            top: 72px;
-            position: absolute;
-            z-index: 1;
-        }
-        .previous-government-token {
-            top: 0;
-            opacity: 0.2;
-        }
-        .government-token.isPendingPresident,
-        .government-token.isPendingChancellor {
-            animation: fadeIn 1.5s infinite alternate;
-        }
-        .government-token.isPendingPresident,
-        .government-token.isPresident,
-        .government-token.wasPresident {
-            background-image: url('../images/president-token.png');
-        }
-        .government-token.isPendingChancellor,
-        .government-token.isChancellor,
-        .government-token.wasChancellor {
-            background-image: url('../images/chancellor-token.png');
-        }
-        .card-container {
-            width: 70px;
-            height: 95px;
-            top: 100px;
-            left: 0;
-            transition-duration: 1s;
-            transition-property: transform, top;
-            transform-style: preserve-3d;
-            position: relative;
-            -webkit-backface-visibility: hidden; // thanks osx safari
-            backface-visibility: hidden;
-            .card {
-                background-size: contain;
-                background-repeat: no-repeat;
-                position: absolute;
-                top: 0;
-                left: 0;
-                height: 95px;
-                width: 100%;
-            }
-            .card.secretrole {
-                background-image: url('../images/cards/secretrole.png');
-            }
-            .card.liberal0 {
-                background-image: url('../images/cards/liberal0.png');
-            }
-            .card.liberal1 {
-                background-image: url('../images/cards/liberal1.png');
-            }
-            .card.liberal2 {
-                background-image: url('../images/cards/liberal2.png');
-            }
-            .card.liberal3 {
-                background-image: url('../images/cards/liberal3.png');
-            }
-            .card.liberal4 {
-                background-image: url('../images/cards/liberal4.png');
-            }
-            .card.liberal5 {
-                background-image: url('../images/cards/liberal5.png');
-            }
-            .card.fascist0 {
-                background-image: url('../images/cards/fascist0.png');
-            }
-            .card.fascist1 {
-                background-image: url('../images/cards/fascist1.png');
-            }
-            .card.fascist2 {
-                background-image: url('../images/cards/fascist2.png');
-            }
-            .card.fascist3 {
-                background-image: url('../images/cards/fascist3.png');
-            }
-            .card.hitler0 {
-                background-image: url('../images/cards/hitler0.png');
-            }
-            .card.ballot {
-                background-image: url('../images/cards/ballot.png');
-            }
-            .card.ja {
-                background-image: url('../images/cards/ja.png');
-            }
-            .card.nein {
-                background-image: url('../images/cards/nein.png');
-            }
-            .card.partymembership {
-                background-image: url('../images/cards/partymembership.png');
-            }
-            .card.membership-liberal {
-                background-image: url('../images/cards/membership-liberal.png');
-            }
-            .card.membership-fascist {
-                background-image: url('../images/cards/membership-fascist.png');
-            }
-            .card-back {
-                -webkit-backface-visibility: hidden; // thanks osx safari
-                backface-visibility: hidden;
-                transform: rotateY(180deg);
-            }
-        }
-        .card-container.showing {
-            top: 0;
-        }
-        .card-container.flipped {
-            transform: rotateY(180deg);
-        }
-        .player-number.disconnected {
-            opacity: .3;
-        }
-        .player-name.liberal,
-        .player-number.liberal {
-            color: #608cb3;
-        }
-        .player-name.fascist,
-        .player-number.fascist {
-            color: #c36563;
-        }
-        .player-name.hitler,
-        .player-number.hitler {
-            color: #be0804;
-        }
-    }
-    .player-container.isDead {
-        background-image: url('../images/deadplayer.png') !important;
-    }
-    .notifier::after {
-        content: '';
-        width: 70px;
-        height: 95px;
-        top: 0;
-        left: 0;
-        position: absolute;
-        animation: fadeIn .6s infinite alternate;
-        cursor: pointer;
-    }
-    .player-container.fascist::after {
-        box-shadow: 0 0 4px 4px #c36563;
-    }
-    .player-container.hitler::after,
-    .player-container.danger::after {
-        box-shadow: 0 0 4px 4px #be0804;
-    }
-    .player-container.liberal::after {
-        box-shadow: 0 0 4px 4px #608cb3;
-    }
-    .player-container.notification::after {
-        box-shadow: 0 0 4px 4px #FBBD08;
-    }
-    .player-container.success::after {
-        box-shadow: 0 0 4px 4px #2185D0 inset;
-        cursor: auto;
-    }
+		.player-number {
+			cursor: pointer;
+			overflow: hidden;
+			white-space: nowrap;
+			margin-top: -20px;
+			font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+			color: #ddd;
+			text-align: center;
+		}
+		.player-number.seated-user {
+			color: #16ab39;
+		}
+		.government-token {
+			width: 100%;
+			height: 23px;
+			top: 72px;
+			position: absolute;
+			z-index: 1;
+		}
+		.previous-government-token {
+			top: 0;
+			opacity: 0.2;
+		}
+		.government-token.isPendingPresident,
+		.government-token.isPendingChancellor {
+			animation: fadeIn 1.5s infinite alternate;
+		}
+		.government-token.isPendingPresident,
+		.government-token.isPresident,
+		.government-token.wasPresident {
+			background-image: url('../images/president-token.png');
+		}
+		.government-token.isPendingChancellor,
+		.government-token.isChancellor,
+		.government-token.wasChancellor {
+			background-image: url('../images/chancellor-token.png');
+		}
+		.card-container {
+			width: 70px;
+			height: 95px;
+			top: 100px;
+			left: 0;
+			transition-duration: 1s;
+			transition-property: transform, top;
+			transform-style: preserve-3d;
+			position: relative;
+			-webkit-backface-visibility: hidden; // thanks osx safari
+			backface-visibility: hidden;
+			.card {
+				background-size: contain;
+				background-repeat: no-repeat;
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 95px;
+				width: 100%;
+			}
+			.card.secretrole {
+				background-image: url('../images/cards/secretrole.png');
+			}
+			.card.liberal0 {
+				background-image: url('../images/cards/liberal0.png');
+			}
+			.card.liberal1 {
+				background-image: url('../images/cards/liberal1.png');
+			}
+			.card.liberal2 {
+				background-image: url('../images/cards/liberal2.png');
+			}
+			.card.liberal3 {
+				background-image: url('../images/cards/liberal3.png');
+			}
+			.card.liberal4 {
+				background-image: url('../images/cards/liberal4.png');
+			}
+			.card.liberal5 {
+				background-image: url('../images/cards/liberal5.png');
+			}
+			.card.fascist0 {
+				background-image: url('../images/cards/fascist0.png');
+			}
+			.card.fascist1 {
+				background-image: url('../images/cards/fascist1.png');
+			}
+			.card.fascist2 {
+				background-image: url('../images/cards/fascist2.png');
+			}
+			.card.fascist3 {
+				background-image: url('../images/cards/fascist3.png');
+			}
+			.card.hitler0 {
+				background-image: url('../images/cards/hitler0.png');
+			}
+			.card.ballot {
+				background-image: url('../images/cards/ballot.png');
+			}
+			.card.ja {
+				background-image: url('../images/cards/ja.png');
+			}
+			.card.nein {
+				background-image: url('../images/cards/nein.png');
+			}
+			.card.partymembership {
+				background-image: url('../images/cards/partymembership.png');
+			}
+			.card.membership-liberal {
+				background-image: url('../images/cards/membership-liberal.png');
+			}
+			.card.membership-fascist {
+				background-image: url('../images/cards/membership-fascist.png');
+			}
+			.card-back {
+				-webkit-backface-visibility: hidden; // thanks osx safari
+				backface-visibility: hidden;
+				transform: rotateY(180deg);
+			}
+		}
+		.card-container.showing {
+			top: 0;
+		}
+		.card-container.flipped {
+			transform: rotateY(180deg);
+		}
+		.player-number.disconnected {
+			opacity: .3;
+		}
+		.player-name.liberal,
+		.player-number.liberal {
+			color: #608cb3;
+		}
+		.player-name.fascist,
+		.player-number.fascist {
+			color: #c36563;
+		}
+		.player-name.hitler,
+		.player-number.hitler {
+			color: #be0804;
+		}
+	}
+	.player-container.isDead {
+		background-image: url('../images/deadplayer.png') !important;
+	}
+	.notifier::after {
+		content: '';
+		width: 70px;
+		height: 95px;
+		top: 0;
+		left: 0;
+		position: absolute;
+		animation: fadeIn .6s infinite alternate;
+		cursor: pointer;
+	}
+	.player-container.fascist::after {
+		box-shadow: 0 0 4px 4px #c36563;
+	}
+	.player-container.hitler::after,
+	.player-container.danger::after {
+		box-shadow: 0 0 4px 4px #be0804;
+	}
+	.player-container.liberal::after {
+		box-shadow: 0 0 4px 4px #608cb3;
+	}
+	.player-container.notification::after {
+		box-shadow: 0 0 4px 4px #fbbd08;
+	}
+	.player-container.success::after {
+		box-shadow: 0 0 4px 4px #2185d0 inset;
+		cursor: auto;
+	}
 }
 
 .players-container .policies-container {
-    width: 164px;
-    height: 115px;
-    float: right;
-    >div {
-        width: 82px;
-        height: inherit;
-        display: inline-block;
-        position: relative;
-    }
-    .card-count {
-        position: absolute;
-        z-index: 1;
-        background: #333;
-        color: #eee;
-        width: 18px;
-        text-align: center;
-        top: 0;
-        left: 0;
-    }
-    .policy-card {
-        width: 70px;
-        height: 95px;
-        background: url('../images/cards/policy.png') no-repeat;
-        position: absolute;
-        top: 5px;
-        left: 6px;
-        transition: 1s all;
-        box-shadow: 0px 0px 1px 0px #d7d7d7;
-    }
-    .policy-card.offscreen {
-        top: 120px;
-    }
-    .draw {
-        background: url('../images/cards/draw.png') no-repeat;
-    }
-    .discard {
-        background: url('../images/cards/discard.png') no-repeat;
-    }
-    .notifier::after {
-        content: '';
-        width: 82px;
-        height: 115px;
-        top: 0;
-        left: 0;
-        position: absolute;
-        animation: fadeIn .6s infinite alternate;
-        cursor: pointer;
-        box-shadow: 0 0 4px 4px #FBBD08 inset;
-    }
+	width: 164px;
+	height: 115px;
+	float: right;
+	> div {
+		width: 82px;
+		height: inherit;
+		display: inline-block;
+		position: relative;
+	}
+	.card-count {
+		position: absolute;
+		z-index: 1;
+		background: #333;
+		color: #eee;
+		width: 18px;
+		text-align: center;
+		top: 0;
+		left: 0;
+	}
+	.policy-card {
+		width: 70px;
+		height: 95px;
+		background: url('../images/cards/policy.png') no-repeat;
+		position: absolute;
+		top: 5px;
+		left: 6px;
+		transition: 1s all;
+		box-shadow: 0px 0px 1px 0px #d7d7d7;
+	}
+	.policy-card.offscreen {
+		top: 120px;
+	}
+	.draw {
+		background: url('../images/cards/draw.png') no-repeat;
+	}
+	.discard {
+		background: url('../images/cards/discard.png') no-repeat;
+	}
+	.notifier::after {
+		content: '';
+		width: 82px;
+		height: 115px;
+		top: 0;
+		left: 0;
+		position: absolute;
+		animation: fadeIn .6s infinite alternate;
+		cursor: pointer;
+		box-shadow: 0 0 4px 4px #fbbd08 inset;
+	}
 }
 
-.players-container.disabledrightsidebar .players>div>.roles {
-    margin: 9px 0px 9px 36px;
+.players-container.disabledrightsidebar .players > div > .roles {
+	margin: 9px 0px 9px 36px;
 }
 
 .experienced .players-container .players {
-    .card-container {
-        transition-duration: .2s;
-    }
+	.card-container {
+		transition-duration: .2s;
+	}
 }
 
 .experienced .players-container .policies-container .policy-card {
-    transition: .2s all;
+	transition: .2s all;
 }

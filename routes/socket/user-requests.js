@@ -1,31 +1,30 @@
 const Account = require('../../models/account'),
 	ModAction = require('../../models/modAction'),
-	{games, userList, generalChats} = require('./models'),
+	{ games, userList, generalChats } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
-	{secureGame} = require('./util'),
+	{ secureGame } = require('./util'),
 	version = require('../../version');
 
 module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
 
-	Account.find({username: userNames})
-		.then(users => {
-			ModAction.find({}) // todo: this should be filtered to be in the last week.  need to brush up on mongo queries.
-				.then(actions => {
-					socket.emit('modInfo', {
-						modReports: actions.reverse(),
-						userList: users.map(user => ({
-							isRainbow: user.wins + user.losses > 49,
-							userName: user.username,
-							ip: user.lastConnectedIP || user.signupIP
-						}))
-					});
+	Account.find({ username: userNames }).then(users => {
+		ModAction.find({}) // todo: this should be filtered to be in the last week.  need to brush up on mongo queries.
+			.then(actions => {
+				socket.emit('modInfo', {
+					modReports: actions.reverse(),
+					userList: users.map(user => ({
+						isRainbow: user.wins + user.losses > 49,
+						userName: user.username,
+						ip: user.lastConnectedIP || user.signupIP
+					}))
 				});
-		});
+			});
+	});
 };
 
 module.exports.sendUserGameSettings = (socket, username) => {
-	Account.findOne({username})
+	Account.findOne({ username })
 		.then(account => {
 			const userListNames = userList.map(user => user.userName);
 			socket.emit('gameSettings', account.gameSettings);
@@ -64,7 +63,9 @@ module.exports.sendUserGameSettings = (socket, username) => {
 module.exports.sendGameList = socket => {
 	const formattedGames = games.map(game => ({
 		name: game.general.name,
-		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
+		gameStatus: game.gameState.isCompleted
+			? game.gameState.isCompleted
+			: game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
 		seatedCount: game.publicPlayersState.length,
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount,
@@ -91,7 +92,8 @@ module.exports.sendGeneralChats = socket => {
 	socket.emit('generalChats', generalChats);
 };
 
-const sendUserList = module.exports.sendUserList = socket => { // eslint-disable-line one-var
+const sendUserList = (module.exports.sendUserList = socket => {
+	// eslint-disable-line one-var
 	if (socket) {
 		socket.emit('userList', {
 			list: userList,
@@ -103,26 +105,33 @@ const sendUserList = module.exports.sendUserList = socket => { // eslint-disable
 			totalSockets: Object.keys(io.sockets.sockets).length
 		});
 	}
-};
+});
 
-const updateUserStatus = module.exports.updateUserStatus = (username, type, gameId) => { // eslint-disable-line one-var
+const updateUserStatus = (module.exports.updateUserStatus = (
+	username,
+	type,
+	gameId
+) => {
+	// eslint-disable-line one-var
 	const user = userList.find(user => user.userName === username);
 
 	if (user) {
 		user.status = { type, gameId };
 		sendUserList();
 	}
-};
+});
 
 module.exports.sendGameInfo = (socket, uid) => {
 	const game = games.find(el => el.general.uid === uid),
-		{passport} = socket.handshake.session;
+		{ passport } = socket.handshake.session;
 
 	if (game) {
 		const _game = Object.assign({}, game);
 
 		if (passport && Object.keys(passport).length) {
-			const player = game.publicPlayersState.find(player => player.userName === passport.user);
+			const player = game.publicPlayersState.find(
+				player => player.userName === passport.user
+			);
 
 			if (player) {
 				player.leftGame = false;

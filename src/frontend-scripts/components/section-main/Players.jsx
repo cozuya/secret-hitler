@@ -1,7 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import Policies from './Policies.jsx';
-import {PLAYERCOLORS} from '../../constants';
+import { PLAYERCOLORS } from '../../constants';
 import PropTypes from 'prop-types';
 
 export default class Players extends React.Component {
@@ -23,13 +23,16 @@ export default class Players extends React.Component {
 	}
 
 	handlePlayerClick(e) {
-		const {userInfo, gameInfo, socket} = this.props,
-			{gameState} = gameInfo,
-			{phase, clickActionInfo} = gameState,
+		const { userInfo, gameInfo, socket } = this.props,
+			{ gameState } = gameInfo,
+			{ phase, clickActionInfo } = gameState,
 			index = parseInt($(e.currentTarget).attr('data-index'), 10);
 
 		if (phase === 'selectingChancellor' && userInfo.userName) {
-			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+			if (
+				clickActionInfo[0] === userInfo.userName &&
+				clickActionInfo[1].includes(index)
+			) {
 				socket.emit('presidentSelectedChancellor', {
 					chancellorIndex: index,
 					uid: gameInfo.general.uid
@@ -38,7 +41,10 @@ export default class Players extends React.Component {
 		}
 
 		if (phase === 'selectPartyMembershipInvestigate' && userInfo.userName) {
-			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+			if (
+				clickActionInfo[0] === userInfo.userName &&
+				clickActionInfo[1].includes(index)
+			) {
 				socket.emit('selectPartyMembershipInvestigate', {
 					playerIndex: index,
 					uid: gameInfo.general.uid
@@ -47,7 +53,10 @@ export default class Players extends React.Component {
 		}
 
 		if (phase === 'execution' && userInfo.userName) {
-			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+			if (
+				clickActionInfo[0] === userInfo.userName &&
+				clickActionInfo[1].includes(index)
+			) {
 				socket.emit('selectedPlayerToExecute', {
 					playerIndex: index,
 					uid: gameInfo.general.uid
@@ -56,7 +65,10 @@ export default class Players extends React.Component {
 		}
 
 		if (phase === 'specialElection' && userInfo.userName) {
-			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+			if (
+				clickActionInfo[0] === userInfo.userName &&
+				clickActionInfo[1].includes(index)
+			) {
 				socket.emit('selectedSpecialElection', {
 					playerIndex: index,
 					uid: gameInfo.general.uid
@@ -66,23 +78,34 @@ export default class Players extends React.Component {
 	}
 
 	renderPreviousGovtToken(i) {
-		const {publicPlayersState} = this.props.gameInfo;
+		const { publicPlayersState } = this.props.gameInfo;
 
 		if (publicPlayersState && publicPlayersState[i].previousGovernmentStatus) {
-			return <div	className={`government-token previous-government-token ${publicPlayersState[i].previousGovernmentStatus}`} />;
+			return (
+				<div
+					className={`government-token previous-government-token ${publicPlayersState[
+						i
+					].previousGovernmentStatus}`}
+				/>
+			);
 		}
 	}
 
 	renderGovtToken(i) {
-		const {publicPlayersState} = this.props.gameInfo;
+		const { publicPlayersState } = this.props.gameInfo;
 
 		if (publicPlayersState && publicPlayersState[i].governmentStatus) {
-			return <div	className={`government-token ${publicPlayersState[i].governmentStatus}`} />;
+			return (
+				<div
+					className={`government-token ${publicPlayersState[i]
+						.governmentStatus}`}
+				/>
+			);
 		}
 	}
 
 	renderLoader(i) {
-		const {publicPlayersState} = this.props.gameInfo;
+		const { publicPlayersState } = this.props.gameInfo;
 
 		if (publicPlayersState && publicPlayersState[i].isLoader) {
 			return <div className="ui active tiny inverted loader" />;
@@ -90,121 +113,216 @@ export default class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const {gameInfo, userInfo} = this.props,
-			{playersState, gameState, publicPlayersState} = gameInfo;
+		const { gameInfo, userInfo } = this.props,
+			{ playersState, gameState, publicPlayersState } = gameInfo;
 
-		return publicPlayersState.map((player, i) => (
-			<div key={i}
+		return publicPlayersState.map((player, i) =>
+			<div
+				key={i}
 				data-index={i}
 				onClick={this.handlePlayerClick}
-				style={(player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) ? {backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`} : {}}
-				className={
-					(() => {
-						let classes = 'player-container',
-							user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+				style={
+					player.customCardback &&
+					(!userInfo.userName ||
+						!(
+							userInfo.userName &&
+							userInfo.gameSettings &&
+							userInfo.gameSettings.disablePlayerCardbacks
+						))
+						? {
+								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+							}
+						: {}
+				}
+				className={(() => {
+					let classes = 'player-container',
+						user = Object.keys(this.props.userList).length
+							? this.props.userList.list.find(
+									play => play.userName === player.userName
+								)
+							: null;
 
-						if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
-							classes = `${classes} notifier ${playersState[i].notificationStatus}`;
-						} else if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].notificationStatus) {
-							classes = `${classes} notifier ${publicPlayersState[i].notificationStatus}`;
-						}
+					if (
+						playersState &&
+						Object.keys(playersState).length &&
+						playersState[i] &&
+						playersState[i].notificationStatus
+					) {
+						classes = `${classes} notifier ${playersState[i]
+							.notificationStatus}`;
+					} else if (
+						publicPlayersState &&
+						Object.keys(publicPlayersState).length &&
+						publicPlayersState[i].notificationStatus
+					) {
+						classes = `${classes} notifier ${publicPlayersState[i]
+							.notificationStatus}`;
+					}
 
-						if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].isDead) {
-							classes = `${classes} isDead`;
-						}
+					if (
+						publicPlayersState &&
+						Object.keys(publicPlayersState).length &&
+						publicPlayersState[i].isDead
+					) {
+						classes = `${classes} isDead`;
+					}
 
-						if (user && user.wins + user.losses > 49) {
-							classes = `${classes} ${PLAYERCOLORS(user)}`;
-						}
+					if (user && user.wins + user.losses > 49) {
+						classes = `${classes} ${PLAYERCOLORS(user)}`;
+					}
 
-						return classes;
-					})()
-				}>
-				<div title="Double click to open a modal to report a player to the moderators" onDoubleClick={this.handlePlayerDoubleClick} className={
-					(() => {
+					return classes;
+				})()}
+			>
+				<div
+					title="Double click to open a modal to report a player to the moderators"
+					onDoubleClick={this.handlePlayerDoubleClick}
+					className={(() => {
 						let classes = 'player-number';
 
-						if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
+						if (
+							playersState &&
+							Object.keys(playersState).length &&
+							playersState[i] &&
+							playersState[i].nameStatus
+						) {
 							classes = `${classes} ${playersState[i].nameStatus}`;
-						} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
+						} else if (
+							Object.keys(publicPlayersState).length &&
+							publicPlayersState[i].nameStatus
+						) {
 							classes = `${classes} ${publicPlayersState[i].nameStatus}`;
 						}
 
-						if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
+						if (
+							!publicPlayersState[i].connected ||
+							publicPlayersState[i].leftGame
+						) {
 							classes = `${classes} disconnected`;
 						}
 
 						return classes;
-					})()
-				}>{gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
+					})()}
+				>
+					{gameState.isTracksFlipped
+						? `${i + 1}. ${player.userName}`
+						: player.userName}
 				</div>
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
 				{this.renderGovtToken(i)}
 				<div
-					className={
-					(() => {
+					className={(() => {
 						let classes = 'card-container';
 
-						if (playersState && Object.keys(playersState).length && playersState[i].cardStatus.cardDisplayed || (publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)) {
+						if (
+							(playersState &&
+								Object.keys(playersState).length &&
+								playersState[i].cardStatus.cardDisplayed) ||
+							(publicPlayersState &&
+								publicPlayersState[i].cardStatus.cardDisplayed)
+						) {
 							classes += ' showing';
 						}
 
-						if (playersState && Object.keys(playersState).length && playersState[i].cardStatus.isFlipped || (publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)) {
+						if (
+							(playersState &&
+								Object.keys(playersState).length &&
+								playersState[i].cardStatus.isFlipped) ||
+							(publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)
+						) {
 							classes += ' flipped';
 						}
 						return classes;
-					})()
-				}>
+					})()}
+				>
 					<div
-						className={
-						(() => {
+						className={(() => {
 							let classes = 'card card-front';
 
-							if (Object.keys(publicPlayersState[i]).length && publicPlayersState[i].cardStatus.cardFront) {
-								classes = `${classes} ${publicPlayersState[i].cardStatus.cardFront}`;
+							if (
+								Object.keys(publicPlayersState[i]).length &&
+								publicPlayersState[i].cardStatus.cardFront
+							) {
+								classes = `${classes} ${publicPlayersState[i].cardStatus
+									.cardFront}`;
 							}
 
 							return classes;
-						})()
-					} />
+						})()}
+					/>
 					<div
-						className={
-						(() => {
+						className={(() => {
 							let classes = 'card card-back';
 
-							if (playersState && playersState.length && Object.keys(playersState[i]).length && Object.keys(playersState[i].cardStatus).length && Object.keys(playersState[i].cardStatus.cardBack).length) {
-								if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
-									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
+							if (
+								playersState &&
+								playersState.length &&
+								Object.keys(playersState[i]).length &&
+								Object.keys(playersState[i].cardStatus).length &&
+								Object.keys(playersState[i].cardStatus.cardBack).length
+							) {
+								if (
+									playersState[i].cardStatus.cardBack.icon ||
+									playersState[i].cardStatus.cardBack.icon === 0
+								) {
+									classes = `${classes} ${playersState[i].cardStatus.cardBack
+										.cardName}${playersState[
+										i
+									].cardStatus.cardBack.icon.toString()}`;
 								} else {
-									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
+									classes = `${classes} ${playersState[i].cardStatus.cardBack
+										.cardName}`;
 								}
-							} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
-								if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
-									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
+							} else if (
+								publicPlayersState &&
+								Object.keys(publicPlayersState[i].cardStatus.cardBack).length
+							) {
+								if (
+									publicPlayersState[i].cardStatus.cardBack.icon ||
+									publicPlayersState[i].cardStatus.cardBack.icon === 0
+								) {
+									classes = `${classes} ${publicPlayersState[i].cardStatus
+										.cardBack.cardName}${publicPlayersState[
+										i
+									].cardStatus.cardBack.icon.toString()}`;
 								} else {
-									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
+									classes = `${classes} ${publicPlayersState[i].cardStatus
+										.cardBack.cardName}`;
 								}
 							}
 
 							return classes;
-						})()
-					} />
+						})()}
+					/>
 				</div>
 			</div>
-			)
 		);
 	}
 
 	renderTakeSeat() {
-		const {userInfo, gameInfo, userList} = this.props;
+		const { userInfo, gameInfo, userList } = this.props;
 
-		if ((!userInfo.isSeated && userInfo.userName)
-			&& !gameInfo.gameState.isTracksFlipped
-			&& gameInfo.publicPlayersState.length < 10
-			&& (!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName))
-			&& (!gameInfo.general.rainbowgame || userList.list.find(user => user.userName === userInfo.userName).wins + userList.list.find(user => user.userName === userInfo.userName).losses > 49)) {
-			return <div className="ui left pointing label" onClick={this.clickedTakeSeat}>Take a seat</div>;
+		if (
+			!userInfo.isSeated &&
+			userInfo.userName &&
+			!gameInfo.gameState.isTracksFlipped &&
+			gameInfo.publicPlayersState.length < 10 &&
+			(!userInfo.userName ||
+				!gameInfo.publicPlayersState.find(
+					player => player.userName === userInfo.userName
+				)) &&
+			(!gameInfo.general.rainbowgame ||
+				userList.list.find(user => user.userName === userInfo.userName).wins +
+					userList.list.find(user => user.userName === userInfo.userName)
+						.losses >
+					49)
+		) {
+			return (
+				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
+					Take a seat
+				</div>
+			);
 		}
 	}
 
@@ -225,12 +343,18 @@ export default class Players extends React.Component {
 	}
 
 	clickedTakeSeat() {
-		const {gameInfo, userInfo, onClickedTakeSeat} = this.props;
+		const { gameInfo, userInfo, onClickedTakeSeat } = this.props;
 
 		if (userInfo.userName) {
-			if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
+			if (
+				userInfo.gameSettings.unbanTime &&
+				new Date(userInfo.gameSettings.unbanTime) > new Date()
+			) {
 				window.alert('Sorry, this service is currently unavailable.');
-			} else if (gameInfo.general.private && !(gameInfo.general.whitelistedPlayers.includes(userInfo.userName))) {
+			} else if (
+				gameInfo.general.private &&
+				!gameInfo.general.whitelistedPlayers.includes(userInfo.userName)
+			) {
 				$(this.passwordModal).modal('show');
 			} else {
 				onClickedTakeSeat();
@@ -241,11 +365,11 @@ export default class Players extends React.Component {
 	}
 
 	render() {
-		const handlePasswordInputChange = (e) => {
-				this.setState({passwordValue: `${e.target.value}`});
+		const handlePasswordInputChange = e => {
+				this.setState({ passwordValue: `${e.target.value}` });
 			},
 			handleReportTextChange = e => {
-				this.setState({reportTextValue: `${e.target.value}`});
+				this.setState({ reportTextValue: `${e.target.value}` });
 			};
 
 		return (
@@ -253,32 +377,66 @@ export default class Players extends React.Component {
 				{this.renderPlayers()}
 				{this.renderTakeSeat()}
 
-				<div className="ui basic small modal signinnag" ref={c => {
-					this.signinModal = c;
-				}}>
-					<div className="ui header">You will need to sign in or sign up for an account to play.</div>
+				<div
+					className="ui basic small modal signinnag"
+					ref={c => {
+						this.signinModal = c;
+					}}
+				>
+					<div className="ui header">
+						You will need to sign in or sign up for an account to play.
+					</div>
 				</div>
 
-				<div className="ui basic small modal reportmodal" ref={c => {
-					this.reportModal = c;
-				}}>
+				<div
+					className="ui basic small modal reportmodal"
+					ref={c => {
+						this.reportModal = c;
+					}}
+				>
 					<form onSubmit={this.handleReportSubmit}>
 						<div className="ui header">Report a player to the moderators</div>
-						<textarea placeholder="Report" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
-						<div onClick={this.handleReportSubmit} className="ui button primary">Submit</div>
+						<textarea
+							placeholder="Report"
+							value={this.state.reportTextValue}
+							onChange={handleReportTextChange}
+							spellCheck="false"
+							maxLength="500"
+						/>
+						<div
+							onClick={this.handleReportSubmit}
+							className="ui button primary"
+						>
+							Submit
+						</div>
 					</form>
 				</div>
 
-				<div className="ui basic small modal passwordmodal" ref={c => {
-					this.passwordModal = c;
-				}}>
+				<div
+					className="ui basic small modal passwordmodal"
+					ref={c => {
+						this.passwordModal = c;
+					}}
+				>
 					<div className="ui header">Private game password:</div>
 					<div className="ui input">
 						<form onSubmit={this.handlePasswordSubmit}>
-							<input maxLength="20" placeholder="Password" onChange={handlePasswordInputChange} value={this.state.passwordValue} autoFocus ref={c => {
-								this.privategamepassword = c;
-							}} />
-							<div onClick={this.handlePasswordSubmit} className="ui button primary">Submit</div>
+							<input
+								maxLength="20"
+								placeholder="Password"
+								onChange={handlePasswordInputChange}
+								value={this.state.passwordValue}
+								autoFocus
+								ref={c => {
+									this.privategamepassword = c;
+								}}
+							/>
+							<div
+								onClick={this.handlePasswordSubmit}
+								className="ui button primary"
+							>
+								Submit
+							</div>
 						</form>
 					</div>
 				</div>

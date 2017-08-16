@@ -2,14 +2,14 @@
 	padding: 2%;
 	.content > button {
 		position: absolute;
-    left: 50px;
-    top: 100px;
-    color: #fff;
+		left: 50px;
+		top: 100px;
+		color: #fff;
 	}
 
 	.popups {
 		text-align: center;
-	
+
 		button {
 			margin-top: 20px;
 			color: #fff;
@@ -44,7 +44,7 @@
 		.current-cardback {
 			width: 70px;
 			height: 95px;
-			background: url('../images/tweed.png')
+			background: url('../images/tweed.png');
 		}
 		.dropzone {
 			width: 70px;

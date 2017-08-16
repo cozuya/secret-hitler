@@ -2,7 +2,7 @@ import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-const EnactedPolicies = props => (
+const EnactedPolicies = props =>
 	<section className="enactedpolicies-container">
 		{(() => {
 			return _.range(1, 12).map((num, i) => {
@@ -34,8 +34,7 @@ const EnactedPolicies = props => (
 				);
 			});
 		})()}
-	</section>
-);
+	</section>;
 
 EnactedPolicies.propTypes = {
 	gameInfo: PropTypes.object

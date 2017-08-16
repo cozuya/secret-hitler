@@ -8,13 +8,11 @@ const { Range, List } = require('immutable');
 
 // (opt: Option[A], predicate: A => Boolean) => Option[A]
 exports.filterOpt = (opt, predicate) => {
-	return opt.flatMap(o => predicate(o) ? opt : none);
+	return opt.flatMap(o => (predicate(o) ? opt : none));
 };
 
 // (xs: List[Option[A]]) => List[A]
-exports.flattenListOpts = xs => xs
-	.filter(x => x.isSome())
-	.map(x => x.value());
+exports.flattenListOpts = xs => xs.filter(x => x.isSome()).map(x => x.value());
 
 // (xs: List[A], opt: Option[A]) => List[A]
 exports.pushOpt = (xs, opt) => {
@@ -30,7 +28,6 @@ exports.mapOpt1 = f => {
 exports.mapOpt2 = f => {
 	return (x, y) => x.flatMap(xx => y.map(yy => f(xx, yy)));
 };
-
 
 /*****************
  * GAME ENTITIES *
@@ -62,20 +59,18 @@ exports.handToPolicy = hand => {
 
 // consistently ordered 'fascist' first, followed by 'liberal'
 // (hand: Hand) => List[Policy]
-const handToPolicies = exports.handToPolicies = hand => {
+const handToPolicies = (exports.handToPolicies = hand => {
 	const toPolicies = (count, type) => Range(0, count).map(i => type).toList();
 
 	const reds = toPolicies(hand.reds, 'fascist');
 	const blues = toPolicies(hand.blues, 'liberal');
 
 	return reds.concat(blues).toList();
-};
+});
 
 // (policy: Policy) => Hand
 exports.policyToHand = policy => {
-	return policy === 'fascist'
-		? { reds: 1, blues: 0 }
-		: { reds: 0, blues: 1 };
+	return policy === 'fascist' ? { reds: 1, blues: 0 } : { reds: 0, blues: 1 };
 };
 
 // (policy: Policy) => String ('R' | 'B')
@@ -83,17 +78,17 @@ exports.policyToString = policy => {
 	return policy === 'fascist' ? 'R' : 'B';
 };
 
-const text = exports.text = (type, text, space) => ({ type, text, space });
+const text = (exports.text = (type, text, space) => ({ type, text, space }));
 
 // (hand: Hand) => String ('R*B*')
 exports.handToText = hand => {
-	const policyToString = policy => policy === 'fascist' ? 'R' : 'B';
+	const policyToString = policy => (policy === 'fascist' ? 'R' : 'B');
 
-	return handToPolicies(hand).map(policy =>
-		text(policy, policyToString(policy), false)
-	).concat(text('normal', '')).toArray();
+	return handToPolicies(hand)
+		.map(policy => text(policy, policyToString(policy), false))
+		.concat(text('normal', ''))
+		.toArray();
 };
-
 
 /********
  * MISC *
@@ -107,7 +102,8 @@ exports.capitalize = s => {
 // (target: Object, subset: Object) => Boolean
 // compares attributes with strict equality
 exports.objectContains = (target, subset) => {
-	return Object.keys(subset).reduce((acc, key) => (
-		acc && target[key] === subset[key]
-	), true);
+	return Object.keys(subset).reduce(
+		(acc, key) => acc && target[key] === subset[key],
+		true
+	);
 };

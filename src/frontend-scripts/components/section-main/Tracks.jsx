@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 const Tracks = props => {
 	const renderElectionTracker = () => {
-			const {gameInfo} = props;
+			const { gameInfo } = props;
 			let classes = 'electiontracker';
 
 			if (gameInfo.trackState.electionTrackerCount === 1) {
@@ -16,35 +16,35 @@ const Tracks = props => {
 				classes += ' fail3';
 			}
 
-			if (gameInfo.gameState.isTracksFlipped && (gameInfo.trackState && !gameInfo.trackState.isHidden)) {
+			if (
+				gameInfo.gameState.isTracksFlipped &&
+				(gameInfo.trackState && !gameInfo.trackState.isHidden)
+			) {
 				return <div className={classes} />;
 			}
 		},
-		{gameInfo, userInfo, socket} = props;
+		{ gameInfo, userInfo, socket } = props;
 
 	return (
 		<section className="tracks-container">
-			<CardFlinger
-				userInfo={userInfo}
-				gameInfo={gameInfo}
-				socket={socket}
-			/>
-			<EnactedPolicies
-				gameInfo={gameInfo}
-			/>
-			<section className={
-				(() => {
+			<CardFlinger userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+			<EnactedPolicies gameInfo={gameInfo} />
+			<section
+				className={(() => {
 					let classes = 'tracks';
 
-					if (props.gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
+					if (
+						props.gameInfo.cardFlingerState.length ||
+						gameInfo.trackState.isBlurred
+					) {
 						classes += ' blurred';
 					}
 
 					return classes;
-				})()
-			}>
-				<div className={
-					(() => {
+				})()}
+			>
+				<div
+					className={(() => {
 						let classes = 'track-flipper track-flipper-top';
 
 						if (gameInfo.gameState.isTracksFlipped) {
@@ -52,13 +52,13 @@ const Tracks = props => {
 						}
 
 						return classes;
-					})()
-				}>
+					})()}
+				>
 					<div className="track top-track-front" />
 					<div className="track top-track-back" />
 				</div>
-				<div className={
-					(() => {
+				<div
+					className={(() => {
 						let classes = 'track-flipper track-flipper-bottom';
 
 						if (gameInfo.gameState.isTracksFlipped) {
@@ -66,11 +66,11 @@ const Tracks = props => {
 						}
 
 						return classes;
-					})()
-				}>
+					})()}
+				>
 					<div className="track bottom-track-front" />
-					<div className={
-						(() => {
+					<div
+						className={(() => {
 							let classes = 'track bottom-track-back';
 
 							if (gameInfo.general.playerCount < 7) {
@@ -82,8 +82,8 @@ const Tracks = props => {
 							}
 
 							return classes;
-						})()
-					} />
+						})()}
+					/>
 				</div>
 				{renderElectionTracker()}
 			</section>

@@ -54,7 +54,10 @@ export default () => {
 					submitErr('Sorry, that request did not look right.');
 				},
 				401(xhr) {
-					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : 'Sorry, that username already exists and you did not provide the correct password.';
+					const message =
+						typeof xhr.responseJSON !== 'undefined'
+							? xhr.responseJSON.message
+							: 'Sorry, that username already exists and you did not provide the correct password.';
 
 					submitErr(message);
 				}
@@ -70,15 +73,15 @@ export default () => {
 			.modal('show');
 	});
 
-	$('body').on('focus', '#signup-username', function () {
+	$('body').on('focus', '#signup-username', function() {
 		$(this).parent().next().text('3-12 alphanumeric characters.').slideDown();
 	});
 
-	$('body').on('focus', '#signup-password1', function () {
+	$('body').on('focus', '#signup-password1', function() {
 		$(this).parent().next().text('6-255 characters.').slideDown();
 	});
 
-	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function () {
+	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function() {
 		$(this).parent().next().slideUp();
 	});
 
@@ -99,7 +102,7 @@ export default () => {
 			url: '/account/signin',
 			method: 'POST',
 			contentType: 'application/json; charset=UTF-8',
-			data: JSON.stringify({username, password}),
+			data: JSON.stringify({ username, password }),
 			statusCode: {
 				200() {
 					if (window.location.pathname === '/observe') {
@@ -112,7 +115,9 @@ export default () => {
 					submitErr('Sorry, that request did not look right.');
 				},
 				401() {
-					submitErr('Sorry, that was not the correct password for that username.');
+					submitErr(
+						'Sorry, that was not the correct password for that username.'
+					);
 				}
 			}
 		});
@@ -136,7 +141,7 @@ export default () => {
 			.modal('show');
 	});
 
-	$('button#passwordchange-submit').on('click', function (event) {
+	$('button#passwordchange-submit').on('click', function(event) {
 		event.preventDefault();
 
 		const newPassword = $('#passwordchange-password').val(),
@@ -166,7 +171,9 @@ export default () => {
 				},
 				401() {
 					$loader.removeClass('active');
-					$errMessage.text('Your new password and your confirm password did not match.').removeClass('hidden');
+					$errMessage
+						.text('Your new password and your confirm password did not match.')
+						.removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}
@@ -181,18 +188,15 @@ export default () => {
 			.modal('show');
 	});
 
-	$('button#deleteaccount-submit').on('click', function (event) {
+	$('button#deleteaccount-submit').on('click', function(event) {
 		// todo-release
 		// event.preventDefault();
-
 		// const password = $('#deleteaccount-password').val(),
 		// 	$loader = $(this).next(),
 		// 	$errMessage = $loader.next(),
 		// 	$successMessage = $errMessage.next(),
 		// 	data = JSON.stringify({password});
-
 		// $loader.addClass('active');
-
 		// $.ajax({
 		// 	url: '/account/delete-account',
 		// 	method: 'POST',
@@ -230,7 +234,7 @@ export default () => {
 			url: '/account/signin',
 			method: 'POST',
 			contentType: 'application/json; charset=UTF-8',
-			data: JSON.stringify({username: user, password: 'snipsnap'}),
+			data: JSON.stringify({ username: user, password: 'snipsnap' }),
 			statusCode: {
 				200() {
 					if (window.location.pathname === '/observe') {

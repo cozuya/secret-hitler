@@ -1,15 +1,12 @@
 {
-	"extends": [
-    "google",
-    "prettier"
-  ],
+	"extends": ["google"],
 	"rules": {
 		"indent": ["error", "tab"],
 		"linebreak-style": "off",
 		"eol-last": "off",
 		"max-len": "off",
 		"one-var": "off",
-		"no-use-before-define": ["warn", {"functions": true, "classes": true}],
+		"no-use-before-define": ["warn", { "functions": true, "classes": true }],
 		"no-warning-comments": "off",
 		"brace-style": "off",
 		"no-nested-ternary": "off",
@@ -29,8 +26,7 @@
 		"react/jsx-uses-vars": "error",
 		"react/jsx-indent-props": ["error", "tab"],
 		"object-curly-spacing": "off",
-    "array-bracket-spacing": "off",
-    "prettier/prettier": "error"
+		"array-bracket-spacing": "off"
 	},
 	"globals": {
 		"io": true,
@@ -48,8 +44,5 @@
 			"modules": true
 		}
 	},
-	"plugins": [
-    "react",
-    "prettier"
-	]
+	"plugins": ["react"]
 }

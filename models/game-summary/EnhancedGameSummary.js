@@ -4,7 +4,6 @@
  */
 
 module.exports = class EnhancedGameSummary {
-
 	constructor(summary) {
 		// from summary
 		this.summary = summary;
@@ -24,8 +23,7 @@ module.exports = class EnhancedGameSummary {
 
 		this.hitlerZone = (() => {
 			const step = (turn, reds) => {
-				const
-					log = this.logs[turn],
+				const log = this.logs[turn],
 					enactedPolicy = log && log.enactedPolicy;
 
 				if (!log) {
@@ -72,8 +70,10 @@ module.exports = class EnhancedGameSummary {
 	isWinner(identifier) {
 		if (this.lastTurn.execution === this.hitlerIndex) {
 			return this.loyaltyOf(identifier) === 'liberal';
-		} else if (this.lastTurn.chancellorId === this.hitlerIndex
-			&& this.lastTurn.votes.filter(v => v).length > this.playerSize / 2) {
+		} else if (
+			this.lastTurn.chancellorId === this.hitlerIndex &&
+			this.lastTurn.votes.filter(v => v).length > this.playerSize / 2
+		) {
 			return this.loyaltyOf(identifier) === 'fascist';
 		} else {
 			return this.loyaltyOf(identifier) === this.lastTurn.enactedPolicy;
@@ -115,8 +115,10 @@ module.exports = class EnhancedGameSummary {
 		const playerIndex = this.indexOf(identifier);
 
 		return this.logs
-			.filter(log => log.presidentId === playerIndex && Number.isInteger(log.execution))
+			.filter(
+				log =>
+					log.presidentId === playerIndex && Number.isInteger(log.execution)
+			)
 			.map(log => log.execution);
 	}
-
 };

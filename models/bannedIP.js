@@ -1,5 +1,5 @@
 const mongoose = require('mongoose'),
-	{Schema} = mongoose,
+	{ Schema } = mongoose,
 	BannedIP = new Schema({
 		bannedDate: Date,
 		type: String,

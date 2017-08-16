@@ -1,104 +1,104 @@
 #main .moderation {
-		color: $fascistteam;
-		.player-input {
-			display: flex;
-			justify-content: center;
-		}
-		h2 {
-			text-align: center;
-		}
-		.player-list-toggle {
-			position: absolute;
-			color: lightblue;
-			text-decoration: underline;
-			right: 80px;
-			top: 70px;
+	color: $fascistteam;
+	.player-input {
+		display: flex;
+		justify-content: center;
+	}
+	h2 {
+		text-align: center;
+	}
+	.player-list-toggle {
+		position: absolute;
+		color: lightblue;
+		text-decoration: underline;
+		right: 80px;
+		top: 70px;
+		cursor: pointer;
+	}
+	.remove.icon {
+		cursor: pointer;
+		position: absolute;
+		font-size: 30px;
+		left: 94%;
+		opacity: .3;
+		top: 70px;
+	}
+	ul {
+		list-style-type: none;
+		li label {
 			cursor: pointer;
 		}
-		.remove.icon {
-			cursor: pointer;
-			position: absolute;
-			font-size: 30px;
-			left: 94%;
-			opacity: .3;
-			top: 70px;
-		}
-		ul {
-			list-style-type: none;
-			li label {
-				cursor: pointer;
+	}
+	button {
+		color: black;
+		padding: 10px;
+	}
+	> div {
+		display: flex;
+		.modlog {
+			max-width: 60%;
+			width: 100%;
+			> div {
+				max-height: 470px;
+				overflow-y: scroll;
 			}
 		}
-		button {
-			color: black;
-			padding: 10px;
+		.modplayerlist {
+			ul {
+				padding: 0 0 0 10px;
+				max-height: 370px;
+				overflow-y: scroll;
+			}
 		}
 		> div {
-			display: flex;
-			.modlog {
-				max-width: 60%;
-				width: 100%;
-				> div {
-					max-height: 470px;
-  				overflow-y: scroll;
-				}
-			}
-			.modplayerlist {
-				ul {
-					padding: 0 0 0 10px;
-					max-height: 370px;
-					overflow-y: scroll;
-				}
-			}
-			> div {
-				padding: 0 5px;
-			}
-			h3 {
-				text-align: center;
-			}
+			padding: 0 5px;
 		}
-		.multi {
-			color: yellow;
+		h3 {
+			text-align: center;
 		}
-		table {
-			font-size: 12px;
+	}
+	.multi {
+		color: yellow;
+	}
+	table {
+		font-size: 12px;
 
-			td {
-				padding: 2px;
-			}
-			
-			tr {
-				background: lightyellow;
-			}
+		td {
+			padding: 2px;
 		}
-		textarea {
-			width: 100%;
+
+		tr {
+			background: lightyellow;
 		}
-		.ip {
-			color: orange;
-		}
-		.broadcast {
-			cursor: pointer;
-			position: absolute;
-			left: 5%;
-			top: 70px;
-			text-decoration: underline;
-		}
-		.ipban-button {
-			width: 100%;
-			background: darkred;
-			color: white;
-			margin: 2px 0;
-		}
-		.cardback-button {
-			width: 100%;
-			background: lightblue;
-			margin: 2px 0;
-		}
-		.tier3 {
-			background: orange;
-			margin: 2px 3px 2px 0;
-		}
+	}
+	textarea {
+		width: 100%;
+	}
+	.ip {
+		color: orange;
+	}
+	.broadcast {
+		cursor: pointer;
+		position: absolute;
+		left: 5%;
+		top: 70px;
+		text-decoration: underline;
+	}
+	.ipban-button {
+		width: 100%;
+		background: darkred;
+		color: white;
+		margin: 2px 0;
+	}
+	.cardback-button {
+		width: 100%;
+		background: lightblue;
+		margin: 2px 0;
+	}
+	.tier3 {
+		background: orange;
+		margin: 2px 3px 2px 0;
+	}
 }
 
 .broadcastmodal {

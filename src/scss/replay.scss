@@ -1,19 +1,19 @@
 #replay {
 	margin-top: 0px;
-    border: 0;
-    border-radius: 0;
-    background-color: #222;
-    padding: 0px;
+	border: 0;
+	border-radius: 0;
+	background-color: #222;
+	padding: 0px;
 
-    .not-found {
-    	margin-top: 150px;
-    }
+	.not-found {
+		margin-top: 150px;
+	}
 
-    .exit {
-    	position: absolute;
-    	right: 0px;
-    	z-index: 5;
-    }
+	.exit {
+		position: absolute;
+		right: 0px;
+		z-index: 5;
+	}
 
 	.ui.grid > .column {
 		padding: 0;
@@ -71,7 +71,6 @@
 
 			.enacted {
 				position: absolute;
-
 			}
 
 			.election-tracker {
@@ -91,15 +90,14 @@
 				z-index: 3;
 
 				& > .hand > h1::after {
-					content: ':'
+					content: ':';
 				}
 
 				& > .claim > h1::after {
-					content: ':'
+					content: ':';
 				}
 			}
 		}
-
 	}
 
 	.replay-controls {
@@ -147,7 +145,7 @@
 				cursor: pointer;
 
 				.filled.step:after {
-					background-color: #B3B3FF;
+					background-color: #b3b3ff;
 				}
 			}
 
@@ -186,7 +184,8 @@
 					&.policyEnaction {
 						width: 66.66%;
 					}
-					&.investigation, &.execution {
+					&.investigation,
+					&.execution {
 						width: 100%;
 					}
 				}
@@ -265,7 +264,8 @@
 			.tracks {
 				transition: none;
 
-				.track-flipper, .track {
+				.track-flipper,
+				.track {
 					height: 175px;
 				}
 			}

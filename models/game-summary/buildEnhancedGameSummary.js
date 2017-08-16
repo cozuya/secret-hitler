@@ -11,19 +11,34 @@ const buildTurns = require('./buildTurns');
 function buildEnhancedGameSummary(_summary) {
 	// convert Arrays to Lists and some values to Options
 	const summary = fromJS(_summary, (key, value, path) => {
-		const options = [ 'presidentHand', 'chancellorHand', 'enactedPolicy',
-			'presidentClaim', 'chancellorClaim', 'presidentVeto', 'chancellorVeto',
-			'policyPeek', 'policyPeekClaim', 'investigationId', 'investigationClaim',
-			'specialElection', 'execution' ];
+		const options = [
+			'presidentHand',
+			'chancellorHand',
+			'enactedPolicy',
+			'presidentClaim',
+			'chancellorClaim',
+			'presidentVeto',
+			'chancellorVeto',
+			'policyPeek',
+			'policyPeekClaim',
+			'investigationId',
+			'investigationClaim',
+			'specialElection',
+			'execution'
+		];
 
 		if (key === 'logs') {
-			return value.map(log => {
-				const logOptions = Map(options.map(o => {
-					const optValue = log[o] !== undefined ? some(log[o]) : none;
-					return [o, optValue];
-				})).toObject();
-				return Object.assign({}, log, logOptions);
-			}).toList();
+			return value
+				.map(log => {
+					const logOptions = Map(
+						options.map(o => {
+							const optValue = log[o] !== undefined ? some(log[o]) : none;
+							return [o, optValue];
+						})
+					).toObject();
+					return Object.assign({}, log, logOptions);
+				})
+				.toList();
 		} else {
 			return isIndexed(value) ? value.toList() : value.toObject();
 		}
@@ -52,10 +67,7 @@ function buildEnhancedGameSummary(_summary) {
 	})();
 
 	// List[Turn]
-	const turns = buildTurns(
-		summary.logs,
-		players
-	);
+	const turns = buildTurns(summary.logs, players);
 
 	// Int
 	const playerSize = players.size;
@@ -82,9 +94,7 @@ function buildEnhancedGameSummary(_summary) {
 	// Option[Int]
 	const indexOf = id => {
 		return fromNullable(
-			Number.isInteger(id)
-				? id
-				: players.findIndex(p => p.username === id)
+			Number.isInteger(id) ? id : players.findIndex(p => p.username === id)
 		);
 	};
 
@@ -119,20 +129,23 @@ function buildEnhancedGameSummary(_summary) {
 
 	// Option[List[Option[{ ja: Boolean, presidentId: Int, chancellorId: Int }]]]
 	const votesOf = username => {
-		return indexOf(username).map(i => turns.map(t =>
-			t.votes.get(i).map(v => ({
-				ja: v,
-				presidentId: t.presidentId,
-				chancellorId: t.chancellorId
-			}))
-		));
+		return indexOf(username).map(i =>
+			turns.map(t =>
+				t.votes.get(i).map(v => ({
+					ja: v,
+					presidentId: t.presidentId,
+					chancellorId: t.chancellorId
+				}))
+			)
+		);
 	};
 
 	// Option[List[Int]]
 	const shotsOf = username => {
-		return indexOf(username).map(i => turns
-			.filter(t => t.presidentId === i && t.execution.isSome())
-			.map(t => t.execution.value())
+		return indexOf(username).map(i =>
+			turns
+				.filter(t => t.presidentId === i && t.execution.isSome())
+				.map(t => t.execution.value())
 		);
 	};
 
@@ -141,8 +154,24 @@ function buildEnhancedGameSummary(_summary) {
 		return loyaltyOf(username).map(l => l === winningTeam);
 	};
 
-	return { summary, id, date, players, turns, playerSize, hitlerZone, winningTeam,
-		usernameOf, tagOf, indexOf, loyaltyOf, roleOf, votesOf, shotsOf, isWinner };
-};
+	return {
+		summary,
+		id,
+		date,
+		players,
+		turns,
+		playerSize,
+		hitlerZone,
+		winningTeam,
+		usernameOf,
+		tagOf,
+		indexOf,
+		loyaltyOf,
+		roleOf,
+		votesOf,
+		shotsOf,
+		isWinner
+	};
+}
 
 module.exports = buildEnhancedGameSummary;

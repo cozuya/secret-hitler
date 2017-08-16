@@ -3,7 +3,7 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 const TBody = ({ rows }) => {
 	return (
 		<tbody>
-			{ rows.map((row, i) => {
+			{rows.map((row, i) => {
 				const isRich = !Array.isArray(row);
 				const noop = () => null;
 
@@ -11,9 +11,11 @@ const TBody = ({ rows }) => {
 				const cells = isRich ? row.cells : row;
 
 				return (
-					<tr onClick={onClick} key={i} >
-						{ cells.map((cell, i) =>
-							<td key={i}>{ cell }</td>
+					<tr onClick={onClick} key={i}>
+						{cells.map((cell, i) =>
+							<td key={i}>
+								{cell}
+							</td>
 						)}
 					</tr>
 				);
@@ -22,17 +24,18 @@ const TBody = ({ rows }) => {
 	);
 };
 
-const Table = ({ headers, rows, uiTable }) => (
+const Table = ({ headers, rows, uiTable }) =>
 	<table className={`ui ${uiTable} table`}>
 		<thead>
 			<tr>
-				{ headers.map(h =>
-					<th key={h}>{h}</th>
+				{headers.map(h =>
+					<th key={h}>
+						{h}
+					</th>
 				)}
 			</tr>
 		</thead>
 		<TBody rows={rows} />
-	</table>
-);
+	</table>;
 
 export default Table;

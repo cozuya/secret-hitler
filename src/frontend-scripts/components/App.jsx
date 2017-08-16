@@ -1,9 +1,17 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
-import {updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, updateVersion} from '../actions/actions.js';
+import {
+	updateUser,
+	updateMidsection,
+	updateGameList,
+	updateGameInfo,
+	updateUserList,
+	updateGeneralChats,
+	updateVersion
+} from '../actions/actions.js';
 import socket from '../socket';
 import $ from 'jquery';
 import PropTypes from 'prop-types';
@@ -22,17 +30,26 @@ export class App extends React.Component {
 	}
 
 	componentDidMount() {
-		const {dispatch} = this.props,
-			{classList} = document.getElementById('game-container');
+		const { dispatch } = this.props,
+			{ classList } = document.getElementById('game-container');
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1],
-				info = {userName: username};
+				info = { userName: username };
 
 			socket.emit('getUserGameSettings', username);
 
 			// ** begin devhelpers **
-			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var
+			const devPlayers = [
+				'Jaina',
+				'Rexxar',
+				'Malfurian',
+				'Thrall',
+				'Valeera',
+				'Anduin',
+				'aaa',
+				'bbb'
+			]; // eslint-disable-line one-var
 			if (devPlayers.includes(username)) {
 				const data = {
 					uid: 'devgame',
@@ -56,10 +73,13 @@ export class App extends React.Component {
 		});
 
 		socket.on('gameSettings', settings => {
-			const {userInfo} = this.props;
+			const { userInfo } = this.props;
 
 			if (settings.customWidth && settings.customWidth !== '1853px') {
-				$('#game-container').css('width', settings.customWidth === 1853 ? 'inherit' : settings.customWidth);
+				$('#game-container').css(
+					'width',
+					settings.customWidth === 1853 ? 'inherit' : settings.customWidth
+				);
 			}
 			userInfo.gameSettings = settings;
 			dispatch(updateUser(userInfo));
@@ -73,7 +93,7 @@ export class App extends React.Component {
 			dispatch(updateVersion(v));
 		});
 
-		socket.on('gameUpdate', (game, isSettings, toReplay=false) => {
+		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
 			if (this.props.midSection !== 'game' && Object.keys(game).length) {
 				dispatch(updateGameInfo(game));
 				dispatch(updateMidsection('game'));
@@ -94,7 +114,7 @@ export class App extends React.Component {
 		});
 
 		socket.on('updateSeatForUser', () => {
-			const {userInfo} = this.props;
+			const { userInfo } = this.props;
 
 			userInfo.isSeated = true;
 			dispatch(updateUser(userInfo));
@@ -106,13 +126,13 @@ export class App extends React.Component {
 	}
 
 	handleRoute(route) {
-		const {dispatch} = this.props;
+		const { dispatch } = this.props;
 
 		dispatch(updateMidsection(route));
 	}
 
 	handleCreateGameSubmit(game) {
-		const {dispatch, userInfo} = this.props;
+		const { dispatch, userInfo } = this.props;
 
 		userInfo.isSeated = true;
 		dispatch(updateUser(userInfo));
@@ -124,7 +144,7 @@ export class App extends React.Component {
 	// ***** begin dev helpers *****
 
 	makeQuickDefault() {
-		const {dispatch, userInfo} = this.props,
+		const { dispatch, userInfo } = this.props,
 			game = {
 				gameState: {
 					previousElectedGovernment: [],
@@ -147,18 +167,20 @@ export class App extends React.Component {
 					status: 'Waiting for more players..',
 					electionCount: 0
 				},
-				publicPlayersState: [{
-					userName: userInfo.userName,
-					connected: true,
-					isDead: false,
-					customCardback: 'png',
-					cardStatus: {
-						cardDisplayed: false,
-						isFlipped: false,
-						cardFront: 'secretrole',
-						cardBack: {}
+				publicPlayersState: [
+					{
+						userName: userInfo.userName,
+						connected: true,
+						isDead: false,
+						customCardback: 'png',
+						cardStatus: {
+							cardDisplayed: false,
+							isFlipped: false,
+							cardFront: 'secretrole',
+							cardBack: {}
+						}
 					}
-				}],
+				],
 				playersState: [],
 				cardFlingerState: [],
 				trackState: {
@@ -179,7 +201,7 @@ export class App extends React.Component {
 	// ***** end dev helpers *****
 
 	handleSeatingUser(password) {
-		const {gameInfo, userInfo} = this.props,
+		const { gameInfo, userInfo } = this.props,
 			data = {
 				uid: gameInfo.general.uid,
 				userName: userInfo.userName,
@@ -192,7 +214,7 @@ export class App extends React.Component {
 	}
 
 	handleLeaveGame(isSeated, isSettings = false, badKarma, toReplay) {
-		const {dispatch, userInfo, gameInfo} = this.props;
+		const { dispatch, userInfo, gameInfo } = this.props;
 
 		if (userInfo.isSeated) {
 			userInfo.isSeated = false;
@@ -213,8 +235,10 @@ export class App extends React.Component {
 		return (
 			<section className="ui grid">
 				{(() => {
-					if (this.props.midSection !== 'game'
-						&& this.props.midSection !== 'replay') {
+					if (
+						this.props.midSection !== 'game' &&
+						this.props.midSection !== 'replay'
+					) {
 						return (
 							<LeftSidebar
 								userInfo={this.props.userInfo}
@@ -247,8 +271,12 @@ export class App extends React.Component {
 					version={this.props.version}
 				/>
 				{(() => {
-					if (this.props.midSection !== 'game' && this.props.midSection !== 'replay'
-						|| this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
+					if (
+						(this.props.midSection !== 'game' &&
+							this.props.midSection !== 'replay') ||
+						(this.props.userInfo.gameSettings &&
+							this.props.userInfo.gameSettings.enableRightSidebarInGame)
+					) {
 						return (
 							<RightSidebar
 								gameInfo={this.props.gameInfo}

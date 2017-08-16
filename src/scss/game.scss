@@ -1,328 +1,331 @@
 #game-container {
-    margin: 0 auto;
+	margin: 0 auto;
 }
 
-.game>.ui.grid {
-    margin: 0;
-    >.row:first-child {
-        height: 440px;
-        padding: 0;
-    }
-    .chat-container {
-        background: #f6f6f6;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        .gamestatus {
-            font-size: 22px;
-            font-style: italic;
-            color: #eee;
-            background: $darkfascistteam;
-            padding: 3px 0px 7px 2px;
-        }
-        .gamechat {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            margin: 0;
-            background: #f6f6f6;
-            display: flex;
-            flex-direction: column;
-            form {
-                background: #3d3d3d;
-                display: flex;
-                position: relative;
-                z-index: 100;
-            }
-            .pointing.menu {
-                .observer-chat {
-                    opacity: .75;
-                }
-                margin: 0;
-                min-height: initial;
-                overflow-x: initial !important;
-                .item {
-                    padding: 7px 8px 6px;
-                    position: relative;
-                    z-index: 101;
-                }
-                .icon {
-                    margin-top: 4px;
-                    cursor: pointer;
-                }
-                .button {
-                    padding: 2px 0px;
-                    font-size: 12px;
-                    width: 42px;
-                    font-size: 11px;
-                    background: #FBBD08 !important;
-                    color: black !important;
-                }
-                .button.ui-disabled {
-                    opacity: 0.45 !important;
-                    box-shadow: none !important;
-                    cursor: pointer;
-                }
-            }
-            .chats {
-                display: flex;
-                flex-direction: column-reverse;
-                height: 345px;
-                position: relative;
-                background: #F9FAFF;
-                font-size: 18px;
-                cursor: not-allowed;
-                overflow: hidden;
-                .ui.list {
-                    padding-left: 5px;
-                    overflow-y: auto;
-                    position: absolute;
-                    bottom: 0;
-                    line-height: 1.2;
-                    max-height: 345px;
-                    width: 100%;
-                }
-                .item {
-                    word-wrap: break-word;
-                    line-height: inherit;
-                    padding: 0;
-                }
-                .chat-user {
-                    color: #eee;
-                    .chat-timestamp {
-                        color: #848484;
-                        font-size: 12px;
-                    }
-                }
-                .chat-user--game .chat-timestamp {
-                    font-size: 12px;
-                }
-                .chat-user--game,
-                .game-chat,
-                .chat-user--game .chat-timestamp {
-                    color: #8B8B8B;
-                }
-                .chat-user--claim,
-                .claim-chat,
-                {
-                    color: #FBBD08;
-                }
-                .chat-user--broadcast {
-                    color: lightsalmon;
-                }
-                .broadcast-chat {
-                    color: lightskyblue;
-                }
-                .chat-role--liberal {
-                    font-weight: 700;
-                    color: $darkliberalteam;
-                }
-                .chat-role--hitler {
-                    font-weight: 700;
-                    color: #be0804;
-                }
-                .chat-role--fascist {
-                    font-weight: 700;
-                    color: $darkfascistteam;
-                }
-                .chat-player {
-                    color: #eee;
-                    font-weight: 700;
-                }
-            }
-            .chats.blurred {
-                filter: blur(4px);
-            }
-            .claim-container {
-                position: absolute;
-                top: 80px;
-                left: 0;
-                width: 630px;
-                opacity: 0;
-                transition: opacity 1s;
-                p {
-                    font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
-                    font-size: 32px;
-                    color: #fbbd08;
-                    text-align: center;
-                    margin-bottom: 15px;
-                }
-                .ui.button {
-                    text-align: center;
-                    color: #eee;
-                    display: block;
-                    width: 230px;
-                    margin: 0 auto 15px;
-                }
-                .threefascist {
-                    background: #c36563;
-                }
-                .twofascistoneliberal {
-                    background: #e4bcba;
-                    color: #333 !important;
-                }
-                .onefascistoneliberal {
-                    background: #fff;
-                    color: #333 !important;
-                }
-                .twoliberalonefascist {
-                    background: #bfd8ee;
-                    color: #333 !important;
-                }
-                .threeliberal {
-                    background: #608cb3;
-                }
-            }
-            .claim-container.active {
-                opacity: 1;
-            }
-            .inputbar {
-                .claim-button {
-                    float: left;
-                    color: #fff;
-                    padding: 8px 3px 8px 3px;
-                    font-size: 20px;
-                    font-weight: 700;
-                    z-index: 102;
-                    cursor: pointer;
-                    position: relative;
-                    &:after {
-                        content: '';
-                        display: table;
-                        animation: fadeIn .6s infinite alternate;
-                        top: 0;
-                        left: 0;
-                        position: absolute;
-                        width: 20px;
-                        height: 35px;
-                        box-shadow: 0 0 3px 5px #FBBD08;
-                    }
-                }
-                .expando-container {
-                    position: relative;
-                    top: 7px;
-                    left: 4px;
-                    float: left;
-                    cursor: pointer;
-                    .hotkey-container {
-                        position: absolute;
-                        width: 150px;
-                        height: 70px;
-                        right: 35px;
-                        background: #eee;
-                        bottom: 0;
-                        border: 1px solid #bbb;
-                        >div:hover {
-                            font-weight: bold;
-                            color: $lteal;
-                        }
-                        div:first-child {
-                            width: 75px;
-                            border-right: 1px solid #bbb;
-                        }
-                        div {
-                            width: 73px;
-                            float: left;
-                            height: 70px;
-                            font-size: 16px;
-                            text-align: center;
-                            padding-top: 8px;
-                        }
-                    }
-                }
-                span {
-                    padding-left: 20px;
-                }
-                .input {
-                    flex-grow: 1;
-                    button {
-                        padding: 0px 10px;
-                    }
-                }
-                .input.disabled {
-                    cursor: not-allowed;
-                }
-                >.icon {
-                    float: left;
-                    position: relative;
-                    top: 10px;
-                    cursor: pointer;
-                }
-            }
-        }
-    }
-    .gameroles-container {
-        background: #eee;
-    }
+.game > .ui.grid {
+	margin: 0;
+	> .row:first-child {
+		height: 440px;
+		padding: 0;
+	}
+	.chat-container {
+		background: #f6f6f6;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		.gamestatus {
+			font-size: 22px;
+			font-style: italic;
+			color: #eee;
+			background: $darkfascistteam;
+			padding: 3px 0px 7px 2px;
+		}
+		.gamechat {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			margin: 0;
+			background: #f6f6f6;
+			display: flex;
+			flex-direction: column;
+			form {
+				background: #3d3d3d;
+				display: flex;
+				position: relative;
+				z-index: 100;
+			}
+			.pointing.menu {
+				.observer-chat {
+					opacity: .75;
+				}
+				margin: 0;
+				min-height: initial;
+				overflow-x: initial !important;
+				.item {
+					padding: 7px 8px 6px;
+					position: relative;
+					z-index: 101;
+				}
+				.icon {
+					margin-top: 4px;
+					cursor: pointer;
+				}
+				.button {
+					padding: 2px 0px;
+					font-size: 12px;
+					width: 42px;
+					font-size: 11px;
+					background: #fbbd08 !important;
+					color: black !important;
+				}
+				.button.ui-disabled {
+					opacity: 0.45 !important;
+					box-shadow: none !important;
+					cursor: pointer;
+				}
+			}
+			.chats {
+				display: flex;
+				flex-direction: column-reverse;
+				height: 345px;
+				position: relative;
+				background: #f9faff;
+				font-size: 18px;
+				cursor: not-allowed;
+				overflow: hidden;
+				.ui.list {
+					padding-left: 5px;
+					overflow-y: auto;
+					position: absolute;
+					bottom: 0;
+					line-height: 1.2;
+					max-height: 345px;
+					width: 100%;
+				}
+				.item {
+					word-wrap: break-word;
+					line-height: inherit;
+					padding: 0;
+				}
+				.chat-user {
+					color: #eee;
+					.chat-timestamp {
+						color: #848484;
+						font-size: 12px;
+					}
+				}
+				.chat-user--game .chat-timestamp {
+					font-size: 12px;
+				}
+				.chat-user--game,
+				.game-chat,
+				.chat-user--game .chat-timestamp {
+					color: #8b8b8b;
+				}
+				.chat-user--claim,
+				.claim-chat {
+					color: #fbbd08;
+				}
+				.chat-user--broadcast {
+					color: lightsalmon;
+				}
+				.broadcast-chat {
+					color: lightskyblue;
+				}
+				.chat-role--liberal {
+					font-weight: 700;
+					color: $darkliberalteam;
+				}
+				.chat-role--hitler {
+					font-weight: 700;
+					color: #be0804;
+				}
+				.chat-role--fascist {
+					font-weight: 700;
+					color: $darkfascistteam;
+				}
+				.chat-player {
+					color: #eee;
+					font-weight: 700;
+				}
+			}
+			.chats.blurred {
+				filter: blur(4px);
+			}
+			.claim-container {
+				position: absolute;
+				top: 80px;
+				left: 0;
+				width: 630px;
+				opacity: 0;
+				transition: opacity 1s;
+				p {
+					font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+					font-size: 32px;
+					color: #fbbd08;
+					text-align: center;
+					margin-bottom: 15px;
+				}
+				.ui.button {
+					text-align: center;
+					color: #eee;
+					display: block;
+					width: 230px;
+					margin: 0 auto 15px;
+				}
+				.threefascist {
+					background: #c36563;
+				}
+				.twofascistoneliberal {
+					background: #e4bcba;
+					color: #333 !important;
+				}
+				.onefascistoneliberal {
+					background: #fff;
+					color: #333 !important;
+				}
+				.twoliberalonefascist {
+					background: #bfd8ee;
+					color: #333 !important;
+				}
+				.threeliberal {
+					background: #608cb3;
+				}
+			}
+			.claim-container.active {
+				opacity: 1;
+			}
+			.inputbar {
+				.claim-button {
+					float: left;
+					color: #fff;
+					padding: 8px 3px 8px 3px;
+					font-size: 20px;
+					font-weight: 700;
+					z-index: 102;
+					cursor: pointer;
+					position: relative;
+					&:after {
+						content: '';
+						display: table;
+						animation: fadeIn .6s infinite alternate;
+						top: 0;
+						left: 0;
+						position: absolute;
+						width: 20px;
+						height: 35px;
+						box-shadow: 0 0 3px 5px #fbbd08;
+					}
+				}
+				.expando-container {
+					position: relative;
+					top: 7px;
+					left: 4px;
+					float: left;
+					cursor: pointer;
+					.hotkey-container {
+						position: absolute;
+						width: 150px;
+						height: 70px;
+						right: 35px;
+						background: #eee;
+						bottom: 0;
+						border: 1px solid #bbb;
+						> div:hover {
+							font-weight: bold;
+							color: $lteal;
+						}
+						div:first-child {
+							width: 75px;
+							border-right: 1px solid #bbb;
+						}
+						div {
+							width: 73px;
+							float: left;
+							height: 70px;
+							font-size: 16px;
+							text-align: center;
+							padding-top: 8px;
+						}
+					}
+				}
+				span {
+					padding-left: 20px;
+				}
+				.input {
+					flex-grow: 1;
+					button {
+						padding: 0px 10px;
+					}
+				}
+				.input.disabled {
+					cursor: not-allowed;
+				}
+				> .icon {
+					float: left;
+					position: relative;
+					top: 10px;
+					cursor: pointer;
+				}
+			}
+		}
+	}
+	.gameroles-container {
+		background: #eee;
+	}
 }
 
-.game>.ui.grid .eight.chat-container .gamechat .inputbar .input {
-    width: 548px;
+.game > .ui.grid .eight.chat-container .gamechat .inputbar .input {
+	width: 548px;
 }
 
-.game>.ui.grid .eight.chat-container .gamechat .chats .ui.list {
-    width: 577px;
+.game > .ui.grid .eight.chat-container .gamechat .chats .ui.list {
+	width: 577px;
 }
 
-.game>.ui.grid .eight.chat-container .gamechat .pointing.menu .icon {
-    margin: 7px 0 0 410px;
+.game > .ui.grid .eight.chat-container .gamechat .pointing.menu .icon {
+	margin: 7px 0 0 410px;
 }
 
-.thirteen.wide .game>.ui.grid .six.chat-container .unlock.icon+.primary.button {
-    position: relative;
-    z-index: 100;
+.thirteen.wide .game
+	> .ui.grid .six.chat-container .unlock.icon
+	+ .primary.button {
+	position: relative;
+	z-index: 100;
 }
 
-.sixteen.wide .game>.ui.grid .six.chat-container .unlock.icon+.primary.button {
-    position: relative;
-    z-index: 100;
+.sixteen.wide .game
+	> .ui.grid .six.chat-container .unlock.icon
+	+ .primary.button {
+	position: relative;
+	z-index: 100;
 }
 
-.sixteen.wide .game>.ui.grid .six.chat-container .whitelist {
-    float: right;
-    background: #fff !important;
-    width: 60px;
+.sixteen.wide .game > .ui.grid .six.chat-container .whitelist {
+	float: right;
+	background: #fff !important;
+	width: 60px;
 }
 
-.sixteen.wide .game>.ui.grid .six.chat-container .whitelist+.button {
-    margin-left: 10px;
+.sixteen.wide .game > .ui.grid .six.chat-container .whitelist + .button {
+	margin-left: 10px;
 }
 
-.thirteen.wide .game>.ui.grid .six.chat-container .whitelist {
-    float: right;
-    background: #fff !important;
-    width: 60px;
+.thirteen.wide .game > .ui.grid .six.chat-container .whitelist {
+	float: right;
+	background: #fff !important;
+	width: 60px;
 }
 
-.thirteen.wide .game>.ui.grid .six.chat-container .whitelist+.button {
-    margin-left: 10px;
+.thirteen.wide .game > .ui.grid .six.chat-container .whitelist + .button {
+	margin-left: 10px;
 }
 
-.thirteen.wide .game>.ui.grid .six.chat-container .claim-container {
-    width: 390px;
+.thirteen.wide .game > .ui.grid .six.chat-container .claim-container {
+	width: 390px;
 }
 
 .whitelistmodal {
-    margin-top: 0 !important;
-    top: 50px !important;
-    ul {
-        list-style-type: none;
-        li,
-        li input,
-        li label {
-            cursor: pointer;
-        }
-    }
+	margin-top: 0 !important;
+	top: 50px !important;
+	ul {
+		list-style-type: none;
+		li,
+		li input,
+		li label {
+			cursor: pointer;
+		}
+	}
 }
 
 .leavegamemodals {
-    ul {
-        list-style-type: none;
-        li {
-            margin: 8px 0;
-        }
-    }
+	ul {
+		list-style-type: none;
+		li {
+			margin: 8px 0;
+		}
+	}
 }

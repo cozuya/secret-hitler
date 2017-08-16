@@ -8,10 +8,7 @@ export default function buildReplay(game) {
 		if (tick.gameOver) {
 			return list.push(snapshot(tick));
 		} else {
-			return traverse(
-				step(tick),
-				list.push(snapshot(tick))
-			);
+			return traverse(step(tick), list.push(snapshot(tick)));
 		}
 	}
 
@@ -20,7 +17,8 @@ export default function buildReplay(game) {
 		const { turnNum, phase, gameOver } = tick;
 
 		const {
-			beforeTrack, afterTrack,
+			beforeTrack,
+			afterTrack,
 			beforePlayers,
 			afterPlayers,
 			beforeElectionTracker,
@@ -48,7 +46,6 @@ export default function buildReplay(game) {
 			specialElection
 		} = game.turns.get(turnNum);
 
-
 		const base = {
 			turnNum,
 			phase,
@@ -65,7 +62,7 @@ export default function buildReplay(game) {
 			players: beforePlayers,
 			track: beforeTrack,
 			electionTracker: beforeElectionTracker,
-			deckSize: beforeDeckSize,
+			deckSize: beforeDeckSize
 		});
 
 		const midEnactionAdd = add({
@@ -86,58 +83,61 @@ export default function buildReplay(game) {
 			deckSize: afterDeckSize
 		});
 
-		switch(phase) {
-		case 'candidacy':
-			return preEnactionAdd({ presidentId });
-		case 'nomination':
-			return preEnactionAdd({ presidentId, chancellorId });
-		case 'election':
-			return preEnactionAdd({ presidentId, chancellorId, votes,
-				electionTracker: afterElectionTracker
-			});
-		case 'topDeck':
-			return midEnactionAdd({});
-		case 'presidentLegislation':
-			return midEnactionAdd({
-				presidentClaim,
-				presidentHand: presidentHand.value(),
-				presidentDiscard: presidentDiscard.value()
-			});
-		case 'chancellorLegislation':
-			return midEnactionAdd({
-				chancellorClaim,
-				chancellorDiscard,
-				chancellorHand: chancellorHand.value(),
-			});
-		case 'veto':
-			return midEnactionAdd({
-				isVetoSuccessful,
-				presidentVeto,
-				chancellorVeto: chancellorVeto.value(),
-			});
-		case 'policyEnaction':
-			return postEnactionAdd({
-				players: beforePlayers,
-				enactedPolicy: enactedPolicy.value()
-			});
-		case 'investigation':
-			return postEnactionAdd({
-				investigationId: investigationId.value(),
-				investigationClaim: investigationClaim
-			});
-		case 'policyPeek':
-			return postEnactionAdd({
-				policyPeek: policyPeek.value(),
-				policyPeekClaim: policyPeekClaim
-			});
-		case 'specialElection':
-			return postEnactionAdd({
-				specialElection: specialElection.value()
-			});
-		case 'execution':
-			return postEnactionAdd({
-				execution: execution.value()
-			});
+		switch (phase) {
+			case 'candidacy':
+				return preEnactionAdd({ presidentId });
+			case 'nomination':
+				return preEnactionAdd({ presidentId, chancellorId });
+			case 'election':
+				return preEnactionAdd({
+					presidentId,
+					chancellorId,
+					votes,
+					electionTracker: afterElectionTracker
+				});
+			case 'topDeck':
+				return midEnactionAdd({});
+			case 'presidentLegislation':
+				return midEnactionAdd({
+					presidentClaim,
+					presidentHand: presidentHand.value(),
+					presidentDiscard: presidentDiscard.value()
+				});
+			case 'chancellorLegislation':
+				return midEnactionAdd({
+					chancellorClaim,
+					chancellorDiscard,
+					chancellorHand: chancellorHand.value()
+				});
+			case 'veto':
+				return midEnactionAdd({
+					isVetoSuccessful,
+					presidentVeto,
+					chancellorVeto: chancellorVeto.value()
+				});
+			case 'policyEnaction':
+				return postEnactionAdd({
+					players: beforePlayers,
+					enactedPolicy: enactedPolicy.value()
+				});
+			case 'investigation':
+				return postEnactionAdd({
+					investigationId: investigationId.value(),
+					investigationClaim: investigationClaim
+				});
+			case 'policyPeek':
+				return postEnactionAdd({
+					policyPeek: policyPeek.value(),
+					policyPeekClaim: policyPeekClaim
+				});
+			case 'specialElection':
+				return postEnactionAdd({
+					specialElection: specialElection.value()
+				});
+			case 'execution':
+				return postEnactionAdd({
+					execution: execution.value()
+				});
 		}
 	}
 
@@ -161,56 +161,57 @@ export default function buildReplay(game) {
 
 		const next = nextPhase => ({ turnNum, phase: nextPhase, gameOver: false });
 
-		const jump = () => ({ turnNum: turnNum + 1, phase: 'candidacy', gameOver: false });
+		const jump = () => ({
+			turnNum: turnNum + 1,
+			phase: 'candidacy',
+			gameOver: false
+		});
 
 		const gameOver = () => {
 			return Object.assign({}, tick, { gameOver: true });
 		};
 
 		switch (phase) {
-		case 'candidacy':
-			return next('nomination');
-		case 'nomination':
-			return next('election');
-		case 'election':
-			if (isHitlerElected) return gameOver();
-			else if (isVotePassed) return next('presidentLegislation');
-			else if (isElectionTrackerMaxed) return next('topDeck');
-			else return jump();
-		case 'topDeck':
-			return next('policyEnaction');
-		case 'presidentLegislation':
-			return next('chancellorLegislation');
-		case 'chancellorLegislation':
-			if (isVeto) return next('veto');
-			else return next('policyEnaction');
-		case 'veto':
-			if (isVetoSuccessful) {
-				if (isElectionTrackerMaxed) return next('topDeck');
+			case 'candidacy':
+				return next('nomination');
+			case 'nomination':
+				return next('election');
+			case 'election':
+				if (isHitlerElected) return gameOver();
+				else if (isVotePassed) return next('presidentLegislation');
+				else if (isElectionTrackerMaxed) return next('topDeck');
 				else return jump();
-			} else {
+			case 'topDeck':
 				return next('policyEnaction');
-			}
-		case 'policyEnaction':
-			if (isGameEndingPolicyEnacted) return gameOver();
-			else if (isInvestigation) return next('investigation');
-			else if (isPolicyPeek) return next('policyPeek');
-			else if (isSpecialElection) return next('specialElection');
-			else if (isExecution) return next('execution');
-			else return jump();
-		case 'investigation':
-		case 'policyPeek':
-		case 'specialElection':
-			return jump();
-		case 'execution':
-			if (isHitlerKilled) return gameOver();
-			else return jump();
+			case 'presidentLegislation':
+				return next('chancellorLegislation');
+			case 'chancellorLegislation':
+				if (isVeto) return next('veto');
+				else return next('policyEnaction');
+			case 'veto':
+				if (isVetoSuccessful) {
+					if (isElectionTrackerMaxed) return next('topDeck');
+					else return jump();
+				} else {
+					return next('policyEnaction');
+				}
+			case 'policyEnaction':
+				if (isGameEndingPolicyEnacted) return gameOver();
+				else if (isInvestigation) return next('investigation');
+				else if (isPolicyPeek) return next('policyPeek');
+				else if (isSpecialElection) return next('specialElection');
+				else if (isExecution) return next('execution');
+				else return jump();
+			case 'investigation':
+			case 'policyPeek':
+			case 'specialElection':
+				return jump();
+			case 'execution':
+				if (isHitlerKilled) return gameOver();
+				else return jump();
 		}
 	}
 
 	// main method
-	return traverse(
-		{ turnNum: 0, phase: 'candidacy', gameOver: false },
-		List()
-	);
+	return traverse({ turnNum: 0, phase: 'candidacy', gameOver: false }, List());
 }

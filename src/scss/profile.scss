@@ -1,37 +1,37 @@
 #profile {
-    border: 0;
-    border-radius: 0;
-    margin-top: 0;
-    background-color: #222; 
-    padding: 20px;
-    color: #eee;
+	border: 0;
+	border-radius: 0;
+	margin-top: 0;
+	background-color: #222;
+	padding: 20px;
+	color: #eee;
 
-    .ui.menu {
-        border-radius: 0.28571429rem 0.28571429rem 0em 0em !important;
-        border: 1px solid #D4D4D5 !important;
-    }
+	.ui.menu {
+		border-radius: 0.28571429rem 0.28571429rem 0em 0em !important;
+		border: 1px solid #d4d4d5 !important;
+	}
 
-    .column-name {
-        display: flex;
-        align-items: flex-start;
+	.column-name {
+		display: flex;
+		align-items: flex-start;
 
-        h2 {
-            display: inline-block;
-            margin-bottom: 0;
-            margin-right: 10px;
-        }
-    }
+		h2 {
+			display: inline-block;
+			margin-bottom: 0;
+			margin-right: 10px;
+		}
+	}
 
-    .not-found {
-        position: relative;
-        top: 150px;
-    }
+	.not-found {
+		position: relative;
+		top: 150px;
+	}
 
-    .remove.icon {
-        cursor: pointer;
-        position: absolute;
-        font-size: 30px;
-        left: 760px;
-        opacity: .3;
-    }
+	.remove.icon {
+		cursor: pointer;
+		position: absolute;
+		font-size: 30px;
+		left: 760px;
+		opacity: .3;
+	}
 }

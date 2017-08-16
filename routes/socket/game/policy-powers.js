@@ -1,11 +1,11 @@
-const {sendInProgressGameUpdate} = require('../util.js'),
-	{games} = require('../models.js'),
-	{startElection, shufflePolicies} = require('./common.js'),
-	{completeGame} = require('./end-game.js');
+const { sendInProgressGameUpdate } = require('../util.js'),
+	{ games } = require('../models.js'),
+	{ startElection, shufflePolicies } = require('./common.js'),
+	{ completeGame } = require('./end-game.js');
 
 module.exports.policyPeek = game => {
-	const {seatedPlayers} = game.private,
-		{presidentIndex} = game.gameState,
+	const { seatedPlayers } = game.private,
+		{ presidentIndex } = game.gameState,
 		president = seatedPlayers[presidentIndex];
 	if (!game.private.lock.policyPeek) {
 		game.private.lock.policyPeek = true;
@@ -23,9 +23,9 @@ module.exports.policyPeek = game => {
 
 module.exports.selectPolicies = data => {
 	const game = games.find(el => el.general.uid === data.uid),
-		{presidentIndex} = game.gameState,
-		{experiencedMode} = game.general,
-		{seatedPlayers} = game.private,
+		{ presidentIndex } = game.gameState,
+		{ experiencedMode } = game.general,
+		{ seatedPlayers } = game.private,
 		president = seatedPlayers[presidentIndex];
 
 	if (!game.private.lock.selectPolicies) {
@@ -86,7 +86,8 @@ module.exports.selectPolicies = data => {
 
 		setTimeout(() => {
 			president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
-			president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
+			president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action =
+				'';
 			sendInProgressGameUpdate(game);
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1500 : 4000);
 
@@ -98,22 +99,22 @@ module.exports.selectPolicies = data => {
 					gameChat: true,
 					timestamp: new Date(),
 					chat: [
-						{text: 'You peek at the top 3 policies and see that they are a '},
+						{ text: 'You peek at the top 3 policies and see that they are a ' },
 						{
 							text: game.private.policies[0],
 							type: game.private.policies[0]
 						},
-						{text: ', a '},
+						{ text: ', a ' },
 						{
 							text: game.private.policies[1],
 							type: game.private.policies[1]
 						},
-						{text: ', and a '},
+						{ text: ', and a ' },
 						{
 							text: game.private.policies[2],
 							type: game.private.policies[2]
 						},
-						{text: ' policy.'}
+						{ text: ' policy.' }
 					]
 				});
 			}
@@ -127,19 +128,36 @@ module.exports.selectPolicies = data => {
 };
 
 module.exports.investigateLoyalty = game => {
-	const {seatedPlayers} = game.private,
-		{presidentIndex} = game.gameState,
+	const { seatedPlayers } = game.private,
+		{ presidentIndex } = game.gameState,
 		president = seatedPlayers[presidentIndex];
 
 	if (!game.private.lock.investigateLoyalty) {
 		game.private.lock.investigateLoyalty = true;
 
 		game.general.status = 'Waiting for President to investigate.';
-		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).forEach(player => {
-			player.notificationStatus = 'notification';
-		});
+		president.playersState
+			.filter(
+				(player, i) =>
+					i !== presidentIndex &&
+					!seatedPlayers[i].isDead &&
+					!seatedPlayers[i].wasInvestigated
+			)
+			.forEach(player => {
+				player.notificationStatus = 'notification';
+			});
 		game.publicPlayersState[presidentIndex].isLoader = true;
-		game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).map(player => seatedPlayers.indexOf(player))];
+		game.gameState.clickActionInfo = [
+			president.userName,
+			seatedPlayers
+				.filter(
+					(player, i) =>
+						i !== presidentIndex &&
+						!seatedPlayers[i].isDead &&
+						!seatedPlayers[i].wasInvestigated
+				)
+				.map(player => seatedPlayers.indexOf(player))
+		];
 		game.gameState.phase = 'selectPartyMembershipInvestigate';
 		sendInProgressGameUpdate(game);
 	}
@@ -147,10 +165,10 @@ module.exports.investigateLoyalty = game => {
 
 module.exports.selectPartyMembershipInvestigate = data => {
 	const game = games.find(el => el.general.uid === data.uid),
-		{playerIndex} = data,
-		{experiencedMode} = game.general,
-		{presidentIndex} = game.gameState,
-		{seatedPlayers} = game.private,
+		{ playerIndex } = data,
+		{ experiencedMode } = game.general,
+		{ presidentIndex } = game.gameState,
+		{ seatedPlayers } = game.private,
 		president = seatedPlayers[presidentIndex],
 		playersTeam = game.private.seatedPlayers[playerIndex].role.team;
 
@@ -190,42 +208,56 @@ module.exports.selectPartyMembershipInvestigate = data => {
 				};
 
 				if (!game.general.disableGamechat) {
-					seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
-						chat.chat = [{text: 'President '},
-							{
-								text: `${president.userName} {${presidentIndex + 1}}`,
-								type: 'player'
-							},
-							{text: ' investigates the party membership of '},
-							{
-								text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-								type: 'player'
-							},
-							{text: '.'}];
+					seatedPlayers
+						.filter(player => player.userName !== president.userName)
+						.forEach(player => {
+							chat.chat = [
+								{ text: 'President ' },
+								{
+									text: `${president.userName} {${presidentIndex + 1}}`,
+									type: 'player'
+								},
+								{ text: ' investigates the party membership of ' },
+								{
+									text: `${seatedPlayers[playerIndex].userName} {${playerIndex +
+										1}}`,
+									type: 'player'
+								},
+								{ text: '.' }
+							];
 
-						player.gameChats.push(chat);
-					});
+							player.gameChats.push(chat);
+						});
 
 					game.private.unSeatedGameChats.push(chat);
 
 					president.gameChats.push({
 						timestamp: new Date(),
 						gameChat: true,
-						chat: [{text: 'You investigate the party membership of '},
+						chat: [
+							{ text: 'You investigate the party membership of ' },
 							{
-								text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+								text: `${seatedPlayers[playerIndex].userName} {${playerIndex +
+									1}}`,
 								type: 'player'
 							},
-							{text: ' and determine that he or she is on the '},
+							{ text: ' and determine that he or she is on the ' },
 							{
 								text: playersTeam,
 								type: playersTeam
 							},
-							{text: ' team.'}]
+							{ text: ' team.' }
+						]
 					});
 				}
 
-				if (!game.general.disableGamechat && !(game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' && president.role.team === 'fascist')) {
+				if (
+					!game.general.disableGamechat &&
+					!(
+						game.private.seatedPlayers[playerIndex].role.cardName ===
+							'hitler' && president.role.team === 'fascist'
+					)
+				) {
 					president.playersState[playerIndex].nameStatus = playersTeam;
 				}
 
@@ -249,8 +281,8 @@ module.exports.selectPartyMembershipInvestigate = data => {
 };
 
 module.exports.specialElection = game => {
-	const {seatedPlayers} = game.private,
-		{presidentIndex} = game.gameState,
+	const { seatedPlayers } = game.private,
+		{ presidentIndex } = game.gameState,
 		president = seatedPlayers[presidentIndex];
 
 	if (!game.private.lock.specialElection) {
@@ -259,12 +291,22 @@ module.exports.specialElection = game => {
 		game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
 		game.publicPlayersState[presidentIndex].isLoader = true;
 
-		president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
-			player.notificationStatus = 'notification';
-		});
+		president.playersState
+			.filter(
+				(player, index) =>
+					index !== presidentIndex && !seatedPlayers[index].isDead
+			)
+			.forEach(player => {
+				player.notificationStatus = 'notification';
+			});
 
 		game.gameState.phase = 'specialElection';
-		game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))];
+		game.gameState.clickActionInfo = [
+			president.userName,
+			seatedPlayers
+				.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead)
+				.map(player => seatedPlayers.indexOf(player))
+		];
 		sendInProgressGameUpdate(game);
 	}
 };
@@ -281,7 +323,9 @@ module.exports.selectSpecialElection = data => {
 
 		game.publicPlayersState[game.gameState.presidentIndex].isLoader = false;
 
-		game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
+		game.private.seatedPlayers[
+			game.gameState.presidentIndex
+		].playersState.forEach(player => {
 			player.notificationStatus = '';
 		});
 
@@ -290,8 +334,8 @@ module.exports.selectSpecialElection = data => {
 };
 
 module.exports.executePlayer = game => {
-	const {seatedPlayers} = game.private,
-		{presidentIndex} = game.gameState,
+	const { seatedPlayers } = game.private,
+		{ presidentIndex } = game.gameState,
 		president = seatedPlayers[presidentIndex];
 	if (!game.private.lock.executePlayer) {
 		game.private.lock.executePlayer = true;
@@ -302,17 +346,25 @@ module.exports.executePlayer = game => {
 			president.gameChats.push({
 				gameChat: true,
 				timestamp: new Date(),
-				chat: [
-					{text: 'You must select a player to execute.'}
-				]
+				chat: [{ text: 'You must select a player to execute.' }]
 			});
 		}
 
-		president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
-			player.notificationStatus = 'notification';
-		});
+		president.playersState
+			.filter(
+				(player, index) =>
+					index !== presidentIndex && !seatedPlayers[index].isDead
+			)
+			.forEach(player => {
+				player.notificationStatus = 'notification';
+			});
 
-		game.gameState.clickActionInfo = [president.userName, seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))];
+		game.gameState.clickActionInfo = [
+			president.userName,
+			seatedPlayers
+				.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead)
+				.map(player => seatedPlayers.indexOf(player))
+		];
 		game.gameState.phase = 'execution';
 		sendInProgressGameUpdate(game);
 	}
@@ -320,35 +372,39 @@ module.exports.executePlayer = game => {
 
 module.exports.selectPlayerToExecute = data => {
 	const game = games.find(el => el.general.uid === data.uid),
-		{playerIndex} = data,
-		{presidentIndex} = game.gameState,
-		{seatedPlayers} = game.private,
+		{ playerIndex } = data,
+		{ presidentIndex } = game.gameState,
+		{ seatedPlayers } = game.private,
 		selectedPlayer = seatedPlayers[playerIndex],
 		publicSelectedPlayer = game.publicPlayersState[playerIndex],
 		president = seatedPlayers[presidentIndex],
 		nonPresidentChat = {
 			gameChat: true,
 			timestamp: new Date(),
-			chat: [{text: 'President '},
+			chat: [
+				{ text: 'President ' },
 				{
 					text: `${president.userName} {${presidentIndex + 1}}`,
 					type: 'player'
 				},
-				{text: ' selects to execute '},
+				{ text: ' selects to execute ' },
 				{
 					text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
 					type: 'player'
 				},
-				{text: '.'}]
+				{ text: '.' }
+			]
 		};
 	if (!game.private.lock.selectPlayerToExecute) {
 		game.private.lock.selectPlayerToExecute = true;
 		if (!game.general.disableGamechat) {
 			game.private.unSeatedGameChats.push(nonPresidentChat);
 
-			seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
-				player.gameChats.push(nonPresidentChat);
-			});
+			seatedPlayers
+				.filter(player => player.userName !== president.userName)
+				.forEach(player => {
+					player.gameChats.push(nonPresidentChat);
+				});
 
 			game.private.summary = game.private.summary.updateLog({
 				execution: playerIndex
@@ -357,12 +413,14 @@ module.exports.selectPlayerToExecute = data => {
 			president.gameChats.push({
 				gameChat: true,
 				timestamp: new Date(),
-				chat: [{text: 'You select to execute '},
+				chat: [
+					{ text: 'You select to execute ' },
 					{
 						text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
 						type: 'player'
 					},
-					{text: '.'}]
+					{ text: '.' }
+				]
 			});
 		}
 
@@ -393,7 +451,8 @@ module.exports.selectPlayerToExecute = data => {
 							text: 'Hitler',
 							type: 'hitler'
 						},
-						{text: '  has been executed.'}]
+						{ text: '  has been executed.' }
+					]
 				};
 
 				publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;

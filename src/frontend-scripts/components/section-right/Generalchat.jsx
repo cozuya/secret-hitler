@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import {MODERATORS} from '../../constants';
+import { MODERATORS } from '../../constants';
 import PropTypes from 'prop-types';
 
 export default class Generalchat extends React.Component {
@@ -26,15 +26,15 @@ export default class Generalchat extends React.Component {
 	}
 
 	handleChatClearClick() {
-		this.setState({inputValue: ''});
+		this.setState({ inputValue: '' });
 	}
 
 	handleInputChange(e) {
-		this.setState({inputValue: `${e.target.value}`});
+		this.setState({ inputValue: `${e.target.value}` });
 	}
 
 	handleSubmit(e) {
-		const {inputValue} = this.state;
+		const { inputValue } = this.state;
 
 		e.preventDefault();
 		if (inputValue.length < 300 && inputValue) {
@@ -50,7 +50,7 @@ export default class Generalchat extends React.Component {
 
 			this.input.blur();
 			setTimeout(() => {
-				this.setState({disabled: false});
+				this.setState({ disabled: false });
 				this.input.focus();
 			}, 300);
 		}
@@ -63,31 +63,42 @@ export default class Generalchat extends React.Component {
 	}
 
 	processChats() {
-		const {userInfo} = this.props;
+		const { userInfo } = this.props;
 
 		return this.props.generalChats.map((chat, i) => {
 			const userClasses = classnames(
-				{ [chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat) },
+				{
+					[chat.color]: !(
+						userInfo.gameSettings &&
+						userInfo.gameSettings.disablePlayerColorsInChat
+					)
+				},
 				'chat-user'
 			);
 
 			return (
 				<div className="item" key={i}>
-					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>{chat.userName}
+					<span
+						className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}
+					>
+						{chat.userName}
 						{(() => {
 							if (MODERATORS.includes(chat.userName)) {
 								return <span className="moderator-name"> (M)</span>;
 							}
 						})()}
-					: </span>
-					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{chat.chat}</span>
+						:{' '}
+					</span>
+					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>
+						{chat.chat}
+					</span>
 				</div>
 			);
 		});
 	}
 
 	handleChatLockClick() {
-		this.setState({lock: !this.state.lock});
+		this.setState({ lock: !this.state.lock });
 	}
 
 	render() {
@@ -96,7 +107,15 @@ export default class Generalchat extends React.Component {
 				<section className="generalchat-header">
 					<div className="clearfix">
 						<h3 className="ui header">Chat</h3>
-						<i title="Click here to lock chat and prevent from scrolling" className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'} onClick={this.handleChatLockClick} />
+						<i
+							title="Click here to lock chat and prevent from scrolling"
+							className={
+								this.state.lock
+									? 'large lock icon'
+									: 'large unlock alternate icon'
+							}
+							onClick={this.handleChatLockClick}
+						/>
 					</div>
 					<div className="ui divider right-sidebar-divider" />
 				</section>
@@ -106,13 +125,43 @@ export default class Generalchat extends React.Component {
 					</div>
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div className={this.props.userInfo.userName ? !this.state.disabled ? 'ui action input' : 'ui action input disabled' : 'ui action input disabled'}>
-						<input placeholder="Chat.." value={this.state.inputValue} onChange={this.handleInputChange} maxLength="300" spellCheck="false" ref={c => {
-							this.input = c;
-						}}/>
-						<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+					<div
+						className={
+							this.props.userInfo.userName
+								? !this.state.disabled
+									? 'ui action input'
+									: 'ui action input disabled'
+								: 'ui action input disabled'
+						}
+					>
+						<input
+							placeholder="Chat.."
+							value={this.state.inputValue}
+							onChange={this.handleInputChange}
+							maxLength="300"
+							spellCheck="false"
+							ref={c => {
+								this.input = c;
+							}}
+						/>
+						<button
+							className={
+								this.state.inputValue
+									? 'ui primary button'
+									: 'ui primary button disabled'
+							}
+						>
+							Chat
+						</button>
 					</div>
-					<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'} onClick={this.handleChatClearClick} />
+					<i
+						className={
+							this.state.inputValue
+								? 'large delete icon'
+								: 'large delete icon app-visibility-hidden'
+						}
+						onClick={this.handleChatClearClick}
+					/>
 				</form>
 			</section>
 		);

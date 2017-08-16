@@ -1,22 +1,31 @@
-import React from 'react';  // eslint-disable-line
+import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 const Policies = props => {
-	const {gameInfo, userInfo, socket} = props,
+	const { gameInfo, userInfo, socket } = props,
 		clickedDraw = () => {
-			if (userInfo.userName && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
-				socket.emit('selectedPolicies', {uid: gameInfo.general.uid});
+			if (
+				userInfo.userName &&
+				gameInfo.playersState[
+					gameInfo.publicPlayersState.findIndex(
+						player => player.userName === userInfo.userName
+					)
+				].policyNotification
+			) {
+				socket.emit('selectedPolicies', { uid: gameInfo.general.uid });
 			}
 		},
 		renderUndrawn = () => {
-			const {playersState} = gameInfo,
+			const { playersState } = gameInfo,
 				count = gameInfo.gameState.undrawnPolicyCount;
 
 			let playerIndex;
 
 			if (userInfo.userName && playersState) {
-				playerIndex = playersState.find(player => player.userName === userInfo.userName);
+				playerIndex = playersState.find(
+					player => player.userName === userInfo.userName
+				);
 			}
 
 			return _.range(1, 18).map(num => {
@@ -34,7 +43,11 @@ const Policies = props => {
 			});
 		},
 		renderDiscard = () => {
-			const	count = 17 - (gameInfo.gameState.undrawnPolicyCount + gameInfo.trackState.liberalPolicyCount + gameInfo.trackState.fascistPolicyCount);
+			const count =
+				17 -
+				(gameInfo.gameState.undrawnPolicyCount +
+					gameInfo.trackState.liberalPolicyCount +
+					gameInfo.trackState.fascistPolicyCount);
 
 			return _.range(1, 10).map(num => {
 				let classes = `policy-card policy-discard policy-card-${num}`;
@@ -46,32 +59,67 @@ const Policies = props => {
 				return <div className={classes} key={num} />;
 			});
 		},
-		discardedPolicyCount = 17 - (gameInfo.gameState.undrawnPolicyCount + gameInfo.trackState.liberalPolicyCount + gameInfo.trackState.fascistPolicyCount);
+		discardedPolicyCount =
+			17 -
+			(gameInfo.gameState.undrawnPolicyCount +
+				gameInfo.trackState.liberalPolicyCount +
+				gameInfo.trackState.fascistPolicyCount);
 
 	return (
 		<section className="policies-container">
-			<div className={
-				(() => {
+			<div
+				className={(() => {
 					let classes = 'draw';
 
-					if (userInfo.userName && userInfo.isSeated && gameInfo.gameState.isStarted && gameInfo.playersState && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)] && gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].policyNotification) {
+					if (
+						userInfo.userName &&
+						userInfo.isSeated &&
+						gameInfo.gameState.isStarted &&
+						gameInfo.playersState &&
+						gameInfo.playersState[
+							gameInfo.publicPlayersState.findIndex(
+								player => player.userName === userInfo.userName
+							)
+						] &&
+						gameInfo.playersState[
+							gameInfo.publicPlayersState.findIndex(
+								player => player.userName === userInfo.userName
+							)
+						].policyNotification
+					) {
 						classes += ' notifier';
 					}
 
 					return classes;
-				})()
-			} title={`${gameInfo.gameState.undrawnPolicyCount} policy cards remain`} onClick={clickedDraw}>
+				})()}
+				title={`${gameInfo.gameState.undrawnPolicyCount} policy cards remain`}
+				onClick={clickedDraw}
+			>
 				{(() => {
-					if (gameInfo.gameState.isTracksFlipped && gameInfo.gameState.undrawnPolicyCount) {
-						return <div className="card-count">{gameInfo.gameState.undrawnPolicyCount}</div>;
+					if (
+						gameInfo.gameState.isTracksFlipped &&
+						gameInfo.gameState.undrawnPolicyCount
+					) {
+						return (
+							<div className="card-count">
+								{gameInfo.gameState.undrawnPolicyCount}
+							</div>
+						);
 					}
 				})()}
 				{renderUndrawn()}
 			</div>
-			<div className="discard" title={`${discardedPolicyCount} policy cards discarded`}>
+			<div
+				className="discard"
+				title={`${discardedPolicyCount} policy cards discarded`}
+			>
 				{(() => {
 					if (gameInfo.gameState.isTracksFlipped && discardedPolicyCount) {
-						return <div className="card-count">{discardedPolicyCount}</div>;
+						return (
+							<div className="card-count">
+								{discardedPolicyCount}
+							</div>
+						);
 					}
 				})()}
 				{renderDiscard()}

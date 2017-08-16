@@ -5,16 +5,15 @@ const mongoose = require('mongoose'),
 	fs = require('fs'),
 	labels = [],
 	data = {},
-	allPlayerGameData = fivePlayerGameData = sixPlayerGameData = sevenPlayerGameData = eightPlayerGameData = ninePlayerGameData = tenPlayerGameData = {
+	allPlayerGameData = (fivePlayerGameData = sixPlayerGameData = sevenPlayerGameData = eightPlayerGameData = ninePlayerGameData = tenPlayerGameData = {
 		fascistWinCount: 0,
 		totalGameCount: 0
-	};
+	});
 
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost:15726/secret-hitler-app');
 
-Game
-	.find({})
+Game.find({})
 	.limit(1)
 	.cursor()
 	.eachAsync(game => {
@@ -23,36 +22,48 @@ Game
 
 		console.log(fivePlayerGameData.fascistWinCount);
 		switch (playerCount) {
-		case 5:
-			fivePlayerGameData.totalGameCount++;
-			if (fascistsWon) {
-				fivePlayerGameData.fascistWinCount++;
-			}
-			console.log(fivePlayerGameData.fascistWinCount);
-			break;
-		case 6:
-			sixPlayerGameData.totalGameCount++;
-			sixPlayerGameData.fascistWinCount = fascistsWon ? sixPlayerGameData.fascistWinCount + 1 : sixPlayerGameData.fascistWinCount;
-			break;
-		case 7:
-			sevenPlayerGameData.totalGameCount++;
-			sevenPlayerGameData.fascistWinCount = fascistsWon ? sevenPlayerGameData.fascistWinCount + 1 : sevenPlayerGameData.fascistWinCount;
-			break;
-		case 8:
-			eightPlayerGameData.totalGameCount++;
-			eightPlayerGameData.fascistWinCount = fascistsWon ? eightPlayerGameData.fascistWinCount + 1 : eightPlayerGameData.fascistWinCount;
-			break;
-		case 9:
-			ninePlayerGameData.totalGameCount++;
-			ninePlayerGameData.fascistWinCount = fascistsWon ? ninePlayerGameData.fascistWinCount + 1 : ninePlayerGameData.fascistWinCount;
-			break;
-		case 10:
-			tenPlayerGameData.totalGameCount++;
-			tenPlayerGameData.fascistWinCount = fascistsWon ? tenPlayerGameData.fascistWinCount + 1 : tenPlayerGameData.fascistWinCount;
-			break;
+			case 5:
+				fivePlayerGameData.totalGameCount++;
+				if (fascistsWon) {
+					fivePlayerGameData.fascistWinCount++;
+				}
+				console.log(fivePlayerGameData.fascistWinCount);
+				break;
+			case 6:
+				sixPlayerGameData.totalGameCount++;
+				sixPlayerGameData.fascistWinCount = fascistsWon
+					? sixPlayerGameData.fascistWinCount + 1
+					: sixPlayerGameData.fascistWinCount;
+				break;
+			case 7:
+				sevenPlayerGameData.totalGameCount++;
+				sevenPlayerGameData.fascistWinCount = fascistsWon
+					? sevenPlayerGameData.fascistWinCount + 1
+					: sevenPlayerGameData.fascistWinCount;
+				break;
+			case 8:
+				eightPlayerGameData.totalGameCount++;
+				eightPlayerGameData.fascistWinCount = fascistsWon
+					? eightPlayerGameData.fascistWinCount + 1
+					: eightPlayerGameData.fascistWinCount;
+				break;
+			case 9:
+				ninePlayerGameData.totalGameCount++;
+				ninePlayerGameData.fascistWinCount = fascistsWon
+					? ninePlayerGameData.fascistWinCount + 1
+					: ninePlayerGameData.fascistWinCount;
+				break;
+			case 10:
+				tenPlayerGameData.totalGameCount++;
+				tenPlayerGameData.fascistWinCount = fascistsWon
+					? tenPlayerGameData.fascistWinCount + 1
+					: tenPlayerGameData.fascistWinCount;
+				break;
 		}
 		allPlayerGameData.totalGameCount++;
-		allPlayerGameData.fascistWinCount = fascistsWon ? allPlayerGameData.fascistWinCount + 1 : allPlayerGameData;
+		allPlayerGameData.fascistWinCount = fascistsWon
+			? allPlayerGameData.fascistWinCount + 1
+			: allPlayerGameData;
 		labels.push(moment(new Date(game.date)).format('l'));
 	})
 	.then(() => {

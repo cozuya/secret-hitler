@@ -6,57 +6,61 @@
  */
 
 const mongoose = require('mongoose'),
-	{Schema} = mongoose,
+	{ Schema } = mongoose,
 	gameSummary = new Schema({
 		_id: String,
 		date: Date,
-		players: [{
-			username: String,
-			role: String
-		}],
-		logs: [{
-			// election
-			presidentId: Number,
-			chancellorId: Number,
-			votes: Array, // [Boolean]
+		players: [
+			{
+				username: String,
+				role: String
+			}
+		],
+		logs: [
+			{
+				// election
+				presidentId: Number,
+				chancellorId: Number,
+				votes: Array, // [Boolean]
 
-			// policy enaction
-			presidentHand: {
-				reds: Number,
-				blues: Number
-			},
-			chancellorHand: {
-				reds: Number,
-				blues: Number
-			},
-			enactedPolicy: String,
+				// policy enaction
+				presidentHand: {
+					reds: Number,
+					blues: Number
+				},
+				chancellorHand: {
+					reds: Number,
+					blues: Number
+				},
+				enactedPolicy: String,
 
-			presidentClaim: {
-				reds: Number,
-				blues: Number
-			},
-			chancellorClaim: {
-				reds: Number,
-				blues: Number
-			},
+				presidentClaim: {
+					reds: Number,
+					blues: Number
+				},
+				chancellorClaim: {
+					reds: Number,
+					blues: Number
+				},
 
-			presidentVeto: Boolean,
-			chancellorVeto: Boolean,
+				presidentVeto: Boolean,
+				chancellorVeto: Boolean,
 
-			// actions
-			policyPeek: {
-				reds: Number,
-				blues: Number
-			},
-			policyPeekClaim: {
-				reds: Number,
-				blues: Number
-			},
-			investigationId: Number,
-			investigationClaim: String,
-			specialElection: Number,
-			execution: Number
-		}]
+				// actions
+				policyPeek: {
+					reds: Number,
+					blues: Number
+				},
+				policyPeekClaim: {
+					reds: Number,
+					blues: Number
+				},
+				investigationId: Number,
+				investigationClaim: String,
+				specialElection: Number,
+				execution: Number
+			}
+		]
 	});
 
 module.exports = mongoose.model('GameSummary', gameSummary);

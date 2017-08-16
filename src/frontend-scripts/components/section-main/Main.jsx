@@ -11,45 +11,45 @@ import Moderation from './Moderation.jsx';
 import PropTypes from 'prop-types';
 
 const Main = props =>
-	(
-		<section
-			className={
-				(() => {
-					let classes = '';
+	<section
+		className={(() => {
+			let classes = '';
 
-					if (props.midSection === 'game' || props.midSection === 'replay') {
-						if (props.gameInfo.general && props.gameInfo.general.experiencedMode) {
-							classes = 'experienced ';
-						}
+			if (props.midSection === 'game' || props.midSection === 'replay') {
+				if (props.gameInfo.general && props.gameInfo.general.experiencedMode) {
+					classes = 'experienced ';
+				}
 
-						if (props.userInfo.gameSettings && props.userInfo.gameSettings.enableRightSidebarInGame) {
-							classes += 'thirteen';
-						} else {
-							classes += 'sixteen';
-						}
-					} else if (props.midSection === 'replay') {
-						classes += 'sixteen';
-					} else {
-						classes = 'ten';
-					}
-
-					classes += ' wide column section-main';  // yes semantic requires classes in specific order... ascii shrug
-
-					if (props.midSection === 'game' || props.midSection === 'replay') {
-						classes += ' ingame';
-					}
-					return classes;
-				})()
+				if (
+					props.userInfo.gameSettings &&
+					props.userInfo.gameSettings.enableRightSidebarInGame
+				) {
+					classes += 'thirteen';
+				} else {
+					classes += 'sixteen';
+				}
+			} else if (props.midSection === 'replay') {
+				classes += 'sixteen';
+			} else {
+				classes = 'ten';
 			}
-		>
-			<Menu
-				userInfo={props.userInfo}
-				onLeaveGame={props.onLeaveGame}
-				onSettingsButtonClick={props.onSettingsButtonClick}
-				gameInfo={props.gameInfo}
-			/>
-			{(() => {
-				switch (props.midSection) {
+
+			classes += ' wide column section-main'; // yes semantic requires classes in specific order... ascii shrug
+
+			if (props.midSection === 'game' || props.midSection === 'replay') {
+				classes += ' ingame';
+			}
+			return classes;
+		})()}
+	>
+		<Menu
+			userInfo={props.userInfo}
+			onLeaveGame={props.onLeaveGame}
+			onSettingsButtonClick={props.onSettingsButtonClick}
+			gameInfo={props.gameInfo}
+		/>
+		{(() => {
+			switch (props.midSection) {
 				case 'createGame':
 					return (
 						<Creategame
@@ -71,7 +71,9 @@ const Main = props =>
 						<Game
 							onUserNightActionEventSubmit={props.onUserNightActionEventSubmit}
 							onUpdateTruncateGameSubmit={props.onUpdateTruncateGameSubmit}
-							onUpdateSelectedForEliminationSubmit={props.onUpdateSelectedForEliminationSubmit}
+							onUpdateSelectedForEliminationSubmit={
+								props.onUpdateSelectedForEliminationSubmit
+							}
 							onUpdateReportGame={props.onUpdateReportGame}
 							onClickedTakeSeat={props.onClickedTakeSeat}
 							onNewGameChat={props.onNewGameChat}
@@ -105,13 +107,10 @@ const Main = props =>
 				case 'replay':
 					return <Replay />;
 				default:
-					return (
-						<Defaultmid quickDefault={props.quickDefault} />
-					);
-				}
-			})()}
-		</section>
-	);
+					return <Defaultmid quickDefault={props.quickDefault} />;
+			}
+		})()}
+	</section>;
 
 Main.propTypes = {
 	midSection: PropTypes.string,

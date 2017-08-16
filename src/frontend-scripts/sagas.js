@@ -12,7 +12,7 @@ function* fetchProfile(action) {
 
 	try {
 		const response = yield call(fetch, `/profile?username=${username}`);
-		const profile = yield call([ response, 'json' ]);
+		const profile = yield call([response, 'json']);
 		yield put({ type: 'RECEIVE_PROFILE', profile });
 	} catch (err) {
 		yield put({ type: 'PROFILE_NOT_FOUND' });
@@ -43,7 +43,7 @@ function* fetchReplay(action) {
 
 	try {
 		const response = yield call(fetch, `/gameSummary?id=${gameId}`);
-		const summary = yield call([ response, 'json' ]);
+		const summary = yield call([response, 'json']);
 		yield put({ type: 'LOAD_REPLAY', summary });
 	} catch (err) {
 		yield put({ type: 'REPLAY_NOT_FOUND' });
@@ -56,4 +56,4 @@ export default function* rootSaga() {
 	yield takeLatest('LOAD_REPLAY', loadReplay);
 	yield takeLatest('CLOSE_REPLAY', closeReplay);
 	yield takeLatest('UPDATE_MIDSECTION', updateMidsection);
-};
+}

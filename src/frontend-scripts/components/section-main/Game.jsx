@@ -7,9 +7,14 @@ import PropTypes from 'prop-types';
 
 export default class Game extends React.Component {
 	componentDidUpdate(prevProps) {
-		const {userInfo, gameInfo} = this.props;
+		const { userInfo, gameInfo } = this.props;
 
-		if (userInfo.isSeated && gameInfo.gameState && gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) {
+		if (
+			userInfo.isSeated &&
+			gameInfo.gameState &&
+			gameInfo.gameState.isTracksFlipped &&
+			!prevProps.gameInfo.gameState.isTracksFlipped
+		) {
 			const sound = document.createElement('audio');
 
 			sound.setAttribute('src', 'alarm.mp3');
@@ -27,21 +32,23 @@ export default class Game extends React.Component {
 				<div className="ui grid">
 					<div className="row">
 						<div
-							className={
-								(() => {
-									let classes;
+							className={(() => {
+								let classes;
 
-									if (this.props.userInfo.gameSettings && !this.props.userInfo.gameSettings.enableRightSidebarInGame) {
-										classes = 'ten ';
-									} else {
-										classes = 'ten ';
-									}
+								if (
+									this.props.userInfo.gameSettings &&
+									!this.props.userInfo.gameSettings.enableRightSidebarInGame
+								) {
+									classes = 'ten ';
+								} else {
+									classes = 'ten ';
+								}
 
-									classes += 'wide column tracks-container';
+								classes += 'wide column tracks-container';
 
-									return classes;
-								})()
-						}>
+								return classes;
+							})()}
+						>
 							<Tracks
 								userInfo={this.props.userInfo}
 								gameInfo={this.props.gameInfo}
@@ -49,11 +56,13 @@ export default class Game extends React.Component {
 							/>
 						</div>
 						<div
-							className={
-							(() => {
+							className={(() => {
 								let classes;
 
-								if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
+								if (
+									this.props.userInfo.gameSettings &&
+									this.props.userInfo.gameSettings.enableRightSidebarInGame
+								) {
 									classes = 'six ';
 								} else {
 									classes = 'six ';
@@ -62,8 +71,8 @@ export default class Game extends React.Component {
 								classes += 'wide column chat-container game-chat';
 
 								return classes;
-							})()
-						}>
+							})()}
+						>
 							<section className="gamestatus">
 								{this.props.gameInfo.general.status}
 							</section>
@@ -79,24 +88,36 @@ export default class Game extends React.Component {
 					</div>
 				</div>
 				{(() => {
-					const {userInfo, gameInfo} = this.props;
+					const { userInfo, gameInfo } = this.props;
 
-					if (userInfo.userName && gameInfo && gameInfo.publicPlayersState && gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) && gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti) {
+					if (
+						userInfo.userName &&
+						gameInfo &&
+						gameInfo.publicPlayersState &&
+						gameInfo.publicPlayersState.find(
+							player => player.userName === userInfo.userName
+						) &&
+						gameInfo.publicPlayersState.find(
+							player => player.userName === userInfo.userName
+						).isConfetti
+					) {
 						return <Confetti />;
 					}
 				})()}
 				<div
-					className={
-						(() => {
-							let classes = 'row players-container';
+					className={(() => {
+						let classes = 'row players-container';
 
-							if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableRightSidebarInGame) {
-								classes += ' disabledrightsidebar';
-							}
+						if (
+							this.props.userInfo.gameSettings &&
+							this.props.userInfo.gameSettings.disableRightSidebarInGame
+						) {
+							classes += ' disabledrightsidebar';
+						}
 
-							return classes;
-						})()
-			}>
+						return classes;
+					})()}
+				>
 					<Players
 						onClickedTakeSeat={this.props.onClickedTakeSeat}
 						userList={this.props.userList}

@@ -8,10 +8,13 @@ import GameText from '../../reusable/GameText.jsx';
 
 const TurnNav = ({ position, size, toTurn }) => {
 	const marks = Map(
-		Range(1, size + 1).map(i => [i, {
-			label: i,
-			style: { fontSize: '16px' }
-		}])
+		Range(1, size + 1).map(i => [
+			i,
+			{
+				label: i,
+				style: { fontSize: '16px' }
+			}
+		])
 	).toObject();
 
 	return (
@@ -24,16 +27,35 @@ const TurnNav = ({ position, size, toTurn }) => {
 				max={size}
 				value={position + 1}
 				marks={marks}
-				dots />
+				dots
+			/>
 		</div>
 	);
 };
 
-const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation, toAction }) => {
+const PhaseNav = ({
+	phase,
+	hasLegislation,
+	hasAction,
+	toElection,
+	toLegislation,
+	toAction
+}) => {
 	const nav = OrderedMap({
-		election: List([ 'candidacy', 'nomination', 'election' ]),
-		legislation: List([ 'presidentLegislation', 'chancellorLegislation', 'topDeck', 'veto', 'policyEnaction' ]),
-		action: List([ 'investigation', 'policyPeek', 'specialElection', 'execution' ])
+		election: List(['candidacy', 'nomination', 'election']),
+		legislation: List([
+			'presidentLegislation',
+			'chancellorLegislation',
+			'topDeck',
+			'veto',
+			'policyEnaction'
+		]),
+		action: List([
+			'investigation',
+			'policyPeek',
+			'specialElection',
+			'execution'
+		])
 	});
 
 	const localize = s => {
@@ -46,8 +68,7 @@ const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation,
 			specialElection: 'Special Election'
 		});
 
-		return fromNullable(custom.get(s))
-			.valueOrElse(capitalize(s));
+		return fromNullable(custom.get(s)).valueOrElse(capitalize(s));
 	};
 
 	const events = Map({
@@ -63,26 +84,32 @@ const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation,
 	});
 
 	const Step = ({ title, description, isFilled, isDisabled, onClick }) => {
-		const classes = classnames({
-			filled: isFilled,
-			disabled: isDisabled
-		}, 'step');
+		const classes = classnames(
+			{
+				filled: isFilled,
+				disabled: isDisabled
+			},
+			'step'
+		);
 
 		return (
-			<div className={classes} onClick={onClick} >
+			<div className={classes} onClick={onClick}>
 				<div className="content">
-					<div className="title">{title}</div>
-					<div className="description">{description}</div>
+					<div className="title">
+						{title}
+					</div>
+					<div className="description">
+						{description}
+					</div>
 				</div>
 			</div>
 		);
 	};
 
-	const Overlay = () => (
+	const Overlay = () =>
 		<div className="overlay-container">
 			<div className={classnames(phase, 'overlay')} />
-		</div>
-	);
+		</div>;
 
 	const filled = (() => {
 		const phases = nav.valueSeq().flatten();
@@ -99,20 +126,27 @@ const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation,
 		return filled;
 	})();
 
-	const steps = nav.map((phases, block) => {
-		return <Step
-			key={block}
-			title={localize(block)}
-			description={phases.includes(phase) ? localize(phase) : ''}
-			isFilled={filled.get(block)}
-			isDisabled={disabled.get(block)}
-			onClick={events.get(block)} />;
-	}).valueSeq();
+	const steps = nav
+		.map((phases, block) => {
+			return (
+				<Step
+					key={block}
+					title={localize(block)}
+					description={phases.includes(phase) ? localize(phase) : ''}
+					isFilled={filled.get(block)}
+					isDisabled={disabled.get(block)}
+					onClick={events.get(block)}
+				/>
+			);
+		})
+		.valueSeq();
 
 	return (
 		<div className="phase-nav">
 			<h1 className="ui header">Phase</h1>
-			<div className="ui three tiny steps">{steps}</div>
+			<div className="ui three tiny steps">
+				{steps}
+			</div>
 			<Overlay />
 		</div>
 	);
@@ -129,53 +163,128 @@ const Description = ({ description }) => {
 	);
 };
 
-const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, end }) => (
+const Playback = ({
+	hasNext,
+	hasPrev,
+	next,
+	prev,
+	forward,
+	backward,
+	beginning,
+	end
+}) =>
 	<div className="playback">
 		<h1>Playback Controls</h1>
 		<div className="ui horizontal segments">
 			<button
-				className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')}
-				onClick={beginning}>
+				className={classnames(
+					'ui icon',
+					{ disabled: !hasPrev },
+					'button segment'
+				)}
+				onClick={beginning}
+			>
 				<i className="fast backward icon" />
 			</button>
 			<button
-				className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')}
-				onClick={backward}>
+				className={classnames(
+					'ui icon',
+					{ disabled: !hasPrev },
+					'button segment'
+				)}
+				onClick={backward}
+			>
 				<i className="backward icon" />
 			</button>
 			<button
-				className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')}
-				onClick={prev}>
+				className={classnames(
+					'ui icon',
+					{ disabled: !hasPrev },
+					'button segment'
+				)}
+				onClick={prev}
+			>
 				<i className="flipped play icon" />
 			</button>
 			<button
-				className={classnames('ui icon', { disabled: !hasNext }, 'button segment')}
-				onClick={next}>
+				className={classnames(
+					'ui icon',
+					{ disabled: !hasNext },
+					'button segment'
+				)}
+				onClick={next}
+			>
 				<i className="play icon" />
 			</button>
 			<button
-				className={classnames('ui icon', { disabled: !hasNext }, 'button segment')}
-				onClick={forward}>
+				className={classnames(
+					'ui icon',
+					{ disabled: !hasNext },
+					'button segment'
+				)}
+				onClick={forward}
+			>
 				<i className="forward icon" />
 			</button>
 			<button
-				className={classnames('ui icon', { disabled: !hasNext }, 'button segment')}
-				onClick={end}>
+				className={classnames(
+					'ui icon',
+					{ disabled: !hasNext },
+					'button segment'
+				)}
+				onClick={end}
+			>
 				<i className="fast forward icon" />
 			</button>
 		</div>
-	</div>
-);
+	</div>;
 
-const ReplayControls = ({ turnsSize, turnNum, phase, description, playback }) => {
-	const { hasNext, hasPrev, toBeginning, toEnd, nextTick, prevTick, nextPhase, prevPhase, hasLegislation, hasAction, toElection, toLegislation, toAction, toTurn } = playback;
+const ReplayControls = ({
+	turnsSize,
+	turnNum,
+	phase,
+	description,
+	playback
+}) => {
+	const {
+		hasNext,
+		hasPrev,
+		toBeginning,
+		toEnd,
+		nextTick,
+		prevTick,
+		nextPhase,
+		prevPhase,
+		hasLegislation,
+		hasAction,
+		toElection,
+		toLegislation,
+		toAction,
+		toTurn
+	} = playback;
 
 	return (
 		<section className="replay-controls">
 			<TurnNav position={turnNum} size={turnsSize} toTurn={toTurn} />
-			<PhaseNav phase={phase} hasLegislation={hasLegislation} hasAction={hasAction} toElection={toElection} toLegislation={toLegislation} toAction={toAction} />
+			<PhaseNav
+				phase={phase}
+				hasLegislation={hasLegislation}
+				hasAction={hasAction}
+				toElection={toElection}
+				toLegislation={toLegislation}
+				toAction={toAction}
+			/>
 			<Description description={description} />
-			<Playback hasNext={hasNext} hasPrev={hasPrev} beginning={toBeginning} end={toEnd} next={nextTick} prev={prevTick} forward={nextPhase} backward={prevPhase} />
+			<Playback
+				hasNext={hasNext}
+				hasPrev={hasPrev}
+				beginning={toBeginning}
+				end={toEnd}
+				next={nextTick}
+				prev={prevTick}
+				forward={nextPhase}
+				backward={prevPhase}
+			/>
 		</section>
 	);
 };

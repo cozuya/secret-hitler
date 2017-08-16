@@ -9,123 +9,113 @@ export default function(snapshot, game) {
 
 	const claimHandToText = claim => claimToText(mapOpt1(handToText)(claim));
 
-	const gameOverText = supplied => supplied.concat([
-		text(game.winningTeam, capitalize(game.winningTeam) + 's'),
-		text('normal', 'win the game.')
-	]);
+	const gameOverText = supplied =>
+		supplied.concat([
+			text(game.winningTeam, capitalize(game.winningTeam) + 's'),
+			text('normal', 'win the game.')
+		]);
 
 	switch (snapshot.phase) {
-	case 'candidacy':
-		return [
-			text('player', usernameOf(snapshot.presidentId)),
-			text('normal', 'is President')
-		];
-	case 'nomination':
-		return [
-			text('player', usernameOf(snapshot.presidentId)),
-			text('normal', 'nominates'),
-			text('player', usernameOf(snapshot.chancellorId)),
-			text('normal', 'as Chancellor')
-		];
-	case 'election':
-		if (snapshot.gameOver) {
-			return gameOverText([
-				text('hitler', 'Hitler'),
-				text('normal', 'is elected.')
-			]);
-		} else {
-			return [
-				text('normal', 'The vote'),
-				text('normal', isVotePassed ? 'passes' : 'fails'),
-				text('player', jas),
-				text('normal', 'to'),
-				text('player', neins)
-			];
-		}
-	case 'topDeck':
-		return [
-			text('normal', 'The election tracker is maxed')
-		];
-	case 'presidentLegislation':
-		return [
-			text('player', usernameOf(snapshot.presidentId)),
-			text('normal', 'draws')
-		].concat(
-			handToText(snapshot.presidentHand)
-		).concat([
-			text('normal', 'and claims')
-		]).concat(
-			claimHandToText(snapshot.presidentClaim)
-		);
-	case 'chancellorLegislation':
-		return [
-			text('player', usernameOf(snapshot.chancellorId)),
-			text('normal', 'receives')
-		].concat(
-			handToText(snapshot.chancellorHand)
-		).concat([
-			text('normal', 'and claims')
-		]).concat(
-			claimHandToText(snapshot.chancellorClaim)
-		);
-	case 'veto':
-		return [
-			text('normal', 'The veto'),
-			text('player', snapshot.isVetoSuccessful ? 'succeeds' : 'fails')
-		];
-	case 'policyEnaction':
-		if (snapshot.gameOver) {
-			return gameOverText([
-				text('normal', 'The last'),
-				text(snapshot.enactedPolicy, capitalize(snapshot.enactedPolicy)),
-				text('normal', 'policy is enacted.')
-			]);
-		} else {
-			return [
-				text('normal', 'A'),
-				text(snapshot.enactedPolicy, capitalize(snapshot.enactedPolicy)),
-				text('normal', 'policy is enacted.')
-			];
-		}
-	case 'investigation':
-		return [
-			text('player', usernameOf(snapshot.presidentId)),
-			text('normal', 'investigates'),
-			text('player', usernameOf(snapshot.investigationId)),
-			text('normal', 'and claims'),
-			claimToText(snapshot.investigationClaim.map(i =>
-				text(i, capitalize(i))
-			))
-		];
-	case 'policyPeek':
-		return [
-			text('player', usernameOf(snapshot.presidentId)),
-			text('normal', 'peeks')
-		].concat(
-			handToText(snapshot.policyPeek)
-		).concat([
-			text('normal', 'and claims')
-		]).concat(
-			claimHandToText(snapshot.policyPeekClaim)
-		);
-	case 'specialElection':
-		return [
-			text('player', usernameOf(snapshot.presidentId)),
-			text('normal', 'special elects'),
-			text('player', usernameOf(snapshot.specialElection))
-		];
-	case 'execution':
-		if (snapshot.gameOver) {
-			return gameOverText([
-				text('hitler', 'Hitler'),
-				text('normal', 'is killed.')
-			]);
-		} else {
+		case 'candidacy':
 			return [
 				text('player', usernameOf(snapshot.presidentId)),
-				text('normal', 'executes'),
-				text('player', usernameOf(snapshot.execution))
+				text('normal', 'is President')
 			];
-		}
+		case 'nomination':
+			return [
+				text('player', usernameOf(snapshot.presidentId)),
+				text('normal', 'nominates'),
+				text('player', usernameOf(snapshot.chancellorId)),
+				text('normal', 'as Chancellor')
+			];
+		case 'election':
+			if (snapshot.gameOver) {
+				return gameOverText([
+					text('hitler', 'Hitler'),
+					text('normal', 'is elected.')
+				]);
+			} else {
+				return [
+					text('normal', 'The vote'),
+					text('normal', isVotePassed ? 'passes' : 'fails'),
+					text('player', jas),
+					text('normal', 'to'),
+					text('player', neins)
+				];
+			}
+		case 'topDeck':
+			return [text('normal', 'The election tracker is maxed')];
+		case 'presidentLegislation':
+			return [
+				text('player', usernameOf(snapshot.presidentId)),
+				text('normal', 'draws')
+			]
+				.concat(handToText(snapshot.presidentHand))
+				.concat([text('normal', 'and claims')])
+				.concat(claimHandToText(snapshot.presidentClaim));
+		case 'chancellorLegislation':
+			return [
+				text('player', usernameOf(snapshot.chancellorId)),
+				text('normal', 'receives')
+			]
+				.concat(handToText(snapshot.chancellorHand))
+				.concat([text('normal', 'and claims')])
+				.concat(claimHandToText(snapshot.chancellorClaim));
+		case 'veto':
+			return [
+				text('normal', 'The veto'),
+				text('player', snapshot.isVetoSuccessful ? 'succeeds' : 'fails')
+			];
+		case 'policyEnaction':
+			if (snapshot.gameOver) {
+				return gameOverText([
+					text('normal', 'The last'),
+					text(snapshot.enactedPolicy, capitalize(snapshot.enactedPolicy)),
+					text('normal', 'policy is enacted.')
+				]);
+			} else {
+				return [
+					text('normal', 'A'),
+					text(snapshot.enactedPolicy, capitalize(snapshot.enactedPolicy)),
+					text('normal', 'policy is enacted.')
+				];
+			}
+		case 'investigation':
+			return [
+				text('player', usernameOf(snapshot.presidentId)),
+				text('normal', 'investigates'),
+				text('player', usernameOf(snapshot.investigationId)),
+				text('normal', 'and claims'),
+				claimToText(
+					snapshot.investigationClaim.map(i => text(i, capitalize(i)))
+				)
+			];
+		case 'policyPeek':
+			return [
+				text('player', usernameOf(snapshot.presidentId)),
+				text('normal', 'peeks')
+			]
+				.concat(handToText(snapshot.policyPeek))
+				.concat([text('normal', 'and claims')])
+				.concat(claimHandToText(snapshot.policyPeekClaim));
+		case 'specialElection':
+			return [
+				text('player', usernameOf(snapshot.presidentId)),
+				text('normal', 'special elects'),
+				text('player', usernameOf(snapshot.specialElection))
+			];
+		case 'execution':
+			if (snapshot.gameOver) {
+				return gameOverText([
+					text('hitler', 'Hitler'),
+					text('normal', 'is killed.')
+				]);
+			} else {
+				return [
+					text('player', usernameOf(snapshot.presidentId)),
+					text('normal', 'executes'),
+					text('player', usernameOf(snapshot.execution))
+				];
+			}
 	}
-};
+}

@@ -62,11 +62,11 @@ export function updateVersion(version) {
 		type: 'UPDATE_VERSION',
 		version
 	};
-};
+}
 
 export function viewPatchNotes() {
 	return { type: 'VIEW_PATCH_NOTES' };
-};
+}
 
 export const fetchProfile = username => ({
 	type: 'FETCH_PROFILE',

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose'),
-	{Schema} = mongoose,
+	{ Schema } = mongoose,
 	Game = new Schema({
 		uid: String,
 		date: Date,

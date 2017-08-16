@@ -1,4 +1,5 @@
-$(document).ready(function () {  // yay ES5
+$(document).ready(function() {
+	// yay ES5
 	$('body').on('click', '#signup', function(event) {
 		event.preventDefault();
 
@@ -15,7 +16,7 @@ $(document).ready(function () {  // yay ES5
 			email = $('#signup-email').val(),
 			$loader = $(this).next(),
 			$message = $loader.next(),
-			submitErr = function (message) {
+			submitErr = function(message) {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
 			};
@@ -33,18 +34,21 @@ $(document).ready(function () {  // yay ES5
 				email: email
 			}),
 			statusCode: {
-				200: function () {
+				200: function() {
 					if (window.location.pathname === '/observe') {
 						window.location.pathname = '/game';
 					} else {
 						window.location.reload();
 					}
 				},
-				400: function () {
+				400: function() {
 					submitErr('Sorry, that request did not look right.');
 				},
-				401: function (xhr) {
-					var message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : 'Sorry, that username already exists and you did not provide the correct password.';
+				401: function(xhr) {
+					var message =
+						typeof xhr.responseJSON !== 'undefined'
+							? xhr.responseJSON.message
+							: 'Sorry, that username already exists and you did not provide the correct password.';
 
 					submitErr(message);
 				}
@@ -60,15 +64,15 @@ $(document).ready(function () {  // yay ES5
 			.modal('show');
 	});
 
-	$('body').on('focus', '#signup-username', function () {
+	$('body').on('focus', '#signup-username', function() {
 		$(this).parent().next().text('3-12 alphanumeric characters.').slideDown();
 	});
 
-	$('body').on('focus', '#signup-password1', function () {
+	$('body').on('focus', '#signup-password1', function() {
 		$(this).parent().next().text('6-255 characters.').slideDown();
 	});
 
-	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function () {
+	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function() {
 		$(this).parent().next().slideUp();
 	});
 
@@ -78,7 +82,7 @@ $(document).ready(function () {  // yay ES5
 			password = $('#signin-password').val(),
 			$loader = $(this).next(),
 			$message = $(this).next().next(),
-			submitErr = function (message) {
+			submitErr = function(message) {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
 			};
@@ -89,44 +93,46 @@ $(document).ready(function () {  // yay ES5
 			url: '/account/signin',
 			method: 'POST',
 			contentType: 'application/json; charset=UTF-8',
-			data: JSON.stringify({username: username, password: password}),
+			data: JSON.stringify({ username: username, password: password }),
 			statusCode: {
-				200: function () {
+				200: function() {
 					if (window.location.pathname === '/observe') {
 						window.location.pathname = '/game';
 					} else {
 						window.location.reload();
 					}
 				},
-				400: function () {
+				400: function() {
 					submitErr('Sorry, that request did not look right.');
 				},
-				401: function () {
-					submitErr('Sorry, that was not the correct password for that username.');
+				401: function() {
+					submitErr(
+						'Sorry, that was not the correct password for that username.'
+					);
 				}
 			}
 		});
 	});
 
-	$('a#reset-password').on('click', function (event) {
+	$('a#reset-password').on('click', function(event) {
 		event.preventDefault();
 
 		$('.signin-modal')
 			.modal('setting', 'transition', 'horizontal flip')
-			.modal('hide', function () {
+			.modal('hide', function() {
 				$('.password-reset-modal')
 					.modal('setting', 'transition', 'horizontal flip')
 					.modal('show');
 			});
 	});
 
-	$('button#password-reset-submit').on('click', function (event) {
+	$('button#password-reset-submit').on('click', function(event) {
 		event.preventDefault();
 
 		var email = $('#password-reset-email').val(),
 			$loader = $(this).next(),
 			$message = $(this).next().next(),
-			submitErr = function (message) {
+			submitErr = function(message) {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
 			};
@@ -137,18 +143,24 @@ $(document).ready(function () {  // yay ES5
 			url: '/account/reset-password',
 			method: 'POST',
 			contentType: 'application/json; charset=UTF-8',
-			data: JSON.stringify({email: email}),
+			data: JSON.stringify({ email: email }),
 			statusCode: {
-				200: function () {
+				200: function() {
 					$message.addClass('hidden');
 					$loader.removeClass('active');
-					$('.password-reset-modal .ui.info.hidden.message').removeClass('hidden').html('We\'ve sent you a password reset email, please check your email to a link to reset your password.');
+					$('.password-reset-modal .ui.info.hidden.message')
+						.removeClass('hidden')
+						.html(
+							"We've sent you a password reset email, please check your email to a link to reset your password."
+						);
 				},
-				400: function () {
+				400: function() {
 					submitErr('Sorry, that request did not look right.');
 				},
-				401: function () {
-					submitErr('Sorry, we don\'t have an account associated with that verified email address.');
+				401: function() {
+					submitErr(
+						"Sorry, we don't have an account associated with that verified email address."
+					);
 				}
 			}
 		});
@@ -160,7 +172,7 @@ $(document).ready(function () {  // yay ES5
 		$.ajax({
 			url: '/account/logout',
 			method: 'POST',
-			success: function () {
+			success: function() {
 				window.location.reload();
 			}
 		});
@@ -178,7 +190,7 @@ $(document).ready(function () {  // yay ES5
 			.modal('show');
 	});
 
-	$('button#request-verification').on('click', function (event) {
+	$('button#request-verification').on('click', function(event) {
 		event.preventDefault();
 
 		$.ajax({
@@ -186,7 +198,7 @@ $(document).ready(function () {  // yay ES5
 			method: 'POST',
 			contentType: 'application/json; charset=UTF-8',
 			statusCode: {
-				200: function () {
+				200: function() {
 					$('section.requestemail-modal')
 						.modal('setting', 'transition', 'horizontal flip')
 						.modal('show');
@@ -195,9 +207,9 @@ $(document).ready(function () {  // yay ES5
 		});
 	});
 
-	$('button#passwordchange-submit').on('click', function (event) {
+	$('button#passwordchange-submit').on('click', function(event) {
 		event.preventDefault();
-		
+
 		var newPassword = $('#passwordchange-password').val(),
 			newPasswordConfirm = $('#passwordchange-confirmpassword').val(),
 			$loader = $(this).next(),
@@ -209,23 +221,25 @@ $(document).ready(function () {  // yay ES5
 			});
 
 		$loader.addClass('active');
-		
+
 		$.ajax({
 			url: '/account/change-password',
 			method: 'POST',
 			contentType: 'application/json; charset=UTF-8',
 			data: data,
 			statusCode: {
-				200: function () {
+				200: function() {
 					$loader.removeClass('active');
 					$successMessage.removeClass('hidden');
 					if (!$errMessage.hasClass('hidden')) {
 						$errMessage.addClass('hidden');
 					}
 				},
-				401: function () {
+				401: function() {
 					$loader.removeClass('active');
-					$errMessage.text('Your new password and your confirm password did not match.').removeClass('hidden');
+					$errMessage
+						.text('Your new password and your confirm password did not match.')
+						.removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}
@@ -234,9 +248,9 @@ $(document).ready(function () {  // yay ES5
 		});
 	});
 
-	$('button#emailchange-submit').on('click', function (event) {
+	$('button#emailchange-submit').on('click', function(event) {
 		event.preventDefault();
-		
+
 		var newEmail = $('#emailchange-email').val(),
 			newEmailConfirm = $('#emailchange-confirmemail').val(),
 			$loader = $(this).next(),
@@ -248,14 +262,14 @@ $(document).ready(function () {  // yay ES5
 			});
 
 		$loader.addClass('active');
-		
+
 		$.ajax({
 			url: '/account/change-email',
 			method: 'POST',
 			contentType: 'application/json; charset=UTF-8',
 			data: data,
 			statusCode: {
-				200: function () {
+				200: function() {
 					$loader.removeClass('active');
 					$successMessage.removeClass('hidden');
 					if (!$errMessage.hasClass('hidden')) {
@@ -263,9 +277,11 @@ $(document).ready(function () {  // yay ES5
 					}
 					$('.current-email > span').html(newEmail);
 				},
-				401: function () {
+				401: function() {
 					$loader.removeClass('active');
-					$errMessage.text('Your new email and your confirm email did not match.').removeClass('hidden');
+					$errMessage
+						.text('Your new email and your confirm email did not match.')
+						.removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}
@@ -280,7 +296,7 @@ $(document).ready(function () {  // yay ES5
 			.modal('show');
 	});
 
-	$('button#deleteaccount-submit').on('click', function (event) {
+	$('button#deleteaccount-submit').on('click', function(event) {
 		return; // todo-release
 		event.preventDefault();
 
@@ -288,7 +304,7 @@ $(document).ready(function () {  // yay ES5
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
 			$successMessage = $errMessage.next(),
-			data = JSON.stringify({password: password});
+			data = JSON.stringify({ password: password });
 
 		$loader.addClass('active');
 
@@ -298,19 +314,21 @@ $(document).ready(function () {  // yay ES5
 			contentType: 'application/json; charset=UTF-8',
 			data: data,
 			statusCode: {
-				200: function () {
+				200: function() {
 					$loader.removeClass('active');
 					$successMessage.removeClass('hidden');
-					setTimeout(function () {
+					setTimeout(function() {
 						window.location.reload();
 					}, 3000);
 					if (!$errMessage.hasClass('hidden')) {
 						$errMessage.addClass('hidden');
 					}
 				},
-				400: function () {
+				400: function() {
 					$loader.removeClass('active');
-					$errMessage.text('Your password did not match.').removeClass('hidden');
+					$errMessage
+						.text('Your password did not match.')
+						.removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}

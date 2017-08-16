@@ -14,7 +14,8 @@ import TrackPieces from './TrackPieces.jsx';
 
 const mapStateToProps = ({ replay, userInfo }) => ({
 	replay,
-	isSmall: userInfo.gameSettings && userInfo.gameSettings.enableRightSidebarInGame
+	isSmall:
+		userInfo.gameSettings && userInfo.gameSettings.enableRightSidebarInGame
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -27,23 +28,22 @@ const buildPlayback = (replay, to) => {
 	const snapshot = ticks.get(position);
 	const { turnNum, phase } = snapshot;
 
-
 	/***********
 	 * HELPERS *
 	 ***********/
 
 	// (turnNum: Int, [phases: List[String] | phase: String]) => Int
 	const findTickPos = (turnNum, _phases) => {
-		const phases = List.isList(_phases) ? _phases : List([ _phases ]);
+		const phases = List.isList(_phases) ? _phases : List([_phases]);
 
-		const i = ticks.findLastIndex(t =>
-			t.turnNum === turnNum && phases.includes(t.phase));
+		const i = ticks.findLastIndex(
+			t => t.turnNum === turnNum && phases.includes(t.phase)
+		);
 
 		return i > -1 ? some(i) : none;
 	};
 
 	const bindTo = position => to.bind(null, position);
-
 
 	/***********
 	 * EXPORTS *
@@ -72,14 +72,14 @@ const buildPlayback = (replay, to) => {
 				execution: List(['policyEnaction', 'election'])
 			});
 
-			const ideal = findTickPos(targetTurn, phase)
-				.map(pos => bindTo(pos));
+			const ideal = findTickPos(targetTurn, phase).map(pos => bindTo(pos));
 
-			const fallback = () => bindTo(
-				fromNullable(fallbacks.get(phase))
-					.flatMap(fallbackPhases => findTickPos(targetTurn, fallbackPhases))
-					.valueOrElse(end)
-			);
+			const fallback = () =>
+				bindTo(
+					fromNullable(fallbacks.get(phase))
+						.flatMap(fallbackPhases => findTickPos(targetTurn, fallbackPhases))
+						.valueOrElse(end)
+				);
 
 			return ideal.valueOrElse(fallback);
 		};
@@ -90,12 +90,17 @@ const buildPlayback = (replay, to) => {
 		};
 	})();
 
-	const { hasLegislation, hasAction, toElection, toLegislation, toAction } = (() => {
+	const {
+		hasLegislation,
+		hasAction,
+		toElection,
+		toLegislation,
+		toAction
+	} = (() => {
 		const rotate = (cycles, fallback) => {
 			return findTickPos(
 				turnNum,
-				fromNullable(cycles.get(phase))
-					.valueOrElse(fallback)
+				fromNullable(cycles.get(phase)).valueOrElse(fallback)
 			);
 		};
 
@@ -114,7 +119,7 @@ const buildPlayback = (replay, to) => {
 				chancellorLegislation: List(['veto', 'policyEnaction']),
 				topDeck: List(['policyEnaction']),
 				veto: List(['policyEnaction', 'topDeck', 'presidentLegislation']),
-				policyEnaction: List(['presidentLegislation', 'topDeck']),
+				policyEnaction: List(['presidentLegislation', 'topDeck'])
 			}),
 			List(['presidentLegislation', 'topDeck'])
 		);
@@ -133,13 +138,25 @@ const buildPlayback = (replay, to) => {
 		};
 	})();
 
-	const toTurn = targetTurn => to(
-		findTickPos(targetTurn, 'candidacy')
-			.valueOrElse(position)
-	);
+	const toTurn = targetTurn =>
+		to(findTickPos(targetTurn, 'candidacy').valueOrElse(position));
 
-	return { hasNext, hasPrev, toBeginning, toEnd, nextTick, prevTick, nextPhase, prevPhase,
-		hasLegislation, hasAction, toElection, toLegislation, toAction, toTurn };
+	return {
+		hasNext,
+		hasPrev,
+		toBeginning,
+		toEnd,
+		nextTick,
+		prevTick,
+		nextPhase,
+		prevPhase,
+		hasLegislation,
+		hasAction,
+		toElection,
+		toLegislation,
+		toAction,
+		toTurn
+	};
 };
 
 const Replay = ({ replay, isSmall, to }) => {
@@ -162,10 +179,9 @@ const Replay = ({ replay, isSmall, to }) => {
 					<TrackPieces
 						phase={snapshot.phase}
 						track={snapshot.track}
-						electionTracker={snapshot.electionTracker} />
-					<Tracks
-						gameInfo={gameInfo}
-						userInfo={userInfo} />
+						electionTracker={snapshot.electionTracker}
+					/>
+					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
 				</div>
 				<div className="right-side eight wide column">
 					<ReplayControls
@@ -173,7 +189,8 @@ const Replay = ({ replay, isSmall, to }) => {
 						turnNum={snapshot.turnNum}
 						phase={phase}
 						description={description}
-						playback={playback} />
+						playback={playback}
+					/>
 				</div>
 			</div>
 			<div className="row players-container">
@@ -182,7 +199,8 @@ const Replay = ({ replay, isSmall, to }) => {
 					onClickedTakeSeat={null}
 					socket={null}
 					userInfo={userInfo}
-					gameInfo={gameInfo} />
+					gameInfo={gameInfo}
+				/>
 			</div>
 		</section>
 	);
@@ -191,29 +209,29 @@ const Replay = ({ replay, isSmall, to }) => {
 const ReplayWrapper = ({ replay, isSmall, to, exit }) => {
 	const children = (() => {
 		switch (replay.status) {
-		case 'INITIAL':
-		case 'LOADING':
-			return (
-				<div className="ui active dimmer">
-					<div className="ui huge text loader">Loading</div>
-				</div>
-			);
-		case 'NOT_FOUND':
-			return (
-				<h1 className="not-found ui icon center aligned header">
-					<i className="settings icon" />
-					<div className="content">Replay not found</div>
-				</h1>
-			);
-		case 'READY':
-			return <Replay replay={replay} isSmall={isSmall} to={to} />;
+			case 'INITIAL':
+			case 'LOADING':
+				return (
+					<div className="ui active dimmer">
+						<div className="ui huge text loader">Loading</div>
+					</div>
+				);
+			case 'NOT_FOUND':
+				return (
+					<h1 className="not-found ui icon center aligned header">
+						<i className="settings icon" />
+						<div className="content">Replay not found</div>
+					</h1>
+				);
+			case 'READY':
+				return <Replay replay={replay} isSmall={isSmall} to={to} />;
 		}
 	})();
 
 	return (
 		<section id="replay" className="ui segment">
 			<button className="exit ui inverted red button" onClick={exit}>
-				<i className="sign out icon"></i>
+				<i className="sign out icon" />
 				Exit Replay
 			</button>
 			{children}
@@ -221,7 +239,4 @@ const ReplayWrapper = ({ replay, isSmall, to, exit }) => {
 	);
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(ReplayWrapper);
+export default connect(mapStateToProps, mapDispatchToProps)(ReplayWrapper);

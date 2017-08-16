@@ -5,7 +5,6 @@ const { List } = require('immutable');
 const { objectContains } = require('../../utils');
 
 module.exports = class GameSummaryBuilder {
-
 	constructor(uid, date, players, logs = List()) {
 		this._id = uid;
 		this.date = date;
@@ -26,9 +25,9 @@ module.exports = class GameSummaryBuilder {
 		const { logs } = this;
 		const targetAttrs = fromNullable(_targetAttrs);
 
-		const targetIndex = targetAttrs.map(attrs =>
-			logs.findLastIndex(log => objectContains(log, attrs))
-		).valueOrElse(logs.size - 1);
+		const targetIndex = targetAttrs
+			.map(attrs => logs.findLastIndex(log => objectContains(log, attrs)))
+			.valueOrElse(logs.size - 1);
 
 		const nextTarget = Object.assign({}, logs.get(targetIndex), update);
 
@@ -41,7 +40,11 @@ module.exports = class GameSummaryBuilder {
 	}
 
 	nextTurn() {
-		return new GameSummaryBuilder(this._id, this.date, this.players, this.logs.push({}));
+		return new GameSummaryBuilder(
+			this._id,
+			this.date,
+			this.players,
+			this.logs.push({})
+		);
 	}
-
 };

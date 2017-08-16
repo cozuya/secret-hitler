@@ -1,5 +1,5 @@
 const mongoose = require('mongoose'),
-	{Schema} = mongoose,
+	{ Schema } = mongoose,
 	profileSchema = new Schema({
 		_id: String, // username
 		version: String, // versioning for `recalculateProfiles`
@@ -31,13 +31,15 @@ const mongoose = require('mongoose'),
 			}
 		},
 		recentGames: {
-			type: [{
-				_id: String,
-				loyalty: String,
-				playerSize: Number,
-				isWinner: Boolean,
-				date: Date
-			}],
+			type: [
+				{
+					_id: String,
+					loyalty: String,
+					playerSize: Number,
+					isWinner: Boolean,
+					date: Date
+				}
+			],
 			default: []
 		}
 	});

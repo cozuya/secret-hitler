@@ -1,11 +1,58 @@
-const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, handleAddNewGameChat, handleNewGeneralChat, handleUpdatedGameSettings, handleSocketDisconnect, handleUserLeaveGame, checkUserStatus, updateSeatedUser, handleUpdateWhitelist, handleAddNewClaim, handleModerationAction, handleOpenReplay, handleCloseReplay, handlePlayerReport} = require('./user-events'),
-	{sendGameInfo, sendUserGameSettings, sendModInfo, sendGameList, sendGeneralChats, sendUserList} = require('./user-requests'),
-	{selectChancellor, selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto} = require('./game/election'),
-	{selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute} = require('./game/policy-powers'),
-	{games} = require('./models'),
+const {
+		handleUpdatedTruncateGame,
+		handleUpdatedReportGame,
+		handleAddNewGame,
+		handleAddNewGameChat,
+		handleNewGeneralChat,
+		handleUpdatedGameSettings,
+		handleSocketDisconnect,
+		handleUserLeaveGame,
+		checkUserStatus,
+		updateSeatedUser,
+		handleUpdateWhitelist,
+		handleAddNewClaim,
+		handleModerationAction,
+		handleOpenReplay,
+		handleCloseReplay,
+		handlePlayerReport
+	} = require('./user-events'),
+	{
+		sendGameInfo,
+		sendUserGameSettings,
+		sendModInfo,
+		sendGameList,
+		sendGeneralChats,
+		sendUserList
+	} = require('./user-requests'),
+	{
+		selectChancellor,
+		selectVoting,
+		selectPresidentPolicy,
+		selectChancellorPolicy,
+		selectChancellorVoteOnVeto,
+		selectPresidentVoteOnVeto
+	} = require('./game/election'),
+	{
+		selectSpecialElection,
+		selectPartyMembershipInvestigate,
+		selectPolicies,
+		selectPlayerToExecute
+	} = require('./game/policy-powers'),
+	{ games } = require('./models'),
 	gamesGarbageCollector = () => {
 		const currentTime = new Date().getTime(),
-			toRemoveIndexes = games.filter(game => (game.general.timeStarted && game.general.timeStarted + 2400000 < currentTime) || (game.general.timeCreated && game.general.timeCreated + 600000 < currentTime && game.general.private && game.publicPlayersState.length < 5)).map(game => games.indexOf(game)).reverse();
+			toRemoveIndexes = games
+				.filter(
+					game =>
+						(game.general.timeStarted &&
+							game.general.timeStarted + 2400000 < currentTime) ||
+						(game.general.timeCreated &&
+							game.general.timeCreated + 600000 < currentTime &&
+							game.general.private &&
+							game.publicPlayersState.length < 5)
+				)
+				.map(game => games.indexOf(game))
+				.reverse();
 
 		games.forEach((game, index) => {
 			if (toRemoveIndexes.includes(index)) {
@@ -14,7 +61,6 @@ const {handleUpdatedTruncateGame, handleUpdatedReportGame, handleAddNewGame, han
 		});
 		sendGameList();
 	};
-
 
 module.exports = () => {
 	setInterval(gamesGarbageCollector, 100000);
@@ -36,58 +82,76 @@ module.exports = () => {
 		});
 
 		socket
-
-		// user-events
+			// user-events
 
 			.on('disconnect', () => {
 				handleSocketDisconnect(socket);
-			}).on('getModInfo', () => {
+			})
+			.on('getModInfo', () => {
 				sendModInfo(socket);
-			}).on('updateModAction', (data) => {
+			})
+			.on('updateModAction', data => {
 				handleModerationAction(socket, data);
-			}).on('addNewClaim', (data) => {
+			})
+			.on('addNewClaim', data => {
 				handleAddNewClaim(data);
-			}).on('updateGameWhitelist', data => {
+			})
+			.on('updateGameWhitelist', data => {
 				handleUpdateWhitelist(data);
-			}).on('updateTruncateGame', data => {
+			})
+			.on('updateTruncateGame', data => {
 				handleUpdatedTruncateGame(data);
-			}).on('addNewGameChat', data => {
+			})
+			.on('addNewGameChat', data => {
 				handleAddNewGameChat(socket, data);
-			}).on('updateReportGame', data => {
+			})
+			.on('updateReportGame', data => {
 				handleUpdatedReportGame(socket, data);
-			}).on('addNewGame', data => {
+			})
+			.on('addNewGame', data => {
 				handleAddNewGame(socket, data);
-			}).on('updateGameSettings', data => {
+			})
+			.on('updateGameSettings', data => {
 				handleUpdatedGameSettings(socket, data);
-			}).on('addNewGeneralChat', data => {
+			})
+			.on('addNewGeneralChat', data => {
 				handleNewGeneralChat(socket, data);
-			}).on('leaveGame', data => {
+			})
+			.on('leaveGame', data => {
 				handleUserLeaveGame(socket, data);
-			}).on('updateSeatedUser', data => {
+			})
+			.on('updateSeatedUser', data => {
 				updateSeatedUser(socket, data);
-			}).on('openReplay', gameId => {
+			})
+			.on('openReplay', gameId => {
 				handleOpenReplay(socket, gameId);
-			}).on('playerReport', data => {
+			})
+			.on('playerReport', data => {
 				handlePlayerReport(data);
-			}).on('closeReplay', () => {
+			})
+			.on('closeReplay', () => {
 				handleCloseReplay(socket);
 			})
-		// user-requests
+			// user-requests
 
 			.on('getGameList', () => {
 				sendGameList(socket);
-			}).on('getGameInfo', uid => {
+			})
+			.on('getGameInfo', uid => {
 				sendGameInfo(socket, uid);
-			}).on('getUserList', () => {
+			})
+			.on('getUserList', () => {
 				sendUserList(socket);
-			}).on('getGeneralChats', () => {
+			})
+			.on('getGeneralChats', () => {
 				sendGeneralChats(socket);
-			}).on('getUserGameSettings', data => {
+			})
+			.on('getUserGameSettings', data => {
 				sendUserGameSettings(socket, data);
-			}).on('selectedChancellorVoteOnVeto', data => {
+			})
+			.on('selectedChancellorVoteOnVeto', data => {
 				selectChancellorVoteOnVeto(data);
 			})
-
 			// election
 
 			.on('presidentSelectedChancellor', data => {
@@ -105,7 +169,6 @@ module.exports = () => {
 			.on('selectedPresidentVoteOnVeto', data => {
 				selectPresidentVoteOnVeto(data);
 			})
-
 			// policy-powers
 			.on('selectPartyMembershipInvestigate', data => {
 				selectPartyMembershipInvestigate(data);

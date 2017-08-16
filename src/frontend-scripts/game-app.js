@@ -3,10 +3,10 @@
 import babelPolyfill from 'babel-polyfill'; // eslint-disable-line
 import $ from 'jquery';
 import React from 'react'; // eslint-disable-line no-unused-vars
-import {render} from 'react-dom';
-import {createStore, applyMiddleware} from 'redux';
+import { render } from 'react-dom';
+import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import {Provider} from 'react-redux';
+import { Provider } from 'react-redux';
 import AppComponent from './components/App.jsx';
 import account from './account';
 import shapp from './reducers/sh-app';
@@ -21,17 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	if (container) {
 		const sagaMiddleware = createSagaMiddleware();
-		const store = createStore(
-			shapp,
-			applyMiddleware(sagaMiddleware)
-		);
+		const store = createStore(shapp, applyMiddleware(sagaMiddleware));
 		sagaMiddleware.run(rootSaga);
 
 		render(
 			<Provider store={store}>
 				<AppComponent />
 			</Provider>,
-		container);
+			container
+		);
 	}
 
 	$(document).keydown(function(e) {

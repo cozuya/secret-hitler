@@ -31,69 +31,84 @@ module.exports = () => {
 			res.render(pageName, renderObj);
 		},
 		getData = () => {
-			Game.find({})
-				.then(data => {
-					const completedGames = (() => {
-							const dates = data.map(game => moment(new Date(game.date)).format('l')).filter(date => date !== '5/13/2017' && date !== moment(new Date()).format('l')),  // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
-								labels = _.uniq(dates),
-								series = new Array(labels.length).fill(0);
+			Game.find({}).then(data => {
+				const completedGames = (() => {
+						const dates = data
+								.map(game => moment(new Date(game.date)).format('l'))
+								.filter(
+									date =>
+										date !== '5/13/2017' &&
+										date !== moment(new Date()).format('l')
+								), // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
+							labels = _.uniq(dates),
+							series = new Array(labels.length).fill(0);
 
-							dates.forEach(date => {
-								series[labels.indexOf(date)]++;
-							});
+						dates.forEach(date => {
+							series[labels.indexOf(date)]++;
+						});
 
-							return {
-								labels: (() => {
-									return labels;
-								})(),
-								series
-							};
-						})(),
-						getDataOnGameByPlayerCount = (count) => {
-							const games = count ? data.filter(game => game.losingPlayers.length + game.winningPlayers.length === count) : data,
-								fascistWinCount = games.filter(game => game.winningTeam === 'fascist').length,
-								totalGameCount = games.length;
-
-							return {
-								fascistWinCount,
-								totalGameCount,
-								expectedFascistWinCount: (() => {
-									if (games.length) {
-										const game = games.find(game => game.winningTeam === 'fascist'),
-											fascistCount = game.winningPlayers.length,
-											{playerCount} = game;
-
-										return (fascistCount / playerCount) * 100;
-									}
-								})()
-							};
+						return {
+							labels: (() => {
+								return labels;
+							})(),
+							series
 						};
+					})(),
+					getDataOnGameByPlayerCount = count => {
+						const games = count
+								? data.filter(
+										game =>
+											game.losingPlayers.length + game.winningPlayers.length ===
+											count
+									)
+								: data,
+							fascistWinCount = games.filter(
+								game => game.winningTeam === 'fascist'
+							).length,
+							totalGameCount = games.length;
 
-					gamesData = {
-						completedGames,
-						allPlayerGameData: getDataOnGameByPlayerCount(),
-						fivePlayerGameData: getDataOnGameByPlayerCount(5),
-						sixPlayerGameData: getDataOnGameByPlayerCount(6),
-						sevenPlayerGameData: getDataOnGameByPlayerCount(7),
-						eightPlayerGameData: getDataOnGameByPlayerCount(8),
-						ninePlayerGameData: getDataOnGameByPlayerCount(9),
-						tenPlayerGameData: getDataOnGameByPlayerCount(10)
+						return {
+							fascistWinCount,
+							totalGameCount,
+							expectedFascistWinCount: (() => {
+								if (games.length) {
+									const game = games.find(
+											game => game.winningTeam === 'fascist'
+										),
+										fascistCount = game.winningPlayers.length,
+										{ playerCount } = game;
+
+									return fascistCount / playerCount * 100;
+								}
+							})()
+						};
 					};
-				});
-		// }
-		// ,  // going to rethink this idea.
-		// decrementKarma = () => {
-		// 	Account.find({karmaCount: {$gt: 0}})
-		// 		.then((err, accounts) => {
-		// 			if (err) {
-		// 				console.log(err, 'decrementKarma err');
-		// 			}
-		// 			accounts.map(account => {
-		// 				account.karmaCount = account.karmaCount - 1;
-		// 				return account;
-		// 			});
-		// 			accounts.save();
-		// 		});
+
+				gamesData = {
+					completedGames,
+					allPlayerGameData: getDataOnGameByPlayerCount(),
+					fivePlayerGameData: getDataOnGameByPlayerCount(5),
+					sixPlayerGameData: getDataOnGameByPlayerCount(6),
+					sevenPlayerGameData: getDataOnGameByPlayerCount(7),
+					eightPlayerGameData: getDataOnGameByPlayerCount(8),
+					ninePlayerGameData: getDataOnGameByPlayerCount(9),
+					tenPlayerGameData: getDataOnGameByPlayerCount(10)
+				};
+			});
+			// }
+			// ,  // going to rethink this idea.
+			// decrementKarma = () => {
+			// 	Account.find({karmaCount: {$gt: 0}})
+			// 		.then((err, accounts) => {
+			// 			if (err) {
+			// 				console.log(err, 'decrementKarma err');
+			// 			}
+			// 			accounts.map(account => {
+			// 				account.karmaCount = account.karmaCount - 1;
+			// 				return account;
+			// 			});
+			// 			accounts.save();
+			// 		});
 		};
 
 	accounts();
@@ -127,7 +142,12 @@ module.exports = () => {
 	});
 
 	app.get('/game', ensureAuthenticated, (req, res) => {
-		if (req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress) {
+		if (
+			req.headers['X-Real-IP'] ||
+			req.headers['x-forwarded-for'] ||
+			req.headers['X-Forwarded-For'] ||
+			req.connection.remoteAddress
+		) {
 			res.render('game', {
 				user: req.user.username,
 				game: true,
@@ -141,7 +161,7 @@ module.exports = () => {
 			req.session.destroy();
 			req.logout();
 		}
-		res.render('game', {game: true});
+		res.render('game', { game: true });
 	});
 
 	app.get('/profile', (req, res) => {
@@ -174,7 +194,7 @@ module.exports = () => {
 		Account.updateOne(
 			{ username: req.user.username },
 			{ lastVersionSeen: version.number },
-			(err) => {
+			err => {
 				if (err) res.sendStatus(404);
 				else res.sendStatus(200);
 			}
@@ -186,29 +206,54 @@ module.exports = () => {
 			return;
 		}
 
-		const {image} = req.body,
+		const { image } = req.body,
 			extension = image.split(';base64')[0].split('/')[1],
 			raw = image.split(',')[1],
 			username = req.session.passport.user,
 			now = new Date(),
-			socketId = Object.keys(io.sockets.sockets).find(socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username);
+			socketId = Object.keys(io.sockets.sockets).find(
+				socketId =>
+					io.sockets.sockets[socketId].handshake.session.passport &&
+					io.sockets.sockets[socketId].handshake.session.passport.user ===
+						username
+			);
 
-		Account.findOne({username}, (err, account) => {
+		Account.findOne({ username }, (err, account) => {
 			if (account.wins + account.losses < 50) {
-				res.json({message: 'You need to have played 50 games to upload a cardback.'});
-			// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
-			} else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000)) {
-				res.json({message: 'You can only change your cardback once every 30 seconds.'});
-			} else {
-				fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
-					account.gameSettings.customCardback = extension;
-					account.gameSettings.customCardbackSaveTime = now;
-					account.gameSettings.customCardbackUid = Math.random().toString(36).substring(2);
-					account.save(() => {
-						res.json({message: 'Cardback successfully uploaded.'});
-						io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
-					});
+				res.json({
+					message: 'You need to have played 50 games to upload a cardback.'
 				});
+				// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
+			} else if (
+				account.gameSettings.customCardbackSaveTime &&
+				now.getTime() -
+					new Date(account.gameSettings.customCardbackSaveTime).getTime() <
+					30000
+			) {
+				res.json({
+					message: 'You can only change your cardback once every 30 seconds.'
+				});
+			} else {
+				fs.writeFile(
+					`public/images/custom-cardbacks/${req.session.passport
+						.user}.${extension}`,
+					raw,
+					'base64',
+					() => {
+						account.gameSettings.customCardback = extension;
+						account.gameSettings.customCardbackSaveTime = now;
+						account.gameSettings.customCardbackUid = Math.random()
+							.toString(36)
+							.substring(2);
+						account.save(() => {
+							res.json({ message: 'Cardback successfully uploaded.' });
+							io.sockets.sockets[socketId].emit(
+								'gameSettings',
+								account.gameSettings
+							);
+						});
+					}
+				);
 			}
 		});
 	});

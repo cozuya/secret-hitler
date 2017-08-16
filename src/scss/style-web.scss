@@ -5,9 +5,9 @@ $darkliberalteam: #608cb3;
 $darkfascistteam: #c36563;
 $hitlerteam: #be0804;
 $fascistteam: #e36248;
-$notification: #FBBD08;
-$selection: #DB2828;
-$proceed: #2185D0;
+$notification: #fbbd08;
+$selection: #db2828;
+$proceed: #2185d0;
 $lteal: #097892;
 $dteal: #034f61;
 
@@ -43,7 +43,7 @@ html {
 	background: #608cb3;
 
 	&:hover {
-		background: #608cb3;		
+		background: #608cb3;
 	}
 }
 
@@ -119,7 +119,7 @@ span.emphasis {
 
 	.news {
 		border: 1px solid #aaa;
-		background: #DCB469;
+		background: #dcb469;
 		border-radius: 5px;
 		color: #222;
 	}
@@ -129,7 +129,8 @@ span.emphasis {
 	}
 }
 
-.signin-modal, .signup-modal {
+.signin-modal,
+.signup-modal {
 	margin-left: -125px !important;
 	left: 38% !important;
 }
@@ -149,7 +150,8 @@ span.emphasis {
 		color: #fff;
 	}
 
-	h1, h4 {
+	h1,
+	h4 {
 		margin-bottom: 10px;
 		color: #eee;
 		text-decoration: underline;
@@ -171,7 +173,7 @@ span.emphasis {
 
 	td {
 		text-align: center;
-    	padding: 5px;
+		padding: 5px;
 		border: 1px solid #555;
 	}
 
@@ -201,9 +203,8 @@ span.emphasis {
 	h2 {
 		margin: 20px 0 !important;
 		color: #eee;
-
 	}
-	
+
 	p {
 		font-size: 14px;
 		text-align: center;
@@ -212,7 +213,7 @@ span.emphasis {
 
 .role-container {
 	margin-bottom: 20px;
-	
+
 	h3 {
 		margin: 0 auto !important;
 	}
@@ -234,7 +235,10 @@ span.emphasis {
 	background: #222;
 	color: #eee;
 
-	h1, h2, h3, h4 {
+	h1,
+	h2,
+	h3,
+	h4 {
 		color: #eee !important;
 	}
 
@@ -249,11 +253,13 @@ span.emphasis {
 	background: #222;
 	color: #eee;
 
-	h1, h2 {
+	h1,
+	h2 {
 		color: $darkfascistteam !important;
 	}
 
-	h3, h4 {
+	h3,
+	h4 {
 		color: $fascistteam !important;
 	}
 }
@@ -298,35 +304,35 @@ span.emphasis {
 }
 
 ::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
+	width: 3px;
+	height: 3px;
 }
 ::-webkit-scrollbar-button {
-  width: 0px;
-  height: 0px;
+	width: 0px;
+	height: 0px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #717171;
-  border: 0px none #ffffff;
-  border-radius: 0px;
+	background: #717171;
+	border: 0px none #ffffff;
+	border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #191919;
+	background: #191919;
 }
 ::-webkit-scrollbar-thumb:active {
-  background: #c4c4c4;
+	background: #c4c4c4;
 }
 ::-webkit-scrollbar-track {
-  background: #bfbfbf;
-  border: 0px none #ffffff;
-  border-radius: 0px;
+	background: #bfbfbf;
+	border: 0px none #ffffff;
+	border-radius: 0px;
 }
 ::-webkit-scrollbar-track:hover {
-  background: #666666;
+	background: #666666;
 }
 ::-webkit-scrollbar-track:active {
-  background: #a4a4a4;
+	background: #a4a4a4;
 }
 ::-webkit-scrollbar-corner {
-  background: transparent;
+	background: transparent;
 }
