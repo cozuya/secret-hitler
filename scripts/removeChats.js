@@ -12,7 +12,7 @@ let numFixed = 0;
 Game.find({ chats: { $gt: 0 } })
 	.cursor()
 	.eachAsync(game => {
-		delete game.chats;
+		game.chats = [];
 		game.save();
 		numFixed++;
 	})

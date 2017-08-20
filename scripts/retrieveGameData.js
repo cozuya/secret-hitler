@@ -11,7 +11,7 @@ const mongoose = require('mongoose'),
 	});
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:15726/secret-hitler-app');
+mongoose.connect('mongodb://localhost/secret-hitler-app');
 
 Game.find({})
 	.limit(1000)

@@ -98,7 +98,8 @@
 		"dev": "NODE_ENV=development DEBUG_DEPTH=3 DEBUG=game:* nodemon bin/dev",
 		"recalculateProfiles": "DEBUG=game:* node scripts/recalculateProfiles.js",
 		"repopulateGames": "DEBUG=game:* node scripts/repopulateGames.js",
-		"removeRainbowLosses": "DEBUG=game:* node scripts/removeRainbowLosses"
+    "removeRainbowLosses": "DEBUG=game:* node scripts/removeRainbowLosses",
+    "removeGamesFromAccounts": "DEBUG=game:* node scripts/removeGamesFromAccounts"
 	},
 	"main": "index.js"
 }
