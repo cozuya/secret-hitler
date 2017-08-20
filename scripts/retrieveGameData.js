@@ -14,20 +14,18 @@ mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost:15726/secret-hitler-app');
 
 Game.find({})
-	.limit(1)
+	.limit(1000)
 	.cursor()
 	.eachAsync(game => {
 		const playerCount = game.losingPlayers.length + game.winningPlayers.length,
 			fascistsWon = game.winningTeam === 'fascist';
 
-		console.log(fivePlayerGameData.fascistWinCount);
 		switch (playerCount) {
 			case 5:
 				fivePlayerGameData.totalGameCount++;
 				if (fascistsWon) {
 					fivePlayerGameData.fascistWinCount++;
 				}
-				console.log(fivePlayerGameData.fascistWinCount);
 				break;
 			case 6:
 				sixPlayerGameData.totalGameCount++;
@@ -78,7 +76,6 @@ Game.find({})
 			labels: uLabels,
 			series
 		};
-		console.log(fivePlayerGameData.fascistWinCount, 'hi');
 		data.allPlayerGameData = allPlayerGameData;
 		data.fivePlayerGameData = fivePlayerGameData;
 		data.sixPlayerGameData = sixPlayerGameData;

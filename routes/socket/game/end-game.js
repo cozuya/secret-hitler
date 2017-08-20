@@ -26,11 +26,6 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 						team: player.role.team,
 						role: player.role.cardName
 					})),
-				chats: game.chats.filter(chat => !chat.gameChat).map(chat => ({
-					timestamp: chat.timestamp,
-					chat: chat.chat,
-					userName: chat.userName
-				})),
 				winningTeam: game.gameState.isCompleted,
 				playerCount: game.general.playerCount
 			});
@@ -69,6 +64,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 			play => play.userName === player.userName
 		).notificationStatus =
 			'success';
+
 		publicPlayersState.find(
 			play => play.userName === player.userName
 		).isConfetti = true;
@@ -143,7 +139,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 					}
 				}
 
-				player.games.push(game.uid);
+				player.games.push(game.general.uid);
 				player.save(() => {
 					const userEntry = userList.find(
 						user => user.userName === player.username

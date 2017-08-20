@@ -6,7 +6,6 @@ const mongoose = require('mongoose'),
 		playerCount: Number,
 		winningPlayers: Array,
 		losingPlayers: Array,
-		chats: Array,
 		winningTeam: String,
 		isRainbow: Boolean
 	});
