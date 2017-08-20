@@ -29,10 +29,7 @@ export default class Players extends React.Component {
 			index = parseInt($(e.currentTarget).attr('data-index'), 10);
 
 		if (phase === 'selectingChancellor' && userInfo.userName) {
-			if (
-				clickActionInfo[0] === userInfo.userName &&
-				clickActionInfo[1].includes(index)
-			) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('presidentSelectedChancellor', {
 					chancellorIndex: index,
 					uid: gameInfo.general.uid
@@ -41,10 +38,7 @@ export default class Players extends React.Component {
 		}
 
 		if (phase === 'selectPartyMembershipInvestigate' && userInfo.userName) {
-			if (
-				clickActionInfo[0] === userInfo.userName &&
-				clickActionInfo[1].includes(index)
-			) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectPartyMembershipInvestigate', {
 					playerIndex: index,
 					uid: gameInfo.general.uid
@@ -53,10 +47,7 @@ export default class Players extends React.Component {
 		}
 
 		if (phase === 'execution' && userInfo.userName) {
-			if (
-				clickActionInfo[0] === userInfo.userName &&
-				clickActionInfo[1].includes(index)
-			) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedPlayerToExecute', {
 					playerIndex: index,
 					uid: gameInfo.general.uid
@@ -65,10 +56,7 @@ export default class Players extends React.Component {
 		}
 
 		if (phase === 'specialElection' && userInfo.userName) {
-			if (
-				clickActionInfo[0] === userInfo.userName &&
-				clickActionInfo[1].includes(index)
-			) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedSpecialElection', {
 					playerIndex: index,
 					uid: gameInfo.general.uid
@@ -81,13 +69,7 @@ export default class Players extends React.Component {
 		const { publicPlayersState } = this.props.gameInfo;
 
 		if (publicPlayersState && publicPlayersState[i].previousGovernmentStatus) {
-			return (
-				<div
-					className={`government-token previous-government-token ${publicPlayersState[
-						i
-					].previousGovernmentStatus}`}
-				/>
-			);
+			return <div className={`government-token previous-government-token ${publicPlayersState[i].previousGovernmentStatus}`} />;
 		}
 	}
 
@@ -95,12 +77,7 @@ export default class Players extends React.Component {
 		const { publicPlayersState } = this.props.gameInfo;
 
 		if (publicPlayersState && publicPlayersState[i].governmentStatus) {
-			return (
-				<div
-					className={`government-token ${publicPlayersState[i]
-						.governmentStatus}`}
-				/>
-			);
+			return <div className={`government-token ${publicPlayersState[i].governmentStatus}`} />;
 		}
 	}
 
@@ -122,13 +99,7 @@ export default class Players extends React.Component {
 				data-index={i}
 				onClick={this.handlePlayerClick}
 				style={
-					player.customCardback &&
-					(!userInfo.userName ||
-						!(
-							userInfo.userName &&
-							userInfo.gameSettings &&
-							userInfo.gameSettings.disablePlayerCardbacks
-						))
+					player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
 							}
@@ -136,34 +107,15 @@ export default class Players extends React.Component {
 				}
 				className={(() => {
 					let classes = 'player-container',
-						user = Object.keys(this.props.userList).length
-							? this.props.userList.list.find(
-									play => play.userName === player.userName
-								)
-							: null;
+						user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === player.userName) : null;
 
-					if (
-						playersState &&
-						Object.keys(playersState).length &&
-						playersState[i] &&
-						playersState[i].notificationStatus
-					) {
-						classes = `${classes} notifier ${playersState[i]
-							.notificationStatus}`;
-					} else if (
-						publicPlayersState &&
-						Object.keys(publicPlayersState).length &&
-						publicPlayersState[i].notificationStatus
-					) {
-						classes = `${classes} notifier ${publicPlayersState[i]
-							.notificationStatus}`;
+					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
+						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
+					} else if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].notificationStatus) {
+						classes = `${classes} notifier ${publicPlayersState[i].notificationStatus}`;
 					}
 
-					if (
-						publicPlayersState &&
-						Object.keys(publicPlayersState).length &&
-						publicPlayersState[i].isDead
-					) {
+					if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].isDead) {
 						classes = `${classes} isDead`;
 					}
 
@@ -180,33 +132,20 @@ export default class Players extends React.Component {
 					className={(() => {
 						let classes = 'player-number';
 
-						if (
-							playersState &&
-							Object.keys(playersState).length &&
-							playersState[i] &&
-							playersState[i].nameStatus
-						) {
+						if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].nameStatus) {
 							classes = `${classes} ${playersState[i].nameStatus}`;
-						} else if (
-							Object.keys(publicPlayersState).length &&
-							publicPlayersState[i].nameStatus
-						) {
+						} else if (Object.keys(publicPlayersState).length && publicPlayersState[i].nameStatus) {
 							classes = `${classes} ${publicPlayersState[i].nameStatus}`;
 						}
 
-						if (
-							!publicPlayersState[i].connected ||
-							publicPlayersState[i].leftGame
-						) {
+						if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
 							classes = `${classes} disconnected`;
 						}
 
 						return classes;
 					})()}
 				>
-					{gameState.isTracksFlipped
-						? `${i + 1}. ${player.userName}`
-						: player.userName}
+					{gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
 				</div>
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
@@ -216,19 +155,14 @@ export default class Players extends React.Component {
 						let classes = 'card-container';
 
 						if (
-							(playersState &&
-								Object.keys(playersState).length &&
-								playersState[i].cardStatus.cardDisplayed) ||
-							(publicPlayersState &&
-								publicPlayersState[i].cardStatus.cardDisplayed)
+							(playersState && Object.keys(playersState).length && playersState[i].cardStatus.cardDisplayed) ||
+							(publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)
 						) {
 							classes += ' showing';
 						}
 
 						if (
-							(playersState &&
-								Object.keys(playersState).length &&
-								playersState[i].cardStatus.isFlipped) ||
+							(playersState && Object.keys(playersState).length && playersState[i].cardStatus.isFlipped) ||
 							(publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)
 						) {
 							classes += ' flipped';
@@ -240,12 +174,8 @@ export default class Players extends React.Component {
 						className={(() => {
 							let classes = 'card card-front';
 
-							if (
-								Object.keys(publicPlayersState[i]).length &&
-								publicPlayersState[i].cardStatus.cardFront
-							) {
-								classes = `${classes} ${publicPlayersState[i].cardStatus
-									.cardFront}`;
+							if (Object.keys(publicPlayersState[i]).length && publicPlayersState[i].cardStatus.cardFront) {
+								classes = `${classes} ${publicPlayersState[i].cardStatus.cardFront}`;
 							}
 
 							return classes;
@@ -262,33 +192,16 @@ export default class Players extends React.Component {
 								Object.keys(playersState[i].cardStatus).length &&
 								Object.keys(playersState[i].cardStatus.cardBack).length
 							) {
-								if (
-									playersState[i].cardStatus.cardBack.icon ||
-									playersState[i].cardStatus.cardBack.icon === 0
-								) {
-									classes = `${classes} ${playersState[i].cardStatus.cardBack
-										.cardName}${playersState[
-										i
-									].cardStatus.cardBack.icon.toString()}`;
+								if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
+									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
 								} else {
-									classes = `${classes} ${playersState[i].cardStatus.cardBack
-										.cardName}`;
+									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
 								}
-							} else if (
-								publicPlayersState &&
-								Object.keys(publicPlayersState[i].cardStatus.cardBack).length
-							) {
-								if (
-									publicPlayersState[i].cardStatus.cardBack.icon ||
-									publicPlayersState[i].cardStatus.cardBack.icon === 0
-								) {
-									classes = `${classes} ${publicPlayersState[i].cardStatus
-										.cardBack.cardName}${publicPlayersState[
-										i
-									].cardStatus.cardBack.icon.toString()}`;
+							} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
+								if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
+									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
 								} else {
-									classes = `${classes} ${publicPlayersState[i].cardStatus
-										.cardBack.cardName}`;
+									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
 								}
 							}
 
@@ -308,15 +221,9 @@ export default class Players extends React.Component {
 			userInfo.userName &&
 			!gameInfo.gameState.isTracksFlipped &&
 			gameInfo.publicPlayersState.length < 10 &&
-			(!userInfo.userName ||
-				!gameInfo.publicPlayersState.find(
-					player => player.userName === userInfo.userName
-				)) &&
+			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
 			(!gameInfo.general.rainbowgame ||
-				userList.list.find(user => user.userName === userInfo.userName).wins +
-					userList.list.find(user => user.userName === userInfo.userName)
-						.losses >
-					49)
+				userList.list.find(user => user.userName === userInfo.userName).wins + userList.list.find(user => user.userName === userInfo.userName).losses > 49)
 		) {
 			return (
 				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
@@ -346,15 +253,9 @@ export default class Players extends React.Component {
 		const { gameInfo, userInfo, onClickedTakeSeat } = this.props;
 
 		if (userInfo.userName) {
-			if (
-				userInfo.gameSettings.unbanTime &&
-				new Date(userInfo.gameSettings.unbanTime) > new Date()
-			) {
+			if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 				window.alert('Sorry, this service is currently unavailable.');
-			} else if (
-				gameInfo.general.private &&
-				!gameInfo.general.whitelistedPlayers.includes(userInfo.userName)
-			) {
+			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
 				$(this.passwordModal).modal('show');
 			} else {
 				onClickedTakeSeat();
@@ -383,9 +284,7 @@ export default class Players extends React.Component {
 						this.signinModal = c;
 					}}
 				>
-					<div className="ui header">
-						You will need to sign in or sign up for an account to play.
-					</div>
+					<div className="ui header">You will need to sign in or sign up for an account to play.</div>
 				</div>
 
 				<div
@@ -396,17 +295,8 @@ export default class Players extends React.Component {
 				>
 					<form onSubmit={this.handleReportSubmit}>
 						<div className="ui header">Report a player to the moderators</div>
-						<textarea
-							placeholder="Report"
-							value={this.state.reportTextValue}
-							onChange={handleReportTextChange}
-							spellCheck="false"
-							maxLength="500"
-						/>
-						<div
-							onClick={this.handleReportSubmit}
-							className="ui button primary"
-						>
+						<textarea placeholder="Report" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
+						<div onClick={this.handleReportSubmit} className="ui button primary">
 							Submit
 						</div>
 					</form>
@@ -431,20 +321,13 @@ export default class Players extends React.Component {
 									this.privategamepassword = c;
 								}}
 							/>
-							<div
-								onClick={this.handlePasswordSubmit}
-								className="ui button primary"
-							>
+							<div onClick={this.handlePasswordSubmit} className="ui button primary">
 								Submit
 							</div>
 						</form>
 					</div>
 				</div>
-				<Policies
-					gameInfo={this.props.gameInfo}
-					userInfo={this.props.userInfo}
-					socket={this.props.socket}
-				/>
+				<Policies gameInfo={this.props.gameInfo} userInfo={this.props.userInfo} socket={this.props.socket} />
 			</section>
 		);
 	}

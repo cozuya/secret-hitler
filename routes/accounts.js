@@ -1,8 +1,7 @@
 const passport = require('passport'),
 	_ = require('lodash'),
 	Account = require('../models/account'),
-	// BannedIP = require('../models/bannedIP'),
-	BannedIP = require('../models/BannedIP'),
+	BannedIP = require('../models/bannedIP'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
 	blacklistedWords = require('../iso/blacklistwords'),
@@ -118,11 +117,9 @@ module.exports = () => {
 		} else if (password !== password2) {
 			res.status(401).json({ message: 'Sorry, your passwords did not match.' });
 		} else if (/88$/i.test(username)) {
-			res
-				.status(401)
-				.json({
-					message: 'Sorry, usernames that end with 88 are not allowed.'
-				});
+			res.status(401).json({
+				message: 'Sorry, usernames that end with 88 are not allowed.'
+			});
 		} else {
 			let doesContainBadWord = false;
 			blacklistedWords.forEach(word => {
@@ -131,12 +128,10 @@ module.exports = () => {
 				}
 			});
 			if (doesContainBadWord) {
-				res
-					.status(401)
-					.json({
-						message:
-							'Sorry, your username contains a naughty word or part of a naughty word.'
-					});
+				res.status(401).json({
+					message:
+						'Sorry, your username contains a naughty word or part of a naughty word.'
+				});
 			} else {
 				Account.findOne(
 					{ username: new RegExp(_.escapeRegExp(username), 'i') },
@@ -166,12 +161,10 @@ module.exports = () => {
 								}
 
 								if (ip && unbannedTime > date) {
-									res
-										.status(403)
-										.json({
-											message:
-												'You can no longer access this service.  If you believe this is in error, contact the administrators.'
-										});
+									res.status(403).json({
+										message:
+											'You can no longer access this service.  If you believe this is in error, contact the administrators.'
+									});
 								} else {
 									Account.register(new Account(save), password, err => {
 										if (err) {
@@ -221,12 +214,10 @@ module.exports = () => {
 					}
 
 					if (ip && unbannedTime > date) {
-						res
-							.status(403)
-							.json({
-								message:
-									'You can no longer access this service.  If you believe this is in error, contact the administrators.'
-							});
+						res.status(403).json({
+							message:
+								'You can no longer access this service.  If you believe this is in error, contact the administrators.'
+						});
 					} else {
 						return next();
 					}

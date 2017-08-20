@@ -47,6 +47,9 @@
 			font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
 			color: #ddd;
 			text-align: center;
+			&:hover {
+				color: yellow;
+			}
 		}
 		.player-number.seated-user {
 			color: #16ab39;

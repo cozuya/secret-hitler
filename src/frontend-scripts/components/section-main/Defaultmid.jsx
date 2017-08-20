@@ -24,8 +24,6 @@ const PatchAlert = ({ isActive, onClick }) => {
 	}
 };
 
-/* <img src="images/nlizard1.png" alt="Secret Hitler Online" /> */
-
 const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 	<section className="defaultmid">
 		<PatchAlert
@@ -33,7 +31,7 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 			onClick={readPatchNotes}
 		/>
 		<img
-			src="images/lizard22.png"
+			src="images/lizard23.png"
 			alt="Secret Hitler logo"
 			width="400"
 			height="400"
