@@ -18,7 +18,7 @@ let passport = require('passport'), // eslint-disable-line no-unused-vars
 	};
 
 module.exports = () => {
-	let gamesData;
+	const gamesData = JSON.parse(fs.readFileSync('data/data.json', 'utf8'));
 	const renderPage = (req, res, pageName, varName) => {
 			const renderObj = {};
 

@@ -632,7 +632,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	}
 
 	const user = userList.find(u => data.userName === u.userName),
-		color = user && user.wins + user.losses > 50 ? PLAYERCOLORS(user) : '';
+		color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
 
 	generalChatCount++;
 	data.time = new Date();

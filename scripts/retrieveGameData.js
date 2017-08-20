@@ -5,20 +5,51 @@ const mongoose = require('mongoose'),
 	fs = require('fs'),
 	labels = [],
 	data = {},
-	allPlayerGameData = (fivePlayerGameData = sixPlayerGameData = sevenPlayerGameData = eightPlayerGameData = ninePlayerGameData = tenPlayerGameData = {
+	allPlayerGameData = {
 		fascistWinCount: 0,
 		totalGameCount: 0
-	});
+	},
+	fivePlayerGameData = {
+		fascistWinCount: 0,
+		totalGameCount: 0
+	},
+	sixPlayerGameData = {
+		fascistWinCount: 0,
+		totalGameCount: 0
+	},
+	sevenPlayerGameData = {
+		fascistWinCount: 0,
+		totalGameCount: 0
+	},
+	eightPlayerGameData = {
+		fascistWinCount: 0,
+		totalGameCount: 0
+	},
+	ninePlayerGameData = {
+		fascistWinCount: 0,
+		totalGameCount: 0
+	},
+	tenPlayerGameData = {
+		fascistWinCount: 0,
+		totalGameCount: 0
+	};
 
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/secret-hitler-app');
 
 Game.find({})
-	.limit(1000)
 	.cursor()
 	.eachAsync(game => {
 		const playerCount = game.losingPlayers.length + game.winningPlayers.length,
-			fascistsWon = game.winningTeam === 'fascist';
+			fascistsWon = game.winningTeam === 'fascist',
+			gameDate = moment(new Date(game.date)).format('l');
+
+		if (
+			gameDate === '5/13/2017' ||
+			gameDate === moment(new Date()).format('l')
+		) {
+			return;
+		}
 
 		switch (playerCount) {
 			case 5:
@@ -29,39 +60,39 @@ Game.find({})
 				break;
 			case 6:
 				sixPlayerGameData.totalGameCount++;
-				sixPlayerGameData.fascistWinCount = fascistsWon
-					? sixPlayerGameData.fascistWinCount + 1
-					: sixPlayerGameData.fascistWinCount;
+				if (fascistsWon) {
+					sixPlayerGameData.fascistWinCount++;
+				}
 				break;
 			case 7:
 				sevenPlayerGameData.totalGameCount++;
-				sevenPlayerGameData.fascistWinCount = fascistsWon
-					? sevenPlayerGameData.fascistWinCount + 1
-					: sevenPlayerGameData.fascistWinCount;
+				if (fascistsWon) {
+					sevenPlayerGameData.fascistWinCount++;
+				}
 				break;
 			case 8:
 				eightPlayerGameData.totalGameCount++;
-				eightPlayerGameData.fascistWinCount = fascistsWon
-					? eightPlayerGameData.fascistWinCount + 1
-					: eightPlayerGameData.fascistWinCount;
+				if (fascistsWon) {
+					eightPlayerGameData.fascistWinCount++;
+				}
 				break;
 			case 9:
 				ninePlayerGameData.totalGameCount++;
-				ninePlayerGameData.fascistWinCount = fascistsWon
-					? ninePlayerGameData.fascistWinCount + 1
-					: ninePlayerGameData.fascistWinCount;
+				if (fascistsWon) {
+					ninePlayerGameData.fascistWinCount++;
+				}
 				break;
 			case 10:
 				tenPlayerGameData.totalGameCount++;
-				tenPlayerGameData.fascistWinCount = fascistsWon
-					? tenPlayerGameData.fascistWinCount + 1
-					: tenPlayerGameData.fascistWinCount;
+				if (fascistsWon) {
+					tenPlayerGameData.fascistWinCount++;
+				}
 				break;
 		}
 		allPlayerGameData.totalGameCount++;
-		allPlayerGameData.fascistWinCount = fascistsWon
-			? allPlayerGameData.fascistWinCount + 1
-			: allPlayerGameData;
+		if (fascistsWon) {
+			allPlayerGameData.fascistWinCount++;
+		}
 		labels.push(moment(new Date(game.date)).format('l'));
 	})
 	.then(() => {
@@ -76,6 +107,7 @@ Game.find({})
 			labels: uLabels,
 			series
 		};
+
 		data.allPlayerGameData = allPlayerGameData;
 		data.fivePlayerGameData = fivePlayerGameData;
 		data.sixPlayerGameData = sixPlayerGameData;
@@ -88,35 +120,3 @@ Game.find({})
 			mongoose.connection.close();
 		});
 	});
-
-// 		getDataOnGameByPlayerCount = (count) => {
-// 			const games = count ? data.filter(game => game.losingPlayers.length + game.winningPlayers.length === count) : data,
-// 				fascistWinCount = games.filter(game => game.winningTeam === 'fascist').length,
-// 				totalGameCount = games.length;
-
-// 			return {
-// 				fascistWinCount,
-// 				totalGameCount,
-// 				expectedFascistWinCount: (() => {
-// 					if (games.length) {
-// 						const game = games.find(game => game.winningTeam === 'fascist'),
-// 							fascistCount = game.winningPlayers.length,
-// 							{playerCount} = game;
-
-// 						return (fascistCount / playerCount) * 100;
-// 					}
-// 				})()
-// 			};
-// 		};
-
-// 	gamesData = {
-// 		completedGames
-// 		// ,
-// 		// allPlayerGameData: getDataOnGameByPlayerCount(),
-// 		// fivePlayerGameData: getDataOnGameByPlayerCount(5),
-// 		// sixPlayerGameData: getDataOnGameByPlayerCount(6),
-// 		// sevenPlayerGameData: getDataOnGameByPlayerCount(7),
-// 		// eightPlayerGameData: getDataOnGameByPlayerCount(8),
-// 		// ninePlayerGameData: getDataOnGameByPlayerCount(9),
-// 		// tenPlayerGameData: getDataOnGameByPlayerCount(10)
-// 	};
