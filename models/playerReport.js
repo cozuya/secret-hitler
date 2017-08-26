@@ -4,10 +4,9 @@ const mongoose = require('mongoose'),
 		date: Date,
 		gameUid: String,
 		userReported: String,
+		type: String,
 		reportingUser: String,
-		comment: String,
-		modNote: String,
-		dismissed: Boolean
+		comment: String
 	});
 
 module.exports = mongoose.model('PlayerReport', playerReport);

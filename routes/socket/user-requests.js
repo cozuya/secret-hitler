@@ -63,9 +63,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 module.exports.sendGameList = socket => {
 	const formattedGames = games.map(game => ({
 		name: game.general.name,
-		gameStatus: game.gameState.isCompleted
-			? game.gameState.isCompleted
-			: game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
+		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
 		seatedCount: game.publicPlayersState.length,
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount,
@@ -107,11 +105,7 @@ const sendUserList = (module.exports.sendUserList = socket => {
 	}
 });
 
-const updateUserStatus = (module.exports.updateUserStatus = (
-	username,
-	type,
-	gameId
-) => {
+const updateUserStatus = (module.exports.updateUserStatus = (username, type, gameId) => {
 	// eslint-disable-line one-var
 	const user = userList.find(user => user.userName === username);
 
@@ -129,9 +123,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 		const _game = Object.assign({}, game);
 
 		if (passport && Object.keys(passport).length) {
-			const player = game.publicPlayersState.find(
-				player => player.userName === passport.user
-			);
+			const player = game.publicPlayersState.find(player => player.userName === passport.user);
 
 			if (player) {
 				player.leftGame = false;

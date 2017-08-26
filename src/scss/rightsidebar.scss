@@ -26,13 +26,25 @@
 			display: flex;
 			justify-content: space-between;
 			color: $darkfascistteam;
-			.mod-button {
-				color: red !important;
+			.mod-button,
+			.report-button {
 				font-weight: 700;
 				cursor: pointer;
-				border: 2px solid red;
 				border-radius: 50%;
 				padding: 2px;
+			}
+			.mod-button {
+				color: red !important;
+				border: 2px solid red;
+			}
+			.report-button {
+				border: 2px solid yellow;
+				color: yellow !important;
+
+				&.active {
+					animation: fadeIn .6s infinite alternate;
+					box-shadow: 0 0 4px 4px #fbbd08;
+				}
 			}
 			.all {
 				background: url('../favicon-16x16.png') no-repeat;

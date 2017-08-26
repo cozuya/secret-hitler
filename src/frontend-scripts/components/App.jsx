@@ -3,15 +3,7 @@ import { connect } from 'react-redux';
 import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
-import {
-	updateUser,
-	updateMidsection,
-	updateGameList,
-	updateGameInfo,
-	updateUserList,
-	updateGeneralChats,
-	updateVersion
-} from '../actions/actions.js';
+import { updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, updateVersion } from '../actions/actions.js';
 import socket from '../socket';
 import $ from 'jquery';
 import PropTypes from 'prop-types';
@@ -40,16 +32,7 @@ export class App extends React.Component {
 			socket.emit('getUserGameSettings', username);
 
 			// ** begin devhelpers **
-			const devPlayers = [
-				'Jaina',
-				'Rexxar',
-				'Malfurian',
-				'Thrall',
-				'Valeera',
-				'Anduin',
-				'aaa',
-				'bbb'
-			]; // eslint-disable-line one-var
+			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var
 			if (devPlayers.includes(username)) {
 				const data = {
 					uid: 'devgame',
@@ -76,10 +59,7 @@ export class App extends React.Component {
 			const { userInfo } = this.props;
 
 			if (settings.customWidth && settings.customWidth !== '1853px') {
-				$('#game-container').css(
-					'width',
-					settings.customWidth === 1853 ? 'inherit' : settings.customWidth
-				);
+				$('#game-container').css('width', settings.customWidth === 1853 ? 'inherit' : settings.customWidth);
 			}
 			userInfo.gameSettings = settings;
 			dispatch(updateUser(userInfo));
@@ -122,6 +102,15 @@ export class App extends React.Component {
 
 		socket.on('generalChats', chats => {
 			dispatch(updateGeneralChats(chats));
+		});
+
+		socket.on('reportUpdate', reportStatus => {
+			const { userInfo } = this.props;
+			console.log(reportStatus);
+
+			userInfo.newReport = reportStatus;
+
+			dispatch(updateUser(userInfo));
 		});
 	}
 
@@ -235,10 +224,7 @@ export class App extends React.Component {
 		return (
 			<section className="ui grid">
 				{(() => {
-					if (
-						this.props.midSection !== 'game' &&
-						this.props.midSection !== 'replay'
-					) {
+					if (this.props.midSection !== 'game' && this.props.midSection !== 'replay') {
 						return (
 							<LeftSidebar
 								userInfo={this.props.userInfo}
@@ -272,10 +258,8 @@ export class App extends React.Component {
 				/>
 				{(() => {
 					if (
-						(this.props.midSection !== 'game' &&
-							this.props.midSection !== 'replay') ||
-						(this.props.userInfo.gameSettings &&
-							this.props.userInfo.gameSettings.enableRightSidebarInGame)
+						(this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
+						(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)
 					) {
 						return (
 							<RightSidebar

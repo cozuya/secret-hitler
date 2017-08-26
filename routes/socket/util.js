@@ -1,5 +1,4 @@
-const getPrivatePlayerInGameByUserName = (game, userName) =>
-		game.private.seatedPlayers.find(player => player.userName === userName),
+const getPrivatePlayerInGameByUserName = (game, userName) => game.private.seatedPlayers.find(player => player.userName === userName),
 	secureGame = game => {
 		const _game = Object.assign({}, game);
 
@@ -9,9 +8,7 @@ const getPrivatePlayerInGameByUserName = (game, userName) =>
 
 module.exports.sendInProgressGameUpdate = game => {
 	// todo-release make this accept a socket argument and emit only to it if it exists
-	const seatedPlayerNames = game.publicPlayersState.map(
-			player => player.userName
-		),
+	const seatedPlayerNames = game.publicPlayersState.map(player => player.userName),
 		combineInProgressChats = (game, userName) => {
 			let player;
 
@@ -19,17 +16,13 @@ module.exports.sendInProgressGameUpdate = game => {
 				player = getPrivatePlayerInGameByUserName(game, userName);
 			}
 
-			return player
-				? player.gameChats.concat(game.chats)
-				: game.private.unSeatedGameChats.concat(game.chats);
+			return player ? player.gameChats.concat(game.chats) : game.private.unSeatedGameChats.concat(game.chats);
 		};
 
 	let roomSockets, playerSockets, observerSockets;
 
 	if (io.sockets.adapter.rooms[game.general.uid]) {
-		roomSockets = Object.keys(
-			io.sockets.adapter.rooms[game.general.uid].sockets
-		).map(sockedId => io.sockets.connected[sockedId]);
+		roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
 
 		playerSockets = roomSockets.filter(
 			socket =>
@@ -39,11 +32,7 @@ module.exports.sendInProgressGameUpdate = game => {
 				seatedPlayerNames.includes(socket.handshake.session.passport.user)
 		);
 
-		observerSockets = roomSockets.filter(
-			socket =>
-				!socket.handshake.session.passport ||
-				!seatedPlayerNames.includes(socket.handshake.session.passport.user)
-		);
+		observerSockets = roomSockets.filter(socket => !socket.handshake.session.passport || !seatedPlayerNames.includes(socket.handshake.session.passport.user));
 	}
 
 	if (playerSockets) {
@@ -52,9 +41,7 @@ module.exports.sendInProgressGameUpdate = game => {
 				{ user } = sock.handshake.session.passport;
 
 			if (!game.gameState.isCompleted && game.gameState.isTracksFlipped) {
-				const privatePlayer = _game.private.seatedPlayers.find(
-					player => user === player.userName
-				);
+				const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
 
 				_game.playersState = privatePlayer.playersState;
 				_game.cardFlingerState = privatePlayer.cardFlingerState || [];

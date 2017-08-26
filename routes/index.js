@@ -130,9 +130,7 @@ module.exports = () => {
 	app.get('/game', ensureAuthenticated, (req, res) => {
 		if (req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress) {
 			if (req.user.isBanned) {
-				req.session.destroy();
-				req.logout();
-				res.render('game', { game: true });
+				res.redirect('/observe');
 			} else {
 				res.render('game', {
 					user: req.user.username,

@@ -621,16 +621,22 @@ module.exports.handleModerationAction = (socket, data) => {
 				actionTaken: data.action
 			}),
 			banAccount = username => {
-				Account.findOne({ username }).then(account => {
-					account.hash = crypto.randomBytes(20).toString('hex');
-					account.salt = crypto.randomBytes(20).toString('hex');
-					account.isBanned = true;
-					account.save(() => {
-						if (io.sockets.sockets[affectedSocketId]) {
-							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+				Account.findOne({ username })
+					.then(account => {
+						if (account) {
+							account.hash = crypto.randomBytes(20).toString('hex');
+							account.salt = crypto.randomBytes(20).toString('hex');
+							account.isBanned = true;
+							account.save(() => {
+								if (io.sockets.sockets[affectedSocketId]) {
+									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+								}
+							});
 						}
+					})
+					.catch(err => {
+						console.log(err, 'ban user err');
 					});
-				});
 			};
 
 		modaction.save();
@@ -711,6 +717,24 @@ module.exports.handleModerationAction = (socket, data) => {
 };
 
 module.exports.handlePlayerReport = data => {
+	const mods = MODERATORS.concat(ADMINS);
+
+	Account.find({ username: mods }).then(accounts => {
+		accounts.forEach(account => {
+			const onlineSocketId = Object.keys(io.sockets.sockets).find(
+				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+			);
+
+			account.gameSettings.newReport = true;
+
+			if (onlineSocketId) {
+				io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
+			}
+			account.save();
+		});
+		// console.log(accounts);
+	});
+
 	// const playerReport = new PlayerReport({
 	// 	date: new Date(),
 	// 	modUserName: passport.user,
