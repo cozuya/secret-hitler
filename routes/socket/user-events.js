@@ -624,6 +624,7 @@ module.exports.handleModerationAction = (socket, data) => {
 				Account.findOne({ username }).then(account => {
 					account.hash = crypto.randomBytes(20).toString('hex');
 					account.salt = crypto.randomBytes(20).toString('hex');
+					account.isBanned = true;
 					account.save(() => {
 						if (io.sockets.sockets[affectedSocketId]) {
 							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');

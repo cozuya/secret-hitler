@@ -22,18 +22,10 @@ const MODERATORS = (module.exports.MODERATORS = [
 
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 
-const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
-	'jbasrai',
-	'sethe',
-	'veggiemanz',
-	'DFinn'
-]);
-
-// const NATEKILLER = 'Banana';
+const CONTRIBUTORS = (module.exports.CONTRIBUTORS = ['jbasrai', 'sethe', 'veggiemanz', 'DFinn']);
 
 module.exports.PLAYERCOLORS = user =>
 	cn({
-		// natekiller: user.userName === NATEKILLER,
 		admin: ADMINS.includes(user.userName),
 		moderatorcolor: MODERATORS.includes(user.userName),
 		experienced1: user.wins + user.losses > 50,
@@ -51,5 +43,6 @@ module.exports.PLAYERCOLORS = user =>
 		onfire8: user.wins / (user.wins + user.losses) > 0.66,
 		onfire9: user.wins / (user.wins + user.losses) > 0.68,
 		onfire10: user.wins / (user.wins + user.losses) > 0.7,
-		contributer: CONTRIBUTORS.includes(user.userName)
+		contributer: CONTRIBUTORS.includes(user.userName),
+		cbell: user.userName === 'cbell'
 	});

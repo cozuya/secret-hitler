@@ -74,11 +74,7 @@ module.exports = () => {
 
 	app.post('/account/signup', (req, res, next) => {
 		const { username, password, password2, email } = req.body,
-			signupIP =
-				req.headers['X-Real-IP'] ||
-				req.headers['x-forwarded-for'] ||
-				req.headers['X-Forwarded-For'] ||
-				req.connection.remoteAddress,
+			signupIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress,
 			save = {
 				username,
 				gameSettings: {
@@ -103,9 +99,7 @@ module.exports = () => {
 			};
 
 		if (!/^[a-z0-9]+$/i.test(username)) {
-			res
-				.status(401)
-				.json({ message: 'Sorry, your username can only be alphanumeric.' });
+			res.status(401).json({ message: 'Sorry, your username can only be alphanumeric.' });
 		} else if (username.length < 3) {
 			res.status(401).json({ message: 'Sorry, your username is too short.' });
 		} else if (username.length > 12) {
@@ -129,60 +123,50 @@ module.exports = () => {
 			});
 			if (doesContainBadWord) {
 				res.status(401).json({
-					message:
-						'Sorry, your username contains a naughty word or part of a naughty word.'
+					message: 'Sorry, your username contains a naughty word or part of a naughty word.'
 				});
 			} else {
-				Account.findOne(
-					{ username: new RegExp(_.escapeRegExp(username), 'i') },
-					(err, account) => {
-						if (err) {
-							return next(err);
-						}
-
-						if (account) {
-							res
-								.status(401)
-								.json({ message: 'Sorry, that account already exists.' });
-						} else {
-							BannedIP.findOne({ ip: signupIP }, (err, ip) => {
-								let date, unbannedTime;
-
-								if (err) {
-									return next(err);
-								}
-
-								if (ip) {
-									date = new Date().getTime();
-									unbannedTime =
-										ip.type === 'small'
-											? ip.bannedDate.getTime() + 64800000
-											: ip.bannedDate.getTime() + 604800000;
-								}
-
-								if (ip && unbannedTime > date) {
-									res.status(403).json({
-										message:
-											'You can no longer access this service.  If you believe this is in error, contact the administrators.'
-									});
-								} else {
-									Account.register(new Account(save), password, err => {
-										if (err) {
-											return next(err);
-										}
-
-										passport.authenticate('local')(req, res, () => {
-											// if (email) {
-											// 	verifyAccount.sendToken(req.body.username, req.body.email);
-											// }
-											res.send();
-										});
-									});
-								}
-							});
-						}
+				Account.findOne({ username: new RegExp(_.escapeRegExp(username), 'i') }, (err, account) => {
+					if (err) {
+						return next(err);
 					}
-				);
+
+					if (account) {
+						res.status(401).json({ message: 'Sorry, that account already exists.' });
+					} else {
+						BannedIP.findOne({ ip: signupIP }, (err, ip) => {
+							let date, unbannedTime;
+
+							if (err) {
+								return next(err);
+							}
+
+							if (ip) {
+								date = new Date().getTime();
+								unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+							}
+
+							if (ip && unbannedTime > date) {
+								res.status(403).json({
+									message: 'You can no longer access this service.  If you believe this is in error, contact the administrators.'
+								});
+							} else {
+								Account.register(new Account(save), password, err => {
+									if (err) {
+										return next(err);
+									}
+
+									passport.authenticate('local')(req, res, () => {
+										// if (email) {
+										// 	verifyAccount.sendToken(req.body.username, req.body.email);
+										// }
+										res.send();
+									});
+								});
+							}
+						});
+					}
+				});
 			}
 		}
 	});
@@ -192,11 +176,7 @@ module.exports = () => {
 		(req, res, next) => {
 			BannedIP.findOne(
 				{
-					ip:
-						req.headers['X-Real-IP'] ||
-						req.headers['x-forwarded-for'] ||
-						req.headers['X-Forwarded-For'] ||
-						req.connection.remoteAddress
+					ip: req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress
 				},
 				(err, ip) => {
 					let date, unbannedTime;
@@ -207,16 +187,12 @@ module.exports = () => {
 
 					if (ip) {
 						date = new Date().getTime();
-						unbannedTime =
-							ip.type === 'small'
-								? ip.bannedDate.getTime() + 64800000
-								: ip.bannedDate.getTime() + 604800000;
+						unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
 					}
 
 					if (ip && unbannedTime > date) {
 						res.status(403).json({
-							message:
-								'You can no longer access this service.  If you believe this is in error, contact the administrators.'
+							message: 'You can no longer access this service.  If you believe this is in error, contact the administrators.'
 						});
 					} else {
 						return next();
@@ -229,11 +205,7 @@ module.exports = () => {
 			Account.findOne({
 				username: new RegExp(_.escapeRegExp(req.user.username), 'i')
 			}).then(player => {
-				player.lastConnectedIP =
-					req.headers['X-Real-IP'] ||
-					req.headers['x-forwarded-for'] ||
-					req.headers['X-Forwarded-For'] ||
-					req.connection.remoteAddress;
+				player.lastConnectedIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
 				player.save(() => {
 					res.send();
 				});

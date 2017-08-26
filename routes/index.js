@@ -35,11 +35,7 @@ module.exports = () => {
 				const completedGames = (() => {
 						const dates = data
 								.map(game => moment(new Date(game.date)).format('l'))
-								.filter(
-									date =>
-										date !== '5/13/2017' &&
-										date !== moment(new Date()).format('l')
-								), // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
+								.filter(date => date !== '5/13/2017' && date !== moment(new Date()).format('l')), // no idea what happened on that date but the db is messed up and shows 3x more than usual which can't be right.
 							labels = _.uniq(dates),
 							series = new Array(labels.length).fill(0);
 
@@ -55,16 +51,8 @@ module.exports = () => {
 						};
 					})(),
 					getDataOnGameByPlayerCount = count => {
-						const games = count
-								? data.filter(
-										game =>
-											game.losingPlayers.length + game.winningPlayers.length ===
-											count
-									)
-								: data,
-							fascistWinCount = games.filter(
-								game => game.winningTeam === 'fascist'
-							).length,
+						const games = count ? data.filter(game => game.losingPlayers.length + game.winningPlayers.length === count) : data,
+							fascistWinCount = games.filter(game => game.winningTeam === 'fascist').length,
 							totalGameCount = games.length;
 
 						return {
@@ -72,9 +60,7 @@ module.exports = () => {
 							totalGameCount,
 							expectedFascistWinCount: (() => {
 								if (games.length) {
-									const game = games.find(
-											game => game.winningTeam === 'fascist'
-										),
+									const game = games.find(game => game.winningTeam === 'fascist'),
 										fascistCount = game.winningPlayers.length,
 										{ playerCount } = game;
 
@@ -142,17 +128,17 @@ module.exports = () => {
 	});
 
 	app.get('/game', ensureAuthenticated, (req, res) => {
-		if (
-			req.headers['X-Real-IP'] ||
-			req.headers['x-forwarded-for'] ||
-			req.headers['X-Forwarded-For'] ||
-			req.connection.remoteAddress
-		) {
-			res.render('game', {
-				user: req.user.username,
-				game: true,
-				isLight: req.user.gameSettings.enableLightTheme
-			});
+		if (req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress) {
+			if (req.user.isBanned) {
+				req.session.destroy();
+				req.logout();
+				res.render('game', { game: true });
+			} else {
+				res.render('game', {
+					user: req.user.username,
+					game: true
+				});
+			}
 		}
 	});
 
@@ -191,14 +177,10 @@ module.exports = () => {
 	});
 
 	app.get('/viewPatchNotes', ensureAuthenticated, (req, res) => {
-		Account.updateOne(
-			{ username: req.user.username },
-			{ lastVersionSeen: version.number },
-			err => {
-				if (err) res.sendStatus(404);
-				else res.sendStatus(200);
-			}
-		);
+		Account.updateOne({ username: req.user.username }, { lastVersionSeen: version.number }, err => {
+			if (err) res.sendStatus(404);
+			else res.sendStatus(200);
+		});
 	});
 
 	app.post('/upload-cardback', ensureAuthenticated, (req, res) => {
@@ -212,10 +194,7 @@ module.exports = () => {
 			username = req.session.passport.user,
 			now = new Date(),
 			socketId = Object.keys(io.sockets.sockets).find(
-				socketId =>
-					io.sockets.sockets[socketId].handshake.session.passport &&
-					io.sockets.sockets[socketId].handshake.session.passport.user ===
-						username
+				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username
 			);
 
 		Account.findOne({ username }, (err, account) => {
@@ -224,36 +203,20 @@ module.exports = () => {
 					message: 'You need to have played 50 games to upload a cardback.'
 				});
 				// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
-			} else if (
-				account.gameSettings.customCardbackSaveTime &&
-				now.getTime() -
-					new Date(account.gameSettings.customCardbackSaveTime).getTime() <
-					30000
-			) {
+			} else if (account.gameSettings.customCardbackSaveTime && now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000) {
 				res.json({
 					message: 'You can only change your cardback once every 30 seconds.'
 				});
 			} else {
-				fs.writeFile(
-					`public/images/custom-cardbacks/${req.session.passport
-						.user}.${extension}`,
-					raw,
-					'base64',
-					() => {
-						account.gameSettings.customCardback = extension;
-						account.gameSettings.customCardbackSaveTime = now;
-						account.gameSettings.customCardbackUid = Math.random()
-							.toString(36)
-							.substring(2);
-						account.save(() => {
-							res.json({ message: 'Cardback successfully uploaded.' });
-							io.sockets.sockets[socketId].emit(
-								'gameSettings',
-								account.gameSettings
-							);
-						});
-					}
-				);
+				fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
+					account.gameSettings.customCardback = extension;
+					account.gameSettings.customCardbackSaveTime = now;
+					account.gameSettings.customCardbackUid = Math.random().toString(36).substring(2);
+					account.save(() => {
+						res.json({ message: 'Cardback successfully uploaded.' });
+						io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
+					});
+				});
 			}
 		});
 	});

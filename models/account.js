@@ -35,6 +35,7 @@ const mongoose = require('mongoose'),
 			resetTokenExpiration: Date
 		},
 		verified: Boolean,
+		isBanned: Boolean,
 		games: Array,
 		wins: Number,
 		losses: Number,
