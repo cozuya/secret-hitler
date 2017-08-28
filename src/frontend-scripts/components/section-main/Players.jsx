@@ -1,8 +1,11 @@
 import React from 'react';
 import $ from 'jquery';
 import Policies from './Policies.jsx';
+import Dropdown from 'semantic-ui-dropdown';
 import { PLAYERCOLORS } from '../../constants';
 import PropTypes from 'prop-types';
+
+$.fn.dropdown = Dropdown;
 
 export default class Players extends React.Component {
 	constructor() {
@@ -295,6 +298,23 @@ export default class Players extends React.Component {
 				>
 					<form onSubmit={this.handleReportSubmit}>
 						<div className="ui header">Report a player to the moderators</div>
+						<div class="ui selection dropdown">
+							<i class="dropdown icon" />
+							<div class="menu">
+								<div class="item" data-value="0">
+									AFK/leaving game
+								</div>
+								<div class="item" data-value="1">
+									Abusive chat
+								</div>
+								<div class="item" data-value="2">
+									Cheating
+								</div>
+								<div class="item" data-value="2">
+									Cheating
+								</div>
+							</div>
+						</div>
 						<textarea placeholder="Report" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
 						<div onClick={this.handleReportSubmit} className="ui button primary">
 							Submit

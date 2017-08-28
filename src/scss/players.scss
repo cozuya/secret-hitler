@@ -20,9 +20,7 @@
 			box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
 		}
 	}
-	.player-container.natekiller {
-		box-shadow: 0 0 5px 2px #ffff00 !important;
-	}
+
 	.player-container.admin {
 		box-shadow: 0 0 5px 2px red !important;
 	}
@@ -34,6 +32,7 @@
 		box-shadow: 0 0 5px 2px #ff1a75 !important;
 	}
 	.player-container {
+		user-select: none;
 		width: 70px;
 		height: 95px;
 		float: left;
@@ -281,4 +280,9 @@
 
 .experienced .players-container .policies-container .policy-card {
 	transition: .2s all;
+}
+
+.reportmodal {
+	background-color: #111 !important;
+	padding: 20px;
 }

@@ -8,6 +8,7 @@ import Profile from './Profile.jsx';
 import Replay from './replay/Replay.jsx';
 import Changelog from './Changelog.jsx';
 import Moderation from './Moderation.jsx';
+import Reports from './Reports.jsx';
 import PropTypes from 'prop-types';
 
 const Main = props =>
@@ -20,10 +21,7 @@ const Main = props =>
 					classes = 'experienced ';
 				}
 
-				if (
-					props.userInfo.gameSettings &&
-					props.userInfo.gameSettings.enableRightSidebarInGame
-				) {
+				if (props.userInfo.gameSettings && props.userInfo.gameSettings.enableRightSidebarInGame) {
 					classes += 'thirteen';
 				} else {
 					classes += 'sixteen';
@@ -42,12 +40,7 @@ const Main = props =>
 			return classes;
 		})()}
 	>
-		<Menu
-			userInfo={props.userInfo}
-			onLeaveGame={props.onLeaveGame}
-			onSettingsButtonClick={props.onSettingsButtonClick}
-			gameInfo={props.gameInfo}
-		/>
+		<Menu userInfo={props.userInfo} onLeaveGame={props.onLeaveGame} onSettingsButtonClick={props.onSettingsButtonClick} gameInfo={props.gameInfo} />
 		{(() => {
 			switch (props.midSection) {
 				case 'createGame':
@@ -60,20 +53,13 @@ const Main = props =>
 						/>
 					);
 				case 'changelog':
-					return (
-						<Changelog
-							onLeaveChangelog={props.onLeaveChangelog}
-							version={props.version}
-						/>
-					);
+					return <Changelog onLeaveChangelog={props.onLeaveChangelog} version={props.version} />;
 				case 'game':
 					return (
 						<Game
 							onUserNightActionEventSubmit={props.onUserNightActionEventSubmit}
 							onUpdateTruncateGameSubmit={props.onUpdateTruncateGameSubmit}
-							onUpdateSelectedForEliminationSubmit={
-								props.onUpdateSelectedForEliminationSubmit
-							}
+							onUpdateSelectedForEliminationSubmit={props.onUpdateSelectedForEliminationSubmit}
 							onUpdateReportGame={props.onUpdateReportGame}
 							onClickedTakeSeat={props.onClickedTakeSeat}
 							onNewGameChat={props.onNewGameChat}
@@ -86,26 +72,15 @@ const Main = props =>
 						/>
 					);
 				case 'moderation':
-					return (
-						<Moderation
-							userInfo={props.userInfo}
-							socket={props.socket}
-							userList={props.userList}
-							onLeaveModeration={props.onLeaveModeration}
-						/>
-					);
+					return <Moderation userInfo={props.userInfo} socket={props.socket} userList={props.userList} onLeaveModeration={props.onLeaveModeration} />;
 				case 'settings':
-					return (
-						<Settings
-							onLeaveSettings={props.onLeaveSettings}
-							userInfo={props.userInfo}
-							socket={props.socket}
-						/>
-					);
+					return <Settings onLeaveSettings={props.onLeaveSettings} userInfo={props.userInfo} socket={props.socket} />;
 				case 'profile':
 					return <Profile />;
 				case 'replay':
 					return <Replay />;
+				case 'reports':
+					return <Reports socket={props.socket} userInfo={props.userInfo} onLeaveReports={props.onLeaveReports} />;
 				default:
 					return <Defaultmid quickDefault={props.quickDefault} />;
 			}

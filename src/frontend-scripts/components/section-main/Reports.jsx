@@ -28,7 +28,7 @@ export default class Reports extends React.Component {
 
 	renderReportsLog() {
 		return (
-			<div>
+			<div className="reports">
 				<table className="ui celled table">
 					<thead>
 						<tr>
