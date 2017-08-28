@@ -732,6 +732,7 @@ module.exports.handlePlayerReport = data => {
 			}
 			account.save();
 		});
+
 		// console.log(accounts);
 	});
 
