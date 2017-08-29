@@ -718,6 +718,7 @@ module.exports.handleModerationAction = (socket, data) => {
 
 module.exports.handlePlayerReport = data => {
 	const mods = MODERATORS.concat(ADMINS);
+	console.log(data);
 
 	Account.find({ username: mods }).then(accounts => {
 		accounts.forEach(account => {

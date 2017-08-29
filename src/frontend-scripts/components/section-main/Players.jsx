@@ -17,12 +17,15 @@ export default class Players extends React.Component {
 		this.handleReportSubmit = this.handleReportSubmit.bind(this);
 		this.state = {
 			passwordValue: '',
+			reportedPlayer: '',
 			reportTextValue: ''
 		};
 	}
 
 	handlePlayerDoubleClick(e) {
+		this.setState({ reportedPlayer: e.currentTarget.innerText });
 		$(this.reportModal).modal('show');
+		$('.ui.dropdown').dropdown();
 	}
 
 	handlePlayerClick(e) {
@@ -247,7 +250,11 @@ export default class Players extends React.Component {
 		e.preventDefault();
 
 		this.props.socket.emit('playerReport', {
-			userName: this.props.userInfo.userName
+			uid: this.props.gameInfo.general.uid,
+			userName: this.props.userInfo.userName,
+			reportedPlayer: this.state.reportedPlayer,
+			reason: $('input[name="reason"]').attr('value'),
+			comment: this.state.reportTextValue
 		});
 		$(this.reportModal).modal('hide');
 	}
@@ -297,25 +304,21 @@ export default class Players extends React.Component {
 					}}
 				>
 					<form onSubmit={this.handleReportSubmit}>
-						<div className="ui header">Report a player to the moderators</div>
-						<div class="ui selection dropdown">
-							<i class="dropdown icon" />
-							<div class="menu">
-								<div class="item" data-value="0">
-									AFK/leaving game
-								</div>
-								<div class="item" data-value="1">
-									Abusive chat
-								</div>
-								<div class="item" data-value="2">
-									Cheating
-								</div>
-								<div class="item" data-value="2">
-									Cheating
-								</div>
+						<div className="ui header">
+							Report player <span style={{ color: 'red' }}>{this.state.reportedPlayer}</span> to the moderators
+						</div>
+						<div className="ui selection dropdown">
+							<input type="hidden" name="reason" />
+							<i className="dropdown icon" />
+							<div className="default text">Reason</div>
+							<div className="menu">
+								<div className="item">AFK/leaving game</div>
+								<div className="item">Abusive chat</div>
+								<div className="item">Cheating</div>
+								<div className="item">Other</div>
 							</div>
 						</div>
-						<textarea placeholder="Report" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
+						<textarea placeholder="Comment" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
 						<div onClick={this.handleReportSubmit} className="ui button primary">
 							Submit
 						</div>
