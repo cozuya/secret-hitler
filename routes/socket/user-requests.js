@@ -1,5 +1,6 @@
 const Account = require('../../models/account'),
 	ModAction = require('../../models/modAction'),
+	PlayerReport = require('../../models/playerReport'),
 	{ games, userList, generalChats } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
 	{ secureGame } = require('./util'),
@@ -9,7 +10,7 @@ module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
 
 	Account.find({ username: userNames }).then(users => {
-		ModAction.find({}) // todo: this should be filtered to be in the last week.  need to brush up on mongo queries.
+		ModAction.find({}) // todo: this should be filtered to be in the last month.  need to brush up on mongo queries.
 			.then(actions => {
 				socket.emit('modInfo', {
 					modReports: actions.reverse(),
@@ -84,6 +85,12 @@ module.exports.sendGameList = socket => {
 	} else {
 		io.sockets.emit('gameList', formattedGames);
 	}
+};
+
+module.exports.sendUserReports = socket => {
+	PlayerReport.find({}).then(reports => {
+		socket.emit('reportInfo', reports);
+	});
 };
 
 module.exports.sendGeneralChats = socket => {

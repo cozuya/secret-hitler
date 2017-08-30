@@ -13,7 +13,7 @@ export default class Reports extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.socket.emit('getReportsInfo');
+		this.props.socket.emit('getUserReports');
 
 		this.props.socket.on('reportsInfo', reports => {
 			this.setState({

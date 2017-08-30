@@ -745,7 +745,27 @@ module.exports.handlePlayerReport = data => {
 	// 	ip: data.ip,
 	// 	actionTaken: data.action
 	// });
-	console.log(data);
+};
+
+module.exports.handlePlayerReportDismiss = () => {
+	const mods = MODERATORS.concat(ADMINS);
+
+	Account.find({ username: mods }).then(accounts => {
+		accounts.forEach(account => {
+			const onlineSocketId = Object.keys(io.sockets.sockets).find(
+				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+			);
+
+			account.gameSettings.newReport = false;
+
+			if (onlineSocketId) {
+				io.sockets.sockets[onlineSocketId].emit('reportUpdate', false);
+			}
+			account.save();
+		});
+
+		// console.log(accounts);
+	});
 };
 
 module.exports.handleUserLeaveGame = (socket, data) => {

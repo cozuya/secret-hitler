@@ -16,14 +16,7 @@ const {
 		handleCloseReplay,
 		handlePlayerReport
 	} = require('./user-events'),
-	{
-		sendGameInfo,
-		sendUserGameSettings,
-		sendModInfo,
-		sendGameList,
-		sendGeneralChats,
-		sendUserList
-	} = require('./user-requests'),
+	{ sendUserReports, sendGameInfo, sendUserGameSettings, sendModInfo, sendGameList, sendGeneralChats, sendUserList } = require('./user-requests'),
 	{
 		selectChancellor,
 		selectVoting,
@@ -32,24 +25,15 @@ const {
 		selectChancellorVoteOnVeto,
 		selectPresidentVoteOnVeto
 	} = require('./game/election'),
-	{
-		selectSpecialElection,
-		selectPartyMembershipInvestigate,
-		selectPolicies,
-		selectPlayerToExecute
-	} = require('./game/policy-powers'),
+	{ selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers'),
 	{ games } = require('./models'),
 	gamesGarbageCollector = () => {
 		const currentTime = new Date().getTime(),
 			toRemoveIndexes = games
 				.filter(
 					game =>
-						(game.general.timeStarted &&
-							game.general.timeStarted + 2400000 < currentTime) ||
-						(game.general.timeCreated &&
-							game.general.timeCreated + 600000 < currentTime &&
-							game.general.private &&
-							game.publicPlayersState.length < 5)
+						(game.general.timeStarted && game.general.timeStarted + 2400000 < currentTime) ||
+						(game.general.timeCreated && game.general.timeCreated + 600000 < currentTime && game.general.private && game.publicPlayersState.length < 5)
 				)
 				.map(game => games.indexOf(game))
 				.reverse();
@@ -86,9 +70,6 @@ module.exports = () => {
 
 			.on('disconnect', () => {
 				handleSocketDisconnect(socket);
-			})
-			.on('getModInfo', () => {
-				sendModInfo(socket);
 			})
 			.on('updateModAction', data => {
 				handleModerationAction(socket, data);
@@ -151,6 +132,12 @@ module.exports = () => {
 			})
 			.on('selectedChancellorVoteOnVeto', data => {
 				selectChancellorVoteOnVeto(data);
+			})
+			.on('getModInfo', () => {
+				sendModInfo(socket);
+			})
+			.on('getUserReportsInfo', () => {
+				sendUserReports(socket);
 			})
 			// election
 
