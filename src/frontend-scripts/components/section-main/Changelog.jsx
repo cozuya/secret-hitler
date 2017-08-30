@@ -13,14 +13,20 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.7.4 "grey" released 8-21-2017</p>
+			<p>Version 0.7.3 "grey" released 8-29-2017</p>
 		</div>
 		<h3>New feature: player reports</h3>
-		<p>Double click a player's name (not card) to bring up an input field to alert moderators of bad behavior.</p>
+		<p>
+			Double click a player's name in game (not card) to bring up an input field to alert moderators of bad behavior. Moderators now see a new icon that shows
+			player reports and will respond when available.
+		</p>
 		<h3>Feature: stats page</h3>
-		<p>The stats page has been restored and will be updated once per day.</p>
+		<p>
+			The <a href="https://secrethitler.io/stats">stats page</a> has been (mostly) restored.
+		</p>
+		<p>Bug fix: a long standing bug preventing moderators from properly banning users has been fixed.</p>
 		<div className="ui header">
-			<p>Version 0.7.3 "black3" released 8-10-2017</p>
+			<p>Version 0.7.2 "black3" released 8-10-2017</p>
 		</div>
 		<ul>
 			<li>New game setting: disable player cardbacks. For those who find them distracting.</li>

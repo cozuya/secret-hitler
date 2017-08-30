@@ -249,6 +249,10 @@ export default class Players extends React.Component {
 	handleReportSubmit(e) {
 		e.preventDefault();
 
+		if (!this.state.reportTextValue) {
+			return;
+		}
+
 		this.props.socket.emit('playerReport', {
 			uid: this.props.gameInfo.general.uid,
 			userName: this.props.userInfo.userName,
@@ -319,7 +323,7 @@ export default class Players extends React.Component {
 							</div>
 						</div>
 						<textarea placeholder="Comment" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
-						<div onClick={this.handleReportSubmit} className="ui button primary">
+						<div onClick={this.handleReportSubmit} className={this.state.reportTextValue ? 'ui button primary' : 'ui button primary disabled'}>
 							Submit
 						</div>
 					</form>

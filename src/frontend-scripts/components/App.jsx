@@ -106,10 +106,8 @@ export class App extends React.Component {
 
 		socket.on('reportUpdate', reportStatus => {
 			const { userInfo } = this.props;
-			console.log(reportStatus);
 
 			userInfo.newReport = reportStatus;
-
 			dispatch(updateUser(userInfo));
 		});
 	}
