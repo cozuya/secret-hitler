@@ -136,7 +136,7 @@ module.exports = () => {
 			.on('getModInfo', () => {
 				sendModInfo(socket);
 			})
-			.on('getUserReportsInfo', () => {
+			.on('getUserReports', () => {
 				sendUserReports(socket);
 			})
 			// election

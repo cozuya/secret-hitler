@@ -71,7 +71,6 @@ class Playerlist extends React.Component {
 
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
-
 		if (userInfo && userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))) {
 			let classes = 'report-button';
 

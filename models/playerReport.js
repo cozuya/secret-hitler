@@ -4,8 +4,8 @@ const mongoose = require('mongoose'),
 		date: Date,
 		gameUid: String,
 		userReported: String,
-		type: String,
-		reportingUser: String,
+		reason: String,
+		reportingPlayer: String,
 		comment: String
 	});
 

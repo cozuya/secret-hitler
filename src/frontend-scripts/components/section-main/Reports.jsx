@@ -15,7 +15,8 @@ export default class Reports extends React.Component {
 	componentDidMount() {
 		this.props.socket.emit('getUserReports');
 
-		this.props.socket.on('reportsInfo', reports => {
+		this.props.socket.on('reportInfo', reports => {
+			console.log(reports, 'reports');
 			this.setState({
 				reports
 			});
@@ -28,7 +29,7 @@ export default class Reports extends React.Component {
 
 	renderReportsLog() {
 		return (
-			<div className="reports">
+			<div>
 				<table className="ui celled table">
 					<thead>
 						<tr>
@@ -53,13 +54,13 @@ export default class Reports extends React.Component {
 									{report.userReported}
 								</td>
 								<td>
-									{report.type}
+									{report.reason}
 								</td>
 								<td>
 									{report.comment}
 								</td>
 								<td>
-									{report.reportingUser}
+									{report.reportingPlayer}
 								</td>
 							</tr>
 						)}
@@ -75,8 +76,8 @@ export default class Reports extends React.Component {
 
 	render() {
 		return (
-			<section className="Reports">
-				<h2>Reports</h2>
+			<section className="reports">
+				<h2>Player Reports</h2>
 				<i className="remove icon" onClick={this.leaveReports} />
 				{this.renderReportsLog()}
 			</section>

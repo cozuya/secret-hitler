@@ -1,9 +1,5 @@
 #main .reports {
 	color: $fascistteam;
-	.player-input {
-		display: flex;
-		justify-content: center;
-	}
 	h2 {
 		text-align: center;
 	}
@@ -61,7 +57,7 @@
 		}
 
 		tr {
-			background: lightyellow;
+			background: #cdf9db;
 		}
 	}
 	textarea {
@@ -91,13 +87,6 @@
 	.tier3 {
 		background: orange;
 		margin: 2px 3px 2px 0;
-	}
-}
-
-.broadcastmodal {
-	display: none !important;
-	input {
-		width: 600px;
 	}
 }
 

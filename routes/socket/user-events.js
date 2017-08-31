@@ -717,34 +717,33 @@ module.exports.handleModerationAction = (socket, data) => {
 };
 
 module.exports.handlePlayerReport = data => {
-	const mods = MODERATORS.concat(ADMINS);
-	console.log(data);
-
-	Account.find({ username: mods }).then(accounts => {
-		accounts.forEach(account => {
-			const onlineSocketId = Object.keys(io.sockets.sockets).find(
-				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
-			);
-
-			account.gameSettings.newReport = true;
-
-			if (onlineSocketId) {
-				io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
-			}
-			account.save();
+	const mods = MODERATORS.concat(ADMINS),
+		playerReport = new PlayerReport({
+			date: new Date(),
+			gameUid: data.uid,
+			reportingPlayer: data.userName,
+			reportedPlayer: data.reportedPlayer,
+			reason: data.reason,
+			comment: data.comment
 		});
 
-		// console.log(accounts);
-	});
+	playerReport.save(() => {
+		Account.find({ username: mods }).then(accounts => {
+			accounts.forEach(account => {
+				const onlineSocketId = Object.keys(io.sockets.sockets).find(
+					socketId =>
+						io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+				);
 
-	// const playerReport = new PlayerReport({
-	// 	date: new Date(),
-	// 	modUserName: passport.user,
-	// 	userActedOn: data.userName,
-	// 	modNotes: data.comment,
-	// 	ip: data.ip,
-	// 	actionTaken: data.action
-	// });
+				account.gameSettings.newReport = true;
+
+				if (onlineSocketId) {
+					io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
+				}
+				account.save();
+			});
+		});
+	});
 };
 
 module.exports.handlePlayerReportDismiss = () => {
