@@ -12,7 +12,6 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'maki2',
 	'Crazyuncle',
 	'nemonorm',
-	'Tenebrae',
 	'jazz',
 	'Max',
 	'Faaiz1999',

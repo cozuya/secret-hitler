@@ -46,6 +46,19 @@ $dteal: #034f61;
 		background: #000;
 	}
 	.defaultmid {
+		.poll {
+			position: absolute;
+			left: 600px;
+			width: 190px;
+			top: 330px;
+
+			> a {
+				color: yellow;
+				font-weight: bold;
+				font-style: italic;
+				text-decoration: underline;
+			}
+		}
 		background: radial-gradient(ellipse at center, #000 0%, rgba(195, 101, 99, 0.23) 100%) #141210;
 		.patch-alert {
 			cursor: pointer;

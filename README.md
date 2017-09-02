@@ -24,6 +24,12 @@ Install node.js.  Production is on node LTS currently v6.11.0 and is recommended
 
 Install mongodb, have it in your path.
 
+Make a .env file, add the following to it:
+
+> MONGOPORT={5 digit number here}
+
+then
+
 > git clone https://github.com/cozuya/secret-hitler.git
 
 > cd secret-hitler
@@ -40,11 +46,11 @@ build assets (first time only):
 
 start mongo:
 
-> npm run db
+> npm run db {your port here}
 
 start express server:
 
-> npm start
+> nodemon bin/dev
 
 start development task runner:
 

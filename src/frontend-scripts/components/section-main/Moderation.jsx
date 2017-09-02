@@ -214,7 +214,7 @@ export default class Moderation extends React.Component {
 									{report.actionTaken}
 								</td>
 								<td>
-									{report.actionTaken === 'comment' ? '' : report.userActedOn}
+									{report.userActedOn}
 								</td>
 								<td>
 									{report.ip}

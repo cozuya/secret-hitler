@@ -123,6 +123,10 @@ module.exports = () => {
 		renderPage(req, res, 'page-about', 'about');
 	});
 
+	app.get('/polls', (req, res) => {
+		renderPage(req, res, 'page-polls', 'polls');
+	});
+
 	app.get('/player-profiles', (req, res) => {
 		renderPage(req, res, 'page-player-profiles', 'playerProfiles');
 	});

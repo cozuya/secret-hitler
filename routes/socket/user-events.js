@@ -10,6 +10,7 @@ const { games, userList, generalChats } = require('./models'),
 	startGame = require('./game/start-game.js'),
 	{ secureGame } = require('./util.js'),
 	crypto = require('crypto'),
+	https = require('https'),
 	{ sendInProgressGameUpdate } = require('./util.js'),
 	version = require('../../version'),
 	{ PLAYERCOLORS, MODERATORS, ADMINS } = require('../../src/frontend-scripts/constants'),
@@ -612,6 +613,7 @@ module.exports.handleModerationAction = (socket, data) => {
 		);
 
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
+		console.log(data);
 		const modaction = new ModAction({
 				date: new Date(),
 				modUserName: passport.user,
@@ -725,7 +727,20 @@ module.exports.handlePlayerReport = data => {
 			reportedPlayer: data.reportedPlayer,
 			reason: data.reason,
 			comment: data.comment
-		});
+		}),
+		body = JSON.stringify({
+			content: `Game UID: ${data.uid.substr(0, 6)}\nReported player: ${data.reportedPlayer}\nReason: ${data.reason}\nComment: ${data.comment}`
+		}),
+		options = {
+			hostname: 'discordapp.com',
+			path: process.env.DISCORDURL,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Content-Length': Buffer.byteLength(body)
+			}
+		},
+		req = https.request(options);
 
 	playerReport.save(() => {
 		Account.find({ username: mods }).then(accounts => {
@@ -743,6 +758,8 @@ module.exports.handlePlayerReport = data => {
 				account.save();
 			});
 		});
+
+		req.end(body);
 	});
 };
 

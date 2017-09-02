@@ -10,19 +10,16 @@ module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
 
 	Account.find({ username: userNames }).then(users => {
-		ModAction.find() // todo: this should be filtered to be in the last month.  need to brush up on mongo queries.
-			.sort({ $natural: -1 })
-			.limit(200)
-			.then(actions => {
-				socket.emit('modInfo', {
-					modReports: actions,
-					userList: users.map(user => ({
-						isRainbow: user.wins + user.losses > 49,
-						userName: user.username,
-						ip: user.lastConnectedIP || user.signupIP
-					}))
-				});
+		ModAction.find().sort({ $natural: -1 }).limit(200).then(actions => {
+			socket.emit('modInfo', {
+				modReports: actions,
+				userList: users.map(user => ({
+					isRainbow: user.wins + user.losses > 49,
+					userName: user.username,
+					ip: user.lastConnectedIP || user.signupIP
+				}))
 			});
+		});
 	});
 };
 

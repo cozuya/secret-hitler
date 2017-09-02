@@ -13,6 +13,18 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.7.4 "grey2" released 9-2-2017</p>
+		</div>
+		<h3>
+			h3 New feature:{' '}
+			<a href="/polls" target="_blank">
+				polls page
+			</a>.
+		</h3>
+		<p>I'd like to start getting more feedback from the community so will start adding polls and see how it goes.</p>
+		<h3>New feature: player reports now also get sent to a new discord channel. Internet is magic.</h3>
+		<p>Note that the way this app works on the dev side has changed slightly, if you are playing along at home please check the README.</p>
+		<div className="ui header">
 			<p>Version 0.7.3 "grey" released 9-1-2017</p>
 		</div>
 		<h3>New feature: player reports</h3>

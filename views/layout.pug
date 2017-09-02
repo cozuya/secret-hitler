@@ -52,10 +52,16 @@ html(lang="en")
 					else
 						a.item(href="/stats") Stats
 
+					if polls
+						a.active.item Polls
+					else
+						a.item(href="/polls") Polls
+
 					if about
 						a.active.item About
 					else
 						a.item(href="/about") About
+
 
 					if username
 						div.item.right
@@ -130,7 +136,12 @@ html(lang="en")
 				.ui.dimmer.inverted
 					.ui.text.loader Signing up..
 				.ui.negative.hidden.message
-		
+		script.
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+			
 		if game
 			script(src="/scripts/bundle.js")
 		else

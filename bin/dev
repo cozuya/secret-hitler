@@ -6,6 +6,8 @@ let	http = require('http'),
 	port = normalizePort(process.env.PORT || '8080'),
 	debug, server;
 
+require('dotenv').config();
+
 global.app = express();
 
 debug = require('debug')('app:server');
