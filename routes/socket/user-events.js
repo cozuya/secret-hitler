@@ -613,7 +613,6 @@ module.exports.handleModerationAction = (socket, data) => {
 		);
 
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
-		console.log(data);
 		const modaction = new ModAction({
 				date: new Date(),
 				modUserName: passport.user,
@@ -630,8 +629,18 @@ module.exports.handleModerationAction = (socket, data) => {
 							account.salt = crypto.randomBytes(20).toString('hex');
 							account.isBanned = true;
 							account.save(() => {
+								const bannedAccountGeneralChats = generalChats.filter(chat => chat.userName === username);
+
 								if (io.sockets.sockets[affectedSocketId]) {
 									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+								}
+
+								if (bannedAccountGeneralChats.length) {
+									bannedAccountGeneralChats.reverse().forEach(chat => {
+										generalChats.splice(generalChats.indexOf(chat), 1);
+									});
+
+									io.sockets.emit('generalChats', generalChats);
 								}
 							});
 						}
