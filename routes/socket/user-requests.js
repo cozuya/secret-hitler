@@ -10,11 +10,12 @@ module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
 
 	Account.find({ username: userNames }).then(users => {
-		ModAction.find({}) // todo: this should be filtered to be in the last month.  need to brush up on mongo queries.
+		ModAction.find() // todo: this should be filtered to be in the last month.  need to brush up on mongo queries.
+			.sort({ $natural: -1 })
 			.limit(200)
 			.then(actions => {
 				socket.emit('modInfo', {
-					modReports: actions.reverse(),
+					modReports: actions,
 					userList: users.map(user => ({
 						isRainbow: user.wins + user.losses > 49,
 						userName: user.username,
@@ -89,8 +90,8 @@ module.exports.sendGameList = socket => {
 };
 
 module.exports.sendUserReports = socket => {
-	PlayerReport.find().limit(200).then(reports => {
-		socket.emit('reportInfo', reports.reverse());
+	PlayerReport.find().sort({ $natural: -1 }).limit(200).then(reports => {
+		socket.emit('reportInfo', reports);
 	});
 };
 
