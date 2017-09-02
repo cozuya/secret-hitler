@@ -49,12 +49,7 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="player-input">
-				<input
-					placeholder="Player name"
-					onChange={playerInputKeyup}
-					className="player-input"
-					value={this.state.playerInputText}
-				/>
+				<input placeholder="Player name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
 			</div>
 		);
 	}
@@ -65,9 +60,7 @@ export default class Moderation extends React.Component {
 			},
 			{ userList } = this.state,
 			ips = userList.map(user => user.ip),
-			multiIPs = _.uniq(
-				_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1))
-			);
+			multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
 
 		return userList
 			.sort((a, b) =>
@@ -104,11 +97,7 @@ export default class Moderation extends React.Component {
 				this.props.socket.emit('updateModAction', {
 					modName: this.props.userInfo.userName,
 					userName: this.state.playerInputText || this.state.selectedUser,
-					ip: this.state.selectedUser
-						? this.state.userList.find(
-								user => user.userName === this.state.selectedUser
-							).ip
-						: '',
+					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 					comment: this.state.actionTextValue,
 					action
 				});
@@ -126,11 +115,7 @@ export default class Moderation extends React.Component {
 		return (
 			<div className="button-container">
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue
-							? 'ui button primary'
-							: 'ui button primary disabled'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button primary' : 'ui button primary disabled'}
 					onClick={() => {
 						takeModAction('ban');
 					}}
@@ -138,9 +123,7 @@ export default class Moderation extends React.Component {
 					Ban user
 				</button>
 				<button
-					className={
-						!this.state.actionTextValue ? 'ui button disabled' : 'ui button'
-					}
+					className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'}
 					onClick={() => {
 						takeModAction('comment');
 					}}
@@ -149,11 +132,7 @@ export default class Moderation extends React.Component {
 				</button>
 				<br />
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue
-							? 'ui button tier3'
-							: 'ui button disabled tier3'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
 						takeModAction('deleteUser');
 					}}
@@ -161,11 +140,7 @@ export default class Moderation extends React.Component {
 					Delete user
 				</button>
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue
-							? 'ui button tier3'
-							: 'ui button disabled tier3'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
 						takeModAction(`setWins${this.state.actionTextValue}`);
 					}}
@@ -173,11 +148,7 @@ export default class Moderation extends React.Component {
 					Set wins
 				</button>
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue
-							? 'ui button tier3'
-							: 'ui button disabled tier3'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
 						takeModAction(`setLosses${this.state.actionTextValue}`);
 					}}
@@ -185,11 +156,7 @@ export default class Moderation extends React.Component {
 					Set losses
 				</button>
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue
-							? 'ui button cardback-button'
-							: 'ui button disabled cardback-button'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}
 					onClick={() => {
 						takeModAction('deleteCardback');
 					}}
@@ -197,11 +164,7 @@ export default class Moderation extends React.Component {
 					Delete player cardback and log them out
 				</button>
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
 					onClick={() => {
 						takeModAction('ipban');
 					}}
@@ -210,9 +173,7 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						ADMINS.includes(this.props.userInfo.userName)
+						(selectedUser || playerInputText) && actionTextValue && ADMINS.includes(this.props.userInfo.userName)
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -247,7 +208,7 @@ export default class Moderation extends React.Component {
 									{report.modUserName}
 								</td>
 								<td>
-									{moment(new Date(report.date)).format('l')}
+									{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}
 								</td>
 								<td>
 									{report.actionTaken}
@@ -274,14 +235,7 @@ export default class Moderation extends React.Component {
 			this.setState({ actionTextValue: `${e.target.value}` });
 		};
 
-		return (
-			<textarea
-				placeholder="Comment"
-				value={this.state.actionTextValue}
-				onChange={handleTextChange}
-				spellCheck="false"
-			/>
-		);
+		return <textarea placeholder="Comment" value={this.state.actionTextValue} onChange={handleTextChange} spellCheck="false" />;
 	}
 
 	leaveModeration() {
@@ -344,10 +298,7 @@ export default class Moderation extends React.Component {
 							);
 						}
 					})()}
-					<div
-						className="modlog"
-						style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}
-					>
+					<div className="modlog" style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}>
 						<h3>Moderation log</h3>
 						{this.renderModLog()}
 					</div>
@@ -372,14 +323,7 @@ export default class Moderation extends React.Component {
 									this.broadcastText = c;
 								}}
 							/>
-							<div
-								onClick={this.handleBroadcastSubmit}
-								className={
-									this.state.broadcastText
-										? 'ui button primary'
-										: 'ui button primary disabled'
-								}
-							>
+							<div onClick={this.handleBroadcastSubmit} className={this.state.broadcastText ? 'ui button primary' : 'ui button primary disabled'}>
 								Submit
 							</div>
 						</form>

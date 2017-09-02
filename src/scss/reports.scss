@@ -24,6 +24,8 @@
 	}
 	> div {
 		display: flex;
+		max-height: 508px;
+		overflow-y: scroll;
 		.modlog {
 			max-width: 60%;
 			width: 100%;

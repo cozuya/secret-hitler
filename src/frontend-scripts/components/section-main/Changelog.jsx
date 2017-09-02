@@ -13,7 +13,7 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.7.3 "grey" released 8-29-2017</p>
+			<p>Version 0.7.3 "grey" released 9-1-2017</p>
 		</div>
 		<h3>New feature: player reports</h3>
 		<p>
@@ -22,9 +22,11 @@ const Changelog = props =>
 		</p>
 		<h3>Feature: stats page</h3>
 		<p>
-			The <a href="https://secrethitler.io/stats">stats page</a> has been (mostly) restored.
+			The <a href="https://secrethitler.io/stats">stats page</a> has been (mostly) restored, still needs a little work (undefined/not a number).
 		</p>
-		<p>Bug fix: a long standing bug preventing moderators from properly banning users has been fixed.</p>
+		<p>Bug fix: a long standing bug preventing moderators from properly banning users who are not in game has been fixed.</p>
+		<p>Bug fix: the italic font is no longer semibold..</p>
+		<h3>Over 400 players have cardbacks! Wow!</h3>
 		<div className="ui header">
 			<p>Version 0.7.2 "black3" released 8-10-2017</p>
 		</div>

@@ -44,7 +44,7 @@ export default class Reports extends React.Component {
 						{this.state.reports.map((report, index) =>
 							<tr key={index}>
 								<td>
-									{moment(new Date(report.date)).format('l')}
+									{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}
 								</td>
 								<td>
 									{report.gameUid.substr(0, 5)}

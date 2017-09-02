@@ -11,6 +11,7 @@ module.exports.sendModInfo = socket => {
 
 	Account.find({ username: userNames }).then(users => {
 		ModAction.find({}) // todo: this should be filtered to be in the last month.  need to brush up on mongo queries.
+			.limit(200)
 			.then(actions => {
 				socket.emit('modInfo', {
 					modReports: actions.reverse(),
@@ -88,9 +89,8 @@ module.exports.sendGameList = socket => {
 };
 
 module.exports.sendUserReports = socket => {
-	PlayerReport.find({}).then(reports => {
-		console.log(reports);
-		socket.emit('reportInfo', reports);
+	PlayerReport.find().limit(200).then(reports => {
+		socket.emit('reportInfo', reports.reverse());
 	});
 };
 

@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A dramatic game of political intrigue and betrayal set in 1930's Germany.",
-	"version": "0.7.2",
+	"version": "0.7.3",
 	"license": "CC-BY-NC-SA-4.0",
 	"repository": {
 		"url": "https://github.com/cozuya/secret-hitler.git",
@@ -98,8 +98,8 @@
 		"dev": "NODE_ENV=development DEBUG_DEPTH=3 DEBUG=game:* nodemon bin/dev",
 		"recalculateProfiles": "DEBUG=game:* node scripts/recalculateProfiles.js",
 		"repopulateGames": "DEBUG=game:* node scripts/repopulateGames.js",
-    "removeRainbowLosses": "DEBUG=game:* node scripts/removeRainbowLosses",
-    "removeGamesFromAccounts": "DEBUG=game:* node scripts/removeGamesFromAccounts"
+		"removeRainbowLosses": "DEBUG=game:* node scripts/removeRainbowLosses",
+		"removeGamesFromAccounts": "DEBUG=game:* node scripts/removeGamesFromAccounts"
 	},
 	"main": "index.js"
 }
