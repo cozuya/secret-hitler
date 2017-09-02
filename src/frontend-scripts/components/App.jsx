@@ -107,7 +107,7 @@ export class App extends React.Component {
 		socket.on('reportUpdate', reportStatus => {
 			const { userInfo } = this.props;
 
-			userInfo.newReport = reportStatus;
+			userInfo.gameSettings.newReport = reportStatus;
 			dispatch(updateUser(userInfo));
 		});
 	}

@@ -727,6 +727,7 @@ module.exports.handlePlayerReport = data => {
 			comment: data.comment
 		});
 
+	console.log(data);
 	playerReport.save(() => {
 		Account.find({ username: mods }).then(accounts => {
 			accounts.forEach(account => {
@@ -748,7 +749,7 @@ module.exports.handlePlayerReport = data => {
 
 module.exports.handlePlayerReportDismiss = () => {
 	const mods = MODERATORS.concat(ADMINS);
-
+	console.log('hi');
 	Account.find({ username: mods }).then(accounts => {
 		accounts.forEach(account => {
 			const onlineSocketId = Object.keys(io.sockets.sockets).find(
@@ -758,12 +759,11 @@ module.exports.handlePlayerReportDismiss = () => {
 			account.gameSettings.newReport = false;
 
 			if (onlineSocketId) {
+				console.log('Hello, World!');
 				io.sockets.sockets[onlineSocketId].emit('reportUpdate', false);
 			}
 			account.save();
 		});
-
-		// console.log(accounts);
 	});
 };
 

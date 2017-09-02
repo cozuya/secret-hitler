@@ -14,7 +14,8 @@ const {
 		handleModerationAction,
 		handleOpenReplay,
 		handleCloseReplay,
-		handlePlayerReport
+		handlePlayerReport,
+		handlePlayerReportDismiss
 	} = require('./user-events'),
 	{ sendUserReports, sendGameInfo, sendUserGameSettings, sendModInfo, sendGameList, sendGeneralChats, sendUserList } = require('./user-requests'),
 	{
@@ -109,6 +110,9 @@ module.exports = () => {
 			})
 			.on('playerReport', data => {
 				handlePlayerReport(data);
+			})
+			.on('playerReportDismiss', () => {
+				handlePlayerReportDismiss();
 			})
 			.on('closeReplay', () => {
 				handleCloseReplay(socket);

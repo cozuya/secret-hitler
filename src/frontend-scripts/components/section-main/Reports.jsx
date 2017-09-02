@@ -16,7 +16,6 @@ export default class Reports extends React.Component {
 		this.props.socket.emit('getUserReports');
 
 		this.props.socket.on('reportInfo', reports => {
-			console.log(reports, 'reports');
 			this.setState({
 				reports
 			});
@@ -51,7 +50,7 @@ export default class Reports extends React.Component {
 									{report.gameUid.substr(0, 5)}
 								</td>
 								<td>
-									{report.userReported}
+									{report.reportedPlayer}
 								</td>
 								<td>
 									{report.reason}

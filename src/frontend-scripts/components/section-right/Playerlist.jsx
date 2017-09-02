@@ -81,6 +81,9 @@ class Playerlist extends React.Component {
 				<a
 					onClick={() => {
 						this.props.onModerationButtonClick('reports');
+						if (userInfo.gameSettings.newReport) {
+							this.props.socket.emit('playerReportDismiss');
+						}
 					}}
 					className={classes}
 				>
@@ -272,7 +275,8 @@ class Playerlist extends React.Component {
 Playerlist.propTypes = {
 	userInfo: PropTypes.object,
 	userList: PropTypes.object,
-	onModerationButtonClick: PropTypes.func
+	onModerationButtonClick: PropTypes.func,
+	socket: PropTypes.object
 };
 
 export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Playerlist);

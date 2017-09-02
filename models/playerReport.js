@@ -3,7 +3,7 @@ const mongoose = require('mongoose'),
 	playerReport = new Schema({
 		date: Date,
 		gameUid: String,
-		userReported: String,
+		reportedPlayer: String,
 		reason: String,
 		reportingPlayer: String,
 		comment: String

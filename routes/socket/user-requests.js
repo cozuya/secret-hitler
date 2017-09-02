@@ -89,6 +89,7 @@ module.exports.sendGameList = socket => {
 
 module.exports.sendUserReports = socket => {
 	PlayerReport.find({}).then(reports => {
+		console.log(reports);
 		socket.emit('reportInfo', reports);
 	});
 };
