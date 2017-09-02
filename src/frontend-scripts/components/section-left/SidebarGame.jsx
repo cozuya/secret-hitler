@@ -97,7 +97,7 @@ const SidebarGame = props => {
 								let status = '';
 
 								if (game.experiencedMode) {
-									status = 'Experienced';
+									status = 'Speed';
 								}
 
 								if (game.disableChat) {

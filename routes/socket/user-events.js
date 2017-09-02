@@ -526,7 +526,7 @@ module.exports.handleAddNewClaim = data => {
 module.exports.handleAddNewGameChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
-	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300) {
+	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length) {
 		return;
 	}
 
@@ -559,7 +559,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 
 	// Check that they are who they say they are.  Should this do, uh, whatever
 	// the ws equivalent of a 401 unauth is?
-	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300) {
+	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length) {
 		return;
 	}
 

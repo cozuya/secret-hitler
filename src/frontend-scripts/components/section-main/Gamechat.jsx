@@ -22,6 +22,7 @@ class Gamechat extends React.Component {
 		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
 		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
 		this.handleBadKarmaCheck = this.handleBadKarmaCheck.bind(this);
+		this.handleChatScroll = this.handleChatScroll.bind(this);
 
 		this.state = {
 			chatFilter: 'All',
@@ -80,6 +81,20 @@ class Gamechat extends React.Component {
 		) {
 			this.setState({ inputValue: '' });
 			$(this.gameChatInput).blur();
+		}
+	}
+
+	handleChatScroll(e) {
+		const el = e.currentTarget;
+
+		if (el.scrollTop === (el.scrollHeight - el.offsetHeight) && this.state.lock) {
+			this.setState({
+				lock: false
+			});
+		} else if (el.scrollTop !== (el.scrollHeight - el.offsetHeight) && !this.state.lock) {
+			this.setState({
+				lock: true
+			});
 		}
 	}
 
@@ -479,7 +494,7 @@ class Gamechat extends React.Component {
 						return classes;
 					})()}
 				>
-					<div className="ui list">
+					<div className="ui list" onScroll={this.handleChatScroll}>
 						{this.processChats()}
 					</div>
 				</section>

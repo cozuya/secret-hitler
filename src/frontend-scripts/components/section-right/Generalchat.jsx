@@ -10,6 +10,7 @@ export default class Generalchat extends React.Component {
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
+		this.handleChatScrolled = this.handleChatScrolled.bind(this);
 		this.state = {
 			lock: false,
 			inputValue: '',
@@ -101,6 +102,20 @@ export default class Generalchat extends React.Component {
 		this.setState({ lock: !this.state.lock });
 	}
 
+	handleChatScrolled(e) {
+		const el = e.currentTarget;
+
+		if (el.scrollTop === (el.scrollHeight - el.offsetHeight) && this.state.lock) {
+			this.setState({
+				lock: false
+			});
+		} else if (el.scrollTop !== (el.scrollHeight - el.offsetHeight) && !this.state.lock) {
+			this.setState({
+				lock: true
+			});
+		}
+	}
+
 	render() {
 		return (
 			<section className="generalchat">
@@ -120,7 +135,7 @@ export default class Generalchat extends React.Component {
 					<div className="ui divider right-sidebar-divider" />
 				</section>
 				<section className="segment chats">
-					<div className="ui list genchat-container">
+					<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
 						{this.processChats()}
 					</div>
 				</section>
