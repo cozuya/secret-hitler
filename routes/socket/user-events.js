@@ -635,13 +635,11 @@ module.exports.handleModerationAction = (socket, data) => {
 									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 								}
 
-								if (bannedAccountGeneralChats.length) {
-									bannedAccountGeneralChats.reverse().forEach(chat => {
-										generalChats.splice(generalChats.indexOf(chat), 1);
-									});
+								bannedAccountGeneralChats.reverse().forEach(chat => {
+									generalChats.splice(generalChats.indexOf(chat), 1);
+								});
 
-									io.sockets.emit('generalChats', generalChats);
-								}
+								io.sockets.emit('generalChats', generalChats);
 							});
 						}
 					})

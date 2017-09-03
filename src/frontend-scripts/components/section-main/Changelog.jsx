@@ -24,13 +24,20 @@ const Changelog = props =>
 		<p>I'd like to start getting more feedback from the community so will start adding polls and see how it goes.</p>
 		<h3>New feature: player reports now also get sent to a new discord channel. Internet is magic.</h3>
 		<h3>New feature: sticky chat</h3>
-		<p>Now, when chat is scrolled from the bottom, the lock is automatically set, meaning it will no longer "jump" every time someone chats something new.  Conversely the lock is unset when you scroll back to the bottom.</p>
+		<p>
+			Now, when chat is scrolled from the bottom, the lock is automatically set, meaning it will no longer "jump" every time someone chats something new.
+			Conversely the lock is unset when you scroll back to the bottom.
+		</p>
 		<h4>Other items</h4>
 		<ul>
 			<li>Experienced mode is now correctly changed to speed mode in the games list.</li>
 			<li>Mod notes now show players.</li>
 			<li>Players can no longer chat blank lines by hitting space.</li>
-			<li>Note that the way this app works on the dev side has changed slightly, if you are playing along at home please check the README.  You'll also need to do npm i this patch.</li>
+			<li>Banned players will have their general chats instantly deleted.</li>
+			<li>
+				Note that the way this app works on the dev side has changed slightly, if you are playing along at home please check the README. You'll also need to do
+				npm i this patch.
+			</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.7.3 "grey" released 9-1-2017</p>
