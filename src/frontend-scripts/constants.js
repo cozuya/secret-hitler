@@ -1,7 +1,7 @@
 const cn = require('classnames');
 
 const MODERATORS = (module.exports.MODERATORS = [
-	'Uther',
+	'MilkMan',
 	'Idrissa',
 	'cayseron',
 	'Knownall',

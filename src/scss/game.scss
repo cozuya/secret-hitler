@@ -37,6 +37,20 @@
 				position: relative;
 				z-index: 100;
 			}
+			.notes-container {
+				position: absolute;
+				width: 400px;
+				height: 320px;
+				background: lightyellow;
+				top: 10px;
+				left: 10px;
+				textarea {
+					width: 400px;
+					height: 320px;
+					background: lightyellow;
+					resize: none;
+				}
+			}
 			.pointing.menu {
 				.observer-chat {
 					opacity: .75;
@@ -270,16 +284,12 @@
 	margin: 7px 0 0 410px;
 }
 
-.thirteen.wide .game
-	> .ui.grid .six.chat-container .unlock.icon
-	+ .primary.button {
+.thirteen.wide .game > .ui.grid .six.chat-container .unlock.icon + .primary.button {
 	position: relative;
 	z-index: 100;
 }
 
-.sixteen.wide .game
-	> .ui.grid .six.chat-container .unlock.icon
-	+ .primary.button {
+.sixteen.wide .game > .ui.grid .six.chat-container .unlock.icon + .primary.button {
 	position: relative;
 	z-index: 100;
 }

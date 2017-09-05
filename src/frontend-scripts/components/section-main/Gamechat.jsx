@@ -23,6 +23,7 @@ class Gamechat extends React.Component {
 		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
 		this.handleBadKarmaCheck = this.handleBadKarmaCheck.bind(this);
 		this.handleChatScroll = this.handleChatScroll.bind(this);
+		this.handleNoteClick = this.handleNoteClick.bind(this);
 
 		this.state = {
 			chatFilter: 'All',
@@ -31,7 +32,11 @@ class Gamechat extends React.Component {
 			claim: '',
 			badKarma: '',
 			playersToWhitelist: [],
-			disabled: false
+			disabled: false,
+			notesEnabled: false,
+			notesValue: '',
+			notesTop: 0,
+			notesLeft: 0
 		};
 	}
 
@@ -40,11 +45,7 @@ class Gamechat extends React.Component {
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {
 			// modal methods dont seem to work.
-			this.props.onLeaveGame(
-				this.props.userInfo.isSeated,
-				false,
-				this.state.badKarma
-			);
+			this.props.onLeaveGame(this.props.userInfo.isSeated, false, this.state.badKarma);
 			$(this.leaveGameModal).modal('hide');
 		});
 	}
@@ -56,27 +57,15 @@ class Gamechat extends React.Component {
 		if (
 			(prevProps &&
 				userInfo.userName &&
-				prevProps.gameInfo.publicPlayersState.filter(player => player.isDead)
-					.length !==
-					gameInfo.publicPlayersState.filter(player => player.isDead).length &&
-				gameInfo.publicPlayersState.find(
-					player => userInfo.userName === player.userName
-				).isDead) ||
+				prevProps.gameInfo.publicPlayersState.filter(player => player.isDead).length !== gameInfo.publicPlayersState.filter(player => player.isDead).length &&
+				gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead) ||
 			(prevProps &&
 				userInfo.userName &&
 				gameInfo.gameState.phase === 'presidentSelectingPolicy' &&
-				((gameInfo.publicPlayersState.find(
-					player => userInfo.userName === player.userName
-				) &&
-					gameInfo.publicPlayersState.find(
-						player => userInfo.userName === player.userName
-					).governmentStatus === 'isPresident') ||
-					(gameInfo.publicPlayersState.find(
-						player => userInfo.userName === player.userName
-					) &&
-						gameInfo.publicPlayersState.find(
-							player => userInfo.userName === player.userName
-						).governmentStatus === 'isChancellor')) &&
+				((gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName) &&
+					gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isPresident') ||
+					(gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName) &&
+						gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).governmentStatus === 'isChancellor')) &&
 				prevProps.gameInfo.gameState.phase !== 'presidentSelectingPolicy')
 		) {
 			this.setState({ inputValue: '' });
@@ -87,11 +76,11 @@ class Gamechat extends React.Component {
 	handleChatScroll(e) {
 		const el = e.currentTarget;
 
-		if (el.scrollTop === (el.scrollHeight - el.offsetHeight) && this.state.lock) {
+		if (el.scrollTop === el.scrollHeight - el.offsetHeight && this.state.lock) {
 			this.setState({
 				lock: false
 			});
-		} else if (el.scrollTop !== (el.scrollHeight - el.offsetHeight) && !this.state.lock) {
+		} else if (el.scrollTop !== el.scrollHeight - el.offsetHeight && !this.state.lock) {
 			this.setState({
 				lock: true
 			});
@@ -112,12 +101,30 @@ class Gamechat extends React.Component {
 		$(this.whitelistModal).modal('show');
 	}
 
+	handleNoteClick() {
+		const { notesEnabled } = this.state;
+
+		this.setState({
+			notesEnabled: !notesEnabled
+		});
+	}
+
+	renderNotes() {
+		if (this.state.notesEnabled) {
+			const notesChange = e => {
+				console.log(e);
+				console.log(e.target.value);
+				this.setState({ notesValue: `${e.target.value}` });
+			};
+			return (
+				<section className="notes-container">
+					<textarea autoFocus spellCheck="false" value={this.state.notesValue} onChange={notesChange} />
+				</section>
+			);
+		}
+	}
 	handleClickedLeaveGame() {
-		if (
-			this.props.userInfo.isSeated &&
-			this.props.gameInfo.gameState.isStarted &&
-			!this.props.gameInfo.gameState.isCompleted
-		) {
+		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
 		} else {
 			this.props.onLeaveGame(this.props.userInfo.isSeated);
@@ -162,9 +169,7 @@ class Gamechat extends React.Component {
 
 	scrollChats() {
 		if (!this.state.lock) {
-			document.querySelector(
-				'section.segment.chats > .ui.list'
-			).scrollTop = 99999999;
+			document.querySelector('section.segment.chats > .ui.list').scrollTop = 99999999;
 		}
 	}
 
@@ -175,11 +180,7 @@ class Gamechat extends React.Component {
 	handleTimestamps(timestamp) {
 		const { userInfo } = this.props;
 
-		if (
-			userInfo.userName &&
-			userInfo.gameSettings &&
-			userInfo.gameSettings.enableTimestamps
-		) {
+		if (userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
 			const minutes = `0${new Date(timestamp).getMinutes()}`.slice(-2),
 				seconds = `0${new Date(timestamp).getSeconds()}`.slice(-2);
 
@@ -201,9 +202,7 @@ class Gamechat extends React.Component {
 
 	handleClickedClaimButton() {
 		const { gameInfo, userInfo } = this.props,
-			playerIndex = gameInfo.publicPlayersState.findIndex(
-				player => player.userName === userInfo.userName
-			);
+			playerIndex = gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName);
 
 		this.setState({
 			claim: this.state.claim ? '' : gameInfo.playersState[playerIndex].claim
@@ -212,28 +211,21 @@ class Gamechat extends React.Component {
 
 	processChats() {
 		const { gameInfo, userInfo, userList } = this.props,
-			seatedUserNames = gameInfo.publicPlayersState.map(
-				player => player.userName
-			),
+			seatedUserNames = gameInfo.publicPlayersState.map(player => player.userName),
 			{ chatFilter } = this.state;
 
 		return gameInfo.chats
 			.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
 			.filter(
 				chat =>
-					(chatFilter === 'No observer chat' &&
-						(chat.gameChat || seatedUserNames.includes(chat.userName))) ||
+					(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
 					(chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All')) ||
-					(!chat.gameChat &&
-						chatFilter !== 'Game' &&
-						chatFilter !== 'No observer chat')
+					(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 			)
 			.map((chat, i) => {
 				const chatContents = chat.chat,
 					isSeated = seatedUserNames.includes(chat.userName),
-					playerListPlayer = Object.keys(userList).length
-						? userList.list.find(player => player.userName === chat.userName)
-						: undefined;
+					playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 
 				return chat.gameChat
 					? <div className="item" key={i}>
@@ -306,21 +298,15 @@ class Gamechat extends React.Component {
 									<span
 										className={
 											playerListPlayer
-												? userInfo.gameSettings &&
-													userInfo.gameSettings.disablePlayerColorsInChat
+												? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat
 													? 'chat-user'
-													: playerListPlayer.wins + playerListPlayer.losses > 49
-														? `chat-user ${PLAYERCOLORS(playerListPlayer)}`
-														: 'chat-user'
+													: playerListPlayer.wins + playerListPlayer.losses > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'
 												: 'chat-user'
 										}
 									>
 										{gameInfo.gameState.isTracksFlipped
 											? isSeated
-												? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(
-														publicPlayer =>
-															publicPlayer.userName === chat.userName
-													) + 1}}`
+												? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 												: chat.userName
 											: chat.userName}
 										{isSeated
@@ -344,20 +330,14 @@ class Gamechat extends React.Component {
 		const { userInfo, gameInfo } = this.props,
 			selectedWhitelistplayer = playerName => {
 				const { playersToWhitelist } = this.state,
-					playerIndex = playersToWhitelist.findIndex(
-						player => player.userName === playerName
-					);
+					playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
 
-				playersToWhitelist[playerIndex].isSelected = !playersToWhitelist[
-					playerIndex
-				].isSelected;
+				playersToWhitelist[playerIndex].isSelected = !playersToWhitelist[playerIndex].isSelected;
 
 				this.setState(playersToWhitelist);
 			},
 			submitWhitelist = () => {
-				const whitelistPlayers = this.state.playersToWhitelist
-					.filter(player => player.isSelected)
-					.map(player => player.userName);
+				const whitelistPlayers = this.state.playersToWhitelist.filter(player => player.isSelected).map(player => player.userName);
 				this.props.socket.emit('updateGameWhitelist', {
 					uid: gameInfo.general.uid,
 					whitelistPlayers
@@ -369,17 +349,10 @@ class Gamechat extends React.Component {
 					{children}
 				</div>,
 			WhiteListButton = () => {
-				if (
-					userInfo.isSeated &&
-					gameInfo.general.private &&
-					!gameInfo.gameState.isStarted
-				) {
+				if (userInfo.isSeated && gameInfo.general.private && !gameInfo.gameState.isStarted) {
 					return (
 						<MenuButton>
-							<div
-								className="ui button whitelist"
-								onClick={this.handleWhitelistPlayers}
-							>
+							<div className="ui button whitelist" onClick={this.handleWhitelistPlayers}>
 								Whitelist Players
 							</div>
 						</MenuButton>
@@ -394,12 +367,7 @@ class Gamechat extends React.Component {
 				if (summary) {
 					const onClick = () => {
 						this.props.loadReplay(summary, true);
-						this.props.onLeaveGame(
-							this.props.userInfo.isSeated,
-							false,
-							this.state.badKarma,
-							true
-						);
+						this.props.onLeaveGame(this.props.userInfo.isSeated, false, this.state.badKarma, true);
 					};
 
 					return (
@@ -413,10 +381,7 @@ class Gamechat extends React.Component {
 			},
 			LeaveGameButton = () => {
 				const classes = classnames('ui primary button', {
-					['ui-disabled']:
-						userInfo.isSeated &&
-						gameInfo.gameState.isStarted &&
-						!gameInfo.gameState.isCompleted
+					['ui-disabled']: userInfo.isSeated && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted
 				});
 
 				return (
@@ -431,44 +396,26 @@ class Gamechat extends React.Component {
 		return (
 			<section className="gamechat">
 				<section className="ui pointing menu">
-					<a
-						className={this.state.chatFilter === 'All' ? 'item active' : 'item'}
-						onClick={this.handleChatFilterClick}
-					>
+					<a className={this.state.chatFilter === 'All' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 						All
 					</a>
-					<a
-						className={
-							this.state.chatFilter === 'Chat' ? 'item active' : 'item'
-						}
-						onClick={this.handleChatFilterClick}
-					>
+					<a className={this.state.chatFilter === 'Chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 						Chat
 					</a>
-					<a
-						className={
-							this.state.chatFilter === 'Game' ? 'item active' : 'item'
-						}
-						onClick={this.handleChatFilterClick}
-					>
+					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 						Game
 					</a>
-					<a
-						className={
-							this.state.chatFilter === 'No observer chat'
-								? 'item active'
-								: 'item'
-						}
-						onClick={this.handleChatFilterClick}
-					>
+					<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 						No observer chat
 					</a>
 					<i
-						className={
-							this.state.lock
-								? 'large lock icon'
-								: 'large unlock alternate icon'
-						}
+						title="Click here to pop out notes"
+						className={this.state.notesEnabled ? 'large window minimize icon' : 'large edit icon'}
+						onClick={this.handleNoteClick}
+					/>
+					<i
+						title="Click here to lock or unlock scrolling of chat"
+						className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
 						onClick={this.handleChatLockClick}
 					/>
 					<div className="right menu">
@@ -479,10 +426,7 @@ class Gamechat extends React.Component {
 				</section>
 				<section
 					style={{
-						fontSize:
-							userInfo.gameSettings && userInfo.gameSettings.fontSize
-								? `${userInfo.gameSettings.fontSize}px`
-								: '18px'
+						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '18px'
 					}}
 					className={(() => {
 						let classes = 'segment chats';
@@ -494,15 +438,12 @@ class Gamechat extends React.Component {
 						return classes;
 					})()}
 				>
+					{this.renderNotes()}
 					<div className="ui list" onScroll={this.handleChatScroll}>
 						{this.processChats()}
 					</div>
 				</section>
-				<section
-					className={
-						this.state.claim ? 'claim-container active' : 'claim-container'
-					}
-				>
+				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
 					{(() => {
 						if (this.state.claim) {
 							const handleClaimButtonClick = (e, claim) => {
@@ -591,10 +532,7 @@ class Gamechat extends React.Component {
 								case 'didInvestigateLoyalty':
 									return (
 										<div>
-											<p>
-												{' '}As president, when I looked at the party membership
-												I saw that he or she was on the...
-											</p>
+											<p> As president, when I looked at the party membership I saw that he or she was on the...</p>
 											<button
 												onClick={e => {
 													handleClaimButtonClick(e, 'fascist');
@@ -695,32 +633,15 @@ class Gamechat extends React.Component {
 								{ gameState, publicPlayersState } = gameInfo,
 								{ gameSettings, userName, isSeated } = userInfo,
 								isDead = (() => {
-									if (
-										userName &&
-										publicPlayersState.length &&
-										publicPlayersState.find(
-											player => userName === player.userName
-										)
-									) {
-										return publicPlayersState.find(
-											player => userName === player.userName
-										).isDead;
+									if (userName && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
+										return publicPlayersState.find(player => userName === player.userName).isDead;
 									}
 								})(),
 								isGovernmentDuringPolicySelection = (() => {
-									if (
-										(gameState.phase === 'presidentSelectingPolicy' ||
-											gameState.phase === 'chancellorSelectingPolicy') &&
-										userName &&
-										isSeated
-									) {
+									if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
 										return (
-											publicPlayersState.find(
-												player => player.userName === userName
-											).governmentStatus === 'isPresident' ||
-											publicPlayersState.find(
-												player => player.userName === userName
-											).governmentStatus === 'isChancellor'
+											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
+											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
 										);
 									}
 								})();
@@ -731,13 +652,8 @@ class Gamechat extends React.Component {
 								(isDead && !gameState.isCompleted) ||
 								isGovernmentDuringPolicySelection ||
 								gameInfo.general.disableChat ||
-								(gameInfo.general.private &&
-									!userInfo.isSeated &&
-									!MODERATORS.includes(userInfo.userName) &&
-									!ADMINS.includes(userInfo.userName)) ||
-								(gameSettings &&
-									gameSettings.unbanTime &&
-									new Date(userInfo.gameSettings.unbanTime) > new Date())
+								(gameInfo.general.private && !userInfo.isSeated && !MODERATORS.includes(userInfo.userName) && !ADMINS.includes(userInfo.userName)) ||
+								(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
 							) {
 								classes += ' disabled';
 							}
@@ -757,33 +673,17 @@ class Gamechat extends React.Component {
 								this.gameChatInput = c;
 							}}
 						/>
-						<button
-							className={
-								this.state.inputValue.length
-									? 'ui primary button'
-									: 'ui primary button disabled'
-							}
-						>
-							Chat
-						</button>
+						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
 					{(() => {
 						if (
 							gameInfo.playersState &&
 							gameInfo.playersState.length &&
 							userInfo.userName &&
-							gameInfo.playersState[
-								gameInfo.publicPlayersState.findIndex(
-									player => player.userName === userInfo.userName
-								)
-							].claim
+							gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim
 						) {
 							return (
-								<div
-									className="claim-button"
-									title="Click here to make a claim in chat"
-									onClick={this.handleClickedClaimButton}
-								>
+								<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
 									C
 								</div>
 							);
@@ -797,10 +697,8 @@ class Gamechat extends React.Component {
 					}}
 				>
 					<h2 className="ui header">
-						DANGER. Leaving an in-progress game will ruin it for the other
-						players (unless you've been executed). Do this only in the case of a
-						game already ruined by an AFK/disconnected player or if someone has
-						already left.
+						DANGER. Leaving an in-progress game will ruin it for the other players (unless you've been executed). Do this only in the case of a game already
+						ruined by an AFK/disconnected player or if someone has already left.
 					</h2>
 					<div className="ui green positive inverted leave-game button">
 						<i className="checkmark icon" />
@@ -813,10 +711,7 @@ class Gamechat extends React.Component {
 						this.whitelistModal = c;
 					}}
 				>
-					<h2 className="ui header">
-						Select player(s) below to whitelist for seating in this private
-						game.
-					</h2>
+					<h2 className="ui header">Select player(s) below to whitelist for seating in this private game.</h2>
 					<ul>
 						{this.state.playersToWhitelist.map((player, index) => {
 							const uid = Math.random().toString(36).substring(2);
@@ -838,10 +733,7 @@ class Gamechat extends React.Component {
 							);
 						})}
 					</ul>
-					<div
-						className="ui green positive inverted whitelist-submit button"
-						onClick={submitWhitelist}
-					>
+					<div className="ui green positive inverted whitelist-submit button" onClick={submitWhitelist}>
 						Submit
 					</div>
 				</div>
