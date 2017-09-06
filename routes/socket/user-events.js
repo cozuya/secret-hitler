@@ -746,8 +746,7 @@ module.exports.handlePlayerReport = data => {
 				'Content-Type': 'application/json',
 				'Content-Length': Buffer.byteLength(body)
 			}
-		},
-		req = https.request(options);
+		};
 
 	playerReport.save(() => {
 		Account.find({ username: mods }).then(accounts => {
@@ -766,7 +765,12 @@ module.exports.handlePlayerReport = data => {
 			});
 		});
 
-		req.end(body);
+		try {
+			const req = https.request(options);
+			req.end(body);
+		} catch (error) {
+			console.log(err, 'Caught exception in player request https request to discord server');
+		}
 	});
 };
 

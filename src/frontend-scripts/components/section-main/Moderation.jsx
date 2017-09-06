@@ -77,7 +77,7 @@ export default class Moderation extends React.Component {
 				})()
 			)
 			.map((user, index) =>
-				<li key={index} className={multiIPs.includes(user.ip) ? 'multi' : ''}>
+				<li key={index} title={user.isTor ? 'TOR user' : ''} className={multiIPs.includes(user.ip) ? 'multi' : user.isTor ? 'istor' : ''}>
 					<label>
 						<input
 							type="radio"

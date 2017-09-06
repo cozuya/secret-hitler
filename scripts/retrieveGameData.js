@@ -35,7 +35,7 @@ const mongoose = require('mongoose'),
 	};
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/secret-hitler-app');
+mongoose.connect(`mongodb://localhost${process.env.MONGOPORT}/secret-hitler-app`);
 
 Game.find({})
 	.cursor()
@@ -44,10 +44,7 @@ Game.find({})
 			fascistsWon = game.winningTeam === 'fascist',
 			gameDate = moment(new Date(game.date)).format('l');
 
-		if (
-			gameDate === '5/13/2017' ||
-			gameDate === moment(new Date()).format('l')
-		) {
+		if (gameDate === '5/13/2017' || gameDate === moment(new Date()).format('l')) {
 			return;
 		}
 

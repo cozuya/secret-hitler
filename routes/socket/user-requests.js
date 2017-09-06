@@ -4,19 +4,44 @@ const Account = require('../../models/account'),
 	{ games, userList, generalChats } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
 	{ secureGame } = require('./util'),
-	version = require('../../version');
+	version = require('../../version'),
+	https = require('https'),
+	options = {
+		hostname: 'check.torproject.org',
+		path: '/cgi-bin/TorBulkExitList.py?ip=1.1.1.1'
+	};
+
+let torIps;
+
+https.get(options, res => {
+	let rawData = '';
+	res.on('data', chunk => {
+		rawData += chunk;
+	});
+	res.on('end', () => {
+		try {
+			torIps = rawData.split('\n').slice(3, rawData.length);
+		} catch (e) {
+			console.error(e.message, 'retrieving tor ip addresses failed');
+		}
+	});
+});
 
 module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
 
 	Account.find({ username: userNames }).then(users => {
 		ModAction.find().sort({ $natural: -1 }).limit(200).then(actions => {
+			// const ip = user.lastConnectedIP || user.signupIP;
+			const ip = '155.4.230.97';
+
 			socket.emit('modInfo', {
 				modReports: actions,
 				userList: users.map(user => ({
 					isRainbow: user.wins + user.losses > 49,
 					userName: user.username,
-					ip: user.lastConnectedIP || user.signupIP
+					isTor: torIps.includes(ip),
+					ip
 				}))
 			});
 		});
