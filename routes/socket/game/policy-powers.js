@@ -86,8 +86,7 @@ module.exports.selectPolicies = data => {
 
 		setTimeout(() => {
 			president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
-			president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action =
-				'';
+			president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 			sendInProgressGameUpdate(game);
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1500 : 4000);
 
@@ -136,26 +135,14 @@ module.exports.investigateLoyalty = game => {
 		game.private.lock.investigateLoyalty = true;
 
 		game.general.status = 'Waiting for President to investigate.';
-		president.playersState
-			.filter(
-				(player, i) =>
-					i !== presidentIndex &&
-					!seatedPlayers[i].isDead &&
-					!seatedPlayers[i].wasInvestigated
-			)
-			.forEach(player => {
-				player.notificationStatus = 'notification';
-			});
+		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).forEach(player => {
+			player.notificationStatus = 'notification';
+		});
 		game.publicPlayersState[presidentIndex].isLoader = true;
 		game.gameState.clickActionInfo = [
 			president.userName,
 			seatedPlayers
-				.filter(
-					(player, i) =>
-						i !== presidentIndex &&
-						!seatedPlayers[i].isDead &&
-						!seatedPlayers[i].wasInvestigated
-				)
+				.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated)
 				.map(player => seatedPlayers.indexOf(player))
 		];
 		game.gameState.phase = 'selectPartyMembershipInvestigate';
@@ -208,26 +195,23 @@ module.exports.selectPartyMembershipInvestigate = data => {
 				};
 
 				if (!game.general.disableGamechat) {
-					seatedPlayers
-						.filter(player => player.userName !== president.userName)
-						.forEach(player => {
-							chat.chat = [
-								{ text: 'President ' },
-								{
-									text: `${president.userName} {${presidentIndex + 1}}`,
-									type: 'player'
-								},
-								{ text: ' investigates the party membership of ' },
-								{
-									text: `${seatedPlayers[playerIndex].userName} {${playerIndex +
-										1}}`,
-									type: 'player'
-								},
-								{ text: '.' }
-							];
+					seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
+						chat.chat = [
+							{ text: 'President ' },
+							{
+								text: `${president.userName} {${presidentIndex + 1}}`,
+								type: 'player'
+							},
+							{ text: ' investigates the party membership of ' },
+							{
+								text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+								type: 'player'
+							},
+							{ text: '.' }
+						];
 
-							player.gameChats.push(chat);
-						});
+						player.gameChats.push(chat);
+					});
 
 					game.private.unSeatedGameChats.push(chat);
 
@@ -237,8 +221,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 						chat: [
 							{ text: 'You investigate the party membership of ' },
 							{
-								text: `${seatedPlayers[playerIndex].userName} {${playerIndex +
-									1}}`,
+								text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
 								type: 'player'
 							},
 							{ text: ' and determine that he or she is on the ' },
@@ -251,13 +234,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 					});
 				}
 
-				if (
-					!game.general.disableGamechat &&
-					!(
-						game.private.seatedPlayers[playerIndex].role.cardName ===
-							'hitler' && president.role.team === 'fascist'
-					)
-				) {
+				if (!game.general.disableGamechat && !(game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' && president.role.team === 'fascist')) {
 					president.playersState[playerIndex].nameStatus = playersTeam;
 				}
 
@@ -291,21 +268,14 @@ module.exports.specialElection = game => {
 		game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
 		game.publicPlayersState[presidentIndex].isLoader = true;
 
-		president.playersState
-			.filter(
-				(player, index) =>
-					index !== presidentIndex && !seatedPlayers[index].isDead
-			)
-			.forEach(player => {
-				player.notificationStatus = 'notification';
-			});
+		president.playersState.filter((player, index) => index !== presidentIndex && !seatedPlayers[index].isDead).forEach(player => {
+			player.notificationStatus = 'notification';
+		});
 
 		game.gameState.phase = 'specialElection';
 		game.gameState.clickActionInfo = [
 			president.userName,
-			seatedPlayers
-				.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead)
-				.map(player => seatedPlayers.indexOf(player))
+			seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead).map(player => seatedPlayers.indexOf(player))
 		];
 		sendInProgressGameUpdate(game);
 	}
@@ -323,9 +293,7 @@ module.exports.selectSpecialElection = data => {
 
 		game.publicPlayersState[game.gameState.presidentIndex].isLoader = false;
 
-		game.private.seatedPlayers[
-			game.gameState.presidentIndex
-		].playersState.forEach(player => {
+		game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
 			player.notificationStatus = '';
 		});
 
@@ -337,6 +305,7 @@ module.exports.executePlayer = game => {
 	const { seatedPlayers } = game.private,
 		{ presidentIndex } = game.gameState,
 		president = seatedPlayers[presidentIndex];
+
 	if (!game.private.lock.executePlayer) {
 		game.private.lock.executePlayer = true;
 		game.general.status = 'President to execute a player.';
@@ -353,7 +322,9 @@ module.exports.executePlayer = game => {
 		president.playersState
 			.filter(
 				(player, index) =>
-					index !== presidentIndex && !seatedPlayers[index].isDead
+					index !== presidentIndex &&
+					!seatedPlayers[index].isDead &&
+					!(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')
 			)
 			.forEach(player => {
 				player.notificationStatus = 'notification';
@@ -362,7 +333,10 @@ module.exports.executePlayer = game => {
 		game.gameState.clickActionInfo = [
 			president.userName,
 			seatedPlayers
-				.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead)
+				.filter(
+					(player, i) =>
+						i !== presidentIndex && !seatedPlayers[i].isDead && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')
+				)
 				.map(player => seatedPlayers.indexOf(player))
 		];
 		game.gameState.phase = 'execution';
@@ -395,16 +369,15 @@ module.exports.selectPlayerToExecute = data => {
 				{ text: '.' }
 			]
 		};
+
 	if (!game.private.lock.selectPlayerToExecute) {
 		game.private.lock.selectPlayerToExecute = true;
 		if (!game.general.disableGamechat) {
 			game.private.unSeatedGameChats.push(nonPresidentChat);
 
-			seatedPlayers
-				.filter(player => player.userName !== president.userName)
-				.forEach(player => {
-					player.gameChats.push(nonPresidentChat);
-				});
+			seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
+				player.gameChats.push(nonPresidentChat);
+			});
 
 			game.private.summary = game.private.summary.updateLog({
 				execution: playerIndex

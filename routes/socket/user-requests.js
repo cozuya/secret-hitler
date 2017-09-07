@@ -32,8 +32,7 @@ module.exports.sendModInfo = socket => {
 
 	Account.find({ username: userNames }).then(users => {
 		ModAction.find().sort({ $natural: -1 }).limit(200).then(actions => {
-			// const ip = user.lastConnectedIP || user.signupIP;
-			const ip = '155.4.230.97';
+			const ip = user.lastConnectedIP || user.signupIP;
 
 			socket.emit('modInfo', {
 				modReports: actions,

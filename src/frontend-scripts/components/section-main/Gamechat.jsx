@@ -118,6 +118,7 @@ class Gamechat extends React.Component {
 			};
 			return (
 				<section className="notes-container">
+					<p>Notes</p>
 					<textarea autoFocus spellCheck="false" value={this.state.notesValue} onChange={notesChange} />
 				</section>
 			);

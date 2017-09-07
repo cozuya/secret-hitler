@@ -626,7 +626,7 @@ module.exports.selectPresidentPolicy = data => {
 		president &&
 		president.cardFlingerState &&
 		president.cardFlingerState.length &&
-		chancellorIndex &&
+		Number.isInteger(chancellorIndex) &&
 		game.publicPlayersState[chancellorIndex]
 	) {
 		game.private.lock.selectPresidentPolicy = true;
