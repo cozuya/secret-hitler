@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import $ from 'jquery';
 import { PLAYERCOLORS, MODERATORS, ADMINS } from '../../constants';
 import { loadReplay } from '../../actions/actions';
+import Gamenotes from './Gamenotes.jsx';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
@@ -33,10 +34,7 @@ class Gamechat extends React.Component {
 			badKarma: '',
 			playersToWhitelist: [],
 			disabled: false,
-			notesEnabled: false,
-			notesValue: '',
-			notesTop: 0,
-			notesLeft: 0
+			notesEnabled: false
 		};
 	}
 
@@ -124,6 +122,7 @@ class Gamechat extends React.Component {
 			);
 		}
 	}
+
 	handleClickedLeaveGame() {
 		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
@@ -439,7 +438,7 @@ class Gamechat extends React.Component {
 						return classes;
 					})()}
 				>
-					{this.renderNotes()}
+					{this.state.notesEnabled && <Gamenotes dismissNotes={this.handleNoteClick} />}
 					<div className="ui list" onScroll={this.handleChatScroll}>
 						{this.processChats()}
 					</div>

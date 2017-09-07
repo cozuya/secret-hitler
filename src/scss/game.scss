@@ -43,8 +43,27 @@
 				width: 400px;
 				height: 320px;
 				background: lightyellow;
-				top: 10px;
-				left: 10px;
+				.notes-header {
+					display: flex;
+					justify-content: space-between;
+					margin: 0;
+					font-size: 20px;
+					padding: 5px 5px 0 10px;
+					color: white;
+					background: $darkfascistteam;
+					font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+					cursor: move;
+					i {
+						cursor: pointer;
+						color: white !important;
+						font-size: 24px;
+					}
+
+					p {
+						margin: 0;
+					}
+				}
+
 				textarea {
 					width: 400px;
 					height: 320px;

@@ -49,7 +49,7 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 					bug and feedback form
 				</a>{' '}
 				|{' '}
-				<a target="_blank" style={{ fontWeight: 'bold', color: '#fff' }} href="https://discord.gg/qbc2DFb">
+				<a target="_blank" style={{ fontWeight: 'bold', color: '#fff' }} href="https://discord.gg/FXDxP2m">
 					discord
 				</a>
 			</span>
