@@ -26,6 +26,7 @@ const PatchAlert = ({ isActive, onClick }) => {
 
 const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 	<section className="defaultmid">
+		<div className="callout">50,000+ games played!</div>
 		<div className="poll">
 			<a target="_blank" href="/polls">
 				Check out our new polls page!

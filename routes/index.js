@@ -174,6 +174,14 @@ module.exports = () => {
 			.catch(err => debug(err));
 	});
 
+	app.get('/online-playercount', (req, res) => {
+		const { userList } = require('./socket/models');
+
+		res.json({
+			count: userList.length
+		});
+	});
+
 	app.get('/data', (req, res) => {
 		res.json(gamesData);
 	});

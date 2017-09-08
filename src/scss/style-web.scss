@@ -34,6 +34,22 @@ html {
 	margin: 55px auto 0;
 	background: no-repeat top center url('../images/banner-s.png') #141210;
 
+	.online-count {
+		position: absolute;
+		top: 20px;
+		right: 20px;
+		color: #ddd;
+		font-size: 18px;
+
+		i {
+			color: lightblue;
+		}
+
+		span {
+			color: #85d42a;
+		}
+	}
+
 	+ .segment {
 		border: 1px solid #5e5e5e;
 	}

@@ -1,11 +1,22 @@
 $(document).ready(function() {
 	// yay ES5
+
+	if (window.location.pathname === '/') {
+		$.ajax({
+			url: '/online-playercount',
+			contentType: 'application/json; charset=UTF-8',
+			statusCode: {
+				200: function(d) {
+					$('.chrome.icon').after('<span>' + d.count + ' </span>');
+				}
+			}
+		});
+	}
+
 	$('body').on('click', '#signup', function(event) {
 		event.preventDefault();
 
-		$('section.signup-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('show');
+		$('section.signup-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 	});
 
 	$('button.signup-submit').on('click', function(event) {
@@ -59,9 +70,7 @@ $(document).ready(function() {
 	$('body').on('click', '#signin', function(event) {
 		event.preventDefault();
 
-		$('section.signin-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('show');
+		$('section.signin-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 	});
 
 	$('body').on('focus', '#signup-username', function() {
@@ -106,9 +115,7 @@ $(document).ready(function() {
 					submitErr('Sorry, that request did not look right.');
 				},
 				401: function() {
-					submitErr(
-						'Sorry, that was not the correct password for that username.'
-					);
+					submitErr('Sorry, that was not the correct password for that username.');
 				}
 			}
 		});
@@ -117,13 +124,9 @@ $(document).ready(function() {
 	$('a#reset-password').on('click', function(event) {
 		event.preventDefault();
 
-		$('.signin-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('hide', function() {
-				$('.password-reset-modal')
-					.modal('setting', 'transition', 'horizontal flip')
-					.modal('show');
-			});
+		$('.signin-modal').modal('setting', 'transition', 'horizontal flip').modal('hide', function() {
+			$('.password-reset-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		});
 	});
 
 	$('button#password-reset-submit').on('click', function(event) {
@@ -150,17 +153,13 @@ $(document).ready(function() {
 					$loader.removeClass('active');
 					$('.password-reset-modal .ui.info.hidden.message')
 						.removeClass('hidden')
-						.html(
-							"We've sent you a password reset email, please check your email to a link to reset your password."
-						);
+						.html("We've sent you a password reset email, please check your email to a link to reset your password.");
 				},
 				400: function() {
 					submitErr('Sorry, that request did not look right.');
 				},
 				401: function() {
-					submitErr(
-						"Sorry, we don't have an account associated with that verified email address."
-					);
+					submitErr("Sorry, we don't have an account associated with that verified email address.");
 				}
 			}
 		});
@@ -179,15 +178,11 @@ $(document).ready(function() {
 	});
 
 	$('button#change-password').on('click', function(event) {
-		$('section.passwordchange-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('show');
+		$('section.passwordchange-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 	});
 
 	$('button#change-email').on('click', function(event) {
-		$('section.emailchange-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('show');
+		$('section.emailchange-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 	});
 
 	$('button#request-verification').on('click', function(event) {
@@ -199,9 +194,7 @@ $(document).ready(function() {
 			contentType: 'application/json; charset=UTF-8',
 			statusCode: {
 				200: function() {
-					$('section.requestemail-modal')
-						.modal('setting', 'transition', 'horizontal flip')
-						.modal('show');
+					$('section.requestemail-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 				}
 			}
 		});
@@ -237,9 +230,7 @@ $(document).ready(function() {
 				},
 				401: function() {
 					$loader.removeClass('active');
-					$errMessage
-						.text('Your new password and your confirm password did not match.')
-						.removeClass('hidden');
+					$errMessage.text('Your new password and your confirm password did not match.').removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}
@@ -279,9 +270,7 @@ $(document).ready(function() {
 				},
 				401: function() {
 					$loader.removeClass('active');
-					$errMessage
-						.text('Your new email and your confirm email did not match.')
-						.removeClass('hidden');
+					$errMessage.text('Your new email and your confirm email did not match.').removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}
@@ -291,9 +280,7 @@ $(document).ready(function() {
 	});
 
 	$('button#delete-account').on('click', function(event) {
-		$('section.deleteaccount-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('show');
+		$('section.deleteaccount-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 	});
 
 	$('button#deleteaccount-submit').on('click', function(event) {
@@ -326,9 +313,7 @@ $(document).ready(function() {
 				},
 				400: function() {
 					$loader.removeClass('active');
-					$errMessage
-						.text('Your password did not match.')
-						.removeClass('hidden');
+					$errMessage.text('Your password did not match.').removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}

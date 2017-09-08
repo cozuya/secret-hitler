@@ -46,6 +46,17 @@ $dteal: #034f61;
 		background: #000;
 	}
 	.defaultmid {
+		.callout {
+			font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+			font-size: 34px;
+			text-align: center;
+			margin-top: 40px;
+			position: absolute;
+			width: 100%;
+			color: #000000;
+			font-weight: bold;
+			text-shadow: 1px 1px 0px #552a2a;
+		}
 		.poll {
 			position: absolute;
 			left: 600px;
