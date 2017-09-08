@@ -27,6 +27,7 @@ export default class Moderation extends React.Component {
 		this.props.socket.emit('getModInfo');
 
 		this.props.socket.on('modInfo', info => {
+			console.log(info, 'info');
 			this.setState({
 				userList: info.userList,
 				log: info.modReports
@@ -73,7 +74,7 @@ export default class Moderation extends React.Component {
 						return -1;
 					}
 
-					return a.ip - b.ip;
+					return parseInt(a.ip.substr(0, 2)) - parseInt(b.ip.substr(0, 2));
 				})()
 			)
 			.map((user, index) =>
@@ -154,6 +155,22 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Set losses
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					onClick={() => {
+						takeModAction(`setRWins${this.state.actionTextValue}`);
+					}}
+				>
+					Set R wins
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					onClick={() => {
+						takeModAction(`setRLosses${this.state.actionTextValue}`);
+					}}
+				>
+					Set R losses
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}

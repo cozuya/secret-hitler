@@ -30,21 +30,29 @@ https.get(options, res => {
 module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
 
-	Account.find({ username: userNames }).then(users => {
-		ModAction.find().sort({ $natural: -1 }).limit(200).then(actions => {
-			const ip = user.lastConnectedIP || user.signupIP;
-
-			socket.emit('modInfo', {
-				modReports: actions,
-				userList: users.map(user => ({
-					isRainbow: user.wins + user.losses > 49,
-					userName: user.username,
-					isTor: torIps.includes(ip),
-					ip
-				}))
-			});
+	Account.find({ username: userNames })
+		.then(users => {
+			ModAction.find()
+				.sort({ $natural: -1 })
+				.limit(200)
+				.then(actions => {
+					socket.emit('modInfo', {
+						modReports: actions,
+						userList: users.map(user => ({
+							isRainbow: user.wins + user.losses > 49,
+							userName: user.username,
+							isTor: torIps.includes(user.lastConnectedIP || user.signupIP),
+							ip: user.lastConnectedIP || user.signupIP
+						}))
+					});
+				})
+				.catch(err => {
+					console.log(err, 'err in finding mod actions');
+				});
+		})
+		.catch(err => {
+			console.log(err, 'err in sending mod info');
 		});
-	});
 };
 
 module.exports.sendUserGameSettings = (socket, username) => {
