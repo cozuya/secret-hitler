@@ -28,18 +28,15 @@
 			color: $darkfascistteam;
 			.mod-button,
 			.report-button {
-				font-weight: 700;
 				cursor: pointer;
-				border-radius: 50%;
-				padding: 2px;
 			}
 			.mod-button {
 				color: red !important;
-				border: 2px solid red;
+				font-size: 24px;
 			}
 			.report-button {
-				border: 2px solid yellow;
 				color: yellow !important;
+				font-size: 20px;
 
 				&.active {
 					animation: fadeIn .6s infinite alternate;

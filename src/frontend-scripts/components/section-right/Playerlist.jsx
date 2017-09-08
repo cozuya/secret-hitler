@@ -57,14 +57,12 @@ class Playerlist extends React.Component {
 
 		if (userInfo && userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))) {
 			return (
-				<a
+				<i
 					onClick={() => {
 						this.props.onModerationButtonClick('moderation');
 					}}
-					className="mod-button"
-				>
-					M
-				</a>
+					className="fire icon mod-button"
+				/>
 			);
 		}
 	}
@@ -72,13 +70,13 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 		if (userInfo && userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))) {
-			let classes = 'report-button';
+			let classes = 'comment icon report-button';
 
 			if (userInfo.gameSettings && userInfo.gameSettings.newReport) {
 				classes += ' active';
 			}
 			return (
-				<a
+				<i
 					onClick={() => {
 						this.props.onModerationButtonClick('reports');
 						if (userInfo.gameSettings.newReport) {
@@ -86,9 +84,7 @@ class Playerlist extends React.Component {
 						}
 					}}
 					className={classes}
-				>
-					R
-				</a>
+				/>
 			);
 		}
 	}
