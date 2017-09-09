@@ -1,9 +1,5 @@
 import { connect } from 'react-redux';
-import {
-	updateActiveStats,
-	updateMidsection,
-	fetchReplay
-} from '../../actions/actions';
+import { updateActiveStats, updateMidsection, fetchReplay } from '../../actions/actions';
 import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 
@@ -18,40 +14,21 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 
 		return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('-');
 	},
-	successRate = (trials, outcomes) =>
-		trials > 0 ? parseFloat((outcomes / trials * 100).toFixed(2)) + '%' : '---',
-	successRow = (name, trials, outcomes) => [
-		name,
-		trials,
-		successRate(trials, outcomes)
-	],
+	successRate = (trials, outcomes) => (trials > 0 ? parseFloat((outcomes / trials * 100).toFixed(2)) + '%' : '---'),
+	successRow = (name, trials, outcomes) => [name, trials, successRate(trials, outcomes)],
 	Matches = ({ matches }) =>
 		<div>
 			<Table
 				uiTable="top attached three column"
 				headers={['All Matches', 'Matches', 'Winrate']}
-				rows={[
-					successRow(
-						'All Matches',
-						matches.allMatches.events,
-						matches.allMatches.successes
-					)
-				]}
+				rows={[successRow('All Matches', matches.allMatches.events, matches.allMatches.successes)]}
 			/>
 			<Table
 				uiTable="bottom attached three column"
 				headers={['Loyalty', 'Matches', 'Winrate']}
 				rows={[
-					successRow(
-						'Liberal',
-						matches.liberal.events,
-						matches.liberal.successes
-					),
-					successRow(
-						'Fascist',
-						matches.fascist.events,
-						matches.fascist.successes
-					)
+					successRow('Liberal', matches.liberal.events, matches.liberal.successes),
+					successRow('Fascist', matches.fascist.events, matches.fascist.successes)
 				]}
 			/>
 		</div>,
@@ -59,16 +36,8 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 		<Table
 			headers={['Action', 'Instances', 'Success Rate']}
 			rows={[
-				successRow(
-					'Vote Accuracy',
-					actions.voteAccuracy.events,
-					actions.voteAccuracy.successes
-				),
-				successRow(
-					'Shot Accuracy',
-					actions.shotAccuracy.events,
-					actions.shotAccuracy.successes
-				)
+				successRow('Vote Accuracy', actions.voteAccuracy.events, actions.voteAccuracy.successes),
+				successRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
 			]}
 		/>,
 	Stats = ({ stats, activeStat, updateActiveStats }) => {
@@ -91,16 +60,10 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 					</a>
 				</div>
 				<div className="ui top attached menu">
-					<a
-						className={`${toActive('MATCHES')} item`}
-						onClick={updateActiveStats.bind(null, 'MATCHES')}
-					>
+					<a className={`${toActive('MATCHES')} item`} onClick={updateActiveStats.bind(null, 'MATCHES')}>
 						Matches
 					</a>
-					<a
-						className={`${toActive('ACTIONS')} item`}
-						onClick={updateActiveStats.bind(null, 'ACTIONS')}
-					>
+					<a className={`${toActive('ACTIONS')} item`} onClick={updateActiveStats.bind(null, 'ACTIONS')}>
 						Actions
 					</a>
 				</div>
@@ -113,27 +76,20 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 	RecentGames = ({ recentGames, fetchReplay }) => {
 		const rows = recentGames.map(game => ({
 			onClick: fetchReplay.bind(null, game._id),
-			cells: [
-				game.loyalty === 'liberal' ? 'Liberal' : 'Fascist',
-				game.playerSize,
-				game.isWinner ? 'Win' : 'Loss',
-				formatDateString(game.date)
-			]
+			cells: [game.loyalty === 'liberal' ? 'Liberal' : 'Fascist', game.playerSize, game.isWinner ? 'Win' : 'Loss', formatDateString(game.date)]
 		}));
 
 		return (
 			<div>
 				<h2 className="ui header">Recent Games</h2>
-				<Table
-					uiTable={'selectable'}
-					headers={['Loyalty', 'Size', 'Result', 'Date']}
-					rows={rows}
-				/>
+				<Table uiTable={'selectable'} headers={['Loyalty', 'Size', 'Result', 'Date']} rows={rows} />
 			</div>
 		);
 	},
 	Profile = ({ profile, fetchReplay, updateActiveStats }) =>
 		<div>
+			{profile.customCardback &&
+				<div className="profile-picture" style={{ backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}` }} />}
 			<div className="ui grid">
 				<h1 className="ui header ten wide column">
 					{profile._id}
@@ -151,17 +107,10 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 			</div>
 			<div className="ui two column grid">
 				<div className="column">
-					<Stats
-						stats={profile.stats}
-						activeStat={profile.activeStat}
-						updateActiveStats={updateActiveStats}
-					/>
+					<Stats stats={profile.stats} activeStat={profile.activeStat} updateActiveStats={updateActiveStats} />
 				</div>
 				<div className="column">
-					<RecentGames
-						fetchReplay={fetchReplay}
-						recentGames={profile.recentGames}
-					/>
+					<RecentGames fetchReplay={fetchReplay} recentGames={profile.recentGames} />
 				</div>
 			</div>
 		</div>,
@@ -183,13 +132,7 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 				case 'NOT_FOUND':
 					return <NotFound />;
 				case 'READY':
-					return (
-						<Profile
-							profile={profile}
-							fetchReplay={fetchReplay}
-							updateActiveStats={updateActiveStats}
-						/>
-					);
+					return <Profile profile={profile} fetchReplay={fetchReplay} updateActiveStats={updateActiveStats} />;
 			}
 		})();
 

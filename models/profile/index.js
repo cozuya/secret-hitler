@@ -4,6 +4,7 @@ const mongoose = require('mongoose'),
 		_id: String, // username
 		version: String, // versioning for `recalculateProfiles`
 		created: Date,
+		customCardback: String,
 		stats: {
 			matches: {
 				allMatches: {
