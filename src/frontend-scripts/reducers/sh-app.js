@@ -1,12 +1,5 @@
 import { combineReducers } from 'redux';
-import {
-	UPDATE_USER,
-	UPDATE_MIDSECTION,
-	UPDATE_GAMELIST,
-	UPDATE_GAMEINFO,
-	UPDATE_USERLIST,
-	UPDATE_GENERALCHATS
-} from '../actions/actions.js';
+import { UPDATE_USER, UPDATE_MIDSECTION, UPDATE_GAMELIST, UPDATE_GAMEINFO, UPDATE_USERLIST, UPDATE_GENERALCHATS, TOGGLE_NOTES } from '../actions/actions.js';
 
 const userInfo = (state = {}, action) => {
 		switch (action.type) {
@@ -79,10 +72,7 @@ const userInfo = (state = {}, action) => {
 				return state;
 		}
 	},
-	version = (
-		state = { current: { number: '', color: '', date: '' }, lastSeen: '' },
-		action
-	) => {
+	version = (state = { current: { number: '', color: '', date: '' }, lastSeen: '' }, action) => {
 		switch (action.type) {
 			case 'UPDATE_VERSION':
 				return action.version;
@@ -114,6 +104,15 @@ const userInfo = (state = {}, action) => {
 			default:
 				return state;
 		}
+	},
+	notesActive = (state = false, action) => {
+		switch (action.type) {
+			case TOGGLE_NOTES:
+				state = action.notesShown;
+				break;
+			default:
+		}
+		return state;
 	};
 
 export default combineReducers({
@@ -125,5 +124,6 @@ export default combineReducers({
 	generalChats,
 	profile,
 	replay,
-	version
+	version,
+	notesActive
 });

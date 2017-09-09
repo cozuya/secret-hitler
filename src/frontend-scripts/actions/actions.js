@@ -52,6 +52,15 @@ export function updateGeneralChats(info) {
 	};
 }
 
+export const TOGGLE_NOTES = 'TOGGLE_NOTES';
+
+export function toggleNotes(payload) {
+	return {
+		type: TOGGLE_NOTES,
+		payload
+	};
+}
+
 export const updateActiveStats = activeStat => ({
 	type: 'UPDATE_ACTIVE_STATS',
 	activeStat

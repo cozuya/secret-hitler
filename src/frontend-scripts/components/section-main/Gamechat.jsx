@@ -2,14 +2,16 @@ import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import { PLAYERCOLORS, MODERATORS, ADMINS } from '../../constants';
-import { loadReplay } from '../../actions/actions';
-import Gamenotes from './Gamenotes.jsx';
+import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 const mapDispatchToProps = dispatch => ({
-	loadReplay: summary => dispatch(loadReplay(summary))
+	loadReplay: summary => dispatch(loadReplay(summary)),
+	toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus))
 });
+
+const mapStateToProps = ({ notesActive }) => ({ notesActive });
 
 class Gamechat extends React.Component {
 	constructor() {
@@ -100,11 +102,11 @@ class Gamechat extends React.Component {
 	}
 
 	handleNoteClick() {
-		const { notesEnabled } = this.state;
-
-		this.setState({
-			notesEnabled: !notesEnabled
-		});
+		const { notesActive } = this.props;
+		console.log(notesActive);
+		console.log(toggleNotes);
+		toggleNotes(!notesActive);
+		this.setState({ notesEnabled: !notesActive });
 	}
 
 	renderNotes() {
@@ -438,7 +440,6 @@ class Gamechat extends React.Component {
 						return classes;
 					})()}
 				>
-					{this.state.notesEnabled && <Gamenotes dismissNotes={this.handleNoteClick} />}
 					<div className="ui list" onScroll={this.handleChatScroll}>
 						{this.processChats()}
 					</div>
@@ -755,4 +756,4 @@ Gamechat.propTypes = {
 	userList: PropTypes.object
 };
 
-export default connect(null, mapDispatchToProps)(Gamechat);
+export default connect(mapStateToProps, mapDispatchToProps)(Gamechat);

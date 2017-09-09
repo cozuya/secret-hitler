@@ -1,6 +1,4 @@
 import React from 'react';
-import $ from 'jquery';
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 class Gamenotes extends React.Component {
@@ -60,7 +58,8 @@ class Gamenotes extends React.Component {
 
 	noteDrop(e) {
 		console.log(e.target);
-		console.log(e.screenX);
+		console.log(e.screenY);
+		console.log(e.clientY);
 	}
 
 	noteDragOver(e) {
