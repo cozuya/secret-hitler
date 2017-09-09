@@ -308,17 +308,7 @@ export default class Creategame extends React.Component {
 							}
 						})()}
 					</div>
-					<div className="row tournyrow">
-						<h4 className="ui header">Tournament Mode</h4>
-						<div
-							className="ui fitted toggle checkbox"
-							ref={c => {
-								this.tournyconfirm = c;
-							}}
-						>
-							<input type="checkbox" name="tournament" defaultChecked={false} />
-						</div>
-					</div>
+					<div className="row tournyrow" />
 				</div>
 				<div className="ui grid footer">
 					<div onClick={this.createNewGame} className="ui button primary" style={{ marginLeft: '15px' }}>

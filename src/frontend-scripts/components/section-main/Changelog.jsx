@@ -13,6 +13,32 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.7.5 "shadow" released 9-10-2017</p>
+		</div>
+		<h2>Over 50,000 games have been played!</h2>
+		<h3>New feature: game notes</h3>
+		<p>
+			Click on the note icon next to the lock button to pop out a new component you can take notes on. You can drag and drop this to any location. Not currently
+			resizable as thats a bit tough.
+		</p>
+		<h3>New feature: sticky chat v2</h3>
+		<p>
+			Now, when chat is scrolled from the bottom, the lock is automatically set, meaning it will no longer "jump" every time someone chats something new.
+			Conversely the lock is unset when you scroll back to the bottom. Hopefully this will go better than last time which was bugged for many
+			players/browsers/zoom levels I believe.
+		</p>
+		<h4>Other items</h4>
+		<ul>
+			<li>The terms of use has been updated - TOR users are no longer permitted. If you have a legitimate reason to use TOR, contact a moderator.</li>
+			<li>Per the polls result, fascist players can no longer shoot hitler.</li>
+			<li>The home page now shows how many players are online.</li>
+			<li>Swastika symbols can no longer be used for game names..</li>
+			<li>Player profiles now include cardbacks.</li>
+			<li>Games now show the name and player count.</li>
+			<li>Some more attempts to fix sorting bugs have been implemented.</li>
+			<li>The link to discord on the default screen & homepage has been fixed.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.7.4 "grey2" released 9-2-2017</p>
 		</div>
 		<h3>

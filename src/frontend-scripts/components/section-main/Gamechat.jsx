@@ -74,11 +74,11 @@ class Gamechat extends React.Component {
 	handleChatScroll(e) {
 		const el = e.currentTarget;
 
-		if (el.scrollTop === el.scrollHeight - el.offsetHeight && this.state.lock) {
+		if (this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) >= -10) {
 			this.setState({
 				lock: false
 			});
-		} else if (el.scrollTop !== el.scrollHeight - el.offsetHeight && !this.state.lock) {
+		} else if (el.scrollTop - (el.scrollHeight - el.offsetHeight) < -10 && !this.state.lock) {
 			this.setState({
 				lock: true
 			});
