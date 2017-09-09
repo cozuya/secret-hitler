@@ -161,7 +161,7 @@ class Playerlist extends React.Component {
 									}
 
 									if (MODERATORS.includes(a.userName) && MODERATORS.includes(b.userName)) {
-										return b[w] - a[w];
+										return a.userName - b.userName;
 									}
 
 									if (aTotal > 49 && bTotal > 49) {
@@ -170,6 +170,10 @@ class Playerlist extends React.Component {
 										return -1;
 									} else if (bTotal > 49) {
 										return 1;
+									}
+
+									if (b[w] === a[w]) {
+										return a.userName - b.userName;
 									}
 
 									return b[w] - a[w];

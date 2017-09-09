@@ -13,9 +13,7 @@ const LeftSidebar = props => {
 						bGameStatus = b.gameStatus;
 
 					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
-						return a.seatedCount === b.seatedCount
-							? -1
-							: a.seatedCount - b.seatedCount;
+						return a.seatedCount === b.seatedCount ? a.uid - b.uid : a.seatedCount - b.seatedCount;
 					}
 
 					if (aGameStatus === 'notStarted' && bGameStatus !== 'notStarted') {
@@ -35,9 +33,7 @@ const LeftSidebar = props => {
 					}
 
 					if (aGameStatus === 'isStarted' && bGameStatus === 'isStarted') {
-						return a.electionCount === b.electionCount
-							? a.seatedCount - b.seatedCount
-							: a.electionCount - b.electionCount;
+						return a.electionCount === b.electionCount ? a.seatedCount - b.seatedCount : a.electionCount - b.electionCount;
 					}
 
 					return a.uid - b.uid;
@@ -64,9 +60,7 @@ const LeftSidebar = props => {
 							Create a new game
 						</button>
 					: <button className="ui button disabled">
-							{gameBeingCreated
-								? 'Creating a new game..'
-								: 'Sign in to make games'}
+							{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}
 						</button>;
 			})()}
 			<div className="games-container">

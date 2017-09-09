@@ -723,10 +723,14 @@ module.exports.handleModerationAction = (socket, data) => {
 								: setType === 'rainbowWins' ? parseInt(data.action.substr(8)) : parseInt(data.action.substr(10));
 
 				if (!isNaN(number)) {
-					Account.findOne({ username: data.userName }).then(account => {
-						account[setType] = number;
-						account.save();
-					});
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							account[setType] = number;
+							account.save();
+						})
+						.catch(err => {
+							console.log(err, 'set wins/losses error');
+						});
 				}
 		}
 	}
