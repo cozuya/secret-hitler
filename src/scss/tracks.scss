@@ -4,9 +4,35 @@
 	padding: 0 !important;
 	overflow: hidden !important;
 	position: relative;
+	.game-name {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		z-index: 105;
+		color: #ddd;
+		background: #89a79a;
+		font-size: 16px;
+		padding: 4px;
+		opacity: 1;
+		border: 2px solid lightblue;
+	}
+
+	.player-count {
+		position: absolute;
+		top: 10px;
+		left: 508px;
+		z-index: 105;
+		color: #ddd;
+		background: #89a79a;
+		font-size: 16px;
+		padding: 4px;
+		opacity: 1;
+		border: 2px solid lightblue;
+	}
 	.tracks {
 		transition: all 1s;
 		position: relative;
+
 		.electiontracker {
 			position: absolute;
 			width: 25px;

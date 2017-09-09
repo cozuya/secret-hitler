@@ -16,10 +16,7 @@ const Tracks = props => {
 				classes += ' fail3';
 			}
 
-			if (
-				gameInfo.gameState.isTracksFlipped &&
-				(gameInfo.trackState && !gameInfo.trackState.isHidden)
-			) {
+			if (gameInfo.gameState.isTracksFlipped && (gameInfo.trackState && !gameInfo.trackState.isHidden)) {
 				return <div className={classes} />;
 			}
 		},
@@ -29,14 +26,19 @@ const Tracks = props => {
 		<section className="tracks-container">
 			<CardFlinger userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
 			<EnactedPolicies gameInfo={gameInfo} />
+			<div>
+				<div className="game-name">
+					Game name: <span>{gameInfo.general.name}</span>
+				</div>
+				<div className="player-count">
+					Players: <span>{gameInfo.publicPlayersState.length}</span>
+				</div>
+			</div>
 			<section
 				className={(() => {
 					let classes = 'tracks';
 
-					if (
-						props.gameInfo.cardFlingerState.length ||
-						gameInfo.trackState.isBlurred
-					) {
+					if (props.gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
 						classes += ' blurred';
 					}
 
