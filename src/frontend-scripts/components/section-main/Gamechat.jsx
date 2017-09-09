@@ -102,9 +102,8 @@ class Gamechat extends React.Component {
 	}
 
 	handleNoteClick() {
-		const { notesActive } = this.props;
-		console.log(notesActive);
-		console.log(toggleNotes);
+		const { notesActive, toggleNotes } = this.props;
+
 		toggleNotes(!notesActive);
 		this.setState({ notesEnabled: !notesActive });
 	}

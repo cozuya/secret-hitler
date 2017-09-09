@@ -28,7 +28,7 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 	<section className="defaultmid">
 		<div className="callout">50,000+ games played!</div>
 		<PatchAlert isActive={version.lastSeen && version.current.number !== version.lastSeen} onClick={readPatchNotes} />
-		<img src="images/lizard23.png" alt="Secret Hitler logo" width="400" height="400" />
+		<img src="images/lizard24.png" alt="Secret Hitler logo" width="400" height="400" />
 		<p>
 			<span>{`sh.io version ${version.current.number} "${version.current.color}" released ${version.current.date} | `}</span>
 			<span>

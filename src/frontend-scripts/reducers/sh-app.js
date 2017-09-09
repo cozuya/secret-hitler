@@ -19,6 +19,15 @@ const userInfo = (state = {}, action) => {
 		}
 		return state;
 	},
+	notesActive = (state = false, action) => {
+		switch (action.type) {
+			case TOGGLE_NOTES:
+				state = action.notesShown;
+				break;
+			default:
+		}
+		return state;
+	},
 	gameList = (state = [], action) => {
 		switch (action.type) {
 			case UPDATE_GAMELIST:
@@ -104,15 +113,6 @@ const userInfo = (state = {}, action) => {
 			default:
 				return state;
 		}
-	},
-	notesActive = (state = false, action) => {
-		switch (action.type) {
-			case TOGGLE_NOTES:
-				state = action.notesShown;
-				break;
-			default:
-		}
-		return state;
 	};
 
 export default combineReducers({

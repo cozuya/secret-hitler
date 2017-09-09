@@ -16,6 +16,15 @@ export function updateMidsection(midSection) {
 	};
 }
 
+export const TOGGLE_NOTES = 'TOGGLE_NOTES';
+
+export function toggleNotes(notesShown) {
+	return {
+		type: TOGGLE_NOTES,
+		notesShown
+	};
+}
+
 export const UPDATE_GAMELIST = 'UPDATE_GAMELIST';
 
 export function updateGameList(gameList) {
@@ -49,15 +58,6 @@ export function updateGeneralChats(info) {
 	return {
 		type: UPDATE_GENERALCHATS,
 		info
-	};
-}
-
-export const TOGGLE_NOTES = 'TOGGLE_NOTES';
-
-export function toggleNotes(payload) {
-	return {
-		type: TOGGLE_NOTES,
-		payload
 	};
 }
 
