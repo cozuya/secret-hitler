@@ -42,6 +42,41 @@ $dteal: #034f61;
 		background: -webkit-linear-gradient(left, #000000 0%, #1c1c1c 50%, #000000 100%);
 		background: linear-gradient(to right, #000000 0%, #1c1c1c 50%, #000000 100%);
 	}
+	.notes-container {
+		padding: 0;
+		z-index: 110;
+		position: absolute;
+		width: 400px;
+		height: 320px;
+		background: lightyellow;
+		.notes-header {
+			display: flex;
+			justify-content: space-between;
+			margin: 0;
+			font-size: 20px;
+			padding: 5px 5px 0 10px;
+			color: white;
+			background: $darkfascistteam;
+			font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+			cursor: move;
+			i {
+				cursor: pointer;
+				color: white !important;
+				font-size: 24px;
+			}
+
+			p {
+				margin: 0;
+			}
+		}
+
+		textarea {
+			width: 400px;
+			height: 320px;
+			background: lightyellow;
+			resize: none;
+		}
+	}
 	.section-main {
 		background: #000;
 	}

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
+import Gamenotes from './Gamenotes.jsx';
 import { updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, updateVersion } from '../actions/actions.js';
 import socket from '../socket';
 import $ from 'jquery';
@@ -221,20 +222,17 @@ export class App extends React.Component {
 	render() {
 		return (
 			<section className="ui grid">
-				{(() => {
-					if (this.props.midSection !== 'game' && this.props.midSection !== 'replay') {
-						return (
-							<LeftSidebar
-								userInfo={this.props.userInfo}
-								midSection={this.props.midSection}
-								gameList={this.props.gameList}
-								onCreateGameButtonClick={this.handleRoute}
-								onGameClick={this.handleGameClick}
-								socket={socket}
-							/>
-						);
-					}
-				})()}
+				{this.props.notesActive && <Gamenotes />}
+				{this.props.midSection !== 'game' &&
+					this.props.midSection !== 'replay' &&
+					<LeftSidebar
+						userInfo={this.props.userInfo}
+						midSection={this.props.midSection}
+						gameList={this.props.gameList}
+						onCreateGameButtonClick={this.handleRoute}
+						onGameClick={this.handleGameClick}
+						socket={socket}
+					/>}
 				<Main
 					userInfo={this.props.userInfo}
 					midSection={this.props.midSection}
