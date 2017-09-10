@@ -27,7 +27,6 @@ export default class Moderation extends React.Component {
 		this.props.socket.emit('getModInfo');
 
 		this.props.socket.on('modInfo', info => {
-			console.log(info, 'info');
 			this.setState({
 				userList: info.userList,
 				log: info.modReports
@@ -171,6 +170,14 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Set R losses
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('timeOut');
+					}}
+				>
+					Timeout - IP ban a player for 18 hours without scrambling password.
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}

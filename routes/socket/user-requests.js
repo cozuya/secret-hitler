@@ -34,7 +34,7 @@ module.exports.sendModInfo = socket => {
 		.then(users => {
 			ModAction.find()
 				.sort({ $natural: -1 })
-				.limit(200)
+				.limit(500)
 				.then(actions => {
 					socket.emit('modInfo', {
 						modReports: actions,

@@ -29,6 +29,7 @@ const Changelog = props =>
 		</p>
 		<h4>Other items</h4>
 		<ul>
+			<li>New polls have been added.</li>
 			<li>The terms of use has been updated - TOR users are no longer permitted. If you have a legitimate reason to use TOR, contact a moderator.</li>
 			<li>Per the polls result, fascist players can no longer shoot hitler.</li>
 			<li>The home page now shows how many players are online.</li>

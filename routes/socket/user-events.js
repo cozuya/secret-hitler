@@ -621,6 +621,17 @@ module.exports.handleModerationAction = (socket, data) => {
 				ip: data.ip,
 				actionTaken: data.action
 			}),
+			logOutUser = username => {
+				const bannedUserlistIndex = userList.findIndex(user => user.userName === data.userName);
+
+				if (io.sockets.sockets[affectedSocketId]) {
+					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+				}
+
+				if (bannedUserlistIndex >= 0) {
+					userList.splice(bannedUserlistIndex, 1);
+				}
+			},
 			banAccount = username => {
 				Account.findOne({ username })
 					.then(account => {
@@ -631,14 +642,10 @@ module.exports.handleModerationAction = (socket, data) => {
 							account.save(() => {
 								const bannedAccountGeneralChats = generalChats.filter(chat => chat.userName === username);
 
-								if (io.sockets.sockets[affectedSocketId]) {
-									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-								}
-
 								bannedAccountGeneralChats.reverse().forEach(chat => {
 									generalChats.splice(generalChats.indexOf(chat), 1);
 								});
-
+								logOutUser(username);
 								io.sockets.emit('generalChats', generalChats);
 							});
 						}
@@ -685,6 +692,16 @@ module.exports.handleModerationAction = (socket, data) => {
 
 				banAccount(data.userName);
 				ipban.save();
+				break;
+			case 'timeOut':
+				const timeout = new BannedIP({
+					bannedDate: new Date(),
+					type: 'small',
+					ip: data.ip
+				});
+				timeout.save(() => {
+					logOutUser(data.userName);
+				});
 				break;
 			case 'ipbanlarge':
 				const ipbanl = new BannedIP({

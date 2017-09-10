@@ -19,6 +19,7 @@ const mongoose = require('mongoose'),
 			disablePlayerColorsInChat: Boolean,
 			disablePlayerCardbacks: Boolean,
 			unbanTime: Date,
+			unTimeoutTime: Date,
 			fontSize: Number
 		},
 		verification: {
@@ -28,7 +29,6 @@ const mongoose = require('mongoose'),
 			passwordResetToken: String,
 			passwordResetTokenExpiration: Date
 		},
-		karmaCount: Number,
 		signupIP: String,
 		lastConnectedIP: String,
 		resetPassword: {
