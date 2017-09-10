@@ -18,8 +18,8 @@ const Changelog = props =>
 		<h2>Over 50,000 games have been played!</h2>
 		<h3>New feature: game notes</h3>
 		<p>
-			Click on the note icon next to the lock button to pop out a new component you can take notes on. You can drag and drop this to any location. Not currently
-			resizable as thats a bit tough.
+			Click on the note icon next to the lock button to pop out a new component you can take notes on, scratchpad style. You can drag and drop this to any
+			location. Not currently resizable as thats a bit tough.
 		</p>
 		<h3>New feature: sticky chat v2</h3>
 		<p>
@@ -29,7 +29,7 @@ const Changelog = props =>
 		</p>
 		<h4>Other items</h4>
 		<ul>
-			<li>New polls have been added.</li>
+			<li>New polls have been added, please use them.</li>
 			<li>The terms of use has been updated - TOR users are no longer permitted. If you have a legitimate reason to use TOR, contact a moderator.</li>
 			<li>Per the polls result, fascist players can no longer shoot hitler.</li>
 			<li>The home page now shows how many players are online.</li>
