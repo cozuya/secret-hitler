@@ -65,7 +65,7 @@ class Gamenotes extends React.Component {
 
 	render() {
 		const notesChange = e => {
-			this.setState({ value: `${e.target.value}` });
+			this.props.changeNotesValue(`${e.target.value}`);
 		};
 
 		return (
@@ -83,14 +83,15 @@ class Gamenotes extends React.Component {
 						<i className="large window minimize icon" onClick={this.dismissNotes} title="Click here to clear your notes" />
 					</div>
 				</div>
-				<textarea autoFocus spellCheck="false" value={this.state.value} onChange={notesChange} />
+				<textarea autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />
 			</section>
 		);
 	}
 }
 
 Gamenotes.propTypes = {
-	toggleNotes: PropTypes.func
+	toggleNotes: PropTypes.func,
+	value: PropTypes.string
 };
 
 export default connect(null, mapDispatchToProps)(Gamenotes);
