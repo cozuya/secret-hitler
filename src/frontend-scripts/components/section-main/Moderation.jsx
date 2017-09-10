@@ -73,10 +73,14 @@ export default class Moderation extends React.Component {
 						return -1;
 					}
 
-					return parseInt(a.ip.substr(0, 2)) - parseInt(b.ip.substr(0, 2));
+					if (a.isRainbow && b.isRainbow) {
+						return a.userName > b.userName ? -1 : 1;
+					}
+
+					return a.userName > b.userName ? -1 : 1;
 				})()
 			)
-			.map((user, index) =>
+			.map((user, index) => (
 				<li key={index} title={user.isTor ? 'TOR user' : ''} className={user.isTor ? 'istor' : multiIPs.includes(user.ip) ? 'multi' : ''}>
 					<label>
 						<input
@@ -89,7 +93,7 @@ export default class Moderation extends React.Component {
 						{user.userName} <span className="ip">{user.ip}</span>
 					</label>
 				</li>
-			);
+			));
 	}
 
 	renderButtons() {
@@ -197,9 +201,11 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && ADMINS.includes(this.props.userInfo.userName)
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+						(selectedUser || playerInputText) && actionTextValue && ADMINS.includes(this.props.userInfo.userName) ? (
+							'ui button ipban-button'
+						) : (
+							'ui button disabled ipban-button'
+						)
 					}
 					onClick={() => {
 						takeModAction('ipbanlarge');
@@ -226,28 +232,16 @@ export default class Moderation extends React.Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.log.map((report, index) =>
+						{this.state.log.map((report, index) => (
 							<tr key={index}>
-								<td>
-									{report.modUserName}
-								</td>
-								<td>
-									{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}
-								</td>
-								<td>
-									{report.actionTaken}
-								</td>
-								<td>
-									{report.userActedOn}
-								</td>
-								<td>
-									{report.ip}
-								</td>
-								<td>
-									{report.modNotes}
-								</td>
+								<td>{report.modUserName}</td>
+								<td>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
+								<td>{report.actionTaken}</td>
+								<td>{report.userActedOn}</td>
+								<td>{report.ip}</td>
+								<td>{report.modNotes}</td>
 							</tr>
-						)}
+						))}
 					</tbody>
 				</table>
 			</div>
@@ -310,9 +304,7 @@ export default class Moderation extends React.Component {
 							return (
 								<div className="modplayerlist">
 									<h3>Current player list</h3>
-									<ul className="userlist">
-										{this.renderUserlist()}
-									</ul>
+									<ul className="userlist">{this.renderUserlist()}</ul>
 									<div className="ui horizontal divider">or</div>
 									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">-</div>
