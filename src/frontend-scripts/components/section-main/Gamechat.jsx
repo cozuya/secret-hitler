@@ -41,7 +41,6 @@ class Gamechat extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log('Hello, World!');
 		this.scrollChats();
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {
@@ -112,8 +111,6 @@ class Gamechat extends React.Component {
 	renderNotes() {
 		if (this.state.notesEnabled) {
 			const notesChange = e => {
-				console.log(e);
-				console.log(e.target.value);
 				this.setState({ notesValue: `${e.target.value}` });
 			};
 			return (
