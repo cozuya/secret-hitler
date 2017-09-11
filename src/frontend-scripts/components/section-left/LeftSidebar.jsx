@@ -36,7 +36,7 @@ const LeftSidebar = props => {
 						return a.electionCount === b.electionCount ? a.seatedCount - b.seatedCount : a.electionCount - b.electionCount;
 					}
 
-					return a.uid - b.uid;
+					return a.uid > b.uid ? 1 : -1;
 				})
 				.map((game, index) => {
 					return <SidebarGame key={index} game={game} socket={props.socket} />;
@@ -50,22 +50,20 @@ const LeftSidebar = props => {
 				const { userName } = props.userInfo,
 					gameBeingCreated = props.midSection === 'createGame';
 
-				return userName && !gameBeingCreated
-					? <button
-							className="ui button primary"
-							onClick={() => {
-								props.onCreateGameButtonClick('createGame');
-							}}
-						>
-							Create a new game
-						</button>
-					: <button className="ui button disabled">
-							{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}
-						</button>;
+				return userName && !gameBeingCreated ? (
+					<button
+						className="ui button primary"
+						onClick={() => {
+							props.onCreateGameButtonClick('createGame');
+						}}
+					>
+						Create a new game
+					</button>
+				) : (
+					<button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>
+				);
 			})()}
-			<div className="games-container">
-				{renderGameList()}
-			</div>
+			<div className="games-container">{renderGameList()}</div>
 		</section>
 	);
 };

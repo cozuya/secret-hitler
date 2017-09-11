@@ -20,6 +20,11 @@ export class App extends React.Component {
 		this.handleSeatingUser = this.handleSeatingUser.bind(this);
 		this.handleLeaveGame = this.handleLeaveGame.bind(this);
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
+		this.changeNotesValue = this.changeNotesValue.bind(this);
+
+		this.state = {
+			notesValue: ''
+		};
 	}
 
 	componentDidMount() {
@@ -219,12 +224,18 @@ export class App extends React.Component {
 		});
 	}
 
+	changeNotesValue(value) {
+		this.setState({
+			notesValue: value
+		});
+	}
+
 	render() {
 		return (
 			<section className="ui grid">
-				{this.props.notesActive && <Gamenotes />}
+				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 				{this.props.midSection !== 'game' &&
-					this.props.midSection !== 'replay' &&
+				this.props.midSection !== 'replay' && (
 					<LeftSidebar
 						userInfo={this.props.userInfo}
 						midSection={this.props.midSection}
@@ -232,7 +243,8 @@ export class App extends React.Component {
 						onCreateGameButtonClick={this.handleRoute}
 						onGameClick={this.handleGameClick}
 						socket={socket}
-					/>}
+					/>
+				)}
 				<Main
 					userInfo={this.props.userInfo}
 					midSection={this.props.midSection}

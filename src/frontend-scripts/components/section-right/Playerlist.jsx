@@ -31,7 +31,9 @@ class Playerlist extends React.Component {
 	}
 
 	clickInfoIcon() {
-		$('.playerlistinfo').modal('setting', 'transition', 'scale').modal('show');
+		$('.playerlistinfo')
+			.modal('setting', 'transition', 'scale')
+			.modal('show');
 	}
 
 	routeToGame(gameId) {
@@ -123,9 +125,7 @@ class Playerlist extends React.Component {
 						if (Object.keys(this.props.userList).length) {
 							return (
 								<span>
-									<span>
-										{this.props.userList.list.length}
-									</span>
+									<span>{this.props.userList.list.length}</span>
 									<i className="large user icon" title="Number of players logged in" />
 								</span>
 							);
@@ -161,7 +161,7 @@ class Playerlist extends React.Component {
 									}
 
 									if (MODERATORS.includes(a.userName) && MODERATORS.includes(b.userName)) {
-										return a.userName - b.userName;
+										return a.userName > b.userName ? 1 : -1;
 									}
 
 									if (aTotal > 49 && bTotal > 49) {
@@ -173,7 +173,7 @@ class Playerlist extends React.Component {
 									}
 
 									if (b[w] === a[w]) {
-										return a.userName - b.userName;
+										return a.userName > b.userName ? 1 : -1;
 									}
 
 									return b[w] - a[w];
@@ -239,7 +239,8 @@ class Playerlist extends React.Component {
 														if (MODERATORS.includes(user.userName)) {
 															return (
 																<span className="moderator-name" title="This user is a moderator">
-																	{' '}(M)
+																	{' '}
+																	(M)
 																</span>
 															);
 														}
