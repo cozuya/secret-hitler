@@ -1,30 +1,42 @@
-version 0.1.0 released 11/11/2016 (alpha)
+version 0.1 released 11/11/2016 (alpha)
 all known game breaking bugs eliminated
 
-version 0.2.0
+version 0.2
 fix/address issues found in alpha
 implement automated claims system
 
-version 0.3.0
+version 0.3
 implement stats page and graphs
 
-version 0.4.0
+version 0.4
 implement karma system
 implement rainbow games
 
-version 0.5.0
+version 0.5
 implement moderation system
 
-version 0.6.0
+version 0.6
 implement in-game player stats @jbasrai
 implement replays @jbasrai
-
-version 0.7.0
-convert to webpack/create-react-app for builds
 upgrade dependencies
 
-version 1.0.0
-all desired features in all bugs fixed
+version 0.7
+player uploaded cardbacks
+wide screen support/options
+player report feature
+polls page
+gamenotes feature
+sticky scroll feature
 
-version 2.0.0
-implement email address saving, token based verification, and password reset via emails
+near future:
+(#204) gamenotes enhancements
+(#205) player notes (#204 will feed into this as well)
+(#195) disable players from making more than one account per day per IP
+
+farther future:
+(#184) tournament mode - still need to decide on requirements for this
+(#198) game creator should have extra powers
+
+version 1.0
+convert to webpack/create-react-app for builds - will resolve safari problems
+all desired features in all bugs fixed
