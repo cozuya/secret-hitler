@@ -79,8 +79,8 @@ class Gamenotes extends React.Component {
 				<div className="notes-header">
 					<p>Game Notes</p>
 					<div className="icon-container">
-						<i className="large ban icon" onClick={this.clearNotes} title="Click here to collapse notes" />
-						<i className="large window minimize icon" onClick={this.dismissNotes} title="Click here to clear your notes" />
+						<i className="large ban icon" onClick={this.clearNotes} title="Click here to clear notes" />
+						<i className="large window minimize icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
 					</div>
 				</div>
 				<textarea autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />

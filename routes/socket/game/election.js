@@ -732,7 +732,11 @@ module.exports.selectChancellorPolicy = data => {
 				const chat = {
 					gameChat: true,
 					timestamp: new Date(),
-					chat: [{ text: 'You must vote whether or not to veto these policies.' }]
+					chat: [
+						{
+							text: 'You must vote whether or not to veto these policies.  Select Ja to veto the your chosen policy or select Nein to enact your chosen policy.'
+						}
+					]
 				};
 
 				game.publicPlayersState[chancellorIndex].isLoader = true;
@@ -818,7 +822,7 @@ module.exports.selectChancellorVoteOnVeto = data => {
 	) {
 		game.private.lock.selectChancellorVoteOnVeto = true;
 
-		game.publicPlayersState[chancellorIndex].isLoader = false; // crashes here very rarily hopefully change @ :780 will address
+		game.publicPlayersState[chancellorIndex].isLoader = false;
 
 		chancellor.cardFlingerState[0].action = chancellor.cardFlingerState[1].action = '';
 		chancellor.cardFlingerState[0].cardStatus.isFlipped = chancellor.cardFlingerState[1].cardStatus.isFlipped = false;
@@ -896,7 +900,12 @@ module.exports.selectChancellorVoteOnVeto = data => {
 					president.gameChats.push({
 						gameChat: true,
 						timestamp: new Date(),
-						chat: [{ text: 'You must vote whether or not to veto these policies.' }]
+						chat: [
+							{
+								text:
+									'You must vote whether or not to veto these policies.  Select Ja to veto the policies you passed to the Chancellor or select Nein to enact the policy the Chancellor has chosen in secret.'
+							}
+						]
 					});
 				}
 
