@@ -13,6 +13,16 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.7.6 "shadow2" released 9-11-2017</p>
+		</div>
+		<ul>
+			<li>Terms of use have been updated - if you're playing a public game, you must converse in a language everyone understands.</li>
+			<li>Fix to gamenotes being cleared/deleted every time its dismissed. It will now persist until you leave the site.</li>
+			<li>Gamechat text for the veto policy power has been clarified/expanded for the president & chancellor.</li>
+			<li>More attempted fixes to sort issues in general.</li>
+			<li>Please welcome new mods Ophxlia and morewhales!</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.7.5 "shadow" released 9-10-2017</p>
 		</div>
 		<h2>Over 50,000 games have been played!</h2>
