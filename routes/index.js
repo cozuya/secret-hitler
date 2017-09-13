@@ -104,7 +104,9 @@ module.exports = () => {
 					if (err) {
 						return new Error(err);
 					}
-					profile.customCardback = account.gameSettings.customCardback;
+					if (account) {
+						profile.customCardback = account.gameSettings.customCardback;
+					}
 					res.json(profile);
 				});
 			}
