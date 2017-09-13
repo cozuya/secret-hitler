@@ -143,12 +143,15 @@ module.exports = () => {
 
 							if (ip) {
 								date = new Date().getTime();
-								unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+								unbannedTime = ip.type === 'small' || ip.type === 'new' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
 							}
 
 							if (ip && unbannedTime > date) {
 								res.status(403).json({
-									message: 'You can no longer access this service.  If you believe this is in error, contact the administrators.'
+									message:
+										ip.type === 'small'
+											? 'You can no longer access this service.  If you believe this is in error, contact the administrators.'
+											: 'You can only make accounts once per day.'
 								});
 							} else {
 								Account.register(new Account(save), password, err => {
@@ -157,10 +160,15 @@ module.exports = () => {
 									}
 
 									passport.authenticate('local')(req, res, () => {
-										// if (email) {
-										// 	verifyAccount.sendToken(req.body.username, req.body.email);
-										// }
-										res.send();
+										const newPlayerBan = new BannedIP({
+											bannedDate: new Date(),
+											type: 'new',
+											ip: signupIP
+										});
+
+										newPlayerBan.save(() => {
+											res.send();
+										});
 									});
 								});
 							}
@@ -190,7 +198,7 @@ module.exports = () => {
 						unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
 					}
 
-					if (ip && unbannedTime > date) {
+					if (ip && unbannedTime > date && ip.type !== 'new') {
 						res.status(403).json({
 							message: 'You can no longer access this service.  If you believe this is in error, contact the administrators.'
 						});
@@ -212,8 +220,6 @@ module.exports = () => {
 			});
 		}
 	);
-
-	// todo-alpha, signed in on 404 page, nothing updated until moved page.
 
 	app.post('/account/logout', ensureAuthenticated, (req, res) => {
 		req.logOut();

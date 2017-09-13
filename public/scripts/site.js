@@ -16,7 +16,9 @@ $(document).ready(function() {
 	$('body').on('click', '#signup', function(event) {
 		event.preventDefault();
 
-		$('section.signup-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		$('section.signup-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
 	});
 
 	$('button.signup-submit').on('click', function(event) {
@@ -62,6 +64,11 @@ $(document).ready(function() {
 							: 'Sorry, that username already exists and you did not provide the correct password.';
 
 					submitErr(message);
+				},
+				403: function(xhr) {
+					var message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
+
+					submitErr(message);
 				}
 			}
 		});
@@ -70,19 +77,32 @@ $(document).ready(function() {
 	$('body').on('click', '#signin', function(event) {
 		event.preventDefault();
 
-		$('section.signin-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		$('section.signin-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
 	});
 
 	$('body').on('focus', '#signup-username', function() {
-		$(this).parent().next().text('3-12 alphanumeric characters.').slideDown();
+		$(this)
+			.parent()
+			.next()
+			.text('3-12 alphanumeric characters.')
+			.slideDown();
 	});
 
 	$('body').on('focus', '#signup-password1', function() {
-		$(this).parent().next().text('6-255 characters.').slideDown();
+		$(this)
+			.parent()
+			.next()
+			.text('6-255 characters.')
+			.slideDown();
 	});
 
 	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function() {
-		$(this).parent().next().slideUp();
+		$(this)
+			.parent()
+			.next()
+			.slideUp();
 	});
 
 	$('button.signin-submit').on('click', function(event) {
@@ -90,7 +110,9 @@ $(document).ready(function() {
 		var username = $('#signin-username').val(),
 			password = $('#signin-password').val(),
 			$loader = $(this).next(),
-			$message = $(this).next().next(),
+			$message = $(this)
+				.next()
+				.next(),
 			submitErr = function(message) {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
@@ -124,9 +146,13 @@ $(document).ready(function() {
 	$('a#reset-password').on('click', function(event) {
 		event.preventDefault();
 
-		$('.signin-modal').modal('setting', 'transition', 'horizontal flip').modal('hide', function() {
-			$('.password-reset-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
-		});
+		$('.signin-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('hide', function() {
+				$('.password-reset-modal')
+					.modal('setting', 'transition', 'horizontal flip')
+					.modal('show');
+			});
 	});
 
 	$('button#password-reset-submit').on('click', function(event) {
@@ -134,7 +160,9 @@ $(document).ready(function() {
 
 		var email = $('#password-reset-email').val(),
 			$loader = $(this).next(),
-			$message = $(this).next().next(),
+			$message = $(this)
+				.next()
+				.next(),
 			submitErr = function(message) {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
@@ -178,11 +206,15 @@ $(document).ready(function() {
 	});
 
 	$('button#change-password').on('click', function(event) {
-		$('section.passwordchange-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		$('section.passwordchange-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
 	});
 
 	$('button#change-email').on('click', function(event) {
-		$('section.emailchange-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		$('section.emailchange-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
 	});
 
 	$('button#request-verification').on('click', function(event) {
@@ -194,7 +226,9 @@ $(document).ready(function() {
 			contentType: 'application/json; charset=UTF-8',
 			statusCode: {
 				200: function() {
-					$('section.requestemail-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+					$('section.requestemail-modal')
+						.modal('setting', 'transition', 'horizontal flip')
+						.modal('show');
 				}
 			}
 		});
@@ -280,7 +314,9 @@ $(document).ready(function() {
 	});
 
 	$('button#delete-account').on('click', function(event) {
-		$('section.deleteaccount-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		$('section.deleteaccount-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
 	});
 
 	$('button#deleteaccount-submit').on('click', function(event) {
