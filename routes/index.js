@@ -132,10 +132,6 @@ module.exports = () => {
 		});
 	});
 
-	app.get('/data', (req, res) => {
-		res.json(gamesData);
-	});
-
 	app.get('/viewPatchNotes', ensureAuthenticated, (req, res) => {
 		Account.updateOne({ username: req.user.username }, { lastVersionSeen: version.number }, err => {
 			if (err) res.sendStatus(404);
