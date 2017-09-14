@@ -160,8 +160,13 @@ module.exports.handleAddNewGame = (socket, data) => {
 };
 
 module.exports.handleAddNewClaim = data => {
-	const game = games.find(el => el.general.uid === data.uid),
-		playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName),
+	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game || !game.private) {
+		return;
+	}
+
+	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName),
 		chat = (() => {
 			let text;
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { toggleNotes } from '../actions/actions';
 import PropTypes from 'prop-types';
+import $ from 'jquery';
 
 const mapDispatchToProps = dispatch => ({
 		toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus))
@@ -18,10 +19,13 @@ class Gamenotes extends React.Component {
 		this.noteDragStart = this.noteDragStart.bind(this);
 		this.dismissNotes = this.dismissNotes.bind(this);
 		this.noteDrop = this.noteDrop.bind(this);
+		this.resizeDragStart = this.resizeDragStart.bind(this);
 
 		this.state = {
-			top: '110px',
-			left: '690px',
+			top: 110,
+			left: 690,
+			width: 400,
+			height: 320,
 			value: ''
 		};
 	}
@@ -37,12 +41,15 @@ class Gamenotes extends React.Component {
 	}
 
 	noteDrop(e) {
-		const offset = e.dataTransfer.getData('text/plain').split(',');
+		console.log(e.target);
+		if (!$(e.target).hasClass('drag-boundry')) {
+			const offset = e.dataTransfer.getData('text/plain').split(',');
 
-		this.setState({
-			top: `${e.clientY + parseInt(offset[1], 10)}px`,
-			left: `${e.clientX + parseInt(offset[0], 10)}px`
-		});
+			this.setState({
+				top: e.clientY + parseInt(offset[1], 10),
+				left: e.clientX + parseInt(offset[0], 10)
+			});
+		}
 	}
 
 	componentDidMount() {
@@ -63,6 +70,10 @@ class Gamenotes extends React.Component {
 		);
 	}
 
+	resizeDragStart(e) {
+		console.log(e.clientY, 'ecy');
+	}
+
 	render() {
 		const notesChange = e => {
 			this.props.changeNotesValue(`${e.target.value}`);
@@ -72,18 +83,20 @@ class Gamenotes extends React.Component {
 			<section
 				draggable="true"
 				onDragStart={this.noteDragStart}
-				onDragOver={this.noteDragOver}
 				className="notes-container"
-				style={{ top: this.state.top, left: this.state.left }}
+				style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, height: `${this.state.height}px`, width: `${this.state.width}px` }}
 			>
 				<div className="notes-header">
+					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
+					<div className="drag-boundry 2d top-left" />
+					<div className="drag-boundry 2d top-right" />
 					<p>Game Notes</p>
 					<div className="icon-container">
 						<i className="large ban icon" onClick={this.clearNotes} title="Click here to clear notes" />
 						<i className="large window minimize icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
 					</div>
 				</div>
-				<textarea autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />
+				<textarea style={{ height: this.state.height }} autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />
 			</section>
 		);
 	}
