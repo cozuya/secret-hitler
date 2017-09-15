@@ -33,7 +33,7 @@ module.exports.sendInProgressGameUpdate = game => {
 		);
 
 		observerSockets = roomSockets.filter(
-			socket => (socket && !socket.handshake.session.passport) || !seatedPlayerNames.includes(socket.handshake.session.passport.user)
+			socket => (socket && !socket.handshake.session.passport) || (socket && !seatedPlayerNames.includes(socket.handshake.session.passport.user))
 		);
 	}
 
