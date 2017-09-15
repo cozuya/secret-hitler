@@ -162,7 +162,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 module.exports.handleAddNewClaim = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (!game || !game.private) {
+	if (!game || !game.private || !game.private.summary) {
 		return;
 	}
 

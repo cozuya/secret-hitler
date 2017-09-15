@@ -26,7 +26,8 @@ class Gamenotes extends React.Component {
 			left: 690,
 			width: 400,
 			height: 320,
-			value: ''
+			value: '',
+			isResizing: false
 		};
 	}
 
@@ -41,8 +42,7 @@ class Gamenotes extends React.Component {
 	}
 
 	noteDrop(e) {
-		console.log(e.target);
-		if (!$(e.target).hasClass('drag-boundry')) {
+		if (!this.state.isResizing) {
 			const offset = e.dataTransfer.getData('text/plain').split(',');
 
 			this.setState({
@@ -71,7 +71,8 @@ class Gamenotes extends React.Component {
 	}
 
 	resizeDragStart(e) {
-		console.log(e.clientY, 'ecy');
+		// this.setState
+		// console.log(e.clientY, 'ecy');
 	}
 
 	render() {
