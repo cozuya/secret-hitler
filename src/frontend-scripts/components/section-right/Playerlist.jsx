@@ -118,7 +118,9 @@ class Playerlist extends React.Component {
 							70%.
 						</p>
 						<p>
-							Also <span className="admin">admins</span> are always on top, and <span className="contributer">contributors</span> get a special color as well.
+							Also <span className="admin">admins</span>, red, are always on top; <span className="moderatorcolor">mods</span> are blue with a red (M) and also
+							appear at the top, and <span className="contributer">contributors</span> get a special orange color as well! Contribute code to this open source
+							project to be endlessly pestered about why you're orange.
 						</p>
 					</div>
 					{(() => {
