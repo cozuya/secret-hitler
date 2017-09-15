@@ -24,7 +24,7 @@ const PatchAlert = ({ isActive, onClick }) => {
 	}
 };
 
-const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
+const Defaultmid = ({ version, readPatchNotes, quickDefault }) => (
 	<section className="defaultmid">
 		<div className="callout">50,000+ games played!</div>
 		<div className="poll">
@@ -42,16 +42,12 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 					open issues and upcoming features
 				</a>{' '}
 				|{' '}
-				<a
-					target="_blank"
-					style={{ color: 'brown' }}
-					href="https://docs.google.com/forms/d/e/1FAIpQLSf_pq4xipbxyb8s84eGaazK0itPZmdKSTvMAH9eIHj2hyz0BQ/viewform?c=0&w=1&usp=send_form"
-				>
-					bug and feedback form
+				<a target="_blank" style={{ color: 'lightgreen' }} href="https://github.com/cozuya/secret-hitler/wiki">
+					wiki page
 				</a>{' '}
 				|{' '}
 				<a target="_blank" style={{ fontWeight: 'bold', color: '#fff' }} href="https://discord.gg/FXDxP2m">
-					discord
+					discord server
 				</a>
 			</span>
 		</p>
@@ -119,7 +115,8 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 		<button style={{ padding: '5px', width: '80px' }} data-name="hhh" className="loginquick">
 			hhh
 		</button>
-	</section>;
+	</section>
+);
 
 Defaultmid.propTypes = {
 	quickDefault: PropTypes.func
