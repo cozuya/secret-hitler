@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { toggleNotes } from '../actions/actions';
 import PropTypes from 'prop-types';
-import $ from 'jquery';
 
 const mapDispatchToProps = dispatch => ({
 		toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus))
