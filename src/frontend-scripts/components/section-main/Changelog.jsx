@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import PropTypes from 'prop-types';
 
-const Changelog = props =>
+const Changelog = props => (
 	<section className="changelog">
 		<i
 			className="remove icon"
@@ -13,14 +13,19 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.7.6 "shadow2" released 9-11-2017</p>
+			<p>Version 0.7.7 "shadow2" released 9-14-2017</p>
 		</div>
 		<ul>
 			<li>Terms of use have been updated - if you're playing a public game, you must converse in a language everyone understands.</li>
-			<li>Fix to gamenotes being cleared/deleted every time its dismissed. It will now persist until you leave the site.</li>
+			<li>Fix to gamenotes being cleared/deleted every time its dismissed. It will now persist until you leave the site/reload.</li>
 			<li>Gamechat text for the veto policy power has been clarified/expanded for the president & chancellor.</li>
 			<li>More attempted fixes to sort issues in general.</li>
-			<li>Please welcome new mods Ophxlia and morewhales!</li>
+			<li>
+				The minimum width of this application has been lowered by 30px, meaning it will fit on a laptop like a macbook better without small horizontal
+				scrolling.
+			</li>
+			<li>Some crash fixes attempted.</li>
+			<li>Players can only make one account per day per IP.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.7.5 "shadow" released 9-10-2017</p>
@@ -224,7 +229,8 @@ const Changelog = props =>
 			where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls. This isn't all that hard and will be coming soon,
 			and hopefully guarantee a better playing experience for everyone. Please check the github issue if you are interested in helping out.
 		</p>
-	</section>;
+	</section>
+);
 
 Changelog.propTypes = {
 	onLeaveChangelog: PropTypes.func

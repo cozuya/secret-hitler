@@ -150,8 +150,8 @@ module.exports = () => {
 								res.status(403).json({
 									message:
 										ip.type === 'small'
-											? 'You can no longer access this service.  If you believe this is in error, contact the administrators.'
-											: 'You can only make accounts once per day.'
+											? 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
+											: 'You can only make accounts once per day.  If you need an exception to this rule, contact a moderator.'
 								});
 							} else {
 								Account.register(new Account(save), password, err => {
