@@ -411,11 +411,12 @@ class Gamechat extends React.Component {
 					<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 						No observer chat
 					</a>
-					<i
-						title="Click here to pop out notes"
-						className={this.state.notesEnabled ? 'large window minimize icon' : 'large edit icon'}
-						onClick={this.handleNoteClick}
-					/>
+					{userInfo.userName &&
+						<i
+							title="Click here to pop out notes"
+							className={this.state.notesEnabled ? 'large window minimize icon' : 'large edit icon'}
+							onClick={this.handleNoteClick}
+						/>}
 					<i
 						title="Click here to lock or unlock scrolling of chat"
 						className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}

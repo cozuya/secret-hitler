@@ -11,28 +11,28 @@ const Account = require('../../models/account'),
 		path: '/cgi-bin/TorBulkExitList.py?ip=1.1.1.1'
 	};
 
-// let torIps;
-// try {
-// 	https.get(options, res => {
-// 		let rawData = '';
-// 		res.on('data', chunk => {
-// 			rawData += chunk;
-// 		});
-// 		res.on('end', () => {
-// 			try {
-// 				torIps = rawData.split('\n').slice(3, rawData.length);
-// 			} catch (e) {
-// 				console.error(e.message, 'retrieving tor ip addresses failed');
-// 			}
-// 		});
-// 	});
-// } catch (e) {
-// 	console.log('err receiving tor ip addresses');
-// }
+let torIps;
+try {
+	https.get(options, res => {
+		let rawData = '';
+		res.on('data', chunk => {
+			rawData += chunk;
+		});
+		res.on('end', () => {
+			try {
+				torIps = rawData.split('\n').slice(3, rawData.length);
+			} catch (e) {
+				console.error(e.message, 'retrieving tor ip addresses failed');
+			}
+		});
+	});
+} catch (e) {
+	console.log('err receiving tor ip addresses');
+}
 
 module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
-
+	console.log('Hello, World!');
 	Account.find({ username: userNames })
 		.then(users => {
 			ModAction.find()
@@ -122,12 +122,9 @@ module.exports.sendGameList = socket => {
 };
 
 module.exports.sendUserReports = socket => {
-	PlayerReport.find()
-		.sort({ $natural: -1 })
-		.limit(200)
-		.then(reports => {
-			socket.emit('reportInfo', reports);
-		});
+	PlayerReport.find().sort({ $natural: -1 }).limit(200).then(reports => {
+		socket.emit('reportInfo', reports);
+	});
 };
 
 module.exports.sendGeneralChats = socket => {

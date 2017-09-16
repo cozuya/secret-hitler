@@ -18,7 +18,7 @@ class Gamenotes extends React.Component {
 		this.noteDragStart = this.noteDragStart.bind(this);
 		this.dismissNotes = this.dismissNotes.bind(this);
 		this.noteDrop = this.noteDrop.bind(this);
-		this.resizeDragStart = this.resizeDragStart.bind(this);
+		this.resizeMouseDown = this.resizeMouseDown.bind(this);
 
 		this.state = {
 			top: 110,
@@ -35,9 +35,7 @@ class Gamenotes extends React.Component {
 	}
 
 	dismissNotes() {
-		const { toggleNotes } = this.props;
-
-		toggleNotes(false);
+		this.props.toggleNotes(false);
 	}
 
 	noteDrop(e) {
@@ -69,9 +67,13 @@ class Gamenotes extends React.Component {
 		);
 	}
 
-	resizeDragStart(e) {
-		// this.setState
-		// console.log(e.clientY, 'ecy');
+	resizeMouseDown(e) {
+		console.log(e.clientY, 'ecy');
+		this.setState({ isResizing: true });
+		document.body.addEventListener('mousemove', e => {
+			console.log(e, 'e');
+			console.log(e.clientY, 'cy');
+		});
 	}
 
 	render() {
@@ -81,22 +83,22 @@ class Gamenotes extends React.Component {
 
 		return (
 			<section
-				draggable="true"
-				onDragStart={this.noteDragStart}
 				className="notes-container"
 				style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, height: `${this.state.height}px`, width: `${this.state.width}px` }}
 			>
-				<div className="notes-header">
-					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
-					<div className="drag-boundry 2d top-left" />
-					<div className="drag-boundry 2d top-right" />
-					<p>Game Notes</p>
-					<div className="icon-container">
-						<i className="large ban icon" onClick={this.clearNotes} title="Click here to clear notes" />
-						<i className="large window minimize icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
+				<div className="drag-boundry 1d top" onMouseDown={this.resizeMouseDown} style={{ width: `${this.state.width - 30}px` }} />
+				<div className="drag-boundry 2d top-left" />
+				<div className="drag-boundry 2d top-right" />
+				<div className="notes-inner" draggable="true" onDragStart={this.noteDragStart}>
+					<div className="notes-header">
+						<p>Game Notes</p>
+						<div className="icon-container">
+							<i className="large ban icon" onClick={this.clearNotes} title="Click here to clear notes" />
+							<i className="large window minimize icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
+						</div>
 					</div>
+					<textarea style={{ height: this.state.height }} autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />
 				</div>
-				<textarea style={{ height: this.state.height }} autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />
 			</section>
 		);
 	}
