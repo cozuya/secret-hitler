@@ -1,6 +1,6 @@
 let generalChatCount = 0;
 
-const { games, userList, generalChats } = require('./models'),
+const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced } = require('./models'),
 	{ sendGameList, sendGeneralChats, sendUserList, updateUserStatus } = require('./user-requests'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
@@ -733,6 +733,14 @@ module.exports.handleModerationAction = (socket, data) => {
 						console.log(err);
 					});
 				break;
+			case 'disableaccountCreationDisabled':
+				accountCreationDisabled.status = true;
+			case 'enableaccountCreationDisabled':
+				accountCreationDisabled.status = false;
+			case 'disableIpbans':
+				ipbansNotEnforced.status = true;
+			case 'enableIpbans':
+				ipbansNotEnforced.status = false;
 			default:
 				const setType = /setRWins/.test(data.action)
 						? 'rainbowWins'

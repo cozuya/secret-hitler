@@ -638,15 +638,20 @@ module.exports.selectPresidentPolicy = data => {
 		game.publicPlayersState[presidentIndex].isLoader = false;
 		game.publicPlayersState[chancellorIndex].isLoader = true;
 
-		if (data.selection === 0) {
-			president.cardFlingerState[0].notificationStatus = 'selected';
-			president.cardFlingerState[1].notificationStatus = president.cardFlingerState[2].notificationStatus = '';
-		} else if (data.selection === 1) {
-			president.cardFlingerState[0].notificationStatus = president.cardFlingerState[2].notificationStatus = ''; // crash here
-			president.cardFlingerState[1].notificationStatus = 'selected';
-		} else {
-			president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = '';
-			president.cardFlingerState[2].notificationStatus = 'selected';
+		try {
+			if (data.selection === 0) {
+				president.cardFlingerState[0].notificationStatus = 'selected';
+				president.cardFlingerState[1].notificationStatus = president.cardFlingerState[2].notificationStatus = '';
+			} else if (data.selection === 1) {
+				president.cardFlingerState[0].notificationStatus = president.cardFlingerState[2].notificationStatus = '';
+				president.cardFlingerState[1].notificationStatus = 'selected';
+			} else {
+				president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = '';
+				president.cardFlingerState[2].notificationStatus = 'selected';
+			}
+		} catch (error) {
+			console.log(err, 'caught exception in president cardflinger');
+			return;
 		}
 
 		game.private.summary = game.private.summary.updateLog({

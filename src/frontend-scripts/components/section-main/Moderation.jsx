@@ -29,32 +29,63 @@ export default class Moderation extends React.Component {
 	}
 
 	componentDidMount() {
-		const self = this;
+		const self = this,
+			{ socket } = this.props;
 
-		this.props.socket.emit('getModInfo');
-
-		this.props.socket.on('modInfo', info => {
+		socket.on('modInfo', info => {
 			this.setState({
 				userList: info.userList,
-				log: info.modReports
+				log: info.modReports,
+				accountCreationDisabled: info.accountCreationDisabled,
+				ipbansDisabled: info.ipbansDisabled
 			});
 		});
+
+		socket.emit('getModInfo');
 
 		$(this.toggleAccountCreation).checkbox({
 			onChecked() {
 				self.setState({ accountCreationDisabled: true });
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Disabled account creation',
+					action: 'disableAccountCreation'
+				});
 			},
 			onUnchecked() {
 				self.setState({ accountCreationDisabled: false });
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Enabled account creation',
+					action: 'enableAccountCreation'
+				});
 			}
 		});
 
 		$(this.toggleIpbans).checkbox({
 			onChecked() {
 				self.setState({ ipbansDisabled: true });
+				socket.emit('updateModAction', {
+					modName: this.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: this.state.actionTextValue || 'Disabled all IP bans',
+					action: 'disableIpbans'
+				});
 			},
 			onUnchecked() {
 				self.setState({ ipbansDisabled: false });
+				socket.emit('updateModAction', {
+					modName: this.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: this.state.actionTextValue || 'Enabled all IP bans',
+					action: 'enableIpbans'
+				});
 			}
 		});
 	}
@@ -244,7 +275,7 @@ export default class Moderation extends React.Component {
 							this.toggleAccountCreation = c;
 						}}
 					>
-						<input type="checkbox" name="accountcreation" defaultChecked={false} />
+						<input type="checkbox" name="accountcreation" defaultChecked={this.state.accountCreationDisabled} />
 					</div>
 				</div>
 				<div className="toggle-containers">
@@ -255,7 +286,7 @@ export default class Moderation extends React.Component {
 							this.toggleIpbans = c;
 						}}
 					>
-						<input type="checkbox" name="ipbans" defaultChecked={false} />
+						<input type="checkbox" name="ipbans" defaultChecked={this.state.ipbansDisabled} />
 					</div>
 				</div>
 			</div>

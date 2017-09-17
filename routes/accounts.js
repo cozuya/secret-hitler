@@ -2,6 +2,7 @@ const passport = require('passport'),
 	_ = require('lodash'),
 	Account = require('../models/account'),
 	BannedIP = require('../models/bannedIP'),
+	{ ipbansNotEnforced, accountCreationDisabled } = require('./socket/models'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
 	blacklistedWords = require('../iso/blacklistwords'),
@@ -73,6 +74,7 @@ module.exports = () => {
 	});
 
 	app.post('/account/signup', (req, res, next) => {
+		console.log(accountCreationDisabled);
 		const { username, password, password2, email } = req.body,
 			signupIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress,
 			save = {
@@ -114,6 +116,10 @@ module.exports = () => {
 			res.status(401).json({
 				message: 'Sorry, usernames that end with 88 are not allowed.'
 			});
+		} else if (accountCreationDisabled.status) {
+			res.status(403).json({
+				message: 'Sorry, creating new accounts is temporarily disabled.'
+			});
 		} else {
 			let doesContainBadWord = false;
 			blacklistedWords.forEach(word => {
@@ -146,12 +152,12 @@ module.exports = () => {
 								unbannedTime = ip.type === 'small' || ip.type === 'new' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
 							}
 
-							if (ip && unbannedTime > date) {
+							if (ip && unbannedTime > date && !ipbansNotEnforced.status) {
 								res.status(403).json({
 									message:
 										ip.type === 'small'
 											? 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
-											: 'You can only make accounts once per day.  If you need an exception to this rule, contact a moderator.'
+											: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators.'
 								});
 							} else {
 								Account.register(new Account(save), password, err => {

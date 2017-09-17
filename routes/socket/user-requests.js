@@ -1,7 +1,7 @@
 const Account = require('../../models/account'),
 	ModAction = require('../../models/modAction'),
 	PlayerReport = require('../../models/playerReport'),
-	{ games, userList, generalChats } = require('./models'),
+	{ games, userList, generalChats, accountCreationDisabled, ipbansDisabled } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
 	{ secureGame } = require('./util'),
 	version = require('../../version'),
@@ -28,12 +28,12 @@ try {
 		});
 	});
 } catch (e) {
-	console.log('err receiving tor ip addresses');
+	console.log(e, 'err receiving tor ip addresses');
 }
 
 module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
-	console.log('Hello, World!');
+
 	Account.find({ username: userNames })
 		.then(users => {
 			ModAction.find()
@@ -42,6 +42,8 @@ module.exports.sendModInfo = socket => {
 				.then(actions => {
 					socket.emit('modInfo', {
 						modReports: actions,
+						accountCreationDisabled,
+						ipbansDisabled,
 						userList: users.map(user => ({
 							isRainbow: user.wins + user.losses > 49,
 							userName: user.username,

@@ -27,12 +27,16 @@ const Changelog = props =>
 		<p>
 			Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the
 			selected one again to bring back the loader and prevent vote tallying or just b) select the other option to switch your vote. Votes are tallied as usual
-			when everyone has a selection.
+			when everyone has made a selection.
 		</p>
 		<ul>
 			<li>
 				Home page and about us page text has been updated and the webform deprecated. If you have feedback/issues, a new email address has been set up and there
 				is always discord and the player report feature.
+			</li>
+			<li>
+				Moderators have 2 new fascist policy powers: the power to temporarily disable new accounts from being made, and the power to temporarily rescind all IP
+				bans (and 1 day ban for making new accounts).
 			</li>
 		</ul>
 		<div className="ui header">
