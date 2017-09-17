@@ -29,12 +29,12 @@ gamenotes feature
 sticky scroll feature
 
 near future:
-(#204) gamenotes enhancements
-(#205) player notes (#204 will feed into this as well)
+(#205) player notes
 (#195) disable players from making more than one account per day per IP
 (#189) allow players to change votes on government
 
 farther future:
+(#204) gamenotes enhancements
 (#184) tournament mode - still need to decide on requirements for this
 (#198) game creator should have extra powers - kick/pause timer/etc
 

@@ -29,12 +29,12 @@ $dteal: #034f61;
 @import 'game-text.scss';
 @import 'reports.scss';
 #main {
-	min-width: 1284px;
+	min-width: 1254px;
 	margin-left: auto;
 	margin-right: auto;
 	max-width: inherit !important;
 	.ui.header {
-		font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+		font-family: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
 	}
 	.section-main > .nav-menu {
 		background: #000000;
@@ -43,12 +43,28 @@ $dteal: #034f61;
 		background: linear-gradient(to right, #000000 0%, #1c1c1c 50%, #000000 100%);
 	}
 	.notes-container {
+		-webkit-transition: all 0.15s ease-in-out;
+		-moz-transition: all 0.15s ease-in-out;
+		-ms-transition: all 0.15s ease-in-out;
+		-o-transition: all 0.15s ease-in-out;
+		transition: all 0.15s ease-in-out;
 		padding: 0;
 		z-index: 110;
 		position: absolute;
-		width: 400px;
-		height: 320px;
 		background: lightyellow;
+		display: flex;
+		flex-direction: column;
+		.drag-boundry {
+			display: none;
+			position: absolute;
+			&.top {
+				cursor: n-resize;
+				height: 5px;
+				top: 0;
+				left: 15px;
+				background: red;
+			}
+		}
 		.notes-header {
 			display: flex;
 			justify-content: space-between;
@@ -57,22 +73,21 @@ $dteal: #034f61;
 			padding: 5px 5px 0 10px;
 			color: white;
 			background: $darkfascistteam;
-			font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+			font-family: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
+			position: relative;
 			cursor: move;
 			i {
 				cursor: pointer;
 				color: white !important;
 				font-size: 24px;
 			}
-
 			p {
 				margin: 0;
 			}
 		}
-
 		textarea {
-			width: 400px;
-			height: 320px;
+			width: 100%;
+			flex-grow: 1;
 			background: lightyellow;
 			resize: none;
 		}
@@ -82,7 +97,7 @@ $dteal: #034f61;
 	}
 	.defaultmid {
 		.callout {
-			font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+			font-family: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
 			font-size: 34px;
 			text-align: center;
 			margin-top: 40px;
@@ -97,7 +112,6 @@ $dteal: #034f61;
 			left: 650px;
 			width: 190px;
 			top: 330px;
-
 			> a {
 				color: yellow;
 				font-weight: bold;
@@ -110,10 +124,10 @@ $dteal: #034f61;
 			cursor: pointer;
 			z-index: 2;
 			position: absolute;
-			top: 154px;
-			left: 215px;
-			height: 370px;
-			width: 370px;
+			top: 140px;
+			left: 200px;
+			height: 397px;
+			width: 397px;
 			border: 17px solid #001f3f;
 			border-radius: 50%;
 			animation: pulse 1s infinite;
@@ -307,7 +321,7 @@ body {
 		line-height: 1;
 		margin: 3px 0 0 10px;
 		font-size: 42px;
-		font-family: 'Josefin Sans', "Lato", Helvetica, Arial, sans-serif;
+		font-family: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
 		a {
 			color: $darkfascistteam;
 		}
@@ -352,7 +366,7 @@ body {
 .section-left,
 .section-right,
 .section-main {
-	box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
+	box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
 	background: #fff;
 }
 
