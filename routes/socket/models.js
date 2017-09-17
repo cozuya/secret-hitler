@@ -1,6 +1,8 @@
 module.exports.games = [];
 module.exports.userList = [];
 module.exports.generalChats = [];
+module.exports.accountCreationDisabled = false;
+module.exports.ipbansDisabled = false;
 
 // set of profiles, no duplicate usernames
 module.exports.profiles = (() => {

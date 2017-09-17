@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import PropTypes from 'prop-types';
 
-const Changelog = props => (
+const Changelog = props =>
 	<section className="changelog">
 		<i
 			className="remove icon"
@@ -12,6 +12,29 @@ const Changelog = props => (
 		<div className="ui header">
 			<h2>Changelog</h2>
 		</div>
+		<div className="ui header">
+			<p>Version 0.8.0 "" released </p>
+		</div>
+		<h3>New feature: wiki page</h3>
+		<p>
+			Check out our{' '}
+			<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
+				wiki page
+			</a>{' '}
+			kindly set up by moderator DFinn.
+		</p>
+		<h3>New feature: election voting rework (changable votes)</h3>
+		<p>
+			Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the
+			selected one again to bring back the loader and prevent vote tallying or just b) select the other option to switch your vote. Votes are tallied as usual
+			when everyone has a selection.
+		</p>
+		<ul>
+			<li>
+				Home page and about us page text has been updated and the webform deprecated. If you have feedback/issues, a new email address has been set up and there
+				is always discord and the player report feature.
+			</li>
+		</ul>
 		<div className="ui header">
 			<p>Version 0.7.7 "shadow2" released 9-14-2017</p>
 		</div>
@@ -174,9 +197,6 @@ const Changelog = props => (
 			Click on a player in the lobby/player list to get detailed information about games they've played. You can access your own stats that way, or through the
 			game settings screen ("gear" icon in upper right corner).
 		</p>
-		<div style={{ textAlign: 'center' }}>
-			<img src="images/profile.png" style={{ width: '90%' }} />
-		</div>
 		<p>A big change to the back end, and will allow for some more interesting features (like game replays) and analysis in the future.</p>
 		<p>This is an epoch event, meaning that only games from here on out will be seen in your profile.</p>
 		<h3>New feature: notification for patch notes</h3>
@@ -229,8 +249,7 @@ const Changelog = props => (
 			where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls. This isn't all that hard and will be coming soon,
 			and hopefully guarantee a better playing experience for everyone. Please check the github issue if you are interested in helping out.
 		</p>
-	</section>
-);
+	</section>;
 
 Changelog.propTypes = {
 	onLeaveChangelog: PropTypes.func

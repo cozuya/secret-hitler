@@ -92,7 +92,7 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 				<div
 					className="profile-picture"
 					style={{
-						backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random().toString(36).substring(2)}`
+						background: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random().toString(36).substring(2)})`
 					}}
 				/>}
 			<div className="ui grid">

@@ -4,6 +4,9 @@ import _ from 'lodash';
 import $ from 'jquery';
 import { ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
+import Checkbox from 'semantic-ui-checkbox';
+
+$.fn.checkbox = Checkbox;
 
 export default class Moderation extends React.Component {
 	constructor() {
@@ -19,11 +22,15 @@ export default class Moderation extends React.Component {
 			log: [],
 			playerListShown: true,
 			broadcastText: '',
-			playerInputText: ''
+			playerInputText: '',
+			accountCreationDisabled: false,
+			ipbansDisabled: false
 		};
 	}
 
 	componentDidMount() {
+		const self = this;
+
 		this.props.socket.emit('getModInfo');
 
 		this.props.socket.on('modInfo', info => {
@@ -31,6 +38,24 @@ export default class Moderation extends React.Component {
 				userList: info.userList,
 				log: info.modReports
 			});
+		});
+
+		$(this.toggleAccountCreation).checkbox({
+			onChecked() {
+				self.setState({ accountCreationDisabled: true });
+			},
+			onUnchecked() {
+				self.setState({ accountCreationDisabled: false });
+			}
+		});
+
+		$(this.toggleIpbans).checkbox({
+			onChecked() {
+				self.setState({ ipbansDisabled: true });
+			},
+			onUnchecked() {
+				self.setState({ ipbansDisabled: false });
+			}
 		});
 	}
 
@@ -80,7 +105,7 @@ export default class Moderation extends React.Component {
 					return a.userName > b.userName ? -1 : 1;
 				})()
 			)
-			.map((user, index) => (
+			.map((user, index) =>
 				<li key={index} title={user.isTor ? 'TOR user' : ''} className={user.isTor ? 'istor' : multiIPs.includes(user.ip) ? 'multi' : ''}>
 					<label>
 						<input
@@ -93,7 +118,7 @@ export default class Moderation extends React.Component {
 						{user.userName} <span className="ip">{user.ip}</span>
 					</label>
 				</li>
-			));
+			);
 	}
 
 	renderButtons() {
@@ -201,11 +226,9 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && ADMINS.includes(this.props.userInfo.userName) ? (
-							'ui button ipban-button'
-						) : (
-							'ui button disabled ipban-button'
-						)
+						(selectedUser || playerInputText) && actionTextValue && ADMINS.includes(this.props.userInfo.userName)
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
 						takeModAction('ipbanlarge');
@@ -213,6 +236,28 @@ export default class Moderation extends React.Component {
 				>
 					Ban and IP ban for 1 week
 				</button>
+				<div className="toggle-containers">
+					<h4 className="ui header">Disable account creation</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleAccountCreation = c;
+						}}
+					>
+						<input type="checkbox" name="accountcreation" defaultChecked={false} />
+					</div>
+				</div>
+				<div className="toggle-containers">
+					<h4 className="ui header">Disable ipbans including new account restrictions</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleIpbans = c;
+						}}
+					>
+						<input type="checkbox" name="ipbans" defaultChecked={false} />
+					</div>
+				</div>
 			</div>
 		);
 	}
@@ -232,16 +277,28 @@ export default class Moderation extends React.Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.log.map((report, index) => (
+						{this.state.log.map((report, index) =>
 							<tr key={index}>
-								<td>{report.modUserName}</td>
-								<td>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
-								<td>{report.actionTaken}</td>
-								<td>{report.userActedOn}</td>
-								<td>{report.ip}</td>
-								<td>{report.modNotes}</td>
+								<td>
+									{report.modUserName}
+								</td>
+								<td>
+									{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}
+								</td>
+								<td>
+									{report.actionTaken}
+								</td>
+								<td>
+									{report.userActedOn}
+								</td>
+								<td>
+									{report.ip}
+								</td>
+								<td>
+									{report.modNotes}
+								</td>
 							</tr>
-						))}
+						)}
 					</tbody>
 				</table>
 			</div>
@@ -292,7 +349,7 @@ export default class Moderation extends React.Component {
 			<section className="moderation">
 				<h2>Moderation</h2>
 				<a className="broadcast" href="#" onClick={this.broadcastClick}>
-					Broadcast to all players
+					Broadcast
 				</a>
 				<i className="remove icon" onClick={this.leaveModeration} />
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
@@ -304,7 +361,9 @@ export default class Moderation extends React.Component {
 							return (
 								<div className="modplayerlist">
 									<h3>Current player list</h3>
-									<ul className="userlist">{this.renderUserlist()}</ul>
+									<ul className="userlist">
+										{this.renderUserlist()}
+									</ul>
 									<div className="ui horizontal divider">or</div>
 									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">-</div>

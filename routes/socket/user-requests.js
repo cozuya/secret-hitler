@@ -12,6 +12,7 @@ const Account = require('../../models/account'),
 	};
 
 let torIps;
+
 try {
 	https.get(options, res => {
 		let rawData = '';
