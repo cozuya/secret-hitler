@@ -733,14 +733,18 @@ module.exports.handleModerationAction = (socket, data) => {
 						console.log(err);
 					});
 				break;
-			case 'disableaccountCreationDisabled':
+			case 'disableAccountCreation':
 				accountCreationDisabled.status = true;
-			case 'enableaccountCreationDisabled':
+				break;
+			case 'enableAccountCreation':
 				accountCreationDisabled.status = false;
+				break;
 			case 'disableIpbans':
 				ipbansNotEnforced.status = true;
+				break;
 			case 'enableIpbans':
 				ipbansNotEnforced.status = false;
+				break;
 			default:
 				const setType = /setRWins/.test(data.action)
 						? 'rainbowWins'

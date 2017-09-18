@@ -22,9 +22,7 @@ export default class Moderation extends React.Component {
 			log: [],
 			playerListShown: true,
 			broadcastText: '',
-			playerInputText: '',
-			accountCreationDisabled: false,
-			ipbansDisabled: false
+			playerInputText: ''
 		};
 	}
 
@@ -35,17 +33,16 @@ export default class Moderation extends React.Component {
 		socket.on('modInfo', info => {
 			this.setState({
 				userList: info.userList,
-				log: info.modReports,
-				accountCreationDisabled: info.accountCreationDisabled,
-				ipbansDisabled: info.ipbansDisabled
+				log: info.modReports
 			});
+
+			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
 		});
 
 		socket.emit('getModInfo');
 
 		$(this.toggleAccountCreation).checkbox({
 			onChecked() {
-				self.setState({ accountCreationDisabled: true });
 				socket.emit('updateModAction', {
 					modName: self.props.userInfo.userName,
 					userName: '',
@@ -55,7 +52,6 @@ export default class Moderation extends React.Component {
 				});
 			},
 			onUnchecked() {
-				self.setState({ accountCreationDisabled: false });
 				socket.emit('updateModAction', {
 					modName: self.props.userInfo.userName,
 					userName: '',
@@ -68,22 +64,20 @@ export default class Moderation extends React.Component {
 
 		$(this.toggleIpbans).checkbox({
 			onChecked() {
-				self.setState({ ipbansDisabled: true });
 				socket.emit('updateModAction', {
-					modName: this.props.userInfo.userName,
+					modName: self.props.userInfo.userName,
 					userName: '',
 					ip: '',
-					comment: this.state.actionTextValue || 'Disabled all IP bans',
+					comment: self.state.actionTextValue || 'Disabled all IP bans',
 					action: 'disableIpbans'
 				});
 			},
 			onUnchecked() {
-				self.setState({ ipbansDisabled: false });
 				socket.emit('updateModAction', {
-					modName: this.props.userInfo.userName,
+					modName: self.props.userInfo.userName,
 					userName: '',
 					ip: '',
-					comment: this.state.actionTextValue || 'Enabled all IP bans',
+					comment: self.state.actionTextValue || 'Enabled all IP bans',
 					action: 'enableIpbans'
 				});
 			}
@@ -275,7 +269,7 @@ export default class Moderation extends React.Component {
 							this.toggleAccountCreation = c;
 						}}
 					>
-						<input type="checkbox" name="accountcreation" defaultChecked={this.state.accountCreationDisabled} />
+						<input type="checkbox" name="accountcreation" />
 					</div>
 				</div>
 				<div className="toggle-containers">
@@ -286,7 +280,7 @@ export default class Moderation extends React.Component {
 							this.toggleIpbans = c;
 						}}
 					>
-						<input type="checkbox" name="ipbans" defaultChecked={this.state.ipbansDisabled} />
+						<input type="checkbox" name="ipbans" />
 					</div>
 				</div>
 			</div>

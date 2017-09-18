@@ -24,16 +24,13 @@ const PatchAlert = ({ isActive, onClick }) => {
 	}
 };
 
-const Defaultmid = ({ version, readPatchNotes, quickDefault }) => (
+const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 	<section className="defaultmid">
-		<div className="callout">50,000+ games played!</div>
 		<div className="poll">
-			<a target="_blank" href="/polls">
-				New polls added
-			</a>
+			<a target="_blank" href="/polls" />
 		</div>
 		<PatchAlert isActive={version.lastSeen && version.current.number !== version.lastSeen} onClick={readPatchNotes} />
-		<img src="images/lizard24.png" alt="Secret Hitler logo" width="400" height="400" />
+		<img src="images/lizard25.png" alt="Secret Hitler logo" width="400" height="400" />
 		<p>
 			<span>{`sh.io version ${version.current.number} "${version.current.color}" released ${version.current.date} | `}</span>
 			<span>
@@ -115,8 +112,7 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) => (
 		<button style={{ padding: '5px', width: '80px' }} data-name="hhh" className="loginquick">
 			hhh
 		</button>
-	</section>
-);
+	</section>;
 
 Defaultmid.propTypes = {
 	quickDefault: PropTypes.func

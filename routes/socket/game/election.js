@@ -955,10 +955,10 @@ module.exports.selectPresidentVoteOnVeto = data => {
 		presidentVeto: data.vote
 	});
 
-	if (!game.private.lock.selectPresidentVoteOnVeto) {
+	if (!game.private.lock.selectPresidentVoteOnVeto && chancellorIndex && game.publicPlayersState[chancellorIndex]) {
 		game.private.lock.selectPresidentVoteOnVeto = true;
 
-		game.publicPlayersState[chancellorIndex].isLoader = false;
+		game.publicPlayersState[chancellorIndex].isLoader = false; // crash here 9/17
 		publicPresident.isLoader = false;
 		president.cardFlingerState[0].action = president.cardFlingerState[1].action = '';
 		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = false;

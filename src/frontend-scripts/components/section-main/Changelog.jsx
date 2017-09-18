@@ -23,6 +23,8 @@ const Changelog = props =>
 			</a>{' '}
 			kindly set up by moderator DFinn.
 		</p>
+		<h3>New feature: card and graphics overhaul</h3>
+		<p>Thanks to contributor andy013 on github, most of the cards and images in game have been upgraded and colorized. Neat!</p>
 		<h3>New feature: election voting rework (changable votes)</h3>
 		<p>
 			Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the

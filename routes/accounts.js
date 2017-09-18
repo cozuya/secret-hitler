@@ -74,7 +74,6 @@ module.exports = () => {
 	});
 
 	app.post('/account/signup', (req, res, next) => {
-		console.log(accountCreationDisabled);
 		const { username, password, password2, email } = req.body,
 			signupIP = req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress,
 			save = {
