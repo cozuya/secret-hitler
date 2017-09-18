@@ -153,6 +153,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 
 		data.general.timeCreated = new Date().getTime();
 		updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
+		console.log(data.general);
 		games.push(data);
 		sendGameList();
 		socket.join(data.general.uid);

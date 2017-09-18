@@ -12,20 +12,16 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 			gameToSave = new Game({
 				uid: game.general.uid,
 				date: new Date(),
-				winningPlayers: game.private.seatedPlayers
-					.filter(player => player.wonGame)
-					.map(player => ({
-						userName: player.userName,
-						team: player.role.team,
-						role: player.role.cardName
-					})),
-				losingPlayers: game.private.seatedPlayers
-					.filter(player => !player.wonGame)
-					.map(player => ({
-						userName: player.userName,
-						team: player.role.team,
-						role: player.role.cardName
-					})),
+				winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => ({
+					userName: player.userName,
+					team: player.role.team,
+					role: player.role.cardName
+				})),
+				losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => ({
+					userName: player.userName,
+					team: player.role.team,
+					role: player.role.cardName
+				})),
 				winningTeam: game.gameState.isCompleted,
 				playerCount: game.general.playerCount
 			});
@@ -42,9 +38,8 @@ const { sendInProgressGameUpdate } = require('../util.js'),
  * @param {string} winningTeamName - name of the team that won this game.
  */
 module.exports.completeGame = (game, winningTeamName) => {
-	const winningPrivatePlayers = game.private.seatedPlayers.filter(
-			player => player.role.team === winningTeamName
-		),
+	console.log(winningTeamName, 'wtn');
+	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName),
 		{ seatedPlayers } = game.private,
 		{ publicPlayersState } = game,
 		chat = {
@@ -60,30 +55,20 @@ module.exports.completeGame = (game, winningTeamName) => {
 		};
 
 	winningPrivatePlayers.forEach((player, index) => {
-		publicPlayersState.find(
-			play => play.userName === player.userName
-		).notificationStatus =
-			'success';
+		publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
 
-		publicPlayersState.find(
-			play => play.userName === player.userName
-		).isConfetti = true;
+		publicPlayersState.find(play => play.userName === player.userName).isConfetti = true;
 		player.wonGame = true;
 	});
 
 	setTimeout(() => {
 		winningPrivatePlayers.forEach((player, index) => {
-			publicPlayersState.find(
-				play => play.userName === player.userName
-			).isConfetti = false;
+			publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
 		});
 		sendInProgressGameUpdate(game);
 	}, 15000);
 
-	game.general.status =
-		winningTeamName === 'fascist'
-			? 'Fascists win the game.'
-			: 'Liberals win the game.';
+	game.general.status = winningTeamName === 'fascist' ? 'Fascists win the game.' : 'Liberals win the game.';
 	game.gameState.isCompleted = winningTeamName;
 	sendGameList();
 
@@ -108,9 +93,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 		username: { $in: seatedPlayers.map(player => player.userName) }
 	})
 		.then(results => {
-			const winningPlayerNames = winningPrivatePlayers.map(
-					player => player.userName
-				),
+			const winningPlayerNames = winningPrivatePlayers.map(player => player.userName),
 				isRainbow = game.general.rainbowgame;
 
 			results.forEach(player => {
@@ -118,21 +101,15 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 				if (winningPlayerNames.includes(player.username)) {
 					if (isRainbow) {
-						player.rainbowWins = player.rainbowWins
-							? player.rainbowWins + 1
-							: 1;
-						player.rainbowLosses = player.rainbowLosses
-							? player.rainbowLosses
-							: 0;
+						player.rainbowWins = player.rainbowWins ? player.rainbowWins + 1 : 1;
+						player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses : 0;
 					} else {
 						player.wins++;
 					}
 					winner = true;
 				} else {
 					if (isRainbow) {
-						player.rainbowLosses = player.rainbowLosses
-							? player.rainbowLosses + 1
-							: 1;
+						player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses + 1 : 1;
 						player.rainbowWins = player.rainbowWins ? player.rainbowWins : 0;
 					} else {
 						player.losses++;
@@ -141,24 +118,18 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 				player.games.push(game.general.uid);
 				player.save(() => {
-					const userEntry = userList.find(
-						user => user.userName === player.username
-					);
+					const userEntry = userList.find(user => user.userName === player.username);
 
 					if (userEntry) {
 						if (winner) {
 							if (isRainbow) {
-								userEntry.rainbowWins = userEntry.rainbowWins
-									? userEntry.rainbowWins + 1
-									: 1;
+								userEntry.rainbowWins = userEntry.rainbowWins ? userEntry.rainbowWins + 1 : 1;
 							} else {
 								userEntry.wins++;
 							}
 						} else {
 							if (isRainbow) {
-								userEntry.rainbowLosses = userEntry.rainbowLosses
-									? userEntry.rainbowLosses + 1
-									: 1;
+								userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses + 1 : 1;
 							} else {
 								userEntry.losses++;
 							}

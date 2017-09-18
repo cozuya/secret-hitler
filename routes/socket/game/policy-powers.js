@@ -372,15 +372,16 @@ module.exports.selectPlayerToExecute = data => {
 
 	if (!game.private.lock.selectPlayerToExecute) {
 		game.private.lock.selectPlayerToExecute = true;
+
+		game.private.summary = game.private.summary.updateLog({
+			execution: playerIndex
+		});
+
 		if (!game.general.disableGamechat) {
 			game.private.unSeatedGameChats.push(nonPresidentChat);
 
 			seatedPlayers.filter(player => player.userName !== president.userName).forEach(player => {
 				player.gameChats.push(nonPresidentChat);
-			});
-
-			game.private.summary = game.private.summary.updateLog({
-				execution: playerIndex
 			});
 
 			president.gameChats.push({
