@@ -13,6 +13,10 @@ $selection: #db2828;
 $proceed: #2185d0;
 $lteal: #097892;
 $dteal: #034f61;
+// $headerfont: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
+// $textfont: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+$headerfont: 'Comfortaa', serif;
+$textfont: 'Source Code Pro', serif;
 @import 'semantic.scss';
 @import 'creategame.scss';
 @import 'leftsidebar.scss';
@@ -34,7 +38,7 @@ $dteal: #034f61;
 	margin-right: auto;
 	max-width: inherit !important;
 	.ui.header {
-		font-family: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
+		font-family: $headerfont;
 	}
 	.section-main > .nav-menu {
 		background: #000000;
@@ -73,7 +77,7 @@ $dteal: #034f61;
 			padding: 5px 5px 0 10px;
 			color: white;
 			background: $darkfascistteam;
-			font-family: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
+			font-family: $headerfont;
 			position: relative;
 			cursor: move;
 			i {
@@ -97,7 +101,7 @@ $dteal: #034f61;
 	}
 	.defaultmid {
 		.callout {
-			font-family: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
+			font-family: $headerfont;
 			font-size: 34px;
 			text-align: center;
 			margin-top: 40px;
@@ -148,7 +152,7 @@ $dteal: #034f61;
 			top: 140px;
 		}
 		p {
-			font-family: 'Josefin Sans', sans-serif;
+			font-family: $headerfont;
 			position: absolute;
 			bottom: 0;
 			left: 3%;
@@ -321,7 +325,7 @@ body {
 		line-height: 1;
 		margin: 3px 0 0 10px;
 		font-size: 42px;
-		font-family: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
+		font-family: $headerfont;
 		a {
 			color: $darkfascistteam;
 		}

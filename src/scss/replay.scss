@@ -26,7 +26,7 @@
 			> h1 {
 				color: white;
 				font-size: 26px;
-				font-family: 'Josefin Sans';
+				font-family: $headerfont;
 				margin-bottom: 10px;
 			}
 
@@ -108,11 +108,11 @@
 		h1 {
 			color: #c36563;
 			font-size: 26px;
-			font-family: 'Josefin Sans';
+			font-family: $headerfont;
 		}
 
 		p {
-			font-family: 'Josefin Sans';
+			font-family: $headerfont;
 			color: #eee;
 			font-size: 20px;
 		}

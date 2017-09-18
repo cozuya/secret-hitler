@@ -31,9 +31,7 @@ class Playerlist extends React.Component {
 	}
 
 	clickInfoIcon() {
-		$('.playerlistinfo')
-			.modal('setting', 'transition', 'scale')
-			.modal('show');
+		$('.playerlistinfo').modal('setting', 'transition', 'scale').modal('show');
 	}
 
 	routeToGame(gameId) {
@@ -118,16 +116,18 @@ class Playerlist extends React.Component {
 							70%.
 						</p>
 						<p>
-							Also <span className="admin">admins</span>, red, are always on top; <span className="moderatorcolor">mods</span> are blue with a red (M) and also
-							appear at the top, and <span className="contributer">contributors</span> get a special orange color as well! Contribute code to this open source
-							project to be endlessly pestered about why you're orange.
+							Also <span className="admin">admins</span> are always on top, <span className="moderatorcolor">mods</span> are blue with a red (M) and also appear
+							at the top, and <span className="contributer">contributors</span> get a special orange color as well! Contribute code to this open source project
+							to be endlessly pestered about why you're orange.
 						</p>
 					</div>
 					{(() => {
 						if (Object.keys(this.props.userList).length) {
 							return (
 								<span>
-									<span>{this.props.userList.list.length}</span>
+									<span>
+										{this.props.userList.list.length}
+									</span>
 									<i className="large user icon" title="Number of players logged in" />
 								</span>
 							);
@@ -241,8 +241,7 @@ class Playerlist extends React.Component {
 														if (MODERATORS.includes(user.userName)) {
 															return (
 																<span className="moderator-name" title="This user is a moderator">
-																	{' '}
-																	(M)
+																	{' '}(M)
 																</span>
 															);
 														}
