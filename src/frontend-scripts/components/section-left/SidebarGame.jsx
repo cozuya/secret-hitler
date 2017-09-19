@@ -136,6 +136,18 @@ const SidebarGame = props => {
 							</div>
 						</div>
 					: <div>
+						    {(() => {
+								if (game.private) {
+									return (
+										<div
+											className="private-game"
+											title="This is a private game."
+										>
+											P
+										</div>
+									);
+								}
+							})()}
 							<div
 								className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
 								title={
