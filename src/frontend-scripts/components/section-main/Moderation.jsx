@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import $ from 'jquery';
-import { ADMINS } from '../../constants';
+import { ADMINS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
 import Checkbox from 'semantic-ui-checkbox';
 
@@ -242,7 +242,13 @@ export default class Moderation extends React.Component {
 					Delete player cardback and log them out
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					className={
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction('ipban');
 					}}
@@ -251,7 +257,9 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && ADMINS.includes(this.props.userInfo.userName)
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -260,6 +268,18 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Ban and IP ban for 1 week
+				</button>
+				<button
+					className={
+						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('resetServer');
+					}}
+				>
+					Reset server
 				</button>
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable account creation</h4>

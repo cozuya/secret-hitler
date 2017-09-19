@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import { PLAYERCOLORS, MODERATORS, ADMINS } from '../../constants';
+import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
 import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -319,7 +319,12 @@ class Gamechat extends React.Component {
 														<span className="moderator-name"> (M)</span>
 														<span className="observer-chat"> (Observer)</span>
 													</span>
-												: <span className="observer-chat"> (Observer)</span>}
+												: EDITORS.includes(chat.userName)
+													? <span>
+															<span className="editor-name"> (E)</span>
+															<span className="observer-chat"> (Observer)</span>
+														</span>
+													: <span className="observer-chat"> (Observer)</span>}
 										{this.handleTimestamps(chat.timestamp)}:
 									</span>
 									<span>
@@ -655,7 +660,11 @@ class Gamechat extends React.Component {
 								(isDead && !gameState.isCompleted) ||
 								isGovernmentDuringPolicySelection ||
 								gameInfo.general.disableChat ||
-								(gameInfo.general.private && !userInfo.isSeated && !MODERATORS.includes(userInfo.userName) && !ADMINS.includes(userInfo.userName)) ||
+								(gameInfo.general.private &&
+									!userInfo.isSeated &&
+									!MODERATORS.includes(userInfo.userName) &&
+									!ADMINS.includes(userInfo.userName) &&
+									!EDITORS.includes(userInfo.userName)) ||
 								(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
 							) {
 								classes += ' disabled';

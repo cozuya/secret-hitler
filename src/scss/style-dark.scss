@@ -15,8 +15,9 @@ $lteal: #097892;
 $dteal: #034f61;
 // $headerfont: 'Josefin Sans', 'Lato', Helvetica, Arial, sans-serif;
 // $textfont: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-$headerfont: 'Comfortaa', serif;
-$textfont: 'Source Code Pro', serif;
+// $headerfont: 'Source Code Pro', serif;
+$textfont: 'Comfortaa', serif;
+$headerfont: 'Unica One', serif;
 @import 'semantic.scss';
 @import 'creategame.scss';
 @import 'leftsidebar.scss';
@@ -438,6 +439,10 @@ body {
 	color: #0f43fc !important;
 }
 
+.editorcolor {
+	color: #05bba0 !important;
+}
+
 .admin {
 	color: red !important;
 }
@@ -470,7 +475,11 @@ body {
 }
 
 .moderator-name {
-	color: red;
+	color: $lightfascistteam;
+}
+
+.editor-name {
+	color: $darkfascistteam;
 }
 
 .modal-warning {

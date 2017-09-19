@@ -13,7 +13,7 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	https = require('https'),
 	{ sendInProgressGameUpdate } = require('./util.js'),
 	version = require('../../version'),
-	{ PLAYERCOLORS, MODERATORS, ADMINS } = require('../../src/frontend-scripts/constants'),
+	{ PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants'),
 	handleSocketDisconnect = socket => {
 		const { passport } = socket.handshake.session;
 
@@ -153,7 +153,6 @@ module.exports.handleAddNewGame = (socket, data) => {
 
 		data.general.timeCreated = new Date().getTime();
 		updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
-		console.log(data.general);
 		games.push(data);
 		sendGameList();
 		socket.join(data.general.uid);
@@ -614,11 +613,12 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 module.exports.handleModerationAction = (socket, data) => {
 	const { passport } = socket.handshake.session,
+		isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user),
 		affectedSocketId = Object.keys(io.sockets.sockets).find(
 			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 		);
 
-	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
+	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
 		const modaction = new ModAction({
 				date: new Date(),
 				modUserName: passport.user,
@@ -639,26 +639,28 @@ module.exports.handleModerationAction = (socket, data) => {
 				}
 			},
 			banAccount = username => {
-				Account.findOne({ username })
-					.then(account => {
-						if (account) {
-							account.hash = crypto.randomBytes(20).toString('hex');
-							account.salt = crypto.randomBytes(20).toString('hex');
-							account.isBanned = true;
-							account.save(() => {
-								const bannedAccountGeneralChats = generalChats.filter(chat => chat.userName === username);
+				if (!ADMINS.includes(username) && (!MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
+					Account.findOne({ username })
+						.then(account => {
+							if (account) {
+								account.hash = crypto.randomBytes(20).toString('hex');
+								account.salt = crypto.randomBytes(20).toString('hex');
+								account.isBanned = true;
+								account.save(() => {
+									const bannedAccountGeneralChats = generalChats.filter(chat => chat.userName === username);
 
-								bannedAccountGeneralChats.reverse().forEach(chat => {
-									generalChats.splice(generalChats.indexOf(chat), 1);
+									bannedAccountGeneralChats.reverse().forEach(chat => {
+										generalChats.splice(generalChats.indexOf(chat), 1);
+									});
+									logOutUser(username);
+									io.sockets.emit('generalChats', generalChats);
 								});
-								logOutUser(username);
-								io.sockets.emit('generalChats', generalChats);
-							});
-						}
-					})
-					.catch(err => {
-						console.log(err, 'ban user err');
-					});
+							}
+						})
+						.catch(err => {
+							console.log(err, 'ban user err');
+						});
+				}
 			};
 
 		modaction.save();
@@ -696,8 +698,11 @@ module.exports.handleModerationAction = (socket, data) => {
 					ip: data.ip
 				});
 
-				banAccount(data.userName);
-				ipban.save();
+				if (isSuperMod) {
+					ipban.save(() => {
+						banAccount(data.userName);
+					});
+				}
 				break;
 			case 'timeOut':
 				const timeout = new BannedIP({
@@ -716,8 +721,11 @@ module.exports.handleModerationAction = (socket, data) => {
 					ip: data.ip
 				});
 
-				banAccount(data.userName);
-				ipbanl.save();
+				if (isSuperMod) {
+					ipbanl.save(() => {
+						banAccount(data.userName);
+					});
+				}
 				break;
 			case 'deleteCardback':
 				Account.findOne({ username: data.userName })
@@ -745,6 +753,12 @@ module.exports.handleModerationAction = (socket, data) => {
 				break;
 			case 'enableIpbans':
 				ipbansNotEnforced.status = false;
+				break;
+			case 'resetServer':
+				if (isSuperMod) {
+					console.log('server crashing manually via mod action');
+					crashServer();
+				}
 				break;
 			default:
 				const setType = /setRWins/.test(data.action)

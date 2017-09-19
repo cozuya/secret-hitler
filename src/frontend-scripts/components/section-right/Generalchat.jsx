@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { MODERATORS } from '../../constants';
+import { MODERATORS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
 
 export default class Generalchat extends React.Component {
@@ -69,23 +69,22 @@ export default class Generalchat extends React.Component {
 		return this.props.generalChats.map((chat, i) => {
 			const userClasses = classnames(
 				{
-					[chat.color]: !(
-						userInfo.gameSettings &&
-						userInfo.gameSettings.disablePlayerColorsInChat
-					)
+					[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
 				},
 				'chat-user'
 			);
 
 			return (
 				<div className="item" key={i}>
-					<span
-						className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}
-					>
+					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
 						{chat.userName}
 						{(() => {
 							if (MODERATORS.includes(chat.userName)) {
 								return <span className="moderator-name"> (M)</span>;
+							}
+
+							if (EDITORS.includes(chat.userName)) {
+								return <span className="editor-name"> (E)</span>;
 							}
 						})()}
 						:{' '}
@@ -105,11 +104,11 @@ export default class Generalchat extends React.Component {
 	handleChatScrolled(e) {
 		const el = e.currentTarget;
 
-		if (el.scrollTop === (el.scrollHeight - el.offsetHeight) && this.state.lock) {
+		if (el.scrollTop === el.scrollHeight - el.offsetHeight && this.state.lock) {
 			this.setState({
 				lock: false
 			});
-		} else if (el.scrollTop !== (el.scrollHeight - el.offsetHeight) && !this.state.lock) {
+		} else if (el.scrollTop !== el.scrollHeight - el.offsetHeight && !this.state.lock) {
 			this.setState({
 				lock: true
 			});
@@ -124,11 +123,7 @@ export default class Generalchat extends React.Component {
 						<h3 className="ui header">Chat</h3>
 						<i
 							title="Click here to lock chat and prevent from scrolling"
-							className={
-								this.state.lock
-									? 'large lock icon'
-									: 'large unlock alternate icon'
-							}
+							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
 							onClick={this.handleChatLockClick}
 						/>
 					</div>
@@ -140,15 +135,7 @@ export default class Generalchat extends React.Component {
 					</div>
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div
-						className={
-							this.props.userInfo.userName
-								? !this.state.disabled
-									? 'ui action input'
-									: 'ui action input disabled'
-								: 'ui action input disabled'
-						}
-					>
+					<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
 						<input
 							placeholder="Chat.."
 							value={this.state.inputValue}
@@ -159,24 +146,9 @@ export default class Generalchat extends React.Component {
 								this.input = c;
 							}}
 						/>
-						<button
-							className={
-								this.state.inputValue
-									? 'ui primary button'
-									: 'ui primary button disabled'
-							}
-						>
-							Chat
-						</button>
+						<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
-					<i
-						className={
-							this.state.inputValue
-								? 'large delete icon'
-								: 'large delete icon app-visibility-hidden'
-						}
-						onClick={this.handleChatClearClick}
-					/>
+					<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'} onClick={this.handleChatClearClick} />
 				</form>
 			</section>
 		);

@@ -38,7 +38,6 @@ const { sendInProgressGameUpdate } = require('../util.js'),
  * @param {string} winningTeamName - name of the team that won this game.
  */
 module.exports.completeGame = (game, winningTeamName) => {
-	console.log(winningTeamName, 'wtn');
 	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName),
 		{ seatedPlayers } = game.private,
 		{ publicPlayersState } = game,
