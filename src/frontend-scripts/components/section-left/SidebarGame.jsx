@@ -86,9 +86,9 @@ const SidebarGame = props => {
 							<div
 								className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
 								title={
-									game.rainbowgame
+									(game.rainbowgame
 										? 'Rainbow game - only players with 50+ games played can be seated in this game.'
-										: 'Click here to enter this game table.'
+										: 'Click here to enter this game table.') + ' Already in game: ' + game.userNames.join(', ')
 								}
 							>
 								{game.name}
