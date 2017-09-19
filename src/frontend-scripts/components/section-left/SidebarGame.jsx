@@ -138,6 +138,9 @@ const SidebarGame = props => {
 					: <div>
 							<div
 								className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
+								title={
+									'Playing: ' + game.userNames.join(', ')
+								}
 							>
 								{game.name}
 							</div>
