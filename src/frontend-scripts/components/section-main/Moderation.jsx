@@ -174,14 +174,6 @@ export default class Moderation extends React.Component {
 		return (
 			<div className="button-container">
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button primary' : 'ui button primary disabled'}
-					onClick={() => {
-						takeModAction('ban');
-					}}
-				>
-					Ban user
-				</button>
-				<button
 					className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'}
 					onClick={() => {
 						takeModAction('comment');
@@ -256,6 +248,55 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
+						playerInputText && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
+					onClick={() => {
+						takeModAction('deleteGame');
+					}}
+				>
+					Delete game
+				</button>
+				<div className="toggle-containers">
+					<h4 className="ui header">Disable account creation</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleAccountCreation = c;
+						}}
+					>
+						<input type="checkbox" name="accountcreation" />
+					</div>
+				</div>
+				<div className="toggle-containers">
+					<h4 className="ui header">Disable ipbans including new account restrictions</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleIpbans = c;
+						}}
+					>
+						<input type="checkbox" name="ipbans" />
+					</div>
+				</div>
+				<div className="ui horizontal divider">-</div>
+				<button
+					className={
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('ban');
+					}}
+				>
+					Ban user
+				</button>
+				<button
+					className={
 						(selectedUser || playerInputText) &&
 						actionTextValue &&
 						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
@@ -306,42 +347,8 @@ export default class Moderation extends React.Component {
 						takeModAction('resetServer');
 					}}
 				>
-					{this.state.resetServerCount ? 'Click again to reset server' : 'Reset server'}
+					{this.state.resetServerCount ? 'Click again to reset server' : 'Reset server - click twice'}
 				</button>
-				<button
-					className={
-						playerInputText && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
-							? 'ui button tier3'
-							: 'ui button disabled tier3'
-					}
-					onClick={() => {
-						takeModAction('deleteGame');
-					}}
-				>
-					Delete game
-				</button>
-				<div className="toggle-containers">
-					<h4 className="ui header">Disable account creation</h4>
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.toggleAccountCreation = c;
-						}}
-					>
-						<input type="checkbox" name="accountcreation" />
-					</div>
-				</div>
-				<div className="toggle-containers">
-					<h4 className="ui header">Disable ipbans including new account restrictions</h4>
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.toggleIpbans = c;
-						}}
-					>
-						<input type="checkbox" name="ipbans" />
-					</div>
-				</div>
 			</div>
 		);
 	}

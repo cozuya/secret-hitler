@@ -16,6 +16,20 @@ body {
 	overflow-x: auto;
 	max-width: 1127px;
 	margin: 0 auto;
+	font-family: 'Comfortaa', serif;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.ui.header,
+.ui.button,
+.ui.menu {
+	font-family: 'Comfortaa', Lato, sans-serif;
 }
 
 html {
