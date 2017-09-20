@@ -2,6 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import { MODERATORS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
+import { processEmotes } from '../../emotes';
 
 export default class Generalchat extends React.Component {
 	constructor() {
@@ -90,7 +91,7 @@ export default class Generalchat extends React.Component {
 						{chat.userName && ':'}{' '}
 					</span>
 					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>
-						{chat.chat}
+						{processEmotes(chat.chat)}
 					</span>
 				</div>
 			);
