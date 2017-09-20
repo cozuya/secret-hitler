@@ -1,6 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import PropTypes from 'prop-types';
+import { PLAYERCOLORS } from '../../constants';
 
 export default class Menu extends React.Component {
 	constructor() {
@@ -29,12 +30,7 @@ export default class Menu extends React.Component {
 					this.textArray = [];
 					this.$elem.html('');
 					for (var i = 0; i < this.oldText.length; i++) {
-						this.textArray[i] =
-							"<span class='text-effect' style='" +
-							effectOption +
-							"'>" +
-							this.oldText.substr(i, 1) +
-							'</span>';
+						this.textArray[i] = "<span class='text-effect' style='" + effectOption + "'>" + this.oldText.substr(i, 1) + '</span>';
 						this.$elem.append(this.textArray[i]);
 					}
 				},
@@ -44,11 +40,7 @@ export default class Menu extends React.Component {
 				},
 				slide: function() {
 					var startPosition = this.$elem.offset().left + this.$elem.width();
-					this.setup(
-						'visibility: hidden; position: relative; left: ' +
-							startPosition +
-							'px;'
-					);
+					this.setup('visibility: hidden; position: relative; left: ' + startPosition + 'px;');
 					this.run('left', 0);
 				},
 				dropdown: function() {
@@ -57,11 +49,7 @@ export default class Menu extends React.Component {
 					this.run('bottom', 0);
 				},
 				fade: function() {
-					this.setup(
-						this.$elem[0].style.opacity !== undefined
-							? 'opacity: 0;'
-							: 'filter: alpha(opacity=0); display: inline-block;'
-					);
+					this.setup(this.$elem[0].style.opacity !== undefined ? 'opacity: 0;' : 'filter: alpha(opacity=0); display: inline-block;');
 					this.run('opacity', this.$elem.css('opacity'));
 				},
 				jumble: function() {
@@ -111,11 +99,7 @@ export default class Menu extends React.Component {
 							clearInterval(self.jumbleInterval);
 						}
 						self.runJumble(letterArray, i);
-						self.$elem
-							.children('span.text-effect')
-							.eq(i)
-							.html(self.oldText.substr(i, 1))
-							.css('color', self.$elem.css('color'));
+						self.$elem.children('span.text-effect').eq(i).html(self.oldText.substr(i, 1)).css('color', self.$elem.css('color'));
 						if (i === self.oldText.length - 1) {
 							clearInterval(jumbleEffectInterval);
 							self.reset();
@@ -132,11 +116,7 @@ export default class Menu extends React.Component {
 								self.$elem
 									.children('span.text-effect')
 									.eq(i)
-									.html(
-										letterArray[
-											Math.floor(Math.random() * (letterArray.length - 1))
-										]
-									)
+									.html(letterArray[Math.floor(Math.random() * (letterArray.length - 1))])
 									.css('color', self.options.jumbleColor);
 							} else {
 								self.$elem.children('span.text-effect').eq(i).html(' ');
@@ -151,23 +131,12 @@ export default class Menu extends React.Component {
 					var $spans = self.$elem.children('span.text-effect');
 					obj[effect] = oldEffect;
 					var effectInterval = setInterval(function() {
-						$spans
-							.eq(i)
-							.css('visibility', 'visible')
-							.animate(
-								obj,
-								self.options.completionSpeed / self.textArray.length,
-								function() {
-									if (
-										($(this).index() === self.textArray.length - 1 &&
-											!self.options.reverse) ||
-										(self.options.reverse && $(this).index() === 0)
-									) {
-										clearInterval(effectInterval);
-										self.reset();
-									}
-								}
-							);
+						$spans.eq(i).css('visibility', 'visible').animate(obj, self.options.completionSpeed / self.textArray.length, function() {
+							if (($(this).index() === self.textArray.length - 1 && !self.options.reverse) || (self.options.reverse && $(this).index() === 0)) {
+								clearInterval(effectInterval);
+								self.reset();
+							}
+						});
 						if (self.options.reverse) {
 							i--;
 						} else {
@@ -197,16 +166,13 @@ export default class Menu extends React.Component {
 		});
 
 		setTimeout(function() {
-			$('section.nav-menu > p > a')
-				.css('fontSize', '42px')
-				.text('Secret Hitler')
-				.textEffect({
-					effect: 'random',
-					effectSpeed: 100,
-					completionSpeed: Math.floor(Math.random() * 20000),
-					jumbleColor: '#7f7f7f',
-					reverse: Boolean(Math.random() >= 0.5)
-				});
+			$('section.nav-menu > p > a').css('fontSize', '42px').text('Secret Hitler').textEffect({
+				effect: 'random',
+				effectSpeed: 100,
+				completionSpeed: Math.floor(Math.random() * 20000),
+				jumbleColor: '#7f7f7f',
+				reverse: Boolean(Math.random() >= 0.5)
+			});
 		}, 6000);
 	}
 
@@ -214,11 +180,7 @@ export default class Menu extends React.Component {
 		const { gameInfo, userInfo } = this.props,
 			{ gameState } = gameInfo;
 
-		if (
-			(gameState && gameState.isCompleted && userInfo.seatNumber) ||
-			(gameState && !userInfo.isSeated) ||
-			(gameState && !gameState.isStarted)
-		) {
+		if ((gameState && gameState.isCompleted && userInfo.seatNumber) || (gameState && !userInfo.isSeated) || (gameState && !gameState.isStarted)) {
 			this.props.onLeaveGame(userInfo.isSeated, true);
 		} else if (!gameState) {
 			this.props.onSettingsButtonClick('settings');
@@ -239,11 +201,7 @@ export default class Menu extends React.Component {
 							iconClasses = () => {
 								let classes = 'setting icon large';
 
-								if (
-									gameInfo.gameState &&
-									gameInfo.gameState.isStarted &&
-									!gameInfo.gameState.isCompleted
-								) {
+								if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
 									classes += ' disabled';
 								}
 
@@ -262,14 +220,9 @@ export default class Menu extends React.Component {
 								</div>
 							: <div>
 									<div className="loggedin">
-										Logged in as{' '}
-										<span className="playername">{userInfo.userName}</span>
+										Logged in as <span className={`${PLAYERCOLORS(userInfo.userName)} playername`}>{userInfo.userName}</span>
 									</div>
-									<i
-										className={iconClasses()}
-										title="Player settings screen"
-										onClick={this.clickSettingsButton}
-									/>
+									<i className={iconClasses()} title="Player settings screen" onClick={this.clickSettingsButton} />
 								</div>;
 					})()}
 					{(() => {

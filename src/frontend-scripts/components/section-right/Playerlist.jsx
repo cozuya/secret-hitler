@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import { ADMINS, PLAYERCOLORS, MODERATORS } from '../../constants';
+import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -55,7 +55,11 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const { userInfo } = this.props;
 
-		if (userInfo && userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))) {
+		if (
+			userInfo &&
+			userInfo.userName &&
+			(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
+		) {
 			return (
 				<i
 					onClick={() => {
@@ -69,7 +73,11 @@ class Playerlist extends React.Component {
 
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
-		if (userInfo && userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))) {
+		if (
+			userInfo &&
+			userInfo.userName &&
+			(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
+		) {
 			let classes = 'comment icon report-button';
 
 			if (userInfo.gameSettings && userInfo.gameSettings.newReport) {
@@ -152,6 +160,18 @@ class Playerlist extends React.Component {
 
 									if (ADMINS.includes(b.userName)) {
 										return 1;
+									}
+
+									if (EDITORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
+										return -1;
+									}
+
+									if (EDITORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
+										return 1;
+									}
+
+									if (EDITORS.includes(a.userName) && EDITORS.includes(b.userName)) {
+										return a.userName > b.userName ? 1 : -1;
 									}
 
 									if (MODERATORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
@@ -242,6 +262,14 @@ class Playerlist extends React.Component {
 															return (
 																<span className="moderator-name" title="This user is a moderator">
 																	{' '}(M)
+																</span>
+															);
+														}
+
+														if (EDITORS.includes(user.userName)) {
+															return (
+																<span className="editor-name" title="This user is an editor">
+																	{' '}(E)
 																</span>
 															);
 														}

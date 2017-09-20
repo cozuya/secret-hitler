@@ -17,7 +17,8 @@
 		border: 2px solid lightblue;
 	}
 
-	.player-count {
+	.player-count,
+	.gameuid {
 		position: absolute;
 		top: 10px;
 		left: 508px;
@@ -28,6 +29,11 @@
 		padding: 4px;
 		opacity: 1;
 		border: 2px solid lightblue;
+	}
+	.gameuid {
+		width: 220px;
+		left: 430px;
+		top: 40px;
 	}
 	.tracks {
 		transition: all 1s;
