@@ -1,19 +1,20 @@
 let generalChatCount = 0;
 
-const { games, userList, generalChats } = require('./models'),
+const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced } = require('./models'),
 	{ sendGameList, sendGeneralChats, sendUserList, updateUserStatus } = require('./user-requests'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
 	ModAction = require('../../models/modAction'),
 	PlayerReport = require('../../models/playerReport'),
 	BannedIP = require('../../models/bannedIP'),
+	Profile = require('../../models/profile/index'),
 	startGame = require('./game/start-game.js'),
 	{ secureGame } = require('./util.js'),
 	crypto = require('crypto'),
 	https = require('https'),
 	{ sendInProgressGameUpdate } = require('./util.js'),
 	version = require('../../version'),
-	{ PLAYERCOLORS, MODERATORS, ADMINS } = require('../../src/frontend-scripts/constants'),
+	{ PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants'),
 	handleSocketDisconnect = socket => {
 		const { passport } = socket.handshake.session;
 
@@ -160,8 +161,13 @@ module.exports.handleAddNewGame = (socket, data) => {
 };
 
 module.exports.handleAddNewClaim = data => {
-	const game = games.find(el => el.general.uid === data.uid),
-		playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName),
+	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game || !game.private || !game.private.summary) {
+		return;
+	}
+
+	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName),
 		chat = (() => {
 			let text;
 
@@ -608,11 +614,12 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 module.exports.handleModerationAction = (socket, data) => {
 	const { passport } = socket.handshake.session,
+		isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user),
 		affectedSocketId = Object.keys(io.sockets.sockets).find(
 			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 		);
 
-	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user))) {
+	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
 		const modaction = new ModAction({
 				date: new Date(),
 				modUserName: passport.user,
@@ -633,26 +640,28 @@ module.exports.handleModerationAction = (socket, data) => {
 				}
 			},
 			banAccount = username => {
-				Account.findOne({ username })
-					.then(account => {
-						if (account) {
-							account.hash = crypto.randomBytes(20).toString('hex');
-							account.salt = crypto.randomBytes(20).toString('hex');
-							account.isBanned = true;
-							account.save(() => {
-								const bannedAccountGeneralChats = generalChats.filter(chat => chat.userName === username);
+				if (!ADMINS.includes(username) && (!MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
+					Account.findOne({ username })
+						.then(account => {
+							if (account) {
+								account.hash = crypto.randomBytes(20).toString('hex');
+								account.salt = crypto.randomBytes(20).toString('hex');
+								account.isBanned = true;
+								account.save(() => {
+									const bannedAccountGeneralChats = generalChats.filter(chat => chat.userName === username);
 
-								bannedAccountGeneralChats.reverse().forEach(chat => {
-									generalChats.splice(generalChats.indexOf(chat), 1);
+									bannedAccountGeneralChats.reverse().forEach(chat => {
+										generalChats.splice(generalChats.indexOf(chat), 1);
+									});
+									logOutUser(username);
+									io.sockets.emit('generalChats', generalChats);
 								});
-								logOutUser(username);
-								io.sockets.emit('generalChats', generalChats);
-							});
-						}
-					})
-					.catch(err => {
-						console.log(err, 'ban user err');
-					});
+							}
+						})
+						.catch(err => {
+							console.log(err, 'ban user err');
+						});
+				}
 			};
 
 		modaction.save();
@@ -690,8 +699,11 @@ module.exports.handleModerationAction = (socket, data) => {
 					ip: data.ip
 				});
 
-				banAccount(data.userName);
-				ipban.save();
+				if (isSuperMod) {
+					ipban.save(() => {
+						banAccount(data.userName);
+					});
+				}
 				break;
 			case 'timeOut':
 				const timeout = new BannedIP({
@@ -703,6 +715,19 @@ module.exports.handleModerationAction = (socket, data) => {
 					logOutUser(data.userName);
 				});
 				break;
+			case 'clearGenchat':
+				generalChats.fill({});
+
+				io.sockets.emit('generalChats', generalChats);
+				break;
+			case 'deleteProfile':
+				Profile.findOne({ _id: data.userName }).remove(() => {
+					if (io.sockets.sockets[affectedSocketId]) {
+						io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+					}
+				});
+
+				break;
 			case 'ipbanlarge':
 				const ipbanl = new BannedIP({
 					bannedDate: new Date(),
@@ -710,8 +735,11 @@ module.exports.handleModerationAction = (socket, data) => {
 					ip: data.ip
 				});
 
-				banAccount(data.userName);
-				ipbanl.save();
+				if (isSuperMod) {
+					ipbanl.save(() => {
+						banAccount(data.userName);
+					});
+				}
 				break;
 			case 'deleteCardback':
 				Account.findOne({ username: data.userName })
@@ -728,26 +756,53 @@ module.exports.handleModerationAction = (socket, data) => {
 						console.log(err);
 					});
 				break;
+			case 'disableAccountCreation':
+				accountCreationDisabled.status = true;
+				break;
+			case 'enableAccountCreation':
+				accountCreationDisabled.status = false;
+				break;
+			case 'disableIpbans':
+				ipbansNotEnforced.status = true;
+				break;
+			case 'enableIpbans':
+				ipbansNotEnforced.status = false;
+				break;
+			case 'resetServer':
+				if (isSuperMod) {
+					console.log('server crashing manually via mod action');
+					crashServer();
+				}
+				break;
 			default:
-				const setType = /setRWins/.test(data.action)
-						? 'rainbowWins'
-						: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses',
-					number =
-						setType === 'wins'
-							? parseInt(data.action.substr(7))
-							: setType === 'losses'
-								? parseInt(data.action.substr(9))
-								: setType === 'rainbowWins' ? parseInt(data.action.substr(8)) : parseInt(data.action.substr(10));
+				if (data.userName.substr(0, 7) === 'DELGAME') {
+					const game = games.find(el => el.general.uid === data.userName.slice(7));
 
-				if (!isNaN(number)) {
-					Account.findOne({ username: data.userName })
-						.then(account => {
-							account[setType] = number;
-							account.save();
-						})
-						.catch(err => {
-							console.log(err, 'set wins/losses error');
-						});
+					if (game) {
+						games.splice(games.indexOf(game), 1);
+						sendGameList();
+					}
+				} else {
+					const setType = /setRWins/.test(data.action)
+							? 'rainbowWins'
+							: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses',
+						number =
+							setType === 'wins'
+								? parseInt(data.action.substr(7))
+								: setType === 'losses'
+									? parseInt(data.action.substr(9))
+									: setType === 'rainbowWins' ? parseInt(data.action.substr(8)) : parseInt(data.action.substr(10));
+
+					if (!isNaN(number)) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								account[setType] = number;
+								account.save();
+							})
+							.catch(err => {
+								console.log(err, 'set wins/losses error');
+							});
+					}
 				}
 		}
 	}

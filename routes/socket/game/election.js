@@ -464,7 +464,7 @@ module.exports.selectVoting = data => {
 						{ presidentIndex } = game.gameState;
 					game.publicPlayersState[presidentIndex].governmentStatus = 'isPresident';
 
-					game.publicPlayersState[chancellorIndex].governmentStatus = 'isChancellor'; // CRASHES HERE
+					game.publicPlayersState[chancellorIndex].governmentStatus = 'isChancellor';
 					chat.chat = [{ text: 'The election passes.' }];
 
 					if (!experiencedMode && !game.general.disableGamechat) {
@@ -543,29 +543,28 @@ module.exports.selectVoting = data => {
 	}
 
 	if (seatedPlayers.length !== seatedPlayers.filter(play => play.voteStatus.hasVoted).length && player) {
-		player.voteStatus.hasVoted = true;
-		player.voteStatus.didVoteYes = data.vote;
-		game.publicPlayersState[playerIndex].isLoader = false;
+		player.voteStatus.hasVoted = !player.voteStatus.hasVoted ? true : player.voteStatus.didVoteYes ? !data.vote : data.vote;
+		player.voteStatus.didVoteYes = player.voteStatus.hasVoted ? data.vote : false;
+		game.publicPlayersState[playerIndex].isLoader = !player.voteStatus.hasVoted;
 
 		if (data.vote) {
-			// crashes here some times
 			player.cardFlingerState = [
 				{
 					position: 'middle-left',
-					notificationStatus: 'selected',
-					action: '',
+					notificationStatus: !player.voteStatus.hasVoted ? 'notification' : 'selected',
+					action: 'active',
 					cardStatus: {
-						isFlipped: false,
+						isFlipped: true,
 						cardFront: 'ballot',
 						cardBack: 'ja'
 					}
 				},
 				{
 					position: 'middle-right',
-					notificationStatus: '',
-					action: '',
+					notificationStatus: 'notification',
+					action: 'active',
 					cardStatus: {
-						isFlipped: false,
+						isFlipped: true,
 						cardFront: 'ballot',
 						cardBack: 'nein'
 					}
@@ -575,20 +574,20 @@ module.exports.selectVoting = data => {
 			player.cardFlingerState = [
 				{
 					position: 'middle-left',
-					notificationStatus: '',
-					action: '',
+					notificationStatus: 'notification',
+					action: 'active',
 					cardStatus: {
-						isFlipped: false,
+						isFlipped: true,
 						cardFront: 'ballot',
 						cardBack: 'ja'
 					}
 				},
 				{
 					position: 'middle-right',
-					notificationStatus: 'selected',
-					action: '',
+					notificationStatus: !player.voteStatus.hasVoted ? 'notification' : 'selected',
+					action: 'active',
 					cardStatus: {
-						isFlipped: false,
+						isFlipped: true,
 						cardFront: 'ballot',
 						cardBack: 'nein'
 					}
@@ -598,17 +597,23 @@ module.exports.selectVoting = data => {
 
 		sendInProgressGameUpdate(game);
 
-		setTimeout(() => {
-			player.cardFlingerState = [];
-			sendInProgressGameUpdate(game);
-		}, experiencedMode ? 200 : 2000);
-
 		if (seatedPlayers.filter(play => play.voteStatus.hasVoted && !play.isDead).length === game.general.livingPlayerCount) {
 			game.general.status = 'Tallying results of ballots..';
+			seatedPlayers.forEach(player => {
+				player.cardFlingerState[0].action = player.cardFlingerState[1].action = '';
+				player.cardFlingerState[0].action = player.cardFlingerState[1].action = '';
+				player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = false;
+			});
 			sendInProgressGameUpdate(game);
 			setTimeout(() => {
+				seatedPlayers.forEach(player => {
+					player.cardFlingerState = [];
+					sendInProgressGameUpdate(game);
+				});
+			}, experiencedMode ? 200 : 2000);
+			setTimeout(() => {
 				flipBallotCards();
-			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
+			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 2500 : 3000);
 		}
 	}
 };
@@ -633,15 +638,20 @@ module.exports.selectPresidentPolicy = data => {
 		game.publicPlayersState[presidentIndex].isLoader = false;
 		game.publicPlayersState[chancellorIndex].isLoader = true;
 
-		if (data.selection === 0) {
-			president.cardFlingerState[0].notificationStatus = 'selected';
-			president.cardFlingerState[1].notificationStatus = president.cardFlingerState[2].notificationStatus = '';
-		} else if (data.selection === 1) {
-			president.cardFlingerState[0].notificationStatus = president.cardFlingerState[2].notificationStatus = ''; // crash here
-			president.cardFlingerState[1].notificationStatus = 'selected';
-		} else {
-			president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = '';
-			president.cardFlingerState[2].notificationStatus = 'selected';
+		try {
+			if (data.selection === 0) {
+				president.cardFlingerState[0].notificationStatus = 'selected';
+				president.cardFlingerState[1].notificationStatus = president.cardFlingerState[2].notificationStatus = '';
+			} else if (data.selection === 1) {
+				president.cardFlingerState[0].notificationStatus = president.cardFlingerState[2].notificationStatus = '';
+				president.cardFlingerState[1].notificationStatus = 'selected';
+			} else {
+				president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = '';
+				president.cardFlingerState[2].notificationStatus = 'selected';
+			}
+		} catch (error) {
+			console.log(err, 'caught exception in president cardflinger');
+			return;
 		}
 
 		game.private.summary = game.private.summary.updateLog({
@@ -945,10 +955,10 @@ module.exports.selectPresidentVoteOnVeto = data => {
 		presidentVeto: data.vote
 	});
 
-	if (!game.private.lock.selectPresidentVoteOnVeto) {
+	if (!game.private.lock.selectPresidentVoteOnVeto && chancellorIndex && game.publicPlayersState[chancellorIndex]) {
 		game.private.lock.selectPresidentVoteOnVeto = true;
 
-		game.publicPlayersState[chancellorIndex].isLoader = false;
+		game.publicPlayersState[chancellorIndex].isLoader = false; // crash here 9/17
 		publicPresident.isLoader = false;
 		president.cardFlingerState[0].action = president.cardFlingerState[1].action = '';
 		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = false;

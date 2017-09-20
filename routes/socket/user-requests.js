@@ -1,7 +1,7 @@
 const Account = require('../../models/account'),
 	ModAction = require('../../models/modAction'),
 	PlayerReport = require('../../models/playerReport'),
-	{ games, userList, generalChats } = require('./models'),
+	{ games, userList, generalChats, accountCreationDisabled, ipbansDisabled } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
 	{ secureGame } = require('./util'),
 	version = require('../../version'),
@@ -13,19 +13,23 @@ const Account = require('../../models/account'),
 
 let torIps;
 
-https.get(options, res => {
-	let rawData = '';
-	res.on('data', chunk => {
-		rawData += chunk;
+try {
+	https.get(options, res => {
+		let rawData = '';
+		res.on('data', chunk => {
+			rawData += chunk;
+		});
+		res.on('end', () => {
+			try {
+				torIps = rawData.split('\n').slice(3, rawData.length);
+			} catch (e) {
+				console.error(e.message, 'retrieving tor ip addresses failed');
+			}
+		});
 	});
-	res.on('end', () => {
-		try {
-			torIps = rawData.split('\n').slice(3, rawData.length);
-		} catch (e) {
-			console.error(e.message, 'retrieving tor ip addresses failed');
-		}
-	});
-});
+} catch (e) {
+	console.log(e, 'err receiving tor ip addresses');
+}
 
 module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
@@ -38,6 +42,8 @@ module.exports.sendModInfo = socket => {
 				.then(actions => {
 					socket.emit('modInfo', {
 						modReports: actions,
+						accountCreationDisabled,
+						ipbansDisabled,
 						userList: users.map(user => ({
 							isRainbow: user.wins + user.losses > 49,
 							userName: user.username,
@@ -95,6 +101,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 module.exports.sendGameList = socket => {
 	const formattedGames = games.map(game => ({
 		name: game.general.name,
+		userNames: game.publicPlayersState.map(val => val.userName ),
 		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
 		seatedCount: game.publicPlayersState.length,
 		minPlayersCount: game.general.minPlayersCount,
@@ -108,7 +115,7 @@ module.exports.sendGameList = socket => {
 		electionCount: game.general.electionCount,
 		private: game.general.private,
 		uid: game.general.uid,
-		rainbowgame: game.general.rainbowgame
+		rainbowgame: game.general.rainbowgame		
 	}));
 
 	if (socket) {
@@ -156,8 +163,8 @@ const updateUserStatus = (module.exports.updateUserStatus = (username, type, gam
 module.exports.sendGameInfo = (socket, uid) => {
 	const game = games.find(el => el.general.uid === uid),
 		{ passport } = socket.handshake.session;
-
-	if (game) {
+    
+	if (game) {		
 		const _game = Object.assign({}, game);
 
 		if (passport && Object.keys(passport).length) {

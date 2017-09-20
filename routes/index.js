@@ -104,7 +104,9 @@ module.exports = () => {
 					if (err) {
 						return new Error(err);
 					}
-					profile.customCardback = account.gameSettings.customCardback;
+					if (account) {
+						profile.customCardback = account.gameSettings.customCardback;
+					}
 					res.json(profile);
 				});
 			}
@@ -132,10 +134,6 @@ module.exports = () => {
 		});
 	});
 
-	app.get('/data', (req, res) => {
-		res.json(gamesData);
-	});
-
 	app.get('/viewPatchNotes', ensureAuthenticated, (req, res) => {
 		Account.updateOne({ username: req.user.username }, { lastVersionSeen: version.number }, err => {
 			if (err) res.sendStatus(404);
@@ -144,44 +142,46 @@ module.exports = () => {
 	});
 
 	app.post('/upload-cardback', ensureAuthenticated, (req, res) => {
-		if (!req.session.passport) {
-			return;
-		}
-
-		const { image } = req.body,
-			extension = image.split(';base64')[0].split('/')[1],
-			raw = image.split(',')[1],
-			username = req.session.passport.user,
-			now = new Date(),
-			socketId = Object.keys(io.sockets.sockets).find(
-				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username
-			);
-
-		Account.findOne({ username }, (err, account) => {
-			if (account.wins + account.losses < 50) {
-				res.json({
-					message: 'You need to have played 50 games to upload a cardback.'
-				});
-				// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
-			} else if (account.gameSettings.customCardbackSaveTime && now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000) {
-				res.json({
-					message: 'You can only change your cardback once every 30 seconds.'
-				});
-			} else {
-				fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
-					account.gameSettings.customCardback = extension;
-					account.gameSettings.customCardbackSaveTime = now;
-					account.gameSettings.customCardbackUid = Math.random()
-						.toString(36)
-						.substring(2);
-					account.save(() => {
-						res.json({ message: 'Cardback successfully uploaded.' });
-						io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
-					});
-				});
+		try {
+			if (!req.session.passport) {
+				return;
 			}
-		}).catch(err => {
-			console.log(err, 'account err in cardbacks');
-		});
+
+			const { image } = req.body,
+				extension = image.split(';base64')[0].split('/')[1],
+				raw = image.split(',')[1],
+				username = req.session.passport.user,
+				now = new Date(),
+				socketId = Object.keys(io.sockets.sockets).find(
+					socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username
+				);
+
+			Account.findOne({ username }, (err, account) => {
+				if (account.wins + account.losses < 50) {
+					res.json({
+						message: 'You need to have played 50 games to upload a cardback.'
+					});
+					// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
+				} else if (account.gameSettings.customCardbackSaveTime && now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000) {
+					res.json({
+						message: 'You can only change your cardback once every 30 seconds.'
+					});
+				} else {
+					fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
+						account.gameSettings.customCardback = extension;
+						account.gameSettings.customCardbackSaveTime = now;
+						account.gameSettings.customCardbackUid = Math.random().toString(36).substring(2);
+						account.save(() => {
+							res.json({ message: 'Cardback successfully uploaded.' });
+							io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
+						});
+					});
+				}
+			}).catch(err => {
+				console.log(err, 'account err in cardbacks');
+			});
+		} catch (error) {
+			console.log(err, 'upload cardback crash error');
+		}
 	});
 };

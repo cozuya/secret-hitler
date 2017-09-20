@@ -1,6 +1,7 @@
 const cn = require('classnames');
 
 const MODERATORS = (module.exports.MODERATORS = [
+	'Costley',
 	'morewhales',
 	'Ophxlia',
 	'MilkMan',
@@ -12,12 +13,10 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Ecoturtle',
 	'maki2',
 	'jazz',
-	'Max',
-	'Faaiz1999',
-	'DFinn',
-	'wizzy',
-	'cbell'
+	'wizzy'
 ]);
+
+const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999', 'Uther']);
 
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 
@@ -27,6 +26,7 @@ module.exports.PLAYERCOLORS = user =>
 	cn({
 		admin: ADMINS.includes(user.userName),
 		moderatorcolor: MODERATORS.includes(user.userName),
+		editorcolor: EDITORS.includes(user.userName),
 		experienced1: user.wins + user.losses > 49,
 		experienced2: user.wins + user.losses > 99,
 		experienced3: user.wins + user.losses > 199,
@@ -43,5 +43,6 @@ module.exports.PLAYERCOLORS = user =>
 		onfire9: user.wins / (user.wins + user.losses) > 0.68,
 		onfire10: user.wins / (user.wins + user.losses) > 0.7,
 		contributer: CONTRIBUTORS.includes(user.userName),
-		cbell: user.userName === 'cbell'
+		cbell: user.userName === 'cbell',
+		max: user.userName === 'Max'
 	});

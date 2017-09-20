@@ -7,17 +7,9 @@ const shufflePolicies = (module.exports.shufflePolicies = game => {
 
 	game.private.policies = game.private.policies.concat(
 		_.shuffle(
-			_.range(
-				1,
-				12 - (game.trackState.fascistPolicyCount + (count.fascist || 0))
-			)
+			_.range(1, 12 - (game.trackState.fascistPolicyCount + (count.fascist || 0)))
 				.map(num => 'fascist')
-				.concat(
-					_.range(
-						1,
-						7 - (game.trackState.liberalPolicyCount + (count.liberal || 0))
-					).map(num => 'liberal')
-				)
+				.concat(_.range(1, 7 - (game.trackState.liberalPolicyCount + (count.liberal || 0))).map(num => 'liberal'))
 		)
 	);
 
@@ -36,13 +28,9 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	}
 
 	game.gameState.presidentIndex = (() => {
-		const {
-				presidentIndex,
-				specialElectionFormerPresidentIndex
-			} = game.gameState,
+		const { presidentIndex, specialElectionFormerPresidentIndex } = game.gameState,
 			nextPresidentIndex = index => {
-				const nextIndex =
-					index + 1 === game.general.playerCount ? 0 : index + 1;
+				const nextIndex = index + 1 === game.general.playerCount ? 0 : index + 1;
 
 				if (game.publicPlayersState[nextIndex].isDead) {
 					return nextPresidentIndex(nextIndex);
@@ -61,9 +49,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		}
 	})();
 
-	game.private.summary = game.private.summary
-		.nextTurn()
-		.updateLog({ presidentId: game.gameState.presidentIndex });
+	game.private.summary = game.private.summary.nextTurn().updateLog({ presidentId: game.gameState.presidentIndex });
 
 	const { seatedPlayers } = game.private, // eslint-disable-line one-var
 		{ presidentIndex, previousElectedGovernment } = game.gameState,
@@ -71,9 +57,8 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 
 	game.general.electionCount++;
 	sendGameList();
-	game.general.status = `Election #${game.general
-		.electionCount}: president to select chancellor.`;
-	if (!experiencedMode) {
+	game.general.status = `Election #${game.general.electionCount}: president to select chancellor.`;
+	if (!experiencedMode && !game.general.disableGamechat) {
 		pendingPresidentPlayer.gameChats.push({
 			gameChat: true,
 			timestamp: new Date(),
@@ -93,9 +78,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 				!seatedPlayers[index].isDead &&
 				((specialElectionPresidentIndex && index !== presidentIndex) ||
 					(index !== presidentIndex &&
-						(game.general.livingPlayerCount > 5
-							? !previousElectedGovernment.includes(index)
-							: previousElectedGovernment[1] !== index)))
+						(game.general.livingPlayerCount > 5 ? !previousElectedGovernment.includes(index) : previousElectedGovernment[1] !== index)))
 		)
 		.forEach(player => {
 			player.notificationStatus = 'notification';
@@ -106,38 +89,25 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		player.governmentStatus = '';
 	});
 
-	game.publicPlayersState[presidentIndex].governmentStatus =
-		'isPendingPresident';
+	game.publicPlayersState[presidentIndex].governmentStatus = 'isPendingPresident';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
 	game.gameState.clickActionInfo = specialElectionPresidentIndex
 		? [
 				pendingPresidentPlayer.userName,
-				seatedPlayers
-					.filter((player, index) => !player.isDead && index !== presidentIndex)
-					.map(el => seatedPlayers.indexOf(el))
+				seatedPlayers.filter((player, index) => !player.isDead && index !== presidentIndex).map(el => seatedPlayers.indexOf(el))
 			]
 		: game.general.livingPlayerCount > 5
 			? [
 					pendingPresidentPlayer.userName,
 					seatedPlayers
-						.filter(
-							(player, index) =>
-								!player.isDead &&
-								index !== presidentIndex &&
-								!previousElectedGovernment.includes(index)
-						)
+						.filter((player, index) => !player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index))
 						.map(el => seatedPlayers.indexOf(el))
 				]
 			: [
 					pendingPresidentPlayer.userName,
 					seatedPlayers
-						.filter(
-							(player, index) =>
-								!player.isDead &&
-								index !== presidentIndex &&
-								previousElectedGovernment[1] !== index
-						)
+						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
 						.map(el => seatedPlayers.indexOf(el))
 				];
 	sendInProgressGameUpdate(game);

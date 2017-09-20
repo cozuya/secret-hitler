@@ -32,11 +32,13 @@ html {
 	height: 460px;
 	width: 100%;
 	margin: 55px auto 0;
-	background: no-repeat top center url('../images/banner-s.png') #141210;
+	background: no-repeat top center url('../images/banner-new.png') #141210;
 
 	.online-count {
+		padding: 5px;
+		background: #6f3939;
 		position: absolute;
-		top: 20px;
+		top: 10px;
 		right: 20px;
 		color: #ddd;
 		font-size: 18px;

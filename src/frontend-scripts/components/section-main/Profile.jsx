@@ -89,7 +89,12 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 	Profile = ({ profile, fetchReplay, updateActiveStats }) =>
 		<div>
 			{profile.customCardback &&
-				<div className="profile-picture" style={{ backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}` }} />}
+				<div
+					className="profile-picture"
+					style={{
+						background: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random().toString(36).substring(2)})`
+					}}
+				/>}
 			<div className="ui grid">
 				<h1 className="ui header ten wide column">
 					{profile._id}

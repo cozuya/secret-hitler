@@ -2,6 +2,7 @@ const passport = require('passport'),
 	_ = require('lodash'),
 	Account = require('../models/account'),
 	BannedIP = require('../models/bannedIP'),
+	{ ipbansNotEnforced, accountCreationDisabled } = require('./socket/models'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
 	blacklistedWords = require('../iso/blacklistwords'),
@@ -114,6 +115,10 @@ module.exports = () => {
 			res.status(401).json({
 				message: 'Sorry, usernames that end with 88 are not allowed.'
 			});
+		} else if (accountCreationDisabled.status) {
+			res.status(403).json({
+				message: 'Sorry, creating new accounts is temporarily disabled.'
+			});
 		} else {
 			let doesContainBadWord = false;
 			blacklistedWords.forEach(word => {
@@ -143,12 +148,15 @@ module.exports = () => {
 
 							if (ip) {
 								date = new Date().getTime();
-								unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+								unbannedTime = ip.type === 'small' || ip.type === 'new' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
 							}
 
-							if (ip && unbannedTime > date) {
+							if (ip && unbannedTime > date && !ipbansNotEnforced.status) {
 								res.status(403).json({
-									message: 'You can no longer access this service.  If you believe this is in error, contact the administrators.'
+									message:
+										ip.type === 'small'
+											? 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
+											: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators.'
 								});
 							} else {
 								Account.register(new Account(save), password, err => {
@@ -157,10 +165,15 @@ module.exports = () => {
 									}
 
 									passport.authenticate('local')(req, res, () => {
-										// if (email) {
-										// 	verifyAccount.sendToken(req.body.username, req.body.email);
-										// }
-										res.send();
+										const newPlayerBan = new BannedIP({
+											bannedDate: new Date(),
+											type: 'new',
+											ip: signupIP
+										});
+
+										newPlayerBan.save(() => {
+											res.send();
+										});
 									});
 								});
 							}
@@ -190,7 +203,7 @@ module.exports = () => {
 						unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
 					}
 
-					if (ip && unbannedTime > date) {
+					if (ip && unbannedTime > date && ip.type !== 'new') {
 						res.status(403).json({
 							message: 'You can no longer access this service.  If you believe this is in error, contact the administrators.'
 						});
@@ -212,8 +225,6 @@ module.exports = () => {
 			});
 		}
 	);
-
-	// todo-alpha, signed in on 404 page, nothing updated until moved page.
 
 	app.post('/account/logout', ensureAuthenticated, (req, res) => {
 		req.logOut();

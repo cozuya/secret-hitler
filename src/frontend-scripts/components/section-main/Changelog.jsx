@@ -13,14 +13,48 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.7.6 "shadow2" released 9-11-2017</p>
+			<p>Version 0.8.0 "" released </p>
+		</div>
+		<h3>New feature: wiki page</h3>
+		<p>
+			Check out our{' '}
+			<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
+				wiki page
+			</a>{' '}
+			kindly set up by moderator DFinn.
+		</p>
+		<h3>New feature: card and graphics overhaul</h3>
+		<p>Thanks to contributor andy013 on github, most of the cards and images in game have been upgraded and colorized. Neat!</p>
+		<h3>New feature: election voting rework (changable votes)</h3>
+		<p>
+			Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the
+			selected one again to bring back the loader and prevent vote tallying or just b) select the other option to switch your vote. Votes are tallied as usual
+			when everyone has made a selection.
+		</p>
+		<ul>
+			<li>
+				Home page and about us page text has been updated and the webform deprecated. If you have feedback/issues, a new email address has been set up and there
+				is always discord and the player report feature.
+			</li>
+			<li>
+				Moderators have 2 new fascist policy powers: the power to temporarily disable new accounts from being made, and the power to temporarily rescind all IP
+				bans (and 1 day ban for making new accounts).
+			</li>
+		</ul>
+		<div className="ui header">
+			<p>Version 0.7.7 "shadow2" released 9-14-2017</p>
 		</div>
 		<ul>
 			<li>Terms of use have been updated - if you're playing a public game, you must converse in a language everyone understands.</li>
-			<li>Fix to gamenotes being cleared/deleted every time its dismissed. It will now persist until you leave the site.</li>
+			<li>Fix to gamenotes being cleared/deleted every time its dismissed. It will now persist until you leave the site/reload.</li>
 			<li>Gamechat text for the veto policy power has been clarified/expanded for the president & chancellor.</li>
 			<li>More attempted fixes to sort issues in general.</li>
-			<li>Please welcome new mods Ophxlia and morewhales!</li>
+			<li>
+				The minimum width of this application has been lowered by 30px, meaning it will fit on a laptop like a macbook better without small horizontal
+				scrolling.
+			</li>
+			<li>Some crash fixes attempted.</li>
+			<li>Players can only make one account per day per IP.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.7.5 "shadow" released 9-10-2017</p>
@@ -169,9 +203,6 @@ const Changelog = props =>
 			Click on a player in the lobby/player list to get detailed information about games they've played. You can access your own stats that way, or through the
 			game settings screen ("gear" icon in upper right corner).
 		</p>
-		<div style={{ textAlign: 'center' }}>
-			<img src="images/profile.png" style={{ width: '90%' }} />
-		</div>
 		<p>A big change to the back end, and will allow for some more interesting features (like game replays) and analysis in the future.</p>
 		<p>This is an epoch event, meaning that only games from here on out will be seen in your profile.</p>
 		<h3>New feature: notification for patch notes</h3>

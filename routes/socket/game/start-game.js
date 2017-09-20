@@ -90,10 +90,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 
 			player.role = roles[index];
 			roles.splice(index, 1);
-			player.playersState = _.range(
-				0,
-				game.publicPlayersState.length
-			).map(play => ({}));
+			player.playersState = _.range(0, game.publicPlayersState.length).map(play => ({}));
 
 			player.playersState.forEach((play, index) => {
 				play.notificationStatus = play.nameStatus = '';
@@ -163,11 +160,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 					player.playersState[i].nameStatus = 'fascist';
 
 					if (playerCount > 6 && playerCount < 9) {
-						const otherFascist = seatedPlayers.find(
-								play =>
-									play.role.cardName === 'fascist' &&
-									play.userName !== player.userName
-							),
+						const otherFascist = seatedPlayers.find(play => play.role.cardName === 'fascist' && play.userName !== player.userName),
 							otherFascistIndex = seatedPlayers.indexOf(otherFascist);
 
 						if (!game.general.disableGamechat) {
@@ -196,15 +189,10 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 							});
 
 							player.playersState[otherFascistIndex].nameStatus = 'fascist';
+							player.playersState[otherFascistIndex].notificationStatus = 'fascist';
 						}
-						player.playersState[otherFascistIndex].notificationStatus =
-							'fascist';
 					} else if (playerCount > 8) {
-						const otherFascists = seatedPlayers.filter(
-							play =>
-								play.role.cardName === 'fascist' &&
-								play.userName !== player.userName
-						);
+						const otherFascists = seatedPlayers.filter(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 
 						if (!game.general.disableGamechat) {
 							player.gameChats.push({
@@ -222,18 +210,14 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 										text: ' in this game are '
 									},
 									{
-										text: `${otherFascists[0]
-											.userName} {${seatedPlayers.indexOf(otherFascists[0]) +
-											1}}`,
+										text: `${otherFascists[0].userName} {${seatedPlayers.indexOf(otherFascists[0]) + 1}}`,
 										type: 'player'
 									},
 									{
 										text: ' and '
 									},
 									{
-										text: `${otherFascists[1]
-											.userName} {${seatedPlayers.indexOf(otherFascists[1]) +
-											1}}`,
+										text: `${otherFascists[1].userName} {${seatedPlayers.indexOf(otherFascists[1]) + 1}}`,
 										type: 'player'
 									},
 									{
@@ -243,23 +227,15 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 							});
 
 							otherFascists.forEach(fascistPlayer => {
-								player.playersState[
-									seatedPlayers.indexOf(fascistPlayer)
-								].nameStatus =
-									'fascist';
+								player.playersState[seatedPlayers.indexOf(fascistPlayer)].nameStatus = 'fascist';
+							});
+							otherFascists.forEach(fascistPlayer => {
+								player.playersState[seatedPlayers.indexOf(fascistPlayer)].notificationStatus = 'fascist';
 							});
 						}
-
-						otherFascists.forEach(fascistPlayer => {
-							player.playersState[
-								seatedPlayers.indexOf(fascistPlayer)
-							].notificationStatus =
-								'fascist';
-						});
 					}
-					const hitlerPlayer = seatedPlayers.find(
-							player => player.role.cardName === 'hitler'
-						),
+
+					const hitlerPlayer = seatedPlayers.find(player => player.role.cardName === 'hitler'),
 						chat = {
 							timestamp: new Date(),
 							gameChat: true,
@@ -275,9 +251,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 									text: ' in this game is '
 								},
 								{
-									text: `${hitlerPlayer.userName} {${seatedPlayers.indexOf(
-										hitlerPlayer
-									) + 1}}`,
+									text: `${hitlerPlayer.userName} {${seatedPlayers.indexOf(hitlerPlayer) + 1}}`,
 									type: 'player'
 								}
 							]
@@ -304,24 +278,15 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 							);
 						}
 						player.gameChats.push(chat);
-						player.playersState[
-							seatedPlayers.indexOf(hitlerPlayer)
-						].nameStatus =
-							'hitler';
+						player.playersState[seatedPlayers.indexOf(hitlerPlayer)].nameStatus = 'hitler';
 					}
 
-					player.playersState[
-						seatedPlayers.indexOf(hitlerPlayer)
-					].notificationStatus =
-						'hitler';
+					player.playersState[seatedPlayers.indexOf(hitlerPlayer)].notificationStatus = 'hitler';
 				} else if (cardName === 'hitler') {
-					player.playersState[seatedPlayers.indexOf(player)].nameStatus =
-						'hitler';
+					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'hitler';
 
 					if (playerCount < 7) {
-						const otherFascist = seatedPlayers.find(
-							player => player.role.cardName === 'fascist'
-						);
+						const otherFascist = seatedPlayers.find(player => player.role.cardName === 'fascist');
 
 						if (!game.general.disableGamechat) {
 							player.gameChats.push({
@@ -339,9 +304,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 										text: ' in this game is '
 									},
 									{
-										text: `${otherFascist.userName} {${seatedPlayers.indexOf(
-											otherFascist
-										) + 1}}`,
+										text: `${otherFascist.userName} {${seatedPlayers.indexOf(otherFascist) + 1}}`,
 										type: 'player'
 									},
 									{
@@ -350,20 +313,12 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 								]
 							});
 
-							player.playersState[
-								seatedPlayers.indexOf(otherFascist)
-							].nameStatus =
-								'fascist';
+							player.playersState[seatedPlayers.indexOf(otherFascist)].nameStatus = 'fascist';
+							player.playersState[seatedPlayers.indexOf(otherFascist)].notificationStatus = 'fascist';
 						}
-
-						player.playersState[
-							seatedPlayers.indexOf(otherFascist)
-						].notificationStatus =
-							'fascist';
 					}
 				} else if (!game.general.disableGamechat) {
-					player.playersState[seatedPlayers.indexOf(player)].nameStatus =
-						'liberal';
+					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'liberal';
 				}
 
 				player.playersState[i].cardStatus.isFlipped = true;
@@ -407,10 +362,7 @@ module.exports = game => {
 			clearInterval(countDown);
 			beginGame(game);
 		} else {
-			game.general.status = `Game starts in ${startGamePause} second${startGamePause ===
-			1
-				? ''
-				: 's'}.`;
+			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
 			sendInProgressGameUpdate(game);
 			startGamePause--;
 		}
@@ -418,8 +370,7 @@ module.exports = game => {
 
 	game.general.playerCount = game.publicPlayersState.length;
 	game.general.livingPlayerCount = game.publicPlayersState.length;
-	game.general.type =
-		game.general.playerCount < 7 ? 0 : game.general.playerCount < 9 ? 1 : 2; // different fascist tracks
+	game.general.type = game.general.playerCount < 7 ? 0 : game.general.playerCount < 9 ? 1 : 2; // different fascist tracks
 	game.publicPlayersState = _.shuffle(game.publicPlayersState);
 	game.private.seatedPlayers = _.cloneDeep(game.publicPlayersState);
 	game.private.seatedPlayers.forEach(player => {

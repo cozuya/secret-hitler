@@ -2,8 +2,11 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import $ from 'jquery';
-import { ADMINS } from '../../constants';
+import { ADMINS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
+import Checkbox from 'semantic-ui-checkbox';
+
+$.fn.checkbox = Checkbox;
 
 export default class Moderation extends React.Component {
 	constructor() {
@@ -19,18 +22,66 @@ export default class Moderation extends React.Component {
 			log: [],
 			playerListShown: true,
 			broadcastText: '',
-			playerInputText: ''
+			playerInputText: '',
+			resetServerCount: 0
 		};
 	}
 
 	componentDidMount() {
-		this.props.socket.emit('getModInfo');
+		const self = this,
+			{ socket } = this.props;
 
-		this.props.socket.on('modInfo', info => {
+		socket.on('modInfo', info => {
 			this.setState({
 				userList: info.userList,
 				log: info.modReports
 			});
+
+			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
+		});
+
+		socket.emit('getModInfo');
+
+		$(this.toggleAccountCreation).checkbox({
+			onChecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Disabled account creation',
+					action: 'disableAccountCreation'
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Enabled account creation',
+					action: 'enableAccountCreation'
+				});
+			}
+		});
+
+		$(this.toggleIpbans).checkbox({
+			onChecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Disabled all IP bans',
+					action: 'disableIpbans'
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Enabled all IP bans',
+					action: 'enableIpbans'
+				});
+			}
 		});
 	}
 
@@ -49,7 +100,7 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="player-input">
-				<input placeholder="Player name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
+				<input placeholder="Player or game name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
 			</div>
 		);
 	}
@@ -80,7 +131,7 @@ export default class Moderation extends React.Component {
 					return a.userName > b.userName ? -1 : 1;
 				})()
 			)
-			.map((user, index) => (
+			.map((user, index) =>
 				<li key={index} title={user.isTor ? 'TOR user' : ''} className={user.isTor ? 'istor' : multiIPs.includes(user.ip) ? 'multi' : ''}>
 					<label>
 						<input
@@ -93,26 +144,30 @@ export default class Moderation extends React.Component {
 						{user.userName} <span className="ip">{user.ip}</span>
 					</label>
 				</li>
-			));
+			);
 	}
 
 	renderButtons() {
 		const takeModAction = action => {
-				this.props.socket.emit('updateModAction', {
-					modName: this.props.userInfo.userName,
-					userName: this.state.playerInputText || this.state.selectedUser,
-					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
-					comment: this.state.actionTextValue,
-					action
-				});
-				this.setState({
-					selectedUser: '',
-					actionTextValue: '',
-					playerInputText: ''
-				});
-				setTimeout(() => {
-					this.props.socket.emit('getModInfo');
-				}, 500);
+				if (action === 'resetServer' && !this.state.resetServerCount) {
+					this.setState({ resetServerCount: 1 });
+				} else {
+					this.props.socket.emit('updateModAction', {
+						modName: this.props.userInfo.userName,
+						userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
+						ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+						comment: this.state.actionTextValue,
+						action
+					});
+					this.setState({
+						selectedUser: '',
+						actionTextValue: '',
+						playerInputText: ''
+					});
+					setTimeout(() => {
+						this.props.socket.emit('getModInfo');
+					}, 500);
+				}
 			},
 			{ selectedUser, actionTextValue, playerInputText } = this.state;
 
@@ -133,6 +188,14 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Comment without action
+				</button>
+				<button
+					className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'}
+					onClick={() => {
+						takeModAction('clearGenchat');
+					}}
+				>
+					Clear/delete general chat
 				</button>
 				<br />
 				<button
@@ -192,7 +255,13 @@ export default class Moderation extends React.Component {
 					Delete player cardback and log them out
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					className={
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction('ipban');
 					}}
@@ -201,11 +270,11 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && ADMINS.includes(this.props.userInfo.userName) ? (
-							'ui button ipban-button'
-						) : (
-							'ui button disabled ipban-button'
-						)
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
 						takeModAction('ipbanlarge');
@@ -213,6 +282,66 @@ export default class Moderation extends React.Component {
 				>
 					Ban and IP ban for 1 week
 				</button>
+				<button
+					className={
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('deleteProfile');
+					}}
+				>
+					Delete/reset player profile
+				</button>
+				<button
+					className={
+						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('resetServer');
+					}}
+				>
+					{this.state.resetServerCount ? 'Click again to reset server' : 'Reset server'}
+				</button>
+				<button
+					className={
+						playerInputText && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
+					onClick={() => {
+						takeModAction('deleteGame');
+					}}
+				>
+					Delete game
+				</button>
+				<div className="toggle-containers">
+					<h4 className="ui header">Disable account creation</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleAccountCreation = c;
+						}}
+					>
+						<input type="checkbox" name="accountcreation" />
+					</div>
+				</div>
+				<div className="toggle-containers">
+					<h4 className="ui header">Disable ipbans including new account restrictions</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleIpbans = c;
+						}}
+					>
+						<input type="checkbox" name="ipbans" />
+					</div>
+				</div>
 			</div>
 		);
 	}
@@ -232,16 +361,28 @@ export default class Moderation extends React.Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.log.map((report, index) => (
+						{this.state.log.map((report, index) =>
 							<tr key={index}>
-								<td>{report.modUserName}</td>
-								<td>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
-								<td>{report.actionTaken}</td>
-								<td>{report.userActedOn}</td>
-								<td>{report.ip}</td>
-								<td>{report.modNotes}</td>
+								<td>
+									{report.modUserName}
+								</td>
+								<td>
+									{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}
+								</td>
+								<td>
+									{report.actionTaken}
+								</td>
+								<td>
+									{report.userActedOn}
+								</td>
+								<td>
+									{report.ip}
+								</td>
+								<td>
+									{report.modNotes}
+								</td>
 							</tr>
-						))}
+						)}
 					</tbody>
 				</table>
 			</div>
@@ -292,7 +433,7 @@ export default class Moderation extends React.Component {
 			<section className="moderation">
 				<h2>Moderation</h2>
 				<a className="broadcast" href="#" onClick={this.broadcastClick}>
-					Broadcast to all players
+					Broadcast
 				</a>
 				<i className="remove icon" onClick={this.leaveModeration} />
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
@@ -304,7 +445,9 @@ export default class Moderation extends React.Component {
 							return (
 								<div className="modplayerlist">
 									<h3>Current player list</h3>
-									<ul className="userlist">{this.renderUserlist()}</ul>
+									<ul className="userlist">
+										{this.renderUserlist()}
+									</ul>
 									<div className="ui horizontal divider">or</div>
 									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">-</div>

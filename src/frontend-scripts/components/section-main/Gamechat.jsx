@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import { PLAYERCOLORS, MODERATORS, ADMINS } from '../../constants';
+import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
 import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -72,7 +72,7 @@ class Gamechat extends React.Component {
 			$(this.gameChatInput).blur();
 		}
 
-		if (prevProps.notesActive && !nextProps.notesActive) {
+		if (prevProps.notesActive && !nextProps.notesActive && this.state.notesEnabled) {
 			this.setState({ notesEnabled: false });
 		}
 	}
@@ -319,7 +319,12 @@ class Gamechat extends React.Component {
 														<span className="moderator-name"> (M)</span>
 														<span className="observer-chat"> (Observer)</span>
 													</span>
-												: <span className="observer-chat"> (Observer)</span>}
+												: EDITORS.includes(chat.userName)
+													? <span>
+															<span className="editor-name"> (E)</span>
+															<span className="observer-chat"> (Observer)</span>
+														</span>
+													: <span className="observer-chat"> (Observer)</span>}
 										{this.handleTimestamps(chat.timestamp)}:
 									</span>
 									<span>
@@ -411,11 +416,12 @@ class Gamechat extends React.Component {
 					<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 						No observer chat
 					</a>
-					<i
-						title="Click here to pop out notes"
-						className={this.state.notesEnabled ? 'large window minimize icon' : 'large edit icon'}
-						onClick={this.handleNoteClick}
-					/>
+					{userInfo.userName &&
+						<i
+							title="Click here to pop out notes"
+							className={this.state.notesEnabled ? 'large window minimize icon' : 'large edit icon'}
+							onClick={this.handleNoteClick}
+						/>}
 					<i
 						title="Click here to lock or unlock scrolling of chat"
 						className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
@@ -654,7 +660,11 @@ class Gamechat extends React.Component {
 								(isDead && !gameState.isCompleted) ||
 								isGovernmentDuringPolicySelection ||
 								gameInfo.general.disableChat ||
-								(gameInfo.general.private && !userInfo.isSeated && !MODERATORS.includes(userInfo.userName) && !ADMINS.includes(userInfo.userName)) ||
+								(gameInfo.general.private &&
+									!userInfo.isSeated &&
+									!MODERATORS.includes(userInfo.userName) &&
+									!ADMINS.includes(userInfo.userName) &&
+									!EDITORS.includes(userInfo.userName)) ||
 								(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
 							) {
 								classes += ' disabled';

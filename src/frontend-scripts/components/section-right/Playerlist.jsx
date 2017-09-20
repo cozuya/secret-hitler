@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import { ADMINS, PLAYERCOLORS, MODERATORS } from '../../constants';
+import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -31,9 +31,7 @@ class Playerlist extends React.Component {
 	}
 
 	clickInfoIcon() {
-		$('.playerlistinfo')
-			.modal('setting', 'transition', 'scale')
-			.modal('show');
+		$('.playerlistinfo').modal('setting', 'transition', 'scale').modal('show');
 	}
 
 	routeToGame(gameId) {
@@ -57,7 +55,11 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const { userInfo } = this.props;
 
-		if (userInfo && userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))) {
+		if (
+			userInfo &&
+			userInfo.userName &&
+			(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
+		) {
 			return (
 				<i
 					onClick={() => {
@@ -71,7 +73,11 @@ class Playerlist extends React.Component {
 
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
-		if (userInfo && userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))) {
+		if (
+			userInfo &&
+			userInfo.userName &&
+			(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
+		) {
 			let classes = 'comment icon report-button';
 
 			if (userInfo.gameSettings && userInfo.gameSettings.newReport) {
@@ -118,14 +124,18 @@ class Playerlist extends React.Component {
 							70%.
 						</p>
 						<p>
-							Also <span className="admin">admins</span> are always on top, and <span className="contributer">contributors</span> get a special color as well.
+							Also <span className="admin">admins</span> are always on top, <span className="moderatorcolor">mods</span> are blue with a red (M) and also appear
+							at the top, and <span className="contributer">contributors</span> get a special orange color as well! Contribute code to this open source project
+							to be endlessly pestered about why you're orange.
 						</p>
 					</div>
 					{(() => {
 						if (Object.keys(this.props.userList).length) {
 							return (
 								<span>
-									<span>{this.props.userList.list.length}</span>
+									<span>
+										{this.props.userList.list.length}
+									</span>
 									<i className="large user icon" title="Number of players logged in" />
 								</span>
 							);
@@ -150,6 +160,18 @@ class Playerlist extends React.Component {
 
 									if (ADMINS.includes(b.userName)) {
 										return 1;
+									}
+
+									if (EDITORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
+										return -1;
+									}
+
+									if (EDITORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
+										return 1;
+									}
+
+									if (EDITORS.includes(a.userName) && EDITORS.includes(b.userName)) {
+										return a.userName > b.userName ? 1 : -1;
 									}
 
 									if (MODERATORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
@@ -239,8 +261,15 @@ class Playerlist extends React.Component {
 														if (MODERATORS.includes(user.userName)) {
 															return (
 																<span className="moderator-name" title="This user is a moderator">
-																	{' '}
-																	(M)
+																	{' '}(M)
+																</span>
+															);
+														}
+
+														if (EDITORS.includes(user.userName)) {
+															return (
+																<span className="editor-name" title="This user is an editor">
+																	{' '}(E)
 																</span>
 															);
 														}

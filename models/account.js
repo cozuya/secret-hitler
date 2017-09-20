@@ -20,7 +20,13 @@ const mongoose = require('mongoose'),
 			disablePlayerCardbacks: Boolean,
 			unbanTime: Date,
 			unTimeoutTime: Date,
-			fontSize: Number
+			fontSize: Number,
+			gameNotes: {
+				top: Number,
+				left: Number,
+				width: Number,
+				height: Number
+			}
 		},
 		verification: {
 			email: String,
