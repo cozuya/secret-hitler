@@ -2,6 +2,7 @@ import React from 'react'; // eslint-disable-line
 import CardFlinger from './CardFlinger.jsx';
 import EnactedPolicies from './EnactedPolicies.jsx';
 import PropTypes from 'prop-types';
+import { EDITORS, ADMINS } from '../../constants';
 
 const Tracks = props => {
 	const renderElectionTracker = () => {
@@ -30,6 +31,11 @@ const Tracks = props => {
 				<div className="game-name">
 					Game name: <span>{gameInfo.general.name}</span>
 				</div>
+				{userInfo.userName &&
+					(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName)) &&
+					<div className="gameuid">
+						Game UID: {gameInfo.general.uid}
+					</div>}
 				<div className="player-count">
 					Players: <span>{gameInfo.publicPlayersState.length}</span>
 				</div>

@@ -22,7 +22,8 @@ export default class Moderation extends React.Component {
 			log: [],
 			playerListShown: true,
 			broadcastText: '',
-			playerInputText: ''
+			playerInputText: '',
+			resetServerCount: 0
 		};
 	}
 
@@ -99,7 +100,7 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="player-input">
-				<input placeholder="Player name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
+				<input placeholder="Player or game name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
 			</div>
 		);
 	}
@@ -148,21 +149,25 @@ export default class Moderation extends React.Component {
 
 	renderButtons() {
 		const takeModAction = action => {
-				this.props.socket.emit('updateModAction', {
-					modName: this.props.userInfo.userName,
-					userName: this.state.playerInputText || this.state.selectedUser,
-					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
-					comment: this.state.actionTextValue,
-					action
-				});
-				this.setState({
-					selectedUser: '',
-					actionTextValue: '',
-					playerInputText: ''
-				});
-				setTimeout(() => {
-					this.props.socket.emit('getModInfo');
-				}, 500);
+				if (action === 'resetServer' && !this.state.resetServerCount) {
+					this.setState({ resetServerCount: 1 });
+				} else {
+					this.props.socket.emit('updateModAction', {
+						modName: this.props.userInfo.userName,
+						userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
+						ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+						comment: this.state.actionTextValue,
+						action
+					});
+					this.setState({
+						selectedUser: '',
+						actionTextValue: '',
+						playerInputText: ''
+					});
+					setTimeout(() => {
+						this.props.socket.emit('getModInfo');
+					}, 500);
+				}
 			},
 			{ selectedUser, actionTextValue, playerInputText } = this.state;
 
@@ -183,6 +188,14 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Comment without action
+				</button>
+				<button
+					className={!this.state.actionTextValue ? 'ui button disabled' : 'ui button'}
+					onClick={() => {
+						takeModAction('clearGenchat');
+					}}
+				>
+					Clear/delete general chat
 				</button>
 				<br />
 				<button
@@ -271,6 +284,20 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('deleteProfile');
+					}}
+				>
+					Delete/reset player profile
+				</button>
+				<button
+					className={
 						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
@@ -279,7 +306,19 @@ export default class Moderation extends React.Component {
 						takeModAction('resetServer');
 					}}
 				>
-					Reset server
+					{this.state.resetServerCount ? 'Click again to reset server' : 'Reset server'}
+				</button>
+				<button
+					className={
+						playerInputText && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
+					onClick={() => {
+						takeModAction('deleteGame');
+					}}
+				>
+					Delete game
 				</button>
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable account creation</h4>

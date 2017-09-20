@@ -7,6 +7,7 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	ModAction = require('../../models/modAction'),
 	PlayerReport = require('../../models/playerReport'),
 	BannedIP = require('../../models/bannedIP'),
+	Profile = require('../../models/profile/index'),
 	startGame = require('./game/start-game.js'),
 	{ secureGame } = require('./util.js'),
 	crypto = require('crypto'),
@@ -714,6 +715,19 @@ module.exports.handleModerationAction = (socket, data) => {
 					logOutUser(data.userName);
 				});
 				break;
+			case 'clearGenchat':
+				generalChats.fill({});
+
+				io.sockets.emit('generalChats', generalChats);
+				break;
+			case 'deleteProfile':
+				Profile.findOne({ _id: data.userName }).remove(() => {
+					if (io.sockets.sockets[affectedSocketId]) {
+						io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+					}
+				});
+
+				break;
 			case 'ipbanlarge':
 				const ipbanl = new BannedIP({
 					bannedDate: new Date(),
@@ -761,25 +775,34 @@ module.exports.handleModerationAction = (socket, data) => {
 				}
 				break;
 			default:
-				const setType = /setRWins/.test(data.action)
-						? 'rainbowWins'
-						: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses',
-					number =
-						setType === 'wins'
-							? parseInt(data.action.substr(7))
-							: setType === 'losses'
-								? parseInt(data.action.substr(9))
-								: setType === 'rainbowWins' ? parseInt(data.action.substr(8)) : parseInt(data.action.substr(10));
+				if (data.userName.substr(0, 7) === 'DELGAME') {
+					const game = games.find(el => el.general.uid === data.userName.slice(7));
 
-				if (!isNaN(number)) {
-					Account.findOne({ username: data.userName })
-						.then(account => {
-							account[setType] = number;
-							account.save();
-						})
-						.catch(err => {
-							console.log(err, 'set wins/losses error');
-						});
+					if (game) {
+						games.splice(games.indexOf(game), 1);
+						sendGameList();
+					}
+				} else {
+					const setType = /setRWins/.test(data.action)
+							? 'rainbowWins'
+							: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses',
+						number =
+							setType === 'wins'
+								? parseInt(data.action.substr(7))
+								: setType === 'losses'
+									? parseInt(data.action.substr(9))
+									: setType === 'rainbowWins' ? parseInt(data.action.substr(8)) : parseInt(data.action.substr(10));
+
+					if (!isNaN(number)) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								account[setType] = number;
+								account.save();
+							})
+							.catch(err => {
+								console.log(err, 'set wins/losses error');
+							});
+					}
 				}
 		}
 	}

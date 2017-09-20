@@ -87,7 +87,7 @@ export default class Generalchat extends React.Component {
 								return <span className="editor-name"> (E)</span>;
 							}
 						})()}
-						:{' '}
+						{chat.userName && ':'}{' '}
 					</span>
 					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>
 						{chat.chat}
