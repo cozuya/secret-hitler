@@ -22,13 +22,7 @@ const SidebarGame = props => {
 		playersCount = () => {
 			const availableSeatCounts = new Array(game.maxPlayersCount)
 				.fill(true)
-				.map(
-					(el, i) =>
-						game.excludedPlayerCount.includes(i + 1) ||
-						i + 1 < game.minPlayersCount
-							? false
-							: i + 1
-				)
+				.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
 				.filter(el => el);
 
 			let str = '';
@@ -44,13 +38,9 @@ const SidebarGame = props => {
 							}
 						} else {
 							if (!str.length) {
-								str = availableSeatCounts.includes(el + 1)
-									? `${el}-`
-									: `${el},`;
+								str = availableSeatCounts.includes(el + 1) ? `${el}-` : `${el},`;
 							} else {
-								str = !availableSeatCounts.includes(el + 1)
-									? `${str}${el},`
-									: (str = `${str}${el}-`);
+								str = !availableSeatCounts.includes(el + 1) ? `${str}${el},` : (str = `${str}${el}-`);
 							}
 						}
 					}
@@ -74,10 +64,7 @@ const SidebarGame = props => {
 							{(() => {
 								if (game.private) {
 									return (
-										<div
-											className="private-game"
-											title="This is a private game.  You can only be seated if you know the password, or are whitelisted"
-										>
+										<div className="private-game" title="This is a private game.  You can only be seated if you know the password, or are whitelisted">
 											P
 										</div>
 									);
@@ -88,7 +75,9 @@ const SidebarGame = props => {
 								title={
 									(game.rainbowgame
 										? 'Rainbow game - only players with 50+ games played can be seated in this game.'
-										: 'Click here to enter this game table.') + ' Already in game: ' + game.userNames.join(', ')
+										: 'Click here to enter this game table.') +
+									' Already in game: ' +
+									game.userNames.join(', ')
 								}
 							>
 								{game.name}
@@ -130,56 +119,33 @@ const SidebarGame = props => {
 									|
 								</span>
 								<span className="seatedcount">
-									{' '}{game.seatedCount}{' '}
-									{game.seatedCount === 1 ? 'player' : 'players'}
+									{' '}{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'}
 								</span>
 							</div>
 						</div>
 					: <div>
-						    {(() => {
+							{(() => {
 								if (game.private) {
 									return (
-										<div
-											className="private-game"
-											title="This is a private game."
-										>
+										<div className="private-game" title="This is a private game.">
 											P
 										</div>
 									);
 								}
 							})()}
-							<div
-								className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
-								title={
-									'Playing: ' + game.userNames.join(', ')
-								}
-							>
+							<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'} title={'Playing: ' + game.userNames.join(', ')}>
 								{game.name}
 							</div>
 							<div className="liberal-count">
 								{(() =>
 									_.range(1, 6).map(num =>
-										<div
-											key={num}
-											className={
-												num <= game.enactedLiberalPolicyCount
-													? 'box liberal-box filled'
-													: 'box liberal-box unfilled'
-											}
-										/>
+										<div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />
 									))()}
 							</div>
 							<div className="fascist-count">
 								{(() =>
 									_.range(1, 7).map(num =>
-										<div
-											key={num}
-											className={
-												num <= game.enactedFascistPolicyCount
-													? 'box fascist-box filled'
-													: 'box fascist-box unfilled'
-											}
-										/>
+										<div key={num} className={num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'} />
 									))()}
 							</div>
 							<div className="lower-row">
@@ -188,8 +154,7 @@ const SidebarGame = props => {
 								</span>
 								<span className="divider">|</span>
 								<span className="seatedcount">
-									{' '}{game.seatedCount}{' '}
-									{game.seatedCount === 1 ? 'player' : 'players'} seated
+									{' '}{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'} seated
 								</span>
 							</div>
 						</div>)()}
