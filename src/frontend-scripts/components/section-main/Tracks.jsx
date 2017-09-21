@@ -2,7 +2,7 @@ import React from 'react'; // eslint-disable-line
 import CardFlinger from './CardFlinger.jsx';
 import EnactedPolicies from './EnactedPolicies.jsx';
 import PropTypes from 'prop-types';
-import { EDITORS, ADMINS } from '../../constants';
+import { EDITORS, ADMINS, MODERATORS } from '../../constants';
 
 const Tracks = props => {
 	const renderElectionTracker = () => {
@@ -32,7 +32,7 @@ const Tracks = props => {
 					Game name: <span>{gameInfo.general.name}</span>
 				</div>
 				{userInfo.userName &&
-					(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName)) &&
+					(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) &&
 					<div className="gameuid">
 						Game UID: {gameInfo.general.uid}
 					</div>}

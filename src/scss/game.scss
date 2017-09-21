@@ -18,7 +18,7 @@
 			font-style: italic;
 			color: #eee;
 			background: $darkfascistteam;
-			padding: 3px 0px 7px 2px;
+			padding: 7px 0px 3px 2px;
 		}
 		.gamechat {
 			-webkit-touch-callout: none;
@@ -89,7 +89,34 @@
 				.item {
 					word-wrap: break-word;
 					line-height: inherit;
-					padding: 0;
+					padding: 2px 0;
+				}
+
+				.gamechat-item {
+					background: #333;
+					span {
+						background: #333 !important;
+					}
+
+					&.fascist {
+						background: #563938;
+						span {
+							background: #563938 !important;
+						}
+					}
+					&.liberal {
+						background: #424e58;
+						span {
+							background: #424e58 !important;
+						}
+					}
+				}
+
+				.claim-item {
+					background: #514a36;
+					span {
+						background: #514a36 !important;
+					}
 				}
 				.chat-user {
 					color: #eee;
@@ -105,7 +132,9 @@
 				.game-chat,
 				.chat-user--game .chat-timestamp {
 					color: #8b8b8b;
+					// background: #111;
 				}
+
 				.chat-user--claim,
 				.claim-chat {
 					color: #fbbd08;

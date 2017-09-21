@@ -721,13 +721,38 @@ module.exports.handleModerationAction = (socket, data) => {
 				io.sockets.emit('generalChats', generalChats);
 				break;
 			case 'deleteProfile':
-				Profile.findOne({ _id: data.userName }).remove(() => {
-					if (io.sockets.sockets[affectedSocketId]) {
-						io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-					}
-				});
-
+				Profile.findOne({ _id: data.userName })
+					.remove(() => {
+						if (io.sockets.sockets[affectedSocketId]) {
+							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+						}
+					})
+					.catch(err => {
+						console.log(err);
+					});
 				break;
+			// case 'renamePlayer':
+			// 	Account.findOne({ username: data.userName })
+			// 		.then(account => {
+			// 			account.username = data.modNotes;
+			// 			account.save(() => {
+			// 				Profile.findOne({ _id: data.userName })
+			// 					.then(profile => {
+			// 						profile._id = data.modNotes;
+			// 						profile.save(() => {
+			// 							if (io.sockets.sockets[affectedSocketId]) {
+			// 								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+			// 							}
+			// 						});
+			// 					})
+			// 					.catch(err => {
+			// 						console.log(err);
+			// 					});
+			// 			});
+			// 		})
+			// 		.catch(err => {
+			// 			console.log(err);
+			// 		});
 			case 'ipbanlarge':
 				const ipbanl = new BannedIP({
 					bannedDate: new Date(),
