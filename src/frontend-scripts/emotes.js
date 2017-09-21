@@ -12,7 +12,7 @@ allEmotes.push({code: 'FasGlory', img: <img src="images/emotes/FasGlory.png" />}
 allEmotes.push({code: 'FasGoofy', img: <img src="images/emotes/FasGoofy.png" />});
 allEmotes.push({code: 'FasGrin', img: <img src="images/emotes/FasGrin.png" />});
 allEmotes.push({code: 'FasHitler', img: <img src="images/emotes/FasHitler.png" />});
-allEmotes.push({code: 'FasistSkull', img: <img src="images/emotes/FasistSkull.png" />});
+allEmotes.push({code: 'FascistSkull', img: <img src="images/emotes/FascistSkull.png" />});
 allEmotes.push({code: 'FasLizard', img: <img src="images/emotes/FasLizard.png" />});
 allEmotes.push({code: 'FasPolicy', img: <img src="images/emotes/FasPolicy.png" />});
 allEmotes.push({code: 'FasPolicy2', img: <img src="images/emotes/FasPolicy2.png" />});
@@ -21,7 +21,6 @@ allEmotes.push({code: 'FasSkull', img: <img src="images/emotes/FasSkull.png" />}
 allEmotes.push({code: 'FasSnake', img: <img src="images/emotes/FasSnake.png" />});
 allEmotes.push({code: 'HeyFas', img: <img src="images/emotes/HeyFas.png" />});
 allEmotes.push({code: 'HeyLibs', img: <img src="images/emotes/HeyLibs.png" />});
-allEmotes.push({code: 'JaBig', img: <img src="images/emotes/JaBig.png" />});
 allEmotes.push({code: 'JaCard', img: <img src="images/emotes/JaCard.png" />});
 allEmotes.push({code: 'LibBird', img: <img src="images/emotes/LibBird.png" />});
 allEmotes.push({code: 'LiberalBird', img: <img src="images/emotes/LiberalBird.png" />});
@@ -34,7 +33,6 @@ allEmotes.push({code: 'LibPolicy2', img: <img src="images/emotes/LibPolicy2.png"
 allEmotes.push({code: 'LibPolicy3', img: <img src="images/emotes/LibPolicy3.png" />});
 allEmotes.push({code: 'LibSmile', img: <img src="images/emotes/LibSmile.png" />});
 allEmotes.push({code: 'LibTash', img: <img src="images/emotes/LibTash.png" />});
-allEmotes.push({code: 'NeinBig', img: <img src="images/emotes/NeinBig.png" />});
 allEmotes.push({code: 'NeinCard', img: <img src="images/emotes/NeinCard.png" />});
 allEmotes.push({code: 'NotHiler', img: <img src="images/emotes/NotHitler.png" />});
 allEmotes.push({code: 'PBullet', img: <img src="images/emotes/PBullet.png" />});
@@ -47,6 +45,8 @@ allEmotes.push({code: 'SecretHitler', img: <img src="images/emotes/SecretHitler.
 allEmotes.push({code: 'SillyLib', img: <img src="images/emotes/SillyLib.png" />});
 allEmotes.push({code: 'TopDeck', img: <img src="images/emotes/TopDeck.png" />});
 allEmotes.push({code: 'VetoPower', img: <img src="images/emotes/VetoPower.png" />});
+allEmotes.push({code: 'VoteJa', img: <img src="images/emotes/VoteJa.png" />});
+allEmotes.push({code: 'VoteNein', img: <img src="images/emotes/VoteNein.png" />});
 
 
 export function processEmotes(message) {
