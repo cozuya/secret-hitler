@@ -50,6 +50,10 @@ allEmotes.push({code: 'VetoPower', img: <img src="images/emotes/VetoPower.png" /
 
 
 export function processEmotes(message) {
+	if (typeof message != 'string')
+		{
+		return message;
+	}
 	const words = message.split(' ');
 	const formatedMsg = [];
 	for (let i = 0; i < words.length; i++)
