@@ -10,7 +10,7 @@ Current production/stable is found at [Secret Hitler IO](https://secrethitler.io
 
 ![Screenshot](http://i.imgur.com/6M56f6I.jpg)
 
-Considering contributing to this project?  Please read our very brief guidelines found at /docs/contributions.txt.  Contributors get a cool orange playername color!
+Considering contributing to this project?  Please read our very brief guidelines found at ./CONTRIBUTING.md.  Contributors get a cool orange playername color!
 
 Front end: React, Redux, Sass, Semantic UI, jQuery, SocketIO.
 
