@@ -230,9 +230,9 @@ class Gamechat extends React.Component {
 				const chatContents = processEmotes(chat.chat),
 					isSeated = seatedUserNames.includes(chat.userName),
 					playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-
+				// ? <div className={chat.chat[2] && chat.chat[2].item.type ? `gamechat-item ${chat.chat[2].item.type}` : 'gamechat-item'} key={i}>
 				return chat.gameChat
-					? <div className="item" key={i}>
+					? <div className={chat.chat[1] && chat.chat[1].type ? `gamechat-item ${chat.chat[1].type}` : 'gamechat-item'} key={i}>
 							<span className="chat-user--game">
 								[GAME]{this.handleTimestamps(chat.timestamp)}:{' '}
 							</span>
@@ -261,7 +261,7 @@ class Gamechat extends React.Component {
 							</span>
 						</div>
 					: chat.isClaim
-						? <div className="item" key={i}>
+						? <div className="item claim-item" key={i}>
 								<span className="chat-user--claim">
 									[CLAIM]{this.handleTimestamps(chat.timestamp)}:{' '}
 								</span>
