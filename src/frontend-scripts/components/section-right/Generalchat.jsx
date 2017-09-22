@@ -4,6 +4,7 @@ import { MODERATORS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
 import { processEmotes } from '../../emotes';
 
+
 export default class Generalchat extends React.Component {
 	constructor() {
 		super();

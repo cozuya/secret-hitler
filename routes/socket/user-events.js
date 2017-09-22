@@ -813,15 +813,14 @@ module.exports.handleModerationAction = (socket, data) => {
 							: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses',
 						number =
 							setType === 'wins'
-								? parseInt(data.action.substr(7))
-								: setType === 'losses'
-									? parseInt(data.action.substr(9))
-									: setType === 'rainbowWins' ? parseInt(data.action.substr(8)) : parseInt(data.action.substr(10));
+								? data.action.substr(7)
+								: setType === 'losses' ? data.action.substr(9) : setType === 'rainbowWins' ? data.action.substr(8) : data.action.substr(10),
+						isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
 
-					if (!isNaN(number)) {
+					if (!isNaN(parseInt(number))) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
-								account[setType] = number;
+								account[setType] = isPlusOrMinus ? account[setType] + parseInt(number) : parseInt(number);
 								account.save();
 							})
 							.catch(err => {
