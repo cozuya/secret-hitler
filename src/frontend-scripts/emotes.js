@@ -49,36 +49,22 @@ allEmotes.push({code: 'VoteJa', img: <img src="images/emotes/VoteJa.png" />});
 allEmotes.push({code: 'VoteNein', img: <img src="images/emotes/VoteNein.png" />});
 
 
-export function processEmotes(message) {
-	if (typeof message != 'string')
-		{
-		return message;
-	}
-	const words = message.split(' ');
+export function processEmotes(input) {
+	if (typeof input != 'string') return input;
+
+	const message = input.split(' ');
 	const formatedMsg = [];
-	for (let i = 0; i < words.length; i++)
-	{
+	for (let word of message) {
 		let emoteMatched = false;
-		// if our word is a space push one into msg
-		if (words[i] == '' ) {
-			formatedMsg.push(' ');
-		}
-		else {
-			for (let j = 0; j < allEmotes.length; j++)
-			{
-				if (words[i] == allEmotes[j]['code']) {
-					formatedMsg.push(allEmotes[j]['img']);
-					formatedMsg.push(' ');
-					emoteMatched = true;
-					break;
-				}
+		for (let emote of allEmotes) {
+			if (word == emote['code']) {
+				formatedMsg.push(emote['img'], ' '); // remember to add the spaces back in
+				emoteMatched = true;
+				break;
 			}
 		}
-		// if we didn't find a match just push the word
-		if(!emoteMatched)
-		{
-			formatedMsg.push(words[i]);
-			formatedMsg.push(' ');
+		if (!emoteMatched) {
+			formatedMsg.push(word, ' ');
 		}
 	}
 	return formatedMsg;
