@@ -5,6 +5,7 @@ import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
 import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import { processEmotes } from '../../emotes';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
@@ -226,7 +227,7 @@ class Gamechat extends React.Component {
 					(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 			)
 			.map((chat, i) => {
-				const chatContents = chat.chat,
+				const chatContents = processEmotes(chat.chat),
 					isSeated = seatedUserNames.includes(chat.userName),
 					playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 				// ? <div className={chat.chat[2] && chat.chat[2].item.type ? `gamechat-item ${chat.chat[2].item.type}` : 'gamechat-item'} key={i}>
@@ -294,7 +295,7 @@ class Gamechat extends React.Component {
 										[BROADCAST]{this.handleTimestamps(chat.timestamp)}:{' '}
 									</span>
 									<span className="broadcast-chat">
-										{chat.chat}
+										{processEmotes(chat.chat)}
 									</span>
 								</div>
 							: <div className="item" key={i}>
