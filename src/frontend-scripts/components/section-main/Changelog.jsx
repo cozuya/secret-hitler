@@ -15,6 +15,17 @@ const Changelog = props =>
 		<div className="ui header">
 			<p>Version 0.8.0 "" released </p>
 		</div>
+		<h3>New feature: card and graphics overhaul</h3>
+		<p>Thanks to contributor andy013, most of the cards and images in game have been upgraded and colorized. Neat!</p>
+		<p>Also fonts redone, many other UI tweaks in. Let us know what you think.</p>
+		<h3>New feature: election voting rework (changable votes)</h3>
+		<p>
+			Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the
+			selected one again to bring back the loader and prevent vote tallying or just b) select the other option to switch your vote. Votes are tallied as usual
+			when everyone has made a selection.
+		</p>
+		<h3>New feature: 2nd tier of player moderators (editors) and many new helpful moderation tools implemented.</h3>
+		<p>Editors will have an (E) next to their name. Consider editors tier 1 mods, and normal (M) tier 2 mods. All of which have my full support.</p>
 		<h3>New feature: wiki page</h3>
 		<p>
 			Check out our{' '}
@@ -23,24 +34,30 @@ const Changelog = props =>
 			</a>{' '}
 			kindly set up by moderator DFinn.
 		</p>
-		<h3>New feature: card and graphics overhaul</h3>
-		<p>Thanks to contributor andy013 on github, most of the cards and images in game have been upgraded and colorized. Neat!</p>
-		<h3>New feature: election voting rework (changable votes)</h3>
-		<p>
-			Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the
-			selected one again to bring back the loader and prevent vote tallying or just b) select the other option to switch your vote. Votes are tallied as usual
-			when everyone has made a selection.
-		</p>
+		<p>The footer bar in the default view has also been updated.</p>
+		<h4>Other issues</h4>
 		<ul>
 			<li>
 				Home page and about us page text has been updated and the webform deprecated. If you have feedback/issues, a new email address has been set up and there
 				is always discord and the player report feature.
 			</li>
+			<li>Player cardbacks in profiles work correctly on Edge.</li>
+			<li>Gamenotes clear button now works.</li>
+			<li>Thanks to contributor jonnybest, hovering on a game on the list in the left sidebar now shows you who is seated in that game.</li>
 			<li>
-				Moderators have 2 new fascist policy powers: the power to temporarily disable new accounts from being made, and the power to temporarily rescind all IP
-				bans (and 1 day ban for making new accounts).
+				A bug in "blind mode" (no gamechat) was causing fascists to get credit for winning the game when Hitler was shot, this mode was disabled via hotfix, now
+				that bug has been fixed and that mode has been re-enabled.
 			</li>
+			<li>
+				Private games "P" icon in the upper left corner of a gamelist was disappearing after the game started - thanks to contributor jonnybest, this has been
+				fixed.
+			</li>
+			<li>Players can now search/type in other players to look at their profile. Click on the settings/gear icon to see this new input field.</li>
 		</ul>
+		<h4>
+			Next up: its high time some more effort was put in to prevent or at least lesson the pain of AFKing players. Also player notes and tournament mode coming
+			soon!
+		</h4>
 		<div className="ui header">
 			<p>Version 0.7.7 "shadow2" released 9-14-2017</p>
 		</div>
