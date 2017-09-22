@@ -600,7 +600,7 @@ module.exports.selectVoting = data => {
 		if (seatedPlayers.filter(play => play.voteStatus.hasVoted && !play.isDead).length === game.general.livingPlayerCount) {
 			game.general.status = 'Tallying results of ballots..';
 			seatedPlayers.forEach(player => {
-				if (player.cardFlingerState.length != 0){
+				if (player.cardFlingerState.length){
 				player.cardFlingerState[0].action = player.cardFlingerState[1].action = '';
 				player.cardFlingerState[0].action = player.cardFlingerState[1].action = '';
 				player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = false;
