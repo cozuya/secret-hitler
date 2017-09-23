@@ -11,6 +11,7 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'snake69sus',
 	'Ecoturtle',
 	'maki2',
+	'Moranki',
 	'jazz'
 ]);
 
@@ -42,5 +43,6 @@ module.exports.PLAYERCOLORS = user =>
 		onfire10: user.wins / (user.wins + user.losses) > 0.7,
 		contributer: CONTRIBUTORS.includes(user.userName),
 		cbell: user.userName === 'cbell',
-		max: user.userName === 'Max'
+		max: user.userName === 'Max',
+		dfinn: user.userName === 'DFinn'
 	});
