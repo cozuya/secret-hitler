@@ -144,7 +144,9 @@ class Settings extends React.Component {
 				reader.readAsDataURL(files[0]);
 			},
 			displayCardbackInfoModal = () => {
-				$('.cardbackinfo').modal('setting', 'transition', 'scale').modal('show');
+				$('.cardbackinfo')
+					.modal('setting', 'transition', 'scale')
+					.modal('show');
 			},
 			previewSaveClick = () => {
 				$.ajax({
@@ -301,7 +303,9 @@ class Settings extends React.Component {
 										}
 
 										if (this.props.userInfo.gameSettings.customCardback) {
-											const imageUid = Math.random().toString(36).substring(6);
+											const imageUid = Math.random()
+												.toString(36)
+												.substring(6);
 
 											return (
 												<div
@@ -346,17 +350,14 @@ class Settings extends React.Component {
 											Image uploaded must be 70px by 95px, or it will not look right. Do not trust the previewer - it will crunch to fit the box, the game
 											itself won't do that.
 										</strong>{' '}
-										Rainbow players only. Can only upload an image once per 18 hours, be careful before hitting save. Only png, jpg, and jpeg are permitted.
-										Must be below 40kb.
+										Rainbow players only. Can only upload an image once per 30 second. Only png, jpg, and jpeg are permitted. Must be below 40kb.
 									</p>
 									<p>
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
 								</div>
 							</div>
-							<div className="centered row cardback-message-container">
-								{this.state.cardbackUploadStatus}
-							</div>
+							<div className="centered row cardback-message-container">{this.state.cardbackUploadStatus}</div>
 						</div>
 					</div>
 				</div>
