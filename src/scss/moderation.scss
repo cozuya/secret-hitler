@@ -7,6 +7,10 @@
 	h2 {
 		text-align: center;
 	}
+	.ib {
+		display: inline-block;
+		width: 150px;
+	}
 	.player-list-toggle {
 		position: absolute;
 		color: lightblue;
@@ -106,6 +110,10 @@
 	.tier3 {
 		background: orange;
 		margin: 2px 3px 2px 0;
+		padding: 2px;
+		width: 74px;
+		height: 40px;
+		vertical-align: text-bottom;
 	}
 }
 

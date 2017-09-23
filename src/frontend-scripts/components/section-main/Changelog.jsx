@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import PropTypes from 'prop-types';
 
-const Changelog = props => (
+const Changelog = props =>
 	<section className="changelog">
 		<i
 			className="remove icon"
@@ -19,9 +19,11 @@ const Changelog = props => (
 		<p>Thanks to contributor andy013, most of the cards and images in game have been upgraded and colorized. Neat!</p>
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
-		<p>In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:</p>
 		<p>
-			Typically a clickable popup will appear and be selectable.. I didn't get to that - next patch. For now, please check out our{' '}
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="images/em.png" />
+		</p>
+		<p>
+			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}
 			<a href="https://github.com/cozuya/secret-hitler/wiki/Emotes" target="_blank">
 				emote reference.
 			</a>{' '}
@@ -31,7 +33,7 @@ const Changelog = props => (
 		<p>
 			Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the
 			selected one again to bring back the loader and prevent vote tallying or just b) select the other option to switch your vote. Votes are tallied as usual
-			when everyone has locked in a selection.
+			when all players have selected their vote.
 		</p>
 		<h3>New feature: 2nd tier of player moderators (editors) and many new helpful moderation tools implemented.</h3>
 		<p>
@@ -288,8 +290,7 @@ const Changelog = props => (
 			where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls. This isn't all that hard and will be coming soon,
 			and hopefully guarantee a better playing experience for everyone. Please check the github issue if you are interested in helping out.
 		</p>
-	</section>
-);
+	</section>;
 
 Changelog.propTypes = {
 	onLeaveChangelog: PropTypes.func

@@ -116,7 +116,9 @@ class Settings extends React.Component {
 	}
 
 	profileSearchSubmit() {
-		this.props.fetchProfile(this.state.profileSearchValue);
+		if (this.state.profileSearchValue !== 'coz') {
+			this.props.fetchProfile(this.state.profileSearchValue);
+		}
 	}
 
 	render() {
@@ -144,9 +146,7 @@ class Settings extends React.Component {
 				reader.readAsDataURL(files[0]);
 			},
 			displayCardbackInfoModal = () => {
-				$('.cardbackinfo')
-					.modal('setting', 'transition', 'scale')
-					.modal('show');
+				$('.cardbackinfo').modal('setting', 'transition', 'scale').modal('show');
 			},
 			previewSaveClick = () => {
 				$.ajax({
@@ -303,9 +303,7 @@ class Settings extends React.Component {
 										}
 
 										if (this.props.userInfo.gameSettings.customCardback) {
-											const imageUid = Math.random()
-												.toString(36)
-												.substring(6);
+											const imageUid = Math.random().toString(36).substring(6);
 
 											return (
 												<div
@@ -357,7 +355,9 @@ class Settings extends React.Component {
 									</p>
 								</div>
 							</div>
-							<div className="centered row cardback-message-container">{this.state.cardbackUploadStatus}</div>
+							<div className="centered row cardback-message-container">
+								{this.state.cardbackUploadStatus}
+							</div>
 						</div>
 					</div>
 				</div>

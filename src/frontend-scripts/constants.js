@@ -4,7 +4,6 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Costley',
 	'morewhales',
 	'Ophxlia',
-	'MilkMan',
 	'Idrissa',
 	'cayseron',
 	'Knownall',
@@ -12,11 +11,10 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'snake69sus',
 	'Ecoturtle',
 	'maki2',
-	'jazz',
-	'wizzy'
+	'jazz'
 ]);
 
-const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999', 'Uther']);
+const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999']);
 
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 
