@@ -112,13 +112,15 @@ $headerfont: 'Unica One', Lato, sans-serif;
 		.poll {
 			position: absolute;
 			left: 650px;
-			width: 190px;
+			width: 130px;
 			top: 330px;
+			text-align: center;
 			> a {
-				color: yellow;
+				color: #a5673f;
 				font-weight: bold;
 				font-style: italic;
 				text-decoration: underline;
+				font-size: 12px;
 			}
 		}
 		background: radial-gradient(ellipse at center, #000 0%, rgba(195, 101, 99, 0.23) 100%) #141210;

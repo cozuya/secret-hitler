@@ -27,7 +27,9 @@ const PatchAlert = ({ isActive, onClick }) => {
 const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 	<section className="defaultmid">
 		<div className="poll">
-			<a target="_blank" href="/polls" />
+			<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki/Emotes">
+				Emotes quick reference guide
+			</a>
 		</div>
 		<PatchAlert isActive={version.lastSeen && version.current.number !== version.lastSeen} onClick={readPatchNotes} />
 		<img src="images/lizard25.png" alt="Secret Hitler logo" width="400" height="400" />

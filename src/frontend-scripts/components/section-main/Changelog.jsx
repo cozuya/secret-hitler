@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import PropTypes from 'prop-types';
 
-const Changelog = props =>
+const Changelog = props => (
 	<section className="changelog">
 		<i
 			className="remove icon"
@@ -13,46 +13,62 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.8.0 "" released </p>
+			<p>Version 0.8.0 "citehtseawen" released 9-23-2017</p>
 		</div>
-		<h3>New feature: card and graphics overhaul</h3>
+		<h3>New feature: UI overhaul</h3>
 		<p>Thanks to contributor andy013, most of the cards and images in game have been upgraded and colorized. Neat!</p>
-		<p>Also fonts redone, many other UI tweaks in. Let us know what you think.</p>
+		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
+		<h3>New feature: chat emotes!</h3>
+		<p>In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:</p>
+		<p>
+			Typically a clickable popup will appear and be selectable.. I didn't get to that - next patch. For now, please check out our{' '}
+			<a href="https://github.com/cozuya/secret-hitler/wiki/Emotes" target="_blank">
+				emote reference.
+			</a>{' '}
+			Thanks goes out to contributor andy013!
+		</p>
 		<h3>New feature: election voting rework (changable votes)</h3>
 		<p>
 			Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the
 			selected one again to bring back the loader and prevent vote tallying or just b) select the other option to switch your vote. Votes are tallied as usual
-			when everyone has made a selection.
+			when everyone has locked in a selection.
 		</p>
 		<h3>New feature: 2nd tier of player moderators (editors) and many new helpful moderation tools implemented.</h3>
-		<p>Editors will have an (E) next to their name. Consider editors tier 1 mods, and normal (M) tier 2 mods. All of which have my full support.</p>
+		<p>
+			Editors will have an (E) next to their name, and mysterious expanded mod powers! Like assign roles to players, and reveal all roles to themselves. Just
+			kidding. Editors and mods can now do helpful things like temporarily turn off account creation in case of troll attack and disable ip bans so that a group
+			from one location can get around the 1 account per day limit.
+		</p>
 		<h3>New feature: wiki page</h3>
 		<p>
 			Check out our{' '}
 			<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
 				wiki page
 			</a>{' '}
-			kindly set up by moderator DFinn.
+			kindly set up by editor DFinn. Useful and topical information will be kept there, keep an eye on it if you are interested in the future of this site.
 		</p>
-		<p>The footer bar in the default view has also been updated.</p>
 		<h4>Other issues</h4>
 		<ul>
 			<li>
-				Home page and about us page text has been updated and the webform deprecated. If you have feedback/issues, a new email address has been set up and there
-				is always discord and the player report feature.
+				Home page and about us page text has been updated and the webform deprecated. If you have feedback/issues, a new email address has been set up in the
+				about page and we are always available via discord and the player report feature.
 			</li>
-			<li>Player cardbacks in profiles work correctly on Edge.</li>
 			<li>Gamenotes clear button now works.</li>
 			<li>Thanks to contributor jonnybest, hovering on a game on the list in the left sidebar now shows you who is seated in that game.</li>
 			<li>
-				A bug in "blind mode" (no gamechat) was causing fascists to get credit for winning the game when Hitler was shot, this mode was disabled via hotfix, now
-				that bug has been fixed and that mode has been re-enabled.
+				A bug in "blind mode" (no gamechat) was causing fascists to get credit for winning the game when Hitler was shot, this mode was previously disabled via
+				hotfix, now that bug has been fixed and that mode has been re-enabled.
 			</li>
 			<li>
 				Private games "P" icon in the upper left corner of a gamelist was disappearing after the game started - thanks to contributor jonnybest, this has been
 				fixed.
 			</li>
-			<li>Players can now search/type in other players to look at their profile. Click on the settings/gear icon to see this new input field.</li>
+			<li>
+				Players can now search/type in other players to look at their profile just like clicking on them. The player settings page (gear icon) has this new
+				input field.
+			</li>
+			<li>The footer bar in the default view has been updated to include our wiki.</li>
+			<li>No new polls this release.</li>
 		</ul>
 		<h4>
 			Next up: its high time some more effort was put in to prevent or at least lesson the pain of AFKing players. Also player notes and tournament mode coming
@@ -272,7 +288,8 @@ const Changelog = props =>
 			where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls. This isn't all that hard and will be coming soon,
 			and hopefully guarantee a better playing experience for everyone. Please check the github issue if you are interested in helping out.
 		</p>
-	</section>;
+	</section>
+);
 
 Changelog.propTypes = {
 	onLeaveChangelog: PropTypes.func
