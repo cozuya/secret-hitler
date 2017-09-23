@@ -3,8 +3,26 @@
 	.content > button {
 		position: absolute;
 		left: 50px;
-		top: 100px;
+		top: 80px;
 		color: #fff;
+		padding: 8px;
+	}
+
+	.profile-search {
+		position: absolute;
+		top: 80px;
+		left: 490px;
+		display: flex;
+		flex-direction: row;
+
+		input {
+			padding: 3px;
+			width: 160px;
+		}
+
+		button {
+			padding: 8px;
+		}
 	}
 
 	.popups {
@@ -55,12 +73,13 @@
 			border-radius: 5px;
 			color: #ddd;
 			cursor: pointer;
-			font-size: 13px;
+			font-size: 12px;
 			line-height: 1;
 		}
 
 		.cardback-message-container {
 			color: yellow;
+			padding-bottom: 0;
 		}
 
 		.preview-container {

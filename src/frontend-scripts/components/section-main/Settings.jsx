@@ -23,12 +23,14 @@ class Settings extends React.Component {
 		this.sliderDrop = this.sliderDrop.bind(this);
 		this.widthSliderChange = this.widthSliderChange.bind(this);
 		this.widthSliderDrop = this.widthSliderDrop.bind(this);
+		this.profileSearchSubmit = this.profileSearchSubmit.bind(this);
 		this.state = {
 			sliderValues: [8, 28],
 			widthSliderValue: '',
 			preview: '',
 			cardbackUploadStatus: '',
-			isUploaded: false
+			isUploaded: false,
+			profileSearchValue: ''
 		};
 	}
 
@@ -105,16 +107,16 @@ class Settings extends React.Component {
 	}
 
 	widthSliderChange(event) {
-		$('#game-container').css(
-			'width',
-			event[0] === 1853 ? 'inherit' : `${event[0]}px`
-		);
+		$('#game-container').css('width', event[0] === 1853 ? 'inherit' : `${event[0]}px`);
 		this.setState({ widthSliderValue: `${event[0]}px` });
-		// todo
 	}
 
 	leaveSettings() {
 		this.props.onLeaveSettings('default');
+	}
+
+	profileSearchSubmit() {
+		this.props.fetchProfile(this.state.profileSearchValue);
 	}
 
 	render() {
@@ -123,16 +125,14 @@ class Settings extends React.Component {
 
 				if (rejectedFile.length) {
 					this.setState({
-						cardbackUploadStatus:
-							'The file you selected has a wrong extension.  Only png jpg and jpeg are allowed.'
+						cardbackUploadStatus: 'The file you selected has a wrong extension.  Only png jpg and jpeg are allowed.'
 					});
 					return;
 				}
 
 				if (files[0].size > 40000) {
 					this.setState({
-						cardbackUploadStatus:
-							'The file you selected is too big.  A maximum of 40kb is allowed.'
+						cardbackUploadStatus: 'The file you selected is too big.  A maximum of 40kb is allowed.'
 					});
 					return;
 				}
@@ -144,9 +144,7 @@ class Settings extends React.Component {
 				reader.readAsDataURL(files[0]);
 			},
 			displayCardbackInfoModal = () => {
-				$('.cardbackinfo')
-					.modal('setting', 'transition', 'scale')
-					.modal('show');
+				$('.cardbackinfo').modal('setting', 'transition', 'scale').modal('show');
 			},
 			previewSaveClick = () => {
 				$.ajax({
@@ -159,11 +157,7 @@ class Settings extends React.Component {
 					.then(data => {
 						this.setState({
 							cardbackUploadStatus: data.message,
-							isUploaded:
-								data.message ===
-								'You need to have played 50 games to upload a cardback.'
-									? ''
-									: this.state.preview,
+							isUploaded: data.message === 'You need to have played 50 games to upload a cardback.' ? '' : this.state.preview,
 							preview: ''
 						});
 					})
@@ -174,6 +168,9 @@ class Settings extends React.Component {
 			previewClearClick = e => {
 				e.preventDefault;
 				this.setState({ preview: '' });
+			},
+			handleSearchProfileChange = e => {
+				this.setState({ profileSearchValue: e.currentTarget.value });
 			};
 
 		return (
@@ -189,15 +186,21 @@ class Settings extends React.Component {
 							</a>{' '}
 							(new tab).
 						</div>
-						<button
-							className="ui button"
-							onClick={this.props.fetchProfile.bind(
-								null,
-								this.props.userInfo.userName
-							)}
-						>
+						<button className="ui button" onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
 							View your profile
 						</button>
+						<form className="profile-search" onSubmit={this.profileSearchSubmit}>
+							<div className="ui action input">
+								<input
+									placeholder="Search profiles.."
+									value={this.state.profileSearchValue}
+									onChange={handleSearchProfileChange}
+									maxLength="20"
+									spellCheck="false"
+								/>
+							</div>
+							<button className={this.state.profileSearchValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
+						</form>
 					</div>
 				</div>
 				<div className="ui grid">
@@ -210,13 +213,7 @@ class Settings extends React.Component {
 									this.timestamps = c;
 								}}
 							>
-								<input
-									type="checkbox"
-									name="timestamps"
-									defaultChecked={
-										this.props.userInfo.gameSettings.enableTimestamps
-									}
-								/>
+								<input type="checkbox" name="timestamps" defaultChecked={this.props.userInfo.gameSettings.enableTimestamps} />
 							</div>
 						</div>
 						<div className="four wide column popups">
@@ -227,13 +224,7 @@ class Settings extends React.Component {
 									this.sidebar = c;
 								}}
 							>
-								<input
-									type="checkbox"
-									name="sidebar"
-									defaultChecked={
-										this.props.userInfo.gameSettings.enableRightSidebarInGame
-									}
-								/>
+								<input type="checkbox" name="sidebar" defaultChecked={this.props.userInfo.gameSettings.enableRightSidebarInGame} />
 							</div>
 						</div>
 						<div className="four wide column popups">
@@ -244,13 +235,7 @@ class Settings extends React.Component {
 									this.cardbacks = c;
 								}}
 							>
-								<input
-									type="checkbox"
-									name="cardbacks"
-									defaultChecked={
-										this.props.userInfo.gameSettings.disablePlayerCardbacks
-									}
-								/>
+								<input type="checkbox" name="cardbacks" defaultChecked={this.props.userInfo.gameSettings.disablePlayerCardbacks} />
 							</div>
 						</div>
 						<div className="four wide column popups">
@@ -261,13 +246,7 @@ class Settings extends React.Component {
 									this.playercolors = c;
 								}}
 							>
-								<input
-									type="checkbox"
-									name="playercolors"
-									defaultChecked={
-										this.props.userInfo.gameSettings.disablePlayerColorsInChat
-									}
-								/>
+								<input type="checkbox" name="playercolors" defaultChecked={this.props.userInfo.gameSettings.disablePlayerColorsInChat} />
 							</div>
 						</div>
 					</div>
@@ -276,10 +255,7 @@ class Settings extends React.Component {
 							<h4
 								className="ui header"
 								style={{
-									fontSize:
-										this.state.sliderValues.length > 1
-											? '18px'
-											: `${this.state.sliderValues[0]}px`
+									fontSize: this.state.sliderValues.length > 1 ? '18px' : `${this.state.sliderValues[0]}px`
 								}}
 							>
 								Gamechat font size
@@ -290,11 +266,7 @@ class Settings extends React.Component {
 								min={8}
 								max={28}
 								range
-								defaultValue={
-									this.props.userInfo.gameSettings.fontSize
-										? [this.props.userInfo.gameSettings.fontSize]
-										: [18]
-								}
+								defaultValue={this.props.userInfo.gameSettings.fontSize ? [this.props.userInfo.gameSettings.fontSize] : [18]}
 								marks={{ 8: '8px', 18: '18px', 28: '28px' }}
 							/>
 						</div>
@@ -308,17 +280,7 @@ class Settings extends React.Component {
 								min={1253}
 								max={1853}
 								range
-								defaultValue={
-									this.props.userInfo.gameSettings.customWidth
-										? [
-												parseInt(
-													this.props.userInfo.gameSettings.customWidth.split(
-														'px'
-													)[0]
-												)
-											]
-										: [1853]
-								}
+								defaultValue={this.props.userInfo.gameSettings.customWidth ? [parseInt(this.props.userInfo.gameSettings.customWidth.split('px')[0])] : [1853]}
 								marks={{ 1253: 'Minimum', 1853: 'Full screen' }}
 							/>
 						</div>
@@ -327,11 +289,7 @@ class Settings extends React.Component {
 						<div className="ui grid">
 							<div className="row centered cardback-header-container">
 								<h4 className="ui header">
-									Cardback<i
-										className="info circle icon"
-										title="Click to get information about user uploaded cardbacks"
-										onClick={displayCardbackInfoModal}
-									/>
+									Cardback<i className="info circle icon" title="Click to get information about user uploaded cardbacks" onClick={displayCardbackInfoModal} />
 								</h4>
 							</div>
 							<div className="row cardbacks-container">
@@ -349,9 +307,7 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this
-															.props.userInfo.userName}.${this.props.userInfo
-															.gameSettings
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${this.props.userInfo.gameSettings
 															.customCardback}?${imageUid}) no-repeat`
 													}}
 												/>
@@ -363,12 +319,7 @@ class Settings extends React.Component {
 								</div>
 								<div className="upload">
 									<h5 className="ui header">New</h5>
-									<Dropzone
-										accept="image/png, image/jpg, image/jpeg"
-										onDrop={onDrop}
-										multiple={false}
-										className="dropzone"
-									>
+									<Dropzone accept="image/png, image/jpg, image/jpeg" onDrop={onDrop} multiple={false} className="dropzone">
 										Click here or drag and drop a 70px by 95px image to upload
 									</Dropzone>
 								</div>
@@ -378,10 +329,7 @@ class Settings extends React.Component {
 											<div className="preview-container">
 												<h5 className="ui header">Preview</h5>
 												<img src={this.state.preview} />;
-												<button
-													onClick={previewSaveClick}
-													className="ui button"
-												>
+												<button onClick={previewSaveClick} className="ui button">
 													Save
 												</button>
 												<a href="#" onClick={previewClearClick}>
@@ -395,19 +343,14 @@ class Settings extends React.Component {
 									<div className="header">Cardback info and terms of use</div>
 									<p>
 										<strong>
-											Image uploaded must be 70px by 95px, or it will not look
-											right. Do not trust the previewer - it will crunch to fit
-											the box, the game itself won't do that.
+											Image uploaded must be 70px by 95px, or it will not look right. Do not trust the previewer - it will crunch to fit the box, the game
+											itself won't do that.
 										</strong>{' '}
-										Rainbow players only. Can only upload an image once per 18
-										hours, be careful before hitting save. Only png, jpg, and
-										jpeg are permitted. Must be below 40kb.
+										Rainbow players only. Can only upload an image once per 18 hours, be careful before hitting save. Only png, jpg, and jpeg are permitted.
+										Must be below 40kb.
 									</p>
 									<p>
-										<strong>
-											No NSFW images, nazi anything, or images from the site
-											itself to be tricky.
-										</strong>
+										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
 								</div>
 							</div>
