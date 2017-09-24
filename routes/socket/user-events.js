@@ -1,6 +1,6 @@
 let generalChatCount = 0;
 
-const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced } = require('./models'),
+const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models'),
 	{ sendGameList, sendGeneralChats, sendUserList, updateUserStatus } = require('./user-requests'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
@@ -137,7 +137,9 @@ module.exports.updateSeatedUser = (socket, data) => {
 };
 
 module.exports.handleAddNewGame = (socket, data) => {
-	if (socket.handshake.session.passport) {
+	console.log(gameCreationDisabled);
+	console.log(socket.handshake.session.passport && !gameCreationDisabled.status);
+	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
 		const username = socket.handshake.session.passport.user;
 
@@ -676,9 +678,7 @@ module.exports.handleModerationAction = (socket, data) => {
 				}
 				break;
 			case 'ban':
-				if (isSuperMod) {
-					banAccount(data.userName);
-				}
+				banAccount(data.userName);
 				break;
 			case 'broadcast':
 				games.forEach(game => {
@@ -798,6 +798,12 @@ module.exports.handleModerationAction = (socket, data) => {
 				break;
 			case 'enableIpbans':
 				ipbansNotEnforced.status = false;
+				break;
+			case 'disableGameCreation':
+				gameCreationDisabled.status = true;
+				break;
+			case 'enableGameCreation':
+				gameCreationDisabled.status = false;
 				break;
 			case 'resetServer':
 				if (isSuperMod) {
