@@ -139,6 +139,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 			// sloppy but not trivial to get around
 			game.gameState.isStarted = true;
 			startGame(game);
+
 		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length) && game.gameState.isStarted === true) {
 			clearInterval(countDown);
 			game.gameState.cancellStart = true;
@@ -153,7 +154,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 		} else if (!game.gameState.isStarted) {
 			displayWaitingForPlayers(game);
 		}
-
 		updateUserStatus(data.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 		sendGameList();
@@ -938,6 +938,11 @@ module.exports.handlePlayerReportDismiss = () => {
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{ badKarma } = false;
+
+	if (!game.gameState.isStarted) {
+		const count = game.general.minPlayersCount - game.publicPlayersState.length + 1;
+		game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
+	}
 
 	if (badKarma) {
 		if (game.private.reports[badKarma]) {
