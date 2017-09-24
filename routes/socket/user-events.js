@@ -97,7 +97,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 			// sloppy but not trivial to get around
 			game.gameState.isStarted = true;
 			startGame(game);
-		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length)) {
+		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length) && game.gameState.isStarted === true) {
 			clearInterval(countDown);
 			game.gameState.cancellStart = true;
 			game.general.status = 'Waiting for more players..';
@@ -127,6 +127,13 @@ module.exports.updateSeatedUser = (socket, data) => {
 		} else if (!game.gameState.isStarted) {
 			const count = game.general.minPlayersCount - publicPlayersState.length;
 
+			const test = game.general.excludedPlayerCount.find((el) => {
+				return el > publicPlayersState.length;
+			});
+
+			console.log("test = ", test);
+
+			console.log("game.general.excludedPlayerCount = ", game.general.excludedPlayerCount);
 			game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 		}
 
