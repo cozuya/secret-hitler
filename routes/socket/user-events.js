@@ -97,10 +97,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 			// sloppy but not trivial to get around
 			game.gameState.isStarted = true;
 			startGame(game);
-		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length)) {
-			clearInterval(countDown);
-			game.gameState.cancellStart = true;
-			game.general.status = 'Waiting for more players..';
 		} else if (
 			publicPlayersState.length === game.general.minPlayersCount ||
 			(publicPlayersState.length > game.general.minPlayersCount &&
@@ -111,11 +107,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 
 			game.gameState.isStarted = true;
 			countDown = setInterval(() => {
-				if (game.gameState.cancellStart) {
-					game.gameState.cancellStart = false;
-					game.gameState.isStarted = false;
-					clearInterval(countDown);
-				} else if (startGamePause === 4) {
+				if (startGamePause === 4) {
 					clearInterval(countDown);
 					startGame(game);
 				} else {
@@ -126,7 +118,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 			}, 1000);
 		} else if (!game.gameState.isStarted) {
 			const count = game.general.minPlayersCount - publicPlayersState.length;
-
 			game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 		}
 
@@ -902,6 +893,11 @@ module.exports.handlePlayerReportDismiss = () => {
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{ badKarma } = false;
+
+	if (!game.gameState.isStarted) {
+		const count = game.general.minPlayersCount - game.publicPlayersState.length + 1;
+		game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
+	}
 
 	if (badKarma) {
 		if (game.private.reports[badKarma]) {
