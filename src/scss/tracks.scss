@@ -125,7 +125,7 @@
 	}
 	.tracks.blurred {
 		filter: blur(5px) saturate(60%);
-		opacity: .3;
+		opacity: 0.3;
 	}
 	.cardflinger-container {
 		position: absolute;
@@ -141,7 +141,7 @@
 		height: 164px;
 		z-index: 3;
 		transition-property: all;
-		transition-delay: .3s;
+		transition-delay: 0.3s;
 		transition-duration: 1s;
 		transform-style: preserve-3d;
 	}
@@ -203,7 +203,7 @@
 		height: 167px;
 		z-index: 2;
 		transition-property: left, top, width, height, transform;
-		transition-delay: .5s, .5s, 3s, 3s, 1s;
+		transition-delay: 0.5s, 0.5s, 3s, 3s, 1s;
 		transition-duration: 2s, 2s, 3s, 3s, 1s;
 		transform-style: preserve-3d;
 		box-shadow: 0px 0px 4px 3px #969696;
@@ -304,7 +304,7 @@
 	top: 0;
 	left: 0;
 	position: absolute;
-	animation: fadeIn .7s infinite alternate;
+	animation: fadeIn 0.7s infinite alternate;
 	cursor: pointer;
 }
 
@@ -326,15 +326,15 @@
 
 .experienced .tracks-container {
 	.tracks {
-		transition: all .2s;
+		transition: all 0.2s;
 	}
 	.cardflinger-card-container {
 		transition-property: all;
-		transition-delay: .1s;
-		transition-duration: .2s;
+		transition-delay: 0.1s;
+		transition-duration: 0.2s;
 	}
 	.enactedpolicies-card-container {
-		transition-delay: .5s, .5s, 1s, 1s, .5s;
-		transition-duration: .5s, .5s, 1s, 1s, 1s;
+		transition-delay: 0.5s, 0.5s, 1s, 1s, 0.5s;
+		transition-duration: 0.5s, 0.5s, 1s, 1s, 1s;
 	}
 }
