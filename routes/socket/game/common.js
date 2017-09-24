@@ -91,7 +91,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	game.publicPlayersState[presidentIndex].governmentStatus = 'isPendingPresident';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
-	game.gameState.clickActionInfo = game.general.livingPlayerCount > 5   // think this fixes the bug
+	game.gameState.clickActionInfo = game.general.livingPlayerCount > 5
 			? [
 				pendingPresidentPlayer.userName,
 				seatedPlayers
