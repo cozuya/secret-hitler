@@ -115,8 +115,12 @@ class Settings extends React.Component {
 		this.props.onLeaveSettings('default');
 	}
 
-	profileSearchSubmit() {
-		this.props.fetchProfile(this.state.profileSearchValue);
+	profileSearchSubmit(e) {
+		e.preventDefault();
+
+		if (this.state.profileSearchValue !== 'coz') {
+			this.props.fetchProfile(this.state.profileSearchValue);
+		}
 	}
 
 	render() {

@@ -658,14 +658,18 @@ module.exports.handleModerationAction = (socket, data) => {
 		modaction.save();
 		switch (data.action) {
 			case 'deleteUser':
-				Account.findOne({ username: data.userName }).remove(() => {
-					if (io.sockets.sockets[affectedSocketId]) {
-						io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-					}
-				});
+				if (isSuperMod) {
+					Account.findOne({ username: data.userName }).remove(() => {
+						if (io.sockets.sockets[affectedSocketId]) {
+							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+						}
+					});
+				}
 				break;
 			case 'ban':
-				banAccount(data.userName);
+				if (isSuperMod) {
+					banAccount(data.userName);
+				}
 				break;
 			case 'broadcast':
 				games.forEach(game => {
@@ -712,15 +716,17 @@ module.exports.handleModerationAction = (socket, data) => {
 				io.sockets.emit('generalChats', generalChats);
 				break;
 			case 'deleteProfile':
-				Profile.findOne({ _id: data.userName })
-					.remove(() => {
-						if (io.sockets.sockets[affectedSocketId]) {
-							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-						}
-					})
-					.catch(err => {
-						console.log(err);
-					});
+				if (isSuperMod) {
+					Profile.findOne({ _id: data.userName })
+						.remove(() => {
+							if (io.sockets.sockets[affectedSocketId]) {
+								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+							}
+						})
+						.catch(err => {
+							console.log(err);
+						});
+				}
 				break;
 			// case 'renamePlayer':
 			// 	Account.findOne({ username: data.userName })

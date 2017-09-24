@@ -77,6 +77,10 @@
 				font-size: 18px;
 				cursor: not-allowed;
 				overflow: hidden;
+
+				img {
+					vertical-align: middle;
+				}
 				.ui.list {
 					padding-left: 5px;
 					overflow-y: auto;

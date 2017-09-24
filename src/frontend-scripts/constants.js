@@ -4,7 +4,6 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Costley',
 	'morewhales',
 	'Ophxlia',
-	'MilkMan',
 	'Idrissa',
 	'cayseron',
 	'Knownall',
@@ -12,11 +11,11 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'snake69sus',
 	'Ecoturtle',
 	'maki2',
-	'jazz',
-	'wizzy'
+	'Moranki',
+	'jazz'
 ]);
 
-const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999', 'Uther']);
+const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999']);
 
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 
@@ -44,5 +43,6 @@ module.exports.PLAYERCOLORS = user =>
 		onfire10: user.wins / (user.wins + user.losses) > 0.7,
 		contributer: CONTRIBUTORS.includes(user.userName),
 		cbell: user.userName === 'cbell',
-		max: user.userName === 'Max'
+		max: user.userName === 'Max',
+		dfinn: user.userName === 'DFinn'
 	});

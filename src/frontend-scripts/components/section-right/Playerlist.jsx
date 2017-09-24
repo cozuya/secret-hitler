@@ -31,7 +31,9 @@ class Playerlist extends React.Component {
 	}
 
 	clickInfoIcon() {
-		$('.playerlistinfo').modal('setting', 'transition', 'scale').modal('show');
+		$('.playerlistinfo')
+			.modal('setting', 'transition', 'scale')
+			.modal('show');
 	}
 
 	routeToGame(gameId) {
@@ -109,14 +111,14 @@ class Playerlist extends React.Component {
 					{this.renderModerationButton()}
 					{this.renderPlayerReportButton()}
 					<div className="ui basic modal playerlistinfo">
-						<div className="header">Lobby and player color info</div>
+						<div className="header">Lobby and player color info:</div>
 						<p>
 							Players in the lobby, general chat, and game chat are grey/white until they reach 50 games played. These are known as "rainbow players" and have
 							access to play in special rainbow player only games.
 						</p>
 						<p>
-							After that, if they have less than 52% win rate, their player color varies between <span className="experienced5">light green</span> and{' '}
-							<span className="experienced1">dark green</span>, depending on how many games played they have.
+							After that, if they have less than 52% win rate, their player color varies between <span className="experienced1">light green</span> and{' '}
+							<span className="experienced5">dark green</span>, depending on how many games played they have.
 						</p>
 						<p>
 							Additionally, if a player has at least 50 games played and a win rate of 52% or higher, their player color ranges from{' '}
@@ -124,18 +126,17 @@ class Playerlist extends React.Component {
 							70%.
 						</p>
 						<p>
-							Also <span className="admin">admins</span> are always on top, <span className="moderatorcolor">mods</span> are blue with a red (M) and also appear
-							at the top, and <span className="contributer">contributors</span> get a special orange color as well! Contribute code to this open source project
-							to be endlessly pestered about why you're orange.
+							Also, <span className="admin">Administrators</span> have a red color and are always on top; <span className="editorcolor">Editors</span>, placed
+							under Administrators, have an aqua color with a red (E); and <span className="moderatorcolor">Moderators</span>, placed under Editors, have a blue
+							color with a light red (M) and also appear at the top, and <span className="contributer">contributors</span> get a special orange color as well!
+							Contribute code to this open source project to be endlessly pestered about why you're orange.
 						</p>
 					</div>
 					{(() => {
 						if (Object.keys(this.props.userList).length) {
 							return (
 								<span>
-									<span>
-										{this.props.userList.list.length}
-									</span>
+									<span>{this.props.userList.list.length}</span>
 									<i className="large user icon" title="Number of players logged in" />
 								</span>
 							);
@@ -261,7 +262,8 @@ class Playerlist extends React.Component {
 														if (MODERATORS.includes(user.userName)) {
 															return (
 																<span className="moderator-name" title="This user is a moderator">
-																	{' '}(M)
+																	{' '}
+																	(M)
 																</span>
 															);
 														}
@@ -269,7 +271,8 @@ class Playerlist extends React.Component {
 														if (EDITORS.includes(user.userName)) {
 															return (
 																<span className="editor-name" title="This user is an editor">
-																	{' '}(E)
+																	{' '}
+																	(E)
 																</span>
 															);
 														}
