@@ -61,37 +61,35 @@ const handleSocketDisconnect = socket => {
 			const { gameState, publicPlayersState } = game,
 				playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-			if (!gameState.isStarted && playerIndex > -1) {
+			if (!gameState.isStarted && publicPlayersState.length === 1) {
+				games.splice(games.indexOf(game), 1);
+			} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 				publicPlayersState.splice(playerIndex, 1);
 				io.sockets.in(game.uid).emit('gameUpdate', game);
+
+				if (
+					gameState.isStarted &&
+					(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
+				) {
+					gameState.cancellStart = true;
+				}
+
 				displayWaitingForPlayers(game);
 
-				if (game.publicPlayersState.length >= game.general.minPlayersCount && !game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) {
+				if (
+					!gameState.isStarted &&
+					game.publicPlayersState.length >= game.general.minPlayersCount &&
+					!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)
+				) {
 					startCountdown(game);
 				}
-			} else if (gameState.isStarted && !gameState.isTracksFlipped && playerIndex > -1) {
-				publicPlayersState.splice(playerIndex, 1);
-				io.sockets.in(game.uid).emit('gameUpdate', game);
-
-				if (game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) {
-					gameState.cancellStart = true;
-					displayWaitingForPlayers(game);
-				}
-			} else if (gameState.isTracksFlipped && !gameState.isCompleted) {
-				publicPlayersState[playerIndex].connected = false;
-				sendInProgressGameUpdate(game);
-			} else if (gameState.isStarted && gameState.isTracksFlipped && !gameState.isCompleted) {
-				publicPlayersState[playerIndex].connected = false;
-				io.in(game.uid).emit('gameUpdate', game);
 			} else if (
 				gameState.isCompleted &&
 				game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1
 			) {
 				games.splice(games.indexOf(game), 1);
-			} else if (publicPlayersState.length === 1) {
-				games.splice(games.indexOf(game), 1);
-			} else if (gameState.isCompleted) {
-				publicPlayersState[playerIndex].leftGame = true;
+			} else if (gameState.isTracksFlipped) {
+				publicPlayersState[playerIndex].connected = false;
 				sendInProgressGameUpdate(game);
 			}
 			sendGameList();
@@ -937,7 +935,7 @@ module.exports.handlePlayerReportDismiss = () => {
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{ badKarma } = false;
-		
+
 	if (badKarma) {
 		if (game.private.reports[badKarma]) {
 			game.private.reports[badKarma]++;
@@ -988,44 +986,31 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 			// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
-
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 			games.splice(games.indexOf(game), 1);
 		}
 	}
 
-	if (
-		game &&
-		data.isSeated &&
-		(!game.gameState.isStarted || !game.gameState.isTracksFlipped) &&
-		game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)
-	) {
+	if (game && data.isSeated && !game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
 		game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
-		io.sockets.in(data.uid).emit('gameUpdate', game);
-
-		if (
-			game.publicPlayersState.length >= game.general.minPlayersCount &&
-			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length) &&
-			!game.gameState.isStarted
+		if (!game.gameState.isStarted) {
+			displayWaitingForPlayers(game);
+			if (
+				game.publicPlayersState.length >= game.general.minPlayersCount &&
+				!game.general.excludedPlayerCount.includes(game.publicPlayersState.length) &&
+				!game.gameState.isStarted
+			) {
+				startCountdown(game);
+			}
+		} else if (
+			game.gameState.isStarted === true &&
+			(game.general.excludedPlayerCount.includes(game.publicPlayersState.length) || game.publicPlayersState.length < game.general.minPlayersCount)
 		) {
-			startCountdown(game);
+			game.gameState.cancellStart = true;
+			displayWaitingForPlayers(game);
 		}
+		io.sockets.in(data.uid).emit('gameUpdate', game);
 	}
-
-	if (
-		game.gameState.isStarted === true &&
-		(game.general.excludedPlayerCount.includes(game.publicPlayersState.length) || game.publicPlayersState.length < game.general.minPlayersCount)
-	) {
-		game.gameState.cancellStart = true;
-		displayWaitingForPlayers(game);
-		io.sockets.in(data.uid).emit('gameUpdate', game); // this seems to update the text instantly
-	}
-
-	if (!game.gameState.isStarted) {
-		displayWaitingForPlayers(game);
-		io.sockets.in(data.uid).emit('gameUpdate', game); // this seems to update the text instantly
-	}
-
 	if (game && !game.publicPlayersState.length) {
 		io.sockets.in(data.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
