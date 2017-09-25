@@ -65,6 +65,7 @@ const handleSocketDisconnect = socket => {
 				games.splice(games.indexOf(game), 1);
 			} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 				publicPlayersState.splice(playerIndex, 1);
+				displayWaitingForPlayers(game);
 				io.sockets.in(game.uid).emit('gameUpdate', game);
 
 				if (
@@ -73,8 +74,6 @@ const handleSocketDisconnect = socket => {
 				) {
 					gameState.cancellStart = true;
 				}
-
-				displayWaitingForPlayers(game);
 
 				if (
 					!gameState.isStarted &&
@@ -994,13 +993,14 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 	if (game && data.isSeated && !game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
 		game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
 		if (!game.gameState.isStarted) {
-			displayWaitingForPlayers(game);
 			if (
 				game.publicPlayersState.length >= game.general.minPlayersCount &&
 				!game.general.excludedPlayerCount.includes(game.publicPlayersState.length) &&
 				!game.gameState.isStarted
 			) {
 				startCountdown(game);
+			} else {
+				displayWaitingForPlayers(game);
 			}
 		} else if (
 			game.gameState.isStarted === true &&
