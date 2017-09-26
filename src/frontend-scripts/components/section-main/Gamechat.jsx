@@ -220,8 +220,8 @@ class Gamechat extends React.Component {
 			compareChatStrings = (a, b) => {
 				let stringA, stringB;
 
-				typeof a.chat == 'string' ? (stringA = a.chat) : (stringA = a.chat.reduce((a, b) => ({ text: a.text + b.text })).text);
-				typeof b.chat == 'string' ? (stringB = b.chat) : (stringB = b.chat.reduce((a, b) => ({ text: a.text + b.text })).text);
+				typeof a.chat == 'string' ? (stringA = a.chat) : (stringA = a.chat.reduce((c, d) => ({ text: c.text + d.text })).text);
+				typeof b.chat == 'string' ? (stringB = b.chat) : (stringB = b.chat.reduce((c, d) => ({ text: c.text + d.text })).text);
 
 				return stringA > stringB ? 1 : -1;
 			};
