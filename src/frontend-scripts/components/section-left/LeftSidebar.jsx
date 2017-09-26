@@ -13,7 +13,7 @@ const LeftSidebar = props => {
 						bGameStatus = b.gameStatus;
 
 					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
-						return a.seatedCount === b.seatedCount ? a.uid - b.uid : a.seatedCount - b.seatedCount;
+						return a.seatedCount === b.seatedCount ? a.uid > b.uid : a.seatedCount - b.seatedCount;
 					}
 
 					if (aGameStatus === 'notStarted' && bGameStatus !== 'notStarted') {
