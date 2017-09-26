@@ -99,7 +99,6 @@ const handleSocketDisconnect = socket => {
 
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
-
 	// prevents race condition between 1) taking a seat and 2) the game starting
 	if (game && game.gameState.isTracksFlipped) {
 		return;
@@ -934,7 +933,6 @@ module.exports.handlePlayerReportDismiss = () => {
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{ badKarma } = false;
-
 	if (badKarma) {
 		if (game.private.reports[badKarma]) {
 			game.private.reports[badKarma]++;
@@ -1041,7 +1039,15 @@ module.exports.checkUserStatus = socket => {
 			);
 
 		if (oldSocketID && sockets[oldSocketID]) {
-			sockets[oldSocketID].emit('manualDisconnection');
+			// sockets[oldSocketID].emit('manualDisconnection');  
+			/* 
+			*  I think this is causing the bug where the user is set to 'connected : false', even though they are signed in
+			*  It seems like their old session is set to 'connected: false' and then this overwrites their new session 
+			*  when they reconnect.
+			*
+			*
+			*/
+
 			delete sockets[oldSocketID];
 		}
 
