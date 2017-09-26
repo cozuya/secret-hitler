@@ -113,6 +113,8 @@ module.exports.updateSeatedUser = (socket, data) => {
 				(game.general.private && game.general.whitelistedPlayers.includes(data.userName))))
 	) {
 		const { publicPlayersState } = game;
+
+		// not sure this is the best place to initalize this?
 		let countDown;
 
 		publicPlayersState.push({
@@ -1039,7 +1041,6 @@ module.exports.checkUserStatus = socket => {
 			);
 
 		if (oldSocketID && sockets[oldSocketID]) {
-			// sockets[oldSocketID].emit('manualDisconnection');  
 			/* 
 			*  I think this is causing the bug where the user is set to 'connected : false', even though they are signed in
 			*  It seems like their old session is set to 'connected: false' and then this overwrites their new session 
@@ -1047,6 +1048,7 @@ module.exports.checkUserStatus = socket => {
 			*
 			*
 			*/
+			// sockets[oldSocketID].emit('manualDisconnection');  
 
 			delete sockets[oldSocketID];
 		}
