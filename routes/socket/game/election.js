@@ -796,19 +796,19 @@ module.exports.selectChancellorPolicy = data => {
 			setTimeout(() => {
 				chancellor.cardFlingerState = [];
 				enactPolicy(game, enactedPolicy);
-
-				if (experiencedMode) {
-					president.playersState[presidentIndex].claim = 'wasPresident';
-					chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
-				} else {
-					setTimeout(() => {
-						president.playersState[presidentIndex].claim = 'wasPresident';
-						chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
-						sendInProgressGameUpdate(game);
-					}, 3000);
-				}
 			}, experiencedMode ? 200 : 2000);
 		}
+		if (experiencedMode) {
+			president.playersState[presidentIndex].claim = 'wasPresident';
+			chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
+		} else {
+			setTimeout(() => {
+				president.playersState[presidentIndex].claim = 'wasPresident';
+				chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
+				sendInProgressGameUpdate(game);
+			}, 3000);
+		}
+
 	}
 };
 
