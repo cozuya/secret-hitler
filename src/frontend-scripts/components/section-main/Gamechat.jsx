@@ -218,9 +218,8 @@ class Gamechat extends React.Component {
 			seatedUserNames = gameInfo.publicPlayersState.map(player => player.userName),
 			{ chatFilter } = this.state,
 			compareChatStrings = (a, b) => {
-				let stringA, stringB;
-				typeof a.chat == 'string' ? (stringA = a.chat) : (stringA = a.chat.map(object => object.text).join(''));
-				typeof b.chat == 'string' ? (stringB = b.chat) : (stringB = b.chat.map(object => object.text).join(''));
+				const stringA = typeof a.chat == 'string' ? a.chat : a.chat.map(object => object.text).join('');
+				const stringB = typeof b.chat == 'string' ? b.chat : b.chat.map(object => object.text).join('');
 				return stringA > stringB ? 1 : -1;
 			};
 

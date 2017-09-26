@@ -163,8 +163,8 @@ const updateUserStatus = (module.exports.updateUserStatus = (username, type, gam
 module.exports.sendGameInfo = (socket, uid) => {
 	const game = games.find(el => el.general.uid === uid),
 		{ passport } = socket.handshake.session;
-    
-	if (game) {		
+
+	if (game) {
 		const _game = Object.assign({}, game);
 
 		if (passport && Object.keys(passport).length) {

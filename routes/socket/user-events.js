@@ -1041,14 +1041,14 @@ module.exports.checkUserStatus = socket => {
 			);
 
 		if (oldSocketID && sockets[oldSocketID]) {
-			/* 
+			/*
 			*  I think this is causing the bug where the user is set to 'connected : false', even though they are signed in
-			*  It seems like their old session is set to 'connected: false' and then this overwrites their new session 
+			*  It seems like their old session is set to 'connected: false' and then this overwrites their new session
 			*  when they reconnect.
 			*
 			*
 			*/
-			// sockets[oldSocketID].emit('manualDisconnection');  
+			// sockets[oldSocketID].emit('manualDisconnection');
 
 			delete sockets[oldSocketID];
 		}
