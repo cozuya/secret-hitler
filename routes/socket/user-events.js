@@ -56,7 +56,22 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 		}
 
 		sendUserList();
-	};
+	},
+	crashReport = JSON.stringify({
+		content: `${process.env.DISCORDADMINPING} the site just crashed or reset.`
+	}),
+	crashOptions = {
+		hostname: 'discordapp.com',
+		path: process.env.DISCORDCRASHURL,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Length': Buffer.byteLength(crashReport)
+		}
+	},
+	crashReq = https.request(crashOptions);
+
+crashReq.end(crashReport);
 
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
@@ -826,8 +841,10 @@ module.exports.handleModerationAction = (socket, data) => {
 					if (!isNaN(parseInt(number))) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
-								account[setType] = isPlusOrMinus ? account[setType] + parseInt(number) : parseInt(number);
-								account.save();
+								if (account) {
+									account[setType] = isPlusOrMinus ? account[setType] + parseInt(number) : parseInt(number);
+									account.save();
+								}
 							})
 							.catch(err => {
 								console.log(err, 'set wins/losses error');

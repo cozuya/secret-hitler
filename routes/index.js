@@ -72,11 +72,11 @@ module.exports = () => {
 		renderPage(req, res, 'page-player-profiles', 'playerProfiles');
 	});
 
-	app.get('/game', (req, res) => {
-		res.redirect('/game/home');
-	});
+	// app.get('/game/', ensureAuthenticated, (req, res) => {
+	// 	res.redirect('/game/');
+	// });
 
-	app.get('/game/:id', ensureAuthenticated, (req, res) => {
+	app.get('/game/', ensureAuthenticated, (req, res) => {
 		if (req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress) {
 			if (req.user.isBanned) {
 				res.redirect('/observe');

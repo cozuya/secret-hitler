@@ -29,7 +29,18 @@ export class App extends React.Component {
 
 	componentDidMount() {
 		const { dispatch } = this.props,
-			{ classList } = document.getElementById('game-container');
+			{ classList } = document.getElementById('game-container'),
+			router = () => {
+				const { hash } = window.location;
+				console.log(hash);
+				if (hash === '#/settings') {
+					console.log('Hello, World!');
+					dispatch(updateMidsection('settings'));
+				}
+			};
+
+		window.addEventListener('hashchange', router);
+		router();
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1],
@@ -235,7 +246,7 @@ export class App extends React.Component {
 			<section className="ui grid">
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 				{this.props.midSection !== 'game' &&
-				this.props.midSection !== 'replay' && (
+					this.props.midSection !== 'replay' &&
 					<LeftSidebar
 						userInfo={this.props.userInfo}
 						midSection={this.props.midSection}
@@ -243,8 +254,7 @@ export class App extends React.Component {
 						onCreateGameButtonClick={this.handleRoute}
 						onGameClick={this.handleGameClick}
 						socket={socket}
-					/>
-				)}
+					/>}
 				<Main
 					userInfo={this.props.userInfo}
 					midSection={this.props.midSection}
