@@ -17,12 +17,10 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	{ PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants'),
 	displayWaitingForPlayers = game => {
 		const includedPlayerCounts = [5, 6, 7, 8, 9, 10].filter(value => !game.general.excludedPlayerCount.includes(value));
-
 		for (value of includedPlayerCounts) {
 			if (value > game.publicPlayersState.length) {
 				const count = value - game.publicPlayersState.length;
-				game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
-				return game;
+				return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 			}
 		}
 	};
@@ -65,7 +63,7 @@ const handleSocketDisconnect = socket => {
 				games.splice(games.indexOf(game), 1);
 			} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 				publicPlayersState.splice(playerIndex, 1);
-				displayWaitingForPlayers(game);
+				game.general.status = displayWaitingForPlayers(game);
 				io.sockets.in(game.uid).emit('gameUpdate', game);
 
 				if (
@@ -140,7 +138,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length) && game.gameState.isStarted === true) {
 			clearInterval(countDown);
 			game.gameState.cancellStart = true;
-			displayWaitingForPlayers(game);
+			game.general.status = displayWaitingForPlayers(game);
 		} else if (
 			publicPlayersState.length === game.general.minPlayersCount ||
 			(publicPlayersState.length > game.general.minPlayersCount &&
@@ -149,7 +147,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 		) {
 			startCountdown(game);
 		} else if (!game.gameState.isStarted) {
-			displayWaitingForPlayers(game);
+			game.general.status = displayWaitingForPlayers(game);
 		}
 		updateUserStatus(data.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
@@ -639,7 +637,8 @@ module.exports.handleModerationAction = (socket, data) => {
 	const { passport } = socket.handshake.session,
 		isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user),
 		affectedSocketId = Object.keys(io.sockets.sockets).find(
-			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
+			socketId =>
+				io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 		);
 
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
@@ -893,7 +892,8 @@ module.exports.handlePlayerReport = data => {
 			accounts.forEach(account => {
 				const onlineSocketId = Object.keys(io.sockets.sockets).find(
 					socketId =>
-						io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+						io.sockets.sockets[socketId].handshake.session.passport &&
+						io.sockets.sockets[socketId].handshake.session.passport.user === account.username
 				);
 
 				account.gameSettings.newReport = true;
@@ -919,7 +919,8 @@ module.exports.handlePlayerReportDismiss = () => {
 	Account.find({ username: mods }).then(accounts => {
 		accounts.forEach(account => {
 			const onlineSocketId = Object.keys(io.sockets.sockets).find(
-				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+				socketId =>
+					io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
 			);
 
 			account.gameSettings.newReport = false;
@@ -956,7 +957,8 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 							account.save(() => {
 								const bannedSocketId = Object.keys(io.sockets.sockets).find(
 									socketId =>
-										io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === badKarma
+										io.sockets.sockets[socketId].handshake.session.passport &&
+										io.sockets.sockets[socketId].handshake.session.passport.user === badKarma
 								);
 
 								if (io.sockets.sockets[bannedSocketId]) {
@@ -1000,14 +1002,14 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 			) {
 				startCountdown(game);
 			} else {
-				displayWaitingForPlayers(game);
+				game.general.status = displayWaitingForPlayers(game);
 			}
 		} else if (
 			game.gameState.isStarted === true &&
 			(game.general.excludedPlayerCount.includes(game.publicPlayersState.length) || game.publicPlayersState.length < game.general.minPlayersCount)
 		) {
 			game.gameState.cancellStart = true;
-			displayWaitingForPlayers(game);
+			game.general.status = displayWaitingForPlayers(game);
 		}
 		io.sockets.in(data.uid).emit('gameUpdate', game);
 	}
