@@ -808,7 +808,6 @@ module.exports.selectChancellorPolicy = data => {
 				sendInProgressGameUpdate(game);
 			}, 3000);
 		}
-
 	}
 };
 
