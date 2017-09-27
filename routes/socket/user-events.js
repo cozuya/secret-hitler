@@ -71,7 +71,9 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	},
 	crashReq = https.request(crashOptions);
 
-crashReq.end(crashReport);
+if (process.env.NODE_ENV) {
+	crashReq.end(crashReport);
+}
 
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
