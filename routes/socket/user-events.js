@@ -15,49 +15,87 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	{ sendInProgressGameUpdate } = require('./util.js'),
 	version = require('../../version'),
 	{ PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants'),
-	handleSocketDisconnect = socket => {
-		const { passport } = socket.handshake.session;
-
-		if (passport && Object.keys(passport).length) {
-			const userIndex = userList.findIndex(user => user.userName === passport.user),
-				game = games.find(game => game.publicPlayersState.find(player => player.userName === passport.user));
-
-			socket.emit('manualDisconnection');
-			if (userIndex !== -1) {
-				userList.splice(userIndex, 1);
-			}
-
-			if (game) {
-				const { gameState, publicPlayersState } = game,
-					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
-
-				if (gameState.isTracksFlipped && !gameState.isCompleted) {
-					publicPlayersState[playerIndex].connected = false;
-					sendInProgressGameUpdate(game);
-				} else if (gameState.isStarted && !gameState.isCompleted) {
-					publicPlayersState[playerIndex].connected = false;
-					io.in(game.uid).emit('gameUpdate', game);
-				} else if (
-					gameState.isCompleted &&
-					game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1
-				) {
-					games.splice(games.indexOf(game), 1);
-				} else if (publicPlayersState.length === 1) {
-					games.splice(games.indexOf(game), 1);
-				} else if (!gameState.isStarted && playerIndex > -1) {
-					publicPlayersState.splice(playerIndex, 1);
-					io.sockets.in(game.uid).emit('gameUpdate', game);
-				} else if (gameState.isCompleted) {
-					publicPlayersState[playerIndex].leftGame = true;
-					sendInProgressGameUpdate(game);
-				}
-				sendGameList();
+	displayWaitingForPlayers = game => {
+		const includedPlayerCounts = [5, 6, 7, 8, 9, 10].filter(value => !game.general.excludedPlayerCount.includes(value));
+		for (value of includedPlayerCounts) {
+			if (value > game.publicPlayersState.length) {
+				const count = value - game.publicPlayersState.length;
+				return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 			}
 		}
+	};
 
+const startCountdown = game => {
+	let startGamePause = 20;
+	game.gameState.isStarted = true;
+	countDown = setInterval(() => {
+		if (game.gameState.cancellStart) {
+			game.gameState.cancellStart = false;
+			game.gameState.isStarted = false;
+			clearInterval(countDown);
+		} else if (startGamePause === 4) {
+			clearInterval(countDown);
+			startGame(game);
+		} else {
+			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
+			io.in(game.general.uid).emit('gameUpdate', secureGame(game));
+		}
+		startGamePause--;
+	}, 1000);
+};
+
+const handleSocketDisconnect = socket => {
+	const { passport } = socket.handshake.session;
+
+	if (passport && Object.keys(passport).length) {
+		const userIndex = userList.findIndex(user => user.userName === passport.user),
+			game = games.find(game => game.publicPlayersState.find(player => player.userName === passport.user));
+
+		socket.emit('manualDisconnection');
+		if (userIndex !== -1) {
+			userList.splice(userIndex, 1);
+		}
+		if (game) {
+			const { gameState, publicPlayersState } = game,
+				playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+
+			if (!gameState.isStarted && publicPlayersState.length === 1) {
+				games.splice(games.indexOf(game), 1);
+			} else if (!gameState.isTracksFlipped && playerIndex > -1) {
+				publicPlayersState.splice(playerIndex, 1);
+				game.general.status = displayWaitingForPlayers(game);
+				io.sockets.in(game.uid).emit('gameUpdate', game);
+
+				if (
+					gameState.isStarted &&
+					(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
+				) {
+					gameState.cancellStart = true;
+				}
+
+				if (
+					!gameState.isStarted &&
+					game.publicPlayersState.length >= game.general.minPlayersCount &&
+					!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)
+				) {
+					startCountdown(game);
+				}
+			} else if (
+				gameState.isCompleted &&
+				game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1
+			) {
+				games.splice(games.indexOf(game), 1);
+			} else if (gameState.isTracksFlipped) {
+				publicPlayersState[playerIndex].connected = false;
+				sendInProgressGameUpdate(game);
+			}
+			sendGameList();
+		}
+
+	}
 		sendUserList();
-	},
-	crashReport = JSON.stringify({
+},
+crashReport = JSON.stringify({
 		content: `${process.env.DISCORDADMINPING} the site just crashed or reset.`
 	}),
 	crashOptions = {
@@ -78,7 +116,6 @@ if (process.env.NODE_ENV) {
 
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
-
 	// prevents race condition between 1) taking a seat and 2) the game starting
 	if (game && game.gameState.isTracksFlipped) {
 		return;
@@ -93,6 +130,8 @@ module.exports.updateSeatedUser = (socket, data) => {
 				(game.general.private && game.general.whitelistedPlayers.includes(data.userName))))
 	) {
 		const { publicPlayersState } = game;
+
+		// not sure this is the best place to initalize this?
 		let countDown;
 
 		publicPlayersState.push({
@@ -115,39 +154,20 @@ module.exports.updateSeatedUser = (socket, data) => {
 			// sloppy but not trivial to get around
 			game.gameState.isStarted = true;
 			startGame(game);
-		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length)) {
+		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length) && game.gameState.isStarted === true) {
 			clearInterval(countDown);
 			game.gameState.cancellStart = true;
-			game.general.status = 'Waiting for more players..';
+			game.general.status = displayWaitingForPlayers(game);
 		} else if (
 			publicPlayersState.length === game.general.minPlayersCount ||
 			(publicPlayersState.length > game.general.minPlayersCount &&
 				!game.general.excludedPlayerCount.includes(publicPlayersState.length) &&
 				!game.gameState.isStarted)
 		) {
-			let startGamePause = 20;
-
-			game.gameState.isStarted = true;
-			countDown = setInterval(() => {
-				if (game.gameState.cancellStart) {
-					game.gameState.cancellStart = false;
-					game.gameState.isStarted = false;
-					clearInterval(countDown);
-				} else if (startGamePause === 4) {
-					clearInterval(countDown);
-					startGame(game);
-				} else {
-					game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
-					io.in(game.general.uid).emit('gameUpdate', secureGame(game));
-				}
-				startGamePause--;
-			}, 1000);
+			startCountdown(game);
 		} else if (!game.gameState.isStarted) {
-			const count = game.general.minPlayersCount - publicPlayersState.length;
-
-			game.general.status = count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
+			game.general.status = displayWaitingForPlayers(game);
 		}
-
 		updateUserStatus(data.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 		sendGameList();
@@ -636,7 +656,8 @@ module.exports.handleModerationAction = (socket, data) => {
 	const { passport } = socket.handshake.session,
 		isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user),
 		affectedSocketId = Object.keys(io.sockets.sockets).find(
-			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
+			socketId =>
+				io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 		);
 
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
@@ -892,7 +913,8 @@ module.exports.handlePlayerReport = data => {
 			accounts.forEach(account => {
 				const onlineSocketId = Object.keys(io.sockets.sockets).find(
 					socketId =>
-						io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+						io.sockets.sockets[socketId].handshake.session.passport &&
+						io.sockets.sockets[socketId].handshake.session.passport.user === account.username
 				);
 
 				account.gameSettings.newReport = true;
@@ -918,7 +940,8 @@ module.exports.handlePlayerReportDismiss = () => {
 	Account.find({ username: mods }).then(accounts => {
 		accounts.forEach(account => {
 			const onlineSocketId = Object.keys(io.sockets.sockets).find(
-				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+				socketId =>
+					io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
 			);
 
 			account.gameSettings.newReport = false;
@@ -934,7 +957,6 @@ module.exports.handlePlayerReportDismiss = () => {
 module.exports.handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{ badKarma } = false;
-
 	if (badKarma) {
 		if (game.private.reports[badKarma]) {
 			game.private.reports[badKarma]++;
@@ -956,7 +978,8 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 							account.save(() => {
 								const bannedSocketId = Object.keys(io.sockets.sockets).find(
 									socketId =>
-										io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === badKarma
+										io.sockets.sockets[socketId].handshake.session.passport &&
+										io.sockets.sockets[socketId].handshake.session.passport.user === badKarma
 								);
 
 								if (io.sockets.sockets[bannedSocketId]) {
@@ -978,24 +1001,39 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		socket.leave(data.uid);
 	}
 
-	if (game && game.gameState.isStarted && data.isSeated) {
+	if (game && game.gameState.isTracksFlipped && data.isSeated) {
 		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
 
 		if (playerIndex > -1) {
 			// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
-
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 			games.splice(games.indexOf(game), 1);
 		}
 	}
 
-	if (game && data.isSeated && !game.gameState.isStarted && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
+	if (game && data.isSeated && !game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
 		game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
+		if (!game.gameState.isStarted) {
+			if (
+				game.publicPlayersState.length >= game.general.minPlayersCount &&
+				!game.general.excludedPlayerCount.includes(game.publicPlayersState.length) &&
+				!game.gameState.isStarted
+			) {
+				startCountdown(game);
+			} else {
+				game.general.status = displayWaitingForPlayers(game);
+			}
+		} else if (
+			game.gameState.isStarted === true &&
+			(game.general.excludedPlayerCount.includes(game.publicPlayersState.length) || game.publicPlayersState.length < game.general.minPlayersCount)
+		) {
+			game.gameState.cancellStart = true;
+			game.general.status = displayWaitingForPlayers(game);
+		}
 		io.sockets.in(data.uid).emit('gameUpdate', game);
 	}
-
 	if (game && !game.publicPlayersState.length) {
 		io.sockets.in(data.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
@@ -1026,7 +1064,15 @@ module.exports.checkUserStatus = socket => {
 			);
 
 		if (oldSocketID && sockets[oldSocketID]) {
-			sockets[oldSocketID].emit('manualDisconnection');
+			/*
+			*  I think this is causing the bug where the user is set to 'connected : false', even though they are signed in
+			*  It seems like their old session is set to 'connected: false' and then this overwrites their new session
+			*  when they reconnect.
+			*
+			*
+			*/
+			// sockets[oldSocketID].emit('manualDisconnection');
+
 			delete sockets[oldSocketID];
 		}
 

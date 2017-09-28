@@ -94,9 +94,14 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 						}
 					});
 
-					if (game.trackState.electionTrackerCount <= 2 && game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor') > -1) {
+					if (
+						game.trackState.electionTrackerCount <= 2 &&
+						game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor') > -1
+					) {
 						game.publicPlayersState[game.gameState.presidentIndex].previousGovernmentStatus = 'wasPresident';
-						game.publicPlayersState[game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')].previousGovernmentStatus =
+						game.publicPlayersState[
+							game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')
+						].previousGovernmentStatus =
 							'wasChancellor';
 					}
 				},
@@ -746,7 +751,8 @@ module.exports.selectChancellorPolicy = data => {
 					timestamp: new Date(),
 					chat: [
 						{
-							text: 'You must vote whether or not to veto these policies.  Select Ja to veto the your chosen policy or select Nein to enact your chosen policy.'
+							text:
+								'You must vote whether or not to veto these policies.  Select Ja to veto the your chosen policy or select Nein to enact your chosen policy.'
 						}
 					]
 				};
@@ -796,18 +802,17 @@ module.exports.selectChancellorPolicy = data => {
 			setTimeout(() => {
 				chancellor.cardFlingerState = [];
 				enactPolicy(game, enactedPolicy);
-
-				if (experiencedMode) {
-					president.playersState[presidentIndex].claim = 'wasPresident';
-					chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
-				} else {
-					setTimeout(() => {
-						president.playersState[presidentIndex].claim = 'wasPresident';
-						chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
-						sendInProgressGameUpdate(game);
-					}, 3000);
-				}
 			}, experiencedMode ? 200 : 2000);
+		}
+		if (experiencedMode) {
+			president.playersState[presidentIndex].claim = 'wasPresident';
+			chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
+		} else {
+			setTimeout(() => {
+				president.playersState[presidentIndex].claim = 'wasPresident';
+				chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
+				sendInProgressGameUpdate(game);
+			}, 3000);
 		}
 	}
 };
@@ -957,7 +962,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 		presidentVeto: data.vote
 	});
 
-	if (!game.private.lock.selectPresidentVoteOnVeto && chancellorIndex && game.publicPlayersState[chancellorIndex]) {
+	if (!game.private.lock.selectPresidentVoteOnVeto && chancellorIndex !== 'undefined' && game.publicPlayersState[chancellorIndex]) {
 		game.private.lock.selectPresidentVoteOnVeto = true;
 
 		game.publicPlayersState[chancellorIndex].isLoader = false; // crash here 9/17
@@ -1007,6 +1012,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 			}
 
 			publicPresident.cardStatus.isFlipped = true;
+
 			sendInProgressGameUpdate(game);
 
 			if (data.vote) {
