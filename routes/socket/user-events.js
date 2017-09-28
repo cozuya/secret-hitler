@@ -68,10 +68,11 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 			'Content-Type': 'application/json',
 			'Content-Length': Buffer.byteLength(crashReport)
 		}
-	},
-	crashReq = https.request(crashOptions);
+	};
 
 if (process.env.NODE_ENV) {
+	const crashReq = https.request(crashOptions);
+
 	crashReq.end(crashReport);
 }
 

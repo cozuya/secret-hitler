@@ -31,11 +31,22 @@ export class App extends React.Component {
 		const { dispatch } = this.props,
 			{ classList } = document.getElementById('game-container'),
 			router = () => {
-				const { hash } = window.location;
-				console.log(hash);
+				const { hash } = window.location,
+					{ gameState } = this.props.gameInfo,
+					{ userInfo } = this.props;
+
 				if (hash === '#/settings') {
 					console.log('Hello, World!');
-					dispatch(updateMidsection('settings'));
+					if ((gameState && gameState.isCompleted && userInfo.seatNumber) || (gameState && !userInfo.isSeated) || (gameState && !gameState.isStarted)) {
+						// this.props.onLeaveGame(userInfo.isSeated, true);
+						console.log('todo');
+					} else if (!gameState && userInfo.userName) {
+						console.log('Hello, World!');
+						dispatch(updateMidsection('settings'));
+					}
+				} else {
+					console.log('Hello, World!');
+					dispatch(updateMidsection('default'));
 				}
 			};
 
@@ -65,7 +76,7 @@ export class App extends React.Component {
 		}
 
 		socket.on('manualDisconnection', () => {
-			window.location.pathname = '/observe';
+			window.location.pathname = '/observe/';
 		});
 
 		socket.on('manualReload', () => {
