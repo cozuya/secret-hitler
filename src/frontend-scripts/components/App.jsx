@@ -50,8 +50,8 @@ export class App extends React.Component {
 				}
 			};
 
-		window.addEventListener('hashchange', router);
-		router();
+		// window.addEventListener('hashchange', router);
+		// router();
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1],
@@ -76,7 +76,7 @@ export class App extends React.Component {
 		}
 
 		socket.on('manualDisconnection', () => {
-			window.location.pathname = '/observe/';
+			window.location.pathname = '/observe';
 		});
 
 		socket.on('manualReload', () => {
