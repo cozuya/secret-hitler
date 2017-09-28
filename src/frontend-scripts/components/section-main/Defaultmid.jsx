@@ -32,7 +32,7 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 			</a>
 		</div>
 		<PatchAlert isActive={version.lastSeen && version.current.number !== version.lastSeen} onClick={readPatchNotes} />
-		<img src="images/lizard25.png" alt="Secret Hitler logo" width="400" height="400" />
+		<img src="/images/lizard25.png" alt="Secret Hitler logo" width="400" height="400" />
 		<p>
 			<span>{`sh.io version ${version.current.number} "${version.current.color}" released ${version.current.date} | `}</span>
 			<span>

@@ -219,7 +219,12 @@ class Gamechat extends React.Component {
 			{ chatFilter } = this.state;
 
 		return gameInfo.chats
-			.sort((a, b) => (a.timestamp === b.timestamp ? -1 : new Date(a.timestamp) - new Date(b.timestamp)))
+			.sort((a, b) => {
+				if (a.timestamp === b.timestamp) {
+					console.log('Hello, World!');
+				}
+				a.timestamp === b.timestamp ? -1 : new Date(a.timestamp) - new Date(b.timestamp);
+			})
 			.filter(
 				chat =>
 					(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
