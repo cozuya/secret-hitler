@@ -29,7 +29,29 @@ export class App extends React.Component {
 
 	componentDidMount() {
 		const { dispatch } = this.props,
-			{ classList } = document.getElementById('game-container');
+			{ classList } = document.getElementById('game-container'),
+			router = () => {
+				const { hash } = window.location,
+					{ gameState } = this.props.gameInfo,
+					{ userInfo } = this.props;
+
+				if (hash === '#/settings') {
+					console.log('Hello, World!');
+					if ((gameState && gameState.isCompleted && userInfo.seatNumber) || (gameState && !userInfo.isSeated) || (gameState && !gameState.isStarted)) {
+						// this.props.onLeaveGame(userInfo.isSeated, true);
+						console.log('todo');
+					} else if (!gameState && userInfo.userName) {
+						console.log('Hello, World!');
+						dispatch(updateMidsection('settings'));
+					}
+				} else {
+					console.log('Hello, World!');
+					dispatch(updateMidsection('default'));
+				}
+			};
+
+		window.addEventListener('hashchange', router);
+		router();
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1],
@@ -54,7 +76,7 @@ export class App extends React.Component {
 		}
 
 		socket.on('manualDisconnection', () => {
-			window.location.pathname = '/observe';
+			window.location.pathname = '/observe/';
 		});
 
 		socket.on('manualReload', () => {
@@ -235,7 +257,7 @@ export class App extends React.Component {
 			<section className="ui grid">
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 				{this.props.midSection !== 'game' &&
-				this.props.midSection !== 'replay' && (
+					this.props.midSection !== 'replay' &&
 					<LeftSidebar
 						userInfo={this.props.userInfo}
 						midSection={this.props.midSection}
@@ -243,8 +265,7 @@ export class App extends React.Component {
 						onCreateGameButtonClick={this.handleRoute}
 						onGameClick={this.handleGameClick}
 						socket={socket}
-					/>
-				)}
+					/>}
 				<Main
 					userInfo={this.props.userInfo}
 					midSection={this.props.midSection}

@@ -27,11 +27,16 @@ player report feature
 polls page
 gamenotes feature
 sticky scroll feature
+disable players from making more than one account per day per IP
+
+version 0.8:
+UI overhaul/fonts/images
+chat emotes
+election vote rework (changable votes)
+editors
 
 near future:
 (#205) player notes
-(#195) disable players from making more than one account per day per IP
-(#189) allow players to change votes on government
 
 farther future:
 (#204) gamenotes enhancements
