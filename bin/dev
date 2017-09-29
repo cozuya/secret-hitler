@@ -17,7 +17,7 @@ global.io = require('socket.io')(server);
 global.notify = require('node-notifier');
 
 app.set('port', port);
-app.set('strict routing', true);
+// app.set('strict routing', true);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);

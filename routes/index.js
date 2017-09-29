@@ -72,11 +72,11 @@ module.exports = () => {
 		renderPage(req, res, 'page-player-profiles', 'playerProfiles');
 	});
 
-	app.get('/game', ensureAuthenticated, (req, res) => {
-		res.redirect('/game/');
-	});
+	// app.get('/game', ensureAuthenticated, (req, res) => {
+	// 	res.redirect('/game/');
+	// });
 
-	app.get('/game/', ensureAuthenticated, (req, res) => {
+	app.get('/game', ensureAuthenticated, (req, res) => {
 		if (req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress) {
 			if (req.user.isBanned) {
 				res.redirect('/observe');
@@ -89,11 +89,11 @@ module.exports = () => {
 		}
 	});
 
-	app.get('/observe', (req, res) => {
-		res.redirect('/observe/');
-	});
+	// app.get('/observe', (req, res) => {
+	// 	res.redirect('/observe/');
+	// });
 
-	app.get('/observe/', (req, res) => {
+	app.get('/observe', (req, res) => {
 		if (req.user) {
 			req.session.destroy();
 			req.logout();
