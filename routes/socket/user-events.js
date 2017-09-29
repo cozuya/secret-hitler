@@ -17,6 +17,7 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	{ PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants'),
 	displayWaitingForPlayers = game => {
 		const includedPlayerCounts = [5, 6, 7, 8, 9, 10].filter(value => !game.general.excludedPlayerCount.includes(value));
+
 		for (value of includedPlayerCounts) {
 			if (value > game.publicPlayersState.length) {
 				const count = value - game.publicPlayersState.length;
@@ -45,57 +46,56 @@ const startCountdown = game => {
 };
 
 const handleSocketDisconnect = socket => {
-	const { passport } = socket.handshake.session;
+		const { passport } = socket.handshake.session;
 
-	if (passport && Object.keys(passport).length) {
-		const userIndex = userList.findIndex(user => user.userName === passport.user),
-			game = games.find(game => game.publicPlayersState.find(player => player.userName === passport.user));
+		if (passport && Object.keys(passport).length) {
+			const userIndex = userList.findIndex(user => user.userName === passport.user),
+				game = games.find(game => game.publicPlayersState.find(player => player.userName === passport.user));
 
-		socket.emit('manualDisconnection');
-		if (userIndex !== -1) {
-			userList.splice(userIndex, 1);
-		}
-		if (game) {
-			const { gameState, publicPlayersState } = game,
-				playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
-
-			if (!gameState.isStarted && publicPlayersState.length === 1) {
-				games.splice(games.indexOf(game), 1);
-			} else if (!gameState.isTracksFlipped && playerIndex > -1) {
-				publicPlayersState.splice(playerIndex, 1);
-				game.general.status = displayWaitingForPlayers(game);
-				io.sockets.in(game.uid).emit('gameUpdate', game);
-
-				if (
-					gameState.isStarted &&
-					(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
-				) {
-					gameState.cancellStart = true;
-				}
-
-				if (
-					!gameState.isStarted &&
-					game.publicPlayersState.length >= game.general.minPlayersCount &&
-					!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)
-				) {
-					startCountdown(game);
-				}
-			} else if (
-				gameState.isCompleted &&
-				game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1
-			) {
-				games.splice(games.indexOf(game), 1);
-			} else if (gameState.isTracksFlipped) {
-				publicPlayersState[playerIndex].connected = false;
-				sendInProgressGameUpdate(game);
+			socket.emit('manualDisconnection');
+			if (userIndex !== -1) {
+				userList.splice(userIndex, 1);
 			}
-			sendGameList();
-		}
+			if (game) {
+				const { gameState, publicPlayersState } = game,
+					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-	}
+				if (!gameState.isStarted && publicPlayersState.length === 1) {
+					games.splice(games.indexOf(game), 1);
+				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
+					publicPlayersState.splice(playerIndex, 1);
+					game.general.status = displayWaitingForPlayers(game);
+					io.sockets.in(game.uid).emit('gameUpdate', game);
+
+					if (
+						gameState.isStarted &&
+						(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
+					) {
+						gameState.cancellStart = true;
+					}
+
+					if (
+						!gameState.isStarted &&
+						game.publicPlayersState.length >= game.general.minPlayersCount &&
+						!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)
+					) {
+						startCountdown(game);
+					}
+				} else if (
+					gameState.isCompleted &&
+					game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1
+				) {
+					games.splice(games.indexOf(game), 1);
+				} else if (gameState.isTracksFlipped) {
+					publicPlayersState[playerIndex].connected = false;
+					sendInProgressGameUpdate(game);
+				}
+				sendGameList();
+			}
+		}
 		sendUserList();
-},
-crashReport = JSON.stringify({
+	},
+	crashReport = JSON.stringify({
 		content: `${process.env.DISCORDADMINPING} the site just crashed or reset.`
 	}),
 	crashOptions = {
@@ -175,8 +175,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 };
 
 module.exports.handleAddNewGame = (socket, data) => {
-	console.log(gameCreationDisabled);
-	console.log(socket.handshake.session.passport && !gameCreationDisabled.status);
 	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
 		const username = socket.handshake.session.passport.user;
@@ -656,8 +654,7 @@ module.exports.handleModerationAction = (socket, data) => {
 	const { passport } = socket.handshake.session,
 		isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user),
 		affectedSocketId = Object.keys(io.sockets.sockets).find(
-			socketId =>
-				io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
+			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 		);
 
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
@@ -913,8 +910,7 @@ module.exports.handlePlayerReport = data => {
 			accounts.forEach(account => {
 				const onlineSocketId = Object.keys(io.sockets.sockets).find(
 					socketId =>
-						io.sockets.sockets[socketId].handshake.session.passport &&
-						io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+						io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
 				);
 
 				account.gameSettings.newReport = true;
@@ -940,8 +936,7 @@ module.exports.handlePlayerReportDismiss = () => {
 	Account.find({ username: mods }).then(accounts => {
 		accounts.forEach(account => {
 			const onlineSocketId = Object.keys(io.sockets.sockets).find(
-				socketId =>
-					io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
 			);
 
 			account.gameSettings.newReport = false;
@@ -978,8 +973,7 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 							account.save(() => {
 								const bannedSocketId = Object.keys(io.sockets.sockets).find(
 									socketId =>
-										io.sockets.sockets[socketId].handshake.session.passport &&
-										io.sockets.sockets[socketId].handshake.session.passport.user === badKarma
+										io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === badKarma
 								);
 
 								if (io.sockets.sockets[bannedSocketId]) {
@@ -1064,15 +1058,7 @@ module.exports.checkUserStatus = socket => {
 			);
 
 		if (oldSocketID && sockets[oldSocketID]) {
-			/*
-			*  I think this is causing the bug where the user is set to 'connected : false', even though they are signed in
-			*  It seems like their old session is set to 'connected: false' and then this overwrites their new session
-			*  when they reconnect.
-			*
-			*
-			*/
-			// sockets[oldSocketID].emit('manualDisconnection');
-
+			sockets[oldSocketID].emit('manualDisconnection');
 			delete sockets[oldSocketID];
 		}
 
