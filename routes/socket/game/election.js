@@ -962,7 +962,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 		presidentVeto: data.vote
 	});
 
-	if (!game.private.lock.selectPresidentVoteOnVeto && chancellorIndex !== 'undefined' && game.publicPlayersState[chancellorIndex]) {
+	if (!game.private.lock.selectPresidentVoteOnVeto && chancellorIndex !== undefined && game.publicPlayersState[chancellorIndex]) {
 		game.private.lock.selectPresidentVoteOnVeto = true;
 
 		game.publicPlayersState[chancellorIndex].isLoader = false; // crash here 9/17
