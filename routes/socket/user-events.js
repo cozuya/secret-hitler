@@ -1051,8 +1051,10 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 
 module.exports.checkUserStatus = socket => {
 	const { passport } = socket.handshake.session;
+	console.log("checkUserStatus");
 
 	if (passport && Object.keys(passport).length) {
+		console.log("if passport ");
 		const { user } = passport,
 			{ sockets } = io.sockets,
 			game = games.find(game => game.publicPlayersState.find(player => player.userName === user && !player.leftGame)),
@@ -1064,6 +1066,7 @@ module.exports.checkUserStatus = socket => {
 			);
 
 		if (oldSocketID && sockets[oldSocketID]) {
+			console.log("oldSocketID");
 			/*
 			*  I think this is causing the bug where the user is set to 'connected : false', even though they are signed in
 			*  It seems like their old session is set to 'connected: false' and then this overwrites their new session
@@ -1071,18 +1074,20 @@ module.exports.checkUserStatus = socket => {
 			*
 			*
 			*/
-			// sockets[oldSocketID].emit('manualDisconnection');
+			sockets[oldSocketID].emit('manualDisconnection');
 
 			delete sockets[oldSocketID];
 		}
 
 		if (game && game.gameState.isStarted && !game.gameState.isCompleted) {
+			console.log("if game");
 			game.publicPlayersState.find(player => player.userName === user).connected = true;
 			socket.join(game.general.uid);
 			socket.emit('updateSeatForUser', true);
 			sendInProgressGameUpdate(game);
 		}
 	}
+	console.log("end code---");
 
 	socket.emit('version', { current: version });
 
