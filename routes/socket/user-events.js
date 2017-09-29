@@ -652,7 +652,7 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 module.exports.handleModerationAction = (socket, data) => {
 	const { passport } = socket.handshake.session,
-		isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user),
+		isSuperMod = passport.user ? EDITORS.includes(passport.user) || ADMINS.includes(passport.user) : false,
 		affectedSocketId = Object.keys(io.sockets.sockets).find(
 			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 		);

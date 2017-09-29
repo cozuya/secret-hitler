@@ -1,5 +1,4 @@
 const passport = require('passport'),
-	_ = require('lodash'),
 	Account = require('../models/account'),
 	BannedIP = require('../models/bannedIP'),
 	{ ipbansNotEnforced, accountCreationDisabled } = require('./socket/models'),
@@ -135,7 +134,7 @@ module.exports = () => {
 						return next(err);
 					}
 
-					if (account) {
+					if (account && account.username.toLowerCase() === username.toLowerCase()) {
 						res.status(401).json({ message: 'Sorry, that account already exists.' });
 					} else {
 						BannedIP.findOne({ ip: signupIP }, (err, ip) => {
@@ -215,7 +214,7 @@ module.exports = () => {
 		passport.authenticate('local'),
 		(req, res) => {
 			Account.findOne({
-				username: new RegExp(_.escapeRegExp(req.user.username), 'i')
+				username: req.user.username
 			}).then(player => {
 				player.lastConnectedIP = req.headers['X-Forwarded-For'] || req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 				player.save(() => {
