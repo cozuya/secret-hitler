@@ -230,8 +230,8 @@ export default () => {
 			data: JSON.stringify({ username: user, password: 'snipsnap' }),
 			statusCode: {
 				200() {
-					if (window.location.pathname === '/observe/') {
-						window.location.pathname = '/game/';
+					if (window.location.pathname === '/observe') {
+						window.location.pathname = '/game';
 					} else {
 						window.location.reload();
 					}

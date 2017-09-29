@@ -9,13 +9,27 @@ block content
 		.ui.grid.mainpage
 			.row#general-info
 				.eight.wide.column
-					h1 Play the hit board game in your browser! Always free and no ads.
+					p(style="font-size: 24px;") Play the hit board game in your browser! Always free and no ads.
 					p Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists. Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late.
 					p Check out our #[a(href="https://github.com/cozuya/secret-hitler/wiki") wiki page] to learn about the game, or hop into the #[a(href="/observe") the game lobby] itself right now.
 					h2 #[a(href="https://discord.gg/FXDxP2m", style=("font-size: 22px;color: coral")) Join our community on discord].
 				.eight.wide.column.news
 					h2(style="color: #000").ui.header News
 					p Issues/bugs can be reported #[a(href="/about") here]. Or open a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
+					p Version 0.8.1 "silver" released 9-28-2017
+					p Cleanup/bug fix patch, the following was affected:
+					ul
+						li Games should start and stop better now - if a 5th player is seated in a 5-10 player game, and then leaves, previously it would count down from 20 and then stall, now it will correctly not count down and go back to the waiting phase. Awesome!
+						li Ages old fix to a special election president being able to nominate a chancellor who was in the last elected government, in opposition to the printed rules.
+						li You can now claim after a veto.
+						li Fixed a bug where sometimes a president can not select a card to veto, hanging the game.
+						li Some more attempts to fix the various small sorting/jumping issues that are still out there.
+						li The link in the signup modal on the main page is finally working.
+						li Generalchat sticky scroll should work/work better
+						li Moderators have ban back, and hopefully some issues fixed with IPs.
+						li The info icon on the lobby has been updated.
+						li Profile search now works on Edge.
+						li There's a new discord webhook to ping admins when the site crashes. -_-
 					p Version 0.8.0 "citehtseawen" released 9-23-2017
 					h3 New feature: UI overhaul
 					p Thanks to contributor andy013, most of the cards and images in game have been upgraded and colorized. Neat!
