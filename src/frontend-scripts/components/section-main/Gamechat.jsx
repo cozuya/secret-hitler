@@ -216,15 +216,15 @@ class Gamechat extends React.Component {
 	processChats() {
 		const { gameInfo, userInfo, userList } = this.props,
 			seatedUserNames = gameInfo.publicPlayersState.map(player => player.userName),
-			{ chatFilter } = this.state;
+			{ chatFilter } = this.state,
+			compareChatStrings = (a, b) => {
+				const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
+				const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
+				return stringA > stringB ? 1 : -1;
+			};
 
 		return gameInfo.chats
-			.sort((a, b) => {
-				if (a.timestamp === b.timestamp) {
-					console.log('Hello, World!');
-				}
-				a.timestamp === b.timestamp ? -1 : new Date(a.timestamp) - new Date(b.timestamp);
-			})
+			.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
 			.filter(
 				chat =>
 					(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||

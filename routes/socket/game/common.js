@@ -76,9 +76,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		.filter(
 			(player, index) =>
 				!seatedPlayers[index].isDead &&
-				((specialElectionPresidentIndex && index !== presidentIndex) ||
-					(index !== presidentIndex &&
-						(game.general.livingPlayerCount > 5 ? !previousElectedGovernment.includes(index) : previousElectedGovernment[1] !== index)))
+				(index !== presidentIndex && (game.general.livingPlayerCount > 5 ? !previousElectedGovernment.includes(index) : previousElectedGovernment[1] !== index))
 		)
 		.forEach(player => {
 			player.notificationStatus = 'notification';
@@ -92,12 +90,9 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	game.publicPlayersState[presidentIndex].governmentStatus = 'isPendingPresident';
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
-	game.gameState.clickActionInfo = specialElectionPresidentIndex
-		? [
-				pendingPresidentPlayer.userName,
-				seatedPlayers.filter((player, index) => !player.isDead && index !== presidentIndex).map(el => seatedPlayers.indexOf(el))
-			]
-		: game.general.livingPlayerCount > 5
+
+	game.gameState.clickActionInfo =
+		game.general.livingPlayerCount > 5
 			? [
 					pendingPresidentPlayer.userName,
 					seatedPlayers

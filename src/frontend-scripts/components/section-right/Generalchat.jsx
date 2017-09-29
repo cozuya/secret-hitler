@@ -105,11 +105,11 @@ export default class Generalchat extends React.Component {
 	handleChatScrolled(e) {
 		const el = e.currentTarget;
 
-		if (el.scrollTop === el.scrollHeight - el.offsetHeight && this.state.lock) {
+		if (this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) >= -20) {
 			this.setState({
 				lock: false
 			});
-		} else if (el.scrollTop !== el.scrollHeight - el.offsetHeight && !this.state.lock) {
+		} else if (el.scrollTop - (el.scrollHeight - el.offsetHeight) < -20 && !this.state.lock) {
 			this.setState({
 				lock: true
 			});

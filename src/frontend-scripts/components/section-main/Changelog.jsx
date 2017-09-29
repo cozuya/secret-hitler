@@ -13,6 +13,30 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.8.1 "silver" released 9-28-2017</p>
+		</div>
+		<p>Cleanup/bug fix patch, the following was affected:</p>
+		<ul>
+			<li>
+				Games should start and stop better now - if a 5th player is seated in a 5-10 player game, and then leaves, previously it would count down from 20 and
+				then stall, now it will correctly not count down and go back to the waiting phase. Awesome!
+			</li>
+			<li>
+				Ages old fix to a special election president being able to nominate a chancellor who was in the last elected government, in opposition to the printed
+				rules.
+			</li>
+			<li>You can now claim after a veto.</li>
+			<li>Fixed a bug where sometimes a president can not select a card to veto, hanging the game.</li>
+			<li>Some more attempts to fix the various small sorting/jumping issues that are still out there.</li>
+			<li>The link in the signup modal on the main page is finally working..</li>
+			<li>Generalchat sticky scroll should work/work better</li>
+			<li>Moderators have ban back, and hopefully some issues fixed with IPs.</li>
+			<li>The info icon on the lobby has been updated.</li>
+			<li>Profile search now works on Edge.</li>
+			<li>There's a new discord webhook to ping admins when the site crashes. -_-</li>
+		</ul>
+		<p>The first 6 issues all done by contributor andy013 on github!</p>
+		<div className="ui header">
 			<p>Version 0.8.0 "citehtseawen" released 9-23-2017</p>
 		</div>
 		<h3>New feature: UI overhaul</h3>

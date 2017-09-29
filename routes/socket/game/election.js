@@ -796,18 +796,17 @@ module.exports.selectChancellorPolicy = data => {
 			setTimeout(() => {
 				chancellor.cardFlingerState = [];
 				enactPolicy(game, enactedPolicy);
-
-				if (experiencedMode) {
-					president.playersState[presidentIndex].claim = 'wasPresident';
-					chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
-				} else {
-					setTimeout(() => {
-						president.playersState[presidentIndex].claim = 'wasPresident';
-						chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
-						sendInProgressGameUpdate(game);
-					}, 3000);
-				}
 			}, experiencedMode ? 200 : 2000);
+		}
+		if (experiencedMode) {
+			president.playersState[presidentIndex].claim = 'wasPresident';
+			chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
+		} else {
+			setTimeout(() => {
+				president.playersState[presidentIndex].claim = 'wasPresident';
+				chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
+				sendInProgressGameUpdate(game);
+			}, 3000);
 		}
 	}
 };
@@ -957,7 +956,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 		presidentVeto: data.vote
 	});
 
-	if (!game.private.lock.selectPresidentVoteOnVeto && chancellorIndex && game.publicPlayersState[chancellorIndex]) {
+	if (!game.private.lock.selectPresidentVoteOnVeto && Number.isInteger(chancellorIndex) && game.publicPlayersState[chancellorIndex]) {
 		game.private.lock.selectPresidentVoteOnVeto = true;
 
 		game.publicPlayersState[chancellorIndex].isLoader = false; // crash here 9/17
@@ -1007,6 +1006,7 @@ module.exports.selectPresidentVoteOnVeto = data => {
 			}
 
 			publicPresident.cardStatus.isFlipped = true;
+
 			sendInProgressGameUpdate(game);
 
 			if (data.vote) {

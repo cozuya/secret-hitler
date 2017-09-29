@@ -183,8 +183,8 @@ export default class Menu extends React.Component {
 		if ((gameState && gameState.isCompleted && userInfo.seatNumber) || (gameState && !userInfo.isSeated) || (gameState && !gameState.isStarted)) {
 			this.props.onLeaveGame(userInfo.isSeated, true);
 		} else if (!gameState) {
-			window.location.hash = '/settings';
-			// this.props.onSettingsButtonClick('settings');
+			// window.location.hash = '/settings';
+			this.props.onSettingsButtonClick('settings');
 		}
 	}
 

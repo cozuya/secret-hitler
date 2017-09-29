@@ -13,7 +13,7 @@ const LeftSidebar = props => {
 						bGameStatus = b.gameStatus;
 
 					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
-						return a.seatedCount === b.seatedCount ? a.uid - b.uid : a.seatedCount - b.seatedCount;
+						return a.seatedCount === b.seatedCount ? (a.uid > b.uid ? 1 : -1) : a.seatedCount - b.seatedCount;
 					}
 
 					if (aGameStatus === 'notStarted' && bGameStatus !== 'notStarted') {
@@ -33,7 +33,13 @@ const LeftSidebar = props => {
 					}
 
 					if (aGameStatus === 'isStarted' && bGameStatus === 'isStarted') {
-						return a.electionCount === b.electionCount ? a.seatedCount - b.seatedCount : a.electionCount - b.electionCount;
+						if (a.electionCount === b.electionCount && a.seatedCount === b.seatedCount) {
+							return a.uid > b.uid ? 1 : -1;
+						} else if (a.electionCount === b.electionCount) {
+							return a.seatedCount - b.seatedCount;
+						} else {
+							return a.electionCount - b.electionCount;
+						}
 					}
 
 					return a.uid > b.uid ? 1 : -1;
@@ -50,20 +56,22 @@ const LeftSidebar = props => {
 				const { userName } = props.userInfo,
 					gameBeingCreated = props.midSection === 'createGame';
 
-				return userName && !gameBeingCreated ? (
-					<button
-						className="ui button primary"
-						onClick={() => {
-							props.onCreateGameButtonClick('createGame');
-						}}
-					>
-						Create a new game
-					</button>
-				) : (
-					<button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>
-				);
+				return userName && !gameBeingCreated
+					? <button
+							className="ui button primary"
+							onClick={() => {
+								props.onCreateGameButtonClick('createGame');
+							}}
+						>
+							Create a new game
+						</button>
+					: <button className="ui button disabled">
+							{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}
+						</button>;
 			})()}
-			<div className="games-container">{renderGameList()}</div>
+			<div className="games-container">
+				{renderGameList()}
+			</div>
 		</section>
 	);
 };
