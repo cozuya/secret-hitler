@@ -27,22 +27,22 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	};
 
 const startCountdown = game => {
-	let startGamePause = 20;
 	game.gameState.isStarted = true;
-	countDown = setInterval(() => {
-		if (game.gameState.cancellStart) {
-			game.gameState.cancellStart = false;
-			game.gameState.isStarted = false;
-			clearInterval(countDown);
-		} else if (startGamePause === 4) {
-			clearInterval(countDown);
-			startGame(game);
-		} else {
-			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
-			io.in(game.general.uid).emit('gameUpdate', secureGame(game));
-		}
-		startGamePause--;
-	}, 1000);
+	let startGamePause = 20,
+		countDown = setInterval(() => {
+			if (game.gameState.cancellStart) {
+				game.gameState.cancellStart = false;
+				game.gameState.isStarted = false;
+				clearInterval(countDown);
+			} else if (startGamePause === 4) {
+				clearInterval(countDown);
+				startGame(game);
+			} else {
+				game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
+				io.in(game.general.uid).emit('gameUpdate', secureGame(game));
+			}
+			startGamePause--;
+		}, 1000);
 };
 
 const handleSocketDisconnect = socket => {
@@ -131,9 +131,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 	) {
 		const { publicPlayersState } = game;
 
-		// not sure this is the best place to initalize this?
-		let countDown;
-
 		publicPlayersState.push({
 			userName: data.userName,
 			connected: true,
@@ -155,7 +152,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 			game.gameState.isStarted = true;
 			startGame(game);
 		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length) && game.gameState.isStarted === true) {
-			clearInterval(countDown);
 			game.gameState.cancellStart = true;
 			game.general.status = displayWaitingForPlayers(game);
 		} else if (
