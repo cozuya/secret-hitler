@@ -27,14 +27,17 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	};
 
 const startCountdown = game => {
-	let startGamePause = 20;
+	if (game.gameState.isStarted) {
+		return;
+	}
 	game.gameState.isStarted = true;
-	countDown = setInterval(() => {
+	let startGamePause = 20;
+	const countDown = setInterval(() => {
 		if (game.gameState.cancellStart) {
 			game.gameState.cancellStart = false;
 			game.gameState.isStarted = false;
 			clearInterval(countDown);
-		} else if (startGamePause === 4) {
+		} else if (startGamePause === 4 || game.publicPlayersState.length === game.general.maxPlayersCount) {
 			clearInterval(countDown);
 			startGame(game);
 		} else {
@@ -43,6 +46,27 @@ const startCountdown = game => {
 		}
 		startGamePause--;
 	}, 1000);
+};
+
+const checkStartConditions = game => {
+	if (game.gameState.isTracksFlipped) {
+		return;
+	}
+	if (
+		game.gameState.isStarted &&
+		(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
+	) {
+		game.gameState.cancellStart = true;
+		game.general.status = displayWaitingForPlayers(game);
+	} else if (
+		!game.gameState.isStarted &&
+		game.publicPlayersState.length >= game.general.minPlayersCount &&
+		!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)
+	) {
+		startCountdown(game);
+	} else if (!game.gameState.isStarted) {
+		game.general.status = displayWaitingForPlayers(game);
+	}
 };
 
 const handleSocketDisconnect = socket => {
@@ -64,23 +88,8 @@ const handleSocketDisconnect = socket => {
 					games.splice(games.indexOf(game), 1);
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 					publicPlayersState.splice(playerIndex, 1);
-					game.general.status = displayWaitingForPlayers(game);
+					checkStartConditions(game);
 					io.sockets.in(game.uid).emit('gameUpdate', game);
-
-					if (
-						gameState.isStarted &&
-						(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
-					) {
-						gameState.cancellStart = true;
-					}
-
-					if (
-						!gameState.isStarted &&
-						game.publicPlayersState.length >= game.general.minPlayersCount &&
-						!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)
-					) {
-						startCountdown(game);
-					}
 				} else if (
 					gameState.isCompleted &&
 					game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1
@@ -131,9 +140,6 @@ module.exports.updateSeatedUser = (socket, data) => {
 	) {
 		const { publicPlayersState } = game;
 
-		// not sure this is the best place to initalize this?
-		let countDown;
-
 		publicPlayersState.push({
 			userName: data.userName,
 			connected: true,
@@ -149,25 +155,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 		});
 
 		socket.emit('updateSeatForUser', true);
-
-		if (publicPlayersState.length === game.general.maxPlayersCount && !game.gameState.isStarted) {
-			// sloppy but not trivial to get around
-			game.gameState.isStarted = true;
-			startGame(game);
-		} else if (game.general.excludedPlayerCount.includes(publicPlayersState.length) && game.gameState.isStarted === true) {
-			clearInterval(countDown);
-			game.gameState.cancellStart = true;
-			game.general.status = displayWaitingForPlayers(game);
-		} else if (
-			publicPlayersState.length === game.general.minPlayersCount ||
-			(publicPlayersState.length > game.general.minPlayersCount &&
-				!game.general.excludedPlayerCount.includes(publicPlayersState.length) &&
-				!game.gameState.isStarted)
-		) {
-			startCountdown(game);
-		} else if (!game.gameState.isStarted) {
-			game.general.status = displayWaitingForPlayers(game);
-		}
+		checkStartConditions(game);
 		updateUserStatus(data.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 		sendGameList();
@@ -995,50 +983,33 @@ module.exports.handleUserLeaveGame = (socket, data) => {
 		socket.leave(data.uid);
 	}
 
-	if (game && game.gameState.isTracksFlipped && data.isSeated) {
-		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
-
-		if (playerIndex > -1) {
-			// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
-			game.publicPlayersState[playerIndex].leftGame = true;
-		}
-		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			games.splice(games.indexOf(game), 1);
-		}
-	}
-
-	if (game && data.isSeated && !game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
-		game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
-		if (!game.gameState.isStarted) {
-			if (
-				game.publicPlayersState.length >= game.general.minPlayersCount &&
-				!game.general.excludedPlayerCount.includes(game.publicPlayersState.length) &&
-				!game.gameState.isStarted
-			) {
-				startCountdown(game);
-			} else {
-				game.general.status = displayWaitingForPlayers(game);
+	if (game) {
+		if (data.isSeated) {
+			if (game.gameState.isTracksFlipped) {
+				const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+				if (playerIndex > -1) {
+					// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
+					game.publicPlayersState[playerIndex].leftGame = true;
+				}
+				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+					games.splice(games.indexOf(game), 1);
+				}
+			} else if (!game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
+				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
+				checkStartConditions(game);
+				io.sockets.in(data.uid).emit('gameUpdate', game);
 			}
-		} else if (
-			game.gameState.isStarted === true &&
-			(game.general.excludedPlayerCount.includes(game.publicPlayersState.length) || game.publicPlayersState.length < game.general.minPlayersCount)
-		) {
-			game.gameState.cancellStart = true;
-			game.general.status = displayWaitingForPlayers(game);
 		}
-		io.sockets.in(data.uid).emit('gameUpdate', game);
+		if (!game.publicPlayersState.length) {
+			io.sockets.in(data.uid).emit('gameUpdate', {});
+			games.splice(games.indexOf(game), 1);
+		} else if (game.gameState.isTracksFlipped) {
+			sendInProgressGameUpdate(game);
+		}
 	}
-	if (game && !game.publicPlayersState.length) {
-		io.sockets.in(data.uid).emit('gameUpdate', {});
-		games.splice(games.indexOf(game), 1);
-	} else if (game && game.isTracksFlipped) {
-		sendInProgressGameUpdate(game);
-	}
-
 	if (!data.toReplay) {
 		updateUserStatus(data.userName, 'none', data.uid);
 	}
-
 	socket.emit('gameUpdate', {}, data.isSettings, data.toReplay);
 	sendGameList();
 };
