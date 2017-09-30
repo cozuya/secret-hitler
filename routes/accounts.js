@@ -129,7 +129,7 @@ module.exports = () => {
 					message: 'Sorry, your username contains a naughty word or part of a naughty word.'
 				});
 			} else {
-				Account.findOne({ username: new RegExp(_.escapeRegExp(username), 'i') }, (err, account) => {
+				Account.findOne({ username }, (err, account) => {
 					if (err) {
 						return next(err);
 					}
