@@ -37,7 +37,7 @@ class Settings extends React.Component {
 	}
 
 	componentDidMount() {
-		const { socket } = this.props;
+		const { socket, userInfo } = this.props;
 
 		$(this.timestamps).checkbox({
 			onChecked() {
@@ -90,6 +90,12 @@ class Settings extends React.Component {
 				});
 			}
 		});
+
+		if (userInfo.gameSettings.fontFamily) {
+			this.setState({
+				fontChecked: userInfo.gameSettings.fontFamily
+			});
+		}
 	}
 
 	sliderChange(event) {
@@ -126,13 +132,28 @@ class Settings extends React.Component {
 	}
 
 	renderFonts() {
-		const changeFontSubmit = () => {};
+		const changeFontSubmit = fontName => {
+			this.setState({
+				fontChecked: fontName
+			});
+
+			this.props.socket.emit('updateGameSettings', {
+				fontFamily: fontName
+			});
+		};
 		return (
 			<div className="row font-container">
 				<h4 className="ui header">Body font style</h4>
 				<div className="field">
 					<div className="ui radio comfortaa checkbox">
-						<input type="radio" name="comfortaa" checked={this.state.fontChecked === 'comfortaa'} />
+						<input
+							type="radio"
+							id="comfortaa"
+							onChange={() => {
+								changeFontSubmit('comfortaa');
+							}}
+							checked={this.state.fontChecked === 'comfortaa'}
+						/>
 						<label
 							htmlFor="comfortaa"
 							style={{
@@ -145,7 +166,14 @@ class Settings extends React.Component {
 				</div>
 				<div className="field">
 					<div className="ui radio lato checkbox">
-						<input type="radio" name="lato" checked={this.state.fontChecked === 'lato'} />
+						<input
+							type="radio"
+							id="lato"
+							onChange={() => {
+								changeFontSubmit('lato');
+							}}
+							checked={this.state.fontChecked === 'lato'}
+						/>
 						<label
 							htmlFor="lato"
 							style={{
@@ -158,7 +186,14 @@ class Settings extends React.Component {
 				</div>
 				<div className="field">
 					<div className="ui radio germaniaone checkbox">
-						<input type="radio" name="germaniaone" checked={this.state.fontChecked === 'germaniaone'} />
+						<input
+							type="radio"
+							id="germaniaone"
+							onChange={() => {
+								changeFontSubmit('germania one');
+							}}
+							checked={this.state.fontChecked === 'germania one'}
+						/>
 						<label
 							htmlFor="germaniaone"
 							style={{
@@ -171,7 +206,14 @@ class Settings extends React.Component {
 				</div>
 				<div className="field">
 					<div className="ui radio robotoslab checkbox">
-						<input type="radio" name="robotoslab" checked={this.state.fontChecked === 'robotoslab'} />
+						<input
+							type="radio"
+							id="robotoslab"
+							onChange={() => {
+								changeFontSubmit('roboto slab');
+							}}
+							checked={this.state.fontChecked === 'roboto slab'}
+						/>
 						<label
 							htmlFor="robotoslab"
 							style={{

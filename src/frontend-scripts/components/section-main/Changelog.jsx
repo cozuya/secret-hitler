@@ -13,6 +13,22 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.8.2 "blue steel" released 9-30-2017</p>
+		</div>
+		<h3>New feature: player selectable fonts</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="images/fonts.png" />
+		</div>
+		<p>
+			These can be found on the usual place (player settings, cog icon in upper right) and save on click. You will probably want to tweak your gamechat font
+			size slider as well.
+		</p>
+		<ul>
+			<li>The "game countdown is negative" bug should be fixed.</li>
+			<li>An issue with some players cannot remake an account after it being deleted has been addressed. Contact a moderator if you have been affected.</li>
+			<li>All new images from 0.8.0 have had their saturation knocked down by 25% - its a bit much.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.8.1 "silver" released 9-28-2017</p>
 		</div>
 		<p>Cleanup/bug fix patch, the following was affected:</p>

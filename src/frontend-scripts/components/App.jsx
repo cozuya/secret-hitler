@@ -85,12 +85,14 @@ export class App extends React.Component {
 
 		socket.on('gameSettings', settings => {
 			const { userInfo } = this.props;
+			console.log(settings, 'settings');
 
 			if (settings.customWidth && settings.customWidth !== '1853px') {
 				$('#game-container').css('width', settings.customWidth === 1853 ? 'inherit' : settings.customWidth);
 			}
 			userInfo.gameSettings = settings;
 			dispatch(updateUser(userInfo));
+			this.forceUpdate(); // dunno why I need this to make it work I'm bad at this.  Plus above jquery..
 		});
 
 		socket.on('gameList', list => {
@@ -253,8 +255,17 @@ export class App extends React.Component {
 	}
 
 	render() {
+		const { gameSettings } = this.props.userInfo;
+
 		return (
-			<section className="ui grid">
+			<section
+				className="ui grid"
+				style={{
+					fontFamily: gameSettings
+						? gameSettings.fontFamily ? `'${gameSettings.fontFamily}', Lato, sans-serif` : '"Comfortaa", Lato, sans-serif'
+						: '"Comfortaa", Lato, sans-serif'
+				}}
+			>
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 				{this.props.midSection !== 'game' &&
 					this.props.midSection !== 'replay' &&

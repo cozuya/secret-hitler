@@ -623,6 +623,8 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 		return;
 	}
 
+	console.log(data);
+
 	Account.findOne({ username: socket.handshake.session.passport.user })
 		.then(account => {
 			for (const setting in data) {
