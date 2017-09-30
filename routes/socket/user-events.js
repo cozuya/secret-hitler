@@ -707,6 +707,24 @@ module.exports.handleModerationAction = (socket, data) => {
 				banAccount(data.userName);
 				break;
 			case 'broadcast':
+				const discordBroadcastBody = JSON.stringify({
+						text: `${data.comment}\n`,
+						mod: passport.user
+					}),
+					discordBroadcastOptions = {
+						hostname: 'discordapp.com',
+						// path: process.env.DISCORDBROADCASTURL,
+						path: '/api/webhooks/363783956002242560/kj3XfTaNby0_KbBKsyztV4fiZaIuYi6y-gZAIXzuAGs6uRRRWGRBTMfJMnUKSgI8tEPX',
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'Content-Length': Buffer.byteLength(discordBroadcastBody)
+						}
+					},
+					broadcastReq = https.request(discordBroadcastOptions);
+
+				broadcastReq.end(discordBroadcastBody);
+				console.log('Hello, World!');
 				games.forEach(game => {
 					game.chats.push({
 						chat: `(${data.modName}) ${data.comment}`,
