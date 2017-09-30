@@ -328,6 +328,9 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 
 		setTimeout(() => {
 			game.private.seatedPlayers.forEach((player, i) => {
+				if (!player.playersState) {
+					return;
+				}
 				player.playersState[i].cardStatus.isFlipped = false;
 				player.playersState.forEach(play => {
 					play.notificationStatus = '';
