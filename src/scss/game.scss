@@ -40,7 +40,7 @@
 
 			.pointing.menu {
 				.observer-chat {
-					opacity: .75;
+					opacity: 0.75;
 				}
 				margin: 0;
 				min-height: initial;
@@ -103,23 +103,25 @@
 					}
 
 					&.fascist {
-						background: #563938;
+						background: #382c2c;
 						span {
-							background: #563938 !important;
+							background: #382c2c !important;
 						}
 					}
 					&.liberal {
-						background: #424e58;
+						background: #323b42;
+
 						span {
-							background: #424e58 !important;
+							background: #323b42 !important;
 						}
 					}
 				}
 
 				.claim-item {
-					background: #514a36;
+					background: #3d3829;
+
 					span {
-						background: #514a36 !important;
+						background: #3d3829 !important;
 					}
 				}
 				.chat-user {
@@ -136,7 +138,6 @@
 				.game-chat,
 				.chat-user--game .chat-timestamp {
 					color: #8b8b8b;
-					// background: #111;
 				}
 
 				.chat-user--claim,
@@ -225,7 +226,7 @@
 					&:after {
 						content: '';
 						display: table;
-						animation: fadeIn .6s infinite alternate;
+						animation: fadeIn 0.6s infinite alternate;
 						top: 0;
 						left: 0;
 						position: absolute;

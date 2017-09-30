@@ -1,5 +1,10 @@
 .settings {
 	padding: 2%;
+
+	> .ui.grid {
+		max-height: 470px;
+		overflow-y: scroll;
+	}
 	.content > button {
 		position: absolute;
 		left: 50px;
@@ -39,7 +44,7 @@
 		position: absolute;
 		font-size: 30px;
 		left: 94%;
-		opacity: .3;
+		opacity: 0.3;
 	}
 
 	.font-container {
@@ -58,7 +63,7 @@
 
 			&:before,
 			&:after {
-				top: 8px !important;
+				top: 6px !important;
 			}
 		}
 
