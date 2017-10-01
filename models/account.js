@@ -21,6 +21,7 @@ const mongoose = require('mongoose'),
 			unbanTime: Date,
 			unTimeoutTime: Date,
 			fontSize: Number,
+			fontFamily: String,
 			gameNotes: {
 				top: Number,
 				left: Number,

@@ -30,6 +30,10 @@ $headerfont: 'Unica One', Lato, sans-serif;
 @import 'moderation.scss';
 @import 'game-text.scss';
 @import 'reports.scss';
+#game-container > .ui.grid,
+body {
+	font-family: $textfont;
+}
 #main {
 	min-width: 1254px;
 	margin-left: auto;

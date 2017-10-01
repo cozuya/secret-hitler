@@ -26,16 +26,18 @@ class Settings extends React.Component {
 		this.profileSearchSubmit = this.profileSearchSubmit.bind(this);
 		this.state = {
 			sliderValues: [8, 28],
+			imageUid: Math.random().toString(36).substring(6),
 			widthSliderValue: '',
 			preview: '',
 			cardbackUploadStatus: '',
 			isUploaded: false,
-			profileSearchValue: ''
+			profileSearchValue: '',
+			fontChecked: 'comfortaa'
 		};
 	}
 
 	componentDidMount() {
-		const { socket } = this.props;
+		const { socket, userInfo } = this.props;
 
 		$(this.timestamps).checkbox({
 			onChecked() {
@@ -88,6 +90,12 @@ class Settings extends React.Component {
 				});
 			}
 		});
+
+		if (userInfo.gameSettings.fontFamily) {
+			this.setState({
+				fontChecked: userInfo.gameSettings.fontFamily
+			});
+		}
 	}
 
 	sliderChange(event) {
@@ -121,6 +129,103 @@ class Settings extends React.Component {
 		if (this.state.profileSearchValue !== 'coz') {
 			this.props.fetchProfile(this.state.profileSearchValue);
 		}
+	}
+
+	renderFonts() {
+		const changeFontSubmit = fontName => {
+			this.setState({
+				fontChecked: fontName
+			});
+
+			this.props.socket.emit('updateGameSettings', {
+				fontFamily: fontName
+			});
+		};
+		return (
+			<div className="row font-container">
+				<h4 className="ui header">Body font style</h4>
+				<div className="field">
+					<div className="ui radio comfortaa checkbox">
+						<input
+							type="radio"
+							id="comfortaa"
+							onChange={() => {
+								changeFontSubmit('comfortaa');
+							}}
+							checked={this.state.fontChecked === 'comfortaa'}
+						/>
+						<label
+							htmlFor="comfortaa"
+							style={{
+								fontSize: this.state.sliderValues.length > 1 ? '18px' : `${this.state.sliderValues[0]}px`
+							}}
+						>
+							The quick brown fascist jumped over the lazy liberal. (comfortaa, default)
+						</label>
+					</div>
+				</div>
+				<div className="field">
+					<div className="ui radio lato checkbox">
+						<input
+							type="radio"
+							id="lato"
+							onChange={() => {
+								changeFontSubmit('lato');
+							}}
+							checked={this.state.fontChecked === 'lato'}
+						/>
+						<label
+							htmlFor="lato"
+							style={{
+								fontSize: this.state.sliderValues.length > 1 ? '18px' : `${this.state.sliderValues[0]}px`
+							}}
+						>
+							The quick brown fascist jumped over the lazy liberal. (lato, prior to v0.8)
+						</label>
+					</div>
+				</div>
+				<div className="field">
+					<div className="ui radio germaniaone checkbox">
+						<input
+							type="radio"
+							id="germaniaone"
+							onChange={() => {
+								changeFontSubmit('germania one');
+							}}
+							checked={this.state.fontChecked === 'germania one'}
+						/>
+						<label
+							htmlFor="germaniaone"
+							style={{
+								fontSize: this.state.sliderValues.length > 1 ? '18px' : `${this.state.sliderValues[0]}px`
+							}}
+						>
+							The quick brown fascist jumped over the lazy liberal. (germania one)
+						</label>
+					</div>
+				</div>
+				<div className="field">
+					<div className="ui radio robotoslab checkbox">
+						<input
+							type="radio"
+							id="robotoslab"
+							onChange={() => {
+								changeFontSubmit('roboto slab');
+							}}
+							checked={this.state.fontChecked === 'roboto slab'}
+						/>
+						<label
+							htmlFor="robotoslab"
+							style={{
+								fontSize: this.state.sliderValues.length > 1 ? '18px' : `${this.state.sliderValues[0]}px`
+							}}
+						>
+							The quick brown fascist jumped over the lazy liberal. (roboto slab)
+						</label>
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	render() {
@@ -289,6 +394,7 @@ class Settings extends React.Component {
 							/>
 						</div>
 					</div>
+					{this.renderFonts()}
 					<div className="row cardback-container">
 						<div className="ui grid">
 							<div className="row centered cardback-header-container">
@@ -305,14 +411,12 @@ class Settings extends React.Component {
 										}
 
 										if (this.props.userInfo.gameSettings.customCardback) {
-											const imageUid = Math.random().toString(36).substring(6);
-
 											return (
 												<div
 													className="current-cardback"
 													style={{
 														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${this.props.userInfo.gameSettings
-															.customCardback}?${imageUid}) no-repeat`
+															.customCardback}?${this.state.imageUid}) no-repeat`
 													}}
 												/>
 											);

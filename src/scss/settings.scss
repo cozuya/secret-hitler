@@ -1,5 +1,10 @@
 .settings {
 	padding: 2%;
+
+	> .ui.grid {
+		max-height: 470px;
+		overflow-y: scroll;
+	}
 	.content > button {
 		position: absolute;
 		left: 50px;
@@ -39,7 +44,51 @@
 		position: absolute;
 		font-size: 30px;
 		left: 94%;
-		opacity: .3;
+		opacity: 0.3;
+	}
+
+	.font-container {
+		input:active ~ label,
+		input:focus ~ label {
+			color: $darkfascistteam;
+		}
+		label {
+			color: $darkfascistteam;
+			line-height: 1.3;
+
+			&:hover {
+				color: $darkfascistteam;
+				cursor: pointer;
+			}
+
+			&:before,
+			&:after {
+				top: 6px !important;
+			}
+		}
+
+		h4 {
+			text-align: center;
+			display: block;
+			width: 100%;
+			font-size: 18px;
+		}
+
+		.comfortaa {
+			font-family: 'Comfortaa', Lato, sans-serif;
+		}
+
+		.lato {
+			font-family: Lato, sans-serif;
+		}
+
+		.germaniaone {
+			font-family: 'Germania One', Lato, sans-serif;
+		}
+
+		.robotoslab {
+			font-family: 'Roboto Slab', Lato, sans-serif;
+		}
 	}
 
 	.cardback-container {
