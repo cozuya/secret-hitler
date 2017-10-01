@@ -26,7 +26,8 @@ const Changelog = props =>
 		<ul>
 			<li>The "game countdown is negative" bug should be fixed.</li>
 			<li>An issue with some players cannot remake an account after it being deleted has been addressed. Contact a moderator if you have been affected.</li>
-			<li>All new images from 0.8.0 have had their saturation knocked down by 25% - its a bit much.</li>
+			<li>All new images from 0.8.0 have had their saturation knocked down by 25%, and new colors in gamechat muted more.</li>
+			<li>Broadcasts now echo through webhook to discord.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.8.1 "silver" released 9-28-2017</p>
