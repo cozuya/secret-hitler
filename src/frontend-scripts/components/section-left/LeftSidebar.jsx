@@ -57,14 +57,9 @@ const LeftSidebar = props => {
 					gameBeingCreated = props.midSection === 'createGame';
 
 				return userName && !gameBeingCreated
-					? <button
-							className="ui button primary"
-							onClick={() => {
-								props.onCreateGameButtonClick('createGame');
-							}}
-						>
+					? <a className="ui button primary" href="#/creategame">
 							Create a new game
-						</button>
+						</a>
 					: <button className="ui button disabled">
 							{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}
 						</button>;

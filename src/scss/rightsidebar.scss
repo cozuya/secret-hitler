@@ -103,6 +103,9 @@
 		.user-container {
 			display: flex;
 			justify-content: space-between;
+			&.hover {
+				background: #2f2f2f;
+			}
 			.userlist-username {
 				width: 60%;
 				white-space: nowrap;

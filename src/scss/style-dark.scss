@@ -257,7 +257,7 @@ body {
 	i.icon {
 		color: $darkfascistteam;
 	}
-	a {
+	a:not(.button) {
 		color: $darkliberalteam;
 	}
 }

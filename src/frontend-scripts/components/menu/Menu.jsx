@@ -6,7 +6,7 @@ import { PLAYERCOLORS } from '../../constants';
 export default class Menu extends React.Component {
 	constructor() {
 		super();
-		this.clickSettingsButton = this.clickSettingsButton.bind(this);
+		// this.clickSettingsButton = this.clickSettingsButton.bind(this);
 	}
 
 	componentDidMount() {
@@ -176,17 +176,17 @@ export default class Menu extends React.Component {
 		}, 6000);
 	}
 
-	clickSettingsButton() {
-		const { gameInfo, userInfo } = this.props,
-			{ gameState } = gameInfo;
+	// clickSettingsButton() {
+	// 	const { gameInfo, userInfo } = this.props,
+	// 		{ gameState } = gameInfo;
 
-		if ((gameState && gameState.isCompleted && userInfo.seatNumber) || (gameState && !userInfo.isSeated) || (gameState && !gameState.isStarted)) {
-			this.props.onLeaveGame(userInfo.isSeated, true);
-		} else if (!gameState) {
-			// window.location.hash = '/settings';
-			this.props.onSettingsButtonClick('settings');
-		}
-	}
+	// 	if ((gameState && gameState.isCompleted && userInfo.seatNumber) || (gameState && !userInfo.isSeated) || (gameState && !gameState.isStarted)) {
+	// 		this.props.onLeaveGame(userInfo.isSeated, true);
+	// 	} else if (!gameState) {
+	// 		window.location.hash = '/settings';
+	// 		// this.props.onSettingsButtonClick('settings');
+	// 	}
+	// }
 
 	render() {
 		return (
@@ -223,7 +223,9 @@ export default class Menu extends React.Component {
 									<div className="loggedin">
 										Logged in as <span className={`${PLAYERCOLORS(userInfo.userName)} playername`}>{userInfo.userName}</span>
 									</div>
-									<i className={iconClasses()} title="Player settings screen" onClick={this.clickSettingsButton} />
+									<a href="#/settings">
+										<i className={iconClasses()} title="Player settings screen" />
+									</a>
 								</div>;
 					})()}
 					{(() => {

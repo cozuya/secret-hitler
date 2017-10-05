@@ -27,31 +27,16 @@ export class App extends React.Component {
 		};
 	}
 
+	compononentDidUpdate() {
+		this.router();
+	}
+
 	componentDidMount() {
 		const { dispatch } = this.props,
-			{ classList } = document.getElementById('game-container'),
-			router = () => {
-				const { hash } = window.location,
-					{ gameState } = this.props.gameInfo,
-					{ userInfo } = this.props;
+			{ classList } = document.getElementById('game-container');
 
-				if (hash === '#/settings') {
-					console.log('Hello, World!');
-					if ((gameState && gameState.isCompleted && userInfo.seatNumber) || (gameState && !userInfo.isSeated) || (gameState && !gameState.isStarted)) {
-						// this.props.onLeaveGame(userInfo.isSeated, true);
-						console.log('todo');
-					} else if (!gameState && userInfo.userName) {
-						console.log('Hello, World!');
-						dispatch(updateMidsection('settings'));
-					}
-				} else {
-					console.log('Hello, World!');
-					dispatch(updateMidsection('default'));
-				}
-			};
-
-		// window.addEventListener('hashchange', router);
-		// router();
+		window.addEventListener('hashchange', this.router.bind(this));
+		this.router.call(this);
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1],
@@ -139,6 +124,27 @@ export class App extends React.Component {
 			userInfo.gameSettings.newReport = reportStatus;
 			dispatch(updateUser(userInfo));
 		});
+	}
+
+	router() {
+		const { hash } = window.location,
+			{ userInfo, dispatch, gameInfo } = this.props,
+			{ gameState } = gameInfo;
+
+		console.log(this.props);
+		if (
+			hash === '#/settings' &&
+			((gameState && ((gameState.isCompleted && userInfo.seatNumber) || !userInfo.isSeated || !gameState.isStarted)) ||
+				(!gameState && userInfo.userName && userInfo.gameSettings && Object.keys(userInfo.gameSettings).length))
+		) {
+			dispatch(updateMidsection('settings'));
+		} else if (hash === '#/creategame' && userInfo.userName && !Object.keys(gameInfo).length) {
+			dispatch(updateMidsection('createGame'));
+		} else if (hash !== '#/') {
+			window.location.hash = '#/';
+		} else {
+			dispatch(updateMidsection('default'));
+		}
 	}
 
 	handleRoute(route) {
