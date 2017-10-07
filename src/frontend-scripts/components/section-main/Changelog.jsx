@@ -13,11 +13,28 @@ const Changelog = props =>
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.8.3 "stainless steel" released 10-15-2017</p>
+		</div>
+		<h3>New feature: URL routing</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="/images/routes.png" />
+		</div>
+		<p>
+			What this means is the URL of your browser now accurately shows the state of the application. The big takeaway is games, replays, and profiles are now all
+			linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you would
+			expect as well. In addition, links to sh.io itself are now clickable in general chat (non sh.io links are still not). This required a large tweak to the
+			front end and may not be perfect, please update if so. One positive is that if you have a custom width or font, the game no longer "flashes" when you load
+			the page.
+		</p>
+		<ul>
+			<li>The whitelist feature now correctly has a scroll bar.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.8.2 "blue steel" released 9-30-2017</p>
 		</div>
 		<h3>New feature: player selectable fonts</h3>
 		<div style={{ textAlign: 'center' }}>
-			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="images/fonts.png" />
+			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="/images/fonts.png" />
 		</div>
 		<p>
 			These can be found on the usual place (player settings, cog icon in upper right) and save on click. You will probably want to tweak your gamechat font
@@ -61,7 +78,7 @@ const Changelog = props =>
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="images/em.png" />
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}
@@ -316,7 +333,7 @@ const Changelog = props =>
 			be seated in. These games have a special symbol in the sidebar.
 		</p>
 		<div style={{ textAlign: 'center' }}>
-			<img src="images/gamelist-rainbow.png" />
+			<img src="/images/gamelist-rainbow.png" />
 		</div>
 		<p>
 			In the lobby, a new icon appears showing what game style you are filter and sorting the userlist by. Click it to switch between "regular" and "rainbow".

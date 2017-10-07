@@ -29,7 +29,7 @@ const Tracks = props => {
 			<EnactedPolicies gameInfo={gameInfo} />
 			<div>
 				<div className="game-name">
-					Game name: <span>{gameInfo.general.name}</span>
+					Game name: <span>{gameInfo.general && gameInfo.general.name}</span>
 				</div>
 				{userInfo.userName &&
 					(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) &&
@@ -37,14 +37,14 @@ const Tracks = props => {
 						Game UID: {gameInfo.general.uid}
 					</div>}
 				<div className="player-count">
-					Players: <span>{gameInfo.publicPlayersState.length}</span>
+					Players: <span>{gameInfo.publicPlayersState && gameInfo.publicPlayersState.length}</span>
 				</div>
 			</div>
 			<section
 				className={(() => {
 					let classes = 'tracks';
 
-					if (props.gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
+					if ((props.gameInfo.cardFlingerState && props.gameInfo.cardFlingerState.length) || gameInfo.trackState.isBlurred) {
 						classes += ' blurred';
 					}
 

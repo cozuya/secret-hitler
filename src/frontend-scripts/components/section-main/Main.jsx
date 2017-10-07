@@ -44,14 +44,7 @@ const Main = props =>
 		{(() => {
 			switch (props.midSection) {
 				case 'createGame':
-					return (
-						<Creategame
-							userList={props.userList}
-							userInfo={props.userInfo}
-							onCreateGameSubmit={props.onCreateGameSubmit}
-							onLeaveCreateGame={props.onLeaveCreateGame}
-						/>
-					);
+					return <Creategame userList={props.userList} userInfo={props.userInfo} socket={props.socket} />;
 				case 'changelog':
 					return <Changelog onLeaveChangelog={props.onLeaveChangelog} version={props.version} />;
 				case 'game':

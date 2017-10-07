@@ -182,5 +182,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 		_game.chats = _game.chats.concat(_game.private.unSeatedGameChats);
 		socket.join(uid);
 		socket.emit('gameUpdate', secureGame(_game));
+	} else {
+		// todo: replay retrieval
 	}
 };

@@ -37,7 +37,8 @@ class Settings extends React.Component {
 	}
 
 	componentDidMount() {
-		const { socket, userInfo } = this.props;
+		const { socket, userInfo } = this.props,
+			gameSettings = this.props.gameSettings || window.gameSettings;
 
 		$(this.timestamps).checkbox({
 			onChecked() {
@@ -91,11 +92,9 @@ class Settings extends React.Component {
 			}
 		});
 
-		if (userInfo.gameSettings.fontFamily) {
-			this.setState({
-				fontChecked: userInfo.gameSettings.fontFamily
-			});
-		}
+		this.setState({
+			fontChecked: gameSettings.fontFamily
+		});
 	}
 
 	sliderChange(event) {
@@ -280,7 +279,8 @@ class Settings extends React.Component {
 			},
 			handleSearchProfileChange = e => {
 				this.setState({ profileSearchValue: e.currentTarget.value });
-			};
+			},
+			gameSettings = this.props.gameSettings || window.gameSettings;
 
 		return (
 			<section className="settings">
@@ -322,7 +322,7 @@ class Settings extends React.Component {
 									this.timestamps = c;
 								}}
 							>
-								<input type="checkbox" name="timestamps" defaultChecked={this.props.userInfo.gameSettings.enableTimestamps} />
+								<input type="checkbox" name="timestamps" defaultChecked={gameSettings.enableTimestamps} />
 							</div>
 						</div>
 						<div className="four wide column popups">
@@ -333,7 +333,7 @@ class Settings extends React.Component {
 									this.sidebar = c;
 								}}
 							>
-								<input type="checkbox" name="sidebar" defaultChecked={this.props.userInfo.gameSettings.enableRightSidebarInGame} />
+								<input type="checkbox" name="sidebar" defaultChecked={gameSettings.enableRightSidebarInGame} />
 							</div>
 						</div>
 						<div className="four wide column popups">
@@ -344,7 +344,7 @@ class Settings extends React.Component {
 									this.cardbacks = c;
 								}}
 							>
-								<input type="checkbox" name="cardbacks" defaultChecked={this.props.userInfo.gameSettings.disablePlayerCardbacks} />
+								<input type="checkbox" name="cardbacks" defaultChecked={gameSettings.disablePlayerCardbacks} />
 							</div>
 						</div>
 						<div className="four wide column popups">
@@ -355,7 +355,7 @@ class Settings extends React.Component {
 									this.playercolors = c;
 								}}
 							>
-								<input type="checkbox" name="playercolors" defaultChecked={this.props.userInfo.gameSettings.disablePlayerColorsInChat} />
+								<input type="checkbox" name="playercolors" defaultChecked={gameSettings.disablePlayerColorsInChat} />
 							</div>
 						</div>
 					</div>
@@ -375,7 +375,7 @@ class Settings extends React.Component {
 								min={8}
 								max={28}
 								range
-								defaultValue={this.props.userInfo.gameSettings.fontSize ? [this.props.userInfo.gameSettings.fontSize] : [18]}
+								defaultValue={gameSettings.fontSize ? [gameSettings.fontSize] : [18]}
 								marks={{ 8: '8px', 18: '18px', 28: '28px' }}
 							/>
 						</div>
@@ -389,7 +389,7 @@ class Settings extends React.Component {
 								min={1253}
 								max={1853}
 								range
-								defaultValue={this.props.userInfo.gameSettings.customWidth ? [parseInt(this.props.userInfo.gameSettings.customWidth.split('px')[0])] : [1853]}
+								defaultValue={gameSettings.customWidth ? [parseInt(gameSettings.customWidth.split('px')[0])] : [1853]}
 								marks={{ 1253: 'Minimum', 1853: 'Full screen' }}
 							/>
 						</div>
@@ -410,13 +410,13 @@ class Settings extends React.Component {
 											return <img src={this.state.isUploaded} />;
 										}
 
-										if (this.props.userInfo.gameSettings.customCardback) {
+										if (gameSettings.customCardback) {
 											return (
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${this.props.userInfo.gameSettings
-															.customCardback}?${this.state.imageUid}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${this.state
+															.imageUid}) no-repeat`
 													}}
 												/>
 											);

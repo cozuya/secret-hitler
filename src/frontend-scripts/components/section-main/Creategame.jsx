@@ -10,7 +10,6 @@ $.fn.checkbox = Checkbox;
 export default class Creategame extends React.Component {
 	constructor() {
 		super();
-		this.leaveCreateGame = this.leaveCreateGame.bind(this);
 		this.createNewGame = this.createNewGame.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
 		this.state = {
@@ -107,10 +106,6 @@ export default class Creategame extends React.Component {
 		});
 	}
 
-	leaveCreateGame() {
-		this.props.onLeaveCreateGame('default');
-	}
-
 	createNewGame() {
 		const $creategame = $('section.creategame'),
 			{ userInfo } = this.props;
@@ -130,7 +125,7 @@ export default class Creategame extends React.Component {
 		} else {
 			const uid = Math.random().toString(36).substring(2);
 
-			this.props.onCreateGameSubmit({
+			this.props.socket.emit('addNewGame', {
 				gameState: {
 					previousElectedGovernment: [],
 					undrawnPolicyCount: 17,
@@ -177,8 +172,6 @@ export default class Creategame extends React.Component {
 					enactedPolicies: []
 				}
 			});
-
-			// window.location.hash = `#/table/${uid}/`;
 		}
 	}
 
@@ -193,7 +186,9 @@ export default class Creategame extends React.Component {
 
 		return (
 			<section className="creategame">
-				<i className="remove icon" onClick={this.leaveCreateGame} />
+				<a href="#/">
+					<i className="remove icon" />
+				</a>
 				<div className="ui header">
 					<div className="content">Create a new game</div>
 				</div>
@@ -291,26 +286,17 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="disablegamechat" defaultChecked={false} />
 							</div>
 						</div>
-						{(() => {
-							const user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName),
-								isRainbow = user.wins + user.losses > 49;
-
-							if (isRainbow) {
-								return (
-									<div className="four wide column experiencedmode">
-										<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
-										<div
-											className="ui fitted toggle checkbox"
-											ref={c => {
-												this.rainbowgame = c;
-											}}
-										>
-											<input type="checkbox" name="rainbowgame" defaultChecked={false} />
-										</div>
-									</div>
-								);
-							}
-						})()}
+						<div className="four wide column experiencedmode">
+							<h4 className="ui header">Rainbow game - only 50+ game veterans can be seated in this game</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.rainbowgame = c;
+								}}
+							>
+								<input type="checkbox" name="rainbowgame" defaultChecked={false} />
+							</div>
+						</div>
 					</div>
 					<div className="row tournyrow" />
 				</div>
@@ -325,8 +311,7 @@ export default class Creategame extends React.Component {
 }
 
 Creategame.propTypes = {
-	onCreateGameSubmit: PropTypes.func,
-	onLeaveCreateGame: PropTypes.func,
+	socket: PropTypes.object,
 	userInfo: PropTypes.object,
 	userList: PropTypes.object
 };

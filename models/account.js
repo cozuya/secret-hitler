@@ -11,7 +11,7 @@ const mongoose = require('mongoose'),
 		gameSettings: {
 			newReport: Boolean,
 			customCardback: String,
-			customCardbackSaveTime: Date,
+			customCardbackSaveTime: String,
 			customCardbackUid: String,
 			customWidth: String,
 			enableTimestamps: Boolean,

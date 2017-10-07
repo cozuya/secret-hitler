@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		const sagaMiddleware = createSagaMiddleware();
 		const store = createStore(shapp, applyMiddleware(sagaMiddleware));
 		sagaMiddleware.run(rootSaga);
-
 		render(
 			<Provider store={store}>
 				<AppComponent />
@@ -32,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		);
 	}
 
-	$(document).keydown(function(e) {
+	$(document).keydown(e => {
 		if (e.ctrlKey && e.keyCode === 65) {
 			return false;
 		}

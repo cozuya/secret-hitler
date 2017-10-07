@@ -6,7 +6,6 @@ import RightSidebar from './section-right/RightSidebar.jsx';
 import Gamenotes from './Gamenotes.jsx';
 import { updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, updateVersion } from '../actions/actions.js';
 import socket from '../socket';
-import $ from 'jquery';
 import PropTypes from 'prop-types';
 
 const select = state => state;
@@ -15,7 +14,6 @@ export class App extends React.Component {
 	constructor() {
 		super();
 		this.handleRoute = this.handleRoute.bind(this);
-		this.handleCreateGameSubmit = this.handleCreateGameSubmit.bind(this);
 		this.handleRoute = this.handleRoute.bind(this);
 		this.handleSeatingUser = this.handleSeatingUser.bind(this);
 		this.handleLeaveGame = this.handleLeaveGame.bind(this);
@@ -71,12 +69,9 @@ export class App extends React.Component {
 		socket.on('gameSettings', settings => {
 			const { userInfo } = this.props;
 
-			if (settings.customWidth && settings.customWidth !== '1853px') {
-				$('#game-container').css('width', settings.customWidth === 1853 ? 'inherit' : settings.customWidth);
-			}
 			userInfo.gameSettings = settings;
 			dispatch(updateUser(userInfo));
-			this.forceUpdate(); // dunno why I need this to make it work I'm bad at this.  Plus above jquery..
+			this.forceUpdate(); // dunno why I need this to make it work I'm bad at this.
 		});
 
 		socket.on('gameList', list => {
@@ -88,15 +83,15 @@ export class App extends React.Component {
 		});
 
 		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
-			console.log(game);
 			if (this.props.midSection !== 'game' && Object.keys(game).length) {
 				dispatch(updateGameInfo(game));
 				dispatch(updateMidsection('game'));
+				window.location.hash = `#/table/${game.general.uid}`;
 			} else if (!Object.keys(game).length) {
 				if (isSettings) {
-					dispatch(updateMidsection('settings'));
+					window.location.hash = '#/settings';
 				} else if (!toReplay) {
-					dispatch(updateMidsection('default'));
+					window.location.hash = '#/';
 				}
 				dispatch(updateGameInfo(game));
 			} else {
@@ -133,8 +128,6 @@ export class App extends React.Component {
 			{ gameState } = gameInfo,
 			isAuthed = Boolean(document.getElementById('game-container').classList.length);
 
-		console.log(userInfo);
-
 		if (
 			hash === '#/settings' &&
 			((gameState && ((gameState.isCompleted && userInfo.seatNumber) || !userInfo.isSeated || !gameState.isStarted)) || (!gameState && isAuthed))
@@ -142,8 +135,8 @@ export class App extends React.Component {
 			dispatch(updateMidsection('settings'));
 		} else if (hash === '#/creategame' && isAuthed && !Object.keys(gameInfo).length) {
 			dispatch(updateMidsection('createGame'));
-		} else if (hash.substr(6) === '#/table/') {
-			console.log('Hello, World!');
+		} else if (hash.substr(0, 8) === '#/table/') {
+			socket.emit('getGameInfo', hash.split('#/table/')[1]);
 		} else if (hash !== '#/') {
 			window.location.hash = '#/';
 		} else {
@@ -157,25 +150,25 @@ export class App extends React.Component {
 		dispatch(updateMidsection(route));
 	}
 
-	handleCreateGameSubmit(game) {
-		const { dispatch, userInfo } = this.props,
-			data = {
-				uid: game.general.uid,
-				userName: userInfo.userName,
-				customCardback: userInfo.gameSettings.customCardback,
-				customCardbackUid: userInfo.gameSettings.customCardbackUid
-				// ,
-				// password
-			};
+	// handleCreateGameSubmit(game) {
+	// 	const { userInfo } = this.props,
+	// 		data = {
+	// 			uid: game.general.uid,
+	// 			userName: userInfo.userName,
+	// 			customCardback: userInfo.gameSettings.customCardback,
+	// 			customCardbackUid: userInfo.gameSettings.customCardbackUid
+	// ,
+	// password
+	// };
 
-		// userInfo.isSeated = true;
-		// dispatch(updateUser(userInfo));
-		// dispatch(updateMidsection('game'));
-		// dispatch(updateGameInfo(game));
+	// userInfo.isSeated = true;
+	// dispatch(updateUser(userInfo));
+	// dispatch(updateMidsection('game'));
+	// dispatch(updateGameInfo(game));
 
-		socket.emit('updateSeatedUser', data);
-		socket.emit('addNewGame', game);
-	}
+	// 	socket.emit('updateSeatedUser', data);
+	// 	socket.emit('addNewGame', game);
+	// }
 
 	// ***** begin dev helpers *****
 
@@ -299,8 +292,6 @@ export class App extends React.Component {
 				<Main
 					userInfo={this.props.userInfo}
 					midSection={this.props.midSection}
-					onCreateGameSubmit={this.handleCreateGameSubmit}
-					onLeaveCreateGame={this.handleRoute}
 					gameInfo={this.props.gameInfo}
 					onLeaveSettings={this.handleRoute}
 					onSeatingUser={this.handleSeatingUser}

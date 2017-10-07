@@ -184,6 +184,11 @@
 				}
 				.item {
 					padding: 0;
+
+					a {
+						color: #f4f439 !important;
+						text-decoration: underline !important;
+					}
 				}
 				.chat-user {
 					color: #888;

@@ -172,23 +172,28 @@ module.exports.handleAddNewGame = (socket, data) => {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
 		const username = socket.handshake.session.passport.user;
 
-		data.private = {
-			reports: {},
-			unSeatedGameChats: [],
-			lock: {}
-		};
+		Account.findOne({ username }).then(account => {
+			data.private = {
+				reports: {},
+				unSeatedGameChats: [],
+				lock: {}
+			};
 
-		if (data.general.private) {
-			data.private.privatePassword = data.general.private;
-			data.general.private = true;
-		}
+			if (data.general.private) {
+				data.private.privatePassword = data.general.private;
+				data.general.private = true;
+			}
 
-		data.general.timeCreated = new Date().getTime();
-		updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
-		games.push(data);
-		sendGameList();
-		socket.join(data.general.uid);
-		socket.emit('gameUpdate', data);
+			if (data.general.rainbowgame) {
+				data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
+			}
+			data.general.timeCreated = new Date().getTime();
+			updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
+			games.push(data);
+			sendGameList();
+			socket.join(data.general.uid);
+			socket.emit('gameUpdate', data);
+		});
 	}
 };
 
@@ -820,13 +825,15 @@ module.exports.handleModerationAction = (socket, data) => {
 			case 'deleteCardback':
 				Account.findOne({ username: data.userName })
 					.then(account => {
-						account.gameSettings.customCardback = '';
+						if (account) {
+							account.gameSettings.customCardback = '';
 
-						account.save(() => {
-							if (io.sockets.sockets[affectedSocketId]) {
-								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-							}
-						});
+							account.save(() => {
+								if (io.sockets.sockets[affectedSocketId]) {
+									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+								}
+							});
+						}
 					})
 					.catch(err => {
 						console.log(err);
