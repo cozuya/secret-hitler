@@ -128,6 +128,8 @@ export default class Creategame extends React.Component {
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			window.alert('Sorry, this service is currently unavailable.');
 		} else {
+			const uid = Math.random().toString(36).substring(2);
+
 			this.props.onCreateGameSubmit({
 				gameState: {
 					previousElectedGovernment: [],
@@ -139,7 +141,7 @@ export default class Creategame extends React.Component {
 				general: {
 					enabledPlayerCounts: this.state.checkedSliderValues.filter(el => el).map((el, i) => i + 5),
 					whitelistedPlayers: [],
-					uid: Math.random().toString(36).substring(2),
+					uid,
 					name: $creategame.find('div.gamename input').val() || 'New Game',
 					minPlayersCount: this.state.sliderValues[0],
 					excludedPlayerCount: this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el),
@@ -175,6 +177,8 @@ export default class Creategame extends React.Component {
 					enactedPolicies: []
 				}
 			});
+
+			// window.location.hash = `#/table/${uid}/`;
 		}
 	}
 

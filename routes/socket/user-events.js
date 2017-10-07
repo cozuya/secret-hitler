@@ -188,6 +188,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 		games.push(data);
 		sendGameList();
 		socket.join(data.general.uid);
+		socket.emit('gameUpdate', data);
 	}
 };
 

@@ -88,6 +88,7 @@ export class App extends React.Component {
 		});
 
 		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
+			console.log(game);
 			if (this.props.midSection !== 'game' && Object.keys(game).length) {
 				dispatch(updateGameInfo(game));
 				dispatch(updateMidsection('game'));
@@ -129,17 +130,20 @@ export class App extends React.Component {
 	router() {
 		const { hash } = window.location,
 			{ userInfo, dispatch, gameInfo } = this.props,
-			{ gameState } = gameInfo;
+			{ gameState } = gameInfo,
+			isAuthed = Boolean(document.getElementById('game-container').classList.length);
 
-		console.log(this.props);
+		console.log(userInfo);
+
 		if (
 			hash === '#/settings' &&
-			((gameState && ((gameState.isCompleted && userInfo.seatNumber) || !userInfo.isSeated || !gameState.isStarted)) ||
-				(!gameState && userInfo.userName && userInfo.gameSettings && Object.keys(userInfo.gameSettings).length))
+			((gameState && ((gameState.isCompleted && userInfo.seatNumber) || !userInfo.isSeated || !gameState.isStarted)) || (!gameState && isAuthed))
 		) {
 			dispatch(updateMidsection('settings'));
-		} else if (hash === '#/creategame' && userInfo.userName && !Object.keys(gameInfo).length) {
+		} else if (hash === '#/creategame' && isAuthed && !Object.keys(gameInfo).length) {
 			dispatch(updateMidsection('createGame'));
+		} else if (hash.substr(6) === '#/table/') {
+			console.log('Hello, World!');
 		} else if (hash !== '#/') {
 			window.location.hash = '#/';
 		} else {
@@ -154,12 +158,22 @@ export class App extends React.Component {
 	}
 
 	handleCreateGameSubmit(game) {
-		const { dispatch, userInfo } = this.props;
+		const { dispatch, userInfo } = this.props,
+			data = {
+				uid: game.general.uid,
+				userName: userInfo.userName,
+				customCardback: userInfo.gameSettings.customCardback,
+				customCardbackUid: userInfo.gameSettings.customCardbackUid
+				// ,
+				// password
+			};
 
-		userInfo.isSeated = true;
-		dispatch(updateUser(userInfo));
-		dispatch(updateMidsection('game'));
-		dispatch(updateGameInfo(game));
+		// userInfo.isSeated = true;
+		// dispatch(updateUser(userInfo));
+		// dispatch(updateMidsection('game'));
+		// dispatch(updateGameInfo(game));
+
+		socket.emit('updateSeatedUser', data);
 		socket.emit('addNewGame', game);
 	}
 

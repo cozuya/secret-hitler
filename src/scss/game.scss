@@ -343,6 +343,8 @@
 	margin-top: 0 !important;
 	top: 50px !important;
 	ul {
+		max-height: 400px;
+		overflow-y: scroll;
 		list-style-type: none;
 		li,
 		li input,
