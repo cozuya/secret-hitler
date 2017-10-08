@@ -19,50 +19,25 @@ const gulp = require('gulp'),
 
 let file;
 
-gulp.task('default', [
-	'watch',
-	'scripts',
-	'styles-dark',
-	'styles-web',
-	'styles-light',
-	'lint-all'
-]);
+gulp.task('default', ['watch', 'scripts', 'styles-dark', 'styles-web', 'styles-light', 'lint-all']);
 
 gulp.task('watch', () => {
 	livereload.listen();
-	gulp.watch('./src/scss/*.scss', [
-		'styles-dark',
-		'styles-web',
-		'styles-light'
-	]);
-	gulp.watch(
-		['./src/frontend-scripts/**/*.js*', './routes/**/*.js', './__test__/*.js'],
-		e => {
-			file =
-				process.platform === 'win32'
-					? `./${e.path
-							.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1]
-							.split('\\')
-							.join('/')}`
-					: `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
-			gulp.start('lint');
-		}
-	);
-	gulp.watch(
-		['./src/frontend-scripts/**/*.js*', './src/models/**/*.js'],
-		['scripts']
-	);
+	gulp.watch('./src/scss/*.scss', ['styles-dark', 'styles-web', 'styles-light']);
+	gulp.watch(['./src/frontend-scripts/**/*.js*', './routes/**/*.js', './__test__/*.js'], e => {
+		file =
+			process.platform === 'win32'
+				? `./${e.path.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1].split('\\').join('/')}`
+				: `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
+		gulp.start('lint');
+	});
+	gulp.watch(['./src/frontend-scripts/**/*.js*', './src/models/**/*.js'], ['scripts']);
 	gulp.watch('./routes/*.js', ['reload']);
 	gulp.watch('./src/images/*', ['imagemin']);
 });
 
 gulp.task('lint', () => {
-	return gulp
-		.src(file)
-		.pipe(eslint())
-		.pipe(plumber())
-		.pipe(eslint.format())
-		.pipe(eslint.failAfterError());
+	return gulp.src(file).pipe(eslint()).pipe(plumber()).pipe(eslint.format()).pipe(eslint.failAfterError());
 	// .on('error', () => {
 	// 	notifier.notify({title: 'ESLint Error', message: ' '});
 	// })
@@ -70,23 +45,14 @@ gulp.task('lint', () => {
 
 gulp.task('lint-all', () => {
 	return gulp
-		.src([
-			'./utils/index.js',
-			'./models/**/*.js',
-			'./routes/**/*.js',
-			'./src/frontend-scripts/**/*.js*',
-			'./__test__/**/*.test.js'
-		])
+		.src(['./utils/index.js', './models/**/*.js', './routes/**/*.js', './src/frontend-scripts/**/*.js*', './__test__/**/*.test.js'])
 		.pipe(eslint())
 		.pipe(eslint.format())
 		.pipe(eslint.failAfterError());
 });
 
 gulp.task('imagemin', () => {
-	gulp
-		.src('./src/images/*')
-		.pipe(imagemin())
-		.pipe(gulp.dest('./public/images'));
+	gulp.src('./src/images/*').pipe(imagemin()).pipe(gulp.dest('./public/images'));
 });
 
 gulp.task('styles-dark', () => {
@@ -144,15 +110,13 @@ gulp.task('scripts', () => {
 		.src('./src/frontend-scripts/game-app.js')
 		.pipe(
 			through2.obj((file, enc, next) => {
-				browserify(file.path, { debug: true })
-					.transform(babelify)
-					.bundle((err, res) => {
-						if (err) {
-							return next(err);
-						}
-						file.contents = res;
-						next(null, file);
-					});
+				browserify(file.path, { debug: true }).transform(babelify).bundle((err, res) => {
+					if (err) {
+						return next(err);
+					}
+					file.contents = res;
+					next(null, file);
+				});
 			})
 		)
 		.on('error', function(error) {
@@ -167,16 +131,10 @@ gulp.task('scripts', () => {
 });
 
 gulp.task('reload', () => {
-	gulp.src('').pipe(wait(4500)).pipe(livereload());
+	gulp.src('').pipe(wait(3500)).pipe(livereload());
 });
 
-gulp.task('build', [
-	'build-game-css',
-	'build-site-css',
-	'build-js',
-	'makelogs',
-	'makedata'
-]);
+gulp.task('build', ['build-game-css', 'build-site-css', 'build-js', 'makelogs', 'makedata']);
 
 gulp.task('makelogs', () => {
 	if (!fs.existsSync('./logs')) {

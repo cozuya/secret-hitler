@@ -1,6 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-import Slider from 'rc-slider';
+import Slider, { Range } from 'rc-slider';
 import Checkbox from 'semantic-ui-checkbox';
 import blacklistedWords from '../../../../iso/blacklistwords';
 import PropTypes from 'prop-types';
@@ -123,7 +123,9 @@ export default class Creategame extends React.Component {
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			window.alert('Sorry, this service is currently unavailable.');
 		} else {
-			const uid = Math.random().toString(36).substring(2);
+			const uid = Math.random()
+				.toString(36)
+				.substring(2);
 
 			this.props.socket.emit('addNewGame', {
 				gameState: {
@@ -209,9 +211,9 @@ export default class Creategame extends React.Component {
 						</div>
 						<div className="eight wide column slider">
 							<h4 className="ui header">Number of players</h4>
-							<Slider onChange={this.sliderChange} min={5} max={10} range defaultValue={[5, 10]} marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }} />
+							<Range onChange={this.sliderChange} min={5} max={10} defaultValue={[5, 10]} marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }} />
 							<div className="checkbox-container">
-								{new Array(6).fill(true).map((el, index) =>
+								{new Array(6).fill(true).map((el, index) => (
 									<label key={index}>
 										<input
 											type="checkbox"
@@ -222,7 +224,7 @@ export default class Creategame extends React.Component {
 											}}
 										/>
 									</label>
-								)}
+								))}
 							</div>
 						</div>
 						<div className="four wide column privategame">

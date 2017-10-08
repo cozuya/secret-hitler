@@ -119,7 +119,7 @@ export default class Generalchat extends React.Component {
 	render() {
 		return (
 			<section className="generalchat">
-				<section className="generalchat-header">
+				<section className="generalchat-header hoz-gradient">
 					<div className="clearfix">
 						<h3 className="ui header">Chat</h3>
 						<i

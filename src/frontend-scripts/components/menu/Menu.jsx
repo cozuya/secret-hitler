@@ -190,10 +190,10 @@ export default class Menu extends React.Component {
 
 	render() {
 		return (
-			<section className="ui menu nav-menu">
+			<section className="ui menu nav-menu hoz-gradient">
 				<p>
 					<a href="/" target="_blank" rel="noopener noreferrer">
-						Can you find and stop the..
+						Can you find and stop the....
 					</a>
 				</p>
 				<div className="item right">

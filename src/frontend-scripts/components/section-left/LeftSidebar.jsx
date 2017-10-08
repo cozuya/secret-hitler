@@ -65,6 +65,9 @@ const LeftSidebar = props => {
 						</button>;
 			})()}
 			<div className="games-container">
+				<div className="ui divider" />
+				<h3 className="ui header centered">Games</h3>
+				<div className="ui divider" />
 				{renderGameList()}
 			</div>
 		</section>

@@ -149,31 +149,10 @@ export class App extends React.Component {
 
 		dispatch(updateMidsection(route));
 	}
-
-	// handleCreateGameSubmit(game) {
-	// 	const { userInfo } = this.props,
-	// 		data = {
-	// 			uid: game.general.uid,
-	// 			userName: userInfo.userName,
-	// 			customCardback: userInfo.gameSettings.customCardback,
-	// 			customCardbackUid: userInfo.gameSettings.customCardbackUid
-	// ,
-	// password
-	// };
-
-	// userInfo.isSeated = true;
-	// dispatch(updateUser(userInfo));
-	// dispatch(updateMidsection('game'));
-	// dispatch(updateGameInfo(game));
-
-	// 	socket.emit('updateSeatedUser', data);
-	// 	socket.emit('addNewGame', game);
-	// }
-
 	// ***** begin dev helpers *****
 
 	makeQuickDefault() {
-		const { dispatch, userInfo } = this.props,
+		const { userInfo } = this.props,
 			game = {
 				gameState: {
 					previousElectedGovernment: [],
@@ -220,10 +199,6 @@ export class App extends React.Component {
 				}
 			};
 
-		userInfo.isSeated = true;
-		dispatch(updateUser(userInfo));
-		dispatch(updateMidsection('game'));
-		dispatch(updateGameInfo(game));
 		socket.emit('addNewGame', game);
 	}
 
@@ -280,15 +255,16 @@ export class App extends React.Component {
 			>
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 				{this.props.midSection !== 'game' &&
-					this.props.midSection !== 'replay' &&
-					<LeftSidebar
-						userInfo={this.props.userInfo}
-						midSection={this.props.midSection}
-						gameList={this.props.gameList}
-						onCreateGameButtonClick={this.handleRoute}
-						onGameClick={this.handleGameClick}
-						socket={socket}
-					/>}
+					this.props.midSection !== 'replay' && (
+						<LeftSidebar
+							userInfo={this.props.userInfo}
+							midSection={this.props.midSection}
+							gameList={this.props.gameList}
+							onCreateGameButtonClick={this.handleRoute}
+							onGameClick={this.handleGameClick}
+							socket={socket}
+						/>
+					)}
 				<Main
 					userInfo={this.props.userInfo}
 					midSection={this.props.midSection}

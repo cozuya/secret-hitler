@@ -9,6 +9,7 @@ const mongoose = require('mongoose'),
 		},
 		password: String,
 		gameSettings: {
+			isRainbow: Boolean,
 			newReport: Boolean,
 			customCardback: String,
 			customCardbackSaveTime: String,
