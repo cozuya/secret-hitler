@@ -31,7 +31,9 @@ class Playerlist extends React.Component {
 	}
 
 	clickInfoIcon() {
-		$('.playerlistinfo').modal('setting', 'transition', 'scale').modal('show');
+		$('.playerlistinfo')
+			.modal('setting', 'transition', 'scale')
+			.modal('show');
 	}
 
 	routeToGame(gameId) {
@@ -130,17 +132,12 @@ class Playerlist extends React.Component {
 							Contribute code to this open source project to be endlessly pestered about why you're orange.
 						</p>
 					</div>
-					{(() => {
-						if (Object.keys(this.props.userList).length) {
-							return (
-								<span>
-									<span>
-										{this.props.userList.list.length}
-									</span>
-									<i className="large user icon" title="Number of players logged in" />
-								</span>
-							);
-						}
+					{Object.keys(this.props.userList).length && (
+						<span>
+							<span>{this.props.userList.list.length}</span>
+							<i className="large user icon" title="Number of players logged in" />
+						</span>
+					)}
 					})()}
 				</div>
 				<div className="playerlist-body">
@@ -262,7 +259,8 @@ class Playerlist extends React.Component {
 														if (MODERATORS.includes(user.userName)) {
 															return (
 																<span className="moderator-name" title="This user is a moderator">
-																	{' '}(M)
+																	{' '}
+																	(M)
 																</span>
 															);
 														}
@@ -270,7 +268,8 @@ class Playerlist extends React.Component {
 														if (EDITORS.includes(user.userName)) {
 															return (
 																<span className="editor-name" title="This user is an editor">
-																	{' '}(E)
+																	{' '}
+																	(E)
 																</span>
 															);
 														}

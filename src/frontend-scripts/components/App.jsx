@@ -4,7 +4,16 @@ import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
 import RightSidebar from './section-right/RightSidebar.jsx';
 import Gamenotes from './Gamenotes.jsx';
-import { updateUser, updateMidsection, updateGameList, updateGameInfo, updateUserList, updateGeneralChats, updateVersion } from '../actions/actions.js';
+import {
+	updateUser,
+	updateMidsection,
+	updateGameList,
+	updateGameInfo,
+	updateUserList,
+	updateGeneralChats,
+	updateVersion,
+	fetchProfile
+} from '../actions/actions.js';
 import socket from '../socket';
 import PropTypes from 'prop-types';
 
@@ -128,7 +137,9 @@ export class App extends React.Component {
 			{ gameState } = gameInfo,
 			isAuthed = Boolean(document.getElementById('game-container').classList.length);
 
-		if (
+		if (hash.substr(0, 10) === '#/profile/') {
+			dispatch(fetchProfile(hash.split('#/profile/')[1]));
+		} else if (
 			hash === '#/settings' &&
 			((gameState && ((gameState.isCompleted && userInfo.seatNumber) || !userInfo.isSeated || !gameState.isStarted)) || (!gameState && isAuthed))
 		) {
@@ -224,6 +235,8 @@ export class App extends React.Component {
 			userInfo.isSeated = false;
 			dispatch(updateUser(userInfo));
 		}
+
+		console.log('Hello, World!');
 
 		socket.emit('leaveGame', {
 			userName: userInfo.userName,

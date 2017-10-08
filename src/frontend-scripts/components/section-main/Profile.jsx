@@ -6,8 +6,7 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 const mapStateToProps = ({ profile }) => ({ profile }),
 	mapDispatchToProps = dispatch => ({
 		updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
-		fetchReplay: gameId => dispatch(fetchReplay(gameId)),
-		exit: () => dispatch(updateMidsection('default'))
+		fetchReplay: gameId => dispatch(fetchReplay(gameId))
 	}),
 	formatDateString = dateString => {
 		const date = new Date(dateString);
@@ -16,7 +15,7 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 	},
 	successRate = (trials, outcomes) => (trials > 0 ? parseFloat((outcomes / trials * 100).toFixed(2)) + '%' : '---'),
 	successRow = (name, trials, outcomes) => [name, trials, successRate(trials, outcomes)],
-	Matches = ({ matches }) =>
+	Matches = ({ matches }) => (
 		<div>
 			<Table
 				uiTable="top attached three column"
@@ -31,15 +30,17 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 					successRow('Fascist', matches.fascist.events, matches.fascist.successes)
 				]}
 			/>
-		</div>,
-	Actions = ({ actions }) =>
+		</div>
+	),
+	Actions = ({ actions }) => (
 		<Table
 			headers={['Action', 'Instances', 'Success Rate']}
 			rows={[
 				successRow('Vote Accuracy', actions.voteAccuracy.events, actions.voteAccuracy.successes),
 				successRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
 			]}
-		/>,
+		/>
+	),
 	Stats = ({ stats, activeStat, updateActiveStats }) => {
 		const table = (() => {
 				switch (activeStat) {
@@ -67,9 +68,7 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 						Actions
 					</a>
 				</div>
-				<div className="ui bottom attached segment">
-					{table}
-				</div>
+				<div className="ui bottom attached segment">{table}</div>
 			</div>
 		);
 	},
@@ -86,28 +85,27 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 			</div>
 		);
 	},
-	Profile = ({ profile, fetchReplay, updateActiveStats }) =>
+	Profile = ({ profile, fetchReplay, updateActiveStats }) => (
 		<div>
-			{profile.customCardback &&
+			{profile.customCardback && (
 				<div
 					className="profile-picture"
 					style={{
-						background: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random().toString(36).substring(2)})`
+						background: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random()
+							.toString(36)
+							.substring(2)})`
 					}}
-				/>}
+				/>
+			)}
 			<div className="ui grid">
-				<h1 className="ui header ten wide column">
-					{profile._id}
-				</h1>
+				<h1 className="ui header ten wide column">{profile._id}</h1>
 				<div className="ui right aligned five wide column">
 					<span>
 						<strong>
 							<em>Created: </em>
 						</strong>
 					</span>
-					<span>
-						{formatDateString(profile.created)}
-					</span>
+					<span>{formatDateString(profile.created)}</span>
 				</div>
 			</div>
 			<div className="ui two column grid">
@@ -118,16 +116,19 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 					<RecentGames fetchReplay={fetchReplay} recentGames={profile.recentGames} />
 				</div>
 			</div>
-		</div>,
-	Loading = () =>
+		</div>
+	),
+	Loading = () => (
 		<div className="ui active dimmer">
 			<div className="ui huge text loader">Loading</div>
-		</div>,
-	NotFound = () =>
+		</div>
+	),
+	NotFound = () => (
 		<h1 className="not-found ui icon center aligned header">
 			<i className="settings icon" />
 			<div className="content">Profile not found</div>
-		</h1>,
+		</h1>
+	),
 	ProfileWrapper = ({ profile, fetchReplay, updateActiveStats, exit }) => {
 		const children = (() => {
 			switch (profile.status) {
@@ -143,7 +144,9 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 
 		return (
 			<section id="profile" className="ui segment">
-				<i className="remove icon" onClick={exit} />
+				<a href="/game/#/">
+					<i className="remove icon" />
+				</a>
 				{children}
 			</section>
 		);
