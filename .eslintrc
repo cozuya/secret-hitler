@@ -1,7 +1,6 @@
 {
 	"extends": ["google"],
 	"rules": {
-		"indent": ["error", "tab", { "SwitchCase": 1 }],
 		"linebreak-style": "off",
 		"eol-last": "off",
 		"max-len": "off",
@@ -12,6 +11,7 @@
 		"no-nested-ternary": "off",
 		"no-mixed-requires": "off",
 		"no-negated-condition": "off",
+		"no-tabs": "off",
 		"camelcase": "off",
 		"new-cap": "off",
 		"quote-props": "off",
