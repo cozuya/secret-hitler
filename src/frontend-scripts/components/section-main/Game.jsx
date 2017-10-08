@@ -59,7 +59,7 @@ export default class Game extends React.Component {
 							})()}
 						>
 							<section className="gamestatus">
-								{this.props.gameInfo.general && this.props.gameInfo.general.status}
+								{this.props.gameInfo.general.status}
 							</section>
 							<Gamechat
 								userList={this.props.userList}
