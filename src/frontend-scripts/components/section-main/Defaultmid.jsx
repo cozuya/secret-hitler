@@ -1,30 +1,24 @@
 import React from 'react'; // eslint-disable-line
 import { connect } from 'react-redux';
-import { updateMidsection, viewPatchNotes } from '../../actions/actions';
+import { viewPatchNotes } from '../../actions/actions';
 import fetch from 'isomorphic-fetch';
 import PropTypes from 'prop-types';
 
-const mapStateToProps = ({ version }) => ({ version });
+const mapStateToProps = ({ version, userInfo }) => ({ version, userInfo });
 
 const mapDispatchToProps = dispatch => ({
 	readPatchNotes: () => {
-		dispatch(updateMidsection('changelog'));
 		dispatch(viewPatchNotes());
 		fetch('/viewPatchNotes', {
 			credentials: 'same-origin'
 		});
+		window.location.hash = '#/changelog';
 	}
 });
 
-const PatchAlert = ({ isActive, onClick }) => {
-	if (isActive) {
-		return <div className="patch-alert" onClick={onClick} />;
-	} else {
-		return null;
-	}
-};
+const PatchAlert = ({ isActive, onClick }) => (isActive ? <div className="patch-alert" onClick={onClick} /> : null);
 
-const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
+const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 	<section className="defaultmid">
 		<div className="poll">
 			<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki/Emotes">
@@ -114,7 +108,8 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault }) =>
 		<button style={{ padding: '5px', width: '80px' }} data-name="hhh" className="loginquick">
 			hhh
 		</button>
-	</section>;
+	</section>
+);
 
 Defaultmid.propTypes = {
 	quickDefault: PropTypes.func

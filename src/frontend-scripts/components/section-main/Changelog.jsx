@@ -1,14 +1,11 @@
 import React from 'react'; // eslint-disable-line
 import PropTypes from 'prop-types';
 
-const Changelog = props =>
+const Changelog = props => (
 	<section className="changelog">
-		<i
-			className="remove icon"
-			onClick={() => {
-				props.onLeaveChangelog('default');
-			}}
-		/>
+		<a href="#/">
+			<i className="remove icon" />
+		</a>
 		<div className="ui header">
 			<h2>Changelog</h2>
 		</div>
@@ -348,7 +345,8 @@ const Changelog = props =>
 			where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls. This isn't all that hard and will be coming soon,
 			and hopefully guarantee a better playing experience for everyone. Please check the github issue if you are interested in helping out.
 		</p>
-	</section>;
+	</section>
+);
 
 Changelog.propTypes = {
 	onLeaveChangelog: PropTypes.func

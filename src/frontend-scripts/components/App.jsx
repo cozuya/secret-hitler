@@ -14,6 +14,7 @@ import {
 	updateVersion,
 	fetchProfile
 } from '../actions/actions.js';
+import { MODERATORS, ADMINS, EDITORS } from '../constants';
 import socket from '../socket';
 import PropTypes from 'prop-types';
 
@@ -139,6 +140,20 @@ export class App extends React.Component {
 
 		if (hash.substr(0, 10) === '#/profile/') {
 			dispatch(fetchProfile(hash.split('#/profile/')[1]));
+		} else if (hash === '#/changelog') {
+			dispatch(updateMidsection('changelog'));
+		} else if (
+			hash === '#/moderation' &&
+			userInfo.userName &&
+			(MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
+		) {
+			dispatch(updateMidsection('moderation'));
+		} else if (
+			hash === '#/playerreports' &&
+			userInfo.userName &&
+			(MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
+		) {
+			dispatch(updateMidsection('reports'));
 		} else if (
 			hash === '#/settings' &&
 			((gameState && ((gameState.isCompleted && userInfo.seatNumber) || !userInfo.isSeated || !gameState.isStarted)) || (!gameState && isAuthed))
@@ -268,16 +283,16 @@ export class App extends React.Component {
 			>
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 				{this.props.midSection !== 'game' &&
-					this.props.midSection !== 'replay' && (
-						<LeftSidebar
-							userInfo={this.props.userInfo}
-							midSection={this.props.midSection}
-							gameList={this.props.gameList}
-							onCreateGameButtonClick={this.handleRoute}
-							onGameClick={this.handleGameClick}
-							socket={socket}
-						/>
-					)}
+				this.props.midSection !== 'replay' && (
+					<LeftSidebar
+						userInfo={this.props.userInfo}
+						midSection={this.props.midSection}
+						gameList={this.props.gameList}
+						onCreateGameButtonClick={this.handleRoute}
+						onGameClick={this.handleGameClick}
+						socket={socket}
+					/>
+				)}
 				<Main
 					userInfo={this.props.userInfo}
 					midSection={this.props.midSection}

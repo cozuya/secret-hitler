@@ -147,8 +147,7 @@ module.exports = () => {
 
 	app.get('/viewPatchNotes', ensureAuthenticated, (req, res) => {
 		Account.updateOne({ username: req.user.username }, { lastVersionSeen: version.number }, err => {
-			if (err) res.sendStatus(404);
-			else res.sendStatus(200);
+			res.sendStatus(err ? 404 : 202);
 		});
 	});
 
@@ -184,7 +183,9 @@ module.exports = () => {
 					fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
 						account.gameSettings.customCardback = extension;
 						account.gameSettings.customCardbackSaveTime = now.toString();
-						account.gameSettings.customCardbackUid = Math.random().toString(36).substring(2);
+						account.gameSettings.customCardbackUid = Math.random()
+							.toString(36)
+							.substring(2);
 						account.save(() => {
 							res.json({ message: 'Cardback successfully uploaded.' });
 							io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);

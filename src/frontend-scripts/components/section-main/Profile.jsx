@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { updateActiveStats, updateMidsection, fetchReplay } from '../../actions/actions';
+import { updateActiveStats, fetchReplay } from '../../actions/actions';
 import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 
@@ -144,7 +144,7 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 
 		return (
 			<section id="profile" className="ui segment">
-				<a href="/game/#/">
+				<a href="#/">
 					<i className="remove icon" />
 				</a>
 				{children}

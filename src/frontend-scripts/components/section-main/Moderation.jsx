@@ -316,9 +316,11 @@ export default class Moderation extends React.Component {
 					className={
 						(selectedUser || playerInputText) &&
 						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName)) ? (
+							'ui button ipban-button'
+						) : (
+							'ui button disabled ipban-button'
+						)
 					}
 					onClick={() => {
 						takeModAction('ipban');
@@ -330,9 +332,11 @@ export default class Moderation extends React.Component {
 					className={
 						(selectedUser || playerInputText) &&
 						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName)) ? (
+							'ui button ipban-button'
+						) : (
+							'ui button disabled ipban-button'
+						)
 					}
 					onClick={() => {
 						takeModAction('ipbanlarge');
@@ -354,9 +358,11 @@ export default class Moderation extends React.Component {
 					className={
 						(selectedUser || playerInputText) &&
 						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName)) ? (
+							'ui button ipban-button'
+						) : (
+							'ui button disabled ipban-button'
+						)
 					}
 					onClick={() => {
 						takeModAction('deleteProfile');
@@ -367,9 +373,11 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'black' }}
 					className={
-						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName)) ? (
+							'ui button ipban-button'
+						) : (
+							'ui button disabled ipban-button'
+						)
 					}
 					onClick={() => {
 						takeModAction('resetServer');
@@ -458,7 +466,9 @@ export default class Moderation extends React.Component {
 				<a className="broadcast" href="#" onClick={this.broadcastClick}>
 					Broadcast
 				</a>
-				<i className="remove icon" onClick={this.leaveModeration} />
+				<a href="#/">
+					<i className="remove icon" />
+				</a>
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
 					show/hide playerlist
 				</span>
