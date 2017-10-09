@@ -6,6 +6,13 @@
 		display: block;
 		padding: 12px 15px;
 	}
+	.ui.header {
+		margin: 0;
+	}
+	.ui.divider {
+		padding: 0;
+		margin: 0;
+	}
 	.vertical.segment {
 		cursor: pointer;
 		border: 1px solid #000;
@@ -14,7 +21,7 @@
 		color: #ddd;
 		background: #1e1414;
 		&:hover {
-			border: 1px solid red;
+			border: 1px solid rgb(49, 16, 16);
 		}
 		.private-game {
 			position: absolute;
@@ -99,7 +106,7 @@
 		}
 	}
 	.games-container {
-		padding: 5px 10px 0 15px;
+		padding: 5px 0 15px;
 		height: 550px;
 		overflow-y: auto;
 	}

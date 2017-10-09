@@ -56,17 +56,17 @@ const LeftSidebar = props => {
 				const { userName } = props.userInfo,
 					gameBeingCreated = props.midSection === 'createGame';
 
-				return userName && !gameBeingCreated
-					? <a className="ui button primary" href="#/creategame">
-							Create a new game
-						</a>
-					: <button className="ui button disabled">
-							{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}
-						</button>;
+				return userName && !gameBeingCreated ? (
+					<a className="ui button primary" href="#/creategame">
+						Create a new game
+					</a>
+				) : (
+					<button className="ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Sign in to make games'}</button>
+				);
 			})()}
 			<div className="games-container">
 				<div className="ui divider" />
-				<h3 className="ui header centered">Games</h3>
+				<h3 className="ui header centered hoz-gradient">Games</h3>
 				<div className="ui divider" />
 				{renderGameList()}
 			</div>

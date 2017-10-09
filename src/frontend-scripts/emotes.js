@@ -59,10 +59,10 @@ export function processEmotes(input) {
 	message.forEach((word, index) => {
 		if (allEmotes.includes(word)) {
 			formatedMsg.push(<img src={`images/emotes/${word}.png`} key={index} />);
-		} else if (/^https:\/\/secrethitler.io\/game\/\#\//.test(word)) {
-			const hash = word.split('https://secrethitler.io/game/')[1];
-			// } else if (/^http:\/\/localhost:8080\/game\/\#\//.test(word)) {
-			// 	const hash = word.split('http://localhost:8080/game/')[1];
+		} else if (/^https:\/\/secrethitler.io/.test(word)) {
+			const hash = word.split('https://secrethitler.io')[1];
+			// } else if (/^http:\/\/localhost:8080/.test(word)) {
+			// 	const hash = word.split('http://localhost:8080')[1];
 
 			formatedMsg.push(
 				<a key={index} href={hash}>

@@ -19,12 +19,13 @@ const Changelog = props => (
 		<p>
 			What this means is the URL of your browser now accurately shows the state of the application. The big takeaway is games, replays, and profiles are now all
 			linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you would
-			expect as well. In addition, links to sh.io itself are now clickable in general chat (non sh.io links are still not). This required a large tweak to the
-			front end and may not be perfect, please update if so. One positive is that if you have a custom width or font, the game no longer "flashes" when you load
-			the page.
+			expect as well. This required a large change to the front end and may not be perfect, please update if so.
 		</p>
 		<ul>
+			<li>Overall UI has been tweaked color wise mostly.</li>
+			<li>Links to sh.io itself in general chat are now clickable (non sh.io links are still not).</li>
 			<li>The whitelist feature now correctly has a scroll bar.</li>
+			<li>If you have a custom width or font, the game no longer "flashes" when you load the page.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.8.2 "blue steel" released 9-30-2017</p>
