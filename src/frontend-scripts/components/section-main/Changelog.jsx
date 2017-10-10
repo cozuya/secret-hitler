@@ -22,7 +22,10 @@ const Changelog = props => (
 			expect as well. This required a large change to the front end and may not be perfect, please update if so.
 		</p>
 		<ul>
-			<li>Overall UI has been tweaked color wise mostly.</li>
+			<li>
+				Overall UI has been tweaked color wise mostly. If you've been playing here at all in the past year (yikes), you'd know I am not at all a designer, but I
+				can at least attempt to make things more fluid and contiguous. If you ARE a designer (and want to work for free..), let me know.
+			</li>
 			<li>Links to sh.io itself in general chat are now clickable (non sh.io links are still not).</li>
 			<li>The whitelist feature now correctly has a scroll bar.</li>
 			<li>If you have a custom width or font, the game no longer "flashes" when you load the page.</li>

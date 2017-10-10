@@ -66,8 +66,8 @@ html {
 		}
 	}
 
-	+ .segment {
-		border: 1px solid #5e5e5e;
+	+ .ui.segment {
+		border: none;
 	}
 }
 
@@ -92,7 +92,10 @@ span.emphasis {
 }
 
 #top-menu {
-	background: #141210;
+	background: #000000;
+	background: -moz-linear-gradient(left, #000000 0%, #100000 50%, #000000 100%);
+	background: -webkit-linear-gradient(left, #000000 0%, #100000 50%, #000000 100%);
+	background: linear-gradient(to right, #000000 0%, #100000 50%, #000000 100%);
 
 	.left.menu .button {
 		color: #fff;
@@ -129,7 +132,7 @@ span.emphasis {
 }
 
 .ui.grid.mainpage {
-	background: #3f2725;
+	background: #030000;
 	color: #ddd;
 	padding: 10px;
 
@@ -147,11 +150,10 @@ span.emphasis {
 }
 
 #general-info {
-	border: 1px solid #333;
-
+	border: none;
 	.news {
-		border: 1px solid #aaa;
-		background: #dcb469;
+		padding-top: 10px;
+		background: #d9c091;
 		border-radius: 5px;
 		color: #222;
 	}
@@ -170,7 +172,7 @@ span.emphasis {
 .ui.container.rules-container {
 	margin: 50px 0 0 0;
 	padding: 10px 0;
-	background: #222;
+	background: #030000;
 	color: #ccc;
 
 	.understated {
@@ -217,7 +219,7 @@ span.emphasis {
 .ui.container.howtoplay-container {
 	margin: 50px 0 0 0;
 	padding: 10px 0;
-	background: #222;
+	background: #030000;
 	color: #eee;
 
 	img {
@@ -264,7 +266,7 @@ span.emphasis {
 .about-container {
 	margin: 50px 0 0 0;
 	padding: 10px 0;
-	background: #222;
+	background: #030000;
 	color: #eee;
 
 	h1,
@@ -282,7 +284,7 @@ span.emphasis {
 .player-profiles-container {
 	margin: 50px 0 0 0;
 	padding: 30px 0;
-	background: #222;
+	background: #030000;
 	color: #eee;
 
 	h1,

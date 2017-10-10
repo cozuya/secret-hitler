@@ -138,7 +138,7 @@ export class App extends React.Component {
 			{ gameState } = gameInfo,
 			isAuthed = Boolean(document.getElementById('game-container').classList.length);
 
-		if (hash.substr(0, 10) === '#/profile/') {
+		if (hash.substr(0, 10) === '#/profile/' && !ADMINS.includes(hash.split('#/profile/')[1])) {
 			dispatch(fetchProfile(hash.split('#/profile/')[1]));
 		} else if (hash === '#/changelog') {
 			dispatch(updateMidsection('changelog'));
@@ -283,16 +283,16 @@ export class App extends React.Component {
 			>
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 				{this.props.midSection !== 'game' &&
-				this.props.midSection !== 'replay' && (
-					<LeftSidebar
-						userInfo={this.props.userInfo}
-						midSection={this.props.midSection}
-						gameList={this.props.gameList}
-						onCreateGameButtonClick={this.handleRoute}
-						onGameClick={this.handleGameClick}
-						socket={socket}
-					/>
-				)}
+					this.props.midSection !== 'replay' && (
+						<LeftSidebar
+							userInfo={this.props.userInfo}
+							midSection={this.props.midSection}
+							gameList={this.props.gameList}
+							onCreateGameButtonClick={this.handleRoute}
+							onGameClick={this.handleGameClick}
+							socket={socket}
+						/>
+					)}
 				<Main
 					userInfo={this.props.userInfo}
 					midSection={this.props.midSection}

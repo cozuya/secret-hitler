@@ -1,29 +1,30 @@
 extends layout
 block content
-	a(href="https://github.com/cozuya/secret-hitler")
-		img(style="position: absolute; top: 44px; left: 0; border: 0;", src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67", alt="Fork me on GitHub", data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png")
-	.ui.container.about-container
+	.ui.container.about-container(style="position: relative")
 		.ui.text.container
-			h1.ui.centered.header About Secret Hitler
+			a(href="https://github.com/cozuya/secret-hitler")
+			img(style="position: absolute; top: 0px; left: 0; border: 0;", src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67", alt="Fork me on GitHub", data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png")
+			h1.ui.centered.header About Secret Hitler IO
 			p You can contact the team at secrethitlerio at gmail dot com.
 			p Application designed and developed from the original board game by #[a(href="http://www.TwoLongOs.com") Chris Ozols].  Due to a fairly complicated UI and text-driven gameplay this application is not mobile-optimized, but should work OK on mobile devices in theory.  Source code available at #[a(href="//github.com/cozuya/secret-hitler") github].  Bugs/issues?  Contact us via email, discord channel, or #[a(href="https://github.com/cozuya/secret-hitler/issues") open a github issue].
-			h3.ui.header Front end
-			p React, Redux, Sass, SemanticUI, jQuery, SocketIO.
-			h3.ui.header Back end
-			p NodeJS v6, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
-			h3.ui.header Build
-			p Gulp, Browserify, Babel (front end).
-			h3.ui.header Privacy Policy
-			p We securely store your encrypted password that is not accessible by anyone including admins.  Your user name or any chats you've made is not publicly accessible and not indexed by search engines.
 			h3.ui.header#TOU Terms of Use (general)
 			p Don't cheat.  Don't be a jerk/excessive abusive chat.  Don't collude.  Don't try to turn away newbies from your games.  Don't attempt to circumvent things like not being able to select text from the gamechat or screenshotting/uploading your role.  No TOR users - if you have a legitimate issue where you need to use TOR, contact the moderators.  No homophobic/racist/sexist/nazi/hate speech/anti-semitic stuff.  Public game chat must be in a language that all players know.  Play to win for the team you're dealt.  Be a good loser and a gracious winner.  Have fun!
 			h3.ui.header Terms of Use (player uploaded cardbacks)
 			p Everything in the general terms of use, plus: no pornography or anything nsfw, no nazi imagery whatsoever including images of historical figures (very slight exemptions for parody may be OK on a case-by-case basis - no swastikas), no images/screenshots of the game itself to attempt to trick people (no matter how amusing it is..).
 			h3.ui.header Terms of Use (IP addresses)
 			p Moderators and admins have access to see your IP address on a private moderation panel.  This is used solely to guard against cheating and is never publically available.
+			h3.ui.header Privacy Policy
+			p We securely store your encrypted password that is not accessible by anyone including admins.  Your user name or any chats you've made is not publicly accessible and not indexed by search engines.
 			h3.ui.header Attribution
 			p Secret Hitler is designed by Max Temkin (Cards Against Humanity, Humans vs. Zombies) Mike Boxleiter (Solipskier, TouchTone), Tommy Maranges (Philosophy Bro) and illustrated by Mackenzie Schubert (Letter Tycoon, Penny Press).
 			p This game is attributed as per the #[a(href="//creativecommons.org/licenses/by-nc-sa/4.0/") Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International] license.
+			h3.ui.header Built with:
+				h4.ui.header(style="margin-left: 20px;") Front end
+				p(style="margin-left: 20px;") React, Redux, Sass, SemanticUI, jQuery, SocketIO.
+				h4.ui.header(style="margin-left: 20px;") Back end
+				p(style="margin-left: 20px;") NodeJS LTS, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
+				h4.ui.header(style="margin-left: 20px;") Build
+				p(style="margin-left: 20px;") Gulp, Browserify, Babel (front end).
 			h3.ui.header Alterations to the original game
 			ul
 				li Minor image alterations and editing.

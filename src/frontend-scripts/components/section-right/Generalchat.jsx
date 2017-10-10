@@ -3,6 +3,7 @@ import classnames from 'classnames';
 import { MODERATORS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
 import { processEmotes } from '../../emotes';
+import moment from 'moment';
 
 export default class Generalchat extends React.Component {
 	constructor() {
@@ -75,8 +76,10 @@ export default class Generalchat extends React.Component {
 				'chat-user'
 			);
 
+			console.log(chat);
+
 			return (
-				<div className="item" key={i}>
+				<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
 					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
 						{chat.userName}
 						{(() => {
@@ -90,9 +93,7 @@ export default class Generalchat extends React.Component {
 						})()}
 						{chat.userName && ':'}{' '}
 					</span>
-					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>
-						{processEmotes(chat.chat)}
-					</span>
+					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
 				</div>
 			);
 		});
