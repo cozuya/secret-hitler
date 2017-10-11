@@ -2,7 +2,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 	{ sendGameList } = require('../user-requests.js'),
 	_ = require('lodash');
 
-const shufflePolicies = (module.exports.shufflePolicies = game => {
+const shufflePolicies = (module.exports.shufflePolicies = (game, is6pStart, is9pStart) => {
 	const count = _.countBy(game.private.policies);
 
 	game.private.policies = game.private.policies.concat(
@@ -12,6 +12,30 @@ const shufflePolicies = (module.exports.shufflePolicies = game => {
 				.concat(_.range(1, 7 - (game.trackState.liberalPolicyCount + (count.liberal || 0))).map(num => 'liberal'))
 		)
 	);
+
+	if (is6pStart) {
+		game.trackState.fascistPolicyCount = 1;
+		game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+		game.trackState.enactedPolicies = [
+			{
+				cardBack: 'fascist',
+				isFlipped: true,
+				position: 'fascist1'
+			}
+		];
+	}
+
+	if (is9pStart) {
+		game.trackState.liberalPolicyCount = 1;
+		game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'liberal'), 1);
+		game.trackState.enactedPolicies = [
+			{
+				cardBack: 'liberal',
+				isFlipped: true,
+				position: 'liberal1'
+			}
+		];
+	}
 
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
 });
