@@ -23,7 +23,8 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 					role: player.role.cardName
 				})),
 				winningTeam: game.gameState.isCompleted,
-				playerCount: game.general.playerCount
+				playerCount: game.general.playerCount,
+				rebalance69p: game.general.rebalance69p
 			});
 
 		debug('Saving game: %O', summary);

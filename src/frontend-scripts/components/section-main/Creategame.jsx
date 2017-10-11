@@ -1,6 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-import Slider, { Range } from 'rc-slider';
+import { Range } from 'rc-slider';
 import Checkbox from 'semantic-ui-checkbox';
 import blacklistedWords from '../../../../iso/blacklistwords';
 import PropTypes from 'prop-types';
@@ -20,6 +20,7 @@ export default class Creategame extends React.Component {
 			privateShowing: false,
 			containsBadWord: false,
 			rainbowgame: false,
+			rebalance69p: true,
 			checkedSliderValues: new Array(6).fill(true),
 			isTourny: false
 		};
@@ -81,17 +82,19 @@ export default class Creategame extends React.Component {
 				self.setState({ isTourny: false });
 			}
 		});
+
+		$(this.rebalance69p).checkbox({
+			onChecked() {
+				self.setState({ rebalance69p: true });
+			},
+			onUnchecked() {
+				self.setState({ rebalance69p: false });
+			}
+		});
 	}
 
 	sliderChange(sliderValues) {
 		const { checkedSliderValues } = this.state;
-		// todo make this uncheck boxes instead of just check
-		// event.forEach(el => {
-		// 	if (!this.state.checkedSliderValues[el - 5]) {
-		// 		newState.checkedSliderValues = this.state.checkedSliderValues;
-		// 		newState.checkedSliderValues[el - 5] = true;
-		// 	}
-		// });
 
 		this.setState({
 			sliderValues,
@@ -148,6 +151,7 @@ export default class Creategame extends React.Component {
 					disableChat: this.state.disablechat,
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
+					rebalance69p: this.state.rebalance69p,
 					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 					electionCount: 0
 				},
@@ -203,11 +207,7 @@ export default class Creategame extends React.Component {
 							<div className="ui input">
 								<input maxLength="20" placeholder="New Game" />
 							</div>
-							{(() => {
-								if (this.state.containsBadWord) {
-									return <p className="contains-bad-word">This game name has a banned word or word fragment.</p>;
-								}
-							})()}
+							{this.state.containsBadWord && <p className="contains-bad-word">This game name has a banned word or word fragment.</p>}
 						</div>
 						<div className="eight wide column slider">
 							<h4 className="ui header">Number of players</h4>
@@ -301,6 +301,19 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 					<div className="row tournyrow" />
+				</div>
+				<div className="row">
+					<div className="four wide column rebalance69p">
+						<h4 className="ui header">Rebalance 6 & 9 player games - they have a policy card enacted on start.</h4>
+						<div
+							className="ui fitted toggle checkbox"
+							ref={c => {
+								this.rebalance69p = c;
+							}}
+						>
+							<input type="checkbox" name="rebalance69p" defaultChecked={true} />
+						</div>
+					</div>
 				</div>
 				<div className="ui grid footer">
 					<div onClick={this.createNewGame} className="ui button primary" style={{ marginLeft: '15px' }}>
