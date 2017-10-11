@@ -26,20 +26,6 @@ module.exports = () => {
 
 		res.render(pageName, renderObj);
 	};
-	// }
-	// ,  // going to rethink this idea.
-	// decrementKarma = () => {
-	// 	Account.find({karmaCount: {$gt: 0}})
-	// 		.then((err, accounts) => {
-	// 			if (err) {
-	// 				console.log(err, 'decrementKarma err');
-	// 			}
-	// 			accounts.map(account => {
-	// 				account.karmaCount = account.karmaCount - 1;
-	// 				return account;
-	// 			});
-	// 			accounts.save();
-	// 		});
 
 	accounts();
 	socketRoutes();
