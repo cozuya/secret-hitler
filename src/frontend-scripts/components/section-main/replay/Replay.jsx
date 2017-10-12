@@ -14,8 +14,7 @@ import TrackPieces from './TrackPieces.jsx';
 
 const mapStateToProps = ({ replay, userInfo }) => ({
 	replay,
-	isSmall:
-		userInfo.gameSettings && userInfo.gameSettings.enableRightSidebarInGame
+	isSmall: userInfo.gameSettings && userInfo.gameSettings.enableRightSidebarInGame
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -36,9 +35,7 @@ const buildPlayback = (replay, to) => {
 	const findTickPos = (turnNum, _phases) => {
 		const phases = List.isList(_phases) ? _phases : List([_phases]);
 
-		const i = ticks.findLastIndex(
-			t => t.turnNum === turnNum && phases.includes(t.phase)
-		);
+		const i = ticks.findLastIndex(t => t.turnNum === turnNum && phases.includes(t.phase));
 
 		return i > -1 ? some(i) : none;
 	};
@@ -90,18 +87,9 @@ const buildPlayback = (replay, to) => {
 		};
 	})();
 
-	const {
-		hasLegislation,
-		hasAction,
-		toElection,
-		toLegislation,
-		toAction
-	} = (() => {
+	const { hasLegislation, hasAction, toElection, toLegislation, toAction } = (() => {
 		const rotate = (cycles, fallback) => {
-			return findTickPos(
-				turnNum,
-				fromNullable(cycles.get(phase)).valueOrElse(fallback)
-			);
+			return findTickPos(turnNum, fromNullable(cycles.get(phase)).valueOrElse(fallback));
 		};
 
 		const electionPos = rotate(
@@ -124,10 +112,7 @@ const buildPlayback = (replay, to) => {
 			List(['presidentLegislation', 'topDeck'])
 		);
 
-		const actionPos = findTickPos(
-			turnNum,
-			List(['investigation', 'policyPeek', 'specialElection', 'execution'])
-		);
+		const actionPos = findTickPos(turnNum, List(['investigation', 'policyPeek', 'specialElection', 'execution']));
 
 		return {
 			hasLegislation: legislationPos.isSome(),
@@ -138,8 +123,7 @@ const buildPlayback = (replay, to) => {
 		};
 	})();
 
-	const toTurn = targetTurn =>
-		to(findTickPos(targetTurn, 'candidacy').valueOrElse(position));
+	const toTurn = targetTurn => to(findTickPos(targetTurn, 'candidacy').valueOrElse(position));
 
 	return {
 		hasNext,
@@ -176,61 +160,49 @@ const Replay = ({ replay, isSmall, to }) => {
 			<div className="ui grid">
 				<div className="left-side eight wide column">
 					<ReplayOverlay snapshot={snapshot} />
-					<TrackPieces
-						phase={snapshot.phase}
-						track={snapshot.track}
-						electionTracker={snapshot.electionTracker}
-					/>
+					<TrackPieces phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
 					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
 				</div>
 				<div className="right-side eight wide column">
-					<ReplayControls
-						turnsSize={ticks.last().turnNum + 1}
-						turnNum={snapshot.turnNum}
-						phase={phase}
-						description={description}
-						playback={playback}
-					/>
+					<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
 				</div>
 			</div>
 			<div className="row players-container">
-				<Players
-					userList={{}}
-					onClickedTakeSeat={null}
-					socket={null}
-					userInfo={userInfo}
-					gameInfo={gameInfo}
-				/>
+				<Players userList={{}} onClickedTakeSeat={null} socket={null} userInfo={userInfo} gameInfo={gameInfo} />
 			</div>
 		</section>
 	);
 };
 
 const ReplayWrapper = ({ replay, isSmall, to, exit }) => {
-	const children = (() => {
-		switch (replay.status) {
-			case 'INITIAL':
-			case 'LOADING':
-				return (
-					<div className="ui active dimmer">
-						<div className="ui huge text loader">Loading</div>
-					</div>
-				);
-			case 'NOT_FOUND':
-				return (
-					<h1 className="not-found ui icon center aligned header">
-						<i className="settings icon" />
-						<div className="content">Replay not found</div>
-					</h1>
-				);
-			case 'READY':
-				return <Replay replay={replay} isSmall={isSmall} to={to} />;
-		}
-	})();
+	const toExit = () => {
+			window.location.hash = '#/';
+			exit();
+		},
+		children = (() => {
+			switch (replay.status) {
+				case 'INITIAL':
+				case 'LOADING':
+					return (
+						<div className="ui active dimmer">
+							<div className="ui huge text loader">Loading</div>
+						</div>
+					);
+				case 'NOT_FOUND':
+					return (
+						<h1 className="not-found ui icon center aligned header">
+							<i className="settings icon" />
+							<div className="content">Replay not found</div>
+						</h1>
+					);
+				case 'READY':
+					return <Replay replay={replay} isSmall={isSmall} to={to} />;
+			}
+		})();
 
 	return (
 		<section id="replay" className="ui segment">
-			<button className="exit ui inverted red button" onClick={exit}>
+			<button className="exit ui inverted red button" onClick={toExit}>
 				<i className="sign out icon" />
 				Exit Replay
 			</button>

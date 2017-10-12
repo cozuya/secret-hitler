@@ -563,7 +563,9 @@ module.exports.handleAddNewClaim = data => {
 	data.timestamp = new Date();
 
 	game.chats.push(data);
-	game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+	if (game.private.seatedPlayers[playerIndex]) {
+		game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+	}
 	sendInProgressGameUpdate(game);
 };
 
