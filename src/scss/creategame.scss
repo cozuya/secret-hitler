@@ -9,7 +9,7 @@
 		position: absolute;
 		font-size: 30px;
 		left: 760px;
-		opacity: .3;
+		opacity: 0.3;
 	}
 
 	.contains-bad-word {
@@ -55,9 +55,15 @@
 	}
 
 	.ui.dropdown {
-		box-shadow: 0 0 0 1px rgba(34, 36, 38, .15) inset;
+		box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.15) inset;
 		padding: 8px 7px 9px 8px;
-		border-radius: .28571429rem;
+		border-radius: 0.28571429rem;
+	}
+
+	.rebalance69p {
+		width: 200px;
+		margin: 0 auto;
+		text-align: center;
 	}
 
 	.checkbox-container {

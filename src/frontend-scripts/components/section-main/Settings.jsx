@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import $ from 'jquery';
-import Slider from 'rc-slider';
+import Slider, { Range } from 'rc-slider';
 import Modal from 'semantic-ui-modal';
 import Checkbox from 'semantic-ui-checkbox';
 import Dropzone from 'react-dropzone';
@@ -18,7 +18,6 @@ const mapDispatchToProps = dispatch => ({
 class Settings extends React.Component {
 	constructor() {
 		super();
-		this.leaveSettings = this.leaveSettings.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
 		this.sliderDrop = this.sliderDrop.bind(this);
 		this.widthSliderChange = this.widthSliderChange.bind(this);
@@ -26,7 +25,9 @@ class Settings extends React.Component {
 		this.profileSearchSubmit = this.profileSearchSubmit.bind(this);
 		this.state = {
 			sliderValues: [8, 28],
-			imageUid: Math.random().toString(36).substring(6),
+			imageUid: Math.random()
+				.toString(36)
+				.substring(6),
 			widthSliderValue: '',
 			preview: '',
 			cardbackUploadStatus: '',
@@ -37,7 +38,8 @@ class Settings extends React.Component {
 	}
 
 	componentDidMount() {
-		const { socket, userInfo } = this.props;
+		const { socket } = this.props,
+			gameSettings = this.props.gameSettings || window.gameSettings;
 
 		$(this.timestamps).checkbox({
 			onChecked() {
@@ -91,11 +93,9 @@ class Settings extends React.Component {
 			}
 		});
 
-		if (userInfo.gameSettings.fontFamily) {
-			this.setState({
-				fontChecked: userInfo.gameSettings.fontFamily
-			});
-		}
+		this.setState({
+			fontChecked: gameSettings.fontFamily
+		});
 	}
 
 	sliderChange(event) {
@@ -117,10 +117,6 @@ class Settings extends React.Component {
 	widthSliderChange(event) {
 		$('#game-container').css('width', event[0] === 1853 ? 'inherit' : `${event[0]}px`);
 		this.setState({ widthSliderValue: `${event[0]}px` });
-	}
-
-	leaveSettings() {
-		this.props.onLeaveSettings('default');
 	}
 
 	profileSearchSubmit(e) {
@@ -253,7 +249,9 @@ class Settings extends React.Component {
 				reader.readAsDataURL(files[0]);
 			},
 			displayCardbackInfoModal = () => {
-				$('.cardbackinfo').modal('setting', 'transition', 'scale').modal('show');
+				$('.cardbackinfo')
+					.modal('setting', 'transition', 'scale')
+					.modal('show');
 			},
 			previewSaveClick = () => {
 				$.ajax({
@@ -280,11 +278,14 @@ class Settings extends React.Component {
 			},
 			handleSearchProfileChange = e => {
 				this.setState({ profileSearchValue: e.currentTarget.value });
-			};
+			},
+			gameSettings = this.props.gameSettings || window.gameSettings;
 
 		return (
 			<section className="settings">
-				<i className="remove icon" onClick={this.leaveSettings} />
+				<a href="/game/#/">
+					<i className="remove icon" />
+				</a>
 				<div className="ui header">
 					<div className="content">
 						Game settings
@@ -322,7 +323,7 @@ class Settings extends React.Component {
 									this.timestamps = c;
 								}}
 							>
-								<input type="checkbox" name="timestamps" defaultChecked={this.props.userInfo.gameSettings.enableTimestamps} />
+								<input type="checkbox" name="timestamps" defaultChecked={gameSettings.enableTimestamps} />
 							</div>
 						</div>
 						<div className="four wide column popups">
@@ -333,7 +334,7 @@ class Settings extends React.Component {
 									this.sidebar = c;
 								}}
 							>
-								<input type="checkbox" name="sidebar" defaultChecked={this.props.userInfo.gameSettings.enableRightSidebarInGame} />
+								<input type="checkbox" name="sidebar" defaultChecked={gameSettings.enableRightSidebarInGame} />
 							</div>
 						</div>
 						<div className="four wide column popups">
@@ -344,7 +345,7 @@ class Settings extends React.Component {
 									this.cardbacks = c;
 								}}
 							>
-								<input type="checkbox" name="cardbacks" defaultChecked={this.props.userInfo.gameSettings.disablePlayerCardbacks} />
+								<input type="checkbox" name="cardbacks" defaultChecked={gameSettings.disablePlayerCardbacks} />
 							</div>
 						</div>
 						<div className="four wide column popups">
@@ -355,7 +356,7 @@ class Settings extends React.Component {
 									this.playercolors = c;
 								}}
 							>
-								<input type="checkbox" name="playercolors" defaultChecked={this.props.userInfo.gameSettings.disablePlayerColorsInChat} />
+								<input type="checkbox" name="playercolors" defaultChecked={gameSettings.disablePlayerColorsInChat} />
 							</div>
 						</div>
 					</div>
@@ -369,13 +370,12 @@ class Settings extends React.Component {
 							>
 								Gamechat font size
 							</h4>
-							<Slider
+							<Range
 								onAfterChange={this.sliderDrop}
 								onChange={this.sliderChange}
 								min={8}
 								max={28}
-								range
-								defaultValue={this.props.userInfo.gameSettings.fontSize ? [this.props.userInfo.gameSettings.fontSize] : [18]}
+								defaultValue={gameSettings.fontSize ? [gameSettings.fontSize] : [18]}
 								marks={{ 8: '8px', 18: '18px', 28: '28px' }}
 							/>
 						</div>
@@ -383,13 +383,12 @@ class Settings extends React.Component {
 					<div className="row centered">
 						<div className="eight wide column slider">
 							<h4 className="ui header">Application width</h4>
-							<Slider
+							<Range
 								onAfterChange={this.widthSliderDrop}
 								onChange={this.widthSliderChange}
 								min={1253}
 								max={1853}
-								range
-								defaultValue={this.props.userInfo.gameSettings.customWidth ? [parseInt(this.props.userInfo.gameSettings.customWidth.split('px')[0])] : [1853]}
+								defaultValue={gameSettings.customWidth ? [parseInt(gameSettings.customWidth.split('px')[0])] : [1853]}
 								marks={{ 1253: 'Minimum', 1853: 'Full screen' }}
 							/>
 						</div>
@@ -410,13 +409,13 @@ class Settings extends React.Component {
 											return <img src={this.state.isUploaded} />;
 										}
 
-										if (this.props.userInfo.gameSettings.customCardback) {
+										if (gameSettings.customCardback) {
 											return (
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${this.props.userInfo.gameSettings
-															.customCardback}?${this.state.imageUid}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${this.state
+															.imageUid}) no-repeat`
 													}}
 												/>
 											);
@@ -461,9 +460,7 @@ class Settings extends React.Component {
 									</p>
 								</div>
 							</div>
-							<div className="centered row cardback-message-container">
-								{this.state.cardbackUploadStatus}
-							</div>
+							<div className="centered row cardback-message-container">{this.state.cardbackUploadStatus}</div>
 						</div>
 					</div>
 				</div>
@@ -473,7 +470,6 @@ class Settings extends React.Component {
 }
 
 Settings.propTypes = {
-	onLeaveSettings: PropTypes.func,
 	userInfo: PropTypes.object,
 	socket: PropTypes.object
 };

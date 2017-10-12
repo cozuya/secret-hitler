@@ -15,7 +15,9 @@ const mongoose = require('mongoose'),
 	},
 	sixPlayerGameData = {
 		fascistWinCount: 0,
-		totalGameCount: 0
+		totalGameCount: 0,
+		rebalancedFascistWinCount: 0,
+		rebalancedTotalGameCount: 0
 	},
 	sevenPlayerGameData = {
 		fascistWinCount: 0,
@@ -27,7 +29,9 @@ const mongoose = require('mongoose'),
 	},
 	ninePlayerGameData = {
 		fascistWinCount: 0,
-		totalGameCount: 0
+		totalGameCount: 0,
+		rebalancedFascistWinCount: 0,
+		rebalancedTotalGameCount: 0
 	},
 	tenPlayerGameData = {
 		fascistWinCount: 0,
@@ -42,7 +46,8 @@ Game.find({})
 	.eachAsync(game => {
 		const playerCount = game.losingPlayers.length + game.winningPlayers.length,
 			fascistsWon = game.winningTeam === 'fascist',
-			gameDate = moment(new Date(game.date)).format('l');
+			gameDate = moment(new Date(game.date)).format('l'),
+			rebalanced = game.rebalance69p && (playerCount === 6 || playerCount === 9);
 
 		if (gameDate === '5/13/2017' || gameDate === moment(new Date()).format('l')) {
 			return;
@@ -56,9 +61,16 @@ Game.find({})
 				}
 				break;
 			case 6:
-				sixPlayerGameData.totalGameCount++;
-				if (fascistsWon) {
-					sixPlayerGameData.fascistWinCount++;
+				if (rebalanced) {
+					if (fascistsWon) {
+						sixPlayerGameData.rebalancedFascistWinCount++;
+					}
+					sixPlayerGameData.rebalancedTotalGameCount++;
+				} else {
+					if (fascistsWon) {
+						sixPlayerGameData.fascistWinCount++;
+					}
+					sixPlayerGameData.totalGameCount++;
 				}
 				break;
 			case 7:
@@ -74,9 +86,16 @@ Game.find({})
 				}
 				break;
 			case 9:
-				ninePlayerGameData.totalGameCount++;
-				if (fascistsWon) {
-					ninePlayerGameData.fascistWinCount++;
+				if (rebalanced) {
+					if (fascistsWon) {
+						ninePlayerGameData.rebalancedFascistWinCount++;
+					}
+					ninePlayerGameData.rebalancedTotalGameCount++;
+				} else {
+					if (fascistsWon) {
+						ninePlayerGameData.fascistWinCount++;
+					}
+					ninePlayerGameData.totalGameCount++;
 				}
 				break;
 			case 10:
@@ -112,7 +131,6 @@ Game.find({})
 		data.eightPlayerGameData = eightPlayerGameData;
 		data.ninePlayerGameData = ninePlayerGameData;
 		data.tenPlayerGameData = tenPlayerGameData;
-
 		fs.writeFile('data/data.json', JSON.stringify(data), () => {
 			mongoose.connection.close();
 		});

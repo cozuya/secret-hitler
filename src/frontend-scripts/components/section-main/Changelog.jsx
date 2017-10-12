@@ -1,23 +1,41 @@
 import React from 'react'; // eslint-disable-line
 import PropTypes from 'prop-types';
 
-const Changelog = props =>
+const Changelog = props => (
 	<section className="changelog">
-		<i
-			className="remove icon"
-			onClick={() => {
-				props.onLeaveChangelog('default');
-			}}
-		/>
+		<a href="#/">
+			<i className="remove icon" />
+		</a>
 		<div className="ui header">
 			<h2>Changelog</h2>
 		</div>
+		<div className="ui header">
+			<p>Version 0.8.3 "stainless steel" released 10-15-2017</p>
+		</div>
+		<h3>New feature: URL routing</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="/images/routes.png" />
+		</div>
+		<p>
+			What this means is the URL of your browser now accurately shows the state of the application. The big takeaway is games, replays, and profiles are now all
+			linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you would
+			expect as well. This required a large change to the front end and may not be perfect, please update if so.
+		</p>
+		<ul>
+			<li>
+				Overall UI has been tweaked color wise mostly. If you've been playing here at all in the past year (yikes), you'd know I am not at all a designer, but I
+				can at least attempt to make things more fluid and contiguous. If you ARE a designer (and want to work for free..), let me know.
+			</li>
+			<li>Links to sh.io itself in general chat are now clickable (non sh.io links are still not).</li>
+			<li>The whitelist feature now correctly has a scroll bar.</li>
+			<li>If you have a custom width or font, the game no longer "flashes" when you load the page.</li>
+		</ul>
 		<div className="ui header">
 			<p>Version 0.8.2 "blue steel" released 9-30-2017</p>
 		</div>
 		<h3>New feature: player selectable fonts</h3>
 		<div style={{ textAlign: 'center' }}>
-			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="images/fonts.png" />
+			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="/images/fonts.png" />
 		</div>
 		<p>
 			These can be found on the usual place (player settings, cog icon in upper right) and save on click. You will probably want to tweak your gamechat font
@@ -61,7 +79,7 @@ const Changelog = props =>
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="images/em.png" />
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}
@@ -316,7 +334,7 @@ const Changelog = props =>
 			be seated in. These games have a special symbol in the sidebar.
 		</p>
 		<div style={{ textAlign: 'center' }}>
-			<img src="images/gamelist-rainbow.png" />
+			<img src="/images/gamelist-rainbow.png" />
 		</div>
 		<p>
 			In the lobby, a new icon appears showing what game style you are filter and sorting the userlist by. Click it to switch between "regular" and "rainbow".
@@ -331,7 +349,8 @@ const Changelog = props =>
 			where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls. This isn't all that hard and will be coming soon,
 			and hopefully guarantee a better playing experience for everyone. Please check the github issue if you are interested in helping out.
 		</p>
-	</section>;
+	</section>
+);
 
 Changelog.propTypes = {
 	onLeaveChangelog: PropTypes.func

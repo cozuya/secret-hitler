@@ -63,12 +63,9 @@ class Playerlist extends React.Component {
 			(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
 		) {
 			return (
-				<i
-					onClick={() => {
-						this.props.onModerationButtonClick('moderation');
-					}}
-					className="fire icon mod-button"
-				/>
+				<a href="#/moderation">
+					<i className="fire icon mod-button" />
+				</a>
 			);
 		}
 	}
@@ -82,19 +79,21 @@ class Playerlist extends React.Component {
 		) {
 			let classes = 'comment icon report-button';
 
+			const reportClick = () => {
+				if (userInfo.gameSettings.newReport) {
+					this.props.socket.emit('playerReportDismiss');
+				}
+
+				window.location.hash = '#/playerreports';
+			};
+
 			if (userInfo.gameSettings && userInfo.gameSettings.newReport) {
 				classes += ' active';
 			}
 			return (
-				<i
-					onClick={() => {
-						this.props.onModerationButtonClick('reports');
-						if (userInfo.gameSettings.newReport) {
-							this.props.socket.emit('playerReportDismiss');
-						}
-					}}
-					className={classes}
-				/>
+				<a href="#/playerreports" onClick={reportClick}>
+					<i className={classes} />
+				</a>
 			);
 		}
 	}
@@ -102,7 +101,7 @@ class Playerlist extends React.Component {
 	render() {
 		return (
 			<section className="playerlist">
-				<div className="playerlist-header">
+				<div className="playerlist-header hoz-gradient">
 					<span className="header-name-container">
 						<h3 className="ui header">Lobby</h3>
 						<i className="info circle icon" onClick={this.clickInfoIcon} title="Click to get information about player colors" />
@@ -132,23 +131,22 @@ class Playerlist extends React.Component {
 							Contribute code to this open source project to be endlessly pestered about why you're orange.
 						</p>
 					</div>
-					{(() => {
-						if (Object.keys(this.props.userList).length) {
-							return (
-								<span>
-									<span>{this.props.userList.list.length}</span>
-									<i className="large user icon" title="Number of players logged in" />
-								</span>
-							);
-						}
-					})()}
+					{Object.keys(this.props.userList).length && (
+						<span>
+							<span>{this.props.userList.list.length}</span>
+							<i className="large user icon" title="Number of players logged in" />
+						</span>
+					)}
 				</div>
 				<div className="playerlist-body">
 					{(() => {
 						if (Object.keys(this.props.userList).length) {
 							const { list } = this.props.userList,
 								w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins',
-								l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
+								l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses',
+								routeToProfile = userName => {
+									window.location.hash = `#/profile/${userName}`;
+								};
 
 							return list
 								.sort((a, b) => {
@@ -206,7 +204,9 @@ class Playerlist extends React.Component {
 									const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0),
 										percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '',
 										disableIfUnclickable = f => {
-											if (this.props.isUserClickable && !ADMINS.includes(user.userName)) return f;
+											if (this.props.isUserClickable && !ADMINS.includes(user.userName)) {
+												return f;
+											}
 
 											return () => null;
 										},
@@ -256,7 +256,7 @@ class Playerlist extends React.Component {
 									return (
 										<div key={i} className="user-container">
 											<div className="userlist-username">
-												<span className={userClasses} onClick={disableIfUnclickable(this.props.fetchProfile).bind(null, user.userName)}>
+												<span className={userClasses} onClick={disableIfUnclickable(routeToProfile.bind(null, user.userName))}>
 													{user.userName}
 													{(() => {
 														if (MODERATORS.includes(user.userName)) {
@@ -308,7 +308,6 @@ class Playerlist extends React.Component {
 Playerlist.propTypes = {
 	userInfo: PropTypes.object,
 	userList: PropTypes.object,
-	onModerationButtonClick: PropTypes.func,
 	socket: PropTypes.object
 };
 

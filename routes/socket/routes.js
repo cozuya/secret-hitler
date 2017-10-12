@@ -33,7 +33,7 @@ const {
 			toRemoveIndexes = games
 				.filter(
 					game =>
-						(game.general.timeStarted && game.general.timeStarted + 2400000 < currentTime) ||
+						(game.general.timeStarted && game.general.timeStarted + 4200000 < currentTime) ||
 						(game.general.timeCreated && game.general.timeCreated + 600000 < currentTime && game.general.private && game.publicPlayersState.length < 5)
 				)
 				.map(game => games.indexOf(game))

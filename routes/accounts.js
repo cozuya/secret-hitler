@@ -5,6 +5,7 @@ const passport = require('passport'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
 	blacklistedWords = require('../iso/blacklistwords'),
+	{ torIps } = require('./socket/user-requests'),
 	ensureAuthenticated = (req, res, next) => {
 		if (req.isAuthenticated()) {
 			return next();
@@ -41,35 +42,35 @@ module.exports = () => {
 		});
 	});
 
-	app.post('/account/change-email', ensureAuthenticated, (req, res) => {
-		const { newEmail, newEmailConfirm } = req.body,
-			{ user } = req;
+	// app.post('/account/change-email', ensureAuthenticated, (req, res) => {
+	// 	const { newEmail, newEmailConfirm } = req.body,
+	// 		{ user } = req;
 
-		if (newEmail !== newEmailConfirm) {
-			res.status(401).json({ message: 'not equal' });
-			return;
-		}
+	// 	if (newEmail !== newEmailConfirm) {
+	// 		res.status(401).json({ message: 'not equal' });
+	// 		return;
+	// 	}
 
-		Account.findOne({ username: user.username }, (err, account) => {
-			if (err) {
-				console.log(err);
-			}
+	// 	Account.findOne({ username: user.username }, (err, account) => {
+	// 		if (err) {
+	// 			console.log(err);
+	// 		}
 
-			account.verification.email = newEmail;
-			account.save(() => {
-				res.send();
-			});
-		});
-	});
+	// 		account.verification.email = newEmail;
+	// 		account.save(() => {
+	// 			res.send();
+	// 		});
+	// 	});
+	// });
 
-	app.post('/account/request-verification', ensureAuthenticated, (req, res) => {
-		verifyAccount.sendToken(req.user.username, req.user.verification.email);
-		res.send();
-	});
+	// app.post('/account/request-verification', ensureAuthenticated, (req, res) => {
+	// 	verifyAccount.sendToken(req.user.username, req.user.verification.email);
+	// 	res.send();
+	// });
 
-	app.post('/account/reset-password', (req, res) => {
-		resetPassword.sendToken(req.body.email, res);
-	});
+	// app.post('/account/reset-password', (req, res) => {
+	// 	resetPassword.sendToken(req.body.email, res);
+	// });
 
 	app.post('/account/signup', (req, res, next) => {
 		const { username, password, password2, email } = req.body,
@@ -116,6 +117,10 @@ module.exports = () => {
 		} else if (accountCreationDisabled.status) {
 			res.status(403).json({
 				message: 'Sorry, creating new accounts is temporarily disabled.'
+			});
+		} else if (torIps.includes(signupIP)) {
+			res.status(401).json({
+				message: 'TOR network users cannot play here.'
 			});
 		} else {
 			let doesContainBadWord = false;
@@ -203,8 +208,12 @@ module.exports = () => {
 
 					if (ip && unbannedTime > date && ip.type !== 'new') {
 						res.status(403).json({
-							message: 'You can no longer access this service.  If you believe this is in error, contact the administrators.'
+							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
 						});
+						// } else if (torIps.includes(ip)) {
+						// 	res.status(401).json({
+						// 		message: 'TOR network users cannot play here.'
+						// 	});
 					} else {
 						return next();
 					}

@@ -7,7 +7,8 @@ const mongoose = require('mongoose'),
 		winningPlayers: Array,
 		losingPlayers: Array,
 		winningTeam: String,
-		isRainbow: Boolean
+		isRainbow: Boolean,
+		rebalance69p: Boolean
 	});
 
 module.exports = mongoose.model('Game', Game);

@@ -13,23 +13,24 @@ const Account = require('../../models/account'),
 
 let torIps;
 
-try {
-	https.get(options, res => {
-		let rawData = '';
-		res.on('data', chunk => {
-			rawData += chunk;
-		});
-		res.on('end', () => {
-			try {
-				torIps = rawData.split('\n').slice(3, rawData.length);
-			} catch (e) {
-				console.error(e.message, 'retrieving tor ip addresses failed');
-			}
-		});
-	});
-} catch (e) {
-	console.log(e, 'err receiving tor ip addresses');
-}
+// try {
+// 	https.get(options, res => {
+// 		let rawData = '';
+// 		res.on('data', chunk => {
+// 			rawData += chunk;
+// 		});
+// 		res.on('end', () => {
+// 			try {
+// 				torIps = rawData.split('\n').slice(3, rawData.length);
+// 			} catch (e) {
+// 				console.error(e.message, 'retrieving tor ip addresses failed');
+// 			}
+// 		});
+// 	});
+// } catch (e) {
+// 	console.log(e, 'err receiving tor ip addresses');
+// }
+module.exports.torIps = torIps;
 
 module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
@@ -113,6 +114,7 @@ module.exports.sendGameList = socket => {
 		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
 		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
 		electionCount: game.general.electionCount,
+		rebalance69p: game.general.rebalance69p,
 		private: game.general.private,
 		uid: game.general.uid,
 		rainbowgame: game.general.rainbowgame
@@ -126,9 +128,12 @@ module.exports.sendGameList = socket => {
 };
 
 module.exports.sendUserReports = socket => {
-	PlayerReport.find().sort({ $natural: -1 }).limit(200).then(reports => {
-		socket.emit('reportInfo', reports);
-	});
+	PlayerReport.find()
+		.sort({ $natural: -1 })
+		.limit(200)
+		.then(reports => {
+			socket.emit('reportInfo', reports);
+		});
 };
 
 module.exports.sendGeneralChats = socket => {
@@ -182,5 +187,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 		_game.chats = _game.chats.concat(_game.private.unSeatedGameChats);
 		socket.join(uid);
 		socket.emit('gameUpdate', secureGame(_game));
+	} else {
+		// todo: replay retrieval
 	}
 };

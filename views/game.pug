@@ -1,7 +1,16 @@
 extends layout-no-menu
 
 block content
-	if user
-		section#game-container(class=`username-${user}`)
+	if username
+		section#game-container(class=`username-${username}`)
+		style.
+			#game-container {
+				width: #{gameSettings.customWidth === '1853px' ? 'inherit' : gameSettings.customWidth}
+			}
+			#game-container > .ui.grid {
+				font-family: '#{gameSettings.fontFamily}', lato, sans-serif !important
+			}
+		script.
+			var gameSettings = #{gameSettings}
 	else
 		section#game-container

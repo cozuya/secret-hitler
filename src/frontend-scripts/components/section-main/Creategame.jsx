@@ -1,6 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-import Slider from 'rc-slider';
+import { Range } from 'rc-slider';
 import Checkbox from 'semantic-ui-checkbox';
 import blacklistedWords from '../../../../iso/blacklistwords';
 import PropTypes from 'prop-types';
@@ -10,7 +10,6 @@ $.fn.checkbox = Checkbox;
 export default class Creategame extends React.Component {
 	constructor() {
 		super();
-		this.leaveCreateGame = this.leaveCreateGame.bind(this);
 		this.createNewGame = this.createNewGame.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
 		this.state = {
@@ -21,6 +20,7 @@ export default class Creategame extends React.Component {
 			privateShowing: false,
 			containsBadWord: false,
 			rainbowgame: false,
+			rebalance69p: true,
 			checkedSliderValues: new Array(6).fill(true),
 			isTourny: false
 		};
@@ -82,17 +82,19 @@ export default class Creategame extends React.Component {
 				self.setState({ isTourny: false });
 			}
 		});
+
+		$(this.rebalance69p).checkbox({
+			onChecked() {
+				self.setState({ rebalance69p: true });
+			},
+			onUnchecked() {
+				self.setState({ rebalance69p: false });
+			}
+		});
 	}
 
 	sliderChange(sliderValues) {
 		const { checkedSliderValues } = this.state;
-		// todo make this uncheck boxes instead of just check
-		// event.forEach(el => {
-		// 	if (!this.state.checkedSliderValues[el - 5]) {
-		// 		newState.checkedSliderValues = this.state.checkedSliderValues;
-		// 		newState.checkedSliderValues[el - 5] = true;
-		// 	}
-		// });
 
 		this.setState({
 			sliderValues,
@@ -105,10 +107,6 @@ export default class Creategame extends React.Component {
 						index + 5 === sliderValues[1]
 				)
 		});
-	}
-
-	leaveCreateGame() {
-		this.props.onLeaveCreateGame('default');
 	}
 
 	createNewGame() {
@@ -128,7 +126,14 @@ export default class Creategame extends React.Component {
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			window.alert('Sorry, this service is currently unavailable.');
 		} else {
-			this.props.onCreateGameSubmit({
+			const uid = Math.random()
+					.toString(36)
+					.substring(2),
+				excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
+
+			console.log(excludedPlayerCount);
+
+			this.props.socket.emit('addNewGame', {
 				gameState: {
 					previousElectedGovernment: [],
 					undrawnPolicyCount: 17,
@@ -139,16 +144,17 @@ export default class Creategame extends React.Component {
 				general: {
 					enabledPlayerCounts: this.state.checkedSliderValues.filter(el => el).map((el, i) => i + 5),
 					whitelistedPlayers: [],
-					uid: Math.random().toString(36).substring(2),
+					uid,
 					name: $creategame.find('div.gamename input').val() || 'New Game',
 					minPlayersCount: this.state.sliderValues[0],
-					excludedPlayerCount: this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el),
+					excludedPlayerCount,
 					maxPlayersCount: this.state.sliderValues[1],
 					status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
 					experiencedMode: this.state.experiencedmode,
 					disableChat: this.state.disablechat,
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
+					rebalance69p: this.state.rebalance69p ? !(excludedPlayerCount.includes(6) && excludedPlayerCount.includes(9)) : false,
 					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 					electionCount: 0
 				},
@@ -189,7 +195,9 @@ export default class Creategame extends React.Component {
 
 		return (
 			<section className="creategame">
-				<i className="remove icon" onClick={this.leaveCreateGame} />
+				<a href="#/">
+					<i className="remove icon" />
+				</a>
 				<div className="ui header">
 					<div className="content">Create a new game</div>
 				</div>
@@ -202,17 +210,13 @@ export default class Creategame extends React.Component {
 							<div className="ui input">
 								<input maxLength="20" placeholder="New Game" />
 							</div>
-							{(() => {
-								if (this.state.containsBadWord) {
-									return <p className="contains-bad-word">This game name has a banned word or word fragment.</p>;
-								}
-							})()}
+							{this.state.containsBadWord && <p className="contains-bad-word">This game name has a banned word or word fragment.</p>}
 						</div>
 						<div className="eight wide column slider">
 							<h4 className="ui header">Number of players</h4>
-							<Slider onChange={this.sliderChange} min={5} max={10} range defaultValue={[5, 10]} marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }} />
+							<Range onChange={this.sliderChange} min={5} max={10} defaultValue={[5, 10]} marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }} />
 							<div className="checkbox-container">
-								{new Array(6).fill(true).map((el, index) =>
+								{new Array(6).fill(true).map((el, index) => (
 									<label key={index}>
 										<input
 											type="checkbox"
@@ -223,7 +227,7 @@ export default class Creategame extends React.Component {
 											}}
 										/>
 									</label>
-								)}
+								))}
 							</div>
 						</div>
 						<div className="four wide column privategame">
@@ -287,28 +291,32 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="disablegamechat" defaultChecked={false} />
 							</div>
 						</div>
-						{(() => {
-							const user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName),
-								isRainbow = user.wins + user.losses > 49;
-
-							if (isRainbow) {
-								return (
-									<div className="four wide column experiencedmode">
-										<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
-										<div
-											className="ui fitted toggle checkbox"
-											ref={c => {
-												this.rainbowgame = c;
-											}}
-										>
-											<input type="checkbox" name="rainbowgame" defaultChecked={false} />
-										</div>
-									</div>
-								);
-							}
-						})()}
+						<div className="four wide column experiencedmode">
+							<h4 className="ui header">Rainbow game - only 50+ game veterans can be seated in this game</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.rainbowgame = c;
+								}}
+							>
+								<input type="checkbox" name="rainbowgame" defaultChecked={false} />
+							</div>
+						</div>
 					</div>
 					<div className="row tournyrow" />
+				</div>
+				<div className="row">
+					<div className="four wide column rebalance69p">
+						<h4 className="ui header">Rebalance 6 & 9 player games - they have a policy card enacted on start.</h4>
+						<div
+							className="ui fitted toggle checkbox"
+							ref={c => {
+								this.rebalance69p = c;
+							}}
+						>
+							<input type="checkbox" name="rebalance69p" defaultChecked={true} />
+						</div>
+					</div>
 				</div>
 				<div className="ui grid footer">
 					<div onClick={this.createNewGame} className="ui button primary" style={{ marginLeft: '15px' }}>
@@ -321,8 +329,7 @@ export default class Creategame extends React.Component {
 }
 
 Creategame.propTypes = {
-	onCreateGameSubmit: PropTypes.func,
-	onLeaveCreateGame: PropTypes.func,
+	socket: PropTypes.object,
 	userInfo: PropTypes.object,
 	userList: PropTypes.object
 };

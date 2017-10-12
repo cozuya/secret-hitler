@@ -57,8 +57,21 @@ export function processEmotes(input) {
 		formatedMsg = [];
 
 	message.forEach((word, index) => {
-		// map better but harder to get the extra spaces in
-		formatedMsg.push(allEmotes.includes(word) ? <img src={`images/emotes/${word}.png`} key={index} /> : word, ' ');
+		if (allEmotes.includes(word)) {
+			formatedMsg.push(<img src={`images/emotes/${word}.png`} key={index} />);
+		} else if (/^https:\/\/secrethitler.io/.test(word)) {
+			const hash = word.split('https://secrethitler.io')[1];
+			// } else if (/^http:\/\/localhost:8080/.test(word)) {
+			// 	const hash = word.split('http://localhost:8080')[1];
+
+			formatedMsg.push(
+				<a key={index} href={hash}>
+					{hash}
+				</a>
+			);
+		} else {
+			formatedMsg.push(word, ' ');
+		}
 	});
 	return formatedMsg;
 }

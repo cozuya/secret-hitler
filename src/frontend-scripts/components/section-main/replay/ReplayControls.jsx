@@ -20,42 +20,16 @@ const TurnNav = ({ position, size, toTurn }) => {
 	return (
 		<div className="turn-nav">
 			<h1>Turn</h1>
-			<Slider
-				onChange={value => toTurn(value - 1)}
-				className="slider"
-				min={1}
-				max={size}
-				value={position + 1}
-				marks={marks}
-				dots
-			/>
+			<Slider onChange={value => toTurn(value - 1)} className="slider" min={1} max={size} value={position + 1} marks={marks} dots />
 		</div>
 	);
 };
 
-const PhaseNav = ({
-	phase,
-	hasLegislation,
-	hasAction,
-	toElection,
-	toLegislation,
-	toAction
-}) => {
+const PhaseNav = ({ phase, hasLegislation, hasAction, toElection, toLegislation, toAction }) => {
 	const nav = OrderedMap({
 		election: List(['candidacy', 'nomination', 'election']),
-		legislation: List([
-			'presidentLegislation',
-			'chancellorLegislation',
-			'topDeck',
-			'veto',
-			'policyEnaction'
-		]),
-		action: List([
-			'investigation',
-			'policyPeek',
-			'specialElection',
-			'execution'
-		])
+		legislation: List(['presidentLegislation', 'chancellorLegislation', 'topDeck', 'veto', 'policyEnaction']),
+		action: List(['investigation', 'policyPeek', 'specialElection', 'execution'])
 	});
 
 	const localize = s => {
@@ -95,21 +69,18 @@ const PhaseNav = ({
 		return (
 			<div className={classes} onClick={onClick}>
 				<div className="content">
-					<div className="title">
-						{title}
-					</div>
-					<div className="description">
-						{description}
-					</div>
+					<div className="title">{title}</div>
+					<div className="description">{description}</div>
 				</div>
 			</div>
 		);
 	};
 
-	const Overlay = () =>
+	const Overlay = () => (
 		<div className="overlay-container">
 			<div className={classnames(phase, 'overlay')} />
-		</div>;
+		</div>
+	);
 
 	const filled = (() => {
 		const phases = nav.valueSeq().flatten();
@@ -144,9 +115,7 @@ const PhaseNav = ({
 	return (
 		<div className="phase-nav">
 			<h1 className="ui header">Phase</h1>
-			<div className="ui three tiny steps">
-				{steps}
-			</div>
+			<div className="ui three tiny steps">{steps}</div>
 			<Overlay />
 		</div>
 	);
@@ -163,89 +132,33 @@ const Description = ({ description }) => {
 	);
 };
 
-const Playback = ({
-	hasNext,
-	hasPrev,
-	next,
-	prev,
-	forward,
-	backward,
-	beginning,
-	end
-}) =>
+const Playback = ({ hasNext, hasPrev, next, prev, forward, backward, beginning, end }) => (
 	<div className="playback">
 		<h1>Playback Controls</h1>
 		<div className="ui horizontal segments">
-			<button
-				className={classnames(
-					'ui icon',
-					{ disabled: !hasPrev },
-					'button segment'
-				)}
-				onClick={beginning}
-			>
+			<button className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')} onClick={beginning}>
 				<i className="fast backward icon" />
 			</button>
-			<button
-				className={classnames(
-					'ui icon',
-					{ disabled: !hasPrev },
-					'button segment'
-				)}
-				onClick={backward}
-			>
+			<button className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')} onClick={backward}>
 				<i className="backward icon" />
 			</button>
-			<button
-				className={classnames(
-					'ui icon',
-					{ disabled: !hasPrev },
-					'button segment'
-				)}
-				onClick={prev}
-			>
+			<button className={classnames('ui icon', { disabled: !hasPrev }, 'button segment')} onClick={prev}>
 				<i className="flipped play icon" />
 			</button>
-			<button
-				className={classnames(
-					'ui icon',
-					{ disabled: !hasNext },
-					'button segment'
-				)}
-				onClick={next}
-			>
+			<button className={classnames('ui icon', { disabled: !hasNext }, 'button segment')} onClick={next}>
 				<i className="play icon" />
 			</button>
-			<button
-				className={classnames(
-					'ui icon',
-					{ disabled: !hasNext },
-					'button segment'
-				)}
-				onClick={forward}
-			>
+			<button className={classnames('ui icon', { disabled: !hasNext }, 'button segment')} onClick={forward}>
 				<i className="forward icon" />
 			</button>
-			<button
-				className={classnames(
-					'ui icon',
-					{ disabled: !hasNext },
-					'button segment'
-				)}
-				onClick={end}
-			>
+			<button className={classnames('ui icon', { disabled: !hasNext }, 'button segment')} onClick={end}>
 				<i className="fast forward icon" />
 			</button>
 		</div>
-	</div>;
+	</div>
+);
 
-const ReplayControls = ({
-	turnsSize,
-	turnNum,
-	phase,
-	description,
-	playback
-}) => {
+const ReplayControls = ({ turnsSize, turnNum, phase, description, playback }) => {
 	const {
 		hasNext,
 		hasPrev,
@@ -266,14 +179,7 @@ const ReplayControls = ({
 	return (
 		<section className="replay-controls">
 			<TurnNav position={turnNum} size={turnsSize} toTurn={toTurn} />
-			<PhaseNav
-				phase={phase}
-				hasLegislation={hasLegislation}
-				hasAction={hasAction}
-				toElection={toElection}
-				toLegislation={toLegislation}
-				toAction={toAction}
-			/>
+			<PhaseNav phase={phase} hasLegislation={hasLegislation} hasAction={hasAction} toElection={toElection} toLegislation={toLegislation} toAction={toAction} />
 			<Description description={description} />
 			<Playback
 				hasNext={hasNext}

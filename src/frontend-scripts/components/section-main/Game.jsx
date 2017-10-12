@@ -9,12 +9,7 @@ export default class Game extends React.Component {
 	componentDidUpdate(prevProps) {
 		const { userInfo, gameInfo } = this.props;
 
-		if (
-			userInfo.isSeated &&
-			gameInfo.gameState &&
-			gameInfo.gameState.isTracksFlipped &&
-			!prevProps.gameInfo.gameState.isTracksFlipped
-		) {
+		if (userInfo.isSeated && gameInfo.gameState && gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) {
 			const sound = document.createElement('audio');
 
 			sound.setAttribute('src', 'alarm.mp3');
@@ -35,10 +30,7 @@ export default class Game extends React.Component {
 							className={(() => {
 								let classes;
 
-								if (
-									this.props.userInfo.gameSettings &&
-									!this.props.userInfo.gameSettings.enableRightSidebarInGame
-								) {
+								if (this.props.userInfo.gameSettings && !this.props.userInfo.gameSettings.enableRightSidebarInGame) {
 									classes = 'ten ';
 								} else {
 									classes = 'ten ';
@@ -49,20 +41,13 @@ export default class Game extends React.Component {
 								return classes;
 							})()}
 						>
-							<Tracks
-								userInfo={this.props.userInfo}
-								gameInfo={this.props.gameInfo}
-								socket={this.props.socket}
-							/>
+							<Tracks userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} socket={this.props.socket} />
 						</div>
 						<div
 							className={(() => {
 								let classes;
 
-								if (
-									this.props.userInfo.gameSettings &&
-									this.props.userInfo.gameSettings.enableRightSidebarInGame
-								) {
+								if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
 									classes = 'six ';
 								} else {
 									classes = 'six ';
@@ -94,12 +79,8 @@ export default class Game extends React.Component {
 						userInfo.userName &&
 						gameInfo &&
 						gameInfo.publicPlayersState &&
-						gameInfo.publicPlayersState.find(
-							player => player.userName === userInfo.userName
-						) &&
-						gameInfo.publicPlayersState.find(
-							player => player.userName === userInfo.userName
-						).isConfetti
+						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
+						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti
 					) {
 						return <Confetti />;
 					}
@@ -108,10 +89,7 @@ export default class Game extends React.Component {
 					className={(() => {
 						let classes = 'row players-container';
 
-						if (
-							this.props.userInfo.gameSettings &&
-							this.props.userInfo.gameSettings.disableRightSidebarInGame
-						) {
+						if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableRightSidebarInGame) {
 							classes += ' disabledrightsidebar';
 						}
 

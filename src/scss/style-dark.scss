@@ -42,11 +42,11 @@ body {
 	.ui.header {
 		font-family: $headerfont;
 	}
-	.section-main > .nav-menu {
+	.hoz-gradient {
 		background: #000000;
-		background: -moz-linear-gradient(left, #000000 0%, #1c1c1c 50%, #000000 100%);
-		background: -webkit-linear-gradient(left, #000000 0%, #1c1c1c 50%, #000000 100%);
-		background: linear-gradient(to right, #000000 0%, #1c1c1c 50%, #000000 100%);
+		background: -moz-linear-gradient(left, #000000 0%, #100000 50%, #000000 100%);
+		background: -webkit-linear-gradient(left, #000000 0%, #100000 50%, #000000 100%);
+		background: linear-gradient(to right, #000000 0%, #100000 50%, #000000 100%);
 	}
 	.notes-container {
 		-webkit-transition: all 0.15s ease-in-out;
@@ -99,7 +99,7 @@ body {
 		}
 	}
 	.section-main {
-		background: #000;
+		background: #140202;
 	}
 	.defaultmid {
 		.callout {
@@ -127,7 +127,7 @@ body {
 				font-size: 12px;
 			}
 		}
-		background: radial-gradient(ellipse at center, #000 0%, rgba(195, 101, 99, 0.23) 100%) #141210;
+		background: radial-gradient(ellipse at center, #000 0%, rgb(24, 0, 0) 100%) #e4e4e4;
 		.patch-alert {
 			cursor: pointer;
 			z-index: 2;
@@ -181,7 +181,7 @@ body {
 	.leftsidebar,
 	.generalchat,
 	.section-right {
-		background: #1b1b1b;
+		background: #140202;
 	}
 	.section-left {
 		width: 240px !important;
@@ -197,7 +197,7 @@ body {
 		min-width: 241px;
 	}
 	.playerlist {
-		background: #202020;
+		background: #140202;
 	}
 	.generalchat .inputbar input,
 	#gameChatInput {
@@ -257,7 +257,7 @@ body {
 	i.icon {
 		color: $darkfascistteam;
 	}
-	a {
+	a:not(.button) {
 		color: $darkliberalteam;
 	}
 }

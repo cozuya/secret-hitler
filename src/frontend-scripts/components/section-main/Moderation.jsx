@@ -238,13 +238,7 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					style={{ width: '100%', background: 'lightyellow' }}
-					className={
-						playerInputText && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName)) ? (
-							'ui button'
-						) : (
-							'ui button disabled'
-						)
-					}
+					className={playerInputText ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
 						takeModAction('deleteGame');
 					}}
@@ -472,7 +466,9 @@ export default class Moderation extends React.Component {
 				<a className="broadcast" href="#" onClick={this.broadcastClick}>
 					Broadcast
 				</a>
-				<i className="remove icon" onClick={this.leaveModeration} />
+				<a href="#/">
+					<i className="remove icon" />
+				</a>
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
 					show/hide playerlist
 				</span>

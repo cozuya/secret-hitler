@@ -26,20 +26,6 @@ module.exports = () => {
 
 		res.render(pageName, renderObj);
 	};
-	// }
-	// ,  // going to rethink this idea.
-	// decrementKarma = () => {
-	// 	Account.find({karmaCount: {$gt: 0}})
-	// 		.then((err, accounts) => {
-	// 			if (err) {
-	// 				console.log(err, 'decrementKarma err');
-	// 			}
-	// 			accounts.map(account => {
-	// 				account.karmaCount = account.karmaCount - 1;
-	// 				return account;
-	// 			});
-	// 			accounts.save();
-	// 		});
 
 	accounts();
 	socketRoutes();
@@ -72,28 +58,31 @@ module.exports = () => {
 		renderPage(req, res, 'page-player-profiles', 'playerProfiles');
 	});
 
-	// app.get('/game', ensureAuthenticated, (req, res) => {
-	// 	res.redirect('/game/');
-	// });
-
 	app.get('/game', ensureAuthenticated, (req, res) => {
-		if (req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress) {
-			if (req.user.isBanned) {
-				res.redirect('/observe');
-			} else {
+		res.redirect('/game/');
+	});
+
+	app.get('/game/', ensureAuthenticated, (req, res) => {
+		const { username } = req.user;
+
+		if (req.user.isBanned) {
+			res.redirect('/observe/');
+		} else {
+			Account.findOne({ username }, (err, account) => {
 				res.render('game', {
-					user: req.user.username,
-					game: true
+					game: true,
+					username,
+					gameSettings: account.gameSettings
 				});
-			}
+			});
 		}
 	});
 
-	// app.get('/observe', (req, res) => {
-	// 	res.redirect('/observe/');
-	// });
-
 	app.get('/observe', (req, res) => {
+		res.redirect('/observe/');
+	});
+
+	app.get('/observe/', (req, res) => {
 		if (req.user) {
 			req.session.destroy();
 			req.logout();
@@ -144,8 +133,7 @@ module.exports = () => {
 
 	app.get('/viewPatchNotes', ensureAuthenticated, (req, res) => {
 		Account.updateOne({ username: req.user.username }, { lastVersionSeen: version.number }, err => {
-			if (err) res.sendStatus(404);
-			else res.sendStatus(200);
+			res.sendStatus(err ? 404 : 202);
 		});
 	});
 
@@ -170,15 +158,20 @@ module.exports = () => {
 						message: 'You need to have played 50 games to upload a cardback.'
 					});
 					// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
-				} else if (account.gameSettings.customCardbackSaveTime && now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000) {
+				} else if (
+					new Date(account.gameSettings.customCardbackSaveTime) &&
+					now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000
+				) {
 					res.json({
 						message: 'You can only change your cardback once every 30 seconds.'
 					});
 				} else {
 					fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
 						account.gameSettings.customCardback = extension;
-						account.gameSettings.customCardbackSaveTime = now;
-						account.gameSettings.customCardbackUid = Math.random().toString(36).substring(2);
+						account.gameSettings.customCardbackSaveTime = now.toString();
+						account.gameSettings.customCardbackUid = Math.random()
+							.toString(36)
+							.substring(2);
 						account.save(() => {
 							res.json({ message: 'Cardback successfully uploaded.' });
 							io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);

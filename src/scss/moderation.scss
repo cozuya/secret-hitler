@@ -1,5 +1,6 @@
 #main .moderation {
 	color: $fascistteam;
+	background: #090000;
 	.player-input {
 		display: flex;
 		justify-content: center;
@@ -24,7 +25,7 @@
 		position: absolute;
 		font-size: 30px;
 		left: 94%;
-		opacity: .3;
+		opacity: 0.3;
 		top: 70px;
 	}
 	ul {

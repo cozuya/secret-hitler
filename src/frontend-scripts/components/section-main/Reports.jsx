@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 export default class Reports extends React.Component {
 	constructor() {
 		super();
-		this.leaveReports = this.leaveReports.bind(this);
 
 		this.state = {
 			reports: []
@@ -41,43 +40,29 @@ export default class Reports extends React.Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.reports.map((report, index) =>
+						{this.state.reports.map((report, index) => (
 							<tr key={index}>
-								<td>
-									{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}
-								</td>
-								<td>
-									{report.gameUid.substr(0, 5)}
-								</td>
-								<td>
-									{report.reportedPlayer}
-								</td>
-								<td>
-									{report.reason}
-								</td>
-								<td>
-									{report.comment}
-								</td>
-								<td>
-									{report.reportingPlayer}
-								</td>
+								<td>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
+								<td>{report.gameUid.substr(0, 5)}</td>
+								<td>{report.reportedPlayer}</td>
+								<td>{report.reason}</td>
+								<td>{report.comment}</td>
+								<td>{report.reportingPlayer}</td>
 							</tr>
-						)}
+						))}
 					</tbody>
 				</table>
 			</div>
 		);
 	}
 
-	leaveReports() {
-		this.props.onLeaveReports('default');
-	}
-
 	render() {
 		return (
 			<section className="reports">
 				<h2>Player Reports</h2>
-				<i className="remove icon" onClick={this.leaveReports} />
+				<a href="#/">
+					<i className="remove icon" />
+				</a>
 				{this.renderReportsLog()}
 			</section>
 		);
@@ -86,6 +71,5 @@ export default class Reports extends React.Component {
 
 Reports.propTypes = {
 	userInfo: PropTypes.object,
-	socket: PropTypes.object,
-	onLeaveReports: PropTypes.func
+	socket: PropTypes.object
 };
