@@ -21,7 +21,7 @@
 		color: #ddd;
 		background: #1e1414;
 		&:hover {
-			border: 1px solid rgb(49, 16, 16);
+			border: 1px solid #802c2c;
 		}
 		.private-game {
 			position: absolute;
@@ -34,6 +34,18 @@
 			text-align: center;
 			height: 19px;
 			background: lightslategray;
+		}
+
+		.rebalance-game {
+			position: absolute;
+			top: 24px;
+			left: 11px;
+			color: rgb(173, 230, 181);
+			border: 1px dotted rgb(173, 230, 197);
+			width: 18px;
+			text-align: center;
+			height: 19px;
+			background: rgb(119, 153, 122);
 		}
 		.gamename {
 			text-align: center;

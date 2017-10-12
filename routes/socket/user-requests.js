@@ -114,6 +114,7 @@ module.exports.sendGameList = socket => {
 		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
 		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
 		electionCount: game.general.electionCount,
+		rebalance69p: game.general.rebalance69p,
 		private: game.general.private,
 		uid: game.general.uid,
 		rainbowgame: game.general.rainbowgame

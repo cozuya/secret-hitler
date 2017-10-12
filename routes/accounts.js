@@ -210,10 +210,10 @@ module.exports = () => {
 						res.status(403).json({
 							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
 						});
-					} else if (torIps.includes(ip)) {
-						res.status(401).json({
-							message: 'TOR network users cannot play here.'
-						});
+						// } else if (torIps.includes(ip)) {
+						// 	res.status(401).json({
+						// 		message: 'TOR network users cannot play here.'
+						// 	});
 					} else {
 						return next();
 					}

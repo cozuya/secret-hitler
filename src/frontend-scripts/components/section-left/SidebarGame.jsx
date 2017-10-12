@@ -59,105 +59,111 @@ const SidebarGame = props => {
 			className={gameClasses()}
 		>
 			{(() =>
-				game.gameStatus === 'notStarted'
-					? <div>
-							{(() => {
-								if (game.private) {
-									return (
-										<div className="private-game" title="This is a private game.  You can only be seated if you know the password, or are whitelisted">
-											P
-										</div>
-									);
-								}
-							})()}
-							<div
-								className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
-								title={
-									(game.rainbowgame
-										? 'Rainbow game - only players with 50+ games played can be seated in this game.'
-										: 'Click here to enter this game table.') +
-									' Already in game: ' +
-									game.userNames.join(', ')
-								}
-							>
-								{game.name}
-							</div>
-							{(() => {
-								let status = '';
-
-								if (game.experiencedMode) {
-									status = 'Speed';
-								}
-
-								if (game.disableChat) {
-									if (status) {
-										status += ' | ';
-									}
-									status += 'No chat';
-								}
-
-								if (game.disableGamechat) {
-									if (status) {
-										status += ' | ';
-									}
-									status += 'No gamechat';
-								}
-
-								if (status) {
-									return (
-										<div className="experienced">
-											{status}
-										</div>
-									);
-								}
-							})()}
-							<div className="lower-row">
-								<span className="allowed-players">
-									{playersCount()}{' '}
-								</span>
-								<span className="divider" style={{ color: '#ddd' }}>
-									|
-								</span>
-								<span className="seatedcount">
-									{' '}{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'}
-								</span>
-							</div>
+				game.gameStatus === 'notStarted' ? (
+					<div>
+						{(() => {
+							if (game.private) {
+								return (
+									<div className="private-game" title="This is a private game.  You can only be seated if you know the password, or are whitelisted">
+										P
+									</div>
+								);
+							}
+						})()}
+						{(() => {
+							if (game.rebalance69p) {
+								return (
+									<div
+										className="rebalance-game"
+										title="This is a rebalanced game - if it is a 6 or 9 player game, it will start with a fascist or liberal policy already enacted, respectively."
+									>
+										R
+									</div>
+								);
+							}
+						})()}
+						<div
+							className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
+							title={
+								(game.rainbowgame ? 'Rainbow game - only players with 50+ games played can be seated in this game.' : 'Click here to enter this game table.') +
+								' Already in game: ' +
+								game.userNames.join(', ')
+							}
+						>
+							{game.name}
 						</div>
-					: <div>
-							{(() => {
-								if (game.private) {
-									return (
-										<div className="private-game" title="This is a private game.">
-											P
-										</div>
-									);
+						{(() => {
+							let status = '';
+
+							if (game.experiencedMode) {
+								status = 'Speed';
+							}
+
+							if (game.disableChat) {
+								if (status) {
+									status += ' | ';
 								}
-							})()}
-							<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'} title={'Playing: ' + game.userNames.join(', ')}>
-								{game.name}
-							</div>
-							<div className="liberal-count">
-								{(() =>
-									_.range(1, 6).map(num =>
-										<div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />
-									))()}
-							</div>
-							<div className="fascist-count">
-								{(() =>
-									_.range(1, 7).map(num =>
-										<div key={num} className={num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'} />
-									))()}
-							</div>
-							<div className="lower-row">
-								<span className="allowed-players">
-									Election #{game.electionCount}{' '}
-								</span>
-								<span className="divider">|</span>
-								<span className="seatedcount">
-									{' '}{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'} seated
-								</span>
-							</div>
-						</div>)()}
+								status += 'No chat';
+							}
+
+							if (game.disableGamechat) {
+								if (status) {
+									status += ' | ';
+								}
+								status += 'No gamechat';
+							}
+
+							if (status) {
+								return <div className="experienced">{status}</div>;
+							}
+						})()}
+						<div className="lower-row">
+							<span className="allowed-players">{playersCount()} </span>
+							<span className="divider" style={{ color: '#ddd' }}>
+								|
+							</span>
+							<span className="seatedcount">
+								{' '}
+								{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'}
+							</span>
+						</div>
+					</div>
+				) : (
+					<div>
+						{(() => {
+							if (game.private) {
+								return (
+									<div className="private-game" title="This is a private game.">
+										P
+									</div>
+								);
+							}
+						})()}
+						<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'} title={'Playing: ' + game.userNames.join(', ')}>
+							{game.name}
+						</div>
+						<div className="liberal-count">
+							{(() =>
+								_.range(1, 6).map(num => (
+									<div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />
+								)))()}
+						</div>
+						<div className="fascist-count">
+							{(() =>
+								_.range(1, 7).map(num => (
+									<div key={num} className={num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'} />
+								)))()}
+						</div>
+						<div className="lower-row">
+							<span className="allowed-players">Election #{game.electionCount} </span>
+							<span className="divider">|</span>
+							<span className="seatedcount">
+								{' '}
+								{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'} seated
+							</span>
+						</div>
+					</div>
+				))()}
 		</div>
 	);
 };

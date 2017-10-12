@@ -127,8 +127,11 @@ export default class Creategame extends React.Component {
 			window.alert('Sorry, this service is currently unavailable.');
 		} else {
 			const uid = Math.random()
-				.toString(36)
-				.substring(2);
+					.toString(36)
+					.substring(2),
+				excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
+
+			console.log(excludedPlayerCount);
 
 			this.props.socket.emit('addNewGame', {
 				gameState: {
@@ -144,14 +147,14 @@ export default class Creategame extends React.Component {
 					uid,
 					name: $creategame.find('div.gamename input').val() || 'New Game',
 					minPlayersCount: this.state.sliderValues[0],
-					excludedPlayerCount: this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el),
+					excludedPlayerCount,
 					maxPlayersCount: this.state.sliderValues[1],
 					status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
 					experiencedMode: this.state.experiencedmode,
 					disableChat: this.state.disablechat,
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
-					rebalance69p: this.state.rebalance69p,
+					rebalance69p: this.state.rebalance69p ? !(excludedPlayerCount.includes(6) && excludedPlayerCount.includes(9)) : false,
 					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 					electionCount: 0
 				},
