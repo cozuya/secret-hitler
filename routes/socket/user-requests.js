@@ -30,6 +30,7 @@ let torIps;
 // } catch (e) {
 // 	console.log(e, 'err receiving tor ip addresses');
 // }
+module.exports.torIps = torIps;
 
 module.exports.sendModInfo = socket => {
 	const userNames = userList.map(user => user.userName);
