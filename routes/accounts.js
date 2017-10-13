@@ -74,7 +74,12 @@ module.exports = () => {
 
 	app.post('/account/signup', (req, res, next) => {
 		const { username, password, password2, email } = req.body,
-			signupIP = req.headers['X-Forwarded-For'] || req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+			signupIP =
+				req.headers['x-real-ip'] ||
+				req.headers['X-Real-IP'] ||
+				req.headers['X-Forwarded-For'] ||
+				req.headers['x-forwarded-for'] ||
+				req.connection.remoteAddress,
 			save = {
 				username,
 				gameSettings: {
@@ -118,7 +123,7 @@ module.exports = () => {
 			res.status(403).json({
 				message: 'Sorry, creating new accounts is temporarily disabled.'
 			});
-		} else if (torIps.includes(signupIP)) {
+		} else if (torIps && torIps.includes(signupIP)) {
 			res.status(401).json({
 				message: 'TOR network users cannot play here.'
 			});
@@ -168,15 +173,14 @@ module.exports = () => {
 									}
 
 									passport.authenticate('local')(req, res, () => {
-										const newPlayerBan = new BannedIP({
-											bannedDate: new Date(),
-											type: 'new',
-											ip: signupIP
-										});
-
-										newPlayerBan.save(() => {
-											res.send();
-										});
+										// const newPlayerBan = new BannedIP({
+										// 	bannedDate: new Date(),
+										// 	type: 'new',
+										// 	ip: signupIP
+										// });
+										// newPlayerBan.save(() => {
+										// 	res.send();
+										// });
 									});
 								});
 							}
@@ -192,7 +196,12 @@ module.exports = () => {
 		(req, res, next) => {
 			BannedIP.findOne(
 				{
-					ip: req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress
+					ip:
+						req.headers['x-real-ip'] ||
+						req.headers['X-Real-IP'] ||
+						req.headers['X-Forwarded-For'] ||
+						req.headers['x-forwarded-for'] ||
+						req.connection.remoteAddress
 				},
 				(err, ip) => {
 					let date, unbannedTime;
@@ -210,10 +219,10 @@ module.exports = () => {
 						res.status(403).json({
 							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
 						});
-						// } else if (torIps.includes(ip)) {
-						// 	res.status(401).json({
-						// 		message: 'TOR network users cannot play here.'
-						// 	});
+					} else if (torIps && torIps.includes(ip)) {
+						res.status(401).json({
+							message: 'TOR network users cannot play here.'
+						});
 					} else {
 						return next();
 					}
@@ -225,10 +234,15 @@ module.exports = () => {
 			Account.findOne({
 				username: req.user.username
 			}).then(player => {
-				player.lastConnectedIP = req.headers['X-Forwarded-For'] || req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-				player.save(() => {
-					res.send();
-				});
+				(player.lastConnectedIP =
+					req.headers['x-real-ip'] ||
+					req.headers['X-Real-IP'] ||
+					req.headers['X-Forwarded-For'] ||
+					req.headers['x-forwarded-for'] ||
+					req.connection.remoteAddress),
+					player.save(() => {
+						res.send();
+					});
 			});
 		}
 	);

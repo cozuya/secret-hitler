@@ -74,13 +74,15 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 	},
 	RecentGames = ({ recentGames, fetchReplay }) => {
 		const rows = recentGames.map(game => ({
-			onClick: fetchReplay.bind(null, game._id),
+			onClick: e => {
+				window.location.hash = `/replay/${game._id}`;
+			},
 			cells: [game.loyalty === 'liberal' ? 'Liberal' : 'Fascist', game.playerSize, game.isWinner ? 'Win' : 'Loss', formatDateString(game.date)]
 		}));
 
 		return (
 			<div>
-				<h2 className="ui header">Recent Games</h2>
+				<h2 className="ui header recent-games-table">Recent Games</h2>
 				<Table uiTable={'selectable'} headers={['Loyalty', 'Size', 'Result', 'Date']} rows={rows} />
 			</div>
 		);

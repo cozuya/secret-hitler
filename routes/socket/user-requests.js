@@ -1,6 +1,7 @@
 const Account = require('../../models/account'),
 	ModAction = require('../../models/modAction'),
 	PlayerReport = require('../../models/playerReport'),
+	Game = require('../../models/game'),
 	{ games, userList, generalChats, accountCreationDisabled, ipbansDisabled } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
 	{ secureGame } = require('./util'),
@@ -13,23 +14,25 @@ const Account = require('../../models/account'),
 
 let torIps;
 
-// try {
-// 	https.get(options, res => {
-// 		let rawData = '';
-// 		res.on('data', chunk => {
-// 			rawData += chunk;
-// 		});
-// 		res.on('end', () => {
-// 			try {
-// 				torIps = rawData.split('\n').slice(3, rawData.length);
-// 			} catch (e) {
-// 				console.error(e.message, 'retrieving tor ip addresses failed');
-// 			}
-// 		});
-// 	});
-// } catch (e) {
-// 	console.log(e, 'err receiving tor ip addresses');
-// }
+if (process.env.NODE_ENV) {
+	try {
+		https.get(options, res => {
+			let rawData = '';
+			res.on('data', chunk => {
+				rawData += chunk;
+			});
+			res.on('end', () => {
+				try {
+					torIps = rawData.split('\n').slice(3, rawData.length);
+				} catch (e) {
+					console.error(e.message, 'retrieving tor ip addresses failed');
+				}
+			});
+		});
+	} catch (e) {
+		console.log(e, 'err receiving tor ip addresses');
+	}
+}
 module.exports.torIps = torIps;
 
 module.exports.sendModInfo = socket => {
@@ -48,7 +51,7 @@ module.exports.sendModInfo = socket => {
 						userList: users.map(user => ({
 							isRainbow: user.wins + user.losses > 49,
 							userName: user.username,
-							isTor: torIps.includes(user.lastConnectedIP || user.signupIP),
+							isTor: torIps && torIps.includes(user.lastConnectedIP || user.signupIP),
 							ip: user.lastConnectedIP || user.signupIP
 						}))
 					});
@@ -188,6 +191,12 @@ module.exports.sendGameInfo = (socket, uid) => {
 		socket.join(uid);
 		socket.emit('gameUpdate', secureGame(_game));
 	} else {
-		// todo: replay retrieval
+		Game.findOne({ uid }).then((game, err) => {
+			if (err) {
+				console.log(err, 'game err retrieving for replay');
+			}
+
+			socket.emit('manualReplayRequest', game ? game.uid : '');
+		});
 	}
 };

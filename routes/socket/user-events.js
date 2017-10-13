@@ -123,7 +123,6 @@ const handleSocketDisconnect = socket => {
 	};
 
 if (process.env.NODE_ENV) {
-	console.log('Hello, World!');
 	const crashReq = https.request(crashOptions);
 
 	crashReq.end(crashReport);

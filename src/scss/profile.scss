@@ -42,4 +42,8 @@
 		left: 760px;
 		opacity: 0.3;
 	}
+
+	.recent-games-table + table tbody tr {
+		cursor: pointer;
+	}
 }
