@@ -214,7 +214,6 @@ export default class Creategame extends React.Component {
 						</div>
 						<div className="eight wide column slider">
 							<h4 className="ui header">Number of players</h4>
-							<Range onChange={this.sliderChange} min={5} max={10} defaultValue={[5, 10]} marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }} />
 							<div className="checkbox-container">
 								{new Array(6).fill(true).map((el, index) => (
 									<label key={index}>
