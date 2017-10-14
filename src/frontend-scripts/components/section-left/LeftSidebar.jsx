@@ -44,9 +44,7 @@ const LeftSidebar = props => {
 
 					return a.uid > b.uid ? 1 : -1;
 				})
-				.map((game, index) => {
-					return <SidebarGame key={index} game={game} socket={props.socket} />;
-				});
+				.map((game, index) => <SidebarGame key={index} game={game} socket={props.socket} userInfo={props.userInfo} />);
 		}
 	};
 

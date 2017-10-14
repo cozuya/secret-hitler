@@ -76,8 +76,6 @@ export default class Generalchat extends React.Component {
 				'chat-user'
 			);
 
-			console.log(chat);
-
 			return (
 				<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
 					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>

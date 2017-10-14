@@ -69,6 +69,14 @@ export function processEmotes(input) {
 					{hash}
 				</a>
 			);
+		} else if (/^https:\/\/github.com\/cozuya\/secret-hitler\/issues/.test(word)) {
+			const endLink = word.split('https://github.com/cozuya/secret-hitler')[1];
+
+			formatedMsg.push(
+				<a key={index} target="_blank" href={`https://github.com/cozuya/secret-hitler${endLink}`}>
+					SH.IO github link to {endLink}
+				</a>
+			);
 		} else {
 			formatedMsg.push(word, ' ');
 		}

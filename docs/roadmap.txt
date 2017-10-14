@@ -40,11 +40,11 @@ version 0.9 (near future):
 (#187) whitelist fix to scroll - done
 (#280) upgrade all dependencies - done
 (#298) optional rebalance to 6&9p games - done
-(#299) links in general chat to either the site itself or the github page are linkable - site works, github doesn't yet
+(#299) links in general chat to either the site itself or the github page are linkable - done
+(#297) private games should be actually private to non mods - done
 (various) overhaul/fixes to moderation problems (banning/timeouts not working) - in progress
 (#306) fix to people being (again) able to make accounts with the same name but different capitalization - not done
 (#305) ip ban all tor ips - not done
-(#297) private games should be actually private to non mods - not done
 
 
 farther future:

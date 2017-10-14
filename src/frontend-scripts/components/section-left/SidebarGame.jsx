@@ -1,9 +1,10 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import { MODERATORS, EDITORS, ADMINS } from '../../constants';
 
 const SidebarGame = props => {
-	const { game } = props,
+	const { game, userInfo } = props,
 		gameClasses = () => {
 			let classes = 'ui vertical segment';
 
@@ -50,7 +51,8 @@ const SidebarGame = props => {
 			return str;
 		};
 
-	return (
+	return !game.private ||
+		(userInfo.userName && (ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))) ? (
 		<div
 			data-uid={game.uid}
 			onClick={() => {
@@ -58,119 +60,105 @@ const SidebarGame = props => {
 			}}
 			className={gameClasses()}
 		>
-			{(() =>
-				game.gameStatus === 'notStarted' ? (
-					<div>
-						{(() => {
-							if (game.private) {
-								return (
-									<div className="private-game" title="This is a private game.  You can only be seated if you know the password, or are whitelisted">
-										P
-									</div>
-								);
-							}
-						})()}
-						{(() => {
-							if (game.rebalance69p) {
-								return (
-									<div
-										className="rebalance-game"
-										title="This is a rebalanced game - if it is a 6 or 9 player game, it will start with a fascist or liberal policy already enacted, respectively."
-									>
-										R
-									</div>
-								);
-							}
-						})()}
+			{game.gameStatus === 'notStarted' ? (
+				<div>
+					{game.private && (
+						<div className="private-game" title="This is a private game.  You can only be seated if you know the password, or are whitelisted">
+							P
+						</div>
+					)}
+					{game.rebalance69p && (
 						<div
-							className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
-							title={
-								(game.rainbowgame ? 'Rainbow game - only players with 50+ games played can be seated in this game.' : 'Click here to enter this game table.') +
-								' Already in game: ' +
-								game.userNames.join(', ')
-							}
+							className="rebalance-game"
+							title="This is a rebalanced game - if it is a 6 or 9 player game, it will start with a fascist or liberal policy already enacted, respectively."
 						>
-							{game.name}
+							R
 						</div>
-						{(() => {
-							let status = '';
+					)}
+					<div
+						className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
+						title={
+							(game.rainbowgame ? 'Rainbow game - only players with 50+ games played can be seated in this game.' : 'Click here to enter this game table.') +
+							' Already in game: ' +
+							game.userNames.join(', ')
+						}
+					>
+						{game.name}
+					</div>
+					{(() => {
+						let status = '';
 
-							if (game.experiencedMode) {
-								status = 'Speed';
-							}
+						if (game.experiencedMode) {
+							status = 'Speed';
+						}
 
-							if (game.disableChat) {
-								if (status) {
-									status += ' | ';
-								}
-								status += 'No chat';
-							}
-
-							if (game.disableGamechat) {
-								if (status) {
-									status += ' | ';
-								}
-								status += 'No gamechat';
-							}
-
+						if (game.disableChat) {
 							if (status) {
-								return <div className="experienced">{status}</div>;
+								status += ' | ';
 							}
-						})()}
-						<div className="lower-row">
-							<span className="allowed-players">{playersCount()} </span>
-							<span className="divider" style={{ color: '#ddd' }}>
-								|
-							</span>
-							<span className="seatedcount">
-								{' '}
-								{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'}
-							</span>
-						</div>
-					</div>
-				) : (
-					<div>
-						{(() => {
-							if (game.private) {
-								return (
-									<div className="private-game" title="This is a private game.">
-										P
-									</div>
-								);
+							status += 'No chat';
+						}
+
+						if (game.disableGamechat) {
+							if (status) {
+								status += ' | ';
 							}
-						})()}
-						<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'} title={'Playing: ' + game.userNames.join(', ')}>
-							{game.name}
-						</div>
-						<div className="liberal-count">
-							{(() =>
-								_.range(1, 6).map(num => (
-									<div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />
-								)))()}
-						</div>
-						<div className="fascist-count">
-							{(() =>
-								_.range(1, 7).map(num => (
-									<div key={num} className={num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'} />
-								)))()}
-						</div>
-						<div className="lower-row">
-							<span className="allowed-players">Election #{game.electionCount} </span>
-							<span className="divider">|</span>
-							<span className="seatedcount">
-								{' '}
-								{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'} seated
-							</span>
-						</div>
+							status += 'No gamechat';
+						}
+
+						if (status) {
+							return <div className="experienced">{status}</div>;
+						}
+					})()}
+					<div className="lower-row">
+						<span className="allowed-players">{playersCount()} </span>
+						<span className="divider" style={{ color: '#ddd' }}>
+							|
+						</span>
+						<span className="seatedcount">
+							{' '}
+							{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'}
+						</span>
 					</div>
-				))()}
+				</div>
+			) : (
+				<div>
+					{game.private && (
+						<div className="private-game" title="This is a private game.">
+							P
+						</div>
+					)}
+					<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'} title={'Playing: ' + game.userNames.join(', ')}>
+						{game.name}
+					</div>
+					<div className="liberal-count">
+						{_.range(1, 6).map(num => (
+							<div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />
+						))}
+					</div>
+					<div className="fascist-count">
+						{_.range(1, 7).map(num => (
+							<div key={num} className={num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'} />
+						))}
+					</div>
+					<div className="lower-row">
+						<span className="allowed-players">Election #{game.electionCount} </span>
+						<span className="divider">|</span>
+						<span className="seatedcount">
+							{' '}
+							{game.seatedCount} {game.seatedCount === 1 ? 'player' : 'players'} seated
+						</span>
+					</div>
+				</div>
+			)}
 		</div>
-	);
+	) : null;
 };
 
 SidebarGame.propTypes = {
 	game: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	userInfo: PropTypes.object
 };
 
 export default SidebarGame;

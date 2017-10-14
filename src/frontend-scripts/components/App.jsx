@@ -258,8 +258,6 @@ export class App extends React.Component {
 			dispatch(updateUser(userInfo));
 		}
 
-		console.log('Hello, World!');
-
 		socket.emit('leaveGame', {
 			userName: userInfo.userName,
 			isSeated,
