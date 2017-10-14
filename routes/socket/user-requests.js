@@ -2,6 +2,7 @@ const Account = require('../../models/account'),
 	ModAction = require('../../models/modAction'),
 	PlayerReport = require('../../models/playerReport'),
 	Game = require('../../models/game'),
+	BannedIP = require('../../models/bannedIP'),
 	{ games, userList, generalChats, accountCreationDisabled, ipbansDisabled } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
 	{ secureGame } = require('./util'),
@@ -27,12 +28,21 @@ if (process.env.NODE_ENV) {
 				} catch (e) {
 					console.error(e.message, 'retrieving tor ip addresses failed');
 				}
+				torIps.forEach(ip => {
+					const ipban = new BannedIP({
+						bannedDate: new Date(),
+						type: 'large',
+						ip
+					});
+					ipban.save();
+				});
 			});
 		});
 	} catch (e) {
 		console.log(e, 'err receiving tor ip addresses');
 	}
 }
+
 module.exports.torIps = torIps;
 
 module.exports.sendModInfo = socket => {

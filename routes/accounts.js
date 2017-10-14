@@ -5,7 +5,6 @@ const passport = require('passport'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
 	blacklistedWords = require('../iso/blacklistwords'),
-	{ torIps } = require('./socket/user-requests'),
 	ensureAuthenticated = (req, res, next) => {
 		if (req.isAuthenticated()) {
 			return next();
@@ -123,10 +122,6 @@ module.exports = () => {
 			res.status(403).json({
 				message: 'Sorry, creating new accounts is temporarily disabled.'
 			});
-		} else if (torIps && torIps.includes(signupIP)) {
-			res.status(401).json({
-				message: 'TOR network users cannot play here.'
-			});
 		} else {
 			let doesContainBadWord = false;
 			blacklistedWords.forEach(word => {
@@ -217,11 +212,7 @@ module.exports = () => {
 
 					if (ip && unbannedTime > date && ip.type !== 'new') {
 						res.status(403).json({
-							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
-						});
-					} else if (torIps && torIps.includes(ip)) {
-						res.status(401).json({
-							message: 'TOR network users cannot play here.'
+							message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
 						});
 					} else {
 						return next();
