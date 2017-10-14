@@ -45,14 +45,13 @@ if (process.env.NODE_ENV) {
 
 module.exports.torIps = torIps;
 
-module.exports.sendModInfo = socket => {
+module.exports.sendModInfo = (socket, count) => {
 	const userNames = userList.map(user => user.userName);
 
 	Account.find({ username: userNames })
 		.then(users => {
 			ModAction.find()
-				.sort({ $natural: -1 })
-				.limit(500)
+				.limit(500 * count)
 				.then(actions => {
 					socket.emit('modInfo', {
 						modReports: actions,

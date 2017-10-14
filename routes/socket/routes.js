@@ -137,8 +137,8 @@ module.exports = () => {
 			.on('selectedChancellorVoteOnVeto', data => {
 				selectChancellorVoteOnVeto(data);
 			})
-			.on('getModInfo', () => {
-				sendModInfo(socket);
+			.on('getModInfo', count => {
+				sendModInfo(socket, count);
 			})
 			.on('getUserReports', () => {
 				sendUserReports(socket);

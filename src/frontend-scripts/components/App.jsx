@@ -154,12 +154,14 @@ export class App extends React.Component {
 			userInfo.userName &&
 			(MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
 		) {
+			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('moderation'));
 		} else if (
 			hash === '#/playerreports' &&
 			userInfo.userName &&
 			(MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
 		) {
+			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
 		} else if (
 			hash === '#/settings' &&
