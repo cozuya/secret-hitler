@@ -72,6 +72,7 @@ module.exports = () => {
 	// });
 
 	app.post('/account/signup', (req, res, next) => {
+		console.log(req.body);
 		const { username, password, password2, email } = req.body,
 			signupIP =
 				req.headers['x-real-ip'] ||
@@ -134,12 +135,12 @@ module.exports = () => {
 					message: 'Sorry, your username contains a naughty word or part of a naughty word.'
 				});
 			} else {
-				Account.findOne({ username }, (err, account) => {
+				Account.findOne({ username: username.toLowerCase() }, (err, account) => {
 					if (err) {
 						return next(err);
 					}
 
-					if (account && account.username.toLowerCase() === username.toLowerCase()) {
+					if (account && account.username === username.toLowerCase()) {
 						res.status(401).json({ message: 'Sorry, that account already exists.' });
 					} else {
 						BannedIP.findOne({ ip: signupIP }, (err, ip) => {
@@ -176,6 +177,7 @@ module.exports = () => {
 										// newPlayerBan.save(() => {
 										// 	res.send();
 										// });
+										res.send();
 									});
 								});
 							}

@@ -42,8 +42,8 @@ version 0.9 (near future):
 (#299) links in general chat to either the site itself or the github page are linkable - done
 (#297) private games should be actually private to non mods - done
 (#305) ip ban all tor ips - done
+(#306) fix to people being (again) able to make accounts with the same name but different capitalization - done
 (various) overhaul/fixes to moderation problems (banning/timeouts not working) - in progress
-(#306) fix to people being (again) able to make accounts with the same name but different capitalization - not done
 (#251) URL routing for entire application (clickable links to games/replays/profiles) - mostly done, needs to run through all possible actions, updateUserStatus isn't working right (icons in Playerlist aren't correct after some routes), doesn't delete a game when you create it and then route away from it in the way it does now, most likely "DANGER" problems but I'm thinking it will just bounce them back which means they need to click leave and then click the DANGER model which is fine.
 
 
