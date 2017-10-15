@@ -276,6 +276,15 @@ class Playerlist extends React.Component {
 																</span>
 															);
 														}
+														
+														if (ADMINS.includes(user.userName)) {
+															return (
+																<span className="admin-name" title="This user is an admin">
+																	{' '}
+																	(A)
+																</span>
+															);
+														}
 													})()}
 												</span>
 												{renderStatus()}
