@@ -568,6 +568,46 @@ module.exports.handleAddNewClaim = data => {
 	sendInProgressGameUpdate(game);
 };
 
+module.exports.handleUpdatedRemakeGame = data => {
+	const game = games.find(el => el.general.uid === data.uid),
+		{ publicPlayersState } = game,
+		playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName),
+		player = publicPlayersState[playerIndex];
+
+	player.isRemakeVoting = data.remakeStatus;
+
+	if (player.isRemakeVoting) {
+		game.chats.push({
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: `${data.userName} {${playerIndex + 1}}`,
+					type: 'player'
+				},
+				{ text: ' has voted to remake this game.' }
+			]
+		});
+	} else {
+		game.chats.push({
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: `${data.userName} {${playerIndex + 1}}`,
+					type: 'player'
+				},
+				{ text: ' has recinded his or her vote to remake this game.' }
+			]
+		});
+	}
+	sendInProgressGameUpdate(game);
+	// remakeStatus: this.state.remakeStatus,
+	// userName: userInfo.userName,
+	// uid: gameInfo.general.uid
+	// isRemakeVoting
+};
+
 module.exports.handleAddNewGameChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 

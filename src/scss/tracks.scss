@@ -30,6 +30,10 @@
 		height: 30px;
 		border: 2px solid lightblue;
 		cursor: pointer;
+
+		&.enabled {
+			color: green !important;
+		}
 	}
 
 	.player-count,

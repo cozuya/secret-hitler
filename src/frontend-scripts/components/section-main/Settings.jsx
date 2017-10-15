@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import $ from 'jquery';
-import Slider, { Range } from 'rc-slider';
+import { Range } from 'rc-slider';
 import Modal from 'semantic-ui-modal';
 import Checkbox from 'semantic-ui-checkbox';
 import Dropzone from 'react-dropzone';

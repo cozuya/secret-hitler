@@ -15,7 +15,8 @@ const {
 		handleOpenReplay,
 		handleCloseReplay,
 		handlePlayerReport,
-		handlePlayerReportDismiss
+		handlePlayerReportDismiss,
+		handleUpdatedRemakeGame
 	} = require('./user-events'),
 	{ sendUserReports, sendGameInfo, sendUserGameSettings, sendModInfo, sendGameList, sendGeneralChats, sendUserList } = require('./user-requests'),
 	{
@@ -116,6 +117,9 @@ module.exports = () => {
 			})
 			.on('closeReplay', () => {
 				handleCloseReplay(socket);
+			})
+			.on('updateRemake', data => {
+				handleUpdatedRemakeGame(data);
 			})
 			// user-requests
 

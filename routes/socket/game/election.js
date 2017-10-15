@@ -652,7 +652,7 @@ module.exports.selectPresidentPolicy = data => {
 				president.cardFlingerState[2].notificationStatus = 'selected';
 			}
 		} catch (error) {
-			console.log(err, 'caught exception in president cardflinger');
+			console.log(error, 'caught exception in president cardflinger');
 			return;
 		}
 

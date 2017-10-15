@@ -131,8 +131,6 @@ export default class Creategame extends React.Component {
 					.substring(2),
 				excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 
-			console.log(excludedPlayerCount);
-
 			this.props.socket.emit('addNewGame', {
 				gameState: {
 					previousElectedGovernment: [],

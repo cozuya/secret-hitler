@@ -1,4 +1,4 @@
-	gameState
+gameState
 	isStarted bool
 	isCompleted bool
 	isVetoEnabled bool
@@ -55,6 +55,7 @@ publicPlayersState array
 		connected bool
 		isLoader bool
 		leftGame bool
+		isRemakeVoting bool
 		userName string
 		previousGovernmentStatus string wasPresident wasChancellor
 		cardStatus
