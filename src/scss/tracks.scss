@@ -16,6 +16,21 @@
 		opacity: 1;
 		border: 2px solid lightblue;
 	}
+	.icon.repeat {
+		position: absolute;
+		bottom: 5px;
+		left: 2px;
+		z-index: 105;
+		color: #ddd !important;
+		background: #89a79a;
+		font-size: 16px;
+		padding: 4px;
+		opacity: 1;
+		width: 28px;
+		height: 30px;
+		border: 2px solid lightblue;
+		cursor: pointer;
+	}
 
 	.player-count,
 	.gameuid {

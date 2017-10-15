@@ -5,6 +5,7 @@ const mongoose = require('mongoose'),
 		version: String, // versioning for `recalculateProfiles`
 		created: Date,
 		customCardback: String,
+		bio: String,
 		stats: {
 			matches: {
 				allMatches: {

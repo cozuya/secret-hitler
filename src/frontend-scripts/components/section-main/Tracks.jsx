@@ -31,11 +31,11 @@ const Tracks = props => {
 				<div className="game-name">
 					Game name: <span>{gameInfo.general.name}</span>
 				</div>
+				<i className="icon repeat" />
 				{userInfo.userName &&
-					(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) &&
-					<div className="gameuid">
-						Game UID: {gameInfo.general.uid}
-					</div>}
+					(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) && (
+						<div className="gameuid">Game UID: {gameInfo.general.uid}</div>
+					)}
 				<div className="player-count">
 					Players: <span>{gameInfo.publicPlayersState.length}</span>
 				</div>
@@ -102,7 +102,6 @@ const Tracks = props => {
 Tracks.propTypes = {
 	onUpdateReportGame: PropTypes.func,
 	onSeatingUser: PropTypes.func,
-	onLeaveGame: PropTypes.func,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object
