@@ -572,34 +572,37 @@ module.exports.handleUpdatedRemakeGame = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{ publicPlayersState } = game,
 		playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName),
-		player = publicPlayersState[playerIndex];
+		player = publicPlayersState[playerIndex],
+		chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: `${data.userName} {${playerIndex + 1}}`,
+					type: 'player'
+				}
+			]
+		};
+
+	if (!game || !player) {
+		return;
+	}
 
 	player.isRemakeVoting = data.remakeStatus;
-
 	if (player.isRemakeVoting) {
-		game.chats.push({
-			timestamp: new Date(),
-			gameChat: true,
-			chat: [
-				{
-					text: `${data.userName} {${playerIndex + 1}}`,
-					type: 'player'
-				},
-				{ text: ' has voted to remake this game.' }
-			]
-		});
+		chat.chat.push({ text: ' has voted to remake this game.' });
+		game.chats.push(chat);
+
+		if (
+			!game.gameState.isRemaking &&
+			publicPlayersState.length > 3 &&
+			publicPlayersState.filter(player => player.isRemakeVoting).length / publicPlayersState.length >= 0.8
+		) {
+			game.gameState.isRemaking = true;
+			console.log('remake goes here');
+		}
 	} else {
-		game.chats.push({
-			timestamp: new Date(),
-			gameChat: true,
-			chat: [
-				{
-					text: `${data.userName} {${playerIndex + 1}}`,
-					type: 'player'
-				},
-				{ text: ' has recinded his or her vote to remake this game.' }
-			]
-		});
+		chat.chat.push({ text: ' has recinded his or her vote to remake this game.' });
 	}
 	sendInProgressGameUpdate(game);
 	// remakeStatus: this.state.remakeStatus,
