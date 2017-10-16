@@ -125,8 +125,8 @@ class Playerlist extends React.Component {
 							70%.
 						</p>
 						<p>
-							Also, <span className="admin">Administrators</span> have a red color and are always on top; <span className="editorcolor">Editors</span>, placed
-							under Administrators, have an aqua color with a red (E); and <span className="moderatorcolor">Moderators</span>, placed under Editors, have a blue
+							Also, <span className="admin">Administrators</span> have a red color with a dark red (A) and are always on top; <span className="editorcolor">Editors</span>, placed
+							under Administrators, have an aqua color with a red (E) and appear at the top; and <span className="moderatorcolor">Moderators</span>, placed under Editors, have a blue
 							color with a light red (M) and also appear at the top, and <span className="contributer">contributors</span> get a special orange color as well!
 							Contribute code to this open source project to be endlessly pestered about why you're orange.
 						</p>
@@ -276,6 +276,15 @@ class Playerlist extends React.Component {
 																</span>
 															);
 														}
+														
+														if (ADMINS.includes(user.userName)) {
+                                                        								return (
+                                                        									<span className="admin-name" title="This user is an admin">
+                                                        										{' '}
+                                                        										(A)
+                                                        									</span>
+                                                        								);
+                                                       								}
 													})()}
 												</span>
 												{renderStatus()}
