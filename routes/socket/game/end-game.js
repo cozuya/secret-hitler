@@ -89,58 +89,60 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	saveGame(game);
 
-	Account.find({
-		username: { $in: seatedPlayers.map(player => player.userName) }
-	})
-		.then(results => {
-			const winningPlayerNames = winningPrivatePlayers.map(player => player.userName),
-				isRainbow = game.general.rainbowgame;
-
-			results.forEach(player => {
-				let winner = false;
-
-				if (winningPlayerNames.includes(player.username)) {
-					if (isRainbow) {
-						player.rainbowWins = player.rainbowWins ? player.rainbowWins + 1 : 1;
-						player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses : 0;
-					} else {
-						player.wins++;
-					}
-					winner = true;
-				} else {
-					if (isRainbow) {
-						player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses + 1 : 1;
-						player.rainbowWins = player.rainbowWins ? player.rainbowWins : 0;
-					} else {
-						player.losses++;
-					}
-				}
-
-				player.games.push(game.general.uid);
-				player.save(() => {
-					const userEntry = userList.find(user => user.userName === player.username);
-
-					if (userEntry) {
-						if (winner) {
-							if (isRainbow) {
-								userEntry.rainbowWins = userEntry.rainbowWins ? userEntry.rainbowWins + 1 : 1;
-							} else {
-								userEntry.wins++;
-							}
-						} else {
-							if (isRainbow) {
-								userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses + 1 : 1;
-							} else {
-								userEntry.losses++;
-							}
-						}
-
-						sendUserList();
-					}
-				});
-			});
+	if (!game.general.private) {
+		Account.find({
+			username: { $in: seatedPlayers.map(player => player.userName) }
 		})
-		.catch(err => {
-			console.log(err);
-		});
+			.then(results => {
+				const winningPlayerNames = winningPrivatePlayers.map(player => player.userName),
+					isRainbow = game.general.rainbowgame;
+
+				results.forEach(player => {
+					let winner = false;
+
+					if (winningPlayerNames.includes(player.username)) {
+						if (isRainbow) {
+							player.rainbowWins = player.rainbowWins ? player.rainbowWins + 1 : 1;
+							player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses : 0;
+						} else {
+							player.wins++;
+						}
+						winner = true;
+					} else {
+						if (isRainbow) {
+							player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses + 1 : 1;
+							player.rainbowWins = player.rainbowWins ? player.rainbowWins : 0;
+						} else {
+							player.losses++;
+						}
+					}
+
+					player.games.push(game.general.uid);
+					player.save(() => {
+						const userEntry = userList.find(user => user.userName === player.username);
+
+						if (userEntry) {
+							if (winner) {
+								if (isRainbow) {
+									userEntry.rainbowWins = userEntry.rainbowWins ? userEntry.rainbowWins + 1 : 1;
+								} else {
+									userEntry.wins++;
+								}
+							} else {
+								if (isRainbow) {
+									userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses + 1 : 1;
+								} else {
+									userEntry.losses++;
+								}
+							}
+
+							sendUserList();
+						}
+					});
+				});
+			})
+			.catch(err => {
+				console.log(err, 'error in updating accounts at end of game');
+			});
+	}
 };

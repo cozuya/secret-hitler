@@ -12,7 +12,8 @@ import {
 	updateUserList,
 	updateGeneralChats,
 	updateVersion,
-	fetchProfile
+	fetchProfile,
+	fetchReplay
 } from '../actions/actions.js';
 import { MODERATORS, ADMINS, EDITORS } from '../constants';
 import socket from '../socket';
@@ -70,6 +71,10 @@ export class App extends React.Component {
 
 		socket.on('manualDisconnection', () => {
 			window.location.pathname = '/observe';
+		});
+
+		socket.on('manualReplayRequest', uid => {
+			window.location.hash = uid ? `#/replay/${uid}` : /#/;
 		});
 
 		socket.on('manualReload', () => {
@@ -140,6 +145,8 @@ export class App extends React.Component {
 
 		if (hash.substr(0, 10) === '#/profile/' && !ADMINS.includes(hash.split('#/profile/')[1])) {
 			dispatch(fetchProfile(hash.split('#/profile/')[1]));
+		} else if (hash.substr(0, 9) === '#/replay/') {
+			dispatch(fetchReplay(hash.split('#/replay/')[1]));
 		} else if (hash === '#/changelog') {
 			dispatch(updateMidsection('changelog'));
 		} else if (
@@ -147,12 +154,14 @@ export class App extends React.Component {
 			userInfo.userName &&
 			(MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
 		) {
+			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('moderation'));
 		} else if (
 			hash === '#/playerreports' &&
 			userInfo.userName &&
 			(MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
 		) {
+			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
 		} else if (
 			hash === '#/settings' &&
@@ -250,8 +259,6 @@ export class App extends React.Component {
 			userInfo.isSeated = false;
 			dispatch(updateUser(userInfo));
 		}
-
-		console.log('Hello, World!');
 
 		socket.emit('leaveGame', {
 			userName: userInfo.userName,

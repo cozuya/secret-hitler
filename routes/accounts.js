@@ -5,7 +5,6 @@ const passport = require('passport'),
 	// verifyAccount = require('./verify-account'),
 	// resetPassword = require('./reset-password'),
 	blacklistedWords = require('../iso/blacklistwords'),
-	{ torIps } = require('./socket/user-requests'),
 	ensureAuthenticated = (req, res, next) => {
 		if (req.isAuthenticated()) {
 			return next();
@@ -73,8 +72,14 @@ module.exports = () => {
 	// });
 
 	app.post('/account/signup', (req, res, next) => {
+		console.log(req.body);
 		const { username, password, password2, email } = req.body,
-			signupIP = req.headers['X-Forwarded-For'] || req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+			signupIP =
+				req.headers['x-real-ip'] ||
+				req.headers['X-Real-IP'] ||
+				req.headers['X-Forwarded-For'] ||
+				req.headers['x-forwarded-for'] ||
+				req.connection.remoteAddress,
 			save = {
 				username,
 				gameSettings: {
@@ -118,10 +123,6 @@ module.exports = () => {
 			res.status(403).json({
 				message: 'Sorry, creating new accounts is temporarily disabled.'
 			});
-		} else if (torIps.includes(signupIP)) {
-			res.status(401).json({
-				message: 'TOR network users cannot play here.'
-			});
 		} else {
 			let doesContainBadWord = false;
 			blacklistedWords.forEach(word => {
@@ -134,12 +135,12 @@ module.exports = () => {
 					message: 'Sorry, your username contains a naughty word or part of a naughty word.'
 				});
 			} else {
-				Account.findOne({ username }, (err, account) => {
+				Account.findOne({ username: username.toLowerCase() }, (err, account) => {
 					if (err) {
 						return next(err);
 					}
 
-					if (account && account.username.toLowerCase() === username.toLowerCase()) {
+					if (account && account.username === username.toLowerCase()) {
 						res.status(401).json({ message: 'Sorry, that account already exists.' });
 					} else {
 						BannedIP.findOne({ ip: signupIP }, (err, ip) => {
@@ -168,15 +169,15 @@ module.exports = () => {
 									}
 
 									passport.authenticate('local')(req, res, () => {
-										const newPlayerBan = new BannedIP({
-											bannedDate: new Date(),
-											type: 'new',
-											ip: signupIP
-										});
-
-										newPlayerBan.save(() => {
-											res.send();
-										});
+										// const newPlayerBan = new BannedIP({
+										// 	bannedDate: new Date(),
+										// 	type: 'new',
+										// 	ip: signupIP
+										// });
+										// newPlayerBan.save(() => {
+										// 	res.send();
+										// });
+										res.send();
 									});
 								});
 							}
@@ -192,7 +193,12 @@ module.exports = () => {
 		(req, res, next) => {
 			BannedIP.findOne(
 				{
-					ip: req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For'] || req.connection.remoteAddress
+					ip:
+						req.headers['x-real-ip'] ||
+						req.headers['X-Real-IP'] ||
+						req.headers['X-Forwarded-For'] ||
+						req.headers['x-forwarded-for'] ||
+						req.connection.remoteAddress
 				},
 				(err, ip) => {
 					let date, unbannedTime;
@@ -208,12 +214,8 @@ module.exports = () => {
 
 					if (ip && unbannedTime > date && ip.type !== 'new') {
 						res.status(403).json({
-							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
+							message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
 						});
-						// } else if (torIps.includes(ip)) {
-						// 	res.status(401).json({
-						// 		message: 'TOR network users cannot play here.'
-						// 	});
 					} else {
 						return next();
 					}
@@ -225,10 +227,15 @@ module.exports = () => {
 			Account.findOne({
 				username: req.user.username
 			}).then(player => {
-				player.lastConnectedIP = req.headers['X-Forwarded-For'] || req.headers['X-Real-IP'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-				player.save(() => {
-					res.send();
-				});
+				(player.lastConnectedIP =
+					req.headers['x-real-ip'] ||
+					req.headers['X-Real-IP'] ||
+					req.headers['X-Forwarded-For'] ||
+					req.headers['x-forwarded-for'] ||
+					req.connection.remoteAddress),
+					player.save(() => {
+						res.send();
+					});
 			});
 		}
 	);

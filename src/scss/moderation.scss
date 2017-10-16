@@ -78,6 +78,14 @@
 		tr {
 			background: lightyellow;
 		}
+
+		thead tr th {
+			cursor: pointer;
+		}
+
+		+ button {
+			color: #fff;
+		}
 	}
 	textarea {
 		width: 100%;

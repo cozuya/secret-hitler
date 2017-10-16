@@ -123,7 +123,6 @@ const handleSocketDisconnect = socket => {
 	};
 
 if (process.env.NODE_ENV) {
-	console.log('Hello, World!');
 	const crashReq = https.request(crashOptions);
 
 	crashReq.end(crashReport);
@@ -567,6 +566,49 @@ module.exports.handleAddNewClaim = data => {
 		game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
 	}
 	sendInProgressGameUpdate(game);
+};
+
+module.exports.handleUpdatedRemakeGame = data => {
+	const game = games.find(el => el.general.uid === data.uid),
+		{ publicPlayersState } = game,
+		playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName),
+		player = publicPlayersState[playerIndex],
+		chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: `${data.userName} {${playerIndex + 1}}`,
+					type: 'player'
+				}
+			]
+		};
+
+	if (!game || !player) {
+		return;
+	}
+
+	player.isRemakeVoting = data.remakeStatus;
+	if (player.isRemakeVoting) {
+		chat.chat.push({ text: ' has voted to remake this game.' });
+		game.chats.push(chat);
+
+		if (
+			!game.gameState.isRemaking &&
+			publicPlayersState.length > 3 &&
+			publicPlayersState.filter(player => player.isRemakeVoting).length / publicPlayersState.length >= 0.8
+		) {
+			game.gameState.isRemaking = true;
+			console.log('remake goes here');
+		}
+	} else {
+		chat.chat.push({ text: ' has recinded his or her vote to remake this game.' });
+	}
+	sendInProgressGameUpdate(game);
+	// remakeStatus: this.state.remakeStatus,
+	// userName: userInfo.userName,
+	// uid: gameInfo.general.uid
+	// isRemakeVoting
 };
 
 module.exports.handleAddNewGameChat = (socket, data) => {

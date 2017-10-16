@@ -185,4 +185,8 @@ module.exports = () => {
 			console.log(err, 'upload cardback crash error');
 		}
 	});
+
+	app.get('*', (req, res) => {
+		renderPage(req, res, '404', '404');
+	});
 };
