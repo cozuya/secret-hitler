@@ -916,7 +916,7 @@ module.exports.handleModerationAction = (socket, data) => {
 						games.splice(games.indexOf(game), 1);
 						sendGameList();
 					}
-				} else {
+				} else if (isSuperMod) {
 					const setType = /setRWins/.test(data.action)
 							? 'rainbowWins'
 							: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses',
