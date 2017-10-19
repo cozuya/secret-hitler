@@ -159,7 +159,7 @@ body {
 			font-family: $headerfont;
 			position: absolute;
 			bottom: 0;
-			left: 3%;
+			left: 9%;
 			color: #bbb;
 			font-size: 13px;
 			a {
@@ -175,7 +175,7 @@ body {
 		}
 	}
 	.section-main > section {
-		border-top: 1px solid #3a3a3a;
+		border-top: none;
 		margin: 0;
 	}
 	.leftsidebar,
@@ -229,14 +229,14 @@ body {
 	}
 	.game > .ui.grid .chat-container .gamechat .chats,
 	.game-chat {
-		background: #3d3d3d;
+		background: #0c0202;
 		flex-grow: 1;
 	}
 	.game > .ui.grid .chat-container .gamechat .inputbar .expando-container .hotkey-container {
 		background: #7c7c7c;
 	}
 	.gamechat .ui.pointing.menu {
-		background: #212121;
+		background: #160a0a;
 		overflow: visible;
 		.item {
 			color: #bfbfbf;
@@ -379,7 +379,7 @@ body {
 }
 
 .section-main > section {
-	min-height: 555px;
+	min-height: 556px;
 	border-top: 1px solid #eee;
 }
 

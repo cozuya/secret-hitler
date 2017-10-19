@@ -139,6 +139,7 @@ class Playerlist extends React.Component {
 						</span>
 					)}
 				</div>
+				<div className="ui divider right-sidebar-divider" />
 				<div className="playerlist-body">
 					{(() => {
 						if (Object.keys(this.props.userList).length) {
