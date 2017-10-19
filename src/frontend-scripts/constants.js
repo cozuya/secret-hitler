@@ -23,7 +23,7 @@ const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999']
 
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 
-const CONTRIBUTORS = (module.exports.CONTRIBUTORS = ['jbasrai', 'sethe', 'veggiemanz', 'DFinn', 'conundrum', 'MilkMan']);
+const CONTRIBUTORS = (module.exports.CONTRIBUTORS = ['jbasrai', 'sethe', 'veggiemanz', 'DFinn', 'conundrum']);
 
 module.exports.PLAYERCOLORS = user =>
 	cn({
@@ -48,6 +48,5 @@ module.exports.PLAYERCOLORS = user =>
 		contributer: CONTRIBUTORS.includes(user.userName),
 		cbell: user.userName === 'cbell',
 		max: user.userName === 'Max',
-		dfinn: user.userName === 'DFinn',
-		milkman: user.userName === 'MilkMan'
+		dfinn: user.userName === 'DFinn'
 	});
