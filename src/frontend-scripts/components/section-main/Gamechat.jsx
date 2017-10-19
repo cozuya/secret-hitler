@@ -330,7 +330,12 @@ class Gamechat extends React.Component {
 															<span className="editor-name"> (E)</span>
 															<span className="observer-chat"> (Observer)</span>
 														</span>
-													: <span className="observer-chat"> (Observer)</span>}
+													: ADMINS.includes(chat.userName)
+										 				? <span>
+																<span className="admin-name"> (A)</span>
+																<span className="observer-chat"> (Observer)</span>
+															</span>
+														: <span className="observer-chat"> (Observer)</span>}
 										{this.handleTimestamps(chat.timestamp)}:
 									</span>
 									<span>
