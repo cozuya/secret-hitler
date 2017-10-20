@@ -116,16 +116,19 @@ start development task runner:
 In the first one:
 
 > cd secret-hitler
+
 > npm run db 27017
 
 In the second one:
 
 > cd secret-hitler
+
 > nodemon bin/dev
 
 In the third one:
 
 > cd secret-hitler
+
 > gulp
 
 ## DO NOT CLOSE ANY OF THE MAIN 3 NEEDED NODE.JS COMMAND PROMPTS OTHERWISE THE SITE WILL NOT LOAD! ##
