@@ -98,7 +98,9 @@ export class App extends React.Component {
 		});
 
 		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
-			if (this.props.midSection !== 'game' && Object.keys(game).length) {
+			const { hash } = window.location;
+
+			if ((this.props.midSection !== 'game' && Object.keys(game).length) || (Object.keys(game).length && hash !== `#/table/${game.general.uid}`)) {
 				dispatch(updateGameInfo(game));
 				dispatch(updateMidsection('game'));
 				window.location.hash = `#/table/${game.general.uid}`;

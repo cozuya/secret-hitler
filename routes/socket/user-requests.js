@@ -195,7 +195,6 @@ module.exports.sendGameInfo = (socket, uid) => {
 			}
 		}
 
-		// todo-release - doesn't work right for players who left game and then comes back into the old game - no gamechats
 		_game.chats = _game.chats.concat(_game.private.unSeatedGameChats);
 		socket.join(uid);
 		socket.emit('gameUpdate', secureGame(_game));

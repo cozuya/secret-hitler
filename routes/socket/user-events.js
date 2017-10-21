@@ -1,7 +1,7 @@
 let generalChatCount = 0;
 
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models'),
-	{ sendGameList, sendGeneralChats, sendUserList, updateUserStatus } = require('./user-requests'),
+	{ sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo } = require('./user-requests'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
 	ModAction = require('../../models/modAction'),
@@ -601,7 +601,12 @@ module.exports.handleUpdatedRemakeGame = data => {
 			publicPlayersState.length > 3 &&
 			publicPlayersState.filter(player => player.isRemakeVoting).length / publicPlayersState.length >= 0.8
 		) {
-			const newGame = Object.assign({}, game);
+			const newGame = Object.assign({}, game),
+				remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName),
+				remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
+					socketId =>
+						io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+				);
 
 			newGame.gameState = {
 				previousElectedGovernment: [],
@@ -643,7 +648,14 @@ module.exports.handleUpdatedRemakeGame = data => {
 				lock: {}
 			};
 
-			game.gameState.isRemaking = true;
+			games.push(newGame);
+			remakePlayerSocketIDs.forEach(id => {
+				io.sockets.sockets[id].leave(game.general.uid);
+				io.sockets.sockets[id].join(newGame.general.uid);
+				sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
+			});
+			checkStartConditions(newGame);
+			// game.gameState.isRemaking = true;
 		}
 	} else {
 		chat.chat.push({ text: ' has recinded his or her vote to remake this game.' });
