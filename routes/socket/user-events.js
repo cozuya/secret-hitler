@@ -590,16 +590,60 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 	player.isRemakeVoting = data.remakeStatus;
 	if (player.isRemakeVoting) {
+		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName);
+
 		chat.chat.push({ text: ' has voted to remake this game.' });
 		game.chats.push(chat);
+		publicPlayer.isRemaking = true;
 
 		if (
 			!game.gameState.isRemaking &&
 			publicPlayersState.length > 3 &&
 			publicPlayersState.filter(player => player.isRemakeVoting).length / publicPlayersState.length >= 0.8
 		) {
+			const newGame = Object.assign({}, game);
+
+			newGame.gameState = {
+				previousElectedGovernment: [],
+				undrawnPolicyCount: 17,
+				discardedPolicyCount: 0,
+				presidentIndex: -1
+			};
+
+			newGame.chats = [];
+			newGame.general.uid = Math.random()
+				.toString(36)
+				.substring(2);
+			newGame.general.status = 'Game is remaking..';
+			newGame.electionCount = 0;
+			newGame.timeCreated = new Date().getTime();
+			newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
+				userName: player.userName,
+				customCardback: player.customCardback,
+				customCardbackUid: player.customCardbackUid,
+				connected: player.connected,
+				cardStatus: {
+					cardDisplayed: false,
+					isFlipped: false,
+					cardFront: 'secretrole',
+					cardBack: {}
+				}
+			}));
+			newGame.playersState = [];
+			newGame.cardFlingerState = [];
+			newGame.trackState = {
+				liberalPolicyCount: 0,
+				fascistPolicyCount: 0,
+				electionTrackerCount: 0,
+				enactedPolicies: []
+			};
+			newGame.private = {
+				reports: {},
+				unSeatedGameChats: [],
+				lock: {}
+			};
+
 			game.gameState.isRemaking = true;
-			console.log('remake goes here');
 		}
 	} else {
 		chat.chat.push({ text: ' has recinded his or her vote to remake this game.' });

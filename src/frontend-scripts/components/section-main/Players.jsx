@@ -99,7 +99,7 @@ export default class Players extends React.Component {
 		const { gameInfo, userInfo } = this.props,
 			{ playersState, gameState, publicPlayersState } = gameInfo;
 
-		return publicPlayersState.map((player, i) =>
+		return publicPlayersState.map((player, i) => (
 			<div
 				key={i}
 				data-index={i}
@@ -216,7 +216,7 @@ export default class Players extends React.Component {
 					/>
 				</div>
 			</div>
-		);
+		));
 	}
 
 	renderTakeSeat() {
@@ -229,7 +229,8 @@ export default class Players extends React.Component {
 			gameInfo.publicPlayersState.length < 10 &&
 			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
 			(!gameInfo.general.rainbowgame ||
-				userList.list.find(user => user.userName === userInfo.userName).wins + userList.list.find(user => user.userName === userInfo.userName).losses > 49)
+				(Object.keys(userList).length &&
+					userList.list.find(user => user.userName === userInfo.userName).wins + userList.list.find(user => user.userName === userInfo.userName).losses > 49))
 		) {
 			return (
 				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
