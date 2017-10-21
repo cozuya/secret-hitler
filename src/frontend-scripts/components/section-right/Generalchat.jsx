@@ -80,19 +80,9 @@ export default class Generalchat extends React.Component {
 				<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
 					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
 						{chat.userName}
-						{(() => {
-							if (MODERATORS.includes(chat.userName)) {
-								return <span className="moderator-name"> (M)</span>;
-							}
-
-							if (EDITORS.includes(chat.userName)) {
-								return <span className="editor-name"> (E)</span>;
-							}
-
-							if (ADMINS.includes(chat.userName)) {
-								return <span className="admin-name"> (A)</span>;
-							}
-						})()}
+						{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
+						{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
+						{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
 						{chat.userName && ':'}{' '}
 					</span>
 					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>

@@ -562,21 +562,17 @@ export default class Moderation extends React.Component {
 					show/hide playerlist
 				</span>
 				<div>
-					{(() => {
-						if (this.state.playerListShown) {
-							return (
-								<div className="modplayerlist">
-									<h3>Current player list</h3>
-									<ul className="userlist">{this.renderUserlist()}</ul>
-									<div className="ui horizontal divider">or</div>
-									{this.renderPlayerInput()}
-									<div className="ui horizontal divider">-</div>
-									{this.renderActionText()}
-									{this.renderButtons()}
-								</div>
-							);
-						}
-					})()}
+					{this.state.playerListShown && (
+						<div className="modplayerlist">
+							<h3>Current player list</h3>
+							<ul className="userlist">{this.renderUserlist()}</ul>
+							<div className="ui horizontal divider">or</div>
+							{this.renderPlayerInput()}
+							<div className="ui horizontal divider">-</div>
+							{this.renderActionText()}
+							{this.renderButtons()}
+						</div>
+					)}
 					<div className="modlog" style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}>
 						<h3>Moderation log</h3>
 						{this.renderModLog()}

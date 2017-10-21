@@ -195,6 +195,8 @@ module.exports.sendGameInfo = (socket, uid) => {
 			}
 		}
 
+		console.log(_game, 'game');
+
 		_game.chats = _game.chats.concat(_game.private.unSeatedGameChats);
 		socket.join(uid);
 		socket.emit('gameUpdate', secureGame(_game));

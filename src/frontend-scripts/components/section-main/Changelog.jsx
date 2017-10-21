@@ -31,7 +31,7 @@ const Changelog = props => (
 			What this means is the URL of your browser now accurately shows the state of the application. The big takeaway is games, replays, and profiles are now all
 			deep linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you
 			would expect as well. If you link a game that no longer exists, you will instead be routed to the replay. This required a large change to the front end
-			and may not be perfect, please update if so.
+			and may not be perfect, please update if so. Also using gfycat style naming convention for games!
 		</p>
 		<h3>New feature: actual private games</h3>
 		<p>

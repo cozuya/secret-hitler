@@ -260,34 +260,25 @@ class Playerlist extends React.Component {
 											<div className="userlist-username">
 												<span className={userClasses} onClick={disableIfUnclickable(routeToProfile.bind(null, user.userName))}>
 													{user.userName}
-													{(() => {
-														if (MODERATORS.includes(user.userName)) {
-															return (
-																<span className="moderator-name" title="This user is a moderator">
-																	{' '}
-																	(M)
-																</span>
-															);
-														}
+													{MODERATORS.includes(user.userName) && (
+														<span className="moderator-name" title="This user is a moderator">
+															{' '}
+															(M)
+														</span>
+													)}
+													{EDITORS.includes(user.userName) && (
+														<span className="editor-name" title="This user is an editor">
+															{' '}
+															(E)
+														</span>
+													)}
 
-														if (EDITORS.includes(user.userName)) {
-															return (
-																<span className="editor-name" title="This user is an editor">
-																	{' '}
-																	(E)
-																</span>
-															);
-														}
-
-														if (ADMINS.includes(user.userName)) {
-															return (
-																<span className="admin-name" title="This user is an admin">
-																	{' '}
-																	(A)
-																</span>
-															);
-														}
-													})()}
+													{ADMINS.includes(user.userName) && (
+														<span className="admin-name" title="This user is an admin">
+															{' '}
+															(A)
+														</span>
+													)}
 												</span>
 												{renderStatus()}
 											</div>

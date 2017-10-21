@@ -173,6 +173,7 @@ export class App extends React.Component {
 		} else if (hash === '#/creategame' && isAuthed && !Object.keys(gameInfo).length) {
 			dispatch(updateMidsection('createGame'));
 		} else if (hash.substr(0, 8) === '#/table/') {
+			console.log('Hello, World!');
 			socket.emit('getGameInfo', hash.split('#/table/')[1]);
 		} else if (hash !== '#/') {
 			window.location.hash = '#/';

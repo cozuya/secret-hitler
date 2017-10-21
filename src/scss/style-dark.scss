@@ -14,7 +14,7 @@ $proceed: #2185d0;
 $lteal: #097892;
 $dteal: #034f61;
 $textfont: 'Comfortaa', Lato, sans-serif;
-$headerfont: 'Unica One', Lato, sans-serif;
+$headerfont: 'Cuprum', Lato, sans-serif;
 @import 'semantic.scss';
 @import 'creategame.scss';
 @import 'leftsidebar.scss';
@@ -35,7 +35,7 @@ body {
 	font-family: $textfont;
 }
 #main {
-	min-width: 1246px;
+	min-width: 1253px;
 	margin-left: auto;
 	margin-right: auto;
 	max-width: inherit !important;

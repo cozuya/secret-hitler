@@ -240,54 +240,50 @@ class Gamechat extends React.Component {
 					<div className={chat.chat[1] && chat.chat[1].type ? `gamechat-item ${chat.chat[1].type}` : 'gamechat-item'} key={i}>
 						<span className="chat-user--game">[GAME]{this.handleTimestamps(chat.timestamp)}: </span>
 						<span className="game-chat">
-							{(() => {
-								return chatContents.map((chatSegment, index) => {
-									if (chatSegment.type) {
-										let classes;
+							{chatContents.map((chatSegment, index) => {
+								if (chatSegment.type) {
+									let classes;
 
-										if (chatSegment.type === 'player') {
-											classes = 'chat-player';
-										} else {
-											classes = `chat-role--${chatSegment.type}`;
-										}
-
-										return (
-											<span key={index} className={classes}>
-												{chatSegment.text}
-											</span>
-										);
+									if (chatSegment.type === 'player') {
+										classes = 'chat-player';
+									} else {
+										classes = `chat-role--${chatSegment.type}`;
 									}
 
-									return chatSegment.text;
-								});
-							})()}
+									return (
+										<span key={index} className={classes}>
+											{chatSegment.text}
+										</span>
+									);
+								}
+
+								return chatSegment.text;
+							})}
 						</span>
 					</div>
 				) : chat.isClaim ? (
 					<div className="item claim-item" key={i}>
 						<span className="chat-user--claim">[CLAIM]{this.handleTimestamps(chat.timestamp)}: </span>
 						<span className="claim-chat">
-							{(() => {
-								return chatContents.map((chatSegment, index) => {
-									if (chatSegment.type) {
-										let classes;
+							{chatContents.map((chatSegment, index) => {
+								if (chatSegment.type) {
+									let classes;
 
-										if (chatSegment.type === 'player') {
-											classes = 'chat-player';
-										} else {
-											classes = `chat-role--${chatSegment.type}`;
-										}
-
-										return (
-											<span key={index} className={classes}>
-												{chatSegment.text}
-											</span>
-										);
+									if (chatSegment.type === 'player') {
+										classes = 'chat-player';
+									} else {
+										classes = `chat-role--${chatSegment.type}`;
 									}
 
-									return chatSegment.text;
-								});
-							})()}
+									return (
+										<span key={index} className={classes}>
+											{chatSegment.text}
+										</span>
+									);
+								}
+
+								return chatSegment.text;
+							})}
 						</span>
 					</div>
 				) : chat.isBroadcast ? (
@@ -690,20 +686,14 @@ class Gamechat extends React.Component {
 						/>
 						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
-					{(() => {
-						if (
-							gameInfo.playersState &&
-							gameInfo.playersState.length &&
-							userInfo.userName &&
-							gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim
-						) {
-							return (
-								<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
-									C
-								</div>
-							);
-						}
-					})()}
+					{gameInfo.playersState &&
+						gameInfo.playersState.length &&
+						userInfo.userName &&
+						gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim && (
+							<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
+								C
+							</div>
+						)}
 				</form>
 				<div
 					className="ui basic fullscreen modal leavegamemodals"
