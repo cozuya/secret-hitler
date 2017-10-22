@@ -39,6 +39,7 @@ const Changelog = props => (
 			mechanism (and remake game feature). In addition, private games no longer count towards a player's win and loss rate. Note: moderators can still see
 			private games.
 		</p>
+		<h3>Other issues:</h3>
 		<ul>
 			<li>
 				Overall UI has been tweaked color wise mostly. If you've been playing here at all in the past year (yikes), you'd know I am not at all a designer, but I

@@ -57,7 +57,6 @@ class Tracks extends React.Component {
 		// {userInfo.userName &&
 		// 	userInfo.seatNumber &&
 		// 	gameInfo.gameState.isTracksFlipped && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
-		console.log(this.props, 'props');
 
 		return (
 			<section className="tracks-container">

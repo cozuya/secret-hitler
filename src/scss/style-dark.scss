@@ -157,9 +157,6 @@ body {
 		}
 		p {
 			font-family: $headerfont;
-			position: absolute;
-			bottom: 0;
-			left: 9%;
 			color: #bbb;
 			font-size: 13px;
 			a {
@@ -386,6 +383,13 @@ body {
 
 .defaultmid {
 	background: #fdfdfd;
+	display: flex;
+	flex-direction: column-reverse;
+
+	p {
+		display: flex;
+		justify-content: center;
+	}
 }
 
 #game-container {
