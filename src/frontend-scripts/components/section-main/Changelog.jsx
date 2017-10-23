@@ -50,6 +50,7 @@ const Changelog = props => (
 			<li>If you have a custom width or font, the application no longer "flashes" when you load the page.</li>
 			<li>Hovering on a chat in general chat will show a timestamp of when it was said.</li>
 			<li>A fix to players being able to make accounts with the same name but different capitalization has been implemented.</li>
+			<li>All dependencies updated including moving to the latest version of React (16). What this means is hopefully some better front-end performance.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.8.2 "blue steel" released 9-30-2017</p>

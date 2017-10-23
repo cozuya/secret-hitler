@@ -46,7 +46,7 @@ class Gamechat extends React.Component {
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {
 			// modal methods dont seem to work.
-			this.props.onLeaveGame(this.props.userInfo.isSeated, false, this.state.badKarma);
+			this.props.onLeaveGame(true);
 			$(this.leaveGameModal).modal('hide');
 		});
 	}
