@@ -17,7 +17,7 @@
 			font-size: 22px;
 			font-style: italic;
 			color: #eee;
-			background: $darkfascistteam;
+			background: #2d0c0b;
 			padding: 7px 0px 3px 2px;
 		}
 		.gamechat {
@@ -32,7 +32,7 @@
 			display: flex;
 			flex-direction: column;
 			form {
-				background: #3d3d3d;
+				background: #0c0202;
 				display: flex;
 				position: relative;
 				z-index: 100;
@@ -97,22 +97,22 @@
 				}
 
 				.gamechat-item {
-					background: #333;
+					background: #0f0202;
 					span {
-						background: #333 !important;
+						background: #0f0202 !important;
 					}
 
 					&.fascist {
-						background: #382c2c;
+						background: #230404;
 						span {
-							background: #382c2c !important;
+							background: #230404 !important;
 						}
 					}
 					&.liberal {
-						background: #323b42;
+						background: #030e17;
 
 						span {
-							background: #323b42 !important;
+							background: #030e17 !important;
 						}
 					}
 				}

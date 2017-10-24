@@ -98,7 +98,10 @@ export class App extends React.Component {
 		});
 
 		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
-			if (this.props.midSection !== 'game' && Object.keys(game).length) {
+			const { hash } = window.location;
+
+			console.log(game, 'game');
+			if ((this.props.midSection !== 'game' && Object.keys(game).length) || (Object.keys(game).length && hash !== `#/table/${game.general.uid}`)) {
 				dispatch(updateGameInfo(game));
 				dispatch(updateMidsection('game'));
 				window.location.hash = `#/table/${game.general.uid}`;
@@ -108,10 +111,8 @@ export class App extends React.Component {
 				} else if (!toReplay) {
 					window.location.hash = '#/';
 				}
-				dispatch(updateGameInfo(game));
-			} else {
-				dispatch(updateGameInfo(game));
 			}
+			dispatch(updateGameInfo(game));
 		});
 
 		socket.on('userList', list => {
@@ -140,8 +141,19 @@ export class App extends React.Component {
 	router() {
 		const { hash } = window.location,
 			{ userInfo, dispatch, gameInfo } = this.props,
-			{ gameState } = gameInfo,
 			isAuthed = Boolean(document.getElementById('game-container').classList.length);
+
+		if (
+			hash.substr(0, 8) !== '#/table/' &&
+			gameInfo &&
+			gameInfo.gameState &&
+			userInfo.userName &&
+			gameInfo.publicPlayersState.length &&
+			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
+			(!gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted)
+		) {
+			this.handleLeaveGame(true);
+		}
 
 		if (hash.substr(0, 10) === '#/profile/' && !ADMINS.includes(hash.split('#/profile/')[1])) {
 			dispatch(fetchProfile(hash.split('#/profile/')[1]));
@@ -163,12 +175,9 @@ export class App extends React.Component {
 		) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
-		} else if (
-			hash === '#/settings' &&
-			((gameState && ((gameState.isCompleted && userInfo.seatNumber) || !userInfo.isSeated || !gameState.isStarted)) || (!gameState && isAuthed))
-		) {
+		} else if (hash === '#/settings') {
 			dispatch(updateMidsection('settings'));
-		} else if (hash === '#/creategame' && isAuthed && !Object.keys(gameInfo).length) {
+		} else if (hash === '#/creategame' && isAuthed) {
 			dispatch(updateMidsection('createGame'));
 		} else if (hash.substr(0, 8) === '#/table/') {
 			socket.emit('getGameInfo', hash.split('#/table/')[1]);
@@ -318,23 +327,17 @@ export class App extends React.Component {
 					socket={socket}
 					version={this.props.version}
 				/>
-				{(() => {
-					if (
-						(this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
-						(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)
-					) {
-						return (
-							<RightSidebar
-								gameInfo={this.props.gameInfo}
-								userInfo={this.props.userInfo}
-								userList={this.props.userList}
-								generalChats={this.props.generalChats}
-								onModerationButtonClick={this.handleRoute}
-								socket={socket}
-							/>
-						);
-					}
-				})()}
+				{((this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
+					(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)) && (
+					<RightSidebar
+						gameInfo={this.props.gameInfo}
+						userInfo={this.props.userInfo}
+						userList={this.props.userList}
+						generalChats={this.props.generalChats}
+						onModerationButtonClick={this.handleRoute}
+						socket={socket}
+					/>
+				)}
 			</section>
 		);
 	}

@@ -125,10 +125,11 @@ class Playerlist extends React.Component {
 							70%.
 						</p>
 						<p>
-							Also, <span className="admin">Administrators</span> have a red color and are always on top; <span className="editorcolor">Editors</span>, placed
-							under Administrators, have an aqua color with a red (E); and <span className="moderatorcolor">Moderators</span>, placed under Editors, have a blue
-							color with a light red (M) and also appear at the top, and <span className="contributer">contributors</span> get a special orange color as well!
-							Contribute code to this open source project to be endlessly pestered about why you're orange.
+							Also, <span className="admin">Administrators</span> have a red color with a dark red (A) and are always on top;{' '}
+							<span className="editorcolor">Editors</span>, placed under Administrators, have an aqua color with a red (E) and appear at the top; and{' '}
+							<span className="moderatorcolor">Moderators</span>, placed under Editors, have a blue color with a light red (M) and also appear at the top, and{' '}
+							<span className="contributer">Contributors</span> get a special orange color as well! Contribute code to this open source project to be endlessly
+							pestered about why you're orange.
 						</p>
 					</div>
 					{Object.keys(this.props.userList).length && (
@@ -138,6 +139,7 @@ class Playerlist extends React.Component {
 						</span>
 					)}
 				</div>
+				<div className="ui divider right-sidebar-divider" />
 				<div className="playerlist-body">
 					{(() => {
 						if (Object.keys(this.props.userList).length) {
@@ -258,25 +260,25 @@ class Playerlist extends React.Component {
 											<div className="userlist-username">
 												<span className={userClasses} onClick={disableIfUnclickable(routeToProfile.bind(null, user.userName))}>
 													{user.userName}
-													{(() => {
-														if (MODERATORS.includes(user.userName)) {
-															return (
-																<span className="moderator-name" title="This user is a moderator">
-																	{' '}
-																	(M)
-																</span>
-															);
-														}
+													{MODERATORS.includes(user.userName) && (
+														<span className="moderator-name" title="This user is a moderator">
+															{' '}
+															(M)
+														</span>
+													)}
+													{EDITORS.includes(user.userName) && (
+														<span className="editor-name" title="This user is an editor">
+															{' '}
+															(E)
+														</span>
+													)}
 
-														if (EDITORS.includes(user.userName)) {
-															return (
-																<span className="editor-name" title="This user is an editor">
-																	{' '}
-																	(E)
-																</span>
-															);
-														}
-													})()}
+													{ADMINS.includes(user.userName) && (
+														<span className="admin-name" title="This user is an admin">
+															{' '}
+															(A)
+														</span>
+													)}
 												</span>
 												{renderStatus()}
 											</div>

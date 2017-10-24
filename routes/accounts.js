@@ -72,7 +72,6 @@ module.exports = () => {
 	// });
 
 	app.post('/account/signup', (req, res, next) => {
-		console.log(req.body);
 		const { username, password, password2, email } = req.body,
 			signupIP =
 				req.headers['x-real-ip'] ||

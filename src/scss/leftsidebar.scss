@@ -6,6 +6,7 @@
 		display: block;
 		padding: 12px 15px;
 	}
+
 	.ui.header {
 		margin: 0;
 	}
@@ -17,7 +18,8 @@
 		cursor: pointer;
 		border: 1px solid #000;
 		padding: 0;
-		margin-bottom: 10px;
+		margin-top: 5px;
+		margin-bottom: 5px;
 		color: #ddd;
 		background: #1e1414;
 		&:hover {

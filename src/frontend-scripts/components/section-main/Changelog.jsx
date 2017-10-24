@@ -31,7 +31,7 @@ const Changelog = props => (
 			What this means is the URL of your browser now accurately shows the state of the application. The big takeaway is games, replays, and profiles are now all
 			deep linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you
 			would expect as well. If you link a game that no longer exists, you will instead be routed to the replay. This required a large change to the front end
-			and may not be perfect, please update if so.
+			and may not be perfect, please update if so. Also using gfycat style naming convention for games!
 		</p>
 		<h3>New feature: actual private games</h3>
 		<p>
@@ -39,6 +39,7 @@ const Changelog = props => (
 			mechanism (and remake game feature). In addition, private games no longer count towards a player's win and loss rate. Note: moderators can still see
 			private games.
 		</p>
+		<h3>Other issues:</h3>
 		<ul>
 			<li>
 				Overall UI has been tweaked color wise mostly. If you've been playing here at all in the past year (yikes), you'd know I am not at all a designer, but I
@@ -49,6 +50,7 @@ const Changelog = props => (
 			<li>If you have a custom width or font, the application no longer "flashes" when you load the page.</li>
 			<li>Hovering on a chat in general chat will show a timestamp of when it was said.</li>
 			<li>A fix to players being able to make accounts with the same name but different capitalization has been implemented.</li>
+			<li>All dependencies updated including moving to the latest version of React (16). What this means is hopefully some better front-end performance.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.8.2 "blue steel" released 9-30-2017</p>

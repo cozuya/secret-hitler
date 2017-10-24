@@ -20,17 +20,11 @@ const PatchAlert = ({ isActive, onClick }) => (isActive ? <div className="patch-
 
 const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 	<section className="defaultmid">
-		<div className="poll">
-			<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki/Emotes">
-				Emotes quick reference guide
-			</a>
-		</div>
 		<PatchAlert isActive={version.lastSeen && version.current.number !== version.lastSeen} onClick={readPatchNotes} />
-		<img src="/images/lizard28.png" alt="Secret Hitler logo" width="400" height="400" />
 		<p>
 			<span>{`sh.io version ${version.current.number} "${version.current.color}" released ${version.current.date} | `}</span>
 			<span>
-				<a onClick={readPatchNotes}>changelog</a> |{' '}
+				<a onClick={readPatchNotes}> changelog </a>|{' '}
 				<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
 					open issues and upcoming features
 				</a>{' '}
@@ -44,70 +38,72 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 				</a>
 			</span>
 		</p>
-		<br />
-		<button style={{ padding: '5px', background: '#333', color: 'white' }} data-name="h" onClick={quickDefault}>
-			default game
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="Uther" className="loginquick">
-			Uther
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="Jaina" className="loginquick">
-			Jaina
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="Rexxar" className="loginquick">
-			Rexxar
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="Malfurian" className="loginquick">
-			Malfurian
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="Thrall" className="loginquick">
-			Thrall
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="Valeera" className="loginquick">
-			Valeera
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="Anduin" className="loginquick">
-			Anduin
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="aaa" className="loginquick">
-			aaa
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="bbb" className="loginquick">
-			bbb
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="ccc" className="loginquick">
-			ccc
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="ddd" className="loginquick">
-			ddd
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="eee" className="loginquick">
-			eee
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="fff" className="loginquick">
-			fff
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="ggg" className="loginquick">
-			ggg
-		</button>
-		<br />
-		<button style={{ padding: '5px', width: '80px' }} data-name="hhh" className="loginquick">
-			hhh
-		</button>
+		<div className="defaults">
+			<br />
+			<button style={{ padding: '5px', background: '#333', color: 'white' }} data-name="h" onClick={quickDefault}>
+				default game
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="Uther" className="loginquick">
+				Uther
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="Jaina" className="loginquick">
+				Jaina
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="Rexxar" className="loginquick">
+				Rexxar
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="Malfurian" className="loginquick">
+				Malfurian
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="Thrall" className="loginquick">
+				Thrall
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="Valeera" className="loginquick">
+				Valeera
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="Anduin" className="loginquick">
+				Anduin
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="aaa" className="loginquick">
+				aaa
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="bbb" className="loginquick">
+				bbb
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="ccc" className="loginquick">
+				ccc
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="ddd" className="loginquick">
+				ddd
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="eee" className="loginquick">
+				eee
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="fff" className="loginquick">
+				fff
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="ggg" className="loginquick">
+				ggg
+			</button>
+			<br />
+			<button style={{ padding: '5px', width: '80px' }} data-name="hhh" className="loginquick">
+				hhh
+			</button>
+		</div>
 	</section>
 );
 
