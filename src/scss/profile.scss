@@ -2,7 +2,7 @@
 	border: 0;
 	border-radius: 0;
 	margin-top: 0;
-	background-color: #070000;
+	background-color: #0b0000;
 	padding: 20px;
 	color: #eee;
 
@@ -41,5 +41,9 @@
 		font-size: 30px;
 		left: 760px;
 		opacity: 0.3;
+	}
+
+	.recent-games-table + table tbody tr {
+		cursor: pointer;
 	}
 }

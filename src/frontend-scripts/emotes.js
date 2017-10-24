@@ -65,8 +65,16 @@ export function processEmotes(input) {
 			// 	const hash = word.split('http://localhost:8080')[1];
 
 			formatedMsg.push(
-				<a key={index} href={hash}>
+				<a key={index} href={hash} title="link to something inside of sh.io">
 					{hash}
+				</a>
+			);
+		} else if (/^https:\/\/github.com\/cozuya\/secret-hitler\/issues/.test(word)) {
+			const endLink = word.split('https://github.com/cozuya/secret-hitler')[1];
+
+			formatedMsg.push(
+				<a key={index} target="_blank" title="link to sh.io's github page" href={`https://github.com/cozuya/secret-hitler${endLink}`}>
+					SH.IO github link to {endLink}
 				</a>
 			);
 		} else {

@@ -10,25 +10,47 @@ const Changelog = props => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.8.3 "stainless steel" released 10-15-2017</p>
+			<p>Version 0.9.0 "" released 10-22-2017</p>
 		</div>
+		<h3>New feature: remake game button.</h3>
+		<p>
+			Your game is dead due to afk? You want to remake a successfully completed game? Click this button to let your table know you'd like to make a new game.
+			When enough people click, there is a 10 second countdown and a new game is made with the same settings and the people who clicked the button already
+			seated. If this is enough to satisfy the start # requirement, the game starts automatically, if not, it is open to new players being seated.
+		</p>
+		<h3>New feature: optional rebalancing for 6 and 9 player games.</h3>
+		<p>
+			There's a new create game option (default: on) that, when a 6 or 9p game has begun, a facist and liberal policy have already been enacted, respectively.
+			You'll get it. While these are being recorded correctly, there are no stats/graphs for this yet - next minor update.
+		</p>
 		<h3>New feature: URL routing</h3>
 		<div style={{ textAlign: 'center' }}>
 			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="/images/routes.png" />
 		</div>
 		<p>
 			What this means is the URL of your browser now accurately shows the state of the application. The big takeaway is games, replays, and profiles are now all
-			linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you would
-			expect as well. This required a large change to the front end and may not be perfect, please update if so.
+			deep linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you
+			would expect as well. If you link a game that no longer exists, you will instead be routed to the replay. This required a large change to the front end
+			and may not be perfect, please update if so. Also using gfycat style naming convention for games!
 		</p>
+		<h3>New feature: actual private games</h3>
+		<p>
+			Private games have been changed - they no longer show up on the list of games on the left sidebar, and are only accessible through the new URL linking
+			mechanism (and remake game feature). In addition, private games no longer count towards a player's win and loss rate. Note: moderators can still see
+			private games.
+		</p>
+		<h3>Other issues:</h3>
 		<ul>
 			<li>
 				Overall UI has been tweaked color wise mostly. If you've been playing here at all in the past year (yikes), you'd know I am not at all a designer, but I
 				can at least attempt to make things more fluid and contiguous. If you ARE a designer (and want to work for free..), let me know.
 			</li>
-			<li>Links to sh.io itself in general chat are now clickable (non sh.io links are still not).</li>
+			<li>Links in general chat to sh.io itself, or to this site's github repository, are now clickable. Other links are still not.</li>
 			<li>The whitelist feature now correctly has a scroll bar.</li>
-			<li>If you have a custom width or font, the game no longer "flashes" when you load the page.</li>
+			<li>If you have a custom width or font, the application no longer "flashes" when you load the page.</li>
+			<li>Hovering on a chat in general chat will show a timestamp of when it was said.</li>
+			<li>A fix to players being able to make accounts with the same name but different capitalization has been implemented.</li>
+			<li>All dependencies updated including moving to the latest version of React (16). What this means is hopefully some better front-end performance.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.8.2 "blue steel" released 9-30-2017</p>

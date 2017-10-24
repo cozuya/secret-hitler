@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { MODERATORS, EDITORS } from '../../constants';
+import { MODERATORS, EDITORS, ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
 import { processEmotes } from '../../emotes';
 import moment from 'moment';
@@ -76,21 +76,13 @@ export default class Generalchat extends React.Component {
 				'chat-user'
 			);
 
-			console.log(chat);
-
 			return (
 				<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
 					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
 						{chat.userName}
-						{(() => {
-							if (MODERATORS.includes(chat.userName)) {
-								return <span className="moderator-name"> (M)</span>;
-							}
-
-							if (EDITORS.includes(chat.userName)) {
-								return <span className="editor-name"> (E)</span>;
-							}
-						})()}
+						{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
+						{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
+						{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
 						{chat.userName && ':'}{' '}
 					</span>
 					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>

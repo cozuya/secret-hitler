@@ -1,6 +1,8 @@
 const Account = require('../../models/account'),
 	ModAction = require('../../models/modAction'),
 	PlayerReport = require('../../models/playerReport'),
+	Game = require('../../models/game'),
+	BannedIP = require('../../models/bannedIP'),
 	{ games, userList, generalChats, accountCreationDisabled, ipbansDisabled } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
 	{ secureGame } = require('./util'),
@@ -13,33 +15,43 @@ const Account = require('../../models/account'),
 
 let torIps;
 
-// try {
-// 	https.get(options, res => {
-// 		let rawData = '';
-// 		res.on('data', chunk => {
-// 			rawData += chunk;
-// 		});
-// 		res.on('end', () => {
-// 			try {
-// 				torIps = rawData.split('\n').slice(3, rawData.length);
-// 			} catch (e) {
-// 				console.error(e.message, 'retrieving tor ip addresses failed');
-// 			}
-// 		});
-// 	});
-// } catch (e) {
-// 	console.log(e, 'err receiving tor ip addresses');
-// }
+if (process.env.NODE_ENV) {
+	try {
+		https.get(options, res => {
+			let rawData = '';
+			res.on('data', chunk => {
+				rawData += chunk;
+			});
+			res.on('end', () => {
+				try {
+					torIps = rawData.split('\n').slice(3, rawData.length);
+				} catch (e) {
+					console.error(e.message, 'retrieving tor ip addresses failed');
+				}
+				torIps.forEach(ip => {
+					const ipban = new BannedIP({
+						bannedDate: new Date(),
+						type: 'large',
+						ip
+					});
+					ipban.save();
+				});
+			});
+		});
+	} catch (e) {
+		console.log(e, 'err receiving tor ip addresses');
+	}
+}
+
 module.exports.torIps = torIps;
 
-module.exports.sendModInfo = socket => {
+module.exports.sendModInfo = (socket, count) => {
 	const userNames = userList.map(user => user.userName);
 
 	Account.find({ username: userNames })
 		.then(users => {
 			ModAction.find()
-				.sort({ $natural: -1 })
-				.limit(500)
+				.limit(500 * count)
 				.then(actions => {
 					socket.emit('modInfo', {
 						modReports: actions,
@@ -48,7 +60,7 @@ module.exports.sendModInfo = socket => {
 						userList: users.map(user => ({
 							isRainbow: user.wins + user.losses > 49,
 							userName: user.username,
-							isTor: torIps.includes(user.lastConnectedIP || user.signupIP),
+							isTor: torIps && torIps.includes(user.lastConnectedIP || user.signupIP),
 							ip: user.lastConnectedIP || user.signupIP
 						}))
 					});
@@ -130,7 +142,7 @@ module.exports.sendGameList = socket => {
 module.exports.sendUserReports = socket => {
 	PlayerReport.find()
 		.sort({ $natural: -1 })
-		.limit(200)
+		.limit(500)
 		.then(reports => {
 			socket.emit('reportInfo', reports);
 		});
@@ -183,11 +195,16 @@ module.exports.sendGameInfo = (socket, uid) => {
 			}
 		}
 
-		// todo-release - doesn't work right for players who left game and then comes back into the old game - no gamechats
 		_game.chats = _game.chats.concat(_game.private.unSeatedGameChats);
 		socket.join(uid);
 		socket.emit('gameUpdate', secureGame(_game));
 	} else {
-		// todo: replay retrieval
+		Game.findOne({ uid }).then((game, err) => {
+			if (err) {
+				console.log(err, 'game err retrieving for replay');
+			}
+
+			socket.emit('manualReplayRequest', game ? game.uid : '');
+		});
 	}
 };

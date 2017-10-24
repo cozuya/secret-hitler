@@ -23,7 +23,12 @@ export default class Moderation extends React.Component {
 			playerListShown: true,
 			broadcastText: '',
 			playerInputText: '',
-			resetServerCount: 0
+			resetServerCount: 0,
+			logCount: 1,
+			logSort: {
+				type: 'date',
+				direction: 'descending'
+			}
 		};
 	}
 
@@ -40,7 +45,7 @@ export default class Moderation extends React.Component {
 			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
 		});
 
-		socket.emit('getModInfo');
+		socket.emit('getModInfo', 1);
 
 		$(this.toggleAccountCreation).checkbox({
 			onChecked() {
@@ -267,17 +272,23 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="ipbans" />
 					</div>
 				</div>
-				<div className="toggle-containers">
-					<h4 className="ui header">Disable game creation</h4>
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.toggleGameCreation = c;
-						}}
-					>
-						<input type="checkbox" name="ipbans" />
-					</div>
-				</div>
+				{(() => {
+					{
+						/* return (
+						<div className="toggle-containers">
+							<h4 className="ui header">Disable game creation</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.toggleGameCreation = c;
+								}}
+							>
+								<input type="checkbox" name="ipbans" />
+							</div>
+						</div>
+					); */
+					}
+				})()}
 				<div className="ui horizontal divider">-</div>
 
 				<button
@@ -316,11 +327,9 @@ export default class Moderation extends React.Component {
 					className={
 						(selectedUser || playerInputText) &&
 						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName)) ? (
-							'ui button ipban-button'
-						) : (
-							'ui button disabled ipban-button'
-						)
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
 						takeModAction('ipban');
@@ -332,11 +341,9 @@ export default class Moderation extends React.Component {
 					className={
 						(selectedUser || playerInputText) &&
 						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName)) ? (
-							'ui button ipban-button'
-						) : (
-							'ui button disabled ipban-button'
-						)
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
 						takeModAction('ipbanlarge');
@@ -358,11 +365,9 @@ export default class Moderation extends React.Component {
 					className={
 						(selectedUser || playerInputText) &&
 						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName)) ? (
-							'ui button ipban-button'
-						) : (
-							'ui button disabled ipban-button'
-						)
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
 						takeModAction('deleteProfile');
@@ -373,11 +378,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'black' }}
 					className={
-						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName)) ? (
-							'ui button ipban-button'
-						) : (
-							'ui button disabled ipban-button'
-						)
+						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
 						takeModAction('resetServer');
@@ -390,32 +393,118 @@ export default class Moderation extends React.Component {
 	}
 
 	renderModLog() {
+		const { logSort } = this.state,
+			clickSort = type => {
+				this.setState({
+					logSort: {
+						type,
+						direction: this.state.logSort.direction === 'descending' ? 'ascending' : 'descending'
+					}
+				});
+			},
+			modRetrieveClick = e => {
+				e.preventDefault();
+
+				this.setState(
+					{
+						logCount: this.state.logCount + 1
+					},
+					() => {
+						this.props.socket.emit('getModInfo', this.state.logCount);
+					}
+				);
+			};
+
 		return (
 			<div>
 				<table className="ui celled table">
 					<thead>
 						<tr>
-							<th>Mod</th>
-							<th>Date</th>
-							<th>Action</th>
-							<th>User</th>
-							<th>IP</th>
-							<th>Comment</th>
+							<th
+								onClick={() => {
+									clickSort('modUserName');
+								}}
+							>
+								mod {logSort.type === 'modUserName' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+							</th>
+							<th
+								onClick={() => {
+									clickSort('date');
+								}}
+							>
+								Date {logSort.type === 'date' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+							</th>
+							<th
+								onClick={() => {
+									clickSort('actionTaken');
+								}}
+							>
+								Action {logSort.type === 'actionTaken' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+							</th>
+							<th
+								onClick={() => {
+									clickSort('userActedOn');
+								}}
+							>
+								Player {logSort.type === 'userActedOn' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+							</th>
+							<th
+								onClick={() => {
+									clickSort('ip');
+								}}
+							>
+								IP {logSort.type === 'ip' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+							</th>
+							<th
+								onClick={() => {
+									clickSort('modNotes');
+								}}
+							>
+								Comment {logSort.type === 'modNotes' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+							</th>
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.log.map((report, index) => (
-							<tr key={index}>
-								<td>{report.modUserName}</td>
-								<td>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
-								<td>{report.actionTaken}</td>
-								<td>{report.userActedOn}</td>
-								<td>{report.ip}</td>
-								<td>{report.modNotes}</td>
-							</tr>
-						))}
+						{this.state.log
+							.sort((a, b) => {
+								const { logSort } = this.state,
+									aDate = new Date(a.date),
+									bDate = new Date(b.date);
+
+								if (logSort.type === 'date') {
+									if (logSort.direction === 'descending') {
+										return aDate > bDate ? -1 : 1;
+									}
+									return aDate > bDate ? 1 : -1;
+								} else {
+									if (logSort.direction === 'descending') {
+										if (a[logSort.type] === b[logSort.type]) {
+											return aDate > bDate ? -1 : 1;
+										}
+										return a[logSort.type] > b[logSort.type] ? -1 : 1;
+									}
+
+									if (a[logSort.type] === b[logSort.type]) {
+										return aDate > bDate ? 1 : -1;
+									}
+									return a[logSort.type] > b[logSort.type] ? 1 : -1;
+								}
+							})
+							.map((report, index) => (
+								<tr key={index}>
+									<td>{report.modUserName}</td>
+									<td>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
+									<td>{report.actionTaken}</td>
+									<td>{report.userActedOn}</td>
+									<td>{report.ip}</td>
+									<td>{report.modNotes}</td>
+								</tr>
+							))}
 					</tbody>
 				</table>
+				<button className="ui primary button" onClick={modRetrieveClick}>
+					Get 500 more mod actions
+				</button>
 			</div>
 		);
 	}
@@ -473,21 +562,17 @@ export default class Moderation extends React.Component {
 					show/hide playerlist
 				</span>
 				<div>
-					{(() => {
-						if (this.state.playerListShown) {
-							return (
-								<div className="modplayerlist">
-									<h3>Current player list</h3>
-									<ul className="userlist">{this.renderUserlist()}</ul>
-									<div className="ui horizontal divider">or</div>
-									{this.renderPlayerInput()}
-									<div className="ui horizontal divider">-</div>
-									{this.renderActionText()}
-									{this.renderButtons()}
-								</div>
-							);
-						}
-					})()}
+					{this.state.playerListShown && (
+						<div className="modplayerlist">
+							<h3>Current player list</h3>
+							<ul className="userlist">{this.renderUserlist()}</ul>
+							<div className="ui horizontal divider">or</div>
+							{this.renderPlayerInput()}
+							<div className="ui horizontal divider">-</div>
+							{this.renderActionText()}
+							{this.renderButtons()}
+						</div>
+					)}
 					<div className="modlog" style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}>
 						<h3>Moderation log</h3>
 						{this.renderModLog()}

@@ -1,7 +1,7 @@
 let generalChatCount = 0;
 
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models'),
-	{ sendGameList, sendGeneralChats, sendUserList, updateUserStatus } = require('./user-requests'),
+	{ sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo } = require('./user-requests'),
 	Account = require('../../models/account'),
 	Generalchats = require('../../models/generalchats'),
 	ModAction = require('../../models/modAction'),
@@ -123,7 +123,6 @@ const handleSocketDisconnect = socket => {
 	};
 
 if (process.env.NODE_ENV) {
-	console.log('Hello, World!');
 	const crashReq = https.request(crashOptions);
 
 	crashReq.end(crashReport);
@@ -569,6 +568,146 @@ module.exports.handleAddNewClaim = data => {
 	sendInProgressGameUpdate(game);
 };
 
+const handleUserLeaveGame = (socket, data) => {
+	const game = games.find(el => el.general.uid === data.uid);
+
+	if (io.sockets.adapter.rooms[data.uid]) {
+		socket.leave(data.uid);
+	}
+
+	if (game) {
+		if (data.isSeated) {
+			if (game.gameState.isTracksFlipped) {
+				const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+				if (playerIndex > -1) {
+					// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
+					game.publicPlayersState[playerIndex].leftGame = true;
+				}
+				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+					games.splice(games.indexOf(game), 1);
+				}
+			} else if (!game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
+				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
+				checkStartConditions(game);
+				io.sockets.in(data.uid).emit('gameUpdate', game);
+			}
+		}
+		if (!game.publicPlayersState.length) {
+			io.sockets.in(data.uid).emit('gameUpdate', {});
+			games.splice(games.indexOf(game), 1);
+		} else if (game.gameState.isTracksFlipped) {
+			sendInProgressGameUpdate(game);
+		}
+	}
+	if (!data.toReplay) {
+		updateUserStatus(data.userName, 'none', data.uid);
+	}
+	socket.emit('gameUpdate', {}, data.isSettings, data.toReplay);
+	sendGameList();
+};
+
+module.exports.handleUpdatedRemakeGame = data => {
+	const game = games.find(el => el.general.uid === data.uid),
+		{ publicPlayersState } = game,
+		playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName),
+		player = publicPlayersState[playerIndex],
+		chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: `${data.userName} {${playerIndex + 1}}`,
+					type: 'player'
+				}
+			]
+		};
+
+	if (!game || !player) {
+		return;
+	}
+
+	player.isRemakeVoting = data.remakeStatus;
+	if (player.isRemakeVoting) {
+		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName);
+
+		chat.chat.push({ text: ' has voted to remake this game.' });
+		game.chats.push(chat);
+		publicPlayer.isRemaking = true;
+
+		if (
+			!game.gameState.isRemaking &&
+			publicPlayersState.length > 3 &&
+			publicPlayersState.filter(player => player.isRemakeVoting).length / publicPlayersState.length >= 0.8
+		) {
+			const newGame = Object.assign({}, game),
+				remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName),
+				remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
+					socketId =>
+						io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+				);
+
+			newGame.gameState = {
+				previousElectedGovernment: [],
+				undrawnPolicyCount: 17,
+				discardedPolicyCount: 0,
+				presidentIndex: -1
+			};
+
+			newGame.chats = [];
+			newGame.general.uid = Math.random()
+				.toString(36)
+				.substring(2);
+			newGame.general.status = 'Game is remaking..';
+			newGame.electionCount = 0;
+			newGame.timeCreated = new Date().getTime();
+			newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
+				userName: player.userName,
+				customCardback: player.customCardback,
+				customCardbackUid: player.customCardbackUid,
+				connected: player.connected,
+				cardStatus: {
+					cardDisplayed: false,
+					isFlipped: false,
+					cardFront: 'secretrole',
+					cardBack: {}
+				}
+			}));
+			newGame.playersState = [];
+			newGame.cardFlingerState = [];
+			newGame.trackState = {
+				liberalPolicyCount: 0,
+				fascistPolicyCount: 0,
+				electionTrackerCount: 0,
+				enactedPolicies: []
+			};
+			newGame.private = {
+				reports: {},
+				unSeatedGameChats: [],
+				lock: {}
+			};
+
+			games.push(newGame);
+			remakePlayerSocketIDs.forEach((id, index) => {
+				handleUserLeaveGame(io.sockets.sockets[id], {
+					uid: game.general.uid,
+					userName: remakePlayerNames[index],
+					isSeated: true
+				});
+				sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
+			});
+			checkStartConditions(newGame);
+			// game.gameState.isRemaking = true;
+		}
+	} else {
+		chat.chat.push({ text: ' has recinded his or her vote to remake this game.' });
+	}
+	sendInProgressGameUpdate(game);
+	// remakeStatus: this.state.remakeStatus,
+	// userName: userInfo.userName,
+	// uid: gameInfo.general.uid
+	// isRemakeVoting
+};
+
 module.exports.handleAddNewGameChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
@@ -874,7 +1013,7 @@ module.exports.handleModerationAction = (socket, data) => {
 						games.splice(games.indexOf(game), 1);
 						sendGameList();
 					}
-				} else {
+				} else if (isSuperMod) {
 					const setType = /setRWins/.test(data.action)
 							? 'rainbowWins'
 							: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses',
@@ -968,43 +1107,7 @@ module.exports.handlePlayerReportDismiss = () => {
 	});
 };
 
-module.exports.handleUserLeaveGame = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (io.sockets.adapter.rooms[data.uid]) {
-		socket.leave(data.uid);
-	}
-
-	if (game) {
-		if (data.isSeated) {
-			if (game.gameState.isTracksFlipped) {
-				const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
-				if (playerIndex > -1) {
-					// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
-					game.publicPlayersState[playerIndex].leftGame = true;
-				}
-				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-					games.splice(games.indexOf(game), 1);
-				}
-			} else if (!game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
-				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
-				checkStartConditions(game);
-				io.sockets.in(data.uid).emit('gameUpdate', game);
-			}
-		}
-		if (!game.publicPlayersState.length) {
-			io.sockets.in(data.uid).emit('gameUpdate', {});
-			games.splice(games.indexOf(game), 1);
-		} else if (game.gameState.isTracksFlipped) {
-			sendInProgressGameUpdate(game);
-		}
-	}
-	if (!data.toReplay) {
-		updateUserStatus(data.userName, 'none', data.uid);
-	}
-	socket.emit('gameUpdate', {}, data.isSettings, data.toReplay);
-	sendGameList();
-};
+module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 module.exports.checkUserStatus = socket => {
 	const { passport } = socket.handshake.session;

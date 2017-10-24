@@ -11,7 +11,7 @@ import Moderation from './Moderation.jsx';
 import Reports from './Reports.jsx';
 import PropTypes from 'prop-types';
 
-const Main = props =>
+const Main = props => (
 	<section
 		className={(() => {
 			let classes = '';
@@ -48,22 +48,25 @@ const Main = props =>
 				case 'changelog':
 					return <Changelog onLeaveChangelog={props.onLeaveChangelog} version={props.version} />;
 				case 'game':
-					return (
-						<Game
-							onUserNightActionEventSubmit={props.onUserNightActionEventSubmit}
-							onUpdateTruncateGameSubmit={props.onUpdateTruncateGameSubmit}
-							onUpdateSelectedForEliminationSubmit={props.onUpdateSelectedForEliminationSubmit}
-							onUpdateReportGame={props.onUpdateReportGame}
-							onClickedTakeSeat={props.onClickedTakeSeat}
-							onNewGameChat={props.onNewGameChat}
-							onSeatingUser={props.onSeatingUser}
-							onLeaveGame={props.onLeaveGame}
-							userInfo={props.userInfo}
-							gameInfo={props.gameInfo}
-							userList={props.userList}
-							socket={props.socket}
-						/>
-					);
+					if (Object.keys(props.gameInfo).length) {
+						return (
+							<Game
+								onUserNightActionEventSubmit={props.onUserNightActionEventSubmit}
+								onUpdateTruncateGameSubmit={props.onUpdateTruncateGameSubmit}
+								onUpdateSelectedForEliminationSubmit={props.onUpdateSelectedForEliminationSubmit}
+								onUpdateReportGame={props.onUpdateReportGame}
+								onClickedTakeSeat={props.onClickedTakeSeat}
+								onNewGameChat={props.onNewGameChat}
+								onSeatingUser={props.onSeatingUser}
+								onLeaveGame={props.onLeaveGame}
+								userInfo={props.userInfo}
+								gameInfo={props.gameInfo}
+								userList={props.userList}
+								socket={props.socket}
+							/>
+						);
+					}
+					break;
 				case 'moderation':
 					return <Moderation userInfo={props.userInfo} socket={props.socket} userList={props.userList} onLeaveModeration={props.onLeaveModeration} />;
 				case 'settings':
@@ -78,7 +81,8 @@ const Main = props =>
 					return <Defaultmid quickDefault={props.quickDefault} />;
 			}
 		})()}
-	</section>;
+	</section>
+);
 
 Main.propTypes = {
 	midSection: PropTypes.string,

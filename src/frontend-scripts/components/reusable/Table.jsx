@@ -3,11 +3,10 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 const TBody = ({ rows }) => (
 	<tbody>
 		{rows.map((row, i) => {
-			const isRich = !Array.isArray(row);
-			const noop = () => null;
-
-			const onClick = isRich && row.onClick ? row.onClick : noop;
-			const cells = isRich ? row.cells : row;
+			const isRich = !Array.isArray(row),
+				noop = () => null,
+				onClick = isRich && row.onClick ? row.onClick : noop,
+				cells = isRich ? row.cells : row;
 
 			return (
 				<tr onClick={onClick} key={i}>
