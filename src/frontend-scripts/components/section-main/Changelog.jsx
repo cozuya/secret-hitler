@@ -46,9 +46,10 @@ const Changelog = props => (
 				can at least attempt to make things more fluid and contiguous. If you ARE a designer (and want to work for free..), let me know.
 			</li>
 			<li>Links in general chat to sh.io itself, or to this site's github repository, are now clickable. Other links are still not.</li>
-			<li>The whitelist feature now correctly has a scroll bar.</li>
-			<li>If you have a custom width or font, the application no longer "flashes" when you load the page.</li>
 			<li>Hovering on a chat in general chat will show a timestamp of when it was said.</li>
+			<li>The whitelist feature now correctly has a scroll bar.</li>
+			<li>Players who have left a game in progress now look slightly different than players who are disconnected.</li>
+			<li>If you have a custom width or font, the application no longer "flashes" when you load the page.</li>
 			<li>A fix to players being able to make accounts with the same name but different capitalization has been implemented.</li>
 			<li>All dependencies updated including moving to the latest version of React (16). What this means is hopefully some better front-end performance.</li>
 		</ul>

@@ -100,7 +100,6 @@ export class App extends React.Component {
 		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
 			const { hash } = window.location;
 
-			console.log(game, 'game');
 			if ((this.props.midSection !== 'game' && Object.keys(game).length) || (Object.keys(game).length && hash !== `#/table/${game.general.uid}`)) {
 				dispatch(updateGameInfo(game));
 				dispatch(updateMidsection('game'));
@@ -145,7 +144,6 @@ export class App extends React.Component {
 
 		if (
 			hash.substr(0, 8) !== '#/table/' &&
-			gameInfo &&
 			gameInfo.gameState &&
 			userInfo.userName &&
 			gameInfo.publicPlayersState.length &&
@@ -175,7 +173,7 @@ export class App extends React.Component {
 		) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
-		} else if (hash === '#/settings') {
+		} else if (hash === '#/settings' && isAuthed) {
 			dispatch(updateMidsection('settings'));
 		} else if (hash === '#/creategame' && isAuthed) {
 			dispatch(updateMidsection('createGame'));
@@ -274,7 +272,6 @@ export class App extends React.Component {
 			isSeated,
 			isSettings,
 			uid: gameInfo.general.uid,
-			badKarma,
 			toReplay
 		});
 	}

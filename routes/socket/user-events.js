@@ -74,32 +74,31 @@ const handleSocketDisconnect = socket => {
 
 		if (passport && Object.keys(passport).length) {
 			const userIndex = userList.findIndex(user => user.userName === passport.user),
-				gamez = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user)),
-				game = games.find(game => game.publicPlayersState.find(player => player.userName === passport.user));
+				gamesPlayerSeatedIn = games.filter(game =>
+					game.publicPlayersState.find(player => player.userName === passport.user && player.connected && !player.leftGame)
+				);
 
-			if (gamez.length && gamez.length > 1) {
-				console.log('player in more than publicplayersstate');
+			if (gamesPlayerSeatedIn.length > 1) {
+				console.log("player in more than one seated game and isn't disconned or left");
 			}
 
-			socket.emit('manualDisconnection');
 			if (userIndex !== -1) {
 				userList.splice(userIndex, 1);
 			}
-			if (game) {
-				const { gameState, publicPlayersState } = game,
+			if (gamesPlayerSeatedIn.length) {
+				const game = gamesPlayerSeatedIn[0],
+					{ gameState, publicPlayersState } = game,
 					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-				if (!gameState.isStarted && publicPlayersState.length === 1 && gamez.length && gamez.length < 2) {
+				if (
+					(!gameState.isStarted && publicPlayersState.length === 1) ||
+					(gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
+				) {
 					games.splice(games.indexOf(game), 1);
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 					publicPlayersState.splice(playerIndex, 1);
 					checkStartConditions(game);
 					io.sockets.in(game.uid).emit('gameUpdate', game);
-				} else if (
-					gameState.isCompleted &&
-					game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1
-				) {
-					games.splice(games.indexOf(game), 1);
 				} else if (gameState.isTracksFlipped) {
 					publicPlayersState[playerIndex].connected = false;
 					sendInProgressGameUpdate(game);
@@ -627,6 +626,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 	}
 
 	player.isRemakeVoting = data.remakeStatus;
+
 	if (player.isRemakeVoting) {
 		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName);
 
@@ -634,6 +634,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 		game.chats.push(chat);
 		publicPlayer.isRemaking = true;
 
+		console.log(game.gameState, 'gamestate');
 		if (
 			!game.gameState.isRemaking &&
 			publicPlayersState.length > 3 &&
@@ -645,6 +646,14 @@ module.exports.handleUpdatedRemakeGame = data => {
 					socketId =>
 						io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 				);
+
+			remakePlayerNames.forEach(name => {
+				const play = game.publicPlayersState.find(p => p.userName === name);
+
+				play.leftGame = true;
+			});
+
+			sendInProgressGameUpdate(game);
 
 			newGame.gameState = {
 				previousElectedGovernment: [],
@@ -695,11 +704,13 @@ module.exports.handleUpdatedRemakeGame = data => {
 				});
 				sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
 			});
+			console.log(newGame);
+			console.log(newGame.publicPlayersState);
 			checkStartConditions(newGame);
 			// game.gameState.isRemaking = true;
 		}
 	} else {
-		chat.chat.push({ text: ' has recinded his or her vote to remake this game.' });
+		chat.chat.push({ text: ' has recinded their vote to remake this game.' });
 	}
 	sendInProgressGameUpdate(game);
 	// remakeStatus: this.state.remakeStatus,
@@ -798,7 +809,7 @@ module.exports.handleModerationAction = (socket, data) => {
 		return;
 	}
 
-	const isSuperMod = Boolean(EDITORS.includes(passport.user) || ADMINS.includes(passport.user)),
+	const isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user),
 		affectedSocketId = Object.keys(io.sockets.sockets).find(
 			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 		);

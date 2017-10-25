@@ -144,7 +144,9 @@ export default class Players extends React.Component {
 							classes = `${classes} ${publicPlayersState[i].nameStatus}`;
 						}
 
-						if (!publicPlayersState[i].connected || publicPlayersState[i].leftGame) {
+						if (!publicPlayersState[i].leftGame) {
+							classes = `${classes} leftgame`;
+						} else if (!publicPlayersState[i].connected) {
 							classes = `${classes} disconnected`;
 						}
 
