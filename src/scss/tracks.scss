@@ -87,9 +87,12 @@
 			backface-visibility: hidden;
 		}
 		.track-flipper-top {
+			background: radial-gradient(ellipse at center, #90aeba 0%, #445950 100%) #90aeba;
 			background-color: #90aeba;
 		}
+
 		.track-flipper-bottom {
+			background: radial-gradient(ellipse at center, #85393b 0%, #3f2525 100%) #85393b;
 			background-color: #85393b;
 		}
 		.track {

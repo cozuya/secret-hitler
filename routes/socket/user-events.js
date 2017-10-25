@@ -792,8 +792,13 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 };
 
 module.exports.handleModerationAction = (socket, data) => {
-	const { passport } = socket.handshake.session,
-		isSuperMod = passport.user ? EDITORS.includes(passport.user) || ADMINS.includes(passport.user) : false,
+	const { passport } = socket.handshake.session;
+
+	if (!passport || !Object.keys(passport).length) {
+		return;
+	}
+
+	const isSuperMod = Boolean(EDITORS.includes(passport.user) || ADMINS.includes(passport.user)),
 		affectedSocketId = Object.keys(io.sockets.sockets).find(
 			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 		);

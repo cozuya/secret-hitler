@@ -479,6 +479,98 @@ body {
 	z-index: 99;
 }
 
+.balloon-container {
+	position: absolute;
+	left: 0;
+	bottom: -100%;
+	transition: all 12s;
+
+	&.active {
+		bottom: 140%;
+	}
+}
+
+.balloon {
+	display: inline-block;
+	width: 120px;
+	height: 145px;
+	background: hsl(215, 50%, 65%);
+	border-radius: 80%;
+	position: relative;
+	box-shadow: inset -10px -10px 0 rgba(0, 0, 0, 0.07);
+	margin: 20px 55px 20px 30px;
+	transition: transform 0.5s ease;
+	z-index: 99;
+	animation: balloons 4s ease-in-out infinite;
+	transform-origin: bottom center;
+}
+
+@keyframes balloons {
+	0%,
+	100% {
+		transform: translateY(0) rotate(-4deg);
+	}
+	50% {
+		transform: translateY(-25px) rotate(4deg);
+	}
+}
+
+.balloon:before {
+	content: '▲';
+	font-size: 20px;
+	color: hsl(215, 30%, 50%);
+	display: block;
+	text-align: center;
+	width: 100%;
+	position: absolute;
+	bottom: -12px;
+	z-index: -100;
+}
+
+.balloon:after {
+	display: inline-block;
+	top: 153px;
+	position: absolute;
+	height: 250px;
+	width: 2px;
+	left: 60px;
+	margin: 0 auto;
+	content: '';
+	background: #aaa;
+}
+
+.balloon + .balloon {
+	background: hsl(245, 40%, 65%);
+	animation-duration: 3.5s;
+}
+.balloon + .balloon:before {
+	color: hsl(245, 40%, 65%);
+}
+
+.balloon + .balloon + .balloon {
+	background: hsl(139, 50%, 60%);
+	animation-duration: 3s;
+}
+.balloon + .balloon + .balloon:before {
+	color: hsl(139, 30%, 50%);
+}
+
+.balloon + .balloon + .balloon + .balloon {
+	background: hsl(59, 50%, 58%);
+	animation-duration: 4.5s;
+}
+.balloon + .balloon + .balloon + .balloon:before {
+	color: hsl(59, 30%, 52%);
+}
+
+.balloon + .balloon + .balloon + .balloon + .balloon {
+	background: hsl(23, 55%, 57%);
+	animation-duration: 5s;
+}
+.balloon + .balloon + .balloon + .balloon + .balloon:before {
+	color: hsl(23, 44%, 46%);
+}
+
 .tou {
 	text-align: center;
 	font-weight: bold;
