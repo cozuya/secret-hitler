@@ -27,8 +27,8 @@ gulp.task('watch', () => {
 	gulp.watch(['./src/frontend-scripts/**/*.js*', './routes/**/*.js', './__test__/*.js'], e => {
 		file =
 			process.platform === 'win32'
-				? `./${e.path.split('C:\\Users\\Andy\\Documents\\GitHub\\secret-hitler')[1].split('\\').join('/')}`
-				: `./${e.path.split('/Users/Andy/Documents/GitHub/secret-hitler/')[1]}`;
+				? `./${e.path.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1].split('\\').join('/')}`
+				: `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
 		gulp.start('lint');
 	});
 	gulp.watch(['./src/frontend-scripts/**/*.js*', './src/models/**/*.js'], ['scripts']);
