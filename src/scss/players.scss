@@ -24,7 +24,7 @@
 	.player-container.admin {
 		box-shadow: 0 0 5px 2px red !important;
 	}
-	
+
 	.player-container.contributer {
 		box-shadow: 0 0 5px 2px orange !important;
 	}
@@ -169,13 +169,14 @@
 			}
 		}
 		.card-container.showing {
-			top: 0;
+			// prevents 1px gap showing below card
+			top: 1px;
 		}
 		.card-container.flipped {
 			transform: rotateY(180deg);
 		}
 		.player-number.disconnected {
-			opacity: .3;
+			opacity: 0.3;
 		}
 		.player-name.liberal,
 		.player-number.liberal {
@@ -200,7 +201,7 @@
 		top: 0;
 		left: 0;
 		position: absolute;
-		animation: fadeIn .6s infinite alternate;
+		animation: fadeIn 0.6s infinite alternate;
 		cursor: pointer;
 	}
 	.player-container.fascist::after {
@@ -268,7 +269,7 @@
 		top: 0;
 		left: 0;
 		position: absolute;
-		animation: fadeIn .6s infinite alternate;
+		animation: fadeIn 0.6s infinite alternate;
 		cursor: pointer;
 		box-shadow: 0 0 4px 4px #fbbd08 inset;
 	}
@@ -280,12 +281,12 @@
 
 .experienced .players-container .players {
 	.card-container {
-		transition-duration: .2s;
+		transition-duration: 0.2s;
 	}
 }
 
 .experienced .players-container .policies-container .policy-card {
-	transition: .2s all;
+	transition: 0.2s all;
 }
 
 .reportmodal {

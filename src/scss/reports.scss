@@ -1,5 +1,6 @@
 #main .reports {
 	color: $fascistteam;
+	position: relative;
 	h2 {
 		text-align: center;
 	}
@@ -9,8 +10,8 @@
 		position: absolute;
 		font-size: 30px;
 		left: 94%;
-		opacity: .3;
-		top: 70px;
+		//opacity: .3;
+		top: 5%;
 	}
 	ul {
 		list-style-type: none;

@@ -8,7 +8,13 @@
 	padding-right: 0 !important;
 	padding-bottom: 0 !important;
 	.playerlist {
-		padding-bottom: 10px;
+		background: #181818;
+		border: 1px solid #262626;
+		border-bottom: 0;
+		//padding-bottom: 10px;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
 		.userlist-stats-container {
 			font-size: 12px;
 			color: #bdbdbd;
@@ -20,11 +26,13 @@
 			justify-content: flex-end;
 		}
 		.playerlist-header {
+			min-height: 32px;
 			padding: 5px 0 3px;
-			background: #000;
+			//background: #1a1a1a;
 			display: flex;
 			justify-content: space-between;
 			color: $darkfascistteam;
+			border-bottom: 1px solid #262626;
 			.mod-button,
 			.report-button {
 				cursor: pointer;
@@ -78,10 +86,10 @@
 			// margin-top: -5px;
 		}
 		.playerlist-body {
-			height: 250px;
+			// height: 250px;
 			overflow-y: auto;
-			padding-left: 5px;
-
+			overflow-x: hidden;
+			padding: 0 10px 0 10px;
 			.fav {
 				background: url('../favicon-16x16.png') no-repeat;
 				width: 16px;
@@ -128,24 +136,37 @@
 		margin: 0;
 	}
 	.generalchat {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		border: 1px solid #262626;
+		//max-width: 350px;
 		img {
 			vertical-align: middle;
 		}
 		.generalchat-header {
+			min-height: 32px;
+			//background-color:#1a1a1a;
+			border-bottom: 1px solid #262626;
+			padding: 5px 0px 3px;
 			h3 {
 				float: left;
 				margin: 0;
+				padding-left: 5px;
 			}
 			i {
 				float: right;
 				cursor: pointer;
 			}
 			> div {
-				padding: 2px 5px 0;
+				//padding: 2px 5px 0;
 			}
 		}
 		.inputbar {
 			display: flex;
+			padding: 15px 5px 15px 5px;
+			background: #181818;
+			border-top: 1px solid #272727;
 			> div {
 				flex-grow: 1;
 			}
@@ -165,16 +186,26 @@
 				cursor: pointer;
 			}
 		}
-		.chats {
-			height: 252px;
-			padding-left: 5px;
+		.segment.chats {
+			//height: 252px;
+			//padding-left: 10px;
+			//padding-right: 10px;
 			position: relative;
-			> .ui.list {
-				overflow-y: auto;
+			//overflow-x: hidden;
+			//overflow-y: auto;
+			flex: 1;
+			background: #181818;
+			.ui.list.genchat-container {
+				//overflow-y: auto;
 				position: absolute;
 				bottom: 0;
-				max-height: 254px;
-				width: 99%;
+				left: 0;
+				right: 0;
+				max-height: 100%;
+				width: 97%;
+				margin: auto;
+				padding-right: 5px;
+				padding-bottom: 1px;
 				.chat-user--broadcast {
 					color: lightsalmon;
 				}
@@ -191,6 +222,7 @@
 				}
 				.chat-user {
 					color: #888;
+					font-weight: bold;
 				}
 				.admin {
 					color: red;
@@ -206,4 +238,17 @@
 #main .ingame + .three.wide.section-right {
 	max-width: 235px;
 	min-width: initial;
+}
+
+
+@media screen and (min-width: 1520px) {
+	.generalchat {
+		min-width: 350px;
+	}
+}
+
+@media screen and (min-width: 1470px) {
+	.generalchat {
+		border-right: 0 !important;
+	}
 }

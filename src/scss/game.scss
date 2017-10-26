@@ -16,8 +16,8 @@
 		.gamestatus {
 			font-size: 22px;
 			font-style: italic;
-			color: #eee;
-			background: #2d0c0b;
+			color: $darkfascistteam; //#eee;
+			background: #1b1b1b; //$darkfascistteam;
 			padding: 7px 0px 3px 2px;
 		}
 		.gamechat {
@@ -32,10 +32,11 @@
 			display: flex;
 			flex-direction: column;
 			form {
-				background: #0c0202;
+				background: #181818;
 				display: flex;
 				position: relative;
 				z-index: 100;
+				padding: 5px 10px 5px 10px;
 			}
 
 			.pointing.menu {
@@ -45,6 +46,7 @@
 				margin: 0;
 				min-height: initial;
 				overflow-x: initial !important;
+				width: 100% !important;
 				.item {
 					padding: 7px 8px 6px;
 					position: relative;
@@ -68,6 +70,9 @@
 					cursor: pointer;
 				}
 			}
+			.gamechat-item {
+				display: flex;
+			}
 			.chats {
 				display: flex;
 				flex-direction: column-reverse;
@@ -83,53 +88,30 @@
 				}
 				.ui.list {
 					padding-left: 5px;
-					overflow-y: auto;
+					//overflow-y: auto;
 					position: absolute;
 					bottom: 0;
 					line-height: 1.2;
 					max-height: 345px;
-					width: 100%;
+					width: 98%;
+					margin: 0;
 				}
 				.item {
 					word-wrap: break-word;
 					line-height: inherit;
 					padding: 2px 0;
-				}
-
-				.gamechat-item {
-					background: #0f0202;
-					span {
-						background: #0f0202 !important;
-					}
-
-					&.fascist {
-						background: #230404;
-						span {
-							background: #230404 !important;
-						}
-					}
-					&.liberal {
-						background: #030e17;
-
-						span {
-							background: #030e17 !important;
-						}
-					}
-				}
-
-				.claim-item {
-					background: #3d3829;
-
-					span {
-						background: #3d3829 !important;
-					}
+					display: flex;
 				}
 				.chat-user {
-					color: #eee;
-					.chat-timestamp {
-						color: #848484;
-						font-size: 12px;
-					}
+					//color: #eee;
+					//color: #8b8b8b;
+					color: #adabab;
+				}
+				.chat-timestamp {
+					color: #848484;
+					font-size: 12px;
+					width: 40px;
+					display: block;
 				}
 				.chat-user--game .chat-timestamp {
 					font-size: 12px;
@@ -137,7 +119,8 @@
 				.chat-user--game,
 				.game-chat,
 				.chat-user--game .chat-timestamp {
-					color: #8b8b8b;
+					//color: #8b8b8b;
+					color: #6f6f6f;
 				}
 
 				.chat-user--claim,

@@ -3,7 +3,7 @@
 		font-size: 30px;
 	}
 	padding: 2%;
-	background: #0e0303;
+	//background: #0e0303;
 
 	.remove.icon {
 		cursor: pointer;
@@ -59,6 +59,10 @@
 		box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.15) inset;
 		padding: 8px 7px 9px 8px;
 		border-radius: 0.28571429rem;
+	}
+
+	.ui.search.dropdown > .text {
+		color: black;
 	}
 
 	.rebalance69p {

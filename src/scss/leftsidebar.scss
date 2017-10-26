@@ -1,3 +1,33 @@
+.liberal-count {
+	width: 84%;
+	margin: 0 auto;
+	padding: 10px 0 8px 0;
+}
+.fascist-count {
+	//width: 92%;
+	//margin: 0 auto;
+}
+.box {
+	display: inline-block;
+	width: 13px;
+	height: 13px;
+	margin: 0 3px;
+}
+.liberal-box {
+	box-shadow: 0px 0px 1px 2px #5b9cc4;
+	background-color: #1b1b1b;
+}
+.liberal-box.filled {
+	background-color: #5b9cc4;
+}
+.fascist-box {
+	box-shadow: 0px 0px 1px 2px #c36563;
+	background-color: #1b1b1b;
+}
+.fascist-box.filled {
+	background-color: #c36563;
+}
+
 #main .leftsidebar {
 	padding: 10px 0 0;
 	> .button {

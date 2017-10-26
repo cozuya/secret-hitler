@@ -1,22 +1,24 @@
 .settings {
+	position: relative;
 	padding: 2%;
-	background: #100000;
+	margin: 10px;
+	//background: #100000;
 
 	> .ui.grid {
-		max-height: 470px;
-		overflow-y: scroll;
+		//max-height: 470px;
+		//overflow-y: scroll;
 	}
 	.content > button {
 		position: absolute;
 		left: 50px;
-		top: 80px;
+		top: 0;
 		color: #fff;
 		padding: 8px;
 	}
 
 	.profile-search {
 		position: absolute;
-		top: 80px;
+		top: 0;
 		left: 490px;
 		display: flex;
 		flex-direction: row;
@@ -45,7 +47,8 @@
 		position: absolute;
 		font-size: 30px;
 		left: 94%;
-		opacity: 0.3;
+		top: 0;
+		//opacity: .3;
 	}
 
 	.font-container {

@@ -133,8 +133,8 @@
 }
 .rc-slider-tooltip-zoom-down-enter,
 .rc-slider-tooltip-zoom-down-appear {
-	-webkit-animation-duration: .3s;
-	animation-duration: .3s;
+	-webkit-animation-duration: 0.3s;
+	animation-duration: 0.3s;
 	-webkit-animation-fill-mode: both;
 	animation-fill-mode: both;
 	display: block !important;
@@ -142,8 +142,8 @@
 	animation-play-state: paused;
 }
 .rc-slider-tooltip-zoom-down-leave {
-	-webkit-animation-duration: .3s;
-	animation-duration: .3s;
+	-webkit-animation-duration: 0.3s;
+	animation-duration: 0.3s;
 	-webkit-animation-fill-mode: both;
 	animation-fill-mode: both;
 	display: block !important;

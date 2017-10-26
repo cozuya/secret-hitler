@@ -10,7 +10,7 @@
 		left: 10px;
 		z-index: 105;
 		color: #ddd;
-		background: #89a79a;
+		background: #5b9cc4;
 		font-size: 16px;
 		padding: 4px;
 		opacity: 1;
@@ -35,28 +35,28 @@
 			color: green !important;
 		}
 	}
-
 	.player-count,
 	.gameuid {
 		position: absolute;
 		top: 10px;
-		left: 508px;
+		left: 555px;
 		z-index: 105;
 		color: #ddd;
-		background: #89a79a;
+		background: #5b9cc4;
 		font-size: 16px;
 		padding: 4px;
 		opacity: 1;
 		border: 2px solid lightblue;
 	}
 	.gameuid {
-		width: 220px;
-		left: 430px;
-		top: 40px;
+		width: 280px;
+		left: 270px;
+		top: 2px;
 	}
 	.tracks {
 		transition: all 1s;
 		position: relative;
+		background-color: #1b1b1b;
 
 		.electiontracker {
 			position: absolute;
@@ -64,18 +64,18 @@
 			height: 25px;
 			background-color: #2f2fbe;
 			border-radius: 50%;
-			top: 176px;
-			left: 214px;
+			top: 182px;
+			left: 212px;
 			transition: all 2s;
 		}
 		.electiontracker.fail1 {
-			left: 278px;
+			left: 276px;
 		}
 		.electiontracker.fail2 {
-			left: 340px;
+			left: 339px;
 		}
 		.electiontracker.fail3 {
-			left: 402px;
+			left: 403px;
 		}
 		.track-flipper {
 			height: 220px;
@@ -87,10 +87,10 @@
 			backface-visibility: hidden;
 		}
 		.track-flipper-top {
-			background-color: #90aeba;
+			//background-color: #90aeba;
 		}
 		.track-flipper-bottom {
-			background-color: #85393b;
+			//background-color: #85393b;
 		}
 		.track {
 			transform: rotateX(0deg);
@@ -103,7 +103,7 @@
 			width: 100%;
 		}
 		.top-track-front {
-			background-image: url('../images/liberal-logo.png');
+			background-image: url('../images/tracks/liberaltrack_front.png');
 			background-position: center;
 			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
@@ -115,7 +115,7 @@
 			background-image: url('../images/tracks/liberaltrack.png');
 		}
 		.bottom-track-front {
-			background-image: url('../images/fascist-logo.png');
+			background-image: url('../images/tracks/fascisttrack_front.png');
 			background-position: center;
 			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
@@ -142,9 +142,71 @@
 			cursor: pointer;
 		}
 	}
-	.tracks.blurred {
+	.tracks.blurred,
+	.enactedpolicies-container.blurred {
 		filter: blur(5px) saturate(60%);
 		opacity: 0.3;
+	}
+	.help-message {
+		position: absolute;
+		text-align: center;
+		top: 55px;
+		font-size: 20px;
+		z-index: 3;
+		text-shadow: 0px 0px 7px #000000, 0px 0px 7px #000000, 0px 0px 7px #000000;
+		.secondary-message {
+			font-size: 15px;
+			margin-top: 5px;
+		}
+		span {
+			font-weight: bold;
+		}
+	}
+	.help-message.voting {
+		left: 135px;
+		.select {
+			color: lightgreen;
+		}
+		.deselect {
+			color: red;
+		}
+	}
+	.help-message.pres-select {
+		left: 140px;
+		span {
+			color: red;
+		}
+		.secondary-message {
+			span {
+				color: lightgreen;
+			}
+		}
+	}
+	.help-message.chanc-select {
+		left: 200px;
+		top: 70px;
+		span {
+			color: lightgreen;
+		}
+	}
+	.help-message.policy-peak {
+		left: 58px;
+	}
+	.help-message.investigate {
+		left: 31px;
+	}
+	.help-message.special-election {
+		left: 86px;
+	}
+	.help-message.execute {
+		left: 166px;
+	}
+	.help-message.veto {
+		left: 85px;
+		top: 70px;
+		span {
+			color: red;
+		}
 	}
 	.cardflinger-container {
 		position: absolute;
@@ -159,7 +221,7 @@
 		width: 120px;
 		height: 164px;
 		z-index: 3;
-		transition-property: all;
+		transition-property: transform;
 		transition-delay: 0.3s;
 		transition-duration: 1s;
 		transform-style: preserve-3d;
@@ -214,6 +276,46 @@
 	.cardflinger-card.fascistp {
 		background-image: url('../images/cards/fascistp-l.png');
 	}
+	.cardflinger-card-container.middle-far-right.hovered,
+	.cardflinger-card-container.middle-center.hovered,
+	.cardflinger-card-container.middle-far-left.hovered {
+		.cardflinger-card.back::before {
+			content: '\f00d';
+			font-size: 50px;
+			font-family: Icons;
+			color: red;
+		}
+	}
+	.cardflinger-card-container.middle-far-right.not-hovered,
+	.cardflinger-card-container.middle-center.not-hovered,
+	.cardflinger-card-container.middle-far-left.not-hovered {
+		.cardflinger-card.back::before {
+			content: '\f00c';
+			font-size: 50px;
+			font-family: Icons;
+			color: lightgreen;
+		}
+	}
+	.cardflinger-card-container.middle-left.hovered,
+	.cardflinger-card-container.middle-right.hovered {
+		.cardflinger-card.back::before {
+			content: '\f00c';
+			font-size: 50px;
+			font-family: Icons;
+			color: lightgreen;
+		}
+	}
+	.cardflinger-card-container.middle-left.not-hovered,
+	.cardflinger-card-container.middle-left.hovered.selected,
+	.cardflinger-card-container.middle-right.not-hovered,
+	.cardflinger-card-container.middle-right.hovered.selected {
+		.cardflinger-card.back::before {
+			content: '\f00d';
+			font-size: 50px;
+			font-family: Icons;
+			color: red;
+		}
+	}
 	.enactedpolicies-card-container {
 		position: absolute;
 		top: 130px;
@@ -264,47 +366,47 @@
 	}
 	.enactedpolicies-card-container.liberal1 {
 		left: 95px;
-		top: 46px;
+		top: 48px;
 	}
 	.enactedpolicies-card-container.liberal2 {
 		left: 188px;
-		top: 46px;
+		top: 48px;
 	}
 	.enactedpolicies-card-container.liberal3 {
 		left: 280px;
-		top: 46px;
+		top: 48px;
 	}
 	.enactedpolicies-card-container.liberal4 {
 		left: 374px;
-		top: 46px;
+		top: 48px;
 	}
 	.enactedpolicies-card-container.liberal5 {
 		left: 466px;
-		top: 46px;
+		top: 48px;
 	}
 	.enactedpolicies-card-container.fascist1 {
 		left: 46px;
-		top: 266px;
+		top: 268px;
 	}
 	.enactedpolicies-card-container.fascist2 {
 		left: 140px;
-		top: 266px;
+		top: 268px;
 	}
 	.enactedpolicies-card-container.fascist3 {
 		left: 234px;
-		top: 266px;
+		top: 268px;
 	}
 	.enactedpolicies-card-container.fascist4 {
 		left: 326px;
-		top: 266px;
+		top: 268px;
 	}
 	.enactedpolicies-card-container.fascist5 {
 		left: 418px;
-		top: 266px;
+		top: 268px;
 	}
 	.enactedpolicies-card-container.fascist6 {
 		left: 510px;
-		top: 266px;
+		top: 268px;
 	}
 }
 
@@ -328,15 +430,21 @@
 }
 
 .cardflinger-card-container.notification::after {
-	box-shadow: 0 0 15px 14px #fbbd08;
+	box-shadow: 0 0 5px 7px #fbbd08;
 }
 
 .cardflinger-card-container.selected::after {
-	box-shadow: 0 0 2px 8px #c36563;
+	box-shadow: 0 0 10px 12px lightgreen;
 }
 
 .cardflinger-card-container.selected {
 	left: 670px;
+	.cardflinger-card.back::before {
+		content: '\f00c';
+		font-size: 50px;
+		font-family: Icons;
+		color: lightgreen;
+	}
 }
 
 .cardflinger-card-container.active {

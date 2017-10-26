@@ -64,7 +64,13 @@ class Tracks extends React.Component {
 				<EnactedPolicies gameInfo={gameInfo} />
 				<div>
 					<div className="game-name">
-						Game name: <span>{gameInfo.general.name}</span>
+						{'Game name: '}
+						{(() => {
+							if (gameInfo.general.flag !== 'none') {
+								return <i className={`ui flag ${gameInfo.general.flag}`} />;
+							}
+						})()}
+						<span>{gameInfo.general.name}</span>
 					</div>
 					{userInfo.userName && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
 					{userInfo.userName &&

@@ -88,7 +88,7 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 		);
 	},
 	Profile = ({ profile, fetchReplay, updateActiveStats }) => (
-		<div>
+		<div style={{ marginTop: '27px' }}>
 			{profile.customCardback && (
 				<div
 					className="profile-picture"

@@ -1,9 +1,9 @@
 import React from 'react';
 import classnames from 'classnames';
-import { MODERATORS, EDITORS, ADMINS } from '../../constants';
+import { MODERATORS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
 import { processEmotes } from '../../emotes';
-import moment from 'moment';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 export default class Generalchat extends React.Component {
 	constructor() {
@@ -13,6 +13,7 @@ export default class Generalchat extends React.Component {
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
+		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
 		this.state = {
 			lock: false,
 			inputValue: '',
@@ -61,7 +62,7 @@ export default class Generalchat extends React.Component {
 
 	scrollChats() {
 		if (!this.state.lock) {
-			document.querySelector('.genchat-container').scrollTop = 99999999;
+			this.refs.perfectScrollbar.setScrollTop(document.querySelectorAll('div.item').length * 300);
 		}
 	}
 
@@ -77,12 +78,18 @@ export default class Generalchat extends React.Component {
 			);
 
 			return (
-				<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
+				<div className="item" key={i}>
 					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
 						{chat.userName}
-						{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
-						{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
-						{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
+						{(() => {
+							if (MODERATORS.includes(chat.userName)) {
+								return <span className="moderator-name"> (M)</span>;
+							}
+
+							if (EDITORS.includes(chat.userName)) {
+								return <span className="editor-name"> (E)</span>;
+							}
+						})()}
 						{chat.userName && ':'}{' '}
 					</span>
 					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
@@ -95,24 +102,22 @@ export default class Generalchat extends React.Component {
 		this.setState({ lock: !this.state.lock });
 	}
 
-	handleChatScrolled(e) {
-		const el = e.currentTarget;
+	handleChatScrolled() {
+		if (this.state.lock !== true) {
+			this.setState({ lock: true });
+		}
+	}
 
-		if (this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) >= -20) {
-			this.setState({
-				lock: false
-			});
-		} else if (el.scrollTop - (el.scrollHeight - el.offsetHeight) < -20 && !this.state.lock) {
-			this.setState({
-				lock: true
-			});
+	handleChatScrolledToBottom() {
+		if (this.state.lock !== false) {
+			this.setState({ lock: false });
 		}
 	}
 
 	render() {
 		return (
 			<section className="generalchat">
-				<section className="generalchat-header hoz-gradient">
+				<section className="generalchat-header">
 					<div className="clearfix">
 						<h3 className="ui header">Chat</h3>
 						<i
@@ -121,17 +126,18 @@ export default class Generalchat extends React.Component {
 							onClick={this.handleChatLockClick}
 						/>
 					</div>
-					<div className="ui divider right-sidebar-divider" />
 				</section>
 				<section className="segment chats">
-					<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
-						{this.processChats()}
-					</div>
+					<PerfectScrollbar ref="perfectScrollbar" onScrollY={this.handleChatScrolled} onYReachEnd={this.handleChatScrolledToBottom}>
+						<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
+							{this.processChats()}
+						</div>
+					</PerfectScrollbar>
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
 					<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
 						<input
-							placeholder="Chat.."
+							placeholder="Send a message"
 							value={this.state.inputValue}
 							onChange={this.handleInputChange}
 							maxLength="300"
@@ -140,9 +146,9 @@ export default class Generalchat extends React.Component {
 								this.input = c;
 							}}
 						/>
+						<br />
 						<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
-					<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'} onClick={this.handleChatClearClick} />
 				</form>
 			</section>
 		);
