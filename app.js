@@ -43,7 +43,7 @@ app.use(passport.session());
 passport.use(new Strategy(Account.authenticate()));
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
-mongoose.connect(`mongodb://localhost/secret-hitler-app`, {
+mongoose.connect(`mongodb://localhost:${process.env.MONGOPORT}/secret-hitler-app`, {
 	useMongoClient: true
 });
 mongoose.Promise = global.Promise;
