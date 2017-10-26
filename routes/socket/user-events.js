@@ -627,14 +627,15 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 	player.isRemakeVoting = data.remakeStatus;
 
-	if (player.isRemakeVoting) {
+	console.log(data, 'data');
+
+	if (data.remakeStatus) {
 		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName);
 
 		chat.chat.push({ text: ' has voted to remake this game.' });
-		game.chats.push(chat);
 		publicPlayer.isRemaking = true;
 
-		console.log(game.gameState, 'gamestate');
+		// console.log(game.gameState, 'gamestate');
 		if (
 			!game.gameState.isRemaking &&
 			publicPlayersState.length > 3 &&
@@ -646,6 +647,14 @@ module.exports.handleUpdatedRemakeGame = data => {
 					socketId =>
 						io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 				);
+			game.gameState.isRemaking = true;
+
+			remakePlayerSocketIDs.forEach(id => {
+				console.log(io.sockets.sockets[id].rooms, 'rooms');
+				io.sockets.sockets[id].leave(game.general.uid);
+				delete io.sockets.sockets[id].rooms[game.general.uid];
+				console.log(io.sockets.sockets[id].rooms, 'rooms');
+			});
 
 			remakePlayerNames.forEach(name => {
 				const play = game.publicPlayersState.find(p => p.userName === name);
@@ -663,9 +672,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 			};
 
 			newGame.chats = [];
-			newGame.general.uid = Math.random()
-				.toString(36)
-				.substring(2);
+			newGame.general.uid = `${game.general.uid}Remake`;
 			newGame.general.status = 'Game is remaking..';
 			newGame.electionCount = 0;
 			newGame.timeCreated = new Date().getTime();
@@ -704,14 +711,15 @@ module.exports.handleUpdatedRemakeGame = data => {
 				});
 				sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
 			});
-			console.log(newGame);
+			// console.log(newGame);
 			console.log(newGame.publicPlayersState);
 			checkStartConditions(newGame);
-			// game.gameState.isRemaking = true;
 		}
 	} else {
 		chat.chat.push({ text: ' has recinded their vote to remake this game.' });
 	}
+	game.chats.push(chat);
+
 	sendInProgressGameUpdate(game);
 	// remakeStatus: this.state.remakeStatus,
 	// userName: userInfo.userName,
