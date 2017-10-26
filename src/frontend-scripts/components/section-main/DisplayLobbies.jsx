@@ -205,6 +205,7 @@ const DisplayLobbies = props => {
 				</div>
 			);
 		} else if (game.gameStatus === 'notStarted') {
+			classes += ' waiting';
 			progressText = 'Waiting for players...';
 		} else {
 			progressText = 'Election #' + game.electionCount;

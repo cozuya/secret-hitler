@@ -223,6 +223,9 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 		.progress-text {
 			font-size: 16px;
 		}
+		.progress-text.waiting {
+			margin: auto;
+		}
 		.progress-text.liberal {
 			color: $darkliberalteam;
 			margin: auto;
