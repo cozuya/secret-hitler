@@ -324,9 +324,10 @@ class Gamechat extends React.Component {
 							) : (
 								<span className="observer-chat"> (Observer)</span>
 							)}
+							{`:`}
 						</span>
 						<span>
-							{`: `} {chatContents}
+							&nbsp;{chatContents}
 						</span>
 					</div>
 				);
