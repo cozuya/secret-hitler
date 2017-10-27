@@ -655,7 +655,7 @@ class Gamechat extends React.Component {
 							maxLength="300"
 							autoComplete="off"
 							spellCheck="false"
-							placeholder="Send a message."
+							placeholder="Send a message"
 							id="gameChatInput"
 							ref={c => {
 								this.gameChatInput = c;

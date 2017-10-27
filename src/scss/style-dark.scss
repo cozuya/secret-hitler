@@ -379,13 +379,16 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 	}
 	.generalchat .inputbar input,
 	#gameChatInput {
-		background: #181818; // #686868;
+		background: #181818;
 		border: 1px solid #8c8c8c !important;
 		color: white;
 		&:focus {
 			outline: none;
 			border: 1px solid #f2654c !important;
 			box-shadow: 0 0 3px #f2654c;
+		}
+		&::placeholder {
+    		color: #8c8c8c;
 		}
 	}
 	// careful this styles both generalchat and gamechat emote buttons

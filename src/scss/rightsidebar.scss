@@ -272,12 +272,15 @@
 	padding: 30px 15px 0 20px;
 	display: flex;
 	flex-wrap: wrap;
-	background: transparent;//#181818;
+	background: transparent;
 	overflow-x: hidden; 
 	cursor: pointer;
 	resize: none;
 	div {
 		margin: 0 2px 0 2px;
+		&:active {
+			opacity: 0.5;
+		}
 	}
 }
 .ui.top.popup {
@@ -302,4 +305,4 @@
 	.generalchat {
 		border-right: 0 !important;
 	}
-}te-b
+}
