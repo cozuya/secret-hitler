@@ -175,7 +175,7 @@ export class App extends React.Component {
 		) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
-		} else if (hash === '#/settings') {
+		} else if (hash === '#/settings' && isAuthed) {
 			dispatch(updateMidsection('settings'));
 		} else if (hash === '#/creategame' && isAuthed) {
 			dispatch(updateMidsection('createGame'));
