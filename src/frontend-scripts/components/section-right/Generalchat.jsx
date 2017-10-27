@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import { MODERATORS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
-import { processEmotes } from '../../emotes';
+import { renderEmoteButton, processEmotes } from '../../emotes';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 export default class Generalchat extends React.Component {
@@ -14,6 +14,8 @@ export default class Generalchat extends React.Component {
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
 		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
+		this.handleInsertEmote = this.handleInsertEmote.bind(this);
+		this.checkKeyPress = this.checkKeyPress.bind(this);
 		this.state = {
 			lock: false,
 			inputValue: '',
@@ -40,7 +42,7 @@ export default class Generalchat extends React.Component {
 	handleSubmit(e) {
 		const { inputValue } = this.state;
 
-		e.preventDefault();
+		//e.preventDefault();
 		if (inputValue.length < 300 && inputValue) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
@@ -114,6 +116,18 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
+	handleInsertEmote(emote) {
+		const newMsg = this.state.inputValue + ` ${emote}`;
+		this.setState({inputValue: newMsg});
+		this.input.focus();
+	}
+
+	checkKeyPress(e) {
+		if (e.keyCode == 13 && e.shiftKey == false) {
+			this.handleSubmit(this.state.inputValue);
+		}
+	}
+
 	render() {
 		return (
 			<section className="generalchat">
@@ -136,18 +150,23 @@ export default class Generalchat extends React.Component {
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
 					<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
-						<input
+						<textarea
+							disabled={!this.props.userInfo.userName}
+							className="chat-input-box"
 							placeholder="Send a message"
 							value={this.state.inputValue}
 							onChange={this.handleInputChange}
 							maxLength="300"
 							spellCheck="false"
+							onKeyDown={this.checkKeyPress}
 							ref={c => {
 								this.input = c;
 							}}
 						/>
-						<br />
-						<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+						{this.props.userInfo.userName ? renderEmoteButton(this.handleInsertEmote) : null}
+						<div className="chat-button">
+							<button type="submit" className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+						</div>
 					</div>
 				</form>
 			</section>

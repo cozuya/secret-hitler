@@ -1,6 +1,7 @@
 import React from 'react'; // eslint-disable-line
+import { Button, Popup } from 'semantic-ui-react';
 
-const allEmotes = [
+export const allEmotes = [
 	'BangBang',
 	'BigNose',
 	'FasCroc',
@@ -48,6 +49,28 @@ const allEmotes = [
 	'VoteNein'
 ];
 
+export function renderEmoteButton(handleInsertEmote) {
+	return (
+	<Popup on='click'
+		trigger={<Button type="button" icon='smile' primary className="emote-button" />}
+	>
+		<Popup.Content>
+			{(() => {
+				return (
+					<div className="emote-popup">
+						{allEmotes.map(el =>
+							<div data-tooltip={el} data-inverted onClick={() => handleInsertEmote(el)}>
+								<img src={`../images/emotes/${el}.png`} />
+							</div>
+						)}
+					</div>
+					);
+			})()}
+		</Popup.Content>
+	</Popup>
+	);
+}
+
 export function processEmotes(input) {
 	if (typeof input !== 'string') {
 		return input;
@@ -58,11 +81,11 @@ export function processEmotes(input) {
 
 	message.forEach((word, index) => {
 		if (allEmotes.includes(word)) {
-			formatedMsg.push(<img src={`images/emotes/${word}.png`} key={index} />);
+			formatedMsg.push(<span data-tooltip={word} data-inverted><img src={`../images/emotes/${word}.png`} key={index} />{' '}</span>);
 		} else if (/^https:\/\/secrethitler.io/.test(word)) {
 			const hash = word.split('https://secrethitler.io')[1];
-			// } else if (/^http:\/\/localhost:8080/.test(word)) {
-			// 	const hash = word.split('http://localhost:8080')[1];
+		// } else if (/^http:\/\/localhost:8080/.test(word)) {
+		//	const hash = word.split('http://localhost:8080')[1];
 
 			formatedMsg.push(
 				<a key={index} href={hash} title="link to something inside of sh.io">

@@ -379,8 +379,24 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 	}
 	.generalchat .inputbar input,
 	#gameChatInput {
-		background: #686868;
+		background: #181818; // #686868;
+		border: 1px solid #8c8c8c !important;
 		color: white;
+		&:focus {
+			outline: none;
+			border: 1px solid #f2654c !important;
+			box-shadow: 0 0 3px #f2654c;
+		}
+	}
+	// careful this styles both generalchat and gamechat emote buttons
+	.emote-button {
+		position: absolute;
+		right: 45px;
+		top: 2px;
+		background: transparent;
+		.smile.icon {
+			color: white !important;
+		}
 	}
 	.genchat-container .chat-user + span,
 	#game-container .ui.menu .loggedin,
@@ -670,6 +686,12 @@ div {
 	padding: 5px 20px;
 	font-size: 16px;
 }
+
+[data-tooltip][data-inverted]:after {
+	padding: 5px;
+}
+
+
 
 // ::-webkit-scrollbar {
 // 	width: 3px;

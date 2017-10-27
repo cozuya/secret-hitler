@@ -102,6 +102,9 @@
 					line-height: inherit;
 					padding: 2px 0;
 					display: flex;
+					span {
+						max-width: 90%;
+					}
 				}
 				.chat-user {
 					//color: #eee;
@@ -111,7 +114,8 @@
 				.chat-timestamp {
 					color: #848484;
 					font-size: 12px;
-					width: 40px;
+					//width: 40px;
+					min-width: 40px;
 					display: block;
 				}
 				.chat-user--game .chat-timestamp {

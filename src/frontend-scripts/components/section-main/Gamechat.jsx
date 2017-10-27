@@ -5,7 +5,7 @@ import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
 import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { processEmotes } from '../../emotes';
+import { renderEmoteButton, processEmotes } from '../../emotes';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 const mapDispatchToProps = dispatch => ({
@@ -30,6 +30,7 @@ class Gamechat extends React.Component {
 		this.handleNoteClick = this.handleNoteClick.bind(this);
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
 		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
+		this.handleInsertEmote = this.handleInsertEmote.bind(this);
 
 		this.state = {
 			chatFilter: 'All',
@@ -207,6 +208,12 @@ class Gamechat extends React.Component {
 		this.setState({
 			claim: this.state.claim ? '' : gameInfo.playersState[playerIndex].claim
 		});
+	}
+
+	handleInsertEmote(emote) {
+		const newMsg = this.state.inputValue + ` ${emote}`;
+		this.setState({inputValue: newMsg});
+		this.gameChatInput.focus();
 	}
 
 	processChats() {
@@ -445,7 +452,7 @@ class Gamechat extends React.Component {
 						return classes;
 					})()}
 				>
-					<PerfectScrollbar ref="perfectScrollbar" onScrollY={this.handleChatScrolled} onYReachEnd={this.handleChatScrolledToBottom}>
+					<PerfectScrollbar ref="perfectScrollbar" onScrollY={this.handleChatScrolled} onYReachEnd={this.handleChatScrolledToBottom} option={{ suppressScrollX: true }}>
 						<div className="ui list" onScroll={this.handleChatScroll}>
 							{this.processChats()}
 						</div>
@@ -648,13 +655,14 @@ class Gamechat extends React.Component {
 							maxLength="300"
 							autoComplete="off"
 							spellCheck="false"
-							placeholder="Chat.."
+							placeholder="Send a message."
 							id="gameChatInput"
 							ref={c => {
 								this.gameChatInput = c;
 							}}
 						/>
-						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+						{this.props.userInfo.userName ? renderEmoteButton(this.handleInsertEmote) : null}
+						<button type="submit" className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
 					{(() => {
 						if (

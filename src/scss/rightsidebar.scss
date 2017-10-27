@@ -164,7 +164,7 @@
 		}
 		.inputbar {
 			display: flex;
-			padding: 15px 5px 15px 5px;
+			padding: 15px 10px 5px 10px;
 			background: #181818;
 			border-top: 1px solid #272727;
 			> div {
@@ -173,18 +173,41 @@
 			i {
 				width: 20px;
 			}
+			.chat-input-box {
+				resize: none;
+				width: 100%;
+				background: #181818;
+				color: white;
+				padding-right: 25px;
+				border: solid 1px #8c8c8c;
+				&:focus {
+					 outline: none;
+					 border: 1px solid #f2654c;
+					 box-shadow: 0 0 3px #f2654c;
+				}
+			}
 		}
 		.ui.input {
 			margin-right: 4px;
+			display: flex;
+			flex-direction: column;
+			.chat-button {
+				margin-top: 5px;
+			}
+			.emote-button {
+				right: 2px !important;
+			}
 			input {
 				padding: 2px;
 			}
 			button {
 				padding: 2px;
+				float: right;
 			}
 			+ i {
 				cursor: pointer;
 			}
+
 		}
 		.segment.chats {
 			//height: 252px;
@@ -241,6 +264,34 @@
 }
 
 
+.emote-popup {
+	//min-height: 290px;
+	//min-width: 195px;
+	// add padding area for tooltips around popup
+	margin: -30px -15px 0 -20px;
+	padding: 30px 15px 0 20px;
+	display: flex;
+	flex-wrap: wrap;
+	background: transparent;//#181818;
+	overflow-x: hidden; 
+	cursor: pointer;
+	resize: none;
+	div {
+		margin: 0 2px 0 2px;
+	}
+}
+.ui.top.popup {
+	min-width: 250px;
+	padding: 10px;
+	background: #181818;
+	//border: 1px solid #f2664d !important;
+	&:before {
+		background: #181818;
+		//box-shadow: 1px 1px 0 0 #f2664d;
+	}
+}
+
+
 @media screen and (min-width: 1520px) {
 	.generalchat {
 		min-width: 350px;
@@ -251,4 +302,4 @@
 	.generalchat {
 		border-right: 0 !important;
 	}
-}
+}te-b
