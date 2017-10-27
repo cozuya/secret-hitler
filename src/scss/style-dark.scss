@@ -169,6 +169,14 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 	.section-main {
 		min-width: 870px;
 		max-width: 870px;
+		.scrollbar-container-main {
+			// small hack to prevent hover tooltips being cut off.
+			margin-right: -100px;
+			padding-right: 100px;
+			.ps__scrollbar-y-rail {
+				right: 100px;
+			}
+		}
 	}
 	.section-main.game {
 		width: 100%;
