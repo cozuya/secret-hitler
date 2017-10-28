@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import { MODERATORS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
-import { renderEmoteButton, processEmotes } from '../../emotes';
+import { renderEmotesButton, processEmotes } from '../../emotes';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 export default class Generalchat extends React.Component {
@@ -15,7 +15,7 @@ export default class Generalchat extends React.Component {
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
 		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
 		this.handleInsertEmote = this.handleInsertEmote.bind(this);
-		this.checkKeyPress = this.checkKeyPress.bind(this);
+		this.handleKeyPress = this.handleKeyPress.bind(this);
 		this.state = {
 			lock: false,
 			inputValue: '',
@@ -122,7 +122,7 @@ export default class Generalchat extends React.Component {
 		this.input.focus();
 	}
 
-	checkKeyPress(e) {
+	handleKeyPress(e) {
 		if (e.keyCode == 13 && e.shiftKey == false) {
 			this.handleSubmit(this.state.inputValue);
 		}
@@ -158,12 +158,12 @@ export default class Generalchat extends React.Component {
 							onChange={this.handleInputChange}
 							maxLength="300"
 							spellCheck="false"
-							onKeyDown={this.checkKeyPress}
+							onKeyDown={this.handleKeyPress}
 							ref={c => {
 								this.input = c;
 							}}
 						/>
-						{this.props.userInfo.userName ? renderEmoteButton(this.handleInsertEmote) : null}
+						{this.props.userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
 						<div className="chat-button">
 							<button type="submit" className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 						</div>

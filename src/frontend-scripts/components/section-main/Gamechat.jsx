@@ -5,7 +5,7 @@ import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
 import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { renderEmoteButton, processEmotes } from '../../emotes';
+import { renderEmotesButton, processEmotes } from '../../emotes';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 const mapDispatchToProps = dispatch => ({
@@ -661,7 +661,7 @@ class Gamechat extends React.Component {
 								this.gameChatInput = c;
 							}}
 						/>
-						{this.props.userInfo.userName ? renderEmoteButton(this.handleInsertEmote) : null}
+						{this.props.userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
 						<button type="submit" className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
 					{(() => {

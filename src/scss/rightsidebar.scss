@@ -194,7 +194,7 @@
 			.chat-button {
 				margin-top: 5px;
 			}
-			.emote-button {
+			.emotes-button {
 				right: 2px !important;
 			}
 			input {
@@ -264,7 +264,7 @@
 }
 
 
-.emote-popup {
+.emotes-popup {
 	//min-height: 290px;
 	//min-width: 195px;
 	// add padding area for tooltips around popup
@@ -279,7 +279,9 @@
 	div {
 		margin: 0 2px 0 2px;
 		&:active {
-			opacity: 0.5;
+			img {
+				opacity: 0.5;
+			}
 		}
 	}
 }

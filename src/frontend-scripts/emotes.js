@@ -49,16 +49,16 @@ export const allEmotes = [
 	'VoteNein'
 ];
 
-export function renderEmoteButton(handleInsertEmote) {
+export function renderEmotesButton(handleInsertEmote) {
 	return (
 	<Popup on='click'
-		trigger={<Button type="button" icon='smile' primary className="emote-button" />}
+		trigger={<Button type="button" icon='smile' primary className="emotes-button" />}
 	>
 		<Popup.Content>
 			{(() => {
 				return (
-					<div className="emote-popup">
-						{allEmotes.map(el =>
+					<div className="emotes-popup">
+						{allEmotes.map((el, index) =>
 							<div data-tooltip={el} data-inverted onClick={() => handleInsertEmote(el)}>
 								<img src={`../images/emotes/${el}.png`} />
 							</div>
