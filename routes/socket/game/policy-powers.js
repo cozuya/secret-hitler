@@ -88,7 +88,7 @@ module.exports.selectPolicies = data => {
 			president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
 			president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 			sendInProgressGameUpdate(game);
-		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1500 : 4000);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 3500 : 6000);
 
 		setTimeout(() => {
 			president.cardFlingerState = [];
@@ -122,7 +122,7 @@ module.exports.selectPolicies = data => {
 			game.trackState.electionTrackerCount = 0;
 			president.playersState[presidentIndex].claim = 'didPolicyPeek';
 			startElection(game);
-		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 2000 : 6000);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4500 : 7000);
 	}
 };
 

@@ -83,6 +83,10 @@ class CardFlinger extends React.Component {
 				currentPlayer = publicPlayersState.find(player => player.userName === userName),
 				currentPlayerStatus = currentPlayer ? currentPlayer.governmentStatus : null;
 
+			if (status === 'Fascists win the game.' || status === 'Liberals win the game.') {
+				return;
+			}
+
 			if (phase === 'voting' && cardFlingerState.length) {
 				return (
 					<div className="help-message voting">

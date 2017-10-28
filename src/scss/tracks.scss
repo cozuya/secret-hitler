@@ -433,11 +433,12 @@
 }
 
 .cardflinger-card-container.notification::after {
-	box-shadow: 0 0 5px 7px #fbbd08;
+	box-shadow: 0 0 26px 6px #fbbd08;
 }
 
 .cardflinger-card-container.selected::after {
-	box-shadow: 0 0 10px 12px lightgreen;
+	box-shadow: 0 0 2px 14px lightgreen;
+	animation-duration: 0s;
 }
 
 .cardflinger-card-container.selected {
