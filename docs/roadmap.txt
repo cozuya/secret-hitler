@@ -9,7 +9,6 @@ version 0.3
 implement stats page and graphs
 
 version 0.4
-implement karma system
 implement rainbow games
 
 version 0.5
@@ -35,20 +34,21 @@ chat emotes
 election vote rework (changable votes)
 editors
 
-version 0.9 (near future):
-(#187) whitelist fix to scroll - done
-(#280) upgrade all dependencies - done
-(#298) optional rebalance to 6&9p games - done
-(#299) links in general chat to either the site itself or the github page are linkable - done
-(#297) private games should be actually private to non mods - done
-(#296) general chat has timestamps on hover - done
-(#305) ip ban all tor ips - done
-(#306) fix to people being (again) able to make accounts with the same name but different capitalization - done
-(#307) enhanced mod log - done
-(#275) remake button - in progress
+version 0.9:
+(#187) whitelist fix to scroll
+(#280) upgrade all dependencies
+(#298) optional rebalance to 6&9p games
+(#299) links in general chat to either the site itself or the github page are linkable
+(#297) private games should be actually private to non mods
+(#296) general chat has timestamps on hover
+(#305) ip ban all tor ips
+(#306) fix to people being (again) able to make accounts with the same name but different capitalization
+(#307) enhanced mod log
+(#251) URL routing
+
+near future:
 (various) overhaul/fixes to moderation problems (banning/timeouts not working) - in progress
-(#251) URL routing:
-	
+(#275) remake button - in progress
 
 
 farther future:

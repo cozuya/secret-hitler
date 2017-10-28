@@ -191,6 +191,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 			games.push(data);
 			sendGameList();
 			socket.join(data.general.uid);
+			socket.emit('updateSeatForUser');
 			socket.emit('gameUpdate', data);
 		});
 	}
@@ -1155,7 +1156,7 @@ module.exports.checkUserStatus = socket => {
 		if (game && game.gameState.isStarted && !game.gameState.isCompleted) {
 			game.publicPlayersState.find(player => player.userName === user).connected = true;
 			socket.join(game.general.uid);
-			socket.emit('updateSeatForUser', true);
+			socket.emit('updateSeatForUser');
 			sendInProgressGameUpdate(game);
 		}
 	}
@@ -1165,24 +1166,6 @@ module.exports.checkUserStatus = socket => {
 	sendUserList();
 	sendGeneralChats(socket);
 	sendGameList(socket);
-};
-
-module.exports.handleOpenReplay = (socket, gameId) => {
-	const { passport } = socket.handshake.session;
-
-	if (passport) {
-		const username = socket.handshake.session.passport.user;
-		updateUserStatus(username, 'replay', gameId);
-	}
-};
-
-module.exports.handleCloseReplay = socket => {
-	const { passport } = socket.handshake.session;
-
-	if (passport) {
-		const username = socket.handshake.session.passport.user;
-		updateUserStatus(username, 'none');
-	}
 };
 
 module.exports.handleSocketDisconnect = handleSocketDisconnect;

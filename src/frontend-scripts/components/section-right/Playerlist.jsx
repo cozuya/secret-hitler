@@ -206,7 +206,7 @@ class Playerlist extends React.Component {
 									const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0),
 										percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '',
 										disableIfUnclickable = f => {
-											if (this.props.isUserClickable && !ADMINS.includes(user.userName)) {
+											if (this.props.isUserClickable) {
 												return f;
 											}
 

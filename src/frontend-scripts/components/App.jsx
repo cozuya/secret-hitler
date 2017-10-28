@@ -34,6 +34,7 @@ export class App extends React.Component {
 		this.state = {
 			notesValue: ''
 		};
+		this.prevHash = '';
 	}
 
 	compononentDidUpdate() {
@@ -61,7 +62,7 @@ export class App extends React.Component {
 					userName: username
 				};
 
-				// info.isSeated = true;
+				info.isSeated = true;
 				socket.emit('updateSeatedUser', data);
 				socket.emit('getGameInfo', 'devgame');
 			}
@@ -140,7 +141,20 @@ export class App extends React.Component {
 	router() {
 		const { hash } = window.location,
 			{ userInfo, dispatch, gameInfo } = this.props,
-			isAuthed = Boolean(document.getElementById('game-container').classList.length);
+			isAuthed = Boolean(document.getElementById('game-container').classList.length),
+			updateStatus = (type, uid) => {
+				if (userInfo.userName) {
+					socket.emit('updateUserStatus', userInfo.userName, type, uid);
+				}
+			};
+
+		if (hash === this.prevHash) {
+			return;
+		}
+
+		// if (this.prevHash.substr === '#/table/') {
+		// 	hash.split('#/table/')[1];
+		// }
 
 		if (
 			hash.substr(0, 8) !== '#/table/' &&
@@ -153,9 +167,10 @@ export class App extends React.Component {
 			this.handleLeaveGame(true);
 		}
 
-		if (hash.substr(0, 10) === '#/profile/' && !ADMINS.includes(hash.split('#/profile/')[1])) {
+		if (hash.substr(0, 10) === '#/profile/') {
 			dispatch(fetchProfile(hash.split('#/profile/')[1]));
 		} else if (hash.substr(0, 9) === '#/replay/') {
+			updateStatus('replay', hash.split('#/replay/')[1]);
 			dispatch(fetchReplay(hash.split('#/replay/')[1]));
 		} else if (hash === '#/changelog') {
 			dispatch(updateMidsection('changelog'));
@@ -178,12 +193,16 @@ export class App extends React.Component {
 		} else if (hash === '#/creategame' && isAuthed) {
 			dispatch(updateMidsection('createGame'));
 		} else if (hash.substr(0, 8) === '#/table/') {
+			// updateStatus('observing', hash.split('#/table/')[1]);
 			socket.emit('getGameInfo', hash.split('#/table/')[1]);
 		} else if (hash !== '#/') {
 			window.location.hash = '#/';
 		} else {
+			updateStatus('none');
 			dispatch(updateMidsection('default'));
 		}
+
+		this.prevHash = hash;
 	}
 
 	handleRoute(route) {
@@ -259,7 +278,7 @@ export class App extends React.Component {
 		socket.emit('updateSeatedUser', data);
 	}
 
-	handleLeaveGame(isSeated, isSettings = false, badKarma, toReplay) {
+	handleLeaveGame(isSeated) {
 		const { dispatch, userInfo, gameInfo } = this.props;
 
 		if (userInfo.isSeated) {
@@ -270,9 +289,7 @@ export class App extends React.Component {
 		socket.emit('leaveGame', {
 			userName: userInfo.userName,
 			isSeated,
-			isSettings,
-			uid: gameInfo.general.uid,
-			toReplay
+			uid: gameInfo.general.uid
 		});
 	}
 

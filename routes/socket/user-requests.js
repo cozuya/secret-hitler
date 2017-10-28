@@ -168,7 +168,6 @@ const sendUserList = (module.exports.sendUserList = socket => {
 });
 
 const updateUserStatus = (module.exports.updateUserStatus = (username, type, gameId) => {
-	// eslint-disable-line one-var
 	const user = userList.find(user => user.userName === username);
 
 	if (user) {
@@ -180,8 +179,8 @@ const updateUserStatus = (module.exports.updateUserStatus = (username, type, gam
 module.exports.sendGameInfo = (socket, uid) => {
 	const game = games.find(el => el.general.uid === uid),
 		{ passport } = socket.handshake.session;
+
 	if (game) {
-		console.log(game.general.uid, 'newgame in sendgameinfo');
 		const _game = Object.assign({}, game);
 
 		if (passport && Object.keys(passport).length) {
@@ -189,7 +188,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 
 			if (player) {
 				player.leftGame = false;
-				updateUserStatus(passport.user, 'playing', uid);
+				updateUserStatus(passport.user, game.general.rainbowgame ? 'rainbow' : 'playing', uid);
 			} else {
 				updateUserStatus(passport.user, 'observing', uid);
 			}

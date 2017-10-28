@@ -14,11 +14,12 @@ function profileDelta(username, game) {
 		isFascist = !isLiberal,
 		votes = game.hitlerZone
 			.map(hz =>
-				flattenListOpts(game.votesOf(username).value().slice(hz)).filter(
-					v =>
-						game.loyaltyOf(v.presidentId).value() === 'fascist' ||
-						game.roleOf(v.chancellorId).value() === 'hitler'
-				)
+				flattenListOpts(
+					game
+						.votesOf(username)
+						.value()
+						.slice(hz)
+				).filter(v => game.loyaltyOf(v.presidentId).value() === 'fascist' || game.roleOf(v.chancellorId).value() === 'hitler')
 			)
 			.valueOrElse(List()),
 		accurateVotes = votes.filterNot(v => {
@@ -26,14 +27,10 @@ function profileDelta(username, game) {
 				presidentLoyalty = game.loyaltyOf(presidentId).value(),
 				chancellorRole = game.roleOf(chancellorId).value();
 
-			return (
-				ja && (presidentLoyalty === 'fascist' || chancellorRole === 'hitler')
-			);
+			return ja && (presidentLoyalty === 'fascist' || chancellorRole === 'hitler');
 		}),
 		shots = game.shotsOf(username).value(),
-		accurateShots = shots.filter(
-			id => game.loyaltyOf(id).value() === 'fascist'
-		);
+		accurateShots = shots.filter(id => game.loyaltyOf(id).value() === 'fascist');
 
 	return {
 		stats: {
@@ -82,28 +79,20 @@ function updateProfile(username, game, options = {}) {
 			username,
 			{
 				$inc: {
-					'stats.matches.allMatches.events':
-						delta.stats.matches.allMatches.events,
-					'stats.matches.allMatches.successes':
-						delta.stats.matches.allMatches.successes,
+					'stats.matches.allMatches.events': delta.stats.matches.allMatches.events,
+					'stats.matches.allMatches.successes': delta.stats.matches.allMatches.successes,
 
 					'stats.matches.liberal.events': delta.stats.matches.liberal.events,
-					'stats.matches.liberal.successes':
-						delta.stats.matches.liberal.successes,
+					'stats.matches.liberal.successes': delta.stats.matches.liberal.successes,
 
 					'stats.matches.fascist.events': delta.stats.matches.fascist.events,
-					'stats.matches.fascist.successes':
-						delta.stats.matches.fascist.successes,
+					'stats.matches.fascist.successes': delta.stats.matches.fascist.successes,
 
-					'stats.actions.voteAccuracy.events':
-						delta.stats.actions.voteAccuracy.events,
-					'stats.actions.voteAccuracy.successes':
-						delta.stats.actions.voteAccuracy.successes,
+					'stats.actions.voteAccuracy.events': delta.stats.actions.voteAccuracy.events,
+					'stats.actions.voteAccuracy.successes': delta.stats.actions.voteAccuracy.successes,
 
-					'stats.actions.shotAccuracy.events':
-						delta.stats.actions.shotAccuracy.events,
-					'stats.actions.shotAccuracy.successes':
-						delta.stats.actions.shotAccuracy.successes
+					'stats.actions.shotAccuracy.events': delta.stats.actions.shotAccuracy.events,
+					'stats.actions.shotAccuracy.successes': delta.stats.actions.shotAccuracy.successes
 				},
 				$push: {
 					recentGames: {
@@ -162,11 +151,7 @@ function updateProfile(username, game, options = {}) {
 function updateProfiles(game, options = {}) {
 	debug('Updating profiles for: %s', game.id);
 
-	return Promise.all(
-		game.players
-			.map(p => p.username)
-			.map(username => updateProfile(username, game, options))
-	);
+	return Promise.all(game.players.map(p => p.username).map(username => updateProfile(username, game, options)));
 }
 
 // side effect: caches profile
