@@ -1087,7 +1087,7 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 				</div>
-				<div className="ui grid centered footer" style={{ marginTop: '20px' }}>
+				<div className="ui grid centered footer" style={{ marginTop: '20px', marginBottom: '10px'}}>
 					<div onClick={this.createNewGame} className="ui button primary" style={{ marginLeft: '15px', width: '400px' }}>
 						Create game
 					</div>

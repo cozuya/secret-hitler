@@ -123,7 +123,7 @@ export default class Generalchat extends React.Component {
 	}
 
 	handleKeyPress(e) {
-		if (e.keyCode == 13 && e.shiftKey == false) {
+		if (e.keyCode === 13 && e.shiftKey === false) {
 			this.handleSubmit(this.state.inputValue);
 		}
 	}
@@ -148,7 +148,6 @@ export default class Generalchat extends React.Component {
 						</div>
 					</PerfectScrollbar>
 				</section>
-				<form className="segment inputbar" onSubmit={this.handleSubmit}>
 					<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
 						<textarea
 							disabled={!this.props.userInfo.userName}
@@ -165,10 +164,9 @@ export default class Generalchat extends React.Component {
 						/>
 						{this.props.userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
 						<div className="chat-button">
-							<button type="submit" className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+							<button onClick={this.handleSubmit} className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 						</div>
 					</div>
-				</form>
 			</section>
 		);
 	}

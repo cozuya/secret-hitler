@@ -225,10 +225,6 @@ class Menu extends React.Component {
 								Wiki
 							</a>{' '}
 							|{' '}
-							<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki/Emotes">
-								Emotes
-							</a>{' '}
-							|{' '}
 							<a target="_blank" href="https://discord.gg/FXDxP2m">
 								Discord
 							</a>

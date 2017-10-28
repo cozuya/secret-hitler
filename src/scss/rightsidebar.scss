@@ -162,16 +162,19 @@
 				//padding: 2px 5px 0;
 			}
 		}
-		.inputbar {
+		.ui.input {
+			margin: 0;
 			display: flex;
-			padding: 15px 10px 5px 10px;
+			flex-direction: column;
+			padding: 10px 10px 5px 10px;
 			background: #181818;
-			border-top: 1px solid #272727;
-			> div {
-				flex-grow: 1;
+			//border-top: 1px solid #272727;
+			.chat-button {
+				margin-top: 5px;
 			}
-			i {
-				width: 20px;
+			.emotes-button {
+				right: 10px !important;
+				top: 12px !important;
 			}
 			.chat-input-box {
 				resize: none;
@@ -180,22 +183,12 @@
 				color: white;
 				padding-right: 25px;
 				border: solid 1px #8c8c8c;
+				height: 44px;
 				&:focus {
 					 outline: none;
 					 border: 1px solid #f2654c;
 					 box-shadow: 0 0 3px #f2654c;
 				}
-			}
-		}
-		.ui.input {
-			margin-right: 4px;
-			display: flex;
-			flex-direction: column;
-			.chat-button {
-				margin-top: 5px;
-			}
-			.emotes-button {
-				right: 2px !important;
 			}
 			input {
 				padding: 2px;
@@ -204,8 +197,9 @@
 				padding: 2px;
 				float: right;
 			}
-			+ i {
+			i {
 				cursor: pointer;
+				width: 20px;
 			}
 
 		}
