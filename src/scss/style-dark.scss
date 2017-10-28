@@ -137,25 +137,6 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 			resize: none;
 		}
 	}
-	.emotes-popup {
-		// add padding area for tooltips around popup
-		margin: -30px -15px 0 -20px;
-		padding: 30px 15px 0 20px;
-		display: flex;
-		flex-wrap: wrap;
-		background: transparent;
-		overflow-x: hidden; 
-		cursor: pointer;
-		resize: none;
-		div {
-			margin: 0 2px 0 2px;
-			&:active {
-				img {
-					opacity: 0.5;
-				}
-			}
-		}
-	}
 	.app-container {
 		height: 100%;
 		display: flex;
