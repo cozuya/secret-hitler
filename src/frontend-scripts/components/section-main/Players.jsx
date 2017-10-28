@@ -224,6 +224,8 @@ export default class Players extends React.Component {
 	renderTakeSeat() {
 		const { userInfo, gameInfo, userList } = this.props;
 
+		// TODO: BUG - if you refresh an open rainbow game lobby while logged in you are removed from userList.list and .wins is undefined!
+
 		if (
 			!userInfo.isSeated &&
 			userInfo.userName &&

@@ -133,8 +133,10 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 		textarea {
 			width: 100%;
 			flex-grow: 1;
-			background: lightyellow;
+			background: #1b1b1b;
 			resize: none;
+			border-top: none;
+			border: 1px solid white;
 		}
 	}
 	.app-container {
