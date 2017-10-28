@@ -131,7 +131,7 @@ Game.find({})
 		data.eightPlayerGameData = eightPlayerGameData;
 		data.ninePlayerGameData = ninePlayerGameData;
 		data.tenPlayerGameData = tenPlayerGameData;
-		fs.writeFile('data/data.json', JSON.stringify(data), () => {
+		fs.writeFile('/var/www/secret-hitler/data/data.json', JSON.stringify(data), () => {
 			mongoose.connection.close();
 		});
 	});

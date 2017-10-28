@@ -2,7 +2,6 @@ import { put, call, takeLatest } from 'redux-saga/effects';
 import buildEnhancedGameSummary from '../../models/game-summary/buildEnhancedGameSummary';
 import buildReplay from './replay/buildReplay';
 import { updateMidsection } from './actions/actions';
-import socket from './socket';
 
 function* fetchProfile(action) {
 	const { username } = action;
@@ -20,7 +19,6 @@ function* fetchProfile(action) {
 }
 
 function* closeReplay() {
-	socket.emit('closeReplay');
 	yield put(updateMidsection('default'));
 }
 
@@ -30,7 +28,6 @@ function* loadReplay(action) {
 	const game = buildEnhancedGameSummary(summary);
 	const replay = buildReplay(game);
 
-	socket.emit('openReplay', game.id);
 	yield put({ type: 'RECEIVE_REPLAY', replay, game });
 	yield put(updateMidsection('replay'));
 }

@@ -17,10 +17,10 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const PatchAlert = ({ isActive, onClick }) => (isActive ? <div className="patch-alert" onClick={onClick} /> : null);
-
 const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 	<section className="defaultmid">
 		<PatchAlert isActive={version.lastSeen && version.current.number !== version.lastSeen} onClick={readPatchNotes} />
+		<img src="/images/lizard29.png" alt="Secret Hitler log" width="400" height="400" />
 		<p>
 			<span>{`sh.io version ${version.current.number} "${version.current.color}" released ${version.current.date} | `}</span>
 			<span>

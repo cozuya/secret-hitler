@@ -122,9 +122,7 @@ class Settings extends React.Component {
 	profileSearchSubmit(e) {
 		e.preventDefault();
 
-		if (this.state.profileSearchValue !== 'coz') {
-			this.props.fetchProfile(this.state.profileSearchValue);
-		}
+		this.props.fetchProfile(this.state.profileSearchValue);
 	}
 
 	renderFonts() {

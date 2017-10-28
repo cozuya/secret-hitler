@@ -168,15 +168,15 @@ module.exports = () => {
 									}
 
 									passport.authenticate('local')(req, res, () => {
-										// const newPlayerBan = new BannedIP({
-										// 	bannedDate: new Date(),
-										// 	type: 'new',
-										// 	ip: signupIP
-										// });
-										// newPlayerBan.save(() => {
-										// 	res.send();
-										// });
-										res.send();
+										const newPlayerBan = new BannedIP({
+											bannedDate: new Date(),
+											type: 'new',
+											ip: signupIP
+										});
+
+										newPlayerBan.save(() => {
+											res.send();
+										});
 									});
 								});
 							}

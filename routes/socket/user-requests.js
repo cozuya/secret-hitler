@@ -171,7 +171,6 @@ const sendUserList = (module.exports.sendUserList = socket => {
 });
 
 const updateUserStatus = (module.exports.updateUserStatus = (username, type, gameId) => {
-	// eslint-disable-line one-var
 	const user = userList.find(user => user.userName === username);
 
 	if (user) {
@@ -192,7 +191,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 
 			if (player) {
 				player.leftGame = false;
-				updateUserStatus(passport.user, 'playing', uid);
+				updateUserStatus(passport.user, game.general.rainbowgame ? 'rainbow' : 'playing', uid);
 			} else {
 				updateUserStatus(passport.user, 'observing', uid);
 			}
