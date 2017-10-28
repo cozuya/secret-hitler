@@ -175,8 +175,11 @@
 		.card-container.flipped {
 			transform: rotateY(180deg);
 		}
-		.player-number.disconnected {
+		.player-number.leftgame {
 			opacity: 0.3;
+		}
+		.player-number.disconnected {
+			opacity: 0.6;
 		}
 		.player-name.liberal,
 		.player-number.liberal {

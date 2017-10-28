@@ -26,7 +26,6 @@ class Gamechat extends React.Component {
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
 		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
 		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
-		this.handleBadKarmaCheck = this.handleBadKarmaCheck.bind(this);
 		this.handleNoteClick = this.handleNoteClick.bind(this);
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
 		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
@@ -37,7 +36,6 @@ class Gamechat extends React.Component {
 			lock: false,
 			inputValue: '',
 			claim: '',
-			badKarma: '',
 			playersToWhitelist: [],
 			disabled: false,
 			notesEnabled: false
@@ -91,10 +89,6 @@ class Gamechat extends React.Component {
 		if (this.state.lock !== false) {
 			this.setState({ lock: false });
 		}
-	}
-
-	handleBadKarmaCheck(playerName) {
-		this.setState({ badKarma: playerName });
 	}
 
 	handleWhitelistPlayers() {
@@ -378,8 +372,8 @@ class Gamechat extends React.Component {
 
 				if (summary) {
 					const onClick = () => {
-						this.props.loadReplay(summary, true);
-						this.props.onLeaveGame(this.props.userInfo.isSeated, false, this.state.badKarma, true);
+						this.props.onLeaveGame(this.props.userInfo.isSeated);
+						window.location.hash = `#/replay/${gameInfo.general.uid}`;
 					};
 
 					return (

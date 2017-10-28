@@ -58,6 +58,8 @@ class Tracks extends React.Component {
 		// 	userInfo.seatNumber &&
 		// 	gameInfo.gameState.isTracksFlipped && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
 
+		// {userInfo.userName && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
+
 		return (
 			<section className="tracks-container">
 				<CardFlinger userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
@@ -72,7 +74,6 @@ class Tracks extends React.Component {
 						})()}
 						<span>{gameInfo.general.name}</span>
 					</div>
-					{userInfo.userName && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
 					{userInfo.userName &&
 						(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) && (
 							<div className="gameuid">Game UID: {gameInfo.general.uid}</div>

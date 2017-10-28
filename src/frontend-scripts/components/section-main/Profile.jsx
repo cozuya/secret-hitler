@@ -51,7 +51,6 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 				}
 			})(),
 			toActive = stat => (activeStat === stat ? 'active' : '');
-
 		return (
 			<div>
 				<div className="column-name">
