@@ -8,7 +8,6 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 	debug = require('debug')('game:summary'),
 	saveGame = game => {
 		const summary = game.private.summary.publish(),
-			enhanced = buildEnhancedGameSummary(summary.toObject()),
 			gameToSave = new Game({
 				uid: game.general.uid,
 				date: new Date(),
@@ -27,10 +26,22 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 				rebalance69p: game.general.rebalance69p
 			});
 
-		debug('Saving game: %O', summary);
+		let enhanced;
 
-		updateProfiles(enhanced, { cache: true });
-		summary.save();
+		try {
+			if (summary && summary.toObject()) {
+				enhanced = buildEnhancedGameSummary(summary.toObject());
+				updateProfiles(enhanced, { cache: true });
+				summary.save();
+			} else {
+				console.log(summary, 'problem with summary');
+				console.log(summary.toObject(), 'problem with summary');
+			}
+		} catch (error) {
+			console.log(error, 'error in enhanced/end-game');
+		}
+
+		debug('Saving game: %O', summary);
 		gameToSave.save();
 	};
 
