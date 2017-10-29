@@ -14,6 +14,7 @@ const {
 		handleModerationAction,
 		handlePlayerReport,
 		handlePlayerReportDismiss,
+		handleUpdatedBio,
 		handleUpdatedRemakeGame
 	} = require('./user-events'),
 	{
@@ -124,6 +125,9 @@ module.exports = () => {
 			})
 			.on('updateRemake', data => {
 				handleUpdatedRemakeGame(data);
+			})
+			.on('updateBio', data => {
+				handleUpdatedBio(socket, data);
 			})
 			// user-requests
 

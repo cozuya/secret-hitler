@@ -166,6 +166,17 @@ module.exports.updateSeatedUser = (socket, data) => {
 	}
 };
 
+module.exports.handleUpdatedBio = (socket, data) => {
+	if (socket.handshake.session.passport) {
+		const username = socket.handshake.session.passport.user;
+
+		Account.findOne({ username }).then(account => {
+			account.bio = data;
+			account.save();
+		});
+	}
+};
+
 module.exports.handleAddNewGame = (socket, data) => {
 	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
