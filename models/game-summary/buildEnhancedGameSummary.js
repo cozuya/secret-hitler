@@ -81,6 +81,10 @@ function buildEnhancedGameSummary(_summary) {
 		} else if (lastTurn.isHitlerKilled) {
 			return 'liberal';
 		} else {
+			if (!lastTurn.enactedPolicy) {
+				console.log('no lastturn enacted policy @ buildenhancedgamesummary');
+				return null;
+			}
 			return lastTurn.enactedPolicy.value();
 		}
 	})();
@@ -93,18 +97,12 @@ function buildEnhancedGameSummary(_summary) {
 
 	// Option[Int]
 	const indexOf = id => {
-		return fromNullable(
-			Number.isInteger(id) ? id : players.findIndex(p => p.username === id)
-		);
+		return fromNullable(Number.isInteger(id) ? id : players.findIndex(p => p.username === id));
 	};
 
 	// Option[Int]
 	const playerOf = id => {
-		return fromNullable(
-			Number.isInteger(id)
-				? players.get(id)
-				: players.find(p => p.username === id)
-		);
+		return fromNullable(Number.isInteger(id) ? players.get(id) : players.find(p => p.username === id));
 	};
 
 	// Option[String]
@@ -142,11 +140,7 @@ function buildEnhancedGameSummary(_summary) {
 
 	// Option[List[Int]]
 	const shotsOf = username => {
-		return indexOf(username).map(i =>
-			turns
-				.filter(t => t.presidentId === i && t.execution.isSome())
-				.map(t => t.execution.value())
-		);
+		return indexOf(username).map(i => turns.filter(t => t.presidentId === i && t.execution.isSome()).map(t => t.execution.value()));
 	};
 
 	// Option[Boolean]

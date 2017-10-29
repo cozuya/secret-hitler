@@ -83,23 +83,24 @@ const handleSocketDisconnect = socket => {
 			}
 
 			if (gamesPlayerSeatedIn.length) {
-				const game = gamesPlayerSeatedIn[0],
-					{ gameState, publicPlayersState } = game,
-					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+				gamesPlayerSeatedIn.forEach(game => {
+					const { gameState, publicPlayersState } = game,
+						playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-				if (
-					(!gameState.isStarted && publicPlayersState.length === 1) ||
-					(gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
-				) {
-					games.splice(games.indexOf(game), 1);
-				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
-					publicPlayersState.splice(playerIndex, 1);
-					checkStartConditions(game);
-					io.sockets.in(game.uid).emit('gameUpdate', game);
-				} else if (gameState.isTracksFlipped) {
-					publicPlayersState[playerIndex].connected = false;
-					sendInProgressGameUpdate(game);
-				}
+					if (
+						(!gameState.isStarted && publicPlayersState.length === 1) ||
+						(gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
+					) {
+						games.splice(games.indexOf(game), 1);
+					} else if (!gameState.isTracksFlipped && playerIndex > -1) {
+						publicPlayersState.splice(playerIndex, 1);
+						checkStartConditions(game);
+						io.sockets.in(game.uid).emit('gameUpdate', game);
+					} else if (gameState.isTracksFlipped) {
+						publicPlayersState[playerIndex].connected = false;
+						sendInProgressGameUpdate(game);
+					}
+				});
 				sendGameList();
 			}
 		}
