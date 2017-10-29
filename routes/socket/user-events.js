@@ -78,13 +78,10 @@ const handleSocketDisconnect = socket => {
 					game.publicPlayersState.find(player => player.userName === passport.user && player.connected && !player.leftGame)
 				);
 
-			if (gamesPlayerSeatedIn.length > 1) {
-				console.log("player in more than one seated game and isn't disconned or left");
-			}
-
 			if (userIndex !== -1) {
 				userList.splice(userIndex, 1);
 			}
+
 			if (gamesPlayerSeatedIn.length) {
 				const game = gamesPlayerSeatedIn[0],
 					{ gameState, publicPlayersState } = game,
