@@ -39,7 +39,7 @@ class Settings extends React.Component {
 
 	componentDidMount() {
 		const { socket } = this.props,
-			gameSettings = this.props.gameSettings || window.gameSettings;
+			gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
 
 		$(this.timestamps).checkbox({
 			onChecked() {
@@ -50,6 +50,32 @@ class Settings extends React.Component {
 			onUnchecked() {
 				socket.emit('updateGameSettings', {
 					enableTimestamps: false
+				});
+			}
+		});
+
+		$(this.disableHelpMessages).checkbox({
+			onChecked() {
+				socket.emit('updateGameSettings', {
+					disableHelpMessages: true
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateGameSettings', {
+					disableHelpMessages: false
+				});
+			}
+		});
+
+		$(this.disableHelpIcons).checkbox({
+			onChecked() {
+				socket.emit('updateGameSettings', {
+					disableHelpIcons: true
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateGameSettings', {
+					disableHelpIcons: false
 				});
 			}
 		});
@@ -323,6 +349,15 @@ class Settings extends React.Component {
 							>
 								<input type="checkbox" name="timestamps" defaultChecked={gameSettings.enableTimestamps} />
 							</div>
+							<h4 className="ui header">Disable Help Messages</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.disableHelpMessages = c;
+								}}
+							>
+								<input type="checkbox" name="disableHelpMessages" defaultChecked={gameSettings.disableHelpMessages} />
+							</div>
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Show right sidebar in games</h4>
@@ -333,6 +368,15 @@ class Settings extends React.Component {
 								}}
 							>
 								<input type="checkbox" name="sidebar" defaultChecked={gameSettings.enableRightSidebarInGame} />
+							</div>
+							<h4 className="ui header">Disable Help Icons</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.disableHelpIcons = c;
+								}}
+							>
+								<input type="checkbox" name="disableHelpIcons" defaultChecked={gameSettings.disableHelpIcons} />
 							</div>
 						</div>
 						<div className="four wide column popups">

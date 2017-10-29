@@ -83,6 +83,11 @@ class CardFlinger extends React.Component {
 				currentPlayer = publicPlayersState.find(player => player.userName === userName),
 				currentPlayerStatus = currentPlayer ? currentPlayer.governmentStatus : null;
 
+
+			if (userName && userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages === true) {
+				return;
+			}
+
 			if (status === 'Fascists win the game.' || status === 'Liberals win the game.') {
 				return;
 			}
@@ -141,6 +146,10 @@ class CardFlinger extends React.Component {
 							backClasses = 'cardflinger-card back',
 							containerClasses = `cardflinger-card-container ${position}`;
 
+						if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
+							containerClasses += ' display-help-icons';
+						}
+
 						if (stateObj && Object.keys(stateObj).length) {
 							if (stateObj.cardStatus.isFlipped) {
 								containerClasses += ' flippedY';
@@ -162,11 +171,15 @@ class CardFlinger extends React.Component {
 								backClasses = `${backClasses} ${stateObj.cardStatus.cardBack}`;
 							}
 						}
-						if (this.state.isHovered && this.state.hoveredClass === containerClasses) {
-							containerClasses += ' hovered';
-						} else if (this.state.isHovered) {
-							containerClasses += ' not-hovered';
+
+						if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
+							if (this.state.isHovered && this.state.hoveredClass === containerClasses) {
+								containerClasses += ' hovered';
+							} else if (this.state.isHovered) {
+								containerClasses += ' not-hovered';
+							}
 						}
+
 
 						return (
 							<div

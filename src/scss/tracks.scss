@@ -151,9 +151,8 @@
 		opacity: 0.3;
 	}
 	.help-message {
-		position: absolute;
 		text-align: center;
-		top: 55px;
+		margin-top: 55px;
 		font-size: 20px;
 		z-index: 3;
 		text-shadow: 0px 0px 7px #000000, 0px 0px 7px #000000, 0px 0px 7px #000000;
@@ -166,7 +165,7 @@
 		}
 	}
 	.help-message.voting {
-		left: 135px;
+		//left: 135px;
 		.select {
 			color: lightgreen;
 		}
@@ -175,7 +174,6 @@
 		}
 	}
 	.help-message.pres-select {
-		left: 140px;
 		span {
 			color: red;
 		}
@@ -186,27 +184,13 @@
 		}
 	}
 	.help-message.chanc-select {
-		left: 200px;
-		top: 70px;
+		margin-top: 70px;
 		span {
 			color: lightgreen;
 		}
 	}
-	.help-message.policy-peak {
-		left: 58px;
-	}
-	.help-message.investigate {
-		left: 31px;
-	}
-	.help-message.special-election {
-		left: 86px;
-	}
-	.help-message.execute {
-		left: 166px;
-	}
 	.help-message.veto {
-		left: 85px;
-		top: 70px;
+		margin-top: 70px;
 		span {
 			color: red;
 		}
@@ -441,7 +425,7 @@
 	animation-duration: 0s;
 }
 
-.cardflinger-card-container.selected {
+.cardflinger-card-container.selected.display-help-icons {
 	left: 670px;
 	.cardflinger-card.back::before {
 		content: '\f00c';
