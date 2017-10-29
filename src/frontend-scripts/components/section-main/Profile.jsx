@@ -63,8 +63,8 @@ class ProfileWrapper extends React.Component {
 			<Table
 				headers={['Action', 'Instances', 'Success Rate']}
 				rows={[
-					successRow('Vote Accuracy', actions.voteAccuracy.events, actions.voteAccuracy.successes),
-					successRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
+					this.successRow('Vote Accuracy', actions.voteAccuracy.events, actions.voteAccuracy.successes),
+					this.componentDidCatchsuccessRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
 				]}
 			/>
 		);
