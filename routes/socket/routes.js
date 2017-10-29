@@ -120,9 +120,6 @@ module.exports = () => {
 			.on('playerReportDismiss', () => {
 				handlePlayerReportDismiss();
 			})
-			.on('closeReplay', () => {
-				handleCloseReplay(socket);
-			})
 			.on('updateRemake', data => {
 				handleUpdatedRemakeGame(data);
 			})
