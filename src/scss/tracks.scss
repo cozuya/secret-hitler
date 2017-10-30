@@ -152,7 +152,11 @@
 	}
 	.help-message {
 		text-align: center;
-		margin-top: 55px;
+		position: absolute;
+		top: 55px;
+		bottom: 0;
+		right: 0;
+		left: 0;
 		font-size: 20px;
 		z-index: 3;
 		text-shadow: 0px 0px 7px #000000, 0px 0px 7px #000000, 0px 0px 7px #000000;
@@ -165,7 +169,6 @@
 		}
 	}
 	.help-message.voting {
-		//left: 135px;
 		.select {
 			color: lightgreen;
 		}
@@ -184,13 +187,13 @@
 		}
 	}
 	.help-message.chanc-select {
-		margin-top: 70px;
+		top: 70px;
 		span {
 			color: lightgreen;
 		}
 	}
 	.help-message.veto {
-		margin-top: 70px;
+		top: 70px;
 		span {
 			color: red;
 		}
@@ -208,7 +211,7 @@
 		width: 120px;
 		height: 164px;
 		z-index: 3;
-		transition-property: transform;
+		transition-property: all;
 		transition-delay: 0.3s;
 		transition-duration: 1s;
 		transform-style: preserve-3d;

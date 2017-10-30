@@ -59,10 +59,10 @@ export default class Reports extends React.Component {
 	render() {
 		return (
 			<section className="reports">
-				<h2>Player Reports</h2>
 				<a href="#/">
 					<i className="remove icon" />
 				</a>
+				<h2>Player Reports</h2>
 				{this.renderReportsLog()}
 			</section>
 		);

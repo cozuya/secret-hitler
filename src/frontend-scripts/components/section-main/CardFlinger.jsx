@@ -83,7 +83,6 @@ class CardFlinger extends React.Component {
 				currentPlayer = publicPlayersState.find(player => player.userName === userName),
 				currentPlayerStatus = currentPlayer ? currentPlayer.governmentStatus : null;
 
-
 			if (userName && userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages === true) {
 				return;
 			}
@@ -101,12 +100,14 @@ class CardFlinger extends React.Component {
 						</div>
 					</div>
 				);
+			} else if (phase === 'selectingChancellor' && currentPlayerStatus === 'isPendingPresident') {
+				return <div className="help-message nominate-chanc">You must select a player to be your Chancellor</div>;
 			} else if (phase === 'presidentSelectingPolicy' && currentPlayerStatus === 'isPresident') {
 				return (
 					<div className="help-message pres-select">
 						Choose 1 policy to <span>DISCARD</span>.
 						<div className="secondary-message">
-							The other 2 will be <span>PASSED</span> to your chancellor.
+							The other 2 will be <span>PASSED</span> to your Chancellor.
 						</div>
 					</div>
 				);
@@ -119,7 +120,7 @@ class CardFlinger extends React.Component {
 			} else if (phase === 'selectPartyMembershipInvestigate' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message investigate">You must investigate another players party membership.</div>;
 			} else if (phase === 'specialElection' && currentPlayerStatus === 'isPresident') {
-				return <div className="help-message special-election">Choose 1 player to become the next president.</div>;
+				return <div className="help-message special-election">Choose 1 player to become the next President.</div>;
 			} else if (phase === 'execution' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message execute">You must select a player to execute.</div>;
 			} else if (
@@ -132,7 +133,7 @@ class CardFlinger extends React.Component {
 					</div>
 				);
 			} else if (status === 'President to peek at policies.' && currentPlayerStatus === 'isPresident') {
-				return <div className="help-message policy-peak">Click on the draw deck to peek at the top 3 policies.</div>;
+				return (<div className="help-message policy-peak">Click on the draw deck to peek at the top 3 policies.</div>);
 			}
 		};
 

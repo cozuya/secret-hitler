@@ -551,12 +551,12 @@ export default class Moderation extends React.Component {
 
 		return (
 			<section className="moderation">
+				<a href="#/">
+					<i className="remove icon" />
+				</a>
 				<h2>Moderation</h2>
 				<a className="broadcast" href="#" onClick={this.broadcastClick}>
 					Broadcast
-				</a>
-				<a href="#/">
-					<i className="remove icon" />
 				</a>
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
 					show/hide playerlist

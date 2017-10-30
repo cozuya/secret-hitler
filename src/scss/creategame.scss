@@ -4,14 +4,6 @@
 	}
 	padding: 2%;
 	margin-right: 10px;
-	//background: #0e0303;
-
-	.remove.icon {
-		cursor: pointer;
-		position: absolute;
-		font-size: 30px;
-		left: 760px;
-	}
 
 	.contains-bad-word {
 		color: red;
@@ -47,22 +39,28 @@
 		}
 	}
 
-	.private {
-		.checkbox {
-			width: 55px;
-			margin: 0 auto;
-			display: block;
-		}
-	}
-
-	.ui.dropdown {
-		box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.15) inset;
-		padding: 8px 7px 9px 8px;
-		border-radius: 0.28571429rem;
-	}
-
 	.ui.search.dropdown > .text {
 		color: black;
+	}
+
+	.lock.icon {
+		margin-top: -15px;
+	}
+	.private {
+		padding-top: 10px;
+	}
+	.password-input {
+		margin-top: 20px;
+	}
+	.row.slider {
+		margin: 25px 0 25px 0;
+	}
+	.footer {
+		margin: 20px 0 10px 0;
+		.button {
+			margin-left: 15px;
+			width: 400px;
+		}
 	}
 
 	.rebalance69p {

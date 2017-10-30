@@ -189,7 +189,7 @@ export default class Creategame extends React.Component {
 			<div ref={select => (this._select = select)} className="ui search selection dropdown flag">
 				<input type="hidden" name="flag" />
 				<i className="dropdown icon" />
-				<div className="default text">Select Flag</div>
+				<div className="default text">None</div>
 				<div className="menu">
 					<div className="item" data-value="none">
 						None
@@ -963,10 +963,9 @@ export default class Creategame extends React.Component {
 						</div>
 						<div className="three wide column privategame">
 							<h4 className="ui header">Private game</h4>
-							<i className="big yellow lock icon" style={{ marginTop: '-15px' }} />
+							<i className="big yellow lock icon" />
 							<div
-								className="ui fitted toggle checkbox"
-								style={{ paddingTop: '10px' }}
+								className="ui fitted toggle checkbox private"
 								ref={c => {
 									this.privategame = c;
 								}}
@@ -977,7 +976,7 @@ export default class Creategame extends React.Component {
 						{this.state.privateShowing && (
 							<div className="four wide column ui input">
 								<input
-									style={{ marginTop: '20px' }}
+									className="password-input"
 									maxLength="20"
 									placeholder="Password"
 									autoFocus
@@ -988,7 +987,7 @@ export default class Creategame extends React.Component {
 							</div>
 						)}
 					</div>
-					<div className="row" style={{ margin: '25px 0 25px 0' }}>
+					<div className="row slider">
 						<div className="eight wide column centered slider">
 							<h4 className="ui header">Number of players</h4>
 							<Range onChange={this.sliderChange} min={5} max={10} defaultValue={[5, 10]} marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }} />
@@ -1047,13 +1046,13 @@ export default class Creategame extends React.Component {
 						</div>
 						{(() => {
 							let user, isRainbow;
+
 							if (this.props.userList.list) {
 								user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 							}
 							if (user) {
 								isRainbow = user.wins + user.losses > 49;
 							}
-
 							if (isRainbow) {
 								return (
 									<div className="four wide column experiencedmode">
@@ -1087,8 +1086,8 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 				</div>
-				<div className="ui grid centered footer" style={{ marginTop: '20px', marginBottom: '10px'}}>
-					<div onClick={this.createNewGame} className="ui button primary" style={{ marginLeft: '15px', width: '400px' }}>
+				<div className="ui grid centered footer">
+					<div onClick={this.createNewGame} className="ui button primary">
 						Create game
 					</div>
 				</div>

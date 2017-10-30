@@ -140,7 +140,6 @@
 		display: flex;
 		flex-direction: column;
 		border: 1px solid #262626;
-		//max-width: 350px;
 		img {
 			vertical-align: middle;
 		}
@@ -286,18 +285,5 @@
 	&:before {
 		background: #181818;
 		//box-shadow: 1px 1px 0 0 #f2664d;
-	}
-}
-
-
-@media screen and (min-width: 1520px) {
-	.generalchat {
-		min-width: 350px;
-	}
-}
-
-@media screen and (min-width: 1470px) {
-	.generalchat {
-		border-right: 0 !important;
 	}
 }

@@ -16,8 +16,8 @@
 		.gamestatus {
 			font-size: 22px;
 			font-style: italic;
-			color: $darkfascistteam; //#eee;
-			background: #1b1b1b; //$darkfascistteam;
+			color: $darkfascistteam;
+			background: #1b1b1b; 
 			padding: 7px 0px 3px 2px;
 		}
 		.gamechat {
@@ -86,6 +86,7 @@
 
 				img {
 					vertical-align: middle;
+					margin-top: -5px;
 				}
 				.ui.list {
 					padding-left: 5px;
@@ -101,26 +102,13 @@
 					word-wrap: break-word;
 					line-height: inherit;
 					padding: 2px 0;
-					display: flex;
 					span {
 						max-width: 90%;
 					}
-					.chat-timestamp {
-						margin-top: 3px;
-					}
 				}
 				.chat-user {
-					//color: #eee;
-					//color: #8b8b8b;
 					color: #adabab;
 					white-space: nowrap;
-				}
-				.chat-timestamp {
-					color: #848484;
-					font-size: 12px;
-					//width: 40px;
-					min-width: 40px;
-					display: block;
 				}
 				.chat-user--game .chat-timestamp {
 					font-size: 12px;
@@ -128,7 +116,6 @@
 				.chat-user--game,
 				.game-chat,
 				.chat-user--game .chat-timestamp {
-					//color: #8b8b8b;
 					color: #6f6f6f;
 				}
 
@@ -158,6 +145,14 @@
 					color: #eee;
 					font-weight: 700;
 				}
+			}
+			.chat-timestamp {
+				margin-top: 3px;
+				color: #848484;
+				font-size: 12px;
+				white-space: nowrap;
+				float: left;
+				min-width: 45px;
 			}
 			.chats.blurred {
 				filter: blur(4px);

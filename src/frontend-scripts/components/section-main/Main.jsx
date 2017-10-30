@@ -76,7 +76,7 @@ const Main = props => {
 				} else {
 					return (
 						<PerfectScrollbar className="scrollbar-container-main" option={{ suppressScrollX: true }}>
-							{RenderMidSection(props)}
+							<div className="section-main-content-container">{RenderMidSection(props)}</div>
 						</PerfectScrollbar>
 					);
 				}

@@ -210,7 +210,7 @@ class Menu extends React.Component {
 		return (
 			<div className="menu-container">
 				<section className={classes}>
-					<img src="../images/navbar_logo.png" />
+					<a href="/" target="_blank"><img src="../images/navbar_logo.png" /></a>
 					<div className="version">
 						<span>{`sh.io version ${this.props.version.current.number} "${this.props.version.current.color}" released ${this.props.version.current
 							.date} | `}</span>

@@ -303,7 +303,7 @@ export class App extends React.Component {
 	render() {
 		const { gameSettings } = this.props.userInfo;
 
-		let classes = 'main-container';
+		let classes = 'body-container';
 		if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
 			classes += ' game';
 		}

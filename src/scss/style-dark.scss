@@ -20,7 +20,7 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 
 @import 'semantic.scss';
 @import 'creategame.scss';
-@import 'leftsidebar.scss';
+//@import 'leftsidebar.scss';
 @import 'game.scss';
 @import 'players.scss';
 @import 'settings.scss';
@@ -35,50 +35,49 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 @import 'reports.scss';
 @import 'perfect-scrollbar.scss';
 
-@media screen and (min-width: 1520px) {
-	.playerlist {
-		min-width: 300px;
+
+@media screen and (min-width: 1680px) {
+	.body-container {
+		margin: auto;
+		width: 1680px;
 	}
 }
-@media screen and (max-width: 1520px) and (min-width: 1471px) {
-	.main-container {
-		margin: 0 !important;
+@media screen and (min-width: 1520px) {
+	.generalchat {
+		width: 350px;
+	}
+}
+@media screen and (min-width: 1471px) and (max-width: 1520px) {
+	// allows general chat to scale a little
+	.generalchat {
+		width: 300px;
+	}
+	.section-right {
+		width: 100%;
+	}
+}
+@media screen and (min-width: 1471px) {
+	.playerlist {
+		width: 300px;
+	}
+	.generalchat {
+		border-right: 0 !important;
 	}
 }
 @media screen and (max-width: 1470px) {
 	.section-right {
 		flex-direction: column;
+		min-width: 350px;
 	}
 	.playerlist {
 		order: 0 !important;
 		max-width: 350px !important;
 	}
-	.main-container {
-		width: 1220px !important;
-		min-width: 0 !important; // clearing our previous min
-		//margin: auto;
-	}
-	.ui.menu {
-		max-width: 1220px !important;
-	}
-}
-@media screen and (max-width: 1300px) {
-	// add scrollbar when we are in-game to stop buttons getting cut off
-	.main-container.game {
-		overflow-x: auto;
-	}
-}
-// Little bit of a hack to prevent scroll bars appearing
-@media screen and (max-width: 1223px) {
-	.section-right {
-		margin-right: 2px;
-	}
 }
 @media screen and (max-width: 1220px) {
-	.main-container {
-		width: 100% !important;
-		min-width: 0 !important; // clearing our previous min
-		overflow-x: auto;
+	.section-right {
+		min-width: 0;
+		width: 100%;
 	}
 }
 
@@ -135,8 +134,13 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 			flex-grow: 1;
 			background: #1b1b1b;
 			resize: none;
-			border-top: none;
-			border: 1px solid white;
+			border-style: solid;
+			border-width: 0 1px 1px 1px;
+			&:focus {
+				outline: none;
+				border-color: #f2654c;
+				box-shadow: 0 0 3px #f2654c;
+			}
 		}
 	}
 	.app-container {
@@ -159,25 +163,28 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 			margin: auto;
 		}
 	}
-	.main-container {
+	.body-container {
 		display: flex;
 		height: 100%;
-		margin: auto;
+		//margin: auto;
 		overflow: hidden;
 	}
-	.main-container.game {
+	.body-container.game {
 		width: 100% !important;
 	}
 	.section-main {
-		min-width: 870px;
-		max-width: 870px;
+		width: 100%;
 		.scrollbar-container-main {
 			// small hack to prevent hover tooltips being cut off.
-			margin-right: -100px;
-			padding-right: 100px;
+			margin-right: -50px;
+			padding-right: 50px;
 			.ps__scrollbar-y-rail {
-				right: 100px;
+				right: 50px;
 			}
+		}
+		.section-main-content-container {
+			width: 870px;
+			margin: 0 auto 0 auto;
 		}
 	}
 	.section-main.game {
@@ -195,7 +202,7 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 		line-height: normal;
 	}
 	.browser-row {
-		margin-bottom: 25px;
+		margin-bottom: 30px;
 		box-shadow: 0 0 6px 3px darkgray;
 	}
 	.browser-row.inprogress {
@@ -250,9 +257,31 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 			color: #fbbd07;
 		}
 		.progress-icons {
-			margin: 0 auto;
 			i {
 				font-size: 50px;
+			}
+			.liberal-count {
+				padding: 10px 0 8px 0;
+			}
+			.box {
+				display: inline-block;
+				width: 13px;
+				height: 13px;
+				margin: 0 3px;
+			}
+			.liberal-box {
+				box-shadow: 0px 0px 1px 2px #5b9cc4;
+				background-color: #1b1b1b;
+			}
+			.liberal-box.filled {
+				background-color: #5b9cc4;
+			}
+			.fascist-box {
+				box-shadow: 0px 0px 1px 2px #c36563;
+				background-color: #1b1b1b;
+			}
+			.fascist-box.filled {
+				background-color: #c36563;
 			}
 		}
 		.progress-icons.private {
@@ -352,8 +381,8 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 		font-size: 18px;
 	}
 	.section-right {
-		width: 100%;
 		display: flex;
+		margin-right: auto;
 	}
 	// quick hack to get sidebar in-game working for now
 	.section-right.game {
@@ -370,9 +399,6 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 			max-width: 250px !important;
 			min-width: 250px !important;
 		}
-	}
-	.ui.menu.nav-menu.game {
-		max-width: 1520px !important;
 	}
 	.playerlist {
 		min-height: 0;
@@ -462,6 +488,15 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 	a:not(.button) {
 		color: $darkliberalteam;
 	}
+	.remove.icon {
+		cursor: pointer;
+		font-size: 30px;
+		float: right;
+		opacity: .5;
+		&:hover {
+			opacity: 1;
+		}
+	}
 }
 
 @keyframes fadeIn {
@@ -526,8 +561,9 @@ div {
 	overflow: hidden;
 	background-color: $darkfascistteam;
 	margin: auto;
-	max-width: 1520px;
-	> img {
+	width: 95%;
+	max-width: 1680px;
+	> a {
 		max-height: 36px;
 		margin-top: 3px;
 	}
@@ -787,7 +823,6 @@ div {
 [data-tooltip][data-inverted]:after {
 	padding: 5px;
 }
-
 
 
 // ::-webkit-scrollbar {
