@@ -153,19 +153,17 @@ export class App extends React.Component {
 			return;
 		}
 
-		// if (this.prevHash.substr === '#/table/') {
-		// 	hash.split('#/table/')[1];
-		// }
-
 		if (
 			hash.substr(0, 8) !== '#/table/' &&
-			gameInfo.gameState &&
+			Object.keys(gameInfo).length &&
 			userInfo.userName &&
 			gameInfo.publicPlayersState.length &&
 			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
 			(!gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted)
 		) {
 			this.handleLeaveGame(true);
+		} else if (this.prevHash.substr(0, 8) === '#/table/') {
+			this.handleLeaveGame(false, this.prevHash.split('#/table/')[1]);
 		}
 
 		if (hash.substr(0, 10) === '#/profile/') {
@@ -194,7 +192,6 @@ export class App extends React.Component {
 		} else if (hash === '#/creategame' && isAuthed) {
 			dispatch(updateMidsection('createGame'));
 		} else if (hash.substr(0, 8) === '#/table/') {
-			// updateStatus('observing', hash.split('#/table/')[1]);
 			socket.emit('getGameInfo', hash.split('#/table/')[1]);
 		} else if (hash !== '#/') {
 			window.location.hash = '#/';
@@ -279,7 +276,7 @@ export class App extends React.Component {
 		socket.emit('updateSeatedUser', data);
 	}
 
-	handleLeaveGame(isSeated) {
+	handleLeaveGame(isSeated, manualLeaveGame) {
 		const { dispatch, userInfo, gameInfo } = this.props;
 
 		if (userInfo.isSeated) {
@@ -290,7 +287,7 @@ export class App extends React.Component {
 		socket.emit('leaveGame', {
 			userName: userInfo.userName,
 			isSeated,
-			uid: gameInfo.general.uid
+			uid: manualLeaveGame || gameInfo.general.uid
 		});
 	}
 

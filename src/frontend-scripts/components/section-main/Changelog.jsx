@@ -12,7 +12,15 @@ const Changelog = props => (
 		<div className="ui header">
 			<p>Version 0.9.0 "dim" released 10-28-2017</p>
 		</div>
-		<h3>New feature: optional rebalancing for 6 and 9 player games.</h3>
+		<h3>New feature: player bios</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img style={{ width: '80%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="/images/bio.png" />
+		</div>
+		<p>
+			Visit your profile page to write something brief about yourself that others can see. Links are allowed, but SEO unfriendly (google "nofollow noreferrer
+			noopener"). Obviously still subject to the site terms of use..
+		</p>
+		<h3>New feature: optional rebalancing for 6 and 9 player games</h3>
 		<p>
 			There's a new create game option (default: on) that, when a 6 or 9p game has begun, a facist and liberal policy have already been enacted, respectively.
 			You'll get it. While these are being recorded correctly, there are no stats/graphs for this yet - next minor update.
@@ -39,7 +47,6 @@ const Changelog = props => (
 			<li>Links in general chat to sh.io itself, or to this site's github repository, are now clickable. Other links are still not.</li>
 			<li>Hovering on a chat in general chat will show a timestamp of when it was said.</li>
 			<li>The whitelist feature now correctly has a scroll bar.</li>
-			<li>Players who have left a game in progress now look slightly different than players who are disconnected.</li>
 			<li>If you have a custom width or font, the application no longer "flashes" when you load the page.</li>
 			<li>A fix to players being able to make accounts with the same name but different capitalization has been implemented.</li>
 			<li>The stats page is finally working right - it updates once per day, and the undefined/NaN stuff is gone.</li>

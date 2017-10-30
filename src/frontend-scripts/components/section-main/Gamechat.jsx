@@ -126,6 +126,7 @@ class Gamechat extends React.Component {
 		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
 		} else {
+			this.props.onLeaveGame();
 			window.location.hash = '#/';
 		}
 	}

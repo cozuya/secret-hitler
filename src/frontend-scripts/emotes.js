@@ -81,7 +81,7 @@ export function processEmotes(input) {
 
 	message.forEach((word, index) => {
 		if (allEmotes.includes(word)) {
-			formatedMsg.push(<span data-tooltip={word} data-inverted><img src={`../images/emotes/${word}.png`} key={index} />{' '}</span>);
+			formatedMsg.push(<span data-tooltip={word} data-inverted><img src={`/images/emotes/${word}.png`} key={index} />{' '}</span>);
 		} else if (/^https:\/\/secrethitler.io/.test(word)) {
 			const hash = word.split('https://secrethitler.io')[1];
 		// } else if (/^http:\/\/localhost:8080/.test(word)) {

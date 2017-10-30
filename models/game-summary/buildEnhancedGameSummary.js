@@ -81,6 +81,10 @@ function buildEnhancedGameSummary(_summary) {
 		} else if (lastTurn.isHitlerKilled) {
 			return 'liberal';
 		} else {
+			if (!lastTurn.enactedPolicy) {
+				console.log('no lastturn enacted policy @ buildenhancedgamesummary');
+				return null;
+			}
 			return lastTurn.enactedPolicy.value();
 		}
 	})();

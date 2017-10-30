@@ -78,31 +78,29 @@ const handleSocketDisconnect = socket => {
 					game.publicPlayersState.find(player => player.userName === passport.user && player.connected && !player.leftGame)
 				);
 
-			if (gamesPlayerSeatedIn.length > 1) {
-				console.log("player in more than one seated game and isn't disconned or left");
-			}
-
 			if (userIndex !== -1) {
 				userList.splice(userIndex, 1);
 			}
-			if (gamesPlayerSeatedIn.length) {
-				const game = gamesPlayerSeatedIn[0],
-					{ gameState, publicPlayersState } = game,
-					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-				if (
-					(!gameState.isStarted && publicPlayersState.length === 1) ||
-					(gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
-				) {
-					games.splice(games.indexOf(game), 1);
-				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
-					publicPlayersState.splice(playerIndex, 1);
-					checkStartConditions(game);
-					io.sockets.in(game.uid).emit('gameUpdate', game);
-				} else if (gameState.isTracksFlipped) {
-					publicPlayersState[playerIndex].connected = false;
-					sendInProgressGameUpdate(game);
-				}
+			if (gamesPlayerSeatedIn.length) {
+				gamesPlayerSeatedIn.forEach(game => {
+					const { gameState, publicPlayersState } = game,
+						playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+
+					if (
+						(!gameState.isStarted && publicPlayersState.length === 1) ||
+						(gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
+					) {
+						games.splice(games.indexOf(game), 1);
+					} else if (!gameState.isTracksFlipped && playerIndex > -1) {
+						publicPlayersState.splice(playerIndex, 1);
+						checkStartConditions(game);
+						io.sockets.in(game.uid).emit('gameUpdate', game);
+					} else if (gameState.isTracksFlipped) {
+						publicPlayersState[playerIndex].connected = false;
+						sendInProgressGameUpdate(game);
+					}
+				});
 				sendGameList();
 			}
 		}
@@ -163,6 +161,17 @@ module.exports.updateSeatedUser = (socket, data) => {
 		updateUserStatus(data.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 		sendGameList();
+	}
+};
+
+module.exports.handleUpdatedBio = (socket, data) => {
+	if (socket.handshake.session.passport) {
+		const username = socket.handshake.session.passport.user;
+
+		Account.findOne({ username }).then(account => {
+			account.bio = data;
+			account.save();
+		});
 	}
 };
 

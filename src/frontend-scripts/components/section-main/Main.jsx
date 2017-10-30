@@ -42,7 +42,7 @@ const RenderMidSection = props => {
 		case 'settings':
 			return <Settings onLeaveSettings={props.onLeaveSettings} userInfo={props.userInfo} socket={props.socket} />;
 		case 'profile':
-			return <Profile />;
+			return <Profile userInfo={props.userInfo} socket={props.socket} />;
 		case 'replay':
 			return <Replay />;
 		case 'reports':

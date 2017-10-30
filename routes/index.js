@@ -103,6 +103,7 @@ module.exports = () => {
 					}
 					if (account) {
 						profile.customCardback = account.gameSettings.customCardback;
+						profile.bio = account.bio;
 					}
 					res.json(profile);
 				});

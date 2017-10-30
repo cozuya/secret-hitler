@@ -6,11 +6,13 @@ secret-hitler
 
 Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists. Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late.
 
+Effectively this is a take on the classic social deduction/hidden role board game genre such as Werewolf and Mafia, but closer to the Resistance.  Games are 5-10 players, the minority (fascists) know who everyone is and the majority (liberals) don't know anything.  Over the course of the game the liberals need to try to figure out the fascists to win and the fascists need to remain hidden, with an extra "superfascist" role with an additional win condition for both sides.  This codebase is a "lobby style" implementation of this game - anyone can make a game, when enough players are seated it starts, anyone can watch a game in progress, etc.
+
 Current production/stable is found at [Secret Hitler IO](https://secrethitler.io).
 
 ![Screenshot](http://i.imgur.com/6M56f6I.jpg)
 
-Considering contributing to this project?  Please read our very brief guidelines found at ./CONTRIBUTING.md.  Contributors get a cool orange playername color!
+Considering contributing to this project?  Please read our brief guidelines found at [CONTRIBUTING](https://github.com/cozuya/secret-hitler/blob/master/CONTRIBUTING.md).  Contributors get a cool orange playername color!
 
 Front end: React, Redux, Sass, Semantic UI, jQuery, SocketIO.
 
@@ -20,11 +22,11 @@ Build: Gulp, Browserify, Babel (front end).
 
 ## Installation ##
 
-Install node.js.  Production is on node LTS currently v6.11.0 and is recommended you use that for development.
+Install node.js LTS.
 
 Install mongodb, have it in your path.
 
-Make a .env file, add the following to it:
+Make a .env file in the root directory and add the following to it:
 
 > MONGOPORT={5 digit number here}
 
@@ -46,7 +48,7 @@ build assets (first time only):
 
 start mongo:
 
-> npm run db {your port here}
+> npm run db {your port here from the .env file}
 
 start express server:
 
@@ -62,7 +64,7 @@ You'll most likely need a browser extension such as Chrome's openMultiLogin to h
 
 ## Running in production mode ##
 
-I'll leave you to figure that out.  SH.IO is currently a $10/month digital ocean box using nginx, lets encrypt, and PM2.
+I'll leave you to figure that out.  SH.IO is currently a $10/month digitalocean box using nginx, lets encrypt, and PM2.
 
 ## Tests ##
 
@@ -76,8 +78,10 @@ This game is licensed as per the [Creative Commons Attribution-NonCommercial-Sha
 
 ## Alterations to the original game ##
 
-Minor image alterations and editing (from scans, assets available upon request).
+Minor image alterations and editing (assets available upon request).
 
 Veto power is slightly adjusted so that chancellors need to select a policy prior to saying yes or no to vetoing that policy.
 
 Adapted the rules explanation to account for online vs physical play.
+
+There is an option when players make a game to "rebalance" the 6 and 9 player games - they start with a fascist and liberal policy already enacted, respectively.  Players (and results from analyzing statistics) have noted that these game modes are the worst balanced and not fun to play with the original ruleset.

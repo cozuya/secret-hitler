@@ -2,55 +2,87 @@ import { connect } from 'react-redux';
 import { updateActiveStats, fetchReplay } from '../../actions/actions';
 import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
+import PropTypes from 'prop-types';
 
 const mapStateToProps = ({ profile }) => ({ profile }),
 	mapDispatchToProps = dispatch => ({
 		updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
 		fetchReplay: gameId => dispatch(fetchReplay(gameId))
-	}),
-	formatDateString = dateString => {
+	});
+
+class ProfileWrapper extends React.Component {
+	constructor() {
+		super();
+
+		this.state = {
+			bioStatus: 'displayed',
+			bioValue: ''
+		};
+	}
+
+	formatDateString(dateString) {
 		const date = new Date(dateString);
 
 		return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('-');
-	},
-	successRate = (trials, outcomes) => (trials > 0 ? parseFloat((outcomes / trials * 100).toFixed(2)) + '%' : '---'),
-	successRow = (name, trials, outcomes) => [name, trials, successRate(trials, outcomes)],
-	Matches = ({ matches }) => (
-		<div>
+	}
+
+	successRate(trials, outcomes) {
+		return trials > 0 ? parseFloat((outcomes / trials * 100).toFixed(2)) + '%' : '---';
+	}
+
+	successRow(name, trials, outcomes) {
+		return [name, trials, this.successRate(trials, outcomes)];
+	}
+
+	Matches() {
+		const { matches } = this.props.profile.stats;
+
+		return (
+			<div>
+				<Table
+					uiTable="top attached three column"
+					headers={['All Matches', 'Matches', 'Winrate']}
+					rows={[this.successRow('All Matches', matches.allMatches.events, matches.allMatches.successes)]}
+				/>
+				<Table
+					uiTable="bottom attached three column"
+					headers={['Loyalty', 'Matches', 'Winrate']}
+					rows={[
+						this.successRow('Liberal', matches.liberal.events, matches.liberal.successes),
+						this.successRow('Fascist', matches.fascist.events, matches.fascist.successes)
+					]}
+				/>
+			</div>
+		);
+	}
+
+	Actions() {
+		const { actions } = this.props.profile.stats;
+
+		return (
 			<Table
-				uiTable="top attached three column"
-				headers={['All Matches', 'Matches', 'Winrate']}
-				rows={[successRow('All Matches', matches.allMatches.events, matches.allMatches.successes)]}
-			/>
-			<Table
-				uiTable="bottom attached three column"
-				headers={['Loyalty', 'Matches', 'Winrate']}
+				headers={['Action', 'Instances', 'Success Rate']}
 				rows={[
-					successRow('Liberal', matches.liberal.events, matches.liberal.successes),
-					successRow('Fascist', matches.fascist.events, matches.fascist.successes)
+					this.successRow('Vote Accuracy', actions.voteAccuracy.events, actions.voteAccuracy.successes),
+					this.componentDidCatchsuccessRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
 				]}
 			/>
-		</div>
-	),
-	Actions = ({ actions }) => (
-		<Table
-			headers={['Action', 'Instances', 'Success Rate']}
-			rows={[
-				successRow('Vote Accuracy', actions.voteAccuracy.events, actions.voteAccuracy.successes),
-				successRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
-			]}
-		/>
-	),
-	Stats = ({ stats, activeStat, updateActiveStats }) => {
-		const table = (() => {
+		);
+	}
+
+	Stats() {
+		const { activeStat } = this.props.profile,
+			{ updateActiveStats } = this.props,
+			table = (() => {
 				switch (activeStat) {
 					case 'MATCHES':
-						return <Matches matches={stats.matches} />;
+						return this.Matches();
 					case 'ACTIONS':
-						return <Actions actions={stats.actions} />;
+						return this.Actions();
 				}
 			})(),
 			toActive = stat => (activeStat === stat ? 'active' : '');
+
 		return (
 			<div>
 				<div className="column-name">
@@ -70,14 +102,16 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 				<div className="ui bottom attached segment">{table}</div>
 			</div>
 		);
-	},
-	RecentGames = ({ recentGames, fetchReplay }) => {
-		const rows = recentGames.map(game => ({
-			onClick: e => {
-				window.location.hash = `/replay/${game._id}`;
-			},
-			cells: [game.loyalty === 'liberal' ? 'Liberal' : 'Fascist', game.playerSize, game.isWinner ? 'Win' : 'Loss', formatDateString(game.date)]
-		}));
+	}
+
+	RecentGames() {
+		const { recentGames } = this.props.profile,
+			rows = recentGames.map(game => ({
+				onClick: e => {
+					window.location.hash = `/replay/${game._id}`;
+				},
+				cells: [game.loyalty === 'liberal' ? 'Liberal' : 'Fascist', game.playerSize, game.isWinner ? 'Win' : 'Loss', this.formatDateString(game.date)]
+			}));
 
 		return (
 			<div>
@@ -108,38 +142,146 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 					</span>
 					<span>{formatDateString(profile.created)}</span>
 				</div>
+	}
+
+	renderBio() {
+		const { userInfo, profile } = this.props,
+			editClick = () => {
+				this.setState({
+					bioStatus: this.state.bioStatus === 'editing' ? 'displayed' : 'editing'
+				});
+			},
+			bioChange = e => {
+				this.setState({ bioValue: `${e.target.value}` });
+			},
+			bioKeyDown = e => {
+				if (e.keyCode === 13) {
+					this.props.socket.emit('updateBio', this.state.bioValue);
+					this.setState({ bioStatus: 'displayed' });
+				}
+			},
+			processBio = () => {
+				const text = this.state.bioValue || profile.bio;
+
+				if (!text) {
+					return 'Nothing here!';
+				}
+
+				const formatedBio = [],
+					words = text.split(' ');
+
+				words.forEach(word => {
+					if (/^https:\/\//i.test(word)) {
+						formatedBio.push(
+							<a key={word} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
+								{word.split('https://')[1]}
+							</a>,
+							' '
+						);
+					} else if (/^http:\/\//i.test(word)) {
+						formatedBio.push(
+							<a key={word} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
+								{word.split('http://')[1]}
+							</a>,
+							' '
+						);
+					} else {
+						formatedBio.push(word, ' ');
+					}
+				});
+				return formatedBio;
+			};
+
+		return (
+			<div>
+				<h2 className="ui header bio">Bio {userInfo.userName && userInfo.userName === profile._id && <i onClick={editClick} className="edit icon" />}</h2>
+				{(() => {
+					switch (this.state.bioStatus) {
+						case 'displayed':
+							return <p>{processBio()}</p>;
+						case 'editing':
+							return (
+								<textarea
+									placeholder="Write something about yourself here"
+									maxLength="500"
+									autoFocus
+									spellCheck="false"
+									value={this.state.bioValue}
+									onChange={bioChange}
+									onKeyDown={bioKeyDown}
+								/>
+							);
+					}
+				})()}
 			</div>
-			<div className="ui two column grid">
-				<div className="column">
-					<Stats stats={profile.stats} activeStat={profile.activeStat} updateActiveStats={updateActiveStats} />
+		);
+	}
+
+	Profile() {
+		const { profile } = this.props;
+
+		return (
+			<div>
+				{profile.customCardback && (
+					<div
+						className="profile-picture"
+						style={{
+							background: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random()
+								.toString(36)
+								.substring(2)})`
+						}}
+					/>
+				)}
+				<div className="ui grid">
+					<h1 className="ui header ten wide column">{profile._id}</h1>
+					<div className="ui right aligned five wide column">
+						<span>
+							<strong>
+								<em>Created: </em>
+							</strong>
+						</span>
+						<span>{this.formatDateString(profile.created)}</span>
+					</div>
 				</div>
-				<div className="column">
-					<RecentGames fetchReplay={fetchReplay} recentGames={profile.recentGames} />
+				{this.renderBio()}
+
+				<div className="ui two column grid">
+					<div className="column">{this.Stats()}</div>
+					<div className="column">{this.RecentGames()}</div>
 				</div>
 			</div>
-		</div>
-	),
-	Loading = () => (
-		<div className="ui active dimmer">
-			<div className="ui huge text loader">Loading</div>
-		</div>
-	),
-	NotFound = () => (
-		<h1 className="not-found ui icon center aligned header">
-			<i className="settings icon" />
-			<div className="content">Profile not found</div>
-		</h1>
-	),
-	ProfileWrapper = ({ profile, fetchReplay, updateActiveStats, exit }) => {
+		);
+	}
+
+	Loading() {
+		return (
+			<div className="ui active dimmer">
+				<div className="ui huge text loader">Loading</div>
+			</div>
+		);
+	}
+
+	NotFound() {
+		return (
+			<h1 className="not-found ui icon center aligned header">
+				<i className="settings icon" />
+				<div className="content">Profile not found</div>
+			</h1>
+		);
+	}
+
+	render() {
+		const { profile } = this.props;
+
 		const children = (() => {
 			switch (profile.status) {
 				case 'INITIAL':
 				case 'LOADING':
-					return <Loading />;
+					return this.Loading();
 				case 'NOT_FOUND':
-					return <NotFound />;
+					return this.NotFound();
 				case 'READY':
-					return <Profile profile={profile} fetchReplay={fetchReplay} updateActiveStats={updateActiveStats} />;
+					return this.Profile();
 			}
 		})();
 
@@ -151,6 +293,12 @@ const mapStateToProps = ({ profile }) => ({ profile }),
 				{children}
 			</section>
 		);
-	};
+	}
+}
+
+ProfileWrapper.propTypes = {
+	userInfo: PropTypes.object,
+	socket: PropTypes.object
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileWrapper);
