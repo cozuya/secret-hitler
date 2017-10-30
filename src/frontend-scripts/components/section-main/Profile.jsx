@@ -119,29 +119,6 @@ class ProfileWrapper extends React.Component {
 				<Table uiTable={'selectable'} headers={['Loyalty', 'Size', 'Result', 'Date']} rows={rows} />
 			</div>
 		);
-	},
-	Profile = ({ profile, fetchReplay, updateActiveStats }) => (
-		<div style={{ marginTop: '27px' }}>
-			{profile.customCardback && (
-				<div
-					className="profile-picture"
-					style={{
-						background: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random()
-							.toString(36)
-							.substring(2)})`
-					}}
-				/>
-			)}
-			<div className="ui grid">
-				<h1 className="ui header ten wide column">{profile._id}</h1>
-				<div className="ui right aligned five wide column">
-					<span>
-						<strong>
-							<em>Created: </em>
-						</strong>
-					</span>
-					<span>{formatDateString(profile.created)}</span>
-				</div>
 	}
 
 	renderBio() {
