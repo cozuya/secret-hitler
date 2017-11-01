@@ -187,10 +187,9 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 									}
 								]
 							});
-
-							player.playersState[otherFascistIndex].nameStatus = 'fascist';
-							player.playersState[otherFascistIndex].notificationStatus = 'fascist';
 						}
+						player.playersState[otherFascistIndex].nameStatus = 'fascist';
+						player.playersState[otherFascistIndex].notificationStatus = 'fascist';
 					} else if (playerCount > 8) {
 						const otherFascists = seatedPlayers.filter(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 
@@ -225,14 +224,13 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 									}
 								]
 							});
-
-							otherFascists.forEach(fascistPlayer => {
-								player.playersState[seatedPlayers.indexOf(fascistPlayer)].nameStatus = 'fascist';
-							});
-							otherFascists.forEach(fascistPlayer => {
-								player.playersState[seatedPlayers.indexOf(fascistPlayer)].notificationStatus = 'fascist';
-							});
 						}
+						otherFascists.forEach(fascistPlayer => {
+							player.playersState[seatedPlayers.indexOf(fascistPlayer)].nameStatus = 'fascist';
+						});
+						otherFascists.forEach(fascistPlayer => {
+							player.playersState[seatedPlayers.indexOf(fascistPlayer)].notificationStatus = 'fascist';
+						});
 					}
 
 					const hitlerPlayer = seatedPlayers.find(player => player.role.cardName === 'hitler'),
@@ -278,10 +276,10 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 							);
 						}
 						player.gameChats.push(chat);
-						player.playersState[seatedPlayers.indexOf(hitlerPlayer)].nameStatus = 'hitler';
 					}
 
 					player.playersState[seatedPlayers.indexOf(hitlerPlayer)].notificationStatus = 'hitler';
+					player.playersState[seatedPlayers.indexOf(hitlerPlayer)].nameStatus = 'hitler';
 				} else if (cardName === 'hitler') {
 					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'hitler';
 
@@ -312,10 +310,9 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 									}
 								]
 							});
-
-							player.playersState[seatedPlayers.indexOf(otherFascist)].nameStatus = 'fascist';
-							player.playersState[seatedPlayers.indexOf(otherFascist)].notificationStatus = 'fascist';
 						}
+						player.playersState[seatedPlayers.indexOf(otherFascist)].nameStatus = 'fascist';
+						player.playersState[seatedPlayers.indexOf(otherFascist)].notificationStatus = 'fascist';
 					}
 				} else if (!game.general.disableGamechat) {
 					player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'liberal';
