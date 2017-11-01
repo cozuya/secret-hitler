@@ -224,9 +224,8 @@ export default class Players extends React.Component {
 	}
 
 	renderTakeSeat() {
-		const { userInfo, gameInfo, userList } = this.props;
-
-		// TODO: BUG - if you refresh an open rainbow game lobby while logged in you are removed from userList.list and .wins is undefined!
+		const { userInfo, gameInfo, userList } = this.props,
+			user = userList.list.find(user => user.userName === userInfo.userName);
 
 		if (
 			!userInfo.isSeated &&
@@ -235,8 +234,7 @@ export default class Players extends React.Component {
 			gameInfo.publicPlayersState.length < 10 &&
 			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
 			(!gameInfo.general.rainbowgame ||
-				(Object.keys(userList).length &&
-					userList.list.find(user => user.userName === userInfo.userName).wins + userList.list.find(user => user.userName === userInfo.userName).losses > 49))
+				(user && user.wins + user.losses > 49))
 		) {
 			return (
 				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
