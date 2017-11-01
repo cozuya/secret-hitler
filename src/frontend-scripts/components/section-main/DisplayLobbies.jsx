@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { PLAYERCOLORS, MODERATORS, EDITORS, ADMINS } from '../../constants';
 
 const DisplayLobbies = props => {
-	const { game, userInfo } = props,
+	const { game, userInfo, userList } = props,
 		gameClasses = () => {
 			let classes = 'browser-row';
 
@@ -128,14 +128,13 @@ const DisplayLobbies = props => {
 		game.customCardback.forEach((el, index) => (players[index].customCardback = el));
 		game.customCardbackUid.forEach((el, index) => (players[index].customCardbackUid = el));
 		players.forEach((player, index) => {
-			const userStats = props.userList.list.find(el => el.userName === player.userName);
+			const userStats = userList.list.find(el => el.userName === player.userName);
 			if (userStats) {
 				players[index].wins = userStats.wins;
 				players[index].losses = userStats.losses;
 			}
 		});
 
-		// TODO:  Generate unique key for each of these, using array length / index is bad
 		players.forEach(player => {
 			const classes = player.wins + player.losses > 49 ? `player-small-cardback ${PLAYERCOLORS(player)}` : 'player-small-cardback';
 
@@ -285,7 +284,9 @@ const DisplayLobbies = props => {
 
 DisplayLobbies.propTypes = {
 	game: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	userInfo: PropTypes.object,
+	userList: PropTypes.object
 };
 
 export default DisplayLobbies;

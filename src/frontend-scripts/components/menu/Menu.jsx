@@ -112,6 +112,7 @@ Menu.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	onLeaveGame: PropTypes.func,
+	midSection: PropTypes.string
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

@@ -23,7 +23,8 @@ RightSidebar.propTypes = {
 	socket: PropTypes.object,
 	generalChats: PropTypes.array,
 	userList: PropTypes.object,
-	onModerationButtonClick: PropTypes.func
+	onModerationButtonClick: PropTypes.func,
+	midSection: PropTypes.string
 };
 
 export default RightSidebar;

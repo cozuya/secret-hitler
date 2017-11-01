@@ -257,8 +257,8 @@
 
 .emotes-popup-content {
 	// add padding area for tooltips around popup
-	margin: -30px -15px 0 -20px;
-	padding: 30px 15px 0 20px;
+	margin: -30px -20px 0 -20px;
+	padding: 32px 22px 2px 22px;
 	display: flex;
 	flex-wrap: wrap;
 	background: transparent;
@@ -275,8 +275,9 @@
 	}
 }
 .emotes-popup {
-	min-width: 250px !important;
-	padding: 10px !important;
+	min-width: 240px !important;
+	max-width: 240px !important;
+	//padding: 10px !important;
 	background: #181818 !important;
 	&:before {
 		background: #181818 !important;

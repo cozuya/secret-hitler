@@ -9,10 +9,23 @@ const GamesList = props => {
 			return gameList
 				.sort((a, b) => {
 					const aGameStatus = a.gameStatus,
-						bGameStatus = b.gameStatus;
+						bGameStatus = b.gameStatus,
+						aName = a.name.toLowerCase(),
+						bName = b.name.toLowerCase();
 
 					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
-						return a.seatedCount === b.seatedCount ? a.uid - b.uid : a.seatedCount - b.seatedCount;
+						if (a.seatedCount === b.seatedCount)
+						{
+							if (aName === bName) {
+								return a.uid < b.uid ? 1 : -1;
+							}
+							else {
+								return aName > bName ? 1 : -1;
+							}
+						}
+						else {
+							return b.seatedCount - a.seatedCount;
+						}
 					}
 
 					if (aGameStatus === 'notStarted' && bGameStatus !== 'notStarted') {
@@ -32,10 +45,19 @@ const GamesList = props => {
 					}
 
 					if (aGameStatus === 'isStarted' && bGameStatus === 'isStarted') {
-						return a.electionCount === b.electionCount ? a.seatedCount - b.seatedCount : a.electionCount - b.electionCount;
+						if (a.seatedCount === b.seatedCount) {
+							if (aName === bName) {
+								return a.uid < b.uid ? 1 : -1;
+							}
+							else {
+								return aName > bName ? 1 : -1;
+							}
+						} else {
+							return b.seatedCount - a.seatedCount;
+						}
 					}
 
-					return a.uid > b.uid ? 1 : -1;
+					return aName === bName ? a.uid < b.uid ? 1 : -1 : aName > bName ? 1 : -1;
 				})
 				.map((game, index) => {
 					return <DisplayLobbies key={index} game={game} socket={props.socket} userList={props.userList} userInfo={props.userInfo} />;
@@ -69,7 +91,8 @@ GamesList.propTypes = {
 	midSection: PropTypes.string,
 	gameList: PropTypes.array,
 	onCreateGameButtonClick: PropTypes.func,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	userList: PropTypes.object
 };
 
 export default GamesList;

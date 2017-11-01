@@ -90,7 +90,8 @@ Main.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	gameList: PropTypes.array
 };
 
 export default Main;

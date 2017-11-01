@@ -8,6 +8,8 @@ html(lang="en")
 		meta(name="description", content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
 
 		// moved semantic stylesheet outside if loop as modals weren't working properly in-game	
+		// but this duplicates a lot of css as we now have the cdn file and semantic.scss
+		// must be some missing components from semantic.scss (flags, tooltips, responsiveness / modal centering?)
 		link(rel="stylesheet", type="text/css", href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css")
 
 		if game

@@ -324,7 +324,6 @@ export class App extends React.Component {
 					onSettingsButtonClick={this.handleRoute}
 					gameInfo={this.props.gameInfo}
 					midSection={this.props.midSection}
-					userList={this.props.userList}
 				/>
 
 				<div className={classes}>
