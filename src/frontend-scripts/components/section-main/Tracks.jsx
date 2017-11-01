@@ -46,19 +46,17 @@ class Tracks extends React.Component {
 						}
 					);
 
-					setTimeout(() => {
-						this.setState({
-							remakeStatusDisabled: false
-						});
-					}, 2000);
+					// setTimeout(() => {  // todo this crashes front end as its not mounted on leave.
+					// 	this.setState({
+					// 		remakeStatusDisabled: false
+					// 	});
+					// }, 2000);
 				}
 			};
 
 		// {userInfo.userName &&
 		// 	userInfo.seatNumber &&
 		// 	gameInfo.gameState.isTracksFlipped && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
-
-		// {userInfo.userName && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
 
 		return (
 			<section className="tracks-container">
@@ -75,6 +73,7 @@ class Tracks extends React.Component {
 					<div className="player-count">
 						Players: <span>{gameInfo.publicPlayersState.length}</span>
 					</div>
+					{userInfo.userName && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
 				</div>
 				<section
 					className={(() => {

@@ -260,7 +260,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 					if (!game.general.disableGamechat) {
 						if (playerCount < 7) {
 							chat.chat.push(
-								{ text: '. He or she also sees that you are a ' },
+								{ text: '. They also see that you are a ' },
 								{
 									text: 'fascist',
 									type: 'fascist'
@@ -269,7 +269,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 							);
 						} else {
 							chat.chat.push(
-								{ text: '. He or she does not know you are a ' },
+								{ text: '. They do not know you are a ' },
 								{
 									text: 'fascist',
 									type: 'fascist'
@@ -308,7 +308,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 										type: 'player'
 									},
 									{
-										text: '.  He or she knows who you are.'
+										text: '.  They know who you are.'
 									}
 								]
 							});

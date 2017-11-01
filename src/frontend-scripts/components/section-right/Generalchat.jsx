@@ -109,6 +109,8 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
+	// <embed height='400' width='400' src='https://widgetbot.io/embed/323243744914571264/323243744914571264/0002/' />
+
 	render() {
 		return (
 			<section className="generalchat">

@@ -43,7 +43,8 @@ module.exports.selectPolicies = data => {
 				} else {
 					return Object.assign({}, peek, { blues: peek.blues + 1 });
 				}
-			}, { reds: 0, blues: 0 })
+			},
+			{ reds: 0, blues: 0 })
 		});
 
 		president.cardFlingerState = [
@@ -224,7 +225,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 								text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
 								type: 'player'
 							},
-							{ text: ' and determine that he or she is on the ' },
+							{ text: ' and determine that they are on the ' },
 							{
 								text: playersTeam,
 								type: playersTeam
