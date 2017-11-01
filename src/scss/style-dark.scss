@@ -16,7 +16,7 @@ $dteal: #034f61;
 $textfont: 'Comfortaa', Lato, sans-serif;
 $headerfont: 'Comfortaa', Lato, sans-serif;
 
-@import 'semantic.scss';
+//@import 'semantic.scss';
 @import 'creategame.scss';
 //@import 'leftsidebar.scss';
 @import 'game.scss';
@@ -84,7 +84,7 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 #main {
 	height: 100%;
 	.ui.header {
-		font-family: $headerfont;
+		font-family: inherit; // $headerfont;
 	}
 	.notes-container {
 		-webkit-transition: all 0.15s ease-in-out;
@@ -455,6 +455,9 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 	.clearroles {
 		//color: #bfbfbf;
 		color: white;
+	}
+	.ui.menu, .ui.button {
+		font-family: inherit;
 	}
 	.table-container .ui.fitted.toggle.checkbox.truncate-game label,
 	.table-container .ui.fitted.toggle.checkbox.showclaims label {
