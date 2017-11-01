@@ -51,11 +51,11 @@ const GamesList = props => {
 						gameBeingCreated = props.midSection === 'createGame';
 
 					return userName && !gameBeingCreated ? (
-						<a className="fluid inverted ui button primary" href="#/creategame">
+						<a className="fluid ui button primary create-game-button" href="#/creategame">
 							Create a new game
 						</a>
 					) : (
-						<button className="fluid inverted ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>
+						<button className="fluid ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>
 					);
 				})()}
 			</div>

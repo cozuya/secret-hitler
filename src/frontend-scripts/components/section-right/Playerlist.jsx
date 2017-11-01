@@ -2,12 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS } from '../../constants';
+import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CONTRIBUTORS } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { Popup } from 'semantic-ui-react';
 
 $.fn.modal = Modal;
 
@@ -214,7 +215,7 @@ class Playerlist extends React.Component {
 												return () => null;
 											},
 											userClasses =
-												user.wins + user.losses > 49
+												user.wins + user.losses > 50 || ADMINS.includes(user.userName) || EDITORS.includes(user.userName) || MODERATORS.includes(user.userName) || CONTRIBUTORS.includes(user.userName)
 													? cn(PLAYERCOLORS(user), { unclickable: !this.props.isUserClickable }, { clickable: this.props.isUserClickable }, 'username')
 													: 'username',
 											renderStatus = () => {
@@ -259,28 +260,32 @@ class Playerlist extends React.Component {
 										return (
 											<div key={i} className="user-container">
 												<div className="userlist-username">
-													<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
-														{user.userName}
-														{MODERATORS.includes(user.userName) && (
-															<span className="moderator-name" title="This user is a moderator">
-																{' '}
-																(M)
-															</span>
-														)}
-														{EDITORS.includes(user.userName) && (
-															<span className="editor-name" title="This user is an editor">
-																{' '}
-																(E)
-															</span>
-														)}
+													{(() => {
+														const userAdminRole = ADMINS.includes(user.userName) ? 'Admin' : EDITORS.includes(user.userName) ? 'Editor' : MODERATORS.includes(user.userName) ? 'Moderator' : CONTRIBUTORS.includes(user.userName) ? 'Contributor' : null;
 
-														{ADMINS.includes(user.userName) && (
-															<span className="admin-name" title="This user is an admin">
-																{' '}
-																(A)
-															</span>
-														)}
-													</span>
+														if (userAdminRole) {
+															const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
+
+															return (
+																<Popup
+																	inverted
+																	className="admin-popup"
+																	trigger={
+																		<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+																			{prefix}
+																			{` ${user.userName}`}
+																		</span>
+																	}
+																	content={userAdminRole} />
+																	);
+														} else {
+															return (
+																	<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+																		{user.userName}
+																	</span>
+																);
+														}
+													})()}
 													{renderStatus()}
 												</div>
 												{(() => {

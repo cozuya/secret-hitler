@@ -20,15 +20,12 @@ class Settings extends React.Component {
 		super();
 		this.sliderChange = this.sliderChange.bind(this);
 		this.sliderDrop = this.sliderDrop.bind(this);
-		this.widthSliderChange = this.widthSliderChange.bind(this);
-		this.widthSliderDrop = this.widthSliderDrop.bind(this);
 		this.profileSearchSubmit = this.profileSearchSubmit.bind(this);
 		this.state = {
 			sliderValues: [8, 28],
 			imageUid: Math.random()
 				.toString(36)
 				.substring(6),
-			widthSliderValue: '',
 			preview: '',
 			cardbackUploadStatus: '',
 			isUploaded: false,
@@ -132,17 +129,6 @@ class Settings extends React.Component {
 		this.props.socket.emit('updateGameSettings', {
 			fontSize: this.state.sliderValues[0]
 		});
-	}
-
-	widthSliderDrop(e) {
-		this.props.socket.emit('updateGameSettings', {
-			customWidth: this.state.widthSliderValue
-		});
-	}
-
-	widthSliderChange(event) {
-		$('#game-container').css('width', event[0] === 1853 ? 'inherit' : `${event[0]}px`);
-		this.setState({ widthSliderValue: `${event[0]}px` });
 	}
 
 	profileSearchSubmit(e) {
@@ -320,7 +306,7 @@ class Settings extends React.Component {
 							</a>{' '}
 							(new tab).
 						</div>
-						<button className="ui button" onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
+						<button className="ui primary button" onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
 							View your profile
 						</button>
 						<form className="profile-search" onSubmit={this.profileSearchSubmit}>
@@ -419,19 +405,6 @@ class Settings extends React.Component {
 								max={28}
 								defaultValue={gameSettings.fontSize ? [gameSettings.fontSize] : [18]}
 								marks={{ 8: '8px', 18: '18px', 28: '28px' }}
-							/>
-						</div>
-					</div>
-					<div className="row centered">
-						<div className="eight wide column slider">
-							<h4 className="ui header">Application width</h4>
-							<Range
-								onAfterChange={this.widthSliderDrop}
-								onChange={this.widthSliderChange}
-								min={1253}
-								max={1853}
-								defaultValue={gameSettings.customWidth ? [parseInt(gameSettings.customWidth.split('px')[0])] : [1853]}
-								marks={{ 1253: 'Minimum', 1853: 'Full screen' }}
 							/>
 						</div>
 					</div>

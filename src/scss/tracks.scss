@@ -39,7 +39,7 @@
 		}
 	}
 	.player-count,
-	.gameuid {
+	.gameuid {			// gameuid not used since routing update displays it in url
 		position: absolute;
 		top: 10px;
 		left: 555px;
@@ -55,6 +55,15 @@
 		width: 280px;
 		left: 270px;
 		top: 2px;
+	}
+	.option-icons {
+		position: absolute;
+		z-index: 110;
+		left: 440px;
+		top: 10px;
+		background: #5b9cc4;
+		border: 2px solid lightblue;
+		padding: 4px;
 	}
 	.tracks {
 		transition: all 1s;

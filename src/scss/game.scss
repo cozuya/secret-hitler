@@ -27,17 +27,17 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
-			margin: 0;
-			background: #f6f6f6;
-			display: flex;
-			flex-direction: column;
-			height: 411px;
+			//margin: 0;
+			//background: #f6f6f6;
+			//display: flex;
+			//flex-direction: column;
+			//height: 411px;
 			form {
 				background: #181818;
 				display: flex;
 				position: relative;
 				z-index: 100;
-				padding: 5px 10px 5px 10px;
+				padding: 4px 10px 4px 10px;
 			}
 
 			.pointing.menu {
@@ -48,6 +48,7 @@
 				min-height: initial;
 				overflow-x: initial !important;
 				width: 100% !important;
+				border-radius: 0;
 				.item {
 					padding: 7px 8px 6px;
 					position: relative;
@@ -64,6 +65,9 @@
 					font-size: 11px;
 					background: #fbbd08 !important;
 					color: black !important;
+					&:hover {
+						background: $darkfascistteam !important;
+					}
 				}
 				.button.ui-disabled {
 					opacity: 0.45 !important;
@@ -71,13 +75,10 @@
 					cursor: pointer;
 				}
 			}
-			.gamechat-item {
-				display: flex;
-			}
 			.chats {
 				display: flex;
 				flex-direction: column-reverse;
-				height: 345px;
+				height: 336px;
 				position: relative;
 				background: #f9faff;
 				font-size: 18px;
@@ -86,7 +87,6 @@
 
 				img {
 					vertical-align: middle;
-					margin-top: -5px;
 				}
 				.ui.list {
 					padding-left: 5px;
@@ -94,14 +94,14 @@
 					position: absolute;
 					bottom: 0;
 					line-height: 1.2;
-					max-height: 345px;
+					max-height: 336px;
 					width: 98%;
 					margin: 0;
 				}
 				.item {
 					word-wrap: break-word;
-					line-height: inherit;
-					padding: 2px 0;
+					line-height: 130%;
+					padding: 4px 0;
 					span {
 						max-width: 90%;
 					}
@@ -123,11 +123,11 @@
 				.claim-chat {
 					color: #fbbd08;
 				}
-				.chat-user--broadcast {
+				.chat-user.broadcast {
 					color: lightsalmon;
 				}
 				.broadcast-chat {
-					color: lightskyblue;
+					color: lightskyblue !important;
 				}
 				.chat-role--liberal {
 					font-weight: 700;
@@ -147,12 +147,12 @@
 				}
 			}
 			.chat-timestamp {
-				margin-top: 3px;
-				color: #848484;
+				//margin-top: 3px;
+				//color: #848484;
+				color: #565656;
 				font-size: 12px;
 				white-space: nowrap;
-				float: left;
-				min-width: 45px;
+				font-family: arial;
 			}
 			.chats.blurred {
 				filter: blur(4px);
@@ -261,6 +261,10 @@
 					flex-grow: 1;
 					button {
 						padding: 0px 10px;
+						background: $darkfascistteam;
+						&:hover {
+							background: #e44023;
+						}
 					}
 				}
 				.input.disabled {

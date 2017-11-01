@@ -20,7 +20,7 @@ const DisplayLobbies = props => {
 
 			return classes;
 		},
-		playersCount = () => {
+		playerCount = () => {
 			const availableSeatCounts = new Array(game.maxPlayersCount)
 				.fill(true)
 				.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
@@ -176,7 +176,7 @@ const DisplayLobbies = props => {
 		return total;
 	};
 
-	const displayGameProgress = () => {
+	const gameProgress = () => {
 		let progressText,
 			progressIcons,
 			classes = 'progress-text';
@@ -256,7 +256,7 @@ const DisplayLobbies = props => {
 			className={gameClasses()}
 		>
 			<div className="game-row">
-				{displayGameProgress()}
+				{gameProgress()}
 				<div className="game-main">
 					<div className="game-main-top-row">
 						<div className="gamename-column">
@@ -274,7 +274,7 @@ const DisplayLobbies = props => {
 								{game.seatedCount}{' '}
 							</span>
 							<span className="divider">/</span>
-							<span className="allowed-players"> {playersCount()}</span>
+							<span className="allowed-players"> {playerCount()}</span>
 						</div>
 					</div>
 				</div>

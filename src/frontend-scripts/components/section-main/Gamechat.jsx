@@ -169,7 +169,7 @@ class Gamechat extends React.Component {
 
 	scrollChats() {
 		if (!this.state.lock) {
-			this.refs.perfectScrollbar.setScrollTop(document.querySelectorAll('div.item').length * 300);
+			this.refs.perfectScrollbar.setScrollTop(document.querySelectorAll('div.item').length * 1000);
 		}
 	}
 
@@ -181,10 +181,11 @@ class Gamechat extends React.Component {
 		const { userInfo } = this.props;
 
 		if (userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
-			const minutes = `0${new Date(timestamp).getMinutes()}`.slice(-2),
+			const hours = `0${new Date(timestamp).getHours()}`.slice(-2),
+				minutes = `0${new Date(timestamp).getMinutes()}`.slice(-2),
 				seconds = `0${new Date(timestamp).getSeconds()}`.slice(-2);
 
-			return <span className="chat-timestamp">{`${minutes}: ${seconds} `}</span>;
+			return <span className="chat-timestamp">{`${hours}:${minutes}:${seconds} `}</span>;
 		}
 	}
 
@@ -235,8 +236,8 @@ class Gamechat extends React.Component {
 					playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 				// ? <div className={chat.chat[2] && chat.chat[2].item.type ? `gamechat-item ${chat.chat[2].item.type}` : 'gamechat-item'} key={i}>
 				return chat.gameChat ? (
-					<div className={chat.chat[1] && chat.chat[1].type ? `gamechat-item ${chat.chat[1].type}` : 'gamechat-item'} key={i}>
-						<span className="chat-user--game">{this.handleTimestamps(chat.timestamp)} </span>
+					<div className={chat.chat[1] && chat.chat[1].type ? `item gamechat ${chat.chat[1].type}` : 'item gamechat'} key={i}>
+						{this.handleTimestamps(chat.timestamp)}
 						<span className="game-chat">
 							{chatContents.map((chatSegment, index) => {
 								if (chatSegment.type) {
@@ -286,7 +287,7 @@ class Gamechat extends React.Component {
 					</div>
 				) : chat.isBroadcast ? (
 					<div className="item" key={i}>
-						<span className="chat-user--broadcast">{this.handleTimestamps(chat.timestamp)} [BROADCAST]: </span>
+						<span className="chat-user broadcast">{this.handleTimestamps(chat.timestamp)} {`${chat.userName}: `} </span>
 						<span className="broadcast-chat">{processEmotes(chat.chat)}</span>
 					</div>
 				) : (
@@ -301,35 +302,35 @@ class Gamechat extends React.Component {
 									: 'chat-user'
 							}
 						>
-							{gameInfo.gameState.isTracksFlipped
+							{isSeated ? (
+								''
+							) : MODERATORS.includes(chat.userName) ? (
+								<span data-tooltip="Moderator" data-inverted>
+									<span className="moderator-name">(M)</span>
+									<span className="observer-chat"> (Observer) </span>
+								</span>
+							) : EDITORS.includes(chat.userName) ? (
+								<span data-tooltip="Editor" data-inverted>
+									<span className="editor-name">(E)</span>
+									<span className="observer-chat"> (Observer) </span>
+								</span>
+							) : ADMINS.includes(chat.userName) ? (
+								<span data-tooltip="Admin" data-inverted>
+									<span className="admin-name">(A)</span>
+									<span className="observer-chat"> (Observer) </span>
+								</span>
+							) : (
+								<span className="observer-chat"> (Observer) </span>
+							)}
+						{gameInfo.gameState.isTracksFlipped
 								? isSeated
 									? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 									: chat.userName
 								: chat.userName}
-							{isSeated ? (
-								''
-							) : MODERATORS.includes(chat.userName) ? (
-								<span>
-									<span className="moderator-name"> (M)</span>
-									<span className="observer-chat"> (Observer)</span>
-								</span>
-							) : EDITORS.includes(chat.userName) ? (
-								<span>
-									<span className="editor-name"> (E)</span>
-									<span className="observer-chat"> (Observer)</span>
-								</span>
-							) : ADMINS.includes(chat.userName) ? (
-								<span>
-									<span className="admin-name"> (A)</span>
-									<span className="observer-chat"> (Observer)</span>
-								</span>
-							) : (
-								<span className="observer-chat"> (Observer)</span>
-							)}
-							{`:`}
+						{': '}
 						</span>
 						<span>
-							&nbsp;{chatContents}
+							{chatContents}
 						</span>
 					</div>
 				);

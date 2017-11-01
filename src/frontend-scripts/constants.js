@@ -22,7 +22,7 @@ const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999']
 
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine', 'Uther']);
 
-const CONTRIBUTORS = (module.exports.CONTRIBUTORS = ['jbasrai', 'sethe', 'veggiemanz', 'DFinn', 'conundrum', 'MilkMan']);
+const CONTRIBUTORS = (module.exports.CONTRIBUTORS = ['jbasrai', 'sethe', 'veggiemanz', 'DFinn', 'conundrum', 'MilkMan', 'Wi1son']);
 
 module.exports.PLAYERCOLORS = user =>
 	cn({

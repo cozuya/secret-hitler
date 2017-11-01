@@ -52,14 +52,15 @@ export const allEmotes = [
 export function renderEmotesButton(handleInsertEmote) {
 	return (
 	<Popup on='click'
+		className="emotes-popup"
 		trigger={<Button type="button" icon='smile' primary className="emotes-button" />}
 	>
 		<Popup.Content>
 			{(() => {
 				return (
-					<div className="emotes-popup">
+					<div className="emotes-popup-content">
 						{allEmotes.map((el, index) =>
-							<div data-tooltip={el} data-inverted onClick={() => handleInsertEmote(el)}>
+							<div key={index} data-tooltip={el} data-inverted onClick={() => handleInsertEmote(el)}>
 								<img src={`../images/emotes/${el}.png`} />
 							</div>
 						)}
@@ -81,7 +82,7 @@ export function processEmotes(input) {
 
 	message.forEach((word, index) => {
 		if (allEmotes.includes(word)) {
-			formatedMsg.push(<span data-tooltip={word} data-inverted><img src={`/images/emotes/${word}.png`} key={index} />{' '}</span>);
+			formatedMsg.push(<span key={index} data-tooltip={word} data-inverted><img src={`/images/emotes/${word}.png`} />{' '}</span>);
 		} else if (/^https:\/\/secrethitler.io/.test(word)) {
 			const hash = word.split('https://secrethitler.io')[1];
 		// } else if (/^http:\/\/localhost:8080/.test(word)) {

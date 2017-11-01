@@ -242,7 +242,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'RRR',
+									text: 'FFF',
 									type: 'fascist'
 								},
 								{
@@ -264,11 +264,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'RR',
+									text: 'FF',
 									type: 'fascist'
 								},
 								{
-									text: 'B',
+									text: 'L',
 									type: 'liberal'
 								},
 								{
@@ -290,11 +290,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'R',
+									text: 'F',
 									type: 'fascist'
 								},
 								{
-									text: 'BB',
+									text: 'LL',
 									type: 'liberal'
 								},
 								{
@@ -316,7 +316,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'BBB',
+									text: 'LLL',
 									type: 'liberal'
 								},
 								{
@@ -351,7 +351,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'RR',
+									text: 'FF',
 									type: 'fascist'
 								},
 								{
@@ -373,11 +373,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'R',
+									text: 'F',
 									type: 'fascist'
 								},
 								{
-									text: 'B',
+									text: 'L',
 									type: 'liberal'
 								},
 								{
@@ -399,7 +399,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'BB',
+									text: 'LL',
 									type: 'liberal'
 								},
 								{
@@ -909,13 +909,14 @@ module.exports.handleModerationAction = (socket, data) => {
 				broadcastReq.end(discordBroadcastBody);
 				games.forEach(game => {
 					game.chats.push({
-						chat: `(${data.modName}) ${data.comment}`,
+						userName: `[BROADCAST] ${data.modName}`,
+						chat: data.comment,
 						isBroadcast: true,
 						timestamp: new Date()
 					});
 				});
 				generalChats.push({
-					userName: `BROADCAST (${data.modName})`,
+					userName: `[BROADCAST] ${data.modName}`,
 					time: new Date(),
 					chat: data.comment,
 					isBroadcast: true

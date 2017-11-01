@@ -203,7 +203,7 @@ class ProfileWrapper extends React.Component {
 					<div
 						className="profile-picture"
 						style={{
-							background: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random()
+							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random()
 								.toString(36)
 								.substring(2)})`
 						}}

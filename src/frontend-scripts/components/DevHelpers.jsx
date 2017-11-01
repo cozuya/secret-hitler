@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class DevHelpers extends React.Component {
+export default class DevHelpers extends React.PureComponent {
 	constructor() {
 		super();
 	}

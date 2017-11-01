@@ -1,9 +1,10 @@
 import React from 'react';
 import classnames from 'classnames';
-import { MODERATORS, EDITORS } from '../../constants';
+import { MODERATORS, EDITORS, ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import moment from 'moment';
 
 export default class Generalchat extends React.Component {
 	constructor() {
@@ -42,7 +43,6 @@ export default class Generalchat extends React.Component {
 	handleSubmit(e) {
 		const { inputValue } = this.state;
 
-		//e.preventDefault();
 		if (inputValue.length < 300 && inputValue) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
@@ -70,6 +70,7 @@ export default class Generalchat extends React.Component {
 
 	processChats() {
 		const { userInfo } = this.props;
+		let timestamp;
 
 		return this.props.generalChats.map((chat, i) => {
 			const userClasses = classnames(
@@ -78,21 +79,17 @@ export default class Generalchat extends React.Component {
 				},
 				'chat-user'
 			);
-
+			if (userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
+				timestamp = (<span className="timestamp">{moment(chat.time).format('HH:mm')} </span>);
+			}
 			return (
-				<div className="item" key={i}>
-					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
-						{chat.userName}
-						{(() => {
-							if (MODERATORS.includes(chat.userName)) {
-								return <span className="moderator-name"> (M)</span>;
-							}
-
-							if (EDITORS.includes(chat.userName)) {
-								return <span className="editor-name"> (E)</span>;
-							}
-						})()}
-						{chat.userName && ':'}{' '}
+				<div key={i} className="item">
+					{timestamp}
+					<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
+						{MODERATORS.includes(chat.userName) && <span className="moderator-name">(M) </span>}
+						{EDITORS.includes(chat.userName) && <span className="editor-name">(E) </span>}
+						{ADMINS.includes(chat.userName) && <span className="admin-name">(A) </span>}
+						{`${chat.userName}: `}
 					</span>
 					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
 				</div>

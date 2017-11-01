@@ -11,7 +11,6 @@
 		background: #181818;
 		border: 1px solid #262626;
 		border-bottom: 0;
-		//padding-bottom: 10px;
 		flex: 1;
 		display: flex;
 		flex-direction: column;
@@ -28,7 +27,6 @@
 		.playerlist-header {
 			min-height: 32px;
 			padding: 5px 0 3px;
-			//background: #1a1a1a;
 			display: flex;
 			justify-content: space-between;
 			color: $darkfascistteam;
@@ -82,11 +80,7 @@
 		.divider {
 			margin: 0;
 		}
-		i {
-			// margin-top: -5px;
-		}
 		.playerlist-body {
-			// height: 250px;
 			overflow-y: auto;
 			overflow-x: hidden;
 			padding: 0 10px 0 10px;
@@ -118,9 +112,13 @@
 				white-space: nowrap;
 				overflow-x: hidden;
 				color: #bfbfbf;
-				> span:hover {
+				span:hover {
 					color: #608cb3 !important;
 					cursor: pointer;
+					span {
+						color: #608cb3 !important;
+						cursor: pointer;
+					}
 				}
 			}
 			.unclickable:hover {
@@ -142,10 +140,10 @@
 		border: 1px solid #262626;
 		img {
 			vertical-align: middle;
+			margin: 2px 0;
 		}
 		.generalchat-header {
 			min-height: 32px;
-			//background-color:#1a1a1a;
 			border-bottom: 1px solid #262626;
 			padding: 5px 0px 3px;
 			h3 {
@@ -157,9 +155,6 @@
 				float: right;
 				cursor: pointer;
 			}
-			> div {
-				//padding: 2px 5px 0;
-			}
 		}
 		.ui.input {
 			margin: 0;
@@ -167,7 +162,6 @@
 			flex-direction: column;
 			padding: 10px 10px 5px 10px;
 			background: #181818;
-			//border-top: 1px solid #272727;
 			.chat-button {
 				margin-top: 5px;
 			}
@@ -195,6 +189,10 @@
 			button {
 				padding: 2px;
 				float: right;
+				background: $darkfascistteam;
+				&:hover {
+					background: #e44023;
+				}
 			}
 			i {
 				cursor: pointer;
@@ -203,16 +201,10 @@
 
 		}
 		.segment.chats {
-			//height: 252px;
-			//padding-left: 10px;
-			//padding-right: 10px;
 			position: relative;
-			//overflow-x: hidden;
-			//overflow-y: auto;
 			flex: 1;
 			background: #181818;
 			.ui.list.genchat-container {
-				//overflow-y: auto;
 				position: absolute;
 				bottom: 0;
 				left: 0;
@@ -222,15 +214,15 @@
 				margin: auto;
 				padding-right: 5px;
 				padding-bottom: 1px;
-				.chat-user--broadcast {
+				.chat-user.broadcast {
 					color: lightsalmon;
 				}
 				.broadcast-chat {
-					color: lightskyblue;
+					color: lightskyblue !important;
 				}
 				.item {
-					padding: 0;
-
+					padding: 4px 0;
+					line-height: 140%;
 					a {
 						color: #f4f439 !important;
 						text-decoration: underline !important;
@@ -239,6 +231,13 @@
 				.chat-user {
 					color: #888;
 					font-weight: bold;
+					white-space: nowrap;
+				}
+				.timestamp {
+					color: #565656;
+					font-size: 80%;
+					white-space: nowrap;
+					font-family: arial;
 				}
 				.admin {
 					color: red;
@@ -256,9 +255,7 @@
 	min-width: initial;
 }
 
-.emotes-popup {
-	//min-height: 290px;
-	//min-width: 195px;
+.emotes-popup-content {
 	// add padding area for tooltips around popup
 	margin: -30px -15px 0 -20px;
 	padding: 30px 15px 0 20px;
@@ -277,13 +274,16 @@
 		}
 	}
 }
-.ui.top.popup {
-	min-width: 250px;
-	padding: 10px;
-	background: #181818;
-	//border: 1px solid #f2664d !important;
+.emotes-popup {
+	min-width: 250px !important;
+	padding: 10px !important;
+	background: #181818 !important;
 	&:before {
-		background: #181818;
-		//box-shadow: 1px 1px 0 0 #f2664d;
+		background: #181818 !important;
 	}
+}
+
+
+.admin-popup {
+	padding: 5px !important;
 }
