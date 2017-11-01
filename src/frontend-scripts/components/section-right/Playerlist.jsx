@@ -215,7 +215,11 @@ class Playerlist extends React.Component {
 												return () => null;
 											},
 											userClasses =
-												user.wins + user.losses > 50 || ADMINS.includes(user.userName) || EDITORS.includes(user.userName) || MODERATORS.includes(user.userName) || CONTRIBUTORS.includes(user.userName)
+												user.wins + user.losses > 50 ||
+												ADMINS.includes(user.userName) ||
+												EDITORS.includes(user.userName) ||
+												MODERATORS.includes(user.userName) ||
+												CONTRIBUTORS.includes(user.userName)
 													? cn(PLAYERCOLORS(user), { unclickable: !this.props.isUserClickable }, { clickable: this.props.isUserClickable }, 'username')
 													: 'username',
 											renderStatus = () => {
@@ -261,7 +265,11 @@ class Playerlist extends React.Component {
 											<div key={i} className="user-container">
 												<div className="userlist-username">
 													{(() => {
-														const userAdminRole = ADMINS.includes(user.userName) ? 'Admin' : EDITORS.includes(user.userName) ? 'Editor' : MODERATORS.includes(user.userName) ? 'Moderator' : CONTRIBUTORS.includes(user.userName) ? 'Contributor' : null;
+														const userAdminRole = ADMINS.includes(user.userName)
+															? 'Admin'
+															: EDITORS.includes(user.userName)
+																? 'Editor'
+																: MODERATORS.includes(user.userName) ? 'Moderator' : CONTRIBUTORS.includes(user.userName) ? 'Contributor' : null;
 
 														if (userAdminRole) {
 															const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
@@ -276,14 +284,15 @@ class Playerlist extends React.Component {
 																			{` ${user.userName}`}
 																		</span>
 																	}
-																	content={userAdminRole} />
-																	);
+																	content={userAdminRole}
+																/>
+															);
 														} else {
 															return (
-																	<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
-																		{user.userName}
-																	</span>
-																);
+																<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+																	{user.userName}
+																</span>
+															);
 														}
 													})()}
 													{renderStatus()}

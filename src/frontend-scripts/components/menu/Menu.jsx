@@ -17,7 +17,6 @@ const mapDispatchToProps = dispatch => ({
 	}
 });
 
-
 class Menu extends React.Component {
 	constructor() {
 		super();
@@ -32,10 +31,18 @@ class Menu extends React.Component {
 		return (
 			<div className="menu-container">
 				<section className={classes}>
-					<a href="/" target="_blank"><img src="../images/navbar_logo.png" /></a>
+					<a href="/" target="_blank">
+						<img src="../images/navbar_logo.png" />
+					</a>
 					<div className="center-menu-links">
 						<span>
-							<a className={this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen ? 'patch-alert' : null} onClick={this.props.readPatchNotes}> Changelog {this.props.version.current.number} </a>
+							<a
+								className={this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen ? 'patch-alert' : null}
+								onClick={this.props.readPatchNotes}
+							>
+								{' '}
+								Changelog {this.props.version.current.number}{' '}
+							</a>
 							|{' '}
 							<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
 								Feedback / Bug Reports
@@ -83,10 +90,11 @@ class Menu extends React.Component {
 										className="settings-popup"
 										trigger={
 											<a href="#/settings">
-										<i className={iconClasses()} />
-									</a>
-									}
-									content="Settings" />
+												<i className={iconClasses()} />
+											</a>
+										}
+										content="Settings"
+									/>
 								</div>
 							);
 						})()}

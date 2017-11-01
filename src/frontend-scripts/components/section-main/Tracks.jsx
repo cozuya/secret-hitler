@@ -80,7 +80,7 @@ class Tracks extends React.Component {
 				</span>
 			</div>
 		);
-	};
+	}
 
 	render() {
 		const { gameInfo, userInfo, socket } = this.props,
@@ -142,9 +142,7 @@ class Tracks extends React.Component {
 						})()}
 						<span>{gameInfo.general.name}</span>
 					</div>
-					<div className="option-icons">
-						{this.optionIcons(gameInfo)}
-					</div>
+					<div className="option-icons">{this.optionIcons(gameInfo)}</div>
 					<div className="player-count">
 						Players: <span>{gameInfo.publicPlayersState.length}</span>
 					</div>

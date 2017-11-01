@@ -208,7 +208,7 @@ class Gamechat extends React.Component {
 
 	handleInsertEmote(emote) {
 		const newMsg = this.state.inputValue + ` ${emote}`;
-		this.setState({inputValue: newMsg});
+		this.setState({ inputValue: newMsg });
 		this.gameChatInput.focus();
 	}
 
@@ -287,7 +287,9 @@ class Gamechat extends React.Component {
 					</div>
 				) : chat.isBroadcast ? (
 					<div className="item" key={i}>
-						<span className="chat-user broadcast">{this.handleTimestamps(chat.timestamp)} {`${chat.userName}: `} </span>
+						<span className="chat-user broadcast">
+							{this.handleTimestamps(chat.timestamp)} {`${chat.userName}: `}{' '}
+						</span>
 						<span className="broadcast-chat">{processEmotes(chat.chat)}</span>
 					</div>
 				) : (
@@ -322,16 +324,14 @@ class Gamechat extends React.Component {
 							) : (
 								<span className="observer-chat"> (Observer) </span>
 							)}
-						{gameInfo.gameState.isTracksFlipped
+							{gameInfo.gameState.isTracksFlipped
 								? isSeated
 									? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 									: chat.userName
 								: chat.userName}
-						{': '}
+							{': '}
 						</span>
-						<span>
-							{chatContents}
-						</span>
+						<span>{chatContents}</span>
 					</div>
 				);
 			});
@@ -448,7 +448,12 @@ class Gamechat extends React.Component {
 						return classes;
 					})()}
 				>
-					<PerfectScrollbar ref="perfectScrollbar" onScrollY={this.handleChatScrolled} onYReachEnd={this.handleChatScrolledToBottom} option={{ suppressScrollX: true }}>
+					<PerfectScrollbar
+						ref="perfectScrollbar"
+						onScrollY={this.handleChatScrolled}
+						onYReachEnd={this.handleChatScrolledToBottom}
+						option={{ suppressScrollX: true }}
+					>
 						<div className="ui list" onScroll={this.handleChatScroll}>
 							{this.processChats()}
 						</div>
@@ -658,7 +663,9 @@ class Gamechat extends React.Component {
 							}}
 						/>
 						{this.props.userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
-						<button type="submit" className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+						<button type="submit" className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>
+							Chat
+						</button>
 					</div>
 					{(() => {
 						if (

@@ -14,16 +14,13 @@ const GamesList = props => {
 						bName = b.name.toLowerCase();
 
 					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
-						if (a.seatedCount === b.seatedCount)
-						{
+						if (a.seatedCount === b.seatedCount) {
 							if (aName === bName) {
 								return a.uid < b.uid ? 1 : -1;
-							}
-							else {
+							} else {
 								return aName > bName ? 1 : -1;
 							}
-						}
-						else {
+						} else {
 							return b.seatedCount - a.seatedCount;
 						}
 					}
@@ -48,8 +45,7 @@ const GamesList = props => {
 						if (a.seatedCount === b.seatedCount) {
 							if (aName === bName) {
 								return a.uid < b.uid ? 1 : -1;
-							}
-							else {
+							} else {
 								return aName > bName ? 1 : -1;
 							}
 						} else {
@@ -57,7 +53,7 @@ const GamesList = props => {
 						}
 					}
 
-					return aName === bName ? a.uid < b.uid ? 1 : -1 : aName > bName ? 1 : -1;
+					return aName === bName ? (a.uid < b.uid ? 1 : -1) : aName > bName ? 1 : -1;
 				})
 				.map((game, index) => {
 					return <DisplayLobbies key={index} game={game} socket={props.socket} userList={props.userList} userInfo={props.userInfo} />;

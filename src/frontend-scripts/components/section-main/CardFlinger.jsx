@@ -133,7 +133,7 @@ class CardFlinger extends React.Component {
 					</div>
 				);
 			} else if (status === 'President to peek at policies.' && currentPlayerStatus === 'isPresident') {
-				return (<div className="help-message policy-peak">Click on the draw deck to peek at the top 3 policies.</div>);
+				return <div className="help-message policy-peak">Click on the draw deck to peek at the top 3 policies.</div>;
 			}
 		};
 
@@ -180,7 +180,6 @@ class CardFlinger extends React.Component {
 								containerClasses += ' not-hovered';
 							}
 						}
-
 
 						return (
 							<div

@@ -178,9 +178,9 @@
 				border: solid 1px #8c8c8c;
 				height: 44px;
 				&:focus {
-					 outline: none;
-					 border: 1px solid #f2654c;
-					 box-shadow: 0 0 3px #f2654c;
+					outline: none;
+					border: 1px solid #f2654c;
+					box-shadow: 0 0 3px #f2654c;
 				}
 			}
 			input {
@@ -198,7 +198,6 @@
 				cursor: pointer;
 				width: 20px;
 			}
-
 		}
 		.segment.chats {
 			position: relative;
@@ -262,7 +261,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	background: transparent;
-	overflow-x: hidden; 
+	overflow-x: hidden;
 	cursor: pointer;
 	resize: none;
 	div {
@@ -283,7 +282,6 @@
 		background: #181818 !important;
 	}
 }
-
 
 .admin-popup {
 	padding: 5px !important;

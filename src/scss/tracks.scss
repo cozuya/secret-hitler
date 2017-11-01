@@ -39,7 +39,8 @@
 		}
 	}
 	.player-count,
-	.gameuid {			// gameuid not used since routing update displays it in url
+	.gameuid {
+		// gameuid not used since routing update displays it in url
 		position: absolute;
 		top: 10px;
 		left: 555px;
