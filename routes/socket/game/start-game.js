@@ -379,9 +379,5 @@ module.exports = game => {
 	game.gameState.isTracksFlipped = true;
 	game.private.policies = [];
 
-	shufflePolicies(
-		game,
-		Boolean(game.private.seatedPlayers.length === 6) && game.general.rebalance69p,
-		Boolean(game.private.seatedPlayers.length === 9) && game.general.rebalance69p
-	);
+	shufflePolicies(game, Boolean(game.private.seatedPlayers.length === 6) && game.general.rebalance69p);
 };
