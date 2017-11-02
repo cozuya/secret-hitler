@@ -19,7 +19,7 @@ const Changelog = props => (
 		</p>
 
 		<div className="ui header">
-			<p>Version 0.9.0 "dim" released 10-28-2017</p>
+			<p>Version 0.9.0 "dim" released 10-29-2017</p>
 		</div>
 		<h3>New feature: player bios</h3>
 		<div style={{ textAlign: 'center' }}>
