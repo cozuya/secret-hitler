@@ -71,7 +71,7 @@ const Main = props => {
 	return (
 		<section className={classes}>
 			{(() => {
-				if (props.midSection === 'game') {
+				if (props.midSection === 'game' || 'replay') {
 					return RenderMidSection(props);
 				} else {
 					return (

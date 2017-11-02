@@ -13,8 +13,8 @@ $selection: #db2828;
 $proceed: #2185d0;
 $lteal: #097892;
 $dteal: #034f61;
-$textfont: 'Comfortaa', Lato, sans-serif;
-$headerfont: 'Comfortaa', Lato, sans-serif;
+$textfont: inherit; //'Comfortaa', Lato, sans-serif;
+$headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 
 //@import 'semantic.scss';
 @import 'creategame.scss';
@@ -397,19 +397,21 @@ $headerfont: 'Comfortaa', Lato, sans-serif;
 		margin-right: auto;
 	}
 	// quick hack to get sidebar in-game working for now
-	.section-right.game {
-		width: 250px;
-		flex-direction: column !important;
-		margin-right: 2px;
-		.playerlist {
-			order: 0 !important;
-			max-width: 250px !important;
-			min-width: 250px !important;
-		}
-		.generalchat {
-			order: 0 !important;
-			max-width: 250px !important;
-			min-width: 250px !important;
+	.body-container.game {
+		.section-right {
+			width: 250px;
+			flex-direction: column !important;
+			margin-right: 2px;
+			.playerlist {
+				order: 0 !important;
+				max-width: 250px !important;
+				min-width: 250px !important;
+			}
+			.generalchat {
+				order: 0 !important;
+				max-width: 250px !important;
+				min-width: 250px !important;
+			}
 		}
 	}
 	.playerlist {
