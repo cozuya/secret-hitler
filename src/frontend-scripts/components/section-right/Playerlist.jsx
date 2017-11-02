@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS } from '../../constants';
+import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CONTRIBUTORS } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -128,8 +128,8 @@ class Playerlist extends React.Component {
 							Also, <span className="admin">Administrators</span> have a red color with a dark red (A) and are always on top;{' '}
 							<span className="editorcolor">Editors</span>, placed under Administrators, have an aqua color with a red (E) and appear at the top; and{' '}
 							<span className="moderatorcolor">Moderators</span>, placed under Editors, have a blue color with a light red (M) and also appear at the top, and{' '}
-							<span className="contributer">Contributors</span> get a special orange color as well! Contribute code to this open source project to be endlessly
-							pestered about why you're orange.
+							<span className="contributor">Contributors</span> get a special yellow color with an orange (C) as well! Contribute code to this open source project to be endlessly
+							pestered about why you're yellow.
 						</p>
 					</div>
 					{Object.keys(this.props.userList).length && (
@@ -260,21 +260,27 @@ class Playerlist extends React.Component {
 											<div className="userlist-username">
 												<span className={userClasses} onClick={disableIfUnclickable(routeToProfile.bind(null, user.userName))}>
 													{user.userName}
+													{CONTRIBUTORS.includes(user.userName) && (
+														<span className="contributor-name" title="This user is a Contributor.">
+															{' '}
+															(C)
+														</span>
+													)}
 													{MODERATORS.includes(user.userName) && (
-														<span className="moderator-name" title="This user is a moderator">
+														<span className="moderator-name" title="This user is a Moderator.">
 															{' '}
 															(M)
 														</span>
 													)}
 													{EDITORS.includes(user.userName) && (
-														<span className="editor-name" title="This user is an editor">
+														<span className="editor-name" title="This user is an Editor.">
 															{' '}
 															(E)
 														</span>
 													)}
 
 													{ADMINS.includes(user.userName) && (
-														<span className="admin-name" title="This user is an admin">
+														<span className="admin-name" title="This user is an Administrator.">
 															{' '}
 															(A)
 														</span>
