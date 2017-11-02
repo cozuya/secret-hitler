@@ -44,7 +44,7 @@ module.exports.PLAYERCOLORS = user =>
 		onfire8: user.wins / (user.wins + user.losses) > 0.66,
 		onfire9: user.wins / (user.wins + user.losses) > 0.68,
 		onfire10: user.wins / (user.wins + user.losses) > 0.7,
-		contributer: CONTRIBUTORS.includes(user.userName),
+		contributor: CONTRIBUTORS.includes(user.userName),
 		cbell: user.userName === 'cbell',
 		max: user.userName === 'Max',
 		dfinn: user.userName === 'DFinn'

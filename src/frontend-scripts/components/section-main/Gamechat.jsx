@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
+import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS, CONTRIBUTORS } from '../../constants';
 import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -304,6 +304,11 @@ class Gamechat extends React.Component {
 								: chat.userName}
 							{isSeated ? (
 								''
+							) : CONTRIBUTORS.includes(chat.userName) ? (
+								<span>
+									<span className="contributor-name"> (C)</span>
+									<span className="observer-chat"> (Observer)</span>
+								</span>
 							) : MODERATORS.includes(chat.userName) ? (
 								<span>
 									<span className="moderator-name"> (M)</span>

@@ -456,8 +456,8 @@ body {
 	color: red !important;
 }
 
-.contributer {
-	color: orange !important;
+.contributor {
+	color: yellow !important;
 }
 
 .cbell {
@@ -577,6 +577,10 @@ body {
 	font-weight: bold;
 	margin-top: 10px;
 	margin: 10px 0 0;
+}
+
+.contributor-name {
+	color: orange;
 }
 
 .moderator-name {

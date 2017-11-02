@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { MODERATORS, EDITORS, ADMINS } from '../../constants';
+import { CONTRIBUTORS, MODERATORS, EDITORS, ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
 import { processEmotes } from '../../emotes';
 import moment from 'moment';
@@ -80,6 +80,7 @@ export default class Generalchat extends React.Component {
 				<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
 					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
 						{chat.userName}
+						{CONTRIBUTORS.includes(chat.userName) && <span className="contributor-name"> (C)</span>}
 						{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
 						{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
 						{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
