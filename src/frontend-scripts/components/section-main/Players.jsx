@@ -224,12 +224,9 @@ export default class Players extends React.Component {
 	}
 
 	renderTakeSeat() {
-		const { userInfo, gameInfo, userList } = this.props;
-		let user;
-		if (userList.list) {
-			user = userList.list.find(user => user.userName === userInfo.userName);
-		}
-
+		const { userInfo, gameInfo, userList } = this.props,
+			user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
+			
 		if (
 			!userInfo.isSeated &&
 			userInfo.userName &&

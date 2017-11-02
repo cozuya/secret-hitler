@@ -436,8 +436,8 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 	// careful this styles both generalchat and gamechat emote buttons
 	.emotes-button {
 		position: absolute;
-		right: 48px;
-		top: 2px;
+		right: 52px;
+		top: 3px;
 		background: transparent;
 		.smile.icon {
 			color: white !important;
@@ -831,6 +831,10 @@ div {
 	color: coral;
 	padding: 5px 20px;
 	font-size: 16px;
+}
+
+.ui.dropdown>.text {
+	color: black;
 }
 
 [data-tooltip][data-inverted]:after {

@@ -166,7 +166,7 @@
 				margin-top: 5px;
 			}
 			.emotes-button {
-				right: 10px !important;
+				right: 14px !important;
 				top: 12px !important;
 			}
 			.chat-input-box {
@@ -264,6 +264,7 @@
 	overflow-x: hidden;
 	cursor: pointer;
 	resize: none;
+	justify-content: center;
 	div {
 		margin: 0 2px 0 2px;
 		&:active {
