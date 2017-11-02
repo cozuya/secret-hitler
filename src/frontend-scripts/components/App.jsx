@@ -163,7 +163,7 @@ export class App extends React.Component {
 			(!gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted)
 		) {
 			this.handleLeaveGame(true);
-		} else if (this.prevHash.substr(0, 8) === '#/table/') {
+		} else if (this.prevHash.substr(0, 8) === '#/table/' && hash.substr(-6) !== 'Remake') {
 			this.handleLeaveGame(false, this.prevHash.split('#/table/')[1]);
 		}
 
@@ -228,7 +228,7 @@ export class App extends React.Component {
 					maxPlayersCount: 5,
 					excludedPlayerCount: [6],
 					private: false,
-					rainbowgame: true,
+					rainbowgame: false,
 					experiencedMode: true,
 					disableChat: false,
 					disableGamechat: false,

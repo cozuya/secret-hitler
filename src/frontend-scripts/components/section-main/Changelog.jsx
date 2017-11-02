@@ -10,6 +10,15 @@ const Changelog = props => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.9.1 "dim2" released 10-28-2017</p>
+		</div>
+		<h3>New feature: remake game button</h3>
+		<p>
+			Your is game dead or afked on, or you just want to play again with the same team? Hit this button to show that you'd like to remake the game. When (number
+			of fascists in game + 1, or +2 in 8, 9 and 10p games) have also hit the button, the game is remade with the same rules and name and updated UID/link.
+		</p>
+
+		<div className="ui header">
 			<p>Version 0.9.0 "dim" released 10-28-2017</p>
 		</div>
 		<h3>New feature: player bios</h3>
