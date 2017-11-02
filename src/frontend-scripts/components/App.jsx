@@ -149,6 +149,8 @@ export class App extends React.Component {
 				}
 			};
 
+		console.log(hash, 'hash');
+
 		if (hash === this.prevHash) {
 			return;
 		}
