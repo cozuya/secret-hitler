@@ -7,7 +7,7 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 
 	game.private.policies = game.private.policies.concat(
 		_.shuffle(
-			_.range(1, (is9pRebalanceStart ? 11 : 12) - (game.trackState.fascistPolicyCount + (count.fascist || 0)))
+			_.range(1, (game.private.seatedPlayers.length === 9 && game.general.rebalance69p ? 11 : 12) - (game.trackState.fascistPolicyCount + (count.fascist || 0)))
 				.map(num => 'fascist')
 				.concat(_.range(1, 7 - (game.trackState.liberalPolicyCount + (count.liberal || 0))).map(num => 'liberal'))
 		)
