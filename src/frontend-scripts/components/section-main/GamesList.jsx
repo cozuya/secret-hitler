@@ -56,7 +56,7 @@ const GamesList = props => {
 					return aName === bName ? (a.uid < b.uid ? 1 : -1) : aName > bName ? 1 : -1;
 				})
 				.map((game, index) => {
-					return <DisplayLobbies key={index} game={game} socket={props.socket} userList={props.userList} userInfo={props.userInfo} />;
+					return <DisplayLobbies key={game.uid} game={game} socket={props.socket} userList={props.userList} userInfo={props.userInfo} />;
 				});
 		}
 	};
@@ -73,7 +73,7 @@ const GamesList = props => {
 							Create a new game
 						</a>
 					) : (
-						<button className="fluid ui button disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>
+						<button className="fluid ui button primary disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>
 					);
 				})()}
 			</div>
