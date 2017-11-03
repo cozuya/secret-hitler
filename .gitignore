@@ -26,7 +26,6 @@ npm-debug.log
 yarn-error.log
 .vscode/
 yarn.lock
-package-lock.json
 public/images/Thumbs.db
 public/images/custom-cardbacks
 public/Thumbs.db

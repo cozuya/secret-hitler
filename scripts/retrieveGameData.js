@@ -49,13 +49,7 @@ Game.find({})
 			gameDate = moment(new Date(game.date)).format('l'),
 			rebalanced = game.rebalance69p && (playerCount === 6 || playerCount === 9);
 
-		if (
-			gameDate === '5/13/2017' ||
-			gameDate === moment(new Date()).format('l') ||
-			(rebalanced &&
-				playerCount === 9 &&
-				(gameDate === '10/29/2017' || gameDate === '10/30/2017' || gameDate === '10/31/2017' || gameDate === '11/1/2017' || gameDate === '11/2/2017'))
-		) {
+		if (gameDate === '5/13/2017' || gameDate === moment(new Date()).format('l')) {
 			return;
 		}
 
