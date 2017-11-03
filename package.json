@@ -1,7 +1,8 @@
 {
 	"name": "secret-hitler",
-	"description": "Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists. Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late.",
-	"version": "0.9.0",
+	"description":
+		"Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists. Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late.",
+	"version": "0.9.1",
 	"license": "CC-BY-NC-SA-4.0",
 	"repository": {
 		"url": "https://github.com/cozuya/secret-hitler.git",

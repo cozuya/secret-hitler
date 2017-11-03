@@ -20,11 +20,6 @@ const PatchAlert = ({ isActive, onClick }) => (isActive ? <div className="patch-
 
 const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 	<section className="defaultmid">
-		<div className="poll">
-			<a target="_blank" href="/polls">
-				New proposed site redesign poll, please take a look and vote!
-			</a>
-		</div>
 		<PatchAlert isActive={version.lastSeen && version.current.number !== version.lastSeen} onClick={readPatchNotes} />
 		<img src="/images/lizard29.png" alt="Secret Hitler log" width="400" height="400" />
 		<p>
