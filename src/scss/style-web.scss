@@ -12,7 +12,7 @@ $lteal: #097892;
 $dteal: #034f61;
 
 body {
-	background-image: url('../images/footer_lodyas.png');
+	background-color: #1b1b1b;
 	overflow-x: auto;
 	max-width: 1127px;
 	margin: 0 auto;
@@ -132,7 +132,7 @@ span.emphasis {
 }
 
 .ui.grid.mainpage {
-	background: #030000;
+	background: #181818;
 	color: #ddd;
 	padding: 10px;
 
@@ -165,8 +165,8 @@ span.emphasis {
 
 .signin-modal,
 .signup-modal {
-	margin-left: -125px !important;
-	left: 38% !important;
+	//margin-left: -125px !important;
+	//left: 38% !important;
 }
 
 .ui.container.rules-container {

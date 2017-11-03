@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
-import RightSidebar from './section-right/RightSidebar.jsx';
 import Gamenotes from './Gamenotes.jsx';
 import {
 	updateUser,
@@ -18,14 +16,15 @@ import {
 import { MODERATORS, ADMINS, EDITORS } from '../constants';
 import socket from '../socket';
 import PropTypes from 'prop-types';
+import RightSidebar from './section-right/RightSidebar.jsx';
+import Menu from './menu/Menu.jsx';
+import DevHelpers from './DevHelpers.jsx';
 
 const select = state => state;
 
 export class App extends React.Component {
 	constructor() {
 		super();
-		this.handleRoute = this.handleRoute.bind(this);
-		this.handleRoute = this.handleRoute.bind(this);
 		this.handleSeatingUser = this.handleSeatingUser.bind(this);
 		this.handleLeaveGame = this.handleLeaveGame.bind(this);
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
@@ -98,20 +97,12 @@ export class App extends React.Component {
 			dispatch(updateVersion(v));
 		});
 
-		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
-			const { hash } = window.location;
+		socket.on('joinGameRedirect', uid => {
+			dispatch(updateMidsection('game'));
+			window.location = `#/table/${uid}`;
+		});
 
-			if ((this.props.midSection !== 'game' && Object.keys(game).length) || (Object.keys(game).length && hash !== `#/table/${game.general.uid}`)) {
-				dispatch(updateGameInfo(game));
-				dispatch(updateMidsection('game'));
-				window.location.hash = `#/table/${game.general.uid}`;
-			} else if (!Object.keys(game).length) {
-				if (isSettings) {
-					window.location.hash = '#/settings';
-				} else if (!toReplay) {
-					window.location.hash = '#/';
-				}
-			}
+		socket.on('gameUpdate', game => {
 			dispatch(updateGameInfo(game));
 		});
 
@@ -156,12 +147,17 @@ export class App extends React.Component {
 			hash.substr(0, 8) !== '#/table/' &&
 			Object.keys(gameInfo).length &&
 			userInfo.userName &&
+			userInfo.isSeated &&
 			gameInfo.publicPlayersState.length &&
-			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
-			(!gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted)
+			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)
 		) {
-			this.handleLeaveGame(true);
-		} else if (this.prevHash.substr(0, 8) === '#/table/' && hash.substr(-6) !== 'Remake') {
+			if (hash === '#/') {
+				this.handleLeaveGame(true);
+			} else if (!gameInfo.gameState.isCompleted) {
+				window.location = `#/table/${gameInfo.general.uid}`;
+				return;
+			}
+		} else if (this.prevHash.substr(0, 8) === '#/table/') {
 			this.handleLeaveGame(false, this.prevHash.split('#/table/')[1]);
 		}
 
@@ -202,11 +198,6 @@ export class App extends React.Component {
 		this.prevHash = hash;
 	}
 
-	handleRoute(route) {
-		const { dispatch } = this.props;
-
-		dispatch(updateMidsection(route));
-	}
 	// ***** begin dev helpers *****
 
 	makeQuickDefault() {
@@ -299,9 +290,14 @@ export class App extends React.Component {
 	render() {
 		const { gameSettings } = this.props.userInfo;
 
+		let classes = 'body-container';
+		if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
+			classes += ' game';
+		}
+
 		return (
 			<section
-				className="ui grid"
+				className="app-container"
 				style={{
 					fontFamily: gameSettings
 						? gameSettings.fontFamily ? `'${gameSettings.fontFamily}', Lato, sans-serif` : '"Comfortaa", Lato, sans-serif'
@@ -309,46 +305,43 @@ export class App extends React.Component {
 				}}
 			>
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
-				{this.props.midSection !== 'game' &&
-					this.props.midSection !== 'replay' && (
-						<LeftSidebar
-							userInfo={this.props.userInfo}
-							midSection={this.props.midSection}
-							gameList={this.props.gameList}
-							onCreateGameButtonClick={this.handleRoute}
-							onGameClick={this.handleGameClick}
-							socket={socket}
-						/>
-					)}
-				<Main
-					userInfo={this.props.userInfo}
-					midSection={this.props.midSection}
-					gameInfo={this.props.gameInfo}
-					onLeaveSettings={this.handleRoute}
-					onSeatingUser={this.handleSeatingUser}
-					onLeaveGame={this.handleLeaveGame}
-					quickDefault={this.makeQuickDefault}
-					onLeaveChangelog={this.handleRoute}
-					onSettingsButtonClick={this.handleRoute}
-					onChangelogButtonClick={this.handleRoute}
-					onLeaveModeration={this.handleRoute}
-					onLeaveReports={this.handleRoute}
-					onClickedTakeSeat={this.handleSeatingUser}
-					userList={this.props.userList}
-					socket={socket}
-					version={this.props.version}
-				/>
-				{((this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
-					(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)) && (
-					<RightSidebar
-						gameInfo={this.props.gameInfo}
+
+				<DevHelpers />
+
+				<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
+
+				<div className={classes}>
+					<Main
 						userInfo={this.props.userInfo}
+						midSection={this.props.midSection}
+						gameInfo={this.props.gameInfo}
+						onSeatingUser={this.handleSeatingUser}
+						quickDefault={this.makeQuickDefault}
+						onClickedTakeSeat={this.handleSeatingUser}
 						userList={this.props.userList}
-						generalChats={this.props.generalChats}
-						onModerationButtonClick={this.handleRoute}
 						socket={socket}
+						version={this.props.version}
+						gameList={this.props.gameList}
 					/>
-				)}
+
+					{(() => {
+						if (
+							(this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
+							(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)
+						) {
+							return (
+								<RightSidebar
+									gameInfo={this.props.gameInfo}
+									userInfo={this.props.userInfo}
+									userList={this.props.userList}
+									generalChats={this.props.generalChats}
+									socket={socket}
+									midSection={this.props.midSection}
+								/>
+							);
+						}
+					})()}
+				</div>
 			</section>
 		);
 	}

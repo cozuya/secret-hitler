@@ -66,7 +66,7 @@
 
 			&.blurred > * {
 				filter: blur(5px) saturate(60%);
-				opacity: .3;
+				opacity: 0.3;
 			}
 
 			.enacted {
@@ -147,6 +147,17 @@
 				.filled.step:after {
 					background-color: #b3b3ff;
 				}
+
+				.title {
+					color: black;
+					font-size: 20px;
+					font-family: inherit;
+				}
+				.description {
+					font-size: 15px;
+					font-family: inherit;
+				}
+
 			}
 
 			.overlay-container {
@@ -198,6 +209,7 @@
 				padding: 10px 20px;
 				white-space: nowrap;
 				overflow: auto;
+				font-family: inherit;
 			}
 		}
 
@@ -229,23 +241,23 @@
 
 				.election-tracker {
 					&.zero {
-						top: 173px;
-						left: 211px;
+						top: 182px;
+						left: 212px;
 					}
 
 					&.one {
-						top: 173px;
-						left: 273px;
+						top: 182px;
+						left: 276px;
 					}
 
 					&.two {
-						top: 173px;
-						left: 335px;
+						top: 182px;
+						left: 339px;
 					}
 
 					&.three {
-						top: 173px;
-						left: 397px;
+						top: 182px;
+						left: 403px;
 					}
 				}
 			}

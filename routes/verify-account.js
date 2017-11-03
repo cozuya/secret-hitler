@@ -14,29 +14,22 @@ let tokens = [];
 
 module.exports = {
 	setRoutes() {
-		Account.find(
-			{ 'verification.verificationTokenExpiration': { $gte: new Date() } },
-			(err, accounts) => {
-				if (err) {
-					console.log(err);
-				}
-
-				tokens = accounts.map(account => ({
-					username: account.username,
-					token: account.verification.verificationToken,
-					expires: account.verification.verificationTokenExpiration
-				}));
+		Account.find({ 'verification.verificationTokenExpiration': { $gte: new Date() } }, (err, accounts) => {
+			if (err) {
+				console.log(err);
 			}
-		);
+
+			tokens = accounts.map(account => ({
+				username: account.username,
+				token: account.verification.verificationToken,
+				expires: account.verification.verificationTokenExpiration
+			}));
+		});
 
 		app.get('/verify-account/:user/:token', (req, res, next) => {
 			const token = tokens.find(toke => toke.token === req.params.token);
 
-			if (
-				token &&
-				token.expires >= new Date() &&
-				req.user.username === req.params.user
-			) {
+			if (token && token.expires >= new Date() && req.user.username === req.params.user) {
 				Account.findOne({ username: token.username }, (err, account) => {
 					if (err) {
 						console.log(err);
@@ -46,10 +39,7 @@ module.exports = {
 					account.verification.verificationTokenExpiration = null;
 					account.save(() => {
 						res.redirect('/account');
-						tokens.splice(
-							tokens.findIndex(toke => toke.token === req.params.token),
-							1
-						);
+						tokens.splice(tokens.findIndex(toke => toke.token === req.params.token), 1);
 					});
 				});
 			} else {
@@ -66,7 +56,9 @@ module.exports = {
 			const tomorrow = new Date(),
 				token = `${Math.random()
 					.toString(36)
-					.substring(2)}${Math.random().toString(36).substring(2)}`,
+					.substring(2)}${Math.random()
+					.toString(36)
+					.substring(2)}`,
 				nmMailgun = nodemailer.createTransport(
 					mg({
 						auth: {

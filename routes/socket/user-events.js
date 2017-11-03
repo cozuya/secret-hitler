@@ -219,31 +219,40 @@ module.exports.handleUpdatedBio = (socket, data) => {
 module.exports.handleAddNewGame = (socket, data) => {
 	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
-		const username = socket.handshake.session.passport.user;
+		const username = socket.handshake.session.passport.user,
+			user = userList.find(obj => obj.userName === username),
+			currentTime = new Date();
 
-		Account.findOne({ username }).then(account => {
-			data.private = {
-				reports: {},
-				unSeatedGameChats: [],
-				lock: {}
-			};
+		if (currentTime - user.timeLastGameCreated < 8000) {
+			return null;
+		} else {
+			user.timeLastGameCreated = currentTime;
 
-			if (data.general.private) {
-				data.private.privatePassword = data.general.private;
-				data.general.private = true;
-			}
+			Account.findOne({ username }).then(account => {
+				data.private = {
+					reports: {},
+					unSeatedGameChats: [],
+					lock: {}
+				};
 
-			if (data.general.rainbowgame) {
-				data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
-			}
-			data.general.timeCreated = new Date().getTime();
-			updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
-			games.push(data);
-			sendGameList();
-			socket.join(data.general.uid);
-			socket.emit('updateSeatForUser');
-			socket.emit('gameUpdate', data);
-		});
+				if (data.general.private) {
+					data.private.privatePassword = data.general.private;
+					data.general.private = true;
+				}
+
+				if (data.general.rainbowgame) {
+					data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
+				}
+				data.general.timeCreated = currentTime;
+				updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
+				games.push(data);
+				sendGameList();
+				socket.join(data.general.uid);
+				socket.emit('updateSeatForUser');
+				socket.emit('gameUpdate', data);
+				socket.emit('joinGameRedirect', data.general.uid);
+			});
+		}
 	}
 };
 
@@ -283,7 +292,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'RRR',
+									text: 'FFF',
 									type: 'fascist'
 								},
 								{
@@ -305,11 +314,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'RR',
+									text: 'FF',
 									type: 'fascist'
 								},
 								{
-									text: 'B',
+									text: 'L',
 									type: 'liberal'
 								},
 								{
@@ -331,11 +340,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'R',
+									text: 'F',
 									type: 'fascist'
 								},
 								{
-									text: 'BB',
+									text: 'LL',
 									type: 'liberal'
 								},
 								{
@@ -357,7 +366,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'BBB',
+									text: 'LLL',
 									type: 'liberal'
 								},
 								{
@@ -392,7 +401,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'RR',
+									text: 'FF',
 									type: 'fascist'
 								},
 								{
@@ -414,11 +423,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'R',
+									text: 'F',
 									type: 'fascist'
 								},
 								{
-									text: 'B',
+									text: 'L',
 									type: 'liberal'
 								},
 								{
@@ -440,7 +449,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims '
 								},
 								{
-									text: 'BB',
+									text: 'LL',
 									type: 'liberal'
 								},
 								{
@@ -474,7 +483,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims to have peeked at '
 								},
 								{
-									text: 'RRR',
+									text: 'FFF',
 									type: 'fascist'
 								},
 								{
@@ -496,11 +505,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims to have peeked at '
 								},
 								{
-									text: 'RR',
+									text: 'FF',
 									type: 'fascist'
 								},
 								{
-									text: 'B',
+									text: 'L',
 									type: 'liberal'
 								},
 								{
@@ -522,11 +531,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims to have peeked at '
 								},
 								{
-									text: 'R',
+									text: 'F',
 									type: 'fascist'
 								},
 								{
-									text: 'BB',
+									text: 'LL',
 									type: 'liberal'
 								},
 								{
@@ -548,7 +557,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims to have peeked at '
 								},
 								{
-									text: 'BBB',
+									text: 'FFF',
 									type: 'liberal'
 								},
 								{
@@ -607,15 +616,17 @@ module.exports.handleAddNewClaim = data => {
 			}
 		})();
 
-	data.chat = chat;
-	data.isClaim = true;
-	data.timestamp = new Date();
+	if (game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== '') {
+		if (game.private.seatedPlayers[playerIndex]) {
+			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+		}
+		data.chat = chat;
+		data.isClaim = true;
+		data.timestamp = new Date();
 
-	game.chats.push(data);
-	if (game.private.seatedPlayers[playerIndex]) {
-		game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+		game.chats.push(data);
+		sendInProgressGameUpdate(game);
 	}
-	sendInProgressGameUpdate(game);
 };
 
 module.exports.handleUpdatedRemakeGame = data => {
@@ -936,13 +947,14 @@ module.exports.handleModerationAction = (socket, data) => {
 				broadcastReq.end(discordBroadcastBody);
 				games.forEach(game => {
 					game.chats.push({
-						chat: `(${data.modName}) ${data.comment}`,
+						userName: `[BROADCAST] ${data.modName}`,
+						chat: data.comment,
 						isBroadcast: true,
 						timestamp: new Date()
 					});
 				});
 				generalChats.push({
-					userName: `BROADCAST (${data.modName})`,
+					userName: `[BROADCAST] ${data.modName}`,
 					time: new Date(),
 					chat: data.comment,
 					isBroadcast: true
