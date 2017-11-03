@@ -180,7 +180,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
 		const username = socket.handshake.session.passport.user,
 			user = userList.find(obj => obj.userName === username),
-			currentTime = new Date().getTime();
+			currentTime = new Date();
 
 		if (currentTime - user.timeLastGameCreated < 8000) {
 			return null;
