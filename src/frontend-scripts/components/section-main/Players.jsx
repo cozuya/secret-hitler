@@ -109,7 +109,9 @@ export default class Players extends React.Component {
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
 							}
-						: {}
+						: {
+								backgroundImage: `url(../images/default_cardback.png)`
+							}
 				}
 				className={(() => {
 					let classes = 'player-container',
@@ -222,8 +224,9 @@ export default class Players extends React.Component {
 	}
 
 	renderTakeSeat() {
-		const { userInfo, gameInfo, userList } = this.props;
-
+		const { userInfo, gameInfo, userList } = this.props,
+			user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
+			
 		if (
 			!userInfo.isSeated &&
 			userInfo.userName &&
@@ -231,8 +234,7 @@ export default class Players extends React.Component {
 			gameInfo.publicPlayersState.length < 10 &&
 			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
 			(!gameInfo.general.rainbowgame ||
-				(Object.keys(userList).length &&
-					userList.list.find(user => user.userName === userInfo.userName).wins + userList.list.find(user => user.userName === userInfo.userName).losses > 49))
+				(user && user.wins + user.losses > 49))
 		) {
 			return (
 				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>

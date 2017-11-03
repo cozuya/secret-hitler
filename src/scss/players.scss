@@ -46,6 +46,7 @@
 		border-radius: 4px;
 		background-image: url('../images/tweed.png');
 		background-repeat: no-repeat;
+		background-size: 70px;
 		position: relative;
 
 		.player-number {
@@ -56,6 +57,7 @@
 			font-family: $headerfont;
 			color: #ddd;
 			text-align: center;
+			font-size: 13px;
 			&:hover {
 				color: yellow;
 			}
@@ -169,7 +171,8 @@
 			}
 		}
 		.card-container.showing {
-			top: 0;
+			// prevents 1px gap showing below card
+			top: 1px;
 		}
 		.card-container.flipped {
 			transform: rotateY(180deg);
@@ -273,7 +276,7 @@
 		position: absolute;
 		animation: fadeIn 0.6s infinite alternate;
 		cursor: pointer;
-		box-shadow: 0 0 4px 4px #fbbd08 inset;
+		box-shadow: 0 0 4px 8px #fbbd08 inset;
 	}
 }
 

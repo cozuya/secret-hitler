@@ -14,20 +14,17 @@ let tokens = [];
 
 module.exports = {
 	setRoutes() {
-		Account.find(
-			{ 'resetPassword.resetTokenExpiration': { $gte: new Date() } },
-			(err, accounts) => {
-				if (err) {
-					console.log(err);
-				}
-
-				tokens = accounts.map(account => ({
-					username: account.username,
-					token: account.verification.verificationToken,
-					expires: account.verification.verificationTokenExpiration
-				}));
+		Account.find({ 'resetPassword.resetTokenExpiration': { $gte: new Date() } }, (err, accounts) => {
+			if (err) {
+				console.log(err);
 			}
-		);
+
+			tokens = accounts.map(account => ({
+				username: account.username,
+				token: account.verification.verificationToken,
+				expires: account.verification.verificationTokenExpiration
+			}));
+		});
 
 		app.get('/reset-password/:user/:token', (req, res, next) => {
 			const token = tokens.find(toke => toke.token === req.params.token);
@@ -43,10 +40,7 @@ module.exports = {
 					account.resetPassword.resetTokenExpiration = null;
 					account.save(() => {
 						res.render('/reset-password', { username: token.username });
-						tokens.splice(
-							tokens.findIndex(toke => toke.token === req.params.token),
-							1
-						);
+						tokens.splice(tokens.findIndex(toke => toke.token === req.params.token), 1);
 					});
 				});
 			} else {
@@ -65,7 +59,9 @@ module.exports = {
 					{ username } = account,
 					token = `${Math.random()
 						.toString(36)
-						.substring(2)}${Math.random().toString(36).substring(2)}`,
+						.substring(2)}${Math.random()
+						.toString(36)
+						.substring(2)}`,
 					nmMailgun = nodemailer.createTransport(
 						mg({
 							auth: {

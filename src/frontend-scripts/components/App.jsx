@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
-import RightSidebar from './section-right/RightSidebar.jsx';
 import Gamenotes from './Gamenotes.jsx';
 import {
 	updateUser,
@@ -18,6 +16,9 @@ import {
 import { MODERATORS, ADMINS, EDITORS } from '../constants';
 import socket from '../socket';
 import PropTypes from 'prop-types';
+import RightSidebar from './section-right/RightSidebar.jsx';
+import Menu from './menu/Menu.jsx';
+import DevHelpers from './DevHelpers.jsx';
 
 const select = state => state;
 
@@ -299,9 +300,14 @@ export class App extends React.Component {
 	render() {
 		const { gameSettings } = this.props.userInfo;
 
+		let classes = 'body-container';
+		if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
+			classes += ' game';
+		}
+
 		return (
 			<section
-				className="ui grid"
+				className="app-container"
 				style={{
 					fontFamily: gameSettings
 						? gameSettings.fontFamily ? `'${gameSettings.fontFamily}', Lato, sans-serif` : '"Comfortaa", Lato, sans-serif'
@@ -309,46 +315,59 @@ export class App extends React.Component {
 				}}
 			>
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
-				{this.props.midSection !== 'game' &&
-					this.props.midSection !== 'replay' && (
-						<LeftSidebar
-							userInfo={this.props.userInfo}
-							midSection={this.props.midSection}
-							gameList={this.props.gameList}
-							onCreateGameButtonClick={this.handleRoute}
-							onGameClick={this.handleGameClick}
-							socket={socket}
-						/>
-					)}
-				<Main
+
+				<DevHelpers />
+
+				<Menu
 					userInfo={this.props.userInfo}
-					midSection={this.props.midSection}
-					gameInfo={this.props.gameInfo}
-					onLeaveSettings={this.handleRoute}
-					onSeatingUser={this.handleSeatingUser}
 					onLeaveGame={this.handleLeaveGame}
-					quickDefault={this.makeQuickDefault}
-					onLeaveChangelog={this.handleRoute}
 					onSettingsButtonClick={this.handleRoute}
-					onChangelogButtonClick={this.handleRoute}
-					onLeaveModeration={this.handleRoute}
-					onLeaveReports={this.handleRoute}
-					onClickedTakeSeat={this.handleSeatingUser}
-					userList={this.props.userList}
-					socket={socket}
-					version={this.props.version}
+					gameInfo={this.props.gameInfo}
+					midSection={this.props.midSection}
 				/>
-				{((this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
-					(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)) && (
-					<RightSidebar
-						gameInfo={this.props.gameInfo}
+
+				<div className={classes}>
+					<Main
 						userInfo={this.props.userInfo}
+						midSection={this.props.midSection}
+						gameInfo={this.props.gameInfo}
+						onLeaveSettings={this.handleRoute}
+						onSeatingUser={this.handleSeatingUser}
+						onLeaveGame={this.handleLeaveGame}
+						quickDefault={this.makeQuickDefault}
+						onLeaveChangelog={this.handleRoute}
+						onSettingsButtonClick={this.handleRoute}
+						onChangelogButtonClick={this.handleRoute}
+						onLeaveModeration={this.handleRoute}
+						onLeaveReports={this.handleRoute}
+						onClickedTakeSeat={this.handleSeatingUser}
 						userList={this.props.userList}
-						generalChats={this.props.generalChats}
-						onModerationButtonClick={this.handleRoute}
 						socket={socket}
+						version={this.props.version}
+						gameList={this.props.gameList}
+						handleRoute={this.handleRoute}
+						handleGameClick={this.handleGameClick}
 					/>
-				)}
+
+					{(() => {
+						if (
+							(this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
+							(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)
+						) {
+							return (
+								<RightSidebar
+									gameInfo={this.props.gameInfo}
+									userInfo={this.props.userInfo}
+									userList={this.props.userList}
+									generalChats={this.props.generalChats}
+									onModerationButtonClick={this.handleRoute}
+									socket={socket}
+									midSection={this.props.midSection}
+								/>
+							);
+						}
+					})()}
+				</div>
 			</section>
 		);
 	}

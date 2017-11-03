@@ -15,7 +15,9 @@ mongoose.connect('mongodb://localhost/secret-hitler-app');
 (function recalculateAllProfiles() {
 	debug('Recalculating all player profiles');
 
-	const version = Math.random().toString(36).substring(6);
+	const version = Math.random()
+		.toString(36)
+		.substring(6);
 
 	GameSummary.find(null, null, { sort: { date: 'asc' } })
 		.cursor()
