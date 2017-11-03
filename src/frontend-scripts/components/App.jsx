@@ -99,6 +99,7 @@ export class App extends React.Component {
 
 		socket.on('joinGameRedirect', uid => {
 			dispatch(updateMidsection('game'));
+			window.location = `#/table/${uid}`;
 		});
 
 		socket.on('gameUpdate', game => {
