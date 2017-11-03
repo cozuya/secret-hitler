@@ -719,12 +719,12 @@ module.exports.handleUpdatedRemakeGame = data => {
 		if (
 			!game.general.isRemaking &&
 			publicPlayersState.length > 3 &&
-			((game.general.playerCount === 5 && remakePlayerCount >= 3) ||
-				(game.general.playerCount === 6 && remakePlayerCount >= 3) ||
-				(game.general.playerCount === 7 && remakePlayerCount >= 4) ||
-				(game.general.playerCount === 8 && remakePlayerCount >= 4) ||
-				(game.general.playerCount === 9 && remakePlayerCount >= 5) ||
-				(game.general.playerCount === 10 && remakePlayerCount >= 5))
+			((game.general.playerCount === 5 && remakePlayerCount >= 4) ||
+				(game.general.playerCount === 6 && remakePlayerCount >= 4) ||
+				(game.general.playerCount === 7 && remakePlayerCount >= 5) ||
+				(game.general.playerCount === 8 && remakePlayerCount >= 6) ||
+				(game.general.playerCount === 9 && remakePlayerCount >= 6) ||
+				(game.general.playerCount === 10 && remakePlayerCount >= 7))
 		) {
 			game.general.isRemaking = true;
 			game.general.remakeCount = 5;
@@ -746,18 +746,18 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 		if (
 			game.general.isRemaking &&
-			((game.general.playerCount === 5 && remakePlayerCount === 2) ||
-				(game.general.playerCount === 6 && remakePlayerCount === 2) ||
-				(game.general.playerCount === 7 && remakePlayerCount === 3) ||
-				(game.general.playerCount === 8 && remakePlayerCount === 3) ||
-				(game.general.playerCount === 9 && remakePlayerCount === 4) ||
-				(game.general.playerCount === 10 && remakePlayerCount === 4))
+			((game.general.playerCount === 5 && remakePlayerCount === 3) ||
+				(game.general.playerCount === 6 && remakePlayerCount === 3) ||
+				(game.general.playerCount === 7 && remakePlayerCount === 4) ||
+				(game.general.playerCount === 8 && remakePlayerCount === 5) ||
+				(game.general.playerCount === 9 && remakePlayerCount === 5) ||
+				(game.general.playerCount === 10 && remakePlayerCount === 6))
 		) {
 			game.general.isRemaking = false;
 			game.general.status = 'Game remaking has been cancelled.';
 			clearInterval(game.private.remakeTimer);
 		}
-		chat.chat.push({ text: ' has recinded their vote to remake this game.' });
+		chat.chat.push({ text: ' has rescinded their vote to remake this game.' });
 	}
 	game.chats.push(chat);
 
