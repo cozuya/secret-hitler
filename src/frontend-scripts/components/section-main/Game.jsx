@@ -64,6 +64,7 @@ export default class Game extends React.Component {
 								userList={this.props.userList}
 								gameInfo={this.props.gameInfo}
 								userInfo={this.props.userInfo}
+								onLeaveGame={this.props.onLeaveGame}
 								onNewGameChat={this.props.onNewGameChat}
 								socket={this.props.socket}
 							/>
@@ -115,6 +116,7 @@ Game.propTypes = {
 	onUpdateReportGame: PropTypes.func,
 	onNewGameChat: PropTypes.func,
 	onSeatingUser: PropTypes.func,
+	onLeaveGame: PropTypes.func,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,

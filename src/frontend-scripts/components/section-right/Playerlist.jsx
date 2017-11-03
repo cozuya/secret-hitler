@@ -39,7 +39,7 @@ class Playerlist extends React.Component {
 	}
 
 	routeToGame(gameId) {
-		window.location = `#/table/${gameId}`;
+		this.props.socket.emit('getGameInfo', gameId);
 	}
 
 	renderFilterIcons() {
@@ -326,6 +326,7 @@ class Playerlist extends React.Component {
 Playerlist.propTypes = {
 	userInfo: PropTypes.object,
 	userList: PropTypes.object,
+	onModerationButtonClick: PropTypes.func,
 	socket: PropTypes.object
 };
 

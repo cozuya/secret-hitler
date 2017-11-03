@@ -1,6 +1,7 @@
 import React from 'react'; // eslint-disable-line
+import PropTypes from 'prop-types';
 
-const Changelog = () => (
+const Changelog = props => (
 	<section className="changelog">
 		<a href="#/">
 			<i className="remove icon" />
@@ -391,5 +392,9 @@ const Changelog = () => (
 		</p>
 	</section>
 );
+
+Changelog.propTypes = {
+	onLeaveChangelog: PropTypes.func
+};
 
 export default Changelog;

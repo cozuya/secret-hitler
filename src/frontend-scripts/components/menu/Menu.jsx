@@ -119,6 +119,7 @@ class Menu extends React.Component {
 Menu.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
+	onLeaveGame: PropTypes.func,
 	midSection: PropTypes.string
 };
 

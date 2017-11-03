@@ -250,7 +250,7 @@ const DisplayLobbies = props => {
 		<div
 			data-uid={game.uid}
 			onClick={() => {
-				location.href = (`#/table/${game.uid}`);
+				props.socket.emit('getGameInfo', game.uid);
 			}}
 			className={gameClasses()}
 		>

@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 const GamesList = props => {
 	const renderGameList = () => {
 		const { gameList } = props;
-
 		if (gameList.length) {
 			return gameList
 				.sort((a, b) => {
@@ -87,6 +86,7 @@ GamesList.propTypes = {
 	userInfo: PropTypes.object,
 	midSection: PropTypes.string,
 	gameList: PropTypes.array,
+	onCreateGameButtonClick: PropTypes.func,
 	socket: PropTypes.object,
 	userList: PropTypes.object
 };

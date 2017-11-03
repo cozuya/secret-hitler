@@ -11,6 +11,7 @@ $.fn.checkbox = Checkbox;
 export default class Moderation extends React.Component {
 	constructor() {
 		super();
+		this.leaveModeration = this.leaveModeration.bind(this);
 		this.togglePlayerList = this.togglePlayerList.bind(this);
 		this.broadcastClick = this.broadcastClick.bind(this);
 		this.handleBroadcastSubmit = this.handleBroadcastSubmit.bind(this);
@@ -516,6 +517,10 @@ export default class Moderation extends React.Component {
 		return <textarea placeholder="Comment" value={this.state.actionTextValue} onChange={handleTextChange} spellCheck="false" />;
 	}
 
+	leaveModeration() {
+		this.props.onLeaveModeration('default');
+	}
+
 	broadcastClick(e) {
 		e.preventDefault();
 
@@ -606,5 +611,6 @@ export default class Moderation extends React.Component {
 
 Moderation.propTypes = {
 	userInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	onLeaveModeration: PropTypes.func
 };

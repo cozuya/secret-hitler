@@ -16,7 +16,7 @@ const RenderMidSection = props => {
 		case 'createGame':
 			return <Creategame userList={props.userList} userInfo={props.userInfo} socket={props.socket} />;
 		case 'changelog':
-			return <Changelog />;
+			return <Changelog onLeaveChangelog={props.onLeaveChangelog} version={props.version} />;
 		case 'game':
 			if (Object.keys(props.gameInfo).length) {
 				return (
@@ -28,6 +28,7 @@ const RenderMidSection = props => {
 						onClickedTakeSeat={props.onClickedTakeSeat}
 						onNewGameChat={props.onNewGameChat}
 						onSeatingUser={props.onSeatingUser}
+						onLeaveGame={props.onLeaveGame}
 						userInfo={props.userInfo}
 						gameInfo={props.gameInfo}
 						userList={props.userList}
@@ -37,17 +38,27 @@ const RenderMidSection = props => {
 			}
 			break;
 		case 'moderation':
-			return <Moderation userInfo={props.userInfo} socket={props.socket} userList={props.userList} />;
+			return <Moderation userInfo={props.userInfo} socket={props.socket} userList={props.userList} onLeaveModeration={props.onLeaveModeration} />;
 		case 'settings':
-			return <Settings userInfo={props.userInfo} socket={props.socket} />;
+			return <Settings onLeaveSettings={props.onLeaveSettings} userInfo={props.userInfo} socket={props.socket} />;
 		case 'profile':
 			return <Profile userInfo={props.userInfo} socket={props.socket} />;
 		case 'replay':
 			return <Replay />;
 		case 'reports':
-			return <Reports socket={props.socket} userInfo={props.userInfo} />;
+			return <Reports socket={props.socket} userInfo={props.userInfo} onLeaveReports={props.onLeaveReports} />;
 		default:
-			return <GamesList userList={props.userList} userInfo={props.userInfo} midSection={props.midSection} gameList={props.gameList} socket={props.socket} />;
+			return (
+				<GamesList
+					userList={props.userList}
+					userInfo={props.userInfo}
+					midSection={props.midSection}
+					gameList={props.gameList}
+					onCreateGameButtonClick={props.handleRoute}
+					onGameClick={props.handleGameClick}
+					socket={props.socket}
+				/>
+			);
 	}
 };
 
