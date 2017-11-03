@@ -86,7 +86,6 @@ GamesList.propTypes = {
 	userInfo: PropTypes.object,
 	midSection: PropTypes.string,
 	gameList: PropTypes.array,
-	onCreateGameButtonClick: PropTypes.func,
 	socket: PropTypes.object,
 	userList: PropTypes.object
 };
