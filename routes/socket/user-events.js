@@ -474,7 +474,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims to have peeked at '
 								},
 								{
-									text: 'RRR',
+									text: 'FFF',
 									type: 'fascist'
 								},
 								{
@@ -496,11 +496,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims to have peeked at '
 								},
 								{
-									text: 'RR',
+									text: 'FF',
 									type: 'fascist'
 								},
 								{
-									text: 'B',
+									text: 'L',
 									type: 'liberal'
 								},
 								{
@@ -522,11 +522,11 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims to have peeked at '
 								},
 								{
-									text: 'R',
+									text: 'F',
 									type: 'fascist'
 								},
 								{
-									text: 'BB',
+									text: 'LL',
 									type: 'liberal'
 								},
 								{
@@ -548,7 +548,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims to have peeked at '
 								},
 								{
-									text: 'BBB',
+									text: 'FFF',
 									type: 'liberal'
 								},
 								{
