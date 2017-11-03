@@ -9,7 +9,29 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.9.0 "dim" released 10-28-2017</p>
+			<p>Version 0.9.1 "dim2" released 11-2-2017</p>
+		</div>
+		<h3>New feature: remake game button</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img style={{ width: '30%', border: '1px solid grey', margin: '5px 0' }} src="/images/remake.png" />
+		</div>
+		<p>
+			Your game is dead or afked on, or you just want to play again with the same team? Hit this button in the lower left corner of the fascist track to show
+			that you'd like to remake the game. When (number of fascists in game +1, or +2 in 8, 9 and 10p games) have also hit the button, the game is remade with
+			the same rules and name and updated UID/link, and will start when its requirements are met as usual.
+		</p>
+		<h3>New feature: rerebalanced 9p games</h3>
+		<p>
+			In what should speak volumes about what I know about game design, having an already-enacted liberal policy in 9p games.. actually makes fascists win more.
+			So now that's gone, but there is one less fascist policy in the deck (so starting at 16). We'll see what happens there.
+		</p>
+		<h3>Other issues:</h3>
+		<ul>
+			<li>Thanks to a contribution, "blind mode" aka no gamechat mode now correctly will let other fascists see who is on their team.</li>
+			<li>Stats/charts should work with the new rerebalanced 9p starting tomorrow when data collection fires at 4am.</li>
+		</ul>
+		<div className="ui header">
+			<p>Version 0.9.0 "dim" released 10-29-2017</p>
 		</div>
 		<h3>New feature: player bios</h3>
 		<div style={{ textAlign: 'center' }}>
