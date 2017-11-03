@@ -575,15 +575,17 @@ module.exports.handleAddNewClaim = data => {
 			}
 		})();
 
-	data.chat = chat;
-	data.isClaim = true;
-	data.timestamp = new Date();
+	if (game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== '') {
+		if (game.private.seatedPlayers[playerIndex]) {
+			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+		}
+		data.chat = chat;
+		data.isClaim = true;
+		data.timestamp = new Date();
 
-	game.chats.push(data);
-	if (game.private.seatedPlayers[playerIndex]) {
-		game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+		game.chats.push(data);
+		sendInProgressGameUpdate(game);
 	}
-	sendInProgressGameUpdate(game);
 };
 
 const handleUserLeaveGame = (socket, data) => {
