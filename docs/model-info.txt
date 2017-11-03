@@ -23,7 +23,6 @@ general
 	maxPlayersCount number 5-10
 	excludedPlayerCount array of numbers
 	status string
-	prevStatus string
 	whitelistedPlayers array of strings (userNames)
 	uid string
 	rainbowgame bool

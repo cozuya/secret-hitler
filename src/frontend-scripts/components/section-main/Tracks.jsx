@@ -89,7 +89,13 @@ class Tracks extends React.Component {
 					</div>
 					{userInfo.userName &&
 						userInfo.isSeated &&
-						gameInfo.gameState.isTracksFlipped && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
+						gameInfo.gameState.isTracksFlipped && (
+							<i
+								className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`}
+								onClick={updateRemake}
+								title="Enable this button to show that you would like to remake this game"
+							/>
+						)}
 				</div>
 				<section
 					className={(() => {
