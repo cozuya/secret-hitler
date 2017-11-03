@@ -21,7 +21,6 @@ class Gamechat extends React.Component {
 		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChatLockClick = this.handleChatLockClick.bind(this);
-		// this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
 		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
@@ -47,7 +46,7 @@ class Gamechat extends React.Component {
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {
 			// modal methods dont seem to work.
-			this.props.onLeaveGame(true);
+			window.location.hash = '#/';
 			$(this.leaveGameModal).modal('hide');
 		});
 	}
@@ -126,14 +125,9 @@ class Gamechat extends React.Component {
 		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
 		} else {
-			this.props.onLeaveGame();
 			window.location.hash = '#/';
 		}
 	}
-
-	// handleChatClearClick() {
-	// 	this.setState({ inputValue: '' });
-	// }
 
 	handleInputChange(e) {
 		this.setState({ inputValue: `${e.target.value}` });
@@ -374,7 +368,6 @@ class Gamechat extends React.Component {
 
 				if (summary) {
 					const onClick = () => {
-						this.props.onLeaveGame(this.props.userInfo.isSeated);
 						window.location.hash = `#/replay/${gameInfo.general.uid}`;
 					};
 

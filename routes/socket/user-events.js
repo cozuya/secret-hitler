@@ -219,31 +219,40 @@ module.exports.handleUpdatedBio = (socket, data) => {
 module.exports.handleAddNewGame = (socket, data) => {
 	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
-		const username = socket.handshake.session.passport.user;
+		const username = socket.handshake.session.passport.user,
+			user = userList.find(obj => obj.userName === username),
+			currentTime = new Date();
 
-		Account.findOne({ username }).then(account => {
-			data.private = {
-				reports: {},
-				unSeatedGameChats: [],
-				lock: {}
-			};
+		if (currentTime - user.timeLastGameCreated < 8000) {
+			return null;
+		} else {
+			user.timeLastGameCreated = currentTime;
 
-			if (data.general.private) {
-				data.private.privatePassword = data.general.private;
-				data.general.private = true;
-			}
+			Account.findOne({ username }).then(account => {
+				data.private = {
+					reports: {},
+					unSeatedGameChats: [],
+					lock: {}
+				};
 
-			if (data.general.rainbowgame) {
-				data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
-			}
-			data.general.timeCreated = new Date().getTime();
-			updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
-			games.push(data);
-			sendGameList();
-			socket.join(data.general.uid);
-			socket.emit('updateSeatForUser');
-			socket.emit('gameUpdate', data);
-		});
+				if (data.general.private) {
+					data.private.privatePassword = data.general.private;
+					data.general.private = true;
+				}
+
+				if (data.general.rainbowgame) {
+					data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
+				}
+				data.general.timeCreated = currentTime;
+				updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
+				games.push(data);
+				sendGameList();
+				socket.join(data.general.uid);
+				socket.emit('updateSeatForUser');
+				socket.emit('gameUpdate', data);
+				socket.emit('joinGameRedirect', data.general.uid);
+			});
+		}
 	}
 };
 
@@ -607,15 +616,55 @@ module.exports.handleAddNewClaim = data => {
 			}
 		})();
 
-	data.chat = chat;
-	data.isClaim = true;
-	data.timestamp = new Date();
+	if (game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== '') {
+		if (game.private.seatedPlayers[playerIndex]) {
+			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+		}
+		data.chat = chat;
+		data.isClaim = true;
+		data.timestamp = new Date();
 
-	game.chats.push(data);
-	if (game.private.seatedPlayers[playerIndex]) {
-		game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+		game.chats.push(data);
+		sendInProgressGameUpdate(game);
 	}
-	sendInProgressGameUpdate(game);
+};
+
+const handleUserLeaveGame = (socket, data) => {
+	const game = games.find(el => el.general.uid === data.uid);
+
+	if (io.sockets.adapter.rooms[data.uid]) {
+		socket.leave(data.uid);
+	}
+
+	if (game) {
+		if (data.isSeated) {
+			if (game.gameState.isTracksFlipped) {
+				const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+				if (playerIndex > -1) {
+					// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
+					game.publicPlayersState[playerIndex].leftGame = true;
+				}
+				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+					games.splice(games.indexOf(game), 1);
+				}
+			} else if (!game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
+				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
+				checkStartConditions(game);
+				io.sockets.in(data.uid).emit('gameUpdate', game);
+			}
+		}
+		if (!game.publicPlayersState.length) {
+			io.sockets.in(data.uid).emit('gameUpdate', {});
+			games.splice(games.indexOf(game), 1);
+		} else if (game.gameState.isTracksFlipped) {
+			sendInProgressGameUpdate(game);
+		}
+	}
+	if (!data.toReplay) {
+		updateUserStatus(data.userName, 'none', data.uid);
+	}
+	socket.emit('gameUpdate', game);
+	sendGameList();
 };
 
 module.exports.handleUpdatedRemakeGame = data => {
@@ -690,7 +739,6 @@ module.exports.handleUpdatedRemakeGame = data => {
 			};
 
 			games.push(newGame);
-			sendGameList();
 			remakePlayerSocketIDs.forEach((id, index) => {
 				handleUserLeaveGame(io.sockets.sockets[id], {
 					uid: game.general.uid,
@@ -1169,6 +1217,8 @@ module.exports.handlePlayerReportDismiss = () => {
 	});
 };
 
+module.exports.handleUserLeaveGame = handleUserLeaveGame;
+
 module.exports.checkUserStatus = socket => {
 	const { passport } = socket.handshake.session;
 
@@ -1202,7 +1252,5 @@ module.exports.checkUserStatus = socket => {
 	sendGeneralChats(socket);
 	sendGameList(socket);
 };
-
-module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 module.exports.handleSocketDisconnect = handleSocketDisconnect;

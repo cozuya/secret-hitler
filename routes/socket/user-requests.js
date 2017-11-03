@@ -201,6 +201,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 		_game.chats = _game.chats.concat(_game.private.unSeatedGameChats);
 		socket.join(uid);
 		socket.emit('gameUpdate', secureGame(_game));
+		socket.emit('joinGameRedirect', game.general.uid);
 	} else {
 		Game.findOne({ uid }).then((game, err) => {
 			if (err) {
