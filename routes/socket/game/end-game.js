@@ -29,7 +29,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 		let enhanced;
 
 		try {
-			if (summary && summary.toObject() && game.general.uid !== 'devgame') {
+			if (summary && summary.toObject()) {
 				enhanced = buildEnhancedGameSummary(summary.toObject());
 				updateProfiles(enhanced, { cache: true });
 				summary.save();

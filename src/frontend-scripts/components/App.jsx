@@ -99,20 +99,12 @@ export class App extends React.Component {
 			dispatch(updateVersion(v));
 		});
 
-		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
-			const { hash } = window.location;
+		socket.on('joinGameRedirect', uid => {
+			dispatch(updateMidsection('game'));
+			window.location = `#/table/${uid}`;
+		});
 
-			if ((this.props.midSection !== 'game' && Object.keys(game).length) || (Object.keys(game).length && hash !== `#/table/${game.general.uid}`)) {
-				dispatch(updateGameInfo(game));
-				dispatch(updateMidsection('game'));
-				window.location.hash = `#/table/${game.general.uid}`;
-			} else if (!Object.keys(game).length) {
-				if (isSettings) {
-					window.location.hash = '#/settings';
-				} else if (!toReplay) {
-					window.location.hash = '#/';
-				}
-			}
+		socket.on('gameUpdate', game => {
 			dispatch(updateGameInfo(game));
 		});
 
@@ -227,7 +219,7 @@ export class App extends React.Component {
 					maxPlayersCount: 5,
 					excludedPlayerCount: [6],
 					private: false,
-					rainbowgame: false,
+					rainbowgame: true,
 					experiencedMode: true,
 					disableChat: false,
 					disableGamechat: false,
