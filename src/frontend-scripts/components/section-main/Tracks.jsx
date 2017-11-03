@@ -13,7 +13,7 @@ class Tracks extends React.Component {
 		};
 	}
 
-  componentDidMount() {
+	componentDidMount() {
 		this._ismounted = true;
 	}
 
@@ -96,7 +96,8 @@ class Tracks extends React.Component {
 				</span>
 			</div>
 		);
-  
+	}
+
 	render() {
 		const { gameInfo, userInfo, socket } = this.props,
 			renderElectionTracker = () => {
