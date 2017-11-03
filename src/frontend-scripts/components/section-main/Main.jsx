@@ -16,7 +16,7 @@ const RenderMidSection = props => {
 		case 'createGame':
 			return <Creategame userList={props.userList} userInfo={props.userInfo} socket={props.socket} />;
 		case 'changelog':
-			return <Changelog onLeaveChangelog={props.onLeaveChangelog} version={props.version} />;
+			return <Changelog />;
 		case 'game':
 			if (Object.keys(props.gameInfo).length) {
 				return (
@@ -28,7 +28,6 @@ const RenderMidSection = props => {
 						onClickedTakeSeat={props.onClickedTakeSeat}
 						onNewGameChat={props.onNewGameChat}
 						onSeatingUser={props.onSeatingUser}
-						onLeaveGame={props.onLeaveGame}
 						userInfo={props.userInfo}
 						gameInfo={props.gameInfo}
 						userList={props.userList}
@@ -38,27 +37,17 @@ const RenderMidSection = props => {
 			}
 			break;
 		case 'moderation':
-			return <Moderation userInfo={props.userInfo} socket={props.socket} userList={props.userList} onLeaveModeration={props.onLeaveModeration} />;
+			return <Moderation userInfo={props.userInfo} socket={props.socket} userList={props.userList} />;
 		case 'settings':
-			return <Settings onLeaveSettings={props.onLeaveSettings} userInfo={props.userInfo} socket={props.socket} />;
+			return <Settings userInfo={props.userInfo} socket={props.socket} />;
 		case 'profile':
 			return <Profile userInfo={props.userInfo} socket={props.socket} />;
 		case 'replay':
 			return <Replay />;
 		case 'reports':
-			return <Reports socket={props.socket} userInfo={props.userInfo} onLeaveReports={props.onLeaveReports} />;
+			return <Reports socket={props.socket} userInfo={props.userInfo} />;
 		default:
-			return (
-				<GamesList
-					userList={props.userList}
-					userInfo={props.userInfo}
-					midSection={props.midSection}
-					gameList={props.gameList}
-					onCreateGameButtonClick={props.handleRoute}
-					onGameClick={props.handleGameClick}
-					socket={props.socket}
-				/>
-			);
+			return <GamesList userList={props.userList} userInfo={props.userInfo} midSection={props.midSection} gameList={props.gameList} socket={props.socket} />;
 	}
 };
 
@@ -71,7 +60,7 @@ const Main = props => {
 	return (
 		<section className={classes}>
 			{(() => {
-				if (props.midSection === 'game' || 'replay') {
+				if (props.midSection === 'game' || props.midSection === 'replay') {
 					return RenderMidSection(props);
 				} else {
 					return (

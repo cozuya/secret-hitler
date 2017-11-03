@@ -25,8 +25,6 @@ const select = state => state;
 export class App extends React.Component {
 	constructor() {
 		super();
-		this.handleRoute = this.handleRoute.bind(this);
-		this.handleRoute = this.handleRoute.bind(this);
 		this.handleSeatingUser = this.handleSeatingUser.bind(this);
 		this.handleLeaveGame = this.handleLeaveGame.bind(this);
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
@@ -99,20 +97,11 @@ export class App extends React.Component {
 			dispatch(updateVersion(v));
 		});
 
-		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
-			const { hash } = window.location;
+		socket.on('joinGameRedirect', uid => {
+			dispatch(updateMidsection('game'));
+		});
 
-			if ((this.props.midSection !== 'game' && Object.keys(game).length) || (Object.keys(game).length && hash !== `#/table/${game.general.uid}`)) {
-				dispatch(updateGameInfo(game));
-				dispatch(updateMidsection('game'));
-				window.location.hash = `#/table/${game.general.uid}`;
-			} else if (!Object.keys(game).length) {
-				if (isSettings) {
-					window.location.hash = '#/settings';
-				} else if (!toReplay) {
-					window.location.hash = '#/';
-				}
-			}
+		socket.on('gameUpdate', game => {
 			dispatch(updateGameInfo(game));
 		});
 
@@ -149,8 +138,6 @@ export class App extends React.Component {
 				}
 			};
 
-		console.log(hash, 'hash');
-
 		if (hash === this.prevHash) {
 			return;
 		}
@@ -159,11 +146,16 @@ export class App extends React.Component {
 			hash.substr(0, 8) !== '#/table/' &&
 			Object.keys(gameInfo).length &&
 			userInfo.userName &&
+			userInfo.isSeated &&
 			gameInfo.publicPlayersState.length &&
-			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
-			(!gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted)
+			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)
 		) {
-			this.handleLeaveGame(true);
+			if (hash === '#/') {
+				this.handleLeaveGame(true);
+			} else if (!gameInfo.gameState.isCompleted) {
+				window.location = `#/table/${gameInfo.general.uid}`;
+				return;
+			}
 		} else if (this.prevHash.substr(0, 8) === '#/table/') {
 			this.handleLeaveGame(false, this.prevHash.split('#/table/')[1]);
 		}
@@ -205,11 +197,6 @@ export class App extends React.Component {
 		this.prevHash = hash;
 	}
 
-	handleRoute(route) {
-		const { dispatch } = this.props;
-
-		dispatch(updateMidsection(route));
-	}
 	// ***** begin dev helpers *****
 
 	makeQuickDefault() {
@@ -320,35 +307,20 @@ export class App extends React.Component {
 
 				<DevHelpers />
 
-				<Menu
-					userInfo={this.props.userInfo}
-					onLeaveGame={this.handleLeaveGame}
-					onSettingsButtonClick={this.handleRoute}
-					gameInfo={this.props.gameInfo}
-					midSection={this.props.midSection}
-				/>
+				<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
 
 				<div className={classes}>
 					<Main
 						userInfo={this.props.userInfo}
 						midSection={this.props.midSection}
 						gameInfo={this.props.gameInfo}
-						onLeaveSettings={this.handleRoute}
 						onSeatingUser={this.handleSeatingUser}
-						onLeaveGame={this.handleLeaveGame}
 						quickDefault={this.makeQuickDefault}
-						onLeaveChangelog={this.handleRoute}
-						onSettingsButtonClick={this.handleRoute}
-						onChangelogButtonClick={this.handleRoute}
-						onLeaveModeration={this.handleRoute}
-						onLeaveReports={this.handleRoute}
 						onClickedTakeSeat={this.handleSeatingUser}
 						userList={this.props.userList}
 						socket={socket}
 						version={this.props.version}
 						gameList={this.props.gameList}
-						handleRoute={this.handleRoute}
-						handleGameClick={this.handleGameClick}
 					/>
 
 					{(() => {
@@ -362,7 +334,6 @@ export class App extends React.Component {
 									userInfo={this.props.userInfo}
 									userList={this.props.userList}
 									generalChats={this.props.generalChats}
-									onModerationButtonClick={this.handleRoute}
 									socket={socket}
 									midSection={this.props.midSection}
 								/>

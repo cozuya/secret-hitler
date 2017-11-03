@@ -125,44 +125,6 @@ if (process.env.NODE_ENV) {
 	crashReq.end(crashReport);
 }
 
-const handleUserLeaveGame = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (io.sockets.adapter.rooms[data.uid]) {
-		socket.leave(data.uid);
-	}
-
-	if (game) {
-		if (data.isSeated) {
-			if (game.gameState.isTracksFlipped) {
-				const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
-				if (playerIndex > -1) {
-					// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
-					game.publicPlayersState[playerIndex].leftGame = true;
-				}
-				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-					games.splice(games.indexOf(game), 1);
-				}
-			} else if (!game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
-				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
-				checkStartConditions(game);
-				io.sockets.in(data.uid).emit('gameUpdate', game);
-			}
-		}
-		if (!game.publicPlayersState.length) {
-			io.sockets.in(data.uid).emit('gameUpdate', {});
-			games.splice(games.indexOf(game), 1);
-		} else if (game.gameState.isTracksFlipped) {
-			sendInProgressGameUpdate(game);
-		}
-	}
-	if (!data.toReplay) {
-		updateUserStatus(data.userName, 'none', data.uid);
-	}
-	socket.emit('gameUpdate', {}, data.isSettings, data.toReplay);
-	sendGameList();
-};
-
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 	// prevents race condition between 1) taking a seat and 2) the game starting
@@ -216,31 +178,40 @@ module.exports.handleUpdatedBio = (socket, data) => {
 module.exports.handleAddNewGame = (socket, data) => {
 	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
-		const username = socket.handshake.session.passport.user;
+		const username = socket.handshake.session.passport.user,
+			user = userList.find(obj => obj.userName === username),
+			currentTime = new Date().getTime();
 
-		Account.findOne({ username }).then(account => {
-			data.private = {
-				reports: {},
-				unSeatedGameChats: [],
-				lock: {}
-			};
+		if (currentTime - user.timeLastGameCreated < 8000) {
+			return null;
+		} else {
+			user.timeLastGameCreated = currentTime;
 
-			if (data.general.private) {
-				data.private.privatePassword = data.general.private;
-				data.general.private = true;
-			}
+			Account.findOne({ username }).then(account => {
+				data.private = {
+					reports: {},
+					unSeatedGameChats: [],
+					lock: {}
+				};
 
-			if (data.general.rainbowgame) {
-				data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
-			}
-			data.general.timeCreated = new Date().getTime();
-			updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
-			games.push(data);
-			sendGameList();
-			socket.join(data.general.uid);
-			socket.emit('updateSeatForUser');
-			socket.emit('gameUpdate', data);
-		});
+				if (data.general.private) {
+					data.private.privatePassword = data.general.private;
+					data.general.private = true;
+				}
+
+				if (data.general.rainbowgame) {
+					data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
+				}
+				data.general.timeCreated = currentTime;
+				updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
+				games.push(data);
+				sendGameList();
+				socket.join(data.general.uid);
+				socket.emit('updateSeatForUser');
+				socket.emit('gameUpdate', data);
+				socket.emit('joinGameRedirect', data.general.uid);
+			});
+		}
 	}
 };
 
@@ -615,6 +586,44 @@ module.exports.handleAddNewClaim = data => {
 	sendInProgressGameUpdate(game);
 };
 
+const handleUserLeaveGame = (socket, data) => {
+	const game = games.find(el => el.general.uid === data.uid);
+
+	if (io.sockets.adapter.rooms[data.uid]) {
+		socket.leave(data.uid);
+	}
+
+	if (game) {
+		if (data.isSeated) {
+			if (game.gameState.isTracksFlipped) {
+				const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+				if (playerIndex > -1) {
+					// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
+					game.publicPlayersState[playerIndex].leftGame = true;
+				}
+				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+					games.splice(games.indexOf(game), 1);
+				}
+			} else if (!game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
+				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
+				checkStartConditions(game);
+				io.sockets.in(data.uid).emit('gameUpdate', game);
+			}
+		}
+		if (!game.publicPlayersState.length) {
+			io.sockets.in(data.uid).emit('gameUpdate', {});
+			games.splice(games.indexOf(game), 1);
+		} else if (game.gameState.isTracksFlipped) {
+			sendInProgressGameUpdate(game);
+		}
+	}
+	if (!data.toReplay) {
+		updateUserStatus(data.userName, 'none', data.uid);
+	}
+	socket.emit('gameUpdate', game);
+	sendGameList();
+};
+
 module.exports.handleUpdatedRemakeGame = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{ publicPlayersState } = game,
@@ -631,7 +640,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 			]
 		};
 
-	if (!game || !player || !game.publicPlayersState) {
+	if (!game || !player) {
 		return;
 	}
 
@@ -648,10 +657,8 @@ module.exports.handleUpdatedRemakeGame = data => {
 		// console.log(game.gameState, 'gamestate');
 		if (
 			!game.gameState.isRemaking &&
-			// publicPlayersState.length > 3 &&
-			// publicPlayersState.filter(player => player.isRemakeVoting).length / publicPlayersState.length >= 0.8
-			publicPlayersState.length &&
-			publicPlayersState.filter(player => player.isRemakeVoting).length / publicPlayersState.length >= 0
+			publicPlayersState.length > 3 &&
+			publicPlayersState.filter(player => player.isRemakeVoting).length / publicPlayersState.length >= 0.8
 		) {
 			const newGame = Object.assign({}, game),
 				remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName),
@@ -664,7 +671,8 @@ module.exports.handleUpdatedRemakeGame = data => {
 			remakePlayerSocketIDs.forEach(id => {
 				console.log(io.sockets.sockets[id].rooms, 'rooms');
 				io.sockets.sockets[id].leave(game.general.uid);
-				console.log(io.sockets.sockets[id].rooms, 'rooms2');
+				delete io.sockets.sockets[id].rooms[game.general.uid];
+				console.log(io.sockets.sockets[id].rooms, 'rooms');
 			});
 
 			remakePlayerNames.forEach(name => {
@@ -714,20 +722,15 @@ module.exports.handleUpdatedRemakeGame = data => {
 			};
 
 			games.push(newGame);
-			sendGameList();
 			remakePlayerSocketIDs.forEach((id, index) => {
-				console.log(io.sockets.sockets[id].rooms, 'rooms3');
 				handleUserLeaveGame(io.sockets.sockets[id], {
 					uid: game.general.uid,
 					userName: remakePlayerNames[index],
 					isSeated: true
 				});
 				sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-				console.log(io.sockets.sockets[id].rooms, 'rooms4');
 			});
-			console.log('\n\n');
-			console.log(newGame);
-			console.log('\n\n');
+			// console.log(newGame);
 			console.log(newGame.publicPlayersState);
 			checkStartConditions(newGame);
 		}
@@ -1148,6 +1151,8 @@ module.exports.handlePlayerReportDismiss = () => {
 	});
 };
 
+module.exports.handleUserLeaveGame = handleUserLeaveGame;
+
 module.exports.checkUserStatus = socket => {
 	const { passport } = socket.handshake.session;
 
@@ -1181,7 +1186,5 @@ module.exports.checkUserStatus = socket => {
 	sendGeneralChats(socket);
 	sendGameList(socket);
 };
-
-module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 module.exports.handleSocketDisconnect = handleSocketDisconnect;
