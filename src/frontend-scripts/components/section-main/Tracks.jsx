@@ -72,16 +72,6 @@ class Tracks extends React.Component {
 				}
 			};
 
-		// {userInfo.userName &&
-		// 	userInfo.isSeated &&
-		// 	gameInfo.gameState.isTracksFlipped && (
-		// 		<i
-		// 			className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`}
-		// 			onClick={updateRemake}
-		// 			title="Enable this button to show that you would like to remake this game"
-		// 		/>
-		// 	)}
-
 		return (
 			<section className="tracks-container">
 				<CardFlinger userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
@@ -90,16 +80,22 @@ class Tracks extends React.Component {
 					<div className="game-name">
 						Game name: <span>{gameInfo.general.name}</span>
 					</div>
+					{userInfo.userName &&
+						(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) && (
+							<div className="gameuid">Game UID: {gameInfo.general.uid}</div>
+						)}
 					<div className="player-count">
 						Players: <span>{gameInfo.publicPlayersState.length}</span>
 					</div>
-					{
-						<i
-							className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`}
-							onClick={updateRemake}
-							title="Enable this button to show that you would like to remake this game"
-						/>
-					}
+					{userInfo.userName &&
+						userInfo.isSeated &&
+						gameInfo.gameState.isTracksFlipped && (
+							<i
+								className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`}
+								onClick={updateRemake}
+								title="Enable this button to show that you would like to remake this game"
+							/>
+						)}
 				</div>
 				<section
 					className={(() => {
