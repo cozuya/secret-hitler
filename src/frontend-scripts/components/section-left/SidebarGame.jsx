@@ -51,8 +51,7 @@ const SidebarGame = props => {
 			return str;
 		};
 
-	return !game.private ||
-		(userInfo.userName && (ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))) ? (
+	return (
 		<div
 			data-uid={game.uid}
 			onClick={() => {
@@ -152,7 +151,7 @@ const SidebarGame = props => {
 				</div>
 			)}
 		</div>
-	) : null;
+	);
 };
 
 SidebarGame.propTypes = {
