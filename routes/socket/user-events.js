@@ -623,6 +623,22 @@ module.exports.handleUpdatedRemakeGame = data => {
 		{ publicPlayersState } = game,
 		playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName),
 		player = publicPlayersState[playerIndex],
+		minimumRemakeVoteCount = (() => {
+			switch (game.general.playerCount) {
+				case 5:
+					return 4;
+				case 6:
+					return 4;
+				case 7:
+					return 5;
+				case 8:
+					return 6;
+				case 9:
+					return 6;
+				case 10:
+					return 7;
+			}
+		})(),
 		chat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -713,19 +729,10 @@ module.exports.handleUpdatedRemakeGame = data => {
 		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName),
 			remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-		chat.chat.push({ text: ' has voted to remake this game.' });
+		chat.chat.push({ text: ` has voted to remake this game. (${remakePlayerCount}/${minimumRemakeVoteCount})` });
 		publicPlayer.isRemaking = true;
 
-		if (
-			!game.general.isRemaking &&
-			publicPlayersState.length > 3 &&
-			((game.general.playerCount === 5 && remakePlayerCount >= 4) ||
-				(game.general.playerCount === 6 && remakePlayerCount >= 4) ||
-				(game.general.playerCount === 7 && remakePlayerCount >= 5) ||
-				(game.general.playerCount === 8 && remakePlayerCount >= 6) ||
-				(game.general.playerCount === 9 && remakePlayerCount >= 6) ||
-				(game.general.playerCount === 10 && remakePlayerCount >= 7))
-		) {
+		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
 			game.general.isRemaking = true;
 			game.general.remakeCount = 5;
 
@@ -744,20 +751,12 @@ module.exports.handleUpdatedRemakeGame = data => {
 	} else {
 		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-		if (
-			game.general.isRemaking &&
-			((game.general.playerCount === 5 && remakePlayerCount === 3) ||
-				(game.general.playerCount === 6 && remakePlayerCount === 3) ||
-				(game.general.playerCount === 7 && remakePlayerCount === 4) ||
-				(game.general.playerCount === 8 && remakePlayerCount === 5) ||
-				(game.general.playerCount === 9 && remakePlayerCount === 5) ||
-				(game.general.playerCount === 10 && remakePlayerCount === 6))
-		) {
+		if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
 			game.general.isRemaking = false;
 			game.general.status = 'Game remaking has been cancelled.';
 			clearInterval(game.private.remakeTimer);
 		}
-		chat.chat.push({ text: ' has rescinded their vote to remake this game.' });
+		chat.chat.push({ text: ` has rescinded their vote to remake this game. (${remakePlayerCount}/${minimumRemakeVoteCount})` });
 	}
 	game.chats.push(chat);
 

@@ -1,10 +1,9 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { MODERATORS, EDITORS, ADMINS } from '../../constants';
 
 const SidebarGame = props => {
-	const { game, userInfo } = props,
+	const { game } = props,
 		gameClasses = () => {
 			let classes = 'ui vertical segment';
 
