@@ -16,7 +16,8 @@ export default class Generalchat extends React.Component {
 		this.state = {
 			lock: false,
 			inputValue: '',
-			disabled: false
+			disabled: false,
+			discordEnabled: false
 		};
 	}
 
@@ -61,36 +62,8 @@ export default class Generalchat extends React.Component {
 
 	scrollChats() {
 		if (!this.state.lock) {
-			document.querySelector('.genchat-container').scrollTop = 99999999;
+			// document.querySelector('.genchat-container').scrollTop = 99999999;
 		}
-	}
-
-	processChats() {
-		const { userInfo } = this.props;
-
-		return this.props.generalChats.map((chat, i) => {
-			const userClasses = classnames(
-				{
-					[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
-				},
-				'chat-user'
-			);
-
-			return (
-				<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
-					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
-						<a href={`#/profile/${chat.userName}`} className="genchat-user">
-							{chat.userName}
-						</a>
-						{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
-						{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
-						{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
-						{chat.userName && ':'}{' '}
-					</span>
-					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
-				</div>
-			);
-		});
 	}
 
 	handleChatLockClick() {
@@ -111,8 +84,63 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
-	// <embed height='400' width='400' src='https://widgetbot.io/embed/323243744914571264/323243744914571264/0002/' />
+	renderInput() {
+		return this.state.discordEnabled ? null : (
+			<form className="segment inputbar" onSubmit={this.handleSubmit}>
+				<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
+					<input
+						placeholder="Chat.."
+						value={this.state.inputValue}
+						onChange={this.handleInputChange}
+						maxLength="300"
+						spellCheck="false"
+						ref={c => {
+							this.input = c;
+						}}
+					/>
+					<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+				</div>
+				<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'} onClick={this.handleChatClearClick} />
+			</form>
+		);
+	}
 
+	// <embed height='400' width='400' src='https://widgetbot.io/embed/323243744914571264/323243744914571264/0002/' />
+	// 	<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
+	// 	{this.processChats()}
+	// </div>
+
+	renderChats() {
+		const { userInfo } = this.props;
+
+		return this.state.discordEnabled ? (
+			<embed height="298" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
+		) : (
+			this.props.generalChats.map((chat, i) => {
+				const userClasses = classnames(
+					{
+						[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
+					},
+					'chat-user'
+				);
+
+				return (
+					<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
+						<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
+							<a href={`#/profile/${chat.userName}`} className="genchat-user">
+								{chat.userName}
+							</a>
+							{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
+							{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
+							{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
+							{chat.userName && ':'}{' '}
+						</span>
+						<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
+					</div>
+				);
+			})
+		);
+	}
 	render() {
 		return (
 			<section className="generalchat">
@@ -129,25 +157,10 @@ export default class Generalchat extends React.Component {
 				</section>
 				<section className="segment chats">
 					<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
-						{this.processChats()}
+						{this.renderChats()}
 					</div>
 				</section>
-				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
-						<input
-							placeholder="Chat.."
-							value={this.state.inputValue}
-							onChange={this.handleInputChange}
-							maxLength="300"
-							spellCheck="false"
-							ref={c => {
-								this.input = c;
-							}}
-						/>
-						<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
-					</div>
-					<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'} onClick={this.handleChatClearClick} />
-				</form>
+				{this.renderInput()}
 			</section>
 		);
 	}
