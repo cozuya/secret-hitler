@@ -183,8 +183,11 @@
 				}
 				.item {
 					padding: 0;
+					a.genchat-user:hover {
+						text-decoration: underline;
+					}
 
-					a {
+					a.shio-link {
 						color: #f4f439 !important;
 						text-decoration: underline !important;
 					}

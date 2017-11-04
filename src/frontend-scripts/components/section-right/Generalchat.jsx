@@ -79,7 +79,9 @@ export default class Generalchat extends React.Component {
 			return (
 				<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
 					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
-						{chat.userName}
+						<a href={`#/profile/${chat.userName}`} className="genchat-user">
+							{chat.userName}
+						</a>
 						{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
 						{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
 						{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
