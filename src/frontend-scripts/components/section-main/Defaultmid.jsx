@@ -39,8 +39,16 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 					wiki page
 				</a>{' '}
 				|{' '}
-				<a target="_blank" style={{ fontWeight: 'bold', color: '#fff' }} href="https://discord.gg/FXDxP2m">
+				<a target="_blank" style={{ fontWeight: 'bold', color: '#fff' }} href="https://discord.gg/secrethitlerio">
 					discord server
+				</a>{' '}
+				|{' '}
+				<a target="_blank" style={{ fontWeight: 'bold', color: '#fff' }} href="https://twitter.com/SecretHitlerio">
+					twitter page
+				</a>{' '}
+				|{' '}
+				<a target="_blank" style={{ fontWeight: 'bold', color: '#fff' }} href="mailto:SecretHitlerio@gmail.com">
+					email us
 				</a>
 			</span>
 		</p>
