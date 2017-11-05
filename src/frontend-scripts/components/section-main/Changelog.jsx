@@ -10,8 +10,27 @@ const Changelog = props => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.9.2 "dim3" released 11-5-2017</p>
+		</div>
+		<h3>New feature: discord integration in general chat.</h3>
+		<p>Hit the discord icon (while logged in) to replace the site's general chat with our discord channel's general chat.</p>
+		<h3>New feature: disable confetti game setting.</h3>
+		<p>For those of you that hate fun.</p>
+		<h3>New feature: reverted private games visibility.</h3>
+		<p>
+			Having them totally hidden was probably too difficult to find for some players that didn't have the URL. So you can now see private games on the sidebar
+			again, but now only those who are seated can see gamechats. A decent compromise I think.
+		</p>
+		<h3>Other issues:</h3>
+		<ul>
+			<li>Clicking on a player's name in general chat takes you to their profile page.</li>
+			<li>The remake button's gamechat now tells you how many votes you need to remake a game.</li>
+		</ul>
+
+		<div className="ui header">
 			<p>Version 0.9.1 "dim2" released 11-2-2017</p>
 		</div>
+
 		<h3>New feature: remake game button</h3>
 		<div style={{ textAlign: 'center' }}>
 			<img style={{ width: '30%', border: '1px solid grey', margin: '5px 0' }} src="/images/remake.png" />

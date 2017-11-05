@@ -1123,28 +1123,32 @@ module.exports.handlePlayerReport = data => {
 			}
 		};
 
-	playerReport.save(() => {
-		Account.find({ username: mods }).then(accounts => {
-			accounts.forEach(account => {
-				const onlineSocketId = Object.keys(io.sockets.sockets).find(
-					socketId =>
-						io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
-				);
+	PlayerReport.findOne({ gameUid: data.uid, reportingPlayer: data.userName }).then(report => {
+		if (!report) {
+			playerReport.save(() => {
+				Account.find({ username: mods }).then(accounts => {
+					accounts.forEach(account => {
+						const onlineSocketId = Object.keys(io.sockets.sockets).find(
+							socketId =>
+								io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+						);
 
-				account.gameSettings.newReport = true;
+						account.gameSettings.newReport = true;
 
-				if (onlineSocketId) {
-					io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
+						if (onlineSocketId) {
+							io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
+						}
+						account.save();
+					});
+				});
+
+				try {
+					const req = https.request(options);
+					req.end(body);
+				} catch (error) {
+					console.log(err, 'Caught exception in player request https request to discord server');
 				}
-				account.save();
 			});
-		});
-
-		try {
-			const req = https.request(options);
-			req.end(body);
-		} catch (error) {
-			console.log(err, 'Caught exception in player request https request to discord server');
 		}
 	});
 };
