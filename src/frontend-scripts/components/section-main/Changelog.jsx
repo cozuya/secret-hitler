@@ -16,6 +16,8 @@ const Changelog = props => (
 		<p>Click the new discord icon (while logged in) to replace the site's general chat with our discord channel's general chat.</p>
 		<h3>New feature: disable confetti user setting.</h3>
 		<p>For those of you that hate fun.</p>
+		<h3>New feature: moderator sticky notes on general chat.</h3>
+		<p>Dismiss in usual way, will be used to impart useful information that is less temporary than broadcasts.</p>
 		<h3>New feature: reverted private games visibility.</h3>
 		<p>
 			Having them totally hidden was probably too difficult to find for some players that didn't have the URL. So now everyone can see private games again, but
@@ -31,11 +33,9 @@ const Changelog = props => (
 				game will not go through to mods.
 			</li>
 		</ul>
-
 		<div className="ui header">
 			<p>Version 0.9.1 "dim2" released 11-2-2017</p>
 		</div>
-
 		<h3>New feature: remake game button</h3>
 		<div style={{ textAlign: 'center' }}>
 			<img style={{ width: '30%', border: '1px solid grey', margin: '5px 0' }} src="/images/remake.png" />

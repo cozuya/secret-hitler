@@ -131,7 +131,7 @@ export default class Generalchat extends React.Component {
 
 				return (
 					<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
-						<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
+						<span className={chat.isBroadcast ? 'chat-user--broadcast' : 'chat-user genchat-user'}>
 							<a href={`#/profile/${chat.userName}`} className={userClasses}>
 								{chat.userName}
 							</a>
