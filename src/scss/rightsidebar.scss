@@ -129,7 +129,12 @@
 	}
 	.generalchat {
 		img {
-			vertical-align: middle;
+			float: right;
+			padding: 4px;
+			cursor: pointer;
+			&.active {
+				background: #555;
+			}
 		}
 		.generalchat-header {
 			h3 {
@@ -144,6 +149,7 @@
 				padding: 2px 5px 0;
 			}
 		}
+
 		.inputbar {
 			display: flex;
 			> div {
@@ -201,6 +207,13 @@
 				span {
 					word-wrap: break-word;
 				}
+			}
+		}
+		.chats.discord {
+			height: 276px;
+
+			.genchat-container {
+				max-height: 276px;
 			}
 		}
 	}

@@ -61,8 +61,8 @@ export default class Generalchat extends React.Component {
 	}
 
 	scrollChats() {
-		if (!this.state.lock) {
-			// document.querySelector('.genchat-container').scrollTop = 99999999;
+		if (!this.state.lock && !this.state.discordEnabled) {
+			document.querySelector('.genchat-container').scrollTop = 99999999;
 		}
 	}
 
@@ -105,16 +105,11 @@ export default class Generalchat extends React.Component {
 		);
 	}
 
-	// <embed height='400' width='400' src='https://widgetbot.io/embed/323243744914571264/323243744914571264/0002/' />
-	// 	<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
-	// 	{this.processChats()}
-	// </div>
-
 	renderChats() {
 		const { userInfo } = this.props;
 
 		return this.state.discordEnabled ? (
-			<embed height="298" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
+			<embed height="272" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
 		) : (
 			this.props.generalChats.map((chat, i) => {
 				const userClasses = classnames(
@@ -155,16 +150,24 @@ export default class Generalchat extends React.Component {
 				<section className="generalchat-header hoz-gradient">
 					<div className="clearfix">
 						<h3 className="ui header">Chat</h3>
-						{userInfo && userInfo.userName && <img src="/images/discord-icon.png" onClick={discordIconClick} />}
 						<i
 							title="Click here to lock chat and prevent from scrolling"
 							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
 							onClick={this.handleChatLockClick}
 						/>
+						{userInfo &&
+							userInfo.userName && (
+								<img
+									title="Click to show our discord general chat instead of the site's general chat"
+									className={this.state.discordEnabled ? 'active' : ''}
+									src="/images/discord-icon.png"
+									onClick={discordIconClick}
+								/>
+							)}
 					</div>
 					<div className="ui divider right-sidebar-divider" />
 				</section>
-				<section className="segment chats">
+				<section className={this.state.discordEnabled ? 'segment chats discord' : 'segment chats'}>
 					<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
 						{this.renderChats()}
 					</div>
