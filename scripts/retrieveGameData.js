@@ -39,7 +39,7 @@ const mongoose = require('mongoose'),
 	};
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:${process.env.MONGOPORT}/secret-hitler-app`);
+mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
 
 Game.find({})
 	.cursor()
