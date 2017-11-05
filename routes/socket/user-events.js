@@ -804,7 +804,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	}
 
 	if (generalChatCount === 100) {
-		const chats = new Generalchats({ chats: generalChats });
+		const chats = new Generalchats({ chats: generalChats.list });
 
 		chats.save(() => {
 			generalChatCount = 0;
@@ -817,10 +817,10 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	generalChatCount++;
 	data.time = new Date();
 	data.color = color;
-	generalChats.push(data);
+	generalChats.list.push(data);
 
-	if (generalChats.length > 99) {
-		generalChats.shift();
+	if (generalChats.list.length > 99) {
+		generalChats.list.shift();
 	}
 	io.sockets.emit('generalChats', generalChats);
 };
@@ -887,10 +887,10 @@ module.exports.handleModerationAction = (socket, data) => {
 								account.salt = crypto.randomBytes(20).toString('hex');
 								account.isBanned = true;
 								account.save(() => {
-									const bannedAccountGeneralChats = generalChats.filter(chat => chat.userName === username);
+									const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
 
 									bannedAccountGeneralChats.reverse().forEach(chat => {
-										generalChats.splice(generalChats.indexOf(chat), 1);
+										generalChats.list.splice(generalChats.list.indexOf(chat), 1);
 									});
 									logOutUser(username);
 									io.sockets.emit('generalChats', generalChats);
@@ -917,6 +917,10 @@ module.exports.handleModerationAction = (socket, data) => {
 			case 'ban':
 				banAccount(data.userName);
 				break;
+			case 'setSticky':
+				generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+				io.sockets.emit('generalChats', generalChats);
+				break;
 			case 'broadcast':
 				const discordBroadcastBody = JSON.stringify({
 						content: `Text: ${data.comment}\nMod: ${passport.user}`
@@ -940,12 +944,17 @@ module.exports.handleModerationAction = (socket, data) => {
 						timestamp: new Date()
 					});
 				});
-				generalChats.push({
+				generalChats.list.push({
 					userName: `BROADCAST (${data.modName})`,
 					time: new Date(),
 					chat: data.comment,
 					isBroadcast: true
 				});
+
+				if (data.isSticky) {
+					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+				}
+
 				io.sockets.emit('generalChats', generalChats);
 				break;
 			case 'ipban':
@@ -972,7 +981,7 @@ module.exports.handleModerationAction = (socket, data) => {
 				});
 				break;
 			case 'clearGenchat':
-				generalChats.fill({});
+				generalChats.list.fill({});
 
 				io.sockets.emit('generalChats', generalChats);
 				break;

@@ -13,18 +13,23 @@ const Changelog = props => (
 			<p>Version 0.9.2 "dim3" released 11-5-2017</p>
 		</div>
 		<h3>New feature: discord integration in general chat.</h3>
-		<p>Hit the discord icon (while logged in) to replace the site's general chat with our discord channel's general chat.</p>
-		<h3>New feature: disable confetti game setting.</h3>
+		<p>Click the new discord icon (while logged in) to replace the site's general chat with our discord channel's general chat.</p>
+		<h3>New feature: disable confetti user setting.</h3>
 		<p>For those of you that hate fun.</p>
 		<h3>New feature: reverted private games visibility.</h3>
 		<p>
-			Having them totally hidden was probably too difficult to find for some players that didn't have the URL. So you can now see private games on the sidebar
-			again, but now only those who are seated can see gamechats. A decent compromise I think.
+			Having them totally hidden was probably too difficult to find for some players that didn't have the URL. So now everyone can see private games again, but
+			only those who are seated (and mods) can see gamechats. A decent compromise I think.
 		</p>
 		<h3>Other issues:</h3>
 		<ul>
 			<li>Clicking on a player's name in general chat takes you to their profile page.</li>
 			<li>The remake button's gamechat now tells you how many votes you need to remake a game.</li>
+			<li>A fix to moderation timeout ability is in.</li>
+			<li>
+				Players can only make one player report per game. I'm lazy and there's no failure state for this, so just keep it in mind: more than one attempt per
+				game will not go through to mods.
+			</li>
 		</ul>
 
 		<div className="ui header">

@@ -340,15 +340,15 @@ export class App extends React.Component {
 				/>
 				{((this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
 					(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)) && (
-					<RightSidebar
-						gameInfo={this.props.gameInfo}
-						userInfo={this.props.userInfo}
-						userList={this.props.userList}
-						generalChats={this.props.generalChats}
-						onModerationButtonClick={this.handleRoute}
-						socket={socket}
-					/>
-				)}
+						<RightSidebar
+							gameInfo={this.props.gameInfo}
+							userInfo={this.props.userInfo}
+							userList={this.props.userList}
+							generalChats={this.props.generalChats}
+							onModerationButtonClick={this.handleRoute}
+							socket={socket}
+						/>
+					)}
 			</section>
 		);
 	}
@@ -360,7 +360,7 @@ App.propTypes = {
 	midSection: PropTypes.string,
 	gameInfo: PropTypes.object,
 	gameList: PropTypes.array,
-	generalChats: PropTypes.array,
+	generalChats: PropTypes.object,
 	userList: PropTypes.object
 };
 

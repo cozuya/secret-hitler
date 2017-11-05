@@ -17,7 +17,8 @@ export default class Generalchat extends React.Component {
 			lock: false,
 			inputValue: '',
 			disabled: false,
-			discordEnabled: false
+			discordEnabled: false,
+			stickyEnabled: true
 		};
 	}
 
@@ -27,6 +28,14 @@ export default class Generalchat extends React.Component {
 
 	componentDidUpdate() {
 		this.scrollChats();
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (!this.state.stickyEnabled && this.props.generalChats.sticky !== nextProps.generalChats.sticky) {
+			this.setState({
+				stickyEnabled: true
+			});
+		}
 	}
 
 	handleChatClearClick() {
@@ -106,23 +115,24 @@ export default class Generalchat extends React.Component {
 	}
 
 	renderChats() {
-		const { userInfo } = this.props;
+		const { userInfo, generalChats } = this.props;
 
 		return this.state.discordEnabled ? (
 			<embed height="272" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
-		) : (
-			this.props.generalChats.map((chat, i) => {
+		) : Object.keys(generalChats).length ? (
+			generalChats.list.map((chat, i) => {
 				const userClasses = classnames(
 					{
 						[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
 					},
-					'chat-user'
+					'chat-user',
+					'genchat-user'
 				);
 
 				return (
 					<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
 						<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
-							<a href={`#/profile/${chat.userName}`} className="genchat-user">
+							<a href={`#/profile/${chat.userName}`} className={userClasses}>
 								{chat.userName}
 							</a>
 							{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
@@ -134,7 +144,25 @@ export default class Generalchat extends React.Component {
 					</div>
 				);
 			})
-		);
+		) : null;
+	}
+
+	renderSticky() {
+		if (this.state.stickyEnabled && this.props.generalChats.sticky) {
+			const dismissSticky = () => {
+				this.setState({ stickyEnabled: false });
+			};
+
+			return (
+				<div className="sticky">
+					<span>
+						<span>Sticky: </span>
+						{this.props.generalChats.sticky}
+					</span>
+					<i className="remove icon" onClick={dismissSticky} />
+				</div>
+			);
+		}
 	}
 
 	render() {
@@ -159,7 +187,7 @@ export default class Generalchat extends React.Component {
 							userInfo.userName && (
 								<img
 									title="Click to show our discord general chat instead of the site's general chat"
-									className={this.state.discordEnabled ? 'active' : ''}
+									className={this.state.discordEnabled ? 'active discord-icon' : 'discord-icon'}
 									src="/images/discord-icon.png"
 									onClick={discordIconClick}
 								/>
@@ -168,6 +196,7 @@ export default class Generalchat extends React.Component {
 					<div className="ui divider right-sidebar-divider" />
 				</section>
 				<section className={this.state.discordEnabled ? 'segment chats discord' : 'segment chats'}>
+					{!this.state.discordEnabled && this.renderSticky()}
 					<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
 						{this.renderChats()}
 					</div>
@@ -182,6 +211,6 @@ Generalchat.propTypes = {
 	gameInfo: PropTypes.object,
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
-	generalChats: PropTypes.array,
+	generalChats: PropTypes.object,
 	userList: PropTypes.object
 };

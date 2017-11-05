@@ -3,7 +3,7 @@
 	padding: 20px;
 }
 
-.section-right {
+#game-container .section-right {
 	padding-left: 0 !important;
 	padding-right: 0 !important;
 	padding-bottom: 0 !important;
@@ -128,7 +128,7 @@
 		margin: 0;
 	}
 	.generalchat {
-		img {
+		.discord-icon {
 			float: right;
 			padding: 4px;
 			cursor: pointer;
@@ -206,6 +206,29 @@
 				}
 				span {
 					word-wrap: break-word;
+				}
+			}
+			.sticky {
+				position: absolute;
+				background: darkorange;
+				top: -2px;
+				left: 0;
+				color: white;
+				padding: 3px;
+				width: 100%;
+				z-index: 1;
+				display: flex;
+				> span {
+					flex-grow: 1;
+					> span {
+						font-style: italic;
+					}
+				}
+
+				i {
+					color: white !important;
+					cursor: pointer;
+					margin: 0 3px;
 				}
 			}
 		}
