@@ -68,7 +68,7 @@ const SidebarGame = props => {
 					{game.rebalance69p && (
 						<div
 							className="rebalance-game"
-							title="This is a rebalanced game - if it is a 6 or 9 player game, it will start with a fascist or liberal policy already enacted, respectively."
+							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 9 player games start with one less fascist policy."
 						>
 							R
 						</div>
@@ -124,6 +124,14 @@ const SidebarGame = props => {
 					{game.private && (
 						<div className="private-game" title="This is a private game.">
 							P
+						</div>
+					)}
+					{game.rebalance69p && (
+						<div
+							className="rebalance-game"
+							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 9 player games start with one less fascist policy."
+						>
+							R
 						</div>
 					)}
 					<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'} title={'Playing: ' + game.userNames.join(', ')}>
