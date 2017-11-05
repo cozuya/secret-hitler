@@ -77,6 +77,7 @@ export default class Game extends React.Component {
 
 					if (
 						userInfo.userName &&
+						!userInfo.gameSettings.disableConfetti &&
 						gameInfo &&
 						gameInfo.publicPlayersState &&
 						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
