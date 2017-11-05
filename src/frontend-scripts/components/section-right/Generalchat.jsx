@@ -141,12 +141,21 @@ export default class Generalchat extends React.Component {
 			})
 		);
 	}
+
 	render() {
+		const { userInfo } = this.props,
+			discordIconClick = () => {
+				this.setState({
+					discordEnabled: !this.state.discordEnabled
+				});
+			};
+
 		return (
 			<section className="generalchat">
 				<section className="generalchat-header hoz-gradient">
 					<div className="clearfix">
 						<h3 className="ui header">Chat</h3>
+						{userInfo && userInfo.userName && <img src="/images/discord-icon.png" onClick={discordIconClick} />}
 						<i
 							title="Click here to lock chat and prevent from scrolling"
 							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
