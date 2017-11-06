@@ -46,4 +46,23 @@
 	.recent-games-table + table tbody tr {
 		cursor: pointer;
 	}
+
+	.edit.icon {
+		cursor: pointer;
+		font-size: 24px;
+	}
+
+	textarea {
+		width: 100%;
+		flex-grow: 1;
+		background: #fff;
+		resize: none;
+		color: #333;
+		min-height: 60px;
+		margin-bottom: 10px;
+	}
+
+	.bio + p {
+		margin-bottom: 10px;
+	}
 }

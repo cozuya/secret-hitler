@@ -168,15 +168,15 @@ module.exports = () => {
 									}
 
 									passport.authenticate('local')(req, res, () => {
-										// const newPlayerBan = new BannedIP({
-										// 	bannedDate: new Date(),
-										// 	type: 'new',
-										// 	ip: signupIP
-										// });
-										// newPlayerBan.save(() => {
-										// 	res.send();
-										// });
-										res.send();
+										const newPlayerBan = new BannedIP({
+											bannedDate: new Date(),
+											type: 'new',
+											ip: signupIP
+										});
+
+										newPlayerBan.save(() => {
+											res.send();
+										});
 									});
 								});
 							}
@@ -197,7 +197,8 @@ module.exports = () => {
 						req.headers['X-Real-IP'] ||
 						req.headers['X-Forwarded-For'] ||
 						req.headers['x-forwarded-for'] ||
-						req.connection.remoteAddress
+						req.connection.remoteAddress,
+					type: 'small' || 'big'
 				},
 				(err, ip) => {
 					let date, unbannedTime;
@@ -211,7 +212,7 @@ module.exports = () => {
 						unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
 					}
 
-					if (ip && unbannedTime > date && ip.type !== 'new') {
+					if (ip && unbannedTime > date) {
 						res.status(403).json({
 							message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
 						});

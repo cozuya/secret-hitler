@@ -34,6 +34,7 @@ export class App extends React.Component {
 		this.state = {
 			notesValue: ''
 		};
+		this.prevHash = '';
 	}
 
 	compononentDidUpdate() {
@@ -61,7 +62,7 @@ export class App extends React.Component {
 					userName: username
 				};
 
-				// info.isSeated = true;
+				info.isSeated = true;
 				socket.emit('updateSeatedUser', data);
 				socket.emit('getGameInfo', 'devgame');
 			}
@@ -100,7 +101,6 @@ export class App extends React.Component {
 		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
 			const { hash } = window.location;
 
-			console.log(game, 'game');
 			if ((this.props.midSection !== 'game' && Object.keys(game).length) || (Object.keys(game).length && hash !== `#/table/${game.general.uid}`)) {
 				dispatch(updateGameInfo(game));
 				dispatch(updateMidsection('game'));
@@ -141,23 +141,34 @@ export class App extends React.Component {
 	router() {
 		const { hash } = window.location,
 			{ userInfo, dispatch, gameInfo } = this.props,
-			isAuthed = Boolean(document.getElementById('game-container').classList.length);
+			isAuthed = Boolean(document.getElementById('game-container').classList.length),
+			updateStatus = (type, uid) => {
+				if (userInfo.userName) {
+					socket.emit('updateUserStatus', userInfo.userName, type, uid);
+				}
+			};
+
+		if (hash === this.prevHash) {
+			return;
+		}
 
 		if (
 			hash.substr(0, 8) !== '#/table/' &&
-			gameInfo &&
-			gameInfo.gameState &&
+			Object.keys(gameInfo).length &&
 			userInfo.userName &&
 			gameInfo.publicPlayersState.length &&
 			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
 			(!gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted)
 		) {
 			this.handleLeaveGame(true);
+		} else if (this.prevHash.substr(0, 8) === '#/table/' && hash.substr(-6) !== 'Remake') {
+			this.handleLeaveGame(false, this.prevHash.split('#/table/')[1]);
 		}
 
-		if (hash.substr(0, 10) === '#/profile/' && !ADMINS.includes(hash.split('#/profile/')[1])) {
+		if (hash.substr(0, 10) === '#/profile/') {
 			dispatch(fetchProfile(hash.split('#/profile/')[1]));
 		} else if (hash.substr(0, 9) === '#/replay/') {
+			updateStatus('replay', hash.split('#/replay/')[1]);
 			dispatch(fetchReplay(hash.split('#/replay/')[1]));
 		} else if (hash === '#/changelog') {
 			dispatch(updateMidsection('changelog'));
@@ -175,7 +186,7 @@ export class App extends React.Component {
 		) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
-		} else if (hash === '#/settings') {
+		} else if (hash === '#/settings' && isAuthed) {
 			dispatch(updateMidsection('settings'));
 		} else if (hash === '#/creategame' && isAuthed) {
 			dispatch(updateMidsection('createGame'));
@@ -184,8 +195,11 @@ export class App extends React.Component {
 		} else if (hash !== '#/') {
 			window.location.hash = '#/';
 		} else {
+			updateStatus('none');
 			dispatch(updateMidsection('default'));
 		}
+
+		this.prevHash = hash;
 	}
 
 	handleRoute(route) {
@@ -212,7 +226,7 @@ export class App extends React.Component {
 					maxPlayersCount: 5,
 					excludedPlayerCount: [6],
 					private: false,
-					rainbowgame: true,
+					rainbowgame: false,
 					experiencedMode: true,
 					disableChat: false,
 					disableGamechat: false,
@@ -261,7 +275,7 @@ export class App extends React.Component {
 		socket.emit('updateSeatedUser', data);
 	}
 
-	handleLeaveGame(isSeated, isSettings = false, badKarma, toReplay) {
+	handleLeaveGame(isSeated, manualLeaveGame) {
 		const { dispatch, userInfo, gameInfo } = this.props;
 
 		if (userInfo.isSeated) {
@@ -272,10 +286,7 @@ export class App extends React.Component {
 		socket.emit('leaveGame', {
 			userName: userInfo.userName,
 			isSeated,
-			isSettings,
-			uid: gameInfo.general.uid,
-			badKarma,
-			toReplay
+			uid: manualLeaveGame || gameInfo.general.uid
 		});
 	}
 
@@ -329,15 +340,15 @@ export class App extends React.Component {
 				/>
 				{((this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
 					(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)) && (
-					<RightSidebar
-						gameInfo={this.props.gameInfo}
-						userInfo={this.props.userInfo}
-						userList={this.props.userList}
-						generalChats={this.props.generalChats}
-						onModerationButtonClick={this.handleRoute}
-						socket={socket}
-					/>
-				)}
+						<RightSidebar
+							gameInfo={this.props.gameInfo}
+							userInfo={this.props.userInfo}
+							userList={this.props.userList}
+							generalChats={this.props.generalChats}
+							onModerationButtonClick={this.handleRoute}
+							socket={socket}
+						/>
+					)}
 			</section>
 		);
 	}
@@ -349,7 +360,7 @@ App.propTypes = {
 	midSection: PropTypes.string,
 	gameInfo: PropTypes.object,
 	gameList: PropTypes.array,
-	generalChats: PropTypes.array,
+	generalChats: PropTypes.object,
 	userList: PropTypes.object
 };
 

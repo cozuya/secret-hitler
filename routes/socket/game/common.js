@@ -2,12 +2,12 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 	{ sendGameList } = require('../user-requests.js'),
 	_ = require('lodash');
 
-const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceStart, is9pRebalanceStart) => {
+const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceStart) => {
 	const count = _.countBy(game.private.policies);
 
 	game.private.policies = game.private.policies.concat(
 		_.shuffle(
-			_.range(1, 12 - (game.trackState.fascistPolicyCount + (count.fascist || 0)))
+			_.range(1, (game.private.seatedPlayers.length === 9 && game.general.rebalance69p ? 11 : 12) - (game.trackState.fascistPolicyCount + (count.fascist || 0)))
 				.map(num => 'fascist')
 				.concat(_.range(1, 7 - (game.trackState.liberalPolicyCount + (count.liberal || 0))).map(num => 'liberal'))
 		)
@@ -25,17 +25,31 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 		];
 	}
 
-	if (is9pRebalanceStart) {
-		game.trackState.liberalPolicyCount = 1;
-		game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'liberal'), 1);
-		game.trackState.enactedPolicies = [
-			{
-				cardBack: 'liberal',
-				isFlipped: true,
-				position: 'liberal1'
-			}
-		];
-	}
+	// delete/comment below prior to deployment..
+
+	// game.trackState.fascistPolicyCount = 3;
+	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+	// game.trackState.enactedPolicies = [
+	// 	{
+	// 		cardBack: 'fascist',
+	// 		isFlipped: true,
+	// 		position: 'fascist1'
+	// 	},
+	// 	{
+	// 		cardBack: 'fascist',
+	// 		isFlipped: true,
+	// 		position: 'fascist2'
+	// 	},
+	// 	{
+	// 		cardBack: 'fascist',
+	// 		isFlipped: true,
+	// 		position: 'fascist3'
+	// 	}
+	// ];
+
+	// delete/comment above
 
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
 });

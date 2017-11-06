@@ -12,13 +12,21 @@ const {
 		handleUpdateWhitelist,
 		handleAddNewClaim,
 		handleModerationAction,
-		handleOpenReplay,
-		handleCloseReplay,
 		handlePlayerReport,
 		handlePlayerReportDismiss,
+		handleUpdatedBio,
 		handleUpdatedRemakeGame
 	} = require('./user-events'),
-	{ sendUserReports, sendGameInfo, sendUserGameSettings, sendModInfo, sendGameList, sendGeneralChats, sendUserList } = require('./user-requests'),
+	{
+		sendUserReports,
+		sendGameInfo,
+		sendUserGameSettings,
+		sendModInfo,
+		sendGameList,
+		sendGeneralChats,
+		sendUserList,
+		updateUserStatus
+	} = require('./user-requests'),
 	{
 		selectChancellor,
 		selectVoting,
@@ -106,20 +114,17 @@ module.exports = () => {
 			.on('updateSeatedUser', data => {
 				updateSeatedUser(socket, data);
 			})
-			.on('openReplay', gameId => {
-				handleOpenReplay(socket, gameId);
-			})
 			.on('playerReport', data => {
 				handlePlayerReport(data);
 			})
 			.on('playerReportDismiss', () => {
 				handlePlayerReportDismiss();
 			})
-			.on('closeReplay', () => {
-				handleCloseReplay(socket);
-			})
 			.on('updateRemake', data => {
 				handleUpdatedRemakeGame(data);
+			})
+			.on('updateBio', data => {
+				handleUpdatedBio(socket, data);
 			})
 			// user-requests
 
@@ -146,6 +151,9 @@ module.exports = () => {
 			})
 			.on('getUserReports', () => {
 				sendUserReports(socket);
+			})
+			.on('updateUserStatus', (username, type, gameId) => {
+				updateUserStatus(username, type, gameId);
 			})
 			// election
 

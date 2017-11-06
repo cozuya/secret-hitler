@@ -131,6 +131,19 @@
 	input {
 		width: 600px;
 	}
+
+	label {
+		color: #fff;
+		margin: 5px;
+		cursor: pointer;
+	}
+
+	.stickycheck {
+		margin-top: 5px !important;
+		display: inline-block;
+		width: inherit;
+		cursor: pointer;
+	}
 }
 
 .horizontal.divider {

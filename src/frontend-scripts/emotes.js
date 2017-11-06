@@ -58,14 +58,14 @@ export function processEmotes(input) {
 
 	message.forEach((word, index) => {
 		if (allEmotes.includes(word)) {
-			formatedMsg.push(<img src={`images/emotes/${word}.png`} key={index} />);
+			formatedMsg.push(<img src={`/images/emotes/${word}.png`} key={index} />);
 		} else if (/^https:\/\/secrethitler.io/.test(word)) {
 			const hash = word.split('https://secrethitler.io')[1];
 			// } else if (/^http:\/\/localhost:8080/.test(word)) {
 			// 	const hash = word.split('http://localhost:8080')[1];
 
 			formatedMsg.push(
-				<a key={index} href={hash} title="link to something inside of sh.io">
+				<a key={index} href={hash} className="shio-link" title="link to something inside of sh.io">
 					{hash}
 				</a>
 			);
@@ -73,7 +73,7 @@ export function processEmotes(input) {
 			const endLink = word.split('https://github.com/cozuya/secret-hitler')[1];
 
 			formatedMsg.push(
-				<a key={index} target="_blank" title="link to sh.io's github page" href={`https://github.com/cozuya/secret-hitler${endLink}`}>
+				<a key={index} target="_blank" className="shio-link" title="link to sh.io's github page" href={`https://github.com/cozuya/secret-hitler${endLink}`}>
 					SH.IO github link to {endLink}
 				</a>
 			);

@@ -10,34 +10,79 @@ const Changelog = props => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.9.0 "" released 10-22-2017</p>
+			<p>Version 0.9.2 "dim3" released 11-5-2017</p>
 		</div>
-		<h3>New feature: remake game button.</h3>
+		<h3>New feature: discord integration in general chat.</h3>
+		<p>Click the new discord icon (while logged in) to replace the site's general chat with our discord channel's general chat.</p>
+		<h3>New feature: disable confetti user setting.</h3>
+		<p>For those of you that hate fun.</p>
+		<h3>New feature: moderator sticky notes on general chat.</h3>
+		<p>Dismiss in usual way, will be used to impart useful information that is less temporary than broadcasts.</p>
+		<h3>New feature: reverted private games visibility.</h3>
 		<p>
-			Your game is dead due to afk? You want to remake a successfully completed game? Click this button to let your table know you'd like to make a new game.
-			When enough people click, there is a 10 second countdown and a new game is made with the same settings and the people who clicked the button already
-			seated. If this is enough to satisfy the start # requirement, the game starts automatically, if not, it is open to new players being seated.
+			Having them totally hidden was probably too difficult to find for some players that didn't have the URL. So now everyone can see private games again, but
+			only those who are seated (and mods) can see gamechats. A decent compromise I think.
 		</p>
-		<h3>New feature: optional rebalancing for 6 and 9 player games.</h3>
+		<h3>Other issues:</h3>
+		<ul>
+			<li>Clicking on a player's name in general chat takes you to their profile page.</li>
+			<li>The remake button's gamechat now tells you how many votes you need to remake a game.</li>
+			<li>A fix to moderation timeout ability is in.</li>
+			<li>
+				Players can only make one player report per game. I'm lazy and there's no failure state for this, so just keep it in mind: more than one attempt per
+				game will not go through to mods.
+			</li>
+		</ul>
+		<div className="ui header">
+			<p>Version 0.9.1 "dim2" released 11-2-2017</p>
+		</div>
+		<h3>New feature: remake game button</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img style={{ width: '30%', border: '1px solid grey', margin: '5px 0' }} src="/images/remake.png" />
+		</div>
+		<p>
+			Your game is dead or afked on, or you just want to play again with the same team? Hit this button in the lower left corner of the fascist track to show
+			that you'd like to remake the game. When (number of fascists in game +1, or +2 in 8, 9 and 10p games) have also hit the button, the game is remade with
+			the same rules and name and updated UID/link, and will start when its requirements are met as usual.
+		</p>
+		<h3>New feature: rerebalanced 9p games</h3>
+		<p>
+			In what should speak volumes about what I know about game design, having an already-enacted liberal policy in 9p games.. actually makes fascists win more.
+			So now that's gone, but there is one less fascist policy in the deck (so starting at 16). We'll see what happens there.
+		</p>
+		<h3>Other issues:</h3>
+		<ul>
+			<li>Thanks to a contribution, "blind mode" aka no gamechat mode now correctly will let other fascists see who is on their team.</li>
+			<li>Stats/charts should work with the new rerebalanced 9p starting tomorrow when data collection fires at 4am.</li>
+		</ul>
+		<div className="ui header">
+			<p>Version 0.9.0 "dim" released 10-29-2017</p>
+		</div>
+		<h3>New feature: player bios</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img style={{ width: '80%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="/images/bio.png" />
+		</div>
+		<p>
+			Visit your profile page to write something brief about yourself that others can see. Links are allowed, but SEO unfriendly (google "nofollow noreferrer
+			noopener"). Obviously still subject to the site terms of use..
+		</p>
+		<h3>New feature: optional rebalancing for 6 and 9 player games</h3>
 		<p>
 			There's a new create game option (default: on) that, when a 6 or 9p game has begun, a facist and liberal policy have already been enacted, respectively.
 			You'll get it. While these are being recorded correctly, there are no stats/graphs for this yet - next minor update.
 		</p>
 		<h3>New feature: URL routing</h3>
-		<div style={{ textAlign: 'center' }}>
-			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="/images/routes.png" />
-		</div>
 		<p>
 			What this means is the URL of your browser now accurately shows the state of the application. The big takeaway is games, replays, and profiles are now all
 			deep linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you
 			would expect as well. If you link a game that no longer exists, you will instead be routed to the replay. This required a large change to the front end
-			and may not be perfect, please update if so. Also using gfycat style naming convention for games!
+			and may not be perfect, please update if so. Also using gfycat style naming convention for game IDs!
 		</p>
 		<h3>New feature: actual private games</h3>
 		<p>
 			Private games have been changed - they no longer show up on the list of games on the left sidebar, and are only accessible through the new URL linking
-			mechanism (and remake game feature). In addition, private games no longer count towards a player's win and loss rate. Note: moderators can still see
-			private games.
+			mechanism. In addition, private games no longer count towards a player's win and loss rate. Note: moderators can still see private games. I realize that
+			it may be somewhat difficult to play additional private games - next minor patch will have a remake game feature which will help with that.
 		</p>
 		<h3>Other issues:</h3>
 		<ul>
@@ -46,12 +91,15 @@ const Changelog = props => (
 				can at least attempt to make things more fluid and contiguous. If you ARE a designer (and want to work for free..), let me know.
 			</li>
 			<li>Links in general chat to sh.io itself, or to this site's github repository, are now clickable. Other links are still not.</li>
+			<li>Hovering on a chat in general chat will show a timestamp of when it was said.</li>
 			<li>The whitelist feature now correctly has a scroll bar.</li>
 			<li>If you have a custom width or font, the application no longer "flashes" when you load the page.</li>
-			<li>Hovering on a chat in general chat will show a timestamp of when it was said.</li>
 			<li>A fix to players being able to make accounts with the same name but different capitalization has been implemented.</li>
+			<li>The stats page is finally working right - it updates once per day, and the undefined/NaN stuff is gone.</li>
+			<li>There is a now a slight UI difference between players who have left a game, and players who are disconnected.</li>
 			<li>All dependencies updated including moving to the latest version of React (16). What this means is hopefully some better front-end performance.</li>
 		</ul>
+		<h3>Up next: the remake game functionality will be finished up and rolled out in 0.9.1. Also new stats graphs for the rebalanced game feature.</h3>
 		<div className="ui header">
 			<p>Version 0.8.2 "blue steel" released 9-30-2017</p>
 		</div>
@@ -365,11 +413,6 @@ const Changelog = props => (
 		<p>
 			<b>For rainbow games, your wins and losses are in a different tier, that does not affect your regular game winrate or player color.</b> "Rainbow rewards"
 			may come in at some point.
-		</p>
-		<p>
-			Also in this release, the karma system has been temporarily disabled due to griefers exploiting it. The next major feature is <b>player moderation</b>,
-			where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls. This isn't all that hard and will be coming soon,
-			and hopefully guarantee a better playing experience for everyone. Please check the github issue if you are interested in helping out.
 		</p>
 	</section>
 );

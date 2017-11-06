@@ -25,7 +25,6 @@ class Gamechat extends React.Component {
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
 		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
 		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
-		this.handleBadKarmaCheck = this.handleBadKarmaCheck.bind(this);
 		this.handleChatScroll = this.handleChatScroll.bind(this);
 		this.handleNoteClick = this.handleNoteClick.bind(this);
 
@@ -34,7 +33,6 @@ class Gamechat extends React.Component {
 			lock: false,
 			inputValue: '',
 			claim: '',
-			badKarma: '',
 			playersToWhitelist: [],
 			disabled: false,
 			notesEnabled: false
@@ -92,10 +90,6 @@ class Gamechat extends React.Component {
 		}
 	}
 
-	handleBadKarmaCheck(playerName) {
-		this.setState({ badKarma: playerName });
-	}
-
 	handleWhitelistPlayers() {
 		this.setState({
 			playersToWhitelist: this.props.userList.list
@@ -131,6 +125,7 @@ class Gamechat extends React.Component {
 		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
 		} else {
+			this.props.onLeaveGame();
 			window.location.hash = '#/';
 		}
 	}
@@ -223,116 +218,122 @@ class Gamechat extends React.Component {
 				return stringA > stringB ? 1 : -1;
 			};
 
-		return gameInfo.chats
-			.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
-			.filter(
-				chat =>
-					(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
-					(chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All')) ||
-					(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
-			)
-			.map((chat, i) => {
-				const chatContents = processEmotes(chat.chat),
-					isSeated = seatedUserNames.includes(chat.userName),
-					playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-				// ? <div className={chat.chat[2] && chat.chat[2].item.type ? `gamechat-item ${chat.chat[2].item.type}` : 'gamechat-item'} key={i}>
-				return chat.gameChat ? (
-					<div className={chat.chat[1] && chat.chat[1].type ? `gamechat-item ${chat.chat[1].type}` : 'gamechat-item'} key={i}>
-						<span className="chat-user--game">[GAME]{this.handleTimestamps(chat.timestamp)}: </span>
-						<span className="game-chat">
-							{chatContents.map((chatSegment, index) => {
-								if (chatSegment.type) {
-									let classes;
+		if (
+			!gameInfo.general.private ||
+			userInfo.isSeated ||
+			(userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)))
+		) {
+			return gameInfo.chats
+				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
+				.filter(
+					chat =>
+						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
+						(chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All')) ||
+						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
+				)
+				.map((chat, i) => {
+					const chatContents = processEmotes(chat.chat),
+						isSeated = seatedUserNames.includes(chat.userName),
+						playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
+					// ? <div className={chat.chat[2] && chat.chat[2].item.type ? `gamechat-item ${chat.chat[2].item.type}` : 'gamechat-item'} key={i}>
+					return chat.gameChat ? (
+						<div className={chat.chat[1] && chat.chat[1].type ? `gamechat-item ${chat.chat[1].type}` : 'gamechat-item'} key={i}>
+							<span className="chat-user--game">[GAME]{this.handleTimestamps(chat.timestamp)}: </span>
+							<span className="game-chat">
+								{chatContents.map((chatSegment, index) => {
+									if (chatSegment.type) {
+										let classes;
 
-									if (chatSegment.type === 'player') {
-										classes = 'chat-player';
-									} else {
-										classes = `chat-role--${chatSegment.type}`;
+										if (chatSegment.type === 'player') {
+											classes = 'chat-player';
+										} else {
+											classes = `chat-role--${chatSegment.type}`;
+										}
+
+										return (
+											<span key={index} className={classes}>
+												{chatSegment.text}
+											</span>
+										);
 									}
 
-									return (
-										<span key={index} className={classes}>
-											{chatSegment.text}
-										</span>
-									);
-								}
+									return chatSegment.text;
+								})}
+							</span>
+						</div>
+					) : chat.isClaim ? (
+						<div className="item claim-item" key={i}>
+							<span className="chat-user--claim">[CLAIM]{this.handleTimestamps(chat.timestamp)}: </span>
+							<span className="claim-chat">
+								{chatContents.map((chatSegment, index) => {
+									if (chatSegment.type) {
+										let classes;
 
-								return chatSegment.text;
-							})}
-						</span>
-					</div>
-				) : chat.isClaim ? (
-					<div className="item claim-item" key={i}>
-						<span className="chat-user--claim">[CLAIM]{this.handleTimestamps(chat.timestamp)}: </span>
-						<span className="claim-chat">
-							{chatContents.map((chatSegment, index) => {
-								if (chatSegment.type) {
-									let classes;
+										if (chatSegment.type === 'player') {
+											classes = 'chat-player';
+										} else {
+											classes = `chat-role--${chatSegment.type}`;
+										}
 
-									if (chatSegment.type === 'player') {
-										classes = 'chat-player';
-									} else {
-										classes = `chat-role--${chatSegment.type}`;
+										return (
+											<span key={index} className={classes}>
+												{chatSegment.text}
+											</span>
+										);
 									}
 
-									return (
-										<span key={index} className={classes}>
-											{chatSegment.text}
-										</span>
-									);
+									return chatSegment.text;
+								})}
+							</span>
+						</div>
+					) : chat.isBroadcast ? (
+						<div className="item" key={i}>
+							<span className="chat-user--broadcast">[BROADCAST]{this.handleTimestamps(chat.timestamp)}: </span>
+							<span className="broadcast-chat">{processEmotes(chat.chat)}</span>
+						</div>
+					) : (
+						<div className="item" key={i}>
+							<span
+								className={
+									playerListPlayer
+										? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat
+											? 'chat-user'
+											: playerListPlayer.wins + playerListPlayer.losses > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'
+										: 'chat-user'
 								}
-
-								return chatSegment.text;
-							})}
-						</span>
-					</div>
-				) : chat.isBroadcast ? (
-					<div className="item" key={i}>
-						<span className="chat-user--broadcast">[BROADCAST]{this.handleTimestamps(chat.timestamp)}: </span>
-						<span className="broadcast-chat">{processEmotes(chat.chat)}</span>
-					</div>
-				) : (
-					<div className="item" key={i}>
-						<span
-							className={
-								playerListPlayer
-									? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat
-										? 'chat-user'
-										: playerListPlayer.wins + playerListPlayer.losses > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'
-									: 'chat-user'
-							}
-						>
-							{gameInfo.gameState.isTracksFlipped
-								? isSeated
-									? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-									: chat.userName
-								: chat.userName}
-							{isSeated ? (
-								''
-							) : MODERATORS.includes(chat.userName) ? (
-								<span>
-									<span className="moderator-name"> (M)</span>
+							>
+								{gameInfo.gameState.isTracksFlipped
+									? isSeated
+										? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+										: chat.userName
+									: chat.userName}
+								{isSeated ? (
+									''
+								) : MODERATORS.includes(chat.userName) ? (
+									<span>
+										<span className="moderator-name"> (M)</span>
+										<span className="observer-chat"> (Observer)</span>
+									</span>
+								) : EDITORS.includes(chat.userName) ? (
+									<span>
+										<span className="editor-name"> (E)</span>
+										<span className="observer-chat"> (Observer)</span>
+									</span>
+								) : ADMINS.includes(chat.userName) ? (
+									<span>
+										<span className="admin-name"> (A)</span>
+										<span className="observer-chat"> (Observer)</span>
+									</span>
+								) : (
 									<span className="observer-chat"> (Observer)</span>
-								</span>
-							) : EDITORS.includes(chat.userName) ? (
-								<span>
-									<span className="editor-name"> (E)</span>
-									<span className="observer-chat"> (Observer)</span>
-								</span>
-							) : ADMINS.includes(chat.userName) ? (
-								<span>
-									<span className="admin-name"> (A)</span>
-									<span className="observer-chat"> (Observer)</span>
-								</span>
-							) : (
-								<span className="observer-chat"> (Observer)</span>
-							)}
-							{this.handleTimestamps(chat.timestamp)}:
-						</span>
-						<span> {chatContents}</span>
-					</div>
-				);
-			});
+								)}
+								{this.handleTimestamps(chat.timestamp)}:
+							</span>
+							<span> {chatContents}</span>
+						</div>
+					);
+				});
+		}
 	}
 
 	render() {
@@ -372,8 +373,8 @@ class Gamechat extends React.Component {
 
 				if (summary) {
 					const onClick = () => {
-						this.props.loadReplay(summary, true);
-						this.props.onLeaveGame(this.props.userInfo.isSeated, false, this.state.badKarma, true);
+						this.props.onLeaveGame(this.props.userInfo.isSeated);
+						window.location.hash = `#/replay/${gameInfo.general.uid}`;
 					};
 
 					return (

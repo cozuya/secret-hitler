@@ -93,6 +93,19 @@ class Settings extends React.Component {
 			}
 		});
 
+		$(this.confetti).checkbox({
+			onChecked() {
+				socket.emit('updateGameSettings', {
+					disableConfetti: true
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateGameSettings', {
+					disableConfetti: false
+				});
+			}
+		});
+
 		this.setState({
 			fontChecked: gameSettings.fontFamily
 		});
@@ -122,9 +135,7 @@ class Settings extends React.Component {
 	profileSearchSubmit(e) {
 		e.preventDefault();
 
-		if (this.state.profileSearchValue !== 'coz') {
-			this.props.fetchProfile(this.state.profileSearchValue);
-		}
+		this.props.fetchProfile(this.state.profileSearchValue);
 	}
 
 	renderFonts() {
@@ -357,6 +368,19 @@ class Settings extends React.Component {
 								}}
 							>
 								<input type="checkbox" name="playercolors" defaultChecked={gameSettings.disablePlayerColorsInChat} />
+							</div>
+						</div>
+					</div>
+					<div className="row centered">
+						<div className="four wide column popups">
+							<h4 className="ui header">Disable confetti</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.confetti = c;
+								}}
+							>
+								<input type="checkbox" name="confetti" defaultChecked={gameSettings.disableConfetti} />
 							</div>
 						</div>
 					</div>

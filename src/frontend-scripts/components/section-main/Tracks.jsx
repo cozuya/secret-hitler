@@ -13,6 +13,22 @@ class Tracks extends React.Component {
 		};
 	}
 
+	componentDidMount() {
+		this._ismounted = true;
+	}
+
+	componentWillUnmount() {
+		this._ismounted = false;
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (!this.props.gameInfo.gameState.isStarted) {
+			this.setState({
+				remakeStatus: false
+			});
+		}
+	}
+
 	render() {
 		const { gameInfo, userInfo, socket } = this.props,
 			renderElectionTracker = () => {
@@ -47,16 +63,14 @@ class Tracks extends React.Component {
 					);
 
 					setTimeout(() => {
-						this.setState({
-							remakeStatusDisabled: false
-						});
+						if (this._ismounted) {
+							this.setState({
+								remakeStatusDisabled: false
+							});
+						}
 					}, 2000);
 				}
 			};
-
-		// {userInfo.userName &&
-		// 	userInfo.seatNumber &&
-		// 	gameInfo.gameState.isTracksFlipped && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
 
 		return (
 			<section className="tracks-container">
@@ -66,7 +80,6 @@ class Tracks extends React.Component {
 					<div className="game-name">
 						Game name: <span>{gameInfo.general.name}</span>
 					</div>
-					{userInfo.userName && <i className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`} onClick={updateRemake} />}
 					{userInfo.userName &&
 						(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) && (
 							<div className="gameuid">Game UID: {gameInfo.general.uid}</div>
@@ -74,6 +87,15 @@ class Tracks extends React.Component {
 					<div className="player-count">
 						Players: <span>{gameInfo.publicPlayersState.length}</span>
 					</div>
+					{userInfo.userName &&
+						userInfo.isSeated &&
+						gameInfo.gameState.isTracksFlipped && (
+							<i
+								className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`}
+								onClick={updateRemake}
+								title="Enable this button to show that you would like to remake this game"
+							/>
+						)}
 				</div>
 				<section
 					className={(() => {

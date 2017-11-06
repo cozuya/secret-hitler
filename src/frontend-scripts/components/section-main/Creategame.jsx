@@ -301,7 +301,9 @@ export default class Creategame extends React.Component {
 				</div>
 				<div className="row">
 					<div className="four wide column rebalance69p">
-						<h4 className="ui header">Rebalance 6 & 9 player games - they have a policy card enacted on start.</h4>
+						<h4 className="ui header">
+							Rebalance 6 & 9 player games - 6 player games start with a fascist policy enacted, 9 player games start with one less fascist policy.
+						</h4>
 						<div
 							className="ui fitted toggle checkbox"
 							ref={c => {

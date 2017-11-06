@@ -1,10 +1,9 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { MODERATORS, EDITORS, ADMINS } from '../../constants';
 
 const SidebarGame = props => {
-	const { game, userInfo } = props,
+	const { game } = props,
 		gameClasses = () => {
 			let classes = 'ui vertical segment';
 
@@ -51,8 +50,7 @@ const SidebarGame = props => {
 			return str;
 		};
 
-	return !game.private ||
-		(userInfo.userName && (ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))) ? (
+	return (
 		<div
 			data-uid={game.uid}
 			onClick={() => {
@@ -70,7 +68,7 @@ const SidebarGame = props => {
 					{game.rebalance69p && (
 						<div
 							className="rebalance-game"
-							title="This is a rebalanced game - if it is a 6 or 9 player game, it will start with a fascist or liberal policy already enacted, respectively."
+							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 9 player games start with one less fascist policy."
 						>
 							R
 						</div>
@@ -128,6 +126,14 @@ const SidebarGame = props => {
 							P
 						</div>
 					)}
+					{game.rebalance69p && (
+						<div
+							className="rebalance-game"
+							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 9 player games start with one less fascist policy."
+						>
+							R
+						</div>
+					)}
 					<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'} title={'Playing: ' + game.userNames.join(', ')}>
 						{game.name}
 					</div>
@@ -152,7 +158,7 @@ const SidebarGame = props => {
 				</div>
 			)}
 		</div>
-	) : null;
+	);
 };
 
 SidebarGame.propTypes = {

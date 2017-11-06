@@ -3,6 +3,7 @@ import Tracks from './Tracks.jsx';
 import Gamechat from './Gamechat.jsx';
 import Players from './Players.jsx';
 import Confetti from './Confetti.jsx';
+import Balloons from './Balloons.jsx';
 import PropTypes from 'prop-types';
 
 export default class Game extends React.Component {
@@ -71,16 +72,18 @@ export default class Game extends React.Component {
 					</div>
 				</div>
 				{(() => {
-					const { userInfo, gameInfo } = this.props;
+					const { userInfo, gameInfo } = this.props,
+						balloons = Math.random() < 0.1;
 
 					if (
 						userInfo.userName &&
+						!userInfo.gameSettings.disableConfetti &&
 						gameInfo &&
 						gameInfo.publicPlayersState &&
 						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
 						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti
 					) {
-						return <Confetti />;
+						return balloons ? <Balloons /> : <Confetti />;
 					}
 				})()}
 				<div

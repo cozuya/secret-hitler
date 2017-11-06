@@ -1,6 +1,9 @@
 module.exports.games = [];
 module.exports.userList = [];
-module.exports.generalChats = [];
+module.exports.generalChats = {
+	sticky: '',
+	list: []
+};
 module.exports.accountCreationDisabled = { status: false };
 module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };

@@ -67,7 +67,7 @@ export default class Generalchat extends React.Component {
 	processChats() {
 		const { userInfo } = this.props;
 
-		return this.props.generalChats.map((chat, i) => {
+		return this.props.generalChats.list.map((chat, i) => {
 			const userClasses = classnames(
 				{
 					[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
@@ -162,6 +162,6 @@ Generalchat.propTypes = {
 	gameInfo: PropTypes.object,
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
-	generalChats: PropTypes.array,
+	generalChats: PropTypes.object,
 	userList: PropTypes.object
 };

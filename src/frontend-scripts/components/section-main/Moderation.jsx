@@ -250,6 +250,15 @@ export default class Moderation extends React.Component {
 				>
 					Delete game
 				</button>
+				<button
+					style={{ width: '100%', background: 'darkorange' }}
+					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
+					onClick={() => {
+						takeModAction('setSticky');
+					}}
+				>
+					Set general chat sticky
+				</button>
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable account creation</h4>
 					<div
@@ -534,7 +543,8 @@ export default class Moderation extends React.Component {
 		this.props.socket.emit('updateModAction', {
 			modName: this.props.userInfo.userName,
 			comment: this.state.broadcastText,
-			action: 'broadcast'
+			action: 'broadcast',
+			isSticky: $('#broadcast-sticky').is(':checked')
 		});
 
 		this.setState({
@@ -602,6 +612,8 @@ export default class Moderation extends React.Component {
 								Submit
 							</div>
 						</form>
+						<label htmlFor="broadcast-sticky">Also sticky this broadcast</label>
+						<input className="stickycheck" type="checkbox" id="broadcast-sticky" />
 					</div>
 				</div>
 			</section>

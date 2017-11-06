@@ -22,7 +22,7 @@
 		left: 2px;
 		z-index: 105;
 		color: #ddd !important;
-		background: #89a79a;
+		background: #034f61;
 		font-size: 16px;
 		padding: 4px;
 		opacity: 1;
@@ -32,7 +32,7 @@
 		cursor: pointer;
 
 		&.enabled {
-			color: green !important;
+			color: #db2828 !important;
 		}
 	}
 
@@ -87,9 +87,12 @@
 			backface-visibility: hidden;
 		}
 		.track-flipper-top {
+			background: radial-gradient(ellipse at center, #90aeba 0%, #445950 100%) #90aeba;
 			background-color: #90aeba;
 		}
+
 		.track-flipper-bottom {
+			background: radial-gradient(ellipse at center, #85393b 0%, #3f2525 100%) #85393b;
 			background-color: #85393b;
 		}
 		.track {

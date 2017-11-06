@@ -55,7 +55,7 @@ const userInfo = (state = {}, action) => {
 		}
 		return state;
 	},
-	generalChats = (state = [], action) => {
+	generalChats = (state = {}, action) => {
 		switch (action.type) {
 			case UPDATE_GENERALCHATS:
 				state = action.info;

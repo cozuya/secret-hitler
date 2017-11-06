@@ -3,29 +3,19 @@ import Playerlist from './Playerlist.jsx';
 import Generalchat from './Generalchat.jsx';
 import PropTypes from 'prop-types';
 
-const RightSidebar = props =>
+const RightSidebar = props => (
 	<section className="section-right three wide column">
-		<Playerlist
-			userInfo={props.userInfo}
-			userList={props.userList}
-			socket={props.socket}
-			onModerationButtonClick={props.onModerationButtonClick}
-		/>
+		<Playerlist userInfo={props.userInfo} userList={props.userList} socket={props.socket} onModerationButtonClick={props.onModerationButtonClick} />
 		<div className="ui divider right-sidebar-divider" />
-		<Generalchat
-			gameInfo={props.gameInfo}
-			socket={props.socket}
-			generalChats={props.generalChats}
-			userInfo={props.userInfo}
-			userList={props.userList}
-		/>
-	</section>;
+		<Generalchat gameInfo={props.gameInfo} socket={props.socket} generalChats={props.generalChats} userInfo={props.userInfo} userList={props.userList} />
+	</section>
+);
 
 RightSidebar.propTypes = {
 	gameInfo: PropTypes.object,
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
-	generalChats: PropTypes.array,
+	generalChats: PropTypes.object,
 	userList: PropTypes.object,
 	onModerationButtonClick: PropTypes.func
 };

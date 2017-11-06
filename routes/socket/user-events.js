@@ -12,6 +12,7 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	{ secureGame } = require('./util.js'),
 	crypto = require('crypto'),
 	https = require('https'),
+	_ = require('lodash'),
 	{ sendInProgressGameUpdate } = require('./util.js'),
 	version = require('../../version'),
 	{ PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants'),
@@ -74,36 +75,33 @@ const handleSocketDisconnect = socket => {
 
 		if (passport && Object.keys(passport).length) {
 			const userIndex = userList.findIndex(user => user.userName === passport.user),
-				gamez = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user)),
-				game = games.find(game => game.publicPlayersState.find(player => player.userName === passport.user));
+				gamesPlayerSeatedIn = games.filter(game =>
+					game.publicPlayersState.find(player => player.userName === passport.user && player.connected && !player.leftGame)
+				);
 
-			if (gamez.length && gamez.length > 1) {
-				console.log('player in more than publicplayersstate');
-			}
-
-			socket.emit('manualDisconnection');
 			if (userIndex !== -1) {
 				userList.splice(userIndex, 1);
 			}
-			if (game) {
-				const { gameState, publicPlayersState } = game,
-					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-				if (!gameState.isStarted && publicPlayersState.length === 1 && gamez.length && gamez.length < 2) {
-					games.splice(games.indexOf(game), 1);
-				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
-					publicPlayersState.splice(playerIndex, 1);
-					checkStartConditions(game);
-					io.sockets.in(game.uid).emit('gameUpdate', game);
-				} else if (
-					gameState.isCompleted &&
-					game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1
-				) {
-					games.splice(games.indexOf(game), 1);
-				} else if (gameState.isTracksFlipped) {
-					publicPlayersState[playerIndex].connected = false;
-					sendInProgressGameUpdate(game);
-				}
+			if (gamesPlayerSeatedIn.length) {
+				gamesPlayerSeatedIn.forEach(game => {
+					const { gameState, publicPlayersState } = game,
+						playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+
+					if (
+						(!gameState.isStarted && publicPlayersState.length === 1) ||
+						(gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
+					) {
+						games.splice(games.indexOf(game), 1);
+					} else if (!gameState.isTracksFlipped && playerIndex > -1) {
+						publicPlayersState.splice(playerIndex, 1);
+						checkStartConditions(game);
+						io.sockets.in(game.uid).emit('gameUpdate', game);
+					} else if (gameState.isTracksFlipped) {
+						publicPlayersState[playerIndex].connected = false;
+						sendInProgressGameUpdate(game);
+					}
+				});
 				sendGameList();
 			}
 		}
@@ -127,6 +125,46 @@ if (process.env.NODE_ENV) {
 
 	crashReq.end(crashReport);
 }
+
+const handleUserLeaveGame = (socket, data) => {
+	const game = games.find(el => el.general.uid === data.uid);
+
+	if (io.sockets.adapter.rooms[data.uid]) {
+		socket.leave(data.uid);
+	}
+
+	if (game) {
+		if (data.isSeated) {
+			if (game.gameState.isTracksFlipped) {
+				const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+				if (playerIndex > -1) {
+					// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
+					game.publicPlayersState[playerIndex].leftGame = true;
+				}
+				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+					games.splice(games.indexOf(game), 1);
+				}
+			} else if (!game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
+				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
+				checkStartConditions(game);
+				io.sockets.in(data.uid).emit('gameUpdate', game);
+			}
+		}
+		if (!game.publicPlayersState.length) {
+			io.sockets.in(data.uid).emit('gameUpdate', {});
+			games.splice(games.indexOf(game), 1);
+		} else if (game.gameState.isTracksFlipped) {
+			sendInProgressGameUpdate(game);
+		}
+	}
+
+	if (!data.isRemake) {
+		updateUserStatus(data.userName, 'none', data.uid);
+		socket.emit('gameUpdate', {});
+	}
+
+	sendGameList();
+};
 
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
@@ -167,6 +205,17 @@ module.exports.updateSeatedUser = (socket, data) => {
 	}
 };
 
+module.exports.handleUpdatedBio = (socket, data) => {
+	if (socket.handshake.session.passport) {
+		const username = socket.handshake.session.passport.user;
+
+		Account.findOne({ username }).then(account => {
+			account.bio = data;
+			account.save();
+		});
+	}
+};
+
 module.exports.handleAddNewGame = (socket, data) => {
 	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
@@ -192,6 +241,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 			games.push(data);
 			sendGameList();
 			socket.join(data.general.uid);
+			socket.emit('updateSeatForUser');
 			socket.emit('gameUpdate', data);
 		});
 	}
@@ -568,49 +618,27 @@ module.exports.handleAddNewClaim = data => {
 	sendInProgressGameUpdate(game);
 };
 
-const handleUserLeaveGame = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (io.sockets.adapter.rooms[data.uid]) {
-		socket.leave(data.uid);
-	}
-
-	if (game) {
-		if (data.isSeated) {
-			if (game.gameState.isTracksFlipped) {
-				const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
-				if (playerIndex > -1) {
-					// crash protection.  Presumably race condition or latency causes this to fire twice, causing crash?
-					game.publicPlayersState[playerIndex].leftGame = true;
-				}
-				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-					games.splice(games.indexOf(game), 1);
-				}
-			} else if (!game.gameState.isTracksFlipped && game.publicPlayersState.findIndex(player => player.userName === data.userName > -1)) {
-				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
-				checkStartConditions(game);
-				io.sockets.in(data.uid).emit('gameUpdate', game);
-			}
-		}
-		if (!game.publicPlayersState.length) {
-			io.sockets.in(data.uid).emit('gameUpdate', {});
-			games.splice(games.indexOf(game), 1);
-		} else if (game.gameState.isTracksFlipped) {
-			sendInProgressGameUpdate(game);
-		}
-	}
-	if (!data.toReplay) {
-		updateUserStatus(data.userName, 'none', data.uid);
-	}
-	socket.emit('gameUpdate', {}, data.isSettings, data.toReplay);
-	sendGameList();
-};
-
 module.exports.handleUpdatedRemakeGame = data => {
 	const game = games.find(el => el.general.uid === data.uid),
 		{ publicPlayersState } = game,
 		playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName),
 		player = publicPlayersState[playerIndex],
+		minimumRemakeVoteCount = (() => {
+			switch (game.general.playerCount) {
+				case 5:
+					return 4;
+				case 6:
+					return 4;
+				case 7:
+					return 5;
+				case 8:
+					return 6;
+				case 9:
+					return 6;
+				case 10:
+					return 7;
+			}
+		})(),
 		chat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -620,31 +648,24 @@ module.exports.handleUpdatedRemakeGame = data => {
 					type: 'player'
 				}
 			]
-		};
-
-	if (!game || !player) {
-		return;
-	}
-
-	player.isRemakeVoting = data.remakeStatus;
-	if (player.isRemakeVoting) {
-		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName);
-
-		chat.chat.push({ text: ' has voted to remake this game.' });
-		game.chats.push(chat);
-		publicPlayer.isRemaking = true;
-
-		if (
-			!game.gameState.isRemaking &&
-			publicPlayersState.length > 3 &&
-			publicPlayersState.filter(player => player.isRemakeVoting).length / publicPlayersState.length >= 0.8
-		) {
-			const newGame = Object.assign({}, game),
+		},
+		makeNewGame = () => {
+			const newGame = _.cloneDeep(game),
 				remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName),
 				remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
 					socketId =>
 						io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 				);
+
+			remakePlayerSocketIDs.forEach(id => {
+				io.sockets.sockets[id].leave(game.general.uid);
+			});
+			remakePlayerNames.forEach(name => {
+				const play = game.publicPlayersState.find(p => p.userName === name);
+
+				play.leftGame = true;
+			});
+			sendInProgressGameUpdate(game);
 
 			newGame.gameState = {
 				previousElectedGovernment: [],
@@ -654,10 +675,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 			};
 
 			newGame.chats = [];
-			newGame.general.uid = Math.random()
-				.toString(36)
-				.substring(2);
-			newGame.general.status = 'Game is remaking..';
+			newGame.general.uid = `${game.general.uid}Remake`;
 			newGame.electionCount = 0;
 			newGame.timeCreated = new Date().getTime();
 			newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
@@ -665,6 +683,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 				customCardback: player.customCardback,
 				customCardbackUid: player.customCardbackUid,
 				connected: player.connected,
+				isRemakeVoting: false,
 				cardStatus: {
 					cardDisplayed: false,
 					isFlipped: false,
@@ -687,25 +706,61 @@ module.exports.handleUpdatedRemakeGame = data => {
 			};
 
 			games.push(newGame);
+			sendGameList();
 			remakePlayerSocketIDs.forEach((id, index) => {
 				handleUserLeaveGame(io.sockets.sockets[id], {
 					uid: game.general.uid,
 					userName: remakePlayerNames[index],
-					isSeated: true
+					isSeated: true,
+					isRemake: true
 				});
 				sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
 			});
 			checkStartConditions(newGame);
-			// game.gameState.isRemaking = true;
+		};
+
+	if (!game || !player || !game.publicPlayersState) {
+		return;
+	}
+
+	player.isRemakeVoting = data.remakeStatus;
+
+	if (data.remakeStatus) {
+		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName),
+			remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+
+		chat.chat.push({ text: ` has voted to remake this game. (${remakePlayerCount}/${minimumRemakeVoteCount})` });
+		publicPlayer.isRemaking = true;
+
+		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
+			game.general.isRemaking = true;
+			game.general.remakeCount = 5;
+
+			game.private.remakeTimer = setInterval(() => {
+				if (game.general.remakeCount !== 0) {
+					game.general.status = `Game is remade in ${game.general.remakeCount} ${game.general.remakeCount === 1 ? 'second' : 'seconds'}.`;
+					sendInProgressGameUpdate(game);
+					game.general.remakeCount--;
+				} else {
+					clearInterval(game.private.remakeTimer);
+					game.general.status = 'Game has been remade.';
+					makeNewGame();
+				}
+			}, 1000);
 		}
 	} else {
-		chat.chat.push({ text: ' has recinded his or her vote to remake this game.' });
+		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+
+		if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+			game.general.isRemaking = false;
+			game.general.status = 'Game remaking has been cancelled.';
+			clearInterval(game.private.remakeTimer);
+		}
+		chat.chat.push({ text: ` has rescinded their vote to remake this game. (${remakePlayerCount}/${minimumRemakeVoteCount})` });
 	}
+	game.chats.push(chat);
+
 	sendInProgressGameUpdate(game);
-	// remakeStatus: this.state.remakeStatus,
-	// userName: userInfo.userName,
-	// uid: gameInfo.general.uid
-	// isRemakeVoting
 };
 
 module.exports.handleAddNewGameChat = (socket, data) => {
@@ -749,7 +804,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	}
 
 	if (generalChatCount === 100) {
-		const chats = new Generalchats({ chats: generalChats });
+		const chats = new Generalchats({ chats: generalChats.list });
 
 		chats.save(() => {
 			generalChatCount = 0;
@@ -762,10 +817,10 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	generalChatCount++;
 	data.time = new Date();
 	data.color = color;
-	generalChats.push(data);
+	generalChats.list.push(data);
 
-	if (generalChats.length > 99) {
-		generalChats.shift();
+	if (generalChats.list.length > 99) {
+		generalChats.list.shift();
 	}
 	io.sockets.emit('generalChats', generalChats);
 };
@@ -792,8 +847,13 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 };
 
 module.exports.handleModerationAction = (socket, data) => {
-	const { passport } = socket.handshake.session,
-		isSuperMod = passport.user ? EDITORS.includes(passport.user) || ADMINS.includes(passport.user) : false,
+	const { passport } = socket.handshake.session;
+
+	if (!passport || !Object.keys(passport).length) {
+		return;
+	}
+
+	const isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user),
 		affectedSocketId = Object.keys(io.sockets.sockets).find(
 			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 		);
@@ -827,10 +887,10 @@ module.exports.handleModerationAction = (socket, data) => {
 								account.salt = crypto.randomBytes(20).toString('hex');
 								account.isBanned = true;
 								account.save(() => {
-									const bannedAccountGeneralChats = generalChats.filter(chat => chat.userName === username);
+									const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
 
 									bannedAccountGeneralChats.reverse().forEach(chat => {
-										generalChats.splice(generalChats.indexOf(chat), 1);
+										generalChats.list.splice(generalChats.list.indexOf(chat), 1);
 									});
 									logOutUser(username);
 									io.sockets.emit('generalChats', generalChats);
@@ -857,6 +917,10 @@ module.exports.handleModerationAction = (socket, data) => {
 			case 'ban':
 				banAccount(data.userName);
 				break;
+			case 'setSticky':
+				generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+				io.sockets.emit('generalChats', generalChats);
+				break;
 			case 'broadcast':
 				const discordBroadcastBody = JSON.stringify({
 						content: `Text: ${data.comment}\nMod: ${passport.user}`
@@ -880,12 +944,17 @@ module.exports.handleModerationAction = (socket, data) => {
 						timestamp: new Date()
 					});
 				});
-				generalChats.push({
+				generalChats.list.push({
 					userName: `BROADCAST (${data.modName})`,
 					time: new Date(),
 					chat: data.comment,
 					isBroadcast: true
 				});
+
+				if (data.isSticky) {
+					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+				}
+
 				io.sockets.emit('generalChats', generalChats);
 				break;
 			case 'ipban':
@@ -912,7 +981,7 @@ module.exports.handleModerationAction = (socket, data) => {
 				});
 				break;
 			case 'clearGenchat':
-				generalChats.fill({});
+				generalChats.list.fill({});
 
 				io.sockets.emit('generalChats', generalChats);
 				break;
@@ -1063,28 +1132,32 @@ module.exports.handlePlayerReport = data => {
 			}
 		};
 
-	playerReport.save(() => {
-		Account.find({ username: mods }).then(accounts => {
-			accounts.forEach(account => {
-				const onlineSocketId = Object.keys(io.sockets.sockets).find(
-					socketId =>
-						io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
-				);
+	PlayerReport.findOne({ gameUid: data.uid, reportingPlayer: data.userName }).then(report => {
+		if (!report) {
+			playerReport.save(() => {
+				Account.find({ username: mods }).then(accounts => {
+					accounts.forEach(account => {
+						const onlineSocketId = Object.keys(io.sockets.sockets).find(
+							socketId =>
+								io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+						);
 
-				account.gameSettings.newReport = true;
+						account.gameSettings.newReport = true;
 
-				if (onlineSocketId) {
-					io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
+						if (onlineSocketId) {
+							io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
+						}
+						account.save();
+					});
+				});
+
+				try {
+					const req = https.request(options);
+					req.end(body);
+				} catch (error) {
+					console.log(err, 'Caught exception in player request https request to discord server');
 				}
-				account.save();
 			});
-		});
-
-		try {
-			const req = https.request(options);
-			req.end(body);
-		} catch (error) {
-			console.log(err, 'Caught exception in player request https request to discord server');
 		}
 	});
 };
@@ -1106,8 +1179,6 @@ module.exports.handlePlayerReportDismiss = () => {
 		});
 	});
 };
-
-module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 module.exports.checkUserStatus = socket => {
 	const { passport } = socket.handshake.session;
@@ -1131,7 +1202,7 @@ module.exports.checkUserStatus = socket => {
 		if (game && game.gameState.isStarted && !game.gameState.isCompleted) {
 			game.publicPlayersState.find(player => player.userName === user).connected = true;
 			socket.join(game.general.uid);
-			socket.emit('updateSeatForUser', true);
+			socket.emit('updateSeatForUser');
 			sendInProgressGameUpdate(game);
 		}
 	}
@@ -1143,22 +1214,6 @@ module.exports.checkUserStatus = socket => {
 	sendGameList(socket);
 };
 
-module.exports.handleOpenReplay = (socket, gameId) => {
-	const { passport } = socket.handshake.session;
-
-	if (passport) {
-		const username = socket.handshake.session.passport.user;
-		updateUserStatus(username, 'replay', gameId);
-	}
-};
-
-module.exports.handleCloseReplay = socket => {
-	const { passport } = socket.handshake.session;
-
-	if (passport) {
-		const username = socket.handshake.session.passport.user;
-		updateUserStatus(username, 'none');
-	}
-};
+module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 module.exports.handleSocketDisconnect = handleSocketDisconnect;

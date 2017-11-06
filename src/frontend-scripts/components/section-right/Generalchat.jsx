@@ -16,7 +16,9 @@ export default class Generalchat extends React.Component {
 		this.state = {
 			lock: false,
 			inputValue: '',
-			disabled: false
+			disabled: false,
+			discordEnabled: false,
+			stickyEnabled: true
 		};
 	}
 
@@ -26,6 +28,14 @@ export default class Generalchat extends React.Component {
 
 	componentDidUpdate() {
 		this.scrollChats();
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (!this.state.stickyEnabled && this.props.generalChats.sticky !== nextProps.generalChats.sticky) {
+			this.setState({
+				stickyEnabled: true
+			});
+		}
 	}
 
 	handleChatClearClick() {
@@ -60,35 +70,9 @@ export default class Generalchat extends React.Component {
 	}
 
 	scrollChats() {
-		if (!this.state.lock) {
+		if (!this.state.lock && !this.state.discordEnabled) {
 			document.querySelector('.genchat-container').scrollTop = 99999999;
 		}
-	}
-
-	processChats() {
-		const { userInfo } = this.props;
-
-		return this.props.generalChats.map((chat, i) => {
-			const userClasses = classnames(
-				{
-					[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
-				},
-				'chat-user'
-			);
-
-			return (
-				<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
-					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
-						{chat.userName}
-						{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
-						{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
-						{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
-						{chat.userName && ':'}{' '}
-					</span>
-					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
-				</div>
-			);
-		});
 	}
 
 	handleChatLockClick() {
@@ -109,7 +93,86 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
+	renderInput() {
+		return this.state.discordEnabled ? null : (
+			<form className="segment inputbar" onSubmit={this.handleSubmit}>
+				<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
+					<input
+						placeholder="Chat.."
+						value={this.state.inputValue}
+						onChange={this.handleInputChange}
+						maxLength="300"
+						spellCheck="false"
+						ref={c => {
+							this.input = c;
+						}}
+					/>
+					<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+				</div>
+				<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'} onClick={this.handleChatClearClick} />
+			</form>
+		);
+	}
+
+	renderChats() {
+		const { userInfo, generalChats } = this.props;
+
+		return this.state.discordEnabled ? (
+			<embed height="272" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
+		) : Object.keys(generalChats).length ? (
+			generalChats.list.map((chat, i) => {
+				const userClasses = classnames(
+					{
+						[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
+					},
+					'chat-user',
+					'genchat-user'
+				);
+
+				return (
+					<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
+						<span className={chat.isBroadcast ? 'chat-user--broadcast' : 'chat-user genchat-user'}>
+							<a href={`#/profile/${chat.userName}`} className={userClasses}>
+								{chat.userName}
+							</a>
+							{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
+							{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
+							{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
+							{chat.userName && ':'}{' '}
+						</span>
+						<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
+					</div>
+				);
+			})
+		) : null;
+	}
+
+	renderSticky() {
+		if (this.state.stickyEnabled && this.props.generalChats.sticky) {
+			const dismissSticky = () => {
+				this.setState({ stickyEnabled: false });
+			};
+
+			return (
+				<div className="sticky">
+					<span>
+						<span>Sticky: </span>
+						{this.props.generalChats.sticky}
+					</span>
+					<i className="remove icon" onClick={dismissSticky} />
+				</div>
+			);
+		}
+	}
+
 	render() {
+		const { userInfo } = this.props,
+			discordIconClick = () => {
+				this.setState({
+					discordEnabled: !this.state.discordEnabled
+				});
+			};
+
 		return (
 			<section className="generalchat">
 				<section className="generalchat-header hoz-gradient">
@@ -120,30 +183,25 @@ export default class Generalchat extends React.Component {
 							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
 							onClick={this.handleChatLockClick}
 						/>
+						{userInfo &&
+							userInfo.userName && (
+								<img
+									title="Click to show our discord general chat instead of the site's general chat"
+									className={this.state.discordEnabled ? 'active discord-icon' : 'discord-icon'}
+									src="/images/discord-icon.png"
+									onClick={discordIconClick}
+								/>
+							)}
 					</div>
 					<div className="ui divider right-sidebar-divider" />
 				</section>
-				<section className="segment chats">
+				<section className={this.state.discordEnabled ? 'segment chats discord' : 'segment chats'}>
+					{!this.state.discordEnabled && this.renderSticky()}
 					<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
-						{this.processChats()}
+						{this.renderChats()}
 					</div>
 				</section>
-				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
-						<input
-							placeholder="Chat.."
-							value={this.state.inputValue}
-							onChange={this.handleInputChange}
-							maxLength="300"
-							spellCheck="false"
-							ref={c => {
-								this.input = c;
-							}}
-						/>
-						<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
-					</div>
-					<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'} onClick={this.handleChatClearClick} />
-				</form>
+				{this.renderInput()}
 			</section>
 		);
 	}
@@ -153,6 +211,6 @@ Generalchat.propTypes = {
 	gameInfo: PropTypes.object,
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
-	generalChats: PropTypes.array,
+	generalChats: PropTypes.object,
 	userList: PropTypes.object
 };
