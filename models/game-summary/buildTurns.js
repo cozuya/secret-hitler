@@ -1,16 +1,7 @@
 /* eslint-disable no-use-before-define */
 const { List, Range } = require('immutable');
 const { some, none, fromNullable } = require('option');
-const {
-	filterOpt,
-	flattenListOpts,
-	pushOpt,
-	mapOpt1,
-	mapOpt2,
-	handDiff,
-	policyToHand,
-	handToPolicy
-} = require('../../utils');
+const { filterOpt, flattenListOpts, pushOpt, mapOpt1, mapOpt2, handDiff, policyToHand, handToPolicy } = require('../../utils');
 
 module.exports = (logs, players) => {
 	return buildTurns(List(), logs, players);
@@ -43,10 +34,7 @@ const buildTurn = (prevTurnOpt, log, players) => {
 
 	// List[Int]
 	const { beforePlayers, afterPlayers } = (() => {
-		const p = deadPlayers =>
-			players.map((p, i) =>
-				Object.assign({}, p, { isDead: deadPlayers.includes(i) })
-			);
+		const p = deadPlayers => players.map((p, i) => Object.assign({}, p, { isDead: deadPlayers.includes(i) }));
 
 		return {
 			beforePlayers: p(beforeDeadPlayers),
@@ -60,9 +48,7 @@ const buildTurn = (prevTurnOpt, log, players) => {
 		.toList();
 
 	// List[Option[Boolean]]
-	const votes = log.votes.map(
-		(v, i) => (beforeDeadPlayers.includes(i) ? none : some(v))
-	);
+	const votes = log.votes.map((v, i) => (beforeDeadPlayers.includes(i) ? none : some(v)));
 
 	// Int
 	const jas = flattenListOpts(votes).count(v => v);
@@ -101,16 +87,13 @@ const buildTurn = (prevTurnOpt, log, players) => {
 	const isVeto = chancellorVeto.isSome();
 
 	// Boolean
-	const isVetoSuccessful =
-		chancellorVeto.valueOrElse(false) && presidentVeto.valueOrElse(false);
+	const isVetoSuccessful = chancellorVeto.valueOrElse(false) && presidentVeto.valueOrElse(false);
 
 	// Int
 	const { beforeElectionTracker, afterElectionTracker } = (() => {
-		const beforeElectionTracker =
-			prevTurn.afterElectionTracker === 3 ? 0 : prevTurn.afterElectionTracker;
+		const beforeElectionTracker = prevTurn.afterElectionTracker === 3 ? 0 : prevTurn.afterElectionTracker;
 
-		const afterElectionTracker =
-			isVotePassed && !isVetoSuccessful ? 0 : beforeElectionTracker + 1;
+		const afterElectionTracker = isVotePassed && !isVetoSuccessful ? 0 : beforeElectionTracker + 1;
 
 		return { beforeElectionTracker, afterElectionTracker };
 	})();
@@ -121,7 +104,9 @@ const buildTurn = (prevTurnOpt, log, players) => {
 	// { reds: Int, blues: Int }
 	const { beforeTrack, afterTrack } = (() => {
 		const f = (count, policy, type) => {
-			const inc = filterOpt(policy, x => x === type).map(x => 1).valueOrElse(0);
+			const inc = filterOpt(policy, x => x === type)
+				.map(x => 1)
+				.valueOrElse(0);
 
 			return count + inc;
 		};
@@ -136,16 +121,13 @@ const buildTurn = (prevTurnOpt, log, players) => {
 	})();
 
 	// Boolean
-	const isGameEndingPolicyEnacted =
-		afterTrack.reds === 6 || afterTrack.blues === 5;
+	const isGameEndingPolicyEnacted = afterTrack.reds === 6 || afterTrack.blues === 5;
 
 	// Boolean
 	const isHitlerElected = (() => {
 		const hitlerIndex = players.findIndex(p => p.role === 'hitler');
 
-		return (
-			beforeTrack.reds >= 3 && log.chancellorId === hitlerIndex && isVotePassed
-		);
+		return beforeTrack.reds >= 3 && log.chancellorId === hitlerIndex && isVotePassed;
 	})();
 
 	// Boolean
@@ -161,13 +143,9 @@ const buildTurn = (prevTurnOpt, log, players) => {
 		const policyToHandOpt = mapOpt1(policyToHand);
 		const handToPolicyOpt = mapOpt1(handToPolicy);
 
-		const presidentDiscard = handToPolicyOpt(
-			handDiffOpt(log.presidentHand, log.chancellorHand)
-		);
+		const presidentDiscard = handToPolicyOpt(handDiffOpt(log.presidentHand, log.chancellorHand));
 
-		const chancellorDiscard = handToPolicyOpt(
-			handDiffOpt(log.chancellorHand, policyToHandOpt(log.enactedPolicy))
-		);
+		const chancellorDiscard = handToPolicyOpt(handDiffOpt(log.chancellorHand, policyToHandOpt(log.enactedPolicy)));
 
 		return { presidentDiscard, chancellorDiscard };
 	})();

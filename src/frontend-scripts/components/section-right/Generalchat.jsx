@@ -2,7 +2,8 @@ import React from 'react';
 import classnames from 'classnames';
 import { MODERATORS, EDITORS, ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
-import { processEmotes } from '../../emotes';
+import { renderEmotesButton, processEmotes } from '../../emotes';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import moment from 'moment';
 
 export default class Generalchat extends React.Component {
@@ -13,6 +14,9 @@ export default class Generalchat extends React.Component {
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
+		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
+		this.handleInsertEmote = this.handleInsertEmote.bind(this);
+		this.handleKeyPress = this.handleKeyPress.bind(this);
 		this.state = {
 			lock: false,
 			inputValue: '',
@@ -49,7 +53,6 @@ export default class Generalchat extends React.Component {
 	handleSubmit(e) {
 		const { inputValue } = this.state;
 
-		e.preventDefault();
 		if (inputValue.length < 300 && inputValue) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
@@ -71,7 +74,7 @@ export default class Generalchat extends React.Component {
 
 	scrollChats() {
 		if (!this.state.lock && !this.state.discordEnabled) {
-			document.querySelector('.genchat-container').scrollTop = 99999999;
+			this.refs.perfectScrollbar.setScrollTop(document.querySelectorAll('div.item').length * 300);
 		}
 	}
 
@@ -79,72 +82,90 @@ export default class Generalchat extends React.Component {
 		this.setState({ lock: !this.state.lock });
 	}
 
-	handleChatScrolled(e) {
-		const el = e.currentTarget;
+	handleChatScrolled() {
+		if (this.state.lock !== true) {
+			this.setState({ lock: true });
+		}
+	}
 
-		if (this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) >= -20) {
-			this.setState({
-				lock: false
-			});
-		} else if (el.scrollTop - (el.scrollHeight - el.offsetHeight) < -20 && !this.state.lock) {
-			this.setState({
-				lock: true
-			});
+	handleChatScrolledToBottom() {
+		if (this.state.lock !== false) {
+			this.setState({ lock: false });
+		}
+	}
+
+	handleInsertEmote(emote) {
+		const newMsg = this.state.inputValue + ` ${emote}`;
+		this.setState({ inputValue: newMsg });
+		this.input.focus();
+	}
+
+	handleKeyPress(e) {
+		if (e.keyCode === 13 && e.shiftKey === false) {
+			this.handleSubmit(this.state.inputValue);
 		}
 	}
 
 	renderInput() {
 		return this.state.discordEnabled ? null : (
-			<form className="segment inputbar" onSubmit={this.handleSubmit}>
-				<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
-					<input
-						placeholder="Chat.."
-						value={this.state.inputValue}
-						onChange={this.handleInputChange}
-						maxLength="300"
-						spellCheck="false"
-						ref={c => {
-							this.input = c;
-						}}
-					/>
-					<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+			<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
+				<textarea
+					disabled={!this.props.userInfo.userName}
+					className="chat-input-box"
+					placeholder="Send a message"
+					value={this.state.inputValue}
+					onChange={this.handleInputChange}
+					maxLength="300"
+					spellCheck="false"
+					onKeyDown={this.handleKeyPress}
+					ref={c => {
+						this.input = c;
+					}}
+				/>
+				{this.props.userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
+				<div className="chat-button">
+					<button onClick={this.handleSubmit} className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>
+						Chat
+					</button>
 				</div>
-				<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'} onClick={this.handleChatClearClick} />
-			</form>
+			</div>
 		);
 	}
 
 	renderChats() {
 		const { userInfo, generalChats } = this.props;
+		let timestamp;
 
-		return this.state.discordEnabled ? (
-			<embed height="272" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
-		) : Object.keys(generalChats).length ? (
-			generalChats.list.map((chat, i) => {
-				const userClasses = classnames(
-					{
-						[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
-					},
-					'chat-user',
-					'genchat-user'
-				);
-
-				return (
-					<div className="item" title={moment(chat.time).format('h:mm')} key={i}>
-						<span className={chat.isBroadcast ? 'chat-user--broadcast' : 'chat-user genchat-user'}>
-							<a href={`#/profile/${chat.userName}`} className={userClasses}>
-								{chat.userName}
-							</a>
-							{MODERATORS.includes(chat.userName) && <span className="moderator-name"> (M)</span>}
-							{EDITORS.includes(chat.userName) && <span className="editor-name"> (E)</span>}
-							{ADMINS.includes(chat.userName) && <span className="admin-name"> (A)</span>}
-							{chat.userName && ':'}{' '}
-						</span>
-						<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
-					</div>
-				);
-			})
-		) : null;
+		return generalChats.list
+			? generalChats.list.map((chat, i) => {
+					const userClasses = classnames(
+						{
+							[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
+						},
+						'chat-user'
+					);
+					if (userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
+						timestamp = <span className="timestamp">{moment(chat.time).format('HH:mm')} </span>;
+					}
+					return (
+						<div className="item" key={i}>
+							{timestamp}
+							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
+								{MODERATORS.includes(chat.userName) && <span className="moderator-name">(M) </span>}
+								{EDITORS.includes(chat.userName) && <span className="editor-name">(E) </span>}
+								{ADMINS.includes(chat.userName) && <span className="admin-name">(A) </span>}
+								<a
+									href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}
+									className={'genchat-user ' + userClasses}
+								>
+									{`${chat.userName}: `}
+								</a>
+							</span>
+							<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
+						</div>
+					);
+				})
+			: null;
 	}
 
 	renderSticky() {
@@ -175,7 +196,7 @@ export default class Generalchat extends React.Component {
 
 		return (
 			<section className="generalchat">
-				<section className="generalchat-header hoz-gradient">
+				<section className="generalchat-header">
 					<div className="clearfix">
 						<h3 className="ui header">Chat</h3>
 						<i
@@ -193,13 +214,20 @@ export default class Generalchat extends React.Component {
 								/>
 							)}
 					</div>
-					<div className="ui divider right-sidebar-divider" />
 				</section>
-				<section className={this.state.discordEnabled ? 'segment chats discord' : 'segment chats'}>
+				<section className="segment chats">
 					{!this.state.discordEnabled && this.renderSticky()}
-					<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
-						{this.renderChats()}
-					</div>
+					{(() => {
+						return this.state.discordEnabled ? (
+							<embed height="100%" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
+						) : (
+							<PerfectScrollbar ref="perfectScrollbar" onScrollY={this.handleChatScrolled} onYReachEnd={this.handleChatScrolledToBottom}>
+								<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
+									{this.renderChats()}
+								</div>
+							</PerfectScrollbar>
+						);
+					})()}
 				</section>
 				{this.renderInput()}
 			</section>

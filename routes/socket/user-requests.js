@@ -5,7 +5,7 @@ const Account = require('../../models/account'),
 	BannedIP = require('../../models/bannedIP'),
 	{ games, userList, generalChats, accountCreationDisabled, ipbansDisabled } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
-	{ secureGame } = require('./util'),
+	{ sendInProgressGameUpdate } = require('./util'),
 	version = require('../../version'),
 	https = require('https'),
 	options = {
@@ -115,7 +115,10 @@ module.exports.sendUserGameSettings = (socket, username) => {
 module.exports.sendGameList = socket => {
 	const formattedGames = games.map(game => ({
 		name: game.general.name,
+		flag: game.general.flag,
 		userNames: game.publicPlayersState.map(val => val.userName),
+		customCardback: game.publicPlayersState.map(val => val.customCardback),
+		customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
 		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
 		seatedCount: game.publicPlayersState.length,
 		minPlayersCount: game.general.minPlayersCount,
@@ -189,15 +192,17 @@ module.exports.sendGameInfo = (socket, uid) => {
 
 			if (player) {
 				player.leftGame = false;
+				player.connected = true;
+				socket.emit('updateSeatForUser', true);
 				updateUserStatus(passport.user, game.general.rainbowgame ? 'rainbow' : 'playing', uid);
 			} else {
 				updateUserStatus(passport.user, 'observing', uid);
 			}
 		}
 
-		_game.chats = _game.chats.concat(_game.private.unSeatedGameChats);
 		socket.join(uid);
-		socket.emit('gameUpdate', secureGame(_game));
+		sendInProgressGameUpdate(_game);
+		socket.emit('joinGameRedirect', game.general.uid);
 	} else {
 		Game.findOne({ uid }).then((game, err) => {
 			if (err) {

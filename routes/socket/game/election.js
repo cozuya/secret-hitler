@@ -201,7 +201,12 @@ module.exports.selectChancellor = data => {
 		presidentPlayer = game.private.seatedPlayers[presidentIndex],
 		chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
 
-	if (!game.private.lock.selectChancellor) {
+	// Attempt to prevent rare issue with multiple chancellors
+	const playersGovernmentStatus = game.publicPlayersState.map(player => {
+		return player.governmentStatus;
+	});
+
+	if (!game.private.lock.selectChancellor && !playersGovernmentStatus.includes('isPendingChancellor')) {
 		game.private.summary = game.private.summary.updateLog({
 			chancellorId: chancellorIndex
 		});
@@ -535,7 +540,7 @@ module.exports.selectVoting = data => {
 				}
 
 				sendInProgressGameUpdate(game);
-			}, process.env.NODE_ENV === 'development' ? 2100 : 4000);
+			}, process.env.NODE_ENV === 'development' ? 2100 : 6000);
 		};
 
 	if (game.private.lock.selectChancellor) {

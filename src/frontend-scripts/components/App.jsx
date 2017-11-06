@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import LeftSidebar from './section-left/LeftSidebar.jsx';
 import Main from './section-main/Main.jsx';
-import RightSidebar from './section-right/RightSidebar.jsx';
 import Gamenotes from './Gamenotes.jsx';
 import {
 	updateUser,
@@ -18,14 +16,15 @@ import {
 import { MODERATORS, ADMINS, EDITORS } from '../constants';
 import socket from '../socket';
 import PropTypes from 'prop-types';
+import RightSidebar from './section-right/RightSidebar.jsx';
+import Menu from './menu/Menu.jsx';
+import DevHelpers from './DevHelpers.jsx';
 
 const select = state => state;
 
 export class App extends React.Component {
 	constructor() {
 		super();
-		this.handleRoute = this.handleRoute.bind(this);
-		this.handleRoute = this.handleRoute.bind(this);
 		this.handleSeatingUser = this.handleSeatingUser.bind(this);
 		this.handleLeaveGame = this.handleLeaveGame.bind(this);
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
@@ -62,9 +61,9 @@ export class App extends React.Component {
 					userName: username
 				};
 
-				info.isSeated = true;
-				socket.emit('updateSeatedUser', data);
-				socket.emit('getGameInfo', 'devgame');
+				//info.isSeated = true;
+				//socket.emit('updateSeatedUser', data);
+				//socket.emit('getGameInfo', 'devgame');
 			}
 			// ** end devhelpers **
 			dispatch(updateUser(info));
@@ -98,20 +97,12 @@ export class App extends React.Component {
 			dispatch(updateVersion(v));
 		});
 
-		socket.on('gameUpdate', (game, isSettings, toReplay = false) => {
-			const { hash } = window.location;
+		socket.on('joinGameRedirect', uid => {
+			dispatch(updateMidsection('game'));
+			window.location.hash = `#/table/${uid}`;
+		});
 
-			if ((this.props.midSection !== 'game' && Object.keys(game).length) || (Object.keys(game).length && hash !== `#/table/${game.general.uid}`)) {
-				dispatch(updateGameInfo(game));
-				dispatch(updateMidsection('game'));
-				window.location.hash = `#/table/${game.general.uid}`;
-			} else if (!Object.keys(game).length) {
-				if (isSettings) {
-					window.location.hash = '#/settings';
-				} else if (!toReplay) {
-					window.location.hash = '#/';
-				}
-			}
+		socket.on('gameUpdate', game => {
 			dispatch(updateGameInfo(game));
 		});
 
@@ -153,16 +144,29 @@ export class App extends React.Component {
 		}
 
 		if (
-			hash.substr(0, 8) !== '#/table/' &&
 			Object.keys(gameInfo).length &&
 			userInfo.userName &&
+			userInfo.isSeated &&
 			gameInfo.publicPlayersState.length &&
-			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
-			(!gameInfo.gameState.isStarted || gameInfo.gameState.isCompleted)
+			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)
 		) {
-			this.handleLeaveGame(true);
-		} else if (this.prevHash.substr(0, 8) === '#/table/' && hash.substr(-6) !== 'Remake') {
-			this.handleLeaveGame(false, this.prevHash.split('#/table/')[1]);
+			if (hash === '#/') {
+				this.handleLeaveGame();
+			} else if (!gameInfo.gameState.isCompleted) {
+				if (this.prevHash !== '#/table/' + gameInfo.general.uid) {
+					// Force player to rejoin the game if it's not finished and they are still seated
+					socket.emit('getGameInfo', gameInfo.general.uid);
+				} else {
+					// If they were already sitting at the table then just make sure they can see it and don't redirect away
+					dispatch(updateMidsection('game'));
+					window.location.hash = '#/table/' + gameInfo.general.uid;
+				}
+				// Prevent prevHash being incorrect after we are redirected
+				this.prevHash = '#/table/' + gameInfo.general.uid;
+				return;
+			}
+		} else if (this.prevHash.substr(0, 8) === '#/table/') {
+			this.handleLeaveGame(this.prevHash.split('#/table/')[1]);
 		}
 
 		if (hash.substr(0, 10) === '#/profile/') {
@@ -202,11 +206,6 @@ export class App extends React.Component {
 		this.prevHash = hash;
 	}
 
-	handleRoute(route) {
-		const { dispatch } = this.props;
-
-		dispatch(updateMidsection(route));
-	}
 	// ***** begin dev helpers *****
 
 	makeQuickDefault() {
@@ -275,7 +274,7 @@ export class App extends React.Component {
 		socket.emit('updateSeatedUser', data);
 	}
 
-	handleLeaveGame(isSeated, manualLeaveGame) {
+	handleLeaveGame(manualLeaveGame) {
 		const { dispatch, userInfo, gameInfo } = this.props;
 
 		if (userInfo.isSeated) {
@@ -285,7 +284,6 @@ export class App extends React.Component {
 
 		socket.emit('leaveGame', {
 			userName: userInfo.userName,
-			isSeated,
 			uid: manualLeaveGame || gameInfo.general.uid
 		});
 	}
@@ -299,9 +297,14 @@ export class App extends React.Component {
 	render() {
 		const { gameSettings } = this.props.userInfo;
 
+		let classes = 'body-container';
+		if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
+			classes += ' game';
+		}
+
 		return (
 			<section
-				className="ui grid"
+				className="app-container"
 				style={{
 					fontFamily: gameSettings
 						? gameSettings.fontFamily ? `'${gameSettings.fontFamily}', Lato, sans-serif` : '"Comfortaa", Lato, sans-serif'
@@ -309,46 +312,43 @@ export class App extends React.Component {
 				}}
 			>
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
-				{this.props.midSection !== 'game' &&
-					this.props.midSection !== 'replay' && (
-						<LeftSidebar
-							userInfo={this.props.userInfo}
-							midSection={this.props.midSection}
-							gameList={this.props.gameList}
-							onCreateGameButtonClick={this.handleRoute}
-							onGameClick={this.handleGameClick}
-							socket={socket}
-						/>
-					)}
-				<Main
-					userInfo={this.props.userInfo}
-					midSection={this.props.midSection}
-					gameInfo={this.props.gameInfo}
-					onLeaveSettings={this.handleRoute}
-					onSeatingUser={this.handleSeatingUser}
-					onLeaveGame={this.handleLeaveGame}
-					quickDefault={this.makeQuickDefault}
-					onLeaveChangelog={this.handleRoute}
-					onSettingsButtonClick={this.handleRoute}
-					onChangelogButtonClick={this.handleRoute}
-					onLeaveModeration={this.handleRoute}
-					onLeaveReports={this.handleRoute}
-					onClickedTakeSeat={this.handleSeatingUser}
-					userList={this.props.userList}
-					socket={socket}
-					version={this.props.version}
-				/>
-				{((this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
-					(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)) && (
-						<RightSidebar
-							gameInfo={this.props.gameInfo}
-							userInfo={this.props.userInfo}
-							userList={this.props.userList}
-							generalChats={this.props.generalChats}
-							onModerationButtonClick={this.handleRoute}
-							socket={socket}
-						/>
-					)}
+
+				<DevHelpers />
+
+				<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
+
+				<div className={classes}>
+					<Main
+						userInfo={this.props.userInfo}
+						midSection={this.props.midSection}
+						gameInfo={this.props.gameInfo}
+						onSeatingUser={this.handleSeatingUser}
+						quickDefault={this.makeQuickDefault}
+						onClickedTakeSeat={this.handleSeatingUser}
+						userList={this.props.userList}
+						socket={socket}
+						version={this.props.version}
+						gameList={this.props.gameList}
+					/>
+
+					{(() => {
+						if (
+							(this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
+							(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)
+						) {
+							return (
+								<RightSidebar
+									gameInfo={this.props.gameInfo}
+									userInfo={this.props.userInfo}
+									userList={this.props.userList}
+									generalChats={this.props.generalChats}
+									socket={socket}
+									midSection={this.props.midSection}
+								/>
+							);
+						}
+					})()}
+				</div>
 			</section>
 		);
 	}
