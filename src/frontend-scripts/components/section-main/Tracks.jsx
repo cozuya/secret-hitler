@@ -2,7 +2,7 @@ import React from 'react';
 import CardFlinger from './CardFlinger.jsx';
 import EnactedPolicies from './EnactedPolicies.jsx';
 import PropTypes from 'prop-types';
-import { EDITORS, ADMINS, MODERATORS } from '../../constants';
+import { Popup } from 'semantic-ui-react';
 
 class Tracks extends React.Component {
 	constructor() {
@@ -27,6 +27,75 @@ class Tracks extends React.Component {
 				remakeStatus: false
 			});
 		}
+	}
+
+	optionIcons(gameInfo) {
+		const game = gameInfo.general;
+		let rebalance69p,
+			rebalance69pTooltip,
+			disableChat,
+			disableChatTooltip,
+			disableGamechat,
+			disableGamechatTooltip,
+			experiencedMode,
+			experiancedModeTooltip,
+			rainbowgame,
+			rainbowgameTooltip;
+
+		if (game.rebalance69p) {
+			rebalance69p = <div> R </div>;
+			rebalance69pTooltip = 'Rebalanced 6 & 9 player games';
+		}
+
+		if (game.disableChat) {
+			disableChat = (
+				<i className="icons">
+					<i className="unmute icon" />
+					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+				</i>
+			);
+			disableChatTooltip = 'Player Chat Disabled';
+		}
+
+		if (game.disableGamechat) {
+			disableGamechat = (
+				<i className="icons">
+					<i className="game icon" />
+					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+				</i>
+			);
+			disableGamechatTooltip = 'Game Chat Disabled';
+		}
+
+		if (game.experiencedMode) {
+			experiencedMode = <i className="fast forward icon" />;
+			experiancedModeTooltip = 'Speed Mode';
+		}
+
+		if (game.rainbowgame) {
+			rainbowgame = <img style={{ maxHeight: '14px', marginBottom: '-2px' }} src="../images/rainbow.png" />;
+			rainbowgameTooltip = 'Experienced Game';
+		}
+
+		return (
+			<div className="options-icons-container">
+				<span className="rebalanced">
+					<Popup inverted trigger={rebalance69p} content={rebalance69pTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={disableChat} content={disableChatTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={disableGamechat} content={disableGamechatTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={experiencedMode} content={experiancedModeTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
+				</span>
+			</div>
+		);
 	}
 
 	render() {
@@ -78,12 +147,14 @@ class Tracks extends React.Component {
 				<EnactedPolicies gameInfo={gameInfo} />
 				<div>
 					<div className="game-name">
-						Game name: <span>{gameInfo.general.name}</span>
+						{(() => {
+							if (gameInfo.general.flag !== 'none') {
+								return <i className={`ui flag ${gameInfo.general.flag}`} />;
+							}
+						})()}
+						<span>{gameInfo.general.name}</span>
 					</div>
-					{userInfo.userName &&
-						(EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) && (
-							<div className="gameuid">Game UID: {gameInfo.general.uid}</div>
-						)}
+					<div className="option-icons">{this.optionIcons(gameInfo)}</div>
 					<div className="player-count">
 						Players: <span>{gameInfo.publicPlayersState.length}</span>
 					</div>

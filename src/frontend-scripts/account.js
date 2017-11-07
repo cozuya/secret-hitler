@@ -14,7 +14,9 @@ export default () => {
 	$('body').on('click', '#signup', function(event) {
 		event.preventDefault();
 
-		$('section.signup-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		$('section.signup-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
 	});
 
 	$('button.signup-submit').on('click', function(event) {
@@ -71,19 +73,32 @@ export default () => {
 	$('body').on('click', '#signin', function(event) {
 		event.preventDefault();
 
-		$('section.signin-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		$('section.signin-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
 	});
 
 	$('body').on('focus', '#signup-username', function() {
-		$(this).parent().next().text('3-12 alphanumeric characters.').slideDown();
+		$(this)
+			.parent()
+			.next()
+			.text('3-12 alphanumeric characters.')
+			.slideDown();
 	});
 
 	$('body').on('focus', '#signup-password1', function() {
-		$(this).parent().next().text('6-255 characters.').slideDown();
+		$(this)
+			.parent()
+			.next()
+			.text('6-255 characters.')
+			.slideDown();
 	});
 
 	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function() {
-		$(this).parent().next().slideUp();
+		$(this)
+			.parent()
+			.next()
+			.slideUp();
 	});
 
 	$('button.signin-submit').on('click', function(event) {
@@ -135,7 +150,9 @@ export default () => {
 	});
 
 	$('button#change-password').on('click', function(event) {
-		$('section.passwordchange-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		$('section.passwordchange-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
 	});
 
 	$('button#passwordchange-submit').on('click', function(event) {
@@ -178,7 +195,9 @@ export default () => {
 	});
 
 	$('button#delete-account').on('click', function(event) {
-		$('section.deleteaccount-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
+		$('section.deleteaccount-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
 	});
 
 	$('button#deleteaccount-submit').on('click', function(event) {

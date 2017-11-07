@@ -64,7 +64,7 @@ class ProfileWrapper extends React.Component {
 				headers={['Action', 'Instances', 'Success Rate']}
 				rows={[
 					this.successRow('Vote Accuracy', actions.voteAccuracy.events, actions.voteAccuracy.successes),
-					this.componentDidCatchsuccessRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
+					this.successRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
 				]}
 			/>
 		);
@@ -203,7 +203,7 @@ class ProfileWrapper extends React.Component {
 					<div
 						className="profile-picture"
 						style={{
-							background: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random()
+							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random()
 								.toString(36)
 								.substring(2)})`
 						}}

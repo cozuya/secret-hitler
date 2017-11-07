@@ -15,23 +15,17 @@ export default function toGameInfo(snapshot) {
 
 	const publicPlayersState = snapshot.players
 		.map((p, i) => {
-			const maybe = (predicate, field, value) =>
-				predicate ? { [field]: value } : {};
+			const maybe = (predicate, field, value) => (predicate ? { [field]: value } : {});
 
 			const isSpecialElection = Number.isInteger(snapshot.specialElection);
 
 			const maybePresident = maybe(
-				(!isSpecialElection && snapshot.presidentId === i) ||
-					(isSpecialElection && snapshot.specialElection === i),
+				(!isSpecialElection && snapshot.presidentId === i) || (isSpecialElection && snapshot.specialElection === i),
 				'governmentStatus',
 				'isPresident'
 			);
 
-			const maybeChancellor = maybe(
-				!isSpecialElection && snapshot.chancellorId === i,
-				'governmentStatus',
-				'isChancellor'
-			);
+			const maybeChancellor = maybe(!isSpecialElection && snapshot.chancellorId === i, 'governmentStatus', 'isChancellor');
 
 			const cardStatus = (() => {
 				const f = (cardDisplayed, isFlipped, cardFront, cardBack) => ({
@@ -65,15 +59,12 @@ export default function toGameInfo(snapshot) {
 							cardName: isInvTarget && 'membership-' + p.loyalty
 						});
 					case 'veto':
-						const vetoCard = vote =>
-							f(true, true, 'ballot', { cardName: vote ? 'ja' : 'nein' });
+						const vetoCard = vote => f(true, true, 'ballot', { cardName: vote ? 'ja' : 'nein' });
 
 						if (i === snapshot.chancellorId) {
 							return vetoCard(snapshot.chancellorVeto);
 						} else if (i === snapshot.presidentId) {
-							return mapOpt1(vetoCard)(snapshot.presidentVeto).valueOrElse(
-								blank
-							);
+							return mapOpt1(vetoCard)(snapshot.presidentVeto).valueOrElse(blank);
 						} else {
 							return blank;
 						}
@@ -98,11 +89,7 @@ export default function toGameInfo(snapshot) {
 		fascistPolicyCount: snapshot.track.reds,
 		liberalPolicyCount: snapshot.track.blues,
 		enactedPolicies: [],
-		isBlurred: [
-			'presidentLegislation',
-			'chancellorLegislation',
-			'policyPeek'
-		].includes(snapshot.phase),
+		isBlurred: ['presidentLegislation', 'chancellorLegislation', 'policyPeek'].includes(snapshot.phase),
 		isHidden: true
 	};
 

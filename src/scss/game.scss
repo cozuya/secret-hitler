@@ -16,8 +16,8 @@
 		.gamestatus {
 			font-size: 22px;
 			font-style: italic;
-			color: #eee;
-			background: #2d0c0b;
+			color: $darkfascistteam;
+			background: #1b1b1b;
 			padding: 7px 0px 3px 2px;
 		}
 		.gamechat {
@@ -27,15 +27,17 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
-			margin: 0;
-			background: #f6f6f6;
-			display: flex;
-			flex-direction: column;
+			//margin: 0;
+			//background: #f6f6f6;
+			//display: flex;
+			//flex-direction: column;
+			//height: 411px;
 			form {
-				background: #0c0202;
+				background: #181818;
 				display: flex;
 				position: relative;
 				z-index: 100;
+				padding: 4px 10px 4px 10px;
 			}
 
 			.pointing.menu {
@@ -45,6 +47,8 @@
 				margin: 0;
 				min-height: initial;
 				overflow-x: initial !important;
+				width: 100% !important;
+				border-radius: 0;
 				.item {
 					padding: 7px 8px 6px;
 					position: relative;
@@ -61,6 +65,9 @@
 					font-size: 11px;
 					background: #fbbd08 !important;
 					color: black !important;
+					&:hover {
+						background: $darkfascistteam !important;
+					}
 				}
 				.button.ui-disabled {
 					opacity: 0.45 !important;
@@ -71,7 +78,7 @@
 			.chats {
 				display: flex;
 				flex-direction: column-reverse;
-				height: 345px;
+				height: 336px;
 				position: relative;
 				background: #f9faff;
 				font-size: 18px;
@@ -83,53 +90,25 @@
 				}
 				.ui.list {
 					padding-left: 5px;
-					overflow-y: auto;
+					//overflow-y: auto;
 					position: absolute;
 					bottom: 0;
 					line-height: 1.2;
-					max-height: 345px;
-					width: 100%;
+					max-height: 336px;
+					width: 98%;
+					margin: 0;
 				}
 				.item {
 					word-wrap: break-word;
-					line-height: inherit;
-					padding: 2px 0;
-				}
-
-				.gamechat-item {
-					background: #0f0202;
+					line-height: 130%;
+					padding: 4px 0;
 					span {
-						background: #0f0202 !important;
-					}
-
-					&.fascist {
-						background: #230404;
-						span {
-							background: #230404 !important;
-						}
-					}
-					&.liberal {
-						background: #030e17;
-
-						span {
-							background: #030e17 !important;
-						}
-					}
-				}
-
-				.claim-item {
-					background: #3d3829;
-
-					span {
-						background: #3d3829 !important;
+						max-width: 90%;
 					}
 				}
 				.chat-user {
-					color: #eee;
-					.chat-timestamp {
-						color: #848484;
-						font-size: 12px;
-					}
+					color: #adabab;
+					white-space: nowrap;
 				}
 				.chat-user--game .chat-timestamp {
 					font-size: 12px;
@@ -137,18 +116,18 @@
 				.chat-user--game,
 				.game-chat,
 				.chat-user--game .chat-timestamp {
-					color: #8b8b8b;
+					color: #6f6f6f;
 				}
 
 				.chat-user--claim,
 				.claim-chat {
 					color: #fbbd08;
 				}
-				.chat-user--broadcast {
+				.chat-user.broadcast {
 					color: lightsalmon;
 				}
 				.broadcast-chat {
-					color: lightskyblue;
+					color: lightskyblue !important;
 				}
 				.chat-role--liberal {
 					font-weight: 700;
@@ -166,6 +145,14 @@
 					color: #eee;
 					font-weight: 700;
 				}
+			}
+			.chat-timestamp {
+				//margin-top: 3px;
+				//color: #848484;
+				color: #565656;
+				font-size: 12px;
+				white-space: nowrap;
+				font-family: arial;
 			}
 			.chats.blurred {
 				filter: blur(4px);
@@ -274,6 +261,10 @@
 					flex-grow: 1;
 					button {
 						padding: 0px 10px;
+						background: $darkfascistteam;
+						&:hover {
+							background: #e44023;
+						}
 					}
 				}
 				.input.disabled {

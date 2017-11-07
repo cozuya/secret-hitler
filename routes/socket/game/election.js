@@ -202,12 +202,12 @@ module.exports.selectChancellor = data => {
 		chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
 
 	if (!game.private.lock.selectChancellor) {
+		game.private.lock.selectChancellor = true;
+		game.publicPlayersState[presidentIndex].isLoader = false;
+
 		game.private.summary = game.private.summary.updateLog({
 			chancellorId: chancellorIndex
 		});
-
-		game.private.lock.selectChancellor = true;
-		game.publicPlayersState[presidentIndex].isLoader = false;
 
 		presidentPlayer.playersState.forEach(player => {
 			player.notificationStatus = '';
@@ -535,7 +535,7 @@ module.exports.selectVoting = data => {
 				}
 
 				sendInProgressGameUpdate(game);
-			}, process.env.NODE_ENV === 'development' ? 2100 : 4000);
+			}, process.env.NODE_ENV === 'development' ? 2100 : 6000);
 		};
 
 	if (game.private.lock.selectChancellor) {

@@ -5,7 +5,8 @@ import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
 import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { processEmotes } from '../../emotes';
+import { renderEmotesButton, processEmotes } from '../../emotes';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
@@ -20,22 +21,21 @@ class Gamechat extends React.Component {
 		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChatLockClick = this.handleChatLockClick.bind(this);
-		this.handleChatClearClick = this.handleChatClearClick.bind(this);
-		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
 		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
 		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
-		this.handleChatScroll = this.handleChatScroll.bind(this);
 		this.handleNoteClick = this.handleNoteClick.bind(this);
+		this.handleChatScrolled = this.handleChatScrolled.bind(this);
+		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
+		this.handleInsertEmote = this.handleInsertEmote.bind(this);
+		this.checkIsChatDisabled = this.checkIsChatDisabled.bind(this);
 
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
-			inputValue: '',
 			claim: '',
 			playersToWhitelist: [],
-			disabled: false,
-			notesEnabled: false
+			notesEnabled: false,
 		};
 	}
 
@@ -44,7 +44,7 @@ class Gamechat extends React.Component {
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {
 			// modal methods dont seem to work.
-			this.props.onLeaveGame(true);
+			window.location.hash = '#/';
 			$(this.leaveGameModal).modal('hide');
 		});
 	}
@@ -76,17 +76,15 @@ class Gamechat extends React.Component {
 		}
 	}
 
-	handleChatScroll(e) {
-		const el = e.currentTarget;
+	handleChatScrolled() {
+		if (this.state.lock !== true) {
+			this.setState({ lock: true });
+		}
+	}
 
-		if (this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) >= -10) {
-			this.setState({
-				lock: false
-			});
-		} else if (el.scrollTop - (el.scrollHeight - el.offsetHeight) < -10 && !this.state.lock) {
-			this.setState({
-				lock: true
-			});
+	handleChatScrolledToBottom() {
+		if (this.state.lock !== false) {
+			this.setState({ lock: false });
 		}
 	}
 
@@ -125,21 +123,12 @@ class Gamechat extends React.Component {
 		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
 		} else {
-			this.props.onLeaveGame();
 			window.location.hash = '#/';
 		}
 	}
 
-	handleChatClearClick() {
-		this.setState({ inputValue: '' });
-	}
-
-	handleInputChange(e) {
-		this.setState({ inputValue: `${e.target.value}` });
-	}
-
 	handleSubmit(e) {
-		const currentValue = this.state.inputValue,
+		const currentValue = this.gameChatInput.value,
 			{ gameInfo, userInfo } = this.props;
 
 		e.preventDefault();
@@ -154,21 +143,19 @@ class Gamechat extends React.Component {
 			};
 
 			this.props.socket.emit('addNewGameChat', chat);
-			this.setState({
-				inputValue: '',
-				disabled: true
-			});
+
+			this.gameChatInput.value = '';
+
 			this.gameChatInput.blur();
 			setTimeout(() => {
-				this.setState({ disabled: false });
 				this.gameChatInput.focus();
-			}, 150);
+			}, 300);
 		}
 	}
 
 	scrollChats() {
 		if (!this.state.lock) {
-			document.querySelector('section.segment.chats > .ui.list').scrollTop = 99999999;
+			this.refs.perfectScrollbar.setScrollTop(document.querySelectorAll('div.item').length * 1000);
 		}
 	}
 
@@ -180,14 +167,11 @@ class Gamechat extends React.Component {
 		const { userInfo } = this.props;
 
 		if (userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
-			const minutes = `0${new Date(timestamp).getMinutes()}`.slice(-2),
+			const hours = `0${new Date(timestamp).getHours()}`.slice(-2),
+				minutes = `0${new Date(timestamp).getMinutes()}`.slice(-2),
 				seconds = `0${new Date(timestamp).getSeconds()}`.slice(-2);
 
-			return (
-				<span className="chat-timestamp">
-					({minutes}: {seconds})
-				</span>
-			);
+			return <span className="chat-timestamp">{`${hours}:${minutes}:${seconds} `}</span>;
 		}
 	}
 
@@ -206,6 +190,48 @@ class Gamechat extends React.Component {
 		this.setState({
 			claim: this.state.claim ? '' : gameInfo.playersState[playerIndex].claim
 		});
+	}
+
+	handleInsertEmote(emote) {
+		this.gameChatInput.value += ` ${emote}`;
+		this.gameChatInput.focus();
+	}
+
+	checkIsChatDisabled () {
+							const { userInfo, gameInfo } = this.props,
+								{ gameState, publicPlayersState } = gameInfo,
+								{ gameSettings, userName, isSeated } = userInfo,
+								isDead = (() => {
+									if (userName && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
+										return publicPlayersState.find(player => userName === player.userName).isDead;
+									}
+								})(),
+								isGovernmentDuringPolicySelection = (() => {
+									if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
+										return (
+											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
+											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
+										);
+									}
+								})();
+
+							if (
+								!userName ||
+								(isDead && !gameState.isCompleted) ||
+								isGovernmentDuringPolicySelection ||
+								gameInfo.general.disableChat ||
+								(gameInfo.general.private &&
+									!userInfo.isSeated &&
+									!MODERATORS.includes(userInfo.userName) &&
+									!ADMINS.includes(userInfo.userName) &&
+									!EDITORS.includes(userInfo.userName)) ||
+								(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
+							) {
+								return true;
+							}
+							else {
+								return false;
+							}
 	}
 
 	processChats() {
@@ -237,8 +263,8 @@ class Gamechat extends React.Component {
 						playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 					// ? <div className={chat.chat[2] && chat.chat[2].item.type ? `gamechat-item ${chat.chat[2].item.type}` : 'gamechat-item'} key={i}>
 					return chat.gameChat ? (
-						<div className={chat.chat[1] && chat.chat[1].type ? `gamechat-item ${chat.chat[1].type}` : 'gamechat-item'} key={i}>
-							<span className="chat-user--game">[GAME]{this.handleTimestamps(chat.timestamp)}: </span>
+						<div className={chat.chat[1] && chat.chat[1].type ? `item gamechat ${chat.chat[1].type}` : 'item gamechat'} key={i}>
+							{this.handleTimestamps(chat.timestamp)}
 							<span className="game-chat">
 								{chatContents.map((chatSegment, index) => {
 									if (chatSegment.type) {
@@ -263,7 +289,7 @@ class Gamechat extends React.Component {
 						</div>
 					) : chat.isClaim ? (
 						<div className="item claim-item" key={i}>
-							<span className="chat-user--claim">[CLAIM]{this.handleTimestamps(chat.timestamp)}: </span>
+							{this.handleTimestamps(chat.timestamp)}
 							<span className="claim-chat">
 								{chatContents.map((chatSegment, index) => {
 									if (chatSegment.type) {
@@ -288,11 +314,14 @@ class Gamechat extends React.Component {
 						</div>
 					) : chat.isBroadcast ? (
 						<div className="item" key={i}>
-							<span className="chat-user--broadcast">[BROADCAST]{this.handleTimestamps(chat.timestamp)}: </span>
+							<span className="chat-user broadcast">
+								{this.handleTimestamps(chat.timestamp)} {`${chat.userName}: `}{' '}
+							</span>
 							<span className="broadcast-chat">{processEmotes(chat.chat)}</span>
 						</div>
 					) : (
 						<div className="item" key={i}>
+							{this.handleTimestamps(chat.timestamp)}
 							<span
 								className={
 									playerListPlayer
@@ -302,34 +331,34 @@ class Gamechat extends React.Component {
 										: 'chat-user'
 								}
 							>
+								{isSeated ? (
+									''
+								) : MODERATORS.includes(chat.userName) ? (
+									<span data-tooltip="Moderator" data-inverted>
+										<span className="observer-chat">(Observer) </span>
+										<span className="moderator-name">(M) </span>
+									</span>
+								) : EDITORS.includes(chat.userName) ? (
+									<span data-tooltip="Editor" data-inverted>
+										<span className="observer-chat">(Observer) </span>
+										<span className="editor-name">(E) </span>
+									</span>
+								) : ADMINS.includes(chat.userName) ? (
+									<span data-tooltip="Admin" data-inverted>
+										<span className="observer-chat">(Observer) </span>
+										<span className="admin-name">(A) </span>
+									</span>
+								) : (
+									<span className="observer-chat">(Observer) </span>
+								)}
 								{gameInfo.gameState.isTracksFlipped
 									? isSeated
 										? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
 									: chat.userName}
-								{isSeated ? (
-									''
-								) : MODERATORS.includes(chat.userName) ? (
-									<span>
-										<span className="moderator-name"> (M)</span>
-										<span className="observer-chat"> (Observer)</span>
-									</span>
-								) : EDITORS.includes(chat.userName) ? (
-									<span>
-										<span className="editor-name"> (E)</span>
-										<span className="observer-chat"> (Observer)</span>
-									</span>
-								) : ADMINS.includes(chat.userName) ? (
-									<span>
-										<span className="admin-name"> (A)</span>
-										<span className="observer-chat"> (Observer)</span>
-									</span>
-								) : (
-									<span className="observer-chat"> (Observer)</span>
-								)}
-								{this.handleTimestamps(chat.timestamp)}:
+								{': '}
 							</span>
-							<span> {chatContents}</span>
+							<span>{chatContents}</span>
 						</div>
 					);
 				});
@@ -373,7 +402,6 @@ class Gamechat extends React.Component {
 
 				if (summary) {
 					const onClick = () => {
-						this.props.onLeaveGame(this.props.userInfo.isSeated);
 						window.location.hash = `#/replay/${gameInfo.general.uid}`;
 					};
 
@@ -435,7 +463,7 @@ class Gamechat extends React.Component {
 				</section>
 				<section
 					style={{
-						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '18px'
+						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px'
 					}}
 					className={(() => {
 						let classes = 'segment chats';
@@ -447,9 +475,16 @@ class Gamechat extends React.Component {
 						return classes;
 					})()}
 				>
-					<div className="ui list" onScroll={this.handleChatScroll}>
-						{this.processChats()}
-					</div>
+					<PerfectScrollbar
+						ref="perfectScrollbar"
+						onScrollY={this.handleChatScrolled}
+						onYReachEnd={this.handleChatScrolledToBottom}
+						option={{ suppressScrollX: true }}
+					>
+						<div className="ui list" onScroll={this.handleChatScroll}>
+							{this.processChats()}
+						</div>
+					</PerfectScrollbar>
 				</section>
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
 					{(() => {
@@ -602,99 +637,38 @@ class Gamechat extends React.Component {
 					})()}
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					{(() => {
-						const { gameInfo, userInfo } = this.props;
-
-						let classes = 'expando-container';
-
-						if (
-							!userInfo.isSeated ||
-							gameInfo.gameState.isNight ||
-							gameInfo.gameState.isCompleted ||
-							(gameInfo.gameState.isStarted && !gameInfo.gameState.isDay)
-						) {
-							classes += ' app-visibility-hidden';
-						}
-
-						return (
-							<div className={classes}>
-								<i
-									className={(() => {
-										let classes = 'large delete icon';
-
-										if (!this.state.inputValue.length) {
-											classes += ' app-visibility-hidden';
-										}
-
-										return classes;
-									})()}
-									onClick={this.handleChatClearClick}
-								/>
-							</div>
-						);
-					})()}
-					<div
-						className={(() => {
-							let classes = 'ui action input';
-
-							const { userInfo, gameInfo } = this.props,
-								{ gameState, publicPlayersState } = gameInfo,
-								{ gameSettings, userName, isSeated } = userInfo,
-								isDead = (() => {
-									if (userName && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
-										return publicPlayersState.find(player => userName === player.userName).isDead;
-									}
-								})(),
-								isGovernmentDuringPolicySelection = (() => {
-									if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
-										return (
-											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
-											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
-										);
-									}
-								})();
-
-							if (
-								!userName ||
-								this.state.disabled ||
-								(isDead && !gameState.isCompleted) ||
-								isGovernmentDuringPolicySelection ||
-								gameInfo.general.disableChat ||
-								(gameInfo.general.private &&
-									!userInfo.isSeated &&
-									!MODERATORS.includes(userInfo.userName) &&
-									!ADMINS.includes(userInfo.userName) &&
-									!EDITORS.includes(userInfo.userName)) ||
-								(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
-							) {
-								classes += ' disabled';
-							}
-
-							return classes;
-						})()}
+					<div className={ this.checkIsChatDisabled() ? 'ui action input disabled' : 'ui action input'}
 					>
 						<input
-							value={this.state.inputValue}
-							onChange={this.handleInputChange}
+							onSubmit={this.handleSubmit}
 							maxLength="300"
 							autoComplete="off"
 							spellCheck="false"
-							placeholder="Chat.."
+							placeholder="Send a message"
 							id="gameChatInput"
 							ref={c => {
 								this.gameChatInput = c;
 							}}
 						/>
-						<button className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
+						{this.checkIsChatDisabled() ? null : renderEmotesButton(this.handleInsertEmote)}
+						<button type="submit" className='ui primary button'>
+							Chat
+						</button>
 					</div>
-					{gameInfo.playersState &&
-						gameInfo.playersState.length &&
-						userInfo.userName &&
-						gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim && (
-							<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
-								C
-							</div>
-						)}
+					{(() => {
+						if (
+							gameInfo.playersState &&
+							gameInfo.playersState.length &&
+							userInfo.userName &&
+							gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim
+						) {
+							return (
+								<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
+									C
+								</div>
+							);
+						}
+					})()}
 				</form>
 				<div
 					className="ui basic fullscreen modal leavegamemodals"

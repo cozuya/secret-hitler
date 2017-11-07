@@ -1,6 +1,4 @@
 import React from 'react'; // eslint-disable-line
-import Menu from '../menu/Menu.jsx';
-import Defaultmid from './Defaultmid.jsx';
 import Creategame from './Creategame.jsx';
 import Settings from './Settings.jsx';
 import Game from './Game.jsx';
@@ -10,86 +8,80 @@ import Changelog from './Changelog.jsx';
 import Moderation from './Moderation.jsx';
 import Reports from './Reports.jsx';
 import PropTypes from 'prop-types';
+import GamesList from './GamesList.jsx';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
-const Main = props => (
-	<section
-		className={(() => {
-			let classes = '';
+const RenderMidSection = props => {
+	switch (props.midSection) {
+		case 'createGame':
+			return <Creategame userList={props.userList} userInfo={props.userInfo} socket={props.socket} />;
+		case 'changelog':
+			return <Changelog />;
+		case 'game':
+			if (Object.keys(props.gameInfo).length) {
+				return (
+					<Game
+						onUserNightActionEventSubmit={props.onUserNightActionEventSubmit}
+						onUpdateTruncateGameSubmit={props.onUpdateTruncateGameSubmit}
+						onUpdateSelectedForEliminationSubmit={props.onUpdateSelectedForEliminationSubmit}
+						onUpdateReportGame={props.onUpdateReportGame}
+						onClickedTakeSeat={props.onClickedTakeSeat}
+						onNewGameChat={props.onNewGameChat}
+						onSeatingUser={props.onSeatingUser}
+						onLeaveGame={props.onLeaveGame}
+						userInfo={props.userInfo}
+						gameInfo={props.gameInfo}
+						userList={props.userList}
+						socket={props.socket}
+					/>
+				);
+			}
+			break;
+		case 'moderation':
+			return <Moderation userInfo={props.userInfo} socket={props.socket} userList={props.userList} />;
+		case 'settings':
+			return <Settings userInfo={props.userInfo} socket={props.socket} />;
+		case 'profile':
+			return <Profile userInfo={props.userInfo} socket={props.socket} />;
+		case 'replay':
+			return <Replay />;
+		case 'reports':
+			return <Reports socket={props.socket} userInfo={props.userInfo} />;
+		default:
+			return <GamesList userList={props.userList} userInfo={props.userInfo} midSection={props.midSection} gameList={props.gameList} socket={props.socket} />;
+	}
+};
 
-			if (props.midSection === 'game' || props.midSection === 'replay') {
-				if (props.gameInfo.general && props.gameInfo.general.experiencedMode) {
-					classes = 'experienced ';
-				}
+const Main = props => {
+	let classes = 'section-main';
+	if (props.midSection === 'game' || props.midSection === 'replay') {
+		classes += ' game';
+	}
 
-				if (props.userInfo.gameSettings && props.userInfo.gameSettings.enableRightSidebarInGame) {
-					classes += 'thirteen';
+	return (
+		<section className={classes}>
+			{(() => {
+				if (props.midSection === 'game' || props.midSection === 'replay') {
+					return RenderMidSection(props);
 				} else {
-					classes += 'sixteen';
+					return (
+						<PerfectScrollbar className="scrollbar-container-main" option={{ suppressScrollX: true }}>
+							<div className="section-main-content-container">{RenderMidSection(props)}</div>
+						</PerfectScrollbar>
+					);
 				}
-			} else if (props.midSection === 'replay') {
-				classes += 'sixteen';
-			} else {
-				classes = 'ten';
-			}
-
-			classes += ' wide column section-main'; // yes semantic requires classes in specific order... ascii shrug
-
-			if (props.midSection === 'game' || props.midSection === 'replay') {
-				classes += ' ingame';
-			}
-			return classes;
-		})()}
-	>
-		<Menu userInfo={props.userInfo} onLeaveGame={props.onLeaveGame} onSettingsButtonClick={props.onSettingsButtonClick} gameInfo={props.gameInfo} />
-		{(() => {
-			switch (props.midSection) {
-				case 'createGame':
-					return <Creategame userList={props.userList} userInfo={props.userInfo} socket={props.socket} />;
-				case 'changelog':
-					return <Changelog onLeaveChangelog={props.onLeaveChangelog} version={props.version} />;
-				case 'game':
-					if (Object.keys(props.gameInfo).length) {
-						return (
-							<Game
-								onUserNightActionEventSubmit={props.onUserNightActionEventSubmit}
-								onUpdateTruncateGameSubmit={props.onUpdateTruncateGameSubmit}
-								onUpdateSelectedForEliminationSubmit={props.onUpdateSelectedForEliminationSubmit}
-								onUpdateReportGame={props.onUpdateReportGame}
-								onClickedTakeSeat={props.onClickedTakeSeat}
-								onNewGameChat={props.onNewGameChat}
-								onSeatingUser={props.onSeatingUser}
-								onLeaveGame={props.onLeaveGame}
-								userInfo={props.userInfo}
-								gameInfo={props.gameInfo}
-								userList={props.userList}
-								socket={props.socket}
-							/>
-						);
-					}
-					break;
-				case 'moderation':
-					return <Moderation userInfo={props.userInfo} socket={props.socket} userList={props.userList} onLeaveModeration={props.onLeaveModeration} />;
-				case 'settings':
-					return <Settings onLeaveSettings={props.onLeaveSettings} userInfo={props.userInfo} socket={props.socket} />;
-				case 'profile':
-					return <Profile userInfo={props.userInfo} socket={props.socket} />;
-				case 'replay':
-					return <Replay />;
-				case 'reports':
-					return <Reports socket={props.socket} userInfo={props.userInfo} onLeaveReports={props.onLeaveReports} />;
-				default:
-					return <Defaultmid quickDefault={props.quickDefault} />;
-			}
-		})()}
-	</section>
-);
+			})()}
+		</section>
+	);
+};
 
 Main.propTypes = {
 	midSection: PropTypes.string,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	gameList: PropTypes.array
 };
 
 export default Main;
