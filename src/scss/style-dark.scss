@@ -708,9 +708,15 @@ div {
 .moderatorcolor {
 	color: #0f43fc !important;
 }
+.player-small-cardback.moderatorcolor {
+	box-shadow: 0 0 5px 2px #0f43fc !important;
+}
 
 .editorcolor {
 	color: #05bba0 !important;
+}
+.player-small-cardback.editorcolor {
+	box-shadow: 0 0 5px 2px #05bba0 !important;
 }
 
 .admin {
@@ -722,6 +728,9 @@ div {
 
 .contributer {
 	color: orange !important;
+}
+.player-small-cardback.contributer {
+	box-shadow: 0 0 5px 2px orange !important;
 }
 
 .cbell {
@@ -741,9 +750,15 @@ div {
 .dfinn {
 	color: #00ffd8 !important;
 }
+.player-small-cardback.dfinn {
+	box-shadow: 0 0 5px 2px #00ffd8 !important;
+}
 
-.player-small-cardback.contributer {
-	box-shadow: 0 0 5px 2px orange !important;
+.faaiz {
+	color: #c7c1ff !important;
+}
+.player-small-cardback.faaiz {
+	box-shadow: 0 0 5px 2px #c7c1ff !important;
 }
 
 #confetti {
