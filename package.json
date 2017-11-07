@@ -28,7 +28,7 @@
 		"express": "^4.15.2",
 		"express-session": "^1.15.1",
 		"express-socket.io-session": "^1.3.2",
-		"gfycat-style-urls": "^1.0.1",
+		"gfycat-style-urls": "git+https://github.com/cozuya/gfycat-style-urls.git",
 		"gulp-eslint": "^4.0.0",
 		"gulp-uglify": "^3.0.0",
 		"immutable": "^4.0.0-rc.6",

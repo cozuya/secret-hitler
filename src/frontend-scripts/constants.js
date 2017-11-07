@@ -47,5 +47,6 @@ module.exports.PLAYERCOLORS = user =>
 		contributer: CONTRIBUTORS.includes(user.userName),
 		cbell: user.userName === 'cbell',
 		max: user.userName === 'Max',
-		dfinn: user.userName === 'DFinn'
+		dfinn: user.userName === 'DFinn',
+		faaiz: user.userName === 'Faaiz1999'
 	});
