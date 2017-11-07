@@ -185,6 +185,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 		{ passport } = socket.handshake.session;
 
 	if (game) {
+		// Not sure if we need this copy of game anymore? all it's doing is being passed to sendInProgressGameUpdate
 		const _game = Object.assign({}, game);
 
 		if (passport && Object.keys(passport).length) {

@@ -201,18 +201,13 @@ module.exports.selectChancellor = data => {
 		presidentPlayer = game.private.seatedPlayers[presidentIndex],
 		chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
 
-	// Attempt to prevent rare issue with multiple chancellors
-	const playersGovernmentStatus = game.publicPlayersState.map(player => {
-		return player.governmentStatus;
-	});
+	if (!game.private.lock.selectChancellor) {
+		game.private.lock.selectChancellor = true;
+		game.publicPlayersState[presidentIndex].isLoader = false;
 
-	if (!game.private.lock.selectChancellor && !playersGovernmentStatus.includes('isPendingChancellor')) {
 		game.private.summary = game.private.summary.updateLog({
 			chancellorId: chancellorIndex
 		});
-
-		game.private.lock.selectChancellor = true;
-		game.publicPlayersState[presidentIndex].isLoader = false;
 
 		presidentPlayer.playersState.forEach(player => {
 			player.notificationStatus = '';

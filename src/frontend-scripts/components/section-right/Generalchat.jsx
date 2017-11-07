@@ -19,8 +19,6 @@ export default class Generalchat extends React.Component {
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 		this.state = {
 			lock: false,
-			inputValue: '',
-			disabled: false,
 			discordEnabled: false,
 			stickyEnabled: true
 		};
@@ -51,23 +49,19 @@ export default class Generalchat extends React.Component {
 	}
 
 	handleSubmit(e) {
-		const { inputValue } = this.state;
+		const inputValue = this.chatInput.value;
 
-		if (inputValue.length < 300 && inputValue) {
+		if (inputValue && inputValue.length < 300) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
 				chat: inputValue
 			});
 
-			this.setState({
-				inputValue: '',
-				disabled: true
-			});
+			this.chatInput.value = '';
 
-			this.input.blur();
+			this.chatInput.blur();
 			setTimeout(() => {
-				this.setState({ disabled: false });
-				this.input.focus();
+				this.chatInput.focus();
 			}, 300);
 		}
 	}
@@ -95,36 +89,32 @@ export default class Generalchat extends React.Component {
 	}
 
 	handleInsertEmote(emote) {
-		const newMsg = this.state.inputValue + ` ${emote}`;
-		this.setState({ inputValue: newMsg });
-		this.input.focus();
+		this.chatInput.value += ` ${emote}`;
+		this.chatInput.focus();
 	}
 
 	handleKeyPress(e) {
 		if (e.keyCode === 13 && e.shiftKey === false) {
-			this.handleSubmit(this.state.inputValue);
+			e.preventDefault();
+			this.handleSubmit();
 		}
 	}
 
 	renderInput() {
 		return this.state.discordEnabled ? null : (
-			<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
+			<div className={this.props.userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
 				<textarea
 					disabled={!this.props.userInfo.userName}
 					className="chat-input-box"
 					placeholder="Send a message"
-					value={this.state.inputValue}
-					onChange={this.handleInputChange}
 					maxLength="300"
 					spellCheck="false"
 					onKeyDown={this.handleKeyPress}
-					ref={c => {
-						this.input = c;
-					}}
+					ref={c => (this.chatInput = c)}
 				/>
 				{this.props.userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
 				<div className="chat-button">
-					<button onClick={this.handleSubmit} className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>
+					<button onClick={this.handleSubmit} className="ui primary button">
 						Chat
 					</button>
 				</div>

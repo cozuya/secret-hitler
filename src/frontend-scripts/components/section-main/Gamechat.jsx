@@ -21,7 +21,6 @@ class Gamechat extends React.Component {
 		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChatLockClick = this.handleChatLockClick.bind(this);
-		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
 		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
 		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
@@ -29,15 +28,14 @@ class Gamechat extends React.Component {
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
 		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
 		this.handleInsertEmote = this.handleInsertEmote.bind(this);
+		this.checkIsChatDisabled = this.checkIsChatDisabled.bind(this);
 
 		this.state = {
 			chatFilter: 'All',
 			lock: false,
-			inputValue: '',
 			claim: '',
 			playersToWhitelist: [],
-			disabled: false,
-			notesEnabled: false
+			notesEnabled: false,
 		};
 	}
 
@@ -129,12 +127,8 @@ class Gamechat extends React.Component {
 		}
 	}
 
-	handleInputChange(e) {
-		this.setState({ inputValue: `${e.target.value}` });
-	}
-
 	handleSubmit(e) {
-		const currentValue = this.state.inputValue,
+		const currentValue = this.gameChatInput.value,
 			{ gameInfo, userInfo } = this.props;
 
 		e.preventDefault();
@@ -149,15 +143,13 @@ class Gamechat extends React.Component {
 			};
 
 			this.props.socket.emit('addNewGameChat', chat);
-			this.setState({
-				inputValue: '',
-				disabled: true
-			});
+
+			this.gameChatInput.value = '';
+
 			this.gameChatInput.blur();
 			setTimeout(() => {
-				this.setState({ disabled: false });
 				this.gameChatInput.focus();
-			}, 150);
+			}, 300);
 		}
 	}
 
@@ -201,9 +193,45 @@ class Gamechat extends React.Component {
 	}
 
 	handleInsertEmote(emote) {
-		const newMsg = this.state.inputValue + ` ${emote}`;
-		this.setState({ inputValue: newMsg });
+		this.gameChatInput.value += ` ${emote}`;
 		this.gameChatInput.focus();
+	}
+
+	checkIsChatDisabled () {
+							const { userInfo, gameInfo } = this.props,
+								{ gameState, publicPlayersState } = gameInfo,
+								{ gameSettings, userName, isSeated } = userInfo,
+								isDead = (() => {
+									if (userName && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
+										return publicPlayersState.find(player => userName === player.userName).isDead;
+									}
+								})(),
+								isGovernmentDuringPolicySelection = (() => {
+									if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
+										return (
+											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
+											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
+										);
+									}
+								})();
+
+							if (
+								!userName ||
+								(isDead && !gameState.isCompleted) ||
+								isGovernmentDuringPolicySelection ||
+								gameInfo.general.disableChat ||
+								(gameInfo.general.private &&
+									!userInfo.isSeated &&
+									!MODERATORS.includes(userInfo.userName) &&
+									!ADMINS.includes(userInfo.userName) &&
+									!EDITORS.includes(userInfo.userName)) ||
+								(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
+							) {
+								return true;
+							}
+							else {
+								return false;
+							}
 	}
 
 	processChats() {
@@ -609,49 +637,10 @@ class Gamechat extends React.Component {
 					})()}
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div
-						className={(() => {
-							let classes = 'ui action input';
-
-							const { userInfo, gameInfo } = this.props,
-								{ gameState, publicPlayersState } = gameInfo,
-								{ gameSettings, userName, isSeated } = userInfo,
-								isDead = (() => {
-									if (userName && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
-										return publicPlayersState.find(player => userName === player.userName).isDead;
-									}
-								})(),
-								isGovernmentDuringPolicySelection = (() => {
-									if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
-										return (
-											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
-											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
-										);
-									}
-								})();
-
-							if (
-								!userName ||
-								this.state.disabled ||
-								(isDead && !gameState.isCompleted) ||
-								isGovernmentDuringPolicySelection ||
-								gameInfo.general.disableChat ||
-								(gameInfo.general.private &&
-									!userInfo.isSeated &&
-									!MODERATORS.includes(userInfo.userName) &&
-									!ADMINS.includes(userInfo.userName) &&
-									!EDITORS.includes(userInfo.userName)) ||
-								(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
-							) {
-								classes += ' disabled';
-							}
-
-							return classes;
-						})()}
+					<div className={ this.checkIsChatDisabled() ? 'ui action input disabled' : 'ui action input'}
 					>
 						<input
-							value={this.state.inputValue}
-							onChange={this.handleInputChange}
+							onSubmit={this.handleSubmit}
 							maxLength="300"
 							autoComplete="off"
 							spellCheck="false"
@@ -661,8 +650,8 @@ class Gamechat extends React.Component {
 								this.gameChatInput = c;
 							}}
 						/>
-						{this.props.userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
-						<button type="submit" className={this.state.inputValue.length ? 'ui primary button' : 'ui primary button disabled'}>
+						{this.checkIsChatDisabled() ? null : renderEmotesButton(this.handleInsertEmote)}
+						<button type="submit" className='ui primary button'>
 							Chat
 						</button>
 					</div>

@@ -75,9 +75,7 @@ const handleSocketDisconnect = socket => {
 
 		if (passport && Object.keys(passport).length) {
 			const userIndex = userList.findIndex(user => user.userName === passport.user),
-				gamesPlayerSeatedIn = games.filter(game =>
-					game.publicPlayersState.find(player => player.userName === passport.user && !player.leftGame)
-				);
+				gamesPlayerSeatedIn = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user && !player.leftGame));
 
 			if (userIndex !== -1) {
 				userList.splice(userIndex, 1);
@@ -224,8 +222,9 @@ module.exports.handleAddNewGame = (socket, data) => {
 			user = userList.find(obj => obj.userName === username),
 			currentTime = new Date();
 
-		if (currentTime - user.timeLastGameCreated < 8000) {
-			return null;
+		if (!user || currentTime - user.timeLastGameCreated < 8000) {
+			// Check if !user here in case of bug where user doesn't appear on userList
+			return;
 		} else {
 			user.timeLastGameCreated = currentTime;
 
