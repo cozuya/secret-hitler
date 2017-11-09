@@ -1,22 +1,23 @@
+
 version 0.1 released 11/11/2016 (alpha)
 all known game breaking bugs eliminated
 
 version 0.2
 fix/address issues found in alpha
-implement automated claims system
+automated claims system
 
 version 0.3
-implement stats page and graphs
+stats page and graphs
 
 version 0.4
-implement rainbow games
+rainbow games
 
 version 0.5
-implement moderation system
+moderation system
 
 version 0.6
-implement in-game player stats @jbasrai
-implement replays @jbasrai
+in-game player stats @jbasrai
+replays @jbasrai
 upgrade dependencies
 
 version 0.7
@@ -45,16 +46,16 @@ version 0.9:
 (#306) fix to people being (again) able to make accounts with the same name but different capitalization
 (#307) enhanced mod log
 (#251) URL routing
+(#275) remake button
+(various) overhaul/fixes to moderation problems (banning/timeouts not working)
 
 near future:
-(various) overhaul/fixes to moderation problems (banning/timeouts not working) - in progress
-(#275) remake button - in progress
-
+UI overhaul from PR
+(#184) tournament mode
 
 farther future:
 (#205) player notes
 (#204) notes enhancements
-(#184) tournament mode - still need to decide on requirements for this
 (#198) game creator should have extra powers - kick/pause timer/etc
 
 version 1.0
