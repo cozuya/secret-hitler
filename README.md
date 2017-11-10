@@ -10,6 +10,10 @@ Effectively this is a take on the classic social deduction/hidden role board gam
 
 Current production/stable is found at [Secret Hitler IO](https://secrethitler.io).
 
+## Special note ##
+
+Due to some bad actors, public code for this project is not currently up to date on github and is being privately source controlled elsewhere.  Please contact the maintainer for more details if you are considering contributing.
+
 ![Screenshot](http://i.imgur.com/6M56f6I.jpg)
 
 Considering contributing to this project?  Please read our brief guidelines found at [CONTRIBUTING](https://github.com/cozuya/secret-hitler/blob/master/CONTRIBUTING.md).  Contributors get a cool orange playername color!
@@ -84,4 +88,4 @@ Veto power is slightly adjusted so that chancellors need to select a policy prio
 
 Adapted the rules explanation to account for online vs physical play.
 
-There is an option when players make a game to "rebalance" the 6 and 9 player games - they start with a fascist and liberal policy already enacted, respectively.  Players (and results from analyzing statistics) have noted that these game modes are the worst balanced and not fun to play with the original ruleset.
+There is an option when players make a game to "rebalance" the 6 and 9 player games - 6p starts with a fascist policy already enacted, 9p starts with one less fascist policy in the deck. Players (and results from analyzing statistics) have noted that these game modes are the worst balanced and not fun to play with the original ruleset.
