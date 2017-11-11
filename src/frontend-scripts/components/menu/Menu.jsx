@@ -37,7 +37,11 @@ class Menu extends React.Component {
 					<div className="center-menu-links">
 						<span>
 							<a
-								className={this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen ? 'patch-alert' : null}
+								className={
+									this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
+										? 'patch-alert'
+										: null
+								}
 								onClick={this.props.readPatchNotes}
 							>
 								{' '}

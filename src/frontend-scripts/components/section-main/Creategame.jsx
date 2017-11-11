@@ -154,7 +154,9 @@ export default class Creategame extends React.Component {
 					disableChat: this.state.disablechat,
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
-					rebalance69p: this.state.rebalance69p ? !(excludedPlayerCount.includes(6) && excludedPlayerCount.includes(9)) : false,
+					rebalance69p: this.state.rebalance69p
+						? !(excludedPlayerCount.includes(6) && excludedPlayerCount.includes(7) && excludedPlayerCount.includes(9))
+						: false,
 					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 					electionCount: 0
 				},
@@ -194,6 +196,22 @@ export default class Creategame extends React.Component {
 					<div className="item" data-value="none">
 						None
 					</div>
+
+					<div className="item" data-value="us">
+						<i className="us flag" />United States
+					</div>
+					<div className="item" data-value="ca">
+						<i className="ca flag" />Canada
+					</div>
+					<div className="item" data-value="de">
+						<i className="de flag" />Germany
+					</div>
+					<div className="item" data-value="gb">
+						<i className="gb flag" />United Kingdom
+					</div>
+					<div className="item" data-value="au">
+						<i className="au flag" />Australia
+					</div>
 					<div className="item" data-value="af">
 						<i className="af flag" />Afghanistan
 					</div>
@@ -230,9 +248,7 @@ export default class Creategame extends React.Component {
 					<div className="item" data-value="aw">
 						<i className="aw flag" />Aruba
 					</div>
-					<div className="item" data-value="au">
-						<i className="au flag" />Australia
-					</div>
+
 					<div className="item" data-value="at">
 						<i className="at flag" />Austria
 					</div>
@@ -311,9 +327,10 @@ export default class Creategame extends React.Component {
 					<div className="item" data-value="cm">
 						<i className="cm flag" />Cameroon
 					</div>
-					<div className="item" data-value="ca">
-						<i className="ca flag" />Canada
+					<div className="item" data-value="cn">
+						<i className="cn flag" />China
 					</div>
+
 					<div className="item" data-value="cv">
 						<i className="cv flag" />Cape Verde
 					</div>
@@ -329,9 +346,7 @@ export default class Creategame extends React.Component {
 					<div className="item" data-value="cl">
 						<i className="cl flag" />Chile
 					</div>
-					<div className="item" data-value="cn">
-						<i className="cn flag" />China
-					</div>
+
 					<div className="item" data-value="cx">
 						<i className="cx flag" />Christmas Island
 					</div>
@@ -440,9 +455,7 @@ export default class Creategame extends React.Component {
 					<div className="item" data-value="ge">
 						<i className="ge flag" />Georgia
 					</div>
-					<div className="item" data-value="de">
-						<i className="de flag" />Germany
-					</div>
+
 					<div className="item" data-value="gh">
 						<i className="gh flag" />Ghana
 					</div>
@@ -878,12 +891,7 @@ export default class Creategame extends React.Component {
 					<div className="item" data-value="ae">
 						<i className="ae flag" />United Arab Emirates
 					</div>
-					<div className="item" data-value="gb">
-						<i className="gb flag" />United Kingdom
-					</div>
-					<div className="item" data-value="us">
-						<i className="us flag" />United States
-					</div>
+
 					<div className="item" data-value="uy">
 						<i className="uy flag" />Uruguay
 					</div>
@@ -1076,7 +1084,7 @@ export default class Creategame extends React.Component {
 				<div className="row">
 					<div className="four wide column rebalance69p">
 						<h4 className="ui header">
-							Rebalance 6 & 9 player games - 6 player games start with a fascist policy enacted, 9 player games start with one less fascist policy.
+							Rebalance games - 6 player games start with a fascist policy enacted, 7 & 9 player games start with one less fascist policy.
 						</h4>
 						<div
 							className="ui fitted toggle checkbox"

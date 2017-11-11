@@ -35,7 +35,7 @@ class Gamechat extends React.Component {
 			lock: false,
 			claim: '',
 			playersToWhitelist: [],
-			notesEnabled: false,
+			notesEnabled: false
 		};
 	}
 
@@ -197,41 +197,40 @@ class Gamechat extends React.Component {
 		this.gameChatInput.focus();
 	}
 
-	checkIsChatDisabled () {
-							const { userInfo, gameInfo } = this.props,
-								{ gameState, publicPlayersState } = gameInfo,
-								{ gameSettings, userName, isSeated } = userInfo,
-								isDead = (() => {
-									if (userName && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
-										return publicPlayersState.find(player => userName === player.userName).isDead;
-									}
-								})(),
-								isGovernmentDuringPolicySelection = (() => {
-									if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
-										return (
-											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
-											publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
-										);
-									}
-								})();
+	checkIsChatDisabled() {
+		const { userInfo, gameInfo } = this.props,
+			{ gameState, publicPlayersState } = gameInfo,
+			{ gameSettings, userName, isSeated } = userInfo,
+			isDead = (() => {
+				if (userName && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
+					return publicPlayersState.find(player => userName === player.userName).isDead;
+				}
+			})(),
+			isGovernmentDuringPolicySelection = (() => {
+				if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
+					return (
+						publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
+						publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
+					);
+				}
+			})();
 
-							if (
-								!userName ||
-								(isDead && !gameState.isCompleted) ||
-								isGovernmentDuringPolicySelection ||
-								gameInfo.general.disableChat ||
-								(gameInfo.general.private &&
-									!userInfo.isSeated &&
-									!MODERATORS.includes(userInfo.userName) &&
-									!ADMINS.includes(userInfo.userName) &&
-									!EDITORS.includes(userInfo.userName)) ||
-								(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
-							) {
-								return true;
-							}
-							else {
-								return false;
-							}
+		if (
+			!userName ||
+			(isDead && !gameState.isCompleted) ||
+			isGovernmentDuringPolicySelection ||
+			gameInfo.general.disableChat ||
+			(gameInfo.general.private &&
+				!userInfo.isSeated &&
+				!MODERATORS.includes(userInfo.userName) &&
+				!ADMINS.includes(userInfo.userName) &&
+				!EDITORS.includes(userInfo.userName)) ||
+			(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
+		) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	processChats() {
@@ -637,8 +636,7 @@ class Gamechat extends React.Component {
 					})()}
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div className={ this.checkIsChatDisabled() ? 'ui action input disabled' : 'ui action input'}
-					>
+					<div className={this.checkIsChatDisabled() ? 'ui action input disabled' : 'ui action input'}>
 						<input
 							onSubmit={this.handleSubmit}
 							maxLength="300"
@@ -651,7 +649,7 @@ class Gamechat extends React.Component {
 							}}
 						/>
 						{this.checkIsChatDisabled() ? null : renderEmotesButton(this.handleInsertEmote)}
-						<button type="submit" className='ui primary button'>
+						<button type="submit" className="ui primary button">
 							Chat
 						</button>
 					</div>

@@ -65,7 +65,7 @@ const DisplayLobbies = props => {
 
 		if (game.rebalance69p) {
 			rebalance69p = <div> R </div>;
-			rebalance69pTooltip = 'Rebalanced 6 & 9 player games';
+			rebalance69pTooltip = 'Rebalanced 6, 7, & 9 player games';
 		}
 
 		if (game.disableChat) {

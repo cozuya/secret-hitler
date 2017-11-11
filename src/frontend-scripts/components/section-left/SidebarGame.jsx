@@ -68,7 +68,7 @@ const SidebarGame = props => {
 					{game.rebalance69p && (
 						<div
 							className="rebalance-game"
-							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 9 player games start with one less fascist policy."
+							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 7 & 9 player games start with one less fascist policy."
 						>
 							R
 						</div>
@@ -129,7 +129,7 @@ const SidebarGame = props => {
 					{game.rebalance69p && (
 						<div
 							className="rebalance-game"
-							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 9 player games start with one less fascist policy."
+							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 7 & 9 player games start with one less fascist policy."
 						>
 							R
 						</div>
