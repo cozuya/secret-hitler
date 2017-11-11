@@ -53,6 +53,9 @@ const checkStartConditions = game => {
 	if (game.gameState.isTracksFlipped) {
 		return;
 	}
+	if (game.electionCount !== 0) {
+		game.electionCount = 0
+	}
 	if (
 		game.gameState.isStarted &&
 		(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
