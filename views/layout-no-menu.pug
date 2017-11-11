@@ -3,8 +3,12 @@ html(lang="en")
 	head
 		meta(charset="utf-8")
 		meta(http-equiv="X-UA-Compatible", content="IE=edge")
-		meta(name="theme-color", content="#c36563")
+
+		meta(name="theme-color", content="#aaa")
 		meta(name="description", content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
+
+		link(rel="stylesheet", type="text/css", href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css")
+
 		if game
 			if isLight
 				link(rel="stylesheet", type="text/css", href="/styles/style-light.css")
@@ -12,8 +16,8 @@ html(lang="en")
 				link(rel="stylesheet", type="text/css", href="/styles/style-dark.css")
 		else
 			meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
-			link(rel="stylesheet", type="text/css", href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css")
 			link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
+				
 		link(href="//fonts.googleapis.com/css?family=Comfortaa|Cuprum:400i|Germania+One|Roboto+Slab", rel="stylesheet", type="text/css")
 		link(rel="author", href="humans.txt")
 		link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")

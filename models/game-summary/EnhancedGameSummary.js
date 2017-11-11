@@ -70,10 +70,7 @@ module.exports = class EnhancedGameSummary {
 	isWinner(identifier) {
 		if (this.lastTurn.execution === this.hitlerIndex) {
 			return this.loyaltyOf(identifier) === 'liberal';
-		} else if (
-			this.lastTurn.chancellorId === this.hitlerIndex &&
-			this.lastTurn.votes.filter(v => v).length > this.playerSize / 2
-		) {
+		} else if (this.lastTurn.chancellorId === this.hitlerIndex && this.lastTurn.votes.filter(v => v).length > this.playerSize / 2) {
 			return this.loyaltyOf(identifier) === 'fascist';
 		} else {
 			return this.loyaltyOf(identifier) === this.lastTurn.enactedPolicy;
@@ -114,11 +111,6 @@ module.exports = class EnhancedGameSummary {
 	shotsOf(identifier) {
 		const playerIndex = this.indexOf(identifier);
 
-		return this.logs
-			.filter(
-				log =>
-					log.presidentId === playerIndex && Number.isInteger(log.execution)
-			)
-			.map(log => log.execution);
+		return this.logs.filter(log => log.presidentId === playerIndex && Number.isInteger(log.execution)).map(log => log.execution);
 	}
 };

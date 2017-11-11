@@ -1,9 +1,14 @@
 #main .moderation {
 	color: $fascistteam;
-	background: #090000;
+	position: relative;
+	width: 98%;
 	.player-input {
 		display: flex;
 		justify-content: center;
+		color: black;
+	}
+	textarea {
+		color: black;
 	}
 	h2 {
 		text-align: center;
@@ -17,16 +22,8 @@
 		color: lightblue;
 		text-decoration: underline;
 		right: 80px;
-		top: 70px;
+		top: 1%;
 		cursor: pointer;
-	}
-	.remove.icon {
-		cursor: pointer;
-		position: absolute;
-		font-size: 30px;
-		left: 94%;
-		opacity: 0.3;
-		top: 70px;
 	}
 	ul {
 		list-style-type: none;
@@ -97,7 +94,7 @@
 		cursor: pointer;
 		position: absolute;
 		left: 5%;
-		top: 70px;
+		top: 1%;
 		text-decoration: underline;
 	}
 	.ipban-button {

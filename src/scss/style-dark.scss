@@ -2,7 +2,7 @@ $lred: #e36248;
 $lightliberalteam: #bfd8ee;
 $lightfascistteam: #e4bcba;
 $darkliberalteam: #608cb3;
-$darkfascistteam: #c36563;
+$darkfascistteam: #f2654c; // default orange color now
 $hitlerteam: #be0804;
 $werewolfteam: #dc6969;
 $villageteam: #4b6a90;
@@ -13,11 +13,12 @@ $selection: #db2828;
 $proceed: #2185d0;
 $lteal: #097892;
 $dteal: #034f61;
-$textfont: 'Comfortaa', Lato, sans-serif;
-$headerfont: 'Cuprum', Lato, sans-serif;
-@import 'semantic.scss';
+$textfont: inherit; //'Comfortaa', Lato, sans-serif;
+$headerfont: inherit; //'Comfortaa', Lato, sans-serif;
+
+//@import 'semantic.scss';
 @import 'creategame.scss';
-@import 'leftsidebar.scss';
+//@import 'leftsidebar.scss';
 @import 'game.scss';
 @import 'players.scss';
 @import 'settings.scss';
@@ -30,23 +31,60 @@ $headerfont: 'Cuprum', Lato, sans-serif;
 @import 'moderation.scss';
 @import 'game-text.scss';
 @import 'reports.scss';
-#game-container > .ui.grid,
-body {
-	font-family: $textfont;
-}
-#main {
-	min-width: 1253px;
-	margin-left: auto;
-	margin-right: auto;
-	max-width: inherit !important;
-	.ui.header {
-		font-family: $headerfont;
+@import 'perfect-scrollbar.scss';
+
+@media screen and (min-width: 1920px) {
+	.body-container {
+		margin: auto;
+		width: 1920px;
 	}
-	.hoz-gradient {
-		background: #000000;
-		background: -moz-linear-gradient(left, #000000 0%, #100000 50%, #000000 100%);
-		background: -webkit-linear-gradient(left, #000000 0%, #100000 50%, #000000 100%);
-		background: linear-gradient(to right, #000000 0%, #100000 50%, #000000 100%);
+}
+@media screen and (min-width: 1520px) {
+	.generalchat {
+		width: 350px;
+	}
+}
+@media screen and (min-width: 1471px) and (max-width: 1520px) {
+	// allows general chat to scale a little
+	.generalchat {
+		width: 300px;
+	}
+	.section-right {
+		width: 100%;
+	}
+}
+@media screen and (min-width: 1471px) {
+	.playerlist {
+		width: 300px;
+	}
+	.generalchat {
+		border-right: 0 !important;
+	}
+}
+@media screen and (max-width: 1470px) {
+	.section-right {
+		flex-direction: column;
+		min-width: 350px;
+	}
+	.section-right.game {
+		min-width: 250px;
+	}
+	.playerlist {
+		order: 0 !important;
+		max-width: 350px !important;
+	}
+}
+@media screen and (max-width: 1220px) {
+	.section-right {
+		min-width: 0;
+		width: 100%;
+	}
+}
+
+#main {
+	height: 100%;
+	.ui.header {
+		font-family: inherit; // $headerfont;
 	}
 	.notes-container {
 		-webkit-transition: all 0.15s ease-in-out;
@@ -94,115 +132,342 @@ body {
 		textarea {
 			width: 100%;
 			flex-grow: 1;
-			background: lightyellow;
+			background: #1b1b1b;
 			resize: none;
-		}
-	}
-	.section-main {
-		background: #140202;
-	}
-	.defaultmid {
-		.callout {
-			font-family: $headerfont;
-			font-size: 34px;
-			text-align: center;
-			margin-top: 40px;
-			position: absolute;
-			width: 100%;
-			color: #1c1515;
-			font-weight: bold;
-			text-shadow: 1px 1px 0px #713d3d;
-		}
-		.poll {
-			position: absolute;
-			left: 600px;
-			width: 190px;
-			top: 330px;
-			text-align: center;
-			> a {
-				color: yellow;
-				font-weight: bold;
-				font-style: italic;
-				text-decoration: underline;
-				font-size: 12px;
+			border-style: solid;
+			border-width: 0 1px 1px 1px;
+			&:focus {
+				outline: none;
+				border-color: #f2654c;
+				box-shadow: 0 0 3px #f2654c;
 			}
 		}
-		background: radial-gradient(ellipse at center, #000 0%, rgb(24, 0, 0) 100%) #e4e4e4;
-		.patch-alert {
+	}
+	.app-container {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+	.menu-container {
+		background-color: $darkfascistteam;
+		a {
 			cursor: pointer;
-			z-index: 2;
-			position: absolute;
-			top: 140px;
-			left: 200px;
-			height: 397px;
-			width: 397px;
-			border: 17px solid #001f3f;
-			border-radius: 50%;
-			animation: pulse 1s infinite;
-			animation-direction: alternate;
-			@keyframes pulse {
-				0% {
-					border-color: whitesmoke;
-				}
-				100% {
-					border-color: gold;
-				}
-			}
+			font-weight: bold;
+			color: white;
 		}
-		img {
-			position: absolute;
-			left: 50%;
-			margin-left: -200px;
-			top: 140px;
-			opacity: 0.2;
+		a:hover {
+			color: #3d75b9;
 		}
-		p {
-			font-family: $headerfont;
-			color: #bbb;
-			font-size: 13px;
-			a {
-				color: lightblue;
-				cursor: pointer;
-			}
-			a:first-child {
-				color: yellow;
-			}
-			a:last-child {
-				color: #d86363;
+		.center-menu-links {
+			min-width: 350px;
+			margin: auto;
+		}
+		.button {
+			background: #3d75b9;
+		}
+		.patch-alert {
+			animation: blinker 2s linear infinite;
+		}
+		@keyframes blinker {
+			50% {
+				opacity: 0.2;
 			}
 		}
 	}
-	.section-main > section {
-		border-top: none;
-		margin: 0;
+	// Not used in new layout yet
+	.poll {
+		position: absolute;
+		left: 600px;
+		width: 190px;
+		top: 330px;
+		text-align: center;
+		> a {
+			color: yellow;
+			font-weight: bold;
+			font-style: italic;
+			text-decoration: underline;
+			font-size: 12px;
+		}
 	}
-	.leftsidebar,
-	.generalchat,
-	.section-right {
-		background: #140202;
+
+	.body-container {
+		display: flex;
+		height: 100%;
+		//margin: auto;
+		overflow: hidden;
 	}
-	.section-left {
-		width: 240px !important;
-	}
-	.section-main {
-		width: 800px !important;
-	}
-	.section-main.ingame {
+	.body-container.game {
 		width: 100% !important;
 	}
+	.section-main {
+		width: 100%;
+		.scrollbar-container-main {
+			// small hack to prevent hover tooltips being cut off.
+			margin-right: -50px;
+			padding-right: 50px;
+			.ps__scrollbar-y-rail {
+				right: 50px;
+			}
+		}
+		.section-main-content-container {
+			width: 870px;
+			margin: 0 auto 0 auto;
+		}
+	}
+	.section-main.game {
+		width: 100%;
+		max-width: 100%;
+		min-width: 1050px !important;
+	}
+	.browser-header {
+		margin: 5px auto 10px auto;
+		width: 400px;
+		padding: 10px 0 10px 0;
+	}
+	.browser-body {
+		margin: 0 20px 0 20px;
+		line-height: normal;
+	}
+	.browser-row {
+		margin-bottom: 30px;
+		box-shadow: 0px 0px 6px 3px #fbbd08;
+	}
+	.browser-row.inprogress {
+		box-shadow: 0px 0px 6px 3px #608cb3;
+	}
+	.browser-row.fascist {
+		box-shadow: 0 0 6px 3px darkgray;
+	}
+	.browser-row.liberal {
+		box-shadow: 0 0 6px 3px darkgray;
+	}
+	.game-row {
+		display: flex;
+		border: 1px solid #1b1b1b;
+		transition: border 0.3s;
+		cursor: pointer;
+		.victory-icon {
+			margin: auto;
+		}
+		&:hover {
+			border: 1px solid $darkfascistteam;
+			.progress-text,
+			.victory-icon {
+				display: none;
+			}
+		}
+		.game-progress {
+			width: 15%;
+			background-color: #313030;
+			border-right: 1px solid #1b1b1b;
+			display: flex;
+			flex-direction: column;
+			padding-top: 3px;
+			text-align: center;
+		}
+		.progress-text {
+			font-size: 16px;
+		}
+		.progress-text.waiting {
+			margin: auto;
+		}
+		.progress-text.liberal {
+			color: $darkliberalteam;
+			margin: auto;
+		}
+		.progress-text.fascist {
+			color: $darkfascistteam;
+			margin: auto;
+		}
+		.progress-text.private {
+			margin: 0;
+			color: #fbbd07;
+		}
+		.progress-icons {
+			i {
+				font-size: 50px;
+			}
+			.liberal-count {
+				padding: 10px 0 8px 0;
+			}
+			.box {
+				display: inline-block;
+				width: 13px;
+				height: 13px;
+				margin: 0 3px;
+			}
+			.liberal-box {
+				box-shadow: 0px 0px 1px 2px #5b9cc4;
+				background-color: #1b1b1b;
+			}
+			.liberal-box.filled {
+				background-color: #5b9cc4;
+			}
+			.fascist-box {
+				box-shadow: 0px 0px 1px 2px #c36563;
+				background-color: #1b1b1b;
+			}
+			.fascist-box.filled {
+				background-color: #c36563;
+			}
+		}
+		.progress-icons.private {
+			margin: auto;
+		}
+	}
+	.game-row:hover .progress-icons {
+		display: none;
+	}
+	.hidden-join-message {
+		display: none;
+		font-size: 50px;
+		margin: auto;
+		div {
+			font-size: 20px;
+			font-weight: bold;
+			margin-top: -5px
+		}
+		i {
+			color: white !important;
+		}
+	}
+	.game-row:hover .hidden-join-message {
+		display: block;
+	}
+	.game-main {
+		// need 1% more here to prevent 1px gap
+		width: 86%;
+	}
+	.game-main-top-row {
+		width: 100%;
+		display: flex;
+		background-color: #525151;
+		font-size: 16px;
+		padding-top: 3px;
+		border-bottom: 1px solid #1b1b1b;
+	}
+	.gamename-column {
+		width: 70%;
+		padding-left: 3px;
+	}
+	.options-column {
+		width: 30%;
+		margin-right: 5px;
+	}
+	.options-icons-container {
+		float: right;
+		margin-right: -7px;
+		span {
+			display: inline-block;
+			min-width: 20px;
+			margin-right: 2px;
+		}
+		.rebalanced {
+			min-width: 16px;
+			div {
+				color: $darkfascistteam;
+			}
+		}
+	}
+	.game-main-bottom-row {
+		display: flex;
+		padding: 8px 5px 8px 5px;
+		background-color: #302f2f;
+	}
+	.player-icons-column {
+		width: 80%;
+	}
+	.player-icons {
+		display: flex;
+		padding-left: 10px;
+	}
+	.player-small-cardback {
+		margin-right: 15px;
+		box-shadow: 0 0 5px 2px gray;
+		border: 1px solid #313030;
+		border-radius: 3px;
+		height: 49px;
+		img {
+			max-height: 47px;
+			max-width: 35px;
+		}
+	}
+	.empty-seat-icons {
+		width: 36.6px;
+		height: 47.5px;
+		margin-right: 15px;
+		background-image: url(../images/empty_seat.png);
+		background-size: 36.6px;
+		text-align: center;
+		vertical-align: middle;
+		line-height: 70px;
+		color: #313131;
+	}
+	.empty-seat-icons.included-player-count {
+		color: #b0b3b1;
+	}
+	.player-count-column {
+		font-size: 44px;
+		margin: auto;
+		width: 25%;
+		padding-left: 10px;
+	}
+	.player-count-column .divider {
+		font-size: 30px;
+	}
+	.allowed-players {
+		font-size: 18px;
+	}
 	.section-right {
-		flex-grow: 1;
-		min-width: 241px;
+		display: flex;
+		margin-right: auto;
+	}
+	// quick hack to get sidebar in-game working for now
+	.body-container.game {
+		.section-right {
+			width: 250px;
+			flex-direction: column !important;
+			margin-right: 2px;
+			.playerlist {
+				order: 0 !important;
+				max-width: 250px !important;
+				min-width: 250px !important;
+			}
+			.generalchat {
+				order: 0 !important;
+				max-width: 250px !important;
+				min-width: 250px !important;
+			}
+		}
 	}
 	.playerlist {
-		background: #140202;
+		min-height: 0;
+		order: 2;
+		max-width: 300px;
 	}
 	.generalchat .inputbar input,
 	#gameChatInput {
-		background: #686868;
+		background: #181818;
+		border: 1px solid #8c8c8c !important;
+		color: white;
+		&:focus {
+			outline: none;
+			border: 1px solid #f2654c !important;
+			box-shadow: 0 0 3px #f2654c;
+		}
+		&::placeholder {
+			color: #8c8c8c;
+		}
 	}
-	.remove.icon {
-		color: #ccc;
+	// careful this styles both generalchat and gamechat emote buttons
+	.emotes-button {
+		position: absolute;
+		right: 52px;
+		top: 3px;
+		background: transparent;
+		.smile.icon {
+			color: white !important;
+		}
 	}
 	.genchat-container .chat-user + span,
 	#game-container .ui.menu .loggedin,
@@ -216,7 +481,12 @@ body {
 	.chats .chat-user + span,
 	.creategame .pickroles .column > span,
 	.clearroles {
-		color: #bfbfbf;
+		//color: #bfbfbf;
+		color: white;
+	}
+	.ui.menu,
+	.ui.button {
+		font-family: inherit;
 	}
 	.table-container .ui.fitted.toggle.checkbox.truncate-game label,
 	.table-container .ui.fitted.toggle.checkbox.showclaims label {
@@ -225,16 +495,19 @@ body {
 	.game > .ui.grid .chat-container .gamechat .chats .chat-player {
 		color: #ddd;
 	}
+	.chat-player {
+		white-space: nowrap;
+	}
 	.game > .ui.grid .chat-container .gamechat .chats,
 	.game-chat {
-		background: #0c0202;
+		background: #181818;
 		flex-grow: 1;
 	}
 	.game > .ui.grid .chat-container .gamechat .inputbar .expando-container .hotkey-container {
 		background: #7c7c7c;
 	}
 	.gamechat .ui.pointing.menu {
-		background: #160a0a;
+		background: #272727;
 		overflow: visible;
 		.item {
 			color: #bfbfbf;
@@ -248,6 +521,10 @@ body {
 	.ui.toggle.checkbox input ~ label:before {
 		background: #444;
 	}
+	.ui.toggle.checkbox input:checked ~ .box:before,
+	.ui.toggle.checkbox input:checked ~ label:before {
+		background: #3d75b9 !important;
+	}
 	.ui.pointing.menu .item:after {
 		border-bottom: 1px solid #111;
 		border-right: 1px solid #111;
@@ -256,7 +533,16 @@ body {
 		color: $darkfascistteam;
 	}
 	a:not(.button) {
-		color: $darkliberalteam;
+		//color: $darkliberalteam;
+	}
+	.remove.icon {
+		cursor: pointer;
+		font-size: 30px;
+		float: right;
+		opacity: 0.5;
+		&:hover {
+			opacity: 1;
+		}
 	}
 }
 
@@ -276,16 +562,16 @@ body {
 .ui.primary.button:focus,
 .ui.primary.buttons .button:active,
 .ui.primary.button:active {
-	background-color: $lred;
+	background-color: #5a9bc4;
 }
 
 .ui.primary.button,
 .ui.primary.buttons .button {
-	background-color: $darkfascistteam;
+	background-color: #3d75b9; //#5a9bc4;
 }
 
 .ui.disabled.button {
-	background: $lightfascistteam;
+	background: #a3c4ec;
 }
 
 .ui.button {
@@ -293,9 +579,10 @@ body {
 }
 
 body {
-	background-image: url('../images/footer_lodyas.png');
-	margin: 0 1%;
-	min-width: 1127px;
+	background-color: #1b1b1b;
+	min-height: 595px;
+	min-width: 1070px;
+	overflow: auto;
 }
 
 .app-hidden {
@@ -312,17 +599,23 @@ body {
 	clear: both;
 }
 
-#game-container .ui.menu {
+div {
+	color: #fff;
+}
+
+#game-container .nav-menu {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: 0;
 	border: 0;
 	box-shadow: none;
 	overflow: hidden;
-	> img {
-		margin-left: 10px;
-		margin-top: 12px;
-		width: 30px;
-		height: 30px;
+	background-color: $darkfascistteam;
+	margin: auto;
+	width: 95%;
+	max-width: 1920px;
+	> a {
+		max-height: 36px;
+		margin-top: 3px;
 	}
 	> p {
 		line-height: 1;
@@ -338,9 +631,17 @@ body {
 	}
 	.item.right {
 		padding: 3px 10px;
+		margin-left: 0 !important;
 		a:hover {
-			color: #000;
-			text-decoration: underline;
+			//color: #000;
+			//text-decoration: underline;
+		}
+		.setting.icon.large {
+			color: white !important;
+			text-decoration: none;
+			&:hover {
+				animation: icon-loading 2s linear infinite;
+			}
 		}
 	}
 	.loggedin {
@@ -349,7 +650,8 @@ body {
 		vertical-align: middle;
 		.playername {
 			font-weight: bold;
-			color: #16ab39;
+			//color: white;
+			font-size: 16px;
 		}
 	}
 	i {
@@ -361,71 +663,24 @@ body {
 	.ui.button:hover,
 	.ui.button:active {
 		color: #fff;
-		background: $lred;
-	}
-}
-
-#game-container .section-main {
-	padding-left: 0;
-	padding-right: 0;
-}
-
-.section-left,
-.section-right,
-.section-main {
-	box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
-	background: #fff;
-}
-
-.section-main > section {
-	min-height: 556px;
-	border-top: 1px solid #eee;
-}
-
-.defaultmid {
-	background: #fdfdfd;
-	display: flex;
-	flex-direction: column-reverse;
-
-	p {
-		display: flex;
-		justify-content: center;
+		background: #5a9bc4;
 	}
 }
 
 #game-container {
+	height: 100%;
+
 	.section-main {
-		padding-bottom: 0;
+		//padding-bottom: 0;
 	}
 	> .ui.grid {
 		border-top: 1px solid #ddd;
 	}
 }
 
-.changelog {
-	max-height: 554px;
-	overflow-y: scroll;
-}
-
-.section-main > .menu {
-	margin: -0.5rem;
-}
-
-.header-container {
-	text-align: center;
-	height: 400px;
-	background-image: url('../images/1127X400.jpeg');
-	margin-top: 45px;
-}
-
 #general-info,
 #top-menu {
 	background: #eee;
-}
-
-.signin-modal,
-.signup-modal {
-	margin-left: -125px !important;
 }
 
 .signinnag {
@@ -436,44 +691,74 @@ body {
 	.experienced#{$i} {
 		color: rgb(19,  (222 - ($i * 20)), 19) !important;
 	}
+	.player-small-cardback.experienced#{$i} {
+		box-shadow: 0 0 5px 2px rgb(0,  (175 - ($i * 20)), 0) !important;
+	}
 }
 
 @for $i from 1 through 10 {
 	.onfire#{$i} {
 		color: rgb(183,  (10 - $i) * 15, 167) !important;
 	}
+	.player-small-cardback.onfire#{$i} {
+		box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
+	}
 }
 
 .moderatorcolor {
 	color: #0f43fc !important;
 }
+.player-small-cardback.moderatorcolor {
+	box-shadow: 0 0 5px 2px #0f43fc !important;
+}
 
 .editorcolor {
 	color: #05bba0 !important;
+}
+.player-small-cardback.editorcolor {
+	box-shadow: 0 0 5px 2px #05bba0 !important;
 }
 
 .admin {
 	color: red !important;
 }
+.player-small-cardback.admin {
+	box-shadow: 0 0 5px 2px red !important;
+}
 
 .contributer {
 	color: orange !important;
+}
+.player-small-cardback.contributer {
+	box-shadow: 0 0 5px 2px orange !important;
 }
 
 .cbell {
 	color: #ff1a75 !important;
 }
+.player-small-cardback.cbell {
+	box-shadow: 0 0 5px 2px #ff1a75 !important;
+}
 
 .max {
 	color: #b7ae0b !important;
+}
+.player-small-cardback.max {
+	box-shadow: 0 0 5px 2px #b7ae0b !important;
 }
 
 .dfinn {
 	color: #00ffd8 !important;
 }
+.player-small-cardback.dfinn {
+	box-shadow: 0 0 5px 2px #00ffd8 !important;
+}
 
 .faaiz {
 	color: #c7c1ff !important;
+}
+.player-small-cardback.faaiz {
+	box-shadow: 0 0 5px 2px #c7c1ff !important;
 }
 
 #confetti {
@@ -577,6 +862,7 @@ body {
 }
 
 .tou {
+	color: black;
 	text-align: center;
 	font-weight: bold;
 	margin-top: 10px;
@@ -601,49 +887,57 @@ body {
 	font-size: 16px;
 }
 
-#main .thirteen.wide.section-main.ingame {
-	flex-grow: 1;
-	width: initial !important;
+.ui.dropdown > .text {
+	color: black;
 }
 
-::-webkit-scrollbar {
-	width: 3px;
-	height: 3px;
+[data-tooltip][data-inverted]:after {
+	padding: 5px;
 }
 
-::-webkit-scrollbar-button {
-	width: 0px;
-	height: 0px;
+.popup {
+	padding: 5px !important;
+	font-family: $textfont;
 }
 
-::-webkit-scrollbar-thumb {
-	background: #717171;
-	border: 0px none #ffffff;
-	border-radius: 0px;
-}
+// ::-webkit-scrollbar {
+// 	width: 3px;
+// 	height: 3px;
+// }
 
-::-webkit-scrollbar-thumb:hover {
-	background: #191919;
-}
+// ::-webkit-scrollbar-button {
+// 	width: 0px;
+// 	height: 0px;
+// }
 
-::-webkit-scrollbar-thumb:active {
-	background: #c4c4c4;
-}
+// ::-webkit-scrollbar-thumb {
+// 	background: #717171;
+// 	border: 0px none #ffffff;
+// 	border-radius: 0px;
+// }
 
-::-webkit-scrollbar-track {
-	background: #bfbfbf;
-	border: 0px none #ffffff;
-	border-radius: 0px;
-}
+// ::-webkit-scrollbar-thumb:hover {
+// 	background: #191919;
+// }
 
-::-webkit-scrollbar-track:hover {
-	background: #666666;
-}
+// ::-webkit-scrollbar-thumb:active {
+// 	background: #c4c4c4;
+// }
 
-::-webkit-scrollbar-track:active {
-	background: #a4a4a4;
-}
+// ::-webkit-scrollbar-track {
+// 	background: #bfbfbf;
+// 	border: 0px none #ffffff;
+// 	border-radius: 0px;
+// }
 
-::-webkit-scrollbar-corner {
-	background: transparent;
-}
+// ::-webkit-scrollbar-track:hover {
+// 	background: #666666;
+// }
+
+// ::-webkit-scrollbar-track:active {
+// 	background: #a4a4a4;
+// }
+
+// ::-webkit-scrollbar-corner {
+// 	background: transparent;
+// }

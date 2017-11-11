@@ -17,7 +17,7 @@
 	left: 0;
 	height: 4px;
 	border-radius: 6px;
-	background-color: #c36563;
+	background-color: #3d75b9;
 }
 .rc-slider-handle {
 	position: absolute;
@@ -133,8 +133,8 @@
 }
 .rc-slider-tooltip-zoom-down-enter,
 .rc-slider-tooltip-zoom-down-appear {
-	-webkit-animation-duration: .3s;
-	animation-duration: .3s;
+	-webkit-animation-duration: 0.3s;
+	animation-duration: 0.3s;
 	-webkit-animation-fill-mode: both;
 	animation-fill-mode: both;
 	display: block !important;
@@ -142,8 +142,8 @@
 	animation-play-state: paused;
 }
 .rc-slider-tooltip-zoom-down-leave {
-	-webkit-animation-duration: .3s;
-	animation-duration: .3s;
+	-webkit-animation-duration: 0.3s;
+	animation-duration: 0.3s;
 	-webkit-animation-fill-mode: both;
 	animation-fill-mode: both;
 	display: block !important;

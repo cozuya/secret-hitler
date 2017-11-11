@@ -2,9 +2,10 @@
 	border: 0;
 	border-radius: 0;
 	margin-top: 0;
-	background-color: #0b0000;
+	background-color: #1b1b1b;
 	padding: 20px;
 	color: #eee;
+	width: 98%;
 
 	.profile-picture {
 		width: 70px;
@@ -12,6 +13,8 @@
 		position: absolute;
 		left: 318px;
 		top: 5px;
+		background-size: 70px;
+		background-repeat: no-repeat;
 	}
 
 	.ui.menu {
@@ -34,15 +37,6 @@
 		position: relative;
 		top: 150px;
 	}
-
-	.remove.icon {
-		cursor: pointer;
-		position: absolute;
-		font-size: 30px;
-		left: 760px;
-		opacity: 0.3;
-	}
-
 	.recent-games-table + table tbody tr {
 		cursor: pointer;
 	}

@@ -8,7 +8,12 @@
 	padding-right: 0 !important;
 	padding-bottom: 0 !important;
 	.playerlist {
-		padding-bottom: 10px;
+		background: #181818;
+		border: 1px solid #262626;
+		border-bottom: 0;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
 		.userlist-stats-container {
 			font-size: 12px;
 			color: #bdbdbd;
@@ -20,11 +25,12 @@
 			justify-content: flex-end;
 		}
 		.playerlist-header {
+			min-height: 32px;
 			padding: 5px 0 3px;
-			background: #000;
 			display: flex;
 			justify-content: space-between;
 			color: $darkfascistteam;
+			border-bottom: 1px solid #262626;
 			.mod-button,
 			.report-button {
 				cursor: pointer;
@@ -74,14 +80,10 @@
 		.divider {
 			margin: 0;
 		}
-		i {
-			// margin-top: -5px;
-		}
 		.playerlist-body {
-			height: 250px;
 			overflow-y: auto;
-			padding-left: 5px;
-
+			overflow-x: hidden;
+			padding: 0 10px 0 10px;
 			.fav {
 				background: url('../favicon-16x16.png') no-repeat;
 				width: 16px;
@@ -110,9 +112,13 @@
 				white-space: nowrap;
 				overflow-x: hidden;
 				color: #bfbfbf;
-				> span:hover {
+				span:hover {
 					color: #608cb3 !important;
 					cursor: pointer;
+					span {
+						color: #608cb3 !important;
+						cursor: pointer;
+					}
 				}
 			}
 			.unclickable:hover {
@@ -128,6 +134,14 @@
 		margin: 0;
 	}
 	.generalchat {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		border: 1px solid #262626;
+		img {
+			vertical-align: middle;
+			margin: 2px 0;
+		}
 		.discord-icon {
 			float: right;
 			padding: 4px;
@@ -137,69 +151,115 @@
 			}
 		}
 		.generalchat-header {
+			min-height: 32px;
+			border-bottom: 1px solid #262626;
+			padding: 5px 0px 3px;
 			h3 {
 				float: left;
 				margin: 0;
+				padding-left: 5px;
 			}
 			i {
 				float: right;
 				cursor: pointer;
 			}
-			> div {
-				padding: 2px 5px 0;
-			}
-		}
-
-		.inputbar {
-			display: flex;
-			> div {
-				flex-grow: 1;
-			}
-			i {
-				width: 20px;
-			}
 		}
 		.ui.input {
-			margin-right: 4px;
+			margin: 0;
+			display: flex;
+			flex-direction: column;
+			padding: 10px 10px 5px 10px;
+			background: #181818;
+			.chat-button {
+				margin-top: 5px;
+				button {
+					padding: 2px;
+					float: right;
+					background: $darkfascistteam;
+					&:hover {
+						background: #e44023;
+					}
+				}
+			}
+			.emotes-button {
+				padding: 2px;
+				right: 14px !important;
+				top: 12px !important;
+			}
+			.chat-input-box {
+				resize: none;
+				width: 100%;
+				background: #181818;
+				color: white;
+				padding-right: 25px;
+				border: solid 1px #8c8c8c;
+				height: 44px;
+				&:focus {
+					outline: none;
+					border: 1px solid #f2654c;
+					box-shadow: 0 0 3px #f2654c;
+				}
+			}
 			input {
 				padding: 2px;
 			}
-			button {
-				padding: 2px;
-			}
-			+ i {
+			i {
 				cursor: pointer;
+				width: 20px;
 			}
 		}
-		.chats {
-			height: 252px;
-			padding-left: 5px;
+		.segment.chats {
 			position: relative;
-			> .ui.list {
-				overflow-y: auto;
+			flex: 1;
+			background: #181818;
+			.ui.list.genchat-container {
 				position: absolute;
 				bottom: 0;
-				max-height: 254px;
-				width: 99%;
-				.chat-user--broadcast {
+				left: 0;
+				right: 0;
+				max-height: 100%;
+				width: 97%;
+				margin: auto;
+				padding-right: 5px;
+				padding-bottom: 1px;
+				.chat-user.broadcast {
 					color: lightsalmon;
+					a {
+						color: lightsalmon;
+					}
 				}
 				.broadcast-chat {
-					color: lightskyblue;
+					color: lightskyblue !important;
 				}
 				.item {
-					padding: 0;
+					padding: 2px 0;
+					line-height: 140%;
+					a {
+						padding: 0;
+					}
 					a.genchat-user:hover {
-						text-decoration: underline;
+						//text-decoration: underline;
+						color: #608cb3 !important;
 					}
 
 					a.shio-link {
 						color: #f4f439 !important;
 						text-decoration: underline !important;
+						&:hover {
+							color: #608cb3 !important;
+						}
 					}
 				}
 				.chat-user {
 					color: #888;
+					font-weight: bold;
+					white-space: nowrap;
+				}
+				.timestamp {
+					color: #565656;
+					font-size: 80%;
+					white-space: nowrap;
+					font-family: arial;
 				}
 				.admin {
 					color: red;
@@ -210,7 +270,7 @@
 			}
 			.sticky {
 				position: absolute;
-				background: darkorange;
+				background: $darkfascistteam;
 				top: -2px;
 				left: 0;
 				color: white;
@@ -220,6 +280,8 @@
 				display: flex;
 				> span {
 					flex-grow: 1;
+					width: 100%;
+					word-break: break-word;
 					> span {
 						font-style: italic;
 					}
@@ -245,4 +307,38 @@
 #main .ingame + .three.wide.section-right {
 	max-width: 235px;
 	min-width: initial;
+}
+
+.emotes-popup-content {
+	// add padding area for tooltips around popup
+	margin: -30px -20px 0 -20px;
+	padding: 32px 22px 2px 22px;
+	display: flex;
+	flex-wrap: wrap;
+	background: transparent;
+	overflow-x: hidden;
+	cursor: pointer;
+	resize: none;
+	justify-content: center;
+	div {
+		margin: 0 2px 0 2px;
+		&:active {
+			img {
+				opacity: 0.5;
+			}
+		}
+	}
+}
+.emotes-popup {
+	min-width: 240px !important;
+	max-width: 240px !important;
+	//padding: 10px !important;
+	background: #181818 !important;
+	&:before {
+		background: #181818 !important;
+	}
+}
+
+.admin-popup {
+	padding: 5px !important;
 }
