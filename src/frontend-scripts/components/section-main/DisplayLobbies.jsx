@@ -239,7 +239,7 @@ const DisplayLobbies = props => {
 			<div className="game-progress">
 				<div className="hidden-join-message">
 					<i className="share icon" />
-					<div>Join</div>
+					<div>Enter</div>
 				</div>
 				<span className={classes}>{progressText}</span>
 				{progressIcons}
