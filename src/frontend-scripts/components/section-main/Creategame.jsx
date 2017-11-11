@@ -23,7 +23,8 @@ export default class Creategame extends React.Component {
 			rainbowgame: false,
 			rebalance69p: true,
 			checkedSliderValues: new Array(6).fill(true),
-			isTourny: false
+			isTourny: false,
+			blindMode: false
 		};
 	}
 
@@ -83,6 +84,15 @@ export default class Creategame extends React.Component {
 			},
 			onUnchecked() {
 				self.setState({ isTourny: false });
+			}
+		});
+
+		$(this.blindmode).checkbox({
+			onChecked() {
+				self.setState({ blindMode: true });
+			},
+			onUnchecked() {
+				self.setState({ blindMode: false });
 			}
 		});
 
@@ -154,6 +164,7 @@ export default class Creategame extends React.Component {
 					disableChat: this.state.disablechat,
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
+					blindMode: this.state.blindMode,
 					rebalance69p: this.state.rebalance69p
 						? !(excludedPlayerCount.includes(6) && excludedPlayerCount.includes(7) && excludedPlayerCount.includes(9))
 						: false,
@@ -1079,7 +1090,6 @@ export default class Creategame extends React.Component {
 							}
 						})()}
 					</div>
-					<div className="row tournyrow" />
 				</div>
 				<div className="row">
 					<div className="four wide column rebalance69p">
@@ -1095,7 +1105,30 @@ export default class Creategame extends React.Component {
 							<input type="checkbox" name="rebalance69p" defaultChecked={true} />
 						</div>
 					</div>
+					<div className="four wide column tourny-container">
+						<h4 className="ui header">Tournament mode</h4>
+						<div
+							className="ui fitted toggle checkbox"
+							ref={c => {
+								this.tournyconfirm = c;
+							}}
+						>
+							<input type="checkbox" name="tournyconfirm" defaultChecked={false} />
+						</div>
+					</div>
+					<div className="four wide column">
+						<h4 className="ui header">Blind mode - player's names are turned into a random animal to anonymize them.</h4>
+						<div
+							className="ui fitted toggle checkbox"
+							ref={c => {
+								this.blindmode = c;
+							}}
+						>
+							<input type="checkbox" name="blindmode" defaultChecked={false} />
+						</div>
+					</div>
 				</div>
+
 				<div className="ui grid centered footer">
 					<div onClick={this.createNewGame} className="ui button primary">
 						Create game
