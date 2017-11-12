@@ -11,6 +11,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 			gameToSave = new Game({
 				uid: game.general.uid,
 				date: new Date(),
+				chats: game.chats,
 				winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => ({
 					userName: player.userName,
 					team: player.role.team,

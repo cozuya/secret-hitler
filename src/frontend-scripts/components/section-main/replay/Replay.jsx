@@ -158,24 +158,23 @@ const Replay = ({ replay, isSmall, to, replayChats }) => {
 		<section className={classnames({ small: isSmall, big: !isSmall }, 'game')}>
 			<div className="ui grid">
 				<div className="left-side eight wide column">
+					<ReplayOverlay key="replayoverlay" snapshot={snapshot} />
+					<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
+					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
+				</div>
+				<div className="right-side eight wide column">
 					{replayChats.length ? (
 						<Gamechat
 							isReplay={true}
 							userInfo={{}}
+							userList={{}}
 							gameInfo={{
 								chats: replayChats
 							}}
 						/>
 					) : (
-						[
-							<ReplayOverlay key="replayoverlay" snapshot={snapshot} />,
-							<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
-						]
+						<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
 					)}
-					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
-				</div>
-				<div className="right-side eight wide column">
-					<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
 				</div>
 			</div>
 			<div className="row players-container">
@@ -251,7 +250,9 @@ class ReplayWrapper extends React.Component {
 
 		return (
 			<section id="replay" className="ui segment">
-				<span onClick={toggleChats}>{this.state.chatsShown ? 'Hide chats' : 'Show chats'}</span>
+				<button className="displaychats ui inverted blue button" onClick={toggleChats}>
+					{this.state.chatsShown ? 'Hide chats' : 'Show chats'}
+				</button>
 				<button className="exit ui inverted red button" onClick={toExit}>
 					<i className="sign out icon" />
 					Exit Replay

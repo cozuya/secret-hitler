@@ -207,7 +207,7 @@ class Gamechat extends React.Component {
 				}
 			})(),
 			isGovernmentDuringPolicySelection = (() => {
-				if ((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
+				if (gameState && (gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
 					return (
 						publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
 						publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
@@ -234,8 +234,8 @@ class Gamechat extends React.Component {
 	}
 
 	processChats() {
-		const { gameInfo, userInfo, userList } = this.props,
-			seatedUserNames = gameInfo.publicPlayersState.map(player => player.userName),
+		const { gameInfo, userInfo, userList, isReplay } = this.props,
+			seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [],
 			{ chatFilter } = this.state,
 			compareChatStrings = (a, b) => {
 				const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
@@ -244,6 +244,7 @@ class Gamechat extends React.Component {
 			};
 
 		if (
+			isReplay ||
 			!gameInfo.general.private ||
 			userInfo.isSeated ||
 			(userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)))
@@ -323,14 +324,18 @@ class Gamechat extends React.Component {
 							{this.handleTimestamps(chat.timestamp)}
 							<span
 								className={
-									playerListPlayer
-										? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat
-											? 'chat-user'
-											: playerListPlayer.wins + playerListPlayer.losses > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'
-										: 'chat-user'
+									playerListPlayer ? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat ? (
+										'chat-user'
+									) : playerListPlayer.wins + playerListPlayer.losses > 49 ? (
+										`chat-user ${PLAYERCOLORS(playerListPlayer)}`
+									) : (
+										'chat-user'
+									) : (
+										'chat-user'
+									)
 								}
 							>
-								{isSeated ? (
+								{isReplay || isSeated ? (
 									''
 								) : MODERATORS.includes(chat.userName) ? (
 									<span data-tooltip="Moderator" data-inverted>
@@ -350,11 +355,13 @@ class Gamechat extends React.Component {
 								) : (
 									<span className="observer-chat">(Observer) </span>
 								)}
-								{gameInfo.gameState.isTracksFlipped
-									? isSeated
-										? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-										: chat.userName
-									: chat.userName}
+								{this.props.isReplay || gameInfo.gameState.isTracksFlipped ? isSeated ? (
+									`${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+								) : (
+									chat.userName
+								) : (
+									chat.userName
+								)}
 								{': '}
 							</span>
 							<span>{chatContents}</span>
@@ -365,7 +372,7 @@ class Gamechat extends React.Component {
 	}
 
 	render() {
-		const { userInfo, gameInfo } = this.props,
+		const { userInfo, gameInfo, isReplay } = this.props,
 			selectedWhitelistplayer = playerName => {
 				const { playersToWhitelist } = this.state,
 					playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
@@ -449,15 +456,17 @@ class Gamechat extends React.Component {
 							onClick={this.handleNoteClick}
 						/>
 					)}
-					<i
-						title="Click here to lock or unlock scrolling of chat"
-						className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
-						onClick={this.handleChatLockClick}
-					/>
+					{!isReplay && (
+						<i
+							title="Click here to lock or unlock scrolling of chat"
+							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
+							onClick={this.handleChatLockClick}
+						/>
+					)}
 					<div className="right menu">
 						<WhiteListButton />
 						<WatchReplayButton />
-						<LeaveGameButton />
+						{!this.props.isReplay && <LeaveGameButton />}
 					</div>
 				</section>
 				<section
@@ -635,39 +644,41 @@ class Gamechat extends React.Component {
 						}
 					})()}
 				</section>
-				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div className={this.checkIsChatDisabled() ? 'ui action input disabled' : 'ui action input'}>
-						<input
-							onSubmit={this.handleSubmit}
-							maxLength="300"
-							autoComplete="off"
-							spellCheck="false"
-							placeholder="Send a message"
-							id="gameChatInput"
-							ref={c => {
-								this.gameChatInput = c;
-							}}
-						/>
-						{this.checkIsChatDisabled() ? null : renderEmotesButton(this.handleInsertEmote)}
-						<button type="submit" className="ui primary button">
-							Chat
-						</button>
-					</div>
-					{(() => {
-						if (
-							gameInfo.playersState &&
-							gameInfo.playersState.length &&
-							userInfo.userName &&
-							gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim
-						) {
-							return (
-								<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
-									C
-								</div>
-							);
-						}
-					})()}
-				</form>
+				{!this.props.isReplay && (
+					<form className="segment inputbar" onSubmit={this.handleSubmit}>
+						<div className={this.checkIsChatDisabled() ? 'ui action input disabled' : 'ui action input'}>
+							<input
+								onSubmit={this.handleSubmit}
+								maxLength="300"
+								autoComplete="off"
+								spellCheck="false"
+								placeholder="Send a message"
+								id="gameChatInput"
+								ref={c => {
+									this.gameChatInput = c;
+								}}
+							/>
+							{this.checkIsChatDisabled() ? null : renderEmotesButton(this.handleInsertEmote)}
+							<button type="submit" className="ui primary button">
+								Chat
+							</button>
+						</div>
+						{(() => {
+							if (
+								gameInfo.playersState &&
+								gameInfo.playersState.length &&
+								userInfo.userName &&
+								gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim
+							) {
+								return (
+									<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
+										C
+									</div>
+								);
+							}
+						})()}
+					</form>
+				)}
 				<div
 					className="ui basic fullscreen modal leavegamemodals"
 					ref={c => {
@@ -721,7 +732,7 @@ class Gamechat extends React.Component {
 }
 
 Gamechat.propTypes = {
-	replayChats: PropTypes.array,
+	isReplay: PropTypes.bool,
 	onNewGameChat: PropTypes.func,
 	clickedGameRole: PropTypes.object,
 	clickedPlayer: PropTypes.object,

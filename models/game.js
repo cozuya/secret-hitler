@@ -8,7 +8,8 @@ const mongoose = require('mongoose'),
 		losingPlayers: Array,
 		winningTeam: String,
 		isRainbow: Boolean,
-		rebalance69p: Boolean
+		rebalance69p: Boolean,
+		chats: Array
 	});
 
 module.exports = mongoose.model('Game', Game);

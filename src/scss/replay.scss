@@ -15,6 +15,12 @@
 		z-index: 5;
 	}
 
+	.displaychats {
+		position: absolute;
+		right: 140px;
+		z-index: 5;
+	}
+
 	.ui.grid > .column {
 		padding: 0;
 	}
@@ -157,7 +163,6 @@
 					font-size: 15px;
 					font-family: inherit;
 				}
-
 			}
 
 			.overlay-container {
