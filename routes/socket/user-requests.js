@@ -112,6 +112,18 @@ module.exports.sendUserGameSettings = (socket, username) => {
 		});
 };
 
+module.exports.sendReplayGameChats = (socket, uid) => {
+	Game.findOne({ uid }).then((game, err) => {
+		if (err) {
+			console.log(err, 'game err retrieving for replay');
+		}
+		console.log(game);
+		if (game) {
+			socket.emit('replayGameChats', game.chats);
+		}
+	});
+};
+
 module.exports.sendGameList = socket => {
 	const formattedGames = games.map(game => ({
 		name: game.general.name,

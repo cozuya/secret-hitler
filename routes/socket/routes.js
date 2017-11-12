@@ -25,6 +25,7 @@ const {
 		sendGameList,
 		sendGeneralChats,
 		sendUserList,
+		sendReplayGameChats,
 		updateUserStatus
 	} = require('./user-requests'),
 	{
@@ -154,6 +155,9 @@ module.exports = () => {
 			})
 			.on('updateUserStatus', (username, type, gameId) => {
 				updateUserStatus(username, type, gameId);
+			})
+			.on('getReplayGameChats', uid => {
+				sendReplayGameChats(socket, uid);
 			})
 			// election
 

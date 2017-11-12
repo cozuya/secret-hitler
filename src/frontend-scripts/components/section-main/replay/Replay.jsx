@@ -8,9 +8,11 @@ import { Map, List } from 'immutable';
 import { some, none, fromNullable } from 'option';
 import Tracks from '../Tracks.jsx';
 import Players from '../Players.jsx';
+import Gamechat from '../Gamechat.jsx';
 import ReplayOverlay from './ReplayOverlay.jsx';
 import ReplayControls from './ReplayControls.jsx';
 import TrackPieces from './TrackPieces.jsx';
+import socket from '../../../socket';
 
 const mapStateToProps = ({ replay, userInfo }) => ({
 	replay,
@@ -143,24 +145,33 @@ const buildPlayback = (replay, to) => {
 	};
 };
 
-const Replay = ({ replay, isSmall, to }) => {
-	const { ticks, position, game } = replay;
-
-	const snapshot = ticks.get(position);
-
-	const playback = buildPlayback(replay, to);
-	const gameInfo = toGameInfo(snapshot);
-	const userInfo = { username: '' };
-
-	const { phase } = snapshot;
-	const description = toDescription(snapshot, game);
+const Replay = ({ replay, isSmall, to, replayChats }) => {
+	const { ticks, position, game } = replay,
+		snapshot = ticks.get(position),
+		playback = buildPlayback(replay, to),
+		gameInfo = toGameInfo(snapshot),
+		userInfo = { username: '' },
+		{ phase } = snapshot,
+		description = toDescription(snapshot, game);
 
 	return (
 		<section className={classnames({ small: isSmall, big: !isSmall }, 'game')}>
 			<div className="ui grid">
 				<div className="left-side eight wide column">
-					<ReplayOverlay snapshot={snapshot} />
-					<TrackPieces phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
+					{replayChats.length ? (
+						<Gamechat
+							isReplay={true}
+							userInfo={{}}
+							gameInfo={{
+								chats: replayChats
+							}}
+						/>
+					) : (
+						[
+							<ReplayOverlay key="replayoverlay" snapshot={snapshot} />,
+							<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
+						]
+					)}
 					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
 				</div>
 				<div className="right-side eight wide column">
@@ -174,41 +185,81 @@ const Replay = ({ replay, isSmall, to }) => {
 	);
 };
 
-const ReplayWrapper = ({ replay, isSmall, to, exit }) => {
-	const toExit = () => {
-			window.location.hash = '#/';
-			exit();
-		},
-		children = (() => {
-			switch (replay.status) {
-				case 'INITIAL':
-				case 'LOADING':
-					return (
-						<div className="ui active dimmer">
-							<div className="ui huge text loader">Loading</div>
-						</div>
-					);
-				case 'NOT_FOUND':
-					return (
-						<h1 className="not-found ui icon center aligned header">
-							<i className="settings icon" />
-							<div className="content">Replay not found</div>
-						</h1>
-					);
-				case 'READY':
-					return <Replay replay={replay} isSmall={isSmall} to={to} />;
-			}
-		})();
+class ReplayWrapper extends React.Component {
+	constructor() {
+		super();
 
-	return (
-		<section id="replay" className="ui segment">
-			<button className="exit ui inverted red button" onClick={toExit}>
-				<i className="sign out icon" />
-				Exit Replay
-			</button>
-			{children}
-		</section>
-	);
-};
+		this.state = {
+			chatsShown: false,
+			replayChats: []
+		};
+	}
+
+	componentDidMount() {
+		socket.on('replayGameChats', replayChats => {
+			console.log(replayChats);
+			this.setState({
+				replayChats
+			});
+		});
+	}
+
+	componentWillUnmount() {
+		socket.off('replayGameChats');
+	}
+
+	render() {
+		const toExit = () => {
+				window.location.hash = '#/';
+				this.props.exit();
+			},
+			toggleChats = () => {
+				if (!this.state.replayChats.length) {
+					socket.emit('getReplayGameChats', this.props.replay.game.id);
+				}
+				this.setState({
+					chatsShown: !this.state.chatsShown
+				});
+			},
+			children = (() => {
+				switch (this.props.replay.status) {
+					case 'INITIAL':
+					case 'LOADING':
+						return (
+							<div className="ui active dimmer">
+								<div className="ui huge text loader">Loading</div>
+							</div>
+						);
+					case 'NOT_FOUND':
+						return (
+							<h1 className="not-found ui icon center aligned header">
+								<i className="settings icon" />
+								<div className="content">Replay not found</div>
+							</h1>
+						);
+					case 'READY':
+						return (
+							<Replay
+								replay={this.props.replay}
+								isSmall={this.props.isSmall}
+								to={this.props.to}
+								replayChats={this.state.chatsShown && this.state.replayChats.length ? this.state.replayChats : []}
+							/>
+						);
+				}
+			})();
+
+		return (
+			<section id="replay" className="ui segment">
+				<span onClick={toggleChats}>{this.state.chatsShown ? 'Hide chats' : 'Show chats'}</span>
+				<button className="exit ui inverted red button" onClick={toExit}>
+					<i className="sign out icon" />
+					Exit Replay
+				</button>
+				{children}
+			</section>
+		);
+	}
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReplayWrapper);

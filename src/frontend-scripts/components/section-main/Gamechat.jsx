@@ -721,6 +721,7 @@ class Gamechat extends React.Component {
 }
 
 Gamechat.propTypes = {
+	replayChats: PropTypes.array,
 	onNewGameChat: PropTypes.func,
 	clickedGameRole: PropTypes.object,
 	clickedPlayer: PropTypes.object,
