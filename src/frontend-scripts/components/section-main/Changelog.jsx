@@ -15,6 +15,8 @@ const Changelog = () => (
 		<p>Huge changes!  Also updates to some of the more irritating front-end issues like blank screens/bouncing back and forth.  Please report any issues you see.</p>
     <h3>New feature: see chats in replays.</h3>
 		<p>There's a new button on replays to toggle between the replay tools and the chats in that game.</p>
+	<h3>New feature: rebalanced 7p games.</h3>
+		<p>7p games have the optional rebalance treatment now - same as 9p, a fascist policy has been removed to start the game.</p>
     <h3>Up next: blind mode and tournament mode!</h3>
 		<div className="ui header">
 			<p>Version 0.9.2 "dim3" released 11-5-2017</p>
