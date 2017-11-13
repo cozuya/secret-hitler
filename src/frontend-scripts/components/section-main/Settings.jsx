@@ -48,7 +48,7 @@ class Settings extends React.Component {
 
 		this.setState({
 			fontChecked: gameSettings.fontFamily,
-			fontSize: gameSettings.fontSize,
+			fontSize: gameSettings.fontSize ? gameSettings.fontSize : 16,
 			enableTimestamps: gameSettings.enableTimestamps,
 			disableHelpMessages: gameSettings.disableHelpMessages,
 			disableHelpIcons: gameSettings.disableHelpIcons,
@@ -363,7 +363,7 @@ class Settings extends React.Component {
 							/>
 						</div>
 					</div>
-					{this.renderFonts()}
+					{this.renderFonts()}{' '}
 					<div className="row cardback-container">
 						<div className="ui grid">
 							<div className="row centered cardback-header-container">

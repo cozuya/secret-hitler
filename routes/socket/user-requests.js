@@ -117,7 +117,7 @@ module.exports.sendReplayGameChats = (socket, uid) => {
 		if (err) {
 			console.log(err, 'game err retrieving for replay');
 		}
-		console.log(game);
+
 		if (game) {
 			socket.emit('replayGameChats', game.chats);
 		}

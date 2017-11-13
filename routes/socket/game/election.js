@@ -81,9 +81,9 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 							type: team === 'liberal' ? 'liberal' : 'fascist'
 						},
 						{
-							text: ` policy has been enacted. (${team === 'liberal'
-								? game.trackState.liberalPolicyCount.toString()
-								: game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`
+							text: ` policy has been enacted. (${
+								team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()
+							}/${team === 'liberal' ? '5' : '6'})`
 						}
 					]
 				},
@@ -193,8 +193,13 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 		);
 
 module.exports.selectChancellor = data => {
-	const game = games.find(el => el.general.uid === data.uid),
-		{ chancellorIndex } = data,
+	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game.private.seatedPlayers) {
+		return;
+	}
+
+	const { chancellorIndex } = data,
 		{ presidentIndex } = game.gameState,
 		{ experiencedMode } = game.general,
 		seatedPlayers = game.private.seatedPlayers.filter(player => !player.isDead),

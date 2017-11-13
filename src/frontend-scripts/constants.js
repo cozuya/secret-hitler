@@ -5,14 +5,9 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'FreeLaxative',
 	'Number5',
 	'Costley',
-	'morewhales',
 	'Ophxlia',
 	'Idrissa',
 	'cayseron',
-	'Knownall',
-	'safi',
-	'snake69sus',
-	'Ecoturtle',
 	'maki2',
 	'Moranki',
 	'jazz'
@@ -20,7 +15,7 @@ const MODERATORS = (module.exports.MODERATORS = [
 
 const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999']);
 
-const ADMINS = (module.exports.ADMINS = ['coz', 'Stine', 'Uther']);
+const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = ['jbasrai', 'sethe', 'veggiemanz', 'DFinn', 'conundrum', 'MilkMan', 'Invidia', 'Wi1son']);
 
