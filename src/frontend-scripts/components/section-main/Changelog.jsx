@@ -8,6 +8,14 @@ const Changelog = () => (
 		<div className="ui header">
 			<h2>Changelog</h2>
 		</div>
+    <div className="ui header">
+			<p>Version 0.10.0 released 11-13-2017</p>
+		</div>
+    <h3>New feature: UI overhaul thanks to contributor Wi1son</h3>
+		<p>Huge changes!  Also updates to some of the more irritating front-end issues like blank screens/bouncing back and forth.  Please report any issues you see.</p>
+    <h3>New feature: see chats in replays.</h3>
+		<p>There's a new button on replays to toggle between the replay tools and the chats in that game.</p>
+    <h3>Up next: blind mode and tournament mode!</h3>
 		<div className="ui header">
 			<p>Version 0.9.2 "dim3" released 11-5-2017</p>
 		</div>
