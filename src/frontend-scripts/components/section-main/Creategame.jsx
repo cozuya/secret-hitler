@@ -1105,7 +1105,7 @@ export default class Creategame extends React.Component {
 							<input type="checkbox" name="rebalance69p" defaultChecked={true} />
 						</div>
 					</div>
-					<div className="four wide column tourny-container">
+					{/* <div className="four wide column tourny-container">
 						<h4 className="ui header">Tournament mode</h4>
 						<div
 							className="ui fitted toggle checkbox"
@@ -1126,7 +1126,7 @@ export default class Creategame extends React.Component {
 						>
 							<input type="checkbox" name="blindmode" defaultChecked={false} />
 						</div>
-					</div>
+					</div> */}
 				</div>
 
 				<div className="ui grid centered footer">

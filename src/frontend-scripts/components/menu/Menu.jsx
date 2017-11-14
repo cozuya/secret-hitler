@@ -56,7 +56,7 @@ class Menu extends React.Component {
 								Wiki
 							</a>{' '}
 							|{' '}
-							<a target="_blank" href="https://discord.gg/FXDxP2m">
+							<a target="_blank" href="https://discord.gg/secrethitlerio">
 								Discord
 							</a>
 						</span>
