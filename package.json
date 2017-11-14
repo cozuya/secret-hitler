@@ -86,12 +86,16 @@
 		"gulp-rename": "^1.2.2",
 		"gulp-sass": "^3.1.0",
 		"gulp-sourcemaps": "^2.6.0",
+		"gulp-uglify-es": "^0.1.4",
+		"gulp-util": "^3.0.8",
 		"gulp-wait": "0.0.2",
 		"moment": "^2.18.1",
 		"node-notifier": "^5.1.2",
 		"prettier": "^1.5.3",
 		"require-dot-file": "^0.4.0",
 		"through2": "^2.0.3",
+		"vinyl-buffer": "^1.0.0",
+		"vinyl-source-stream": "^1.1.0",
 		"vinyl-transform": "^1.0.0"
 	},
 	"scripts": {

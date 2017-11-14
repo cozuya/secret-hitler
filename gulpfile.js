@@ -9,7 +9,7 @@ const gulp = require('gulp'),
 	rename = require('gulp-rename'),
 	sass = require('gulp-sass'),
 	cleanCSS = require('gulp-clean-css'),
-	uglify = require('gulp-uglify'),
+	uglify = require('gulp-uglify-es').default,
 	wait = require('gulp-wait'),
 	imagemin = require('gulp-imagemin'),
 	sourcemaps = require('gulp-sourcemaps'),
@@ -27,7 +27,10 @@ gulp.task('watch', () => {
 	gulp.watch(['./src/frontend-scripts/**/*.js*', './routes/**/*.js', './__test__/*.js'], e => {
 		file =
 			process.platform === 'win32'
-				? `./${e.path.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1].split('\\').join('/')}`
+				? `./${e.path
+						.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1]
+						.split('\\')
+						.join('/')}`
 				: `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
 		gulp.start('lint');
 	});
@@ -37,7 +40,12 @@ gulp.task('watch', () => {
 });
 
 gulp.task('lint', () => {
-	return gulp.src(file).pipe(eslint()).pipe(plumber()).pipe(eslint.format()).pipe(eslint.failAfterError());
+	return gulp
+		.src(file)
+		.pipe(eslint())
+		.pipe(plumber())
+		.pipe(eslint.format())
+		.pipe(eslint.failAfterError());
 	// .on('error', () => {
 	// 	notifier.notify({title: 'ESLint Error', message: ' '});
 	// })
@@ -52,7 +60,10 @@ gulp.task('lint-all', () => {
 });
 
 gulp.task('imagemin', () => {
-	gulp.src('./src/images/*').pipe(imagemin()).pipe(gulp.dest('./public/images'));
+	gulp
+		.src('./src/images/*')
+		.pipe(imagemin())
+		.pipe(gulp.dest('./public/images'));
 });
 
 gulp.task('styles-dark', () => {
@@ -110,13 +121,15 @@ gulp.task('scripts', () => {
 		.src('./src/frontend-scripts/game-app.js')
 		.pipe(
 			through2.obj((file, enc, next) => {
-				browserify(file.path, { debug: true }).transform(babelify).bundle((err, res) => {
-					if (err) {
-						return next(err);
-					}
-					file.contents = res;
-					next(null, file);
-				});
+				browserify(file.path, { debug: true })
+					.transform(babelify)
+					.bundle((err, res) => {
+						if (err) {
+							return next(err);
+						}
+						file.contents = res;
+						next(null, file);
+					});
 			})
 		)
 		.on('error', function(error) {
@@ -131,7 +144,10 @@ gulp.task('scripts', () => {
 });
 
 gulp.task('reload', () => {
-	gulp.src('').pipe(wait(3500)).pipe(livereload());
+	gulp
+		.src('')
+		.pipe(wait(3500))
+		.pipe(livereload());
 });
 
 gulp.task('build', ['build-game-css', 'build-site-css', 'build-js', 'makelogs', 'makedata']);
@@ -154,13 +170,15 @@ gulp.task('build-js', () => {
 		.src('./src/frontend-scripts/game-app.js')
 		.pipe(
 			through2.obj((file, enc, next) => {
-				browserify(file.path).transform(babelify).bundle((err, res) => {
-					if (err) {
-						return next(err);
-					}
-					file.contents = res;
-					next(null, file);
-				});
+				browserify(file.path)
+					.transform(babelify)
+					.bundle((err, res) => {
+						if (err) {
+							return next(err);
+						}
+						file.contents = res;
+						next(null, file);
+					});
 			})
 		)
 		.on('error', function(error) {
