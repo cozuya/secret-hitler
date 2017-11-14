@@ -196,7 +196,6 @@ class ReplayWrapper extends React.Component {
 
 	componentDidMount() {
 		socket.on('replayGameChats', replayChats => {
-			console.log(replayChats);
 			this.setState({
 				replayChats
 			});

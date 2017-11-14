@@ -8,16 +8,30 @@ const Changelog = () => (
 		<div className="ui header">
 			<h2>Changelog</h2>
 		</div>
-    <div className="ui header">
+		<div className="ui header">
+			<p>Version 0.10.1 released 11-14-2017</p>
+		</div>
+		<h3>Bug fix patch:</h3>
+		<ul>
+			<li>Removed tourny and blind mode from create game - they're not ready yet.</li>
+			<li>Moved some assets from a source (cloudflare) that is not accessible in some countries.</li>
+			<li>You can now scroll while viewing chats in replays.</li>
+			<li>A bug with the way this was deployed for production was resulting in giant js to download, that has been fixed.</li>
+			<li>New favicon! New rainbow icon!</li>
+		</ul>
+		<h3>Next up: more bug fixes..</h3>
+		<div className="ui header">
 			<p>Version 0.10.0 released 11-13-2017</p>
 		</div>
-    <h3>New feature: UI overhaul thanks to contributor Wi1son</h3>
-		<p>Huge changes!  Also updates to some of the more irritating front-end issues like blank screens/bouncing back and forth.  Please report any issues you see.</p>
-    <h3>New feature: see chats in replays.</h3>
+		<h3>New feature: UI overhaul thanks to contributor Wi1son</h3>
+		<p>
+			Huge changes! Also updates to some of the more irritating front-end issues like blank screens/bouncing back and forth. Please report any issues you see.
+		</p>
+		<h3>New feature: see chats in replays.</h3>
 		<p>There's a new button on replays to toggle between the replay tools and the chats in that game.</p>
-	<h3>New feature: rebalanced 7p games.</h3>
+		<h3>New feature: rebalanced 7p games.</h3>
 		<p>7p games have the optional rebalance treatment now - same as 9p, a fascist policy has been removed to start the game.</p>
-    <h3>Up next: blind mode and tournament mode!</h3>
+		<h3>Up next: blind mode and tournament mode!</h3>
 		<div className="ui header">
 			<p>Version 0.9.2 "dim3" released 11-5-2017</p>
 		</div>
@@ -158,7 +172,10 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
+				style={{ width: '30%', margin: '0 auto', display: 'block' }}
+				src="/images/em.png"
+			/>
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}

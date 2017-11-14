@@ -5,6 +5,11 @@
 	background-color: #222;
 	padding: 0px;
 
+	.scrollbar-container {
+		max-height: 382px;
+		overflow-y: scroll !important;
+	}
+
 	.not-found {
 		margin-top: 150px;
 	}
