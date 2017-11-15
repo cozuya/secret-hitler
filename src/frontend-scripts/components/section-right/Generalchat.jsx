@@ -212,7 +212,7 @@ export default class Generalchat extends React.Component {
 							<embed height="100%" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
 						) : (
 							<PerfectScrollbar ref="perfectScrollbar" onScrollY={this.handleChatScrolled} onYReachEnd={this.handleChatScrolledToBottom}>
-								<div className="ui list genchat-container" onScroll={this.handleChatScrolled}>
+								<div className="ui list genchat-container">
 									{this.renderChats()}
 								</div>
 							</PerfectScrollbar>

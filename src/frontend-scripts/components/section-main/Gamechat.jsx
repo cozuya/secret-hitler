@@ -489,7 +489,7 @@ class Gamechat extends React.Component {
 						onYReachEnd={this.handleChatScrolledToBottom}
 						option={{ suppressScrollX: true }}
 					>
-						<div className="ui list" onScroll={this.handleChatScroll}>
+						<div className="ui list">
 							{this.processChats()}
 						</div>
 					</PerfectScrollbar>
