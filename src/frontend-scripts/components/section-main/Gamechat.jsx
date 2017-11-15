@@ -452,7 +452,7 @@ class Gamechat extends React.Component {
 					{userInfo.userName && (
 						<i
 							title="Click here to pop out notes"
-							className={this.state.notesEnabled ? 'large window minimize icon' : 'large edit icon'}
+							className={this.state.notesEnabled ? 'large window minus icon' : 'large edit icon'}
 							onClick={this.handleNoteClick}
 						/>
 					)}

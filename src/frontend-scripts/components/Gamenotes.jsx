@@ -92,7 +92,7 @@ class Gamenotes extends React.Component {
 					<p>Game Notes</p>
 					<div className="icon-container">
 						<i className="large ban icon" onClick={this.clearNotes} title="Click here to clear notes" />
-						<i className="large window minimize icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
+						<i className="large window minus icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
 					</div>
 				</div>
 				<textarea style={{ height: this.state.height }} autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />
