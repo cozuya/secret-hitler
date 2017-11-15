@@ -43,6 +43,12 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 	.generalchat {
 		width: 350px;
 	}
+	.section-right {
+		min-width: 650px;
+	}
+	.section-right.game {
+		min-width: 250px;
+	}
 }
 @media screen and (min-width: 1471px) and (max-width: 1520px) {
 	// allows general chat to scale a little
