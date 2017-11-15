@@ -80,9 +80,16 @@ Game.find({})
 				}
 				break;
 			case 7:
-				sevenPlayerGameData.totalGameCount++;
-				if (fascistsWon) {
-					sevenPlayerGameData.fascistWinCount++;
+				if (rebalanced) {
+					if (fascistsWon) {
+						sevenPlayerGameData.rebalancedFascistWinCount++;
+					}
+					sevenPlayerGameData.rebalancedTotalGameCount++;
+				} else {
+					if (fascistsWon) {
+						sevenPlayerGameData.fascistWinCount++;
+					}
+					sevenPlayerGameData.totalGameCount++;
 				}
 				break;
 			case 8:
