@@ -952,16 +952,14 @@ export default class Creategame extends React.Component {
 
 	render() {
 		const sliderCheckboxClick = index => {
-				const newSliderValues = this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el));
-				this.setState({
-					checkedSliderValues: newSliderValues
-				});
-				const includedPlayerCounts = newSliderValues.map((el, i) => el ? i + 5 : null).filter(el => el !== null);
-				const min = Math.min(...includedPlayerCounts);
-				const max = Math.max(...includedPlayerCounts);
+				const newSliderValues = this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el)),
+					includedPlayerCounts = newSliderValues.map((el, i) => el ? i + 5 : null).filter(el => el !== null),
+					minPlayers = Math.min(...includedPlayerCounts),
+					maxPlayers = Math.max(...includedPlayerCounts);
 
 				this.setState({
-					sliderValues: [min, max]
+					checkedSliderValues: newSliderValues,
+					sliderValues: [minPlayers, maxPlayers]
 				});
 		};
 
@@ -1022,6 +1020,7 @@ export default class Creategame extends React.Component {
 										<input
 											type="checkbox"
 											checked={this.state.checkedSliderValues[index]}
+											disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? index + 5 === this.state.sliderValues[0] ? true : false : false}
 											onChange={() => {
 												sliderCheckboxClick(index);
 											}}
