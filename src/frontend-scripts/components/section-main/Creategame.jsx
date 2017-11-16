@@ -952,11 +952,15 @@ export default class Creategame extends React.Component {
 
 	render() {
 		const sliderCheckboxClick = index => {
-			if (!this.state.sliderValues.includes(index + 5)) {
+				const newSliderValues = this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el)),
+					includedPlayerCounts = newSliderValues.map((el, i) => el ? i + 5 : null).filter(el => el !== null),
+					minPlayers = Math.min(...includedPlayerCounts),
+					maxPlayers = Math.max(...includedPlayerCounts);
+
 				this.setState({
-					checkedSliderValues: this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el))
+					checkedSliderValues: newSliderValues,
+					sliderValues: [minPlayers, maxPlayers]
 				});
-			}
 		};
 
 		return (
@@ -1009,14 +1013,14 @@ export default class Creategame extends React.Component {
 					<div className="row slider">
 						<div className="eight wide column centered slider">
 							<h4 className="ui header">Number of players</h4>
-							<Range onChange={this.sliderChange} min={5} max={10} defaultValue={[5, 10]} marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }} />
+							<Range onChange={this.sliderChange} min={5} max={10} defaultValue={[5, 10]} value={this.state.sliderValues} marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }} />
 							<div className="checkbox-container">
 								{new Array(6).fill(true).map((el, index) => (
 									<label key={index}>
 										<input
 											type="checkbox"
 											checked={this.state.checkedSliderValues[index]}
-											disabled={index + 5 <= this.state.sliderValues[0] || index + 5 >= this.state.sliderValues[1]}
+											disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? index + 5 === this.state.sliderValues[0] ? true : false : false}
 											onChange={() => {
 												sliderCheckboxClick(index);
 											}}

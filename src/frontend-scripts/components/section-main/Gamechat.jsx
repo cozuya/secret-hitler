@@ -149,13 +149,13 @@ class Gamechat extends React.Component {
 			this.gameChatInput.blur();
 			setTimeout(() => {
 				this.gameChatInput.focus();
-			}, 300);
+			}, 100);
 		}
 	}
 
 	scrollChats() {
 		if (!this.state.lock) {
-			this.refs.perfectScrollbar.setScrollTop(document.querySelectorAll('div.item').length * 1000);
+			this.refs.perfectScrollbar.setScrollTop(99999999);
 		}
 	}
 
@@ -452,7 +452,7 @@ class Gamechat extends React.Component {
 					{userInfo.userName && (
 						<i
 							title="Click here to pop out notes"
-							className={this.state.notesEnabled ? 'large window minimize icon' : 'large edit icon'}
+							className={this.state.notesEnabled ? 'large window minus icon' : 'large edit icon'}
 							onClick={this.handleNoteClick}
 						/>
 					)}
@@ -489,7 +489,7 @@ class Gamechat extends React.Component {
 						onYReachEnd={this.handleChatScrolledToBottom}
 						option={{ suppressScrollX: true }}
 					>
-						<div className="ui list" onScroll={this.handleChatScroll}>
+						<div className="ui list">
 							{this.processChats()}
 						</div>
 					</PerfectScrollbar>

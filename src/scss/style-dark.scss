@@ -43,6 +43,12 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 	.generalchat {
 		width: 350px;
 	}
+	.section-right {
+		min-width: 650px;
+	}
+	.section-right.game {
+		min-width: 250px;
+	}
 }
 @media screen and (min-width: 1471px) and (max-width: 1520px) {
 	// allows general chat to scale a little
@@ -130,6 +136,7 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 			}
 		}
 		textarea {
+			color: white;
 			width: 100%;
 			flex-grow: 1;
 			background: #1b1b1b;
@@ -387,6 +394,7 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		border: 1px solid #313030;
 		border-radius: 3px;
 		height: 49px;
+		width: 36.63px; // size of cardbacks once resized
 		img {
 			max-height: 47px;
 			max-width: 35px;
