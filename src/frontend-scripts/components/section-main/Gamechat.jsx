@@ -162,7 +162,7 @@ class Gamechat extends React.Component {
 			setTimeout(() => {
 				this.setState({ disabled: false });
 				this.gameChatInput.focus();
-			}, 150);
+			}, 80);
 		}
 	}
 
