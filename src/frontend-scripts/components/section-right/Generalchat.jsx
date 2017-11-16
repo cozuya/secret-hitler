@@ -62,13 +62,13 @@ export default class Generalchat extends React.Component {
 			this.chatInput.blur();
 			setTimeout(() => {
 				this.chatInput.focus();
-			}, 300);
+			}, 100);
 		}
 	}
 
 	scrollChats() {
 		if (!this.state.lock && !this.state.discordEnabled) {
-			this.refs.perfectScrollbar.setScrollTop(document.querySelectorAll('div.item').length * 300);
+			this.refs.perfectScrollbar.setScrollTop(99999999);
 		}
 	}
 
@@ -77,7 +77,7 @@ export default class Generalchat extends React.Component {
 	}
 
 	handleChatScrolled() {
-		if (this.state.lock !== true) {
+		if (this.state.lock !== true && this.autoScroll !== true) {
 			this.setState({ lock: true });
 		}
 	}

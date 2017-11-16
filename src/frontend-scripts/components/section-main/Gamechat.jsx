@@ -149,13 +149,13 @@ class Gamechat extends React.Component {
 			this.gameChatInput.blur();
 			setTimeout(() => {
 				this.gameChatInput.focus();
-			}, 300);
+			}, 100);
 		}
 	}
 
 	scrollChats() {
 		if (!this.state.lock) {
-			this.refs.perfectScrollbar.setScrollTop(document.querySelectorAll('div.item').length * 1000);
+			this.refs.perfectScrollbar.setScrollTop(99999999);
 		}
 	}
 
