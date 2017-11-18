@@ -14,7 +14,7 @@ Current production/stable is found at [Secret Hitler IO](https://secrethitler.io
 
 Due to some bad actors, public code for this project is not currently up to date on github and is being privately source controlled elsewhere.  Please contact the maintainer for more details if you are considering contributing.
 
-![Screenshot](http://i.imgur.com/6M56f6I.jpg)
+![Screenshot](https://i.imgur.com/y7ka1lG.png)
 
 Considering contributing to this project?  Please read our brief guidelines found at [CONTRIBUTING](https://github.com/cozuya/secret-hitler/blob/master/CONTRIBUTING.md).  Contributors get a cool orange playername color!
 
