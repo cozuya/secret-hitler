@@ -13,7 +13,7 @@ export default class Game extends React.Component {
 		if (userInfo.isSeated && gameInfo.gameState && gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) {
 			const sound = document.createElement('audio');
 
-			sound.setAttribute('src', 'alarm.mp3');
+			sound.setAttribute('src', '../../alarm.mp3');
 			sound.play();
 
 			setTimeout(() => {

@@ -560,7 +560,7 @@ module.exports.handleAddNewClaim = data => {
 									text: 'claims to have peeked at '
 								},
 								{
-									text: 'RRR',
+									text: 'BBB',
 									type: 'liberal'
 								},
 								{
