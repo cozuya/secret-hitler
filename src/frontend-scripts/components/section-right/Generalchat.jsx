@@ -212,10 +212,15 @@ export default class Generalchat extends React.Component {
 						return this.state.discordEnabled ? (
 							<embed height="100%" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
 						) : (
-							<PerfectScrollbar ref="perfectScrollbar" containerRef={c => {this.psContainer = c;}} onScrollY={this.handleChatScrolled} onYReachEnd={this.handleChatScrolledToBottom}>
-								<div className="ui list genchat-container">
-									{this.renderChats()}
-								</div>
+							<PerfectScrollbar
+								ref="perfectScrollbar"
+								containerRef={c => {
+									this.psContainer = c;
+								}}
+								onScrollY={this.handleChatScrolled}
+								onYReachEnd={this.handleChatScrolledToBottom}
+							>
+								<div className="ui list genchat-container">{this.renderChats()}</div>
 							</PerfectScrollbar>
 						);
 					})()}
