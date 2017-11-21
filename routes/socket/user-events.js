@@ -54,7 +54,7 @@ const checkStartConditions = game => {
 		return;
 	}
 	if (game.electionCount !== 0) {
-		game.electionCount = 0
+		game.electionCount = 0;
 	}
 	if (
 		game.gameState.isStarted &&
@@ -996,7 +996,7 @@ module.exports.handleModerationAction = (socket, data) => {
 				});
 				break;
 			case 'clearGenchat':
-				generalChats.list.fill({});
+				generalChats.list = [];
 
 				io.sockets.emit('generalChats', generalChats);
 				break;

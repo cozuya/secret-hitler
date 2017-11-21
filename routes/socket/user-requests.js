@@ -12,6 +12,7 @@ const Account = require('../../models/account'),
 		hostname: 'check.torproject.org',
 		path: '/cgi-bin/TorBulkExitList.py?ip=1.1.1.1'
 	};
+// http://torstatus.blutmagie.de/ip_list_exit.php/Tor_ip_list_EXIT.csv
 
 let torIps;
 
