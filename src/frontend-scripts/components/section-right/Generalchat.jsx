@@ -77,13 +77,14 @@ export default class Generalchat extends React.Component {
 	}
 
 	handleChatScrolled() {
-		if (this.state.lock !== true) {
+		const el = this.psContainer;
+		if (!this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) < -20) {
 			this.setState({ lock: true });
 		}
 	}
 
 	handleChatScrolledToBottom() {
-		if (this.state.lock !== false) {
+		if (this.state.lock) {
 			this.setState({ lock: false });
 		}
 	}
@@ -211,7 +212,7 @@ export default class Generalchat extends React.Component {
 						return this.state.discordEnabled ? (
 							<embed height="100%" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
 						) : (
-							<PerfectScrollbar ref="perfectScrollbar" onScrollY={this.handleChatScrolled} onYReachEnd={this.handleChatScrolledToBottom}>
+							<PerfectScrollbar ref="perfectScrollbar" containerRef={c => {this.psContainer = c;}} onScrollY={this.handleChatScrolled} onYReachEnd={this.handleChatScrolledToBottom}>
 								<div className="ui list genchat-container">
 									{this.renderChats()}
 								</div>

@@ -77,13 +77,14 @@ class Gamechat extends React.Component {
 	}
 
 	handleChatScrolled() {
-		if (this.state.lock !== true) {
+		const el = this.psContainer;
+		if (!this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) < -20) {
 			this.setState({ lock: true });
 		}
 	}
 
 	handleChatScrolledToBottom() {
-		if (this.state.lock !== false) {
+		if (this.state.lock) {
 			this.setState({ lock: false });
 		}
 	}
@@ -485,6 +486,7 @@ class Gamechat extends React.Component {
 				>
 					<PerfectScrollbar
 						ref="perfectScrollbar"
+						containerRef={c => {this.psContainer = c;}}
 						onScrollY={this.handleChatScrolled}
 						onYReachEnd={this.handleChatScrolledToBottom}
 						option={{ suppressScrollX: true }}
