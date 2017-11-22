@@ -149,7 +149,7 @@ class Gamechat extends React.Component {
 			this.gameChatInput.blur();
 			setTimeout(() => {
 				this.gameChatInput.focus();
-			}, 100);
+			}, 80);
 		}
 	}
 
@@ -324,15 +324,11 @@ class Gamechat extends React.Component {
 							{this.handleTimestamps(chat.timestamp)}
 							<span
 								className={
-									playerListPlayer ? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat ? (
-										'chat-user'
-									) : playerListPlayer.wins + playerListPlayer.losses > 49 ? (
-										`chat-user ${PLAYERCOLORS(playerListPlayer)}`
-									) : (
-										'chat-user'
-									) : (
-										'chat-user'
-									)
+									playerListPlayer
+										? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat
+											? 'chat-user'
+											: playerListPlayer.wins + playerListPlayer.losses > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'
+										: 'chat-user'
 								}
 							>
 								{isReplay || isSeated ? (
@@ -355,13 +351,11 @@ class Gamechat extends React.Component {
 								) : (
 									<span className="observer-chat">(Observer) </span>
 								)}
-								{this.props.isReplay || gameInfo.gameState.isTracksFlipped ? isSeated ? (
-									`${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-								) : (
-									chat.userName
-								) : (
-									chat.userName
-								)}
+								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
+									? isSeated
+										? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+										: chat.userName
+									: chat.userName}
 								{': '}
 							</span>
 							<span>{chatContents}</span>
@@ -489,9 +483,7 @@ class Gamechat extends React.Component {
 						onYReachEnd={this.handleChatScrolledToBottom}
 						option={{ suppressScrollX: true }}
 					>
-						<div className="ui list">
-							{this.processChats()}
-						</div>
+						<div className="ui list">{this.processChats()}</div>
 					</PerfectScrollbar>
 				</section>
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>

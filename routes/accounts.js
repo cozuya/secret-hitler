@@ -236,6 +236,11 @@ module.exports = () => {
 					player.save(() => {
 						res.send();
 					});
+
+				if (player.isTimeout && new Date().getTime() - new Date(player.isTimeout).getTime() < 64800000) {
+					req.logOut();
+					res.send();
+				}
 			});
 		}
 	);

@@ -49,7 +49,7 @@ class Menu extends React.Component {
 							</a>
 							|{' '}
 							<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
-								Feedback / Bug Reports
+								Feedback / Bug Reports / Source Code
 							</a>{' '}
 							|{' '}
 							<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
@@ -58,6 +58,10 @@ class Menu extends React.Component {
 							|{' '}
 							<a target="_blank" href="https://discord.gg/secrethitlerio">
 								Discord
+							</a>{' '}
+							|{' '}
+							<a target="_blank" href="https://secrethitler.io/polls" style={{ color: 'yellow', textDecoration: 'underline' }}>
+								New Polls 11/23/2017
 							</a>
 						</span>
 					</div>

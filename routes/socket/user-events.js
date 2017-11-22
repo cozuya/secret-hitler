@@ -690,7 +690,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			newGame.chats = [];
 			newGame.general.uid = `${game.general.uid}Remake`;
-			newGame.electionCount = 0;
+			newGame.general.electionCount = 0;
 			newGame.timeCreated = new Date().getTime();
 			newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
 				userName: player.userName,
@@ -994,6 +994,20 @@ module.exports.handleModerationAction = (socket, data) => {
 				timeout.save(() => {
 					logOutUser(data.userName);
 				});
+				break;
+			case 'timeOut2':
+				Account.findOne({ username: data.userName })
+					.then(account => {
+						if (account) {
+							account.isTimeout = new Date();
+							account.save(() => {
+								logOutUser(data.userName);
+							});
+						}
+					})
+					.catch(err => {
+						console.log(err, 'timeout2 user err');
+					});
 				break;
 			case 'clearGenchat':
 				generalChats.list = [];
