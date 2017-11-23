@@ -24,6 +24,7 @@ export default class Moderation extends React.Component {
 			playerInputText: '',
 			resetServerCount: 0,
 			logCount: 1,
+			modLogToday: false,
 			logSort: {
 				type: 'date',
 				direction: 'descending'
@@ -231,6 +232,14 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Timeout - IP ban a player for 18 hours without scrambling password.
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('timeOut2');
+					}}
+				>
+					Timeout - non-IP version.
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}
@@ -474,6 +483,7 @@ export default class Moderation extends React.Component {
 					</thead>
 					<tbody>
 						{this.state.log
+							.filter(entry => (this.state.modLogToday ? new Date(entry.date).toDateString() === new Date().toDateString() : true))
 							.sort((a, b) => {
 								const { logSort } = this.state,
 									aDate = new Date(a.date),
@@ -549,10 +559,18 @@ export default class Moderation extends React.Component {
 
 	render() {
 		const broadcastKeyup = e => {
-			this.setState({
-				broadcastText: e.currentTarget.value
-			});
-		};
+				this.setState({
+					broadcastText: e.currentTarget.value
+				});
+			},
+			toggleModLogToday = e => {
+				const { modLogToday } = this.state;
+				e.preventDefault();
+
+				this.setState({
+					modLogToday: !modLogToday
+				});
+			};
 
 		return (
 			<section className="moderation">
@@ -579,7 +597,12 @@ export default class Moderation extends React.Component {
 						</div>
 					)}
 					<div className="modlog" style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}>
-						<h3>Moderation log</h3>
+						<h3>
+							Moderation log{' '}
+							<a href="#" onClick={toggleModLogToday} style={{ textDecoration: 'underline', fontSize: '12px' }}>
+								{this.state.modLogToday ? 'Show all' : 'Show today only'}
+							</a>
+						</h3>
 						{this.renderModLog()}
 					</div>
 				</div>

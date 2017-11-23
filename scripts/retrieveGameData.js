@@ -47,7 +47,7 @@ Game.find({})
 		const playerCount = game.losingPlayers.length + game.winningPlayers.length,
 			fascistsWon = game.winningTeam === 'fascist',
 			gameDate = moment(new Date(game.date)).format('l'),
-			rebalanced = game.rebalance69p && (playerCount === 6 || playerCount === 9);
+			rebalanced = game.rebalance69p && (playerCount === 6 || playerCount === 7 || playerCount === 9);
 
 		if (
 			gameDate === '5/13/2017' ||

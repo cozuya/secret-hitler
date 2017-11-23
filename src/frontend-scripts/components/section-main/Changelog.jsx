@@ -9,16 +9,12 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.10.1 released 11-14-2017</p>
+			<p>Version 0.10.2 released 11-19-2017</p>
 		</div>
 		<h3>Bug fix patch:</h3>
-		<ul>
-			<li>Removed tourny and blind mode from create game - they're not ready yet.</li>
-			<li>Moved some assets from a source (cloudflare) that is not accessible in some countries.</li>
-			<li>You can now scroll while viewing chats in replays.</li>
-			<li>A bug with the way this was deployed for production was resulting in giant js to download, that has been fixed.</li>
-			<li>New favicon! New rainbow icon!</li>
-		</ul>
+		<p>
+			Mobile devices should work better, hopefully fixes to some of the chat scrolling issues, start game sound should be back, gamenotes text readable again.
+		</p>
 		<h3>Next up: more bug fixes..</h3>
 		<div className="ui header">
 			<p>Version 0.10.0 released 11-13-2017</p>

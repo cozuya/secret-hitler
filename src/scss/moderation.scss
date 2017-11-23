@@ -22,7 +22,7 @@
 		color: lightblue;
 		text-decoration: underline;
 		right: 80px;
-		top: 1%;
+		top: 10px;
 		cursor: pointer;
 	}
 	ul {
@@ -41,14 +41,12 @@
 			max-width: 60%;
 			width: 100%;
 			> div {
-				max-height: 470px;
 				overflow-y: scroll;
 			}
 		}
 		.modplayerlist {
 			ul {
 				padding: 0 0 0 10px;
-				max-height: 370px;
 				overflow-y: scroll;
 			}
 		}
@@ -94,7 +92,7 @@
 		cursor: pointer;
 		position: absolute;
 		left: 5%;
-		top: 1%;
+		top: 10px;
 		text-decoration: underline;
 	}
 	.ipban-button {
