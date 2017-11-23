@@ -14,37 +14,37 @@ const Account = require('../../models/account'),
 	};
 // http://torstatus.blutmagie.de/ip_list_exit.php/Tor_ip_list_EXIT.csv
 
-let torIps;
+// let torIps;
 
-if (process.env.NODE_ENV) {
-	try {
-		https.get(options, res => {
-			let rawData = '';
-			res.on('data', chunk => {
-				rawData += chunk;
-			});
-			res.on('end', () => {
-				try {
-					torIps = rawData.split('\n').slice(3, rawData.length);
-				} catch (e) {
-					console.error(e.message, 'retrieving tor ip addresses failed');
-				}
-				torIps.forEach(ip => {
-					const ipban = new BannedIP({
-						bannedDate: new Date(),
-						type: 'large',
-						ip
-					});
-					ipban.save();
-				});
-			});
-		});
-	} catch (e) {
-		console.log(e, 'err receiving tor ip addresses');
-	}
-}
+// if (process.env.NODE_ENV) {
+// 	try {
+// 		https.get(options, res => {
+// 			let rawData = '';
+// 			res.on('data', chunk => {
+// 				rawData += chunk;
+// 			});
+// 			res.on('end', () => {
+// 				try {
+// 					torIps = rawData.split('\n').slice(3, rawData.length);
+// 				} catch (e) {
+// 					console.error(e.message, 'retrieving tor ip addresses failed');
+// 				}
+// 				torIps.forEach(ip => {
+// 					const ipban = new BannedIP({
+// 						bannedDate: new Date(),
+// 						type: 'large',
+// 						ip
+// 					});
+// 					ipban.save();
+// 				});
+// 			});
+// 		});
+// 	} catch (e) {
+// 		console.log(e, 'err receiving tor ip addresses');
+// 	}
+// }
 
-module.exports.torIps = torIps;
+module.exports.torIps = [];
 
 module.exports.sendModInfo = (socket, count) => {
 	const userNames = userList.map(user => user.userName);
