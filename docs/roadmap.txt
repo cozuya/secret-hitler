@@ -36,22 +36,26 @@ election vote rework (changable votes)
 editors
 
 version 0.9:
-(#187) whitelist fix to scroll
-(#280) upgrade all dependencies
-(#298) optional rebalance to 6&9p games
-(#299) links in general chat to either the site itself or the github page are linkable
-(#297) private games should be actually private to non mods
-(#296) general chat has timestamps on hover
-(#305) ip ban all tor ips
-(#306) fix to people being (again) able to make accounts with the same name but different capitalization
-(#307) enhanced mod log
-(#251) URL routing
-(#275) remake button
-(various) overhaul/fixes to moderation problems (banning/timeouts not working)
+whitelist fix to scroll
+upgrade all dependencies
+optional rebalance to 6&9p games
+links in general chat to either the site itself or the github page are linkable
+private games should be actually private to non mods
+general chat has timestamps on hover
+ip ban all tor ips
+fix to people being (again) able to make accounts with the same name but different capitalization
+enhanced mod log
+URL routing
+remake button
+overhaul/fixes to moderation problems (banning/timeouts not working)
+
+version 0.10:
+UI overhaul
+7p rebalance option
 
 near future:
-UI overhaul from PR
-(#184) tournament mode
+tournament mode
+blind mode
 
 farther future:
 (#205) player notes

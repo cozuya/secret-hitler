@@ -30,7 +30,6 @@ export default class Reports extends React.Component {
 	renderReportsLog() {
 		const { sortType, sortDirection } = this.state,
 			sortClick = type => {
-				console.log('Hello, World!');
 				this.setState({
 					sortType: type,
 					sortDirection: sortDirection === 'descending' ? 'ascending' : 'descending'
