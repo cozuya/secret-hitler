@@ -170,7 +170,7 @@ export class App extends React.Component {
 		}
 
 		if (hash.substr(0, 10) === '#/profile/') {
-			dispatch(fetchProfile(hash.split('#/profile/')[1]));
+			dispatch(fetchProfile(hash.split('#/profile/')[1], userInfo.userName));
 		} else if (hash.substr(0, 9) === '#/replay/') {
 			updateStatus('replay', hash.split('#/replay/')[1]);
 			dispatch(fetchReplay(hash.split('#/replay/')[1]));

@@ -6,6 +6,7 @@ const mongoose = require('mongoose'),
 		created: Date,
 		customCardback: String,
 		bio: String,
+		lastConnectedIP: String,
 		stats: {
 			matches: {
 				allMatches: {

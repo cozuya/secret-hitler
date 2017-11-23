@@ -3,8 +3,10 @@ let passport = require('passport'), // eslint-disable-line no-unused-vars
 	{ getProfile } = require('../models/profile/utils'),
 	GameSummary = require('../models/game-summary'),
 	socketRoutes = require('./socket/routes'),
+	_ = require('lodash'),
 	accounts = require('./accounts'),
 	version = require('../version'),
+	{ MODERATORS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants'),
 	fs = require('fs'),
 	ensureAuthenticated = (req, res, next) => {
 		if (req.isAuthenticated()) {
@@ -91,21 +93,28 @@ module.exports = () => {
 	});
 
 	app.get('/profile', (req, res) => {
-		const username = req.query.username;
+		const username = req.query.username,
+			requestingUser = req.query.requestingUser;
 
 		getProfile(username).then(profile => {
 			if (!profile) {
 				res.status(404).send('Profile not found');
 			} else {
 				Account.findOne({ username }, (err, account) => {
+					const _profile = _.cloneDeep(profile);
+
 					if (err) {
 						return new Error(err);
 					}
 					if (account) {
-						profile.customCardback = account.gameSettings.customCardback;
-						profile.bio = account.bio;
+						_profile.customCardback = account.gameSettings.customCardback;
+						_profile.bio = account.bio;
 					}
-					res.json(profile);
+
+					if (!(MODERATORS.includes(requestingUser) || ADMINS.includes(requestingUser) || EDITORS.includes(requestingUser))) {
+						_profile.lastConnectedIP = 'no looking';
+					}
+					res.json(_profile);
 				});
 			}
 		});

@@ -1,5 +1,6 @@
 const passport = require('passport'),
 	Account = require('../models/account'),
+	Profile = require('../models/profile/index'),
 	BannedIP = require('../models/bannedIP'),
 	{ ipbansNotEnforced, accountCreationDisabled } = require('./socket/models'),
 	// verifyAccount = require('./verify-account'),
@@ -227,14 +228,27 @@ module.exports = () => {
 			Account.findOne({
 				username: req.user.username
 			}).then(player => {
-				(player.lastConnectedIP =
+				const ip =
 					req.headers['x-real-ip'] ||
 					req.headers['X-Real-IP'] ||
 					req.headers['X-Forwarded-For'] ||
 					req.headers['x-forwarded-for'] ||
-					req.connection.remoteAddress),
-					player.save(() => {
-						res.send();
+					req.connection.remoteAddress;
+
+				player.lastConnectedIP = ip;
+				player.save(() => {
+					res.send();
+				});
+
+				Profile.findOne({ _id: req.user.username })
+					.then(profile => {
+						if (profile) {
+							profile.lastConnectedIP = ip;
+							profile.save();
+						}
+					})
+					.catch(err => {
+						console.log(err, 'profile find err');
 					});
 
 				if (player.isTimeout && new Date().getTime() - new Date(player.isTimeout).getTime() < 64800000) {

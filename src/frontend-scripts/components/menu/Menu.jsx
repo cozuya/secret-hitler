@@ -49,7 +49,7 @@ class Menu extends React.Component {
 							</a>
 							|{' '}
 							<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
-								Feedback / Bug Reports / Source Code
+								Feedback / Bug Reports
 							</a>{' '}
 							|{' '}
 							<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">

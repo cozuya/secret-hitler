@@ -218,6 +218,7 @@ class ProfileWrapper extends React.Component {
 							</strong>
 						</span>
 						<span>{this.formatDateString(profile.created)}</span>
+						{profile.lastConnectedIP !== 'no looking' && <p>Last connected IP: {profile.lastConnectedIP}</p>}
 					</div>
 				</div>
 				{this.renderBio()}
