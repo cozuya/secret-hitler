@@ -9,6 +9,11 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.10.3 released 11-23-2017</p>
+		</div>
+		<p>Chat scrolling fixes again (I hope), bunch of moderator stuff, fix to 7p rebalanced graph (tomorrow).</p>
+		<h3>Next up: if stuff is finally working right in 0.10, tourny mode.</h3>
+		<div className="ui header">
 			<p>Version 0.10.2 released 11-19-2017</p>
 		</div>
 		<h3>Bug fix patch:</h3>

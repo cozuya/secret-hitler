@@ -21,7 +21,9 @@ const mongoose = require('mongoose'),
 	},
 	sevenPlayerGameData = {
 		fascistWinCount: 0,
-		totalGameCount: 0
+		totalGameCount: 0,
+		rebalancedFascistWinCount: 0,
+		rebalancedTotalGameCount: 0
 	},
 	eightPlayerGameData = {
 		fascistWinCount: 0,
