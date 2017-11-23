@@ -14,7 +14,7 @@ const Account = require('../../models/account'),
 	};
 // http://torstatus.blutmagie.de/ip_list_exit.php/Tor_ip_list_EXIT.csv
 
-// let torIps;
+let torIps = [];
 
 // if (process.env.NODE_ENV) {
 // 	try {
@@ -44,7 +44,7 @@ const Account = require('../../models/account'),
 // 	}
 // }
 
-module.exports.torIps = [];
+module.exports.torIps = torIps;
 
 module.exports.sendModInfo = (socket, count) => {
 	const userNames = userList.map(user => user.userName);
