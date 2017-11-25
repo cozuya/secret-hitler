@@ -235,7 +235,11 @@ export default class Players extends React.Component {
 			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
 			(!gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49))
 		) {
-			return (
+			return gameInfo.general.isTourny ? (
+				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
+					Queue for tournament
+				</div>
+			) : (
 				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
 					Take a seat
 				</div>

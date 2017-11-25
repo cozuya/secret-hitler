@@ -80,10 +80,10 @@ export default class Creategame extends React.Component {
 
 		$(this.tournyconfirm).checkbox({
 			onChecked() {
-				self.setState({ isTourny: true });
+				self.setState({ isTourny: true, sliderValues: [8] });
 			},
 			onUnchecked() {
-				self.setState({ isTourny: false });
+				self.setState({ isTourny: false, sliderValues: [5, 10] });
 			}
 		});
 
@@ -139,7 +139,7 @@ export default class Creategame extends React.Component {
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			window.alert('Sorry, this service is currently unavailable.');
 		} else {
-			const uid = generateCombination(2, ''),
+			const uid = this.state.isTourny ? `${generateCombination(2, '')}Tournament` : generateCombination(2, ''),
 				excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 
 			this.props.socket.emit('addNewGame', {
@@ -158,10 +158,11 @@ export default class Creategame extends React.Component {
 					flag: $creategame.find('div.flag input').val() || 'none',
 					minPlayersCount: this.state.sliderValues[0],
 					excludedPlayerCount,
-					maxPlayersCount: this.state.sliderValues[1],
+					maxPlayersCount: this.state.isTourny ? undefined : this.state.sliderValues[1],
 					status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
 					experiencedMode: this.state.experiencedmode,
 					disableChat: this.state.disablechat,
+					isTourny: this.state.isTourny,
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
 					blindMode: this.state.blindMode,
@@ -950,19 +951,63 @@ export default class Creategame extends React.Component {
 		);
 	}
 
-	render() {
+	renderPlayerSlider() {
 		const sliderCheckboxClick = index => {
-				const newSliderValues = this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el)),
-					includedPlayerCounts = newSliderValues.map((el, i) => el ? i + 5 : null).filter(el => el !== null),
-					minPlayers = Math.min(...includedPlayerCounts),
-					maxPlayers = Math.max(...includedPlayerCounts);
+			const newSliderValues = this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el)),
+				includedPlayerCounts = newSliderValues.map((el, i) => (el ? i + 5 : null)).filter(el => el !== null),
+				minPlayers = Math.min(...includedPlayerCounts),
+				maxPlayers = Math.max(...includedPlayerCounts);
 
-				this.setState({
-					checkedSliderValues: newSliderValues,
-					sliderValues: [minPlayers, maxPlayers]
-				});
+			this.setState({
+				checkedSliderValues: newSliderValues,
+				sliderValues: [minPlayers, maxPlayers]
+			});
 		};
 
+		return (
+			<div className="eight wide column centered slider">
+				<h4 className="ui header">Number of players</h4>
+				{this.state.isTourny ? (
+					<Range
+						className="tourny-slider"
+						onChange={this.sliderChange}
+						min={1}
+						max={3}
+						defaultValue={[2]}
+						value={this.state.sliderValues}
+						marks={{ 1: '14', 2: '16', 3: '18' }}
+					/>
+				) : (
+					<Range
+						onChange={this.sliderChange}
+						min={5}
+						max={10}
+						defaultValue={[5, 10]}
+						value={this.state.sliderValues}
+						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
+					/>
+				)}
+				{!this.state.isTourny && (
+					<div className="checkbox-container">
+						{new Array(6).fill(true).map((el, index) => (
+							<label key={index}>
+								<input
+									type="checkbox"
+									checked={this.state.checkedSliderValues[index]}
+									disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? (index + 5 === this.state.sliderValues[0] ? true : false) : false}
+									onChange={() => {
+										sliderCheckboxClick(index);
+									}}
+								/>
+							</label>
+						))}
+					</div>
+				)}
+			</div>
+		);
+	}
+
+	render() {
 		return (
 			<section className="creategame">
 				<a href="#/">
@@ -1010,26 +1055,7 @@ export default class Creategame extends React.Component {
 							</div>
 						)}
 					</div>
-					<div className="row slider">
-						<div className="eight wide column centered slider">
-							<h4 className="ui header">Number of players</h4>
-							<Range onChange={this.sliderChange} min={5} max={10} defaultValue={[5, 10]} value={this.state.sliderValues} marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }} />
-							<div className="checkbox-container">
-								{new Array(6).fill(true).map((el, index) => (
-									<label key={index}>
-										<input
-											type="checkbox"
-											checked={this.state.checkedSliderValues[index]}
-											disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? index + 5 === this.state.sliderValues[0] ? true : false : false}
-											onChange={() => {
-												sliderCheckboxClick(index);
-											}}
-										/>
-									</label>
-								))}
-							</div>
-						</div>
-					</div>
+					<div className="row slider">{this.renderPlayerSlider()}</div>
 					<div className="row sliderrow">
 						<div className="four wide column disablechat">
 							<i className="big unmute icon" />
@@ -1094,32 +1120,32 @@ export default class Creategame extends React.Component {
 							}
 						})()}
 					</div>
-				</div>
-				<div className="row">
-					<div className="four wide column rebalance69p">
-						<h4 className="ui header">
-							Rebalance games - 6 player games start with a fascist policy enacted, 7 & 9 player games start with one less fascist policy.
-						</h4>
-						<div
-							className="ui fitted toggle checkbox"
-							ref={c => {
-								this.rebalance69p = c;
-							}}
-						>
-							<input type="checkbox" name="rebalance69p" defaultChecked={true} />
+					<div className="row">
+						<div className="eight wide column rebalance69p">
+							<h4 className="ui header">
+								Rebalance games - 6 player games start with a fascist policy enacted, 7 & 9 player games start with one less fascist policy.
+							</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.rebalance69p = c;
+								}}
+							>
+								<input type="checkbox" name="rebalance69p" defaultChecked={true} />
+							</div>
 						</div>
-					</div>
-					{/* <div className="four wide column tourny-container">
-						<h4 className="ui header">Tournament mode</h4>
-						<div
-							className="ui fitted toggle checkbox"
-							ref={c => {
-								this.tournyconfirm = c;
-							}}
-						>
-							<input type="checkbox" name="tournyconfirm" defaultChecked={false} />
+						<div className="eight wide column tourny-container">
+							<h4 className="ui header">Tournament mode</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.tournyconfirm = c;
+								}}
+							>
+								<input type="checkbox" name="tournyconfirm" defaultChecked={false} />
+							</div>
 						</div>
-					</div>
+						{/* 
 					<div className="four wide column">
 						<h4 className="ui header">Blind mode - player's names are turned into a random animal to anonymize them.</h4>
 						<div
@@ -1131,6 +1157,7 @@ export default class Creategame extends React.Component {
 							<input type="checkbox" name="blindmode" defaultChecked={false} />
 						</div>
 					</div> */}
+					</div>
 				</div>
 
 				<div className="ui grid centered footer">

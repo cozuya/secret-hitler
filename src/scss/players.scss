@@ -9,6 +9,11 @@
 		padding: 6px;
 		text-align: center;
 		cursor: pointer;
+		&.tourny {
+			width: 130px;
+			margin: 40px 0 0 10px;
+			background: $tourny;
+		}
 	}
 	@for $i from 1 through 5 {
 		.player-container.experienced#{$i} {

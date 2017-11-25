@@ -36,6 +36,10 @@ class Menu extends React.Component {
 					</a>
 					<div className="center-menu-links">
 						<span>
+							<a style={{ textDecoration: 'underline' }} target="_blank" href="/about#TOU">
+								Site Rules
+							</a>{' '}
+							|{' '}
 							<a
 								className={
 									this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
@@ -49,7 +53,7 @@ class Menu extends React.Component {
 							</a>
 							|{' '}
 							<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
-								Feedback / Bug Reports
+								Feedback
 							</a>{' '}
 							|{' '}
 							<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">

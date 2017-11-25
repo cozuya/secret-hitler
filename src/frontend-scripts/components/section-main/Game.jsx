@@ -23,6 +23,8 @@ export default class Game extends React.Component {
 	}
 
 	render() {
+		const { userInfo, gameInfo } = this.props;
+
 		return (
 			<section className="game">
 				<div className="ui grid">
@@ -31,7 +33,7 @@ export default class Game extends React.Component {
 							className={(() => {
 								let classes;
 
-								if (this.props.userInfo.gameSettings && !this.props.userInfo.gameSettings.enableRightSidebarInGame) {
+								if (userInfo.gameSettings && !userInfo.gameSettings.enableRightSidebarInGame) {
 									classes = 'ten ';
 								} else {
 									classes = 'ten ';
@@ -42,13 +44,13 @@ export default class Game extends React.Component {
 								return classes;
 							})()}
 						>
-							<Tracks userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} socket={this.props.socket} />
+							<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
 						</div>
 						<div
 							className={(() => {
 								let classes;
 
-								if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame) {
+								if (userInfo.gameSettings && userInfo.gameSettings.enableRightSidebarInGame) {
 									classes = 'six ';
 								} else {
 									classes = 'six ';
@@ -59,11 +61,13 @@ export default class Game extends React.Component {
 								return classes;
 							})()}
 						>
-							<section className="gamestatus">{this.props.gameInfo.general && this.props.gameInfo.general.status}</section>
+							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
+								{gameInfo.general && gameInfo.general.status}
+							</section>
 							<Gamechat
 								userList={this.props.userList}
-								gameInfo={this.props.gameInfo}
-								userInfo={this.props.userInfo}
+								gameInfo={gameInfo}
+								userInfo={userInfo}
 								onNewGameChat={this.props.onNewGameChat}
 								socket={this.props.socket}
 							/>
@@ -71,8 +75,7 @@ export default class Game extends React.Component {
 					</div>
 				</div>
 				{(() => {
-					const { userInfo, gameInfo } = this.props,
-						balloons = Math.random() < 0.1;
+					const balloons = Math.random() < 0.1;
 
 					if (
 						userInfo.userName &&
@@ -90,7 +93,7 @@ export default class Game extends React.Component {
 					className={(() => {
 						let classes = 'row players-container';
 
-						if (this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableRightSidebarInGame) {
+						if (userInfo.gameSettings && userInfo.gameSettings.disableRightSidebarInGame) {
 							classes += ' disabledrightsidebar';
 						}
 
@@ -100,8 +103,8 @@ export default class Game extends React.Component {
 					<Players
 						onClickedTakeSeat={this.props.onClickedTakeSeat}
 						userList={this.props.userList}
-						userInfo={this.props.userInfo}
-						gameInfo={this.props.gameInfo}
+						userInfo={userInfo}
+						gameInfo={gameInfo}
 						socket={this.props.socket}
 					/>
 				</div>

@@ -13,13 +13,19 @@
 		padding: 0;
 		display: flex;
 		flex-direction: column;
+
 		.gamestatus {
 			font-size: 22px;
 			font-style: italic;
 			color: $darkfascistteam;
 			background: #1b1b1b;
 			padding: 7px 0px 3px 2px;
+
+			&.tourny {
+				color: $tourny;
+			}
 		}
+
 		.gamechat {
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
@@ -27,11 +33,6 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
-			//margin: 0;
-			//background: #f6f6f6;
-			//display: flex;
-			//flex-direction: column;
-			//height: 411px;
 			form {
 				background: #181818;
 				display: flex;

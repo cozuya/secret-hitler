@@ -228,34 +228,41 @@ module.exports.handleAddNewGame = (socket, data) => {
 		if (!user || currentTime - user.timeLastGameCreated < 8000) {
 			// Check if !user here in case of bug where user doesn't appear on userList
 			return;
-		} else {
-			user.timeLastGameCreated = currentTime;
-
-			Account.findOne({ username }).then(account => {
-				data.private = {
-					reports: {},
-					unSeatedGameChats: [],
-					lock: {}
-				};
-
-				if (data.general.private) {
-					data.private.privatePassword = data.general.private;
-					data.general.private = true;
-				}
-
-				if (data.general.rainbowgame) {
-					data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
-				}
-				data.general.timeCreated = currentTime;
-				updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
-				games.push(data);
-				sendGameList();
-				socket.join(data.general.uid);
-				socket.emit('updateSeatForUser');
-				socket.emit('gameUpdate', data);
-				socket.emit('joinGameRedirect', data.general.uid);
-			});
 		}
+
+		if (data.general.isTourny) {
+			const { minPlayers } = data.general;
+
+			data.general.minPlayersCount = minPlayers === 1 ? 14 : minPlayers === 2 ? 16 : 18;
+			data.general.status = `Waiting for ${data.general.minPlayersCount - 1} more players..`;
+		}
+		console.log(data);
+		user.timeLastGameCreated = currentTime;
+
+		Account.findOne({ username }).then(account => {
+			data.private = {
+				reports: {},
+				unSeatedGameChats: [],
+				lock: {}
+			};
+
+			if (data.general.private) {
+				data.private.privatePassword = data.general.private;
+				data.general.private = true;
+			}
+
+			if (data.general.rainbowgame) {
+				data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
+			}
+			data.general.timeCreated = currentTime;
+			updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
+			games.push(data);
+			sendGameList();
+			socket.join(data.general.uid);
+			socket.emit('updateSeatForUser');
+			socket.emit('gameUpdate', data);
+			socket.emit('joinGameRedirect', data.general.uid);
+		});
 	}
 };
 
