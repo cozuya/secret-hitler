@@ -139,7 +139,7 @@ export default class Creategame extends React.Component {
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			window.alert('Sorry, this service is currently unavailable.');
 		} else {
-			const uid = this.state.isTourny ? `${generateCombination(2, '')}Tournament` : generateCombination(2, ''),
+			const uid = this.state.isTourny ? `${generateCombination(2, '', true)}Tournament` : generateCombination(2, '', true),
 				excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 
 			this.props.socket.emit('addNewGame', {
@@ -163,6 +163,9 @@ export default class Creategame extends React.Component {
 					experiencedMode: this.state.experiencedmode,
 					disableChat: this.state.disablechat,
 					isTourny: this.state.isTourny,
+					tournyInfo: {
+						queuedPlayers: [userInfo.userName]
+					},
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
 					blindMode: this.state.blindMode,
@@ -973,7 +976,7 @@ export default class Creategame extends React.Component {
 						onChange={this.sliderChange}
 						min={1}
 						max={3}
-						defaultValue={[2]}
+						defaultValue={[0]}
 						value={this.state.sliderValues}
 						marks={{ 1: '14', 2: '16', 3: '18' }}
 					/>

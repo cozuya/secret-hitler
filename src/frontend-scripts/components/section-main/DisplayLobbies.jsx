@@ -7,13 +7,15 @@ const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props,
 		gameClasses = () => {
 			let classes = 'browser-row';
-
+			console.log(game);
 			if (game.gameStatus === 'isStarted') {
 				classes += ' inprogress';
 			} else if (game.gameStatus === 'fascist') {
 				classes += ' fascist';
 			} else if (game.gameStatus === 'liberal') {
 				classes += ' liberal';
+			} else if (game.isTourny) {
+				classes += ' tourny';
 			} else {
 				classes += ' notstarted';
 			}

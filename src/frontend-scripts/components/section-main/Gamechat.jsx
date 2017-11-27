@@ -47,6 +47,11 @@ class Gamechat extends React.Component {
 			window.location.hash = '#/';
 			$(this.leaveGameModal).modal('hide');
 		});
+
+		$(this.leaveGameModal).on('click', '.leave-tourny.button', () => {
+			window.location.hash = '#/';
+			$(this.leaveGameModal).modal('hide');
+		});
 	}
 
 	componentDidUpdate(prevProps, nextProps) {
@@ -121,8 +126,15 @@ class Gamechat extends React.Component {
 	}
 
 	handleClickedLeaveGame() {
-		if (this.props.userInfo.isSeated && this.props.gameInfo.gameState.isStarted && !this.props.gameInfo.gameState.isCompleted) {
+		const { userInfo, gameInfo } = this.props;
+
+		console.log(userInfo);
+		console.log(gameInfo);
+
+		if (userInfo.isSeated && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
+		} else if (userInfo.isSeated && !gameInfo.gameState.isStarted && gameInfo.general.isTourny) {
+			$(this.leaveTournyQueueModal).modal('show');
 		} else {
 			window.location.hash = '#/';
 		}
@@ -688,6 +700,18 @@ class Gamechat extends React.Component {
 					<div className="ui green positive inverted leave-game button">
 						<i className="checkmark icon" />
 						Leave game
+					</div>
+				</div>
+				<div
+					className="ui basic fullscreen modal leavetournyqueue"
+					ref={c => {
+						this.leaveTournyQueueModal = c;
+					}}
+				>
+					<h2 className="ui header">Would you also like to leave the tournament queue?</h2>
+					<div className="ui green positive inverted leave-tourny button">
+						<i className="checkmark icon" />
+						Leave tournament queue
 					</div>
 				</div>
 				<div

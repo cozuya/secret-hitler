@@ -11,7 +11,8 @@
 		cursor: pointer;
 		&.tourny {
 			width: 130px;
-			margin: 40px 0 0 10px;
+			margin: 32px 0 0 10px;
+			padding: 15px;
 			background: $tourny;
 		}
 	}

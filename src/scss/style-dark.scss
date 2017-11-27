@@ -249,6 +249,9 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 	.browser-row.liberal {
 		box-shadow: 0 0 6px 3px darkgray;
 	}
+	.browser-row.tourny {
+		box-shadow: 0 0 6px 3px $tourny;
+	}
 	.game-row {
 		display: flex;
 		border: 1px solid #1b1b1b;

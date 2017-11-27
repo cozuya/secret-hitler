@@ -171,6 +171,7 @@ const handleUserLeaveGame = (socket, data) => {
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 	// prevents race condition between 1) taking a seat and 2) the game starting
+
 	if (game && game.gameState.isTracksFlipped) {
 		return;
 	}
@@ -231,12 +232,12 @@ module.exports.handleAddNewGame = (socket, data) => {
 		}
 
 		if (data.general.isTourny) {
-			const { minPlayers } = data.general;
+			const { minPlayersCount } = data.general;
 
-			data.general.minPlayersCount = minPlayers === 1 ? 14 : minPlayers === 2 ? 16 : 18;
+			data.general.minPlayersCount = data.general.maxPlayersCount = minPlayersCount === 1 ? 14 : minPlayersCount === 2 ? 16 : 18;
 			data.general.status = `Waiting for ${data.general.minPlayersCount - 1} more players..`;
 		}
-		console.log(data);
+
 		user.timeLastGameCreated = currentTime;
 
 		Account.findOne({ username }).then(account => {
