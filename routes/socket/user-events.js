@@ -17,6 +17,11 @@ const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforce
 	version = require('../../version'),
 	{ PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants'),
 	displayWaitingForPlayers = game => {
+		if (game.general.isTourny) {
+			const count = game.general.maxPlayersCount - game.general.tournyInfo.queuedPlayers.length;
+
+			return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
+		}
 		const includedPlayerCounts = [5, 6, 7, 8, 9, 10].filter(value => !game.general.excludedPlayerCount.includes(value));
 
 		for (value of includedPlayerCounts) {
@@ -186,22 +191,35 @@ module.exports.updateSeatedUser = (socket, data) => {
 	) {
 		const { publicPlayersState } = game;
 
-		publicPlayersState.push({
-			userName: data.userName,
-			connected: true,
-			isDead: false,
-			customCardback: data.customCardback,
-			customCardbackUid: data.customCardbackUid,
-			cardStatus: {
-				cardDisplayed: false,
-				isFlipped: false,
-				cardFront: 'secretrole',
-				cardBack: {}
-			}
-		});
-
 		if (game.general.isTourny) {
 			game.general.tournyInfo.queuedPlayers.push(data.userName);
+			game.chats.push({
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: `${data.userName}`,
+						type: 'player'
+					},
+					{
+						text: ` (${game.general.tournyInfo.queuedPlayers.length} / ${game.general.maxPlayersCount}) has entered the tournament queue.`
+					}
+				]
+			});
+		} else {
+			publicPlayersState.push({
+				userName: data.userName,
+				connected: true,
+				isDead: false,
+				customCardback: data.customCardback,
+				customCardbackUid: data.customCardbackUid,
+				cardStatus: {
+					cardDisplayed: false,
+					isFlipped: false,
+					cardFront: 'secretrole',
+					cardBack: {}
+				}
+			});
 		}
 
 		socket.emit('updateSeatForUser', true);

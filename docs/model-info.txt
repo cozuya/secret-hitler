@@ -36,6 +36,8 @@ general
 	type number refers to fasctrack
 	livingPlayerCount number
 	electionCount number, starts at 0
+	tournyInfo
+		queuedPlayers array of strings
 seatedPlayers array 5-10
 	obj
 		connected bool
