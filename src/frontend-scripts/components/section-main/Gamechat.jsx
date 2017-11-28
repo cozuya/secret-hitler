@@ -61,6 +61,7 @@ class Gamechat extends React.Component {
 		if (
 			(prevProps &&
 				userInfo.userName &&
+				userInfo.isSeated &&
 				prevProps.gameInfo.publicPlayersState.filter(player => player.isDead).length !== gameInfo.publicPlayersState.filter(player => player.isDead).length &&
 				gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead) ||
 			(prevProps &&

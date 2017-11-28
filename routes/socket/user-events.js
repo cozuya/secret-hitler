@@ -200,6 +200,10 @@ module.exports.updateSeatedUser = (socket, data) => {
 			}
 		});
 
+		if (game.general.isTourny) {
+			game.general.tournyInfo.queuedPlayers.push(data.userName);
+		}
+
 		socket.emit('updateSeatForUser', true);
 		checkStartConditions(game);
 		updateUserStatus(data.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
