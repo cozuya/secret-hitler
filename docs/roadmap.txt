@@ -62,6 +62,15 @@ farther future:
 (#204) notes enhancements
 (#198) game creator should have extra powers - kick/pause timer/etc
 
+tournament checklist/todos:
+turn remake button into "cancel tournament" (due to player afk) & end tourny on both tables functionality
+move players to final table after 2nd gets done and all of that
+crown icon next to names in Players and Userlist
+sort userlist for crowns
+remove crown after 3 hours
+fix leave game modal in pretourny
+players seating in a new game will be looped through all pretournies and removed
+
 version 1.0
 convert to webpack/create-react-app for builds - will resolve safari problems
 all desired features in all bugs fixed

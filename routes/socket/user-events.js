@@ -130,57 +130,89 @@ const checkStartConditions = game => {
 	}
 };
 
+const playerLeavePretourny = (game, playerName) => {
+	const { queuedPlayers } = game.general.tournyInfo;
+
+	queuedPlayers.splice(queuedPlayers.findIndex(player => player.userName === playerName), 1);
+
+	game.chats.push({
+		timestamp: new Date(),
+		gameChat: true,
+		chat: [
+			{
+				text: playerName,
+				type: 'player'
+			},
+			{
+				text: ` (${queuedPlayers.length}/${game.general.maxPlayersCount}) has left the tournament queue.`
+			}
+		]
+	});
+	game.general.status = displayWaitingForPlayers(game);
+	sendInProgressGameUpdate(game);
+};
+
 const handleSocketDisconnect = socket => {
-		const { passport } = socket.handshake.session;
+	const { passport } = socket.handshake.session;
 
-		if (passport && Object.keys(passport).length) {
-			const userIndex = userList.findIndex(user => user.userName === passport.user),
-				gamesPlayerSeatedIn = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user && !player.leftGame));
+	if (passport && Object.keys(passport).length) {
+		const userIndex = userList.findIndex(user => user.userName === passport.user),
+			gamesPlayerSeatedIn = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user && !player.leftGame));
 
-			if (userIndex !== -1) {
-				userList.splice(userIndex, 1);
-			}
+		if (userIndex !== -1) {
+			userList.splice(userIndex, 1);
+		}
 
-			if (gamesPlayerSeatedIn.length) {
-				gamesPlayerSeatedIn.forEach(game => {
-					const { gameState, publicPlayersState } = game,
-						playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+		if (gamesPlayerSeatedIn.length) {
+			gamesPlayerSeatedIn.forEach(game => {
+				const { gameState, publicPlayersState } = game,
+					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-					if (
-						(!gameState.isStarted && publicPlayersState.length === 1) ||
-						(gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
-					) {
+				if (
+					(!gameState.isStarted && publicPlayersState.length === 1) ||
+					(gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
+				) {
+					games.splice(games.indexOf(game), 1);
+				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
+					publicPlayersState.splice(playerIndex, 1);
+					checkStartConditions(game);
+					io.sockets.in(game.uid).emit('gameUpdate', game);
+				} else if (gameState.isTracksFlipped) {
+					publicPlayersState[playerIndex].connected = false;
+					publicPlayersState[playerIndex].leftGame = true;
+					sendInProgressGameUpdate(game);
+					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 						games.splice(games.indexOf(game), 1);
-					} else if (!gameState.isTracksFlipped && playerIndex > -1) {
-						publicPlayersState.splice(playerIndex, 1);
-						checkStartConditions(game);
-						io.sockets.in(game.uid).emit('gameUpdate', game);
-					} else if (gameState.isTracksFlipped) {
-						publicPlayersState[playerIndex].connected = false;
-						publicPlayersState[playerIndex].leftGame = true;
-						sendInProgressGameUpdate(game);
-						if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-							games.splice(games.indexOf(game), 1);
-						}
 					}
-				});
-				sendGameList();
-			}
+				}
+			});
+			sendGameList();
+		} else {
+			const tournysPlayerQueuedIn = games.filter(
+				game => game.general.isTourny && game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.includes(passport.user)
+			);
+
+			tournysPlayerQueuedIn.forEach(game => {
+				playerLeavePretourny(game, passport.user);
+			});
 		}
-		sendUserList();
-	},
-	crashReport = JSON.stringify({
-		content: `${process.env.DISCORDADMINPING} the site just crashed or reset.`
-	}),
-	crashOptions = {
-		hostname: 'discordapp.com',
-		path: process.env.DISCORDCRASHURL,
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'Content-Length': Buffer.byteLength(crashReport)
-		}
-	};
+	}
+	sendUserList();
+};
+
+const crashReport = JSON.stringify({
+	content: `${process.env.DISCORDADMINPING} the site just crashed or reset.`
+});
+
+const crashOptions = {
+	hostname: 'discordapp.com',
+	path: process.env.DISCORDCRASHURL,
+	method: 'POST',
+	headers: {
+		'Content-Type': 'application/json',
+		'Content-Length': Buffer.byteLength(crashReport)
+	}
+};
 
 if (process.env.NODE_ENV) {
 	const crashReq = https.request(crashOptions);
@@ -197,6 +229,7 @@ const handleUserLeaveGame = (socket, data) => {
 
 	if (game) {
 		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+
 		if (playerIndex > -1) {
 			if (game.gameState.isTracksFlipped) {
 				game.publicPlayersState[playerIndex].leftGame = true;
@@ -210,7 +243,15 @@ const handleUserLeaveGame = (socket, data) => {
 				io.sockets.in(data.uid).emit('gameUpdate', game);
 			}
 		}
-		if (!game.publicPlayersState.length) {
+
+		if (game.general.isTourny && game.general.tournyInfo.isPretourny) {
+			playerLeavePretourny(game, data.userName);
+		}
+
+		if (
+			(!game.publicPlayersState.length && !(game.general.isTourny && game.general.tournyInfo.isPretourny)) ||
+			(game.general.isTourny && game.general.tournyInfo.isPretourny && !game.general.tournyInfo.queuedPlayers.length)
+		) {
 			io.sockets.in(data.uid).emit('gameUpdate', {});
 			games.splice(games.indexOf(game), 1);
 		} else if (game.gameState.isTracksFlipped) {
@@ -717,6 +758,7 @@ module.exports.handleAddNewClaim = data => {
 
 module.exports.handleUpdatedRemakeGame = data => {
 	const game = games.find(el => el.general.uid === data.uid),
+		remakeText = game.general.isTourny ? 'cancel' : 'remake',
 		{ publicPlayersState } = game,
 		playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName),
 		player = publicPlayersState[playerIndex],
@@ -815,6 +857,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 			});
 			checkStartConditions(newGame);
 		};
+	const cancellTourny = () => {
+		// todo
+	};
 
 	if (!game || !player || !game.publicPlayersState) {
 		return;
@@ -826,7 +871,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName),
 			remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-		chat.chat.push({ text: ` has voted to remake this game. (${remakePlayerCount}/${minimumRemakeVoteCount})` });
+		chat.chat.push({ text: ` has voted to ${remakeText} this game. (${remakePlayerCount}/${minimumRemakeVoteCount})` });
 		publicPlayer.isRemaking = true;
 
 		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
@@ -835,13 +880,19 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is remade in ${game.general.remakeCount} ${game.general.remakeCount === 1 ? 'second' : 'seconds'}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
+						? 'second'
+						: 'seconds'}.`;
 					sendInProgressGameUpdate(game);
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
-					game.general.status = 'Game has been remade.';
-					makeNewGame();
+					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
+					if (game.general.isTourny) {
+						cancellTourny();
+					} else {
+						makeNewGame();
+					}
 				}
 			}, 1000);
 		}
@@ -853,7 +904,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 			game.general.status = 'Game remaking has been cancelled.';
 			clearInterval(game.private.remakeTimer);
 		}
-		chat.chat.push({ text: ` has rescinded their vote to remake this game. (${remakePlayerCount}/${minimumRemakeVoteCount})` });
+		chat.chat.push({
+			text: ` has rescinded their vote to remake this game. (${remakePlayerCount}/${minimumRemakeVoteCount})`
+		});
 	}
 	game.chats.push(chat);
 
