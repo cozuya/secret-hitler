@@ -151,7 +151,6 @@ export default class Creategame extends React.Component {
 				},
 				chats: [],
 				general: {
-					enabledPlayerCounts: this.state.checkedSliderValues.filter(el => el).map((el, i) => i + 5),
 					whitelistedPlayers: [],
 					uid,
 					name: $creategame.find('div.gamename input').val() || 'New Game',
@@ -164,7 +163,20 @@ export default class Creategame extends React.Component {
 					disableChat: this.state.disablechat,
 					isTourny: this.state.isTourny,
 					tournyInfo: {
-						queuedPlayers: [userInfo.userName]
+						queuedPlayers: [
+							{
+								userName: userInfo.userName,
+								customCardback: userInfo.gameSettings.customCardback,
+								customCardbackUid: userInfo.gameSettings.customCardbackUid,
+								connected: true,
+								cardStatus: {
+									cardDisplayed: false,
+									isFlipped: false,
+									cardFront: 'secretrole',
+									cardBack: {}
+								}
+							}
+						]
 					},
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,

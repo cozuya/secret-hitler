@@ -37,7 +37,7 @@ const startCountdown = game => {
 		return;
 	}
 	game.gameState.isStarted = true;
-	let startGamePause = 20;
+	let startGamePause = game.general.isTourny ? 10 : 20;
 	const countDown = setInterval(() => {
 		if (game.gameState.cancellStart) {
 			game.gameState.cancellStart = false;
@@ -45,9 +45,60 @@ const startCountdown = game => {
 			clearInterval(countDown);
 		} else if (startGamePause === 4 || game.publicPlayersState.length === game.general.maxPlayersCount) {
 			clearInterval(countDown);
-			startGame(game);
+			console.log(game);
+			if (game.general.isTourny) {
+				const { queuedPlayers } = game.general.tournyInfo,
+					players = _.shuffle(queuedPlayers),
+					gameA = _.cloneDeep(game),
+					APlayers = players.filter((player, index) => index < game.general.maxPlayersCount / 2),
+					BPlayers = players.filter(player => !APlayers.includes(player)),
+					APlayerNames = APlayers.map(player => player.userName),
+					BPlayerNames = BPlayers.map(player => player.userName),
+					ASocketIds = Object.keys(io.sockets.sockets).filter(
+						socketId =>
+							io.sockets.sockets[socketId].handshake.session.passport && APlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+					),
+					BSocketIds = Object.keys(io.sockets.sockets).filter(
+						socketId =>
+							io.sockets.sockets[socketId].handshake.session.passport && BPlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+					);
+
+				gameA.general.uid = `${game.general.uid}TableA`;
+				gameA.general.minPlayersCount = gameA.general.maxPlayersCount = game.general.maxPlayersCount / 2;
+				gameA.publicPlayersState = APlayers;
+
+				const gameB = _.cloneDeep(gameA);
+				gameB.general.uid = `${game.general.uid}TableB`;
+				gameB.publicPlayersState = BPlayers;
+
+				ASocketIds.forEach(id => {
+					const socket = io.sockets.sockets[id];
+
+					Object.keys(socket.rooms).forEach(roomUid => {
+						socket.leave(roomUid);
+					});
+					socket.join(gameA.general.uid);
+				});
+
+				BSocketIds.forEach(id => {
+					const socket = io.sockets.sockets[id];
+
+					Object.keys(socket.rooms).forEach(roomUid => {
+						socket.leave(roomUid);
+					});
+					socket.join(gameB.general.uid);
+				});
+
+				games.splice(games.indexOf(game), 1);
+				startGame(gameA);
+				startGame(gameB);
+			} else {
+				startGame(game);
+			}
 		} else {
-			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
+			game.general.status = game.general.isTourny
+				? `Tournament starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`
+				: `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
 			io.in(game.general.uid).emit('gameUpdate', secureGame(game));
 		}
 		startGamePause--;
@@ -68,9 +119,10 @@ const checkStartConditions = game => {
 		game.gameState.cancellStart = true;
 		game.general.status = displayWaitingForPlayers(game);
 	} else if (
-		!game.gameState.isStarted &&
-		game.publicPlayersState.length >= game.general.minPlayersCount &&
-		!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)
+		(!game.gameState.isStarted &&
+			game.publicPlayersState.length >= game.general.minPlayersCount &&
+			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) ||
+		(game.general.isTourny && game.general.tournyInfo.queuedPlayers.length === game.general.maxPlayersCount)
 	) {
 		startCountdown(game);
 	} else if (!game.gameState.isStarted) {
@@ -189,25 +241,8 @@ module.exports.updateSeatedUser = (socket, data) => {
 			((game.general.private && data.password === game.private.privatePassword) ||
 				(game.general.private && game.general.whitelistedPlayers.includes(data.userName))))
 	) {
-		const { publicPlayersState } = game;
-
-		if (game.general.isTourny) {
-			game.general.tournyInfo.queuedPlayers.push(data.userName);
-			game.chats.push({
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{
-						text: `${data.userName}`,
-						type: 'player'
-					},
-					{
-						text: ` (${game.general.tournyInfo.queuedPlayers.length} / ${game.general.maxPlayersCount}) has entered the tournament queue.`
-					}
-				]
-			});
-		} else {
-			publicPlayersState.push({
+		const { publicPlayersState } = game,
+			player = {
 				userName: data.userName,
 				connected: true,
 				isDead: false,
@@ -219,7 +254,25 @@ module.exports.updateSeatedUser = (socket, data) => {
 					cardFront: 'secretrole',
 					cardBack: {}
 				}
+			};
+
+		if (game.general.isTourny) {
+			game.general.tournyInfo.queuedPlayers.push(player);
+			game.chats.push({
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: `${data.userName}`,
+						type: 'player'
+					},
+					{
+						text: ` (${game.general.tournyInfo.queuedPlayers.length}/${game.general.maxPlayersCount}) has entered the tournament queue.`
+					}
+				]
 			});
+		} else {
+			publicPlayersState.push(player);
 		}
 
 		socket.emit('updateSeatForUser', true);

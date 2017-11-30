@@ -17,7 +17,6 @@ chats array
 	isBroadcast bool
 	timestamp time
 general
-	enabledPlayerCounts array of numbers 5-10
 	name string
 	minPlayersCount number 5-10
 	maxPlayersCount number 5-10
@@ -36,8 +35,9 @@ general
 	type number refers to fasctrack
 	livingPlayerCount number
 	electionCount number, starts at 0
+	isTourny bool
 	tournyInfo
-		queuedPlayers array of strings
+		queuedPlayers array of objects
 seatedPlayers array 5-10
 	obj
 		connected bool
