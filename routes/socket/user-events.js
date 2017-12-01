@@ -1,41 +1,42 @@
 let generalChatCount = 0;
 
-const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models'),
-	{ sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo } = require('./user-requests'),
-	Account = require('../../models/account'),
-	Generalchats = require('../../models/generalchats'),
-	ModAction = require('../../models/modAction'),
-	PlayerReport = require('../../models/playerReport'),
-	BannedIP = require('../../models/bannedIP'),
-	Profile = require('../../models/profile/index'),
-	startGame = require('./game/start-game.js'),
-	{ secureGame } = require('./util.js'),
-	crypto = require('crypto'),
-	https = require('https'),
-	_ = require('lodash'),
-	{ sendInProgressGameUpdate } = require('./util.js'),
-	version = require('../../version'),
-	{ PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants'),
-	displayWaitingForPlayers = game => {
-		if (game.general.isTourny) {
-			const count = game.general.maxPlayersCount - game.general.tournyInfo.queuedPlayers.length;
+const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
+const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo } = require('./user-requests');
+const Account = require('../../models/account');
+const Generalchats = require('../../models/generalchats');
+const ModAction = require('../../models/modAction');
+const PlayerReport = require('../../models/playerReport');
+const BannedIP = require('../../models/bannedIP');
+const Profile = require('../../models/profile/index');
+const startGame = require('./game/start-game.js');
+const { secureGame } = require('./util.js');
+const crypto = require('crypto');
+const https = require('https');
+const _ = require('lodash');
+const { sendInProgressGameUpdate } = require('./util.js');
+const version = require('../../version');
+const { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
+const displayWaitingForPlayers = game => {
+	if (game.general.isTourny) {
+		const count = game.general.maxPlayersCount - game.general.tournyInfo.queuedPlayers.length;
 
+		return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
+	}
+	const includedPlayerCounts = [5, 6, 7, 8, 9, 10].filter(value => !game.general.excludedPlayerCount.includes(value));
+
+	for (value of includedPlayerCounts) {
+		if (value > game.publicPlayersState.length) {
+			const count = value - game.publicPlayersState.length;
 			return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 		}
-		const includedPlayerCounts = [5, 6, 7, 8, 9, 10].filter(value => !game.general.excludedPlayerCount.includes(value));
-
-		for (value of includedPlayerCounts) {
-			if (value > game.publicPlayersState.length) {
-				const count = value - game.publicPlayersState.length;
-				return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
-			}
-		}
-	};
+	}
+};
 
 const startCountdown = game => {
 	if (game.gameState.isStarted) {
 		return;
 	}
+
 	game.gameState.isStarted = true;
 	let startGamePause = game.general.isTourny ? 10 : 20;
 	const countDown = setInterval(() => {
@@ -45,23 +46,23 @@ const startCountdown = game => {
 			clearInterval(countDown);
 		} else if (startGamePause === 4 || game.publicPlayersState.length === game.general.maxPlayersCount) {
 			clearInterval(countDown);
-			console.log(game);
+
 			if (game.general.isTourny) {
-				const { queuedPlayers } = game.general.tournyInfo,
-					players = _.shuffle(queuedPlayers),
-					gameA = _.cloneDeep(game),
-					APlayers = players.filter((player, index) => index < game.general.maxPlayersCount / 2),
-					BPlayers = players.filter(player => !APlayers.includes(player)),
-					APlayerNames = APlayers.map(player => player.userName),
-					BPlayerNames = BPlayers.map(player => player.userName),
-					ASocketIds = Object.keys(io.sockets.sockets).filter(
-						socketId =>
-							io.sockets.sockets[socketId].handshake.session.passport && APlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
-					),
-					BSocketIds = Object.keys(io.sockets.sockets).filter(
-						socketId =>
-							io.sockets.sockets[socketId].handshake.session.passport && BPlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
-					);
+				const { queuedPlayers } = game.general.tournyInfo;
+				const players = _.shuffle(queuedPlayers);
+				const gameA = _.cloneDeep(game);
+				const APlayers = players.filter((player, index) => index < game.general.maxPlayersCount / 2);
+				const BPlayers = players.filter(player => !APlayers.includes(player));
+				const APlayerNames = APlayers.map(player => player.userName);
+				const BPlayerNames = BPlayers.map(player => player.userName);
+				const ASocketIds = Object.keys(io.sockets.sockets).filter(
+					socketId =>
+						io.sockets.sockets[socketId].handshake.session.passport && APlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+				);
+				const BSocketIds = Object.keys(io.sockets.sockets).filter(
+					socketId =>
+						io.sockets.sockets[socketId].handshake.session.passport && BPlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+				);
 
 				gameA.general.uid = `${game.general.uid}TableA`;
 				gameA.general.minPlayersCount = gameA.general.maxPlayersCount = game.general.maxPlayersCount / 2;
@@ -90,8 +91,10 @@ const startCountdown = game => {
 				});
 
 				games.splice(games.indexOf(game), 1);
+				games.push(gameA, gameB);
 				startGame(gameA);
 				startGame(gameB);
+				sendGameList();
 			} else {
 				startGame(game);
 			}
@@ -156,8 +159,8 @@ const handleSocketDisconnect = socket => {
 	const { passport } = socket.handshake.session;
 
 	if (passport && Object.keys(passport).length) {
-		const userIndex = userList.findIndex(user => user.userName === passport.user),
-			gamesPlayerSeatedIn = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user && !player.leftGame));
+		const userIndex = userList.findIndex(user => user.userName === passport.user);
+		const gamesPlayerSeatedIn = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user && !player.leftGame));
 
 		if (userIndex !== -1) {
 			userList.splice(userIndex, 1);
@@ -165,8 +168,8 @@ const handleSocketDisconnect = socket => {
 
 		if (gamesPlayerSeatedIn.length) {
 			gamesPlayerSeatedIn.forEach(game => {
-				const { gameState, publicPlayersState } = game,
-					playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+				const { gameState, publicPlayersState } = game;
+				const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
 				if (
 					(!gameState.isStarted && publicPlayersState.length === 1) ||
@@ -282,20 +285,20 @@ module.exports.updateSeatedUser = (socket, data) => {
 			((game.general.private && data.password === game.private.privatePassword) ||
 				(game.general.private && game.general.whitelistedPlayers.includes(data.userName))))
 	) {
-		const { publicPlayersState } = game,
-			player = {
-				userName: data.userName,
-				connected: true,
-				isDead: false,
-				customCardback: data.customCardback,
-				customCardbackUid: data.customCardbackUid,
-				cardStatus: {
-					cardDisplayed: false,
-					isFlipped: false,
-					cardFront: 'secretrole',
-					cardBack: {}
-				}
-			};
+		const { publicPlayersState } = game;
+		const player = {
+			userName: data.userName,
+			connected: true,
+			isDead: false,
+			customCardback: data.customCardback,
+			customCardbackUid: data.customCardbackUid,
+			cardStatus: {
+				cardDisplayed: false,
+				isFlipped: false,
+				cardFront: 'secretrole',
+				cardBack: {}
+			}
+		};
 
 		if (game.general.isTourny) {
 			game.general.tournyInfo.queuedPlayers.push(player);
@@ -338,9 +341,9 @@ module.exports.handleUpdatedBio = (socket, data) => {
 module.exports.handleAddNewGame = (socket, data) => {
 	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
-		const username = socket.handshake.session.passport.user,
-			user = userList.find(obj => obj.userName === username),
-			currentTime = new Date();
+		const username = socket.handshake.session.passport.user;
+		const user = userList.find(obj => obj.userName === username);
+		const currentTime = new Date();
 
 		if (!user || currentTime - user.timeLastGameCreated < 8000) {
 			// Check if !user here in case of bug where user doesn't appear on userList
@@ -757,106 +760,106 @@ module.exports.handleAddNewClaim = data => {
 };
 
 module.exports.handleUpdatedRemakeGame = data => {
-	const game = games.find(el => el.general.uid === data.uid),
-		remakeText = game.general.isTourny ? 'cancel' : 'remake',
-		{ publicPlayersState } = game,
-		playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName),
-		player = publicPlayersState[playerIndex],
-		minimumRemakeVoteCount = (() => {
-			switch (game.general.playerCount) {
-				case 5:
-					return 4;
-				case 6:
-					return 4;
-				case 7:
-					return 5;
-				case 8:
-					return 6;
-				case 9:
-					return 6;
-				case 10:
-					return 7;
+	const game = games.find(el => el.general.uid === data.uid);
+	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
+	const { publicPlayersState } = game;
+	const playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName);
+	const player = publicPlayersState[playerIndex];
+	const minimumRemakeVoteCount = (() => {
+		switch (game.general.playerCount) {
+			case 5:
+				return 4;
+			case 6:
+				return 4;
+			case 7:
+				return 5;
+			case 8:
+				return 6;
+			case 9:
+				return 6;
+			case 10:
+				return 7;
+		}
+	})();
+	const chat = {
+		timestamp: new Date(),
+		gameChat: true,
+		chat: [
+			{
+				text: `${data.userName} {${playerIndex + 1}}`,
+				type: 'player'
 			}
-		})(),
-		chat = {
-			timestamp: new Date(),
-			gameChat: true,
-			chat: [
-				{
-					text: `${data.userName} {${playerIndex + 1}}`,
-					type: 'player'
-				}
-			]
-		},
-		makeNewGame = () => {
-			const newGame = _.cloneDeep(game),
-				remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName),
-				remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
-					socketId =>
-						io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
-				);
+		]
+	};
+	const makeNewGame = () => {
+		const newGame = _.cloneDeep(game);
+		const remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName);
+		const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
+			socketId =>
+				io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+		);
 
-			remakePlayerSocketIDs.forEach(id => {
-				io.sockets.sockets[id].leave(game.general.uid);
-			});
-			remakePlayerNames.forEach(name => {
-				const play = game.publicPlayersState.find(p => p.userName === name);
+		remakePlayerSocketIDs.forEach(id => {
+			io.sockets.sockets[id].leave(game.general.uid);
+		});
+		remakePlayerNames.forEach(name => {
+			const play = game.publicPlayersState.find(p => p.userName === name);
 
-				play.leftGame = true;
-			});
-			sendInProgressGameUpdate(game);
+			play.leftGame = true;
+		});
+		sendInProgressGameUpdate(game);
 
-			newGame.gameState = {
-				previousElectedGovernment: [],
-				undrawnPolicyCount: 17,
-				discardedPolicyCount: 0,
-				presidentIndex: -1
-			};
-
-			newGame.chats = [];
-			newGame.general.uid = `${game.general.uid}Remake`;
-			newGame.general.electionCount = 0;
-			newGame.timeCreated = new Date().getTime();
-			newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
-				userName: player.userName,
-				customCardback: player.customCardback,
-				customCardbackUid: player.customCardbackUid,
-				connected: player.connected,
-				isRemakeVoting: false,
-				cardStatus: {
-					cardDisplayed: false,
-					isFlipped: false,
-					cardFront: 'secretrole',
-					cardBack: {}
-				}
-			}));
-			newGame.playersState = [];
-			newGame.cardFlingerState = [];
-			newGame.trackState = {
-				liberalPolicyCount: 0,
-				fascistPolicyCount: 0,
-				electionTrackerCount: 0,
-				enactedPolicies: []
-			};
-			newGame.private = {
-				reports: {},
-				unSeatedGameChats: [],
-				lock: {}
-			};
-
-			games.push(newGame);
-			sendGameList();
-			remakePlayerSocketIDs.forEach((id, index) => {
-				handleUserLeaveGame(io.sockets.sockets[id], {
-					uid: game.general.uid,
-					userName: remakePlayerNames[index],
-					isSeated: true,
-					isRemake: true
-				});
-				sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-			});
-			checkStartConditions(newGame);
+		newGame.gameState = {
+			previousElectedGovernment: [],
+			undrawnPolicyCount: 17,
+			discardedPolicyCount: 0,
+			presidentIndex: -1
 		};
+
+		newGame.chats = [];
+		newGame.general.uid = `${game.general.uid}Remake`;
+		newGame.general.electionCount = 0;
+		newGame.timeCreated = new Date().getTime();
+		newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
+			userName: player.userName,
+			customCardback: player.customCardback,
+			customCardbackUid: player.customCardbackUid,
+			connected: player.connected,
+			isRemakeVoting: false,
+			cardStatus: {
+				cardDisplayed: false,
+				isFlipped: false,
+				cardFront: 'secretrole',
+				cardBack: {}
+			}
+		}));
+		newGame.playersState = [];
+		newGame.cardFlingerState = [];
+		newGame.trackState = {
+			liberalPolicyCount: 0,
+			fascistPolicyCount: 0,
+			electionTrackerCount: 0,
+			enactedPolicies: []
+		};
+		newGame.private = {
+			reports: {},
+			unSeatedGameChats: [],
+			lock: {}
+		};
+
+		games.push(newGame);
+		sendGameList();
+		remakePlayerSocketIDs.forEach((id, index) => {
+			handleUserLeaveGame(io.sockets.sockets[id], {
+				uid: game.general.uid,
+				userName: remakePlayerNames[index],
+				isSeated: true,
+				isRemake: true
+			});
+			sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
+		});
+		checkStartConditions(newGame);
+	};
 	const cancellTourny = () => {
 		// todo
 	};
@@ -868,8 +871,8 @@ module.exports.handleUpdatedRemakeGame = data => {
 	player.isRemakeVoting = data.remakeStatus;
 
 	if (data.remakeStatus) {
-		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName),
-			remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName);
+		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
 		chat.chat.push({ text: ` has voted to ${remakeText} this game. (${remakePlayerCount}/${minimumRemakeVoteCount})` });
 		publicPlayer.isRemaking = true;
@@ -880,9 +883,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
-						? 'second'
-						: 'seconds'}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
+						game.general.remakeCount === 1 ? 'second' : 'seconds'
+					}.`;
 					sendInProgressGameUpdate(game);
 					game.general.remakeCount--;
 				} else {
@@ -920,8 +923,8 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 		return;
 	}
 
-	const game = games.find(el => el.general.uid === data.uid),
-		player = game.publicPlayersState.find(player => player.userName === passport.user);
+	const game = games.find(el => el.general.uid === data.uid);
+	const player = game.publicPlayersState.find(player => player.userName === passport.user);
 
 	if ((player && player.isDead && !game.gameState.isCompleted) || (player && player.leftGame)) {
 		return;
@@ -961,8 +964,8 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 		});
 	}
 
-	const user = userList.find(u => data.userName === u.userName),
-		color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
+	const user = userList.find(u => data.userName === u.userName);
+	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
 
 	generalChatCount++;
 	data.time = new Date();
@@ -1003,55 +1006,55 @@ module.exports.handleModerationAction = (socket, data) => {
 		return;
 	}
 
-	const isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user),
-		affectedSocketId = Object.keys(io.sockets.sockets).find(
-			socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
-		);
+	const isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user);
+	const affectedSocketId = Object.keys(io.sockets.sockets).find(
+		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
+	);
 
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
 		const modaction = new ModAction({
-				date: new Date(),
-				modUserName: passport.user,
-				userActedOn: data.userName,
-				modNotes: data.comment,
-				ip: data.ip,
-				actionTaken: data.action
-			}),
-			logOutUser = username => {
-				const bannedUserlistIndex = userList.findIndex(user => user.userName === data.userName);
+			date: new Date(),
+			modUserName: passport.user,
+			userActedOn: data.userName,
+			modNotes: data.comment,
+			ip: data.ip,
+			actionTaken: data.action
+		});
+		const logOutUser = username => {
+			const bannedUserlistIndex = userList.findIndex(user => user.userName === data.userName);
 
-				if (io.sockets.sockets[affectedSocketId]) {
-					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-				}
+			if (io.sockets.sockets[affectedSocketId]) {
+				io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+			}
 
-				if (bannedUserlistIndex >= 0) {
-					userList.splice(bannedUserlistIndex, 1);
-				}
-			},
-			banAccount = username => {
-				if (!ADMINS.includes(username) && (!MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
-					Account.findOne({ username })
-						.then(account => {
-							if (account) {
-								account.hash = crypto.randomBytes(20).toString('hex');
-								account.salt = crypto.randomBytes(20).toString('hex');
-								account.isBanned = true;
-								account.save(() => {
-									const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
+			if (bannedUserlistIndex >= 0) {
+				userList.splice(bannedUserlistIndex, 1);
+			}
+		};
+		const banAccount = username => {
+			if (!ADMINS.includes(username) && (!MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
+				Account.findOne({ username })
+					.then(account => {
+						if (account) {
+							account.hash = crypto.randomBytes(20).toString('hex');
+							account.salt = crypto.randomBytes(20).toString('hex');
+							account.isBanned = true;
+							account.save(() => {
+								const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
 
-									bannedAccountGeneralChats.reverse().forEach(chat => {
-										generalChats.list.splice(generalChats.list.indexOf(chat), 1);
-									});
-									logOutUser(username);
-									io.sockets.emit('generalChats', generalChats);
+								bannedAccountGeneralChats.reverse().forEach(chat => {
+									generalChats.list.splice(generalChats.list.indexOf(chat), 1);
 								});
-							}
-						})
-						.catch(err => {
-							console.log(err, 'ban user err');
-						});
-				}
-			};
+								logOutUser(username);
+								io.sockets.emit('generalChats', generalChats);
+							});
+						}
+					})
+					.catch(err => {
+						console.log(err, 'ban user err');
+					});
+			}
+		};
 
 		modaction.save();
 		switch (data.action) {
@@ -1073,18 +1076,18 @@ module.exports.handleModerationAction = (socket, data) => {
 				break;
 			case 'broadcast':
 				const discordBroadcastBody = JSON.stringify({
-						content: `Text: ${data.comment}\nMod: ${passport.user}`
-					}),
-					discordBroadcastOptions = {
-						hostname: 'discordapp.com',
-						path: process.env.DISCORDBROADCASTURL,
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							'Content-Length': Buffer.byteLength(discordBroadcastBody)
-						}
-					},
-					broadcastReq = https.request(discordBroadcastOptions);
+					content: `Text: ${data.comment}\nMod: ${passport.user}`
+				});
+				const discordBroadcastOptions = {
+					hostname: 'discordapp.com',
+					path: process.env.DISCORDBROADCASTURL,
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': Buffer.byteLength(discordBroadcastBody)
+					}
+				};
+				const broadcastReq = https.request(discordBroadcastOptions);
 
 				broadcastReq.end(discordBroadcastBody);
 				games.forEach(game => {
@@ -1249,13 +1252,13 @@ module.exports.handleModerationAction = (socket, data) => {
 					}
 				} else if (isSuperMod) {
 					const setType = /setRWins/.test(data.action)
-							? 'rainbowWins'
-							: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses',
-						number =
-							setType === 'wins'
-								? data.action.substr(7)
-								: setType === 'losses' ? data.action.substr(9) : setType === 'rainbowWins' ? data.action.substr(8) : data.action.substr(10),
-						isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
+						? 'rainbowWins'
+						: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses';
+					const number =
+						setType === 'wins'
+							? data.action.substr(7)
+							: setType === 'losses' ? data.action.substr(9) : setType === 'rainbowWins' ? data.action.substr(8) : data.action.substr(10);
+					const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
 
 					if (!isNaN(parseInt(number))) {
 						Account.findOne({ username: data.userName })
@@ -1275,27 +1278,27 @@ module.exports.handleModerationAction = (socket, data) => {
 };
 
 module.exports.handlePlayerReport = data => {
-	const mods = MODERATORS.concat(ADMINS),
-		playerReport = new PlayerReport({
-			date: new Date(),
-			gameUid: data.uid,
-			reportingPlayer: data.userName,
-			reportedPlayer: data.reportedPlayer,
-			reason: data.reason,
-			comment: data.comment
-		}),
-		body = JSON.stringify({
-			content: `Game UID: ${data.uid.substr(0, 6)}\nReported player: ${data.reportedPlayer}\nReason: ${data.reason}\nComment: ${data.comment}`
-		}),
-		options = {
-			hostname: 'discordapp.com',
-			path: process.env.DISCORDURL,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Content-Length': Buffer.byteLength(body)
-			}
-		};
+	const mods = MODERATORS.concat(ADMINS);
+	const playerReport = new PlayerReport({
+		date: new Date(),
+		gameUid: data.uid,
+		reportingPlayer: data.userName,
+		reportedPlayer: data.reportedPlayer,
+		reason: data.reason,
+		comment: data.comment
+	});
+	const body = JSON.stringify({
+		content: `Game UID: ${data.uid.substr(0, 6)}\nReported player: ${data.reportedPlayer}\nReason: ${data.reason}\nComment: ${data.comment}`
+	});
+	const options = {
+		hostname: 'discordapp.com',
+		path: process.env.DISCORDURL,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Length': Buffer.byteLength(body)
+		}
+	};
 
 	PlayerReport.findOne({ gameUid: data.uid, reportingPlayer: data.userName }).then(report => {
 		if (!report) {
@@ -1349,15 +1352,15 @@ module.exports.checkUserStatus = socket => {
 	const { passport } = socket.handshake.session;
 
 	if (passport && Object.keys(passport).length) {
-		const { user } = passport,
-			{ sockets } = io.sockets,
-			game = games.find(game => game.publicPlayersState.find(player => player.userName === user && !player.leftGame)),
-			oldSocketID = Object.keys(sockets).find(
-				socketID =>
-					sockets[socketID].handshake.session.passport &&
-					Object.keys(sockets[socketID].handshake.session.passport).length &&
-					(sockets[socketID].handshake.session.passport.user === user && socketID !== socket.id)
-			);
+		const { user } = passport;
+		const { sockets } = io.sockets;
+		const game = games.find(game => game.publicPlayersState.find(player => player.userName === user && !player.leftGame));
+		const oldSocketID = Object.keys(sockets).find(
+			socketID =>
+				sockets[socketID].handshake.session.passport &&
+				Object.keys(sockets[socketID].handshake.session.passport).length &&
+				(sockets[socketID].handshake.session.passport.user === user && socketID !== socket.id)
+		);
 
 		if (oldSocketID && sockets[oldSocketID]) {
 			sockets[oldSocketID].emit('manualDisconnection');
