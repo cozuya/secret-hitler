@@ -91,6 +91,7 @@ const startCountdown = game => {
 				});
 
 				games.splice(games.indexOf(game), 1);
+				gameA.general.tournyInfo.round = gameB.general.tournyInfo.round = 1;
 				games.push(gameA, gameB);
 				startGame(gameA);
 				startGame(gameB);
@@ -883,9 +884,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
-						game.general.remakeCount === 1 ? 'second' : 'seconds'
-					}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
+						? 'second'
+						: 'seconds'}.`;
 					sendInProgressGameUpdate(game);
 					game.general.remakeCount--;
 				} else {

@@ -38,6 +38,8 @@ general
 	isTourny bool
 	tournyInfo
 		isPretourny bool
+		round number
+		showOtherTournyTable bool
 		queuedPlayers array of objects
 seatedPlayers array 5-10
 	obj

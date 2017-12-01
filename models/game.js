@@ -9,6 +9,8 @@ const mongoose = require('mongoose'),
 		winningTeam: String,
 		isRainbow: Boolean,
 		rebalance69p: Boolean,
+		isTournyFirstRound: Boolean,
+		isTournySecondRound: Boolean,
 		chats: Array
 	});
 

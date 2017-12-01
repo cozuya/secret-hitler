@@ -1,84 +1,88 @@
-const { sendInProgressGameUpdate } = require('../util.js'),
-	{ userList } = require('../models.js'),
-	{ sendUserList, sendGameList } = require('../user-requests.js'),
-	Account = require('../../../models/account.js'),
-	Game = require('../../../models/game'),
-	buildEnhancedGameSummary = require('../../../models/game-summary/buildEnhancedGameSummary'),
-	{ updateProfiles } = require('../../../models/profile/utils'),
-	debug = require('debug')('game:summary'),
-	saveGame = game => {
-		const summary = game.private.summary.publish(),
-			gameToSave = new Game({
-				uid: game.general.uid,
-				date: new Date(),
-				chats: game.chats,
-				winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => ({
-					userName: player.userName,
-					team: player.role.team,
-					role: player.role.cardName
-				})),
-				losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => ({
-					userName: player.userName,
-					team: player.role.team,
-					role: player.role.cardName
-				})),
-				winningTeam: game.gameState.isCompleted,
-				playerCount: game.general.playerCount,
-				rebalance69p: game.general.rebalance69p
-			});
+const { sendInProgressGameUpdate } = require('../util.js');
+const { userList } = require('../models.js');
+const { sendUserList, sendGameList } = require('../user-requests.js');
+const Account = require('../../../models/account.js');
+const Game = require('../../../models/game');
+const buildEnhancedGameSummary = require('../../../models/game-summary/buildEnhancedGameSummary');
+const { updateProfiles } = require('../../../models/profile/utils');
+const debug = require('debug')('game:summary');
+const saveGame = game => {
+	const summary = game.private.summary.publish();
+	const gameToSave = new Game({
+		uid: game.general.uid,
+		date: new Date(),
+		chats: game.chats,
+		winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => ({
+			userName: player.userName,
+			team: player.role.team,
+			role: player.role.cardName
+		})),
+		losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => ({
+			userName: player.userName,
+			team: player.role.team,
+			role: player.role.cardName
+		})),
+		winningTeam: game.gameState.isCompleted,
+		playerCount: game.general.playerCount,
+		rebalance69p: game.general.rebalance69p,
+		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
+		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2
+	});
 
-		let enhanced;
+	let enhanced;
 
-		try {
-			if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
-				enhanced = buildEnhancedGameSummary(summary.toObject());
-				updateProfiles(enhanced, { cache: true });
-				summary.save();
-			} else {
-				console.log(summary, 'problem with summary');
-				console.log(summary.toObject(), 'problem with summary');
-			}
-		} catch (error) {
-			console.log(error, 'error in enhanced/end-game');
+	try {
+		if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
+			enhanced = buildEnhancedGameSummary(summary.toObject());
+			updateProfiles(enhanced, { cache: true });
+			summary.save();
+		} else {
+			console.log(summary, 'problem with summary');
+			console.log(summary.toObject(), 'problem with summary');
 		}
+	} catch (error) {
+		console.log(error, 'error in enhanced/end-game');
+	}
 
-		debug('Saving game: %O', summary);
-		gameToSave.save();
-	};
+	debug('Saving game: %O', summary);
+	gameToSave.save();
+};
 
 /**
  * @param {object} game - game to act on.
  * @param {string} winningTeamName - name of the team that won this game.
  */
 module.exports.completeGame = (game, winningTeamName) => {
-	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName),
-		{ seatedPlayers } = game.private,
-		{ publicPlayersState } = game,
-		chat = {
-			gameChat: true,
-			timestamp: new Date(),
-			chat: [
-				{
-					text: winningTeamName === 'fascist' ? 'Fascists' : 'Liberals',
-					type: winningTeamName === 'fascist' ? 'fascist' : 'liberal'
-				},
-				{ text: ' win the game.' }
-			]
-		};
+	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
+	const { seatedPlayers } = game.private;
+	const { publicPlayersState } = game;
+	const chat = {
+		gameChat: true,
+		timestamp: new Date(),
+		chat: [
+			{
+				text: winningTeamName === 'fascist' ? 'Fascists' : 'Liberals',
+				type: winningTeamName === 'fascist' ? 'fascist' : 'liberal'
+			},
+			{ text: ' win the game.' }
+		]
+	};
 
-	winningPrivatePlayers.forEach((player, index) => {
-		publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
-
-		publicPlayersState.find(play => play.userName === player.userName).isConfetti = true;
-		player.wonGame = true;
-	});
-
-	setTimeout(() => {
+	if (!(game.general.isTourny && game.general.tournyInfo && game.general.tournyInfo.round === 1)) {
 		winningPrivatePlayers.forEach((player, index) => {
-			publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
+			publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
+
+			publicPlayersState.find(play => play.userName === player.userName).isConfetti = true;
+			player.wonGame = true;
 		});
-		sendInProgressGameUpdate(game);
-	}, 15000);
+
+		setTimeout(() => {
+			winningPrivatePlayers.forEach((player, index) => {
+				publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
+			});
+			sendInProgressGameUpdate(game);
+		}, 15000);
+	}
 
 	game.general.status = winningTeamName === 'fascist' ? 'Fascists win the game.' : 'Liberals win the game.';
 	game.gameState.isCompleted = winningTeamName;
