@@ -110,6 +110,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 			username: { $in: seatedPlayers.map(player => player.userName) }
 		})
 			.then(results => {
+				// todo add tourny save
 				const winningPlayerNames = winningPrivatePlayers.map(player => player.userName),
 					isRainbow = game.general.rainbowgame;
 
@@ -160,5 +161,30 @@ module.exports.completeGame = (game, winningTeamName) => {
 			.catch(err => {
 				console.log(err, 'error in updating accounts at end of game');
 			});
+	}
+
+	if (game.general.isTourny) {
+		if (game.general.tournyInfo.round === 1) {
+			const tableUidLastLetter = game.general.uid.charAt(game.general.uid.length - 1);
+			const otherGame = games.find(game => ((game.general.uid.charAt(game.general.uid.length - 1) === tableUidLastLetter) === 'A' ? 'B' : 'A'));
+
+			if (otherGame.gameState.isCompleted) {
+				// todo add make new final table game object, assign sockets, delete A and B
+			} else {
+				game.general.tournyInfo.showOtherTournyTable = true;
+				game.chats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'This tournament game has finished first.  Winning players will be pulled into the final round when it starts.'
+						}
+					]
+				});
+				sendInProgressGameUpdate(game);
+			}
+		} else {
+			// todo add crown stuff
+		}
 	}
 };
