@@ -178,6 +178,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 				let gamePause = 10;
 
 				finalGame.general.uid = `${uid.substr(0, uid.length - 1)}Final`;
+				finalGame.general.timeCreated = new Date();
 				finalGame.gameState = {
 					previousElectedGovernment: [],
 					undrawnPolicyCount: 17,
@@ -194,12 +195,42 @@ module.exports.completeGame = (game, winningTeamName) => {
 						gamePause--;
 					} else {
 						clearInterval(countDown);
-						finalGame.tournyInfo.round = 2;
+						const winningPlayerSocketIds = Object.keys(io.sockets.sockets).filter(
+							socketId =>
+								io.sockets.sockets[socketId].handshake.session.passport &&
+								winningPrivatePlayers.map(player => player.userName).includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+						);
+
+						const otherGameWinningPlayerSocketIds = Object.keys(io.sockets.sockets).filter(
+							socketId =>
+								io.sockets.sockets[socketId].handshake.session.passport &&
+								otherGame.general.tournyInfo.winningPlayersFirstCompletedGame
+									.map(player => player.userName)
+									.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+						);
+
+						const socketIds = winningPlayerSocketIds.concat(otherGameWinningPlayerSocketIds);
+
+						socketIds.forEach(id => {
+							const socket = io.sockets.sockets[id];
+
+							Object.keys(socket.rooms).forEach(roomUid => {
+								socket.leave(roomUid);
+							});
+							socket.join(finalGame.general.uid);
+							socket.emit('joinGameRedirect', finalGame.general.uid);
+						});
+
+						finalGame.general.tournyInfo.round = 2;
 						finalGame.publicPlayersState = otherGame.general.tournyInfo.winningPlayersFirstCompletedGame.concat(
 							game.private.seatedPlayers.filter(player => player.role.team === winningTeamName)
 						);
+						console.log(winningPlayerSocketIds.length);
 						console.log(finalGame);
 						console.log(finalGame.publicPlayersState);
+						games.push(finalGame);
+						startGame(finalGame);
+						sendGameList();
 					}
 				}, 1000);
 
@@ -215,7 +246,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 						}
 					]
 				});
-				game.general.tournyInfo.winningPlayersFirstCompletedGame = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
+				game.general.tournyInfo.winningPlayersFirstCompletedGame = _.cloneDeep(game.private.seatedPlayers).filter(
+					player => player.role.team === winningTeamName
+				);
 				sendInProgressGameUpdate(game);
 			}
 		} else {
