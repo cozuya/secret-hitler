@@ -163,7 +163,7 @@ export default class Creategame extends React.Component {
 					disableChat: this.state.disablechat,
 					isTourny: this.state.isTourny,
 					tournyInfo: {
-						isPretourny: true,
+						round: 0,
 						queuedPlayers: [
 							{
 								userName: userInfo.userName,

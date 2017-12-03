@@ -79,6 +79,7 @@ const startCountdown = game => {
 						socket.leave(roomUid);
 					});
 					socket.join(gameA.general.uid);
+					socket.emit('joinGameRedirect', gameA.general.uid);
 				});
 
 				BSocketIds.forEach(id => {
@@ -88,6 +89,7 @@ const startCountdown = game => {
 						socket.leave(roomUid);
 					});
 					socket.join(gameB.general.uid);
+					socket.emit('joinGameRedirect', gameB.general.uid);
 				});
 
 				games.splice(games.indexOf(game), 1);
@@ -248,13 +250,13 @@ const handleUserLeaveGame = (socket, data) => {
 			}
 		}
 
-		if (game.general.isTourny && game.general.tournyInfo.isPretourny) {
+		if (game.general.isTourny && game.general.tournyInfo.round === 0) {
 			playerLeavePretourny(game, data.userName);
 		}
 
 		if (
-			(!game.publicPlayersState.length && !(game.general.isTourny && game.general.tournyInfo.isPretourny)) ||
-			(game.general.isTourny && game.general.tournyInfo.isPretourny && !game.general.tournyInfo.queuedPlayers.length)
+			(!game.publicPlayersState.length && !(game.general.isTourny && game.general.tournyInfo.round === 0)) ||
+			(game.general.isTourny && game.general.tournyInfo.round === 0 && !game.general.tournyInfo.queuedPlayers.length)
 		) {
 			io.sockets.in(data.uid).emit('gameUpdate', {});
 			games.splice(games.indexOf(game), 1);
@@ -884,9 +886,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
-						? 'second'
-						: 'seconds'}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
+						game.general.remakeCount === 1 ? 'second' : 'seconds'
+					}.`;
 					sendInProgressGameUpdate(game);
 					game.general.remakeCount--;
 				} else {

@@ -70,6 +70,8 @@ sort userlist for crowns
 remove crown after 3 hours
 fix leave game modal in pretourny
 players seating in a new game will be looped through all pretournies and removed
+fix ui for gamelist for tournies
+check that gamestart times is right for final
 
 version 1.0
 convert to webpack/create-react-app for builds - will resolve safari problems

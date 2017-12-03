@@ -440,6 +440,14 @@ class Gamechat extends React.Component {
 						</div>
 					</MenuButton>
 				);
+			},
+			routeToOtherTournyTable = e => {
+				e.preventDefault();
+				const { uid } = gameInfo.general;
+				const tableUidLastLetter = uid.charAt(gameInfo.general.uid.length - 1);
+				const { hash } = window.location;
+
+				window.location.hash = tableUidLastLetter === 'A' ? `${hash.substr(0, hash.length - 1)}B` : `${hash.substr(0, hash.length - 1)}A`;
 			};
 
 		return (
@@ -471,6 +479,12 @@ class Gamechat extends React.Component {
 							onClick={this.handleChatLockClick}
 						/>
 					)}
+					{gameInfo.general.tournyInfo &&
+						gameInfo.general.tournyInfo.showOtherTournyTable && (
+							<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
+								Observe other tournament table
+							</button>
+						)}
 					<div className="right menu">
 						<WhiteListButton />
 						<WatchReplayButton />

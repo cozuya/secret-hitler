@@ -1,11 +1,14 @@
 const { sendInProgressGameUpdate } = require('../util.js');
-const { userList } = require('../models.js');
+const { userList, games } = require('../models.js');
 const { sendUserList, sendGameList } = require('../user-requests.js');
 const Account = require('../../../models/account.js');
 const Game = require('../../../models/game');
 const buildEnhancedGameSummary = require('../../../models/game-summary/buildEnhancedGameSummary');
 const { updateProfiles } = require('../../../models/profile/utils');
+const startGame = require('./start-game.js');
 const debug = require('debug')('game:summary');
+const _ = require('lodash');
+
 const saveGame = game => {
 	const summary = game.private.summary.publish();
 	const gameToSave = new Game({
@@ -165,10 +168,41 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	if (game.general.isTourny) {
 		if (game.general.tournyInfo.round === 1) {
-			const tableUidLastLetter = game.general.uid.charAt(game.general.uid.length - 1);
-			const otherGame = games.find(game => ((game.general.uid.charAt(game.general.uid.length - 1) === tableUidLastLetter) === 'A' ? 'B' : 'A'));
+			const { uid } = game.general;
+			const tableUidLastLetter = uid.charAt(uid.length - 1);
+			const otherUid = tableUidLastLetter === 'A' ? `${uid.substr(0, uid.length - 1)}B` : `${uid.substr(0, uid.length - 1)}A`;
+			const otherGame = games.find(g => g.general.uid === otherUid);
 
 			if (otherGame.gameState.isCompleted) {
+				const finalGame = _.cloneDeep(game);
+				let gamePause = 10;
+
+				finalGame.general.uid = `${uid.substr(0, uid.length - 1)}Final`;
+				finalGame.gameState = {
+					previousElectedGovernment: [],
+					undrawnPolicyCount: 17,
+					discardedPolicyCount: 0,
+					presidentIndex: -1,
+					isStarted: true
+				};
+
+				const countDown = setInterval(() => {
+					if (gamePause) {
+						game.general.status = otherGame.general.status = `Final game starts in ${gamePause} ${gamePause === 1 ? 'second' : 'seconds'}.`;
+						sendInProgressGameUpdate(game);
+						sendInProgressGameUpdate(otherGame);
+						gamePause--;
+					} else {
+						clearInterval(countDown);
+						finalGame.tournyInfo.round = 2;
+						finalGame.publicPlayersState = otherGame.general.tournyInfo.winningPlayersFirstCompletedGame.concat(
+							game.private.seatedPlayers.filter(player => player.role.team === winningTeamName)
+						);
+						console.log(finalGame);
+						console.log(finalGame.publicPlayersState);
+					}
+				}, 1000);
+
 				// todo add make new final table game object, assign sockets, delete A and B
 			} else {
 				game.general.tournyInfo.showOtherTournyTable = true;
@@ -181,6 +215,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						}
 					]
 				});
+				game.general.tournyInfo.winningPlayersFirstCompletedGame = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
 				sendInProgressGameUpdate(game);
 			}
 		} else {

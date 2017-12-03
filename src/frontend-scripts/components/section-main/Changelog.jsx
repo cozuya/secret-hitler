@@ -13,14 +13,18 @@ const Changelog = () => (
 		</div>
 		<h3>New feature: tournaments</h3>
 		<p>
-			Tournaments on SH.IO consist of players queueing up until there are twice as many players as the tournament creator has created, and then splitting into
-			two tables. The winners of each game then play a 2nd game immediately after the 2nd table completes its game.
+			Tournaments on SH.IO consist of players queueing up until there are enough players to have 2 games going as once, and then splitting into two tables. The
+			winners of each game then play a 2nd game immediately after the 2nd table completes its game.
 		</p>
 		<p>There is some new UI here - when making a tournament in the create game panel, the slider turns into choosing a 14, 16, or 18 player tournament.</p>
-		<p>When you queue for a tournament, you can leave the table - you will be pulled into the tournament when it starts.</p>
+		<p>
+			When you queue for a tournament, you can leave the table - you will be pulled into the tournament when it starts. Joining another game or disconnecting
+			removes you from the queue.
+		</p>
 		<p>
 			The remake game functionality in tournaments now turns into cancel tournament. If someone afks in a tournament, there is no choice but to cancel both
-			tables when remake is made. Please have the courtesy of doing so so that the other table isn't stuck playing a dead game.
+			tables when remake is made. Please have the courtesy of doing so so that the other table isn't stuck playing a dead game. FYI: moderators are going to be
+			very upset with tournament afkers..
 		</p>
 		<p>
 			Winners of tournaments get a cool crown icon next to their name! And are sorted to the top of the userList under mods. These last for 3 hours from
@@ -192,7 +196,10 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
+				style={{ width: '30%', margin: '0 auto', display: 'block' }}
+				src="/images/em.png"
+			/>
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}

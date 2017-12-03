@@ -70,6 +70,14 @@
 						background: $darkfascistteam !important;
 					}
 				}
+
+				.tourny-button {
+					width: 110px;
+					background: $tourny;
+					&:hover {
+						background: darkgreen !important;
+					}
+				}
 				.button.ui-disabled {
 					opacity: 0.45 !important;
 					box-shadow: none !important;

@@ -37,7 +37,6 @@ general
 	electionCount number, starts at 0
 	isTourny bool
 	tournyInfo
-		isPretourny bool
 		round number
 		showOtherTournyTable bool
 		queuedPlayers array of objects
