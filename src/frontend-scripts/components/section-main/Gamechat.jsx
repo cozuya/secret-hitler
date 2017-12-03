@@ -48,9 +48,14 @@ class Gamechat extends React.Component {
 			$(this.leaveGameModal).modal('hide');
 		});
 
-		$(this.leaveGameModal).on('click', '.leave-tourny.button', () => {
+		$(this.leaveTournyQueueModal).on('click', '.leave-tourny.button', () => {
 			window.location.hash = '#/';
-			$(this.leaveGameModal).modal('hide');
+			$(this.leaveTournyQueueModal).modal('hide');
+		});
+
+		$(this.leaveTournyQueueModal).on('click', '.leave-tourny-queue.button', () => {
+			window.location.hash = '#/';
+			$(this.leaveTournyQueueModal).modal('hide');
 		});
 	}
 
@@ -128,9 +133,6 @@ class Gamechat extends React.Component {
 
 	handleClickedLeaveGame() {
 		const { userInfo, gameInfo } = this.props;
-
-		console.log(userInfo);
-		console.log(gameInfo);
 
 		if (userInfo.isSeated && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
@@ -723,11 +725,8 @@ class Gamechat extends React.Component {
 						this.leaveTournyQueueModal = c;
 					}}
 				>
-					<h2 className="ui header">Would you also like to leave the tournament queue?</h2>
-					<div className="ui green positive inverted leave-tourny button">
-						<i className="checkmark icon" />
-						Leave tournament queue
-					</div>
+					<h2 className="ui header">Leaving this table will leave the tournament queue</h2>
+					<div className="ui red positive inverted leave-tourny-queue button">Leave tournament queue</div>
 				</div>
 				<div
 					className="ui basic fullscreen modal whitelistmodal"

@@ -138,6 +138,16 @@ module.exports.sendGameList = socket => {
 		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
 		excludedPlayerCount: game.general.excludedPlayerCount,
 		isTourny: game.general.isTourny,
+		tournyStatus: (() => {
+			if (game.general.isTourny) {
+				if (game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length) {
+					return {
+						queuedPlayers: game.general.tournyInfo.queuedPlayers.length
+					};
+				}
+			}
+			return null;
+		})(),
 		experiencedMode: game.general.experiencedMode,
 		disableChat: game.general.disableChat,
 		disableGamechat: game.general.disableGamechat,

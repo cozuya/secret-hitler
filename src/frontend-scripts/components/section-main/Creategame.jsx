@@ -139,10 +139,9 @@ export default class Creategame extends React.Component {
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			window.alert('Sorry, this service is currently unavailable.');
 		} else {
-			const uid = this.state.isTourny ? `${generateCombination(2, '', true)}Tournament` : generateCombination(2, '', true),
-				excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
-
-			this.props.socket.emit('addNewGame', {
+			const uid = this.state.isTourny ? `${generateCombination(2, '', true)}Tournament` : generateCombination(2, '', true);
+			const excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
+			const game = {
 				gameState: {
 					previousElectedGovernment: [],
 					undrawnPolicyCount: 17,
@@ -153,7 +152,7 @@ export default class Creategame extends React.Component {
 				general: {
 					whitelistedPlayers: [],
 					uid,
-					name: $creategame.find('div.gamename input').val() || 'New Game',
+					name: $creategame.find('div.gamename input').val() || this.state.isTourny ? 'New Tournament' : 'New Game',
 					flag: $creategame.find('div.flag input').val() || 'none',
 					minPlayersCount: this.state.sliderValues[0],
 					excludedPlayerCount,
@@ -162,23 +161,6 @@ export default class Creategame extends React.Component {
 					experiencedMode: this.state.experiencedmode,
 					disableChat: this.state.disablechat,
 					isTourny: this.state.isTourny,
-					tournyInfo: {
-						round: 0,
-						queuedPlayers: [
-							{
-								userName: userInfo.userName,
-								customCardback: userInfo.gameSettings.customCardback,
-								customCardbackUid: userInfo.gameSettings.customCardbackUid,
-								connected: true,
-								cardStatus: {
-									cardDisplayed: false,
-									isFlipped: false,
-									cardFront: 'secretrole',
-									cardBack: {}
-								}
-							}
-						]
-					},
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
 					blindMode: this.state.blindMode,
@@ -188,7 +170,37 @@ export default class Creategame extends React.Component {
 					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 					electionCount: 0
 				},
-				publicPlayersState: [
+				publicPlayersState: [],
+				playersState: [],
+				cardFlingerState: [],
+				trackState: {
+					liberalPolicyCount: 0,
+					fascistPolicyCount: 0,
+					electionTrackerCount: 0,
+					enactedPolicies: []
+				}
+			};
+
+			if (this.state.isTourny) {
+				game.general.tournyInfo = {
+					round: 0,
+					queuedPlayers: [
+						{
+							userName: userInfo.userName,
+							customCardback: userInfo.gameSettings.customCardback,
+							customCardbackUid: userInfo.gameSettings.customCardbackUid,
+							connected: true,
+							cardStatus: {
+								cardDisplayed: false,
+								isFlipped: false,
+								cardFront: 'secretrole',
+								cardBack: {}
+							}
+						}
+					]
+				};
+			} else {
+				game.publicPlayersState = [
 					{
 						userName: userInfo.userName,
 						customCardback: userInfo.gameSettings.customCardback,
@@ -201,16 +213,10 @@ export default class Creategame extends React.Component {
 							cardBack: {}
 						}
 					}
-				],
-				playersState: [],
-				cardFlingerState: [],
-				trackState: {
-					liberalPolicyCount: 0,
-					fascistPolicyCount: 0,
-					electionTrackerCount: 0,
-					enactedPolicies: []
-				}
-			});
+				];
+			}
+
+			this.props.socket.emit('addNewGame', game);
 		}
 	}
 

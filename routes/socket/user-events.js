@@ -95,6 +95,8 @@ const startCountdown = game => {
 				games.splice(games.indexOf(game), 1);
 				gameA.general.tournyInfo.round = gameB.general.tournyInfo.round = 1;
 				games.push(gameA, gameB);
+				delete gameA.general.tournyInfo.queuedPlayers;
+				delete gameB.general.tournyInfo.queuedPlayers;
 				startGame(gameA);
 				startGame(gameB);
 				sendGameList();
@@ -139,6 +141,10 @@ const checkStartConditions = game => {
 const playerLeavePretourny = (game, playerName) => {
 	const { queuedPlayers } = game.general.tournyInfo;
 
+	if (queuedPlayers.length === 1) {
+		games.splice(games.indexOf(game), 1);
+		return;
+	}
 	queuedPlayers.splice(queuedPlayers.findIndex(player => player.userName === playerName), 1);
 
 	game.chats.push({
@@ -195,7 +201,10 @@ const handleSocketDisconnect = socket => {
 			sendGameList();
 		} else {
 			const tournysPlayerQueuedIn = games.filter(
-				game => game.general.isTourny && game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.includes(passport.user)
+				game =>
+					game.general.isTourny &&
+					game.general.tournyInfo.queuedPlayers &&
+					game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(passport.user)
 			);
 
 			tournysPlayerQueuedIn.forEach(game => {
@@ -358,6 +367,19 @@ module.exports.handleAddNewGame = (socket, data) => {
 
 			data.general.minPlayersCount = data.general.maxPlayersCount = minPlayersCount === 1 ? 14 : minPlayersCount === 2 ? 16 : 18;
 			data.general.status = `Waiting for ${data.general.minPlayersCount - 1} more players..`;
+			data.chats.push({
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: `${username}`,
+						type: 'player'
+					},
+					{
+						text: ` (${data.general.tournyInfo.queuedPlayers.length}/${data.general.maxPlayersCount}) has entered the tournament queue.`
+					}
+				]
+			});
 		}
 
 		user.timeLastGameCreated = currentTime;

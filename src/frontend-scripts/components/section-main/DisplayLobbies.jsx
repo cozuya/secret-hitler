@@ -7,7 +7,7 @@ const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props,
 		gameClasses = () => {
 			let classes = 'browser-row';
-			console.log(game);
+
 			if (game.gameStatus === 'isStarted') {
 				classes += ' inprogress';
 			} else if (game.gameStatus === 'fascist') {
@@ -274,12 +274,16 @@ const DisplayLobbies = props => {
 						<div className="options-column experienced">{optionIcons()}</div>
 					</div>
 					<div className="game-main-bottom-row">
-						<div className="player-icons-column">
-							<div className="player-icons">{playerIcons()}</div>
-						</div>
+						{game.isTourny && game.tournyStatus && game.tournyStatus.queuedPlayers ? (
+							<span className="game-tournament-unstarted">Tournament starting soon..</span>
+						) : (
+							<div className="player-icons-column">
+								<div className="player-icons">{playerIcons()}</div>
+							</div>
+						)}
 						<div className="player-count-column">
 							<span className="seatedcount" style={{ fontWeight: 'bold' }}>
-								{game.seatedCount}{' '}
+								{game.seatedCount || (game.tournyStatus && game.tournyStatus.queuedPlayers)}{' '}
 							</span>
 							<span className="divider">/</span>
 							<span className="allowed-players"> {playerCount()}</span>
