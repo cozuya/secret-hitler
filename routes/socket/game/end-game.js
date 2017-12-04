@@ -5,7 +5,6 @@ const Account = require('../../../models/account.js');
 const Game = require('../../../models/game');
 const buildEnhancedGameSummary = require('../../../models/game-summary/buildEnhancedGameSummary');
 const { updateProfiles } = require('../../../models/profile/utils');
-const startGame = require('./start-game.js');
 const debug = require('debug')('game:summary');
 const _ = require('lodash');
 
@@ -222,14 +221,12 @@ module.exports.completeGame = (game, winningTeamName) => {
 						});
 
 						finalGame.general.tournyInfo.round = 2;
+						finalGame.general.electionCount = 0;
 						finalGame.publicPlayersState = otherGame.general.tournyInfo.winningPlayersFirstCompletedGame.concat(
 							game.private.seatedPlayers.filter(player => player.role.team === winningTeamName)
 						);
-						console.log(winningPlayerSocketIds.length);
-						console.log(finalGame);
-						console.log(finalGame.publicPlayersState);
 						games.push(finalGame);
-						startGame(finalGame);
+						require('./start-game.js')(finalGame); // circular dep.
 						sendGameList();
 					}
 				}, 1000);
@@ -252,6 +249,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 				sendInProgressGameUpdate(game);
 			}
 		} else {
+			console.log('Hello, World!');
 			// todo add crown stuff
 		}
 	}
