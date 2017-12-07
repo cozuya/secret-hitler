@@ -227,6 +227,21 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		max-width: 100%;
 		min-width: 1050px !important;
 	}
+
+	.browser-container > h3 {
+		text-align: center;
+		margin-top: 10px;
+	}
+
+	.browser-filters {
+		justify-content: center;
+
+		> .column {
+			text-align: center;
+			width: 11% !important;
+			padding: 10px 0 !important;
+		}
+	}
 	.browser-header {
 		margin: 5px auto 10px auto;
 		width: 400px;

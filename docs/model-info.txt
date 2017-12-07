@@ -18,6 +18,7 @@ chats array
 	timestamp time
 general
 	name string
+	isRemade bool, so that people can't click remake after its remade
 	minPlayersCount number 5-10
 	maxPlayersCount number 5-10
 	excludedPlayerCount array of numbers
@@ -79,7 +80,7 @@ private
 	timeout object
 	policies array
 	currentElectionPolicies array
-  	privatePassword string
+  privatePassword string
 	unSeatedGameChats array
 		chat string
 		timestamp time

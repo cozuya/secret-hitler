@@ -146,6 +146,7 @@ class Playerlist extends React.Component {
 						{(() => {
 							if (Object.keys(this.props.userList).length) {
 								const { list } = this.props.userList,
+									{ userInfo } = this.props,
 									w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins',
 									l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses',
 									routeToProfile = userName => {
@@ -203,7 +204,13 @@ class Playerlist extends React.Component {
 
 										return b[w] - a[w];
 									})
-									.filter(user => this.state.userListFilter === 'all' || user.wins + user.losses > 49)
+									.filter(
+										user =>
+											(this.state.userListFilter === 'all' || user.wins + user.losses > 49) &&
+											(!user.isPrivate ||
+												(userInfo.userName &&
+													(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))))
+									)
 									.map((user, i) => {
 										const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0),
 											percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '',
@@ -290,6 +297,7 @@ class Playerlist extends React.Component {
 														} else {
 															return (
 																<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+																	{user.isPrivate ? 'P - ' : ''}
 																	{user.userName}
 																</span>
 															);

@@ -29,6 +29,7 @@ $(document).ready(function() {
 			email = $('#signup-email').val(),
 			$loader = $(this).next(),
 			$message = $loader.next(),
+			isPrivate = $('#private-player').is(':checked'),
 			submitErr = function(message) {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
@@ -44,7 +45,8 @@ $(document).ready(function() {
 				username: username,
 				password: password,
 				password2: password2,
-				email: email
+				email: email,
+				isPrivate: isPrivate
 			}),
 			statusCode: {
 				200: function() {

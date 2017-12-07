@@ -304,6 +304,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 			isDead: false,
 			customCardback: data.customCardback,
 			customCardbackUid: data.customCardbackUid,
+			isPrivate: data.isPrivate,
 			cardStatus: {
 				cardDisplayed: false,
 				isFlipped: false,
@@ -869,7 +870,8 @@ module.exports.handleUpdatedRemakeGame = data => {
 		newGame.private = {
 			reports: {},
 			unSeatedGameChats: [],
-			lock: {}
+			lock: {},
+			privatePassword: game.private.privatePassword
 		};
 
 		games.push(newGame);
@@ -911,17 +913,18 @@ module.exports.handleUpdatedRemakeGame = data => {
 					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
 						game.general.remakeCount === 1 ? 'second' : 'seconds'
 					}.`;
-					sendInProgressGameUpdate(game);
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
 					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
+					game.general.isRemade = true;
 					if (game.general.isTourny) {
 						cancellTourny();
 					} else {
 						makeNewGame();
 					}
 				}
+				sendInProgressGameUpdate(game);
 			}, 1000);
 		}
 	} else {
@@ -977,7 +980,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 
 	// Check that they are who they say they are.  Should this do, uh, whatever
 	// the ws equivalent of a 401 unauth is?
-	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length) {
+	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length || data.isPrivate) {
 		return;
 	}
 

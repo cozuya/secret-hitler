@@ -2,7 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import Policies from './Policies.jsx';
 import Dropdown from 'semantic-ui-dropdown';
-import { PLAYERCOLORS } from '../../constants';
+import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS } from '../../constants';
 import PropTypes from 'prop-types';
 
 $.fn.dropdown = Dropdown;
@@ -23,9 +23,11 @@ export default class Players extends React.Component {
 	}
 
 	handlePlayerDoubleClick(e) {
-		this.setState({ reportedPlayer: e.currentTarget.innerText });
-		$(this.reportModal).modal('show');
-		$('.ui.dropdown').dropdown();
+		if (!this.props.gameInfo.general.private) {
+			this.setState({ reportedPlayer: e.currentTarget.innerText });
+			$(this.reportModal).modal('show');
+			$('.ui.dropdown').dropdown();
+		}
 	}
 
 	handlePlayerClick(e) {
@@ -155,7 +157,11 @@ export default class Players extends React.Component {
 						return classes;
 					})()}
 				>
-					{gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
+					{player.isPrivate &&
+					!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)) &&
+					!userInfo.isSeated
+						? 'Anonymous'
+						: gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
 				</div>
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
@@ -233,7 +239,8 @@ export default class Players extends React.Component {
 			!gameInfo.gameState.isTracksFlipped &&
 			gameInfo.publicPlayersState.length < 10 &&
 			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
-			(!gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49))
+			(!gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
+			(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private))
 		) {
 			return gameInfo.general.isTourny ? (
 				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>

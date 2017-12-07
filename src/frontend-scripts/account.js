@@ -26,6 +26,7 @@ export default () => {
 			password2 = $('#signup-password2').val(),
 			$loader = $(this).next(),
 			$message = $loader.next(),
+			isPrivate = $('#private-player').is(':checked'),
 			submitErr = message => {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
@@ -40,7 +41,8 @@ export default () => {
 			data: JSON.stringify({
 				username,
 				password,
-				password2
+				password2,
+				isPrivate
 			}),
 			statusCode: {
 				200() {

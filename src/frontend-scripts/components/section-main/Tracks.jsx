@@ -160,7 +160,8 @@ class Tracks extends React.Component {
 					</div>
 					{userInfo.userName &&
 						userInfo.isSeated &&
-						gameInfo.gameState.isTracksFlipped && (
+						gameInfo.gameState.isTracksFlipped &&
+						!gameInfo.general.isRemade && (
 							<i
 								className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`}
 								onClick={updateRemake}

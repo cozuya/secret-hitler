@@ -25,6 +25,19 @@ block content
 				.eight.wide.column.news
 					h2(style="color: #000").ui.header News
 					p Issues/bugs can be reported #[a(href="/about") here]. Or open a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
+					p Version 0.10.4 released 12-6-2017
+					h3 New feature: private-game-only accounts
+					div(style="text-align: center")
+						img(src="https://i.imgur.com/ULKSqr2.png")
+					p When signing up for an account, you can now make a new type of account - one that can only create and sit in private games. That account name does not appear in the userlist on the right sidebar, cannot use general chat, cannot set custom game names, and when a non-moderator views a game that player is playing in, their real username is obscured. Please use these if you're just visiting. Please note that I'm not condoning breaking the site rules, but this is just easier for everyone..
+					h3 New feature: gamelist checkbox filters
+					p Self explanatory - the increased traffic from our new clover friends have made these necessary.  Because I'm lazy and did this quickly you'll have to redo these every time you revert to the gamelist view, sorry.  I'll make it persist next patch.
+					ul
+						li Bug fix: Players seated in a game that has been remade can no longer hit the remake button, screwing everything up/bouncing between games.
+						li Bug fix: Private games that get remade now correctly transfers over the old game's password, as expected.
+						li Bug fix: Observing a game when someone is executed no longer crashes your browser..
+						li Players in private games can no longer report players.
+						li Game UIDs always start with a capital letter.
 					p Version 0.10.3 released 11-23-2017
 					h3 Bug fix patch:
 					p Chat scrolling fixes again (I hope), bunch of moderator stuff, fix to 7p rebalanced graph (tomorrow).

@@ -54,7 +54,8 @@ export default class Generalchat extends React.Component {
 		if (inputValue && inputValue.length < 300) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
-				chat: inputValue
+				chat: inputValue,
+				isPrivate: this.props.userInfo.gameSettings.isPrivate
 			});
 
 			this.chatInput.value = '';
@@ -102,10 +103,12 @@ export default class Generalchat extends React.Component {
 	}
 
 	renderInput() {
+		const { userInfo } = this.props;
+
 		return this.state.discordEnabled ? null : (
-			<div className={this.props.userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
+			<div className={userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
 				<textarea
-					disabled={!this.props.userInfo.userName}
+					disabled={!userInfo.userName || (userInfo.gameSettings && userInfo.gameSettings.isPrivate)}
 					className="chat-input-box"
 					placeholder="Send a message"
 					maxLength="300"
@@ -113,7 +116,7 @@ export default class Generalchat extends React.Component {
 					onKeyDown={this.handleKeyPress}
 					ref={c => (this.chatInput = c)}
 				/>
-				{this.props.userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
+				{userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
 				<div className="chat-button">
 					<button onClick={this.handleSubmit} className="ui primary button">
 						Chat

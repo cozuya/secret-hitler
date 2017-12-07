@@ -25,6 +25,7 @@ const mongoose = require('mongoose'),
 			unTimeoutTime: Date,
 			fontSize: Number,
 			fontFamily: String,
+			isPrivate: Boolean,
 			gameNotes: {
 				top: Number,
 				left: Number,

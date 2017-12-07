@@ -126,6 +126,10 @@ export default class Creategame extends React.Component {
 		const $creategame = $('section.creategame'),
 			{ userInfo } = this.props;
 
+		if (userInfo.gameSettings.isPrivate && !this.state.privateShowing) {
+			return;
+		}
+
 		let containsBadWord = false;
 
 		blacklistedWords.forEach(word => {
@@ -152,7 +156,9 @@ export default class Creategame extends React.Component {
 				general: {
 					whitelistedPlayers: [],
 					uid,
-					name: $creategame.find('div.gamename input').val() || this.state.isTourny ? 'New Tournament' : 'New Game',
+					name: userInfo.gameSettings.isPrivate
+						? 'Private Game'
+						: $creategame.find('div.gamename input').val() || this.state.isTourny ? 'New Tournament' : 'New Game',
 					flag: $creategame.find('div.flag input').val() || 'none',
 					minPlayersCount: this.state.sliderValues[0],
 					excludedPlayerCount,
@@ -206,6 +212,7 @@ export default class Creategame extends React.Component {
 						customCardback: userInfo.gameSettings.customCardback,
 						customCardbackUid: userInfo.gameSettings.customCardbackUid,
 						connected: true,
+						isPrivate: userInfo.gameSettings.isPrivate,
 						cardStatus: {
 							cardDisplayed: false,
 							isFlipped: false,
@@ -1156,7 +1163,7 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="rebalance69p" defaultChecked={true} />
 							</div>
 						</div>
-						<div className="eight wide column tourny-container">
+						{/* <div className="eight wide column tourny-container">
 							<h4 className="ui header">Tournament mode</h4>
 							<div
 								className="ui fitted toggle checkbox"
@@ -1166,7 +1173,7 @@ export default class Creategame extends React.Component {
 							>
 								<input type="checkbox" name="tournyconfirm" defaultChecked={false} />
 							</div>
-						</div>
+						</div> */}
 						{/* 
 					<div className="four wide column">
 						<h4 className="ui header">Blind mode - player's names are turned into a random animal to anonymize them.</h4>

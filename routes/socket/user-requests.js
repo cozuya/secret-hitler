@@ -89,6 +89,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,
 					rainbowLosses: account.rainbowLosses,
+					isPrivate: account.gameSettings.isPrivate,
 					status: {
 						type: 'none',
 						gameId: null
