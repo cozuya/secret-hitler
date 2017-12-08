@@ -9,6 +9,18 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.10.5 released 12-9-2017</p>
+		</div>
+		<h3>New feature: presistent gamelist filters</h3>
+		<p>Gamelist filters will now not-reset when leaving the gamelist view and are tied to your account as expected.</p>
+		<h3>New setting and moderation action: converting a player from normal/public to private-game-only</h3>
+		<p>If you'd like to be an anonymous player you can now toggle this gamesetting (cog icon in upper right). This action will log you out.</p>
+		<h3>New gametype: only private-game-only players allowed</h3>
+		<p>
+			For anonymous players, there is a new checkbox while creating a game that only allows other anonymous players to take a seat. Non-anonymous players will
+			not see these games on the list.
+		</p>
+		<div className="ui header">
 			<p>Version 0.10.4 released 12-6-2017</p>
 		</div>
 		<h3>New feature: private-game-only accounts</h3>
@@ -221,10 +233,7 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
-				style={{ width: '30%', margin: '0 auto', display: 'block' }}
-				src="/images/em.png"
-			/>
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}

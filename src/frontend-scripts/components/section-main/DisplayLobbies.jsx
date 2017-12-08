@@ -4,54 +4,54 @@ import PropTypes from 'prop-types';
 import { PLAYERCOLORS } from '../../constants';
 
 const DisplayLobbies = props => {
-	const { game, userInfo, userList } = props,
-		gameClasses = () => {
-			let classes = 'browser-row';
+	const { game, userInfo, userList } = props;
+	const gameClasses = () => {
+		let classes = 'browser-row';
 
-			if (game.gameStatus === 'isStarted') {
-				classes += ' inprogress';
-			} else if (game.gameStatus === 'fascist') {
-				classes += ' fascist';
-			} else if (game.gameStatus === 'liberal') {
-				classes += ' liberal';
-			} else if (game.isTourny) {
-				classes += ' tourny';
-			} else {
-				classes += ' notstarted';
-			}
+		if (game.gameStatus === 'isStarted') {
+			classes += ' inprogress';
+		} else if (game.gameStatus === 'fascist') {
+			classes += ' fascist';
+		} else if (game.gameStatus === 'liberal') {
+			classes += ' liberal';
+		} else if (game.isTourny) {
+			classes += ' tourny';
+		} else {
+			classes += ' notstarted';
+		}
 
-			return classes;
-		},
-		playerCount = () => {
-			const availableSeatCounts = new Array(game.maxPlayersCount)
-				.fill(true)
-				.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
-				.filter(el => el);
+		return classes;
+	};
+	const playerCount = () => {
+		const availableSeatCounts = new Array(game.maxPlayersCount)
+			.fill(true)
+			.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
+			.filter(el => el);
 
-			let str = '';
+		let str = '';
 
-			availableSeatCounts.forEach(el => {
-				if (availableSeatCounts.includes(el)) {
-					if (el === game.maxPlayersCount) {
-						str = `${str}${el}`;
+		availableSeatCounts.forEach(el => {
+			if (availableSeatCounts.includes(el)) {
+				if (el === game.maxPlayersCount) {
+					str = `${str}${el}`;
+				} else {
+					if (availableSeatCounts.includes(el - 1)) {
+						if (!availableSeatCounts.includes(el + 1)) {
+							str = `${str}${el}, `;
+						}
 					} else {
-						if (availableSeatCounts.includes(el - 1)) {
-							if (!availableSeatCounts.includes(el + 1)) {
-								str = `${str}${el}, `;
-							}
+						if (!str.length) {
+							str = availableSeatCounts.includes(el + 1) ? `${el}-` : `${el},`;
 						} else {
-							if (!str.length) {
-								str = availableSeatCounts.includes(el + 1) ? `${el}-` : `${el},`;
-							} else {
-								str = !availableSeatCounts.includes(el + 1) ? `${str}${el},` : (str = `${str}${el}-`);
-							}
+							str = !availableSeatCounts.includes(el + 1) ? `${str}${el},` : (str = `${str}${el}-`);
 						}
 					}
 				}
-			});
+			}
+		});
 
-			return str;
-		};
+		return str;
+	};
 
 	const optionIcons = () => {
 		let rebalance69p,
@@ -63,7 +63,9 @@ const DisplayLobbies = props => {
 			experiencedMode,
 			experiancedModeTooltip,
 			rainbowgame,
-			rainbowgameTooltip;
+			rainbowgameTooltip,
+			privateOnly,
+			privateOnlyTooltip;
 
 		if (game.rebalance69p) {
 			rebalance69p = <div> R </div>;
@@ -78,6 +80,11 @@ const DisplayLobbies = props => {
 				</i>
 			);
 			disableChatTooltip = 'Player Chat Disabled';
+		}
+
+		if (game.privateOnly) {
+			privateOnly = <i className="spy icon" />;
+			privateOnlyTooltip = 'Private game only - only anonymous players may be seated here.';
 		}
 
 		if (game.disableGamechat) {
@@ -110,6 +117,9 @@ const DisplayLobbies = props => {
 				</span>
 				<span data-tooltip={disableGamechatTooltip} data-inverted="">
 					{disableGamechat}
+				</span>
+				<span data-tooltip={privateOnlyTooltip} data-inverted="">
+					{privateOnly}
 				</span>
 				<span data-tooltip={experiancedModeTooltip} data-inverted="">
 					{experiencedMode}

@@ -23,6 +23,7 @@ export default class Creategame extends React.Component {
 			rainbowgame: false,
 			rebalance69p: true,
 			checkedSliderValues: new Array(6).fill(true),
+			privateonlygame: false,
 			isTourny: false,
 			blindMode: false
 		};
@@ -104,6 +105,15 @@ export default class Creategame extends React.Component {
 				self.setState({ rebalance69p: false });
 			}
 		});
+
+		$(this.privateonlygame).checkbox({
+			onChecked() {
+				self.setState({ privateonlygame: true });
+			},
+			onUnchecked() {
+				self.setState({ privateonlygame: false });
+			}
+		});
 	}
 
 	sliderChange(sliderValues) {
@@ -174,6 +184,7 @@ export default class Creategame extends React.Component {
 						? !(excludedPlayerCount.includes(6) && excludedPlayerCount.includes(7) && excludedPlayerCount.includes(9))
 						: false,
 					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
+					privateOnly: this.state.privateonlygame,
 					electionCount: 0
 				},
 				publicPlayersState: [],
@@ -1163,6 +1174,19 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="rebalance69p" defaultChecked={true} />
 							</div>
 						</div>
+						{this.props.userInfo.gameSettings.isPrivate && (
+							<div className="eight wide column privateonlygame">
+								<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
+								<div
+									className="ui fitted toggle checkbox"
+									ref={c => {
+										this.privateonlygame = c;
+									}}
+								>
+									<input type="checkbox" name="privateonlygame" defaultChecked={true} />
+								</div>
+							</div>
+						)}
 						{/* <div className="eight wide column tourny-container">
 							<h4 className="ui header">Tournament mode</h4>
 							<div

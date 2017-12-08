@@ -910,9 +910,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
-						game.general.remakeCount === 1 ? 'second' : 'seconds'
-					}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
+						? 'second'
+						: 'seconds'}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
@@ -1014,12 +1014,18 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 	Account.findOne({ username: socket.handshake.session.passport.user })
 		.then(account => {
+			const currentPrivate = account.gameSettings.isPrivate;
+
 			for (const setting in data) {
 				account.gameSettings[setting] = data[setting];
 			}
 
 			account.save(() => {
-				socket.emit('gameSettings', account.gameSettings);
+				if ((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) {
+					socket.emit('manualDisconnection');
+				} else {
+					socket.emit('gameSettings', account.gameSettings);
+				}
 			});
 		})
 		.catch(err => {
@@ -1174,6 +1180,20 @@ module.exports.handleModerationAction = (socket, data) => {
 					})
 					.catch(err => {
 						console.log(err, 'timeout2 user err');
+					});
+				break;
+			case 'convertToPrivate':
+				Account.findOne({ username: data.userName })
+					.then(account => {
+						if (account) {
+							account.gameSettings.isPrivate = true;
+							account.save(() => {
+								logOutUser(data.userName);
+							});
+						}
+					})
+					.catch(err => {
+						console.log(err, 'private convert user err');
 					});
 				break;
 			case 'clearGenchat':

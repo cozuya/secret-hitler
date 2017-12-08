@@ -36,6 +36,7 @@ general
 	type number refers to fasctrack
 	livingPlayerCount number
 	electionCount number, starts at 0
+	privateOnly bool only anons can play
 	isTourny bool
 	tournyInfo
 		round number

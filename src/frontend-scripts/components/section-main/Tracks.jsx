@@ -40,6 +40,8 @@ class Tracks extends React.Component {
 			experiencedMode,
 			experiancedModeTooltip,
 			rainbowgame,
+			privateOnly,
+			privateOnlyTooltip,
 			rainbowgameTooltip;
 
 		if (game.rebalance69p) {
@@ -55,6 +57,11 @@ class Tracks extends React.Component {
 				</i>
 			);
 			disableChatTooltip = 'Player Chat Disabled';
+		}
+
+		if (game.privateOnly) {
+			privateOnly = <i className="spy icon" />;
+			privateOnlyTooltip = 'Private game only - only anonymous players may be seated here.';
 		}
 
 		if (game.disableGamechat) {
@@ -90,6 +97,9 @@ class Tracks extends React.Component {
 				</span>
 				<span>
 					<Popup inverted trigger={experiencedMode} content={experiancedModeTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={privateOnly} content={privateOnlyTooltip} />
 				</span>
 				<span>
 					<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
