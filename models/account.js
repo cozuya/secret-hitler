@@ -26,6 +26,13 @@ const mongoose = require('mongoose'),
 			fontSize: Number,
 			fontFamily: String,
 			isPrivate: Boolean,
+			gameListFilters: {
+				pub: Boolean,
+				priv: Boolean,
+				unstarted: Boolean,
+				inprogress: Boolean,
+				completed: Boolean
+			},
 			gameNotes: {
 				top: Number,
 				left: Number,

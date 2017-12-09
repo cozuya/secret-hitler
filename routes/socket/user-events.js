@@ -383,6 +383,8 @@ module.exports.handleAddNewGame = (socket, data) => {
 			});
 		}
 
+		console.log(data.general);
+
 		user.timeLastGameCreated = currentTime;
 
 		Account.findOne({ username }).then(account => {
@@ -910,9 +912,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
-						? 'second'
-						: 'seconds'}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
+						game.general.remakeCount === 1 ? 'second' : 'seconds'
+					}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
@@ -1182,11 +1184,13 @@ module.exports.handleModerationAction = (socket, data) => {
 						console.log(err, 'timeout2 user err');
 					});
 				break;
-			case 'convertToPrivate':
+			case 'togglePrivate':
 				Account.findOne({ username: data.userName })
 					.then(account => {
 						if (account) {
-							account.gameSettings.isPrivate = true;
+							const { isPrivate } = account.gameSettings;
+
+							account.gameSettings.isPrivate = !isPrivate;
 							account.save(() => {
 								logOutUser(data.userName);
 							});

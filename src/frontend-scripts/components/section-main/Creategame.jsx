@@ -1174,19 +1174,20 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="rebalance69p" defaultChecked={true} />
 							</div>
 						</div>
-						{this.props.userInfo.gameSettings.isPrivate && (
-							<div className="eight wide column privateonlygame">
-								<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
-								<div
-									className="ui fitted toggle checkbox"
-									ref={c => {
-										this.privateonlygame = c;
-									}}
-								>
-									<input type="checkbox" name="privateonlygame" defaultChecked={true} />
+						{this.props.userInfo.gameSettings &&
+							this.props.userInfo.gameSettings.isPrivate && (
+								<div className="eight wide column privateonlygame">
+									<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
+									<div
+										className="ui fitted toggle checkbox"
+										ref={c => {
+											this.privateonlygame = c;
+										}}
+									>
+										<input type="checkbox" name="privateonlygame" defaultChecked={false} />
+									</div>
 								</div>
-							</div>
-						)}
+							)}
 						{/* <div className="eight wide column tourny-container">
 							<h4 className="ui header">Tournament mode</h4>
 							<div

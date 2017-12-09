@@ -20,6 +20,9 @@ const Changelog = () => (
 			For anonymous players, there is a new checkbox while creating a game that only allows other anonymous players to take a seat. Non-anonymous players will
 			not see these games on the list.
 		</p>
+		<ul>
+			<li>Private, and private only games now have an icon on the gameslist and in games themselves.</li>
+		</ul>
 		<div className="ui header">
 			<p>Version 0.10.4 released 12-6-2017</p>
 		</div>
@@ -233,7 +236,10 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
+				style={{ width: '30%', margin: '0 auto', display: 'block' }}
+				src="/images/em.png"
+			/>
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}

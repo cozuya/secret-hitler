@@ -46,7 +46,7 @@ class Settings extends React.Component {
 
 	componentWillMount() {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
-
+		console.log(gameSettings.isPrivate, 'ip');
 		this.setState({
 			fontChecked: gameSettings.fontFamily,
 			fontSize: gameSettings.fontSize ? gameSettings.fontSize : 16,
@@ -329,11 +329,6 @@ class Settings extends React.Component {
 								<input type="checkbox" name="confetti" checked={this.state.disableConfetti} onChange={() => this.toggleGameSettings('disableConfetti')} />
 								<label />
 							</div>
-							<h4 className="ui header">Private-games-only (this action will log you out)</h4>
-							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
-								<label />
-							</div>
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Disable player colors in chat</h4>
@@ -344,6 +339,11 @@ class Settings extends React.Component {
 									checked={this.state.disablePlayerColorsInChat}
 									onChange={() => this.toggleGameSettings('disablePlayerColorsInChat')}
 								/>
+								<label />
+							</div>
+							<h4 className="ui header">Private-games-only (this action will log you out)</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
 								<label />
 							</div>
 						</div>
@@ -392,8 +392,9 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${this.state
-															.imageUid}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
+															this.state.imageUid
+														}) no-repeat`
 													}}
 												/>
 											);

@@ -64,6 +64,8 @@ const DisplayLobbies = props => {
 			experiancedModeTooltip,
 			rainbowgame,
 			rainbowgameTooltip,
+			priv,
+			privTooltip,
 			privateOnly,
 			privateOnlyTooltip;
 
@@ -84,7 +86,12 @@ const DisplayLobbies = props => {
 
 		if (game.privateOnly) {
 			privateOnly = <i className="spy icon" />;
-			privateOnlyTooltip = 'Private game only - only anonymous players may be seated here.';
+			privateOnlyTooltip = 'Private game only - only anonymous players.';
+		}
+
+		if (!game.privateOnly && game.private) {
+			priv = <i className="lock icon" />;
+			privTooltip = 'Private';
 		}
 
 		if (game.disableGamechat) {
@@ -120,6 +127,9 @@ const DisplayLobbies = props => {
 				</span>
 				<span data-tooltip={privateOnlyTooltip} data-inverted="">
 					{privateOnly}
+				</span>
+				<span data-tooltip={privTooltip} data-inverted="">
+					{priv}
 				</span>
 				<span data-tooltip={experiancedModeTooltip} data-inverted="">
 					{experiencedMode}
