@@ -39,6 +39,10 @@ class Tracks extends React.Component {
 			disableGamechatTooltip,
 			experiencedMode,
 			experiancedModeTooltip,
+			privateOnly,
+			privateOnlyTooltip,
+			priv,
+			privTooltip,
 			rainbowgame,
 			rainbowgameTooltip;
 
@@ -55,6 +59,16 @@ class Tracks extends React.Component {
 				</i>
 			);
 			disableChatTooltip = 'Player Chat Disabled';
+		}
+
+		if (game.privateOnly) {
+			privateOnly = <i className="spy icon" />;
+			privateOnlyTooltip = 'Private game only - only anonymous players may be seated here.';
+		}
+
+		if (!game.privateOnly && game.private) {
+			priv = <i className="lock icon" />;
+			privTooltip = 'Private game.';
 		}
 
 		if (game.disableGamechat) {
@@ -90,6 +104,12 @@ class Tracks extends React.Component {
 				</span>
 				<span>
 					<Popup inverted trigger={experiencedMode} content={experiancedModeTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={privateOnly} content={privateOnlyTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={priv} content={privTooltip} />
 				</span>
 				<span>
 					<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
@@ -160,7 +180,8 @@ class Tracks extends React.Component {
 					</div>
 					{userInfo.userName &&
 						userInfo.isSeated &&
-						gameInfo.gameState.isTracksFlipped && (
+						gameInfo.gameState.isTracksFlipped &&
+						!gameInfo.general.isRemade && (
 							<i
 								className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`}
 								onClick={updateRemake}

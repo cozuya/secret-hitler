@@ -73,7 +73,7 @@ module.exports = () => {
 	// });
 
 	app.post('/account/signup', (req, res, next) => {
-		const { username, password, password2, email } = req.body,
+		const { username, password, password2, email, isPrivate } = req.body,
 			signupIP =
 				req.headers['x-real-ip'] ||
 				req.headers['X-Real-IP'] ||
@@ -86,7 +86,8 @@ module.exports = () => {
 					disablePopups: false,
 					enableTimestamps: false,
 					disableRightSidebarInGame: false,
-					enableDarkTheme: false
+					enableDarkTheme: false,
+					isPrivate
 				},
 				verification: {
 					email: email || '',

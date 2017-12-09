@@ -92,6 +92,7 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 	height: 100%;
 	.ui.header {
 		font-family: inherit; // $headerfont;
+		margin-bottom: 2px;
 	}
 	.notes-container {
 		-webkit-transition: all 0.15s ease-in-out;
@@ -227,8 +228,23 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		max-width: 100%;
 		min-width: 1050px !important;
 	}
+
+	.browser-container > h3 {
+		text-align: center;
+		margin-top: 10px;
+	}
+
+	.browser-filters {
+		justify-content: center;
+
+		> .column {
+			text-align: center;
+			width: 11% !important;
+			padding: 10px 0 2px !important;
+		}
+	}
 	.browser-header {
-		margin: 5px auto 10px auto;
+		margin: 5px auto 5px auto;
 		width: 400px;
 		padding: 10px 0 10px 0;
 	}
@@ -367,7 +383,7 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 	}
 	.options-icons-container {
 		float: right;
-		margin-right: -7px;
+		// margin-right: -27px;
 		span {
 			display: inline-block;
 			min-width: 20px;

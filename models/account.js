@@ -25,6 +25,14 @@ const mongoose = require('mongoose'),
 			unTimeoutTime: Date,
 			fontSize: Number,
 			fontFamily: String,
+			isPrivate: Boolean,
+			gameListFilters: {
+				pub: Boolean,
+				priv: Boolean,
+				unstarted: Boolean,
+				inprogress: Boolean,
+				completed: Boolean
+			},
 			gameNotes: {
 				top: Number,
 				left: Number,

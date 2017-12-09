@@ -9,6 +9,46 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.10.5 released 12-9-2017</p>
+		</div>
+		<h3>New feature: presistent gamelist filters</h3>
+		<p>Gamelist filters will now not-reset when leaving the gamelist view and are tied to your account as expected.</p>
+		<h3>New setting and moderation action: converting a player from normal/public to private-game-only</h3>
+		<p>If you'd like to be an anonymous player you can now toggle this gamesetting (cog icon in upper right). This action will log you out.</p>
+		<h3>New gametype: only private-game-only players allowed</h3>
+		<p>
+			For anonymous players, there is a new checkbox while creating a game that only allows other anonymous players to take a seat. Non-anonymous players will
+			not see these games on the list.
+		</p>
+		<ul>
+			<li>Private, and private only games now have an icon on the gameslist and in games themselves.</li>
+		</ul>
+		<div className="ui header">
+			<p>Version 0.10.4 released 12-6-2017</p>
+		</div>
+		<h3>New feature: private-game-only accounts</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img src="https://i.imgur.com/ULKSqr2.png" />
+		</div>
+		<p>
+			When signing up for an account, you can now make a new type of account - one that can only create and sit in private games. That account name does not
+			appear in the userlist on the right sidebar, cannot use general chat, cannot set custom game names, and when a non-moderator views a game that player is
+			playing in, their real username is obscured. Please use these if you're just visiting. Please note that I'm not condoning breaking the site rules, but
+			this is just easier for everyone..
+		</p>
+		<h3>New feature: gamelist checkbox filters</h3>
+		<p>
+			Self explanatory - the increased traffic from our new clover friends have made these necessary. Because I'm lazy and did this quickly you'll have to redo
+			these every time you revert to the gamelist view, sorry. I'll make it persist next patch.
+		</p>
+		<ul>
+			<li>Bug fix: Players seated in a game that has been remade can no longer hit the remake button, screwing everything up/bouncing between games.</li>
+			<li>Bug fix: Private games that get remade now correctly transfers over the old game's password, as expected.</li>
+			<li>Bug fix: Observing a game when someone is executed no longer crashes your browser..</li>
+			<li>Players in private games can no longer report players.</li>
+			<li>Game UIDs always start with a capital letter.</li>
+		</ul>
+		{/* <div className="ui header">
 			<p>Version 0.11.0 released 12-10-2017</p>
 		</div>
 		<h3>New feature: tournaments</h3>
@@ -30,7 +70,7 @@ const Changelog = () => (
 			Winners of tournaments get a cool crown icon next to their name! And are sorted to the top of the userList under mods. These last for 3 hours from
 			completion of the tournament. And yes, you can get multiple crowns.
 		</p>
-		<p>There's no stat tracking of tournaments yet - that will be the next thing worked on for minor versioning.</p>
+		<p>There's no stat tracking of tournaments yet - that will be the next thing worked on for minor versioning.</p> */}
 		<div className="ui header">
 			<p>Version 0.10.3 released 11-23-2017</p>
 		</div>

@@ -266,6 +266,7 @@ export class App extends React.Component {
 			data = {
 				uid: gameInfo.general.uid,
 				userName: userInfo.userName,
+				isPrivate: userInfo.gameSettings.isPrivate,
 				customCardback: userInfo.gameSettings.customCardback,
 				customCardbackUid: userInfo.gameSettings.customCardbackUid,
 				password

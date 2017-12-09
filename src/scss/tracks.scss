@@ -59,12 +59,14 @@
 	}
 	.option-icons {
 		position: absolute;
-		z-index: 110;
-		left: 440px;
+		z-index: 108;
+		left: 388px;
 		top: 10px;
 		background: #5b9cc4;
 		border: 2px solid lightblue;
 		padding: 4px;
+		width: 165px;
+		height: 31px;
 	}
 	.tracks {
 		transition: all 1s;

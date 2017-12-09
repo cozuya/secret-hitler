@@ -39,13 +39,14 @@ class Settings extends React.Component {
 			enableRightSidebarInGame: '',
 			disablePlayerColorsInChat: '',
 			disablePlayerCardbacks: '',
-			disableConfetti: ''
+			disableConfetti: '',
+			isPrivate: ''
 		};
 	}
 
 	componentWillMount() {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
-
+		console.log(gameSettings.isPrivate, 'ip');
 		this.setState({
 			fontChecked: gameSettings.fontFamily,
 			fontSize: gameSettings.fontSize ? gameSettings.fontSize : 16,
@@ -55,7 +56,8 @@ class Settings extends React.Component {
 			enableRightSidebarInGame: gameSettings.enableRightSidebarInGame,
 			disablePlayerColorsInChat: gameSettings.disablePlayerColorsInChat,
 			disablePlayerCardbacks: gameSettings.disablePlayerCardbacks,
-			disableConfetti: gameSettings.disableConfetti
+			disableConfetti: gameSettings.disableConfetti,
+			isPrivate: gameSettings.isPrivate
 		});
 	}
 
@@ -93,6 +95,7 @@ class Settings extends React.Component {
 				fontFamily: fontName
 			});
 		};
+
 		return (
 			<div className="row font-container">
 				<h4 className="ui header">Body font style</h4>
@@ -182,60 +185,60 @@ class Settings extends React.Component {
 
 	render() {
 		const onDrop = (files, rejectedFile) => {
-				const reader = new FileReader();
+			const reader = new FileReader();
 
-				if (rejectedFile.length) {
-					this.setState({
-						cardbackUploadStatus: 'The file you selected has a wrong extension.  Only png jpg and jpeg are allowed.'
-					});
-					return;
+			if (rejectedFile.length) {
+				this.setState({
+					cardbackUploadStatus: 'The file you selected has a wrong extension.  Only png jpg and jpeg are allowed.'
+				});
+				return;
+			}
+
+			if (files[0].size > 40000) {
+				this.setState({
+					cardbackUploadStatus: 'The file you selected is too big.  A maximum of 40kb is allowed.'
+				});
+				return;
+			}
+
+			reader.onload = () => {
+				this.setState({ preview: reader.result });
+			};
+
+			reader.readAsDataURL(files[0]);
+		};
+		const displayCardbackInfoModal = () => {
+			$('.cardbackinfo')
+				.modal('setting', 'transition', 'scale')
+				.modal('show');
+		};
+		const previewSaveClick = () => {
+			$.ajax({
+				url: '/upload-cardback',
+				method: 'POST',
+				data: {
+					image: this.state.preview
 				}
-
-				if (files[0].size > 40000) {
+			})
+				.then(data => {
 					this.setState({
-						cardbackUploadStatus: 'The file you selected is too big.  A maximum of 40kb is allowed.'
+						cardbackUploadStatus: data.message,
+						isUploaded: data.message === 'You need to have played 50 games to upload a cardback.' ? '' : this.state.preview,
+						preview: ''
 					});
-					return;
-				}
-
-				reader.onload = () => {
-					this.setState({ preview: reader.result });
-				};
-
-				reader.readAsDataURL(files[0]);
-			},
-			displayCardbackInfoModal = () => {
-				$('.cardbackinfo')
-					.modal('setting', 'transition', 'scale')
-					.modal('show');
-			},
-			previewSaveClick = () => {
-				$.ajax({
-					url: '/upload-cardback',
-					method: 'POST',
-					data: {
-						image: this.state.preview
-					}
 				})
-					.then(data => {
-						this.setState({
-							cardbackUploadStatus: data.message,
-							isUploaded: data.message === 'You need to have played 50 games to upload a cardback.' ? '' : this.state.preview,
-							preview: ''
-						});
-					})
-					.catch(err => {
-						console.log(err, 'err');
-					});
-			},
-			previewClearClick = e => {
-				e.preventDefault;
-				this.setState({ preview: '' });
-			},
-			handleSearchProfileChange = e => {
-				this.setState({ profileSearchValue: e.currentTarget.value });
-			},
-			gameSettings = this.props.gameSettings || window.gameSettings;
+				.catch(err => {
+					console.log(err, 'err');
+				});
+		};
+		const previewClearClick = e => {
+			e.preventDefault;
+			this.setState({ preview: '' });
+		};
+		const handleSearchProfileChange = e => {
+			this.setState({ profileSearchValue: e.currentTarget.value });
+		};
+		const gameSettings = this.props.gameSettings || window.gameSettings;
 
 		return (
 			<section className="settings">
@@ -336,6 +339,11 @@ class Settings extends React.Component {
 									checked={this.state.disablePlayerColorsInChat}
 									onChange={() => this.toggleGameSettings('disablePlayerColorsInChat')}
 								/>
+								<label />
+							</div>
+							<h4 className="ui header">Private-games-only (this action will log you out)</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
 								<label />
 							</div>
 						</div>

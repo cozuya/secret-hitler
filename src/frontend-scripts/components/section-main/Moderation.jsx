@@ -250,6 +250,15 @@ export default class Moderation extends React.Component {
 					Delete player cardback and log out
 				</button>
 				<button
+					style={{ width: '100%', background: 'palevioletred' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled convert-button'}
+					onClick={() => {
+						takeModAction('togglePrivate');
+					}}
+				>
+					Toggle player private-only and log out
+				</button>
+				<button
 					style={{ width: '100%', background: 'lightyellow' }}
 					className={playerInputText ? 'ui button' : 'ui button disabled'}
 					onClick={() => {

@@ -304,6 +304,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 			isDead: false,
 			customCardback: data.customCardback,
 			customCardbackUid: data.customCardbackUid,
+			isPrivate: data.isPrivate,
 			cardStatus: {
 				cardDisplayed: false,
 				isFlipped: false,
@@ -381,6 +382,8 @@ module.exports.handleAddNewGame = (socket, data) => {
 				]
 			});
 		}
+
+		console.log(data.general);
 
 		user.timeLastGameCreated = currentTime;
 
@@ -869,7 +872,8 @@ module.exports.handleUpdatedRemakeGame = data => {
 		newGame.private = {
 			reports: {},
 			unSeatedGameChats: [],
-			lock: {}
+			lock: {},
+			privatePassword: game.private.privatePassword
 		};
 
 		games.push(newGame);
@@ -911,17 +915,18 @@ module.exports.handleUpdatedRemakeGame = data => {
 					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
 						game.general.remakeCount === 1 ? 'second' : 'seconds'
 					}.`;
-					sendInProgressGameUpdate(game);
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
 					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
+					game.general.isRemade = true;
 					if (game.general.isTourny) {
 						cancellTourny();
 					} else {
 						makeNewGame();
 					}
 				}
+				sendInProgressGameUpdate(game);
 			}, 1000);
 		}
 	} else {
@@ -977,7 +982,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 
 	// Check that they are who they say they are.  Should this do, uh, whatever
 	// the ws equivalent of a 401 unauth is?
-	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length) {
+	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length || data.isPrivate) {
 		return;
 	}
 
@@ -1011,12 +1016,18 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 	Account.findOne({ username: socket.handshake.session.passport.user })
 		.then(account => {
+			const currentPrivate = account.gameSettings.isPrivate;
+
 			for (const setting in data) {
 				account.gameSettings[setting] = data[setting];
 			}
 
 			account.save(() => {
-				socket.emit('gameSettings', account.gameSettings);
+				if ((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) {
+					socket.emit('manualDisconnection');
+				} else {
+					socket.emit('gameSettings', account.gameSettings);
+				}
 			});
 		})
 		.catch(err => {
@@ -1171,6 +1182,22 @@ module.exports.handleModerationAction = (socket, data) => {
 					})
 					.catch(err => {
 						console.log(err, 'timeout2 user err');
+					});
+				break;
+			case 'togglePrivate':
+				Account.findOne({ username: data.userName })
+					.then(account => {
+						if (account) {
+							const { isPrivate } = account.gameSettings;
+
+							account.gameSettings.isPrivate = !isPrivate;
+							account.save(() => {
+								logOutUser(data.userName);
+							});
+						}
+					})
+					.catch(err => {
+						console.log(err, 'private convert user err');
 					});
 				break;
 			case 'clearGenchat':

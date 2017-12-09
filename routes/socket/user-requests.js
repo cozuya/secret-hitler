@@ -89,6 +89,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,
 					rainbowLosses: account.rainbowLosses,
+					isPrivate: account.gameSettings.isPrivate,
 					status: {
 						type: 'none',
 						gameId: null
@@ -126,6 +127,7 @@ module.exports.sendReplayGameChats = (socket, uid) => {
 };
 
 module.exports.sendGameList = socket => {
+	console.log(games);
 	const formattedGames = games.map(game => ({
 		name: game.general.name,
 		flag: game.general.flag,
@@ -155,6 +157,7 @@ module.exports.sendGameList = socket => {
 		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
 		electionCount: game.general.electionCount,
 		rebalance69p: game.general.rebalance69p,
+		privateOnly: game.general.privateOnly,
 		private: game.general.private,
 		uid: game.general.uid,
 		rainbowgame: game.general.rainbowgame
