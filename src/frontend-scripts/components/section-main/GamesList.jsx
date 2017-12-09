@@ -131,7 +131,7 @@ export class GamesList extends React.Component {
 	}
 
 	renderGameList() {
-		const { gameList } = this.props;
+		const { gameList, userInfo } = this.props;
 		console.log(gameList);
 
 		if (gameList.length) {
@@ -144,10 +144,9 @@ export class GamesList extends React.Component {
 						(!game.private && !pub) ||
 						(game.gameStatus === 'notStarted' && !unstarted) ||
 						(game.gameStatus === 'isStarted' && !inprogress) ||
-						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && !completed)
+						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && !completed) ||
+						!(game.privateOnly && userInfo.gameSettings && userInfo.gameSettings.isPrivate)
 					);
-					// ||
-					// (userInfo.userName && (!userInfo.gameSettings.isPrivate && game.privateOnly))
 				})
 				.sort((a, b) => {
 					const aGameStatus = a.gameStatus,
