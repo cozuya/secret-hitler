@@ -98,8 +98,25 @@ export default class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const { gameInfo, userInfo } = this.props,
-			{ playersState, gameState, publicPlayersState } = gameInfo;
+		const { gameInfo, userInfo } = this.props;
+		const { playersState, gameState, publicPlayersState } = gameInfo;
+		const renderPlayerName = player => {
+			const userName = gameInfo.general.blindMode ? '?' : player.userName;
+
+			if (
+				player.isPrivate &&
+				!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)) &&
+				!userInfo.isSeated
+			) {
+				return 'Anonymous';
+			}
+
+			if (gameState.isTracksFlipped) {
+				return `${i + 1}. ${userName}`;
+			}
+
+			return userName;
+		};
 
 		return publicPlayersState.map((player, i) => (
 			<div
@@ -161,11 +178,7 @@ export default class Players extends React.Component {
 						return classes;
 					})()}
 				>
-					{player.isPrivate &&
-					!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)) &&
-					!userInfo.isSeated
-						? 'Anonymous'
-						: gameState.isTracksFlipped ? `${i + 1}. ${player.userName}` : player.userName}
+					{renderPlayerName(player)}
 				</div>
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
