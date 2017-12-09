@@ -88,6 +88,9 @@
 			color: #ddd;
 			text-align: center;
 			font-size: 13px;
+			&.blacklisted {
+				color: $blacklist !important;
+			}
 			&:hover {
 				color: yellow;
 			}

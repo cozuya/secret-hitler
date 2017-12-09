@@ -127,7 +127,6 @@ module.exports.sendReplayGameChats = (socket, uid) => {
 };
 
 module.exports.sendGameList = socket => {
-	console.log(games);
 	const formattedGames = games.map(game => ({
 		name: game.general.name,
 		flag: game.general.flag,

@@ -154,6 +154,10 @@ export default class Players extends React.Component {
 							classes = `${classes} disconnected`;
 						}
 
+						if (userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(player.userName)) {
+							classes = `${classes} blacklisted`;
+						}
+
 						return classes;
 					})()}
 				>
@@ -283,7 +287,9 @@ export default class Players extends React.Component {
 		const { gameInfo, userInfo, onClickedTakeSeat } = this.props;
 
 		if (userInfo.userName) {
-			if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
+			if (gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
+				$(this.blacklistModal).modal('show');
+			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 				window.alert('Sorry, this service is currently unavailable.');
 			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
 				$(this.passwordModal).modal('show');
@@ -315,6 +321,15 @@ export default class Players extends React.Component {
 					}}
 				>
 					<div className="ui header">You will need to sign in or sign up for an account to play.</div>
+				</div>
+
+				<div
+					className="ui basic small modal"
+					ref={c => {
+						this.blacklistModal = c;
+					}}
+				>
+					<div className="ui header">This game's creator has you blacklisted.</div>
 				</div>
 
 				<div

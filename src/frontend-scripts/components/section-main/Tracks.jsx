@@ -250,7 +250,6 @@ class Tracks extends React.Component {
 }
 
 Tracks.propTypes = {
-	onUpdateReportGame: PropTypes.func,
 	onSeatingUser: PropTypes.func,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,

@@ -227,8 +227,14 @@ class Playerlist extends React.Component {
 												EDITORS.includes(user.userName) ||
 												MODERATORS.includes(user.userName) ||
 												CONTRIBUTORS.includes(user.userName)
-													? cn(PLAYERCOLORS(user), { unclickable: !this.props.isUserClickable }, { clickable: this.props.isUserClickable }, 'username')
-													: 'username',
+													? cn(
+															PLAYERCOLORS(user),
+															{ blacklisted: userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(user.userName) },
+															{ unclickable: !this.props.isUserClickable },
+															{ clickable: this.props.isUserClickable },
+															'username'
+														)
+													: cn({ blacklisted: userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(user.userName) }, 'username'),
 											renderStatus = () => {
 												const status = user.status;
 

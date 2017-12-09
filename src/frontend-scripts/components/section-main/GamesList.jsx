@@ -7,63 +7,62 @@ import Checkbox from 'semantic-ui-checkbox';
 $.fn.checkbox = Checkbox;
 
 export class GamesList extends React.Component {
-	constructor() {
-		super();
-
-		this.state = {
-			priv: true,
-			pub: true,
-			unstarted: true,
-			inprogress: true,
-			completed: true
-		};
-	}
-
 	componentDidMount() {
+		const { changeGameFilter, gameFilter } = this.props;
 		const self = this;
 
 		$(this.private).checkbox({
 			onChecked() {
-				self.setState({ priv: true });
+				gameFilter.priv = true;
+				changeGameFilter(gameFilter);
 			},
 			onUnchecked() {
-				self.setState({ priv: false });
+				gameFilter.priv = false;
+				changeGameFilter(gameFilter);
 			}
 		});
 
 		$(this.public).checkbox({
 			onChecked() {
-				self.setState({ pub: true });
+				gameFilter.pub = true;
+				changeGameFilter(gameFilter);
 			},
 			onUnchecked() {
-				self.setState({ pub: false });
+				gameFilter.pub = false;
+				changeGameFilter(gameFilter);
 			}
 		});
 
 		$(this.unstarted).checkbox({
 			onChecked() {
-				self.setState({ unstarted: true });
+				gameFilter.unstarted = true;
+				changeGameFilter(gameFilter);
 			},
 			onUnchecked() {
-				self.setState({ unstarted: false });
+				gameFilter.unstarted = false;
+				changeGameFilter(gameFilter);
 			}
 		});
 
 		$(this.inprogress).checkbox({
 			onChecked() {
-				self.setState({ inprogress: true });
+				gameFilter.inprogress = true;
+				changeGameFilter(gameFilter);
 			},
 			onUnchecked() {
-				self.setState({ inprogress: false });
+				gameFilter.inprogress = false;
+				changeGameFilter(gameFilter);
 			}
 		});
 
 		$(this.completed).checkbox({
 			onChecked() {
-				self.setState({ completed: true });
+				gameFilter.completed = true;
+				changeGameFilter(gameFilter);
 			},
 			onUnchecked() {
-				self.setState({ completed: false });
+				gameFilter.completed = false;
+				changeGameFilter(gameFilter);
 			}
 		});
 	}
@@ -132,12 +131,11 @@ export class GamesList extends React.Component {
 
 	renderGameList() {
 		const { gameList } = this.props;
-		console.log(gameList);
 
 		if (gameList.length) {
 			return gameList
 				.filter(game => {
-					const { pub, priv, unstarted, inprogress, completed } = this.state;
+					const { pub, priv, unstarted, inprogress, completed } = this.props.gameFilter;
 
 					return !(
 						(game.private && !priv) ||
@@ -232,7 +230,9 @@ GamesList.propTypes = {
 	midSection: PropTypes.string,
 	gameList: PropTypes.array,
 	socket: PropTypes.object,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	gameFilter: PropTypes.object,
+	changeGameFilter: PropTypes.func
 };
 
 export default GamesList;

@@ -17,6 +17,13 @@
 		background-repeat: no-repeat;
 	}
 
+	.blacklist-button {
+		background: $blacklist;
+		position: absolute;
+		top: 15px;
+		left: 415px;
+	}
+
 	.ui.menu {
 		border-radius: 0.28571429rem 0.28571429rem 0em 0em !important;
 		border: 1px solid #d4d4d5 !important;

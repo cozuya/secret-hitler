@@ -383,8 +383,6 @@ module.exports.handleAddNewGame = (socket, data) => {
 			});
 		}
 
-		console.log(data.general);
-
 		user.timeLastGameCreated = currentTime;
 
 		Account.findOne({ username }).then(account => {
@@ -1022,13 +1020,19 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 				account.gameSettings[setting] = data[setting];
 			}
 
-			account.save(() => {
-				if ((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) {
+			if (
+				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&
+				(!account.gameSettings.privateToggleTime || account.gameSettings.privateToggleTime < new Date().getTime() - 64800000)
+			) {
+				account.gameSettings.privateToggleTime = new Date().getTime();
+				account.save(() => {
 					socket.emit('manualDisconnection');
-				} else {
+				});
+			} else {
+				account.save(() => {
 					socket.emit('gameSettings', account.gameSettings);
-				}
-			});
+				});
+			}
 		})
 		.catch(err => {
 			console.log(err);

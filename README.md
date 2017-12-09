@@ -74,7 +74,7 @@ You'll most likely need a browser extension such as Chrome's openMultiLogin to h
 
 ## Running in production mode
 
-I'll leave you to figure that out. SH.IO is currently a $10/month digitalocean box using nginx, lets encrypt, and PM2.
+I'll leave you to figure that out. SH.IO is currently a $20/month digitalocean box using nginx, lets encrypt, and PM2.
 
 ## Tests
 

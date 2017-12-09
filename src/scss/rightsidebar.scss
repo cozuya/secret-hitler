@@ -112,6 +112,11 @@
 				white-space: nowrap;
 				overflow-x: hidden;
 				color: #bfbfbf;
+
+				.blacklisted {
+					color: $blacklist !important;
+				}
+
 				span:hover {
 					color: #608cb3 !important;
 					cursor: pointer;

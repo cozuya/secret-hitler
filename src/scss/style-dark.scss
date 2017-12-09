@@ -14,6 +14,7 @@ $selection: #db2828;
 $proceed: #2185d0;
 $lteal: #097892;
 $dteal: #034f61;
+$blacklist: #462c35;
 $textfont: inherit; //'Comfortaa', Lato, sans-serif;
 $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 
@@ -92,7 +93,6 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 	height: 100%;
 	.ui.header {
 		font-family: inherit; // $headerfont;
-		margin-bottom: 2px;
 	}
 	.notes-container {
 		-webkit-transition: all 0.15s ease-in-out;
@@ -229,9 +229,16 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		min-width: 1050px !important;
 	}
 
-	.browser-container > h3 {
-		text-align: center;
-		margin-top: 10px;
+	.browser-container {
+		> h3 {
+			text-align: center;
+			margin-top: 10px;
+			margin-bottom: 2px;
+		}
+
+		h4 {
+			margin-bottom: 2px;
+		}
 	}
 
 	.browser-filters {

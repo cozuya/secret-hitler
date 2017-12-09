@@ -11,10 +11,17 @@ const Changelog = () => (
 		<div className="ui header">
 			<p>Version 0.10.5 released 12-9-2017</p>
 		</div>
-		<h3>New feature: presistent gamelist filters</h3>
-		<p>Gamelist filters will now not-reset when leaving the gamelist view and are tied to your account as expected.</p>
+		<h3>New feature: player blacklist</h3>
+		<p>
+			If you'd like to blacklist a player, go to their profile via the playerlist or search from your settings page, and click the new button. This has 2
+			effects: it prevents them from joining games <b>you have made</b>, and also gives them a new color for you so that you can avoid games they are in. Abuse
+			of this feature for public games will result in a ban.
+		</p>
 		<h3>New setting and moderation action: converting a player from normal/public to private-game-only</h3>
-		<p>If you'd like to be an anonymous player you can now toggle this gamesetting (cog icon in upper right). This action will log you out.</p>
+		<p>
+			If you'd like to be an anonymous player (or not be) you can now toggle this gamesetting (cog icon in upper right) - this can only happen once every 18
+			hours. This action will log you out.
+		</p>
 		<h3>New gametype: only private-game-only players allowed</h3>
 		<p>
 			For anonymous players, there is a new checkbox while creating a game that only allows other anonymous players to take a seat. Non-anonymous players will
@@ -22,6 +29,7 @@ const Changelog = () => (
 		</p>
 		<ul>
 			<li>Private, and private only games now have an icon on the gameslist and in games themselves.</li>
+			<li>Gamelist filters will now remember your settings when leaving and then returning to the gamelist view.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.10.4 released 12-6-2017</p>

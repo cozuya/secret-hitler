@@ -16,7 +16,8 @@ class ProfileWrapper extends React.Component {
 
 		this.state = {
 			bioStatus: 'displayed',
-			bioValue: ''
+			bioValue: '',
+			blacklistClicked: false
 		};
 	}
 
@@ -194,6 +195,36 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
+	renderBlacklist() {
+		const { profile } = this.props;
+		const name = profile._id;
+		const { gameSettings } = this.props.userInfo;
+
+		const blackListClick = e => {
+			e.preventDefault();
+
+			this.setState(
+				{
+					blacklistClicked: true
+				},
+				() => {
+					if (gameSettings.blacklist.includes(name)) {
+						gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(name), 1);
+					} else {
+						gameSettings.blacklist.push(name);
+					}
+					this.props.socket.emit('updateGameSettings', gameSettings);
+				}
+			);
+		};
+
+		return (
+			<button className="ui primary button blacklist-button" onClick={blackListClick}>
+				{gameSettings && gameSettings.blacklist.includes(name) ? 'Unblacklist player' : 'Blacklist player'}
+			</button>
+		);
+	}
+
 	Profile() {
 		const { profile } = this.props;
 
@@ -222,7 +253,7 @@ class ProfileWrapper extends React.Component {
 					</div>
 				</div>
 				{this.renderBio()}
-
+				{this.props.userInfo.userName && this.props.userInfo.userName !== profile._id && !this.state.blacklistClicked && this.renderBlacklist()}
 				<div className="ui two column grid">
 					<div className="column">{this.Stats()}</div>
 					<div className="column">{this.RecentGames()}</div>
