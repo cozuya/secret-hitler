@@ -1160,7 +1160,7 @@ export default class Creategame extends React.Component {
 						})()}
 					</div>
 					<div className="row">
-						<div className="eight wide column rebalance69p">
+						<div className="four wide column rebalance69p">
 							<h4 className="ui header">
 								Rebalance games - 6 player games start with a fascist policy enacted, 7 & 9 player games start with one less fascist policy.
 							</h4>
@@ -1175,7 +1175,7 @@ export default class Creategame extends React.Component {
 						</div>
 						{this.props.userInfo.gameSettings &&
 							this.props.userInfo.gameSettings.isPrivate && (
-								<div className="eight wide column privateonlygame">
+								<div className="four wide column privateonlygame">
 									<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
 									<div
 										className="ui fitted toggle checkbox"
@@ -1187,6 +1187,17 @@ export default class Creategame extends React.Component {
 									</div>
 								</div>
 							)}
+						<div className="four wide column">
+							<h4 className="ui header">Blind mode - player's names are turned into a random animal to anonymize them.</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.blindmode = c;
+								}}
+							>
+								<input type="checkbox" name="blindmode" defaultChecked={false} />
+							</div>
+						</div>
 						{/* <div className="eight wide column tourny-container">
 							<h4 className="ui header">Tournament mode</h4>
 							<div
@@ -1198,18 +1209,6 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="tournyconfirm" defaultChecked={false} />
 							</div>
 						</div> */}
-						{/* 
-					<div className="four wide column">
-						<h4 className="ui header">Blind mode - player's names are turned into a random animal to anonymize them.</h4>
-						<div
-							className="ui fitted toggle checkbox"
-							ref={c => {
-								this.blindmode = c;
-							}}
-						>
-							<input type="checkbox" name="blindmode" defaultChecked={false} />
-						</div>
-					</div> */}
 					</div>
 				</div>
 
