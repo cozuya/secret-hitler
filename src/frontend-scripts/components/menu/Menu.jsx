@@ -32,7 +32,7 @@ class Menu extends React.Component {
 			<div className="menu-container">
 				<section className={classes}>
 					<a href="/" target="_blank">
-						<img src="../images/navbar_logo.png" />
+						<img src="../images/navbar_logo2.png" />
 					</a>
 					<div className="center-menu-links">
 						<span>
@@ -62,6 +62,10 @@ class Menu extends React.Component {
 							|{' '}
 							<a target="_blank" href="https://discord.gg/secrethitlerio">
 								Discord
+							</a>{' '}
+							|{' '}
+							<a target="_blank" href="mailto:secrethitlerio@gmail.com">
+								Email
 							</a>
 						</span>
 					</div>
