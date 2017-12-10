@@ -233,7 +233,7 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		> h3 {
 			text-align: center;
 			margin-top: 10px;
-			margin-bottom: 2px;
+			margin-bottom: 10px;
 		}
 
 		h4 {
@@ -243,6 +243,32 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 
 	.browser-filters {
 		justify-content: center;
+
+		.iconcolumn {
+			display: flex;
+			flex-direction: column;
+			justify-content: normal;
+
+			.checkbox {
+				margin: 0 auto;
+			}
+		}
+
+		i {
+			width: 16px;
+			height: 16px;
+			vertical-align: text-bottom;
+			display: block;
+			margin: 0 auto 3px;
+		}
+
+		.rainbow-icon {
+			background: url(../images/rainbow.png) no-repeat;
+		}
+
+		.standard-icon {
+			background: url(../favicon-16x16.png) no-repeat;
+		}
 
 		> .column {
 			text-align: center;

@@ -430,7 +430,7 @@ module.exports.handleAddNewClaim = data => {
 							text: 'President '
 						},
 						{
-							text: `${data.userName} {${playerIndex + 1}} `,
+							text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
 							type: 'player'
 						}
 					];
@@ -539,7 +539,7 @@ module.exports.handleAddNewClaim = data => {
 							text: 'Chancellor '
 						},
 						{
-							text: `${data.userName} {${playerIndex + 1}} `,
+							text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
 							type: 'player'
 						}
 					];
@@ -621,7 +621,7 @@ module.exports.handleAddNewClaim = data => {
 							text: 'President '
 						},
 						{
-							text: `${data.userName} {${playerIndex + 1}} `,
+							text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
 							type: 'player'
 						}
 					];
@@ -729,7 +729,7 @@ module.exports.handleAddNewClaim = data => {
 							text: 'President '
 						},
 						{
-							text: `${data.userName} {${playerIndex + 1}} `,
+							text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
 							type: 'player'
 						},
 						{
@@ -812,7 +812,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 		gameChat: true,
 		chat: [
 			{
-				text: `${data.userName} {${playerIndex + 1}}`,
+				text: game.general.blindMode ? `{${playerIndex + 1}}` : `${data.userName} {${playerIndex + 1}}`,
 				type: 'player'
 			}
 		]

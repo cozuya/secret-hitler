@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
+import _ from 'lodash';
 import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
 import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
@@ -250,14 +251,16 @@ class Gamechat extends React.Component {
 	}
 
 	processChats() {
-		const { gameInfo, userInfo, userList, isReplay } = this.props,
-			seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [],
-			{ chatFilter } = this.state,
-			compareChatStrings = (a, b) => {
-				const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
-				const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
-				return stringA > stringB ? 1 : -1;
-			};
+		const { gameInfo, userInfo, userList, isReplay } = this.props;
+		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
+		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
+		const { chatFilter } = this.state;
+		const compareChatStrings = (a, b) => {
+			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
+			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
+
+			return stringA > stringB ? 1 : -1;
+		};
 
 		if (
 			isReplay ||
@@ -274,10 +277,11 @@ class Gamechat extends React.Component {
 						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 				)
 				.map((chat, i) => {
-					const chatContents = processEmotes(chat.chat),
-						isSeated = seatedUserNames.includes(chat.userName),
-						playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-					// ? <div className={chat.chat[2] && chat.chat[2].item.type ? `gamechat-item ${chat.chat[2].item.type}` : 'gamechat-item'} key={i}>
+					// chat.realUserName = _.cloneDeep(chat).userName;
+					const chatContents = processEmotes(chat.chat);
+					const isSeated = seatedUserNames.includes(chat.userName);
+					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
+
 					return chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item gamechat ${chat.chat[1].type}` : 'item gamechat'} key={i}>
 							{this.handleTimestamps(chat.timestamp)}
@@ -343,7 +347,9 @@ class Gamechat extends React.Component {
 									playerListPlayer
 										? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat
 											? 'chat-user'
-											: playerListPlayer.wins + playerListPlayer.losses > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'
+											: isBlind
+												? 'chat-user'
+												: playerListPlayer.wins + playerListPlayer.losses > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'
 										: 'chat-user'
 								}
 							>
@@ -369,12 +375,14 @@ class Gamechat extends React.Component {
 								)}
 								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
 									? isSeated
-										? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+										? isBlind
+											? `{${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
-									: chat.userName}
+									: isBlind ? '?' : chat.userName}
 								{': '}
 							</span>
-							<span>{chatContents}</span>
+							<span>{chatContents}</span>{' '}
 						</div>
 					);
 				});

@@ -166,7 +166,17 @@ export default class Creategame extends React.Component {
 				general: {
 					whitelistedPlayers: [],
 					uid,
-					name: userInfo.gameSettings.isPrivate ? 'Private Game' : $creategame.find('div.gamename input').val(),
+					name: userInfo.gameSettings.isPrivate
+						? 'Private Game'
+						: $creategame
+								.find('div.gamename input')
+								.val()
+								.trim().length
+							? $creategame
+									.find('div.gamename input')
+									.val()
+									.trim()
+							: 'New Game',
 					flag: $creategame.find('div.flag input').val() || 'none',
 					minPlayersCount: this.state.sliderValues[0],
 					gameCreatorBlacklist: userInfo.gameSettings.blacklist,
@@ -1188,7 +1198,8 @@ export default class Creategame extends React.Component {
 								</div>
 							)}
 						<div className="four wide column">
-							<h4 className="ui header">Blind mode - player's names are turned into a random animal to anonymize them.</h4>
+							<i className="big hide icon" />
+							<h4 className="ui header">Blind mode - player's names are erased, anonymizing them.</h4>
 							<div
 								className="ui fitted toggle checkbox"
 								ref={c => {

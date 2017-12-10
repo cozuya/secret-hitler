@@ -23,7 +23,7 @@ export default class Players extends React.Component {
 	}
 
 	handlePlayerDoubleClick(e) {
-		if (!this.props.gameInfo.general.private) {
+		if (!this.props.gameInfo.general.private && !this.props.gameInfo.general.blindMode) {
 			this.setState({ reportedPlayer: e.currentTarget.innerText });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
@@ -100,8 +100,9 @@ export default class Players extends React.Component {
 	renderPlayers() {
 		const { gameInfo, userInfo } = this.props;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
-		const renderPlayerName = player => {
-			const userName = gameInfo.general.blindMode ? '?' : player.userName;
+		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
+		const renderPlayerName = (player, i) => {
+			const userName = isBlind ? '?' : player.userName;
 
 			if (
 				player.isPrivate &&
@@ -124,7 +125,9 @@ export default class Players extends React.Component {
 				data-index={i}
 				onClick={this.handlePlayerClick}
 				style={
-					player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+					player.customCardback &&
+					!isBlind &&
+					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
 							}
@@ -146,7 +149,7 @@ export default class Players extends React.Component {
 						classes = `${classes} isDead`;
 					}
 
-					if (user && user.wins + user.losses > 49) {
+					if (user && user.wins + user.losses > 49 && !isBlind) {
 						classes = `${classes} ${PLAYERCOLORS(user)}`;
 					}
 
@@ -178,7 +181,7 @@ export default class Players extends React.Component {
 						return classes;
 					})()}
 				>
-					{renderPlayerName(player)}
+					{renderPlayerName(player, i)}
 				</div>
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}

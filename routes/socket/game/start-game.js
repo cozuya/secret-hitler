@@ -110,7 +110,11 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 							type: player.role.cardName
 						},
 						{
-							text: ' role.'
+							text: ' role and take seat '
+						},
+						{
+							text: `#${i + 1}.`,
+							type: 'player'
 						}
 					]
 				});
@@ -179,7 +183,7 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 										text: ' in this game is '
 									},
 									{
-										text: `${otherFascist.userName} {${otherFascistIndex + 1}}`,
+										text: game.general.blindMode ? `{${otherFascistIndex + 1}}` : `${otherFascist.userName} {${otherFascistIndex + 1}}`,
 										type: 'player'
 									},
 									{
@@ -209,14 +213,18 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 										text: ' in this game are '
 									},
 									{
-										text: `${otherFascists[0].userName} {${seatedPlayers.indexOf(otherFascists[0]) + 1}}`,
+										text: game.general.blindMode
+											? `{${seatedPlayers.indexOf(otherFascists[0]) + 1}}`
+											: `${otherFascists[0].userName} {${seatedPlayers.indexOf(otherFascists[0]) + 1}}`,
 										type: 'player'
 									},
 									{
 										text: ' and '
 									},
 									{
-										text: `${otherFascists[1].userName} {${seatedPlayers.indexOf(otherFascists[1]) + 1}}`,
+										text: game.general.blindMode
+											? `{${seatedPlayers.indexOf(otherFascists[1]) + 1}}`
+											: `${otherFascists[1].userName} {${seatedPlayers.indexOf(otherFascists[1]) + 1}}`,
 										type: 'player'
 									},
 									{
@@ -249,7 +257,9 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 									text: ' in this game is '
 								},
 								{
-									text: `${hitlerPlayer.userName} {${seatedPlayers.indexOf(hitlerPlayer) + 1}}`,
+									text: game.general.blindMode
+										? `{${seatedPlayers.indexOf(hitlerPlayer) + 1}}`
+										: `${hitlerPlayer.userName} {${seatedPlayers.indexOf(hitlerPlayer) + 1}}`,
 									type: 'player'
 								}
 							]
@@ -302,7 +312,9 @@ const { sendInProgressGameUpdate } = require('../util.js'),
 										text: ' in this game is '
 									},
 									{
-										text: `${otherFascist.userName} {${seatedPlayers.indexOf(otherFascist) + 1}}`,
+										text: game.general.blindMode
+											? `{${seatedPlayers.indexOf(otherFascist) + 1}}`
+											: `${otherFascist.userName} {${seatedPlayers.indexOf(otherFascist) + 1}}`,
 										type: 'player'
 									},
 									{

@@ -37,14 +37,16 @@ module.exports.selectPolicies = data => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 3).reduce((peek, policy) => {
-				if (policy === 'fascist') {
-					return Object.assign({}, peek, { reds: peek.reds + 1 });
-				} else {
-					return Object.assign({}, peek, { blues: peek.blues + 1 });
-				}
-			},
-			{ reds: 0, blues: 0 })
+			policyPeek: game.private.policies.slice(0, 3).reduce(
+				(peek, policy) => {
+					if (policy === 'fascist') {
+						return Object.assign({}, peek, { reds: peek.reds + 1 });
+					} else {
+						return Object.assign({}, peek, { blues: peek.blues + 1 });
+					}
+				},
+				{ reds: 0, blues: 0 }
+			)
 		});
 
 		president.cardFlingerState = [
@@ -200,12 +202,12 @@ module.exports.selectPartyMembershipInvestigate = data => {
 						chat.chat = [
 							{ text: 'President ' },
 							{
-								text: `${president.userName} {${presidentIndex + 1}}`,
+								text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
 								type: 'player'
 							},
 							{ text: ' investigates the party membership of ' },
 							{
-								text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+								text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
 								type: 'player'
 							},
 							{ text: '.' }
@@ -222,7 +224,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 						chat: [
 							{ text: 'You investigate the party membership of ' },
 							{
-								text: `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+								text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
 								type: 'player'
 							},
 							{ text: ' and determine that they are on the ' },
@@ -359,12 +361,12 @@ module.exports.selectPlayerToExecute = data => {
 			chat: [
 				{ text: 'President ' },
 				{
-					text: `${president.userName} {${presidentIndex + 1}}`,
+					text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
 					type: 'player'
 				},
 				{ text: ' selects to execute ' },
 				{
-					text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
+					text: game.general.blindMode ? `{${playerIndex + 1}}` : `${selectedPlayer.userName} {${playerIndex + 1}}`,
 					type: 'player'
 				},
 				{ text: '.' }
@@ -391,7 +393,7 @@ module.exports.selectPlayerToExecute = data => {
 				chat: [
 					{ text: 'You select to execute ' },
 					{
-						text: `${selectedPlayer.userName} {${playerIndex + 1}}`,
+						text: game.general.blindMode ? `{${playerIndex + 1}}` : `${selectedPlayer.userName} {${playerIndex + 1}}`,
 						type: 'player'
 					},
 					{ text: '.' }

@@ -244,14 +244,14 @@ module.exports.selectChancellor = data => {
 							text: 'You must vote for the election of president '
 						},
 						{
-							text: `${presidentPlayer.userName} {${presidentIndex + 1}}`,
+							text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${presidentPlayer.userName} {${presidentIndex + 1}}`,
 							type: 'player'
 						},
 						{
 							text: ' and chancellor '
 						},
 						{
-							text: `${chancellorPlayer.userName} {${chancellorIndex + 1}}`,
+							text: game.general.blindMode ? `{${chancellorIndex + 1}}` : `${chancellorPlayer.userName} {${chancellorIndex + 1}}`,
 							type: 'player'
 						},
 						{
@@ -868,7 +868,7 @@ module.exports.selectChancellorVoteOnVeto = data => {
 				chat: [
 					{ text: 'Chancellor ' },
 					{
-						text: `${data.userName} {${chancellorIndex + 1}}`,
+						text: game.general.blindMode ? `{${chancellorIndex + 1}}` : `${data.userName} {${chancellorIndex + 1}}`,
 						type: 'player'
 					},
 					{
@@ -994,7 +994,9 @@ module.exports.selectPresidentVoteOnVeto = data => {
 				chat: [
 					{ text: 'President ' },
 					{
-						text: `${data.userName} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
+						text: game.general.blindMode
+							? `{${game.private.seatedPlayers.indexOf(president) + 1}}`
+							: `${data.userName} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
 						type: 'player'
 					},
 					{

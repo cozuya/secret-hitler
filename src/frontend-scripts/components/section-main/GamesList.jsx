@@ -65,6 +65,28 @@ export class GamesList extends React.Component {
 				changeGameFilter(gameFilter);
 			}
 		});
+
+		$(this.standard).checkbox({
+			onChecked() {
+				gameFilter.standard = true;
+				changeGameFilter(gameFilter);
+			},
+			onUnchecked() {
+				gameFilter.standard = false;
+				changeGameFilter(gameFilter);
+			}
+		});
+
+		$(this.rainbow).checkbox({
+			onChecked() {
+				gameFilter.rainbow = true;
+				changeGameFilter(gameFilter);
+			},
+			onUnchecked() {
+				gameFilter.rainbow = false;
+				changeGameFilter(gameFilter);
+			}
+		});
 	}
 
 	renderFilters() {
@@ -125,25 +147,48 @@ export class GamesList extends React.Component {
 						<input type="checkbox" defaultChecked={true} />
 					</div>
 				</div>
+				<div className="three wide column iconcolumn">
+					<i title="Filter by standard games" className="standard-icon" />
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.standard = c;
+						}}
+					>
+						<input type="checkbox" defaultChecked={true} />
+					</div>
+				</div>
+				<div className="three wide column iconcolumn">
+					<i title="Filter by experienced-player-only games" className="rainbow-icon" />
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.rainbow = c;
+						}}
+					>
+						<input type="checkbox" defaultChecked={true} />
+					</div>
+				</div>
 			</div>
 		);
 	}
 
 	renderGameList() {
-		const { gameList, userInfo } = this.props;
+		const { gameList } = this.props;
 
 		if (gameList.length) {
 			return gameList
 				.filter(game => {
-					const { pub, priv, unstarted, inprogress, completed } = this.props.gameFilter;
+					const { pub, priv, unstarted, inprogress, completed, rainbow, standard } = this.props.gameFilter;
 
 					return !(
 						(game.private && !priv) ||
 						(!game.private && !pub) ||
+						(game.rainbowgame && !rainbow) ||
+						(!game.rainbowgame && !standard) ||
 						(game.gameStatus === 'notStarted' && !unstarted) ||
 						(game.gameStatus === 'isStarted' && !inprogress) ||
-						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && !completed) ||
-						!(game.privateOnly && userInfo.gameSettings && userInfo.gameSettings.isPrivate)
+						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && !completed)
 					);
 				})
 				.sort((a, b) => {

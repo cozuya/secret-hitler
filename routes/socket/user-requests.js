@@ -152,6 +152,7 @@ module.exports.sendGameList = socket => {
 		experiencedMode: game.general.experiencedMode,
 		disableChat: game.general.disableChat,
 		disableGamechat: game.general.disableGamechat,
+		blindMode: game.general.blindMode,
 		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
 		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
 		electionCount: game.general.electionCount,

@@ -9,6 +9,14 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.10.6 released 12-10-2017</p>
+		</div>
+		<h3>New game type: blind mode</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/blind.png" />
+		</div>
+		<p>Games with this option enabled will anonymize players - players do not have their names displayed (or colors/cardbacks) until the game is complete.</p>
+		<div className="ui header">
 			<p>Version 0.10.5 released 12-9-2017</p>
 		</div>
 		<h3>New feature: player blacklist</h3>

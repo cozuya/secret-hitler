@@ -20,7 +20,9 @@ export class Main extends React.Component {
 				pub: true,
 				unstarted: true,
 				inprogress: true,
-				completed: true
+				completed: true,
+				rainbow: true,
+				standard: true
 			}
 		};
 	}
