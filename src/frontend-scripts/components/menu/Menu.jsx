@@ -66,6 +66,10 @@ class Menu extends React.Component {
 							|{' '}
 							<a target="_blank" href="mailto:secrethitlerio@gmail.com">
 								Email
+							</a>{' '}
+							|{' '}
+							<a target="_blank" href="https://twitter.com/secrethitlerio">
+								Twitter
 							</a>
 						</span>
 					</div>
