@@ -65,6 +65,17 @@ export class GamesList extends React.Component {
 				changeGameFilter(gameFilter);
 			}
 		});
+		
+		$(this.rainbow).checkbox({
+			onChecked() {
+				gameFilter.rain = true;
+				changeGameFilter(gameFilter);
+			},
+			onUnchecked() {
+				gameFilter.rain = false;
+				changeGameFilter(gameFilter);
+			}
+		});
 	}
 
 	renderFilters() {
@@ -120,6 +131,17 @@ export class GamesList extends React.Component {
 						className="ui fitted toggle checkbox"
 						ref={c => {
 							this.completed = c;
+						}}
+					>
+						<input type="checkbox" defaultChecked={true} />
+					</div>
+				</div>
+				<div className="three wide column">
+					<h4 className="ui header">Rainbow</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.inprogress = c;
 						}}
 					>
 						<input type="checkbox" defaultChecked={true} />
