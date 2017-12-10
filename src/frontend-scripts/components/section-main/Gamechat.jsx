@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import _ from 'lodash';
 import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
 import { loadReplay, toggleNotes } from '../../actions/actions';
 import classnames from 'classnames';
@@ -277,7 +276,6 @@ class Gamechat extends React.Component {
 						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 				)
 				.map((chat, i) => {
-					// chat.realUserName = _.cloneDeep(chat).userName;
 					const chatContents = processEmotes(chat.chat);
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;

@@ -16,6 +16,9 @@ const Changelog = () => (
 			<img src="/images/blind.png" />
 		</div>
 		<p>Games with this option enabled will anonymize players - players do not have their names displayed (or colors/cardbacks) until the game is complete.</p>
+		<h3>New gamelist filters</h3>
+		<p>New gamelist filters for standard and rainbow games have been added.</p>
+		<h3>Next major update (tournaments) is almost done, expect this week, the increased traffic was a bit distracting.</h3>
 		<div className="ui header">
 			<p>Version 0.10.5 released 12-9-2017</p>
 		</div>
