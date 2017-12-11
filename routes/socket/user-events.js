@@ -910,9 +910,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
-						game.general.remakeCount === 1 ? 'second' : 'seconds'
-					}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
+						? 'second'
+						: 'seconds'}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
@@ -954,7 +954,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const player = game.publicPlayersState.find(player => player.userName === passport.user);
 
-	if ((player && player.isDead && !game.gameState.isCompleted) || (player && player.leftGame)) {
+	if ((player && player.isDead && !game.gameState.isCompleted) || (player && player.leftGame) || (!player && game.general.disableObserver)) {
 		return;
 	}
 

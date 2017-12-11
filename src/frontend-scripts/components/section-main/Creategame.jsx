@@ -18,6 +18,7 @@ export default class Creategame extends React.Component {
 			experiencedmode: false,
 			disablechat: false,
 			disablegamechat: false,
+			disableobserver: false,
 			privateShowing: false,
 			containsBadWord: false,
 			rainbowgame: false,
@@ -114,6 +115,15 @@ export default class Creategame extends React.Component {
 				self.setState({ privateonlygame: false });
 			}
 		});
+
+		$(this.disableobserver).checkbox({
+			onChecked() {
+				self.setState({ disableobserver: true });
+			},
+			onUnchecked() {
+				self.setState({ disableobserver: false });
+			}
+		});
 	}
 
 	sliderChange(sliderValues) {
@@ -185,6 +195,7 @@ export default class Creategame extends React.Component {
 					status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
 					experiencedMode: this.state.experiencedmode,
 					disableChat: this.state.disablechat,
+					disableObserver: this.state.disableobserver,
 					isTourny: this.state.isTourny,
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
@@ -1183,6 +1194,30 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="rebalance69p" defaultChecked={true} />
 							</div>
 						</div>
+						<div className="four wide column">
+							<i className="big hide icon" />
+							<h4 className="ui header">Blind mode - player's names are erased, anonymizing them.</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.blindmode = c;
+								}}
+							>
+								<input type="checkbox" name="blindmode" defaultChecked={false} />
+							</div>
+						</div>
+						<div className="four wide column">
+							<i className="big hide icon" />
+							<h4 className="ui header">Disable observer chat</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.disableobserver = c;
+								}}
+							>
+								<input type="checkbox" name="disableobserver" defaultChecked={false} />
+							</div>
+						</div>
 						{this.props.userInfo.gameSettings &&
 							this.props.userInfo.gameSettings.isPrivate && (
 								<div className="four wide column privateonlygame">
@@ -1197,18 +1232,8 @@ export default class Creategame extends React.Component {
 									</div>
 								</div>
 							)}
-						<div className="four wide column">
-							<i className="big hide icon" />
-							<h4 className="ui header">Blind mode - player's names are erased, anonymizing them.</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.blindmode = c;
-								}}
-							>
-								<input type="checkbox" name="blindmode" defaultChecked={false} />
-							</div>
-						</div>
+					</div>
+					<div className="row">
 						{/* <div className="eight wide column tourny-container">
 							<h4 className="ui header">Tournament mode</h4>
 							<div

@@ -33,6 +33,7 @@ general
 	experiencedMode bool
 	disableChat bool
 	disableGamechat bool
+	disableObserver bool
 	playerCount number 5-10
 	type number refers to fasctrack
 	livingPlayerCount number

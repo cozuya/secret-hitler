@@ -231,8 +231,9 @@ class Gamechat extends React.Component {
 				}
 			})();
 
-		if (
+		return (
 			!userName ||
+			(gameInfo.general.disableObserver && !userInfo.isSeated) ||
 			(isDead && !gameState.isCompleted) ||
 			isGovernmentDuringPolicySelection ||
 			gameInfo.general.disableChat ||
@@ -242,11 +243,7 @@ class Gamechat extends React.Component {
 				!ADMINS.includes(userInfo.userName) &&
 				!EDITORS.includes(userInfo.userName)) ||
 			(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
-		) {
-			return true;
-		} else {
-			return false;
-		}
+		);
 	}
 
 	processChats() {
