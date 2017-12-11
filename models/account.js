@@ -28,6 +28,7 @@ const mongoose = require('mongoose'),
 			isPrivate: Boolean,
 			privateToggleTime: Number,
 			blacklist: Array,
+			tournyWins: Array,
 			gameNotes: {
 				top: Number,
 				left: Number,

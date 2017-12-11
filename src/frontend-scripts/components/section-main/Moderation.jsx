@@ -298,23 +298,17 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="ipbans" />
 					</div>
 				</div>
-				{(() => {
-					{
-						/* return (
-						<div className="toggle-containers">
-							<h4 className="ui header">Disable game creation</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.toggleGameCreation = c;
-								}}
-							>
-								<input type="checkbox" name="ipbans" />
-							</div>
-						</div>
-					); */
-					}
-				})()}
+				<div className="toggle-containers">
+					<h4 className="ui header">Disable game creation</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleGameCreation = c;
+						}}
+					>
+						<input type="checkbox" name="ipbans" />
+					</div>
+				</div>
 				<div className="ui horizontal divider">-</div>
 
 				<button

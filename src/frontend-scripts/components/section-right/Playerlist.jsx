@@ -12,16 +12,16 @@ import { Popup } from 'semantic-ui-react';
 
 $.fn.modal = Modal;
 
-const mapStateToProps = ({ midSection }) => ({ midSection }),
-	mapDispatchToProps = dispatch => ({
-		fetchProfile: username => dispatch(fetchProfile(username)),
-		fetchReplay: gameId => dispatch({ type: 'FETCH_REPLAY', gameId })
-	}),
-	mergeProps = (stateProps, dispatchProps, ownProps) => {
-		const isUserClickable = stateProps.midSection !== 'game' && stateProps.midSection !== 'replay';
+const mapStateToProps = ({ midSection }) => ({ midSection });
+const mapDispatchToProps = dispatch => ({
+	fetchProfile: username => dispatch(fetchProfile(username)),
+	fetchReplay: gameId => dispatch({ type: 'FETCH_REPLAY', gameId })
+});
+const mergeProps = (stateProps, dispatchProps, ownProps) => {
+	const isUserClickable = stateProps.midSection !== 'game' && stateProps.midSection !== 'replay';
 
-		return Object.assign({}, ownProps, dispatchProps, { isUserClickable });
-	};
+	return Object.assign({}, ownProps, dispatchProps, { isUserClickable });
+};
 
 class Playerlist extends React.Component {
 	constructor() {
@@ -74,6 +74,7 @@ class Playerlist extends React.Component {
 
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
+
 		if (
 			userInfo &&
 			userInfo.userName &&
@@ -92,6 +93,7 @@ class Playerlist extends React.Component {
 			if (userInfo.gameSettings && userInfo.gameSettings.newReport) {
 				classes += ' active';
 			}
+
 			return (
 				<a href="#/playerreports" onClick={reportClick}>
 					<i className={classes} />
@@ -145,18 +147,25 @@ class Playerlist extends React.Component {
 					<div className="playerlist-body">
 						{(() => {
 							if (Object.keys(this.props.userList).length) {
-								const { list } = this.props.userList,
-									{ userInfo } = this.props,
-									w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins',
-									l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses',
-									routeToProfile = userName => {
-										window.location.hash = `#/profile/${userName}`;
-									};
+								const { list } = this.props.userList;
+								const { userInfo } = this.props;
+								const w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins';
+								const l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
+								const time = new Date().getTime();
+								const routeToProfile = userName => {
+									window.location.hash = `#/profile/${userName}`;
+								};
 
 								return list
 									.sort((a, b) => {
-										const aTotal = a[w] + a[l],
-											bTotal = b[w] + b[l];
+										const aTotal = a[w] + a[l];
+										const bTotal = b[w] + b[l];
+										const aIsSuperuser = ADMINS.includes(a.userName) || EDITORS.includes(a.userName) || MODERATORS.includes(a.userName);
+										const bIsSuperuser = ADMINS.includes(b.userName) || EDITORS.includes(b.userName) || MODERATORS.includes(b.userName);
+
+										if (ADMINS.includes(a.userName) && ADMINS.includes(b.userName)) {
+											return a.userName > b.userName ? 1 : -1;
+										}
 
 										if (ADMINS.includes(a.userName)) {
 											return -1;
@@ -164,6 +173,37 @@ class Playerlist extends React.Component {
 
 										if (ADMINS.includes(b.userName)) {
 											return 1;
+										}
+
+										if (a.tournyWins.length || b.tournyWins.length) {
+											const aTWinCount = a.tournyWins.filter(winTime => time - winTime < 10800000).length;
+											const bTWinCount = b.tournyWins.filter(winTime => time - winTime < 10800000).length;
+
+											if (aTWinCount > 2) {
+												if (aTWinCount === bTWinCount) {
+													return a.userName > b.userName ? 1 : -1;
+												}
+												return aTWinCount - bTWinCount;
+											}
+
+											if (bTWinCount > 2) {
+												if (aTWinCount === bTWinCount) {
+													return a.userName > b.userName ? 1 : -1;
+												}
+												return bTWinCount - aTWinCount;
+											}
+
+											if (aTWinCount) {
+												if (!bIsSuperuser) {
+													return aTWinCount - bTWinCount;
+												}
+											}
+
+											if (bTWinCount) {
+												if (!aIsSuperuser) {
+													return bTWinCount - aTWinCount;
+												}
+											}
 										}
 
 										if (EDITORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
@@ -212,67 +252,73 @@ class Playerlist extends React.Component {
 													(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))))
 									)
 									.map((user, i) => {
-										const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0),
-											percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '',
-											disableIfUnclickable = f => {
-												if (this.props.isUserClickable) {
-													return f;
-												}
+										const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
+										const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
+										const disableIfUnclickable = f => {
+											if (this.props.isUserClickable) {
+												return f;
+											}
 
-												return () => null;
-											},
-											userClasses =
-												user.wins + user.losses > 50 ||
-												ADMINS.includes(user.userName) ||
-												EDITORS.includes(user.userName) ||
-												MODERATORS.includes(user.userName) ||
-												CONTRIBUTORS.includes(user.userName)
-													? cn(
-															PLAYERCOLORS(user),
-															{ blacklisted: userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(user.userName) },
-															{ unclickable: !this.props.isUserClickable },
-															{ clickable: this.props.isUserClickable },
-															'username'
-														)
-													: cn({ blacklisted: userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(user.userName) }, 'username'),
-											renderStatus = () => {
-												const status = user.status;
+											return () => null;
+										};
+										const userClasses =
+											user.wins + user.losses > 50 ||
+											ADMINS.includes(user.userName) ||
+											EDITORS.includes(user.userName) ||
+											MODERATORS.includes(user.userName) ||
+											CONTRIBUTORS.includes(user.userName)
+												? cn(
+														PLAYERCOLORS(user),
+														{ blacklisted: userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(user.userName) },
+														{ unclickable: !this.props.isUserClickable },
+														{ clickable: this.props.isUserClickable },
+														'username'
+													)
+												: cn({ blacklisted: userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(user.userName) }, 'username');
+										const renderStatus = () => {
+											const status = user.status;
 
-												if (!status || status.type === 'none') {
-													return null;
-												} else {
-													const iconClasses = classnames(
-															'status',
-															{ unclickable: !this.props.isUserClickable },
-															{ clickable: this.props.isUserClickable },
-															{ search: status.type === 'observing' },
-															{ fav: status.type === 'playing' },
-															{ rainbow: status.type === 'rainbow' },
-															{ record: status.type === 'replay' },
-															'icon'
-														),
-														title = {
-															playing: 'This player is playing in a standard game.',
-															observing: 'This player is observing a game.',
-															rainbow: 'This player is playing in a experienced-player-only game.',
-															replay: 'This player is watching a replay.'
-														},
-														onClick = {
-															playing: this.routeToGame,
-															observing: this.routeToGame,
-															rainbow: this.routeToGame,
-															replay: this.props.fetchReplay
-														};
+											if (!status || status.type === 'none') {
+												return null;
+											} else {
+												const iconClasses = classnames(
+													'status',
+													{ unclickable: !this.props.isUserClickable },
+													{ clickable: this.props.isUserClickable },
+													{ search: status.type === 'observing' },
+													{ fav: status.type === 'playing' },
+													{ rainbow: status.type === 'rainbow' },
+													{ record: status.type === 'replay' },
+													'icon'
+												);
+												const title = {
+													playing: 'This player is playing in a standard game.',
+													observing: 'This player is observing a game.',
+													rainbow: 'This player is playing in a experienced-player-only game.',
+													replay: 'This player is watching a replay.'
+												};
+												const onClick = {
+													playing: this.routeToGame,
+													observing: this.routeToGame,
+													rainbow: this.routeToGame,
+													replay: this.props.fetchReplay
+												};
 
-													return (
-														<i
-															title={title[status.type]}
-															className={iconClasses}
-															onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)}
-														/>
-													);
-												}
-											};
+												return (
+													<i
+														title={title[status.type]}
+														className={iconClasses}
+														onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)}
+													/>
+												);
+											}
+										};
+
+										const renderCrowns = () => {
+											const crowns = user.tournyWins.filter(winTime => time - winTime < 10800000);
+
+											return crowns.map(crown => <span className="crown-icon">X</span>);
+										};
 
 										return (
 											<div key={i} className="user-container">
@@ -310,11 +356,12 @@ class Playerlist extends React.Component {
 														}
 													})()}
 													{renderStatus()}
+													{renderCrowns()}
 												</div>
 												{(() => {
 													if (!ADMINS.includes(user.userName)) {
-														const w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins',
-															l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
+														const w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins';
+														const l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
 
 														return (
 															<div className="userlist-stats-container">

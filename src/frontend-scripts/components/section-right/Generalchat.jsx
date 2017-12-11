@@ -127,8 +127,9 @@ export default class Generalchat extends React.Component {
 	}
 
 	renderChats() {
-		const { userInfo, generalChats } = this.props;
 		let timestamp;
+		const { userInfo, generalChats } = this.props;
+		const renderCrowns = chat => {};
 
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
@@ -144,6 +145,7 @@ export default class Generalchat extends React.Component {
 					return (
 						<div className="item" key={i}>
 							{timestamp}
+							{renderCrowns(chat)}
 							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
 								{MODERATORS.includes(chat.userName) && <span className="moderator-name">(M) </span>}
 								{EDITORS.includes(chat.userName) && <span className="editor-name">(E) </span>}

@@ -9,6 +9,19 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.10.7 released 12-12-2017</p>
+		</div>
+		<h3>Blind mode update</h3>
+		<p>Blind mode now assigns every player a random animal name, instead of just being blank/their number. Hopefully this makes it less hard to understand.</p>
+		<h3>New game option: disable observer chat</h3>
+		<p>Toggle this on to prevent observers from chatting at all in your new game. No icon for this as thats starting to get huge.</p>
+		<h3>Other items</h3>
+		<ul>
+			<li>Blind mode no longer shows who is seated/their cardbacks in the gamelist.</li>
+			<li>Gamelist filters now correctly show the toggled state after leaving and coming back to the list.</li>
+			<li>Moderators now have a new sitewide "disable game creation" setting - this will be used when planned updates are about to happen.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.10.6 released 12-10-2017</p>
 		</div>
 		<h3>New game type: blind mode</h3>
@@ -255,10 +268,7 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
-				style={{ width: '30%', margin: '0 auto', display: 'block' }}
-				src="/images/em.png"
-			/>
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}

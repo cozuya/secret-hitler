@@ -90,6 +90,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 					rainbowWins: account.rainbowWins,
 					rainbowLosses: account.rainbowLosses,
 					isPrivate: account.gameSettings.isPrivate,
+					tournyWins: account.gameSettings.tournyWins,
 					status: {
 						type: 'none',
 						gameId: null
@@ -105,8 +106,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 			});
 
 			io.sockets.emit('userList', {
-				list: userList,
-				totalSockets: Object.keys(io.sockets.sockets).length
+				list: userList
 			});
 		})
 		.catch(err => {
@@ -187,13 +187,11 @@ const sendUserList = (module.exports.sendUserList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
 		socket.emit('userList', {
-			list: userList,
-			totalSockets: Object.keys(io.sockets.sockets).length
+			list: userList
 		});
 	} else {
 		io.sockets.emit('userList', {
-			list: userList,
-			totalSockets: Object.keys(io.sockets.sockets).length
+			list: userList
 		});
 	}
 });
