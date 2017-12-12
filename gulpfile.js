@@ -30,7 +30,7 @@ gulp.task('watch', () => {
 				? `./${e.path
 						.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1]
 //						.split('\\')
-						.join('/')}`
+//						.join('/')}`
 				: `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
 		gulp.start('lint');
 	});
