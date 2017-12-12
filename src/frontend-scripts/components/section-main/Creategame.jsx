@@ -1207,7 +1207,7 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 						<div className="four wide column">
-							<i className="big hide icon" />
+							<i className="big talk icon" />
 							<h4 className="ui header">Disable observer chat</h4>
 							<div
 								className="ui fitted toggle checkbox"

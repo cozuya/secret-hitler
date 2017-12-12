@@ -3,7 +3,7 @@ const Account = require('../../models/account'),
 	PlayerReport = require('../../models/playerReport'),
 	Game = require('../../models/game'),
 	BannedIP = require('../../models/bannedIP'),
-	{ games, userList, generalChats, accountCreationDisabled, ipbansDisabled } = require('./models'),
+	{ games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models'),
 	{ getProfile } = require('../../models/profile/utils'),
 	{ sendInProgressGameUpdate } = require('./util'),
 	version = require('../../version'),
@@ -49,6 +49,9 @@ module.exports.torIps = torIps;
 module.exports.sendModInfo = (socket, count) => {
 	const userNames = userList.map(user => user.userName);
 
+	console.log(ipbansNotEnforced);
+	console.log(gameCreationDisabled);
+
 	Account.find({ username: userNames })
 		.then(users => {
 			ModAction.find()
@@ -58,7 +61,8 @@ module.exports.sendModInfo = (socket, count) => {
 					socket.emit('modInfo', {
 						modReports: actions,
 						accountCreationDisabled,
-						ipbansDisabled,
+						ipbansNotEnforced,
+						gameCreationDisabled,
 						userList: users.map(user => ({
 							isRainbow: user.wins + user.losses > 49,
 							userName: user.username,

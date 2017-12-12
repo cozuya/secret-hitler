@@ -371,7 +371,9 @@ class Gamechat extends React.Component {
 								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
 									? isSeated
 										? isBlind
-											? `{${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											? `${
+													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
+												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
 									: isBlind ? '?' : chat.userName}
@@ -467,9 +469,11 @@ class Gamechat extends React.Component {
 					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 						Game
 					</a>
-					<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-						No observer chat
-					</a>
+					{!gameInfo.general.disableObserver && (
+						<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
+							No observer chat
+						</a>
+					)}
 					{userInfo.userName && (
 						<i
 							title="Click here to pop out notes"

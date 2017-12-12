@@ -1,92 +1,21 @@
 import React from 'react'; // eslint-disable-line
 import DisplayLobbies from './DisplayLobbies.jsx';
 import PropTypes from 'prop-types';
-import $ from 'jquery';
-import Checkbox from 'semantic-ui-checkbox';
-
-$.fn.checkbox = Checkbox;
+import { Checkbox } from 'semantic-ui-react';
 
 export class GamesList extends React.Component {
-	componentDidMount() {
-		const { changeGameFilter, gameFilter } = this.props;
-		const self = this;
+	constructor() {
+		super();
 
-		$(this.private).checkbox({
-			onChecked() {
-				gameFilter.priv = true;
-				changeGameFilter(gameFilter);
-			},
-			onUnchecked() {
-				gameFilter.priv = false;
-				changeGameFilter(gameFilter);
-			}
-		});
+		this.toggleFilter = this.toggleFilter.bind(this);
+	}
 
-		$(this.public).checkbox({
-			onChecked() {
-				gameFilter.pub = true;
-				changeGameFilter(gameFilter);
-			},
-			onUnchecked() {
-				gameFilter.pub = false;
-				changeGameFilter(gameFilter);
-			}
-		});
+	toggleFilter(value) {
+		const { gameFilter } = this.props;
 
-		$(this.unstarted).checkbox({
-			onChecked() {
-				gameFilter.unstarted = true;
-				changeGameFilter(gameFilter);
-			},
-			onUnchecked() {
-				gameFilter.unstarted = false;
-				changeGameFilter(gameFilter);
-			}
-		});
+		gameFilter[value] = !gameFilter[value];
 
-		$(this.inprogress).checkbox({
-			onChecked() {
-				gameFilter.inprogress = true;
-				changeGameFilter(gameFilter);
-			},
-			onUnchecked() {
-				gameFilter.inprogress = false;
-				changeGameFilter(gameFilter);
-			}
-		});
-
-		$(this.completed).checkbox({
-			onChecked() {
-				gameFilter.completed = true;
-				changeGameFilter(gameFilter);
-			},
-			onUnchecked() {
-				gameFilter.completed = false;
-				changeGameFilter(gameFilter);
-			}
-		});
-
-		$(this.standard).checkbox({
-			onChecked() {
-				gameFilter.standard = true;
-				changeGameFilter(gameFilter);
-			},
-			onUnchecked() {
-				gameFilter.standard = false;
-				changeGameFilter(gameFilter);
-			}
-		});
-
-		$(this.rainbow).checkbox({
-			onChecked() {
-				gameFilter.rainbow = true;
-				changeGameFilter(gameFilter);
-			},
-			onUnchecked() {
-				gameFilter.rainbow = false;
-				changeGameFilter(gameFilter);
-			}
-		});
+		this.props.changeGameFilter(gameFilter);
 	}
 
 	renderFilters() {
@@ -94,80 +23,73 @@ export class GamesList extends React.Component {
 			<div className="browser-filters ui grid">
 				<div className="three wide column">
 					<h4 className="ui header">Public</h4>
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.public = c;
+					<Checkbox
+						toggle
+						checked={this.props.gameFilter.pub}
+						onChange={() => {
+							this.toggleFilter('pub');
 						}}
-					>
-						<input type="checkbox" defaultChecked={true} />
-					</div>
+					/>
 				</div>
 				<div className="three wide column">
 					<h4 className="ui header">Private</h4>
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.private = c;
+					<Checkbox
+						toggle
+						checked={this.props.gameFilter.priv}
+						onChange={() => {
+							this.toggleFilter('priv');
 						}}
-					>
-						<input type="checkbox" defaultChecked={true} />
-					</div>
+					/>
 				</div>
 				<div className="three wide column">
 					<h4 className="ui header">Unstarted</h4>
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.unstarted = c;
+					<Checkbox
+						toggle
+						checked={this.props.gameFilter.unstarted}
+						onChange={() => {
+							this.toggleFilter('unstarted');
 						}}
-					>
-						<input type="checkbox" defaultChecked={true} />
-					</div>
+					/>
 				</div>
 				<div className="three wide column">
 					<h4 className="ui header">In progress</h4>
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.inprogress = c;
+					<Checkbox
+						toggle
+						checked={this.props.gameFilter.inprogress}
+						onChange={() => {
+							this.toggleFilter('inprogress');
 						}}
-					>
-						<input type="checkbox" defaultChecked={true} />
-					</div>
+					/>
 				</div>
 				<div className="three wide column">
 					<h4 className="ui header">Completed</h4>
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.completed = c;
+					<Checkbox
+						toggle
+						checked={this.props.gameFilter.completed}
+						onChange={() => {
+							this.toggleFilter('completed');
 						}}
-					>
-						<input type="checkbox" defaultChecked={true} />
-					</div>
+					/>
 				</div>
 				<div className="three wide column iconcolumn">
 					<i title="Filter by standard games" className="standard-icon" />
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.standard = c;
+					<Checkbox
+						toggle
+						checked={this.props.gameFilter.standard}
+						onChange={() => {
+							this.toggleFilter('standard');
 						}}
-					>
-						<input type="checkbox" defaultChecked={true} />
-					</div>
+					/>
 				</div>
 				<div className="three wide column iconcolumn">
 					<i title="Filter by experienced-player-only games" className="rainbow-icon" />
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.rainbow = c;
+					<Checkbox
+						toggle
+						checked={this.props.gameFilter.rainbow}
+						onChange={() => {
+							this.toggleFilter('rainbow');
 						}}
-					>
-						<input type="checkbox" defaultChecked={true} />
-					</div>
+					/>
 				</div>
 			</div>
 		);

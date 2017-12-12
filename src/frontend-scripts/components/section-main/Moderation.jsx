@@ -42,6 +42,8 @@ export default class Moderation extends React.Component {
 				log: info.modReports
 			});
 
+			$(this.toggleIpbans).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
+			$(this.toggleGameCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
 		});
 

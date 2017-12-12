@@ -14,6 +14,7 @@ const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
 const { sendInProgressGameUpdate } = require('./util.js');
+const animals = require('../../utils/animals');
 const version = require('../../version');
 const { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
 const displayWaitingForPlayers = game => {
@@ -101,6 +102,9 @@ const startCountdown = game => {
 				startGame(gameB);
 				sendGameList();
 			} else {
+				if (game.general.blindMode) {
+					game.general.replacementNames = _.shuffle(animals).slice(0, game.publicPlayersState.length);
+				}
 				startGame(game);
 			}
 		} else {
@@ -352,6 +356,7 @@ module.exports.handleUpdatedBio = (socket, data) => {
 };
 
 module.exports.handleAddNewGame = (socket, data) => {
+	console.log(gameCreationDisabled, 'gcd');
 	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
 		const username = socket.handshake.session.passport.user;
@@ -910,9 +915,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
-						? 'second'
-						: 'seconds'}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
+						game.general.remakeCount === 1 ? 'second' : 'seconds'
+					}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);

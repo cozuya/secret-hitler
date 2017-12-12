@@ -20,6 +20,7 @@ general
 	name string
 	isRemade bool, so that people can't click remake after its remade
 	gameCreatorBlacklist array of strings of usernames
+	replacementNames array of strings of animals to be used to replace player names in blind mode
 	minPlayersCount number 5-10
 	maxPlayersCount number 5-10
 	excludedPlayerCount array of numbers
