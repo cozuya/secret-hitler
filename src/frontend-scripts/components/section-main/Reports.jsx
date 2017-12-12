@@ -28,13 +28,13 @@ export default class Reports extends React.Component {
 	}
 
 	renderReportsLog() {
-		const { sortType, sortDirection } = this.state,
-			sortClick = type => {
-				this.setState({
-					sortType: type,
-					sortDirection: sortDirection === 'descending' ? 'ascending' : 'descending'
-				});
-			};
+		const { sortType, sortDirection } = this.state;
+		const sortClick = type => {
+			this.setState({
+				sortType: type,
+				sortDirection: sortDirection === 'descending' ? 'ascending' : 'descending'
+			});
+		};
 
 		return (
 			<div>
@@ -88,8 +88,8 @@ export default class Reports extends React.Component {
 					<tbody>
 						{this.state.reports
 							.sort((a, b) => {
-								const aDate = new Date(a.date),
-									bDate = new Date(b.date);
+								const aDate = new Date(a.date);
+								const bDate = new Date(b.date);
 
 								if (sortType === 'date') {
 									if (sortDirection === 'descending') {

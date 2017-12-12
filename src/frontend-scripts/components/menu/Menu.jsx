@@ -24,6 +24,7 @@ class Menu extends React.Component {
 
 	render() {
 		let classes = 'ui menu nav-menu';
+
 		if (this.props.midSection === 'game') {
 			classes += ' game';
 		}
@@ -67,16 +68,16 @@ class Menu extends React.Component {
 					</div>
 					<div className="item right">
 						{(() => {
-							const { gameInfo, userInfo } = this.props,
-								iconClasses = () => {
-									let classes = 'setting icon large';
+							const { gameInfo, userInfo } = this.props;
+							const iconClasses = () => {
+								let classes = 'setting icon large';
 
-									if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
-										classes += ' disabled';
-									}
+								if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
+									classes += ' disabled';
+								}
 
-									return classes;
-								};
+								return classes;
+							};
 
 							return !userInfo.userName ? (
 								<div className="ui buttons">
@@ -106,17 +107,13 @@ class Menu extends React.Component {
 								</div>
 							);
 						})()}
-						{(() => {
-							if (this.props.userInfo.userName) {
-								return (
-									<div className="item right">
-										<a className="ui button" href="/observe">
-											Logout
-										</a>
-									</div>
-								);
-							}
-						})()}
+						{this.props.userInfo.userName && (
+							<div className="item right">
+								<a className="ui button" href="/observe">
+									Logout
+								</a>
+							</div>
+						)}
 					</div>
 				</section>
 			</div>

@@ -63,8 +63,8 @@ class Settings extends React.Component {
 
 	toggleGameSettings(value) {
 		const obj = {};
-		obj[value] = !this.state[value];
 
+		obj[value] = !this.state[value];
 		this.props.socket.emit('updateGameSettings', obj);
 		this.setState(obj);
 	}
@@ -392,9 +392,8 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
-															this.state.imageUid
-														}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${this.state
+															.imageUid}) no-repeat`
 													}}
 												/>
 											);

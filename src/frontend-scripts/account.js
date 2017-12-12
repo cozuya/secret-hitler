@@ -21,16 +21,16 @@ export default () => {
 
 	$('button.signup-submit').on('click', function(event) {
 		event.preventDefault();
-		const username = $('#signup-username').val(),
-			password = $('#signup-password1').val(),
-			password2 = $('#signup-password2').val(),
-			$loader = $(this).next(),
-			$message = $loader.next(),
-			isPrivate = $('#private-player').is(':checked'),
-			submitErr = message => {
-				$loader.removeClass('active');
-				$message.text(message).removeClass('hidden');
-			};
+		const username = $('#signup-username').val();
+		const password = $('#signup-password1').val();
+		const password2 = $('#signup-password2').val();
+		const $loader = $(this).next();
+		const $message = $loader.next();
+		const isPrivate = $('#private-player').is(':checked');
+		const submitErr = message => {
+			$loader.removeClass('active');
+			$message.text(message).removeClass('hidden');
+		};
 
 		$loader.addClass('active');
 
@@ -105,14 +105,14 @@ export default () => {
 
 	$('button.signin-submit').on('click', function(event) {
 		event.preventDefault();
-		const username = $('#signin-username').val(),
-			password = $('#signin-password').val(),
-			$loader = $(this).next(),
-			$message = $loader.next(),
-			submitErr = message => {
-				$loader.removeClass('active');
-				$message.text(message).removeClass('hidden');
-			};
+		const username = $('#signin-username').val();
+		const password = $('#signin-password').val();
+		const $loader = $(this).next();
+		const $message = $loader.next();
+		const submitErr = message => {
+			$loader.removeClass('active');
+			$message.text(message).removeClass('hidden');
+		};
 
 		$loader.addClass('active');
 
@@ -160,15 +160,15 @@ export default () => {
 	$('button#passwordchange-submit').on('click', function(event) {
 		event.preventDefault();
 
-		const newPassword = $('#passwordchange-password').val(),
-			newPasswordConfirm = $('#passwordchange-confirmpassword').val(),
-			$loader = $(this).next(),
-			$errMessage = $loader.next(),
-			$successMessage = $errMessage.next(),
-			data = JSON.stringify({
-				newPassword,
-				newPasswordConfirm
-			});
+		const newPassword = $('#passwordchange-password').val();
+		const newPasswordConfirm = $('#passwordchange-confirmpassword').val();
+		const $loader = $(this).next();
+		const $errMessage = $loader.next();
+		const $successMessage = $errMessage.next();
+		const data = JSON.stringify({
+			newPassword,
+			newPasswordConfirm
+		});
 
 		$loader.addClass('active');
 

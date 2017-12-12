@@ -31,20 +31,21 @@ class Tracks extends React.Component {
 
 	optionIcons(gameInfo) {
 		const game = gameInfo.general;
-		let rebalance69p,
-			rebalance69pTooltip,
-			disableChat,
-			disableChatTooltip,
-			disableGamechat,
-			disableGamechatTooltip,
-			experiencedMode,
-			experiancedModeTooltip,
-			privateOnly,
-			privateOnlyTooltip,
-			priv,
-			privTooltip,
-			rainbowgame,
-			rainbowgameTooltip;
+
+		let rebalance69p;
+		let rebalance69pTooltip;
+		let disableChat;
+		let disableChatTooltip;
+		let disableGamechat;
+		let disableGamechatTooltip;
+		let experiencedMode;
+		let experiancedModeTooltip;
+		let privateOnly;
+		let privateOnlyTooltip;
+		let priv;
+		let privTooltip;
+		let rainbowgame;
+		let rainbowgameTooltip;
 
 		if (game.rebalance69p) {
 			rebalance69p = <div> R </div>;
@@ -119,47 +120,48 @@ class Tracks extends React.Component {
 	}
 
 	render() {
-		const { gameInfo, userInfo, socket } = this.props,
-			renderElectionTracker = () => {
-				let classes = 'electiontracker';
+		const { gameInfo, userInfo, socket } = this.props;
+		const renderElectionTracker = () => {
+			let classes = 'electiontracker';
 
-				if (gameInfo.trackState.electionTrackerCount === 1) {
-					classes += ' fail1';
-				} else if (gameInfo.trackState.electionTrackerCount === 2) {
-					classes += ' fail2';
-				} else if (gameInfo.trackState.electionTrackerCount === 3) {
-					classes += ' fail3';
-				}
+			if (gameInfo.trackState.electionTrackerCount === 1) {
+				classes += ' fail1';
+			} else if (gameInfo.trackState.electionTrackerCount === 2) {
+				classes += ' fail2';
+			} else if (gameInfo.trackState.electionTrackerCount === 3) {
+				classes += ' fail3';
+			}
 
-				if (gameInfo.gameState.isTracksFlipped && (gameInfo.trackState && !gameInfo.trackState.isHidden)) {
-					return <div className={classes} />;
-				}
-			},
-			updateRemake = () => {
-				if (!this.state.remakeStatusDisabled) {
-					this.setState(
-						{
-							remakeStatus: !this.state.remakeStatus,
-							remakeStatusDisabled: true
-						},
-						() => {
-							this.props.socket.emit('updateRemake', {
-								remakeStatus: this.state.remakeStatus,
-								userName: userInfo.userName,
-								uid: gameInfo.general.uid
-							});
-						}
-					);
+			if (gameInfo.gameState.isTracksFlipped && (gameInfo.trackState && !gameInfo.trackState.isHidden)) {
+				return <div className={classes} />;
+			}
+		};
 
-					setTimeout(() => {
-						if (this._ismounted) {
-							this.setState({
-								remakeStatusDisabled: false
-							});
-						}
-					}, 2000);
-				}
-			};
+		const updateRemake = () => {
+			if (!this.state.remakeStatusDisabled) {
+				this.setState(
+					{
+						remakeStatus: !this.state.remakeStatus,
+						remakeStatusDisabled: true
+					},
+					() => {
+						this.props.socket.emit('updateRemake', {
+							remakeStatus: this.state.remakeStatus,
+							userName: userInfo.userName,
+							uid: gameInfo.general.uid
+						});
+					}
+				);
+
+				setTimeout(() => {
+					if (this._ismounted) {
+						this.setState({
+							remakeStatusDisabled: false
+						});
+					}
+				}, 2000);
+			}
+		};
 
 		return (
 			<section className="tracks-container">

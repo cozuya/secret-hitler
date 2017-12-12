@@ -1,61 +1,61 @@
 const {
-		handleUpdatedTruncateGame,
-		handleUpdatedReportGame,
-		handleAddNewGame,
-		handleAddNewGameChat,
-		handleNewGeneralChat,
-		handleUpdatedGameSettings,
-		handleSocketDisconnect,
-		handleUserLeaveGame,
-		checkUserStatus,
-		updateSeatedUser,
-		handleUpdateWhitelist,
-		handleAddNewClaim,
-		handleModerationAction,
-		handlePlayerReport,
-		handlePlayerReportDismiss,
-		handleUpdatedBio,
-		handleUpdatedRemakeGame
-	} = require('./user-events'),
-	{
-		sendUserReports,
-		sendGameInfo,
-		sendUserGameSettings,
-		sendModInfo,
-		sendGameList,
-		sendGeneralChats,
-		sendUserList,
-		sendReplayGameChats,
-		updateUserStatus
-	} = require('./user-requests'),
-	{
-		selectChancellor,
-		selectVoting,
-		selectPresidentPolicy,
-		selectChancellorPolicy,
-		selectChancellorVoteOnVeto,
-		selectPresidentVoteOnVeto
-	} = require('./game/election'),
-	{ selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers'),
-	{ games } = require('./models'),
-	gamesGarbageCollector = () => {
-		const currentTime = new Date().getTime(),
-			toRemoveIndexes = games
-				.filter(
-					game =>
-						(game.general.timeStarted && game.general.timeStarted + 4200000 < currentTime) ||
-						(game.general.timeCreated && game.general.timeCreated + 600000 < currentTime && game.general.private && game.publicPlayersState.length < 5)
-				)
-				.map(game => games.indexOf(game))
-				.reverse();
+	handleUpdatedTruncateGame,
+	handleUpdatedReportGame,
+	handleAddNewGame,
+	handleAddNewGameChat,
+	handleNewGeneralChat,
+	handleUpdatedGameSettings,
+	handleSocketDisconnect,
+	handleUserLeaveGame,
+	checkUserStatus,
+	updateSeatedUser,
+	handleUpdateWhitelist,
+	handleAddNewClaim,
+	handleModerationAction,
+	handlePlayerReport,
+	handlePlayerReportDismiss,
+	handleUpdatedBio,
+	handleUpdatedRemakeGame
+} = require('./user-events');
+const {
+	sendUserReports,
+	sendGameInfo,
+	sendUserGameSettings,
+	sendModInfo,
+	sendGameList,
+	sendGeneralChats,
+	sendUserList,
+	sendReplayGameChats,
+	updateUserStatus
+} = require('./user-requests');
+const {
+	selectChancellor,
+	selectVoting,
+	selectPresidentPolicy,
+	selectChancellorPolicy,
+	selectChancellorVoteOnVeto,
+	selectPresidentVoteOnVeto
+} = require('./game/election');
+const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
+const { games } = require('./models');
+const gamesGarbageCollector = () => {
+	const currentTime = new Date().getTime();
+	const toRemoveIndexes = games
+		.filter(
+			game =>
+				(game.general.timeStarted && game.general.timeStarted + 4200000 < currentTime) ||
+				(game.general.timeCreated && game.general.timeCreated + 600000 < currentTime && game.general.private && game.publicPlayersState.length < 5)
+		)
+		.map(game => games.indexOf(game))
+		.reverse();
 
-		games.forEach((game, index) => {
-			if (toRemoveIndexes.includes(index)) {
-				games.splice(index, 1);
-			}
-		});
-		sendGameList();
-	};
+	games.forEach((game, index) => {
+		if (toRemoveIndexes.includes(index)) {
+			games.splice(index, 1);
+		}
+	});
+	sendGameList();
+};
 
 module.exports = () => {
 	setInterval(gamesGarbageCollector, 100000);
@@ -65,9 +65,9 @@ module.exports = () => {
 
 		// defensively check if game exists
 		socket.use((packet, next) => {
-			const data = packet[1],
-				uid = data && data.uid,
-				isGameFound = uid && games.find(g => g.general.uid === uid);
+			const data = packet[1];
+			const uid = data && data.uid;
+			const isGameFound = uid && games.find(g => g.general.uid === uid);
 
 			if (!uid || isGameFound) {
 				return next();

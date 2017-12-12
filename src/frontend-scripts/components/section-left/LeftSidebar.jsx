@@ -9,8 +9,8 @@ const LeftSidebar = props => {
 		if (gameList.length) {
 			return gameList
 				.sort((a, b) => {
-					const aGameStatus = a.gameStatus,
-						bGameStatus = b.gameStatus;
+					const aGameStatus = a.gameStatus;
+					const bGameStatus = b.gameStatus;
 
 					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
 						return a.seatedCount === b.seatedCount ? (a.uid > b.uid ? 1 : -1) : a.seatedCount - b.seatedCount;
@@ -51,8 +51,8 @@ const LeftSidebar = props => {
 	return (
 		<section className="section-left three wide column leftsidebar">
 			{(() => {
-				const { userName } = props.userInfo,
-					gameBeingCreated = props.midSection === 'createGame';
+				const { userName } = props.userInfo;
+				const gameBeingCreated = props.midSection === 'createGame';
 
 				return userName && !gameBeingCreated ? (
 					<a className="ui button primary" href="#/creategame">

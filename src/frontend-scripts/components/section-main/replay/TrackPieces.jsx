@@ -6,7 +6,6 @@ import { handToCards } from './replay-utils.jsx';
 
 const ElectionTracker = ({ position }) => {
 	const positionToClassName = Map([[0, 'zero'], [1, 'one'], [2, 'two'], [3, 'three']]);
-
 	const classes = classnames('election-tracker', positionToClassName.get(position));
 
 	return <div className={classes} />;
@@ -14,10 +13,8 @@ const ElectionTracker = ({ position }) => {
 
 const TrackPieces = ({ phase, track, electionTracker }) => {
 	const cards = handToCards(track);
-
 	const redCards = cards.slice(0, track.reds);
 	const blueCards = cards.slice(track.reds);
-
 	const classes = classnames('track-pieces', {
 		blurred: ['presidentLegislation', 'chancellorLegislation', 'policyPeek'].includes(phase)
 	});

@@ -3,52 +3,52 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 const SidebarGame = props => {
-	const { game } = props,
-		gameClasses = () => {
-			let classes = 'ui vertical segment';
+	const { game } = props;
+	const gameClasses = () => {
+		let classes = 'ui vertical segment';
 
-			if (game.gameStatus === 'isStarted') {
-				classes += ' inprogress';
-			} else if (game.gameStatus === 'fascist') {
-				classes += ' fascist';
-			} else if (game.gameStatus === 'liberal') {
-				classes += ' liberal';
-			} else {
-				classes += ' notstarted';
-			}
+		if (game.gameStatus === 'isStarted') {
+			classes += ' inprogress';
+		} else if (game.gameStatus === 'fascist') {
+			classes += ' fascist';
+		} else if (game.gameStatus === 'liberal') {
+			classes += ' liberal';
+		} else {
+			classes += ' notstarted';
+		}
 
-			return classes;
-		},
-		playersCount = () => {
-			const availableSeatCounts = new Array(game.maxPlayersCount)
-				.fill(true)
-				.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
-				.filter(el => el);
+		return classes;
+	};
+	const playersCount = () => {
+		const availableSeatCounts = new Array(game.maxPlayersCount)
+			.fill(true)
+			.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
+			.filter(el => el);
 
-			let str = '';
+		let str = '';
 
-			availableSeatCounts.forEach(el => {
-				if (availableSeatCounts.includes(el)) {
-					if (el === game.maxPlayersCount) {
-						str = `${str}${el} players`;
+		availableSeatCounts.forEach(el => {
+			if (availableSeatCounts.includes(el)) {
+				if (el === game.maxPlayersCount) {
+					str = `${str}${el} players`;
+				} else {
+					if (availableSeatCounts.includes(el - 1)) {
+						if (!availableSeatCounts.includes(el + 1)) {
+							str = `${str}${el}, `;
+						}
 					} else {
-						if (availableSeatCounts.includes(el - 1)) {
-							if (!availableSeatCounts.includes(el + 1)) {
-								str = `${str}${el}, `;
-							}
+						if (!str.length) {
+							str = availableSeatCounts.includes(el + 1) ? `${el}-` : `${el},`;
 						} else {
-							if (!str.length) {
-								str = availableSeatCounts.includes(el + 1) ? `${el}-` : `${el},`;
-							} else {
-								str = !availableSeatCounts.includes(el + 1) ? `${str}${el},` : (str = `${str}${el}-`);
-							}
+							str = !availableSeatCounts.includes(el + 1) ? `${str}${el},` : (str = `${str}${el}-`);
 						}
 					}
 				}
-			});
+			}
+		});
 
-			return str;
-		};
+		return str;
+	};
 
 	return (
 		<div

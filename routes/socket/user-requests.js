@@ -1,17 +1,17 @@
-const Account = require('../../models/account'),
-	ModAction = require('../../models/modAction'),
-	PlayerReport = require('../../models/playerReport'),
-	Game = require('../../models/game'),
-	BannedIP = require('../../models/bannedIP'),
-	{ games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models'),
-	{ getProfile } = require('../../models/profile/utils'),
-	{ sendInProgressGameUpdate } = require('./util'),
-	version = require('../../version'),
-	https = require('https'),
-	options = {
-		hostname: 'check.torproject.org',
-		path: '/cgi-bin/TorBulkExitList.py?ip=1.1.1.1'
-	};
+const Account = require('../../models/account');
+const ModAction = require('../../models/modAction');
+const PlayerReport = require('../../models/playerReport');
+const Game = require('../../models/game');
+const BannedIP = require('../../models/bannedIP');
+const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
+const { getProfile } = require('../../models/profile/utils');
+const { sendInProgressGameUpdate } = require('./util');
+const version = require('../../version');
+const https = require('https');
+const options = {
+	hostname: 'check.torproject.org',
+	path: '/cgi-bin/TorBulkExitList.py?ip=1.1.1.1'
+};
 // http://torstatus.blutmagie.de/ip_list_exit.php/Tor_ip_list_EXIT.csv
 
 let torIps = [];
@@ -84,6 +84,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 	Account.findOne({ username })
 		.then(account => {
 			const userListNames = userList.map(user => user.userName);
+
 			socket.emit('gameSettings', account.gameSettings);
 
 			if (!userListNames.includes(username)) {
@@ -210,8 +211,8 @@ const updateUserStatus = (module.exports.updateUserStatus = (username, type, gam
 });
 
 module.exports.sendGameInfo = (socket, uid) => {
-	const game = games.find(el => el.general.uid === uid),
-		{ passport } = socket.handshake.session;
+	const game = games.find(el => el.general.uid === uid);
+	const { passport } = socket.handshake.session;
 
 	if (game) {
 		// Not sure if we need this copy of game anymore? all it's doing is being passed to sendInProgressGameUpdate

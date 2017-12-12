@@ -21,67 +21,66 @@ class CardFlinger extends React.Component {
 
 	render() {
 		const handleCardClick = e => {
-				const { gameInfo, socket } = this.props,
-					{ gameState } = gameInfo,
-					{ phase } = gameState,
-					index = parseInt($(e.currentTarget).attr('data-index'), 10);
+			const { gameInfo, socket } = this.props;
+			const { gameState } = gameInfo;
+			const { phase } = gameState;
+			const index = parseInt($(e.currentTarget).attr('data-index'), 10);
 
-				if (phase === 'voting' && gameInfo.cardFlingerState[0].action === 'active') {
-					socket.emit('selectedVoting', {
-						vote: index === 1,
-						userName: this.props.userInfo.userName,
-						uid: gameInfo.general.uid
-					});
-				}
+			if (phase === 'voting' && gameInfo.cardFlingerState[0].action === 'active') {
+				socket.emit('selectedVoting', {
+					vote: index === 1,
+					userName: this.props.userInfo.userName,
+					uid: gameInfo.general.uid
+				});
+			}
 
-				if (phase === 'presidentSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
-					socket.emit('selectedPresidentPolicy', {
-						userName: this.props.userInfo.userName,
-						uid: gameInfo.general.uid,
-						selection: index ? (index === 2 ? 1 : 2) : 0
-					});
-				}
+			if (phase === 'presidentSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
+				socket.emit('selectedPresidentPolicy', {
+					userName: this.props.userInfo.userName,
+					uid: gameInfo.general.uid,
+					selection: index ? (index === 2 ? 1 : 2) : 0
+				});
+			}
 
-				if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
-					socket.emit('selectedChancellorPolicy', {
-						userName: this.props.userInfo.userName,
-						uid: gameInfo.general.uid,
-						selection: index,
-						policy: $(e.currentTarget)
-							.find('.back')
-							.hasClass('liberalp')
-							? 'liberal'
-							: 'fascist'
-					});
-				}
+			if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
+				socket.emit('selectedChancellorPolicy', {
+					userName: this.props.userInfo.userName,
+					uid: gameInfo.general.uid,
+					selection: index,
+					policy: $(e.currentTarget)
+						.find('.back')
+						.hasClass('liberalp')
+						? 'liberal'
+						: 'fascist'
+				});
+			}
 
-				if (phase === 'chancellorVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
-					socket.emit('selectedChancellorVoteOnVeto', {
-						vote: index === 1,
-						userName: this.props.userInfo.userName,
-						uid: gameInfo.general.uid
-					});
-				}
+			if (phase === 'chancellorVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
+				socket.emit('selectedChancellorVoteOnVeto', {
+					vote: index === 1,
+					userName: this.props.userInfo.userName,
+					uid: gameInfo.general.uid
+				});
+			}
 
-				if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
-					socket.emit('selectedPresidentVoteOnVeto', {
-						vote: index === 1,
-						userName: this.props.userInfo.userName,
-						uid: gameInfo.general.uid
-					});
-				}
-			},
-			{ cardFlingerState } = this.props.gameInfo,
-			positions = ['middle-far-left', 'middle-left', 'middle-center', 'middle-right', 'middle-far-right'];
-
+			if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
+				socket.emit('selectedPresidentVoteOnVeto', {
+					vote: index === 1,
+					userName: this.props.userInfo.userName,
+					uid: gameInfo.general.uid
+				});
+			}
+		};
+		const { cardFlingerState } = this.props.gameInfo;
+		const positions = ['middle-far-left', 'middle-left', 'middle-center', 'middle-right', 'middle-far-right'];
 		const renderHelpMessage = () => {
-			const { gameInfo, userInfo } = this.props,
-				{ gameState, publicPlayersState, cardFlingerState, general } = gameInfo,
-				{ phase } = gameState,
-				{ status } = general,
-				{ userName } = userInfo,
-				currentPlayer = publicPlayersState.find(player => player.userName === userName),
-				currentPlayerStatus = currentPlayer ? currentPlayer.governmentStatus : null;
+			const { gameInfo, userInfo } = this.props;
+			const { gameState, publicPlayersState, cardFlingerState, general } = gameInfo;
+			const { phase } = gameState;
+			const { status } = general;
+			const { userName } = userInfo;
+			const currentPlayer = publicPlayersState.find(player => player.userName === userName);
+			const currentPlayerStatus = currentPlayer ? currentPlayer.governmentStatus : null;
 
 			if (userName && userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages === true) {
 				return;
@@ -143,9 +142,10 @@ class CardFlinger extends React.Component {
 				{(() => {
 					return positions.map((position, i) => {
 						const stateObj = cardFlingerState.find(flinger => flinger.position === position);
-						let frontClasses = 'cardflinger-card front',
-							backClasses = 'cardflinger-card back',
-							containerClasses = `cardflinger-card-container ${position}`;
+
+						let frontClasses = 'cardflinger-card front';
+						let backClasses = 'cardflinger-card back';
+						let containerClasses = `cardflinger-card-container ${position}`;
 
 						if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
 							containerClasses += ' display-help-icons';

@@ -269,6 +269,7 @@ export class App extends React.Component {
 				isPrivate: userInfo.gameSettings.isPrivate,
 				customCardback: userInfo.gameSettings.customCardback,
 				customCardbackUid: userInfo.gameSettings.customCardbackUid,
+				tournyWins: userInfo.gameSettings.tournyWins,
 				password
 			};
 

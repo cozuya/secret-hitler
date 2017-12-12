@@ -54,22 +54,22 @@ const DisplayLobbies = props => {
 	};
 
 	const optionIcons = () => {
-		let rebalance69p,
-			rebalance69pTooltip,
-			disableChat,
-			disableChatTooltip,
-			disableGamechat,
-			disableGamechatTooltip,
-			experiencedMode,
-			experiancedModeTooltip,
-			rainbowgame,
-			rainbowgameTooltip,
-			blind,
-			blindTooltip,
-			priv,
-			privTooltip,
-			privateOnly,
-			privateOnlyTooltip;
+		let rebalance69p;
+		let rebalance69pTooltip;
+		let disableChat;
+		let disableChatTooltip;
+		let disableGamechat;
+		let disableGamechatTooltip;
+		let experiencedMode;
+		let experiancedModeTooltip;
+		let rainbowgame;
+		let rainbowgameTooltip;
+		let blind;
+		let blindTooltip;
+		let priv;
+		let privTooltip;
+		let privateOnly;
+		let privateOnlyTooltip;
 
 		if (game.rebalance69p) {
 			rebalance69p = <div> R </div>;
@@ -152,8 +152,8 @@ const DisplayLobbies = props => {
 	};
 
 	const playerIcons = () => {
-		const players = [],
-			total = [];
+		const players = [];
+		const total = [];
 		// Might be a simpler way to write this. Just getting all the data we need and storing it in players[]
 		if (game.blindMode) {
 			return;
@@ -210,9 +210,9 @@ const DisplayLobbies = props => {
 	};
 
 	const gameProgress = () => {
-		let progressText,
-			progressIcons,
-			classes = 'progress-text';
+		let progressText;
+		let progressIcons;
+		let classes = 'progress-text';
 		if (game.private) {
 			classes += ' private';
 			progressText = 'Private Game';

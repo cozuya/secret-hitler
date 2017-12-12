@@ -1,12 +1,13 @@
-const { sendInProgressGameUpdate } = require('../util.js'),
-	{ games } = require('../models.js'),
-	{ startElection, shufflePolicies } = require('./common.js'),
-	{ completeGame } = require('./end-game.js');
+const { sendInProgressGameUpdate } = require('../util.js');
+const { games } = require('../models.js');
+const { startElection, shufflePolicies } = require('./common.js');
+const { completeGame } = require('./end-game.js');
 
 module.exports.policyPeek = game => {
-	const { seatedPlayers } = game.private,
-		{ presidentIndex } = game.gameState,
-		president = seatedPlayers[presidentIndex];
+	const { seatedPlayers } = game.private;
+	const { presidentIndex } = game.gameState;
+	const president = seatedPlayers[presidentIndex];
+
 	if (!game.private.lock.policyPeek) {
 		game.private.lock.policyPeek = true;
 
@@ -22,11 +23,11 @@ module.exports.policyPeek = game => {
 };
 
 module.exports.selectPolicies = data => {
-	const game = games.find(el => el.general.uid === data.uid),
-		{ presidentIndex } = game.gameState,
-		{ experiencedMode } = game.general,
-		{ seatedPlayers } = game.private,
-		president = seatedPlayers[presidentIndex];
+	const game = games.find(el => el.general.uid === data.uid);
+	const { presidentIndex } = game.gameState;
+	const { experiencedMode } = game.general;
+	const { seatedPlayers } = game.private;
+	const president = seatedPlayers[presidentIndex];
 
 	if (!game.private.lock.selectPolicies) {
 		game.private.lock.selectPolicies = true;
@@ -37,16 +38,14 @@ module.exports.selectPolicies = data => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 3).reduce(
-				(peek, policy) => {
-					if (policy === 'fascist') {
-						return Object.assign({}, peek, { reds: peek.reds + 1 });
-					} else {
-						return Object.assign({}, peek, { blues: peek.blues + 1 });
-					}
-				},
-				{ reds: 0, blues: 0 }
-			)
+			policyPeek: game.private.policies.slice(0, 3).reduce((peek, policy) => {
+				if (policy === 'fascist') {
+					return Object.assign({}, peek, { reds: peek.reds + 1 });
+				} else {
+					return Object.assign({}, peek, { blues: peek.blues + 1 });
+				}
+			},
+			{ reds: 0, blues: 0 })
 		});
 
 		president.cardFlingerState = [
@@ -130,9 +129,9 @@ module.exports.selectPolicies = data => {
 };
 
 module.exports.investigateLoyalty = game => {
-	const { seatedPlayers } = game.private,
-		{ presidentIndex } = game.gameState,
-		president = seatedPlayers[presidentIndex];
+	const { seatedPlayers } = game.private;
+	const { presidentIndex } = game.gameState;
+	const president = seatedPlayers[presidentIndex];
 
 	if (!game.private.lock.investigateLoyalty) {
 		game.private.lock.investigateLoyalty = true;
@@ -154,16 +153,17 @@ module.exports.investigateLoyalty = game => {
 };
 
 module.exports.selectPartyMembershipInvestigate = data => {
-	const game = games.find(el => el.general.uid === data.uid),
-		{ playerIndex } = data,
-		{ experiencedMode } = game.general,
-		{ presidentIndex } = game.gameState,
-		{ seatedPlayers } = game.private,
-		president = seatedPlayers[presidentIndex],
-		playersTeam = game.private.seatedPlayers[playerIndex].role.team;
+	const game = games.find(el => el.general.uid === data.uid);
+	const { playerIndex } = data;
+	const { experiencedMode } = game.general;
+	const { presidentIndex } = game.gameState;
+	const { seatedPlayers } = game.private;
+	const president = seatedPlayers[presidentIndex];
+	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
 
 	if (!game.private.lock.selectPartyMembershipInvestigate) {
 		game.private.lock.selectPartyMembershipInvestigate = true;
+
 		if (!seatedPlayers[playerIndex].wasInvestigated) {
 			seatedPlayers[playerIndex].wasInvestigated = true;
 
@@ -261,9 +261,9 @@ module.exports.selectPartyMembershipInvestigate = data => {
 };
 
 module.exports.specialElection = game => {
-	const { seatedPlayers } = game.private,
-		{ presidentIndex } = game.gameState,
-		president = seatedPlayers[presidentIndex];
+	const { seatedPlayers } = game.private;
+	const { presidentIndex } = game.gameState;
+	const president = seatedPlayers[presidentIndex];
 
 	if (!game.private.lock.specialElection) {
 		game.private.lock.specialElection = true;
@@ -305,9 +305,9 @@ module.exports.selectSpecialElection = data => {
 };
 
 module.exports.executePlayer = game => {
-	const { seatedPlayers } = game.private,
-		{ presidentIndex } = game.gameState,
-		president = seatedPlayers[presidentIndex];
+	const { seatedPlayers } = game.private;
+	const { presidentIndex } = game.gameState;
+	const president = seatedPlayers[presidentIndex];
 
 	if (!game.private.lock.executePlayer) {
 		game.private.lock.executePlayer = true;
@@ -348,30 +348,30 @@ module.exports.executePlayer = game => {
 };
 
 module.exports.selectPlayerToExecute = data => {
-	const game = games.find(el => el.general.uid === data.uid),
-		{ playerIndex } = data,
-		{ presidentIndex } = game.gameState,
-		{ seatedPlayers } = game.private,
-		selectedPlayer = seatedPlayers[playerIndex],
-		publicSelectedPlayer = game.publicPlayersState[playerIndex],
-		president = seatedPlayers[presidentIndex],
-		nonPresidentChat = {
-			gameChat: true,
-			timestamp: new Date(),
-			chat: [
-				{ text: 'President ' },
-				{
-					text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
-					type: 'player'
-				},
-				{ text: ' selects to execute ' },
-				{
-					text: game.general.blindMode ? `{${playerIndex + 1}}` : `${selectedPlayer.userName} {${playerIndex + 1}}`,
-					type: 'player'
-				},
-				{ text: '.' }
-			]
-		};
+	const game = games.find(el => el.general.uid === data.uid);
+	const { playerIndex } = data;
+	const { presidentIndex } = game.gameState;
+	const { seatedPlayers } = game.private;
+	const selectedPlayer = seatedPlayers[playerIndex];
+	const publicSelectedPlayer = game.publicPlayersState[playerIndex];
+	const president = seatedPlayers[presidentIndex];
+	const nonPresidentChat = {
+		gameChat: true,
+		timestamp: new Date(),
+		chat: [
+			{ text: 'President ' },
+			{
+				text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
+				type: 'player'
+			},
+			{ text: ' selects to execute ' },
+			{
+				text: game.general.blindMode ? `{${playerIndex + 1}}` : `${selectedPlayer.userName} {${playerIndex + 1}}`,
+				type: 'player'
+			},
+			{ text: '.' }
+		]
+	};
 
 	if (!game.private.lock.selectPlayerToExecute) {
 		game.private.lock.selectPlayerToExecute = true;

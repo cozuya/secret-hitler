@@ -4,11 +4,11 @@ import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 
-const mapStateToProps = ({ profile }) => ({ profile }),
-	mapDispatchToProps = dispatch => ({
-		updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
-		fetchReplay: gameId => dispatch(fetchReplay(gameId))
-	});
+const mapStateToProps = ({ profile }) => ({ profile });
+const mapDispatchToProps = dispatch => ({
+	updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
+	fetchReplay: gameId => dispatch(fetchReplay(gameId))
+});
 
 class ProfileWrapper extends React.Component {
 	constructor() {
@@ -72,17 +72,17 @@ class ProfileWrapper extends React.Component {
 	}
 
 	Stats() {
-		const { activeStat } = this.props.profile,
-			{ updateActiveStats } = this.props,
-			table = (() => {
-				switch (activeStat) {
-					case 'MATCHES':
-						return this.Matches();
-					case 'ACTIONS':
-						return this.Actions();
-				}
-			})(),
-			toActive = stat => (activeStat === stat ? 'active' : '');
+		const { activeStat } = this.props.profile;
+		const { updateActiveStats } = this.props;
+		const table = (() => {
+			switch (activeStat) {
+				case 'MATCHES':
+					return this.Matches();
+				case 'ACTIONS':
+					return this.Actions();
+			}
+		})();
+		const toActive = stat => (activeStat === stat ? 'active' : '');
 
 		return (
 			<div>
@@ -106,13 +106,13 @@ class ProfileWrapper extends React.Component {
 	}
 
 	RecentGames() {
-		const { recentGames } = this.props.profile,
-			rows = recentGames.map(game => ({
-				onClick: e => {
-					window.location.hash = `/replay/${game._id}`;
-				},
-				cells: [game.loyalty === 'liberal' ? 'Liberal' : 'Fascist', game.playerSize, game.isWinner ? 'Win' : 'Loss', this.formatDateString(game.date)]
-			}));
+		const { recentGames } = this.props.profile;
+		const rows = recentGames.map(game => ({
+			onClick: e => {
+				window.location.hash = `/replay/${game._id}`;
+			},
+			cells: [game.loyalty === 'liberal' ? 'Liberal' : 'Fascist', game.playerSize, game.isWinner ? 'Win' : 'Loss', this.formatDateString(game.date)]
+		}));
 
 		return (
 			<div>
@@ -123,52 +123,52 @@ class ProfileWrapper extends React.Component {
 	}
 
 	renderBio() {
-		const { userInfo, profile } = this.props,
-			editClick = () => {
-				this.setState({
-					bioStatus: this.state.bioStatus === 'editing' ? 'displayed' : 'editing'
-				});
-			},
-			bioChange = e => {
-				this.setState({ bioValue: `${e.target.value}` });
-			},
-			bioKeyDown = e => {
-				if (e.keyCode === 13) {
-					this.props.socket.emit('updateBio', this.state.bioValue);
-					this.setState({ bioStatus: 'displayed' });
+		const { userInfo, profile } = this.props;
+		const editClick = () => {
+			this.setState({
+				bioStatus: this.state.bioStatus === 'editing' ? 'displayed' : 'editing'
+			});
+		};
+		const bioChange = e => {
+			this.setState({ bioValue: `${e.target.value}` });
+		};
+		const bioKeyDown = e => {
+			if (e.keyCode === 13) {
+				this.props.socket.emit('updateBio', this.state.bioValue);
+				this.setState({ bioStatus: 'displayed' });
+			}
+		};
+		const processBio = () => {
+			const text = this.state.bioValue || profile.bio;
+
+			if (!text) {
+				return 'Nothing here!';
+			}
+
+			const formatedBio = [];
+			const words = text.split(' ');
+
+			words.forEach(word => {
+				if (/^https:\/\//i.test(word)) {
+					formatedBio.push(
+						<a key={word} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
+							{word.split('https://')[1]}
+						</a>,
+						' '
+					);
+				} else if (/^http:\/\//i.test(word)) {
+					formatedBio.push(
+						<a key={word} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
+							{word.split('http://')[1]}
+						</a>,
+						' '
+					);
+				} else {
+					formatedBio.push(word, ' ');
 				}
-			},
-			processBio = () => {
-				const text = this.state.bioValue || profile.bio;
-
-				if (!text) {
-					return 'Nothing here!';
-				}
-
-				const formatedBio = [],
-					words = text.split(' ');
-
-				words.forEach(word => {
-					if (/^https:\/\//i.test(word)) {
-						formatedBio.push(
-							<a key={word} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
-								{word.split('https://')[1]}
-							</a>,
-							' '
-						);
-					} else if (/^http:\/\//i.test(word)) {
-						formatedBio.push(
-							<a key={word} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
-								{word.split('http://')[1]}
-							</a>,
-							' '
-						);
-					} else {
-						formatedBio.push(word, ' ');
-					}
-				});
-				return formatedBio;
-			};
+			});
+			return formatedBio;
+		};
 
 		return (
 			<div>

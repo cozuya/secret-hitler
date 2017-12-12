@@ -1,17 +1,17 @@
-const passport = require('passport'),
-	Account = require('../models/account'),
-	Profile = require('../models/profile/index'),
-	BannedIP = require('../models/bannedIP'),
-	{ ipbansNotEnforced, accountCreationDisabled } = require('./socket/models'),
-	// verifyAccount = require('./verify-account'),
-	// resetPassword = require('./reset-password'),
-	blacklistedWords = require('../iso/blacklistwords'),
-	ensureAuthenticated = (req, res, next) => {
-		if (req.isAuthenticated()) {
-			return next();
-		}
-		res.redirect('/');
-	};
+const passport = require('passport');
+const Account = require('../models/account');
+const Profile = require('../models/profile/index');
+const BannedIP = require('../models/bannedIP');
+const { ipbansNotEnforced, accountCreationDisabled } = require('./socket/models');
+// verifyAccount = require('./verify-account'),
+// resetPassword = require('./reset-password'),
+const blacklistedWords = require('../iso/blacklistwords');
+const ensureAuthenticated = (req, res, next) => {
+	if (req.isAuthenticated()) {
+		return next();
+	}
+	res.redirect('/');
+};
 
 module.exports = () => {
 	// verifyAccount.setRoutes();
@@ -26,8 +26,8 @@ module.exports = () => {
 	});
 
 	app.post('/account/change-password', ensureAuthenticated, (req, res) => {
-		const { newPassword, newPasswordConfirm } = req.body,
-			{ user } = req;
+		const { newPassword, newPasswordConfirm } = req.body;
+		const { user } = req;
 
 		// todo-release prevent tiny/huge new passwords
 
@@ -73,36 +73,32 @@ module.exports = () => {
 	// });
 
 	app.post('/account/signup', (req, res, next) => {
-		const { username, password, password2, email, isPrivate } = req.body,
-			signupIP =
-				req.headers['x-real-ip'] ||
-				req.headers['X-Real-IP'] ||
-				req.headers['X-Forwarded-For'] ||
-				req.headers['x-forwarded-for'] ||
-				req.connection.remoteAddress,
-			save = {
-				username,
-				gameSettings: {
-					disablePopups: false,
-					enableTimestamps: false,
-					disableRightSidebarInGame: false,
-					enableDarkTheme: false,
-					isPrivate
-				},
-				verification: {
-					email: email || '',
-					verificationToken: '',
-					verificationTokenExpiration: null,
-					passwordResetToken: '',
-					passwordResetTokenExpiration: null
-				},
-				verified: false,
-				games: [],
-				wins: 0,
-				losses: 0,
-				created: new Date(),
-				signupIP
-			};
+		const { username, password, password2, email, isPrivate } = req.body;
+		const signupIP =
+			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		const save = {
+			username,
+			gameSettings: {
+				disablePopups: false,
+				enableTimestamps: false,
+				disableRightSidebarInGame: false,
+				enableDarkTheme: false,
+				isPrivate
+			},
+			verification: {
+				email: email || '',
+				verificationToken: '',
+				verificationTokenExpiration: null,
+				passwordResetToken: '',
+				passwordResetTokenExpiration: null
+			},
+			verified: false,
+			games: [],
+			wins: 0,
+			losses: 0,
+			created: new Date(),
+			signupIP
+		};
 
 		if (!/^[a-z0-9]+$/i.test(username)) {
 			res.status(401).json({ message: 'Sorry, your username can only be alphanumeric.' });
@@ -126,11 +122,13 @@ module.exports = () => {
 			});
 		} else {
 			let doesContainBadWord = false;
+
 			blacklistedWords.forEach(word => {
 				if (new RegExp(word, 'i').test(username)) {
 					doesContainBadWord = true;
 				}
 			});
+
 			if (doesContainBadWord) {
 				res.status(401).json({
 					message: 'Sorry, your username contains a naughty word or part of a naughty word.'
@@ -145,7 +143,8 @@ module.exports = () => {
 						res.status(401).json({ message: 'Sorry, that account already exists.' });
 					} else {
 						BannedIP.findOne({ ip: signupIP }, (err, ip) => {
-							let date, unbannedTime;
+							let date;
+							let unbannedTime;
 
 							if (err) {
 								return next(err);
@@ -203,7 +202,8 @@ module.exports = () => {
 					type: 'small' || 'big'
 				},
 				(err, ip) => {
-					let date, unbannedTime;
+					let date;
+					let unbannedTime;
 
 					if (err) {
 						return next(err);

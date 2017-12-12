@@ -314,11 +314,7 @@ class Playerlist extends React.Component {
 											}
 										};
 
-										const renderCrowns = () => {
-											const crowns = user.tournyWins.filter(winTime => time - winTime < 10800000);
-
-											return crowns.map(crown => <span className="crown-icon">X</span>);
-										};
+										const renderCrowns = () => user.tournyWins.filter(winTime => time - winTime < 10800000).map(crown => <span className="crown-icon">X</span>);
 
 										return (
 											<div key={i} className="user-container">

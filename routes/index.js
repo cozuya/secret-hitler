@@ -1,20 +1,20 @@
-let passport = require('passport'), // eslint-disable-line no-unused-vars
-	Account = require('../models/account'), // eslint-disable-line no-unused-vars
-	{ getProfile } = require('../models/profile/utils'),
-	GameSummary = require('../models/game-summary'),
-	socketRoutes = require('./socket/routes'),
-	_ = require('lodash'),
-	accounts = require('./accounts'),
-	version = require('../version'),
-	{ MODERATORS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants'),
-	fs = require('fs'),
-	ensureAuthenticated = (req, res, next) => {
-		if (req.isAuthenticated()) {
-			return next();
-		}
+const passport = require('passport'); // eslint-disable-line no-unused-vars
+const Account = require('../models/account'); // eslint-disable-line no-unused-vars
+const { getProfile } = require('../models/profile/utils');
+const GameSummary = require('../models/game-summary');
+const socketRoutes = require('./socket/routes');
+const _ = require('lodash');
+const accounts = require('./accounts');
+const version = require('../version');
+const { MODERATORS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants');
+const fs = require('fs');
+const ensureAuthenticated = (req, res, next) => {
+	if (req.isAuthenticated()) {
+		return next();
+	}
 
-		res.redirect('/observe');
-	};
+	res.redirect('/observe');
+};
 
 module.exports = () => {
 	const renderPage = (req, res, pageName, varName) => {
@@ -93,8 +93,8 @@ module.exports = () => {
 	});
 
 	app.get('/profile', (req, res) => {
-		const username = req.query.username,
-			requestingUser = req.query.requestingUser;
+		const username = req.query.username;
+		const requestingUser = req.query.requestingUser;
 
 		getProfile(username).then(profile => {
 			if (!profile) {
@@ -153,14 +153,14 @@ module.exports = () => {
 				return;
 			}
 
-			const { image } = req.body,
-				extension = image.split(';base64')[0].split('/')[1],
-				raw = image.split(',')[1],
-				username = req.session.passport.user,
-				now = new Date(),
-				socketId = Object.keys(io.sockets.sockets).find(
-					socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username
-				);
+			const { image } = req.body;
+			const extension = image.split(';base64')[0].split('/')[1];
+			const raw = image.split(',')[1];
+			const username = req.session.passport.user;
+			const now = new Date();
+			const socketId = Object.keys(io.sockets.sockets).find(
+				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username
+			);
 
 			Account.findOne({ username }, (err, account) => {
 				if (account.wins + account.losses < 50) {

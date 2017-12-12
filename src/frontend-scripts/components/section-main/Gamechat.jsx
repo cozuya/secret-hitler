@@ -89,6 +89,7 @@ class Gamechat extends React.Component {
 
 	handleChatScrolled() {
 		const el = this.psContainer;
+
 		if (!this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) < -20) {
 			this.setState({ lock: true });
 		}
@@ -144,8 +145,8 @@ class Gamechat extends React.Component {
 	}
 
 	handleSubmit(e) {
-		const currentValue = this.gameChatInput.value,
-			{ gameInfo, userInfo } = this.props;
+		const currentValue = this.gameChatInput.value;
+		const { gameInfo, userInfo } = this.props;
 
 		e.preventDefault();
 
@@ -183,9 +184,9 @@ class Gamechat extends React.Component {
 		const { userInfo } = this.props;
 
 		if (userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
-			const hours = `0${new Date(timestamp).getHours()}`.slice(-2),
-				minutes = `0${new Date(timestamp).getMinutes()}`.slice(-2),
-				seconds = `0${new Date(timestamp).getSeconds()}`.slice(-2);
+			const hours = `0${new Date(timestamp).getHours()}`.slice(-2);
+			const minutes = `0${new Date(timestamp).getMinutes()}`.slice(-2);
+			const seconds = `0${new Date(timestamp).getSeconds()}`.slice(-2);
 
 			return <span className="chat-timestamp">{`${hours}:${minutes}:${seconds} `}</span>;
 		}
@@ -200,8 +201,8 @@ class Gamechat extends React.Component {
 	}
 
 	handleClickedClaimButton() {
-		const { gameInfo, userInfo } = this.props,
-			playerIndex = gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName);
+		const { gameInfo, userInfo } = this.props;
+		const playerIndex = gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName);
 
 		this.setState({
 			claim: this.state.claim ? '' : gameInfo.playersState[playerIndex].claim
@@ -214,22 +215,22 @@ class Gamechat extends React.Component {
 	}
 
 	checkIsChatDisabled() {
-		const { userInfo, gameInfo } = this.props,
-			{ gameState, publicPlayersState } = gameInfo,
-			{ gameSettings, userName, isSeated } = userInfo,
-			isDead = (() => {
-				if (userName && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
-					return publicPlayersState.find(player => userName === player.userName).isDead;
-				}
-			})(),
-			isGovernmentDuringPolicySelection = (() => {
-				if (gameState && (gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
-					return (
-						publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
-						publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
-					);
-				}
-			})();
+		const { userInfo, gameInfo } = this.props;
+		const { gameState, publicPlayersState } = gameInfo;
+		const { gameSettings, userName, isSeated } = userInfo;
+		const isDead = (() => {
+			if (userName && publicPlayersState.length && publicPlayersState.find(player => userName === player.userName)) {
+				return publicPlayersState.find(player => userName === player.userName).isDead;
+			}
+		})();
+		const isGovernmentDuringPolicySelection = (() => {
+			if (gameState && (gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
+				return (
+					publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
+					publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
+				);
+			}
+		})();
 
 		return (
 			!userName ||
@@ -371,9 +372,9 @@ class Gamechat extends React.Component {
 								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
 									? isSeated
 										? isBlind
-											? `${
-													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											? `${gameInfo.general.replacementNames[
+													gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)
+												]} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
 									: isBlind ? '?' : chat.userName}
@@ -387,75 +388,75 @@ class Gamechat extends React.Component {
 	}
 
 	render() {
-		const { userInfo, gameInfo, isReplay } = this.props,
-			selectedWhitelistplayer = playerName => {
-				const { playersToWhitelist } = this.state,
-					playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
+		const { userInfo, gameInfo, isReplay } = this.props;
+		const selectedWhitelistplayer = playerName => {
+			const { playersToWhitelist } = this.state;
+			const playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
 
-				playersToWhitelist[playerIndex].isSelected = !playersToWhitelist[playerIndex].isSelected;
+			playersToWhitelist[playerIndex].isSelected = !playersToWhitelist[playerIndex].isSelected;
 
-				this.setState(playersToWhitelist);
-			},
-			submitWhitelist = () => {
-				const whitelistPlayers = this.state.playersToWhitelist.filter(player => player.isSelected).map(player => player.userName);
-				this.props.socket.emit('updateGameWhitelist', {
-					uid: gameInfo.general.uid,
-					whitelistPlayers
-				});
-				$(this.whitelistModal).modal('hide');
-			},
-			MenuButton = ({ children }) => <div className="item">{children}</div>,
-			WhiteListButton = () => {
-				if (userInfo.isSeated && gameInfo.general.private && !gameInfo.gameState.isStarted) {
-					return (
-						<MenuButton>
-							<div className="ui button whitelist" onClick={this.handleWhitelistPlayers}>
-								Whitelist Players
-							</div>
-						</MenuButton>
-					);
-				} else {
-					return null;
-				}
-			},
-			WatchReplayButton = () => {
-				const { summary } = gameInfo;
-
-				if (summary) {
-					const onClick = () => {
-						window.location.hash = `#/replay/${gameInfo.general.uid}`;
-					};
-
-					return (
-						<MenuButton>
-							<div className="ui primary button" onClick={onClick}>
-								Watch Replay
-							</div>
-						</MenuButton>
-					);
-				} else return null;
-			},
-			LeaveGameButton = () => {
-				const classes = classnames('ui primary button', {
-					['ui-disabled']: userInfo.isSeated && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted
-				});
-
+			this.setState(playersToWhitelist);
+		};
+		const submitWhitelist = () => {
+			const whitelistPlayers = this.state.playersToWhitelist.filter(player => player.isSelected).map(player => player.userName);
+			this.props.socket.emit('updateGameWhitelist', {
+				uid: gameInfo.general.uid,
+				whitelistPlayers
+			});
+			$(this.whitelistModal).modal('hide');
+		};
+		const MenuButton = ({ children }) => <div className="item">{children}</div>;
+		const WhiteListButton = () => {
+			if (userInfo.isSeated && gameInfo.general.private && !gameInfo.gameState.isStarted) {
 				return (
 					<MenuButton>
-						<div className={classes} onClick={this.handleClickedLeaveGame}>
-							Leave Game
+						<div className="ui button whitelist" onClick={this.handleWhitelistPlayers}>
+							Whitelist Players
 						</div>
 					</MenuButton>
 				);
-			},
-			routeToOtherTournyTable = e => {
-				e.preventDefault();
-				const { uid } = gameInfo.general;
-				const tableUidLastLetter = uid.charAt(gameInfo.general.uid.length - 1);
-				const { hash } = window.location;
+			} else {
+				return null;
+			}
+		};
+		const WatchReplayButton = () => {
+			const { summary } = gameInfo;
 
-				window.location.hash = tableUidLastLetter === 'A' ? `${hash.substr(0, hash.length - 1)}B` : `${hash.substr(0, hash.length - 1)}A`;
-			};
+			if (summary) {
+				const onClick = () => {
+					window.location.hash = `#/replay/${gameInfo.general.uid}`;
+				};
+
+				return (
+					<MenuButton>
+						<div className="ui primary button" onClick={onClick}>
+							Watch Replay
+						</div>
+					</MenuButton>
+				);
+			} else return null;
+		};
+		const LeaveGameButton = () => {
+			const classes = classnames('ui primary button', {
+				['ui-disabled']: userInfo.isSeated && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted
+			});
+
+			return (
+				<MenuButton>
+					<div className={classes} onClick={this.handleClickedLeaveGame}>
+						Leave Game
+					</div>
+				</MenuButton>
+			);
+		};
+		const routeToOtherTournyTable = e => {
+			e.preventDefault();
+			const { uid } = gameInfo.general;
+			const tableUidLastLetter = uid.charAt(gameInfo.general.uid.length - 1);
+			const { hash } = window.location;
+
+			window.location.hash = tableUidLastLetter === 'A' ? `${hash.substr(0, hash.length - 1)}B` : `${hash.substr(0, hash.length - 1)}A`;
+		};
 
 		return (
 			<section className="gamechat">

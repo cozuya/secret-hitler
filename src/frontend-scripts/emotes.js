@@ -74,8 +74,8 @@ export function processEmotes(input) {
 		return input;
 	}
 
-	const message = input.split(' '),
-		formatedMsg = [];
+	const message = input.split(' ');
+	const formatedMsg = [];
 
 	message.forEach((word, index) => {
 		if (allEmotes.includes(word)) {

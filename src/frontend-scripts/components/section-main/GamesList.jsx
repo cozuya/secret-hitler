@@ -14,7 +14,6 @@ export class GamesList extends React.Component {
 		const { gameFilter } = this.props;
 
 		gameFilter[value] = !gameFilter[value];
-
 		this.props.changeGameFilter(gameFilter);
 	}
 
@@ -114,10 +113,10 @@ export class GamesList extends React.Component {
 					);
 				})
 				.sort((a, b) => {
-					const aGameStatus = a.gameStatus,
-						bGameStatus = b.gameStatus,
-						aName = a.name.toLowerCase(),
-						bName = b.name.toLowerCase();
+					const aGameStatus = a.gameStatus;
+					const bGameStatus = b.gameStatus;
+					const aName = a.name.toLowerCase();
+					const bName = b.name.toLowerCase();
 
 					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
 						if (a.seatedCount === b.seatedCount) {
@@ -174,8 +173,8 @@ export class GamesList extends React.Component {
 				{this.renderFilters()}
 				<div className="browser-header">
 					{(() => {
-						const { userName } = this.props.userInfo,
-							gameBeingCreated = this.props.midSection === 'createGame';
+						const { userName } = this.props.userInfo;
+						const gameBeingCreated = this.props.midSection === 'createGame';
 
 						return userName && !gameBeingCreated ? (
 							<a className="fluid ui button primary create-game-button" href="#/creategame">

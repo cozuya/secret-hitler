@@ -14,9 +14,9 @@ const EnactedPolicies = props => {
 				return _.range(1, 12).map((num, i) => {
 					const stateObj = props.gameInfo.trackState.enactedPolicies[i];
 
-					let frontClasses = 'enactedpolicies-card front',
-						backClasses = 'enactedpolicies-card back',
-						containerClasses = `enactedpolicies-card-container`;
+					let frontClasses = 'enactedpolicies-card front';
+					let backClasses = 'enactedpolicies-card back';
+					let containerClasses = `enactedpolicies-card-container`;
 
 					if (stateObj && Object.keys(stateObj).length) {
 						if (stateObj.isFlipped) {

@@ -1,6 +1,6 @@
-const { sendInProgressGameUpdate } = require('../util.js'),
-	{ sendGameList } = require('../user-requests.js'),
-	_ = require('lodash');
+const { sendInProgressGameUpdate } = require('../util.js');
+const { sendGameList } = require('../user-requests.js');
+const _ = require('lodash');
 
 const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceStart) => {
 	const count = _.countBy(game.private.policies);
@@ -70,16 +70,16 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	}
 
 	game.gameState.presidentIndex = (() => {
-		const { presidentIndex, specialElectionFormerPresidentIndex } = game.gameState,
-			nextPresidentIndex = index => {
-				const nextIndex = index + 1 === game.general.playerCount ? 0 : index + 1;
+		const { presidentIndex, specialElectionFormerPresidentIndex } = game.gameState;
+		const nextPresidentIndex = index => {
+			const nextIndex = index + 1 === game.general.playerCount ? 0 : index + 1;
 
-				if (game.publicPlayersState[nextIndex].isDead) {
-					return nextPresidentIndex(nextIndex);
-				} else {
-					return nextIndex;
-				}
-			};
+			if (game.publicPlayersState[nextIndex].isDead) {
+				return nextPresidentIndex(nextIndex);
+			} else {
+				return nextIndex;
+			}
+		};
 
 		if (Number.isInteger(specialElectionPresidentIndex)) {
 			return specialElectionPresidentIndex;
@@ -93,9 +93,9 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 
 	game.private.summary = game.private.summary.nextTurn().updateLog({ presidentId: game.gameState.presidentIndex });
 
-	const { seatedPlayers } = game.private, // eslint-disable-line one-var
-		{ presidentIndex, previousElectedGovernment } = game.gameState,
-		pendingPresidentPlayer = seatedPlayers[presidentIndex];
+	const { seatedPlayers } = game.private; // eslint-disable-line one-var
+	const { presidentIndex, previousElectedGovernment } = game.gameState;
+	const pendingPresidentPlayer = seatedPlayers[presidentIndex];
 
 	game.general.electionCount++;
 	sendGameList();

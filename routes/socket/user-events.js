@@ -28,6 +28,7 @@ const displayWaitingForPlayers = game => {
 	for (value of includedPlayerCounts) {
 		if (value > game.publicPlayersState.length) {
 			const count = value - game.publicPlayersState.length;
+
 			return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 		}
 	}
@@ -40,6 +41,7 @@ const startCountdown = game => {
 
 	game.gameState.isStarted = true;
 	let startGamePause = game.general.isTourny ? 10 : 20;
+
 	const countDown = setInterval(() => {
 		if (game.gameState.cancellStart) {
 			game.gameState.cancellStart = false;
@@ -121,9 +123,11 @@ const checkStartConditions = game => {
 	if (game.gameState.isTracksFlipped) {
 		return;
 	}
+
 	if (game.electionCount !== 0) {
 		game.electionCount = 0;
 	}
+
 	if (
 		game.gameState.isStarted &&
 		(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
@@ -149,6 +153,7 @@ const playerLeavePretourny = (game, playerName) => {
 		games.splice(games.indexOf(game), 1);
 		return;
 	}
+
 	queuedPlayers.splice(queuedPlayers.findIndex(player => player.userName === playerName), 1);
 
 	game.chats.push({
@@ -309,6 +314,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 			customCardback: data.customCardback,
 			customCardbackUid: data.customCardbackUid,
 			isPrivate: data.isPrivate,
+			tournyWins: data.tournyWins,
 			cardStatus: {
 				cardDisplayed: false,
 				isFlipped: false,
@@ -424,358 +430,358 @@ module.exports.handleAddNewClaim = data => {
 		return;
 	}
 
-	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName),
-		chat = (() => {
-			let text;
+	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+	const chat = (() => {
+		let text;
 
-			switch (data.claim) {
-				case 'wasPresident':
-					text = [
-						{
-							text: 'President '
-						},
-						{
-							text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
-							type: 'player'
-						}
-					];
-					switch (data.claimState) {
-						case 'threefascist':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									presidentClaim: { reds: 3, blues: 0 }
-								},
-								{ presidentId: playerIndex }
-							);
-
-							text.push(
-								{
-									text: 'claims '
-								},
-								{
-									text: 'RRR',
-									type: 'fascist'
-								},
-								{
-									text: '.'
-								}
-							);
-
-							return text;
-						case 'twofascistoneliberal':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									presidentClaim: { reds: 2, blues: 1 }
-								},
-								{ presidentId: playerIndex }
-							);
-
-							text.push(
-								{
-									text: 'claims '
-								},
-								{
-									text: 'RR',
-									type: 'fascist'
-								},
-								{
-									text: 'B',
-									type: 'liberal'
-								},
-								{
-									text: '.'
-								}
-							);
-
-							return text;
-						case 'twoliberalonefascist':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									presidentClaim: { reds: 1, blues: 2 }
-								},
-								{ presidentId: playerIndex }
-							);
-
-							text.push(
-								{
-									text: 'claims '
-								},
-								{
-									text: 'R',
-									type: 'fascist'
-								},
-								{
-									text: 'BB',
-									type: 'liberal'
-								},
-								{
-									text: '.'
-								}
-							);
-
-							return text;
-						case 'threeliberal':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									presidentClaim: { reds: 0, blues: 3 }
-								},
-								{ presidentId: playerIndex }
-							);
-
-							text.push(
-								{
-									text: 'claims '
-								},
-								{
-									text: 'BBB',
-									type: 'liberal'
-								},
-								{
-									text: '.'
-								}
-							);
-
-							return text;
+		switch (data.claim) {
+			case 'wasPresident':
+				text = [
+					{
+						text: 'President '
+					},
+					{
+						text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						type: 'player'
 					}
+				];
+				switch (data.claimState) {
+					case 'threefascist':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								presidentClaim: { reds: 3, blues: 0 }
+							},
+							{ presidentId: playerIndex }
+						);
 
-				case 'wasChancellor':
-					text = [
-						{
-							text: 'Chancellor '
-						},
-						{
-							text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
-							type: 'player'
-						}
-					];
-					switch (data.claimState) {
-						case 'twofascist':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									chancellorClaim: { reds: 2, blues: 0 }
-								},
-								{ chancellorId: playerIndex }
-							);
+						text.push(
+							{
+								text: 'claims '
+							},
+							{
+								text: 'RRR',
+								type: 'fascist'
+							},
+							{
+								text: '.'
+							}
+						);
 
-							text.push(
-								{
-									text: 'claims '
-								},
-								{
-									text: 'RR',
-									type: 'fascist'
-								},
-								{
-									text: '.'
-								}
-							);
+						return text;
+					case 'twofascistoneliberal':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								presidentClaim: { reds: 2, blues: 1 }
+							},
+							{ presidentId: playerIndex }
+						);
 
-							return text;
-						case 'onefascistoneliberal':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									chancellorClaim: { reds: 1, blues: 1 }
-								},
-								{ chancellorId: playerIndex }
-							);
+						text.push(
+							{
+								text: 'claims '
+							},
+							{
+								text: 'RR',
+								type: 'fascist'
+							},
+							{
+								text: 'B',
+								type: 'liberal'
+							},
+							{
+								text: '.'
+							}
+						);
 
-							text.push(
-								{
-									text: 'claims '
-								},
-								{
-									text: 'R',
-									type: 'fascist'
-								},
-								{
-									text: 'B',
-									type: 'liberal'
-								},
-								{
-									text: '.'
-								}
-							);
+						return text;
+					case 'twoliberalonefascist':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								presidentClaim: { reds: 1, blues: 2 }
+							},
+							{ presidentId: playerIndex }
+						);
 
-							return text;
-						case 'twoliberal':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									chancellorClaim: { reds: 0, blues: 2 }
-								},
-								{ chancellorId: playerIndex }
-							);
+						text.push(
+							{
+								text: 'claims '
+							},
+							{
+								text: 'R',
+								type: 'fascist'
+							},
+							{
+								text: 'BB',
+								type: 'liberal'
+							},
+							{
+								text: '.'
+							}
+						);
 
-							text.push(
-								{
-									text: 'claims '
-								},
-								{
-									text: 'BB',
-									type: 'liberal'
-								},
-								{
-									text: '.'
-								}
-							);
+						return text;
+					case 'threeliberal':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								presidentClaim: { reds: 0, blues: 3 }
+							},
+							{ presidentId: playerIndex }
+						);
 
-							return text;
+						text.push(
+							{
+								text: 'claims '
+							},
+							{
+								text: 'BBB',
+								type: 'liberal'
+							},
+							{
+								text: '.'
+							}
+						);
+
+						return text;
+				}
+
+			case 'wasChancellor':
+				text = [
+					{
+						text: 'Chancellor '
+					},
+					{
+						text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						type: 'player'
 					}
-				case 'didPolicyPeek':
-					text = [
-						{
-							text: 'President '
-						},
-						{
-							text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
-							type: 'player'
-						}
-					];
-					switch (data.claimState) {
-						case 'threefascist':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									policyPeekClaim: { reds: 3, blues: 0 }
-								},
-								{ presidentId: playerIndex }
-							);
+				];
+				switch (data.claimState) {
+					case 'twofascist':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								chancellorClaim: { reds: 2, blues: 0 }
+							},
+							{ chancellorId: playerIndex }
+						);
 
-							text.push(
-								{
-									text: 'claims to have peeked at '
-								},
-								{
-									text: 'RRR',
-									type: 'fascist'
-								},
-								{
-									text: '.'
-								}
-							);
+						text.push(
+							{
+								text: 'claims '
+							},
+							{
+								text: 'RR',
+								type: 'fascist'
+							},
+							{
+								text: '.'
+							}
+						);
 
-							return text;
-						case 'twofascistoneliberal':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									policyPeekClaim: { reds: 2, blues: 1 }
-								},
-								{ presidentId: playerIndex }
-							);
+						return text;
+					case 'onefascistoneliberal':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								chancellorClaim: { reds: 1, blues: 1 }
+							},
+							{ chancellorId: playerIndex }
+						);
 
-							text.push(
-								{
-									text: 'claims to have peeked at '
-								},
-								{
-									text: 'RR',
-									type: 'fascist'
-								},
-								{
-									text: 'B',
-									type: 'liberal'
-								},
-								{
-									text: '.'
-								}
-							);
+						text.push(
+							{
+								text: 'claims '
+							},
+							{
+								text: 'R',
+								type: 'fascist'
+							},
+							{
+								text: 'B',
+								type: 'liberal'
+							},
+							{
+								text: '.'
+							}
+						);
 
-							return text;
-						case 'twoliberalonefascist':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									policyPeekClaim: { reds: 1, blues: 2 }
-								},
-								{ presidentId: playerIndex }
-							);
+						return text;
+					case 'twoliberal':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								chancellorClaim: { reds: 0, blues: 2 }
+							},
+							{ chancellorId: playerIndex }
+						);
 
-							text.push(
-								{
-									text: 'claims to have peeked at '
-								},
-								{
-									text: 'R',
-									type: 'fascist'
-								},
-								{
-									text: 'BB',
-									type: 'liberal'
-								},
-								{
-									text: '.'
-								}
-							);
+						text.push(
+							{
+								text: 'claims '
+							},
+							{
+								text: 'BB',
+								type: 'liberal'
+							},
+							{
+								text: '.'
+							}
+						);
 
-							return text;
-						case 'threeliberal':
-							game.private.summary = game.private.summary.updateLog(
-								{
-									policyPeekClaim: { reds: 0, blues: 3 }
-								},
-								{ presidentId: playerIndex }
-							);
-
-							text.push(
-								{
-									text: 'claims to have peeked at '
-								},
-								{
-									text: 'BBB',
-									type: 'liberal'
-								},
-								{
-									text: '.'
-								}
-							);
-
-							return text;
+						return text;
+				}
+			case 'didPolicyPeek':
+				text = [
+					{
+						text: 'President '
+					},
+					{
+						text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						type: 'player'
 					}
-				case 'didInvestigateLoyalty':
-					text = [
-						{
-							text: 'President '
-						},
-						{
-							text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
-							type: 'player'
-						},
-						{
-							text: 'claims to see a party membership of the '
-						}
-					];
+				];
+				switch (data.claimState) {
+					case 'threefascist':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								policyPeekClaim: { reds: 3, blues: 0 }
+							},
+							{ presidentId: playerIndex }
+						);
 
-					game.private.summary = game.private.summary.updateLog(
-						{
-							investigationClaim: data.claimState
-						},
-						{ presidentId: playerIndex }
-					);
-					switch (data.claimState) {
-						case 'fascist':
-							text.push(
-								{
-									text: 'fascist ',
-									type: 'fascist'
-								},
-								{
-									text: 'team.'
-								}
-							);
+						text.push(
+							{
+								text: 'claims to have peeked at '
+							},
+							{
+								text: 'RRR',
+								type: 'fascist'
+							},
+							{
+								text: '.'
+							}
+						);
 
-							return text;
-						case 'liberal':
-							text.push(
-								{
-									text: 'liberal ',
-									type: 'liberal'
-								},
-								{
-									text: 'team.'
-								}
-							);
+						return text;
+					case 'twofascistoneliberal':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								policyPeekClaim: { reds: 2, blues: 1 }
+							},
+							{ presidentId: playerIndex }
+						);
 
-							return text;
+						text.push(
+							{
+								text: 'claims to have peeked at '
+							},
+							{
+								text: 'RR',
+								type: 'fascist'
+							},
+							{
+								text: 'B',
+								type: 'liberal'
+							},
+							{
+								text: '.'
+							}
+						);
+
+						return text;
+					case 'twoliberalonefascist':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								policyPeekClaim: { reds: 1, blues: 2 }
+							},
+							{ presidentId: playerIndex }
+						);
+
+						text.push(
+							{
+								text: 'claims to have peeked at '
+							},
+							{
+								text: 'R',
+								type: 'fascist'
+							},
+							{
+								text: 'BB',
+								type: 'liberal'
+							},
+							{
+								text: '.'
+							}
+						);
+
+						return text;
+					case 'threeliberal':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								policyPeekClaim: { reds: 0, blues: 3 }
+							},
+							{ presidentId: playerIndex }
+						);
+
+						text.push(
+							{
+								text: 'claims to have peeked at '
+							},
+							{
+								text: 'BBB',
+								type: 'liberal'
+							},
+							{
+								text: '.'
+							}
+						);
+
+						return text;
+				}
+			case 'didInvestigateLoyalty':
+				text = [
+					{
+						text: 'President '
+					},
+					{
+						text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						type: 'player'
+					},
+					{
+						text: 'claims to see a party membership of the '
 					}
-			}
-		})();
+				];
+
+				game.private.summary = game.private.summary.updateLog(
+					{
+						investigationClaim: data.claimState
+					},
+					{ presidentId: playerIndex }
+				);
+				switch (data.claimState) {
+					case 'fascist':
+						text.push(
+							{
+								text: 'fascist ',
+								type: 'fascist'
+							},
+							{
+								text: 'team.'
+							}
+						);
+
+						return text;
+					case 'liberal':
+						text.push(
+							{
+								text: 'liberal ',
+								type: 'liberal'
+							},
+							{
+								text: 'team.'
+							}
+						);
+
+						return text;
+				}
+		}
+	})();
 
 	if (game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== '') {
 		if (game.private.seatedPlayers[playerIndex]) {
@@ -915,9 +921,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
-						game.general.remakeCount === 1 ? 'second' : 'seconds'
-					}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
+						? 'second'
+						: 'seconds'}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
@@ -1393,6 +1399,7 @@ module.exports.handlePlayerReport = data => {
 
 module.exports.handlePlayerReportDismiss = () => {
 	const mods = MODERATORS.concat(ADMINS);
+
 	Account.find({ username: mods }).then(accounts => {
 		accounts.forEach(account => {
 			const onlineSocketId = Object.keys(io.sockets.sockets).find(

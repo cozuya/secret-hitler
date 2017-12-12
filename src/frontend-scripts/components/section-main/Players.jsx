@@ -31,10 +31,10 @@ export default class Players extends React.Component {
 	}
 
 	handlePlayerClick(e) {
-		const { userInfo, gameInfo, socket } = this.props,
-			{ gameState } = gameInfo,
-			{ phase, clickActionInfo } = gameState,
-			index = parseInt($(e.currentTarget).attr('data-index'), 10);
+		const { userInfo, gameInfo, socket } = this.props;
+		const { gameState } = gameInfo;
+		const { phase, clickActionInfo } = gameState;
+		const index = parseInt($(e.currentTarget).attr('data-index'), 10);
 
 		if (phase === 'selectingChancellor' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
@@ -103,20 +103,26 @@ export default class Players extends React.Component {
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const renderPlayerName = (player, i) => {
 			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
+			const prependCrowns = str => (
+				<span>
+					{player.tournyWins.filter(winTime => time - winTime < 10800000).map(crown => <span className="crown-icon">X</span>)}
+					{str}
+				</span>
+			);
 
 			if (
 				player.isPrivate &&
 				!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)) &&
 				!userInfo.isSeated
 			) {
-				return 'Anonymous';
+				return prependCrowns('Anonymous');
 			}
 
 			if (gameState.isTracksFlipped) {
-				return `${i + 1}. ${userName}`;
+				return prependCrowns(`${i + 1}. ${userName}`);
 			}
 
-			return userName;
+			return prePendCrowns(userName);
 		};
 
 		return publicPlayersState.map((player, i) => (
@@ -136,8 +142,8 @@ export default class Players extends React.Component {
 							}
 				}
 				className={(() => {
-					let classes = 'player-container',
-						user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+					let classes = 'player-container';
+					let user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === player.userName) : null;
 
 					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
@@ -250,8 +256,8 @@ export default class Players extends React.Component {
 	}
 
 	renderTakeSeat() {
-		const { userInfo, gameInfo, userList } = this.props,
-			user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
+		const { userInfo, gameInfo, userList } = this.props;
+		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
 
 		if (
 			!userInfo.isSeated &&
@@ -319,11 +325,11 @@ export default class Players extends React.Component {
 
 	render() {
 		const handlePasswordInputChange = e => {
-				this.setState({ passwordValue: `${e.target.value}` });
-			},
-			handleReportTextChange = e => {
-				this.setState({ reportTextValue: `${e.target.value}` });
-			};
+			this.setState({ passwordValue: `${e.target.value}` });
+		};
+		const handleReportTextChange = e => {
+			this.setState({ reportTextValue: `${e.target.value}` });
+		};
 
 		return (
 			<section className="players">

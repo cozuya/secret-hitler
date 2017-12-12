@@ -33,8 +33,8 @@ export default class Moderation extends React.Component {
 	}
 
 	componentDidMount() {
-		const self = this,
-			{ socket } = this.props;
+		const self = this;
+		const { socket } = this.props;
 
 		socket.on('modInfo', info => {
 			this.setState({
@@ -135,11 +135,11 @@ export default class Moderation extends React.Component {
 
 	renderUserlist() {
 		const radioChange = userName => {
-				this.setState({ selectedUser: userName });
-			},
-			{ userList } = this.state,
-			ips = userList.map(user => user.ip),
-			multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
+			this.setState({ selectedUser: userName });
+		};
+		const { userList } = this.state;
+		const ips = userList.map(user => user.ip);
+		const multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
 
 		return userList
 			.sort((a, b) =>
@@ -177,27 +177,27 @@ export default class Moderation extends React.Component {
 
 	renderButtons() {
 		const takeModAction = action => {
-				if (action === 'resetServer' && !this.state.resetServerCount) {
-					this.setState({ resetServerCount: 1 });
-				} else {
-					this.props.socket.emit('updateModAction', {
-						modName: this.props.userInfo.userName,
-						userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
-						ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
-						comment: this.state.actionTextValue,
-						action
-					});
-					this.setState({
-						selectedUser: '',
-						actionTextValue: '',
-						playerInputText: ''
-					});
-					setTimeout(() => {
-						this.props.socket.emit('getModInfo');
-					}, 500);
-				}
-			},
-			{ selectedUser, actionTextValue, playerInputText } = this.state;
+			if (action === 'resetServer' && !this.state.resetServerCount) {
+				this.setState({ resetServerCount: 1 });
+			} else {
+				this.props.socket.emit('updateModAction', {
+					modName: this.props.userInfo.userName,
+					userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
+					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+					comment: this.state.actionTextValue,
+					action
+				});
+				this.setState({
+					selectedUser: '',
+					actionTextValue: '',
+					playerInputText: ''
+				});
+				setTimeout(() => {
+					this.props.socket.emit('getModInfo');
+				}, 500);
+			}
+		};
+		const { selectedUser, actionTextValue, playerInputText } = this.state;
 
 		return (
 			<div className="button-container">
@@ -415,27 +415,27 @@ export default class Moderation extends React.Component {
 	}
 
 	renderModLog() {
-		const { logSort } = this.state,
-			clickSort = type => {
-				this.setState({
-					logSort: {
-						type,
-						direction: this.state.logSort.direction === 'descending' ? 'ascending' : 'descending'
-					}
-				});
-			},
-			modRetrieveClick = e => {
-				e.preventDefault();
+		const { logSort } = this.state;
+		const clickSort = type => {
+			this.setState({
+				logSort: {
+					type,
+					direction: this.state.logSort.direction === 'descending' ? 'ascending' : 'descending'
+				}
+			});
+		};
+		const modRetrieveClick = e => {
+			e.preventDefault();
 
-				this.setState(
-					{
-						logCount: this.state.logCount + 1
-					},
-					() => {
-						this.props.socket.emit('getModInfo', this.state.logCount);
-					}
-				);
-			};
+			this.setState(
+				{
+					logCount: this.state.logCount + 1
+				},
+				() => {
+					this.props.socket.emit('getModInfo', this.state.logCount);
+				}
+			);
+		};
 
 		return (
 			<div>
@@ -564,18 +564,18 @@ export default class Moderation extends React.Component {
 
 	render() {
 		const broadcastKeyup = e => {
-				this.setState({
-					broadcastText: e.currentTarget.value
-				});
-			},
-			toggleModLogToday = e => {
-				const { modLogToday } = this.state;
-				e.preventDefault();
+			this.setState({
+				broadcastText: e.currentTarget.value
+			});
+		};
+		const toggleModLogToday = e => {
+			const { modLogToday } = this.state;
+			e.preventDefault();
 
-				this.setState({
-					modLogToday: !modLogToday
-				});
-			};
+			this.setState({
+				modLogToday: !modLogToday
+			});
+		};
 
 		return (
 			<section className="moderation">

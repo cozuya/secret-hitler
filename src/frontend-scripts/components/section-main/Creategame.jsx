@@ -143,8 +143,8 @@ export default class Creategame extends React.Component {
 	}
 
 	createNewGame() {
-		const $creategame = $('section.creategame'),
-			{ userInfo } = this.props;
+		const $creategame = $('section.creategame');
+		const { userInfo } = this.props;
 
 		if (userInfo.gameSettings.isPrivate && !this.state.privateShowing) {
 			return;
@@ -1013,10 +1013,10 @@ export default class Creategame extends React.Component {
 
 	renderPlayerSlider() {
 		const sliderCheckboxClick = index => {
-			const newSliderValues = this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el)),
-				includedPlayerCounts = newSliderValues.map((el, i) => (el ? i + 5 : null)).filter(el => el !== null),
-				minPlayers = Math.min(...includedPlayerCounts),
-				maxPlayers = Math.max(...includedPlayerCounts);
+			const newSliderValues = this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el));
+			const includedPlayerCounts = newSliderValues.map((el, i) => (el ? i + 5 : null)).filter(el => el !== null);
+			const minPlayers = Math.min(...includedPlayerCounts);
+			const maxPlayers = Math.max(...includedPlayerCounts);
 
 			this.setState({
 				checkedSliderValues: newSliderValues,
