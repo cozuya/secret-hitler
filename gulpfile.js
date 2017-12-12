@@ -29,7 +29,7 @@ gulp.task('watch', () => {
 			process.platform === 'win32'
 				? `./${e.path
 						.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1]
-						.split('\\')
+//						.split('\\')
 						.join('/')}`
 				: `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
 		gulp.start('lint');
