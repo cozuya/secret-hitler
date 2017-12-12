@@ -61,9 +61,9 @@ export class App extends React.Component {
 					userName: username
 				};
 
-				//info.isSeated = true;
-				//socket.emit('updateSeatedUser', data);
-				//socket.emit('getGameInfo', 'devgame');
+				// info.isSeated = true;
+				// socket.emit('updateSeatedUser', data);
+				// socket.emit('getGameInfo', 'devgame');
 			}
 			// ** end devhelpers **
 			dispatch(updateUser(info));
