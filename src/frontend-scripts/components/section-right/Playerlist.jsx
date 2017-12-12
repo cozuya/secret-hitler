@@ -262,7 +262,7 @@ class Playerlist extends React.Component {
 											return () => null;
 										};
 										const userClasses =
-											user.wins + user.losses > 50 ||
+											user.wins + user.losses > 49 ||
 											ADMINS.includes(user.userName) ||
 											EDITORS.includes(user.userName) ||
 											MODERATORS.includes(user.userName) ||
