@@ -56,14 +56,14 @@ export class App extends React.Component {
 			// ** begin devhelpers **
 			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var
 			if (devPlayers.includes(username)) {
-				const data = {
+//				const data = {
 					uid: 'devgame',
 					userName: username
 				};
 
-				//info.isSeated = true;
-				//socket.emit('updateSeatedUser', data);
-				//socket.emit('getGameInfo', 'devgame');
+				// info.isSeated = true;
+				// socket.emit('updateSeatedUser', data);
+				// socket.emit('getGameInfo', 'devgame');
 			}
 			// ** end devhelpers **
 			dispatch(updateUser(info));
