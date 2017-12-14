@@ -184,7 +184,9 @@ module.exports = () => {
 							.substring(2);
 						account.save(() => {
 							res.json({ message: 'Cardback successfully uploaded.' });
-							io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
+							if (socketId && io.sockets.sockets[socketId]) {
+								io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
+							}
 						});
 					});
 				}

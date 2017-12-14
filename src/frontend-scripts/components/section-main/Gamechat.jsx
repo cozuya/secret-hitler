@@ -277,6 +277,7 @@ class Gamechat extends React.Component {
 					const chatContents = processEmotes(chat.chat);
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
+					const isGreenText = /^>/i.test(chatContents[0]);
 
 					return chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item gamechat ${chat.chat[1].type}` : 'item gamechat'} key={i}>
@@ -372,15 +373,15 @@ class Gamechat extends React.Component {
 								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
 									? isSeated
 										? isBlind
-											? `${gameInfo.general.replacementNames[
-													gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)
-												]} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											? `${
+													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
+												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
 									: isBlind ? '?' : chat.userName}
 								{': '}
 							</span>
-							<span>{chatContents}</span>{' '}
+							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
 						</div>
 					);
 				});

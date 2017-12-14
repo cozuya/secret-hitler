@@ -40,7 +40,6 @@ const saveGame = game => {
 			summary.save();
 		} else {
 			console.log(summary, 'problem with summary');
-			console.log(summary.toObject(), 'problem with summary');
 		}
 	} catch (error) {
 		console.log(error, 'error in enhanced/end-game');
@@ -113,8 +112,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 		})
 			.then(results => {
 				// todo add tourny save
-				const winningPlayerNames = winningPrivatePlayers.map(player => player.userName),
-					isRainbow = game.general.rainbowgame;
+				const winningPlayerNames = winningPrivatePlayers.map(player => player.userName);
+				const isRainbow = game.general.rainbowgame;
+				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 
 				results.forEach(player => {
 					let winner = false;
@@ -127,6 +127,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 							player.wins++;
 						}
 						winner = true;
+						if (isTournamentFinalGame) {
+							player.gameSettings.tournyWins.push(new Date().getTime());
+						}
 					} else {
 						if (isRainbow) {
 							player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses + 1 : 1;
@@ -146,6 +149,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 									userEntry.rainbowWins = userEntry.rainbowWins ? userEntry.rainbowWins + 1 : 1;
 								} else {
 									userEntry.wins++;
+								}
+								if (isTournamentFinalGame) {
+									userEntry.tournyWins.push(new Date().getTime());
 								}
 							} else {
 								if (isRainbow) {

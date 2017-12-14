@@ -64,7 +64,7 @@ farther future:
 
 tournament checklist/todos:
 turn remake button into "cancel tournament" (due to player afk) & end tourny on both tables functionality
-move players to final table after 2nd gets done and all of that
+move players to final table after 2nd gets done and all of that - delete A and B, move all sockets in A&B to final.
 crown icon next to names in Players and Userlist
 sort userlist for crowns
 remove crown after 3 hours

@@ -195,13 +195,15 @@ class Playerlist extends React.Component {
 
 											if (aTWinCount) {
 												if (!bIsSuperuser) {
-													return aTWinCount - bTWinCount;
+													console.log(bTWinCount, 'b');
+													console.log(aTWinCount, 'a');
+													return bTWinCount - aTWinCount;
 												}
 											}
 
 											if (bTWinCount) {
 												if (!aIsSuperuser) {
-													return bTWinCount - aTWinCount;
+													return aTWinCount - bTWinCount;
 												}
 											}
 										}
@@ -314,11 +316,15 @@ class Playerlist extends React.Component {
 											}
 										};
 
-										const renderCrowns = () => user.tournyWins.filter(winTime => time - winTime < 10800000).map(crown => <span className="crown-icon">X</span>);
+										const renderCrowns = () =>
+											user.tournyWins
+												.filter(winTime => time - winTime < 10800000)
+												.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
 										return (
 											<div key={i} className="user-container">
 												<div className="userlist-username">
+													{renderCrowns()}
 													{(() => {
 														const userAdminRole = ADMINS.includes(user.userName)
 															? 'Admin'
@@ -352,7 +358,6 @@ class Playerlist extends React.Component {
 														}
 													})()}
 													{renderStatus()}
-													{renderCrowns()}
 												</div>
 												{(() => {
 													if (!ADMINS.includes(user.userName)) {

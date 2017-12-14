@@ -53,17 +53,13 @@ export function renderEmotesButton(handleInsertEmote) {
 	return (
 		<Popup on="click" className="emotes-popup" trigger={<Button type="button" icon="smile" primary className="emotes-button" />}>
 			<Popup.Content>
-				{(() => {
-					return (
-						<div className="emotes-popup-content">
-							{allEmotes.map((el, index) => (
-								<div key={index} data-tooltip={el} data-inverted onClick={() => handleInsertEmote(el)}>
-									<img src={`../images/emotes/${el}.png`} />
-								</div>
-							))}
+				<div className="emotes-popup-content">
+					{allEmotes.map((el, index) => (
+						<div key={index} data-tooltip={el} data-inverted onClick={() => handleInsertEmote(el)}>
+							<img src={`../images/emotes/${el}.png`} />
 						</div>
-					);
-				})()}
+					))}
+				</div>
 			</Popup.Content>
 		</Popup>
 	);

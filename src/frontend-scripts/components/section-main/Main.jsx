@@ -85,17 +85,13 @@ export class Main extends React.Component {
 
 		return (
 			<section className={classes}>
-				{(() => {
-					if (midSection === 'game' || midSection === 'replay') {
-						return RenderMidSection();
-					} else {
-						return (
-							<PerfectScrollbar className="scrollbar-container-main" option={{ suppressScrollX: true }}>
-								<div className="section-main-content-container">{RenderMidSection()}</div>
-							</PerfectScrollbar>
-						);
-					}
-				})()}
+				{midSection === 'game' || midSection === 'replay' ? (
+					RenderMidSection()
+				) : (
+					<PerfectScrollbar className="scrollbar-container-main" option={{ suppressScrollX: true }}>
+						<div className="section-main-content-container">{RenderMidSection()}</div>
+					</PerfectScrollbar>
+				)}
 			</section>
 		);
 	}

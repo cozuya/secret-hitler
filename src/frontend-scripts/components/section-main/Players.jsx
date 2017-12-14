@@ -105,7 +105,7 @@ export default class Players extends React.Component {
 			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
 			const prependCrowns = str => (
 				<span>
-					{player.tournyWins.filter(winTime => time - winTime < 10800000).map(crown => <span className="crown-icon">X</span>)}
+					{player.tournyWins && player.tournyWins.filter(winTime => time - winTime < 10800000).map(crown => <span className="crown-icon">X</span>)}
 					{str}
 				</span>
 			);
@@ -122,7 +122,7 @@ export default class Players extends React.Component {
 				return prependCrowns(`${i + 1}. ${userName}`);
 			}
 
-			return prePendCrowns(userName);
+			return prependCrowns(userName);
 		};
 
 		return publicPlayersState.map((player, i) => (

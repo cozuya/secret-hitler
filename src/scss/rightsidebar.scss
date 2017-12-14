@@ -107,6 +107,13 @@
 			&.hover {
 				background: #2f2f2f;
 			}
+			.crown-icon {
+				width: 24px;
+				height: 16px;
+				background: url('/images/crown-small.png') no-repeat;
+				display: inline-block;
+				margin-right: 2px;
+			}
 			.userlist-username {
 				width: 60%;
 				white-space: nowrap;

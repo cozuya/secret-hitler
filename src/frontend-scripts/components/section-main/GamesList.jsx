@@ -8,6 +8,9 @@ export class GamesList extends React.Component {
 		super();
 
 		this.toggleFilter = this.toggleFilter.bind(this);
+		this.state = {
+			filtersVisible: false
+		};
 	}
 
 	toggleFilter(value) {
@@ -167,8 +170,14 @@ export class GamesList extends React.Component {
 	}
 
 	render() {
+		const toggleFilter = () => {
+			this.setState(state => ({
+				filtersVisible: !state.filtersVisible
+			}));
+		};
+
 		return (
-			<section className="browser-container">
+			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<h3>Game filters</h3>
 				{this.renderFilters()}
 				<div className="browser-header">
@@ -181,9 +190,14 @@ export class GamesList extends React.Component {
 								Create a new game
 							</a>
 						) : (
-							<button className="fluid ui button primary disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>
+							<span className="disabled-create-game-button">
+								<button className="fluid ui button primary disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>
+							</span>
 						);
 					})()}
+					<span className={this.state.filtersVisible ? 'enabled' : 'disabled'} onClick={toggleFilter}>
+						<i className="very large filter icon" />Game filters
+					</span>
 				</div>
 				<div className="browser-body">{this.renderGameList()}</div>
 			</section>

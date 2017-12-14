@@ -221,6 +221,29 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		.section-main-content-container {
 			width: 870px;
 			margin: 0 auto 0 auto;
+
+			.browser-header {
+				position: relative;
+			}
+
+			.disabled-create-game-button + span,
+			.create-game-button + span {
+				cursor: pointer;
+				&.enabled {
+					color: #bbb;
+					i {
+						color: #5b3535;
+					}
+				}
+
+				i {
+					font-size: 28px;
+				}
+				width: 130px;
+				position: absolute;
+				top: 18px;
+				left: 405px;
+			}
 		}
 	}
 	.section-main.game {
@@ -230,6 +253,10 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 	}
 
 	.browser-container {
+		transition: all 0.5s;
+		&.filters-hidden {
+			margin-top: -80px;
+		}
 		> h3 {
 			text-align: center;
 			margin-top: 10px;
