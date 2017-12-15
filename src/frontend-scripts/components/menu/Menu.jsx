@@ -33,7 +33,7 @@ class Menu extends React.Component {
 			<div className="menu-container">
 				<section className={classes}>
 					<a href="/" target="_blank">
-						<img src="../images/navbar_logo.png" />
+						<img src="../images/navbar_logo2.png" />
 					</a>
 					<div className="center-menu-links">
 						<span>
@@ -91,9 +91,16 @@ class Menu extends React.Component {
 								</div>
 							) : (
 								<div>
-									<div className="loggedin">
-										<span className={`${PLAYERCOLORS(userInfo.userName)} playername`}>{userInfo.userName}</span>
-									</div>
+									<Popup 
+										inverted
+										className="loggedin"
+										trigger={
+											<a href={`#/profile/${userInfo.userName}`}>
+												<span className={`${PLAYERCOLORS(userInfo.userName)} playername`}>{userInfo.userName}</span>
+											</a>
+										}
+										content="Profile"
+									/>
 									<Popup
 										inverted
 										className="settings-popup"
