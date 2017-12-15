@@ -92,7 +92,9 @@ class Menu extends React.Component {
 							) : (
 								<div>
 									<div className="loggedin">
-										<span className={`${PLAYERCOLORS(userInfo.userName)} playername`}>{userInfo.userName}</span>
+										<a href={`#/profile/${userInfo.userName}`}>
+											<span className={`${PLAYERCOLORS(userInfo.userName)} playername`}>{userInfo.userName}</span>
+										</a>
 									</div>
 									<Popup
 										inverted
