@@ -93,6 +93,8 @@ class Menu extends React.Component {
 								<div>
 									<div className="loggedin">
 										<span className={`${PLAYERCOLORS(userInfo.userName)} playername`}>{userInfo.userName}</span>
+										trigger={<a href="#/profile/${userName}"></a>}
+										content="Player Profile"
 									</div>
 									<Popup
 										inverted
