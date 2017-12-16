@@ -1,6 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { fetchProfile } from '../../actions/actions';
 import $ from 'jquery';
 import { Range } from 'rc-slider';
 import Modal from 'semantic-ui-modal';
@@ -10,10 +8,6 @@ import PropTypes from 'prop-types';
 
 $.fn.checkbox = Checkbox;
 $.fn.modal = Modal;
-
-const mapDispatchToProps = dispatch => ({
-	fetchProfile: username => dispatch(fetchProfile(username))
-});
 
 class Settings extends React.Component {
 	constructor() {
@@ -82,7 +76,7 @@ class Settings extends React.Component {
 	profileSearchSubmit(e) {
 		e.preventDefault();
 
-		this.props.fetchProfile(this.state.profileSearchValue);
+		window.location.hash = `#/profile/${this.state.profileSearchValue}`;
 	}
 
 	renderFonts() {
@@ -239,6 +233,11 @@ class Settings extends React.Component {
 			this.setState({ profileSearchValue: e.currentTarget.value });
 		};
 		const gameSettings = this.props.gameSettings || window.gameSettings;
+		const ownProfileSubmit = e => {
+			e.preventDefault();
+
+			window.location.hash = `#/profile/${this.props.userInfo.userName}`;
+		};
 
 		return (
 			<section className="settings">
@@ -255,7 +254,7 @@ class Settings extends React.Component {
 							</a>{' '}
 							(new tab).
 						</div>
-						<button className="ui primary button" onClick={this.props.fetchProfile.bind(null, this.props.userInfo.userName)}>
+						<button className="ui primary button" onClick={ownProfileSubmit}>
 							View your profile
 						</button>
 						<form className="profile-search" onSubmit={this.profileSearchSubmit}>
@@ -452,4 +451,4 @@ Settings.propTypes = {
 	socket: PropTypes.object
 };
 
-export default connect(null, mapDispatchToProps)(Settings);
+export default Settings;
