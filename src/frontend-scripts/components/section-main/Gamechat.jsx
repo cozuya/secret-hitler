@@ -249,7 +249,7 @@ class Gamechat extends React.Component {
 
 	processChats() {
 		const { gameInfo, userInfo, userList, isReplay } = this.props;
-		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
+		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
 		const { chatFilter } = this.state;
 		const compareChatStrings = (a, b) => {
@@ -341,13 +341,17 @@ class Gamechat extends React.Component {
 							{this.handleTimestamps(chat.timestamp)}
 							<span
 								className={
-									playerListPlayer
-										? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat
-											? 'chat-user'
-											: isBlind
-												? 'chat-user'
-												: playerListPlayer.wins + playerListPlayer.losses > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'
-										: 'chat-user'
+									playerListPlayer ? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat ? (
+										'chat-user'
+									) : isBlind ? (
+										'chat-user'
+									) : playerListPlayer.wins + playerListPlayer.losses > 49 ? (
+										`chat-user ${PLAYERCOLORS(playerListPlayer)}`
+									) : (
+										'chat-user'
+									) : (
+										'chat-user'
+									)
 								}
 							>
 								{isReplay || isSeated ? (
@@ -370,15 +374,19 @@ class Gamechat extends React.Component {
 								) : (
 									<span className="observer-chat">(Observer) </span>
 								)}
-								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
-									? isSeated
-										? isBlind
-											? `${
-													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-										: chat.userName
-									: isBlind ? '?' : chat.userName}
+								{this.props.isReplay || gameInfo.gameState.isTracksFlipped ? isSeated ? isBlind ? (
+									`${gameInfo.general.replacementNames[
+										gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)
+									]} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+								) : (
+									`${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+								) : (
+									chat.userName
+								) : isBlind ? (
+									'?'
+								) : (
+									chat.userName
+								)}
 								{': '}
 							</span>
 							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
@@ -471,7 +479,8 @@ class Gamechat extends React.Component {
 					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 						Game
 					</a>
-					{!gameInfo.general.disableObserver && (
+					{gameInfo.general &&
+					!gameInfo.general.disableObserver && (
 						<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 							No observer chat
 						</a>
@@ -490,12 +499,13 @@ class Gamechat extends React.Component {
 							onClick={this.handleChatLockClick}
 						/>
 					)}
-					{gameInfo.general.tournyInfo &&
-						gameInfo.general.tournyInfo.showOtherTournyTable && (
-							<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
-								Observe other tournament table
-							</button>
-						)}
+					{gameInfo.general &&
+					gameInfo.general.tournyInfo &&
+					gameInfo.general.tournyInfo.showOtherTournyTable && (
+						<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
+							Observe other tournament table
+						</button>
+					)}
 					<div className="right menu">
 						<WhiteListButton />
 						<WatchReplayButton />
