@@ -22,8 +22,8 @@ export default class Creategame extends React.Component {
 			privateShowing: false,
 			containsBadWord: false,
 			rainbowgame: false,
-			rebalance69p: true,
 			checkedSliderValues: new Array(6).fill(true),
+			checkedRebalanceValues: new Array(3).fill(true),
 			privateonlygame: false,
 			isTourny: false,
 			blindMode: false
@@ -1047,7 +1047,7 @@ export default class Creategame extends React.Component {
 						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
 					/>
 				)}
-				{!this.state.isTourny && (
+				{
 					<div className="checkbox-container">
 						{new Array(6).fill(true).map((el, index) => (
 							<label key={index}>
@@ -1062,7 +1062,36 @@ export default class Creategame extends React.Component {
 							</label>
 						))}
 					</div>
-				)}
+				}
+			</div>
+		);
+	}
+
+	renderRebalanceCheckboxes() {
+		const rebalancedInputClick = index => {
+			console.log('Hello, World!');
+		};
+
+		return (
+			<div className="rebalance-container">
+				<span>
+					<i
+						className="info circle icon"
+						title="When enabled, 6p games have a fascist policy already enacted, and 7p and 9p games start with one less fascist policy in the deck."
+					/>Rebalance:
+				</span>
+
+				{new Array(3).fill(true).map((el, index) => (
+					<label key={index} className={`rebalance-${index}`}>
+						<input
+							type="checkbox"
+							checked={this.state.checkedRebalanceValues[index]}
+							onChange={() => {
+								rebalancedInputClick(index);
+							}}
+						/>
+					</label>
+				))}
 			</div>
 		);
 	}
@@ -1115,7 +1144,8 @@ export default class Creategame extends React.Component {
 							</div>
 						)}
 					</div>
-					<div className="row slider">{this.renderPlayerSlider()}</div>
+					<div className="row slider">{!this.state.isTourny && this.renderPlayerSlider()}</div>
+					<div className="row rebalance">{this.renderRebalanceCheckboxes()}</div>
 					<div className="row sliderrow">
 						<div className="four wide column disablechat">
 							<i className="big unmute icon" />
@@ -1181,22 +1211,9 @@ export default class Creategame extends React.Component {
 						})()}
 					</div>
 					<div className="row">
-						<div className="four wide column rebalance69p">
-							<h4 className="ui header">
-								Rebalance games - 6 player games start with a fascist policy enacted, 7 & 9 player games start with one less fascist policy.
-							</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.rebalance69p = c;
-								}}
-							>
-								<input type="checkbox" name="rebalance69p" defaultChecked={true} />
-							</div>
-						</div>
 						<div className="four wide column">
 							<i className="big hide icon" />
-							<h4 className="ui header">Blind mode - player's names are erased, anonymizing them.</h4>
+							<h4 className="ui header">Blind mode - player's names are replaced with random animal names, anonymizing them.</h4>
 							<div
 								className="ui fitted toggle checkbox"
 								ref={c => {

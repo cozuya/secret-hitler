@@ -195,8 +195,6 @@ class Playerlist extends React.Component {
 
 											if (aTWinCount) {
 												if (!bIsSuperuser) {
-													console.log(bTWinCount, 'b');
-													console.log(aTWinCount, 'a');
 													return bTWinCount - aTWinCount;
 												}
 											}
