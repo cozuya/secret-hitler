@@ -54,8 +54,8 @@ const DisplayLobbies = props => {
 	};
 
 	const optionIcons = () => {
-		let rebalance69p;
-		let rebalance69pTooltip;
+		let rebalance;
+		let rebalanceTooltip;
 		let disableChat;
 		let disableChatTooltip;
 		let disableGamechat;
@@ -71,9 +71,30 @@ const DisplayLobbies = props => {
 		let privateOnly;
 		let privateOnlyTooltip;
 
-		if (game.rebalance69p) {
-			rebalance69p = <div> R </div>;
-			rebalance69pTooltip = 'Rebalanced 6, 7, & 9 player games';
+		if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
+			// ugly but lazy
+			if (game.rebalance6p && game.rebalance7p && game.rebalance9p) {
+				rebalance = <div> R679 </div>;
+				rebalanceTooltip = 'Rebalanced 6, 7, and 9p games';
+			} else if (game.rebalance7p && game.rebalance9p) {
+				rebalance = <div> R79 </div>;
+				rebalanceTooltip = 'Rebalanced 7 and 9p games';
+			} else if (game.rebalance6p && game.rebalance7p) {
+				rebalance = <div> R67 </div>;
+				rebalanceTooltip = 'Rebalanced 6 and 7p games';
+			} else if (game.rebalance6p && game.rebalance9p) {
+				rebalance = <div> R69 </div>;
+				rebalanceTooltip = 'Rebalanced 6 and 9p games';
+			} else if (game.rebalance6p) {
+				rebalance = <div> R6 </div>;
+				rebalanceTooltip = 'Rebalanced 6p games';
+			} else if (game.rebalance7p) {
+				rebalance = <div> R7 </div>;
+				rebalanceTooltip = 'Rebalanced 7p games';
+			} else if (game.rebalance9p) {
+				rebalance = <div> R9 </div>;
+				rebalanceTooltip = 'Rebalanced 9p games';
+			}
 		}
 
 		if (game.disableChat) {
@@ -123,8 +144,8 @@ const DisplayLobbies = props => {
 
 		return (
 			<div className="options-icons-container">
-				<span className="rebalanced" data-tooltip={rebalance69pTooltip} data-inverted="">
-					{rebalance69p}
+				<span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
+					{rebalance}
 				</span>
 				<span data-tooltip={disableChatTooltip} data-inverted="">
 					{disableChat}

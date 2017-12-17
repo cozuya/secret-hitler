@@ -65,12 +65,18 @@ const SidebarGame = props => {
 							P
 						</div>
 					)}
-					{game.rebalance69p && (
+					{(game.rebalance6p || game.rebalance7p || game.rebalance9p) && (
 						<div
 							className="rebalance-game"
 							title="This is a rebalanced game - 6 player games start with a fascist policy enacted, 7 & 9 player games start with one less fascist policy."
 						>
-							R
+							{game.rebalance6p && game.rebalance7p && game.rebalance9p
+								? 'R679'
+								: game.rebalance6p && game.rebalance7p
+									? 'R67'
+									: game.rebalance6p && game.rebalance9p
+										? 'R69'
+										: game.rebalance7p && game.rebalance9p ? 'R79' : game.rebalance6p ? 'R6' : game.rebalance7p ? 'R7' : 'R9'}
 						</div>
 					)}
 					<div

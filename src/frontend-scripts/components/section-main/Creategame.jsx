@@ -200,9 +200,9 @@ export default class Creategame extends React.Component {
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
 					blindMode: this.state.blindMode,
-					rebalance69p: this.state.rebalance69p
-						? !(excludedPlayerCount.includes(6) && excludedPlayerCount.includes(7) && excludedPlayerCount.includes(9))
-						: false,
+					rebalance6p: this.state.checkedRebalanceValues[0],
+					rebalance7p: this.state.checkedRebalanceValues[1],
+					rebalance9p: this.state.checkedRebalanceValues[2],
 					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 					privateOnly: this.state.privateonlygame,
 					electionCount: 0
@@ -1074,11 +1074,8 @@ export default class Creategame extends React.Component {
 
 		return (
 			<div className="rebalance-container">
-				<span>
-					<i
-						className="info circle icon"
-						title="When enabled, 6p games have a fascist policy already enacted, and 7p and 9p games start with one less fascist policy in the deck."
-					/>Rebalance:
+				<span title="When enabled, 6p games have a fascist policy already enacted, and 7p and 9p games start with one less fascist policy in the deck.">
+					<i className="info circle icon" />Rebalance:
 				</span>
 
 				{new Array(3).fill(true).map((el, index) => (
@@ -1086,6 +1083,20 @@ export default class Creategame extends React.Component {
 						<input
 							type="checkbox"
 							checked={this.state.checkedRebalanceValues[index]}
+							disabled={(() => {
+								const firstSlider = this.state.sliderValues[0];
+								const secondSlider = this.state.sliderValues[1];
+
+								if (index === 0) {
+									return firstSlider > 6 || secondSlider < 6;
+								}
+
+								if (index === 1) {
+									return firstSlider > 7 || secondSlider < 7;
+								}
+
+								return firstSlider > 9 || secondSlider < 9;
+							})()}
 							onChange={() => {
 								rebalancedInputClick(index);
 							}}

@@ -9,7 +9,9 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 		_.shuffle(
 			_.range(
 				1,
-				(game.general.rebalance69p && (game.private.seatedPlayers.length === 9 || game.private.seatedPlayers.length === 7) ? 11 : 12) -
+				((game.general.rebalance7p && game.private.seatedPlayers.length === 7) || (game.general.rebalance9p && game.private.seatedPlayers.length === 9)
+					? 11
+					: 12) -
 					(game.trackState.fascistPolicyCount + (count.fascist || 0))
 			)
 				.map(num => 'fascist')

@@ -9,20 +9,35 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.10.7 released 12-12-2017</p>
+			<p>Version 0.10.7 released 12-18-2017</p>
 		</div>
 		<h3>Blind mode update</h3>
-		<p>Blind mode now assigns every player a random animal name, instead of just being blank/their number. Hopefully this makes it less hard to follow.</p>
+		<p>
+			Blind mode now assigns every player a random adjective + animal name, instead of just being blank/their number. Also, it no longer shows who is seated or
+			their cardbacks in the gamelist/lobby.
+		</p>
+		<h3>Rebalance update in create game view</h3>
+		<p>
+			When creating a game, you no longer have the option to rebalance all games - instead, you can pick individually via new checkboxes which game sizes you
+			would like rebalanced.
+		</p>
 		<h3>New game option: disable observer chat</h3>
 		<p>
-			Toggle this on to prevent observers from chatting at all in your new game. No icon for this as thats starting to get huge (though the internal chat filter
-			is gone).
+			Toggle this on to prevent observers from chatting at all in your new game. No icon for this as thats starting to get huge (though you will see that in
+			these games, the internal chat filter for observers is not present).
 		</p>
 		<h3>Other items</h3>
 		<ul>
-			<li>Blind mode no longer shows who is seated/their cardbacks in the gamelist/lobby.</li>
-			<li>Gamelist filters now correctly show the toggled state after leaving and coming back to the list.</li>
-			<li>Moderators now have a new sitewide "disable game creation" setting - this will be used when planned updates are about to happen.</li>
+			<li>
+				Gamelist filters now correctly show the toggled state after leaving and coming back to the list, and there is new and obvious UI for that feature.
+			</li>
+			<li>"Show chats" button in replays should work now (no longer crash the browser/require refresh)</li>
+			<li>When you search for a profile from the settings view, your URL will correctly update to show the player's name</li>
+			<li>
+				Moderators now have a new sitewide "disable game creation" setting - this will be used when planned updates are about to happen. I'm lazy and there's no
+				UI for it, the button will just not do anything so uh don't panic.
+			</li>
+			<li>Players with exactly 50 games played are no longer grey in the player list..</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.10.6 released 12-10-2017</p>
@@ -271,7 +286,10 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
+				style={{ width: '30%', margin: '0 auto', display: 'block' }}
+				src="/images/em.png"
+			/>
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}
