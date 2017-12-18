@@ -244,7 +244,7 @@ const crashOptions = {
 	}
 };
 
-if (process.env.NODE_ENV) {
+if (process.env.NODE_ENV === 'production') {
 	const crashReq = https.request(crashOptions);
 
 	crashReq.end(crashReport);
@@ -274,7 +274,12 @@ const handleUserLeaveGame = (socket, data) => {
 			}
 		}
 
-		if (game.general.isTourny && game.general.tournyInfo.round === 0) {
+		if (
+			game.general.isTourny &&
+			game.general.tournyInfo.round === 0 &&
+			socket.handshake.session.passport &&
+			game.general.tournyInfo.queuedPlayers.map(player => player.userName).find(name => name === socket.handshake.session.passport.user)
+		) {
 			playerLeavePretourny(game, data.userName);
 		}
 
@@ -926,9 +931,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
-						game.general.remakeCount === 1 ? 'second' : 'seconds'
-					}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
+						? 'second'
+						: 'seconds'}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
