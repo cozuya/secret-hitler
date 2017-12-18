@@ -101,7 +101,7 @@
 			-webkit-backface-visibility: hidden; // thanks osx safari
 			backface-visibility: hidden;
 		}
-		}
+	}
 		.track {
 			transform: rotateX(0deg);
 			background-size: contain;
@@ -151,7 +151,7 @@
 			font-size: 30px;
 			cursor: pointer;
 		}
-	}
+}
 	.tracks.blurred,
 	.enactedpolicies-container.blurred {
 		filter: blur(5px) saturate(60%);
@@ -405,7 +405,6 @@
 		left: 510px;
 		top: 268px;
 	}
-}
 
 .flipped {
 	transform: rotateX(180deg);

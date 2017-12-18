@@ -111,15 +111,15 @@ const enactPolicy = (game, team) => {
 			},
 			{
 				0: null,
-				1: [investigateLoyalty, "The president must investigate another player's party membership."],
+				1: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
 				2: [specialElection, 'The president must select a player for a special election.'],
 				3: [executePlayer, 'The president must select a player for execution.'],
 				4: [executePlayer, 'The president must select a player for execution.'],
 				5: null
 			},
 			{
-				0: [investigateLoyalty, "The president must investigate another player's party membership."],
-				1: [investigateLoyalty, "The president must investigate another player's party membership."],
+				0: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
+				1: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
 				2: [specialElection, 'The president must select a player for a special election.'],
 				3: [executePlayer, 'The president must select a player for execution.'],
 				4: [executePlayer, 'The president must select a player for execution.'],
