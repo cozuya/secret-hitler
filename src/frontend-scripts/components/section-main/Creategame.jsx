@@ -1265,7 +1265,7 @@ export default class Creategame extends React.Component {
 								</div>
 							)}
 					</div>
-					<div className="row">
+					{/* <div className="row">
 						<div className="sixteen wide column tourny-container">
 							<h4 className="ui header">Tournament mode</h4>
 							<div
@@ -1277,7 +1277,7 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="tournyconfirm" defaultChecked={false} />
 							</div>
 						</div>
-					</div>
+					</div> */}
 				</div>
 
 				<div className="ui grid centered footer">

@@ -13,8 +13,8 @@ const Changelog = () => (
 		</div>
 		<h3>Rebalance update in create game</h3>
 		<p>
-			When creating a game, you no longer have the option to rebalance all games - instead, you can pick individually via new checkboxes which game sizes you
-			would like rebalanced.
+			When creating a game, you no longer have the option to rebalance all 6/7/9p games - instead, you can pick individually via new checkboxes which game sizes
+			you would like rebalanced.
 		</p>
 		<div style={{ textAlign: 'center' }}>
 			<img src="/images/new-rebalance.png" />
@@ -24,7 +24,7 @@ const Changelog = () => (
 			Blind mode now assigns every player a random adjective + animal name, instead of just being blank/their number. Please let me know if you find this to be
 			more playable/any other feedback. Also, it no longer shows who is seated or their cardbacks in the gamelist/lobby.
 		</p>
-		<h3>New game option: disable observer chat</h3>
+		<h3>New create game option: disable observer chat</h3>
 		<p>
 			Toggle this on to prevent observers from chatting at all in your new game. No icon for this as thats starting to get huge (though you will see that in
 			these games, the internal chat filter for observers is not present).
@@ -35,12 +35,13 @@ const Changelog = () => (
 				Gamelist filters now correctly show the toggled state after leaving and coming back to the list, and there is new and obvious UI for that feature.
 			</li>
 			<li>"Show chats" button in replays should work now (no longer crash the browser/require refresh).</li>
-			<li>When you search for a profile from the settings view, your URL will correctly update to show the player's name</li>
+			<li>When you search for a profile from the settings view, your URL will correctly update to show the player's name.</li>
 			<li>
 				Moderators now have a new sitewide "disable game creation" setting - this will be used when planned updates are about to happen. I'm lazy and there's no
 				UI for it, the button will just not do anything so uh don't panic.
 			</li>
-			<li>Players with exactly 50 games played are no longer grey in the player list..</li>
+			<li>Players with exactly 50 games played are no longer grey in the player list.</li>
+			<li>There's some chance I completely broke replays in this update... if so please don't hassle me/the mods, I will work on a fix immediately.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.10.6 released 12-10-2017</p>

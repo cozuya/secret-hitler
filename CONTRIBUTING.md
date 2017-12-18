@@ -6,6 +6,6 @@ I only have the following guidelines:
 
 2. Your code should pass lint.
 
-3. Your code should use prettier with the following options: use-tabs - true, single-quote - true, print-width: 160.
+3. Your code should use prettier with the following options: use-tabs: true, single-quote: true, print-width: 160.
 
-4. If you make something, please commit to supporting it. If there's issues raised on a feature you've made, please make sure you take care of it.
+4. If you make a feature, please commit to supporting it. If there's problems on an issue you've completed, please make sure you can take care of it.
