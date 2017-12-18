@@ -151,259 +151,260 @@
 			cursor: pointer;
 		}
 	}
-	.tracks.blurred,
-	.enactedpolicies-container.blurred {
-		filter: blur(5px) saturate(60%);
-		opacity: 0.3;
+}
+
+.tracks.blurred,
+.enactedpolicies-container.blurred {
+	filter: blur(5px) saturate(60%);
+	opacity: 0.3;
+}
+.help-message {
+	text-align: center;
+	position: absolute;
+	top: 55px;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	font-size: 20px;
+	z-index: 3;
+	text-shadow: 0px 0px 7px #000000, 0px 0px 7px #000000, 0px 0px 7px #000000;
+	.secondary-message {
+		font-size: 15px;
+		margin-top: 5px;
 	}
-	.help-message {
-		text-align: center;
-		position: absolute;
-		top: 55px;
-		bottom: 0;
-		right: 0;
-		left: 0;
-		font-size: 20px;
-		z-index: 3;
-		text-shadow: 0px 0px 7px #000000, 0px 0px 7px #000000, 0px 0px 7px #000000;
-		.secondary-message {
-			font-size: 15px;
-			margin-top: 5px;
-		}
-		span {
-			font-weight: bold;
-		}
+	span {
+		font-weight: bold;
 	}
-	.help-message.voting {
-		.select {
-			color: lightgreen;
-		}
-		.deselect {
-			color: red;
-		}
+}
+.help-message.voting {
+	.select {
+		color: lightgreen;
 	}
-	.help-message.pres-select {
-		span {
-			color: red;
-		}
-		.secondary-message {
-			span {
-				color: lightgreen;
-			}
-		}
+	.deselect {
+		color: red;
 	}
-	.help-message.chanc-select {
-		top: 70px;
+}
+.help-message.pres-select {
+	span {
+		color: red;
+	}
+	.secondary-message {
 		span {
 			color: lightgreen;
 		}
 	}
-	.help-message.veto {
-		top: 70px;
-		span {
-			color: red;
-		}
+}
+.help-message.chanc-select {
+	top: 70px;
+	span {
+		color: lightgreen;
 	}
-	.cardflinger-container {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
+}
+.help-message.veto {
+	top: 70px;
+	span {
+		color: red;
 	}
-	.cardflinger-card-container {
-		position: absolute;
-		top: 130px;
-		left: -140px;
-		width: 120px;
-		height: 164px;
-		z-index: 3;
-		transition-property: all;
-		transition-delay: 0.3s;
-		transition-duration: 1s;
-		transform-style: preserve-3d;
+}
+.cardflinger-container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+}
+.cardflinger-card-container {
+	position: absolute;
+	top: 130px;
+	left: -140px;
+	width: 120px;
+	height: 164px;
+	z-index: 3;
+	transition-property: all;
+	transition-delay: 0.3s;
+	transition-duration: 1s;
+	transform-style: preserve-3d;
+}
+.cardflinger-card {
+	background-size: contain;
+	background-repeat: no-repeat;
+	height: 167px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+.cardflinger-card.back {
+	transform: rotateY(180deg);
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	cursor: pointer;
+}
+.cardflinger-card-container.middle-far-left.active {
+	left: 75px;
+}
+.cardflinger-card-container.middle-center.active {
+	left: 265px;
+}
+.cardflinger-card-container.middle-far-right.active {
+	left: 455px;
+}
+.cardflinger-card-container.middle-left.active {
+	left: 165px;
+}
+.cardflinger-card-container.middle-right.active {
+	left: 365px;
+}
+.cardflinger-card.ballot {
+	background-image: url('../images/cards/ballot-l.png');
+}
+.cardflinger-card.nein {
+	background-image: url('../images/cards/nein-l.png');
+}
+.cardflinger-card.ja {
+	background-image: url('../images/cards/ja-l.png');
+}
+.cardflinger-card.policy {
+	background-image: url('../images/cards/policy-l.png');
+}
+.cardflinger-card.liberalp {
+	background-image: url('../images/cards/liberalp-l.png');
+}
+.cardflinger-card.fascistp {
+	background-image: url('../images/cards/fascistp-l.png');
+}
+.cardflinger-card-container.middle-far-right.hovered,
+.cardflinger-card-container.middle-center.hovered,
+.cardflinger-card-container.middle-far-left.hovered {
+	.cardflinger-card.back::before {
+		content: '\f00d';
+		font-size: 50px;
+		font-family: Icons;
+		color: red;
 	}
-	.cardflinger-card {
-		background-size: contain;
-		background-repeat: no-repeat;
-		height: 167px;
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
+}
+.cardflinger-card-container.middle-far-right.not-hovered,
+.cardflinger-card-container.middle-center.not-hovered,
+.cardflinger-card-container.middle-far-left.not-hovered {
+	.cardflinger-card.back::before {
+		content: '\f00c';
+		font-size: 50px;
+		font-family: Icons;
+		color: lightgreen;
 	}
-	.cardflinger-card.back {
-		transform: rotateY(180deg);
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-		cursor: pointer;
+}
+.cardflinger-card-container.middle-left.hovered,
+.cardflinger-card-container.middle-right.hovered {
+	.cardflinger-card.back::before {
+		content: '\f00c';
+		font-size: 50px;
+		font-family: Icons;
+		color: lightgreen;
 	}
-	.cardflinger-card-container.middle-far-left.active {
-		left: 75px;
+}
+.cardflinger-card-container.middle-left.not-hovered,
+.cardflinger-card-container.middle-left.hovered.selected,
+.cardflinger-card-container.middle-right.not-hovered,
+.cardflinger-card-container.middle-right.hovered.selected {
+	.cardflinger-card.back::before {
+		content: '\f00d';
+		font-size: 50px;
+		font-family: Icons;
+		color: red;
 	}
-	.cardflinger-card-container.middle-center.active {
-		left: 265px;
-	}
-	.cardflinger-card-container.middle-far-right.active {
-		left: 455px;
-	}
-	.cardflinger-card-container.middle-left.active {
-		left: 165px;
-	}
-	.cardflinger-card-container.middle-right.active {
-		left: 365px;
-	}
-	.cardflinger-card.ballot {
-		background-image: url('../images/cards/ballot-l.png');
-	}
-	.cardflinger-card.nein {
-		background-image: url('../images/cards/nein-l.png');
-	}
-	.cardflinger-card.ja {
-		background-image: url('../images/cards/ja-l.png');
-	}
-	.cardflinger-card.policy {
-		background-image: url('../images/cards/policy-l.png');
-	}
-	.cardflinger-card.liberalp {
-		background-image: url('../images/cards/liberalp-l.png');
-	}
-	.cardflinger-card.fascistp {
-		background-image: url('../images/cards/fascistp-l.png');
-	}
-	.cardflinger-card-container.middle-far-right.hovered,
-	.cardflinger-card-container.middle-center.hovered,
-	.cardflinger-card-container.middle-far-left.hovered {
-		.cardflinger-card.back::before {
-			content: '\f00d';
-			font-size: 50px;
-			font-family: Icons;
-			color: red;
-		}
-	}
-	.cardflinger-card-container.middle-far-right.not-hovered,
-	.cardflinger-card-container.middle-center.not-hovered,
-	.cardflinger-card-container.middle-far-left.not-hovered {
-		.cardflinger-card.back::before {
-			content: '\f00c';
-			font-size: 50px;
-			font-family: Icons;
-			color: lightgreen;
-		}
-	}
-	.cardflinger-card-container.middle-left.hovered,
-	.cardflinger-card-container.middle-right.hovered {
-		.cardflinger-card.back::before {
-			content: '\f00c';
-			font-size: 50px;
-			font-family: Icons;
-			color: lightgreen;
-		}
-	}
-	.cardflinger-card-container.middle-left.not-hovered,
-	.cardflinger-card-container.middle-left.hovered.selected,
-	.cardflinger-card-container.middle-right.not-hovered,
-	.cardflinger-card-container.middle-right.hovered.selected {
-		.cardflinger-card.back::before {
-			content: '\f00d';
-			font-size: 50px;
-			font-family: Icons;
-			color: red;
-		}
-	}
-	.enactedpolicies-card-container {
-		position: absolute;
-		top: 130px;
-		left: -140px;
-		width: 120px;
-		height: 167px;
-		z-index: 2;
-		transition-property: left, top, width, height, transform;
-		transition-delay: 0.5s, 0.5s, 3s, 3s, 1s;
-		transition-duration: 2s, 2s, 3s, 3s, 1s;
-		transform-style: preserve-3d;
-		box-shadow: 0px 0px 4px 3px #969696;
-	}
-	.enactedpolicies-card {
-		background-size: contain;
-		background-repeat: no-repeat;
-		height: 167px;
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-	}
-	.enactedpolicies-card.back {
-		transform: rotateY(180deg);
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-		cursor: pointer;
-	}
-	.enactedpolicies-card.front {
-		background-image: url('../images/cards/policy-l.png');
-	}
-	.enactedpolicies-card.back.liberal {
-		background-image: url('../images/cards/liberalp-l.png');
-	}
-	.enactedpolicies-card.back.fascist {
-		background-image: url('../images/cards/fascistp-l.png');
-	}
-	.enactedpolicies-card-container.middle {
-		left: 260px;
-		top: 130px;
-	}
-	.enactedpolicies-card-container.inplace {
-		width: 90px;
-		background-size: contain;
-		height: 124px;
-	}
-	.enactedpolicies-card-container.liberal1 {
-		left: 95px;
-		top: 48px;
-	}
-	.enactedpolicies-card-container.liberal2 {
-		left: 188px;
-		top: 48px;
-	}
-	.enactedpolicies-card-container.liberal3 {
-		left: 280px;
-		top: 48px;
-	}
-	.enactedpolicies-card-container.liberal4 {
-		left: 374px;
-		top: 48px;
-	}
-	.enactedpolicies-card-container.liberal5 {
-		left: 466px;
-		top: 48px;
-	}
-	.enactedpolicies-card-container.fascist1 {
-		left: 46px;
-		top: 268px;
-	}
-	.enactedpolicies-card-container.fascist2 {
-		left: 140px;
-		top: 268px;
-	}
-	.enactedpolicies-card-container.fascist3 {
-		left: 234px;
-		top: 268px;
-	}
-	.enactedpolicies-card-container.fascist4 {
-		left: 326px;
-		top: 268px;
-	}
-	.enactedpolicies-card-container.fascist5 {
-		left: 418px;
-		top: 268px;
-	}
-	.enactedpolicies-card-container.fascist6 {
-		left: 510px;
-		top: 268px;
-	}
+}
+.enactedpolicies-card-container {
+	position: absolute;
+	top: 130px;
+	left: -140px;
+	width: 120px;
+	height: 167px;
+	z-index: 2;
+	transition-property: left, top, width, height, transform;
+	transition-delay: 0.5s, 0.5s, 3s, 3s, 1s;
+	transition-duration: 2s, 2s, 3s, 3s, 1s;
+	transform-style: preserve-3d;
+	box-shadow: 0px 0px 4px 3px #969696;
+}
+.enactedpolicies-card {
+	background-size: contain;
+	background-repeat: no-repeat;
+	height: 167px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+.enactedpolicies-card.back {
+	transform: rotateY(180deg);
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	cursor: pointer;
+}
+.enactedpolicies-card.front {
+	background-image: url('../images/cards/policy-l.png');
+}
+.enactedpolicies-card.back.liberal {
+	background-image: url('../images/cards/liberalp-l.png');
+}
+.enactedpolicies-card.back.fascist {
+	background-image: url('../images/cards/fascistp-l.png');
+}
+.enactedpolicies-card-container.middle {
+	left: 260px;
+	top: 130px;
+}
+.enactedpolicies-card-container.inplace {
+	width: 90px;
+	background-size: contain;
+	height: 124px;
+}
+.enactedpolicies-card-container.liberal1 {
+	left: 95px;
+	top: 48px;
+}
+.enactedpolicies-card-container.liberal2 {
+	left: 188px;
+	top: 48px;
+}
+.enactedpolicies-card-container.liberal3 {
+	left: 280px;
+	top: 48px;
+}
+.enactedpolicies-card-container.liberal4 {
+	left: 374px;
+	top: 48px;
+}
+.enactedpolicies-card-container.liberal5 {
+	left: 466px;
+	top: 48px;
+}
+.enactedpolicies-card-container.fascist1 {
+	left: 46px;
+	top: 268px;
+}
+.enactedpolicies-card-container.fascist2 {
+	left: 140px;
+	top: 268px;
+}
+.enactedpolicies-card-container.fascist3 {
+	left: 234px;
+	top: 268px;
+}
+.enactedpolicies-card-container.fascist4 {
+	left: 326px;
+	top: 268px;
+}
+.enactedpolicies-card-container.fascist5 {
+	left: 418px;
+	top: 268px;
+}
+.enactedpolicies-card-container.fascist6 {
+	left: 510px;
+	top: 268px;
 }
 
 .flipped {

@@ -2,17 +2,17 @@ const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
 const Game = require('../../models/game');
-const BannedIP = require('../../models/bannedIP');
+//	const BannedIP = require('../../models/bannedIP');
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
-const https = require('https');
-const options = {
-	hostname: 'check.torproject.org',
-	path: '/cgi-bin/TorBulkExitList.py?ip=1.1.1.1'
-};
-// http://torstatus.blutmagie.de/ip_list_exit.php/Tor_ip_list_EXIT.csv
+//	const https = require('https');
+//	const options = {
+//	hostname: 'check.torproject.org',
+//	path: '/cgi-bin/TorBulkExitList.py?ip=1.1.1.1'
+//	};
+//	http://torstatus.blutmagie.de/ip_list_exit.php/Tor_ip_list_EXIT.csv
 
 let torIps = [];
 
