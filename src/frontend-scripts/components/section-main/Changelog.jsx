@@ -11,15 +11,18 @@ const Changelog = () => (
 		<div className="ui header">
 			<p>Version 0.10.7 released 12-18-2017</p>
 		</div>
-		<h3>Blind mode update</h3>
-		<p>
-			Blind mode now assigns every player a random adjective + animal name, instead of just being blank/their number. Also, it no longer shows who is seated or
-			their cardbacks in the gamelist/lobby.
-		</p>
-		<h3>Rebalance update in create game view</h3>
+		<h3>Rebalance update in create game</h3>
 		<p>
 			When creating a game, you no longer have the option to rebalance all games - instead, you can pick individually via new checkboxes which game sizes you
 			would like rebalanced.
+		</p>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/new-rebalance.png" />
+		</div>
+		<h3>Blind mode update</h3>
+		<p>
+			Blind mode now assigns every player a random adjective + animal name, instead of just being blank/their number. Please let me know if you find this to be
+			more playable/any other feedback. Also, it no longer shows who is seated or their cardbacks in the gamelist/lobby.
 		</p>
 		<h3>New game option: disable observer chat</h3>
 		<p>
@@ -31,7 +34,7 @@ const Changelog = () => (
 			<li>
 				Gamelist filters now correctly show the toggled state after leaving and coming back to the list, and there is new and obvious UI for that feature.
 			</li>
-			<li>"Show chats" button in replays should work now (no longer crash the browser/require refresh)</li>
+			<li>"Show chats" button in replays should work now (no longer crash the browser/require refresh).</li>
 			<li>When you search for a profile from the settings view, your URL will correctly update to show the player's name</li>
 			<li>
 				Moderators now have a new sitewide "disable game creation" setting - this will be used when planned updates are about to happen. I'm lazy and there's no

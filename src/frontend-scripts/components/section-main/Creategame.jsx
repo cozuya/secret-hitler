@@ -1069,7 +1069,11 @@ export default class Creategame extends React.Component {
 
 	renderRebalanceCheckboxes() {
 		const rebalancedInputClick = index => {
-			console.log('Hello, World!');
+			const { checkedRebalanceValues } = this.state;
+
+			checkedRebalanceValues[index] = !checkedRebalanceValues[index];
+
+			this.setState(checkedRebalanceValues);
 		};
 
 		return (

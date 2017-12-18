@@ -33,27 +33,27 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 
 	// delete/comment below prior to deployment..
 
-	game.trackState.fascistPolicyCount = 3;
-	game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-	game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-	game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-	game.trackState.enactedPolicies = [
-		{
-			cardBack: 'fascist',
-			isFlipped: true,
-			position: 'fascist1'
-		},
-		{
-			cardBack: 'fascist',
-			isFlipped: true,
-			position: 'fascist2'
-		},
-		{
-			cardBack: 'fascist',
-			isFlipped: true,
-			position: 'fascist3'
-		}
-	];
+	// game.trackState.fascistPolicyCount = 3;
+	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+	// game.trackState.enactedPolicies = [
+	// 	{
+	// 		cardBack: 'fascist',
+	// 		isFlipped: true,
+	// 		position: 'fascist1'
+	// 	},
+	// 	{
+	// 		cardBack: 'fascist',
+	// 		isFlipped: true,
+	// 		position: 'fascist2'
+	// 	},
+	// 	{
+	// 		cardBack: 'fascist',
+	// 		isFlipped: true,
+	// 		position: 'fascist3'
+	// 	}
+	// ];
 
 	// delete/comment above
 
