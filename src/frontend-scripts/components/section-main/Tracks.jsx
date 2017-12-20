@@ -183,9 +183,14 @@ class Tracks extends React.Component {
 					{userInfo.userName &&
 						userInfo.isSeated &&
 						gameInfo.gameState.isTracksFlipped &&
-						!gameInfo.general.isRemade && (
+						!gameInfo.general.isRemade &&
+						!(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (
 							<i
-								className={`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`}
+								className={
+									gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 1
+										? `remove icon ${this.state.remakeStatus ? 'enabled' : ''}`
+										: `icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`
+								}
 								onClick={updateRemake}
 								title="Enable this button to show that you would like to remake this game"
 							/>

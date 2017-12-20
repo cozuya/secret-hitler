@@ -19,14 +19,17 @@
 		opacity: 1;
 		border: 2px solid lightblue;
 	}
-	.icon.repeat {
+
+	.icon.repeat,
+	.icon.remove {
+		opacity: 1 !important;
 		position: absolute;
 		bottom: 5px;
 		left: 2px;
 		z-index: 105;
 		color: #ddd !important;
 		background: #034f61;
-		font-size: 16px;
+		font-size: 16px !important;
 		padding: 4px;
 		opacity: 1;
 		width: 28px;

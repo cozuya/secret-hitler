@@ -226,6 +226,7 @@ export default class Creategame extends React.Component {
 							userName: userInfo.userName,
 							customCardback: userInfo.gameSettings.customCardback,
 							customCardbackUid: userInfo.gameSettings.customCardbackUid,
+							tournyWins: userInfo.gameSettings.tournyWins,
 							connected: true,
 							cardStatus: {
 								cardDisplayed: false,
@@ -242,6 +243,7 @@ export default class Creategame extends React.Component {
 						userName: userInfo.userName,
 						customCardback: userInfo.gameSettings.customCardback,
 						customCardbackUid: userInfo.gameSettings.customCardbackUid,
+						tournyWins: userInfo.gameSettings.tournyWins,
 						connected: true,
 						isPrivate: userInfo.gameSettings.isPrivate,
 						cardStatus: {
@@ -1047,14 +1049,14 @@ export default class Creategame extends React.Component {
 						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
 					/>
 				)}
-				{
+				{!this.state.isTourny && (
 					<div className="checkbox-container">
 						{new Array(6).fill(true).map((el, index) => (
 							<label key={index}>
 								<input
 									type="checkbox"
 									checked={this.state.checkedSliderValues[index]}
-									disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? index + 5 === this.state.sliderValues[0] ? true : false : false}
+									disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? (index + 5 === this.state.sliderValues[0] ? true : false) : false}
 									onChange={() => {
 										sliderCheckboxClick(index);
 									}}
@@ -1062,7 +1064,7 @@ export default class Creategame extends React.Component {
 							</label>
 						))}
 					</div>
-				}
+				)}
 			</div>
 		);
 	}
@@ -1077,7 +1079,7 @@ export default class Creategame extends React.Component {
 		};
 
 		return (
-			<div className="rebalance-container">
+			<div className={this.state.isTourny ? 'rebalance-container isTourny' : 'rebalance-container'}>
 				<span title="When enabled, 6p games have a fascist policy already enacted, and 7p and 9p games start with one less fascist policy in the deck.">
 					<i className="info circle icon" />Rebalance:
 				</span>
@@ -1159,7 +1161,7 @@ export default class Creategame extends React.Component {
 							</div>
 						)}
 					</div>
-					<div className="row slider">{!this.state.isTourny && this.renderPlayerSlider()}</div>
+					<div className="row slider">{this.renderPlayerSlider()}</div>
 					<div className="row rebalance">{this.renderRebalanceCheckboxes()}</div>
 					<div className="row sliderrow">
 						<div className="four wide column disablechat">
@@ -1251,19 +1253,19 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 						{this.props.userInfo.gameSettings &&
-						this.props.userInfo.gameSettings.isPrivate && (
-							<div className="four wide column privateonlygame">
-								<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
-								<div
-									className="ui fitted toggle checkbox"
-									ref={c => {
-										this.privateonlygame = c;
-									}}
-								>
-									<input type="checkbox" name="privateonlygame" defaultChecked={false} />
+							this.props.userInfo.gameSettings.isPrivate && (
+								<div className="four wide column privateonlygame">
+									<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
+									<div
+										className="ui fitted toggle checkbox"
+										ref={c => {
+											this.privateonlygame = c;
+										}}
+									>
+										<input type="checkbox" name="privateonlygame" defaultChecked={false} />
+									</div>
 								</div>
-							</div>
-						)}
+							)}
 					</div>
 					<div className="row">
 						<div className="sixteen wide column tourny-container">

@@ -49,9 +49,6 @@ module.exports.torIps = torIps;
 module.exports.sendModInfo = (socket, count) => {
 	const userNames = userList.map(user => user.userName);
 
-	console.log(ipbansNotEnforced);
-	console.log(gameCreationDisabled);
-
 	Account.find({ username: userNames })
 		.then(users => {
 			ModAction.find()

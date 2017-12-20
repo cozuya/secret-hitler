@@ -55,6 +55,7 @@ const saveGame = game => {
  */
 module.exports.completeGame = (game, winningTeamName) => {
 	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
+	const winningPlayerNames = winningPrivatePlayers.map(player => player.userName);
 	const { seatedPlayers } = game.private;
 	const { publicPlayersState } = game;
 	const chat = {
@@ -72,7 +73,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 	if (!(game.general.isTourny && game.general.tournyInfo && game.general.tournyInfo.round === 1)) {
 		winningPrivatePlayers.forEach((player, index) => {
 			publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
-
 			publicPlayersState.find(play => play.userName === player.userName).isConfetti = true;
 			player.wonGame = true;
 		});
@@ -112,7 +112,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 		})
 			.then(results => {
 				// todo add tourny save
-				const winningPlayerNames = winningPrivatePlayers.map(player => player.userName);
 				const isRainbow = game.general.rainbowgame;
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 
@@ -129,6 +128,12 @@ module.exports.completeGame = (game, winningTeamName) => {
 						winner = true;
 						if (isTournamentFinalGame) {
 							player.gameSettings.tournyWins.push(new Date().getTime());
+							const playerSocket = Object.keys(io.sockets.sockets).find(
+								socketId =>
+									io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === player.username
+							);
+
+							playerSocket.emit('gameSettings', player.gameSettings);
 						}
 					} else {
 						if (isRainbow) {
@@ -231,13 +236,12 @@ module.exports.completeGame = (game, winningTeamName) => {
 						finalGame.publicPlayersState = otherGame.general.tournyInfo.winningPlayersFirstCompletedGame.concat(
 							game.private.seatedPlayers.filter(player => player.role.team === winningTeamName)
 						);
+						finalGame.general.name = `${game.general.name.slice(0, game.general.name.length - 7)}-tableFINAL`;
 						games.push(finalGame);
 						require('./start-game.js')(finalGame); // circular dep.
 						sendGameList();
 					}
 				}, 1000);
-
-				// todo add make new final table game object, assign sockets, delete A and B
 			} else {
 				game.general.tournyInfo.showOtherTournyTable = true;
 				game.chats.push({
@@ -255,8 +259,13 @@ module.exports.completeGame = (game, winningTeamName) => {
 				sendInProgressGameUpdate(game);
 			}
 		} else {
-			console.log('Hello, World!');
 			// todo add crown stuff
+			game.publicPlayersState.forEach(player => {
+				if (winningPlayerNames.includes(player.userName)) {
+					player.tournyWins.push(new Date().getTime());
+				}
+			});
+			sendInProgressGameUpdate(game);
 		}
 	}
 };

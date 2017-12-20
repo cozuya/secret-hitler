@@ -9,6 +9,34 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.11.0 released 12--2017</p>
+		</div>
+		<h3>New feature: tournament mode!</h3>
+		<p>When making a game, you now have the option to instead make a new tournment lobby.</p>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/tournament-creategame-slider.png" />
+		</div>
+		<p>
+			The tournament feature will start 2 tables of a game when 14, 16, or 18 people have signed up. When the 2nd game completes, a final table is created with
+			the winners of both games. Please make sure you have the time set aside to play 2 full games before joining a tournament queue.
+		</p>
+		<p>
+			Winners of the final table receive a new crown icon next to their name that lasts for 3 hours. They are also sorted to the top of the userlist under mods.
+			Yes, you can accumulate multiple crowns - get 3 and you'll even be above mods!
+		</p>
+		<p>
+			In tournament round one tables, the remake button has turned into a "cancel tournament" button, please use this if there is an afk and both tables will be
+			stopped. Its not an ideal solution but its what we can do.
+		</p>
+		<h3>Other items</h3>
+		<ul>
+			<li>
+				Thanks to contributors voldemort and Rex1234 there's a new logo in the upper left corner, and you can now access your profile directly by clicking on
+				your name next to the settings cog.
+			</li>
+			<li>Hovering over a player's name in game now shows their name in the "report" description text (in case they have lots of crowns).</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.10.7 released 12-18-2017</p>
 		</div>
 		<h3>Rebalance update in create game</h3>

@@ -73,7 +73,7 @@
 
 				.tourny-button {
 					width: 110px;
-					background: $tourny;
+					background: $tourny !important;
 					&:hover {
 						background: darkgreen !important;
 					}

@@ -106,7 +106,8 @@ export default class Players extends React.Component {
 			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
 			const prependCrowns = str => (
 				<span>
-					{player.tournyWins && player.tournyWins.filter(winTime => time - winTime < 10800000).map(crown => <span className="crown-icon">X</span>)}
+					{player.tournyWins &&
+						player.tournyWins.filter(winTime => time - winTime < 10800000).map((crown, ind) => <span className="crown-icon" key={player.tournyWins[ind]} />)}
 					{str}
 				</span>
 			);
@@ -164,7 +165,7 @@ export default class Players extends React.Component {
 				})()}
 			>
 				<div
-					title="Double click to open a modal to report a player to the moderators"
+					title={`Double click to open a modal to report ${player.userName} to the moderator team`}
 					onDoubleClick={this.handlePlayerDoubleClick}
 					className={(() => {
 						let classes = 'player-number';

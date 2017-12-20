@@ -8,7 +8,7 @@ module.exports.policyPeek = game => {
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.policyPeek) {
+	if (!game.private.lock.policyPeek && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.policyPeek = true;
 
 		if (game.gameState.undrawnPolicyCount < 3) {
@@ -29,7 +29,7 @@ module.exports.selectPolicies = data => {
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.selectPolicies) {
+	if (!game.private.lock.selectPolicies && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectPolicies = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 
@@ -38,14 +38,16 @@ module.exports.selectPolicies = data => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 3).reduce((peek, policy) => {
-				if (policy === 'fascist') {
-					return Object.assign({}, peek, { reds: peek.reds + 1 });
-				} else {
-					return Object.assign({}, peek, { blues: peek.blues + 1 });
-				}
-			},
-			{ reds: 0, blues: 0 })
+			policyPeek: game.private.policies.slice(0, 3).reduce(
+				(peek, policy) => {
+					if (policy === 'fascist') {
+						return Object.assign({}, peek, { reds: peek.reds + 1 });
+					} else {
+						return Object.assign({}, peek, { blues: peek.blues + 1 });
+					}
+				},
+				{ reds: 0, blues: 0 }
+			)
 		});
 
 		president.cardFlingerState = [
@@ -133,7 +135,7 @@ module.exports.investigateLoyalty = game => {
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.investigateLoyalty) {
+	if (!game.private.lock.investigateLoyalty && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.investigateLoyalty = true;
 
 		game.general.status = 'Waiting for President to investigate.';
@@ -161,7 +163,7 @@ module.exports.selectPartyMembershipInvestigate = data => {
 	const president = seatedPlayers[presidentIndex];
 	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
 
-	if (!game.private.lock.selectPartyMembershipInvestigate) {
+	if (!game.private.lock.selectPartyMembershipInvestigate && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectPartyMembershipInvestigate = true;
 
 		if (!seatedPlayers[playerIndex].wasInvestigated) {
@@ -265,7 +267,7 @@ module.exports.specialElection = game => {
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.specialElection) {
+	if (!game.private.lock.specialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.specialElection = true;
 		game.general.status = 'President to select special election.';
 		game.gameState.specialElectionFormerPresidentIndex = presidentIndex;
@@ -287,7 +289,7 @@ module.exports.specialElection = game => {
 module.exports.selectSpecialElection = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (!game.private.lock.selectSpecialElection) {
+	if (!game.private.lock.selectSpecialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectSpecialElection = true;
 
 		game.private.summary = game.private.summary.updateLog({
@@ -309,7 +311,7 @@ module.exports.executePlayer = game => {
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
 
-	if (!game.private.lock.executePlayer) {
+	if (!game.private.lock.executePlayer && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.executePlayer = true;
 		game.general.status = 'President to execute a player.';
 		game.publicPlayersState[presidentIndex].isLoader = true;
@@ -373,7 +375,7 @@ module.exports.selectPlayerToExecute = data => {
 		]
 	};
 
-	if (!game.private.lock.selectPlayerToExecute) {
+	if (!game.private.lock.selectPlayerToExecute && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectPlayerToExecute = true;
 
 		game.private.summary = game.private.summary.updateLog({

@@ -50,12 +50,14 @@ export default class Generalchat extends React.Component {
 
 	handleSubmit(e) {
 		const inputValue = this.chatInput.value;
+		const { userInfo } = this.props;
 
 		if (inputValue && inputValue.length < 300) {
 			this.props.socket.emit('addNewGeneralChat', {
-				userName: this.props.userInfo.userName,
+				userName: userInfo.userName,
+				tournyWins: userInfo.gameSettings.tournyWins,
 				chat: inputValue,
-				isPrivate: this.props.userInfo.gameSettings.isPrivate
+				isPrivate: userInfo.gameSettings.isPrivate
 			});
 
 			this.chatInput.value = '';
@@ -129,7 +131,11 @@ export default class Generalchat extends React.Component {
 	renderChats() {
 		let timestamp;
 		const { userInfo, generalChats } = this.props;
-		const renderCrowns = chat => {};
+		const time = new Date().getTime();
+		const renderCrowns = tournyWins =>
+			tournyWins
+				.filter(winTime => time - winTime < 10800000)
+				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
@@ -145,7 +151,7 @@ export default class Generalchat extends React.Component {
 					return (
 						<div className="item" key={i}>
 							{timestamp}
-							{renderCrowns(chat)}
+							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns(chat.tournyWins)}
 							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
 								{MODERATORS.includes(chat.userName) && <span className="moderator-name">(M) </span>}
 								{EDITORS.includes(chat.userName) && <span className="editor-name">(E) </span>}

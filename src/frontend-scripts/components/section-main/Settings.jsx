@@ -34,6 +34,7 @@ class Settings extends React.Component {
 			disablePlayerColorsInChat: '',
 			disablePlayerCardbacks: '',
 			disableConfetti: '',
+			disableCrowns: '',
 			isPrivate: ''
 		};
 	}
@@ -49,6 +50,7 @@ class Settings extends React.Component {
 			disableHelpIcons: gameSettings.disableHelpIcons,
 			enableRightSidebarInGame: gameSettings.enableRightSidebarInGame,
 			disablePlayerColorsInChat: gameSettings.disablePlayerColorsInChat,
+			disableCrowns: gameSettings.disableCrowns,
 			disablePlayerCardbacks: gameSettings.disablePlayerCardbacks,
 			disableConfetti: gameSettings.disableConfetti,
 			isPrivate: gameSettings.isPrivate
@@ -340,9 +342,14 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							<h4 className="ui header">Private-games-only (this action will log you out)</h4>
+							<h4 className="ui header">Private-games-only (this action will log you out, 18 hour cooldown)</h4>
 							<div className="ui fitted toggle checkbox">
 								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
+								<label />
+							</div>
+							<h4 className="ui header">Disable tournament crowns</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
 								<label />
 							</div>
 						</div>
@@ -391,8 +398,9 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${this.state
-															.imageUid}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
+															this.state.imageUid
+														}) no-repeat`
 													}}
 												/>
 											);

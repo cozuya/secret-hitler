@@ -81,9 +81,9 @@ const enactPolicy = (game, team) => {
 					type: team === 'liberal' ? 'liberal' : 'fascist'
 				},
 				{
-					text: ` policy has been enacted. (${team === 'liberal'
-						? game.trackState.liberalPolicyCount.toString()
-						: game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`
+					text: ` policy has been enacted. (${
+						team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()
+					}/${team === 'liberal' ? '5' : '6'})`
 				}
 			]
 		};
@@ -195,7 +195,7 @@ const handToLog = hand =>
 module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (!game.private.seatedPlayers) {
+	if (!game.private.seatedPlayers || (game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		return;
 	}
 
@@ -543,6 +543,10 @@ module.exports.selectVoting = data => {
 		}, process.env.NODE_ENV === 'development' ? 2100 : 6000);
 	};
 
+	if (game.general.isTourny && game.general.tournyInfo.isCancelled) {
+		return;
+	}
+
 	if (game.private.lock.selectChancellor) {
 		game.private.lock.selectChancellor = false;
 	}
@@ -639,7 +643,8 @@ module.exports.selectPresidentPolicy = data => {
 		president.cardFlingerState &&
 		president.cardFlingerState.length &&
 		Number.isInteger(chancellorIndex) &&
-		game.publicPlayersState[chancellorIndex]
+		game.publicPlayersState[chancellorIndex] &&
+		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
 		game.private.lock.selectPresidentPolicy = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
@@ -725,7 +730,13 @@ module.exports.selectChancellorPolicy = data => {
 	const enactedPolicy = data.policy;
 
 	game.private.lock.selectPresidentPolicy = false;
-	if (!game.private.lock.selectChancellorPolicy && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
+	if (
+		!game.private.lock.selectChancellorPolicy &&
+		chancellor &&
+		chancellor.cardFlingerState &&
+		chancellor.cardFlingerState.length &&
+		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
+	) {
 		game.private.lock.selectChancellorPolicy = true;
 
 		if (data.selection === 3) {
@@ -834,7 +845,8 @@ module.exports.selectChancellorVoteOnVeto = data => {
 		chancellor &&
 		chancellor.cardFlingerState &&
 		chancellor.cardFlingerState.length &&
-		game.publicPlayersState[chancellorIndex]
+		game.publicPlayersState[chancellorIndex] &&
+		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
 		game.private.lock.selectChancellorVoteOnVeto = true;
 
@@ -961,7 +973,12 @@ module.exports.selectPresidentVoteOnVeto = data => {
 		presidentVeto: data.vote
 	});
 
-	if (!game.private.lock.selectPresidentVoteOnVeto && Number.isInteger(chancellorIndex) && game.publicPlayersState[chancellorIndex]) {
+	if (
+		!game.private.lock.selectPresidentVoteOnVeto &&
+		Number.isInteger(chancellorIndex) &&
+		game.publicPlayersState[chancellorIndex] &&
+		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
+	) {
 		game.private.lock.selectPresidentVoteOnVeto = true;
 
 		game.publicPlayersState[chancellorIndex].isLoader = false; // crash here 9/17

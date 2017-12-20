@@ -41,7 +41,7 @@ const startCountdown = game => {
 	}
 
 	game.gameState.isStarted = true;
-	let startGamePause = game.general.isTourny ? 10 : 20;
+	let startGamePause = game.general.isTourny ? 5 : 20;
 
 	const countDown = setInterval(() => {
 		if (game.gameState.cancellStart) {
@@ -98,6 +98,8 @@ const startCountdown = game => {
 
 				games.splice(games.indexOf(game), 1);
 				gameA.general.tournyInfo.round = gameB.general.tournyInfo.round = 1;
+				gameA.general.name = `${gameA.general.name}-tableA`;
+				gameB.general.name = `${gameB.general.name}-tableB`;
 				games.push(gameA, gameB);
 				delete gameA.general.tournyInfo.queuedPlayers;
 				delete gameB.general.tournyInfo.queuedPlayers;
@@ -424,6 +426,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 			data.general.timeCreated = currentTime;
 			updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
 			games.push(data);
+			console.log(data.publicPlayersState);
 			sendGameList();
 			socket.join(data.general.uid);
 			socket.emit('updateSeatForUser');
@@ -908,8 +911,26 @@ module.exports.handleUpdatedRemakeGame = data => {
 		});
 		checkStartConditions(newGame);
 	};
-	const cancellTourny = () => {
-		// todo
+	const cancellTourny = firstTableUid => {
+		const secondTableUid =
+			firstTableUid.charAt(firstTableUid.length - 1) === 'A'
+				? `${firstTableUid.slice(0, firstTableUid.length - 1)}B`
+				: `${firstTableUid.slice(0, firstTableUid.length - 1)}A`;
+		const secondTable = games.find(game => game.general.uid === secondTableUid);
+
+		secondTable.general.tournyInfo.isCancelled = true;
+		secondTable.chats.push({
+			gameChat: true,
+			timestamp: new Date(),
+			chat: [
+				{
+					text: 'Due to the other tournament table voting for cancellation, this tournament has been cancelled.',
+					type: 'hitler'
+				}
+			]
+		});
+		secondTable.general.status = 'Tournament has been cancelled.';
+		sendInProgressGameUpdate(secondTable);
 	};
 
 	if (!game || !player || !game.publicPlayersState) {
@@ -922,7 +943,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName);
 		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-		chat.chat.push({ text: ` has voted to ${remakeText} this game. (${remakePlayerCount}/${minimumRemakeVoteCount})` });
+		chat.chat.push({
+			text: ` has voted to ${remakeText} this ${game.general.isTourny ? 'tournament.' : 'game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+		});
 		publicPlayer.isRemaking = true;
 
 		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
@@ -931,16 +954,16 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
-						? 'second'
-						: 'seconds'}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
+						game.general.remakeCount === 1 ? 'second' : 'seconds'
+					}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
 					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
 					game.general.isRemade = true;
 					if (game.general.isTourny) {
-						cancellTourny();
+						cancellTourny(game.general.uid);
 					} else {
 						makeNewGame();
 					}
@@ -957,7 +980,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 			clearInterval(game.private.remakeTimer);
 		}
 		chat.chat.push({
-			text: ` has rescinded their vote to remake this game. (${remakePlayerCount}/${minimumRemakeVoteCount})`
+			text: ` has rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount}/${
+				minimumRemakeVoteCount
+			})`
 		});
 	}
 	game.chats.push(chat);

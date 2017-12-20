@@ -14,15 +14,19 @@ const DisplayLobbies = props => {
 			classes += ' fascist';
 		} else if (game.gameStatus === 'liberal') {
 			classes += ' liberal';
-		} else if (game.isTourny) {
-			classes += ' tourny';
 		} else {
 			classes += ' notstarted';
 		}
 
+		if (game.isTourny) {
+			classes += ' tourny';
+		}
+
 		return classes;
 	};
-	const playerCount = () => {
+
+	const playerCount = game => {
+		console.log(game);
 		const availableSeatCounts = new Array(game.maxPlayersCount)
 			.fill(true)
 			.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
@@ -50,7 +54,7 @@ const DisplayLobbies = props => {
 			}
 		});
 
-		return str;
+		return str || game.seatedCount;
 	};
 
 	const optionIcons = () => {
@@ -339,7 +343,7 @@ const DisplayLobbies = props => {
 								{game.seatedCount || (game.tournyStatus && game.tournyStatus.queuedPlayers)}{' '}
 							</span>
 							<span className="divider">/</span>
-							<span className="allowed-players"> {playerCount()}</span>
+							<span className="allowed-players"> {playerCount(game)}</span>
 						</div>
 					</div>
 				</div>

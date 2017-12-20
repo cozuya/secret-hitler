@@ -89,7 +89,7 @@
 
 	.rebalance {
 		> div {
-			padding-left: 120px;
+			padding-left: 100px;
 		}
 		span {
 			color: $hitlerteam;
@@ -114,6 +114,20 @@
 		}
 		.rebalance-2 {
 			left: 531px;
+		}
+
+		.rebalance-container.isTourny {
+			.rebalance-0 {
+				display: none;
+			}
+
+			.rebalance-1 {
+				left: 214px;
+			}
+
+			.rebalance-2 {
+				left: 612px;
+			}
 		}
 		input {
 			cursor: pointer;

@@ -94,6 +94,13 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 	.ui.header {
 		font-family: inherit; // $headerfont;
 	}
+	.crown-icon {
+		width: 24px;
+		height: 16px;
+		background: url('/images/crown-small.png') no-repeat;
+		display: inline-block;
+		margin-right: 2px;
+	}
 	.notes-container {
 		-webkit-transition: all 0.15s ease-in-out;
 		-moz-transition: all 0.15s ease-in-out;

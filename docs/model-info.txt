@@ -45,6 +45,7 @@ general
 		round number
 		showOtherTournyTable bool
 		queuedPlayers array of objects
+		isCancelled bool
 seatedPlayers array 5-10
 	obj
 		connected bool
