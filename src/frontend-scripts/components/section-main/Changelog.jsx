@@ -9,7 +9,7 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.11.0 released 12--2017</p>
+			<p>Version 0.11.0 released 12-21-2017</p>
 		</div>
 		<h3>New feature: tournament mode!</h3>
 		<p>When making a game, you now have the option to instead make a new tournment lobby.</p>
@@ -21,8 +21,8 @@ const Changelog = () => (
 			the winners of both games. Please make sure you have the time set aside to play 2 full games before joining a tournament queue. If you're good. ;)
 		</p>
 		<p>
-			Winners of the final table receive a new crown icon next to their name that lasts for 3 hours. Next patch they are also sorted to the top of the userlist
-			under mods, but didn't get to that yet. Yes, you can accumulate multiple crowns.
+			Winners of the final table receive a new crown icon next to their name that lasts for 3 hours, and are sorted to top of the player list under mods. Yes,
+			you can accumulate multiple crowns. Get 3+ and you'll be above mods and editors! But not admins :)
 		</p>
 		<p>
 			In tournament round one tables, the remake button has turned into a "cancel tournament" button, please use this if there is an afk and both tables will be
@@ -40,6 +40,10 @@ const Changelog = () => (
 			<li>Thanks to contributor Rex1234, you can now access your profile directly by clicking on your name next to the settings cog.</li>
 			<li>Hovering over a player's name in game now shows their name in the "report" description text (in case they have lots of crowns).</li>
 		</ul>
+		<h3>
+			Next up: any issues with tournaments, and most likely, a 3rd and 4th tier of playerlist sort for tournments and rainbow tournaments. After that, probably
+			seasons as its a small change and optional and extends the life of the game.
+		</h3>
 		<div className="ui header">
 			<p>Version 0.10.7 released 12-18-2017</p>
 		</div>

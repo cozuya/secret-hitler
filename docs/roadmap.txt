@@ -52,18 +52,17 @@ overhaul/fixes to moderation problems (banning/timeouts not working)
 version 0.10:
 UI overhaul
 7p rebalance option
-
-near future:
-tournament mode
 blind mode
+"anon" enhancements
 
-farther future:
+version 0.11:
+tournament mode
+
+future:
 (#205) player notes
 (#204) notes enhancements
 (#198) game creator should have extra powers - kick/pause timer/etc
 
-tournament checklist/todos:
-sort userlist for crowns
 
 version 1.0
 convert to webpack/create-react-app for builds - will resolve safari problems

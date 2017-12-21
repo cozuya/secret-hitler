@@ -227,7 +227,6 @@ class Gamechat extends React.Component {
 		})();
 		const isGovernmentDuringPolicySelection = (() => {
 			if (gameState && (gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
-				// todo: front end crash here in tournament observation some how
 				return (
 					publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
 					publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
