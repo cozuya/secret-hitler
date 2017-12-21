@@ -151,7 +151,7 @@ export default class Generalchat extends React.Component {
 					return (
 						<div className="item" key={i}>
 							{timestamp}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns(chat.tournyWins)}
+							{/* {!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns(chat.tournyWins)} */}
 							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
 								{MODERATORS.includes(chat.userName) && <span className="moderator-name">(M) </span>}
 								{EDITORS.includes(chat.userName) && <span className="editor-name">(E) </span>}

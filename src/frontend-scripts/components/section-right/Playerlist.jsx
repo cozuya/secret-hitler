@@ -328,7 +328,7 @@ class Playerlist extends React.Component {
 										return (
 											<div key={i} className="user-container">
 												<div className="userlist-username">
-													{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns()}
+													{/* {!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns()} */}
 													{(() => {
 														const userAdminRole = ADMINS.includes(user.userName)
 															? 'Admin'
