@@ -5,8 +5,8 @@ const _ = require('lodash');
 const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceStart) => {
 	const count = _.countBy(game.private.policies);
 
-	game.private.policies = game.private.policies.concat(
-		_.shuffle(
+	game.private.policies = _.shuffle(
+		game.private.policies.concat(
 			_.range(
 				1,
 				((game.general.rebalance7p && game.private.seatedPlayers.length === 7) || (game.general.rebalance9p && game.private.seatedPlayers.length === 9)

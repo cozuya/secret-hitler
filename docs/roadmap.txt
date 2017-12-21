@@ -63,9 +63,7 @@ farther future:
 (#198) game creator should have extra powers - kick/pause timer/etc
 
 tournament checklist/todos:
-gamelist UI for in progress tournys
 sort userlist for crowns
-gamechat doesn't update crowncount in ended final tourny table.
 
 version 1.0
 convert to webpack/create-react-app for builds - will resolve safari problems

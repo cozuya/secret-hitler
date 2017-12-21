@@ -5,6 +5,13 @@
 	padding: 2%;
 	margin-right: 10px;
 
+	.rc-slider-handle {
+		margin-left: -9px;
+		margin-top: -7px;
+		width: 18px;
+		height: 18px;
+	}
+
 	.contains-bad-word {
 		color: red;
 	}

@@ -22,7 +22,7 @@ const beginGame = game => {
 			},
 			{
 				cardName: 'hitler',
-				icon: 0,
+				icon: 1,
 				team: 'fascist'
 			}
 		]);
@@ -106,7 +106,7 @@ const beginGame = game => {
 						text: 'The game begins and you receive the '
 					},
 					{
-						text: player.role.cardName,
+						text: player.role.cardName === 'hitler' ? 'santa hitler' : player.role.cardName,
 						type: player.role.cardName
 					},
 					{
@@ -250,7 +250,7 @@ const beginGame = game => {
 							text: 'You see that '
 						},
 						{
-							text: 'hitler',
+							text: 'santa hitler',
 							type: 'hitler'
 						},
 						{

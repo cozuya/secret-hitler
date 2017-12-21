@@ -18,22 +18,26 @@ const Changelog = () => (
 		</div>
 		<p>
 			The tournament feature will start 2 tables of a game when 14, 16, or 18 people have signed up. When the 2nd game completes, a final table is created with
-			the winners of both games. Please make sure you have the time set aside to play 2 full games before joining a tournament queue.
+			the winners of both games. Please make sure you have the time set aside to play 2 full games before joining a tournament queue. If you're good. ;)
 		</p>
 		<p>
-			Winners of the final table receive a new crown icon next to their name that lasts for 3 hours. They are also sorted to the top of the userlist under mods.
-			Yes, you can accumulate multiple crowns - get 3 and you'll even be above mods!
+			Winners of the final table receive a new crown icon next to their name that lasts for 3 hours. Next patch they are also sorted to the top of the userlist
+			under mods, but didn't get to that yet. Yes, you can accumulate multiple crowns.
 		</p>
 		<p>
 			In tournament round one tables, the remake button has turned into a "cancel tournament" button, please use this if there is an afk and both tables will be
 			stopped. Its not an ideal solution but its what we can do.
 		</p>
+		<p>
+			This feature is a big change, and there's likely going to be issues with it, as my professional QA department is my cat. Other than disable observer chat,
+			you can use all other normal game settings for tournament mode with one caveat - in the unlikely event that you play a 6p final table, it will always be
+			rebalanced.
+		</p>
+		<h3>New player setting: disable tournament crowns</h3>
+		<p>Duh.</p>
 		<h3>Other items</h3>
 		<ul>
-			<li>
-				Thanks to contributors voldemort and Rex1234 there's a new logo in the upper left corner, and you can now access your profile directly by clicking on
-				your name next to the settings cog.
-			</li>
+			<li>Thanks to contributor Rex1234, you can now access your profile directly by clicking on your name next to the settings cog.</li>
 			<li>Hovering over a player's name in game now shows their name in the "report" description text (in case they have lots of crowns).</li>
 		</ul>
 		<div className="ui header">

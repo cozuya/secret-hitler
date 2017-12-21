@@ -349,7 +349,7 @@ class Gamechat extends React.Component {
 					) : (
 						<div className="item" key={i}>
 							{this.handleTimestamps(chat.timestamp)}
-							{renderCrowns(chat.tournyWins)}
+							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns(chat.tournyWins)}
 							<span
 								className={
 									playerListPlayer
@@ -466,10 +466,13 @@ class Gamechat extends React.Component {
 			const { uid } = gameInfo.general;
 			const tableUidLastLetter = uid.charAt(gameInfo.general.uid.length - 1);
 			const { hash } = window.location;
+			const { isRound1TableThatFinished2nd } = gameInfo.general.tournyInfo;
 
 			userInfo.isSeated = false;
 			this.props.updateUser(userInfo);
-			window.location.hash = tableUidLastLetter === 'A' ? `${hash.substr(0, hash.length - 1)}B` : `${hash.substr(0, hash.length - 1)}A`;
+			window.location.hash = isRound1TableThatFinished2nd
+				? `${hash.substr(0, hash.length - 1)}Final`
+				: tableUidLastLetter === 'A' ? `${hash.substr(0, hash.length - 1)}B` : `${hash.substr(0, hash.length - 1)}A`;
 		};
 
 		return (
@@ -506,9 +509,9 @@ class Gamechat extends React.Component {
 					)}
 					{gameInfo.general &&
 						gameInfo.general.tournyInfo &&
-						gameInfo.general.tournyInfo.showOtherTournyTable && (
+						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
 							<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
-								Observe other tournament table
+								Observe {gameInfo.general.tournyInfo.isRound1TableThatFinished2nd ? 'final' : 'other'} tournament table
 							</button>
 						)}
 					<div className="right menu">

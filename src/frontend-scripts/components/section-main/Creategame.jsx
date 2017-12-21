@@ -195,7 +195,7 @@ export default class Creategame extends React.Component {
 					status: `Waiting for ${this.state.sliderValues[0] - 1} more players..`,
 					experiencedMode: this.state.experiencedmode,
 					disableChat: this.state.disablechat,
-					disableObserver: this.state.disableobserver,
+					disableObserver: this.state.disableobserver && !this.state.isTourny,
 					isTourny: this.state.isTourny,
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
@@ -1240,18 +1240,20 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="blindmode" defaultChecked={false} />
 							</div>
 						</div>
-						<div className="four wide column">
-							<i className="big talk icon" />
-							<h4 className="ui header">Disable observer chat</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.disableobserver = c;
-								}}
-							>
-								<input type="checkbox" name="disableobserver" defaultChecked={false} />
+						{!this.state.isTourny && (
+							<div className="four wide column">
+								<i className="big talk icon" />
+								<h4 className="ui header">Disable observer chat</h4>
+								<div
+									className="ui fitted toggle checkbox"
+									ref={c => {
+										this.disableobserver = c;
+									}}
+								>
+									<input type="checkbox" name="disableobserver" defaultChecked={false} />
+								</div>
 							</div>
-						</div>
+						)}
 						{this.props.userInfo.gameSettings &&
 							this.props.userInfo.gameSettings.isPrivate && (
 								<div className="four wide column privateonlygame">

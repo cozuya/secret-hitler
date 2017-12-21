@@ -111,7 +111,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 			username: { $in: seatedPlayers.map(player => player.userName) }
 		})
 			.then(results => {
-				// todo add tourny save
 				const isRainbow = game.general.rainbowgame;
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 
@@ -128,12 +127,12 @@ module.exports.completeGame = (game, winningTeamName) => {
 						winner = true;
 						if (isTournamentFinalGame) {
 							player.gameSettings.tournyWins.push(new Date().getTime());
-							const playerSocket = Object.keys(io.sockets.sockets).find(
+							const playerSocketId = Object.keys(io.sockets.sockets).find(
 								socketId =>
 									io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === player.username
 							);
 
-							playerSocket.emit('gameSettings', player.gameSettings);
+							io.sockets.sockets[playerSocketId].emit('gameSettings', player.gameSettings);
 						}
 					} else {
 						if (isRainbow) {
@@ -205,6 +204,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 						gamePause--;
 					} else {
 						clearInterval(countDown);
+						game.general.status = otherGame.general.status = 'Final game has begun.';
+						game.general.tournyInfo.isRound1TableThatFinished2nd = true;
+						sendInProgressGameUpdate(game);
 						const winningPlayerSocketIds = Object.keys(io.sockets.sockets).filter(
 							socketId =>
 								io.sockets.sockets[socketId].handshake.session.passport &&
@@ -259,12 +261,21 @@ module.exports.completeGame = (game, winningTeamName) => {
 				sendInProgressGameUpdate(game);
 			}
 		} else {
-			// todo add crown stuff
 			game.publicPlayersState.forEach(player => {
 				if (winningPlayerNames.includes(player.userName)) {
 					player.tournyWins.push(new Date().getTime());
 				}
 			});
+			game.chats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{
+						text: 'The tournament has ended.'
+					}
+				]
+			});
+			game.general.status = 'The tournament has ended.';
 			sendInProgressGameUpdate(game);
 		}
 	}

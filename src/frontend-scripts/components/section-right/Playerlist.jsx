@@ -183,25 +183,31 @@ class Playerlist extends React.Component {
 												if (aTWinCount === bTWinCount) {
 													return a.userName > b.userName ? 1 : -1;
 												}
-												return aTWinCount - bTWinCount;
+												return aTWinCount > bTWinCount ? -1 : 1;
 											}
 
 											if (bTWinCount > 2) {
 												if (aTWinCount === bTWinCount) {
 													return a.userName > b.userName ? 1 : -1;
 												}
-												return bTWinCount - aTWinCount;
+												return bTWinCount > aTWinCount ? 1 : -1;
 											}
 
 											if (aTWinCount) {
 												if (!bIsSuperuser) {
-													return bTWinCount - aTWinCount;
+													if (aTWinCount === bTWinCount) {
+														return a.userName > b.userName ? 1 : -1;
+													}
+													return bTWinCount > aTWinCount ? 1 : -1;
 												}
 											}
 
 											if (bTWinCount) {
 												if (!aIsSuperuser) {
-													return aTWinCount - bTWinCount;
+													if (aTWinCount === bTWinCount) {
+														return a.userName > b.userName ? 1 : -1;
+													}
+													return aTWinCount > bTWinCount ? -1 : 1;
 												}
 											}
 										}

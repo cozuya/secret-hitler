@@ -26,7 +26,6 @@ const DisplayLobbies = props => {
 	};
 
 	const playerCount = game => {
-		console.log(game);
 		const availableSeatCounts = new Array(game.maxPlayersCount)
 			.fill(true)
 			.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))

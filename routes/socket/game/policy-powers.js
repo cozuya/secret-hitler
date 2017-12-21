@@ -427,7 +427,7 @@ module.exports.selectPlayerToExecute = data => {
 					gameChat: true,
 					chat: [
 						{
-							text: 'Hitler',
+							text: 'Santa hitler',
 							type: 'hitler'
 						},
 						{ text: '  has been executed.' }

@@ -165,14 +165,15 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		flex-direction: column;
 	}
 	.menu-container {
-		background-color: $darkfascistteam;
+		background-color: $tourny;
+		min-height: 42px;
 		a {
 			cursor: pointer;
 			font-weight: bold;
 			color: white;
 		}
 		a:hover {
-			color: #3d75b9;
+			color: #eee;
 		}
 		.center-menu-links {
 			min-width: 350px;
@@ -715,13 +716,23 @@ div {
 	border: 0;
 	box-shadow: none;
 	overflow: hidden;
-	background-color: $darkfascistteam;
+	background-color: $tourny;
 	margin: auto;
 	width: 95%;
 	max-width: 1920px;
 	> a {
 		max-height: 36px;
 		margin-top: 3px;
+
+		font-family: 'germania one', germania, sans-serif;
+		font-size: 38px;
+		text-shadow: 1px 1px 2px black;
+		padding: 10px 0 0 0;
+		display: inline-block;
+		letter-spacing: 2px;
+		&.hover {
+			color: black;
+		}
 	}
 	> p {
 		line-height: 1;

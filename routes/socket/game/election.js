@@ -486,7 +486,7 @@ module.exports.selectVoting = data => {
 						gameChat: true,
 						chat: [
 							{
-								text: 'Hitler',
+								text: 'Santa hitler',
 								type: 'hitler'
 							},
 							{
