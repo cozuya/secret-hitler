@@ -5,6 +5,7 @@ const { specialElection, policyPeek, investigateLoyalty, executePlayer } = requi
 const { completeGame } = require('./end-game.js');
 const { games } = require('../models.js');
 const _ = require('lodash');
+
 const enactPolicy = (game, team) => {
 	const index = game.trackState.enactedPolicies.length;
 	const { experiencedMode } = game.general;

@@ -997,9 +997,20 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	}
 
 	const game = games.find(el => el.general.uid === data.uid);
-	const player = game.publicPlayersState.find(player => player.userName === passport.user);
+	const { publicPlayersState } = game;
+	const player = publicPlayersState.find(player => player.userName === passport.user);
 
 	if ((player && player.isDead && !game.gameState.isCompleted) || (player && player.leftGame) || (!player && game.general.disableObserver)) {
+		return;
+	}
+
+	const { gameState } = game;
+
+	if (
+		(gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') &&
+		(publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isPresident' ||
+			publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isChancellor')
+	) {
 		return;
 	}
 

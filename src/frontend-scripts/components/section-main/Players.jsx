@@ -141,7 +141,7 @@ export default class Players extends React.Component {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
 							}
 						: {
-								backgroundImage: `url(../images/default_cardback.png)`
+								backgroundImage: `url(../images/default_cardback2.png)`
 							}
 				}
 				className={(() => {

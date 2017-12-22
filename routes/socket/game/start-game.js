@@ -17,7 +17,7 @@ const beginGame = game => {
 		.concat([
 			{
 				cardName: 'fascist',
-				icon: 0,
+				icon: 3,
 				team: 'fascist'
 			},
 			{
@@ -41,7 +41,7 @@ const beginGame = game => {
 		roles = roles.concat([
 			{
 				cardName: 'fascist',
-				icon: 1,
+				icon: 4,
 				team: 'fascist'
 			}
 		]);
@@ -62,7 +62,7 @@ const beginGame = game => {
 		roles = roles.concat([
 			{
 				cardName: 'fascist',
-				icon: 2,
+				icon: 5,
 				team: 'fascist'
 			}
 		]);

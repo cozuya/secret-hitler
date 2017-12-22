@@ -41,6 +41,9 @@ general
 	electionCount number, starts at 0
 	privateOnly bool only anons can play
 	isTourny bool
+	rebalance6p bool
+	rebalance7p bool
+	rebalance9p bool
 	tournyInfo
 		round number
 		showOtherTournyTable bool

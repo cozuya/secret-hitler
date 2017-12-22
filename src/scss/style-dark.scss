@@ -91,6 +91,10 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 
 #main {
 	height: 100%;
+	.greentext {
+		color: #386e29 !important;
+	}
+
 	.ui.header {
 		font-family: inherit; // $headerfont;
 	}

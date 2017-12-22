@@ -26,7 +26,9 @@ const saveGame = game => {
 		})),
 		winningTeam: game.gameState.isCompleted,
 		playerCount: game.general.playerCount,
-		rebalance69p: game.general.rebalance69p,
+		rebalance6p: game.general.rebalance6p,
+		rebalance7p: game.general.rebalance7p,
+		rebalance9p: game.general.rebalance9p,
 		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
 		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2
 	});
@@ -70,7 +72,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 		]
 	};
 
-	if (!(game.general.isTourny && game.general.tournyInfo && game.general.tournyInfo.round === 1)) {
+	if (!(game.general.isTourny && game.general.tournyInfo.round === 1)) {
 		winningPrivatePlayers.forEach((player, index) => {
 			publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
 			publicPlayersState.find(play => play.userName === player.userName).isConfetti = true;
@@ -182,7 +184,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 			const otherUid = tableUidLastLetter === 'A' ? `${uid.substr(0, uid.length - 1)}B` : `${uid.substr(0, uid.length - 1)}A`;
 			const otherGame = games.find(g => g.general.uid === otherUid);
 
-			if (otherGame.gameState.isCompleted) {
+			if (!otherGame || otherGame.gameState.isCompleted) {
 				const finalGame = _.cloneDeep(game);
 				let gamePause = 10;
 
@@ -198,13 +200,20 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 				const countDown = setInterval(() => {
 					if (gamePause) {
-						game.general.status = otherGame.general.status = `Final game starts in ${gamePause} ${gamePause === 1 ? 'second' : 'seconds'}.`;
+						game.general.status = `Final game starts in ${gamePause} ${gamePause === 1 ? 'second' : 'seconds'}.`;
+						if (otherGame) {
+							otherGame.general.status = `Final game starts in ${gamePause} ${gamePause === 1 ? 'second' : 'seconds'}.`;
+							sendInProgressGameUpdate(otherGame);
+						}
 						sendInProgressGameUpdate(game);
-						sendInProgressGameUpdate(otherGame);
 						gamePause--;
 					} else {
 						clearInterval(countDown);
-						game.general.status = otherGame.general.status = 'Final game has begun.';
+						game.general.status = 'Final game has begun.';
+						if (otherGame) {
+							otherGame.general.status = 'Final game has begun.';
+							sendInProgressGameUpdate(otherGame);
+						}
 						game.general.tournyInfo.isRound1TableThatFinished2nd = true;
 						sendInProgressGameUpdate(game);
 						const winningPlayerSocketIds = Object.keys(io.sockets.sockets).filter(
@@ -216,7 +225,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						const otherGameWinningPlayerSocketIds = Object.keys(io.sockets.sockets).filter(
 							socketId =>
 								io.sockets.sockets[socketId].handshake.session.passport &&
-								otherGame.general.tournyInfo.winningPlayersFirstCompletedGame
+								game.general.tournyInfo.winningPlayersFirstCompletedGame
 									.map(player => player.userName)
 									.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 						);
@@ -235,7 +244,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 						finalGame.general.tournyInfo.round = 2;
 						finalGame.general.electionCount = 0;
-						finalGame.publicPlayersState = otherGame.general.tournyInfo.winningPlayersFirstCompletedGame.concat(
+						finalGame.publicPlayersState = game.general.tournyInfo.winningPlayersFirstCompletedGame.concat(
 							game.private.seatedPlayers.filter(player => player.role.team === winningTeamName)
 						);
 						finalGame.general.name = `${game.general.name.slice(0, game.general.name.length - 7)}-tableFINAL`;
@@ -255,7 +264,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						}
 					]
 				});
-				game.general.tournyInfo.winningPlayersFirstCompletedGame = _.cloneDeep(game.private.seatedPlayers).filter(
+				otherGame.general.tournyInfo.winningPlayersFirstCompletedGame = _.cloneDeep(game.private.seatedPlayers).filter(
 					player => player.role.team === winningTeamName
 				);
 				sendInProgressGameUpdate(game);

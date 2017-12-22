@@ -55,7 +55,7 @@ export default class Generalchat extends React.Component {
 		if (inputValue && inputValue.length < 300) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: userInfo.userName,
-				tournyWins: userInfo.gameSettings.tournyWins,
+				tournyWins: userInfo.gameSettings.tournyWins ? userInfo.gameSettings.tournyWins : [],
 				chat: inputValue,
 				isPrivate: userInfo.gameSettings.isPrivate
 			});
@@ -151,7 +151,7 @@ export default class Generalchat extends React.Component {
 					return (
 						<div className="item" key={i}>
 							{timestamp}
-							{/* {!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns(chat.tournyWins)} */}
+							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns(chat.tournyWins)}
 							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
 								{MODERATORS.includes(chat.userName) && <span className="moderator-name">(M) </span>}
 								{EDITORS.includes(chat.userName) && <span className="editor-name">(E) </span>}
@@ -163,7 +163,7 @@ export default class Generalchat extends React.Component {
 									{`${chat.userName}: `}
 								</a>
 							</span>
-							<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
+							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat)}</span>
 						</div>
 					);
 				})

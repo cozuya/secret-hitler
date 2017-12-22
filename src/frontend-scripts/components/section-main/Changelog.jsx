@@ -9,10 +9,27 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.11.1 released 12-22-2017</p>
+		</div>
+		<h3>Tournament mode re-enabled.. we'll see how I messed it up this time.</h3>
+		<h4>A bug that allowed presidents/chancellors to chat during election period by tabbing to the input bar has been fixed.</h4>
+		<h4>New chat enhancements! See below.</h4>
+		<ul>
+			<li>Words surrounded by * (single asterick) are italic.</li>
+			<li>Words surrounded by ** (double asterick) are bold.</li>
+			<li>Words surrounded by __ (double underscore) are underlined.</li>
+			<li>Words surrounded by ~~ (double tilde/grave) are strikethroughed.</li>
+		</ul>
+		<h4>
+			**Puts on professional chatroom application developer hat: please note that this only works on __words__, i.e. text that is separated by spaces, not
+			multiple words. If you want that, you'll (for now..) need to surround each word with the above. Also, you can only have one of these effects per word.**
+		</h4>
+		<h3>The "unchangable election vote" thing is a bug, not a feature, I'll fix that soon.</h3>
+		<div className="ui header">
 			<p>Version 0.11.0 released 12-21-2017</p>
 		</div>
 		<h3>New feature: tournament mode!</h3>
-		<p>When making a game, you now have the option to instead make a new tournment lobby.</p>
+		<p>When making a game, you now have the option to instead make a new tournament lobby.</p>
 		<div style={{ textAlign: 'center' }}>
 			<img src="/images/tournament-creategame-slider.png" />
 		</div>
@@ -41,7 +58,7 @@ const Changelog = () => (
 			<li>Hovering over a player's name in game now shows their name in the "report" description text (in case they have lots of crowns).</li>
 		</ul>
 		<h3>
-			Next up: any issues with tournaments, and most likely, a 3rd and 4th tier of playerlist sort for tournments and rainbow tournaments. After that, probably
+			Next up: any issues with tournaments, and most likely, a 3rd and 4th tier of playerlist sort for tournaments and rainbow tournaments. After that, probably
 			seasons as its a small change and optional and extends the life of the game.
 		</h3>
 		<div className="ui header">
