@@ -320,15 +320,17 @@ class Playerlist extends React.Component {
 											}
 										};
 
-										const renderCrowns = () =>
+										{
+											/* const renderCrowns = () =>
 											user.tournyWins
 												.filter(winTime => time - winTime < 10800000)
-												.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
+												.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />); */
+										}
 
 										return (
 											<div key={i} className="user-container">
 												<div className="userlist-username">
-													{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns()}
+													{/* {!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns()} */}
 													{(() => {
 														const userAdminRole = ADMINS.includes(user.userName)
 															? 'Admin'

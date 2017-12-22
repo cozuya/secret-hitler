@@ -260,14 +260,13 @@ class Gamechat extends React.Component {
 
 			return stringA > stringB ? 1 : -1;
 		};
-		const time = new Date().getTime();
-		const renderCrowns = tournyWins => {
-			return tournyWins
-				.filter(winTime => time - winTime < 10800000)
-				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
-		};
+		// const time = new Date().getTime();
+		// const renderCrowns = tournyWins => {
+		// 	return tournyWins
+		// 		.filter(winTime => time - winTime < 10800000)
+		// 		.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
+		// };
 
-		// console.log(gameInfo.chats);
 		if (
 			isReplay ||
 			!gameInfo.general.private ||
@@ -348,7 +347,7 @@ class Gamechat extends React.Component {
 					) : (
 						<div className="item" key={i}>
 							{this.handleTimestamps(chat.timestamp)}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns(chat.tournyWins)}
+							{/* {!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && renderCrowns(chat.tournyWins)} */}
 							<span
 								className={
 									playerListPlayer
