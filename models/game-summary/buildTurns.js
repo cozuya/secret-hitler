@@ -3,25 +3,25 @@ const { List, Range } = require('immutable');
 const { some, none, fromNullable } = require('option');
 const { filterOpt, flattenListOpts, pushOpt, mapOpt1, mapOpt2, handDiff, policyToHand, handToPolicy } = require('../../utils');
 
-module.exports = (logs, players) => {
-	return buildTurns(List(), logs, players);
+module.exports = (logs, players, gameSetting) => {
+	return buildTurns(List(), logs, players, gameSetting);
 };
 
-const buildTurns = (turns, logs, players) => {
+const buildTurns = (turns, logs, players, gameSetting) => {
 	if (logs.isEmpty()) return turns;
 
-	const nextTurn = buildTurn(fromNullable(turns.last()), logs.first(), players);
+	const nextTurn = buildTurn(fromNullable(turns.last()), logs.first(), players, gameSetting);
 
-	return buildTurns(turns.push(nextTurn), logs.rest(), players);
+	return buildTurns(turns.push(nextTurn), logs.rest(), players, gameSetting);
 };
 
-const buildTurn = (prevTurnOpt, log, players) => {
+const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 	const prevTurn = prevTurnOpt.valueOrElse({
 		isVotePassed: true,
 		afterDeadPlayers: List(),
 		execution: none,
-		afterDeckSize: 17,
-		afterTrack: { reds: 0, blues: 0 },
+		afterDeckSize: 17 - (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p) ,
+		afterTrack: { reds: gameSetting.rebalance6p, blues: 0 },
 		afterElectionTracker: 0,
 		enactedPolicy: none
 	});

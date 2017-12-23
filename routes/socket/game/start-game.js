@@ -8,29 +8,35 @@ const beginGame = game => {
 
 	game.general.timeStarted = new Date().getTime();
 
-	let libCount = Math.floor(game.publicPlayersState.length / 2) + 1;
-	let fasCount = game.publicPlayersState.length - libCount - 1;
+	const libCount = Math.floor(game.publicPlayersState.length / 2) + 1;
+	const fasCount = game.publicPlayersState.length - libCount - 1;
 	game.general.type = Math.floor((game.publicPlayersState.length - 5) / 2);
 
-	let roles = [{
-		cardName: 'hitler',
-		icon: 1,
-		team: 'fascist'
-	}]
-	.concat(_.shuffle(
-		_.range(0,6)
-		.map(el => ({
-			cardName: 'liberal',
-			icon: el,
-			team: 'liberal'
-		}))).slice(0, libCount))
-	.concat(_.shuffle(
-		_.range(3,6)
-		.map(el => ({
-			cardName: 'fascist',
-			icon: el,
+	const roles = [
+		{
+			cardName: 'hitler',
+			icon: 1,
 			team: 'fascist'
-		}))).slice(0, fasCount))
+		}
+	]
+		.concat(
+			_.shuffle(
+				_.range(0, 6).map(el => ({
+					cardName: 'liberal',
+					icon: el,
+					team: 'liberal'
+				}))
+			).slice(0, libCount)
+		)
+		.concat(
+			_.shuffle(
+				_.range(3, 6).map(el => ({
+					cardName: 'fascist',
+					icon: el,
+					team: 'fascist'
+				}))
+			).slice(0, fasCount)
+		);
 
 	game.general.status = 'Dealing roles..';
 
@@ -87,9 +93,15 @@ const beginGame = game => {
 	game.private.summary = new GameSummaryBuilder(
 		game.general.uid,
 		new Date(),
+		{
+			rebalance6p: game.general.rebalance6p && game.private.seatedPlayers.length === 6,
+			rebalance7p: game.general.rebalance7p && game.private.seatedPlayers.length === 7,
+			rebalance9p: game.general.rebalance9p && game.private.seatedPlayers.length === 9,
+		},
 		game.private.seatedPlayers.map(p => ({
 			username: p.userName,
-			role: p.role.cardName
+			role: p.role.cardName,
+			icon: p.role.icon
 		}))
 	);
 

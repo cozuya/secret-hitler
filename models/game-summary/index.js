@@ -10,10 +10,16 @@ const mongoose = require('mongoose'),
 	gameSummary = new Schema({
 		_id: String,
 		date: Date,
+		gameSetting: {
+			rebalance6p: Boolean,
+			rebalance7p: Boolean,
+			rebalance9p: Boolean
+		},
 		players: [
 			{
 				username: String,
-				role: String
+				role: String,
+				icon: Number
 			}
 		],
 		logs: [
