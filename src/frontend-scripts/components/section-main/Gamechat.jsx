@@ -278,7 +278,7 @@ class Gamechat extends React.Component {
 				.filter(
 					chat =>
 						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
-						(chat.gameChat && (chatFilter === 'Game' || chatFilter === 'All')) ||
+						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
 						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 				)
 				.map((chat, i) => {
