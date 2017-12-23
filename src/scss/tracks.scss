@@ -254,10 +254,10 @@
 	left: 455px;
 }
 .cardflinger-card-container.middle-left.active {
-	left: 165px;
+	left: 165px !important;
 }
 .cardflinger-card-container.middle-right.active {
-	left: 365px;
+	left: 365px !important;
 }
 .cardflinger-card.ballot {
 	background-image: url('../images/cards/ballot-l.png');
