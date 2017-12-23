@@ -34,7 +34,6 @@
 		.ui.header {
 			min-height: 80px;
 		}
-		margin-top: 20px;
 	}
 
 	.gamename {
@@ -62,6 +61,10 @@
 	}
 	.row.slider {
 		margin: 10px 0 10px 0;
+	}
+
+	.row.tourny-row {
+		padding: 0;
 	}
 	.footer {
 		margin: 20px 0 10px 0;
