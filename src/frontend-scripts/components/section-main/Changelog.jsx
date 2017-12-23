@@ -9,6 +9,17 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.11.2 released 12-24-2017</p>
+		</div>
+		<h3>Tournament mode re--re-enabled..</h3>
+		<ul>
+			<li>
+				Thanks to a PR, the fascist/lib card icons are now randomized correctly i.e. liberal with pencil mustache can now appear in any game, not just 10p
+				games.
+			</li>
+			<li>Thanks to the same PR, claims now are filtered into the "game" internal chat filter.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.11.1 released 12-22-2017</p>
 		</div>
 		<h3>Tournament mode re-enabled.. we'll see how I messed it up this time.</h3>
@@ -343,10 +354,7 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
-				style={{ width: '30%', margin: '0 auto', display: 'block' }}
-				src="/images/em.png"
-			/>
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}
