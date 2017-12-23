@@ -278,6 +278,18 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		h4 {
 			margin-bottom: 2px;
 		}
+
+		> a > h5 {
+			text-align: center;
+			position: absolute;
+			left: 10px;
+			top: 20px;
+			word-wrap: break-word;
+			font-size: 20px;
+			line-height: 0.9;
+			font-family: 'roboto slab', 'germania one', sans-serif;
+			color: #c7c1ff;
+		}
 	}
 
 	.browser-filters {

@@ -178,6 +178,9 @@ export class GamesList extends React.Component {
 
 		return (
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
+				<a target="_blank" href="/stats">
+					<h5>100k games played!</h5>
+				</a>
 				<h3>Game filters</h3>
 				{this.renderFilters()}
 				<div className="browser-header">
