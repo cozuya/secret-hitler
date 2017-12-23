@@ -8,76 +8,29 @@ const beginGame = game => {
 
 	game.general.timeStarted = new Date().getTime();
 
-	let roles = _.range(0, 3)
+	let libCount = Math.floor(game.publicPlayersState.length / 2) + 1;
+	let fasCount = game.publicPlayersState.length - libCount - 1;
+	game.general.type = Math.floor((game.publicPlayersState.length - 5) / 2);
+
+	let roles = [{
+		cardName: 'hitler',
+		icon: 1,
+		team: 'fascist'
+	}]
+	.concat(_.shuffle(
+		_.range(0,6)
 		.map(el => ({
 			cardName: 'liberal',
 			icon: el,
 			team: 'liberal'
-		}))
-		.concat([
-			{
-				cardName: 'fascist',
-				icon: 3,
-				team: 'fascist'
-			},
-			{
-				cardName: 'hitler',
-				icon: 1,
-				team: 'fascist'
-			}
-		]);
-
-	if (game.publicPlayersState.length > 5) {
-		roles = roles.concat([
-			{
-				cardName: 'liberal',
-				icon: 3,
-				team: 'liberal'
-			}
-		]);
-	}
-
-	if (game.publicPlayersState.length > 6) {
-		roles = roles.concat([
-			{
-				cardName: 'fascist',
-				icon: 4,
-				team: 'fascist'
-			}
-		]);
-		game.general.type = 1;
-	}
-
-	if (game.publicPlayersState.length > 7) {
-		roles = roles.concat([
-			{
-				cardName: 'liberal',
-				icon: 4,
-				team: 'liberal'
-			}
-		]);
-	}
-
-	if (game.publicPlayersState.length > 8) {
-		roles = roles.concat([
-			{
-				cardName: 'fascist',
-				icon: 5,
-				team: 'fascist'
-			}
-		]);
-		game.general.type = 2;
-	}
-
-	if (game.publicPlayersState.length > 9) {
-		roles = roles.concat([
-			{
-				cardName: 'liberal',
-				icon: 5,
-				team: 'liberal'
-			}
-		]);
-	}
+		}))).slice(0, libCount))
+	.concat(_.shuffle(
+		_.range(3,6)
+		.map(el => ({
+			cardName: 'fascist',
+			icon: el,
+			team: 'fascist'
+		}))).slice(0, fasCount))
 
 	game.general.status = 'Dealing roles..';
 
