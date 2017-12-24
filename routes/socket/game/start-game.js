@@ -93,9 +93,15 @@ const beginGame = game => {
 	game.private.summary = new GameSummaryBuilder(
 		game.general.uid,
 		new Date(),
+		{
+			rebalance6p: game.general.rebalance6p && game.private.seatedPlayers.length === 6,
+			rebalance7p: game.general.rebalance7p && game.private.seatedPlayers.length === 7,
+			rebalance9p: game.general.rebalance9p && game.private.seatedPlayers.length === 9,
+		},
 		game.private.seatedPlayers.map(p => ({
 			username: p.userName,
-			role: p.role.cardName
+			role: p.role.cardName,
+			icon: p.role.icon
 		}))
 	);
 

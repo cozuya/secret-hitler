@@ -61,13 +61,14 @@ function buildEnhancedGameSummary(_summary) {
 		return summary.players.map((p, i) => {
 			return Object.assign({}, p, {
 				id: i,
-				loyalty: roleToLoyalty.get(p.role)
+				loyalty: roleToLoyalty.get(p.role),
+				icon: p.icon || 0
 			});
 		});
 	})();
 
 	// List[Turn]
-	const turns = buildTurns(summary.logs, players);
+	const turns = buildTurns(summary.logs, players, summary.gameSetting);
 
 	// Int
 	const playerSize = players.size;

@@ -5,18 +5,19 @@ const { List } = require('immutable');
 const { objectContains } = require('../../utils');
 
 module.exports = class GameSummaryBuilder {
-	constructor(uid, date, players, logs = List()) {
+	constructor(uid, date, gameSetting, players, logs = List()) {
 		this._id = uid;
 		this.date = date;
+		this.gameSetting = gameSetting;
 		this.players = players;
 		this.logs = logs;
 
-		debug('%O', { uid, date, players, logs: logs.toArray() });
+		debug('%O', { uid, date, gameSetting, players, logs: logs.toArray() });
 	}
 
 	publish() {
-		const { _id, date, players, logs } = this;
-		return new GameSummary({ _id, date, players, logs: logs.toArray() });
+		const { _id, date, gameSetting, players, logs } = this;
+		return new GameSummary({ _id, date, gameSetting, players, logs: logs.toArray() });
 	}
 
 	// (update: Object, targetAttrs: (?) Object) => GameSummaryBuilder
@@ -34,10 +35,10 @@ module.exports = class GameSummaryBuilder {
 			.push(nextTarget)
 			.concat(logs.slice(targetIndex + 1));
 
-		return new GameSummaryBuilder(this._id, this.date, this.players, nextLogs);
+		return new GameSummaryBuilder(this._id, this.date, this.gameSetting, this.players, nextLogs);
 	}
 
 	nextTurn() {
-		return new GameSummaryBuilder(this._id, this.date, this.players, this.logs.push({}));
+		return new GameSummaryBuilder(this._id, this.date, this.gameSetting, this.players, this.logs.push({}));
 	}
 };
