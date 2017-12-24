@@ -197,6 +197,12 @@ module.exports.completeGame = (game, winningTeamName) => {
 					presidentIndex: -1,
 					isStarted: true
 				};
+				finalGame.trackState = {
+					liberalPolicyCount: 0,
+					fascistPolicyCount: 0,
+					electionTrackerCount: 0,
+					enactedPolicies: []
+				};
 
 				const countDown = setInterval(() => {
 					if (gamePause) {
@@ -244,9 +250,18 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 						finalGame.general.tournyInfo.round = 2;
 						finalGame.general.electionCount = 0;
-						finalGame.publicPlayersState = game.general.tournyInfo.winningPlayersFirstCompletedGame.concat(
-							game.private.seatedPlayers.filter(player => player.role.team === winningTeamName)
-						);
+						finalGame.publicPlayersState = game.general.tournyInfo.winningPlayersFirstCompletedGame
+							.concat(game.private.seatedPlayers.filter(player => player.role.team === winningTeamName))
+							.map(player => {
+								player.cardStatus = {
+									cardDisplayed: false,
+									isFlipped: false,
+									cardFront: 'secretrole',
+									cardBack: {}
+								};
+
+								return player;
+							});
 						finalGame.general.name = `${game.general.name.slice(0, game.general.name.length - 7)}-tableFINAL`;
 						games.push(finalGame);
 						require('./start-game.js')(finalGame); // circular dep.

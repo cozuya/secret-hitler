@@ -435,6 +435,10 @@ module.exports.selectVoting = data => {
 		}, experiencedMode ? 200 : 600);
 	};
 	const flipBallotCards = () => {
+		const isConsensus = game.publicPlayersState
+			.filter(player => !player.isDead)
+			.every((el, i) => seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes);
+
 		game.publicPlayersState.forEach((player, i) => {
 			if (!player.isDead) {
 				player.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? 'ja' : 'nein';
@@ -541,7 +545,7 @@ module.exports.selectVoting = data => {
 			}
 
 			sendInProgressGameUpdate(game);
-		}, process.env.NODE_ENV === 'development' ? 2100 : 6000);
+		}, process.env.NODE_ENV === 'development' ? 2100 : isConsensus ? 1500 : 6000);
 	};
 
 	if (game.general.isTourny && game.general.tournyInfo.isCancelled) {
