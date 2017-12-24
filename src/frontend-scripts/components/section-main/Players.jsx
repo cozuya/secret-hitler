@@ -101,7 +101,7 @@ export default class Players extends React.Component {
 		const { gameInfo, userInfo } = this.props;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
-		const time = new Date().getTime();
+//		const time = new Date().getTime();
 		const renderPlayerName = (player, i) => {
 			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
 			const prependCrowns = str => (
