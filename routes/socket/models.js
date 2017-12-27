@@ -9,6 +9,9 @@ module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
 
 // set of profiles, no duplicate usernames
+/**
+ * @return // todo
+ */
 module.exports.profiles = (() => {
 	const profiles = [];
 	const MAX_SIZE = 100;

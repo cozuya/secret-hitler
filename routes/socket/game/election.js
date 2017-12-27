@@ -6,6 +6,10 @@ const { completeGame } = require('./end-game.js');
 const { games } = require('../models.js');
 const _ = require('lodash');
 
+/**
+ * @param {object} game - game to act on.
+ * @param {string} team - name of team that is enacting policy.
+ */
 const enactPolicy = (game, team) => {
 	const index = game.trackState.enactedPolicies.length;
 	const { experiencedMode } = game.general;
@@ -82,9 +86,9 @@ const enactPolicy = (game, team) => {
 					type: team === 'liberal' ? 'liberal' : 'fascist'
 				},
 				{
-					text: ` policy has been enacted. (${
-						team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()
-					}/${team === 'liberal' ? '5' : '6'})`
+					text: ` policy has been enacted. (${team === 'liberal'
+						? game.trackState.liberalPolicyCount.toString()
+						: game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`
 				}
 			]
 		};
@@ -185,6 +189,8 @@ const enactPolicy = (game, team) => {
 		game.trackState.electionTrackerCount = 0;
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 4000);
 };
+
+// todo check this argument for jsdoc
 const handToLog = hand =>
 	hand.reduce(
 		(hand, policy) => {
@@ -193,6 +199,9 @@ const handToLog = hand =>
 		{ reds: 0, blues: 0 }
 	);
 
+/**
+ * @param {object} data from socket emit
+ */
 module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
@@ -306,6 +315,9 @@ module.exports.selectChancellor = data => {
 	}
 };
 
+/**
+ * @param {object} data from socket emit
+ */
 module.exports.selectVoting = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { seatedPlayers } = game.private;
@@ -634,6 +646,9 @@ module.exports.selectVoting = data => {
 	}
 };
 
+/**
+ * @param {object} data - socket emit
+ */
 module.exports.selectPresidentPolicy = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { presidentIndex } = game.gameState;
@@ -725,6 +740,9 @@ module.exports.selectPresidentPolicy = data => {
 	}
 };
 
+/**
+ * @param {object} data - socket emit
+ */
 module.exports.selectChancellorPolicy = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { experiencedMode } = game.general;
@@ -832,6 +850,9 @@ module.exports.selectChancellorPolicy = data => {
 	}
 };
 
+/**
+ * @param {object} data - socket emit
+ */
 module.exports.selectChancellorVoteOnVeto = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { experiencedMode } = game.general;
@@ -966,6 +987,9 @@ module.exports.selectChancellorVoteOnVeto = data => {
 	}
 };
 
+/**
+ * @param {object} data - socket emit
+ */
 module.exports.selectPresidentVoteOnVeto = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { experiencedMode } = game.general;

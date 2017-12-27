@@ -3,6 +3,10 @@ const _ = require('lodash');
 const { startElection } = require('./election.js');
 const { shufflePolicies } = require('./common.js');
 const GameSummaryBuilder = require('../../../models/game-summary/GameSummaryBuilder');
+
+/**
+ * @param {object} game - game to act on.
+ */
 const beginGame = game => {
 	const { experiencedMode } = game.general;
 
@@ -96,7 +100,7 @@ const beginGame = game => {
 		{
 			rebalance6p: game.general.rebalance6p && game.private.seatedPlayers.length === 6,
 			rebalance7p: game.general.rebalance7p && game.private.seatedPlayers.length === 7,
-			rebalance9p: game.general.rebalance9p && game.private.seatedPlayers.length === 9,
+			rebalance9p: game.general.rebalance9p && game.private.seatedPlayers.length === 9
 		},
 		game.private.seatedPlayers.map(p => ({
 			username: p.userName,
@@ -331,6 +335,9 @@ const beginGame = game => {
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5400 : 9000);
 };
 
+/**
+ * @param {object} game - game to act on.
+ */
 module.exports = game => {
 	let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 5;
 

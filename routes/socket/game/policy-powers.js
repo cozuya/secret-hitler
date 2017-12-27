@@ -3,6 +3,9 @@ const { games } = require('../models.js');
 const { startElection, shufflePolicies } = require('./common.js');
 const { completeGame } = require('./end-game.js');
 
+/**
+ * @param {object} game - game to act on.
+ */
 module.exports.policyPeek = game => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
@@ -22,6 +25,9 @@ module.exports.policyPeek = game => {
 	}
 };
 
+/**
+ * @param {object} data from socket emit
+ */
 module.exports.selectPolicies = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { presidentIndex } = game.gameState;
@@ -38,16 +44,13 @@ module.exports.selectPolicies = data => {
 		}
 
 		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 3).reduce(
-				(peek, policy) => {
-					if (policy === 'fascist') {
-						return Object.assign({}, peek, { reds: peek.reds + 1 });
-					} else {
-						return Object.assign({}, peek, { blues: peek.blues + 1 });
-					}
-				},
-				{ reds: 0, blues: 0 }
-			)
+			policyPeek: game.private.policies.slice(0, 3).reduce((peek, policy) => {
+				if (policy === 'fascist') {
+					return Object.assign({}, peek, { reds: peek.reds + 1 });
+				} else {
+					return Object.assign({}, peek, { blues: peek.blues + 1 });
+				}
+			}, { reds: 0, blues: 0 })
 		});
 
 		president.cardFlingerState = [
@@ -130,6 +133,9 @@ module.exports.selectPolicies = data => {
 	}
 };
 
+/**
+ * @param {object} game - game to act on.
+ */
 module.exports.investigateLoyalty = game => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
@@ -154,6 +160,9 @@ module.exports.investigateLoyalty = game => {
 	}
 };
 
+/**
+ * @param {object} data from socket emit
+ */
 module.exports.selectPartyMembershipInvestigate = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { playerIndex } = data;
@@ -262,6 +271,9 @@ module.exports.selectPartyMembershipInvestigate = data => {
 	}
 };
 
+/**
+ * @param {object} game - game to act on.
+ */
 module.exports.specialElection = game => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
@@ -286,6 +298,9 @@ module.exports.specialElection = game => {
 	}
 };
 
+/**
+ * @param {object} data from socket emit
+ */
 module.exports.selectSpecialElection = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
@@ -306,6 +321,9 @@ module.exports.selectSpecialElection = data => {
 	}
 };
 
+/**
+ * @param {object} game - game to act on.
+ */
 module.exports.executePlayer = game => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
@@ -349,6 +367,9 @@ module.exports.executePlayer = game => {
 	}
 };
 
+/**
+ * @param {object} data from socket emit
+ */
 module.exports.selectPlayerToExecute = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { playerIndex } = data;

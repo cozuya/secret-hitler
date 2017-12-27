@@ -46,6 +46,10 @@ let torIps = [];
 
 module.exports.torIps = torIps;
 
+/**
+ * @param {object} socket - user socket reference.
+ * @param {number} count - depth of modinfo requested.
+ */
 module.exports.sendModInfo = (socket, count) => {
 	const userNames = userList.map(user => user.userName);
 
@@ -77,6 +81,10 @@ module.exports.sendModInfo = (socket, count) => {
 		});
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ * @param {string} username - name of user.
+ */
 module.exports.sendUserGameSettings = (socket, username) => {
 	Account.findOne({ username })
 		.then(account => {
@@ -116,6 +124,10 @@ module.exports.sendUserGameSettings = (socket, username) => {
 		});
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ * @param {string} uid - uid of game.
+ */
 module.exports.sendReplayGameChats = (socket, uid) => {
 	Game.findOne({ uid }).then((game, err) => {
 		if (err) {
@@ -128,6 +140,9 @@ module.exports.sendReplayGameChats = (socket, uid) => {
 	});
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ */
 module.exports.sendGameList = socket => {
 	const formattedGames = games.map(game => ({
 		name: game.general.name,
@@ -174,6 +189,9 @@ module.exports.sendGameList = socket => {
 	}
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ */
 module.exports.sendUserReports = socket => {
 	PlayerReport.find()
 		.sort({ $natural: -1 })
@@ -183,10 +201,16 @@ module.exports.sendUserReports = socket => {
 		});
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ */
 module.exports.sendGeneralChats = socket => {
 	socket.emit('generalChats', generalChats);
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ */
 const sendUserList = (module.exports.sendUserList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
@@ -200,6 +224,11 @@ const sendUserList = (module.exports.sendUserList = socket => {
 	}
 });
 
+/**
+ * @param {string} username - name of updating user.
+ * @param {string} type - type of user status to be displayed.
+ * @param {string} gameId - uid of game that user is displaying if applicable.
+ */
 const updateUserStatus = (module.exports.updateUserStatus = (username, type, gameId) => {
 	const user = userList.find(user => user.userName === username);
 
@@ -209,6 +238,10 @@ const updateUserStatus = (module.exports.updateUserStatus = (username, type, gam
 	}
 });
 
+/**
+ * @param {object} socket - user socket reference.
+ * @param {string} uid - uid of game.
+ */
 module.exports.sendGameInfo = (socket, uid) => {
 	const game = games.find(el => el.general.uid === uid);
 	const { passport } = socket.handshake.session;

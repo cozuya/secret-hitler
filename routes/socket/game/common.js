@@ -2,6 +2,10 @@ const { sendInProgressGameUpdate } = require('../util.js');
 const { sendGameList } = require('../user-requests.js');
 const _ = require('lodash');
 
+/**
+ * @param {object} game - game to act on.
+ * @param {boolean} is6pRebalanceStart - whether or not 6p is rebalanced
+ */
 const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceStart) => {
 	const count = _.countBy(game.private.policies);
 
@@ -60,6 +64,10 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
 });
 
+/**
+ * @param {object} game - game to act on.
+ * @param {number} specialElectionPresidentIndex - number of index of the special election player (optional)
+ */
 module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const { experiencedMode } = game.general;
 
@@ -71,8 +79,16 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		shufflePolicies(game);
 	}
 
+	/**
+ 	 * @return {number} index of the president
+	 */
 	game.gameState.presidentIndex = (() => {
 		const { presidentIndex, specialElectionFormerPresidentIndex } = game.gameState;
+
+		/**
+		 * @param {number} index - index of the current president
+ 		 * @return {number} index of the next president
+ 		 */
 		const nextPresidentIndex = index => {
 			const nextIndex = index + 1 === game.general.playerCount ? 0 : index + 1;
 
@@ -114,7 +130,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		});
 	}
 
-	// todo-release if spec election fails, next president shows the prev government with notification blink (but is not clickable).
+	// todo-release if spec election fails, next president shows the prev government with notification blink (but is not clickable).  Dunno if this is true any more haven't heard about this in months.
 
 	pendingPresidentPlayer.playersState
 		.filter(

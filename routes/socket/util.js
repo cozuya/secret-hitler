@@ -1,4 +1,7 @@
-const getPrivatePlayerInGameByUserName = (game, userName) => game.private.seatedPlayers.find(player => player.userName === userName);
+/**
+ * @param {object} game - game to act on.
+ * @return {object} game
+ */
 const secureGame = game => {
 	const _game = Object.assign({}, game);
 
@@ -6,14 +9,23 @@ const secureGame = game => {
 	return _game;
 };
 
+/**
+ * @param {object} game - game to act on.
+ */
+// todo-release make this accept a socket argument and emit only to it if it exists
 module.exports.sendInProgressGameUpdate = game => {
-	// todo-release make this accept a socket argument and emit only to it if it exists
 	const seatedPlayerNames = game.publicPlayersState.map(player => player.userName);
+
+	/**
+	 * @param {object} game - game to act on.
+	 * @param {string} userName - name of user to act on.
+	 * @return {array} list of chats.
+	 */
 	const combineInProgressChats = (game, userName) => {
 		let player;
 
 		if (userName && game.gameState.isTracksFlipped) {
-			player = getPrivatePlayerInGameByUserName(game, userName);
+			player = (game, userName) => game.private.seatedPlayers.find(player => player.userName === userName);
 		}
 
 		return player ? player.gameChats.concat(game.chats) : game.private.unSeatedGameChats.concat(game.chats);
@@ -66,5 +78,4 @@ module.exports.sendInProgressGameUpdate = game => {
 	}
 };
 
-module.exports.getPrivatePlayerInGameByUserName = getPrivatePlayerInGameByUserName;
 module.exports.secureGame = secureGame;

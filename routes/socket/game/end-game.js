@@ -8,8 +8,14 @@ const { updateProfiles } = require('../../../models/profile/utils');
 const debug = require('debug')('game:summary');
 const _ = require('lodash');
 
+/**
+ * @param {object} game - game to act on.
+ */
 const saveGame = game => {
 	const summary = game.private.summary.publish();
+	/**
+ 	* @param {object} - object describing game model.
+ 	*/
 	const gameToSave = new Game({
 		uid: game.general.uid,
 		date: new Date(),

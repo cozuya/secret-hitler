@@ -2,10 +2,12 @@ Hello and thanks for considering contributing to this project. Any accepted PR w
 I only have the following guidelines:
 
 1. Before working on a feature, a) make sure its an open, not "suggested" issue on the github issue page and b) it is unassigned. If you start working on
-	something, assign it to yourself, or ask me to, not sure about github permissions.
+	something non-trivial, ask in discord dev channel to have it assigned to you.
 
 2. Your code should pass lint.
 
 3. Your code should use prettier with the following options: use-tabs: true, single-quote: true, print-width: 160.
 
-4. If you make a feature, please commit to supporting it. If there's problems on an issue you've completed, please make sure you can take care of it.
+4. Functions that either a) return a value or b) have arguments (non-anonymous/lambda) should use JSDoc comments to explain the types and return types of that function.
+
+5. If you make a feature, please commit to supporting it. If there's problems on an issue you've completed, please make sure you can take care of it.

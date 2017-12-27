@@ -18,6 +18,11 @@ const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
+
+/**
+ * @param {object} game - game to act on.
+ * @return {string} status text.
+ */
 const displayWaitingForPlayers = game => {
 	if (game.general.isTourny) {
 		const count = game.general.maxPlayersCount - game.general.tournyInfo.queuedPlayers.length;
@@ -35,6 +40,9 @@ const displayWaitingForPlayers = game => {
 	}
 };
 
+/**
+ * @param {object} game - game to act on.
+ */
 const startCountdown = game => {
 	if (game.gameState.isStarted) {
 		return;
@@ -127,6 +135,9 @@ const startCountdown = game => {
 	}, 1000);
 };
 
+/**
+ * @param {object} game - game to act on.
+ */
 const checkStartConditions = game => {
 	if (game.gameState.isTracksFlipped) {
 		return;
@@ -154,6 +165,10 @@ const checkStartConditions = game => {
 	}
 };
 
+/**
+ * @param {object} game - game to act on.
+ * @param {string} playerName - name of player leaving pretourny.
+ */
 const playerLeavePretourny = (game, playerName) => {
 	const { queuedPlayers } = game.general.tournyInfo;
 
@@ -181,6 +196,9 @@ const playerLeavePretourny = (game, playerName) => {
 	sendInProgressGameUpdate(game);
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ */
 const handleSocketDisconnect = socket => {
 	const { passport } = socket.handshake.session;
 
@@ -252,6 +270,10 @@ if (process.env.NODE_ENV === 'production') {
 	crashReq.end(crashReport);
 }
 
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} data - from socket emit.
+ */
 const handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 
@@ -303,6 +325,10 @@ const handleUserLeaveGame = (socket, data) => {
 	sendGameList();
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} data - from socket emit.
+ */
 module.exports.updateSeatedUser = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 	// prevents race condition between 1) taking a seat and 2) the game starting
@@ -363,6 +389,10 @@ module.exports.updateSeatedUser = (socket, data) => {
 	}
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} data - from socket emit.
+ */
 module.exports.handleUpdatedBio = (socket, data) => {
 	if (socket.handshake.session.passport) {
 		const username = socket.handshake.session.passport.user;
@@ -374,6 +404,10 @@ module.exports.handleUpdatedBio = (socket, data) => {
 	}
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} data - from socket emit.
+ */
 module.exports.handleAddNewGame = (socket, data) => {
 	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
 		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
@@ -435,6 +469,9 @@ module.exports.handleAddNewGame = (socket, data) => {
 	}
 };
 
+/**
+ * @param {object} data - from socket emit.
+ */
 module.exports.handleAddNewClaim = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
@@ -443,6 +480,7 @@ module.exports.handleAddNewClaim = data => {
 	}
 
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+
 	const chat = (() => {
 		let text;
 
@@ -953,9 +991,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
-						game.general.remakeCount === 1 ? 'second' : 'seconds'
-					}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
+						? 'second'
+						: 'seconds'}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
@@ -979,9 +1017,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 			clearInterval(game.private.remakeTimer);
 		}
 		chat.chat.push({
-			text: ` has rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount}/${
-				minimumRemakeVoteCount
-			})`
+			text: ` has rescinded their vote to ${game.general.isTourny
+				? 'cancel this tournament.'
+				: 'remake this game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
 	}
 	game.chats.push(chat);
