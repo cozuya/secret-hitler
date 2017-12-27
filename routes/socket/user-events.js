@@ -846,12 +846,19 @@ module.exports.handleAddNewClaim = data => {
 	}
 };
 
+/**
+ * @param {object} data - from socket emit.
+ */
 module.exports.handleUpdatedRemakeGame = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { publicPlayersState } = game;
 	const playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName);
 	const player = publicPlayersState[playerIndex];
+
+	/**
+ 	 * @return {number} minimum number of remake votes to remake a game
+ 	 */
 	const minimumRemakeVoteCount = (() => {
 		switch (game.general.playerCount) {
 			case 5:
@@ -948,6 +955,10 @@ module.exports.handleUpdatedRemakeGame = data => {
 		});
 		checkStartConditions(newGame);
 	};
+
+	/**
+ 	 * @param {string} firstTableUid - the UID of the first tournament table
+ 	 */
 	const cancellTourny = firstTableUid => {
 		const secondTableUid =
 			firstTableUid.charAt(firstTableUid.length - 1) === 'A'
@@ -1027,6 +1038,10 @@ module.exports.handleUpdatedRemakeGame = data => {
 	sendInProgressGameUpdate(game);
 };
 
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} data - from socket emit.
+ */
 module.exports.handleAddNewGameChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
@@ -1062,6 +1077,9 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	}
 };
 
+/**
+ * @param {object} data - from socket emit.
+ */
 module.exports.handleUpdateWhitelist = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
@@ -1069,6 +1087,10 @@ module.exports.handleUpdateWhitelist = data => {
 	io.in(data.uid).emit('gameUpdate', secureGame(game));
 };
 
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} data - from socket emit.
+ */
 module.exports.handleNewGeneralChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
@@ -1100,6 +1122,10 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	io.sockets.emit('generalChats', generalChats);
 };
 
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} data - from socket emit.
+ */
 module.exports.handleUpdatedGameSettings = (socket, data) => {
 	if (!socket.handshake.session.passport) {
 		// yes, even THIS crashed the game once.
@@ -1133,6 +1159,10 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 		});
 };
 
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} data - from socket emit.
+ */
 module.exports.handleModerationAction = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
@@ -1154,6 +1184,9 @@ module.exports.handleModerationAction = (socket, data) => {
 			ip: data.ip,
 			actionTaken: data.action
 		});
+		/**
+ 		 * @param {string} username - name of user.
+  	 */
 		const logOutUser = username => {
 			const bannedUserlistIndex = userList.findIndex(user => user.userName === data.userName);
 
@@ -1165,6 +1198,10 @@ module.exports.handleModerationAction = (socket, data) => {
 				userList.splice(bannedUserlistIndex, 1);
 			}
 		};
+
+		/**
+ 		 * @param {string} username - name of user.
+  	 */
 		const banAccount = username => {
 			if (!ADMINS.includes(username) && (!MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
 				Account.findOne({ username })
@@ -1427,6 +1464,9 @@ module.exports.handleModerationAction = (socket, data) => {
 	}
 };
 
+/**
+ * @param {object} data - from socket emit.
+ */
 module.exports.handlePlayerReport = data => {
 	const mods = MODERATORS.concat(ADMINS);
 	const playerReport = new PlayerReport({
@@ -1499,6 +1539,9 @@ module.exports.handlePlayerReportDismiss = () => {
 	});
 };
 
+/**
+ * @param {object} socket - socket reference.
+ */
 module.exports.checkUserStatus = socket => {
 	const { passport } = socket.handshake.session;
 

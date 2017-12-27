@@ -8,6 +8,12 @@ const accounts = require('./accounts');
 const version = require('../version');
 const { MODERATORS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants');
 const fs = require('fs');
+/**
+ * @param {object} req - express request object.
+ * @param {object} res - express response object.
+ * @param {function} next - socket reference.
+ * @return {function} returns next() if user is authenticated.
+ */
 const ensureAuthenticated = (req, res, next) => {
 	if (req.isAuthenticated()) {
 		return next();
@@ -17,6 +23,12 @@ const ensureAuthenticated = (req, res, next) => {
 };
 
 module.exports = () => {
+	/**
+ 	 * @param {object} req - express request object.
+ 	 * @param {object} res - express response object.
+ 	 * @param {string} pageName - name of the pug page to render
+ 	 * @param {string} varName - name of the pug variable to insert.
+ 	 */
 	const renderPage = (req, res, pageName, varName) => {
 		const renderObj = {};
 
@@ -127,8 +139,11 @@ module.exports = () => {
 			.lean()
 			.exec()
 			.then(gs => {
-				if (!gs) res.status(404).send('Game summary not found');
-				else res.json(gs);
+				if (!gs) {
+					res.status(404).send('Game summary not found');
+				} else {
+					res.json(gs);
+				}
 			})
 			.catch(err => debug(err));
 	});

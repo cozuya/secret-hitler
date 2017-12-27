@@ -6,6 +6,12 @@ const { ipbansNotEnforced, accountCreationDisabled } = require('./socket/models'
 // verifyAccount = require('./verify-account'),
 // resetPassword = require('./reset-password'),
 const blacklistedWords = require('../iso/blacklistwords');
+/**
+ * @param {object} req - express request object.
+ * @param {object} res - express response object.
+ * @param {function} next - socket reference.
+ * @return {function} returns next() if user is authenticated.
+ */
 const ensureAuthenticated = (req, res, next) => {
 	if (req.isAuthenticated()) {
 		return next();
