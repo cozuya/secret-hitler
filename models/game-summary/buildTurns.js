@@ -20,7 +20,7 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		isVotePassed: true,
 		afterDeadPlayers: List(),
 		execution: none,
-		afterDeckSize: 17 - (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p) ,
+		afterDeckSize: 17 - (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p),
 		afterTrack: { reds: gameSetting.rebalance6p, blues: 0 },
 		afterElectionTracker: 0,
 		enactedPolicy: none
