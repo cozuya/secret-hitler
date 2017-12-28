@@ -136,13 +136,15 @@ export default class Players extends React.Component {
 				style={
 					player.customCardback &&
 					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
-						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-							}
-						: {
-								backgroundImage: `url(../images/default_cardback2.png)`
-							}
+					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks)) ? (
+						{
+							backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+						}
+					) : (
+						{
+							backgroundImage: `url(../images/default_cardback2.png)`
+						}
+					)
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -166,7 +168,13 @@ export default class Players extends React.Component {
 				})()}
 			>
 				<div
-					title={`Double click to open a modal to report ${player.userName} to the moderator team`}
+					title={
+						isBlind ? (
+							'Double click to open a modal to report this player to the moderator team'
+						) : (
+							`Double click to open a modal to report ${player.userName} to the moderator team`
+						)
+					}
 					onDoubleClick={this.handlePlayerDoubleClick}
 					className={(() => {
 						let classes = 'player-number';

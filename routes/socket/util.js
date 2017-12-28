@@ -25,7 +25,7 @@ module.exports.sendInProgressGameUpdate = game => {
 		let player;
 
 		if (userName && game.gameState.isTracksFlipped) {
-			player = (game, userName) => game.private.seatedPlayers.find(player => player.userName === userName);
+			player = game.private.seatedPlayers.find(player => player.userName === userName);
 		}
 
 		return player ? player.gameChats.concat(game.chats) : game.private.unSeatedGameChats.concat(game.chats);
