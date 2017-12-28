@@ -81,6 +81,7 @@ export default class Generalchat extends React.Component {
 
 	handleChatScrolled() {
 		const el = this.psContainer;
+
 		if (!this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) < -20) {
 			this.setState({ lock: true });
 		}
@@ -132,6 +133,11 @@ export default class Generalchat extends React.Component {
 		let timestamp;
 		const { userInfo, generalChats } = this.props;
 		const time = new Date().getTime();
+
+		/**
+ 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
+ 		 * @return {jsx}
+ 		 */
 		const renderCrowns = tournyWins =>
 			tournyWins
 				.filter(winTime => time - winTime < 10800000)
@@ -191,12 +197,12 @@ export default class Generalchat extends React.Component {
 	}
 
 	render() {
-		const { userInfo } = this.props,
-			discordIconClick = () => {
-				this.setState({
-					discordEnabled: !this.state.discordEnabled
-				});
-			};
+		const { userInfo } = this.props;
+		const discordIconClick = () => {
+			this.setState({
+				discordEnabled: !this.state.discordEnabled
+			});
+		};
 
 		return (
 			<section className="generalchat">
@@ -209,34 +215,32 @@ export default class Generalchat extends React.Component {
 							onClick={this.handleChatLockClick}
 						/>
 						{userInfo &&
-							userInfo.userName && (
-								<img
-									title="Click to show our discord general chat instead of the site's general chat"
-									className={this.state.discordEnabled ? 'active discord-icon' : 'discord-icon'}
-									src="/images/discord-icon.png"
-									onClick={discordIconClick}
-								/>
-							)}
+						userInfo.userName && (
+							<img
+								title="Click to show our discord general chat instead of the site's general chat"
+								className={this.state.discordEnabled ? 'active discord-icon' : 'discord-icon'}
+								src="/images/discord-icon.png"
+								onClick={discordIconClick}
+							/>
+						)}
 					</div>
 				</section>
 				<section className="segment chats">
 					{!this.state.discordEnabled && this.renderSticky()}
-					{(() => {
-						return this.state.discordEnabled ? (
-							<embed height="100%" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
-						) : (
-							<PerfectScrollbar
-								ref="perfectScrollbar"
-								containerRef={c => {
-									this.psContainer = c;
-								}}
-								onScrollY={this.handleChatScrolled}
-								onYReachEnd={this.handleChatScrolledToBottom}
-							>
-								<div className="ui list genchat-container">{this.renderChats()}</div>
-							</PerfectScrollbar>
-						);
-					})()}
+					{this.state.discordEnabled ? (
+						<embed height="100%" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
+					) : (
+						<PerfectScrollbar
+							ref="perfectScrollbar"
+							containerRef={c => {
+								this.psContainer = c;
+							}}
+							onScrollY={this.handleChatScrolled}
+							onYReachEnd={this.handleChatScrolledToBottom}
+						>
+							<div className="ui list genchat-container">{this.renderChats()}</div>
+						</PerfectScrollbar>
+					)}
 				</section>
 				{this.renderInput()}
 			</section>

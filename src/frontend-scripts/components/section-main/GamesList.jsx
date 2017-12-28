@@ -163,9 +163,9 @@ export class GamesList extends React.Component {
 
 					return aName === bName ? (a.uid < b.uid ? 1 : -1) : aName > bName ? 1 : -1;
 				})
-				.map((game, index) => {
-					return <DisplayLobbies key={game.uid} game={game} socket={this.props.socket} userList={this.props.userList} userInfo={this.props.userInfo} />;
-				});
+				.map((game, index) => (
+					<DisplayLobbies key={game.uid} game={game} socket={this.props.socket} userList={this.props.userList} userInfo={this.props.userInfo} />
+				));
 		}
 	}
 

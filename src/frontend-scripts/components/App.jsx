@@ -41,15 +41,15 @@ export class App extends React.Component {
 	}
 
 	componentDidMount() {
-		const { dispatch } = this.props,
-			{ classList } = document.getElementById('game-container');
+		const { dispatch } = this.props;
+		const { classList } = document.getElementById('game-container');
 
 		window.addEventListener('hashchange', this.router.bind(this));
-		this.router.call(this);
+		this.router.call(this); // uh..?
 
 		if (classList.length) {
-			const username = classList[0].split('username-')[1],
-				info = { userName: username };
+			const username = classList[0].split('username-')[1];
+			const info = { userName: username };
 
 			socket.emit('getUserGameSettings', username);
 
@@ -130,14 +130,19 @@ export class App extends React.Component {
 	}
 
 	router() {
-		const { hash } = window.location,
-			{ userInfo, dispatch, gameInfo } = this.props,
-			isAuthed = Boolean(document.getElementById('game-container').classList.length),
-			updateStatus = (type, uid) => {
-				if (userInfo.userName) {
-					socket.emit('updateUserStatus', userInfo.userName, type, uid);
-				}
-			};
+		const { hash } = window.location;
+		const { userInfo, dispatch, gameInfo } = this.props;
+		const isAuthed = Boolean(document.getElementById('game-container').classList.length);
+
+		/**
+ 		 * @param {string} type - todo
+ 		 * @param {string} uid - game identifier
+ 		 */
+		const updateStatus = (type, uid) => {
+			if (userInfo.userName) {
+				socket.emit('updateUserStatus', userInfo.userName, type, uid);
+			}
+		};
 
 		if (hash === this.prevHash) {
 			return;
@@ -209,52 +214,52 @@ export class App extends React.Component {
 	// ***** begin dev helpers *****
 
 	makeQuickDefault() {
-		const { userInfo } = this.props,
-			game = {
-				gameState: {
-					previousElectedGovernment: [],
-					undrawnPolicyCount: 17,
-					discardedPolicyCount: 0,
-					presidentIndex: -1
-				},
-				chats: [],
-				general: {
-					uid: 'devgame',
-					name: 'New Game',
-					minPlayersCount: 5,
-					maxPlayersCount: 5,
-					excludedPlayerCount: [6],
-					private: false,
-					rainbowgame: false,
-					experiencedMode: true,
-					disableChat: false,
-					disableGamechat: false,
-					status: 'Waiting for more players..',
-					electionCount: 0
-				},
-				publicPlayersState: [
-					{
-						userName: userInfo.userName,
-						connected: true,
-						isDead: false,
-						customCardback: 'png',
-						cardStatus: {
-							cardDisplayed: false,
-							isFlipped: false,
-							cardFront: 'secretrole',
-							cardBack: {}
-						}
+		const { userInfo } = this.props;
+		const game = {
+			gameState: {
+				previousElectedGovernment: [],
+				undrawnPolicyCount: 17,
+				discardedPolicyCount: 0,
+				presidentIndex: -1
+			},
+			chats: [],
+			general: {
+				uid: 'devgame',
+				name: 'New Game',
+				minPlayersCount: 5,
+				maxPlayersCount: 5,
+				excludedPlayerCount: [6],
+				private: false,
+				rainbowgame: false,
+				experiencedMode: true,
+				disableChat: false,
+				disableGamechat: false,
+				status: 'Waiting for more players..',
+				electionCount: 0
+			},
+			publicPlayersState: [
+				{
+					userName: userInfo.userName,
+					connected: true,
+					isDead: false,
+					customCardback: 'png',
+					cardStatus: {
+						cardDisplayed: false,
+						isFlipped: false,
+						cardFront: 'secretrole',
+						cardBack: {}
 					}
-				],
-				playersState: [],
-				cardFlingerState: [],
-				trackState: {
-					liberalPolicyCount: 0,
-					fascistPolicyCount: 0,
-					electionTrackerCount: 0,
-					enactedPolicies: []
 				}
-			};
+			],
+			playersState: [],
+			cardFlingerState: [],
+			trackState: {
+				liberalPolicyCount: 0,
+				fascistPolicyCount: 0,
+				electionTrackerCount: 0,
+				enactedPolicies: []
+			}
+		};
 
 		socket.emit('addNewGame', game);
 	}
@@ -262,16 +267,16 @@ export class App extends React.Component {
 	// ***** end dev helpers *****
 
 	handleSeatingUser(password) {
-		const { gameInfo, userInfo } = this.props,
-			data = {
-				uid: gameInfo.general.uid,
-				userName: userInfo.userName,
-				isPrivate: userInfo.gameSettings.isPrivate,
-				customCardback: userInfo.gameSettings.customCardback,
-				customCardbackUid: userInfo.gameSettings.customCardbackUid,
-				tournyWins: userInfo.gameSettings.tournyWins,
-				password
-			};
+		const { gameInfo, userInfo } = this.props;
+		const data = {
+			uid: gameInfo.general.uid,
+			userName: userInfo.userName,
+			isPrivate: userInfo.gameSettings.isPrivate,
+			customCardback: userInfo.gameSettings.customCardback,
+			customCardbackUid: userInfo.gameSettings.customCardbackUid,
+			tournyWins: userInfo.gameSettings.tournyWins,
+			password
+		};
 
 		socket.emit('updateSeatedUser', data);
 	}
@@ -298,8 +303,8 @@ export class App extends React.Component {
 
 	render() {
 		const { gameSettings } = this.props.userInfo;
-
 		let classes = 'body-container';
+
 		if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
 			classes += ' game';
 		}

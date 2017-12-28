@@ -19,6 +19,7 @@ const mapStateToProps = ({ notesActive }) => ({ notesActive });
 class Gamechat extends React.Component {
 	constructor() {
 		super();
+
 		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChatLockClick = this.handleChatLockClick.bind(this);
@@ -261,6 +262,10 @@ class Gamechat extends React.Component {
 			return stringA > stringB ? 1 : -1;
 		};
 		const time = new Date().getTime();
+		/**
+ 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
+ 		 * @return {jsx}
+ 		 */
 		const renderCrowns = tournyWins => {
 			return tournyWins
 				.filter(winTime => time - winTime < 10800000)
@@ -352,13 +357,17 @@ class Gamechat extends React.Component {
 								renderCrowns(chat.tournyWins)}
 							<span
 								className={
-									playerListPlayer
-										? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat
-											? 'chat-user'
-											: isBlind
-												? 'chat-user'
-												: playerListPlayer.wins + playerListPlayer.losses > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer)}` : 'chat-user'
-										: 'chat-user'
+									playerListPlayer ? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat ? (
+										'chat-user'
+									) : isBlind ? (
+										'chat-user'
+									) : playerListPlayer.wins + playerListPlayer.losses > 49 ? (
+										`chat-user ${PLAYERCOLORS(playerListPlayer)}`
+									) : (
+										'chat-user'
+									) : (
+										'chat-user'
+									)
 								}
 							>
 								{isReplay || isSeated ? (
@@ -381,15 +390,19 @@ class Gamechat extends React.Component {
 								) : (
 									<span className="observer-chat">(Observer) </span>
 								)}
-								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
-									? isSeated
-										? isBlind
-											? `${
-													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-										: chat.userName
-									: isBlind ? '?' : chat.userName}
+								{this.props.isReplay || gameInfo.gameState.isTracksFlipped ? isSeated ? isBlind ? (
+									`${gameInfo.general.replacementNames[
+										gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)
+									]} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+								) : (
+									`${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+								) : (
+									chat.userName
+								) : isBlind ? (
+									'?'
+								) : (
+									chat.userName
+								)}
 								{': '}
 							</span>
 							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
@@ -488,11 +501,11 @@ class Gamechat extends React.Component {
 						Game
 					</a>
 					{gameInfo.general &&
-						!gameInfo.general.disableObserver && (
-							<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-								No observer chat
-							</a>
-						)}
+					!gameInfo.general.disableObserver && (
+						<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
+							No observer chat
+						</a>
+					)}
 					{userInfo.userName && (
 						<i
 							title="Click here to pop out notes"
@@ -508,12 +521,12 @@ class Gamechat extends React.Component {
 						/>
 					)}
 					{gameInfo.general &&
-						gameInfo.general.tournyInfo &&
-						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
-							<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
-								Observe {gameInfo.general.tournyInfo.isRound1TableThatFinished2nd ? 'final' : 'other'} tournament table
-							</button>
-						)}
+					gameInfo.general.tournyInfo &&
+					(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
+						<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
+							Observe {gameInfo.general.tournyInfo.isRound1TableThatFinished2nd ? 'final' : 'other'} tournament table
+						</button>
+					)}
 					<div className="right menu">
 						<WhiteListButton />
 						<WatchReplayButton />
@@ -524,15 +537,7 @@ class Gamechat extends React.Component {
 					style={{
 						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px'
 					}}
-					className={(() => {
-						let classes = 'segment chats';
-
-						if (this.state.claim) {
-							classes += ' blurred';
-						}
-
-						return classes;
-					})()}
+					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
 					<PerfectScrollbar
 						ref="perfectScrollbar"
@@ -715,20 +720,14 @@ class Gamechat extends React.Component {
 								Chat
 							</button>
 						</div>
-						{(() => {
-							if (
-								gameInfo.playersState &&
-								gameInfo.playersState.length &&
-								userInfo.userName &&
-								gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim
-							) {
-								return (
-									<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
-										C
-									</div>
-								);
-							}
-						})()}
+						{gameInfo.playersState &&
+						gameInfo.playersState.length &&
+						userInfo.userName &&
+						gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim && (
+							<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
+								C
+							</div>
+						)}
 					</form>
 				)}
 				<div

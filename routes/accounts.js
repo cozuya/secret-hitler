@@ -9,7 +9,7 @@ const blacklistedWords = require('../iso/blacklistwords');
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.
- * @param {function} next - socket reference.
+ * @param {function} next - express middleware function.
  * @return {function} returns next() if user is authenticated.
  */
 const ensureAuthenticated = (req, res, next) => {

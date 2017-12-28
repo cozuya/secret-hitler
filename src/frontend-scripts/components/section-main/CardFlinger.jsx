@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 class CardFlinger extends React.Component {
 	constructor() {
 		super();
+
 		this.handleHover = this.handleHover.bind(this);
 		this.state = {
 			isHovered: false,
@@ -82,7 +83,7 @@ class CardFlinger extends React.Component {
 			const currentPlayer = publicPlayersState.find(player => player.userName === userName);
 			const currentPlayerStatus = currentPlayer ? currentPlayer.governmentStatus : null;
 
-			if (userName && userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages === true) {
+			if (userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages) {
 				return;
 			}
 
@@ -139,63 +140,61 @@ class CardFlinger extends React.Component {
 		return (
 			<section className="cardflinger-container">
 				{renderHelpMessage()}
-				{(() => {
-					return positions.map((position, i) => {
-						const stateObj = cardFlingerState.find(flinger => flinger.position === position);
+				{positions.map((position, i) => {
+					const stateObj = cardFlingerState.find(flinger => flinger.position === position);
 
-						let frontClasses = 'cardflinger-card front';
-						let backClasses = 'cardflinger-card back';
-						let containerClasses = `cardflinger-card-container ${position}`;
+					let frontClasses = 'cardflinger-card front';
+					let backClasses = 'cardflinger-card back';
+					let containerClasses = `cardflinger-card-container ${position}`;
 
-						if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
-							containerClasses += ' display-help-icons';
+					if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
+						containerClasses += ' display-help-icons';
+					}
+
+					if (stateObj && Object.keys(stateObj).length) {
+						if (stateObj.cardStatus.isFlipped) {
+							containerClasses += ' flippedY';
 						}
 
-						if (stateObj && Object.keys(stateObj).length) {
-							if (stateObj.cardStatus.isFlipped) {
-								containerClasses += ' flippedY';
-							}
-
-							if (stateObj.action) {
-								containerClasses = `${containerClasses} ${stateObj.action}`;
-							}
-
-							if (stateObj.notificationStatus) {
-								containerClasses = `${containerClasses} notifier ${stateObj.notificationStatus}`;
-							}
-
-							if (stateObj.cardStatus.cardFront) {
-								frontClasses = `${frontClasses} ${stateObj.cardStatus.cardFront}`;
-							}
-
-							if (stateObj.cardStatus.cardBack) {
-								backClasses = `${backClasses} ${stateObj.cardStatus.cardBack}`;
-							}
+						if (stateObj.action) {
+							containerClasses = `${containerClasses} ${stateObj.action}`;
 						}
 
-						if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
-							if (this.state.isHovered && this.state.hoveredClass === containerClasses) {
-								containerClasses += ' hovered';
-							} else if (this.state.isHovered) {
-								containerClasses += ' not-hovered';
-							}
+						if (stateObj.notificationStatus) {
+							containerClasses = `${containerClasses} notifier ${stateObj.notificationStatus}`;
 						}
 
-						return (
-							<div
-								key={i}
-								data-index={i}
-								className={containerClasses}
-								onClick={handleCardClick}
-								onMouseEnter={() => this.handleHover(containerClasses)}
-								onMouseLeave={() => this.handleHover(containerClasses)}
-							>
-								<div className={frontClasses} />
-								<div className={backClasses} />
-							</div>
-						);
-					});
-				})()}
+						if (stateObj.cardStatus.cardFront) {
+							frontClasses = `${frontClasses} ${stateObj.cardStatus.cardFront}`;
+						}
+
+						if (stateObj.cardStatus.cardBack) {
+							backClasses = `${backClasses} ${stateObj.cardStatus.cardBack}`;
+						}
+					}
+
+					if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
+						if (this.state.isHovered && this.state.hoveredClass === containerClasses) {
+							containerClasses += ' hovered';
+						} else if (this.state.isHovered) {
+							containerClasses += ' not-hovered';
+						}
+					}
+
+					return (
+						<div
+							key={i}
+							data-index={i}
+							className={containerClasses}
+							onClick={handleCardClick}
+							onMouseEnter={() => this.handleHover(containerClasses)}
+							onMouseLeave={() => this.handleHover(containerClasses)}
+						>
+							<div className={frontClasses} />
+							<div className={backClasses} />
+						</div>
+					);
+				})}
 			</section>
 		);
 	}

@@ -7,6 +7,7 @@ import { processEmotes } from '../../emotes';
 export default class Generalchat extends React.Component {
 	constructor() {
 		super();
+
 		this.handleChatLockClick = this.handleChatLockClick.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
@@ -51,6 +52,7 @@ export default class Generalchat extends React.Component {
 			});
 
 			this.input.blur();
+
 			setTimeout(() => {
 				this.setState({ disabled: false });
 				this.input.focus();
@@ -138,7 +140,7 @@ export default class Generalchat extends React.Component {
 					</div>
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
+					<div className={this.props.userInfo.userName ? !this.state.disabled ? 'ui action input' : 'ui action input disabled' : 'ui action input disabled'}>
 						<input
 							placeholder="Chat.."
 							value={this.state.inputValue}

@@ -14,6 +14,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 export class Main extends React.Component {
 	constructor() {
 		super();
+
 		this.state = {
 			gameFilter: {
 				priv: true,
@@ -29,6 +30,7 @@ export class Main extends React.Component {
 
 	render() {
 		let classes = 'section-main';
+
 		const { midSection, userList, userInfo, socket, gameInfo } = this.props;
 		const changeGameFilter = gameFilter => {
 			this.setState(gameFilter);

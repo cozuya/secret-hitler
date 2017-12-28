@@ -29,6 +29,10 @@ export default class Reports extends React.Component {
 
 	renderReportsLog() {
 		const { sortType, sortDirection } = this.state;
+
+		/**
+ 		 * @param {string} type - description of how to sort the reports log
+ 		 */
 		const sortClick = type => {
 			this.setState({
 				sortType: type,

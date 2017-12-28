@@ -56,7 +56,9 @@ class Settings extends React.Component {
 			isPrivate: gameSettings.isPrivate
 		});
 	}
-
+	/**
+ 	 * @param {string} value - todo
+ 	 */
 	toggleGameSettings(value) {
 		const obj = {};
 
@@ -180,6 +182,10 @@ class Settings extends React.Component {
 	}
 
 	render() {
+		/**
+		 * @param {array} files - todo
+		 * @param {array} rejectedFile - todo
+ 		 */
 		const onDrop = (files, rejectedFile) => {
 			const reader = new FileReader();
 
@@ -203,11 +209,13 @@ class Settings extends React.Component {
 
 			reader.readAsDataURL(files[0]);
 		};
+
 		const displayCardbackInfoModal = () => {
 			$('.cardbackinfo')
 				.modal('setting', 'transition', 'scale')
 				.modal('show');
 		};
+
 		const previewSaveClick = () => {
 			$.ajax({
 				url: '/upload-cardback',
@@ -227,14 +235,18 @@ class Settings extends React.Component {
 					console.log(err, 'err');
 				});
 		};
+
 		const previewClearClick = e => {
 			e.preventDefault;
 			this.setState({ preview: '' });
 		};
+
 		const handleSearchProfileChange = e => {
 			this.setState({ profileSearchValue: e.currentTarget.value });
 		};
+
 		const gameSettings = this.props.gameSettings || window.gameSettings;
+
 		const ownProfileSubmit = e => {
 			e.preventDefault();
 
@@ -398,9 +410,8 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
-															this.state.imageUid
-														}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${this.state
+															.imageUid}) no-repeat`
 													}}
 												/>
 											);
@@ -415,22 +426,18 @@ class Settings extends React.Component {
 										Click here or drag and drop a 70px by 95px image to upload
 									</Dropzone>
 								</div>
-								{(() => {
-									if (this.state.preview) {
-										return (
-											<div className="preview-container">
-												<h5 className="ui header">Preview</h5>
-												<img src={this.state.preview} />;
-												<button onClick={previewSaveClick} className="ui button">
-													Save
-												</button>
-												<a href="#" onClick={previewClearClick}>
-													Clear
-												</a>
-											</div>
-										);
-									}
-								})()}
+								{this.state.preview && (
+									<div className="preview-container">
+										<h5 className="ui header">Preview</h5>
+										<img src={this.state.preview} />;
+										<button onClick={previewSaveClick} className="ui button">
+											Save
+										</button>
+										<a href="#" onClick={previewClearClick}>
+											Clear
+										</a>
+									</div>
+								)}
 								<div className="ui basic modal cardbackinfo">
 									<div className="header">Cardback info and terms of use</div>
 									<p>

@@ -237,6 +237,7 @@ const DisplayLobbies = props => {
 		let progressText;
 		let progressIcons;
 		let classes = 'progress-text';
+
 		if (game.private) {
 			classes += ' private';
 			progressText = 'Private Game';
@@ -270,22 +271,20 @@ const DisplayLobbies = props => {
 				progressIcons = (
 					<div className="progress-icons">
 						<div className="liberal-count">
-							{(() =>
-								_.range(1, 6).map(num => (
-									<div
-										key={num}
-										className={num <= game.enactedLiberalPolicyCount ? 'leftsidebar box liberal-box filled' : 'leftsidebar box liberal-box unfilled'}
-									/>
-								)))()}
+							{_.range(1, 6).map(num => (
+								<div
+									key={num}
+									className={num <= game.enactedLiberalPolicyCount ? 'leftsidebar box liberal-box filled' : 'leftsidebar box liberal-box unfilled'}
+								/>
+							))}
 						</div>
 						<div className="fascist-count">
-							{(() =>
-								_.range(1, 7).map(num => (
-									<div
-										key={num}
-										className={num <= game.enactedFascistPolicyCount ? 'leftsidebar box fascist-box filled' : ' leftsidebar box fascist-box unfilled'}
-									/>
-								)))()}
+							{_.range(1, 7).map(num => (
+								<div
+									key={num}
+									className={num <= game.enactedFascistPolicyCount ? 'leftsidebar box fascist-box filled' : ' leftsidebar box fascist-box unfilled'}
+								/>
+							))}
 						</div>
 					</div>
 				);

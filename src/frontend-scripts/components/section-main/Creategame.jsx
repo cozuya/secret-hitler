@@ -11,6 +11,7 @@ $.fn.checkbox = Checkbox;
 export default class Creategame extends React.Component {
 	constructor() {
 		super();
+
 		this.createNewGame = this.createNewGame.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
 		this.state = {

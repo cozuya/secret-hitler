@@ -29,38 +29,10 @@ export default class Game extends React.Component {
 			<section className="game">
 				<div className="ui grid">
 					<div className="row">
-						<div
-							className={(() => {
-								let classes;
-
-								if (userInfo.gameSettings && !userInfo.gameSettings.enableRightSidebarInGame) {
-									classes = 'ten ';
-								} else {
-									classes = 'ten ';
-								}
-
-								classes += 'wide column tracks-container';
-
-								return classes;
-							})()}
-						>
+						<div className="ten wide column tracks-container">
 							<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
 						</div>
-						<div
-							className={(() => {
-								let classes;
-
-								if (userInfo.gameSettings && userInfo.gameSettings.enableRightSidebarInGame) {
-									classes = 'six ';
-								} else {
-									classes = 'six ';
-								}
-
-								classes += 'wide column chat-container game-chat';
-
-								return classes;
-							})()}
-						>
+						<div className="six wide column chat-container game-chat">
 							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
 								{gameInfo.general && gameInfo.general.status}
 							</section>

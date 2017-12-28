@@ -62,6 +62,7 @@ class Gamenotes extends React.Component {
 
 	noteDragStart(e) {
 		const style = window.getComputedStyle(e.target, null);
+
 		e.dataTransfer.setData(
 			'text/plain',
 			parseInt(style.getPropertyValue('left'), 10) - e.clientX + ',' + (parseInt(style.getPropertyValue('top'), 10) - e.clientY)

@@ -211,9 +211,9 @@ class Menu extends React.Component {
 							|{' '}
 							<a
 								className={
-									this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
-										? 'patch-alert'
-										: null
+									this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen ? (
+										'patch-alert'
+									) : null
 								}
 								onClick={this.props.readPatchNotes}
 							>
@@ -237,6 +237,10 @@ class Menu extends React.Component {
 					<div className="item right">
 						{(() => {
 							const { gameInfo, userInfo } = this.props;
+
+							/**
+ 							 * @return {string} classnames
+ 							 */
 							const iconClasses = () => {
 								let classes = 'setting icon large';
 

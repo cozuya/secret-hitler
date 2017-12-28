@@ -1,5 +1,9 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
 
+/**
+ * @param {object} rows - todo
+ * @return {jsx}
+ */
 const TBody = ({ rows }) => (
 	<tbody>
 		{rows.map((row, i) => {
@@ -17,6 +21,12 @@ const TBody = ({ rows }) => (
 	</tbody>
 );
 
+/**
+ * @param {object} headers - todo
+ * @param {object} rows - todo
+ * @param {object} uiTable - todo
+ * @return {jsx}
+ */
 const Table = ({ headers, rows, uiTable }) => (
 	<table className={`ui ${uiTable} table`}>
 		<thead>

@@ -11,6 +11,7 @@ $.fn.checkbox = Checkbox;
 export default class Moderation extends React.Component {
 	constructor() {
 		super();
+
 		this.togglePlayerList = this.togglePlayerList.bind(this);
 		this.broadcastClick = this.broadcastClick.bind(this);
 		this.handleBroadcastSubmit = this.handleBroadcastSubmit.bind(this);
@@ -498,9 +499,9 @@ export default class Moderation extends React.Component {
 						{this.state.log
 							.filter(entry => (this.state.modLogToday ? new Date(entry.date).toDateString() === new Date().toDateString() : true))
 							.sort((a, b) => {
-								const { logSort } = this.state,
-									aDate = new Date(a.date),
-									bDate = new Date(b.date);
+								const { logSort } = this.state;
+								const aDate = new Date(a.date);
+								const bDate = new Date(b.date);
 
 								if (logSort.type === 'date') {
 									if (logSort.direction === 'descending') {
