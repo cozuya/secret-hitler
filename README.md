@@ -27,17 +27,21 @@ Build: Gulp, Browserify, Babel (front end).
 
 ## Installation
 
-Install node.js LTS.
+Install [node.js LTS](https://nodejs.org/en/), have it in your path.
 
-Install mongodb, have it in your path.
+Install [git](https://git-scm.com/downloads), have it in your path.
+
+Install [mongodb](https://www.mongodb.com/download-center?ct=atlasheader#community), have it in your path.
 
 Make a .env file in the root directory and add the following to it:
 
-> MONGOPORT={5 digit number here}
+> MONGOPORT=27017
 
 then
 
 > git clone https://github.com/cozuya/secret-hitler.git
+
+Now move your .env file from the root directory to the secret-hitler folder you just created.
 
 > cd secret-hitler
 
@@ -53,11 +57,11 @@ build assets (first time only):
 
 start mongo:
 
-> npm run db {your port here from the .env file}
+> npm run db 27017
 
 start express server:
 
-> nodemon bin/dev
+> npm start
 
 start development task runner:
 
