@@ -1,3 +1,7 @@
+const child_process = require('child_process');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const mongoose = require('mongoose');
 const Game = require('../models/game');
 const GameSummary = require('../models/game-summary');
@@ -43,8 +47,6 @@ mongoose.connect('mongodb://localhost/secret-hitler-app');
 
 // Dump summaries for the day
 var summaries = [];
-console.log(new Date(dumpDateFrom))
-console.log(new Date(dumpDateTo))
 GameSummary.find({
         date: {$gte: new Date(dumpDateFrom), $lt: new Date(dumpDateTo)}
     })
@@ -62,8 +64,35 @@ GameSummary.find({
 	})
 	.then(() => {
 
-        // ... dump summaries to stdout
-        console.log(JSON.stringify(summaries, null, 2));
+        // ... write summaries
+        //
+        // We create the initial tmpfile to make sure we aren't stepping on
+        // the toes of any other activity going on in the temp directory.  We
+        // do a bit of additional juggling inside the tempfolder by creating
+        // another folder with the date of the game summaries so that when we
+        // go to create the output archive the resulting directory has a
+        // sensical name (e.g. untarring will result in the files
+        // "2017-01-01/gameFoo", "2017-01-01/gameBar").
+        fs.mkdtemp(path.join(os.tmpdir(), 'game-summaries-'), (err, tmpFolder) => {
+            let folder = path.join(tmpFolder, dumpDateFrom);
+            fs.mkdir(folder, (err) => {
+                for (let summary of summaries) {
+                    debugger
+                    fs.writeFileSync(path.join(folder, summary._id), JSON.stringify(summary));
+                }
+
+                // ... tar gz the results
+                child_process.execSync(`tar -zcvf ${path.join(os.tmpdir(), dumpDateFrom)}.tar.gz .`,
+                    {cwd: tmpFolder});
+
+                // ... cleanup the temporary files
+                //
+                // I'd prefer to use something in the fs module, but that's
+                // only for deleting non-empty directories.  So we'll just
+                // let another process do the work.
+                child_process.execSync(`rm -rf ${tmpFolder}`)
+            });
+        });
 
         // ... close db connection
 		mongoose.connection.close();
