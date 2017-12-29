@@ -103,7 +103,6 @@ class Playerlist extends React.Component {
 	}
 
 	render() {
-		console.log(this.props.userList, 'ul');
 		return (
 			<section className="playerlist">
 				<div className="playerlist-header">
@@ -150,12 +149,10 @@ class Playerlist extends React.Component {
 							if (Object.keys(this.props.userList).length) {
 								const { list } = this.props.userList;
 								const { userInfo } = this.props;
-								console.log(userInfo.gameSettings && userInfo.gameSettings.disableSeasonal);
 								const w =
 									userInfo.gameSettings && userInfo.gameSettings.disableSeasonal
 										? this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins'
 										: this.state.userListFilter === 'all' ? `winsSeason${CURRENTSEASONNUMBER}` : `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
-								console.log(w, 'w');
 								const l =
 									userInfo.gameSettings && userInfo.gameSettings.disableSeasonal
 										? this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses'
@@ -176,6 +173,7 @@ class Playerlist extends React.Component {
 									.sort((a, b) => {
 										const aTotal = a[w] + a[l];
 										const bTotal = b[w] + b[l];
+
 										const aIsSuperuser = ADMINS.includes(a.userName) || EDITORS.includes(a.userName) || MODERATORS.includes(a.userName);
 										const bIsSuperuser = ADMINS.includes(b.userName) || EDITORS.includes(b.userName) || MODERATORS.includes(b.userName);
 
@@ -374,20 +372,13 @@ class Playerlist extends React.Component {
 													})()}
 													{renderStatus()}
 												</div>
-												{(() => {
-													if (!ADMINS.includes(user.userName)) {
-														const w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins';
-														const l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
-
-														return (
-															<div className="userlist-stats-container">
-																(
-																<span className="userlist-stats">{user[w]}</span> / <span className="userlist-stats">{user[l]}</span>){' '}
-																<span className="userlist-stats"> {percentDisplay}</span>
-															</div>
-														);
-													}
-												})()}
+												{!ADMINS.includes(user.userName) && (
+													<div className="userlist-stats-container">
+														(
+														<span className="userlist-stats">{user[w]}</span> / <span className="userlist-stats">{user[l]}</span>){' '}
+														<span className="userlist-stats"> {percentDisplay}</span>
+													</div>
+												)}
 											</div>
 										);
 									});

@@ -199,7 +199,10 @@ export class GamesList extends React.Component {
 						);
 					})()}
 					<span className={this.state.filtersVisible ? 'enabled' : 'disabled'} onClick={toggleFilter}>
-						<i className="very large filter icon" />Game filters
+						<i className="large filter icon" title="Game filters" />
+					</span>
+					<span className="season-text" title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">
+						Welcome to season 1
 					</span>
 				</div>
 				<div className="browser-body">{this.renderGameList()}</div>

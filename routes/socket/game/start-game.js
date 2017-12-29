@@ -19,7 +19,7 @@ const beginGame = game => {
 	const roles = [
 		{
 			cardName: 'hitler',
-			icon: 1,
+			icon: 0,
 			team: 'fascist'
 		}
 	]
@@ -34,7 +34,7 @@ const beginGame = game => {
 		)
 		.concat(
 			_.shuffle(
-				_.range(3, 6).map(el => ({
+				_.range(0, 3).map(el => ({
 					cardName: 'fascist',
 					icon: el,
 					team: 'fascist'
@@ -69,7 +69,7 @@ const beginGame = game => {
 						text: 'The game begins and you receive the '
 					},
 					{
-						text: player.role.cardName === 'hitler' ? 'santa hitler' : player.role.cardName,
+						text: player.role.cardName === 'hitler' ? 'hitler' : player.role.cardName,
 						type: player.role.cardName
 					},
 					{
@@ -219,7 +219,7 @@ const beginGame = game => {
 							text: 'You see that '
 						},
 						{
-							text: 'santa hitler',
+							text: 'hitler',
 							type: 'hitler'
 						},
 						{

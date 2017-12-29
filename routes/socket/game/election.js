@@ -503,7 +503,7 @@ module.exports.selectVoting = data => {
 						gameChat: true,
 						chat: [
 							{
-								text: 'Santa hitler',
+								text: 'Hitler',
 								type: 'hitler'
 							},
 							{

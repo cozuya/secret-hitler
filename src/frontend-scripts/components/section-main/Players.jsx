@@ -142,7 +142,7 @@ export default class Players extends React.Component {
 						}
 					) : (
 						{
-							backgroundImage: `url(../images/default_cardback2.png)`
+							backgroundImage: `url(../images/default_cardback.png)`
 						}
 					)
 				}
