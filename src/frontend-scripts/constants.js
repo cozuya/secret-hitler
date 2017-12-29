@@ -30,31 +30,42 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'voldemort'
 ]);
 
-module.exports.CURRENTSEASONNUMBER = 1;
+const CURRENTSEASONNUMBER = 1;
 
-module.exports.PLAYERCOLORS = user =>
-	cn({
+module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
+
+/**
+ * @param {object} user - user from userlist.
+ * @param {boolean} isSeasonal - whether or not to display seasonal colors.
+ * @return {string} list of classes for colors.
+ */
+module.exports.PLAYERCOLORS = (user, isSeasonal) => {
+	const w = isSeasonal ? user[`winsSeason${CURRENTSEASONNUMBER}`] : user.wins;
+	const l = isSeasonal ? user[`lossesSeason${CURRENTSEASONNUMBER}`] : user.losses;
+
+	return cn({
 		admin: ADMINS.includes(user.userName),
 		moderatorcolor: MODERATORS.includes(user.userName),
 		editorcolor: EDITORS.includes(user.userName),
-		experienced1: user.wins + user.losses > 49,
-		experienced2: user.wins + user.losses > 99,
-		experienced3: user.wins + user.losses > 199,
-		experienced4: user.wins + user.losses > 299,
-		experienced5: user.wins + user.losses > 499,
-		onfire1: user.wins / (user.wins + user.losses) > 0.52,
-		onfire2: user.wins / (user.wins + user.losses) > 0.54,
-		onfire3: user.wins / (user.wins + user.losses) > 0.56,
-		onfire4: user.wins / (user.wins + user.losses) > 0.58,
-		onfire5: user.wins / (user.wins + user.losses) > 0.6,
-		onfire6: user.wins / (user.wins + user.losses) > 0.62,
-		onfire7: user.wins / (user.wins + user.losses) > 0.64,
-		onfire8: user.wins / (user.wins + user.losses) > 0.66,
-		onfire9: user.wins / (user.wins + user.losses) > 0.68,
-		onfire10: user.wins / (user.wins + user.losses) > 0.7,
+		experienced1: w + l > 49,
+		experienced2: w + l > 99,
+		experienced3: w + l > 199,
+		experienced4: w + l > 299,
+		experienced5: w + l > 499,
+		onfire1: w / (w + l) > 0.52,
+		onfire2: w / (w + l) > 0.54,
+		onfire3: w / (w + l) > 0.56,
+		onfire4: w / (w + l) > 0.58,
+		onfire5: w / (w + l) > 0.6,
+		onfire6: w / (w + l) > 0.62,
+		onfire7: w / (w + l) > 0.64,
+		onfire8: w / (w + l) > 0.66,
+		onfire9: w / (w + l) > 0.68,
+		onfire10: w / (w + l) > 0.7,
 		contributer: CONTRIBUTORS.includes(user.userName),
 		cbell: user.userName === 'cbell',
 		max: user.userName === 'Max',
 		dfinn: user.userName === 'DFinn',
 		faaiz: user.userName === 'Faaiz1999'
 	});
+};

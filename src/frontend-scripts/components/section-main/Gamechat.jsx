@@ -252,6 +252,7 @@ class Gamechat extends React.Component {
 
 	processChats() {
 		const { gameInfo, userInfo, userList, isReplay } = this.props;
+		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
 		const { chatFilter } = this.state;
@@ -352,17 +353,15 @@ class Gamechat extends React.Component {
 					) : (
 						<div className="item" key={i}>
 							{this.handleTimestamps(chat.timestamp)}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
-								chat.tournyWins &&
-								renderCrowns(chat.tournyWins)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.tournyWins && renderCrowns(chat.tournyWins)}
 							<span
 								className={
-									playerListPlayer ? userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat ? (
+									playerListPlayer ? gameSettings && gameSettings.disablePlayerColorsInChat ? (
 										'chat-user'
 									) : isBlind ? (
 										'chat-user'
 									) : playerListPlayer.wins + playerListPlayer.losses > 49 ? (
-										`chat-user ${PLAYERCOLORS(playerListPlayer)}`
+										`chat-user ${PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal))}`
 									) : (
 										'chat-user'
 									) : (

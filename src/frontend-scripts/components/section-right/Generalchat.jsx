@@ -145,15 +145,20 @@ export default class Generalchat extends React.Component {
 
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
+					const { gameSettings } = userInfo;
+
 					const userClasses = classnames(
 						{
-							[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
+							[chat.color]: !(gameSettings && gameSettings.disablePlayerColorsInChat) && (gameSettings && gameSettings.disableSeasonal),
+							[chat.seasonColor]: !(gameSettings && gameSettings.disablePlayerColorsInChat) && !(gameSettings && gameSettings.disableSeasonal)
 						},
 						'chat-user'
 					);
-					if (userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
+
+					if (userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
 						timestamp = <span className="timestamp">{moment(chat.time).format('HH:mm')} </span>;
 					}
+
 					return (
 						<div className="item" key={i}>
 							{timestamp}

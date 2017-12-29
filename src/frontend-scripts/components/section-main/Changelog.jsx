@@ -21,7 +21,7 @@ const Changelog = () => (
 		<p>
 			When you play a game from now on, its result is pushed into both your overall record and your seasonal record. Seasonal mode is opt-out - go to your
 			player settings screen to disable and it show you and your other player's overall records and name colors instead. Note: players who have achieved rainbow
-			status do not have to play 50 games to play rainbow games in new seasons.
+			status do not have to play 50 games to play rainbow games in new seasons, and will still have cardbacks enabled.
 		</p>
 		<p>Some fun rewards/leaderboards/stats for doing well in seasons are planned for the near future.</p>
 		<h3>Other items:</h3>

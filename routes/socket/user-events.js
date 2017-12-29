@@ -1,6 +1,6 @@
 let generalChatCount = 0;
 
-const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
+const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber } = require('./models');
 const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo } = require('./user-requests');
 const Account = require('../../models/account');
 const Generalchats = require('../../models/generalchats');
@@ -1110,10 +1110,12 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 
 	const user = userList.find(u => data.userName === u.userName);
 	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
+	const seasonColor = user && user[`winsSeason${currentSeasonNumber}`] + user[`lossesSeason${currentSeasonNumber}`] > 49 ? PLAYERCOLORS(user, true) : '';
 
 	generalChatCount++;
 	data.time = new Date();
 	data.color = color;
+	data.seasonColor = seasonColor;
 	generalChats.list.push(data);
 
 	if (generalChats.list.length > 99) {
