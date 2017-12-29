@@ -1,5 +1,5 @@
 const { sendInProgressGameUpdate } = require('../util.js');
-const { userList, games } = require('../models.js');
+const { userList, games, currentSeasonNumber } = require('../models.js');
 const { sendUserList, sendGameList } = require('../user-requests.js');
 const Account = require('../../../models/account.js');
 const Game = require('../../../models/game');
@@ -20,6 +20,7 @@ const saveGame = game => {
 		uid: game.general.uid,
 		date: new Date(),
 		chats: game.chats,
+		season: currentSeasonNumber,
 		winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => ({
 			userName: player.userName,
 			team: player.role.team,
@@ -128,9 +129,16 @@ module.exports.completeGame = (game, winningTeamName) => {
 					if (winningPlayerNames.includes(player.username)) {
 						if (isRainbow) {
 							player.rainbowWins = player.rainbowWins ? player.rainbowWins + 1 : 1;
-							player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses : 0;
+							player[`rainbowWinsSeason${currentSeasonNumber}`] = player[`rainbowWinsSeason${currentSeasonNumber}`]
+								? player[`rainbowWinsSeason${currentSeasonNumber}`] + 1
+								: 1;
+							player[`rainbowLossesSeason${currentSeasonNumber}`] = player[`rainbowLossesSeason${currentSeasonNumber}`]
+								? player[`rainbowLossesSeason${currentSeasonNumber}`]
+								: 0;
 						} else {
-							player.wins++;
+							player[`winsSeason${currentSeasonNumber}`] = player[`winsSeason${currentSeasonNumber}`] ? player[`winsSeason${currentSeasonNumber}`] + 1 : 1;
+							player.wins = player.wins ? player.wins + 1 : 1;
+							player[`lossesSeason${currentSeasonNumber}`] = player[`lossesSeason${currentSeasonNumber}`] ? player[`lossesSeason${currentSeasonNumber}`] : 0;
 						}
 						winner = true;
 						if (isTournamentFinalGame) {
@@ -145,9 +153,18 @@ module.exports.completeGame = (game, winningTeamName) => {
 					} else {
 						if (isRainbow) {
 							player.rainbowLosses = player.rainbowLosses ? player.rainbowLosses + 1 : 1;
-							player.rainbowWins = player.rainbowWins ? player.rainbowWins : 0;
+							player[`rainbowLossesSeason${currentSeasonNumber}`] = player[`rainbowLossesSeason${currentSeasonNumber}`]
+								? player[`rainbowLossesSeason${currentSeasonNumber}`] + 1
+								: 1;
+							player[`rainbowWinsSeason${currentSeasonNumber}`] = player[`rainbowWinsSeason${currentSeasonNumber}`]
+								? player[`rainbowWinsSeason${currentSeasonNumber}`]
+								: 0;
 						} else {
 							player.losses++;
+							player[`lossesSeason${currentSeasonNumber}`] = player[`lossesSeason${currentSeasonNumber}`]
+								? player[`lossesSeason${currentSeasonNumber}`] + 1
+								: 1;
+							player[`winsSeason${currentSeasonNumber}`] = player[`winsSeason${currentSeasonNumber}`] ? player[`winsSeason${currentSeasonNumber}`] : 0;
 						}
 					}
 
@@ -159,8 +176,21 @@ module.exports.completeGame = (game, winningTeamName) => {
 							if (winner) {
 								if (isRainbow) {
 									userEntry.rainbowWins = userEntry.rainbowWins ? userEntry.rainbowWins + 1 : 1;
+									userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses : 0;
+									userEntry[`rainbowWinsSeason${currentSeasonNumber}`] = userEntry[`rainbowWinsSeason${currentSeasonNumber}`]
+										? userEntry[`rainbowWinsSeason${currentSeasonNumber}`] + 1
+										: 1;
+									userEntry[`rainbowLossesSeason${currentSeasonNumber}`] = userEntry[`rainbowLossesSeason${currentSeasonNumber}`]
+										? userEntry[`rainbowWinsSeason${currentSeasonNumber}`]
+										: 0;
 								} else {
-									userEntry.wins++;
+									userEntry.wins = userEntry.wins ? userEntry.wins + 1 : 1;
+									userEntry[`winsSeason${currentSeasonNumber}`] = userEntry[`winsSeason${currentSeasonNumber}`]
+										? userEntry[`winsSeason${currentSeasonNumber}`] + 1
+										: 1;
+									userEntry[`lossesSeason${currentSeasonNumber}`] = userEntry[`lossesSeason${currentSeasonNumber}`]
+										? userEntry[`lossesSeason${currentSeasonNumber}`]
+										: 0;
 								}
 								if (isTournamentFinalGame) {
 									userEntry.tournyWins.push(new Date().getTime());
@@ -168,8 +198,20 @@ module.exports.completeGame = (game, winningTeamName) => {
 							} else {
 								if (isRainbow) {
 									userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses + 1 : 1;
+									userEntry[`rainbowLossesSeason${currentSeasonNumber}`] = userEntry[`rainbowLossesSeason${currentSeasonNumber}`]
+										? userEntry[`rainbowLossesSeason${currentSeasonNumber}`] + 1
+										: 1;
+									userEntry[`rainbowWinsSeason${currentSeasonNumber}`] = userEntry[`rainbowWinsSeason${currentSeasonNumber}`]
+										? userEntry[`rainbowWinsSeason${currentSeasonNumber}`]
+										: 0;
 								} else {
-									userEntry.losses++;
+									userEntry.losses ? userEntry.losses + 1 : 1;
+									userEntry[`lossesSeason${currentSeasonNumber}`] = userEntry[`lossesSeason${currentSeasonNumber}`]
+										? userEntry[`lossesSeason${currentSeasonNumber}`] + 1
+										: 1;
+									userEntry[`winsSeason${currentSeasonNumber}`] = userEntry[`winsSeason${currentSeasonNumber}`]
+										? userEntry[`winsSeason${currentSeasonNumber}`]
+										: 0;
 								}
 							}
 

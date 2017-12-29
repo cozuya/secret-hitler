@@ -9,15 +9,29 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.11.2 released 12-24-2017</p>
+			<p>Version 0.11.2 released 12-30-2017</p>
 		</div>
-		<h3>Tournament mode re--re-enabled..</h3>
+		<h3>Tournament mode re-re-enabled.. we'll see if this one takes.</h3>
+		<h3>New feature: seasonal mode!</h3>
+		<h4>Important note: your stats are not gone. Read below before panicking.</h4>
+		<p>
+			Like many other esport games, seasonal mode has come to sh.io. What this means as that there are now two tiers of player records, seasonal (which starts
+			today) and overall. At the beginning of a season, the seasonal tier is wiped of wins and losses, and should last about 2 months (some tweaking may occur).
+		</p>
+		<p>
+			When you play a game from now on, its result is pushed into both your overall record and your seasonal record. Seasonal mode is opt-out - go to your
+			player settings screen to disable and it show you and your other player's overall records and name colors instead. Note: players who have achieved rainbow
+			status do not have to play 50 games to play rainbow games in new seasons.
+		</p>
+		<p>Some fun rewards/leaderboards/stats for doing well in seasons are planned for the near future.</p>
+		<h3>Other items:</h3>
 		<ul>
 			<li>
 				Thanks to a PR, the fascist/lib card icons are now randomized correctly i.e. liberal with pencil mustache can now appear in any game, not just 10p
 				games.
 			</li>
 			<li>Thanks to the same PR, claims now are filtered into the "game" internal chat filter.</li>
+			<li>In blind mode games, hovering on a player's name no longer shows you who they are..</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.11.1 released 12-22-2017</p>

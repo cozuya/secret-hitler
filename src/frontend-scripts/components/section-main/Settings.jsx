@@ -35,6 +35,7 @@ class Settings extends React.Component {
 			disablePlayerCardbacks: '',
 			disableConfetti: '',
 			disableCrowns: '',
+			disableSeasonal: '',
 			isPrivate: ''
 		};
 	}
@@ -53,6 +54,7 @@ class Settings extends React.Component {
 			disableCrowns: gameSettings.disableCrowns,
 			disablePlayerCardbacks: gameSettings.disablePlayerCardbacks,
 			disableConfetti: gameSettings.disableConfetti,
+			disableSeasonal: gameSettings.disableSeasonal,
 			isPrivate: gameSettings.isPrivate
 		});
 	}
@@ -300,6 +302,16 @@ class Settings extends React.Component {
 									name="disableHelpMessages"
 									checked={this.state.disableHelpMessages}
 									onChange={() => this.toggleGameSettings('disableHelpMessages')}
+								/>
+								<label />
+							</div>
+							<h4 className="ui header">Show overall winrates and colors (instead of current season)</h4>
+							<div className="ui fitted toggle checkbox">
+								<input
+									type="checkbox"
+									name="disableSeasonal"
+									checked={this.state.disableSeasonal}
+									onChange={() => this.toggleGameSettings('disableSeasonal')}
 								/>
 								<label />
 							</div>

@@ -14,11 +14,8 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Moranki',
 	'jazz'
 ]);
-
 const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999']);
-
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
-
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'jbasrai',
 	'sethe',
@@ -32,6 +29,8 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Rex1234',
 	'voldemort'
 ]);
+
+module.exports.CURRENTSEASONNUMBER = 1;
 
 module.exports.PLAYERCOLORS = user =>
 	cn({

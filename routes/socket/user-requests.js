@@ -3,7 +3,7 @@ const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
 const Game = require('../../models/game');
 //	const BannedIP = require('../../models/bannedIP');
-const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
+const { games, userList, generalChats, currentSeasonNumber, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
@@ -93,7 +93,7 @@ module.exports.sendUserGameSettings = (socket, username) => {
 			socket.emit('gameSettings', account.gameSettings);
 
 			if (!userListNames.includes(username)) {
-				userList.push({
+				const userListInfo = {
 					userName: username,
 					wins: account.wins,
 					losses: account.losses,
@@ -105,7 +105,13 @@ module.exports.sendUserGameSettings = (socket, username) => {
 						type: 'none',
 						gameId: null
 					}
-				});
+				};
+
+				userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
+				userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
+				userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
+				userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+				userList.push(userListInfo);
 			}
 
 			getProfile(username);

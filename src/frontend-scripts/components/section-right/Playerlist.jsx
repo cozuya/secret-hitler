@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CONTRIBUTORS } from '../../constants';
+import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -103,6 +103,7 @@ class Playerlist extends React.Component {
 	}
 
 	render() {
+		console.log(this.props.userList, 'ul');
 		return (
 			<section className="playerlist">
 				<div className="playerlist-header">
@@ -149,14 +150,29 @@ class Playerlist extends React.Component {
 							if (Object.keys(this.props.userList).length) {
 								const { list } = this.props.userList;
 								const { userInfo } = this.props;
-								const w = this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins';
-								const l = this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses';
+								console.log(userInfo.gameSettings && userInfo.gameSettings.disableSeasonal);
+								const w =
+									userInfo.gameSettings && userInfo.gameSettings.disableSeasonal
+										? this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins'
+										: this.state.userListFilter === 'all' ? `winsSeason${CURRENTSEASONNUMBER}` : `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+								console.log(w, 'w');
+								const l =
+									userInfo.gameSettings && userInfo.gameSettings.disableSeasonal
+										? this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses'
+										: this.state.userListFilter === 'all' ? `lossesSeason${CURRENTSEASONNUMBER}` : `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
 								const time = new Date().getTime();
 								const routeToProfile = userName => {
 									window.location.hash = `#/profile/${userName}`;
 								};
 
 								return list
+									.filter(
+										user =>
+											(this.state.userListFilter === 'all' || user[w] + user[l] > 49) &&
+											(!user.isPrivate ||
+												(userInfo.userName &&
+													(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))))
+									)
 									.sort((a, b) => {
 										const aTotal = a[w] + a[l];
 										const bTotal = b[w] + b[l];
@@ -250,13 +266,6 @@ class Playerlist extends React.Component {
 
 										return b[w] - a[w];
 									})
-									.filter(
-										user =>
-											(this.state.userListFilter === 'all' || user.wins + user.losses > 49) &&
-											(!user.isPrivate ||
-												(userInfo.userName &&
-													(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))))
-									)
 									.map((user, i) => {
 										const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
 										const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
@@ -268,7 +277,7 @@ class Playerlist extends React.Component {
 											return () => null;
 										};
 										const userClasses =
-											user.wins + user.losses > 49 ||
+											user[w] + user[l] > 49 ||
 											ADMINS.includes(user.userName) ||
 											EDITORS.includes(user.userName) ||
 											MODERATORS.includes(user.userName) ||
