@@ -57,14 +57,14 @@ blind mode
 
 version 0.11:
 tournament mode
+seasonal mode
 
 future:
 (#205) player notes
 (#204) notes enhancements
 (#198) game creator should have extra powers - kick/pause timer/etc
 
-
 version 1.0
-convert to webpack/create-react-app for builds - will resolve safari problems
+convert to webpack/create-react-app for builds
 all desired features in all bugs fixed
 

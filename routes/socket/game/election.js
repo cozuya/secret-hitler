@@ -449,7 +449,7 @@ module.exports.selectVoting = data => {
 	const flipBallotCards = () => {
 		const isConsensus = game.publicPlayersState
 			.filter(player => !player.isDead)
-			.every((el, i) => seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes);
+			.every((el, i) => seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes); // first time every who says old dog new tricks etc..
 
 		game.publicPlayersState.forEach((player, i) => {
 			if (!player.isDead) {

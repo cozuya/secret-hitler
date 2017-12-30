@@ -149,12 +149,13 @@ class Playerlist extends React.Component {
 							if (Object.keys(this.props.userList).length) {
 								const { list } = this.props.userList;
 								const { userInfo } = this.props;
+								const { gameSettings } = userInfo;
 								const w =
-									userInfo.gameSettings && userInfo.gameSettings.disableSeasonal
+									gameSettings && gameSettings.disableSeasonal
 										? this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins'
 										: this.state.userListFilter === 'all' ? `winsSeason${CURRENTSEASONNUMBER}` : `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
 								const l =
-									userInfo.gameSettings && userInfo.gameSettings.disableSeasonal
+									gameSettings && gameSettings.disableSeasonal
 										? this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses'
 										: this.state.userListFilter === 'all' ? `lossesSeason${CURRENTSEASONNUMBER}` : `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
 								const time = new Date().getTime();
@@ -274,6 +275,7 @@ class Playerlist extends React.Component {
 
 											return () => null;
 										};
+
 										const userClasses =
 											user[w] + user[l] > 49 ||
 											ADMINS.includes(user.userName) ||
@@ -281,13 +283,13 @@ class Playerlist extends React.Component {
 											MODERATORS.includes(user.userName) ||
 											CONTRIBUTORS.includes(user.userName)
 												? cn(
-														PLAYERCOLORS(user, !(userInfo.gameSettings && userInfo.gameSettings.disableSeasonal)),
-														{ blacklisted: userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(user.userName) },
+														PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal)),
+														{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
 														{ unclickable: !this.props.isUserClickable },
 														{ clickable: this.props.isUserClickable },
 														'username'
 													)
-												: cn({ blacklisted: userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(user.userName) }, 'username');
+												: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
 										const renderStatus = () => {
 											const status = user.status;
 
@@ -335,9 +337,7 @@ class Playerlist extends React.Component {
 										return (
 											<div key={i} className="user-container">
 												<div className="userlist-username">
-													{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
-														user.tournyWins &&
-														renderCrowns()}
+													{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()}
 													{(() => {
 														const userAdminRole = ADMINS.includes(user.userName)
 															? 'Admin'
@@ -375,8 +375,8 @@ class Playerlist extends React.Component {
 												{!ADMINS.includes(user.userName) && (
 													<div className="userlist-stats-container">
 														(
-														<span className="userlist-stats">{user[w]}</span> / <span className="userlist-stats">{user[l]}</span>){' '}
-														<span className="userlist-stats"> {percentDisplay}</span>
+														<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> /{' '}
+														<span className="userlist-stats">{user[l] ? user[l] : '0'}</span>) <span className="userlist-stats"> {percentDisplay}</span>
 													</div>
 												)}
 											</div>

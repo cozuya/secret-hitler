@@ -59,8 +59,8 @@ class Settings extends React.Component {
 		});
 	}
 	/**
- 	 * @param {string} value - todo
- 	 */
+	 * @param {string} value - todo
+	 */
 	toggleGameSettings(value) {
 		const obj = {};
 
@@ -187,7 +187,7 @@ class Settings extends React.Component {
 		/**
 		 * @param {array} files - todo
 		 * @param {array} rejectedFile - todo
- 		 */
+		 */
 		const onDrop = (files, rejectedFile) => {
 			const reader = new FileReader();
 
@@ -366,7 +366,9 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							<h4 className="ui header">Private-games-only (this action will log you out, 18 hour cooldown)</h4>
+							<h4 className="ui header" style={{ color: 'red' }}>
+								Private-games-only (this action will log you out, 18 hour cooldown)
+							</h4>
 							<div className="ui fitted toggle checkbox">
 								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
 								<label />
@@ -422,8 +424,9 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${this.state
-															.imageUid}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
+															this.state.imageUid
+														}) no-repeat`
 													}}
 												/>
 											);

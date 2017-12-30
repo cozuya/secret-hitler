@@ -11,7 +11,7 @@ const Changelog = () => (
 		<div className="ui header">
 			<p>Version 0.11.2 released 12-30-2017</p>
 		</div>
-		<h3>Tournament mode re-re-enabled.. we'll see if this one takes.</h3>
+		<h3>Tournament mode re-re-enabled.. we'll see if this one takes..</h3>
 		<h3>New feature: seasonal mode!</h3>
 		<h4>Important note: your stats are not gone. Read below before panicking.</h4>
 		<p>
@@ -19,19 +19,27 @@ const Changelog = () => (
 			today) and overall. At the beginning of a season, the seasonal tier is wiped of wins and losses, and should last about 2 months (some tweaking may occur).
 		</p>
 		<p>
-			When you play a game from now on, its result is pushed into both your overall record and your seasonal record. Seasonal mode is opt-out - go to your
-			player settings screen to disable and it show you and your other player's overall records and name colors instead. Note: players who have achieved rainbow
-			status do not have to play 50 games to play rainbow games in new seasons, and will still have cardbacks enabled.
+			When you play a game from now on, its result is pushed into both your overall record and your current seasonal record. Seasonal mode is opt-out - go to
+			your player settings screen to disable it, and your and other player's overall records and name colors will be shown to you instead, just like before this
+			patch. Note: players who have achieved rainbow status do not have to play 50 games to play rainbow games in new seasons, and will still have cardbacks
+			enabled. Yes I realize this somewhat paradoxically will make rainbow games non rainbow.
 		</p>
 		<p>Some fun rewards/leaderboards/stats for doing well in seasons are planned for the near future.</p>
 		<h3>Other items:</h3>
 		<ul>
 			<li>
-				Thanks to a PR, the fascist/lib card icons are now randomized correctly i.e. liberal with pencil mustache can now appear in any game, not just 10p
-				games.
+				Thanks to a pull request, the fascist/lib card icons are now randomized correctly i.e. liberal with pencil mustache/snake in a suit fascist can now
+				appear in any game, not just 9/10p games.
 			</li>
 			<li>Thanks to the same PR, claims now are filtered into the "game" internal chat filter.</li>
+			<li>
+				Thanks to a PR, replays have been worked on and fixed! If you see more issues, please alert us. In addition the role cards are no longer all the same at
+				the end of replays.
+			</li>
+			<li>The above work was done by contributor STOshka/AlexSTO. Awesome!</li>
 			<li>In blind mode games, hovering on a player's name no longer shows you who they are..</li>
+			<li>In a consensus vote on elections (everyone votes the same), the ja/nein cards are visible for a much shorter period of time, getting on with it.</li>
+			<li>The weird selection bug on elections ja/nein has been fixed, was hotfixed about a week ago but you had to have cleared your cache.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.11.1 released 12-22-2017</p>
@@ -368,7 +376,10 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
+				style={{ width: '30%', margin: '0 auto', display: 'block' }}
+				src="/images/em.png"
+			/>
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}

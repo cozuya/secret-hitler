@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -178,6 +178,7 @@ const DisplayLobbies = props => {
 	const playerIcons = () => {
 		const players = [];
 		const total = [];
+		const { gameSettings } = userInfo;
 		// Might be a simpler way to write this. Just getting all the data we need and storing it in players[]
 		if (game.blindMode) {
 			return;
@@ -190,11 +191,16 @@ const DisplayLobbies = props => {
 			if (userStats) {
 				players[index].wins = userStats.wins;
 				players[index].losses = userStats.losses;
+				players[index][`winsSeason${CURRENTSEASONNUMBER}`] = userStats[`winsSeason${CURRENTSEASONNUMBER}`];
+				players[index][`lossesSeason${CURRENTSEASONNUMBER}`] = userStats[`lossesSeason${CURRENTSEASONNUMBER}`];
 			}
 		});
 
 		players.forEach(player => {
-			const classes = player.wins + player.losses > 49 ? `player-small-cardback ${PLAYERCOLORS(player)}` : 'player-small-cardback';
+			const classes =
+				player.wins + player.losses > 49
+					? `player-small-cardback ${PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal))}`
+					: 'player-small-cardback';
 
 			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
 				total.push(

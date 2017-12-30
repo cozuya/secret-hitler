@@ -178,8 +178,8 @@ export class GamesList extends React.Component {
 
 		return (
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
-				<a target="_blank" href="/stats">
-					<h5>100k games played!</h5>
+				<a href="#/changelog">
+					<h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">Welcome to season 1!</h5>
 				</a>
 				<h3>Game filters</h3>
 				{this.renderFilters()}
@@ -200,9 +200,6 @@ export class GamesList extends React.Component {
 					})()}
 					<span className={this.state.filtersVisible ? 'enabled' : 'disabled'} onClick={toggleFilter}>
 						<i className="large filter icon" title="Game filters" />
-					</span>
-					<span className="season-text" title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">
-						Welcome to season 1
 					</span>
 				</div>
 				<div className="browser-body">{this.renderGameList()}</div>

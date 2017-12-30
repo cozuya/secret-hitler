@@ -99,6 +99,7 @@ export default class Players extends React.Component {
 
 	renderPlayers() {
 		const { gameInfo, userInfo } = this.props;
+		const { gameSettings } = userInfo;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const time = new Date().getTime();
@@ -136,15 +137,13 @@ export default class Players extends React.Component {
 				style={
 					player.customCardback &&
 					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks)) ? (
-						{
-							backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						}
-					) : (
-						{
-							backgroundImage: `url(../images/default_cardback.png)`
-						}
-					)
+					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+						? {
+								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+							}
+						: {
+								backgroundImage: `url(../images/default_cardback.png)`
+							}
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -161,7 +160,7 @@ export default class Players extends React.Component {
 					}
 
 					if (user && user.wins + user.losses > 49 && !isBlind) {
-						classes = `${classes} ${PLAYERCOLORS(user)}`;
+						classes = `${classes} ${PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal))}`;
 					}
 
 					return classes;
@@ -169,11 +168,9 @@ export default class Players extends React.Component {
 			>
 				<div
 					title={
-						isBlind ? (
-							'Double click to open a modal to report this player to the moderator team'
-						) : (
-							`Double click to open a modal to report ${player.userName} to the moderator team`
-						)
+						isBlind
+							? 'Double click to open a modal to report this player to the moderator team'
+							: `Double click to open a modal to report ${player.userName} to the moderator team`
 					}
 					onDoubleClick={this.handlePlayerDoubleClick}
 					className={(() => {
