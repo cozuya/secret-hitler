@@ -22,8 +22,8 @@ const Changelog = () => (
 			affects you only - go to your player settings screen to disable it, and your and other player's overall records and name colors will be shown to you
 			instead, just like before this patch. Note: players who have achieved rainbow status do not have to play 50 games to play rainbow games in new seasons,
 			and will still have cardbacks enabled. Yes I realize this somewhat paradoxically will make rainbow games non rainbow so to speak at least for some time.
+			Your profile will not be affected, for now.
 		</p>
-		<p>Your profile will not be affected, for now.</p>
 		<p>Some fun rewards/leaderboards/stats for doing well in seasons are planned for the near future.</p>
 		<h3>Tournament mode re-re-enabled.. we'll see if this one takes..</h3>
 		<h3>New feature: rainbow games now count towards standard winrate.</h3>
