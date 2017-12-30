@@ -15,7 +15,7 @@ const Changelog = () => (
 		<h4>Important note: your stats are not gone. Read below before panicking.</h4>
 		<p>
 			Like many other esport games, seasonal mode has come to sh.io. What this means as that there are now two tiers of player records, seasonal (which starts
-			today) and overall. At the beginning of a season, the seasonal tier is wiped of wins and losses, and should last about 2 months (some tweaking may occur).
+			today) and overall. At the beginning of a season, the seasonal tier is wiped of wins and losses, and should last about 3 months (some tweaking may occur).
 		</p>
 		<p>
 			When you play a game from now on, its result is pushed into both your overall record and your current seasonal record. Seasonal mode is opt-out - go to
@@ -41,7 +41,8 @@ const Changelog = () => (
 			<li>The above work was done by contributor STOshka/AlexSTO. Awesome!</li>
 			<li>In blind mode games, hovering on a player's name no longer shows you who they are..</li>
 			<li>In a consensus vote on elections (everyone votes the same), the ja/nein cards are visible for a much shorter period of time, getting on with it.</li>
-			<li>You can remake a game more than once, again.</li>
+			<li>A bug that prevented players from remaking a game more than once has been fixed.</li>
+			<li>You can now report players in blind mode. Reminder: blind mode is not an excuse to break site rules.</li>
 			<li>The weird selection bug on elections ja/nein has been fixed, was hotfixed about a week ago but you had to have cleared your cache.</li>
 		</ul>
 		<div className="ui header">

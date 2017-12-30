@@ -22,9 +22,9 @@ export default class Players extends React.Component {
 		};
 	}
 
-	handlePlayerDoubleClick(e) {
-		if (!this.props.gameInfo.general.private && !this.props.gameInfo.general.blindMode) {
-			this.setState({ reportedPlayer: e.currentTarget.innerText });
+	handlePlayerDoubleClick(userName) {
+		if (!this.props.gameInfo.general.private) {
+			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
 		}
@@ -179,7 +179,9 @@ export default class Players extends React.Component {
 							? 'Double click to open a modal to report this player to the moderator team'
 							: `Double click to open a modal to report ${player.userName} to the moderator team`
 					}
-					onDoubleClick={this.handlePlayerDoubleClick}
+					onDoubleClick={() => {
+						this.handlePlayerDoubleClick(player.userName);
+					}}
 					className={(() => {
 						let classes = 'player-number';
 
@@ -345,6 +347,7 @@ export default class Players extends React.Component {
 		const handleReportTextChange = e => {
 			this.setState({ reportTextValue: `${e.target.value}` });
 		};
+		const isBlind = this.props.gameInfo.general.blindMode && !this.props.gameInfo.gameState.isCompleted;
 
 		return (
 			<section className="players">
@@ -377,7 +380,7 @@ export default class Players extends React.Component {
 				>
 					<form onSubmit={this.handleReportSubmit}>
 						<div className="ui header">
-							Report player <span style={{ color: 'red' }}>{this.state.reportedPlayer}</span> to the moderators
+							Report player <span style={{ color: 'red' }}>{isBlind ? '(blind player, mods will know)' : this.state.reportedPlayer}</span> to the moderators
 						</div>
 						<div className="ui selection dropdown">
 							<input type="hidden" name="reason" />
