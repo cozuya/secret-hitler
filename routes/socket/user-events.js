@@ -1003,9 +1003,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
-						game.general.remakeCount === 1 ? 'second' : 'seconds'
-					}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
+						? 'second'
+						: 'seconds'}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
@@ -1029,9 +1029,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 			clearInterval(game.private.remakeTimer);
 		}
 		chat.chat.push({
-			text: ` has rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount}/${
-				minimumRemakeVoteCount
-			})`
+			text: ` has rescinded their vote to ${game.general.isTourny
+				? 'cancel this tournament.'
+				: 'remake this game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
 	}
 	game.chats.push(chat);
@@ -1179,6 +1179,7 @@ module.exports.handleModerationAction = (socket, data) => {
 	);
 
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
+		console.log(data, 'data');
 		const modaction = new ModAction({
 			date: new Date(),
 			modUserName: passport.user,
@@ -1478,7 +1479,8 @@ module.exports.handlePlayerReport = data => {
 		reportingPlayer: data.userName,
 		reportedPlayer: data.reportedPlayer,
 		reason: data.reason,
-		comment: data.comment
+		comment: data.comment,
+		isActive: true
 	});
 	const body = JSON.stringify({
 		content: `Game UID: ${data.uid.substr(0, 6)}\nReported player: ${data.reportedPlayer}\nReason: ${data.reason}\nComment: ${data.comment}`

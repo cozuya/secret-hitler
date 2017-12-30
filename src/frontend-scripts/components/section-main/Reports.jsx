@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import { Checkbox } from 'semantic-ui-react';
 
 export default class Reports extends React.Component {
 	constructor() {
@@ -37,6 +38,12 @@ export default class Reports extends React.Component {
 			this.setState({
 				sortType: type,
 				sortDirection: sortDirection === 'descending' ? 'ascending' : 'descending'
+			});
+		};
+		const activeClick = report => {
+			this.props.emit('updateModAction', {
+				isReportResolveChange: true,
+				isReportResolved: !report.isActive
 			});
 		};
 
@@ -87,6 +94,7 @@ export default class Reports extends React.Component {
 							>
 								Reporting User {sortType === 'reportingUser' && <i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
+							<th>Resolved</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -122,6 +130,15 @@ export default class Reports extends React.Component {
 									<td>{report.reason}</td>
 									<td>{report.comment}</td>
 									<td>{report.reportingPlayer}</td>
+									<td>
+										<Checkbox
+											toggle
+											checked={!report.isActive}
+											onChange={() => {
+												activeClick(report);
+											}}
+										/>
+									</td>
 								</tr>
 							))}
 					</tbody>

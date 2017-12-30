@@ -6,7 +6,8 @@ const mongoose = require('mongoose'),
 		reportedPlayer: String,
 		reason: String,
 		reportingPlayer: String,
-		comment: String
+		comment: String,
+		isActive: Boolean
 	});
 
 module.exports = mongoose.model('PlayerReport', playerReport);
