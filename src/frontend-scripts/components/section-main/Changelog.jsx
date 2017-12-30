@@ -9,9 +9,8 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.11.2 released 12-30-2017</p>
+			<p>Version 0.12.0 released 12-31-2017</p>
 		</div>
-		<h3>Tournament mode re-re-enabled.. we'll see if this one takes..</h3>
 		<h3>New feature: seasonal mode!</h3>
 		<h4>Important note: your stats are not gone. Read below before panicking.</h4>
 		<p>
@@ -25,6 +24,9 @@ const Changelog = () => (
 			enabled. Yes I realize this somewhat paradoxically will make rainbow games non rainbow.
 		</p>
 		<p>Some fun rewards/leaderboards/stats for doing well in seasons are planned for the near future.</p>
+		<h3>Tournament mode re-re-enabled.. we'll see if this one takes..</h3>
+		<h3>New feature: rainbow games now count towards standard winrate.</h3>
+		<p>This has been requested a lot lately, we'll see how this goes/how people like it for season 1.</p>
 		<h3>Other items:</h3>
 		<ul>
 			<li>
