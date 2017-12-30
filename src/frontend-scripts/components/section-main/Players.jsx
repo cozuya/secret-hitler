@@ -2,7 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import Policies from './Policies.jsx';
 import Dropdown from 'semantic-ui-dropdown';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS } from '../../constants';
+import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CURRENTSEASONNUMBER } from '../../constants';
 import PropTypes from 'prop-types';
 
 $.fn.dropdown = Dropdown;
@@ -148,6 +148,13 @@ export default class Players extends React.Component {
 				className={(() => {
 					let classes = 'player-container';
 					let user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+					let w;
+					let l;
+
+					if (user) {
+						w = !(gameSettings && gameSettings.disableSeasonal) ? user[`winsSeason${CURRENTSEASONNUMBER}`] : user.wins;
+						l = !(gameSettings && gameSettings.disableSeasonal) ? user[`lossesSeason${CURRENTSEASONNUMBER}`] : user.losses;
+					}
 
 					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
@@ -159,7 +166,7 @@ export default class Players extends React.Component {
 						classes = `${classes} isDead`;
 					}
 
-					if (user && user.wins + user.losses > 49 && !isBlind) {
+					if (user && w + l > 49 && !isBlind) {
 						classes = `${classes} ${PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal))}`;
 					}
 

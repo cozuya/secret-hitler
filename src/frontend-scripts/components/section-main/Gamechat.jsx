@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
+import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS, CURRENTSEASONNUMBER } from '../../constants';
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -264,9 +264,9 @@ class Gamechat extends React.Component {
 		};
 		const time = new Date().getTime();
 		/**
- 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
- 		 * @return {jsx}
- 		 */
+		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
+		 * @return {jsx}
+		 */
 		const renderCrowns = tournyWins => {
 			return tournyWins
 				.filter(winTime => time - winTime < 10800000)
@@ -292,6 +292,13 @@ class Gamechat extends React.Component {
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 					const isGreenText = /^>/i.test(chatContents[0]);
+					let w;
+					let l;
+
+					if (playerListPlayer) {
+						w = !(gameSettings && gameSettings.disableSeasonal) ? playerListPlayer[`winsSeason${CURRENTSEASONNUMBER}`] : playerListPlayer.wins;
+						l = !(gameSettings && gameSettings.disableSeasonal) ? playerListPlayer[`lossesSeason${CURRENTSEASONNUMBER}`] : playerListPlayer.losses;
+					}
 
 					return chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item gamechat ${chat.chat[1].type}` : 'item gamechat'} key={i}>
@@ -356,17 +363,13 @@ class Gamechat extends React.Component {
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.tournyWins && renderCrowns(chat.tournyWins)}
 							<span
 								className={
-									playerListPlayer ? gameSettings && gameSettings.disablePlayerColorsInChat ? (
-										'chat-user'
-									) : isBlind ? (
-										'chat-user'
-									) : playerListPlayer.wins + playerListPlayer.losses > 49 ? (
-										`chat-user ${PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal))}`
-									) : (
-										'chat-user'
-									) : (
-										'chat-user'
-									)
+									playerListPlayer
+										? gameSettings && gameSettings.disablePlayerColorsInChat
+											? 'chat-user'
+											: isBlind
+												? 'chat-user'
+												: w + l > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal))}` : 'chat-user'
+										: 'chat-user'
 								}
 							>
 								{isReplay || isSeated ? (
@@ -389,19 +392,15 @@ class Gamechat extends React.Component {
 								) : (
 									<span className="observer-chat">(Observer) </span>
 								)}
-								{this.props.isReplay || gameInfo.gameState.isTracksFlipped ? isSeated ? isBlind ? (
-									`${gameInfo.general.replacementNames[
-										gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)
-									]} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-								) : (
-									`${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-								) : (
-									chat.userName
-								) : isBlind ? (
-									'?'
-								) : (
-									chat.userName
-								)}
+								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
+									? isSeated
+										? isBlind
+											? `${
+													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
+												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+										: chat.userName
+									: isBlind ? '?' : chat.userName}
 								{': '}
 							</span>
 							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
@@ -500,11 +499,11 @@ class Gamechat extends React.Component {
 						Game
 					</a>
 					{gameInfo.general &&
-					!gameInfo.general.disableObserver && (
-						<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-							No observer chat
-						</a>
-					)}
+						!gameInfo.general.disableObserver && (
+							<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
+								No observer chat
+							</a>
+						)}
 					{userInfo.userName && (
 						<i
 							title="Click here to pop out notes"
@@ -520,12 +519,12 @@ class Gamechat extends React.Component {
 						/>
 					)}
 					{gameInfo.general &&
-					gameInfo.general.tournyInfo &&
-					(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
-						<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
-							Observe {gameInfo.general.tournyInfo.isRound1TableThatFinished2nd ? 'final' : 'other'} tournament table
-						</button>
-					)}
+						gameInfo.general.tournyInfo &&
+						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
+							<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
+								Observe {gameInfo.general.tournyInfo.isRound1TableThatFinished2nd ? 'final' : 'other'} tournament table
+							</button>
+						)}
 					<div className="right menu">
 						<WhiteListButton />
 						<WatchReplayButton />
@@ -720,13 +719,13 @@ class Gamechat extends React.Component {
 							</button>
 						</div>
 						{gameInfo.playersState &&
-						gameInfo.playersState.length &&
-						userInfo.userName &&
-						gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim && (
-							<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
-								C
-							</div>
-						)}
+							gameInfo.playersState.length &&
+							userInfo.userName &&
+							gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim && (
+								<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
+									C
+								</div>
+							)}
 					</form>
 				)}
 				<div
