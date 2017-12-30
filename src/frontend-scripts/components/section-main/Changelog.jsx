@@ -39,6 +39,7 @@ const Changelog = () => (
 			<li>The above work was done by contributor STOshka/AlexSTO. Awesome!</li>
 			<li>In blind mode games, hovering on a player's name no longer shows you who they are..</li>
 			<li>In a consensus vote on elections (everyone votes the same), the ja/nein cards are visible for a much shorter period of time, getting on with it.</li>
+			<li>You can remake a game more than once, again.</li>
 			<li>The weird selection bug on elections ja/nein has been fixed, was hotfixed about a week ago but you had to have cleared your cache.</li>
 		</ul>
 		<div className="ui header">

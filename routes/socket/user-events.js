@@ -857,8 +857,8 @@ module.exports.handleUpdatedRemakeGame = data => {
 	const player = publicPlayersState[playerIndex];
 
 	/**
- 	 * @return {number} minimum number of remake votes to remake a game
- 	 */
+	 * @return {number} minimum number of remake votes to remake a game
+	 */
 	const minimumRemakeVoteCount = (() => {
 		switch (game.general.playerCount) {
 			case 5:
@@ -911,6 +911,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 		};
 
 		newGame.chats = [];
+		newGame.general.isRemade = false;
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = new Date().getTime();
@@ -957,8 +958,8 @@ module.exports.handleUpdatedRemakeGame = data => {
 	};
 
 	/**
- 	 * @param {string} firstTableUid - the UID of the first tournament table
- 	 */
+	 * @param {string} firstTableUid - the UID of the first tournament table
+	 */
 	const cancellTourny = firstTableUid => {
 		const secondTableUid =
 			firstTableUid.charAt(firstTableUid.length - 1) === 'A'
@@ -1002,9 +1003,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
-						? 'second'
-						: 'seconds'}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
+						game.general.remakeCount === 1 ? 'second' : 'seconds'
+					}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
@@ -1028,9 +1029,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 			clearInterval(game.private.remakeTimer);
 		}
 		chat.chat.push({
-			text: ` has rescinded their vote to ${game.general.isTourny
-				? 'cancel this tournament.'
-				: 'remake this game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+			text: ` has rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount}/${
+				minimumRemakeVoteCount
+			})`
 		});
 	}
 	game.chats.push(chat);
@@ -1187,8 +1188,8 @@ module.exports.handleModerationAction = (socket, data) => {
 			actionTaken: data.action
 		});
 		/**
- 		 * @param {string} username - name of user.
-  	 */
+		 * @param {string} username - name of user.
+		 */
 		const logOutUser = username => {
 			const bannedUserlistIndex = userList.findIndex(user => user.userName === data.userName);
 
@@ -1202,8 +1203,8 @@ module.exports.handleModerationAction = (socket, data) => {
 		};
 
 		/**
- 		 * @param {string} username - name of user.
-  	 */
+		 * @param {string} username - name of user.
+		 */
 		const banAccount = username => {
 			if (!ADMINS.includes(username) && (!MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
 				Account.findOne({ username })
