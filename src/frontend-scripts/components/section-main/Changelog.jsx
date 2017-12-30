@@ -18,15 +18,16 @@ const Changelog = () => (
 			today) and overall. At the beginning of a season, the seasonal tier is wiped of wins and losses, and should last about 3 months (some tweaking may occur).
 		</p>
 		<p>
-			When you play a game from now on, its result is pushed into both your overall record and your current seasonal record. Seasonal mode is opt-out - go to
-			your player settings screen to disable it, and your and other player's overall records and name colors will be shown to you instead, just like before this
-			patch. Note: players who have achieved rainbow status do not have to play 50 games to play rainbow games in new seasons, and will still have cardbacks
-			enabled. Yes I realize this somewhat paradoxically will make rainbow games non rainbow.
+			When you play a game from now on, its result is pushed into both your overall record and your current seasonal record. Seasonal mode is opt-out, and
+			affects you only - go to your player settings screen to disable it, and your and other player's overall records and name colors will be shown to you
+			instead, just like before this patch. Note: players who have achieved rainbow status do not have to play 50 games to play rainbow games in new seasons,
+			and will still have cardbacks enabled. Yes I realize this somewhat paradoxically will make rainbow games non rainbow so to speak at least for some time.
 		</p>
+		<p>Your profile will not be affected, for now.</p>
 		<p>Some fun rewards/leaderboards/stats for doing well in seasons are planned for the near future.</p>
 		<h3>Tournament mode re-re-enabled.. we'll see if this one takes..</h3>
 		<h3>New feature: rainbow games now count towards standard winrate.</h3>
-		<p>This has been requested a lot lately, we'll see how this goes/how people like it for season 1.</p>
+		<p>This has been requested a lot lately, we'll see how this goes/how people like it for season 1. The poll on this was split, lets give this a shot.</p>
 		<h3>Other items:</h3>
 		<ul>
 			<li>

@@ -1,7 +1,7 @@
 let generalChatCount = 0;
 
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber } = require('./models');
-const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo } = require('./user-requests');
+const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports } = require('./user-requests');
 const Account = require('../../models/account');
 const Generalchats = require('../../models/generalchats');
 const ModAction = require('../../models/modAction');
@@ -1003,9 +1003,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 			game.private.remakeTimer = setInterval(() => {
 				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${game.general.remakeCount === 1
-						? 'second'
-						: 'seconds'}.`;
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
+						game.general.remakeCount === 1 ? 'second' : 'seconds'
+					}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
@@ -1029,9 +1029,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 			clearInterval(game.private.remakeTimer);
 		}
 		chat.chat.push({
-			text: ` has rescinded their vote to ${game.general.isTourny
-				? 'cancel this tournament.'
-				: 'remake this game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+			text: ` has rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount}/${
+				minimumRemakeVoteCount
+			})`
 		});
 	}
 	game.chats.push(chat);
@@ -1179,291 +1179,303 @@ module.exports.handleModerationAction = (socket, data) => {
 	);
 
 	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
-		console.log(data, 'data');
-		const modaction = new ModAction({
-			date: new Date(),
-			modUserName: passport.user,
-			userActedOn: data.userName,
-			modNotes: data.comment,
-			ip: data.ip,
-			actionTaken: data.action
-		});
-		/**
-		 * @param {string} username - name of user.
-		 */
-		const logOutUser = username => {
-			const bannedUserlistIndex = userList.findIndex(user => user.userName === data.userName);
+		if (data.isReportResolveChange) {
+			PlayerReport.findOne({ _id: data._id })
+				.then(report => {
+					report.isActive = !report.isActive;
+					report.save(() => {
+						sendUserReports(socket);
+					});
+				})
+				.catch(err => {
+					console.log(err, 'err in finding player report');
+				});
+		} else {
+			const modaction = new ModAction({
+				date: new Date(),
+				modUserName: passport.user,
+				userActedOn: data.userName,
+				modNotes: data.comment,
+				ip: data.ip,
+				actionTaken: data.action
+			});
+			/**
+			 * @param {string} username - name of user.
+			 */
+			const logOutUser = username => {
+				const bannedUserlistIndex = userList.findIndex(user => user.userName === data.userName);
 
-			if (io.sockets.sockets[affectedSocketId]) {
-				io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-			}
+				if (io.sockets.sockets[affectedSocketId]) {
+					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+				}
 
-			if (bannedUserlistIndex >= 0) {
-				userList.splice(bannedUserlistIndex, 1);
-			}
-		};
+				if (bannedUserlistIndex >= 0) {
+					userList.splice(bannedUserlistIndex, 1);
+				}
+			};
 
-		/**
-		 * @param {string} username - name of user.
-		 */
-		const banAccount = username => {
-			if (!ADMINS.includes(username) && (!MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
-				Account.findOne({ username })
-					.then(account => {
-						if (account) {
-							account.hash = crypto.randomBytes(20).toString('hex');
-							account.salt = crypto.randomBytes(20).toString('hex');
-							account.isBanned = true;
-							account.save(() => {
-								const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
+			/**
+			 * @param {string} username - name of user.
+			 */
+			const banAccount = username => {
+				if (!ADMINS.includes(username) && (!MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
+					Account.findOne({ username })
+						.then(account => {
+							if (account) {
+								account.hash = crypto.randomBytes(20).toString('hex');
+								account.salt = crypto.randomBytes(20).toString('hex');
+								account.isBanned = true;
+								account.save(() => {
+									const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
 
-								bannedAccountGeneralChats.reverse().forEach(chat => {
-									generalChats.list.splice(generalChats.list.indexOf(chat), 1);
+									bannedAccountGeneralChats.reverse().forEach(chat => {
+										generalChats.list.splice(generalChats.list.indexOf(chat), 1);
+									});
+									logOutUser(username);
+									io.sockets.emit('generalChats', generalChats);
 								});
-								logOutUser(username);
-								io.sockets.emit('generalChats', generalChats);
-							});
-						}
-					})
-					.catch(err => {
-						console.log(err, 'ban user err');
-					});
-			}
-		};
-
-		modaction.save();
-		switch (data.action) {
-			case 'deleteUser':
-				if (isSuperMod) {
-					Account.findOne({ username: data.userName }).remove(() => {
-						if (io.sockets.sockets[affectedSocketId]) {
-							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-						}
-					});
+							}
+						})
+						.catch(err => {
+							console.log(err, 'ban user err');
+						});
 				}
-				break;
-			case 'ban':
-				banAccount(data.userName);
-				break;
-			case 'setSticky':
-				generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
-				io.sockets.emit('generalChats', generalChats);
-				break;
-			case 'broadcast':
-				const discordBroadcastBody = JSON.stringify({
-					content: `Text: ${data.comment}\nMod: ${passport.user}`
-				});
-				const discordBroadcastOptions = {
-					hostname: 'discordapp.com',
-					path: process.env.DISCORDBROADCASTURL,
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Content-Length': Buffer.byteLength(discordBroadcastBody)
-					}
-				};
-				const broadcastReq = https.request(discordBroadcastOptions);
+			};
 
-				broadcastReq.end(discordBroadcastBody);
-				games.forEach(game => {
-					game.chats.push({
-						userName: `[BROADCAST] ${data.modName}`,
-						chat: data.comment,
-						isBroadcast: true,
-						timestamp: new Date()
-					});
-				});
-				generalChats.list.push({
-					userName: `[BROADCAST] ${data.modName}`,
-					time: new Date(),
-					chat: data.comment,
-					isBroadcast: true
-				});
-
-				if (data.isSticky) {
-					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
-				}
-
-				io.sockets.emit('generalChats', generalChats);
-				break;
-			case 'ipban':
-				const ipban = new BannedIP({
-					bannedDate: new Date(),
-					type: 'small',
-					ip: data.ip
-				});
-
-				if (isSuperMod) {
-					ipban.save(() => {
-						banAccount(data.userName);
-					});
-				}
-				break;
-			case 'timeOut':
-				const timeout = new BannedIP({
-					bannedDate: new Date(),
-					type: 'small',
-					ip: data.ip
-				});
-				timeout.save(() => {
-					logOutUser(data.userName);
-				});
-				break;
-			case 'timeOut2':
-				Account.findOne({ username: data.userName })
-					.then(account => {
-						if (account) {
-							account.isTimeout = new Date();
-							account.save(() => {
-								logOutUser(data.userName);
-							});
-						}
-					})
-					.catch(err => {
-						console.log(err, 'timeout2 user err');
-					});
-				break;
-			case 'togglePrivate':
-				Account.findOne({ username: data.userName })
-					.then(account => {
-						if (account) {
-							const { isPrivate } = account.gameSettings;
-
-							account.gameSettings.isPrivate = !isPrivate;
-							account.save(() => {
-								logOutUser(data.userName);
-							});
-						}
-					})
-					.catch(err => {
-						console.log(err, 'private convert user err');
-					});
-				break;
-			case 'clearGenchat':
-				generalChats.list = [];
-
-				io.sockets.emit('generalChats', generalChats);
-				break;
-			case 'deleteProfile':
-				if (isSuperMod) {
-					Profile.findOne({ _id: data.userName })
-						.remove(() => {
+			modaction.save();
+			switch (data.action) {
+				case 'deleteUser':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName }).remove(() => {
 							if (io.sockets.sockets[affectedSocketId]) {
 								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+							}
+						});
+					}
+					break;
+				case 'ban':
+					banAccount(data.userName);
+					break;
+				case 'setSticky':
+					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+					io.sockets.emit('generalChats', generalChats);
+					break;
+				case 'broadcast':
+					const discordBroadcastBody = JSON.stringify({
+						content: `Text: ${data.comment}\nMod: ${passport.user}`
+					});
+					const discordBroadcastOptions = {
+						hostname: 'discordapp.com',
+						path: process.env.DISCORDBROADCASTURL,
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'Content-Length': Buffer.byteLength(discordBroadcastBody)
+						}
+					};
+					const broadcastReq = https.request(discordBroadcastOptions);
+
+					broadcastReq.end(discordBroadcastBody);
+					games.forEach(game => {
+						game.chats.push({
+							userName: `[BROADCAST] ${data.modName}`,
+							chat: data.comment,
+							isBroadcast: true,
+							timestamp: new Date()
+						});
+					});
+					generalChats.list.push({
+						userName: `[BROADCAST] ${data.modName}`,
+						time: new Date(),
+						chat: data.comment,
+						isBroadcast: true
+					});
+
+					if (data.isSticky) {
+						generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+					}
+
+					io.sockets.emit('generalChats', generalChats);
+					break;
+				case 'ipban':
+					const ipban = new BannedIP({
+						bannedDate: new Date(),
+						type: 'small',
+						ip: data.ip
+					});
+
+					if (isSuperMod) {
+						ipban.save(() => {
+							banAccount(data.userName);
+						});
+					}
+					break;
+				case 'timeOut':
+					const timeout = new BannedIP({
+						bannedDate: new Date(),
+						type: 'small',
+						ip: data.ip
+					});
+					timeout.save(() => {
+						logOutUser(data.userName);
+					});
+					break;
+				case 'timeOut2':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								account.isTimeout = new Date();
+								account.save(() => {
+									logOutUser(data.userName);
+								});
+							}
+						})
+						.catch(err => {
+							console.log(err, 'timeout2 user err');
+						});
+					break;
+				case 'togglePrivate':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								const { isPrivate } = account.gameSettings;
+
+								account.gameSettings.isPrivate = !isPrivate;
+								account.save(() => {
+									logOutUser(data.userName);
+								});
+							}
+						})
+						.catch(err => {
+							console.log(err, 'private convert user err');
+						});
+					break;
+				case 'clearGenchat':
+					generalChats.list = [];
+
+					io.sockets.emit('generalChats', generalChats);
+					break;
+				case 'deleteProfile':
+					if (isSuperMod) {
+						Profile.findOne({ _id: data.userName })
+							.remove(() => {
+								if (io.sockets.sockets[affectedSocketId]) {
+									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				// case 'renamePlayer':
+				// 	Account.findOne({ username: data.userName })
+				// 		.then(account => {
+				// 			account.username = data.modNotes;
+				// 			account.save(() => {
+				// 				Profile.findOne({ _id: data.userName })
+				// 					.then(profile => {
+				// 						profile._id = data.modNotes;
+				// 						profile.save(() => {
+				// 							if (io.sockets.sockets[affectedSocketId]) {
+				// 								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+				// 							}
+				// 						});
+				// 					})
+				// 					.catch(err => {
+				// 						console.log(err);
+				// 					});
+				// 			});
+				// 		})
+				// 		.catch(err => {
+				// 			console.log(err);
+				// 		});
+				case 'ipbanlarge':
+					const ipbanl = new BannedIP({
+						bannedDate: new Date(),
+						type: 'big',
+						ip: data.ip
+					});
+
+					if (isSuperMod) {
+						ipbanl.save(() => {
+							banAccount(data.userName);
+						});
+					}
+					break;
+				case 'deleteCardback':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								account.gameSettings.customCardback = '';
+
+								account.save(() => {
+									if (io.sockets.sockets[affectedSocketId]) {
+										io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+									}
+								});
 							}
 						})
 						.catch(err => {
 							console.log(err);
 						});
-				}
-				break;
-			// case 'renamePlayer':
-			// 	Account.findOne({ username: data.userName })
-			// 		.then(account => {
-			// 			account.username = data.modNotes;
-			// 			account.save(() => {
-			// 				Profile.findOne({ _id: data.userName })
-			// 					.then(profile => {
-			// 						profile._id = data.modNotes;
-			// 						profile.save(() => {
-			// 							if (io.sockets.sockets[affectedSocketId]) {
-			// 								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-			// 							}
-			// 						});
-			// 					})
-			// 					.catch(err => {
-			// 						console.log(err);
-			// 					});
-			// 			});
-			// 		})
-			// 		.catch(err => {
-			// 			console.log(err);
-			// 		});
-			case 'ipbanlarge':
-				const ipbanl = new BannedIP({
-					bannedDate: new Date(),
-					type: 'big',
-					ip: data.ip
-				});
+					break;
+				case 'disableAccountCreation':
+					accountCreationDisabled.status = true;
+					break;
+				case 'enableAccountCreation':
+					accountCreationDisabled.status = false;
+					break;
+				case 'disableIpbans':
+					ipbansNotEnforced.status = true;
+					break;
+				case 'enableIpbans':
+					ipbansNotEnforced.status = false;
+					break;
+				case 'disableGameCreation':
+					gameCreationDisabled.status = true;
+					break;
+				case 'enableGameCreation':
+					gameCreationDisabled.status = false;
+					break;
+				case 'resetServer':
+					if (isSuperMod) {
+						console.log('server crashing manually via mod action');
+						crashServer();
+					}
+					break;
+				default:
+					if (data.userName.substr(0, 7) === 'DELGAME') {
+						const game = games.find(el => el.general.uid === data.userName.slice(7));
 
-				if (isSuperMod) {
-					ipbanl.save(() => {
-						banAccount(data.userName);
-					});
-				}
-				break;
-			case 'deleteCardback':
-				Account.findOne({ username: data.userName })
-					.then(account => {
-						if (account) {
-							account.gameSettings.customCardback = '';
-
-							account.save(() => {
-								if (io.sockets.sockets[affectedSocketId]) {
-									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-								}
-							});
+						if (game) {
+							games.splice(games.indexOf(game), 1);
+							sendGameList();
 						}
-					})
-					.catch(err => {
-						console.log(err);
-					});
-				break;
-			case 'disableAccountCreation':
-				accountCreationDisabled.status = true;
-				break;
-			case 'enableAccountCreation':
-				accountCreationDisabled.status = false;
-				break;
-			case 'disableIpbans':
-				ipbansNotEnforced.status = true;
-				break;
-			case 'enableIpbans':
-				ipbansNotEnforced.status = false;
-				break;
-			case 'disableGameCreation':
-				gameCreationDisabled.status = true;
-				break;
-			case 'enableGameCreation':
-				gameCreationDisabled.status = false;
-				break;
-			case 'resetServer':
-				if (isSuperMod) {
-					console.log('server crashing manually via mod action');
-					crashServer();
-				}
-				break;
-			default:
-				if (data.userName.substr(0, 7) === 'DELGAME') {
-					const game = games.find(el => el.general.uid === data.userName.slice(7));
+					} else if (isSuperMod) {
+						const setType = /setRWins/.test(data.action)
+							? 'rainbowWins'
+							: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses';
+						const number =
+							setType === 'wins'
+								? data.action.substr(7)
+								: setType === 'losses' ? data.action.substr(9) : setType === 'rainbowWins' ? data.action.substr(8) : data.action.substr(10);
+						const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
 
-					if (game) {
-						games.splice(games.indexOf(game), 1);
-						sendGameList();
+						if (!isNaN(parseInt(number))) {
+							Account.findOne({ username: data.userName })
+								.then(account => {
+									if (account) {
+										account[setType] = isPlusOrMinus ? account[setType] + parseInt(number) : parseInt(number);
+										account.save();
+									}
+								})
+								.catch(err => {
+									console.log(err, 'set wins/losses error');
+								});
+						}
 					}
-				} else if (isSuperMod) {
-					const setType = /setRWins/.test(data.action)
-						? 'rainbowWins'
-						: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses';
-					const number =
-						setType === 'wins'
-							? data.action.substr(7)
-							: setType === 'losses' ? data.action.substr(9) : setType === 'rainbowWins' ? data.action.substr(8) : data.action.substr(10);
-					const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
-
-					if (!isNaN(parseInt(number))) {
-						Account.findOne({ username: data.userName })
-							.then(account => {
-								if (account) {
-									account[setType] = isPlusOrMinus ? account[setType] + parseInt(number) : parseInt(number);
-									account.save();
-								}
-							})
-							.catch(err => {
-								console.log(err, 'set wins/losses error');
-							});
-					}
-				}
+			}
 		}
 	}
 };

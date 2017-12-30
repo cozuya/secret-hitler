@@ -32,8 +32,8 @@ export default class Reports extends React.Component {
 		const { sortType, sortDirection } = this.state;
 
 		/**
- 		 * @param {string} type - description of how to sort the reports log
- 		 */
+		 * @param {string} type - description of how to sort the reports log
+		 */
 		const sortClick = type => {
 			this.setState({
 				sortType: type,
@@ -41,9 +41,9 @@ export default class Reports extends React.Component {
 			});
 		};
 		const activeClick = report => {
-			this.props.emit('updateModAction', {
+			this.props.socket.emit('updateModAction', {
 				isReportResolveChange: true,
-				isReportResolved: !report.isActive
+				_id: report._id
 			});
 		};
 
@@ -123,7 +123,7 @@ export default class Reports extends React.Component {
 								}
 							})
 							.map((report, index) => (
-								<tr key={index}>
+								<tr key={index} style={{ background: report.isActive ? '#cdf9db' : '#708a78' }}>
 									<td>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
 									<td>{report.gameUid.substr(0, 5)}</td>
 									<td>{report.reportedPlayer}</td>
@@ -132,6 +132,7 @@ export default class Reports extends React.Component {
 									<td>{report.reportingPlayer}</td>
 									<td>
 										<Checkbox
+											style={{ left: '20px', top: '4px' }}
 											toggle
 											checked={!report.isActive}
 											onChange={() => {
