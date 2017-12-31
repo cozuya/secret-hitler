@@ -148,12 +148,12 @@ export default class Generalchat extends React.Component {
 					const { gameSettings } = userInfo;
 					const userClasses = classnames(
 						{
-							[chat.color]: !(gameSettings && gameSettings.disablePlayerColorsInChat) && (gameSettings && gameSettings.disableSeasonal),
-							[chat.seasonColor]:
+							[chat.color]:
 								MODERATORS.includes(chat.userName) ||
 								EDITORS.includes(chat.userName) ||
 								ADMINS.includes(chat.userName) ||
-								(!(gameSettings && gameSettings.disablePlayerColorsInChat) && !(gameSettings && gameSettings.disableSeasonal))
+								(!(gameSettings && gameSettings.disablePlayerColorsInChat) && (gameSettings && gameSettings.disableSeasonal)),
+							[chat.seasonColor]: !(gameSettings && gameSettings.disablePlayerColorsInChat) && !(gameSettings && gameSettings.disableSeasonal)
 						},
 						'chat-user'
 					);

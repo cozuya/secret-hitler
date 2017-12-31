@@ -37,27 +37,27 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 
 	// delete/comment below prior to deployment..
 
-	game.trackState.fascistPolicyCount = 3;
-	game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-	game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-	game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-	game.trackState.enactedPolicies = [
-		{
-			cardBack: 'fascist',
-			isFlipped: true,
-			position: 'fascist1'
-		},
-		{
-			cardBack: 'fascist',
-			isFlipped: true,
-			position: 'fascist2'
-		},
-		{
-			cardBack: 'fascist',
-			isFlipped: true,
-			position: 'fascist3'
-		}
-	];
+	// game.trackState.fascistPolicyCount = 3;
+	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+	// game.trackState.enactedPolicies = [
+	// 	{
+	// 		cardBack: 'fascist',
+	// 		isFlipped: true,
+	// 		position: 'fascist1'
+	// 	},
+	// 	{
+	// 		cardBack: 'fascist',
+	// 		isFlipped: true,
+	// 		position: 'fascist2'
+	// 	},
+	// 	{
+	// 		cardBack: 'fascist',
+	// 		isFlipped: true,
+	// 		position: 'fascist3'
+	// 	}
+	// ];
 
 	// delete/comment above
 
@@ -80,15 +80,15 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	}
 
 	/**
- 	 * @return {number} index of the president
+	 * @return {number} index of the president
 	 */
 	game.gameState.presidentIndex = (() => {
 		const { presidentIndex, specialElectionFormerPresidentIndex } = game.gameState;
 
 		/**
 		 * @param {number} index - index of the current president
- 		 * @return {number} index of the next president
- 		 */
+		 * @return {number} index of the next president
+		 */
 		const nextPresidentIndex = index => {
 			const nextIndex = index + 1 === game.general.playerCount ? 0 : index + 1;
 

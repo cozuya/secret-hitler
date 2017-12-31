@@ -306,6 +306,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 									cardBack: {}
 								};
 
+								player.isDead = false;
+
 								return player;
 							});
 						finalGame.general.name = `${game.general.name.slice(0, game.general.name.length - 7)}-tableFINAL`;

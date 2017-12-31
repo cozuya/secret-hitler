@@ -18,14 +18,14 @@ const Changelog = () => (
 			today) and overall. At the beginning of a season, the seasonal tier is wiped of wins and losses, and should last about 3 months (some tweaking may occur).
 		</p>
 		<p>
-			When you play a game from now on, its result is pushed into both your overall record and your current seasonal record. Seasonal mode is opt-out, and
-			affects you only - go to your player settings screen to disable it, and your and other player's overall records and name colors will be shown to you
-			instead, just like before this patch. Note: players who have achieved rainbow status do not have to play 50 games to play rainbow games in new seasons,
-			and will still have cardbacks enabled. Yes I realize this somewhat paradoxically will make rainbow games non rainbow so to speak at least for some time.
-			Your profile will not be affected, for now.
+			When you play a game from now on, its result is added to your overall record and your current seasonal record. Seasonal mode is opt-out, and affects you
+			only - go to your player settings screen to disable it, and your and other player's overall records and name colors will be shown to you instead, just
+			like before this patch. Note: players who have achieved rainbow status do not have to play 50 games to play rainbow games in new seasons, and will still
+			have cardbacks enabled. Yes I realize this somewhat paradoxically will make rainbow games non rainbow so to speak at least for some time. Your profile
+			will not be affected, for now.
 		</p>
 		<p>Some fun rewards/leaderboards/stats for doing well in seasons are planned for the near future.</p>
-		<h3>Tournament mode re-re-enabled.. we'll see if this one takes..</h3>
+		<h2>Tournament mode re-re-enabled.. we'll see if this one takes..</h2>
 		<h3>New feature: rainbow games now count towards standard winrate.</h3>
 		<p>This has been requested a lot lately, we'll see how this goes/how people like it for season 1. The poll on this was split, lets give this a shot.</p>
 		<h3>Other items:</h3>
@@ -41,10 +41,11 @@ const Changelog = () => (
 			</li>
 			<li>The above work was done by contributor STOshka/AlexSTO. Awesome!</li>
 			<li>In blind mode games, hovering on a player's name no longer shows you who they are..</li>
+			<li>You can now report players in blind mode. Reminder: blind mode is not an excuse to break site rules.</li>
 			<li>In a consensus vote on elections (everyone votes the same), the ja/nein cards are visible for a much shorter period of time, getting on with it.</li>
 			<li>A bug that prevented players from remaking a game more than once has been fixed.</li>
-			<li>You can now report players in blind mode. Reminder: blind mode is not an excuse to break site rules.</li>
 			<li>The weird selection bug on elections ja/nein has been fixed, was hotfixed about a week ago but you had to have cleared your cache.</li>
+			<li>Say goodbye for now to Santa Hitler.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.11.1 released 12-22-2017</p>

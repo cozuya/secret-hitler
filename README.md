@@ -33,17 +33,13 @@ Install [git](https://git-scm.com/downloads), have it in your path.
 
 Install [mongodb](https://www.mongodb.com/download-center?ct=atlasheader#community), have it in your path.
 
-Make a .env file in the root directory and add the following to it:
-
-> MONGOPORT=27017
-
 then
 
 > git clone https://github.com/cozuya/secret-hitler.git
 
-Now move your .env file from the root directory to the secret-hitler folder you just created.
-
 > cd secret-hitler
+
+> echo "MONGOPORT=27017" > .env
 
 > npm i -g gulp nodemon
 

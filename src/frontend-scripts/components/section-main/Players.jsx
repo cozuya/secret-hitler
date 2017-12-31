@@ -214,14 +214,14 @@ export default class Players extends React.Component {
 						let classes = 'card-container';
 
 						if (
-							(playersState && Object.keys(playersState).length && playersState[i].cardStatus.cardDisplayed) ||
+							(playersState && Object.keys(playersState).length && playersState[i] && playersState[i].cardStatus.cardDisplayed) ||
 							(publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)
 						) {
 							classes += ' showing';
 						}
 
 						if (
-							(playersState && Object.keys(playersState).length && playersState[i].cardStatus.isFlipped) ||
+							(playersState && Object.keys(playersState).length && playersState[i] && playersState[i].cardStatus.isFlipped) ||
 							(publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)
 						) {
 							classes += ' flipped';
@@ -233,7 +233,7 @@ export default class Players extends React.Component {
 						className={(() => {
 							let classes = 'card card-front';
 
-							if (Object.keys(publicPlayersState[i]).length && publicPlayersState[i].cardStatus.cardFront) {
+							if (publicPlayersState[i] && Object.keys(publicPlayersState[i]).length && publicPlayersState[i].cardStatus.cardFront) {
 								classes = `${classes} ${publicPlayersState[i].cardStatus.cardFront}`;
 							}
 

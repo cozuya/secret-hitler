@@ -305,7 +305,9 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							<h4 className="ui header">Show overall winrates and colors (instead of current season)</h4>
+							<h4 className="ui header" style={{ color: '#fbbd08' }}>
+								Show overall winrates and colors (instead of current season)
+							</h4>
 							<div className="ui fitted toggle checkbox">
 								<input
 									type="checkbox"

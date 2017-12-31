@@ -123,8 +123,8 @@ class Tracks extends React.Component {
 		const { gameInfo, userInfo, socket } = this.props;
 
 		/**
- 		 * @return {jsx}
- 		 */
+		 * @return {jsx}
+		 */
 		const renderElectionTracker = () => {
 			let classes = 'electiontracker';
 
@@ -185,22 +185,24 @@ class Tracks extends React.Component {
 						Players: <span>{gameInfo.publicPlayersState.length}</span>
 					</div>
 					{userInfo.userName &&
-					userInfo.isSeated &&
-					gameInfo.gameState.isTracksFlipped &&
-					!gameInfo.general.isRemade &&
-					!(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (
-						<i
-							className={
-								gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 1 ? (
-									`remove icon ${this.state.remakeStatus ? 'enabled' : ''}`
-								) : (
-									`icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`
-								)
-							}
-							onClick={updateRemake}
-							title="Enable this button to show that you would like to remake this game"
-						/>
-					)}
+						userInfo.isSeated &&
+						gameInfo.gameState.isTracksFlipped &&
+						!gameInfo.general.isRemade &&
+						!(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (
+							<i
+								className={
+									gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 1
+										? `remove icon ${this.state.remakeStatus ? 'enabled' : ''}`
+										: `icon repeat ${this.state.remakeStatus ? 'enabled' : ''}`
+								}
+								onClick={updateRemake}
+								title={
+									gameInfo.general.isTourny
+										? 'Enable this button to show that you would like to cancel this tournament'
+										: 'Enable this button to show that you would like to remake this game'
+								}
+							/>
+						)}
 				</div>
 				<section
 					className={(() => {

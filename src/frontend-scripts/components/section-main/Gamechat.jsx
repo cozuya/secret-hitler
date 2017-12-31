@@ -292,12 +292,15 @@ class Gamechat extends React.Component {
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 					const isGreenText = /^>/i.test(chatContents[0]);
+					const isMod = playerListPlayer
+						? ADMINS.includes(playerListPlayer.userName) || EDITORS.includes(playerListPlayer.userName) || MODERATORS.includes(playerListPlayer.userName)
+						: false;
 					let w;
 					let l;
 
 					if (playerListPlayer) {
-						w = !(gameSettings && gameSettings.disableSeasonal) ? playerListPlayer[`winsSeason${CURRENTSEASONNUMBER}`] : playerListPlayer.wins;
-						l = !(gameSettings && gameSettings.disableSeasonal) ? playerListPlayer[`lossesSeason${CURRENTSEASONNUMBER}`] : playerListPlayer.losses;
+						w = !(gameSettings && gameSettings.disableSeasonal) && !isMod ? playerListPlayer[`winsSeason${CURRENTSEASONNUMBER}`] : playerListPlayer.wins;
+						l = !(gameSettings && gameSettings.disableSeasonal) && !isMod ? playerListPlayer[`lossesSeason${CURRENTSEASONNUMBER}`] : playerListPlayer.losses;
 					}
 
 					return chat.gameChat ? (
@@ -368,7 +371,16 @@ class Gamechat extends React.Component {
 											? 'chat-user'
 											: isBlind
 												? 'chat-user'
-												: w + l > 49 ? `chat-user ${PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal))}` : 'chat-user'
+												: w + l > 49
+													? `chat-user ${PLAYERCOLORS(
+															playerListPlayer,
+															!(
+																MODERATORS.includes(playerListPlayer.userName) ||
+																ADMINS.includes(playerListPlayer.userName) ||
+																EDITORS.includes(playerListPlayer.userName)
+															) || !(gameSettings && gameSettings.disableSeasonal)
+														)}`
+													: 'chat-user'
 										: 'chat-user'
 								}
 							>
@@ -718,14 +730,20 @@ class Gamechat extends React.Component {
 								Chat
 							</button>
 						</div>
-						{gameInfo.playersState &&
-							gameInfo.playersState.length &&
-							userInfo.userName &&
-							gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim && (
-								<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
-									C
-								</div>
-							)}
+						{(() => {
+							if (
+								gameInfo.playersState &&
+								gameInfo.playersState.length &&
+								userInfo.userName &&
+								gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim
+							) {
+								return (
+									<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
+										C
+									</div>
+								);
+							}
+						})()}
 					</form>
 				)}
 				<div

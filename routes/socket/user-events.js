@@ -833,7 +833,7 @@ module.exports.handleAddNewClaim = data => {
 		}
 	})();
 
-	if (game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== '') {
+	if (playerIndex && game.private.seatedPlayers[playerIndex] && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== '') {
 		if (game.private.seatedPlayers[playerIndex]) {
 			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
 		}
@@ -1495,8 +1495,11 @@ module.exports.handlePlayerReport = data => {
 		isActive: true
 	});
 	const body = JSON.stringify({
-		content: `Game UID: ${data.uid.substr(0, 6)}\nReported player: ${data.reportedPlayer}\nReason: ${data.reason}\nComment: ${data.comment}`
+		content: `Game UID: https://secrethitler.io/game/#/table/${data.uid}\nReported player: ${data.reportedPlayer}\nReason: ${data.reason}\nComment: ${
+			data.comment
+		}`
 	});
+
 	const options = {
 		hostname: 'discordapp.com',
 		path: process.env.DISCORDURL,
