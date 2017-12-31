@@ -359,6 +359,7 @@ module.exports = game => {
 	game.private.seatedPlayers = _.cloneDeep(game.publicPlayersState);
 	game.private.seatedPlayers.forEach(player => {
 		player.gameChats = [];
+		player.wasInvestigated = false;
 	});
 	game.gameState.isTracksFlipped = true;
 	game.private.policies = [];

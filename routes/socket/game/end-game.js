@@ -310,6 +310,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 								return player;
 							});
+						finalGame.private.lock = {};
 						finalGame.general.name = `${game.general.name.slice(0, game.general.name.length - 7)}-tableFINAL`;
 						games.push(finalGame);
 						require('./start-game.js')(finalGame); // circular dep.

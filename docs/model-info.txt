@@ -103,7 +103,8 @@ private
 			cardName string
 			team string
 		gameChats array of chat objects
-		governmentStatus string isPresident isChancellor isSelectingChancellor isSelectingPresidentDiscard isSelectingChancellorDiscard 		voteStatus
+		governmentStatus string isPresident isChancellor isSelectingChancellor isSelectingPresidentDiscard isSelectingChancellorDiscard
+		voteStatus
 			hasVoted bool
 			didVoteYes bool
 		reportedGame bool
