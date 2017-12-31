@@ -16,26 +16,41 @@ const debug = require('debug')('game:summary');
  */
 
 
+// Ideally we'd take this via command line arguments, but it's already
+// getting a bit unwieldy.  For local testing, either create this directory
+// or change it to something different.
+const OUTPUT_DIR = "/var/www/secret-hitler/public/profile-dumps";
+
+
 // Determine the date for which we want to dump game summaries
 //
 // ... validate args
 if (process.argv.length >= 4) {
-    console.log(`Usage: ${process.argv[0]} ${process.argv[1]} [date (e.g. "2017-01-31")]`);
+    console.log(`Usage: ${process.argv[0]} ${process.argv[1]} [--all] [date (e.g. "2017-01-31")]`);
     process.exit(1);
 }
-// ... get the date, if passed in
 if (process.argv.length == 3) {
-    if (isNaN(Date.parse(process.argv[2]))) {
-        console.log(`Invalid date: "${date}".  Expected format: "YYYY-MM-DD".`);
-        process.exit(1);
+
+    // ... dump all dates if requested
+    if (process.argv[2] == "--all") {
+        startDate = new Date("1970-01-01");
+        endDate = new Date("2100-01-01");
+
+    // ... else, get the date the user requested
+    } else {
+        if (isNaN(Date.parse(process.argv[2]))) {
+            console.log(`Invalid date: "${date}".  Expected format: "YYYY-MM-DD".`);
+            process.exit(1);
+        }
+        startDate = new Date(process.argv[2]);
+        endDate = new Date(startDate.getTime() + (24 * 60 * 60 * 1000));
     }
-    startDate = new Date(process.argv[2]);
 }
-// ... default to today
+// ... default to yesterday
 if (process.argv.length == 2) {
-    startDate = new Date();
+    endDate = new Date();
+    startDate = new Date(endDate.getTime() - (24 * 60 * 60 * 1000));
 }
-endDate = new Date(startDate.getTime() + (24 * 60 * 60 * 1000));
 dumpDateFrom = `${startDate.getFullYear()}-${startDate.getMonth()+1}-${startDate.getDate()}`;
 dumpDateTo = `${endDate.getFullYear()}-${endDate.getMonth()+1}-${endDate.getDate()}`;
 
@@ -54,7 +69,7 @@ GameSummary.find({
 	.cursor()
 	.eachAsync(summary => {
 
-        // ... strip personally identifable information
+        // ... strip personally identifiable information
         for (i = 0; i < summary.players.length; i++) {
             delete summary.players[i]._id
             delete summary.players[i].username
@@ -81,9 +96,15 @@ GameSummary.find({
                     fs.writeFileSync(path.join(folder, summary._id), JSON.stringify(summary));
                 }
 
+                // ... determine output filename
+                if (process.argv.length == 3 && process.argv[2] == "--all") {
+                    output_file = `${path.join(OUTPUT_DIR, "all")}.tar.gz`
+                } else {
+                    output_file = `${path.join(OUTPUT_DIR, dumpDateFrom)}.tar.gz`
+                }
+
                 // ... tar gz the results
-                child_process.execSync(`tar -zcvf ${path.join(os.tmpdir(), dumpDateFrom)}.tar.gz .`,
-                    {cwd: tmpFolder});
+                child_process.execSync(`tar -zcvf ${output_file} .`, {cwd: tmpFolder});
 
                 // ... cleanup the temporary files
                 //
