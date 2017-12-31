@@ -1061,9 +1061,10 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	const { gameState } = game;
 
 	if (
-		(gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') &&
-		(publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isPresident' ||
-			publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isChancellor')
+		player &&
+		((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') &&
+			(publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isPresident' ||
+				publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isChancellor'))
 	) {
 		return;
 	}
