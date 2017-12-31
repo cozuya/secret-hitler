@@ -135,9 +135,9 @@ export default class Generalchat extends React.Component {
 		const time = new Date().getTime();
 
 		/**
- 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
- 		 * @return {jsx}
- 		 */
+		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
+		 * @return {jsx}
+		 */
 		const renderCrowns = tournyWins =>
 			tournyWins
 				.filter(winTime => time - winTime < 10800000)
@@ -146,11 +146,14 @@ export default class Generalchat extends React.Component {
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
 					const { gameSettings } = userInfo;
-
 					const userClasses = classnames(
 						{
 							[chat.color]: !(gameSettings && gameSettings.disablePlayerColorsInChat) && (gameSettings && gameSettings.disableSeasonal),
-							[chat.seasonColor]: !(gameSettings && gameSettings.disablePlayerColorsInChat) && !(gameSettings && gameSettings.disableSeasonal)
+							[chat.seasonColor]:
+								MODERATORS.includes(chat.userName) ||
+								EDITORS.includes(chat.userName) ||
+								ADMINS.includes(chat.userName) ||
+								(!(gameSettings && gameSettings.disablePlayerColorsInChat) && !(gameSettings && gameSettings.disableSeasonal))
 						},
 						'chat-user'
 					);
@@ -220,14 +223,14 @@ export default class Generalchat extends React.Component {
 							onClick={this.handleChatLockClick}
 						/>
 						{userInfo &&
-						userInfo.userName && (
-							<img
-								title="Click to show our discord general chat instead of the site's general chat"
-								className={this.state.discordEnabled ? 'active discord-icon' : 'discord-icon'}
-								src="/images/discord-icon.png"
-								onClick={discordIconClick}
-							/>
-						)}
+							userInfo.userName && (
+								<img
+									title="Click to show our discord general chat instead of the site's general chat"
+									className={this.state.discordEnabled ? 'active discord-icon' : 'discord-icon'}
+									src="/images/discord-icon.png"
+									onClick={discordIconClick}
+								/>
+							)}
 					</div>
 				</section>
 				<section className="segment chats">
