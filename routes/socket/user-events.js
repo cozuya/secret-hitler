@@ -363,6 +363,9 @@ module.exports.updateSeatedUser = (socket, data) => {
 		};
 
 		if (game.general.isTourny) {
+			if (game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(player.userName)) {
+				return;
+			}
 			game.general.tournyInfo.queuedPlayers.push(player);
 			game.chats.push({
 				timestamp: new Date(),
@@ -833,7 +836,11 @@ module.exports.handleAddNewClaim = data => {
 		}
 	})();
 
-	if (playerIndex && game.private.seatedPlayers[playerIndex] && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== '') {
+	if (
+		Number.isInteger(playerIndex) &&
+		game.private.seatedPlayers[playerIndex] &&
+		game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== ''
+	) {
 		if (game.private.seatedPlayers[playerIndex]) {
 			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
 		}
