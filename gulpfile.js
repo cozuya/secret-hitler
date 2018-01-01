@@ -24,16 +24,16 @@ gulp.task('default', ['watch', 'scripts', 'styles-dark', 'styles-web', 'styles-l
 gulp.task('watch', () => {
 	livereload.listen();
 	gulp.watch('./src/scss/*.scss', ['styles-dark', 'styles-web', 'styles-light']);
-	// gulp.watch(['./src/frontend-scripts/**/*.js*', './routes/**/*.js', './__test__/*.js'], e => {
-	// 	file =
-	// 		process.platform === 'win32'
-	// 			? `./${e.path
-	// 					.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1]
-	// 					.split('\\')
-	// 					.join('/')}`
-	// 			: `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
-	// 	gulp.start('lint');
-	// });
+	gulp.watch(['./src/frontend-scripts/**/*.js*', './routes/**/*.js', './__test__/*.js'], e => {
+		file =
+			process.platform === 'win32'
+				? `./${e.path
+						.split('C:\\Users\\cozuya\\Documents\\secret-hitler')[1]
+						.split('\\')
+						.join('/')}`
+				: `./${e.path.split('/Users/Coz/secret-hitler/')[1]}`;
+		gulp.start('lint');
+	});
 	gulp.watch(['./src/frontend-scripts/**/*.js*', './src/models/**/*.js'], ['scripts']);
 	gulp.watch('./routes/*.js', ['reload']);
 	gulp.watch('./src/images/*', ['imagemin']);
