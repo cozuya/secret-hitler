@@ -102,6 +102,239 @@ class Playerlist extends React.Component {
 		}
 	}
 
+	renderPlayerlist() {
+		if (Object.keys(this.props.userList).length) {
+			const { list } = this.props.userList;
+			const { userInfo } = this.props;
+			const { gameSettings } = userInfo;
+			const w =
+				gameSettings && gameSettings.disableSeasonal
+					? this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins'
+					: this.state.userListFilter === 'all' ? `winsSeason${CURRENTSEASONNUMBER}` : `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+			const l =
+				gameSettings && gameSettings.disableSeasonal
+					? this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses'
+					: this.state.userListFilter === 'all' ? `lossesSeason${CURRENTSEASONNUMBER}` : `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+			const time = new Date().getTime();
+			const routeToProfile = userName => {
+				window.location.hash = `#/profile/${userName}`;
+			};
+
+			return list
+				.filter(
+					user =>
+						(this.state.userListFilter === 'all' || user[w] + user[l] > 49) &&
+						(!user.isPrivate ||
+							(userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))))
+				)
+				.sort((a, b) => {
+					const aTotal = a[w] + a[l];
+					const bTotal = b[w] + b[l];
+
+					const aIsSuperuser = ADMINS.includes(a.userName) || EDITORS.includes(a.userName) || MODERATORS.includes(a.userName);
+					const bIsSuperuser = ADMINS.includes(b.userName) || EDITORS.includes(b.userName) || MODERATORS.includes(b.userName);
+
+					if (ADMINS.includes(a.userName) && ADMINS.includes(b.userName)) {
+						return a.userName > b.userName ? 1 : -1;
+					}
+
+					if (ADMINS.includes(a.userName)) {
+						return -1;
+					}
+
+					if (ADMINS.includes(b.userName)) {
+						return 1;
+					}
+
+					if (a.tournyWins.length || b.tournyWins.length) {
+						const aTWinCount = a.tournyWins.filter(winTime => time - winTime < 10800000).length;
+						const bTWinCount = b.tournyWins.filter(winTime => time - winTime < 10800000).length;
+
+						if (aTWinCount > 2) {
+							if (aTWinCount === bTWinCount) {
+								return a.userName > b.userName ? 1 : -1;
+							}
+							return aTWinCount > bTWinCount ? -1 : 1;
+						}
+
+						if (bTWinCount > 2) {
+							if (aTWinCount === bTWinCount) {
+								return a.userName > b.userName ? 1 : -1;
+							}
+							return bTWinCount > aTWinCount ? 1 : -1;
+						}
+
+						if (aTWinCount) {
+							if (!bIsSuperuser) {
+								if (aTWinCount === bTWinCount) {
+									return a.userName > b.userName ? 1 : -1;
+								}
+								return bTWinCount > aTWinCount ? 1 : -1;
+							}
+						}
+
+						if (bTWinCount) {
+							if (!aIsSuperuser) {
+								if (aTWinCount === bTWinCount) {
+									return a.userName > b.userName ? 1 : -1;
+								}
+								return aTWinCount > bTWinCount ? -1 : 1;
+							}
+						}
+					}
+
+					if (EDITORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
+						return -1;
+					}
+
+					if (EDITORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
+						return 1;
+					}
+
+					if (EDITORS.includes(a.userName) && EDITORS.includes(b.userName)) {
+						return a.userName > b.userName ? 1 : -1;
+					}
+
+					if (MODERATORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
+						return -1;
+					}
+
+					if (MODERATORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
+						return 1;
+					}
+
+					if (MODERATORS.includes(a.userName) && MODERATORS.includes(b.userName)) {
+						return a.userName > b.userName ? 1 : -1;
+					}
+
+					if (aTotal > 49 && bTotal > 49) {
+						return b[w] / bTotal - a[w] / aTotal;
+					} else if (aTotal > 49) {
+						return -1;
+					} else if (bTotal > 49) {
+						return 1;
+					}
+
+					if (b[w] / b[l] === a[w] / a[l]) {
+						return a.userName > b.userName ? 1 : -1;
+					}
+
+					return a[w] / b[l] < a[w] / b[l] ? 1 : -1;
+				})
+				.map((user, i) => {
+					const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
+					const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
+					const disableIfUnclickable = f => {
+						if (this.props.isUserClickable) {
+							return f;
+						}
+
+						return () => null;
+					};
+
+					const userClasses =
+						user[w] + user[l] > 49 ||
+						ADMINS.includes(user.userName) ||
+						EDITORS.includes(user.userName) ||
+						MODERATORS.includes(user.userName) ||
+						CONTRIBUTORS.includes(user.userName)
+							? cn(
+									PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal)),
+									{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
+									{ unclickable: !this.props.isUserClickable },
+									{ clickable: this.props.isUserClickable },
+									'username'
+								)
+							: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
+					const renderStatus = () => {
+						const status = user.status;
+
+						if (!status || status.type === 'none') {
+							return null;
+						} else {
+							const iconClasses = classnames(
+								'status',
+								{ unclickable: !this.props.isUserClickable },
+								{ clickable: this.props.isUserClickable },
+								{ search: status.type === 'observing' },
+								{ fav: status.type === 'playing' },
+								{ rainbow: status.type === 'rainbow' },
+								{ record: status.type === 'replay' },
+								'icon'
+							);
+							const title = {
+								playing: 'This player is playing in a standard game.',
+								observing: 'This player is observing a game.',
+								rainbow: 'This player is playing in a experienced-player-only game.',
+								replay: 'This player is watching a replay.'
+							};
+							const onClick = {
+								playing: this.routeToGame,
+								observing: this.routeToGame,
+								rainbow: this.routeToGame,
+								replay: this.props.fetchReplay
+							};
+
+							return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
+						}
+					};
+
+					const renderCrowns = () =>
+						user.tournyWins
+							.filter(winTime => time - winTime < 10800000)
+							.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
+
+					return (
+						<div key={i} className="user-container">
+							<div className="userlist-username">
+								{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()}
+								{(() => {
+									const userAdminRole = ADMINS.includes(user.userName)
+										? 'Admin'
+										: EDITORS.includes(user.userName)
+											? 'Editor'
+											: MODERATORS.includes(user.userName) ? 'Moderator' : CONTRIBUTORS.includes(user.userName) ? 'Contributor' : null;
+
+									if (userAdminRole) {
+										const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
+
+										return (
+											<Popup
+												inverted
+												className="admin-popup"
+												trigger={
+													<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+														{prefix}
+														{` ${user.userName}`}
+													</span>
+												}
+												content={userAdminRole}
+											/>
+										);
+									} else {
+										return (
+											<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+												{user.isPrivate ? 'P - ' : ''}
+												{user.userName}
+											</span>
+										);
+									}
+								})()}
+								{renderStatus()}
+							</div>
+							{!ADMINS.includes(user.userName) && (
+								<div className="userlist-stats-container">
+									(
+									<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
+									<span className="userlist-stats"> {percentDisplay}</span>
+								</div>
+							)}
+						</div>
+					);
+				});
+		}
+	}
+
 	render() {
 		return (
 			<section className="playerlist">
@@ -144,247 +377,7 @@ class Playerlist extends React.Component {
 					)}
 				</div>
 				<PerfectScrollbar>
-					<div className="playerlist-body">
-						{(() => {
-							if (Object.keys(this.props.userList).length) {
-								const { list } = this.props.userList;
-								const { userInfo } = this.props;
-								const { gameSettings } = userInfo;
-								const w =
-									gameSettings && gameSettings.disableSeasonal
-										? this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins'
-										: this.state.userListFilter === 'all' ? `winsSeason${CURRENTSEASONNUMBER}` : `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
-								const l =
-									gameSettings && gameSettings.disableSeasonal
-										? this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses'
-										: this.state.userListFilter === 'all' ? `lossesSeason${CURRENTSEASONNUMBER}` : `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
-								const time = new Date().getTime();
-								const routeToProfile = userName => {
-									window.location.hash = `#/profile/${userName}`;
-								};
-
-								return list
-									.filter(
-										user =>
-											(this.state.userListFilter === 'all' || user[w] + user[l] > 49) &&
-											(!user.isPrivate ||
-												(userInfo.userName &&
-													(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))))
-									)
-									.sort((a, b) => {
-										const aTotal = a[w] + a[l];
-										const bTotal = b[w] + b[l];
-
-										const aIsSuperuser = ADMINS.includes(a.userName) || EDITORS.includes(a.userName) || MODERATORS.includes(a.userName);
-										const bIsSuperuser = ADMINS.includes(b.userName) || EDITORS.includes(b.userName) || MODERATORS.includes(b.userName);
-
-										if (ADMINS.includes(a.userName) && ADMINS.includes(b.userName)) {
-											return a.userName > b.userName ? 1 : -1;
-										}
-
-										if (ADMINS.includes(a.userName)) {
-											return -1;
-										}
-
-										if (ADMINS.includes(b.userName)) {
-											return 1;
-										}
-
-										if (a.tournyWins.length || b.tournyWins.length) {
-											const aTWinCount = a.tournyWins.filter(winTime => time - winTime < 10800000).length;
-											const bTWinCount = b.tournyWins.filter(winTime => time - winTime < 10800000).length;
-
-											if (aTWinCount > 2) {
-												if (aTWinCount === bTWinCount) {
-													return a.userName > b.userName ? 1 : -1;
-												}
-												return aTWinCount > bTWinCount ? -1 : 1;
-											}
-
-											if (bTWinCount > 2) {
-												if (aTWinCount === bTWinCount) {
-													return a.userName > b.userName ? 1 : -1;
-												}
-												return bTWinCount > aTWinCount ? 1 : -1;
-											}
-
-											if (aTWinCount) {
-												if (!bIsSuperuser) {
-													if (aTWinCount === bTWinCount) {
-														return a.userName > b.userName ? 1 : -1;
-													}
-													return bTWinCount > aTWinCount ? 1 : -1;
-												}
-											}
-
-											if (bTWinCount) {
-												if (!aIsSuperuser) {
-													if (aTWinCount === bTWinCount) {
-														return a.userName > b.userName ? 1 : -1;
-													}
-													return aTWinCount > bTWinCount ? -1 : 1;
-												}
-											}
-										}
-
-										if (EDITORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
-											return -1;
-										}
-
-										if (EDITORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
-											return 1;
-										}
-
-										if (EDITORS.includes(a.userName) && EDITORS.includes(b.userName)) {
-											return a.userName > b.userName ? 1 : -1;
-										}
-
-										if (MODERATORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
-											return -1;
-										}
-
-										if (MODERATORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
-											return 1;
-										}
-
-										if (MODERATORS.includes(a.userName) && MODERATORS.includes(b.userName)) {
-											return a.userName > b.userName ? 1 : -1;
-										}
-
-										if (aTotal > 49 && bTotal > 49) {
-											return b[w] / bTotal - a[w] / aTotal;
-										} else if (aTotal > 49) {
-											return -1;
-										} else if (bTotal > 49) {
-											return 1;
-										}
-
-										if (b[w] === a[w]) {
-											return a.userName > b.userName ? 1 : -1;
-										}
-
-										return b[w] - a[w];
-									})
-									.map((user, i) => {
-										const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
-										const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
-										const disableIfUnclickable = f => {
-											if (this.props.isUserClickable) {
-												return f;
-											}
-
-											return () => null;
-										};
-
-										const userClasses =
-											user[w] + user[l] > 49 ||
-											ADMINS.includes(user.userName) ||
-											EDITORS.includes(user.userName) ||
-											MODERATORS.includes(user.userName) ||
-											CONTRIBUTORS.includes(user.userName)
-												? cn(
-														PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal)),
-														{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
-														{ unclickable: !this.props.isUserClickable },
-														{ clickable: this.props.isUserClickable },
-														'username'
-													)
-												: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
-										const renderStatus = () => {
-											const status = user.status;
-
-											if (!status || status.type === 'none') {
-												return null;
-											} else {
-												const iconClasses = classnames(
-													'status',
-													{ unclickable: !this.props.isUserClickable },
-													{ clickable: this.props.isUserClickable },
-													{ search: status.type === 'observing' },
-													{ fav: status.type === 'playing' },
-													{ rainbow: status.type === 'rainbow' },
-													{ record: status.type === 'replay' },
-													'icon'
-												);
-												const title = {
-													playing: 'This player is playing in a standard game.',
-													observing: 'This player is observing a game.',
-													rainbow: 'This player is playing in a experienced-player-only game.',
-													replay: 'This player is watching a replay.'
-												};
-												const onClick = {
-													playing: this.routeToGame,
-													observing: this.routeToGame,
-													rainbow: this.routeToGame,
-													replay: this.props.fetchReplay
-												};
-
-												return (
-													<i
-														title={title[status.type]}
-														className={iconClasses}
-														onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)}
-													/>
-												);
-											}
-										};
-
-										const renderCrowns = () =>
-											user.tournyWins
-												.filter(winTime => time - winTime < 10800000)
-												.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
-
-										return (
-											<div key={i} className="user-container">
-												<div className="userlist-username">
-													{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()}
-													{(() => {
-														const userAdminRole = ADMINS.includes(user.userName)
-															? 'Admin'
-															: EDITORS.includes(user.userName)
-																? 'Editor'
-																: MODERATORS.includes(user.userName) ? 'Moderator' : CONTRIBUTORS.includes(user.userName) ? 'Contributor' : null;
-
-														if (userAdminRole) {
-															const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
-
-															return (
-																<Popup
-																	inverted
-																	className="admin-popup"
-																	trigger={
-																		<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
-																			{prefix}
-																			{` ${user.userName}`}
-																		</span>
-																	}
-																	content={userAdminRole}
-																/>
-															);
-														} else {
-															return (
-																<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
-																	{user.isPrivate ? 'P - ' : ''}
-																	{user.userName}
-																</span>
-															);
-														}
-													})()}
-													{renderStatus()}
-												</div>
-												{!ADMINS.includes(user.userName) && (
-													<div className="userlist-stats-container">
-														(
-														<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> /{' '}
-														<span className="userlist-stats">{user[l] ? user[l] : '0'}</span>) <span className="userlist-stats"> {percentDisplay}</span>
-													</div>
-												)}
-											</div>
-										);
-									});
-							}
-						})()}
-					</div>
+					<div className="playerlist-body">{this.renderPlayerlist()}</div>
 				</PerfectScrollbar>
 			</section>
 		);

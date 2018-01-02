@@ -161,7 +161,7 @@ module.exports = () => {
 								unbannedTime = ip.type === 'small' || ip.type === 'new' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
 							}
 
-							if (ip && unbannedTime > date && !ipbansNotEnforced.status) {
+							if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
 								res.status(403).json({
 									message:
 										ip.type === 'small'

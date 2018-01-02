@@ -108,6 +108,7 @@ export default class Players extends React.Component {
 			const prependCrowns = str => (
 				<span>
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.tournyWins &&
 						player.tournyWins.filter(winTime => time - winTime < 10800000).map((crown, ind) => <span className="crown-icon" key={player.tournyWins[ind]} />)}
 					{str}
@@ -137,13 +138,15 @@ export default class Players extends React.Component {
 				style={
 					player.customCardback &&
 					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
-						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-							}
-						: {
-								backgroundImage: `url(../images/default_cardback.png)`
-							}
+					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks)) ? (
+						{
+							backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+						}
+					) : (
+						{
+							backgroundImage: `url(../images/default_cardback.png)`
+						}
+					)
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -175,9 +178,11 @@ export default class Players extends React.Component {
 			>
 				<div
 					title={
-						isBlind
-							? 'Double click to open a modal to report this player to the moderator team'
-							: `Double click to open a modal to report ${player.userName} to the moderator team`
+						isBlind ? (
+							'Double click to open a modal to report this player to the moderator team'
+						) : (
+							`Double click to open a modal to report ${player.userName} to the moderator team`
+						)
 					}
 					onDoubleClick={() => {
 						this.handlePlayerDoubleClick(player.userName);
