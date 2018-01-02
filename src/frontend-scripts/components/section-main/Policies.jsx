@@ -78,7 +78,7 @@ const Policies = props => {
 				{renderUndrawn()}
 			</div>
 			<div className="discard" title={`${discardedPolicyCount} policy cards discarded`}>
-				{gameInfo.gameState.isTracksFlipped && discardedPolicyCount && <div className="card-count">{discardedPolicyCount}</div>}
+				{gameInfo.gameState.isTracksFlipped && Number.isInteger(discardedPolicyCount) && <div className="card-count">{discardedPolicyCount}</div>}
 				{renderDiscard()}
 			</div>
 		</section>

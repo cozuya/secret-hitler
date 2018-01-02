@@ -363,7 +363,10 @@ module.exports.updateSeatedUser = (socket, data) => {
 		};
 
 		if (game.general.isTourny) {
-			if (game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(player.userName)) {
+			if (
+				game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(player.userName) ||
+				game.general.tournyInfo.queuedPlayers.length >= game.general.maxPlayersCount
+			) {
 				return;
 			}
 			game.general.tournyInfo.queuedPlayers.push(player);
@@ -974,19 +977,21 @@ module.exports.handleUpdatedRemakeGame = data => {
 				: `${firstTableUid.slice(0, firstTableUid.length - 1)}A`;
 		const secondTable = games.find(game => game.general.uid === secondTableUid);
 
-		secondTable.general.tournyInfo.isCancelled = true;
-		secondTable.chats.push({
-			gameChat: true,
-			timestamp: new Date(),
-			chat: [
-				{
-					text: 'Due to the other tournament table voting for cancellation, this tournament has been cancelled.',
-					type: 'hitler'
-				}
-			]
-		});
-		secondTable.general.status = 'Tournament has been cancelled.';
-		sendInProgressGameUpdate(secondTable);
+		if (secondTable) {
+			secondTable.general.tournyInfo.isCancelled = true;
+			secondTable.chats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{
+						text: 'Due to the other tournament table voting for cancellation, this tournament has been cancelled.',
+						type: 'hitler'
+					}
+				]
+			});
+			secondTable.general.status = 'Tournament has been cancelled.';
+			sendInProgressGameUpdate(secondTable);
+		}
 	};
 
 	if (!game || !player || !game.publicPlayersState) {

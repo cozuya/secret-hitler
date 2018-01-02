@@ -168,7 +168,9 @@ class Gamechat extends React.Component {
 
 			this.gameChatInput.blur();
 			setTimeout(() => {
-				this.gameChatInput.focus();
+				if (this.gameChatInput) {
+					this.gameChatInput.focus();
+				}
 			}, 80);
 		}
 	}
