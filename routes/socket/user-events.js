@@ -1065,8 +1065,14 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { publicPlayersState } = game;
 	const player = publicPlayersState.find(player => player.userName === passport.user);
+	const user = userList.find(u => data.userName === u.userName);
 
-	if ((player && player.isDead && !game.gameState.isCompleted) || (player && player.leftGame) || (!player && game.general.disableObserver)) {
+	if (
+		(player && player.isDead && !game.gameState.isCompleted) ||
+		(player && player.leftGame) ||
+		(!player && game.general.disableObserver) ||
+		(user && !player && user.wins + user.losses < 5)
+	) {
 		return;
 	}
 
@@ -1123,19 +1129,21 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	}
 
 	const user = userList.find(u => data.userName === u.userName);
-	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
 	const seasonColor = user && user[`winsSeason${currentSeasonNumber}`] + user[`lossesSeason${currentSeasonNumber}`] > 49 ? PLAYERCOLORS(user, true) : '';
+	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
 
-	generalChatCount++;
-	data.time = new Date();
-	data.color = color;
-	data.seasonColor = seasonColor;
-	generalChats.list.push(data);
+	if (user.wins + user.losses > 4) {
+		generalChatCount++;
+		data.time = new Date();
+		data.color = color;
+		data.seasonColor = seasonColor;
+		generalChats.list.push(data);
 
-	if (generalChats.list.length > 99) {
-		generalChats.list.shift();
+		if (generalChats.list.length > 99) {
+			generalChats.list.shift();
+		}
+		io.sockets.emit('generalChats', generalChats);
 	}
-	io.sockets.emit('generalChats', generalChats);
 };
 
 /**
@@ -1497,6 +1505,12 @@ module.exports.handleModerationAction = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handlePlayerReport = data => {
+	const user = userList.find(u => data.userName === u.userName);
+
+	if (!user || user.wins + user.losses < 5) {
+		return;
+	}
+
 	const mods = MODERATORS.concat(ADMINS);
 	const playerReport = new PlayerReport({
 		date: new Date(),

@@ -9,6 +9,15 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.12.1 released 1-3-2017</p>
+		</div>
+		<ul>
+			<li>Players with less than 5 completed games can no longer chat in general chat, chat as an observer, or make player reports.</li>
+			<li>Thanks to a contributor, rebalanced games now show up correctly on the status bar while in a game.</li>
+			<li>Blind mode no longer shows tournament crowns..</li>
+			<li>Please welcome new mods RavenCaps and JerMej1s.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.12.0 released 12-31-2017</p>
 		</div>
 		<h3>New feature: seasonal mode!</h3>

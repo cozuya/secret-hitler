@@ -86,9 +86,9 @@ const enactPolicy = (game, team) => {
 					type: team === 'liberal' ? 'liberal' : 'fascist'
 				},
 				{
-					text: ` policy has been enacted. (${team === 'liberal'
-						? game.trackState.liberalPolicyCount.toString()
-						: game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`
+					text: ` policy has been enacted. (${
+						team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()
+					}/${team === 'liberal' ? '5' : '6'})`
 				}
 			]
 		};
@@ -1006,7 +1006,9 @@ module.exports.selectPresidentVoteOnVeto = data => {
 		!game.private.lock.selectPresidentVoteOnVeto &&
 		Number.isInteger(chancellorIndex) &&
 		game.publicPlayersState[chancellorIndex] &&
-		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
+		!(game.general.isTourny && game.general.tournyInfo.isCancelled) &&
+		president.cardFlingerState &&
+		president.cardFlingerState[0]
 	) {
 		game.private.lock.selectPresidentVoteOnVeto = true;
 
