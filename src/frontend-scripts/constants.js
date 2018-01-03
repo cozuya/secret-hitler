@@ -13,7 +13,6 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Idrissa',
 	'cayseron',
 	'maki2',
-	'Moranki',
 	'jazz'
 ]);
 
