@@ -26,6 +26,10 @@
 			box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
 		}
 	}
+	
+	.player-container.contributer {
+		box-shadow: 0 0 5px 2px orange !important;
+	}
 
 	.player-container.admin {
 		box-shadow: 0 0 5px 2px red !important;
@@ -37,10 +41,6 @@
 
 	.player-container.moderatorcolor {
 		box-shadow: 0 0 5px 2px #0f43fc !important;
-	}
-
-	.player-container.contributer {
-		box-shadow: 0 0 5px 2px orange !important;
 	}
 
 	.player-container.cbell {
