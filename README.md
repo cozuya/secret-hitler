@@ -39,8 +39,6 @@ then
 
 > cd secret-hitler
 
-> echo "MONGOPORT=27017" > .env
-
 > npm i -g gulp nodemon
 
 > npm i
