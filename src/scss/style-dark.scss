@@ -905,6 +905,13 @@ div {
 	box-shadow: 0 0 5px 2px #c7c1ff !important;
 }
 
+.wallie {
+	color: #ff0000 !important;
+}
+.player-small-cardback.wallie {
+	box-shadow: 0 0 5px 2px #ff0000 !important;
+}
+
 #confetti {
 	position: absolute;
 	top: 0;
@@ -1018,7 +1025,7 @@ div {
 }
 
 .editor-name {
-	color: $darkfascistteam !important;
+	color: #ff0000 !important;
 }
 
 .admin-name {
