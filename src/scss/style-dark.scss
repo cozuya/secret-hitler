@@ -849,6 +849,13 @@ div {
 	}
 }
 
+.contributer {
+	color: orange !important;
+}
+.player-small-cardback.contributer {
+	box-shadow: 0 0 5px 2px orange !important;
+}
+
 .moderatorcolor {
 	color: #0f43fc !important;
 }
@@ -864,17 +871,10 @@ div {
 }
 
 .admin {
-	color: red !important;
+	color: #ffff00 !important;
 }
 .player-small-cardback.admin {
-	box-shadow: 0 0 5px 2px red !important;
-}
-
-.contributer {
-	color: orange !important;
-}
-.player-small-cardback.contributer {
-	box-shadow: 0 0 5px 2px orange !important;
+	box-shadow: 0 0 5px 2px #ffff00 !important;
 }
 
 .cbell {
@@ -903,6 +903,13 @@ div {
 }
 .player-small-cardback.faaiz {
 	box-shadow: 0 0 5px 2px #c7c1ff !important;
+}
+
+.wallie {
+	color: #ff0000 !important;
+}
+.player-small-cardback.wallie {
+	box-shadow: 0 0 5px 2px #ff0000 !important;
 }
 
 #confetti {
@@ -1018,11 +1025,11 @@ div {
 }
 
 .editor-name {
-	color: $darkfascistteam !important;
+	color: #ff0000 !important;
 }
 
 .admin-name {
-	color: $hitlerteam !important;
+	color: #ffff00 !important;
 }
 
 .modal-warning {

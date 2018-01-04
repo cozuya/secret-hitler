@@ -26,9 +26,13 @@
 			box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
 		}
 	}
+	
+	.player-container.contributer {
+		box-shadow: 0 0 5px 2px orange !important;
+	}
 
 	.player-container.admin {
-		box-shadow: 0 0 5px 2px red !important;
+		box-shadow: 0 0 5px 2px #ffff00 !important;
 	}
 
 	.player-container.editorcolor {
@@ -37,10 +41,6 @@
 
 	.player-container.moderatorcolor {
 		box-shadow: 0 0 5px 2px #0f43fc !important;
-	}
-
-	.player-container.contributer {
-		box-shadow: 0 0 5px 2px orange !important;
 	}
 
 	.player-container.cbell {
@@ -57,6 +57,10 @@
 
 	.player-container.faaiz {
 		box-shadow: 0 0 5px 2px #c7c1ff !important;
+	}
+	
+	.player-container.wallie {
+		box-shadow: 0  5px 2px #ff0000 !important;
 	}
 
 	.player-container {

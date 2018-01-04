@@ -4,11 +4,12 @@ const { some, none, fromNullable } = require('option');
 const { filterOpt, flattenListOpts, pushOpt, mapOpt1, mapOpt2, handDiff, policyToHand, handToPolicy } = require('../../utils');
 
 module.exports = (logs, players, gameSetting) => {
-	var gameSetting = gameSetting || {
+	const gameSetting = gameSetting || {
 		rebalance6p: false,
 		rebalance7p: false,
 		rebalance9p: false
-	}
+	};
+
 	return buildTurns(List(), logs, players, gameSetting);
 };
 
