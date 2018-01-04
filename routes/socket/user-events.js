@@ -1132,7 +1132,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	const seasonColor = user && user[`winsSeason${currentSeasonNumber}`] + user[`lossesSeason${currentSeasonNumber}`] > 49 ? PLAYERCOLORS(user, true) : '';
 	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
 
-	if (user.wins + user.losses > 4) {
+	if (user && user.wins + user.losses > 4) {
 		generalChatCount++;
 		data.time = new Date();
 		data.color = color;

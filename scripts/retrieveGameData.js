@@ -1,44 +1,44 @@
-const mongoose = require('mongoose'),
-	Game = require('../models/game'),
-	moment = require('moment'),
-	_ = require('lodash'),
-	fs = require('fs'),
-	labels = [],
-	data = {},
-	allPlayerGameData = {
-		fascistWinCount: 0,
-		totalGameCount: 0
-	},
-	fivePlayerGameData = {
-		fascistWinCount: 0,
-		totalGameCount: 0
-	},
-	sixPlayerGameData = {
-		fascistWinCount: 0,
-		totalGameCount: 0,
-		rebalancedFascistWinCount: 0,
-		rebalancedTotalGameCount: 0
-	},
-	sevenPlayerGameData = {
-		fascistWinCount: 0,
-		totalGameCount: 0,
-		rebalancedFascistWinCount: 0,
-		rebalancedTotalGameCount: 0
-	},
-	eightPlayerGameData = {
-		fascistWinCount: 0,
-		totalGameCount: 0
-	},
-	ninePlayerGameData = {
-		fascistWinCount: 0,
-		totalGameCount: 0,
-		rebalancedFascistWinCount: 0,
-		rebalancedTotalGameCount: 0
-	},
-	tenPlayerGameData = {
-		fascistWinCount: 0,
-		totalGameCount: 0
-	};
+const mongoose = require('mongoose');
+const Game = require('../models/game');
+const moment = require('moment');
+const _ = require('lodash');
+const fs = require('fs');
+const labels = [];
+const data = {};
+const allPlayerGameData = {
+	fascistWinCount: 0,
+	totalGameCount: 0
+};
+const fivePlayerGameData = {
+	fascistWinCount: 0,
+	totalGameCount: 0
+};
+const sixPlayerGameData = {
+	fascistWinCount: 0,
+	totalGameCount: 0,
+	rebalancedFascistWinCount: 0,
+	rebalancedTotalGameCount: 0
+};
+const sevenPlayerGameData = {
+	fascistWinCount: 0,
+	totalGameCount: 0,
+	rebalancedFascistWinCount: 0,
+	rebalancedTotalGameCount: 0
+};
+const eightPlayerGameData = {
+	fascistWinCount: 0,
+	totalGameCount: 0
+};
+const ninePlayerGameData = {
+	fascistWinCount: 0,
+	totalGameCount: 0,
+	rebalancedFascistWinCount: 0,
+	rebalancedTotalGameCount: 0
+};
+const tenPlayerGameData = {
+	fascistWinCount: 0,
+	totalGameCount: 0
+};
 
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
@@ -46,10 +46,10 @@ mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
 Game.find({})
 	.cursor()
 	.eachAsync(game => {
-		const playerCount = game.losingPlayers.length + game.winningPlayers.length,
-			fascistsWon = game.winningTeam === 'fascist',
-			gameDate = moment(new Date(game.date)).format('l'),
-			rebalanced = game.rebalance69p && (playerCount === 6 || playerCount === 7 || playerCount === 9);
+		const playerCount = game.losingPlayers.length + game.winningPlayers.length;
+		const fascistsWon = game.winningTeam === 'fascist';
+		const gameDate = moment(new Date(game.date)).format('l');
+		const rebalanced = (game.rebalance6p && playerCount === 6) || (game.rebalance7p && playerCount === 7) || (game.rebalance9p && playerCount === 9);
 
 		if (
 			gameDate === '5/13/2017' ||
