@@ -16,9 +16,9 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'jazz'
 ]);
 
-const EDITORS = (module.exports.EDITORS = ['Max', 'DFinn', 'cbell', 'Faaiz1999']);
+const EDITORS = (module.exports.EDITORS = ['Wallie98', 'Max', 'DFinn', 'cbell', 'Faaiz1999']);
 
-const ADMINS = (module.exports.ADMINS = ['coz', 'Stine', 'Rex1234']);
+const ADMINS = (module.exports.ADMINS = ['coz', 'Stine', 'Rex1234', 'MilkMan']);
 
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Skyrra',
@@ -71,6 +71,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal) => {
 		cbell: user.userName === 'cbell',
 		max: user.userName === 'Max',
 		dfinn: user.userName === 'DFinn',
-		faaiz: user.userName === 'Faaiz1999'
+		faaiz: user.userName === 'Faaiz1999',
+		wallie: user.userName === 'Wallie98'
 	});
 };
