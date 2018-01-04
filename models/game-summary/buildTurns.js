@@ -9,6 +9,7 @@ module.exports = (logs, players, gameSetting) => {
 		rebalance7p: false,
 		rebalance9p: false
 	};
+
 	return buildTurns(List(), logs, players, gameSetting);
 };
 
