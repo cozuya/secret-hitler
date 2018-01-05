@@ -97,8 +97,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 		)
 	};
 
-	console.log(remainingPoliciesChat);
-
 	if (!(game.general.isTourny && game.general.tournyInfo.round === 1)) {
 		winningPrivatePlayers.forEach((player, index) => {
 			publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';

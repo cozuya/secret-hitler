@@ -111,6 +111,19 @@ const startCountdown = game => {
 				games.push(gameA, gameB);
 				delete gameA.general.tournyInfo.queuedPlayers;
 				delete gameB.general.tournyInfo.queuedPlayers;
+
+				if (game.general.blindMode) {
+					const _shuffledAdjectives = _.shuffle(adjectives);
+
+					gameA.general.replacementNames = _.shuffle(animals)
+						.slice(0, gameA.publicPlayersState.length)
+						.map((animal, index) => `${_shuffledAdjectives[index].charAt(0).toUpperCase()}${_shuffledAdjectives[index].slice(1)} ${animal}`);
+
+					gameB.general.replacementNames = _.shuffle(animals)
+						.slice(0, gameB.publicPlayersState.length)
+						.map((animal, index) => `${_shuffledAdjectives[index].charAt(0).toUpperCase()}${_shuffledAdjectives[index].slice(1)} ${animal}`);
+				}
+
 				startGame(gameA);
 				startGame(gameB);
 				sendGameList();

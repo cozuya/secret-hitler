@@ -15,6 +15,8 @@ const Changelog = () => (
 		<div style={{ textAlign: 'center' }}>
 			<img src="/images/remainingpolicies.png" style={{ border: '1px solid grey' }} />
 		</div>
+		<h3>New feature: blind mode now works in tournaments.</h3>
+		<h3>Other items:</h3>
 		<ul>
 			<li>
 				Previous update with players with less than 5 games played being unable to chat in general chat or observer mode has been reduced to be just 1 game

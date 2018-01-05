@@ -356,6 +356,11 @@ class Settings extends React.Component {
 								<input type="checkbox" name="confetti" checked={this.state.disableConfetti} onChange={() => this.toggleGameSettings('disableConfetti')} />
 								<label />
 							</div>
+							<h4 className="ui header">Disable tournament crowns</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
+								<label />
+							</div>
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Disable player colors in chat</h4>
@@ -373,11 +378,6 @@ class Settings extends React.Component {
 							</h4>
 							<div className="ui fitted toggle checkbox">
 								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
-								<label />
-							</div>
-							<h4 className="ui header">Disable tournament crowns</h4>
-							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
 								<label />
 							</div>
 						</div>
