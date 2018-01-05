@@ -6,6 +6,8 @@ const Game = require('../../../models/game');
 const buildEnhancedGameSummary = require('../../../models/game-summary/buildEnhancedGameSummary');
 const { updateProfiles } = require('../../../models/profile/utils');
 const debug = require('debug')('game:summary');
+const animals = require('../../../utils/animals');
+const adjectives = require('../../../utils/adjectives');
 const _ = require('lodash');
 
 /**
@@ -328,6 +330,15 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 								return player;
 							});
+
+						if (finalGame.general.blindMode) {
+							const _shuffledAdjectives = _.shuffle(adjectives);
+
+							finalGame.general.replacementNames = _.shuffle(animals)
+								.slice(0, finalGame.publicPlayersState.length)
+								.map((animal, index) => `${_shuffledAdjectives[index].charAt(0).toUpperCase()}${_shuffledAdjectives[index].slice(1)} ${animal}`);
+						}
+
 						finalGame.private.lock = {};
 						finalGame.general.name = `${game.general.name.slice(0, game.general.name.length - 7)}-tableFINAL`;
 						games.push(finalGame);

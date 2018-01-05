@@ -9,7 +9,7 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.12.2 released 1-5-2017</p>
+			<p>Version 0.12.2 released 1-6-2017</p>
 		</div>
 		<h3>New feature: gamechat shows remaining policies (in order) at end of game.</h3>
 		<div style={{ textAlign: 'center' }}>
@@ -24,6 +24,7 @@ const Changelog = () => (
 			</li>
 			<li>More fixes to replay issues.</li>
 			<li>Blind mode now shows the player's alias when claiming.</li>
+			<li>An internal UI change has taken place, will hopefully resolve some issues with general chat bouncing around and iOS problems as well.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.1 released 1-3-2017</p>
