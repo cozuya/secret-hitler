@@ -486,6 +486,7 @@ module.exports.handleAddNewClaim = data => {
 	}
 
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+	const { blindMode, replacementNames } = game.general;
 
 	const chat = (() => {
 		let text;
@@ -497,7 +498,7 @@ module.exports.handleAddNewClaim = data => {
 						text: 'President '
 					},
 					{
-						text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
 						type: 'player'
 					}
 				];
@@ -606,7 +607,7 @@ module.exports.handleAddNewClaim = data => {
 						text: 'Chancellor '
 					},
 					{
-						text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
 						type: 'player'
 					}
 				];
@@ -688,7 +689,7 @@ module.exports.handleAddNewClaim = data => {
 						text: 'President '
 					},
 					{
-						text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
 						type: 'player'
 					}
 				];
@@ -796,7 +797,7 @@ module.exports.handleAddNewClaim = data => {
 						text: 'President '
 					},
 					{
-						text: game.general.blindMode ? `{${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
 						type: 'player'
 					},
 					{
@@ -1071,7 +1072,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 		(player && player.isDead && !game.gameState.isCompleted) ||
 		(player && player.leftGame) ||
 		(!player && game.general.disableObserver) ||
-		(user && !player && user.wins + user.losses < 5)
+		(user && !player && user.wins + user.losses < 2)
 	) {
 		return;
 	}
@@ -1132,7 +1133,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	const seasonColor = user && user[`winsSeason${currentSeasonNumber}`] + user[`lossesSeason${currentSeasonNumber}`] > 49 ? PLAYERCOLORS(user, true) : '';
 	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
 
-	if (user && user.wins + user.losses > 4) {
+	if (user && user.wins + user.losses > 1) {
 		generalChatCount++;
 		data.time = new Date();
 		data.color = color;
@@ -1507,7 +1508,7 @@ module.exports.handleModerationAction = (socket, data) => {
 module.exports.handlePlayerReport = data => {
 	const user = userList.find(u => data.userName === u.userName);
 
-	if (!user || user.wins + user.losses < 5) {
+	if (!user || user.wins + user.losses < 2) {
 		return;
 	}
 

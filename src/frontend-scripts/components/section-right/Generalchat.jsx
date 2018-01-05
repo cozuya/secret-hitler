@@ -4,6 +4,7 @@ import { MODERATORS, EDITORS, ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+
 import moment from 'moment';
 
 export default class Generalchat extends React.Component {
