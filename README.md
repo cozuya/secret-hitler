@@ -9,8 +9,8 @@ before it’s too late.
 Effectively this is a take on the classic social deduction/hidden role board game genre such as Werewolf and Mafia, but closer to the Resistance. Games are 5-10
 players, the minority (fascists) know who everyone is and the majority (liberals) don't know anything. Over the course of the game the liberals need to try to
 figure out the fascists to win and the fascists need to remain hidden, with an extra "superfascist" role with an additional win condition for both sides. This
-codebase is a "lobby style" implementation of this game - anyone can make a game, when enough players are seated it starts, anyone can watch a game in progress,
-etc.
+codebase is a "lobby style" implementation of this game - anyone can make a game which is displayed on a list on the "home" page, when enough players are seated
+it starts, anyone can watch a game in progress, etc.
 
 Current production/stable is found at [Secret Hitler IO](https://secrethitler.io).
 
@@ -71,9 +71,10 @@ You'll most likely need a browser extension such as Chrome's openMultiLogin to h
 
 I'll leave you to figure that out. SH.IO is currently a $20/month digitalocean box using nginx, lets encrypt, and PM2.
 
-## Tests
+## Statistics
 
-> npm test
+Production has a limited set of data on the /stats page. If you'd like to do more detailed data analysis, please contact the maintainer for a dump of the
+(anonymized) profile and replay data.
 
 ## License and Attribution
 

@@ -26,6 +26,7 @@ export default class Moderation extends React.Component {
 			resetServerCount: 0,
 			logCount: 1,
 			modLogToday: false,
+			nonSeasonalSetStats: false,
 			logSort: {
 				type: 'date',
 				direction: 'descending'
@@ -109,6 +110,40 @@ export default class Moderation extends React.Component {
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled game creation',
 					action: 'enableGameCreation'
+				});
+			}
+		});
+
+		$(this.toggleGameCreation).checkbox({
+			onChecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Disabled game creation',
+					action: 'disableGameCreation'
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Enabled game creation',
+					action: 'enableGameCreation'
+				});
+			}
+		});
+
+		$(this.toggleSeasonalSetstats).checkbox({
+			onChecked() {
+				self.setState({
+					nonSeasonalSetStats: true
+				});
+			},
+			onUnchecked() {
+				self.setState({
+					nonSeasonalSetStats: false
 				});
 			}
 		});
@@ -314,7 +349,10 @@ export default class Moderation extends React.Component {
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
-						takeModAction(`setWins${this.state.actionTextValue}`);
+						takeModAction({
+							type: `setWins${this.state.actionTextValue}`,
+							isNonSeason: this.state.nonSeasonalSetStats
+						});
 					}}
 				>
 					Set wins
@@ -322,7 +360,10 @@ export default class Moderation extends React.Component {
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
-						takeModAction(`setLosses${this.state.actionTextValue}`);
+						takeModAction({
+							type: `setLosses${this.state.actionTextValue}`,
+							isNonSeason: this.state.nonSeasonalSetStats
+						});
 					}}
 				>
 					Set losses
@@ -330,7 +371,10 @@ export default class Moderation extends React.Component {
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
-						takeModAction(`setRWins${this.state.actionTextValue}`);
+						takeModAction({
+							type: `setRWins${this.state.actionTextValue}`,
+							isNonSeason: this.state.nonSeasonalSetStats
+						});
 					}}
 				>
 					Set R wins
@@ -338,11 +382,25 @@ export default class Moderation extends React.Component {
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
-						takeModAction(`setRLosses${this.state.actionTextValue}`);
+						takeModAction({
+							type: `setRLosses${this.state.actionTextValue}`,
+							isNonSeason: this.state.nonSeasonalSetStats
+						});
 					}}
 				>
 					Set R losses
 				</button>
+				<div className="toggle-containers">
+					<h4 className="ui header">Above actions apply only to non seasonal.</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleSeasonalSetstats = c;
+						}}
+					>
+						<input type="checkbox" name="seasonalsetstats" />
+					</div>
+				</div>
 				<button
 					className={
 						(selectedUser || playerInputText) &&

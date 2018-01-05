@@ -1219,7 +1219,7 @@ module.exports.handleModerationAction = (socket, data) => {
 				userActedOn: data.userName,
 				modNotes: data.comment,
 				ip: data.ip,
-				actionTaken: data.action
+				actionTaken: typeof data.action === 'string' ? data.action : data.action.type
 			});
 			/**
 			 * @param {string} username - name of user.
@@ -1474,14 +1474,14 @@ module.exports.handleModerationAction = (socket, data) => {
 							games.splice(games.indexOf(game), 1);
 							sendGameList();
 						}
-					} else if (isSuperMod) {
-						const setType = /setRWins/.test(data.action)
+					} else if (isSuperMod && data.action.type) {
+						const setType = /setRWins/.test(data.action.type)
 							? 'rainbowWins'
-							: /setRLosses/.test(data.action) ? 'rainbowLosses' : /setWins/.test(data.action) ? 'wins' : 'losses';
+							: /setRLosses/.test(data.action.type) ? 'rainbowLosses' : /setWins/.test(data.action.type) ? 'wins' : 'losses';
 						const number =
 							setType === 'wins'
-								? data.action.substr(7)
-								: setType === 'losses' ? data.action.substr(9) : setType === 'rainbowWins' ? data.action.substr(8) : data.action.substr(10);
+								? data.action.type.substr(7)
+								: setType === 'losses' ? data.action.type.substr(9) : setType === 'rainbowWins' ? data.action.type.substr(8) : data.action.type.substr(10);
 						const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
 
 						if (!isNaN(parseInt(number))) {
@@ -1489,6 +1489,10 @@ module.exports.handleModerationAction = (socket, data) => {
 								.then(account => {
 									if (account) {
 										account[setType] = isPlusOrMinus ? account[setType] + parseInt(number) : parseInt(number);
+
+										if (!data.action.isNonSeason) {
+											account[`${setType}Season${currentSeasonNumber}`] = isPlusOrMinus ? account[setType] + parseInt(number) : parseInt(number);
+										}
 										account.save();
 									}
 								})
