@@ -11,13 +11,17 @@ const Changelog = () => (
 		<div className="ui header">
 			<p>Version 0.12.2 released 1-5-2017</p>
 		</div>
+		<h3>New feature: gamechat shows remaining policies (in order) at end of game.</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/remainingpolicies.png" style={{ border: '1px solid grey' }} />
+		</div>
 		<ul>
 			<li>
-				Previous update with players with less than 5 games played being unable to chat in general chat or observer mode has been changed to be just 1 game
-				played as the requirement.
+				Previous update with players with less than 5 games played being unable to chat in general chat or observer mode has been reduced to be just 1 game
+				played.
 			</li>
 			<li>More fixes to replay issues.</li>
-			<li>Blind mode now shows player's alias when claiming.</li>
+			<li>Blind mode now shows the player's alias when claiming.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.1 released 1-3-2017</p>

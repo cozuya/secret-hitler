@@ -78,6 +78,26 @@ module.exports.completeGame = (game, winningTeamName) => {
 			{ text: ' win the game.' }
 		]
 	};
+	const remainingPoliciesChat = {
+		gameChat: true,
+		timestamp: new Date(),
+		chat: [
+			{
+				text: 'The remaining policies are '
+			}
+		].concat(
+			game.private.policies
+				.map(policyName => ({
+					text: policyName === 'liberal' ? 'B' : 'R',
+					type: policyName === 'liberal' ? 'liberal' : 'fascist'
+				}))
+				.concat({
+					text: '.'
+				})
+		)
+	};
+
+	console.log(remainingPoliciesChat);
 
 	if (!(game.general.isTourny && game.general.tournyInfo.round === 1)) {
 		winningPrivatePlayers.forEach((player, index) => {
@@ -103,10 +123,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 	});
 
 	seatedPlayers.forEach(player => {
-		player.gameChats.push(chat);
+		player.gameChats.push(chat, remainingPoliciesChat);
 	});
 
-	game.private.unSeatedGameChats.push(chat);
+	game.private.unSeatedGameChats.push(chat, remainingPoliciesChat);
 
 	game.summary = game.private.summary;
 	debug('Final game summary: %O', game.summary.publish().toObject());
