@@ -93,5 +93,5 @@ Veto power is slightly adjusted so that chancellors need to select a policy prio
 Adapted the rules explanation to account for online vs physical play.
 
 There is an option when players make a game to "rebalance" the 6, 7 and 9 player games - 6p starts with a fascist policy already enacted, 7p & 9p starts with
-one less fascist policy in the deck. Players (and results from analyzing statistics) have noted that these game modes are the worst balanced and not fun to play
-with the original ruleset.
+one less fascist policy in the deck, 9p additionally has a "7th" liberal policy already enacted. Players (and results from analyzing statistics) have noted that
+these game modes are the worst balanced and not fun to play with the original ruleset.

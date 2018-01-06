@@ -44,6 +44,7 @@ general
 	rebalance6p bool
 	rebalance7p bool
 	rebalance9p bool
+	rerebalance9p bool
 	tournyInfo
 		round number
 		showOtherTournyTable bool

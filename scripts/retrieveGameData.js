@@ -33,7 +33,9 @@ const ninePlayerGameData = {
 	fascistWinCount: 0,
 	totalGameCount: 0,
 	rebalancedFascistWinCount: 0,
-	rebalancedTotalGameCount: 0
+	rebalancedTotalGameCount: 0,
+	rerebalancedFascistWinCount: 0,
+	rerebalancedTotalGameCount: 0
 };
 const tenPlayerGameData = {
 	fascistWinCount: 0,
@@ -50,6 +52,7 @@ Game.find({})
 		const fascistsWon = game.winningTeam === 'fascist';
 		const gameDate = moment(new Date(game.date)).format('l');
 		const rebalanced = (game.rebalance6p && playerCount === 6) || (game.rebalance7p && playerCount === 7) || (game.rebalance9p && playerCount === 9);
+		const rerebalanced = game.rerebalance9p && playerCount === 9;
 
 		if (
 			gameDate === '5/13/2017' ||
@@ -106,6 +109,11 @@ Game.find({})
 						ninePlayerGameData.rebalancedFascistWinCount++;
 					}
 					ninePlayerGameData.rebalancedTotalGameCount++;
+				} else if (rerebalanced) {
+					if (fascistsWon) {
+						ninePlayerGameData.rerebalancedFascistWinCount++;
+					}
+					ninePlayerGameData.rerebalancedTotalGameCount++;
 				} else {
 					if (fascistsWon) {
 						ninePlayerGameData.fascistWinCount++;

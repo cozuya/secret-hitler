@@ -9,6 +9,18 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.12.3 released 1-6-2017</p>
+		</div>
+		<h3>New feature: rerebalanced 9p games.</h3>
+		<p>
+			Due to 9p, even rebalanced, being way too easy for fascists, the newly rebalanced 9p games will have a "phantom" liberal policy already enacted at the
+			start of the game, in addition to one less fascist policy. There will still be 6 liberal policies in the deck to start.
+		</p>
+		<ul>
+			<li>The broken UI on the playerlist/scroll issues has been fixed.</li>
+			<li>Sorting of the playerlist had a bug which caused it to be really broken - now fixed.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.12.2 released 1-6-2017</p>
 		</div>
 		<h3>New feature: gamechat shows remaining policies (in order) at end of game.</h3>

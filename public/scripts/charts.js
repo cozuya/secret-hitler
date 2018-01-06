@@ -74,12 +74,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			$('#chart-sevenplayer-games-winrate').after(
 				`<p style="text-align: center">Total 7 player games played: ${
 					data.sevenPlayerGameData.totalGameCount
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">43%</span></p>`
-			);
-
-			$('#chart-sevenplayer-games-winrate').after(
-				`<p style="text-align: center">Total 7 player games played: ${
-					data.sevenPlayerGameData.totalGameCount
 				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">43%</span></p><h2 class="ui header centered">Winrate for 7 player games (rebalanced)</h2><div class="chart" id="chart-sevenplayer-rebalanced-games-winrate"></div><p style="text-align: center">Total 7 player rebalanced games played: ${
 					data.sevenPlayerGameData.rebalancedTotalGameCount
 				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">43%</span></p>`
@@ -113,12 +107,20 @@ document.addEventListener('DOMContentLoaded', function(event) {
 					data.ninePlayerGameData.totalGameCount
 				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p><h2 class="ui header centered">Winrate for 9 player games (rebalanced)</h2><div class="chart" id="chart-nineplayer-rebalanced-games-winrate"></div><p style="text-align: center">Total 9 player rebalanced games played: ${
 					data.ninePlayerGameData.rebalancedTotalGameCount
+				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p><div class="chart" id="chart-nineplayer-rerebalanced-games-winrate"></div><p style="text-align: center">Total 9 player rerebalanced games played: ${
+					data.ninePlayerGameData.rerebalancedTotalGameCount
 				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p>`
 			);
 
 			new Chartist.Pie(
 				'#chart-nineplayer-rebalanced-games-winrate',
 				processWinrateData(data.ninePlayerGameData.rebalancedFascistWinCount, data.ninePlayerGameData.rebalancedTotalGameCount),
+				{ width: '400px', height: '400px' }
+			);
+
+			new Chartist.Pie(
+				'#chart-nineplayer-rebalanced-games-winrate',
+				processWinrateData(data.ninePlayerGameData.rerebalancedFascistWinCount, data.ninePlayerGameData.rerebalancedTotalGameCount),
 				{ width: '400px', height: '400px' }
 			);
 

@@ -9,7 +9,8 @@ module.exports = (
 	gameSetting = {
 		rebalance6p: false,
 		rebalance7p: false,
-		rebalance9p: false
+		rebalance9p: false,
+		rerebalance9p: false
 	}
 ) => buildTurns(List(), logs, players, gameSetting);
 
@@ -26,8 +27,8 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		isVotePassed: true,
 		afterDeadPlayers: List(),
 		execution: none,
-		afterDeckSize: 17 - (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p),
-		afterTrack: { reds: gameSetting.rebalance6p, blues: 0 },
+		afterDeckSize: 17 - (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p || gameSetting.rerebalance9p),
+		afterTrack: { reds: gameSetting.rebalance6p, blues: gameSetting.rerebalance9p },
 		afterElectionTracker: 0,
 		enactedPolicy: none
 	});

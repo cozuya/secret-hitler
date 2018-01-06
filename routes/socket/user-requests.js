@@ -181,7 +181,7 @@ module.exports.sendGameList = socket => {
 		electionCount: game.general.electionCount,
 		rebalance6p: game.general.rebalance6p,
 		rebalance7p: game.general.rebalance7p,
-		rebalance9p: game.general.rebalance9p,
+		rebalance9p: game.general.rerebalance9p,
 		privateOnly: game.general.privateOnly,
 		private: game.general.private,
 		uid: game.general.uid,

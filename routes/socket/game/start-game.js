@@ -100,7 +100,8 @@ const beginGame = game => {
 		{
 			rebalance6p: game.general.rebalance6p && game.private.seatedPlayers.length === 6,
 			rebalance7p: game.general.rebalance7p && game.private.seatedPlayers.length === 7,
-			rebalance9p: game.general.rebalance9p && game.private.seatedPlayers.length === 9
+			rebalance9p: false,
+			rerebalance9p: game.general.rerebalance9p && game.private.seatedPlayers.length === 9
 		},
 		game.private.seatedPlayers.map(p => ({
 			username: p.userName,
@@ -364,5 +365,9 @@ module.exports = game => {
 	game.gameState.isTracksFlipped = true;
 	game.private.policies = [];
 
-	shufflePolicies(game, Boolean(game.private.seatedPlayers.length === 6) && game.general.rebalance6p);
+	shufflePolicies(
+		game,
+		Boolean(game.private.seatedPlayers.length === 6) && game.general.rebalance6p,
+		Boolean(game.private.seatedPlayers.length === 9) && game.general.rerebalance9p
+	);
 };

@@ -90,11 +90,12 @@ class Gamechat extends React.Component {
 
 	handleChatScrolled() {
 		const bar = this.scrollbar;
+		const scrolledFromBottom = bar.getValues().scrollHeight - (bar.getValues().scrollTop + 335);
 
-		if (this.state.lock && bar.getValues().top > 0.9) {
+		if (this.state.lock && scrolledFromBottom < 20) {
 			this.setState({ lock: false });
 			this.scrollbar.scrollToBottom();
-		} else if (!this.state.lock && bar.getValues().top <= 0.9) {
+		} else if (!this.state.lock && scrolledFromBottom >= 20) {
 			this.setState({ lock: true });
 		}
 	}
