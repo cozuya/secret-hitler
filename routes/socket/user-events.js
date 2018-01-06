@@ -1501,10 +1501,19 @@ module.exports.handleModerationAction = (socket, data) => {
 							Account.findOne({ username: data.userName })
 								.then(account => {
 									if (account) {
-										account[setType] = isPlusOrMinus ? account[setType] + parseInt(number) : parseInt(number);
+										console.log(number, 'num');
+										console.log(data.action, 'action');
+										console.log(setType, 'settype');
+										account[setType] = isPlusOrMinus ? account[setType] + parseInt(number.substr(1, number.length)) : parseInt(number);
+
+										console.log(account, 'account');
 
 										if (!data.action.isNonSeason) {
-											account[`${setType}Season${currentSeasonNumber}`] = isPlusOrMinus ? account[setType] + parseInt(number) : parseInt(number);
+											account[`${setType}Season${currentSeasonNumber}`] = isPlusOrMinus
+												? account[`${setType}Season${currentSeasonNumber}`]
+													? account[`${setType}Season${currentSeasonNumber}`] + parseInt(number.substr(1, number.length))
+													: parseInt(number.substr(1, number.length))
+												: parseInt(number);
 										}
 										account.save();
 									}
