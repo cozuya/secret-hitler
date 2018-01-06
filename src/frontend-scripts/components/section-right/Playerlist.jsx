@@ -219,7 +219,15 @@ class Playerlist extends React.Component {
 						return a.userName > b.userName ? 1 : -1;
 					}
 
-					return a[w] / b[l] < a[w] / b[l] ? 1 : -1;
+					if (aTotal > 9 && bTotal < 10) {
+						return -1;
+					}
+
+					if (bTotal > 9 && aTotal < 10) {
+						return 1;
+					}
+
+					return a[w] / a[l] < b[w] / b[l] ? 1 : -1;
 				})
 				.map((user, i) => {
 					const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
