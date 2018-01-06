@@ -845,6 +845,13 @@ div {
 	}
 }
 
+.contributer {
+	color: orange !important;
+}
+.player-small-cardback.contributer {
+	box-shadow: 0 0 5px 2px orange !important;
+}
+
 .moderatorcolor {
 	color: #0f43fc !important;
 }
@@ -864,13 +871,6 @@ div {
 }
 .player-small-cardback.admin {
 	box-shadow: 0 0 5px 2px red !important;
-}
-
-.contributer {
-	color: orange !important;
-}
-.player-small-cardback.contributer {
-	box-shadow: 0 0 5px 2px orange !important;
 }
 
 .cbell {
