@@ -7,7 +7,7 @@ import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import { Scrollbars } from 'react-custom-scrollbars';
 import { Popup } from 'semantic-ui-react';
 
 $.fn.modal = Modal;
@@ -376,9 +376,9 @@ class Playerlist extends React.Component {
 						</span>
 					)}
 				</div>
-				<PerfectScrollbar>
+				<Scrollbars>
 					<div className="playerlist-body">{this.renderPlayerlist()}</div>
-				</PerfectScrollbar>
+				</Scrollbars>
 			</section>
 		);
 	}
