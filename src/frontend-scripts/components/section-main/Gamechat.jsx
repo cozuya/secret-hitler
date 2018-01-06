@@ -6,7 +6,7 @@ import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
@@ -28,7 +28,6 @@ class Gamechat extends React.Component {
 		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
 		this.handleNoteClick = this.handleNoteClick.bind(this);
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
-		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
 		this.handleInsertEmote = this.handleInsertEmote.bind(this);
 		this.checkIsChatDisabled = this.checkIsChatDisabled.bind(this);
 
@@ -90,16 +89,13 @@ class Gamechat extends React.Component {
 	}
 
 	handleChatScrolled() {
-		const el = this.psContainer;
+		const bar = this.scrollbar;
 
-		if (!this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) < -20) {
-			this.setState({ lock: true });
-		}
-	}
-
-	handleChatScrolledToBottom() {
-		if (this.state.lock) {
+		if (this.state.lock && bar.getValues().top > 0.9) {
 			this.setState({ lock: false });
+			this.scrollbar.scrollToBottom();
+		} else if (!this.state.lock && bar.getValues().top <= 0.9) {
+			this.setState({ lock: true });
 		}
 	}
 
@@ -177,7 +173,7 @@ class Gamechat extends React.Component {
 
 	scrollChats() {
 		if (!this.state.lock) {
-			this.refs.perfectScrollbar.setScrollTop(99999999);
+			this.scrollbar.scrollToBottom();
 		}
 	}
 
@@ -551,17 +547,9 @@ class Gamechat extends React.Component {
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
-					<PerfectScrollbar
-						ref="perfectScrollbar"
-						containerRef={c => {
-							this.psContainer = c;
-						}}
-						onScrollY={this.handleChatScrolled}
-						onYReachEnd={this.handleChatScrolledToBottom}
-						option={{ suppressScrollX: true }}
-					>
+					<Scrollbars ref={c => (this.scrollbar = c)} onScroll={this.handleChatScrolled}>
 						<div className="ui list">{this.processChats()}</div>
-					</PerfectScrollbar>
+					</Scrollbars>
 				</section>
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
 					{(() => {

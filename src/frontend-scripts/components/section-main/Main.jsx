@@ -9,7 +9,7 @@ import Moderation from './Moderation.jsx';
 import Reports from './Reports.jsx';
 import PropTypes from 'prop-types';
 import GamesList from './GamesList.jsx';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 export class Main extends React.Component {
 	constructor() {
@@ -90,9 +90,9 @@ export class Main extends React.Component {
 				{midSection === 'game' || midSection === 'replay' ? (
 					RenderMidSection()
 				) : (
-					<PerfectScrollbar className="scrollbar-container-main" option={{ suppressScrollX: true }}>
+					<Scrollbars className="scrollbar-container-main">
 						<div className="section-main-content-container">{RenderMidSection()}</div>
-					</PerfectScrollbar>
+					</Scrollbars>
 				)}
 			</section>
 		);

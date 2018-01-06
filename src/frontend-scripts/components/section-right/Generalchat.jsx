@@ -3,8 +3,7 @@ import classnames from 'classnames';
 import { MODERATORS, EDITORS, ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-
+import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
 
 export default class Generalchat extends React.Component {
@@ -15,7 +14,6 @@ export default class Generalchat extends React.Component {
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
-		this.handleChatScrolledToBottom = this.handleChatScrolledToBottom.bind(this);
 		this.handleInsertEmote = this.handleInsertEmote.bind(this);
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 		this.state = {
@@ -26,18 +24,23 @@ export default class Generalchat extends React.Component {
 	}
 
 	componentDidMount() {
-		this.scrollChats();
-	}
-
-	componentDidUpdate() {
-		this.scrollChats();
+		this.scrollbar.scrollToBottom();
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (!this.state.stickyEnabled && this.props.generalChats.sticky !== nextProps.generalChats.sticky) {
+		const { generalChats } = this.props;
+		const nextGeneralChats = nextProps.generalChats;
+
+		if (!this.state.stickyEnabled && generalChats.sticky !== nextGeneralChats.sticky) {
 			this.setState({
 				stickyEnabled: true
 			});
+		}
+	}
+
+	componentDidUpdate() {
+		if (!this.state.lock) {
+			this.scrollbar.scrollToBottom();
 		}
 	}
 
@@ -70,27 +73,18 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
-	scrollChats() {
-		if (!this.state.lock && !this.state.discordEnabled) {
-			this.refs.perfectScrollbar.setScrollTop(99999999);
-		}
-	}
-
 	handleChatLockClick() {
 		this.setState({ lock: !this.state.lock });
 	}
 
 	handleChatScrolled() {
-		const el = this.psContainer;
+		const bar = this.scrollbar;
 
-		if (!this.state.lock && el.scrollTop - (el.scrollHeight - el.offsetHeight) < -20) {
-			this.setState({ lock: true });
-		}
-	}
-
-	handleChatScrolledToBottom() {
-		if (this.state.lock) {
+		if (this.state.lock && bar.getValues().top > 0.9) {
 			this.setState({ lock: false });
+			this.scrollbar.scrollToBottom();
+		} else if (!this.state.lock && bar.getValues().top <= 0.9) {
+			this.setState({ lock: true });
 		}
 	}
 
@@ -239,16 +233,9 @@ export default class Generalchat extends React.Component {
 					{this.state.discordEnabled ? (
 						<embed height="100%" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
 					) : (
-						<PerfectScrollbar
-							ref="perfectScrollbar"
-							containerRef={c => {
-								this.psContainer = c;
-							}}
-							onScrollY={this.handleChatScrolled}
-							onYReachEnd={this.handleChatScrolledToBottom}
-						>
+						<Scrollbars ref={c => (this.scrollbar = c)} onScroll={this.handleChatScrolled}>
 							<div className="ui list genchat-container">{this.renderChats()}</div>
-						</PerfectScrollbar>
+						</Scrollbars>
 					)}
 				</section>
 				{this.renderInput()}

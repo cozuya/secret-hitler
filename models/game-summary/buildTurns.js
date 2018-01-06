@@ -3,14 +3,15 @@ const { List, Range } = require('immutable');
 const { some, none, fromNullable } = require('option');
 const { filterOpt, flattenListOpts, pushOpt, mapOpt1, mapOpt2, handDiff, policyToHand, handToPolicy } = require('../../utils');
 
-module.exports = (logs, players, gameSetting) => {
-	var gameSetting = gameSetting || {
+module.exports = (
+	logs,
+	players,
+	gameSetting = {
 		rebalance6p: false,
 		rebalance7p: false,
 		rebalance9p: false
 	}
-	return buildTurns(List(), logs, players, gameSetting);
-};
+) => buildTurns(List(), logs, players, gameSetting);
 
 const buildTurns = (turns, logs, players, gameSetting) => {
 	if (logs.isEmpty()) return turns;

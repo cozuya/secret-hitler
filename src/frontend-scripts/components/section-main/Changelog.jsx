@@ -24,7 +24,9 @@ const Changelog = () => (
 			</li>
 			<li>More fixes to replay issues.</li>
 			<li>Blind mode now shows the player's alias when claiming.</li>
-			<li>An internal UI change has taken place, will hopefully resolve some issues with general chat bouncing around and iOS problems as well.</li>
+			<li>
+				An internal UI change has taken place, will hopefully resolve some issues with general chat bouncing around for some users and iOS problems as well.
+			</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.1 released 1-3-2017</p>
@@ -128,136 +130,6 @@ const Changelog = () => (
 			seasons as its a small change and optional and extends the life of the game.
 		</h3>
 		<div className="ui header">
-			<p>Version 0.10.7 released 12-18-2017</p>
-		</div>
-		<h3>Rebalance update in create game</h3>
-		<p>
-			When creating a game, you no longer have the option to rebalance all 6/7/9p games - instead, you can pick individually via new checkboxes which game sizes
-			you would like rebalanced.
-		</p>
-		<div style={{ textAlign: 'center' }}>
-			<img src="/images/new-rebalance.png" />
-		</div>
-		<h3>Blind mode update</h3>
-		<p>
-			Blind mode now assigns every player a random adjective + animal name, instead of just being blank/their number. Please let me know if you find this to be
-			more playable/any other feedback. Also, it no longer shows who is seated or their cardbacks in the gamelist/lobby.
-		</p>
-		<h3>New create game option: disable observer chat</h3>
-		<p>
-			Toggle this on to prevent observers from chatting at all in your new game. No icon for this as thats starting to get huge (though you will see that in
-			these games, the internal chat filter for observers is not present).
-		</p>
-		<h3>Other items</h3>
-		<ul>
-			<li>
-				Gamelist filters now correctly show the toggled state after leaving and coming back to the list, and there is new and obvious UI for that feature.
-			</li>
-			<li>"Show chats" button in replays should work now (no longer crash the browser/require refresh).</li>
-			<li>When you search for a profile from the settings view, your URL will correctly update to show the player's name.</li>
-			<li>
-				Moderators now have a new sitewide "disable game creation" setting - this will be used when planned updates are about to happen. I'm lazy and there's no
-				UI for it, the button will just not do anything so uh don't panic.
-			</li>
-			<li>Players with exactly 50 games played are no longer grey in the player list.</li>
-			<li>There's some chance I completely broke replays in this update... if so please don't hassle me/the mods, I will work on a fix immediately.</li>
-		</ul>
-		<div className="ui header">
-			<p>Version 0.10.6 released 12-10-2017</p>
-		</div>
-		<h3>New game type: blind mode</h3>
-		<div style={{ textAlign: 'center' }}>
-			<img src="/images/blind.png" />
-		</div>
-		<p>Games with this option enabled will anonymize players - players do not have their names displayed (or colors/cardbacks) until the game is complete.</p>
-		<h3>New gamelist filters</h3>
-		<p>New gamelist filters for standard and rainbow games have been added.</p>
-		<h3>Next major update (tournaments) is almost done, expect this week, the increased traffic was a bit distracting.</h3>
-		<div className="ui header">
-			<p>Version 0.10.5 released 12-9-2017</p>
-		</div>
-		<h3>New feature: player blacklist</h3>
-		<p>
-			If you'd like to blacklist a player, go to their profile via the playerlist or search from your settings page, and click the new button. This has 2
-			effects: it prevents them from joining games <b>you have made</b>, and also gives them a new color for you so that you can avoid games they are in. Abuse
-			of this feature for public games will result in a ban.
-		</p>
-		<h3>New setting and moderation action: converting a player from normal/public to private-game-only</h3>
-		<p>
-			If you'd like to be an anonymous player (or not be) you can now toggle this gamesetting (cog icon in upper right) - this can only happen once every 18
-			hours. This action will log you out.
-		</p>
-		<h3>New gametype: only private-game-only players allowed</h3>
-		<p>
-			For anonymous players, there is a new checkbox while creating a game that only allows other anonymous players to take a seat. Non-anonymous players will
-			not see these games on the list.
-		</p>
-		<ul>
-			<li>Private, and private only games now have an icon on the gameslist and in games themselves.</li>
-			<li>Gamelist filters will now remember your settings when leaving and then returning to the gamelist view.</li>
-		</ul>
-		<div className="ui header">
-			<p>Version 0.10.4 released 12-6-2017</p>
-		</div>
-		<h3>New feature: private-game-only accounts</h3>
-		<div style={{ textAlign: 'center' }}>
-			<img src="https://i.imgur.com/ULKSqr2.png" />
-		</div>
-		<p>
-			When signing up for an account, you can now make a new type of account - one that can only create and sit in private games. That account name does not
-			appear in the userlist on the right sidebar, cannot use general chat, cannot set custom game names, and when a non-moderator views a game that player is
-			playing in, their real username is obscured. Please use these if you're just visiting. Please note that I'm not condoning breaking the site rules, but
-			this is just easier for everyone..
-		</p>
-		<h3>New feature: gamelist checkbox filters</h3>
-		<p>
-			Self explanatory - the increased traffic from our new clover friends have made these necessary. Because I'm lazy and did this quickly you'll have to redo
-			these every time you revert to the gamelist view, sorry. I'll make it persist next patch.
-		</p>
-		<ul>
-			<li>Bug fix: Players seated in a game that has been remade can no longer hit the remake button, screwing everything up/bouncing between games.</li>
-			<li>Bug fix: Private games that get remade now correctly transfers over the old game's password, as expected.</li>
-			<li>Bug fix: Observing a game when someone is executed no longer crashes your browser..</li>
-			<li>Players in private games can no longer report players.</li>
-			<li>Game UIDs always start with a capital letter.</li>
-		</ul>
-		{/* <div className="ui header">
-			<p>Version 0.11.0 released 12-10-2017</p>
-		</div>
-		<h3>New feature: tournaments</h3>
-		<p>
-			Tournaments on SH.IO consist of players queueing up until there are enough players to have 2 games going as once, and then splitting into two tables. The
-			winners of each game then play a 2nd game immediately after the 2nd table completes its game.
-		</p>
-		<p>There is some new UI here - when making a tournament in the create game panel, the slider turns into choosing a 14, 16, or 18 player tournament.</p>
-		<p>
-			When you queue for a tournament, you can leave the table - you will be pulled into the tournament when it starts. Joining another game or disconnecting
-			removes you from the queue.
-		</p>
-		<p>
-			The remake game functionality in tournaments now turns into cancel tournament. If someone afks in a tournament, there is no choice but to cancel both
-			tables when remake is made. Please have the courtesy of doing so so that the other table isn't stuck playing a dead game. FYI: moderators are going to be
-			very upset with tournament afkers..
-		</p>
-		<p>
-			Winners of tournaments get a cool crown icon next to their name! And are sorted to the top of the userList under mods. These last for 3 hours from
-			completion of the tournament. And yes, you can get multiple crowns.
-		</p>
-		<p>There's no stat tracking of tournaments yet - that will be the next thing worked on for minor versioning.</p> */}
-		<div className="ui header">
-			<p>Version 0.10.3 released 11-23-2017</p>
-		</div>
-		<p>Chat scrolling fixes again (I hope), bunch of moderator stuff, fix to 7p rebalanced graph (tomorrow).</p>
-		<h3>Next up: if stuff is finally working right in 0.10, tourny mode.</h3>
-		<div className="ui header">
-			<p>Version 0.10.2 released 11-19-2017</p>
-		</div>
-		<h3>Bug fix patch:</h3>
-		<p>
-			Mobile devices should work better, hopefully fixes to some of the chat scrolling issues, start game sound should be back, gamenotes text readable again.
-		</p>
-		<h3>Next up: more bug fixes..</h3>
-		<div className="ui header">
 			<p>Version 0.10.0 released 11-13-2017</p>
 		</div>
 		<h3>New feature: UI overhaul thanks to contributor Wi1son</h3>
@@ -269,52 +141,6 @@ const Changelog = () => (
 		<h3>New feature: rebalanced 7p games.</h3>
 		<p>7p games have the optional rebalance treatment now - same as 9p, a fascist policy has been removed to start the game.</p>
 		<h3>Up next: blind mode and tournament mode!</h3>
-		<div className="ui header">
-			<p>Version 0.9.2 "dim3" released 11-5-2017</p>
-		</div>
-		<h3>New feature: discord integration in general chat.</h3>
-		<p>Click the new discord icon (while logged in) to replace the site's general chat with our discord channel's general chat.</p>
-		<h3>New feature: disable confetti user setting.</h3>
-		<p>For those of you that hate fun.</p>
-		<h3>New feature: moderator sticky notes on general chat.</h3>
-		<p>Dismiss in usual way, will be used to impart useful information that is less temporary than broadcasts.</p>
-		<h3>New feature: reverted private games visibility.</h3>
-		<p>
-			Having them totally hidden was probably too difficult to find for some players that didn't have the URL. So now everyone can see private games again, but
-			only those who are seated (and mods) can see gamechats. A decent compromise I think.
-		</p>
-		<h3>Other issues:</h3>
-		<ul>
-			<li>Clicking on a player's name in general chat takes you to their profile page.</li>
-			<li>The remake button's gamechat now tells you how many votes you need to remake a game.</li>
-			<li>A fix to moderation timeout ability is in.</li>
-			<li>
-				Players can only make one player report per game. I'm lazy and there's no failure state for this, so just keep it in mind: more than one attempt per
-				game will not go through to mods.
-			</li>
-		</ul>
-		<div className="ui header">
-			<p>Version 0.9.1 "dim2" released 11-2-2017</p>
-		</div>
-		<h3>New feature: remake game button</h3>
-		<div style={{ textAlign: 'center' }}>
-			<img style={{ width: '30%', border: '1px solid grey', margin: '5px 0' }} src="/images/remake.png" />
-		</div>
-		<p>
-			Your game is dead or afked on, or you just want to play again with the same team? Hit this button in the lower left corner of the fascist track to show
-			that you'd like to remake the game. When (number of fascists in game +1, or +2 in 8, 9 and 10p games) have also hit the button, the game is remade with
-			the same rules and name and updated UID/link, and will start when its requirements are met as usual.
-		</p>
-		<h3>New feature: rerebalanced 9p games</h3>
-		<p>
-			In what should speak volumes about what I know about game design, having an already-enacted liberal policy in 9p games.. actually makes fascists win more.
-			So now that's gone, but there is one less fascist policy in the deck (so starting at 16). We'll see what happens there.
-		</p>
-		<h3>Other issues:</h3>
-		<ul>
-			<li>Thanks to a contribution, "blind mode" aka no gamechat mode now correctly will let other fascists see who is on their team.</li>
-			<li>Stats/charts should work with the new rerebalanced 9p starting tomorrow when data collection fires at 4am.</li>
-		</ul>
 		<div className="ui header">
 			<p>Version 0.9.0 "dim" released 10-29-2017</p>
 		</div>
@@ -360,47 +186,6 @@ const Changelog = () => (
 			<li>All dependencies updated including moving to the latest version of React (16). What this means is hopefully some better front-end performance.</li>
 		</ul>
 		<h3>Up next: the remake game functionality will be finished up and rolled out in 0.9.1. Also new stats graphs for the rebalanced game feature.</h3>
-		<div className="ui header">
-			<p>Version 0.8.2 "blue steel" released 9-30-2017</p>
-		</div>
-		<h3>New feature: player selectable fonts</h3>
-		<div style={{ textAlign: 'center' }}>
-			<img style={{ width: '95%', border: '1px solid grey', padding: '10px', margin: '5px 0' }} src="/images/fonts.png" />
-		</div>
-		<p>
-			These can be found on the usual place (player settings, cog icon in upper right) and save on click. You will probably want to tweak your gamechat font
-			size slider as well.
-		</p>
-		<ul>
-			<li>The "game countdown is negative" bug should be fixed.</li>
-			<li>An issue with some players cannot remake an account after it being deleted has been addressed. Contact a moderator if you have been affected.</li>
-			<li>All new images from 0.8.0 have had their saturation knocked down by 25%, and new colors in gamechat muted more.</li>
-			<li>Broadcasts now echo through webhook to discord.</li>
-		</ul>
-		<div className="ui header">
-			<p>Version 0.8.1 "silver" released 9-28-2017</p>
-		</div>
-		<p>Cleanup/bug fix patch, the following was affected:</p>
-		<ul>
-			<li>
-				Games should start and stop better now - if a 5th player is seated in a 5-10 player game, and then leaves, previously it would count down from 20 and
-				then stall, now it will correctly not count down and go back to the waiting phase. Awesome!
-			</li>
-			<li>
-				Ages old fix to a special election president being able to nominate a chancellor who was in the last elected government, in opposition to the printed
-				rules.
-			</li>
-			<li>You can now claim after a veto.</li>
-			<li>Fixed a bug where sometimes a president can not select a card to veto, hanging the game.</li>
-			<li>Some more attempts to fix the various small sorting/jumping issues that are still out there.</li>
-			<li>The link in the signup modal on the main page is finally working..</li>
-			<li>Generalchat sticky scroll should work/work better</li>
-			<li>Moderators have ban back, and hopefully some issues fixed with IPs.</li>
-			<li>The info icon on the lobby has been updated.</li>
-			<li>Profile search now works on Edge.</li>
-			<li>There's a new discord webhook to ping admins when the site crashes. -_-</li>
-		</ul>
-		<p>The first 6 issues all done by contributor andy013 on github!</p>
 		<div className="ui header">
 			<p>Version 0.8.0 "citehtseawen" released 9-23-2017</p>
 		</div>
@@ -469,106 +254,6 @@ const Changelog = () => (
 			soon!
 		</h4>
 		<div className="ui header">
-			<p>Version 0.7.7 "shadow2" released 9-14-2017</p>
-		</div>
-		<ul>
-			<li>Terms of use have been updated - if you're playing a public game, you must converse in a language everyone understands.</li>
-			<li>Fix to gamenotes being cleared/deleted every time its dismissed. It will now persist until you leave the site/reload.</li>
-			<li>Gamechat text for the veto policy power has been clarified/expanded for the president & chancellor.</li>
-			<li>More attempted fixes to sort issues in general.</li>
-			<li>
-				The minimum width of this application has been lowered by 30px, meaning it will fit on a laptop like a macbook better without small horizontal
-				scrolling.
-			</li>
-			<li>Some crash fixes attempted.</li>
-			<li>Players can only make one account per day per IP.</li>
-		</ul>
-		<div className="ui header">
-			<p>Version 0.7.5 "shadow" released 9-10-2017</p>
-		</div>
-		<h2>Over 50,000 games have been played!</h2>
-		<h3>New feature: game notes</h3>
-		<p>
-			Click on the note icon next to the lock button to pop out a new component you can take notes on, scratchpad style. You can drag and drop this to any
-			location. Not currently resizable as thats a bit tough.
-		</p>
-		<h3>New feature: sticky chat v2</h3>
-		<p>
-			Now, when chat is scrolled from the bottom, the lock is automatically set, meaning it will no longer "jump" every time someone chats something new.
-			Conversely the lock is unset when you scroll back to the bottom. Hopefully this will go better than last time which was bugged for many
-			players/browsers/zoom levels I believe.
-		</p>
-		<h4>Other items</h4>
-		<ul>
-			<li>New polls have been added, please use them.</li>
-			<li>The terms of use has been updated - TOR users are no longer permitted. If you have a legitimate reason to use TOR, contact a moderator.</li>
-			<li>Per the polls result, fascist players can no longer shoot hitler.</li>
-			<li>The home page now shows how many players are online.</li>
-			<li>Swastika symbols can no longer be used for game names..</li>
-			<li>Player profiles now include cardbacks.</li>
-			<li>Games now show the name and player count.</li>
-			<li>Some more attempts to fix sorting bugs have been implemented.</li>
-			<li>The link to discord on the default screen & homepage has been fixed.</li>
-		</ul>
-		<div className="ui header">
-			<p>Version 0.7.4 "grey2" released 9-2-2017</p>
-		</div>
-		<h3>
-			New feature:{' '}
-			<a href="/polls" target="_blank">
-				polls page
-			</a>.
-		</h3>
-		<p>I'd like to start getting more feedback from the community so will start adding polls and see how it goes.</p>
-		<h3>New feature: player reports now also get sent to a new discord channel. Internet is magic.</h3>
-		<h3>New feature: sticky chat</h3>
-		<p>
-			Now, when chat is scrolled from the bottom, the lock is automatically set, meaning it will no longer "jump" every time someone chats something new.
-			Conversely the lock is unset when you scroll back to the bottom.
-		</p>
-		<h4>Other items</h4>
-		<ul>
-			<li>Experienced mode is now correctly changed to speed mode in the games list.</li>
-			<li>Mod notes now show players.</li>
-			<li>Players can no longer chat blank lines by hitting space.</li>
-			<li>Banned players will have their general chats instantly deleted.</li>
-			<li>
-				Note that the way this app works on the dev side has changed slightly, if you are playing along at home please check the README. You'll also need to do
-				npm i this patch.
-			</li>
-		</ul>
-		<div className="ui header">
-			<p>Version 0.7.3 "grey" released 9-1-2017</p>
-		</div>
-		<h3>New feature: player reports</h3>
-		<p>
-			Double click a player's name in game (not card) to bring up an input field to alert moderators of bad behavior. Moderators now see a new icon that shows
-			player reports and will respond when available.
-		</p>
-		<h3>Feature: stats page</h3>
-		<p>
-			The <a href="https://secrethitler.io/stats">stats page</a> has been (mostly) restored, still needs a little work (undefined/not a number).
-		</p>
-		<p>Bug fix: a long standing bug preventing moderators from properly banning users who are not in game has been fixed.</p>
-		<p>Bug fix: the italic font is no longer semibold..</p>
-		<h3>Over 400 players have cardbacks! Wow!</h3>
-		<div className="ui header">
-			<p>Version 0.7.2 "black3" released 8-10-2017</p>
-		</div>
-		<ul>
-			<li>New game setting: disable player cardbacks. For those who find them distracting.</li>
-			<li>New game setting: application width slider. Prefer the old (or custom) width of the application? Move this slider as desired.</li>
-			<li>Bug fix: winning players can now click leave game as before. Sorry about that!</li>
-			<li>New mods: snake69sus & Ecoturtle</li>
-		</ul>
-		<div className="ui header">
-			<p>Version 0.7.1 "black2" released 8-10-2017</p>
-		</div>
-		<ul>
-			<li>Players that have a custom cardback now correctly shows the red X when dead.</li>
-			<li>General chat width is now working correctly.</li>
-		</ul>
-		<div className="ui header">
 			<p>Version 0.7.0 "black" released 8-7-2017</p>
 		</div>
 		<h3>New feature: player uploaded custom cardbacks!</h3>
@@ -605,22 +290,6 @@ const Changelog = () => (
 			<li>The "chat a blank line" bug was fixed.</li>
 			<li>Observer count was removed as it never worked right anyways.</li>
 			<li>Moderators can chat in observer chat in private games.</li>
-		</ul>
-		<div className="ui header">
-			<p>Version 0.6.6 "tuotuc" released 8-2-2017</p>
-		</div>
-		<h3>Small patch to fix a bug that could be used to crash the server thanks to player veggiemanz who now has a shiny orange name. Also these things:</h3>
-		<ul>
-			<li>
-				Shuffling of the deck when its less than 3 should now happen before any election, as per the rules. This will prevent the "nein all" problem when
-				there's few policies left.
-			</li>
-			<li>As you probably saw, there is a notice on the sign in/sign up modals to use Chrome or Firefox for the best experience.</li>
-			<li>Fascists who investigate hitler will not have hitler's name change to fascist color.</li>
-			<li>Hid the cardback section on settings as that is work in progress.</li>
-			<li>Gamelist sort should be better and no longer bounce around as much.</li>
-			<li>Confetti should no longer prevent the winners from being able to type in chat while its raining down.</li>
-			<li>A fix to chancellor discards not showing up in replays.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.6.0 "noise" released 6-12-2017</p>
