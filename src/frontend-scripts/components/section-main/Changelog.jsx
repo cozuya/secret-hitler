@@ -17,8 +17,9 @@ const Changelog = () => (
 			start of the game, in addition to one less fascist policy. There will still be 6 liberal policies in the deck to start.
 		</p>
 		<ul>
-			<li>The broken UI on the playerlist/scroll issues has been fixed.</li>
-			<li>Sorting of the playerlist had a bug which caused it to be really broken - now fixed.</li>
+			<li>The broken UI on the playerlist has been fixed.</li>
+			<li>Sorting of grey players on the playerlist had a bug which caused it to be really broken - now fixed.</li>
+			<li>The chat lock scroll issue has been fixed.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.2 released 1-6-2017</p>
