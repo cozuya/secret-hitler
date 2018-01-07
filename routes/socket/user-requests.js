@@ -53,7 +53,7 @@ module.exports.torIps = torIps;
 module.exports.sendModInfo = (socket, count) => {
 	const userNames = userList.map(user => user.userName);
 
-	Account.find({ username: userNames })
+	Account.find({ username: userNames, 'gameSettings.isPrivate': false })
 		.then(users => {
 			ModAction.find()
 				.sort({ $natural: -1 })

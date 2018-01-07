@@ -9,7 +9,7 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.12.3 released 1-6-2017</p>
+			<p>Version 0.12.3 released 1-6-2018</p>
 		</div>
 		<h3>New feature: rerebalanced 9p games.</h3>
 		<p>
@@ -22,7 +22,7 @@ const Changelog = () => (
 			<li>The chat lock scroll issue has been fixed.</li>
 		</ul>
 		<div className="ui header">
-			<p>Version 0.12.2 released 1-6-2017</p>
+			<p>Version 0.12.2 released 1-6-2018</p>
 		</div>
 		<h3>New feature: gamechat shows remaining policies (in order) at end of game.</h3>
 		<div style={{ textAlign: 'center' }}>
@@ -42,7 +42,7 @@ const Changelog = () => (
 			</li>
 		</ul>
 		<div className="ui header">
-			<p>Version 0.12.1 released 1-3-2017</p>
+			<p>Version 0.12.1 released 1-3-2018</p>
 		</div>
 		<ul>
 			<li>Players with less than 5 completed games can no longer chat in general chat, chat as an observer, or make player reports.</li>
@@ -51,7 +51,7 @@ const Changelog = () => (
 			<li>Please welcome new mods RavenCaps and JerMej1s.</li>
 		</ul>
 		<div className="ui header">
-			<p>Version 0.12.0 released 12-31-2017</p>
+			<p>Version 0.12.0 released 12-31-2018</p>
 		</div>
 		<h3>New feature: seasonal mode!</h3>
 		<h4>Important note: your stats are not gone. Read below before panicking.</h4>

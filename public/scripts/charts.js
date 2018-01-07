@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			);
 
 			new Chartist.Pie(
-				'#chart-nineplayer-rebalanced-games-winrate',
+				'#chart-nineplayer-rerebalanced-games-winrate',
 				processWinrateData(data.ninePlayerGameData.rerebalancedFascistWinCount, data.ninePlayerGameData.rerebalancedTotalGameCount),
 				{ width: '400px', height: '400px' }
 			);
