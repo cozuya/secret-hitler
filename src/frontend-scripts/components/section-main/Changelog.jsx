@@ -9,6 +9,13 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.12.4 released 1-6-2018</p>
+		</div>
+		<h3>Other items:</h3>
+		<ul>
+			<li>The site should look a bit better at smaller screen widths outside of games.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.12.3 released 1-6-2018</p>
 		</div>
 		<h3>New feature: rerebalanced 9p games.</h3>
