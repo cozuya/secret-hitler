@@ -39,7 +39,7 @@ export default class Generalchat extends React.Component {
 	}
 
 	componentDidUpdate() {
-		if (!this.state.lock) {
+		if (!this.state.lock && !this.state.discordEnabled) {
 			this.scrollbar.scrollToBottom();
 		}
 	}

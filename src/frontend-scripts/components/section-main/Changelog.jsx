@@ -14,6 +14,7 @@ const Changelog = () => (
 		<h3>Other items:</h3>
 		<ul>
 			<li>The site should look a bit better at smaller screen widths outside of games.</li>
+			<li>The discord widget in general chat now works again.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.3 released 1-6-2018</p>
