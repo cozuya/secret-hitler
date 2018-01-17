@@ -29,7 +29,7 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'MilkMan',
 	'Invidia',
 	'Wi1son',
-	'Rex1234',
+	'LordVader',
 	'voldemort'
 ]);
 
