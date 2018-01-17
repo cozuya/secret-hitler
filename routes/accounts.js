@@ -126,6 +126,10 @@ module.exports = () => {
 			res.status(403).json({
 				message: 'Sorry, creating new accounts is temporarily disabled.'
 			});
+		} else if (signupIP === '174.201.24.41' || signupIP === '199.231.178.151') {
+			res.status(401).json({
+				message: 'Beth, seek serious mental health counseling.'
+			});
 		} else {
 			let doesContainBadWord = false;
 
@@ -211,6 +215,13 @@ module.exports = () => {
 					let date;
 					let unbannedTime;
 
+					const ip2 =
+						req.headers['x-real-ip'] ||
+						req.headers['X-Real-IP'] ||
+						req.headers['X-Forwarded-For'] ||
+						req.headers['x-forwarded-for'] ||
+						req.connection.remoteAddress;
+
 					if (err) {
 						return next(err);
 					}
@@ -218,6 +229,14 @@ module.exports = () => {
 					if (ip) {
 						date = new Date().getTime();
 						unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+					}
+
+					if (ip === '174.201.24.41' || ip === '199.231.178.151' || ip2 === '174.201.24.41' || ip2 === '199.231.178.151') {
+						res.status(401).json({
+							message: 'Beth, seek serious mental health counseling.'
+						});
+
+						return;
 					}
 
 					if (ip && unbannedTime > date) {
