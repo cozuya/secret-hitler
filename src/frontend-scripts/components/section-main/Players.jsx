@@ -23,7 +23,7 @@ export default class Players extends React.Component {
 	}
 
 	handlePlayerDoubleClick(userName) {
-		if (!this.props.gameInfo.general.private) {
+		if (!this.props.gameInfo.general.private && (this.props.userInfo.userName && this.props.userInfo.userName !== userName)) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
@@ -138,15 +138,13 @@ export default class Players extends React.Component {
 				style={
 					player.customCardback &&
 					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks)) ? (
-						{
-							backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						}
-					) : (
-						{
-							backgroundImage: `url(../images/default_cardback.png)`
-						}
-					)
+					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+						? {
+								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+							}
+						: {
+								backgroundImage: `url(../images/default_cardback.png)`
+							}
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -178,11 +176,9 @@ export default class Players extends React.Component {
 			>
 				<div
 					title={
-						isBlind ? (
-							'Double click to open a modal to report this player to the moderator team'
-						) : (
-							`Double click to open a modal to report ${player.userName} to the moderator team`
-						)
+						isBlind
+							? 'Double click to open a modal to report this player to the moderator team'
+							: `Double click to open a modal to report ${player.userName} to the moderator team`
 					}
 					onDoubleClick={() => {
 						this.handlePlayerDoubleClick(player.userName);
