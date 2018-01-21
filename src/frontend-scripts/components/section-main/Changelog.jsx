@@ -11,6 +11,10 @@ const Changelog = () => (
 		<div className="ui header">
 			<p>Version 0.12.4 released </p>
 		</div>
+		<h3>
+			New feature: rebalanced 9p games (again) - starting deck starts with 2 less fascist policies instead of current 1. Stats page (should) be reset for 9p
+			rebalanced.
+		</h3>
 		<h3>Other items:</h3>
 		<ul>
 			<li>The site should look a bit better at smaller screen widths outside of games.</li>
@@ -215,10 +219,7 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
-				style={{ width: '30%', margin: '0 auto', display: 'block' }}
-				src="/images/em.png"
-			/>
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}

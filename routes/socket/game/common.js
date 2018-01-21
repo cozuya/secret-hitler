@@ -5,18 +5,18 @@ const _ = require('lodash');
 /**
  * @param {object} game - game to act on.
  * @param {boolean} is6pRebalanceStart - whether or not 6p is rebalanced
- * @param {boolean} is9pRerebalanceStart - whether or not 9p is rerebalanced
+ * @param {boolean} is9pRebalanceStart - whether or not 9p is rebalanced
  */
-const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceStart, is9pRerebalanceStart) => {
+const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceStart, is9pRebalanceStart) => {
 	const count = _.countBy(game.private.policies);
 
 	game.private.policies = _.shuffle(
 		game.private.policies.concat(
 			_.range(
 				1,
-				((game.general.rebalance7p && game.private.seatedPlayers.length === 7) || (game.general.rerebalance9p && game.private.seatedPlayers.length === 9)
+				(game.general.rebalance7p && game.private.seatedPlayers.length === 7
 					? 11
-					: 12) -
+					: game.general.rebalance9p2f && is9pRebalanceStart && game.private.seatedPlayers.length === 9 ? 10 : 12) -
 					(game.trackState.fascistPolicyCount + (count.fascist || 0))
 			)
 				.map(num => 'fascist')
@@ -36,15 +36,9 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 		];
 	}
 
-	if (is9pRerebalanceStart) {
-		game.trackState.liberalPolicyCount = 1;
-		game.trackState.enactedPolicies = [
-			{
-				cardBack: 'liberal',
-				isFlipped: true,
-				position: 'liberal1'
-			}
-		];
+	if (is9pRebalanceStart) {
+		game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
+		game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
 	}
 
 	// delete/comment below prior to deployment..

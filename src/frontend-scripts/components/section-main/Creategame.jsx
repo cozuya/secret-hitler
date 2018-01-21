@@ -203,7 +203,7 @@ export default class Creategame extends React.Component {
 					blindMode: this.state.blindMode,
 					rebalance6p: this.state.checkedRebalanceValues[0],
 					rebalance7p: this.state.checkedRebalanceValues[1],
-					rerebalance9p: this.state.checkedRebalanceValues[2],
+					rebalance9p2f: this.state.checkedRebalanceValues[2],
 					private: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 					privateOnly: this.state.privateonlygame,
 					electionCount: 0
@@ -1057,7 +1057,7 @@ export default class Creategame extends React.Component {
 								<input
 									type="checkbox"
 									checked={this.state.checkedSliderValues[index]}
-									disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? (index + 5 === this.state.sliderValues[0] ? true : false) : false}
+									disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? index + 5 === this.state.sliderValues[0] ? true : false : false}
 									onChange={() => {
 										sliderCheckboxClick(index);
 									}}
@@ -1269,19 +1269,19 @@ export default class Creategame extends React.Component {
 							</div>
 						)}
 						{this.props.userInfo.gameSettings &&
-							this.props.userInfo.gameSettings.isPrivate && (
-								<div className="four wide column privateonlygame">
-									<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
-									<div
-										className="ui fitted toggle checkbox"
-										ref={c => {
-											this.privateonlygame = c;
-										}}
-									>
-										<input type="checkbox" name="privateonlygame" defaultChecked={false} />
-									</div>
+						this.props.userInfo.gameSettings.isPrivate && (
+							<div className="four wide column privateonlygame">
+								<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
+								<div
+									className="ui fitted toggle checkbox"
+									ref={c => {
+										this.privateonlygame = c;
+									}}
+								>
+									<input type="checkbox" name="privateonlygame" defaultChecked={false} />
 								</div>
-							)}
+							</div>
+						)}
 					</div>
 				</div>
 

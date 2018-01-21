@@ -13,6 +13,7 @@ const mongoose = require('mongoose'),
 		rebalance7p: Boolean,
 		rebalance9p: Boolean,
 		rerebalance9p: Boolean,
+		rebalance9p2f: Boolean,
 		isTournyFirstRound: Boolean,
 		isTournySecondRound: Boolean,
 		chats: Array
