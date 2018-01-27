@@ -1084,7 +1084,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	if (
 		(player && player.isDead && !game.gameState.isCompleted) ||
 		(player && player.leftGame) ||
-		(!player && game.general.disableObserver) ||
+		(!player && game.general.disableObserver && !(MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) ||
 		(user && !player && user.wins + user.losses < 2)
 	) {
 		return;
