@@ -54,22 +54,26 @@ exports.handToPolicy = hand => {
 	if (hand.reds > 0 && hand.blues > 0) {
 		throw new Error('Expected hand to contain only a single card');
 	}
-
 	return hand.reds > 0 ? 'fascist' : 'liberal';
 };
 
 // consistently ordered 'fascist' first, followed by 'liberal'
 // (hand: Hand) => List[Policy]
 const handToPolicies = (exports.handToPolicies = hand => {
-	const toPolicies = (count, type) =>
-		Range(0, count)
-			.map(i => type)
-			.toList();
+	const toPolicies = (count, type) => {
+		if (count) {
+			return Range(0, count)
+				.map(i => type)
+				.toList();
+		}
+	};
 
 	const reds = toPolicies(hand.reds, 'fascist');
 	const blues = toPolicies(hand.blues, 'liberal');
 
-	return reds.concat(blues).toList();
+	if (reds) {
+		return reds.concat(blues).toList();
+	}
 });
 
 // (policy: Policy) => Hand

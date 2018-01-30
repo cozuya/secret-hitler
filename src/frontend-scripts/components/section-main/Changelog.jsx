@@ -9,7 +9,7 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.12.4 released </p>
+			<p>Version 0.12.4 released 1/30/2018</p>
 		</div>
 		<h3>New feature: rebalanced 9p games (again).</h3>
 		<p>Now, they start with 2 less fascist policies in the deck.</p>
@@ -17,7 +17,8 @@ const Changelog = () => (
 		<ul>
 			<li>The site should look a bit better at smaller screen widths outside of games.</li>
 			<li>The discord widget in general chat now works again.</li>
-			<li>The how to play page on the website has been updated with new pictures.</li>
+			<li>"Show chats" button in replays works again.</li>
+			<li>The how to play page on the website has been updated with new content.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.3 released 1-6-2018</p>

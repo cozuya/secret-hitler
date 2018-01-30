@@ -146,13 +146,13 @@ const buildPlayback = (replay, to) => {
 };
 
 const Replay = ({ replay, isSmall, to, replayChats }) => {
-	const { ticks, position, game } = replay,
-		snapshot = ticks.get(position),
-		playback = buildPlayback(replay, to),
-		gameInfo = toGameInfo(snapshot),
-		userInfo = { username: '' },
-		{ phase } = snapshot,
-		description = toDescription(snapshot, game);
+	const { ticks, position, game } = replay;
+	const snapshot = ticks.get(position);
+	const playback = buildPlayback(replay, to);
+	const gameInfo = toGameInfo(snapshot);
+	const userInfo = { username: '' };
+	const { phase } = snapshot;
+	const description = toDescription(snapshot, game);
 
 	return (
 		<section className={classnames({ small: isSmall, big: !isSmall }, 'game')}>

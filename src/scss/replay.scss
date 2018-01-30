@@ -5,6 +5,39 @@
 	background-color: #222;
 	padding: 0px;
 
+	.chats {
+		display: flex;
+		flex-direction: column-reverse;
+		height: 336px;
+		position: relative;
+		background: #f9faff;
+		font-size: 18px;
+		cursor: not-allowed;
+		overflow-y: scroll;
+		flex-grow: 1;
+		background: #181818;
+
+		.ui.list {
+			padding-left: 5px;
+			position: absolute;
+			bottom: 0;
+			line-height: 1.2;
+			max-height: 336px;
+			width: 98%;
+			margin: 0;
+
+			.item {
+				word-wrap: break-word;
+				line-height: 130%;
+				padding: 1px 0 0;
+
+				span {
+					max-width: 90%;
+				}
+			}
+		}
+	}
+
 	.scrollbar-container {
 		max-height: 382px;
 		overflow-y: scroll !important;

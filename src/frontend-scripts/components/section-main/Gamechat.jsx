@@ -373,24 +373,22 @@ class Gamechat extends React.Component {
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.tournyWins && renderCrowns(chat.tournyWins)}
 							<span
 								className={
-									playerListPlayer ? gameSettings && gameSettings.disablePlayerColorsInChat ? (
-										'chat-user'
-									) : isBlind ? (
-										'chat-user'
-									) : w + l > 49 ? (
-										`chat-user ${PLAYERCOLORS(
-											playerListPlayer,
-											!(
-												MODERATORS.includes(playerListPlayer.userName) ||
-												ADMINS.includes(playerListPlayer.userName) ||
-												EDITORS.includes(playerListPlayer.userName)
-											) || !(gameSettings && gameSettings.disableSeasonal)
-										)}`
-									) : (
-										'chat-user'
-									) : (
-										'chat-user'
-									)
+									playerListPlayer
+										? gameSettings && gameSettings.disablePlayerColorsInChat
+											? 'chat-user'
+											: isBlind
+												? 'chat-user'
+												: w + l > 49
+													? `chat-user ${PLAYERCOLORS(
+															playerListPlayer,
+															!(
+																MODERATORS.includes(playerListPlayer.userName) ||
+																ADMINS.includes(playerListPlayer.userName) ||
+																EDITORS.includes(playerListPlayer.userName)
+															) || !(gameSettings && gameSettings.disableSeasonal)
+														)}`
+													: 'chat-user'
+										: 'chat-user'
 								}
 							>
 								{isReplay || isSeated ? (
@@ -413,19 +411,15 @@ class Gamechat extends React.Component {
 								) : (
 									<span className="observer-chat">(Observer) </span>
 								)}
-								{this.props.isReplay || gameInfo.gameState.isTracksFlipped ? isSeated ? isBlind ? (
-									`${gameInfo.general.replacementNames[
-										gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)
-									]} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-								) : (
-									`${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-								) : (
-									chat.userName
-								) : isBlind ? (
-									'?'
-								) : (
-									chat.userName
-								)}
+								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
+									? isSeated
+										? isBlind
+											? `${
+													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
+												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+										: chat.userName
+									: isBlind ? '?' : chat.userName}
 								{': '}
 							</span>
 							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
@@ -524,11 +518,11 @@ class Gamechat extends React.Component {
 						Game
 					</a>
 					{gameInfo.general &&
-					!gameInfo.general.disableObserver && (
-						<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-							No observer chat
-						</a>
-					)}
+						!gameInfo.general.disableObserver && (
+							<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
+								No observer chat
+							</a>
+						)}
 					{userInfo.userName && (
 						<i
 							title="Click here to pop out notes"
@@ -544,12 +538,12 @@ class Gamechat extends React.Component {
 						/>
 					)}
 					{gameInfo.general &&
-					gameInfo.general.tournyInfo &&
-					(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
-						<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
-							Observe {gameInfo.general.tournyInfo.isRound1TableThatFinished2nd ? 'final' : 'other'} tournament table
-						</button>
-					)}
+						gameInfo.general.tournyInfo &&
+						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
+							<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
+								Observe {gameInfo.general.tournyInfo.isRound1TableThatFinished2nd ? 'final' : 'other'} tournament table
+							</button>
+						)}
 					<div className="right menu">
 						<WhiteListButton />
 						<WatchReplayButton />
