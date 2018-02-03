@@ -154,6 +154,8 @@ const Replay = ({ replay, isSmall, to, replayChats }) => {
 	const { phase } = snapshot;
 	const description = toDescription(snapshot, game);
 
+	gameInfo.general.uid = game.id;
+
 	return (
 		<section className={classnames({ small: isSmall, big: !isSmall }, 'game')}>
 			<div className="ui grid">
@@ -178,7 +180,7 @@ const Replay = ({ replay, isSmall, to, replayChats }) => {
 				</div>
 			</div>
 			<div className="row players-container">
-				<Players userList={{}} onClickedTakeSeat={null} socket={null} userInfo={userInfo} gameInfo={gameInfo} />
+				<Players userList={{}} onClickedTakeSeat={null} userInfo={userInfo} gameInfo={gameInfo} isReplay socket={socket} />
 			</div>
 		</section>
 	);
@@ -208,44 +210,45 @@ class ReplayWrapper extends React.Component {
 
 	render() {
 		const toExit = () => {
-				window.location.hash = '#/';
-				this.props.exit();
-			},
-			toggleChats = () => {
-				if (!this.state.replayChats.length) {
-					socket.emit('getReplayGameChats', this.props.replay.game.id);
-				}
-				this.setState({
-					chatsShown: !this.state.chatsShown
-				});
-			},
-			children = (() => {
-				switch (this.props.replay.status) {
-					case 'INITIAL':
-					case 'LOADING':
-						return (
-							<div className="ui active dimmer">
-								<div className="ui huge text loader">Loading</div>
-							</div>
-						);
-					case 'NOT_FOUND':
-						return (
-							<h1 className="not-found ui icon center aligned header">
-								<i className="settings icon" />
-								<div className="content">Replay not found</div>
-							</h1>
-						);
-					case 'READY':
-						return (
-							<Replay
-								replay={this.props.replay}
-								isSmall={this.props.isSmall}
-								to={this.props.to}
-								replayChats={this.state.chatsShown && this.state.replayChats.length ? this.state.replayChats : []}
-							/>
-						);
-				}
-			})();
+			window.location.hash = '#/';
+			this.props.exit();
+		};
+		const toggleChats = () => {
+			if (!this.state.replayChats.length) {
+				socket.emit('getReplayGameChats', this.props.replay.game.id);
+			}
+			this.setState({
+				chatsShown: !this.state.chatsShown
+			});
+		};
+
+		const children = (() => {
+			switch (this.props.replay.status) {
+				case 'INITIAL':
+				case 'LOADING':
+					return (
+						<div className="ui active dimmer">
+							<div className="ui huge text loader">Loading</div>
+						</div>
+					);
+				case 'NOT_FOUND':
+					return (
+						<h1 className="not-found ui icon center aligned header">
+							<i className="settings icon" />
+							<div className="content">Replay not found</div>
+						</h1>
+					);
+				case 'READY':
+					return (
+						<Replay
+							replay={this.props.replay}
+							isSmall={this.props.isSmall}
+							to={this.props.to}
+							replayChats={this.state.chatsShown && this.state.replayChats.length ? this.state.replayChats : []}
+						/>
+					);
+			}
+		})();
 
 		return (
 			<section id="replay" className="ui segment">

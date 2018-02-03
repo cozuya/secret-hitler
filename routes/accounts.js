@@ -152,9 +152,10 @@ module.exports = () => {
 					if (account && account.username === username.toLowerCase()) {
 						res.status(401).json({ message: 'Sorry, that account already exists.' });
 					} else {
-						BannedIP.findOne({ ip: signupIP }, (err, ip) => {
+						BannedIP.find({ ip: signupIP }, (err, ips) => {
 							let date;
 							let unbannedTime;
+							const ip = ips[ips.length - 1];
 
 							if (err) {
 								return next(err);
@@ -201,7 +202,7 @@ module.exports = () => {
 	app.post(
 		'/account/signin',
 		(req, res, next) => {
-			BannedIP.findOne(
+			BannedIP.find(
 				{
 					ip:
 						req.headers['x-real-ip'] ||
@@ -211,9 +212,10 @@ module.exports = () => {
 						req.connection.remoteAddress,
 					type: 'small' || 'big'
 				},
-				(err, ip) => {
+				(err, ips) => {
 					let date;
 					let unbannedTime;
+					const ip = ips[ips.length - 1];
 
 					const ip2 =
 						req.headers['x-real-ip'] ||
@@ -231,16 +233,23 @@ module.exports = () => {
 						unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
 					}
 
-					if (ip === '174.201.24.41' || ip === '199.231.178.151' || ip2 === '174.201.24.41' || ip2 === '199.231.178.151') {
+					if (
+						ip === '50.202.175.243' ||
+						ip2 === '50.202.175.243' ||
+						ip === '174.201.24.41' ||
+						ip === '199.231.178.151' ||
+						ip2 === '174.201.24.41' ||
+						ip2 === '199.231.178.151'
+					) {
 						res.status(401).json({
-							message: 'Beth, seek serious mental health counseling.'
+							message: 'Seek serious mental health counseling.'
 						});
 
 						return;
 					}
 
 					if (ip && unbannedTime > date) {
-						res.status(403).json({
+						res.status(401).json({
 							message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
 						});
 					} else {

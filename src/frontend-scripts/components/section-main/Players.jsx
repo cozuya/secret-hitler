@@ -23,7 +23,7 @@ export default class Players extends React.Component {
 	}
 
 	handlePlayerDoubleClick(userName) {
-		if (!this.props.gameInfo.general.private && (this.props.userInfo.userName && this.props.userInfo.userName !== userName)) {
+		if ((!this.props.gameInfo.general.private && this.props.userInfo.userName && this.props.userInfo.userName !== userName) || this.props.isReplay) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
@@ -315,7 +315,7 @@ export default class Players extends React.Component {
 
 		this.props.socket.emit('playerReport', {
 			uid: this.props.gameInfo.general.uid,
-			userName: this.props.userInfo.userName,
+			userName: this.props.userInfo.userName || 'from replay',
 			reportedPlayer: this.state.reportedPlayer,
 			reason: $('input[name="reason"]').attr('value'),
 			comment: this.state.reportTextValue
@@ -439,5 +439,6 @@ Players.propTypes = {
 	roleState: PropTypes.string,
 	userList: PropTypes.object,
 	socket: PropTypes.object,
-	selectedGamerole: PropTypes.func
+	selectedGamerole: PropTypes.func,
+	isReplay: PropTypes.bool
 };

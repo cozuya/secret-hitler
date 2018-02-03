@@ -311,6 +311,15 @@ export default class Moderation extends React.Component {
 				>
 					Set general chat sticky
 				</button>
+				<button
+					style={{ width: '100%', background: 'aquamarine' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('deleteBio');
+					}}
+				>
+					Delete/clear player bio
+				</button>
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable account creation</h4>
 					<div

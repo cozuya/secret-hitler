@@ -65,11 +65,12 @@ start development task runner:
 
 navigate to: http://localhost:8080
 
-You'll most likely need a browser extension such as Chrome's openMultiLogin to have multiple sessions on the same browser. No, incognito will not work.
+You'll most likely need a browser extension such as Chrome's openMultiLogin to have multiple sessions on the same browser. No, incognito will not work. Also it
+will be very helpful to make all of the "quickdefault" accounts with the default password so that you can log in to an account in one click.
 
 ## Running in production mode
 
-I'll leave you to figure that out. SH.IO is currently a $20/month digitalocean box using nginx, lets encrypt, and PM2.
+I'll leave you to figure that out. SH.IO is currently a $20/month ubuntu linux box using nginx, lets encrypt, PM2, and hosted on Digitalocean.
 
 ## Statistics
 
@@ -92,6 +93,6 @@ Veto power is slightly adjusted so that chancellors need to select a policy prio
 
 Adapted the rules explanation to account for online vs physical play.
 
-There is an option when players make a game to "rebalance" the 6, 7 and 9 player games - 6p starts with a fascist policy already enacted, 7p & 9p starts with
-one less fascist policy in the deck, 9p additionally has a "7th" liberal policy already enacted. Players (and results from analyzing statistics) have noted that
-these game modes are the worst balanced and not fun to play with the original ruleset.
+There is an option when players make a game to "rebalance" the 6, 7 and 9 player games - 6p starts with a fascist policy already enacted, 7p starts with one
+less fascist policy in the deck, 9p starts with two less facist policies in the deck. Players (and results from analyzing statistics) have noted that these game
+modes are not balanced well in the original ruleset.
