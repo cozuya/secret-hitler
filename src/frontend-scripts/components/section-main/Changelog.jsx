@@ -13,7 +13,7 @@ const Changelog = () => (
 		</div>
 		<h3>New feature: rebalanced 9p games (again).</h3>
 		<p>Now, they start with 2 less fascist policies in the deck. The stats page should be updated.</p>
-		<h3>New feature: games being remade will now show player roles briefly.</h3>
+		<h3>New feature: games being remade will now show player roles briefly (thanks to Z3r0-K0ol on github.)</h3>
 		<h3>Other items:</h3>
 		<ul>
 			<li>The site should look a bit better at smaller screen widths outside of games.</li>

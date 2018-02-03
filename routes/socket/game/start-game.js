@@ -368,6 +368,6 @@ module.exports = game => {
 	shufflePolicies(
 		game,
 		Boolean(game.private.seatedPlayers.length === 6) && game.general.rebalance6p,
-		Boolean(game.private.seatedPlayers.length === 9) && game.general.rerebalance9p
+		Boolean(game.private.seatedPlayers.length === 9) && game.general.rebalance9p2f
 	);
 };
