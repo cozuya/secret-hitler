@@ -66,7 +66,7 @@ start development task runner:
 navigate to: http://localhost:8080
 
 You'll most likely need a browser extension such as Chrome's openMultiLogin to have multiple sessions on the same browser. No, incognito will not work. Also it
-will be very helpful to make all of the "quickdefault" accounts with the default password so that you can log in to an account in one click.
+will be very helpful to make all of the "quickdefault" accounts with the default password, snipsnap, so that you can log in to an account in one click.
 
 ## Running in production mode
 
