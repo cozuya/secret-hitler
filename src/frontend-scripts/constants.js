@@ -30,7 +30,8 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Invidia',
 	'Wi1son',
 	'LordVader',
-	'voldemort'
+	'voldemort',
+	'goonbee'
 ]);
 
 const CURRENTSEASONNUMBER = 1;
