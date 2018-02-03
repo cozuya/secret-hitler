@@ -9,7 +9,7 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.12.4 released 2/3/2018</p>
+			<p>Version 0.12.4 released 2-3-2018</p>
 		</div>
 		<h3>New feature: rebalanced 9p games (again).</h3>
 		<p>Now, they start with 2 less fascist policies in the deck. The stats page should be updated.</p>
