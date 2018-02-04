@@ -111,7 +111,7 @@ class ProfileWrapper extends React.Component {
 			onClick: e => {
 				window.location.hash = `/replay/${game._id}`;
 			},
-			cells: [game.loyalty === 'liberal' ? 'Liberal' : 'Fascist', game.playerSize, game.isWinner ? 'Win' : 'Loss', this.formatDateString(game.date)]
+			cells: [game.loyalty === 'liberal' ? 'Liberal' : 'Fascist', game.isRebalanced ? game.playerSize + 'R' : game.playerSize, game.isWinner ? 'Win' : 'Loss', this.formatDateString(game.date)]
 		}));
 
 		return (
