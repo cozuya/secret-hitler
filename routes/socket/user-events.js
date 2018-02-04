@@ -290,7 +290,7 @@ if (process.env.NODE_ENV === 'production') {
 const handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (io.sockets.adapter.rooms[data.uid]) {
+	if (io.sockets.adapter.rooms[data.uid] && socket) {
 		socket.leave(data.uid);
 	}
 
@@ -978,14 +978,16 @@ module.exports.handleUpdatedRemakeGame = data => {
 			games.push(newGame);
 			sendGameList();
 			remakePlayerSocketIDs.forEach((id, index) => {
-				handleUserLeaveGame(io.sockets.sockets[id], {
-					uid: game.general.uid,
-					userName: remakePlayerNames[index],
-					isSeated: true,
-					isRemake: true
-				});
-				io.sockets.sockets[id].leave(game.general.uid);
-				sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
+				if (io.sockets.sockets[id]) {
+					io.sockets.sockets[id].leave(game.general.uid);
+					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
+					handleUserLeaveGame(io.sockets.sockets[id], {
+						uid: game.general.uid,
+						userName: remakePlayerNames[index],
+						isSeated: true,
+						isRemake: true
+					});
+				}
 			});
 			checkStartConditions(newGame);
 		}, 3000);
