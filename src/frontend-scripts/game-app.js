@@ -1,6 +1,6 @@
 'use strict';
 
-import babelPolyfill from 'babel-polyfill'; // eslint-disable-line
+import 'babel-polyfill'; // eslint-disable-line
 import $ from 'jquery';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { render } from 'react-dom';

@@ -135,9 +135,9 @@ export class App extends React.Component {
 		const isAuthed = Boolean(document.getElementById('game-container').classList.length);
 
 		/**
- 		 * @param {string} type - todo
- 		 * @param {string} uid - game identifier
- 		 */
+		 * @param {string} type - todo
+		 * @param {string} uid - game identifier
+		 */
 		const updateStatus = (type, uid) => {
 			if (userInfo.userName) {
 				socket.emit('updateUserStatus', userInfo.userName, type, uid);
@@ -308,7 +308,7 @@ export class App extends React.Component {
 		if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
 			classes += ' game';
 		}
-
+		console.log('Hello, World3!');
 		return (
 			<section
 				className="app-container"
