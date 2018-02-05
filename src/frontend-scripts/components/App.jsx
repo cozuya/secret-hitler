@@ -308,7 +308,7 @@ export class App extends React.Component {
 		if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
 			classes += ' game';
 		}
-		console.log('Hello, World3!');
+		console.log('3');
 		return (
 			<section
 				className="app-container"
