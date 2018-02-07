@@ -1,0 +1,6 @@
+// code:
+$('#three').profanityFilter({
+    replaceWith: ['people', 'nice'],
+    customSwears: ['nigger,nigga,whore,bitch,kkk'],
+    externalSwears: 'swearWords.json'
+})
