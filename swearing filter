@@ -1,7 +1,7 @@
  $obscenelist = Array
                   (
                           /* 'preg'                               => points, */
- -                        '/suka/i'                               => -5,   /* Usually bad words */
+ -                        '/cyka/i'                               => -5,   /* Usually bad words */
  +                        '/suck/i'                               => -5,   /* Usually bad words */
  +                        '/stupid/i'                             => -3,
  +                        '/haha/i'                               => -5,
