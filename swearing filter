@@ -1,0 +1,48 @@
+ $obscenelist = Array
+                (
+                        /* 'preg'                               => points, */
+                        '/suka/i'                               => -5,   /* Usually bad words */
+                        '/\bputa\b/i'                           => -7,
+                        '/\bhomo\b/i'                           => -7,
+                        '/\bGAY\b/'                             => -10,
+                        '/\bslut/i'                             => -5,
+                        '/\bass\b/i'                            => -10,
+                        '/\brape\b/i'                           => -7,
+                        '/\bpoop\b/i'                           => -10,
+                        '/\bcock\b/i'                           => -10,
+                        '/\bcrap\b/i'                           => -5,
+                        '/\bsex\b/i'                            => -5,
+                        '/\bnazi\b/i'                           => -3,
+                        '/\bneo-nazi\b/i'                       => +3,   /* False-positive */
+                        '/Penisula/'                            => +20,  /* False Positive */
+                        '/whore/i'                              => -15,
+                        '/nigger/i'                             => -20,
+                        '/\bnigga\b/i'                          => -20,
+                        '/cocksucker/i'                         => -20,
+                        '/assrape/i'                            => -15,
+                        '/motherfucker/i'                       => -20,
+                        '/wanker/i'                             => -20,
+                        '/\bcunt\b/i'                           => -20,
+                        '/faggot/i'                             => -20,
+                        '/fags/i'                               => -20,
+                        '/asshole/i'                            => -15,
+                        '/fuck ((yo)?u|h(er|im)|them|it)/i'     => -100, /* This looks like a personal attack */
+                        '/((yo)?u|s?he|we|they|it) sucks?/i'    => -100, /* This looks like a personal attack */
+                        '/666+\b/i'                             => -50   /* Though this has uses, it is commonly used by vandals */
+                );
+        $grammarlist = Array
+                (
+                        '/(.{1,4})\1{30}/'                      => -10,  /* Ugg .. the same letter(s) several times in a row. */
+                        '/\b[A-Z].*[.!?]\b/U'                   => +2,   /* This looks to be a correct sentence */
+                        '/\b[A-Z][^a-z]{30,}\b/U'               => -10,  /* All capitals? Looks like vandal activity */
+                        '/\b[^A-Z]{1500,}\b/U'                  => -10,  /* No capitals? Looks like vandal activity */
+                        '/!{5,}/i'                              => -10,  /* No wikipedia article needs '!!!!!' in it */
+                        '/!!+1+(one)*/i'                        => -30,  /* No wikipedia article needs '!!!11one' in it */
+                        '/\[\[.*\]\]/U'                         => +1,   /* Wiki links are good. */
+                        '/\{\{.*\}\}/U'                         => +5,   /* Wiki transcludes are good. */
+                        '/\{\{[iI]nfobox .*\}\}/U'              => +20,  /* Wiki infoboxes are good. */
+                        '/\[\[Category\:.*\]\]/iU'              => +3    /* Wiki categories are good. */
+                        
+                );
+        $scorelist = array_merge($obscenelist,$grammarlist);
+?>
