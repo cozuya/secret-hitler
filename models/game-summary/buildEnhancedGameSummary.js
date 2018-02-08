@@ -73,6 +73,9 @@ function buildEnhancedGameSummary(_summary) {
 	// Int
 	const playerSize = players.size;
 
+	// Boolean
+	const isRebalanced = summary.gameSetting.rebalance6p || summary.gameSetting.rebalance7p || summary.gameSetting.rebalance9p || summary.gameSetting.rerebalance9p;
+
 	// String
 	const winningTeam = (() => {
 		const lastTurn = turns.last();
@@ -158,6 +161,7 @@ function buildEnhancedGameSummary(_summary) {
 		playerSize,
 		hitlerZone,
 		winningTeam,
+		isRebalanced,
 		usernameOf,
 		tagOf,
 		indexOf,

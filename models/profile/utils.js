@@ -7,7 +7,7 @@ const Profile = require('./index'),
 
 // handles all stat computation logic
 function profileDelta(username, game) {
-	const { playerSize, date, id } = game,
+	const { playerSize, isRebalanced, date, id } = game,
 		isWinner = game.isWinner(username).value(),
 		loyalty = game.loyaltyOf(username).value(),
 		isLiberal = loyalty === 'liberal',
@@ -64,6 +64,7 @@ function profileDelta(username, game) {
 			loyalty,
 			playerSize,
 			isWinner,
+			isRebalanced,
 			date
 		}
 	};

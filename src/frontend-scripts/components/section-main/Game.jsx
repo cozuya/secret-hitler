@@ -20,6 +20,11 @@ export default class Game extends React.Component {
 				sound.pause();
 			}, 2400);
 		}
+		// All players have left the game, so we will return the observer to the main screen.
+		if ((!gameInfo.publicPlayersState.length && !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0)) ||
+			(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0 && !gameInfo.general.tournyInfo.queuedPlayers.length)) {
+			window.location.hash = '#/';
+		}
 	}
 
 	render() {

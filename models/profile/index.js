@@ -40,6 +40,7 @@ const mongoose = require('mongoose'),
 					loyalty: String,
 					playerSize: Number,
 					isWinner: Boolean,
+					isRebalanced: Boolean,
 					date: Date
 				}
 			],
