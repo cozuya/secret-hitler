@@ -27,21 +27,19 @@ function buildEnhancedGameSummary(_summary) {
 			'execution'
 		];
 
-		if (key === 'logs') {
-			return value
-				.map(log => {
-					const logOptions = Map(
-						options.map(o => {
-							const optValue = log[o] !== undefined ? some(log[o]) : none;
-							return [o, optValue];
-						})
-					).toObject();
-					return Object.assign({}, log, logOptions);
-				})
-				.toList();
-		} else {
-			return isIndexed(value) ? value.toList() : value.toObject();
-		}
+		return key === 'logs'
+			? value
+					.map(log => {
+						const logOptions = Map(
+							options.map(o => {
+								const optValue = log[o] !== undefined ? some(log[o]) : none;
+								return [o, optValue];
+							})
+						).toObject();
+						return Object.assign({}, log, logOptions);
+					})
+					.toList()
+			: isIndexed(value) ? value.toList() : value.toObject();
 	});
 
 	// String
@@ -74,7 +72,8 @@ function buildEnhancedGameSummary(_summary) {
 	const playerSize = players.size;
 
 	// Boolean
-	const isRebalanced = summary.gameSetting.rebalance6p || summary.gameSetting.rebalance7p || summary.gameSetting.rebalance9p || summary.gameSetting.rerebalance9p;
+	const isRebalanced =
+		summary.gameSetting.rebalance6p || summary.gameSetting.rebalance7p || summary.gameSetting.rebalance9p || summary.gameSetting.rerebalance9p;
 
 	// String
 	const winningTeam = (() => {
