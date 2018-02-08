@@ -1140,8 +1140,6 @@ module.exports.handleUpdateWhitelist = data => {
 module.exports.handleNewGeneralChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
-	// Check that they are who they say they are.  Should this do, uh, whatever
-	// the ws equivalent of a 401 unauth is?
 	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length || data.isPrivate) {
 		return;
 	}
@@ -1158,7 +1156,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	const seasonColor = user && user[`winsSeason${currentSeasonNumber}`] + user[`lossesSeason${currentSeasonNumber}`] > 49 ? PLAYERCOLORS(user, true) : '';
 	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
 
-	if (user && user.wins + user.losses > 1) {
+	if (user && (user.wins > 0 || user.losses > 0)) {
 		generalChatCount++;
 		data.time = new Date();
 		data.color = color;
