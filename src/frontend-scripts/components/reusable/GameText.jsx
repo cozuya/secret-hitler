@@ -1,6 +1,5 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { fromNullable } from 'option';
-
 /**
  * @param {object} segment - todo
  * @return {jsx}

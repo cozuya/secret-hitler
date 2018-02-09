@@ -52,7 +52,7 @@ Game.find({})
 		const fascistsWon = game.winningTeam === 'fascist';
 		const gameDate = moment(new Date(game.date)).format('l');
 		const rebalanced = (game.rebalance6p && playerCount === 6) || (game.rebalance7p && playerCount === 7) || (game.rebalance9p && playerCount === 9);
-		const rebalanced9p2f = game.rerebalance9p && playerCount === 9;
+		const rebalanced9p2f = game.rerebalance9p2f && playerCount === 9;
 
 		if (
 			gameDate === '5/13/2017' ||

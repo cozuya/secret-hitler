@@ -2,13 +2,9 @@ import { text, handToText, mapOpt1, capitalize } from '../../../utils';
 
 export default function(snapshot, game) {
 	const { isVotePassed, jas, neins } = game.turns.get(snapshot.turnNum);
-
 	const usernameOf = id => game.usernameOf(id).valueOrElse('');
-
 	const claimToText = claim => claim.valueOrElse(text('player', 'nothing'));
-
 	const claimHandToText = claim => claimToText(mapOpt1(handToText)(claim));
-
 	const gameOverText = supplied => supplied.concat([text(game.winningTeam, capitalize(game.winningTeam) + 's'), text('normal', 'win the game.')]);
 
 	switch (snapshot.phase) {

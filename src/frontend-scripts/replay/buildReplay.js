@@ -1,15 +1,10 @@
 /* eslint-disable no-use-before-define */
-
 import { List } from 'immutable';
 
 export default function buildReplay(game) {
 	// iterates through a game stepwise by phase, generating a list of snapshots along the way
 	function traverse(tick, list) {
-		if (tick.gameOver) {
-			return list.push(snapshot(tick));
-		} else {
-			return traverse(step(tick), list.push(snapshot(tick)));
-		}
+		return tick.gameOver ? list.push(snapshot(tick)) : traverse(step(tick), list.push(snapshot(tick)));
 	}
 
 	// given the current turn and phase, returns a slice of that turn showing the game at that instant in time
