@@ -135,7 +135,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	saveGame(game);
 
-	if (!game.general.private) {
+	if (!game.general.private && !game.general.casualGame) {
 		Account.find({
 			username: { $in: seatedPlayers.map(player => player.userName) }
 		})

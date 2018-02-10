@@ -27,6 +27,7 @@ export default class Creategame extends React.Component {
 			checkedRebalanceValues: new Array(3).fill(true),
 			privateonlygame: false,
 			isTourny: false,
+			casualgame: false,
 			blindMode: false
 		};
 	}
@@ -125,6 +126,15 @@ export default class Creategame extends React.Component {
 				self.setState({ disableobserver: false });
 			}
 		});
+
+		$(this.casualgame).checkbox({
+			onChecked() {
+				self.setState({ casualgame: true });
+			},
+			onUnchecked() {
+				self.setState({ casualgame: false });
+			}
+		});
 	}
 
 	sliderChange(sliderValues) {
@@ -201,6 +211,7 @@ export default class Creategame extends React.Component {
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
 					blindMode: this.state.blindMode,
+					casualGame: this.state.casualgame,
 					rebalance6p: this.state.checkedRebalanceValues[0],
 					rebalance7p: this.state.checkedRebalanceValues[1],
 					rebalance9p2f: this.state.checkedRebalanceValues[2],
@@ -1268,6 +1279,18 @@ export default class Creategame extends React.Component {
 								</div>
 							</div>
 						)}
+						<div className="four wide column">
+							<i className="big handshake icon" />
+							<h4 className="ui header">Casual game - this game will not count towards your wins and losses</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.casualgame = c;
+								}}
+							>
+								<input type="checkbox" name="casualgame" defaultChecked={false} />
+							</div>
+						</div>
 						{this.props.userInfo.gameSettings &&
 							this.props.userInfo.gameSettings.isPrivate && (
 								<div className="four wide column privateonlygame">
