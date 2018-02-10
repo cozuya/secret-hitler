@@ -46,6 +46,8 @@ class Tracks extends React.Component {
 		let privTooltip;
 		let rainbowgame;
 		let rainbowgameTooltip;
+		let casualgame;
+		let casualgameTooltip;
 
 		{
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
@@ -103,6 +105,11 @@ class Tracks extends React.Component {
 			rainbowgameTooltip = 'Experienced Game';
 		}
 
+		if (game.casualGame) {
+			casualgame = <i className="handshake icon" />;
+			casualgameTooltip = 'Casual game - results do not count towards wins and losses';
+		}
+
 		return (
 			<div className="options-icons-container">
 				<span className="rebalanced">
@@ -125,6 +132,9 @@ class Tracks extends React.Component {
 				</span>
 				<span>
 					<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={casualgame} content={casualgameTooltip} />
 				</span>
 			</div>
 		);

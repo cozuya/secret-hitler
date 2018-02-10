@@ -1067,9 +1067,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 			clearInterval(game.private.remakeTimer);
 		}
 		chat.chat.push({
-			text: ` has rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount}/${
-				minimumRemakeVoteCount
-			})`
+			text: ` has rescinded their vote to ${
+				game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
+			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
 	}
 	game.chats.push(chat);

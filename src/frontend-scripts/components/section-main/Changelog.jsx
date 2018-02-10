@@ -9,6 +9,11 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.12.5 released</p>
+		</div>
+		<h3>New feature: casual game mode setting.</h3>
+		<p>Select this to play a game where the results do not affect the player's wins or losses.</p>
+		<div className="ui header">
 			<p>Version 0.12.4 released 2-3-2018</p>
 		</div>
 		<h3>New feature: rebalanced 9p games (again).</h3>
