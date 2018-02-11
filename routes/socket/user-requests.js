@@ -161,6 +161,7 @@ module.exports.sendGameList = socket => {
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
 		excludedPlayerCount: game.general.excludedPlayerCount,
+		casualGame: game.general.casualGame,
 		isTourny: game.general.isTourny,
 		tournyStatus: (() => {
 			if (game.general.isTourny) {

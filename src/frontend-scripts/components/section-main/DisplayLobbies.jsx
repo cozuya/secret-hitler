@@ -73,6 +73,13 @@ const DisplayLobbies = props => {
 		let privTooltip;
 		let privateOnly;
 		let privateOnlyTooltip;
+		let casualGame;
+		let casualGameTooltip;
+
+		if (game.casualGame) {
+			casualGame = <i className="handshake icon" />;
+			casualGameTooltip = 'Casual game - results do not count for wins or losses';
+		}
 
 		if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
 			// ugly but lazy
@@ -147,6 +154,9 @@ const DisplayLobbies = props => {
 
 		return (
 			<div className="options-icons-container">
+				<span data-tooltip={casualGameTooltip} data-inverted="">
+					{casualGame}
+				</span>
 				<span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
 					{rebalance}
 				</span>
