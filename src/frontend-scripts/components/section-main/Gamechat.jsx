@@ -370,7 +370,10 @@ class Gamechat extends React.Component {
 					) : (
 						<div className="item" key={i}>
 							{this.handleTimestamps(chat.timestamp)}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.tournyWins && renderCrowns(chat.tournyWins)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								chat.tournyWins &&
+								!isBlind &&
+								renderCrowns(chat.tournyWins)}
 							<span
 								className={
 									playerListPlayer
