@@ -320,6 +320,11 @@ module.exports.selectChancellor = data => {
  */
 module.exports.selectVoting = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game) {
+		return;
+	}
+
 	const { seatedPlayers } = game.private;
 	const { experiencedMode } = game.general;
 	const player = seatedPlayers.find(player => player.userName === data.userName);
