@@ -29,6 +29,7 @@ general
 	uid string
 	rainbowgame bool
   private bool
+	gameCreatorName string
 	timeStarted date
 	timeCreated date
 	experiencedMode bool

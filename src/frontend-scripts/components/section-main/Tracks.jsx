@@ -194,11 +194,7 @@ class Tracks extends React.Component {
 				<EnactedPolicies gameInfo={gameInfo} />
 				<div>
 					<div className="game-name">
-						{(() => {
-							if (gameInfo.general.flag !== 'none') {
-								return <i className={`ui flag ${gameInfo.general.flag}`} />;
-							}
-						})()}
+						{gameInfo.general.flag !== 'none' && <i className={`ui flag ${gameInfo.general.flag}`} />}
 						<span>{gameInfo.general.name}</span>
 					</div>
 					<div className="option-icons">{this.optionIcons(gameInfo)}</div>

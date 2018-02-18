@@ -200,6 +200,7 @@ export default class Creategame extends React.Component {
 							: 'New Game',
 					flag: $creategame.find('div.flag input').val() || 'none',
 					minPlayersCount: this.state.sliderValues[0],
+					gameCreatorName: userInfo.userName,
 					gameCreatorBlacklist: userInfo.gameSettings.blacklist,
 					excludedPlayerCount,
 					maxPlayersCount: this.state.isTourny ? undefined : this.state.sliderValues[1],
