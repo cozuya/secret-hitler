@@ -158,6 +158,7 @@ module.exports.sendGameList = socket => {
 		customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
 		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
 		seatedCount: game.publicPlayersState.length,
+		gameCreatorName: game.general.gameCreatorName,
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
 		excludedPlayerCount: game.general.excludedPlayerCount,
