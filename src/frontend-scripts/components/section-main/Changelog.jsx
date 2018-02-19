@@ -13,6 +13,12 @@ const Changelog = () => (
 		</div>
 		<h3>New feature: casual game mode setting.</h3>
 		<p>Select this to play a game where the results do not affect the player's wins or losses.</p>
+		<h3>Other items:</h3>
+		<ul>
+			<li>Thanks to a contribution, tournament crowns are no longer visible in blind mode.</li>
+			<li>Please welcome new moderators safi, Wilmeister, and MrEth3real.</li>
+			<li>Stats for rebalanced (-2 fascist policy) 9 player games might be working..</li>
+		</ul>
 		<div className="ui header">
 			<p>Version 0.12.4 released 2-3-2018</p>
 		</div>

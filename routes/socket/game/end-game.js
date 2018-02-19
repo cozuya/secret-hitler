@@ -50,7 +50,7 @@ const saveGame = game => {
 			updateProfiles(enhanced, { cache: true });
 			summary.save();
 		} else {
-			console.log(summary, 'problem with summary');
+			// console.log(summary, 'problem with summary');
 		}
 	} catch (error) {
 		console.log(error, 'error in enhanced/end-game');
