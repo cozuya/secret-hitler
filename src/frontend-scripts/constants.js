@@ -7,12 +7,13 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Rose',
 	'TheJustStopO',
 	'Number5',
-	'Costley',
 	'Ophxlia',
 	'Idrissa',
 	'cayseron',
 	'maki2',
-	'jazz'
+	'safi',
+	'Wilmeister',
+	'MrEth3real'
 ]);
 
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Faaiz1999', 'Invidia']);
