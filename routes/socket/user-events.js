@@ -875,6 +875,9 @@ module.exports.handleAddNewClaim = data => {
  */
 module.exports.handleUpdatedRemakeGame = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+	if (!game) {
+		return;
+	}
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { publicPlayersState } = game;
 	const playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName);
