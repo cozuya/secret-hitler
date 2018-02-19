@@ -370,11 +370,10 @@ class Playerlist extends React.Component {
 							70%.
 						</p>
 						<p>
-							Also, <span className="admin">Administrators</span> have a red color with a dark red (A) and are always on top;{' '}
-							<span className="editorcolor">Editors</span>, placed under Administrators, have an aqua color with a red (E) and appear at the top; and{' '}
-							<span className="moderatorcolor">Moderators</span>, placed under Editors, have a blue color with a light red (M) and also appear at the top, and{' '}
-							<span className="contributer">Contributors</span> get a special orange color as well! Contribute code to this open source project to be endlessly
-							pestered about why you're orange.
+							Also, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a <span className="admin-name">dark red (A)</span> and are always on top;{' '}
+++							<span className="cbell">Ed</span><span className="max">it</span><span className="invidia">or</span><span className="faaiz">s</span>, placed under <span className="admin">Administrators</span>, have a range of special colors to stand out as well as a <span className="editor-name">red (E)</span> and appear at the top; and{' '}
+++							<span className="moderatorcolor">Moderators</span>, placed under <span className="cbell">Ed</span><span className="max">it</span><span className="invidia">or</span><span className="faaiz">s</span>, have a <span className="moderatorcolor">blue color</span> with a <span className="moderator-name">light red (M)</span> and also appear at the top, and{' '}
+++							<span className="contributer">Contributors</span> get a <span className="contributer">special orange color</span> as well! Contribute code to this open source project to be endlessly pestered about why you're <span className="contributer">orange</span>.
 						</p>
 					</div>
 					{Object.keys(this.props.userList).length && (
