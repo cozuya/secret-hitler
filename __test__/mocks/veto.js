@@ -2,6 +2,12 @@
 module.exports = {
 	"_id":"veto",
 	"date":"2017-06-25T23:58:27.945Z",
+	"gameSetting" : {
+		rebalance6p: false,
+		rebalance7p: false,
+		rebalance9p: false,
+		rerebalance9p: false
+	},
 	"logs":[
 		// turn 0
 		{

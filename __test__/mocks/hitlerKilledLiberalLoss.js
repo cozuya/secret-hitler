@@ -1,6 +1,12 @@
 module.exports = {
    "_id":"hitler-killed-liberal-loss",
    "date":"2017-06-26T20:26:04.058Z",
+    "gameSetting" : {
+		rebalance6p: false,
+		rebalance7p: false,
+		rebalance9p: false,
+		rerebalance9p: false
+	},
    "logs":[
       {
          "presidentId":0,

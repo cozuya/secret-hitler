@@ -9,6 +9,12 @@ describe('GameSummaryBuilder', () => {
 		gsb = new GameSummaryBuilder(
 			'devgame',
 			new Date(),
+			{
+				rebalance6p: false,
+				rebalance7p: false,
+				rebalance9p: false,
+				rerebalance9p: false
+			},
 			[ 'liberal', 'fascist', 'liberal', 'fascist', 'liberal' ]
 		);
 
