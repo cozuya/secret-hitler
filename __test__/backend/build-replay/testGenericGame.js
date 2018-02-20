@@ -46,7 +46,7 @@ export default () => {
 
 		const testLegislation = (govt, turnNum, hand, discard, claim) => {
 			if (!hand) {
-				expect(findPhase(govt + 'Legislation'), turnNum).toBeUndefined();
+				expect(findPhase(govt + 'Legislation', turnNum)).toBeUndefined();
 				return;
 			}
 

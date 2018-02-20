@@ -1,6 +1,12 @@
 // liberal win
 module.exports = {
         "_id" : "liberal-win-7p",
+        "gameSetting" : {
+        rebalance6p: false,
+        rebalance7p: false,
+        rebalance9p: false,
+        rerebalance9p: false
+        },
         "logs" : [
             {
                 "presidentId" : 0,
