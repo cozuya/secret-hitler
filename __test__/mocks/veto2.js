@@ -1,6 +1,12 @@
 // all veto situations
 module.exports = {
 	"_id" : "veto2",
+	"gameSetting" : {
+		rebalance6p: false,
+		rebalance7p: false,
+		rebalance9p: false,
+		rerebalance9p: false
+	},
 	"logs" : [
 		// turn 0
 		{
