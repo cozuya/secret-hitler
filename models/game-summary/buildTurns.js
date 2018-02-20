@@ -23,12 +23,42 @@ const buildTurns = (turns, logs, players, gameSetting) => {
 };
 
 const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
+	let initialDeckSize = 17;
+	let initialTrack = {
+		reds: 0,
+		blues: 0
+	};
+	if (gameSetting.rebalance6p) {
+		initialDeckSize = 16;
+		initialTrack = {
+			reds: 1,
+			blues: 0
+		};
+	} else if (gameSetting.rebalance7p) {
+		initialDeckSize = 16;
+		initialTrack = {
+			reds: 0,
+			blues: 0
+		};
+	} else if (gameSetting.rebalance9p) {
+		initialDeckSize = 16;
+		initialTrack = {
+			reds: 0,
+			blues: 1
+		};
+	} else if (gameSetting.rebalance9p2f) {
+		initialDeckSize = 15;
+		initialTrack = {
+			reds: 0,
+			blues: 0
+		};
+	}
 	const prevTurn = prevTurnOpt.valueOrElse({
 		isVotePassed: true,
 		afterDeadPlayers: List(),
 		execution: none,
-		afterDeckSize: (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p || gameSetting.rerebalance9p) ? 16 : 17,
-		afterTrack: { reds: gameSetting.rebalance6p ? 1 : 0, blues: gameSetting.rerebalance9p ? 1 : 0 },
+		afterDeckSize: initialDeckSize,
+		afterTrack: initialTrack,
 		afterElectionTracker: 0,
 		enactedPolicy: none
 	});
