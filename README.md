@@ -39,27 +39,34 @@ then
 
 > cd secret-hitler
 
-> echo MONGOPORT=27017 > .env
-
 > npm i -g gulp nodemon
 
 > npm i
 
+> touch .env
+
+Open the .env file in an editor, add the following lines to it:
+
+> MONGOPORT=27017
+> SECRETSESSIONKEY='hunter2'
+
+Save and close this file.
+
 ## Running in dev mode
 
-build assets (first time only):
+Build assets (first time only):
 
 > gulp build
 
-start mongo:
+Start mongo:
 
 > npm run db 27017
 
-start express server:
+Start express server:
 
 > npm start
 
-start development task runner:
+Start development task runner:
 
 > gulp
 
