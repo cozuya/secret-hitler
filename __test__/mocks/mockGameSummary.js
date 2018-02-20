@@ -6,6 +6,12 @@
 module.exports = {
 	"_id" : "generic-game",
 	"date" : new Date(),
+	"gameSetting" : {
+		rebalance6p: false,
+		rebalance7p: false,
+		rebalance9p: false,
+		rerebalance9p: false
+	},
 	"logs" : [
 		// turn 0
 		{
