@@ -48,6 +48,7 @@ then
 Open the .env file in an editor, add the following lines to it:
 
 > MONGOPORT=27017
+
 > SECRETSESSIONKEY='hunter2'
 
 Save and close this file.
