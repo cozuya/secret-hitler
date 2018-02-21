@@ -9,15 +9,19 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.12.5 released</p>
+			<p>Version 0.12.5 released 2-20-2018</p>
 		</div>
+		<h3>Bug fix: replays are back!</h3>
+		<p>Thanks to a contribution a long standing bug in replays has been fixed and should work for all recent games.</p>
+		<h3>New feature: 3 new emojis - ThumbsUp, CNH, and Shrug. Check them out.</h3>
 		<h3>New feature: casual game mode setting.</h3>
 		<p>Select this to play a game where the results do not affect the player's wins or losses.</p>
 		<h3>Other items:</h3>
 		<ul>
 			<li>Thanks to a contribution, tournament crowns are no longer visible in blind mode.</li>
 			<li>Please welcome new moderators safi, Wilmeister, and MrEth3real.</li>
-			<li>Stats for rebalanced (-2 fascist policy) 9 player games might be working..</li>
+			<li>Stats for rebalanced (-2 fascist policy) 9 player games might be working tomorrow.. (data collection occurs at 4am)</li>
+			<li>There's a new poll on the polls page re: length of seasons</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.4 released 2-3-2018</p>
