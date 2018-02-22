@@ -39,8 +39,6 @@ then
 
 > cd secret-hitler
 
-> touch .env
-
 > printf "MONGOPORT=27017\r\nSECRETSESSIONKEY='hunter2'\r\n" > .env
 
 > npm i -g gulp nodemon
