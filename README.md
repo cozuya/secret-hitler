@@ -39,19 +39,13 @@ then
 
 > cd secret-hitler
 
+> touch .env
+
+> printf "MONGOPORT=27017\r\nSECRETSESSIONKEY='hunter2'\r\n" > .env
+
 > npm i -g gulp nodemon
 
 > npm i
-
-> touch .env
-
-Open the .env file in an editor, add the following lines to it:
-
-> MONGOPORT=27017
-
-> SECRETSESSIONKEY='hunter2'
-
-Save and close this file.
 
 ## Running in dev mode
 
