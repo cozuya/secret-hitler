@@ -338,6 +338,9 @@ const handleUserLeaveGame = (socket, data) => {
 	sendGameList();
 };
 
+module.exports.handleChangeUsername = (socket, data) => {
+	console.log(data);
+};
 /**
  * @param {object} socket - user socket reference.
  * @param {object} data - from socket emit.
