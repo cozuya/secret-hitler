@@ -4,10 +4,6 @@
 	margin: 10px;
 	//background: #100000;
 
-	> .ui.grid {
-		//max-height: 470px;
-		//overflow-y: scroll;
-	}
 	.content > button {
 		position: absolute;
 		left: 50px;
@@ -19,7 +15,7 @@
 	.profile-search {
 		position: absolute;
 		top: 0;
-		left: 490px;
+		left: 210px;
 		display: flex;
 		flex-direction: row;
 
@@ -31,6 +27,13 @@
 		button {
 			padding: 8px;
 		}
+	}
+
+	.namechange-button {
+		position: absolute !important;
+		top: 0 !important;
+		left: 600px !important;
+		background: red !important;
 	}
 
 	.popups {
