@@ -94,6 +94,7 @@ export default class Reports extends React.Component {
 							>
 								Reporting User {sortType === 'reportingUser' && <i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
+							<th>Game Type</th>
 							<th>Resolved</th>
 						</tr>
 					</thead>
@@ -134,6 +135,7 @@ export default class Reports extends React.Component {
 									<td>{report.reason}</td>
 									<td>{report.comment}</td>
 									<td>{report.reportingPlayer}</td>
+									<td>{report.gameType}</td>
 									<td>
 										<Checkbox
 											style={{ left: '20px', top: '4px' }}

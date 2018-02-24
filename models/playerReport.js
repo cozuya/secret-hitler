@@ -6,6 +6,7 @@ const mongoose = require('mongoose'),
 		reportedPlayer: String,
 		reason: String,
 		reportingPlayer: String,
+		gameType: String,
 		comment: String,
 		isActive: Boolean
 	});
