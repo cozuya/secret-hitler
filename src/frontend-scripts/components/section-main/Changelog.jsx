@@ -9,6 +9,14 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.12.6 released -2018</p>
+		</div>
+		<h3>New feature: one time name change.</h3>
+		<p>
+			Dislike your old name, but want to keep your stats and profile? Hit the big new big red button on your settings page to change your name. This only works
+			once for every account so choose wisely.
+		</p>
+		<div className="ui header">
 			<p>Version 0.12.5 released 2-20-2018</p>
 		</div>
 		<h3>Bug fix: replays are back!</h3>

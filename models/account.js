@@ -31,6 +31,7 @@ const mongoose = require('mongoose'),
 			privateToggleTime: Number,
 			blacklist: Array,
 			tournyWins: Array,
+			hasChangedName: Boolean,
 			gameNotes: {
 				top: Number,
 				left: Number,
