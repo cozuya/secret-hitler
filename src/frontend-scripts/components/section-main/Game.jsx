@@ -10,7 +10,14 @@ export default class Game extends React.Component {
 	componentDidUpdate(prevProps) {
 		const { userInfo, gameInfo } = this.props;
 
-		if (userInfo.isSeated && gameInfo.gameState && gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) {
+		console.log(gameInfo, 'gameinfoz');
+		if (
+			(userInfo.isSeated && gameInfo.gameState && gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) ||
+			(gameInfo.general.isTourny &&
+				gameInfo.general.status === 'Tournament starts in 5 seconds.' &&
+				prevProps.gameInfo.general.status !== 'Tournament starts in 5 seconds.')
+		) {
+			console.log('Hello, World!');
 			const sound = document.createElement('audio');
 
 			sound.setAttribute('src', '../../alarm.mp3');
@@ -21,8 +28,10 @@ export default class Game extends React.Component {
 			}, 2400);
 		}
 		// All players have left the game, so we will return the observer to the main screen.
-		if ((!gameInfo.publicPlayersState.length && !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0)) ||
-			(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0 && !gameInfo.general.tournyInfo.queuedPlayers.length)) {
+		if (
+			(!gameInfo.publicPlayersState.length && !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0)) ||
+			(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0 && !gameInfo.general.tournyInfo.queuedPlayers.length)
+		) {
 			window.location.hash = '#/';
 		}
 	}
