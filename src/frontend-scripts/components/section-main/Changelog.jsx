@@ -16,6 +16,9 @@ const Changelog = () => (
 			Dislike your old name, but want to keep your stats and profile? Hit the big new big red button on your settings page to change your name. This only works
 			once for every account so choose wisely.
 		</p>
+		<ul>
+			<li>Tournaments now make the usual "bong" noise when they start.</li>
+		</ul>
 		<div className="ui header">
 			<p>Version 0.12.5 released 2-20-2018</p>
 		</div>
