@@ -1128,8 +1128,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 module.exports.handleAddNewGameChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 	const game = games.find(el => el.general.uid === data.uid);
+	const { chat } = data;
 
-	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length || !game) {
+	if (!passport || !passport.user || passport.user !== data.userName || chat.length > 300 || !chat.trim().length || !game) {
 		return;
 	}
 
@@ -1158,12 +1159,31 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	}
 
 	data.timestamp = new Date();
-	game.chats.push(data);
 
-	if (game.gameState.isTracksFlipped) {
-		sendInProgressGameUpdate(game);
-	} else {
-		io.in(data.uid).emit('gameUpdate', secureGame(game));
+	if (
+		/^Ping/i.test(chat) &&
+		game.gameState.isStarted &&
+		player &&
+		(parseInt(chat.charAt(4)) <= game.publicPlayersState.length || chat.substr(4, 5) === '10') &&
+		(!player.pingTime || new Date().getTime() - player.pingTime > 180000)
+	) {
+		const affectedPlayerNumber = parseInt(chat.substr(4, 5) === '10' ? 10 : chat.charAt(4)) - 1;
+		const affectedSocketId = Object.keys(io.sockets.sockets).find(
+			socketId =>
+				io.sockets.sockets[socketId].handshake.session.passport &&
+				io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
+		);
+
+		player.pingTime = new Date().getTime();
+		io.sockets.sockets[affectedSocketId].emit('pingPlayer', `Secret Hitler IO: Player ${data.userName} just pinged you.`);
+	} else if (!/^Ping/i.test(chat)) {
+		game.chats.push(data);
+
+		if (game.gameState.isTracksFlipped) {
+			sendInProgressGameUpdate(game);
+		} else {
+			io.in(data.uid).emit('gameUpdate', secureGame(game));
+		}
 	}
 };
 

@@ -28,6 +28,18 @@ export class Main extends React.Component {
 		};
 	}
 
+	componentDidMount() {
+		const { Notification } = window;
+
+		if ('Notification' in window && Notification.permission === 'default') {
+			Notification.requestPermission(permission => {
+				if (permission === 'granted') {
+					new Notification('Players may now "ping" you.');
+				}
+			});
+		}
+	}
+
 	render() {
 		let classes = 'section-main';
 

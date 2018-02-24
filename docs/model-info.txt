@@ -66,6 +66,7 @@ trackState
 		location string offscreen center liberal0 ... fascist0 ...
 publicPlayersState array
 	obj
+		pingTime number using getTime()
 		governmentStatus string isPendingPresident isPendingChancellor
 		isDead bool
 		isConfetti bool

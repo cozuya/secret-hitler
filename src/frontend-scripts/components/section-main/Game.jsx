@@ -10,14 +10,12 @@ export default class Game extends React.Component {
 	componentDidUpdate(prevProps) {
 		const { userInfo, gameInfo } = this.props;
 
-		console.log(gameInfo, 'gameinfoz');
 		if (
 			(userInfo.isSeated && gameInfo.gameState && gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) ||
 			(gameInfo.general.isTourny &&
 				gameInfo.general.status === 'Tournament starts in 5 seconds.' &&
 				prevProps.gameInfo.general.status !== 'Tournament starts in 5 seconds.')
 		) {
-			console.log('Hello, World!');
 			const sound = document.createElement('audio');
 
 			sound.setAttribute('src', '../../alarm.mp3');

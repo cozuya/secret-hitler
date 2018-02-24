@@ -14,11 +14,24 @@ class Tracks extends React.Component {
 	}
 
 	componentDidMount() {
+		const { Notification } = window;
+
 		this._ismounted = true;
+
+		if (Notification.permission === 'granted') {
+			this.props.socket.on('pingPlayer', data => {
+				console.log(data);
+				new Notification(data);
+			});
+		}
 	}
 
 	componentWillUnmount() {
 		this._ismounted = false;
+
+		if (Notification.permission === 'granted') {
+			this.props.socket.off('pingPlayer');
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {

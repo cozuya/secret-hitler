@@ -11,6 +11,24 @@ const Changelog = () => (
 		<div className="ui header">
 			<p>Version 0.12.6 released -2018</p>
 		</div>
+		<h3>New feature: player notifications (pings)</h3>
+		<p>When you enter the site for the first time, you will receive a notification that looks like this:</p>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/notification-permission.png" style={{ border: '1px solid grey' }} />
+		</div>
+		<small>Obviously not localhost..</small>
+		<p>
+			If you enable this feature, other seated players may now send you (and you may as well) a "wake up" notification. If someone types in "Ping5", the player
+			in seat 5, if notifications are enabled, will see a screen like this:
+		</p>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/notification.png" style={{ border: '1px solid grey' }} />
+		</div>
+		<p>
+			Players may use the ping feature only once every 3 minutes, and only in games you're seated in that have been started. This feature is only to be used for
+			players who appear AFK - do not abuse this feature. Reminder: if you wind up finding these irritating, you can revoke permission for them in your browser
+			settings.
+		</p>
 		<h3>New feature: one time name change.</h3>
 		<p>
 			Dislike your old name, but want to keep your stats and profile? Hit the big new big red button on your settings page to change your name. This only works

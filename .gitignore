@@ -10,6 +10,7 @@ apps
 etc
 *.xml
 .vlt
+.env-prod
 content
 ./*.png
 home
