@@ -1606,6 +1606,7 @@ module.exports.handlePlayerReport = data => {
 		reportingPlayer: data.userName,
 		reportedPlayer: data.reportedPlayer,
 		reason: data.reason,
+		gameType: data.gameType,
 		comment: data.comment,
 		isActive: true
 	});
