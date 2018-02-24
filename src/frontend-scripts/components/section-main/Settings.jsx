@@ -38,7 +38,8 @@ class Settings extends React.Component {
 			disableConfetti: '',
 			disableCrowns: '',
 			disableSeasonal: '',
-			isPrivate: ''
+			isPrivate: '',
+			failedNameChangeMessage: ''
 		};
 	}
 
@@ -59,6 +60,16 @@ class Settings extends React.Component {
 			disableSeasonal: gameSettings.disableSeasonal,
 			isPrivate: gameSettings.isPrivate
 		});
+	}
+
+	componentDidMount() {
+		this.props.socket.on('failedNameChange', failedNameChangeMessage => {
+			this.setState({ failedNameChangeMessage });
+		});
+	}
+
+	componentWillUnmount() {
+		this.props.socket.off('failedNameChangeMessage');
 	}
 	/**
 	 * @param {string} value - todo
@@ -302,9 +313,11 @@ class Settings extends React.Component {
 							</div>
 							<button className={this.state.profileSearchValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
 						</form>
-						<button className="ui primary button namechange-button" onClick={namechangeClick}>
-							1-time name change
-						</button>
+						{!gameSettings.hasChangedName && (
+							<button className="ui primary button namechange-button" onClick={namechangeClick}>
+								1-time name change
+							</button>
+						)}
 					</div>
 				</div>
 				<div className="ui grid">
@@ -497,6 +510,7 @@ class Settings extends React.Component {
 											<input placeholder="New name.." value={this.state.namechangeValue} onChange={handleNamechangeChange} maxLength="20" spellCheck="false" />
 										</div>
 										<button className={this.state.namechangeValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
+										<p style={{ color: 'red' }}>{this.state.failedNameChangeMessage}</p>
 									</form>
 								</div>
 							</div>
