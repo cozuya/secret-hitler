@@ -1176,6 +1176,20 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 
 		player.pingTime = new Date().getTime();
 		io.sockets.sockets[affectedSocketId].emit('pingPlayer', `Secret Hitler IO: Player ${data.userName} just pinged you.`);
+
+		game.chats.push({
+			gameChat: true,
+			userName: data.userName,
+			chat: [
+				{
+					text: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber].userName}.`
+				}
+			],
+			uid: data.uid,
+			timestamp: new Date(),
+			inProgress: game.gameState.isStarted
+		});
+		sendInProgressGameUpdate(game);
 	} else if (!/^Ping/i.test(chat)) {
 		game.chats.push(data);
 

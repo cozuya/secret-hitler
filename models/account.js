@@ -37,7 +37,8 @@ const mongoose = require('mongoose'),
 				left: Number,
 				width: Number,
 				height: Number
-			}
+			},
+			playerNotes: Array
 		},
 		verification: {
 			email: String,
