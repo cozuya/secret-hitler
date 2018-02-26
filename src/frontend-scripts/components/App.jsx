@@ -135,9 +135,9 @@ export class App extends React.Component {
 		const isAuthed = Boolean(document.getElementById('game-container').classList.length);
 
 		/**
- 		 * @param {string} type - todo
- 		 * @param {string} uid - game identifier
- 		 */
+		 * @param {string} type - todo
+		 * @param {string} uid - game identifier
+		 */
 		const updateStatus = (type, uid) => {
 			if (userInfo.userName) {
 				socket.emit('updateUserStatus', userInfo.userName, type, uid);

@@ -50,7 +50,7 @@ const saveGame = game => {
 			updateProfiles(enhanced, { cache: true });
 			summary.save();
 		} else {
-			console.log(summary, 'problem with summary');
+			// console.log(summary, 'problem with summary');
 		}
 	} catch (error) {
 		console.log(error, 'error in enhanced/end-game');
@@ -135,7 +135,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	saveGame(game);
 
-	if (!game.general.private) {
+	if (!game.general.private && !game.general.casualGame) {
 		Account.find({
 			username: { $in: seatedPlayers.map(player => player.userName) }
 		})

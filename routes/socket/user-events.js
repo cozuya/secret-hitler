@@ -338,6 +338,47 @@ const handleUserLeaveGame = (socket, data) => {
 	sendGameList();
 };
 
+module.exports.handleChangeUsername = (socket, data) => {
+	const { passport } = socket.handshake.session;
+
+	if (!passport) {
+		return;
+	}
+
+	Account.findOne({ username: data }).then(account => {
+		if (account) {
+			socket.emit('failedNameChange', 'That account name already exists.');
+		} else {
+			if (!/^[a-z0-9]+$/i.test(data)) {
+				socket.emit('failedNameChange', 'Sorry, your username can only be alphanumeric.');
+			} else if (data.length < 3) {
+				socket.emit('failedNameChange', 'Sorry, your username is too short.');
+			} else if (data.length > 12) {
+				socket.emit('failedNameChange', 'Sorry, your username is too long.');
+			} else if (/88$/i.test(data)) {
+				socket.emit('failedNameChange', 'Sorry, usernames that end with 88 are not allowed.');
+			} else {
+				Profile.findOne({ username: passport.user }).then(profile => {
+					if (profile) {
+						profile.username = data;
+						profile.save();
+					}
+					Account.findOne({ username: passport.user }).then(oldAccount => {
+						if (oldAccount.gameSettings.hasChangedName) {
+							socket.emit('failedNameChange', 'You have already changed your account name once.');
+						} else {
+							oldAccount.username = data;
+							oldAccount.gameSettings.hasChangedName = true;
+							oldAccount.save(() => {
+								socket.emit('manualDisconnection');
+							});
+						}
+					});
+				});
+			}
+		}
+	});
+};
 /**
  * @param {object} socket - user socket reference.
  * @param {object} data - from socket emit.
@@ -875,6 +916,9 @@ module.exports.handleAddNewClaim = data => {
  */
 module.exports.handleUpdatedRemakeGame = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+	if (!game) {
+		return;
+	}
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { publicPlayersState } = game;
 	const playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName);
@@ -1067,9 +1111,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 			clearInterval(game.private.remakeTimer);
 		}
 		chat.chat.push({
-			text: ` has rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount}/${
-				minimumRemakeVoteCount
-			})`
+			text: ` has rescinded their vote to ${
+				game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
+			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
 	}
 	game.chats.push(chat);
@@ -1084,8 +1128,9 @@ module.exports.handleUpdatedRemakeGame = data => {
 module.exports.handleAddNewGameChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 	const game = games.find(el => el.general.uid === data.uid);
+	const { chat } = data;
 
-	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length || !game) {
+	if (!passport || !passport.user || passport.user !== data.userName || chat.length > 300 || !chat.trim().length || !game) {
 		return;
 	}
 
@@ -1114,12 +1159,45 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	}
 
 	data.timestamp = new Date();
-	game.chats.push(data);
 
-	if (game.gameState.isTracksFlipped) {
+	if (
+		/^Ping/i.test(chat) &&
+		game.gameState.isStarted &&
+		player &&
+		(parseInt(chat.charAt(4)) <= game.publicPlayersState.length || chat.substr(4, 5) === '10') &&
+		(!player.pingTime || new Date().getTime() - player.pingTime > 180000)
+	) {
+		const affectedPlayerNumber = parseInt(chat.substr(4, 5) === '10' ? 10 : chat.charAt(4)) - 1;
+		const affectedSocketId = Object.keys(io.sockets.sockets).find(
+			socketId =>
+				io.sockets.sockets[socketId].handshake.session.passport &&
+				io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
+		);
+
+		player.pingTime = new Date().getTime();
+		io.sockets.sockets[affectedSocketId].emit('pingPlayer', `Secret Hitler IO: Player ${data.userName} just pinged you.`);
+
+		game.chats.push({
+			gameChat: true,
+			userName: data.userName,
+			chat: [
+				{
+					text: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber].userName}.`
+				}
+			],
+			uid: data.uid,
+			timestamp: new Date(),
+			inProgress: game.gameState.isStarted
+		});
 		sendInProgressGameUpdate(game);
-	} else {
-		io.in(data.uid).emit('gameUpdate', secureGame(game));
+	} else if (!/^Ping/i.test(chat)) {
+		game.chats.push(data);
+
+		if (game.gameState.isTracksFlipped) {
+			sendInProgressGameUpdate(game);
+		} else {
+			io.in(data.uid).emit('gameUpdate', secureGame(game));
+		}
 	}
 };
 
@@ -1140,8 +1218,6 @@ module.exports.handleUpdateWhitelist = data => {
 module.exports.handleNewGeneralChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
-	// Check that they are who they say they are.  Should this do, uh, whatever
-	// the ws equivalent of a 401 unauth is?
 	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length || data.isPrivate) {
 		return;
 	}
@@ -1158,7 +1234,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 	const seasonColor = user && user[`winsSeason${currentSeasonNumber}`] + user[`lossesSeason${currentSeasonNumber}`] > 49 ? PLAYERCOLORS(user, true) : '';
 	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
 
-	if (user && user.wins + user.losses > 1) {
+	if (user && (user.wins > 0 || user.losses > 0)) {
 		generalChatCount++;
 		data.time = new Date();
 		data.color = color;
@@ -1564,6 +1640,7 @@ module.exports.handlePlayerReport = data => {
 		reportingPlayer: data.userName,
 		reportedPlayer: data.reportedPlayer,
 		reason: data.reason,
+		gameType: data.gameType,
 		comment: data.comment,
 		isActive: true
 	});

@@ -14,7 +14,7 @@ const fs = require('fs'),
 	Account = require('./models/account'),
 	routesIndex = require('./routes/index'),
 	session = require('express-session')({
-		secret: 'hunter2',
+		secret: process.env.SECRETSESSIONKEY,
 		resave: false,
 		saveUninitialized: false
 	}),

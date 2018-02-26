@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER, EDITORS, ADMINS, MODERATORS } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -73,6 +73,13 @@ const DisplayLobbies = props => {
 		let privTooltip;
 		let privateOnly;
 		let privateOnlyTooltip;
+		let casualGame;
+		let casualGameTooltip;
+
+		if (game.casualGame) {
+			casualGame = <i className="handshake icon" />;
+			casualGameTooltip = 'Casual game - results do not count for wins or losses';
+		}
 
 		if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
 			// ugly but lazy
@@ -147,6 +154,9 @@ const DisplayLobbies = props => {
 
 		return (
 			<div className="options-icons-container">
+				<span data-tooltip={casualGameTooltip} data-inverted="">
+					{casualGame}
+				</span>
 				<span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
 					{rebalance}
 				</span>
@@ -316,6 +326,9 @@ const DisplayLobbies = props => {
 		}
 	};
 
+	const isModerator =
+		userInfo.userName && (EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName));
+
 	return (
 		<div
 			data-uid={game.uid}
@@ -331,6 +344,7 @@ const DisplayLobbies = props => {
 						<div className="gamename-column">
 							{renderFlag()}
 							{game.name}
+							{isModerator && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
 						</div>
 						<div className="options-column experienced">{optionIcons()}</div>
 					</div>

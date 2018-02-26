@@ -15,6 +15,7 @@ $proceed: #2185d0;
 $lteal: #097892;
 $dteal: #034f61;
 $blacklist: #462c35;
+$thirteen: #1c9cb9;
 $textfont: inherit; //'Comfortaa', Lato, sans-serif;
 $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 
@@ -167,7 +168,7 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		flex-direction: column;
 	}
 	.menu-container {
-		background-color: $tourny;
+		background-color: $thirteen;
 		min-height: 42px;
 		a {
 			cursor: pointer;
@@ -738,7 +739,7 @@ div {
 	border: 0;
 	box-shadow: none;
 	overflow: hidden;
-	background-color: $tourny;
+	background-color: $thirteen;
 	margin: auto;
 	width: 95%;
 	max-width: 1920px;
@@ -852,10 +853,10 @@ div {
 }
 
 .moderatorcolor {
-	color: #0f43fc !important;
+	color: #007fff !important;
 }
 .player-small-cardback.moderatorcolor {
-	box-shadow: 0 0 5px 2px #0f43fc !important;
+	box-shadow: 0 0 5px 2px #007fff !important;
 }
 
 .editorcolor {
@@ -889,6 +890,10 @@ div {
 .dfinn {
 	color: #00ffd8 !important;
 }
+.player-small-cardback.dfinn {
+	box-shadow: 0 0 5px 2px #00ffd8 !important;
+}
+
 .invidia {
 	color: #bb3d06 !important;
 }

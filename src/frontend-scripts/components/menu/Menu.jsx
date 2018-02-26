@@ -211,9 +211,9 @@ class Menu extends React.Component {
 							|{' '}
 							<a
 								className={
-									this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen ? (
-										'patch-alert'
-									) : null
+									this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
+										? 'patch-alert'
+										: null
 								}
 								onClick={this.props.readPatchNotes}
 							>
@@ -232,6 +232,10 @@ class Menu extends React.Component {
 							<a target="_blank" href="https://discord.gg/secrethitlerio">
 								Discord
 							</a>
+							|{' '}
+							<a target="_blank" href="/polls" style={{ color: 'yellow' }}>
+								New Poll
+							</a>
 						</span>
 					</div>
 					<div className="item right">
@@ -239,8 +243,8 @@ class Menu extends React.Component {
 							const { gameInfo, userInfo } = this.props;
 
 							/**
- 							 * @return {string} classnames
- 							 */
+							 * @return {string} classnames
+							 */
 							const iconClasses = () => {
 								let classes = 'setting icon large';
 

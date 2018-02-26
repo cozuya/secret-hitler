@@ -9,9 +9,8 @@ I only have the following guidelines:
 
 2. Your code should pass lint.
 
-3. Your code should use prettier with the following options: use-tabs: true, single-quote: true, print-width: 160.
+3. Your editor should use prettierjs.
 
-4. Functions that either a) return a value or b) have arguments (non-anonymous/lambda) that aren't obvious i.e. not i/index/event should use JSDoc comments to
-	explain the types and return types of that function.
+4. Functions that either a) return a value or b) have arguments (non-anonymous/lambda) that aren't obvious i.e. not i/index/event should use JSDoc comments to explain the types and return types of that function.
 
 5. If you make a feature, please commit to supporting it. If there's problems on an issue you've completed, please make sure you can take care of it.

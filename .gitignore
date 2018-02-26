@@ -10,6 +10,7 @@ apps
 etc
 *.xml
 .vlt
+.env-prod
 content
 ./*.png
 home
@@ -34,3 +35,4 @@ public/styles/style-dark.css
 public/styles/style-light.css
 public/styles/style-web.css
 coverage/*
+.idea/

@@ -9,6 +9,56 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.13.0 released -2018</p>
+		</div>
+		<h3>New feature: player notes</h3>
+		<p>
+			Piggybacking on the game notes feature, all players now have a small icon on their cardback that will now open a dragable box. You can now take notes on
+			any player (limit: 500 characters) by typing into that box and hitting close, which doubles as save. Hovering on that icon will also give you a smaller
+			preview of the note for that player.
+		</p>
+		<h3>New feature: player notifications (pings)</h3>
+		<p>When you enter the site for the first time, you will receive a notification that looks like this:</p>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/notification-permission.png" style={{ border: '1px solid grey' }} />
+		</div>
+		<small>Obviously not localhost..</small>
+		<p>
+			If you enable this feature, other seated players may now send you (and you may as well) a "wake up" notification. If someone types in "Ping5", the player
+			in seat 5, if notifications are enabled, will see a screen like this (on their operating system, not their browser):
+		</p>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/notification.png" style={{ border: '1px solid grey' }} />
+		</div>
+		<p>
+			Players may use the ping feature only once every 3 minutes, and only in games you're seated in that have been started. This feature is only to be used for
+			players who appear AFK - do not abuse this feature. Reminder: if you wind up finding these irritating, you can revoke permission for them in your browser
+			settings.
+		</p>
+		<h3>New feature: one time name change.</h3>
+		<p>
+			Dislike your old name, but want to keep your stats and profile? Hit the big new big red button on your settings page to change your name. This only works
+			once for every account so choose wisely.
+		</p>
+		<ul>
+			<li>Tournaments now make the usual "bong" noise when they start.</li>
+		</ul>
+		<div className="ui header">
+			<p>Version 0.12.5 released 2-20-2018</p>
+		</div>
+		<h3>Bug fix: replays are back!</h3>
+		<p>Thanks to a contribution a long standing bug in replays has been fixed and should work for all recent games.</p>
+		<h3>New feature: 3 new emojis - ThumbsUp, CNH, and Shrug. Check them out.</h3>
+		<h3>New feature: casual game mode setting.</h3>
+		<p>Select this to play a game where the results do not affect the player's wins or losses.</p>
+		<h3>Other items:</h3>
+		<ul>
+			<li>Thanks to a contribution, tournament crowns are no longer visible in blind mode.</li>
+			<li>Please welcome new moderators safi, Wilmeister, and MrEth3real.</li>
+			<li>Stats for rebalanced (-2 fascist policy) 9 player games might be working tomorrow.. (data collection occurs at 4am)</li>
+			<li>There's a new poll on the polls page re: length of seasons</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.12.4 released 2-3-2018</p>
 		</div>
 		<h3>New feature: rebalanced 9p games (again).</h3>

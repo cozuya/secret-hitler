@@ -92,7 +92,6 @@ export default function toGameInfo(snapshot) {
 		isBlurred: ['presidentLegislation', 'chancellorLegislation', 'policyPeek'].includes(snapshot.phase),
 		isHidden: true
 	};
-
 	return {
 		gameState,
 		publicPlayersState,

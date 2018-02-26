@@ -4,6 +4,7 @@ import { Button, Popup } from 'semantic-ui-react';
 export const allEmotes = [
 	'BangBang',
 	'BigNose',
+	'CNH',
 	'FasCroc',
 	'FasEvil',
 	'FasFace',
@@ -42,7 +43,9 @@ export const allEmotes = [
 	'RedFace',
 	'RIP',
 	'SecretHitler',
+	'Shrug',
 	'SillyLib',
+	'ThumbsUp',
 	'TopDeck',
 	'VetoPower',
 	'VoteJa',

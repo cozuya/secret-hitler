@@ -1,36 +1,36 @@
-const Profile = require('./index'),
-	Account = require('../account'),
-	{ profiles } = require('../../routes/socket/models'),
-	debug = require('debug')('game:profile'),
-	{ List } = require('immutable'),
-	{ flattenListOpts } = require('../../utils');
+const Profile = require('./index');
+const Account = require('../account');
+const { profiles } = require('../../routes/socket/models');
+const debug = require('debug')('game:profile');
+const { List } = require('immutable');
+const { flattenListOpts } = require('../../utils');
 
 // handles all stat computation logic
 function profileDelta(username, game) {
-	const { playerSize, date, id } = game,
-		isWinner = game.isWinner(username).value(),
-		loyalty = game.loyaltyOf(username).value(),
-		isLiberal = loyalty === 'liberal',
-		isFascist = !isLiberal,
-		votes = game.hitlerZone
-			.map(hz =>
-				flattenListOpts(
-					game
-						.votesOf(username)
-						.value()
-						.slice(hz)
-				).filter(v => game.loyaltyOf(v.presidentId).value() === 'fascist' || game.roleOf(v.chancellorId).value() === 'hitler')
-			)
-			.valueOrElse(List()),
-		accurateVotes = votes.filterNot(v => {
-			const { presidentId, chancellorId, ja } = v,
-				presidentLoyalty = game.loyaltyOf(presidentId).value(),
-				chancellorRole = game.roleOf(chancellorId).value();
+	const { playerSize, isRebalanced, date, id } = game;
+	const isWinner = game.isWinner(username).value();
+	const loyalty = game.loyaltyOf(username).value();
+	const isLiberal = loyalty === 'liberal';
+	const isFascist = !isLiberal;
+	const votes = game.hitlerZone
+		.map(hz =>
+			flattenListOpts(
+				game
+					.votesOf(username)
+					.value()
+					.slice(hz)
+			).filter(v => game.loyaltyOf(v.presidentId).value() === 'fascist' || game.roleOf(v.chancellorId).value() === 'hitler')
+		)
+		.valueOrElse(List());
+	const accurateVotes = votes.filterNot(v => {
+		const { presidentId, chancellorId, ja } = v;
+		const presidentLoyalty = game.loyaltyOf(presidentId).value();
+		const chancellorRole = game.roleOf(chancellorId).value();
 
-			return ja && (presidentLoyalty === 'fascist' || chancellorRole === 'hitler');
-		}),
-		shots = game.shotsOf(username).value(),
-		accurateShots = shots.filter(id => game.loyaltyOf(id).value() === 'fascist');
+		return ja && (presidentLoyalty === 'fascist' || chancellorRole === 'hitler');
+	});
+	const shots = game.shotsOf(username).value();
+	const accurateShots = shots.filter(id => game.loyaltyOf(id).value() === 'fascist');
 
 	return {
 		stats: {
@@ -64,6 +64,7 @@ function profileDelta(username, game) {
 			loyalty,
 			playerSize,
 			isWinner,
+			isRebalanced,
 			date
 		}
 	};
@@ -71,8 +72,8 @@ function profileDelta(username, game) {
 
 // username: String, game: enhancedGameSummary, options: { version: String, cache: Boolean }
 function updateProfile(username, game, options = {}) {
-	const { version, cache } = options,
-		delta = profileDelta(username, game);
+	const { version, cache } = options;
+	const delta = profileDelta(username, game);
 
 	return (
 		Profile.findByIdAndUpdate(

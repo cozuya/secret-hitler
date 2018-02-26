@@ -31,12 +31,14 @@ const mongoose = require('mongoose'),
 			privateToggleTime: Number,
 			blacklist: Array,
 			tournyWins: Array,
+			hasChangedName: Boolean,
 			gameNotes: {
 				top: Number,
 				left: Number,
 				width: Number,
 				height: Number
-			}
+			},
+			playerNotes: Array
 		},
 		verification: {
 			email: String,

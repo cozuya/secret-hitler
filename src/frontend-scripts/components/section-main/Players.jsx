@@ -307,6 +307,7 @@ export default class Players extends React.Component {
 	}
 
 	handleReportSubmit(e) {
+		const { gameInfo } = this.props;
 		e.preventDefault();
 
 		if (!this.state.reportTextValue) {
@@ -314,8 +315,9 @@ export default class Players extends React.Component {
 		}
 
 		this.props.socket.emit('playerReport', {
-			uid: this.props.gameInfo.general.uid,
+			uid: gameInfo.general.uid,
 			userName: this.props.userInfo.userName || 'from replay',
+			gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
 			reportedPlayer: this.state.reportedPlayer,
 			reason: $('input[name="reason"]').attr('value'),
 			comment: this.state.reportTextValue

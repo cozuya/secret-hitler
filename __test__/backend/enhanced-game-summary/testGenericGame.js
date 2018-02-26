@@ -53,6 +53,7 @@ export default () => {
 
 			expect(beforePlayers(0).first()).toEqual({
 				id: 0,
+				icon: 0,
 				username: 'Uther',
 				role: 'liberal',
 				loyalty: 'liberal',

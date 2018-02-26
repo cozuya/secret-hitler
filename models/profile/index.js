@@ -2,6 +2,7 @@ const mongoose = require('mongoose'),
 	{ Schema } = mongoose,
 	profileSchema = new Schema({
 		_id: String, // username
+		username: String,
 		version: String, // versioning for `recalculateProfiles`
 		created: Date,
 		customCardback: String,
@@ -40,6 +41,7 @@ const mongoose = require('mongoose'),
 					loyalty: String,
 					playerSize: Number,
 					isWinner: Boolean,
+					isRebalanced: Boolean,
 					date: Date
 				}
 			],

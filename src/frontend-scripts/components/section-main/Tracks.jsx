@@ -14,11 +14,23 @@ class Tracks extends React.Component {
 	}
 
 	componentDidMount() {
+		const { Notification } = window;
+
 		this._ismounted = true;
+
+		if (Notification.permission === 'granted') {
+			this.props.socket.on('pingPlayer', data => {
+				new Notification(data);
+			});
+		}
 	}
 
 	componentWillUnmount() {
 		this._ismounted = false;
+
+		if (Notification.permission === 'granted') {
+			this.props.socket.off('pingPlayer');
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -46,6 +58,8 @@ class Tracks extends React.Component {
 		let privTooltip;
 		let rainbowgame;
 		let rainbowgameTooltip;
+		let casualgame;
+		let casualgameTooltip;
 
 		{
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
@@ -103,6 +117,11 @@ class Tracks extends React.Component {
 			rainbowgameTooltip = 'Experienced Game';
 		}
 
+		if (game.casualGame) {
+			casualgame = <i className="handshake icon" />;
+			casualgameTooltip = 'Casual game - results do not count towards wins and losses';
+		}
+
 		return (
 			<div className="options-icons-container">
 				<span className="rebalanced">
@@ -125,6 +144,9 @@ class Tracks extends React.Component {
 				</span>
 				<span>
 					<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={casualgame} content={casualgameTooltip} />
 				</span>
 			</div>
 		);
@@ -184,11 +206,7 @@ class Tracks extends React.Component {
 				<EnactedPolicies gameInfo={gameInfo} />
 				<div>
 					<div className="game-name">
-						{(() => {
-							if (gameInfo.general.flag !== 'none') {
-								return <i className={`ui flag ${gameInfo.general.flag}`} />;
-							}
-						})()}
+						{gameInfo.general.flag !== 'none' && <i className={`ui flag ${gameInfo.general.flag}`} />}
 						<span>{gameInfo.general.name}</span>
 					</div>
 					<div className="option-icons">{this.optionIcons(gameInfo)}</div>

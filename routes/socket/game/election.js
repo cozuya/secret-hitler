@@ -205,7 +205,7 @@ const handToLog = hand =>
 module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (!game.private.seatedPlayers || (game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+	if (game || !game.private.seatedPlayers || (game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		return;
 	}
 
@@ -320,6 +320,11 @@ module.exports.selectChancellor = data => {
  */
 module.exports.selectVoting = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game) {
+		return;
+	}
+
 	const { seatedPlayers } = game.private;
 	const { experiencedMode } = game.general;
 	const player = seatedPlayers.find(player => player.userName === data.userName);

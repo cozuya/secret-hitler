@@ -61,19 +61,15 @@ exports.handToPolicy = hand => {
 // (hand: Hand) => List[Policy]
 const handToPolicies = (exports.handToPolicies = hand => {
 	const toPolicies = (count, type) => {
-		if (count) {
-			return Range(0, count)
-				.map(i => type)
-				.toList();
-		}
+		return Range(0, count)
+			.map(i => type)
+			.toList();
 	};
 
 	const reds = toPolicies(hand.reds, 'fascist');
 	const blues = toPolicies(hand.blues, 'liberal');
 
-	if (reds) {
-		return reds.concat(blues).toList();
-	}
+	return reds.concat(blues).toList();
 });
 
 // (policy: Policy) => Hand
