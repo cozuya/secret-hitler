@@ -20,7 +20,6 @@ class Tracks extends React.Component {
 
 		if (Notification.permission === 'granted') {
 			this.props.socket.on('pingPlayer', data => {
-				console.log(data);
 				new Notification(data);
 			});
 		}

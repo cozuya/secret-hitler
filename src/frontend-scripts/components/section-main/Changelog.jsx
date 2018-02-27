@@ -9,8 +9,14 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.12.6 released -2018</p>
+			<p>Version 0.13.0 released -2018</p>
 		</div>
+		<h3>New feature: player notes</h3>
+		<p>
+			Piggybacking on the game notes feature, all players now have a small icon on their cardback that will now open a dragable box. You can now take notes on
+			any player (limit: 500 characters) by typing into that box and hitting close, which doubles as save. Hovering on that icon will also give you a smaller
+			preview of the note for that player.
+		</p>
 		<h3>New feature: player notifications (pings)</h3>
 		<p>When you enter the site for the first time, you will receive a notification that looks like this:</p>
 		<div style={{ textAlign: 'center' }}>
@@ -19,7 +25,7 @@ const Changelog = () => (
 		<small>Obviously not localhost..</small>
 		<p>
 			If you enable this feature, other seated players may now send you (and you may as well) a "wake up" notification. If someone types in "Ping5", the player
-			in seat 5, if notifications are enabled, will see a screen like this:
+			in seat 5, if notifications are enabled, will see a screen like this (on their operating system, not their browser):
 		</p>
 		<div style={{ textAlign: 'center' }}>
 			<img src="/images/notification.png" style={{ border: '1px solid grey' }} />
