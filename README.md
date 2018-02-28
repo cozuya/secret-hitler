@@ -55,7 +55,7 @@ Start mongo:
 
 Start express server:
 
-> npm start
+> nodemon bin/dev
 
 Start development task runner:
 
