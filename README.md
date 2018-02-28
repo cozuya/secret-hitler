@@ -51,11 +51,11 @@ Build assets (first time only):
 
 Start mongo:
 
-> npm run db 27017
+> npm run db 15726
 
 Start express server:
 
-> npm start
+> nodemon bin/dev
 
 Start development task runner:
 
