@@ -84,13 +84,16 @@
 		"require-dot-file": "^0.4.0",
 		"sass-loader": "^6.0.6",
 		"style-loader": "^0.20.2",
+		"uglifyjs-webpack-plugin": "^1.2.2",
 		"webpack": "^4.0.1",
-		"webpack-cli": "^2.0.9"
+		"webpack-cli": "^2.0.9",
+		"webpack-livereload-plugin": "^1.0.0"
 	},
 	"scripts": {
 		"test": "jest __test__",
 		"test-watch": "jest --watch __test__",
 		"db": "mongod --dbpath data --port",
+		"build": "webpack --config webpack/webpack.config.prod --mode production",
 		"server": "nodemon bin/dev",
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development"
 	}

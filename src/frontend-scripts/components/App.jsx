@@ -41,7 +41,6 @@ export class App extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log('Hello, World!2');
 		const { dispatch } = this.props;
 		const { classList } = document.getElementById('game-container');
 

@@ -1,18 +1,13 @@
 const path = require('path');
-const Reload = require('webpack-livereload-plugin');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
 	output: {
-		filename: `bundle.js?${new Date().getTime()}`,
+		filename: `bundle.js`,
 		path: path.resolve(__dirname, '../public/scripts')
 	},
-	plugins: [
-		new Reload({
-			// appendScriptTag: true
-		})
-	],
-	devtool: 'inline-source-map',
+	plugins: [new UglifyJSPlugin()],
 	module: {
 		rules: [
 			{
