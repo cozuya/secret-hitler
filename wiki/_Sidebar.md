@@ -8,8 +8,11 @@
 **[Read Me Page](https://github.com/cozuya/secret-hitler/wiki/Read-Me)**
   -  Development read me info.
 
-**[Moderator](https://github.com/cozuya/secret-hitler/wiki/Moderation)**
+**[Moderation](https://github.com/cozuya/secret-hitler/wiki/Moderation)**
   -  Moderation guidelines.
+
+**[Contribution](https://github.com/cozuya/secret-hitler/wiki/Contribution)**
+  -  Contribution guidelines.
 
 **[Rules](https://github.com/cozuya/secret-hitler/wiki/Rules)**
   -  Rules for how to play.
@@ -23,8 +26,11 @@
 **[Strategy Notes](https://github.com/cozuya/secret-hitler/wiki/Strategy-Notes)**
   -  Helpful strategy notes.
 
-**[About Secret Hitler](https://github.com/cozuya/secret-hitler/wiki/About-Secret-Hitler)**
+**[About Secret Hitler IO](https://github.com/cozuya/secret-hitler/wiki/About-Secret-Hitler)**
   -  About the game and site.
+
+**[Emotes](https://github.com/cozuya/secret-hitler/wiki/Emotes)**
+  -  Emotes used in game.
 
 **[Phrases](https://github.com/cozuya/secret-hitler/wiki/Phrases)**
   -  Phrases used in game.

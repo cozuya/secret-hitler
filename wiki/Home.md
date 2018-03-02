@@ -634,3 +634,4 @@ between "regular" and "rainbow". Effectively, rainbow players get to "start over
 For rainbow games, your wins and losses are in a different tier, that does not affect your regular game winrate or player color. "Rainbow rewards" may come in at some point.
 
 Also in this release, the karma system has been temporarily disabled due to griefers exploiting it. The next major feature is player moderation, where I will be enlisting some of our regular players to help out in getting rid of griefers and trolls. This isn't all that hard and will be coming soon, and hopefully guarantee a better playing experience for everyone. Please check the GitHub issue if you are interested in helping out.
+
