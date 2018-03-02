@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import RightSidebar from './section-right/RightSidebar.jsx';
 import Menu from './menu/Menu.jsx';
 import DevHelpers from './DevHelpers.jsx';
+import '../../scss/style-dark.scss';
 
 const select = state => state;
 
@@ -41,6 +42,7 @@ export class App extends React.Component {
 	}
 
 	componentDidMount() {
+		console.log('Hello, World!');
 		const { dispatch } = this.props;
 		const { classList } = document.getElementById('game-container');
 

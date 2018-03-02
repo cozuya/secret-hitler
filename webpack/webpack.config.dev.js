@@ -7,11 +7,7 @@ module.exports = {
 		filename: `bundle.js?${new Date().getTime()}`,
 		path: path.resolve(__dirname, '../public/scripts')
 	},
-	plugins: [
-		new Reload({
-			// appendScriptTag: true
-		})
-	],
+	plugins: [new Reload()],
 	devtool: 'inline-source-map',
 	module: {
 		rules: [
@@ -27,16 +23,16 @@ module.exports = {
 						loader: 'style-loader'
 					},
 					{
-						loader: 'css-loader'
-						// options: {
-						// 	sourceMap: true
-						// }
+						loader: 'css-loader',
+						options: {
+							sourceMap: true
+						}
 					},
 					{
-						loader: 'sass-loader'
-						// options: {
-						// 	sourceMap: true
-						// }
+						loader: 'sass-loader',
+						options: {
+							sourceMap: true
+						}
 					}
 				]
 			}
