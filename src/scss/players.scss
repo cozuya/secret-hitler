@@ -70,7 +70,7 @@
 		float: left;
 		margin: 18px 5px 0;
 		border-radius: 4px;
-		background-image: url('../images/tweed.png');
+		background-image: url('../../public/images/tweed.png');
 		background-repeat: no-repeat;
 		background-size: 70px 95px;
 		position: relative;
@@ -112,12 +112,12 @@
 		.government-token.isPendingPresident,
 		.government-token.isPresident,
 		.government-token.wasPresident {
-			background-image: url('../images/president-token.png');
+			background-image: url('../../public/images/president-token.png');
 		}
 		.government-token.isPendingChancellor,
 		.government-token.isChancellor,
 		.government-token.wasChancellor {
-			background-image: url('../images/chancellor-token.png');
+			background-image: url('../../public/images/chancellor-token.png');
 		}
 		.card-container {
 			width: 70px;
@@ -140,67 +140,67 @@
 				width: 100%;
 			}
 			.card.secretrole {
-				background-image: url('../images/cards/secretrole.png');
+				background-image: url('../../public/images/cards/secretrole.png');
 			}
 			.card.liberal0 {
-				background-image: url('../images/cards/liberal0.png');
+				background-image: url('../../public/images/cards/liberal0.png');
 			}
 			.card.liberal1 {
-				background-image: url('../images/cards/liberal1.png');
+				background-image: url('../../public/images/cards/liberal1.png');
 			}
 			.card.liberal2 {
-				background-image: url('../images/cards/liberal2.png');
+				background-image: url('../../public/images/cards/liberal2.png');
 			}
 			.card.liberal3 {
-				background-image: url('../images/cards/liberal3.png');
+				background-image: url('../../public/images/cards/liberal3.png');
 			}
 			.card.liberal4 {
-				background-image: url('../images/cards/liberal4.png');
+				background-image: url('../../public/images/cards/liberal4.png');
 			}
 			.card.liberal5 {
-				background-image: url('../images/cards/liberal5.png');
+				background-image: url('../../public/images/cards/liberal5.png');
 			}
 			.card.fascist0 {
-				background-image: url('../images/cards/fascist0.png');
+				background-image: url('../../public/images/cards/fascist0.png');
 			}
 			.card.fascist1 {
-				background-image: url('../images/cards/fascist1.png');
+				background-image: url('../../public/images/cards/fascist1.png');
 			}
 			.card.fascist2 {
-				background-image: url('../images/cards/fascist2.png');
+				background-image: url('../../public/images/cards/fascist2.png');
 			}
 			.card.fascist3 {
-				background-image: url('../images/cards/fascist3.png');
+				background-image: url('../../public/images/cards/fascist3.png');
 			}
 			.card.fascist4 {
-				background-image: url('../images/cards/fascist4.png');
+				background-image: url('../../public/images/cards/fascist4.png');
 			}
 			.card.fascist5 {
-				background-image: url('../images/cards/fascist5.png');
+				background-image: url('../../public/images/cards/fascist5.png');
 			}
 			.card.hitler0 {
-				background-image: url('../images/cards/hitler0.png');
+				background-image: url('../../public/images/cards/hitler0.png');
 			}
 			.card.hitler1 {
-				background-image: url('../images/cards/hitler1.png');
+				background-image: url('../../public/images/cards/hitler1.png');
 			}
 			.card.ballot {
-				background-image: url('../images/cards/ballot.png');
+				background-image: url('../../public/images/cards/ballot.png');
 			}
 			.card.ja {
-				background-image: url('../images/cards/ja.png');
+				background-image: url('../../public/images/cards/ja.png');
 			}
 			.card.nein {
-				background-image: url('../images/cards/nein.png');
+				background-image: url('../../public/images/cards/nein.png');
 			}
 			.card.partymembership {
-				background-image: url('../images/cards/partymembership.png');
+				background-image: url('../../public/images/cards/partymembership.png');
 			}
 			.card.membership-liberal {
-				background-image: url('../images/cards/membership-liberal.png');
+				background-image: url('../../public/images/cards/membership-liberal.png');
 			}
 			.card.membership-fascist {
-				background-image: url('../images/cards/membership-fascist.png');
+				background-image: url('../../public/images/cards/membership-fascist.png');
 			}
 			.card-back {
 				-webkit-backface-visibility: hidden; // thanks osx safari
@@ -235,7 +235,7 @@
 		}
 	}
 	.player-container.isDead {
-		background-image: url('../images/deadplayer.png') !important;
+		background-image: url('../../public/images/deadplayer.png') !important;
 	}
 	.notifier::after {
 		content: '';
@@ -289,7 +289,7 @@
 	.policy-card {
 		width: 70px;
 		height: 95px;
-		background: url('../images/cards/policy.png') no-repeat;
+		background: url('../../public/images/cards/policy.png') no-repeat;
 		position: absolute;
 		top: 5px;
 		left: 6px;
@@ -300,10 +300,10 @@
 		top: 120px;
 	}
 	.draw {
-		background: url('../images/cards/draw.png') no-repeat;
+		background: url('../../public/images/cards/draw.png') no-repeat;
 	}
 	.discard {
-		background: url('../images/cards/discard.png') no-repeat;
+		background: url('../../public/images/cards/discard.png') no-repeat;
 	}
 	.notifier::after {
 		content: '';

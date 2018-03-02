@@ -4,13 +4,31 @@ const Reload = require('webpack-livereload-plugin');
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
 	output: {
-		filename: `bundle.js?${new Date().getTime()}`,
+		filename: 'bundle.js',
 		path: path.resolve(__dirname, '../public/scripts')
 	},
 	plugins: [new Reload()],
 	devtool: 'inline-source-map',
 	module: {
 		rules: [
+			{
+				test: /\.(html)$/,
+				use: {
+					loader: 'html-loader',
+					options: {
+						attrs: [':data-src']
+					}
+				}
+			},
+			{
+				test: /\.(png|svg|jpg|gif)$/,
+				use: {
+					loader: 'file-loader',
+					options: {
+						useRelativePath: true
+					}
+				}
+			},
 			{
 				test: /\.(js|jsx)$/,
 				use: ['babel-loader'],
@@ -20,7 +38,10 @@ module.exports = {
 				test: /\.scss$/,
 				use: [
 					{
-						loader: 'style-loader'
+						loader: 'style-loader',
+						options: {
+							sourceMap: true
+						}
 					},
 					{
 						loader: 'css-loader',
