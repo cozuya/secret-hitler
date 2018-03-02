@@ -83,6 +83,7 @@
 		"moment": "^2.18.1",
 		"node-notifier": "^5.1.2",
 		"node-sass": "^4.7.2",
+		"npm-run-all": "^4.1.2",
 		"prettier": "^1.5.3",
 		"require-dot-file": "^0.4.0",
 		"sass-loader": "^6.0.6",
@@ -93,6 +94,7 @@
 		"webpack-livereload-plugin": "^1.0.0"
 	},
 	"scripts": {
+		"dev": "npm-run-all --parallel db server start",
 		"test": "jest __test__",
 		"test-watch": "jest --watch __test__",
 		"db": "mongod --dbpath data --port 15726",

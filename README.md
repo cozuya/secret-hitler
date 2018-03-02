@@ -47,17 +47,9 @@ Build assets (first time only):
 
 > yarn build
 
-Start mongo:
+Start development:
 
-> yarn db
-
-Start express server:
-
-> yarn server
-
-Start development webpack build:
-
-> yarn start
+> yarn dev
 
 Navigate to: http://localhost:8080
 
