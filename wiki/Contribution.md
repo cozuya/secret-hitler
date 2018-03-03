@@ -27,11 +27,13 @@ I only have the following guidelines:
 
 5. If you make a feature, please commit to supporting it. If there's problems on an issue you've completed, please make sure you can take care of it.
 
-### **Initial Code Installation Steps:**
+### **Contributing to the Site:**
+
+#### **Initial Code Installation Steps:**
 
 - Follow the step-by-step instructions more specifically detailed in the [Read Me](https://github.com/cozuya/wiki/Read-Me).
 
-### **Local Host Testing in Development Mode:**
+#### **Local Host Testing in Development Mode:**
 
 - From the instructions you follow in the Read Me of the wiki/site, you will also have clarity on how to locally host your fork of the master branch in order to better dev test any potential fixes you might submit via PR to double check that your ideas will work without a hitch.
 
@@ -41,7 +43,7 @@ I only have the following guidelines:
 
 - Your locally hosted site is not reliant on the server nor will it mess up anything on the main branches of the real active code. Specific Passwords are not needed to create your own account of an AEM member. Just remember you need to initially sign up for any new account as your code/site default starts with no accounts in its database memory. 
 
-### **Dev Helper Accounts:**
+#### **Dev Helper Accounts:**
 
 - In order to make games and test new features faster in them, we provide default Dev Helper accounts across the top of the /game page easily ready for use.
 
@@ -49,7 +51,19 @@ I only have the following guidelines:
 
 - Uther, Jaina, Rexxar, Malfurian, Thrall, Valeera, Anduin, aaa, bbb, ccc, ddd, eee, fff, ggg, hhh
 
-- To better use the Dev Helpers, you'll most likely need a browser extension such as Chrome's [openMultiLogin](https://chrome.google.com/webstore/detail/openmultilogin/lbofelamdnfmipbbgkebcpkapahbmcgm?hl=en) to have multiple sessions on the same browser. 
+- To better use the Dev Helpers, you'll most likely need a browser extension such as Chrome's [openMultiLogin](https://chrome.google.com/webstore/detail/openmultilogin/lbofelamdnfmipbbgkebcpkapahbmcgm?hl=en) to have multiple sessions on the same browser.
+
+### **Contributing to the Wiki:**
+
+**To clone this wiki locally, run the following command line in your cmd:**
+
+> git clone https://github.com/cozuya/secret-hitler.wiki.git
+
+*We appreciate any helpful contributions to help improve this wiki to be most useful to the Secret Hitler.io Community.*
+
+*Also by cloning the master repository for the site locally, you are provided with a secret-hitler/wiki folder with all of the wiki pages and their code to view/edit. Feel free to help contribute in this way by sending your changes as [pull requests](https://github.com/cozuya/secret-hitler/pulls) to improve this wiki.*
+
+> git clone https://github.com/cozuya/secret-hitler.git
 
 ### **Discord Development Channel & GitHub Issues Pages:**
 
