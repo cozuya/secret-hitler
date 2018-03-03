@@ -2,9 +2,9 @@ const cn = require('classnames');
 
 const MODERATORS = (module.exports.MODERATORS = [
 	'cayseron',
-	'JerMej1s',
-	'jdudle3',
 	'Idrissa',
+	'jdudle3',
+	'JerMej1s',
 	'maki2',
 	'MrEth3real',
 	'Number5',
@@ -24,9 +24,9 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'conundrum',
 	'DFinn',
 	'goonbee',
+	'Invidia',
 	'jbasrai',
 	'JerMej1s',
-	'Invidia',
 	'LordVader',
 	'sethe',
 	'Skyrra',
@@ -72,6 +72,6 @@ module.exports.PLAYERCOLORS = (user, isSeasonal) => {
 		dfinn: user.userName === 'DFinn',
 		faaiz: user.userName === 'Faaiz1999',
 		invidia: user.userName === 'Invidia',
-		max: user.userName === 'Max',
+		max: user.userName === 'Max'
 	});
 };
