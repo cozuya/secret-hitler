@@ -832,11 +832,11 @@ div {
 	box-shadow: 0 0 5px 2px orange !important;
 }
 
-.moderatorcolor {
-	color: #007fff !important;
+.admin {
+	color: red !important;
 }
-.player-small-cardback.moderatorcolor {
-	box-shadow: 0 0 5px 2px #007fff !important;
+.player-small-cardback.admin {
+	box-shadow: 0 0 5px 2px red !important;
 }
 
 .editorcolor {
@@ -846,11 +846,11 @@ div {
 	box-shadow: 0 0 5px 2px #05bba0 !important;
 }
 
-.admin {
-	color: red !important;
+.moderatorcolor {
+	color: #007fff !important;
 }
-.player-small-cardback.admin {
-	box-shadow: 0 0 5px 2px red !important;
+.player-small-cardback.moderatorcolor {
+	box-shadow: 0 0 5px 2px #007fff !important;
 }
 
 .cbell {
@@ -860,18 +860,18 @@ div {
 	box-shadow: 0 0 5px 2px #ff1a75 !important;
 }
 
-.max {
-	color: #b7ae0b !important;
-}
-.player-small-cardback.max {
-	box-shadow: 0 0 5px 2px #b7ae0b !important;
-}
-
 .dfinn {
 	color: #00ffd8 !important;
 }
 .player-small-cardback.dfinn {
 	box-shadow: 0 0 5px 2px #00ffd8 !important;
+}
+
+.faaiz {
+	color: #c7c1ff !important;
+}
+.player-small-cardback.faaiz {
+	box-shadow: 0 0 5px 2px #c7c1ff !important;
 }
 
 .invidia {
@@ -881,11 +881,11 @@ div {
 	box-shadow: 0 0 5px 2px #bb3d06 !important;
 }
 
-.faaiz {
-	color: #c7c1ff !important;
+.max {
+	color: #b7ae0b !important;
 }
-.player-small-cardback.faaiz {
-	box-shadow: 0 0 5px 2px #c7c1ff !important;
+.player-small-cardback.max {
+	box-shadow: 0 0 5px 2px #b7ae0b !important;
 }
 
 #confetti {
