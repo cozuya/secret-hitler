@@ -1,25 +1,5 @@
-$lred: #e36248;
-$lightliberalteam: #bfd8ee;
-$lightfascistteam: #e4bcba;
-$darkliberalteam: #608cb3;
-$darkfascistteam: #f2654c; // default orange color now
-$hitlerteam: #be0804;
-$werewolfteam: #dc6969;
-$villageteam: #4b6a90;
-$tannerteam: #dcb469;
-$fascistteam: #e36248;
-$tourny: #1cb98e;
-$notification: #fbbd08;
-$selection: #db2828;
-$proceed: #2185d0;
-$lteal: #097892;
-$dteal: #034f61;
-$blacklist: #462c35;
-$thirteen: #1c9cb9;
-$textfont: inherit; //'Comfortaa', Lato, sans-serif;
-$headerfont: inherit; //'Comfortaa', Lato, sans-serif;
-
 //@import 'semantic.scss';
+@import 'variables.scss';
 @import 'creategame.scss';
 //@import 'leftsidebar.scss';
 @import 'game.scss';
@@ -321,11 +301,11 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		}
 
 		.rainbow-icon {
-			background: url(../images/rainbow.png) no-repeat;
+			background: url(../../public/images/rainbow.png) no-repeat;
 		}
 
 		.standard-icon {
-			background: url(../favicon-16x16.png) no-repeat;
+			background: url(../../public/favicon-16x16.png) no-repeat;
 		}
 
 		> .column {
@@ -515,7 +495,7 @@ $headerfont: inherit; //'Comfortaa', Lato, sans-serif;
 		width: 36.6px;
 		height: 47.5px;
 		margin-right: 15px;
-		background-image: url(../images/empty_seat.png);
+		background-image: url(../../public/images/empty_seat.png);
 		background-size: 36.6px;
 		text-align: center;
 		vertical-align: middle;

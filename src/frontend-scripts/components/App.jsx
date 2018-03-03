@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import RightSidebar from './section-right/RightSidebar.jsx';
 import Menu from './menu/Menu.jsx';
 import DevHelpers from './DevHelpers.jsx';
+import '../../scss/style-dark.scss';
 
 const select = state => state;
 

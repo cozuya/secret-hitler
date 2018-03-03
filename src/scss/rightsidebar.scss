@@ -48,7 +48,7 @@
 				}
 			}
 			.all {
-				background: url('../favicon-16x16.png') no-repeat;
+				background: url('../../public/favicon-16x16.png') no-repeat;
 				width: 16px;
 				height: 16px;
 				vertical-align: text-bottom;
@@ -58,7 +58,7 @@
 				cursor: pointer;
 			}
 			.rainbow {
-				background: url('../images/rainbow.png') no-repeat;
+				background: url('../../public/images/rainbow.png') no-repeat;
 				width: 16px;
 				height: 16px;
 				vertical-align: text-bottom;
@@ -85,13 +85,13 @@
 			overflow-x: hidden;
 			padding: 0 10px 0 10px;
 			.fav {
-				background: url('../favicon-16x16.png') no-repeat;
+				background: url('../../public/favicon-16x16.png') no-repeat;
 				width: 16px;
 				height: 16px;
 				vertical-align: text-bottom;
 			}
 			.rainbow {
-				background: url('../images/rainbow.png') no-repeat;
+				background: url('../../public/images/rainbow.png') no-repeat;
 				width: 16px;
 				height: 16px;
 				vertical-align: text-bottom;
@@ -258,7 +258,9 @@
 					}
 				}
 				.chat-user {
-					color: #888;
+					// color: #888;
+
+					color: blue !important;
 					font-weight: bold;
 					white-space: nowrap;
 				}
