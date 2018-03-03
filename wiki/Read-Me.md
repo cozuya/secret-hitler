@@ -26,15 +26,15 @@ Front end: React, Redux, Sass, Semantic UI, jQuery, SocketIO.
 
 Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 
-Build: Gulp, Browserify, Babel (front end).
-
 ## Installation
 
-Install [node.js LTS](https://nodejs.org/en/), have it in your path.
+Install [node.js version: LTS](https://nodejs.org/en/) for your OS, have it in your path.
 
-Install [git](https://git-scm.com/downloads), have it in your path.
+Install [git](https://git-scm.com/downloads) for your OS, have it in your path.
 
-Install [mongodb](https://www.mongodb.com/download-center?ct=atlasheader#community), have it in your path.
+Install [mongodb](https://www.mongodb.com/download-center?ct=atlasheader#community) for your OS, have it in your path.
+
+Install [yarn](https://yarnpkg.com/en/docs/install) for your OS, have it in your path.
 
 then
 
@@ -42,32 +42,20 @@ then
 
 > cd secret-hitler
 
-> npm i -g gulp nodemon
+> mkdir data logs
 
-> npm i
+> yarn
 
 ## Running in dev mode
 
-Build assets (first time only):
+Start development:
 
-> gulp build
+> yarn dev
 
-Start mongo:
+Navigate to: http://localhost:8080
 
-> npm run db 15726
-
-Start express server:
-
-> nodemon bin/dev
-
-Start development task runner:
-
-> gulp
-
-navigate to: http://localhost:8080
-
-You'll most likely need a browser extension such as Chrome's openMultiLogin to have multiple sessions on the same browser. No, incognito will not work. Also it
-will be very helpful to make all of the "quickdefault" accounts with the default password, snipsnap, so that you can log in to an account in one click.
+You'll most likely need a browser extension such as Chrome's [openMultiLogin](https://chrome.google.com/webstore/detail/openmultilogin/lbofelamdnfmipbbgkebcpkapahbmcgm?hl=en) to have multiple sessions on the same browser. No, incognito will not work. Also it
+will be very helpful to make all of the "quickdefault" accounts with the default password, **snipsnap**, so that you can log in to an account in one click.
 
 ## Running in production mode
 
