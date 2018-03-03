@@ -19,6 +19,7 @@ const {
 	handleChangeUsername
 } = require('./user-events');
 const {
+	sendPlayerNotes,
 	sendUserReports,
 	sendGameInfo,
 	sendUserGameSettings,
@@ -133,6 +134,9 @@ module.exports = () => {
 			})
 			// user-requests
 
+			.on('getPlayerNotes', data => {
+				sendPlayerNotes(socket, data);
+			})
 			.on('getGameList', () => {
 				sendGameList(socket);
 			})
