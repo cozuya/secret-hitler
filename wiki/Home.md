@@ -7,7 +7,17 @@
 
 *Go ahead and fork us and give us a star!*
 
-Be sure to follow our **[Terms of Use](https://github.com/cozuya/secret-hitler/wiki/About-Secret-Hitler#terms-of-use-general)** otherwise you can be subject to a ban.
+**To clone this wiki locally, run the following command line in your cmd:**
+
+> git clone https://github.com/cozuya/secret-hitler.wiki.git
+
+*We appreciate any helpful contributions to help improve this wiki to be most useful to the Secret Hitler.io Community.*
+
+*Also by cloning the master repository for the site locally, you are provided with a secret-hitler/wiki folder with all of the wiki pages and their code to view/edit. Feel free to help contribute in this way by sending your changes as [pull requests](https://github.com/cozuya/secret-hitler/pulls) to improve this wiki.*
+
+> git clone https://github.com/cozuya/secret-hitler.git
+
+### Be sure to follow our **[Terms of Use](https://github.com/cozuya/secret-hitler/wiki/About-Secret-Hitler#terms-of-use-general)** otherwise you can be subject to a ban.
 
 >**Join us on [Discord!](https://discord.gg/secrethitlerio)**
 
