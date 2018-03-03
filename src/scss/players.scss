@@ -75,6 +75,18 @@
 		background-size: 70px 95px;
 		position: relative;
 
+		.playernote {
+			color: teal !important;
+			position: absolute;
+			top: 2px;
+			right: -4px;
+
+			&.filled {
+				color: orange !important;
+			}
+		}
+
+
 		.player-number {
 			cursor: pointer;
 			overflow: hidden;

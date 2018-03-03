@@ -18,8 +18,40 @@ export default class Players extends React.Component {
 		this.state = {
 			passwordValue: '',
 			reportedPlayer: '',
-			reportTextValue: ''
+			reportTextValue: '',
+			playerNotes: []
 		};
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { userName } = this.props;
+		const { publicPlayersState } = nextProps.gameInfo;
+
+		if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
+			this.props.socket.emit('getPlayerNotes', {
+				userName,
+				seatedPlayer: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
+			});
+		}
+	}
+
+	componentDidMount() {
+		const { socket, userInfo } = this.props;
+
+		if (userInfo.userName) {
+			socket.on('notesUpdate', playerNotes => {
+				this.setState({ playerNotes });
+			});
+
+			socket.emit('getPlayerNotes', {
+				userName: userInfo.userName,
+				seatedPlayer: this.props.gameInfo.publicPlayersState.filter(player => player.userName !== userInfo.userName).map(player => player.userName)
+			});
+		}
+	}
+
+	componentWillUnmount() {
+		this.props.socket.off('notesUpdate');
 	}
 
 	handlePlayerDoubleClick(userName) {
@@ -97,6 +129,10 @@ export default class Players extends React.Component {
 		}
 	}
 
+	renderPlayerNotes() {
+		return <i className="large edit icon playernote" />;
+	}
+
 	renderPlayers() {
 		const { gameInfo, userInfo } = this.props;
 		const { gameSettings } = userInfo;
@@ -138,13 +174,15 @@ export default class Players extends React.Component {
 				style={
 					player.customCardback &&
 					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
-						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-							}
-						: {
-								backgroundImage: `url(../images/default_cardback.png)`
-							}
+					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks)) ? (
+						{
+							backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+						}
+					) : (
+						{
+							backgroundImage: `url(../images/default_cardback.png)`
+						}
+					)
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -176,9 +214,11 @@ export default class Players extends React.Component {
 			>
 				<div
 					title={
-						isBlind
-							? 'Double click to open a modal to report this player to the moderator team'
-							: `Double click to open a modal to report ${player.userName} to the moderator team`
+						isBlind ? (
+							'Double click to open a modal to report this player to the moderator team'
+						) : (
+							`Double click to open a modal to report ${player.userName} to the moderator team`
+						)
 					}
 					onDoubleClick={() => {
 						this.handlePlayerDoubleClick(player.userName);
@@ -210,6 +250,7 @@ export default class Players extends React.Component {
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
 				{this.renderGovtToken(i)}
+				{this.renderPlayerNotes()}
 				<div
 					className={(() => {
 						let classes = 'card-container';

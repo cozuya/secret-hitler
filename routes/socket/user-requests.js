@@ -1,6 +1,7 @@
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
+const PlayerNote = require('../../models/playerNote');
 const Game = require('../../models/game');
 //	const BannedIP = require('../../models/bannedIP');
 const { games, userList, generalChats, currentSeasonNumber, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
@@ -128,6 +129,11 @@ module.exports.sendUserGameSettings = (socket, username) => {
 		.catch(err => {
 			console.log(err);
 		});
+};
+
+module.exports.sendPlayerNotes = (socket, data) => {
+	// todo: find notes for player, filter out non seated players in data, emit socket event
+	// PlayerNote.find()
 };
 
 /**
