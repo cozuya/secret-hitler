@@ -25,13 +25,13 @@ Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 
 ## Installation
 
-Install [node.js version: LTS](https://nodejs.org/en/), have it in your path.
+Install [node.js version: LTS](https://nodejs.org/en/) for your OS, have it in your path.
 
-Install [git](https://git-scm.com/downloads), have it in your path.
+Install [git](https://git-scm.com/downloads) for your OS, have it in your path.
 
-Install [mongodb](https://www.mongodb.com/download-center?ct=atlasheader#community), have it in your path.
+Install [mongodb](https://www.mongodb.com/download-center?ct=atlasheader#community) for your OS, have it in your path.
 
-Install [yarn](https://yarnpkg.com/en/docs/install) for your OS.
+Install [yarn](https://yarnpkg.com/en/docs/install) for your OS, have it in your path.
 
 then
 
