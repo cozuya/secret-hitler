@@ -49,7 +49,7 @@ I only have the following guidelines:
 
 - Uther, Jaina, Rexxar, Malfurian, Thrall, Valeera, Anduin, aaa, bbb, ccc, ddd, eee, fff, ggg, hhh
 
-- To better use the Dev Helpers, you'll most likely need a browser extension such as Chrome's openMultiLogin to have multiple sessions on the same browser. 
+- To better use the Dev Helpers, you'll most likely need a browser extension such as Chrome's [openMultiLogin](https://chrome.google.com/webstore/detail/openmultilogin/lbofelamdnfmipbbgkebcpkapahbmcgm?hl=en) to have multiple sessions on the same browser. 
 
 ### **Discord Development Channel & GitHub Issues Pages:**
 
