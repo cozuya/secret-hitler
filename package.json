@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
-	"version": "0.12.5",
+	"version": "0.13.0",
 	"license": "CC-BY-NC-SA-4.0",
 	"repository": {
 		"url": "https://github.com/cozuya/secret-hitler.git",
@@ -77,6 +77,7 @@
 		"eslint-config-prettier": "^2.3.0",
 		"eslint-plugin-import": "^2.2.0",
 		"eslint-plugin-prettier": "^2.2.0",
+		"extract-text-webpack-plugin": "^4.0.0-beta.0",
 		"file-loader": "^1.1.11",
 		"html-loader": "^0.5.5",
 		"html-webpack-plugin": "^2.30.1",
