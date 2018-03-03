@@ -2,7 +2,7 @@
 
 ***
 
-# 🌀Moderation Guidelines (living document) v15 12/10/2017:
+# 🌀Moderation Guidelines:
 
 ***We are NOT currently seeking applicants at this time. When we do seek applicants, a [GitHub issue](https://github.com/cozuya/secret-hitler/issues) will be opened and the direct link for that specific issue will be added to this page.***
 
