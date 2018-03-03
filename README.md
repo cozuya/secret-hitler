@@ -52,7 +52,7 @@ Start development:
 Navigate to: http://localhost:8080
 
 You'll most likely need a browser extension such as Chrome's [openMultiLogin](https://chrome.google.com/webstore/detail/openmultilogin/lbofelamdnfmipbbgkebcpkapahbmcgm?hl=en) to have multiple sessions on the same browser. No, incognito will not work. Also it
-will be very helpful to make all of the "quickdefault" accounts with the default password, snipsnap, so that you can log in to an account in one click. There's an open issue on github to provide a mongo script with that prepopulated but haven't got to it yet, sorry.
+will be very helpful to make all of the "quickdefault" accounts with the default password, **snipsnap**, so that you can log in to an account in one click. There's an open issue on github to provide a mongo script with that prepopulated but haven't got to it yet, sorry.
 
 ## Running in production mode
 
