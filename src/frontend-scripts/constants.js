@@ -1,36 +1,38 @@
 const cn = require('classnames');
 
 const MODERATORS = (module.exports.MODERATORS = [
-	'RavenCaps',
+	'cayseron',
 	'JerMej1s',
 	'jdudle3',
-	'Rose',
-	'TheJustStopO',
+	'Idrissa',
+	'maki2',
+	'MrEth3real',
 	'Number5',
 	'Ophxlia',
-	'Idrissa',
-	'cayseron',
-	'maki2',
+	'RavenCaps',
+	'Rose',
 	'safi',
-	'Wilmeister',
-	'MrEth3real'
+	'TheJustStopO',
+	'Wilmeister'
 ]);
 
-const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Faaiz1999', 'Invidia']);
+const EDITORS = (module.exports.EDITORS = ['cbell', 'Faaiz1999', 'Invidia', 'Max']);
+
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
+
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
-	'Skyrra',
-	'jbasrai',
-	'sethe',
-	'veggiemanz',
-	'DFinn',
 	'conundrum',
+	'DFinn',
+	'goonbee',
+	'jbasrai',
 	'JerMej1s',
 	'Invidia',
-	'Wi1son',
 	'LordVader',
+	'sethe',
+	'Skyrra',
+	'veggiemanz',
 	'voldemort',
-	'goonbee'
+	'Wi1son'
 ]);
 
 const CURRENTSEASONNUMBER = 1;
@@ -67,9 +69,9 @@ module.exports.PLAYERCOLORS = (user, isSeasonal) => {
 		onfire10: w / (w + l) > 0.7,
 		contributer: CONTRIBUTORS.includes(user.userName),
 		cbell: user.userName === 'cbell',
-		max: user.userName === 'Max',
 		dfinn: user.userName === 'DFinn',
 		faaiz: user.userName === 'Faaiz1999',
-		invidia: user.userName === 'Invidia'
+		invidia: user.userName === 'Invidia',
+		max: user.userName === 'Max',
 	});
 };
