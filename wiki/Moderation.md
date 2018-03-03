@@ -156,13 +156,13 @@ Below are listed the extra powers Editors have:
 #### 🌀Moderators (12): 
 - 🌀Idrissa 
 - 🌀jdudle3 
-- 🌀JerMej1s 
-- 🌀TheJustStopO 
+- 🌀JerMej1s  
 - 🌀maki2 
 - 🌀MrEth3real 
 - 🌀Number5 
 - 🌀Ophxlia 
 - 🌀RavenCaps 
 - 🌀Rose 
-- 🌀safi 
+- 🌀safi
+- 🌀TheJustStopO
 - 🌀Wilmeister 
