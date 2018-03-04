@@ -129,8 +129,22 @@ export default class Players extends React.Component {
 		}
 	}
 
-	renderPlayerNotes() {
-		return <i className="large edit icon playernote" />;
+	renderPlayerNotesIcon(index) {
+		const { userInfo, gameInfo } = this.props;
+		const clickedPlayerNote = index => {
+			console.log('Hello, World!');
+		};
+
+		if (userInfo.userName && gameInfo.publicPlayersState[index].userName !== userInfo.userName) {
+			return (
+				<i
+					onClick={() => {
+						clickedPlayerNote(index);
+					}}
+					className="large edit icon playernote"
+				/>
+			);
+		}
 	}
 
 	renderPlayers() {
@@ -250,7 +264,7 @@ export default class Players extends React.Component {
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
 				{this.renderGovtToken(i)}
-				{this.renderPlayerNotes()}
+				{this.renderPlayerNotesIcon(i)}
 				<div
 					className={(() => {
 						let classes = 'card-container';
