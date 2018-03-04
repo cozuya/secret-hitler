@@ -26,6 +26,7 @@ const select = state => state;
 export class App extends React.Component {
 	constructor() {
 		super();
+
 		this.handleSeatingUser = this.handleSeatingUser.bind(this);
 		this.handleLeaveGame = this.handleLeaveGame.bind(this);
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
@@ -34,6 +35,7 @@ export class App extends React.Component {
 		this.state = {
 			notesValue: ''
 		};
+
 		this.prevHash = '';
 	}
 
