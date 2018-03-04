@@ -115,6 +115,7 @@ module.exports = () => {
 				handleUserLeaveGame(socket, data);
 			})
 			.on('updateSeatedUser', data => {
+				console.log('Hello, World!');
 				updateSeatedUser(socket, data);
 			})
 			.on('playerReport', data => {
