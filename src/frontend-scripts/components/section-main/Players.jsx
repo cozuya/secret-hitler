@@ -18,8 +18,40 @@ export default class Players extends React.Component {
 		this.state = {
 			passwordValue: '',
 			reportedPlayer: '',
-			reportTextValue: ''
+			reportTextValue: '',
+			playerNotes: []
 		};
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { userName } = this.props;
+		const { publicPlayersState } = nextProps.gameInfo;
+
+		if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
+			this.props.socket.emit('getPlayerNotes', {
+				userName,
+				seatedPlayers: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
+			});
+		}
+	}
+
+	componentDidMount() {
+		const { socket, userInfo } = this.props;
+
+		if (userInfo.userName) {
+			socket.on('notesUpdate', playerNotes => {
+				this.setState({ playerNotes });
+			});
+
+			socket.emit('getPlayerNotes', {
+				userName: userInfo.userName,
+				seatedPlayer: this.props.gameInfo.publicPlayersState.filter(player => player.userName !== userInfo.userName).map(player => player.userName)
+			});
+		}
+	}
+
+	componentWillUnmount() {
+		this.props.socket.off('notesUpdate');
 	}
 
 	handlePlayerDoubleClick(userName) {
@@ -97,6 +129,24 @@ export default class Players extends React.Component {
 		}
 	}
 
+	renderPlayerNotesIcon(index) {
+		const { userInfo, gameInfo } = this.props;
+		const clickedPlayerNote = index => {
+			console.log('Hello, World!');
+		};
+
+		if (userInfo.userName && gameInfo.publicPlayersState[index].userName !== userInfo.userName) {
+			return (
+				<i
+					onClick={() => {
+						clickedPlayerNote(index);
+					}}
+					className="large edit icon playernote"
+				/>
+			);
+		}
+	}
+
 	renderPlayers() {
 		const { gameInfo, userInfo } = this.props;
 		const { gameSettings } = userInfo;
@@ -141,10 +191,10 @@ export default class Players extends React.Component {
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-							}
+						  }
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
-							}
+						  }
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -210,6 +260,7 @@ export default class Players extends React.Component {
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
 				{this.renderGovtToken(i)}
+				{this.renderPlayerNotesIcon(i)}
 				<div
 					className={(() => {
 						let classes = 'card-container';
@@ -326,6 +377,7 @@ export default class Players extends React.Component {
 	}
 
 	clickedTakeSeat() {
+		console.log('Hello, World!');
 		const { gameInfo, userInfo, onClickedTakeSeat } = this.props;
 
 		if (userInfo.userName) {

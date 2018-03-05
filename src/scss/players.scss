@@ -18,12 +18,12 @@
 	}
 	@for $i from 1 through 5 {
 		.player-container.experienced#{$i} {
-			box-shadow: 0 0 5px 2px rgb(0,  (175 - ($i * 20)), 0) !important;
+			box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
 		}
 	}
 	@for $i from 1 through 10 {
 		.player-container.onfire#{$i} {
-			box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
+			box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
 		}
 	}
 
@@ -46,21 +46,21 @@
 	.player-container.cbell {
 		box-shadow: 0 0 5px 2px #ff1a75 !important;
 	}
-	
+
+	.player-container.max {
+		box-shadow: 0 0 5px 2px #b7ae0b !important;
+	}
+
 	.player-container.dfinn {
 		box-shadow: 0 0 5px 2px #00ffd8 !important;
 	}
 
-	.player-container.faaiz {
-		box-shadow: 0 0 5px 2px #c7c1ff !important;
-	}
-	
 	.player-container.invidia {
 		box-shadow: 0 0 5px 2px #bb3d06 !important;
 	}
-	
-	.player-container.max {
-		box-shadow: 0 0 5px 2px #b7ae0b !important;
+
+	.player-container.faaiz {
+		box-shadow: 0 0 5px 2px #c7c1ff !important;
 	}
 
 	.player-container {
@@ -74,6 +74,19 @@
 		background-repeat: no-repeat;
 		background-size: 70px 95px;
 		position: relative;
+
+		.playernote {
+			font-size: 18px;
+			color: teal !important;
+			position: absolute;
+			top: 2px;
+			right: -4px;
+			cursor: pointer;
+
+			&.filled {
+				color: orange !important;
+			}
+		}
 
 		.player-number {
 			cursor: pointer;

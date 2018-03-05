@@ -32,6 +32,7 @@
 		min-width: 250px;
 	}
 }
+
 @media screen and (min-width: 1471px) and (max-width: 1520px) {
 	// allows general chat to scale a little
 	.generalchat {
@@ -642,9 +643,6 @@
 	i.icon {
 		color: $darkfascistteam;
 	}
-	a:not(.button) {
-		//color: $darkliberalteam;
-	}
 	.remove.icon {
 		cursor: pointer;
 		font-size: 30px;
@@ -809,19 +807,19 @@ div {
 
 @for $i from 1 through 5 {
 	.experienced#{$i} {
-		color: rgb(19,  (222 - ($i * 20)), 19) !important;
+		color: rgb(19, (222 - ($i * 20)), 19) !important;
 	}
 	.player-small-cardback.experienced#{$i} {
-		box-shadow: 0 0 5px 2px rgb(0,  (175 - ($i * 20)), 0) !important;
+		box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
 	}
 }
 
 @for $i from 1 through 10 {
 	.onfire#{$i} {
-		color: rgb(183,  (10 - $i) * 15, 167) !important;
+		color: rgb(183, (10 - $i) * 15, 167) !important;
 	}
 	.player-small-cardback.onfire#{$i} {
-		box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
+		box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
 	}
 }
 
