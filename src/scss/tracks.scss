@@ -115,7 +115,7 @@
 			width: 100%;
 		}
 		.top-track-front {
-			background-image: url('../images/tracks/liberaltrack_front.png');
+			background-image: url('../../public/images/tracks/liberaltrack_front.png');
 			background-position: center;
 			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
@@ -124,10 +124,10 @@
 			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
 			transform: rotateX(180deg);
-			background-image: url('../images/tracks/liberaltrack.png');
+			background-image: url('../../public/images/tracks/liberaltrack.png');
 		}
 		.bottom-track-front {
-			background-image: url('../images/tracks/fascisttrack_front.png');
+			background-image: url('../../public/images/tracks/fascisttrack_front.png');
 			background-position: center;
 			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
@@ -138,13 +138,13 @@
 			transform: rotateX(180deg);
 		}
 		.track0 {
-			background-image: url('../images/tracks/fascisttrack56.png');
+			background-image: url('../../public/images/tracks/fascisttrack56.png');
 		}
 		.track1 {
-			background-image: url('../images/tracks/fascisttrack78.png');
+			background-image: url('../../public/images/tracks/fascisttrack78.png');
 		}
 		.track2 {
-			background-image: url('../images/tracks/fascisttrack910.png');
+			background-image: url('../../public/images/tracks/fascisttrack910.png');
 		}
 		.remove.icon {
 			position: absolute;
@@ -260,22 +260,22 @@
 	left: 365px !important;
 }
 .cardflinger-card.ballot {
-	background-image: url('../images/cards/ballot-l.png');
+	background-image: url('../../public/images/cards/ballot-l.png');
 }
 .cardflinger-card.nein {
-	background-image: url('../images/cards/nein-l.png');
+	background-image: url('../../public/images/cards/nein-l.png');
 }
 .cardflinger-card.ja {
-	background-image: url('../images/cards/ja-l.png');
+	background-image: url('../../public/images/cards/ja-l.png');
 }
 .cardflinger-card.policy {
-	background-image: url('../images/cards/policy-l.png');
+	background-image: url('../../public/images/cards/policy-l.png');
 }
 .cardflinger-card.liberalp {
-	background-image: url('../images/cards/liberalp-l.png');
+	background-image: url('../../public/images/cards/liberalp-l.png');
 }
 .cardflinger-card.fascistp {
-	background-image: url('../images/cards/fascistp-l.png');
+	background-image: url('../../public/images/cards/fascistp-l.png');
 }
 .cardflinger-card-container.middle-far-right.hovered,
 .cardflinger-card-container.middle-center.hovered,
@@ -348,13 +348,13 @@
 	cursor: pointer;
 }
 .enactedpolicies-card.front {
-	background-image: url('../images/cards/policy-l.png');
+	background-image: url('../../public/images/cards/policy-l.png');
 }
 .enactedpolicies-card.back.liberal {
-	background-image: url('../images/cards/liberalp-l.png');
+	background-image: url('../../public/images/cards/liberalp-l.png');
 }
 .enactedpolicies-card.back.fascist {
-	background-image: url('../images/cards/fascistp-l.png');
+	background-image: url('../../public/images/cards/fascistp-l.png');
 }
 .enactedpolicies-card-container.middle {
 	left: 260px;

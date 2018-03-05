@@ -2,6 +2,7 @@ import React from 'react'; // eslint-disable-line
 import DisplayLobbies from './DisplayLobbies.jsx';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'semantic-ui-react';
+import moment from 'moment';
 
 export class GamesList extends React.Component {
 	constructor() {
@@ -179,7 +180,9 @@ export class GamesList extends React.Component {
 		return (
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
-					<h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">Welcome to season 1!</h5>
+					<h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">
+						Season ends {new Date().getTime() < new Date('4-1-2018').getTime() ? moment(new Date('4-1-2018')).fromNow() : 'Welcome to season 2!'}.
+					</h5>
 				</a>
 				<h3>Game filters</h3>
 				{this.renderFilters()}

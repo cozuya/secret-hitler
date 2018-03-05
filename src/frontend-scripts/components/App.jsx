@@ -19,12 +19,14 @@ import PropTypes from 'prop-types';
 import RightSidebar from './section-right/RightSidebar.jsx';
 import Menu from './menu/Menu.jsx';
 import DevHelpers from './DevHelpers.jsx';
+import '../../scss/style-dark.scss';
 
 const select = state => state;
 
 export class App extends React.Component {
 	constructor() {
 		super();
+
 		this.handleSeatingUser = this.handleSeatingUser.bind(this);
 		this.handleLeaveGame = this.handleLeaveGame.bind(this);
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
@@ -33,6 +35,7 @@ export class App extends React.Component {
 		this.state = {
 			notesValue: ''
 		};
+
 		this.prevHash = '';
 	}
 

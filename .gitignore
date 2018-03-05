@@ -34,5 +34,6 @@ public/Thumbs.db
 public/styles/style-dark.css
 public/styles/style-light.css
 public/styles/style-web.css
+public/styles/style-main.css
 coverage/*
 .idea/
