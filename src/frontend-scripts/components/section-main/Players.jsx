@@ -30,7 +30,7 @@ export default class Players extends React.Component {
 		if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
 			this.props.socket.emit('getPlayerNotes', {
 				userName,
-				seatedPlayer: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
+				seatedPlayers: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
 			});
 		}
 	}
@@ -188,15 +188,13 @@ export default class Players extends React.Component {
 				style={
 					player.customCardback &&
 					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks)) ? (
-						{
-							backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						}
-					) : (
-						{
-							backgroundImage: `url(../images/default_cardback.png)`
-						}
-					)
+					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+						? {
+								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+						  }
+						: {
+								backgroundImage: `url(../images/default_cardback.png)`
+						  }
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -228,11 +226,9 @@ export default class Players extends React.Component {
 			>
 				<div
 					title={
-						isBlind ? (
-							'Double click to open a modal to report this player to the moderator team'
-						) : (
-							`Double click to open a modal to report ${player.userName} to the moderator team`
-						)
+						isBlind
+							? 'Double click to open a modal to report this player to the moderator team'
+							: `Double click to open a modal to report ${player.userName} to the moderator team`
 					}
 					onDoubleClick={() => {
 						this.handlePlayerDoubleClick(player.userName);
@@ -381,6 +377,7 @@ export default class Players extends React.Component {
 	}
 
 	clickedTakeSeat() {
+		console.log('Hello, World!');
 		const { gameInfo, userInfo, onClickedTakeSeat } = this.props;
 
 		if (userInfo.userName) {

@@ -132,8 +132,15 @@ module.exports.sendUserGameSettings = (socket, username) => {
 };
 
 module.exports.sendPlayerNotes = (socket, data) => {
-	// todo: find notes for player, filter out non seated players in data, emit socket event
-	// PlayerNote.find()
+	PlayerNote.findOne({ username: data.userName })
+		.then(notes => {
+			if (notes) {
+				socket.emit('notesUpdate', notes.notes.filter(note => data.seatedPlayers.includes(note.userName)));
+			}
+		})
+		.catch(err => {
+			console.log(err, 'err in getting playernotes');
+		});
 };
 
 /**
