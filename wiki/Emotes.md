@@ -86,6 +86,8 @@
 **PBullet** - ![PBullet](https://github.com/andy013/secret-hitler/blob/master/public/images/emotes/PBullet.png)
  
 **PDraw** - ![PDraw](https://github.com/andy013/secret-hitler/blob/master/public/images/emotes/PDraw.png)
+
+**PIZZA** - ![PIZZA](https://github.com/LordVader9988/secret-hitler/blob/master/public/images/emotes/PIZZA.png)
  
 **PInvest** - ![PInvest](https://github.com/andy013/secret-hitler/blob/master/public/images/emotes/PInvest.png)
  
