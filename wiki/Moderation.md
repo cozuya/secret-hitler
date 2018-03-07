@@ -141,7 +141,7 @@ Below are listed the extra powers Editors have:
 **Reset server (double click)** - Resets the server. Use sparingly!
 
 ***
-### List of the current 📛🔰🌀 AEM Team (18):
+### List of the current 📛🔰🌀 AEM Team (17):
 
 #### 📛Administrators (2): 
 - 📛coz 
@@ -153,11 +153,10 @@ Below are listed the extra powers Editors have:
 - 🔰Invidia 
 - 🔰Max 
 
-#### 🌀Moderators (12): 
+#### 🌀Moderators (11): 
 - 🌀Idrissa 
 - 🌀jdudle3 
 - 🌀JerMej1s  
-- 🌀maki2 
 - 🌀MrEth3real 
 - 🌀Number5 
 - 🌀Ophxlia 
