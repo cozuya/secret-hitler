@@ -5,69 +5,69 @@
  * see: `./GameSummaryBuilder, ./EnhancedGameSummary`
  */
 
-const mongoose = require('mongoose'),
-	{ Schema } = mongoose,
-	gameSummary = new Schema({
-		_id: String,
-		date: Date,
-		gameSetting: {
-			rebalance6p: Boolean,
-			rebalance7p: Boolean,
-			rebalance9p: Boolean,
-			rerebalance9p: Boolean
-		},
-		players: [
-			{
-				username: String,
-				role: String,
-				icon: Number
-			}
-		],
-		logs: [
-			{
-				// election
-				presidentId: Number,
-				chancellorId: Number,
-				votes: Array, // [Boolean]
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const gameSummary = new Schema({
+	_id: String,
+	date: Date,
+	gameSetting: {
+		rebalance6p: Boolean,
+		rebalance7p: Boolean,
+		rebalance9p: Boolean,
+		rerebalance9p: Boolean
+	},
+	players: [
+		{
+			username: String,
+			role: String,
+			icon: Number
+		}
+	],
+	logs: [
+		{
+			// election
+			presidentId: Number,
+			chancellorId: Number,
+			votes: Array, // [Boolean]
 
-				// policy enaction
-				presidentHand: {
-					reds: Number,
-					blues: Number
-				},
-				chancellorHand: {
-					reds: Number,
-					blues: Number
-				},
-				enactedPolicy: String,
+			// policy enaction
+			presidentHand: {
+				reds: Number,
+				blues: Number
+			},
+			chancellorHand: {
+				reds: Number,
+				blues: Number
+			},
+			enactedPolicy: String,
 
-				presidentClaim: {
-					reds: Number,
-					blues: Number
-				},
-				chancellorClaim: {
-					reds: Number,
-					blues: Number
-				},
+			presidentClaim: {
+				reds: Number,
+				blues: Number
+			},
+			chancellorClaim: {
+				reds: Number,
+				blues: Number
+			},
 
-				presidentVeto: Boolean,
-				chancellorVeto: Boolean,
+			presidentVeto: Boolean,
+			chancellorVeto: Boolean,
 
-				// actions
-				policyPeek: {
-					reds: Number,
-					blues: Number
-				},
-				policyPeekClaim: {
-					reds: Number,
-					blues: Number
-				},
-				investigationId: Number,
-				investigationClaim: String,
-				specialElection: Number,
-				execution: Number
-			}
-		]
-	});
+			// actions
+			policyPeek: {
+				reds: Number,
+				blues: Number
+			},
+			policyPeekClaim: {
+				reds: Number,
+				blues: Number
+			},
+			investigationId: Number,
+			investigationClaim: String,
+			specialElection: Number,
+			execution: Number
+		}
+	]
+});
 
 module.exports = mongoose.model('GameSummary', gameSummary);
