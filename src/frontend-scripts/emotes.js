@@ -43,6 +43,7 @@ export const allEmotes = [
 	'PopCorn',
 	'PPres',
 	'RedFace',
+	'RedHeart',
 	'RIP',
 	'SecretHitler',
 	'Shrug',
