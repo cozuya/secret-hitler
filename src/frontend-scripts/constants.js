@@ -5,7 +5,6 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Idrissa',
 	'jdudle3',
 	'JerMej1s',
-	'maki2',
 	'MrEth3real',
 	'Number5',
 	'Ophxlia',
