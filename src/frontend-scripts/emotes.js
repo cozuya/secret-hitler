@@ -40,6 +40,7 @@ export const allEmotes = [
 	'PDraw',
 	'PIZZA',
 	'PInvest',
+	'PopCorn',
 	'PPres',
 	'RedFace',
 	'RIP',
