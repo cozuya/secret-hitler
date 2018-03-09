@@ -104,6 +104,8 @@
 **SecretHitler** - ![Secret Hitler](https://github.com/andy013/secret-hitler/blob/master/public/images/emotes/SecretHitler.png)
  
 **SillyLib** - ![SillyLib](https://github.com/andy013/secret-hitler/blob/master/public/images/emotes/SillyLib.png)
+
+**ThinkFace** - ![ThinkFace](https://github.com/LordVader9988/secret-hitler/blob/master/public/images/emotes/ThinkFace.png)
  
 **TopDeck** - ![TopDeck](https://github.com/andy013/secret-hitler/blob/master/public/images/emotes/TopDeck.png)
  
