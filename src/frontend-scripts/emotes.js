@@ -48,6 +48,7 @@ export const allEmotes = [
 	'SecretHitler',
 	'Shrug',
 	'SillyLib',
+	'ThinkFace',
 	'ThumbsUp',
 	'TopDeck',
 	'VetoPower',
