@@ -38,6 +38,7 @@ export const allEmotes = [
 	'NotHitler',
 	'PBullet',
 	'PDraw',
+	'PIZZA',
 	'PInvest',
 	'PPres',
 	'RedFace',
