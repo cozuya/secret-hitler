@@ -1,4 +1,7 @@
-# secret-hitler
+![header](https://cdn.discordapp.com/attachments/335071937350860801/357617077881667584/hello1234.jpeg)  
+
+***
+# [Read Me Page](https://github.com/cozuya/secret-hitler#secret-hitler)
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
@@ -52,7 +55,7 @@ Start development:
 Navigate to: http://localhost:8080
 
 You'll most likely need a browser extension such as Chrome's [openMultiLogin](https://chrome.google.com/webstore/detail/openmultilogin/lbofelamdnfmipbbgkebcpkapahbmcgm?hl=en) to have multiple sessions on the same browser. No, incognito will not work. Also it
-will be very helpful to make all of the "quickdefault" accounts with the default password, **snipsnap**, so that you can log in to an account in one click. There's an open issue on github to provide a mongo script with that prepopulated but haven't got to it yet, sorry.
+will be very helpful to make all of the "quickdefault" accounts with the default password, **snipsnap**, so that you can log in to an account in one click.
 
 ## Running in production mode
 
@@ -60,7 +63,8 @@ I'll leave you to figure that out. SH.IO is currently a $20/month ubuntu linux b
 
 ## Statistics
 
-Production has a limited set of data on the /stats page, check network traffic for the XHR for that if interested. If you'd like to do more detailed data analysis, please contact the maintainer for a dump of the (anonymized) profile and replay data.
+Production has a limited set of data on the /stats page. If you'd like to do more detailed data analysis, please contact the maintainer for a dump of the
+(anonymized) profile and replay data.
 
 ## License and Attribution
 
