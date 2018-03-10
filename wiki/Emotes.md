@@ -20,6 +20,8 @@
 **BangBang** - ![BangBang](https://github.com/andy013/secret-hitler/blob/master/public/images/emotes/BangBang.png?raw=true)
  
 **BigNose** - ![BigNose](https://github.com/andy013/secret-hitler/blob/master/public/images/emotes/BigNose.png)
+
+**ExpressionlessFace** - ![ExpressionlessFace](https://github.com/LordVader9988/secret-hitler/blob/master/public/images/emotes/ExpressionlessFace.png)
  
 **FasCroc** - ![Fas Croc](https://github.com/andy013/secret-hitler/blob/master/public/images/emotes/FasCroc.png)
  
