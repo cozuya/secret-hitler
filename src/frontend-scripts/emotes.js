@@ -5,6 +5,7 @@ export const allEmotes = [
 	'BangBang',
 	'BigNose',
 	'CNH',
+	'ExpressionlessFace',
 	'FasCroc',
 	'FasEvil',
 	'FasFace',
