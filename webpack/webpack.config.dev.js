@@ -1,13 +1,21 @@
 const path = require('path');
-const Reload = require('webpack-livereload-plugin');
+// const Reload = require('webpack-livereload-plugin');
+// const CleanWebpackPlugin = require('clean-webpack-plugin');
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
+	plugins: [
+		// new Reload(),
+		// new CleanWebpackPlugin(['../public/scripts']),
+		// new HtmlWebpackPlugin({
+		// 	title: 'caching'
+		// })
+	],
 	output: {
 		filename: 'bundle.js',
 		path: path.resolve(__dirname, '../public/scripts')
 	},
-	plugins: [new Reload()],
 	devtool: 'inline-source-map',
 	module: {
 		rules: [

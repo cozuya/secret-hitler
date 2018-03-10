@@ -63,6 +63,7 @@ export default class Players extends React.Component {
 	}
 
 	handlePlayerClick(e) {
+		console.log('hpc 2');
 		const { userInfo, gameInfo, socket } = this.props;
 		const { gameState } = gameInfo;
 		const { phase, clickActionInfo } = gameState;
@@ -132,7 +133,7 @@ export default class Players extends React.Component {
 	renderPlayerNotesIcon(index) {
 		const { userInfo, gameInfo } = this.props;
 		const clickedPlayerNote = index => {
-			console.log('Hello, World!');
+			console.log('cpn');
 		};
 
 		if (userInfo.userName && gameInfo.publicPlayersState[index].userName !== userInfo.userName) {
@@ -191,10 +192,10 @@ export default class Players extends React.Component {
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						  }
+							}
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
-						  }
+							}
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -377,7 +378,6 @@ export default class Players extends React.Component {
 	}
 
 	clickedTakeSeat() {
-		console.log('Hello, World!');
 		const { gameInfo, userInfo, onClickedTakeSeat } = this.props;
 
 		if (userInfo.userName) {
