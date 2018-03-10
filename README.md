@@ -54,6 +54,10 @@ Navigate to: http://localhost:8080
 You'll most likely need a browser extension such as Chrome's [openMultiLogin](https://chrome.google.com/webstore/detail/openmultilogin/lbofelamdnfmipbbgkebcpkapahbmcgm?hl=en) to have multiple sessions on the same browser. No, incognito will not work. Also it
 will be very helpful to make all of the "quickdefault" accounts with the default password, snipsnap, so that you can log in to an account in one click. There's an open issue on github to provide a mongo script with that prepopulated but haven't got to it yet, sorry.
 
+## Important note for Windows users
+
+After much struggling, I have determined there is something wrong in NodeJS LTS itself. You MUST USE NODE JS v6.13.1, not "Node JS" i.e. the LTS version. For more info: https://stackoverflow.com/questions/49091270/why-is-socket-io-is-very-slow-on-windows/49212490#49212490
+
 ## Running in production mode
 
 I'll leave you to figure that out. SH.IO is currently a $20/month ubuntu linux box using nginx, lets encrypt, PM2, and hosted on Digitalocean.
