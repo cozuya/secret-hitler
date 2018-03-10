@@ -42,11 +42,7 @@ React, Redux, Sass, SemanticUI, SocketIO.
 
 #### Back End:
 
-NodeJS LTS, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
-
-#### Build:
-
-Gulp, Browserify, Babel (front end).
+Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
 
 ### Alterations to the original game:
 
