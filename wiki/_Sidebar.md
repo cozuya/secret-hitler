@@ -3,7 +3,7 @@
 ## Pages
 
 **[Home](https://github.com/cozuya/secret-hitler/wiki)**
-  -  Home page for wiki
+  -  Home page for wiki.
 
 **[Read Me Page](https://github.com/cozuya/secret-hitler/wiki/Read-Me)**
   -  Development read me info.
