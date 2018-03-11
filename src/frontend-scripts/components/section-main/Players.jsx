@@ -2,12 +2,20 @@ import React from 'react';
 import $ from 'jquery';
 import Policies from './Policies.jsx';
 import Dropdown from 'semantic-ui-dropdown';
+import { connect } from 'react-redux';
+import { togglePlayerNotes } from '../../actions/actions';
 import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CURRENTSEASONNUMBER } from '../../constants';
 import PropTypes from 'prop-types';
 
 $.fn.dropdown = Dropdown;
 
-export default class Players extends React.Component {
+const mapDispatchToProps = dispatch => ({
+	togglePlayerNotes: playerNotesStatus => dispatch(togglePlayerNotes(playerNotesStatus))
+});
+
+const mapStateToProps = ({ playerNotesActive }) => ({ playerNotesActive });
+
+class Players extends React.Component {
 	constructor() {
 		super();
 		this.clickedTakeSeat = this.clickedTakeSeat.bind(this);
@@ -19,7 +27,8 @@ export default class Players extends React.Component {
 			passwordValue: '',
 			reportedPlayer: '',
 			reportTextValue: '',
-			playerNotes: []
+			playerNotes: [],
+			playerNoteSeatEnabled: false
 		};
 	}
 
@@ -130,9 +139,12 @@ export default class Players extends React.Component {
 	}
 
 	renderPlayerNotesIcon(index) {
-		const { userInfo, gameInfo } = this.props;
-		const clickedPlayerNote = index => {
-			console.log('cpn');
+		const { userInfo, gameInfo, togglePlayerNotes, playerNotesActive } = this.props;
+		const clickedPlayerNote = playerNoteSeatEnabled => {
+			togglePlayerNotes(!playerNotesActive);
+			this.setState({
+				playerNoteSeatEnabled
+			});
 		};
 
 		if (userInfo.userName && gameInfo.publicPlayersState[index].userName !== userInfo.userName) {
@@ -192,10 +204,10 @@ export default class Players extends React.Component {
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						  }
+							}
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
-						  }
+							}
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -494,5 +506,9 @@ Players.propTypes = {
 	userList: PropTypes.object,
 	socket: PropTypes.object,
 	selectedGamerole: PropTypes.func,
-	isReplay: PropTypes.bool
+	isReplay: PropTypes.bool,
+	toggleNotes: PropTypes.func,
+	playerNotesActive: PropTypes.bool
 };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Players);

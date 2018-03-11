@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Main from './section-main/Main.jsx';
 import Gamenotes from './Gamenotes.jsx';
+import Playernotes from './Playernotes.jsx';
 import {
 	updateUser,
 	updateMidsection,
@@ -31,9 +32,11 @@ export class App extends React.Component {
 		this.handleLeaveGame = this.handleLeaveGame.bind(this);
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
 		this.changeNotesValue = this.changeNotesValue.bind(this);
+		this.changePlayerNotesValue = this.changePlayerNotesValue.bind(this);
 
 		this.state = {
-			notesValue: ''
+			notesValue: '',
+			playerNotesValue: ''
 		};
 
 		this.prevHash = '';
@@ -304,6 +307,12 @@ export class App extends React.Component {
 		});
 	}
 
+	changePlayerNotesValue(value) {
+		this.setState({
+			playerNotesValue: value
+		});
+	}
+
 	render() {
 		const { gameSettings } = this.props.userInfo;
 		let classes = 'body-container';
@@ -322,6 +331,8 @@ export class App extends React.Component {
 				}}
 			>
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
+
+				{this.props.playerNotesActive && <Playernotes value={this.state.playerNotesValue} changePlayerNotesValue={this.changePlayerNotesValue} />}
 
 				<DevHelpers />
 

@@ -17,6 +17,7 @@ class Playernotes extends React.Component {
 		this.clearNotes = this.clearNotes.bind(this);
 		this.noteDragStart = this.noteDragStart.bind(this);
 		this.dismissNotes = this.dismissNotes.bind(this);
+		this.saveNotes = this.saveNotes.bind(this);
 		this.noteDrop = this.noteDrop.bind(this);
 		this.resizeDragStart = this.resizeDragStart.bind(this);
 
@@ -29,8 +30,10 @@ class Playernotes extends React.Component {
 		};
 	}
 
+	resizeDragStart() {}
+
 	clearNotes() {
-		this.props.changeNotesValue('');
+		this.props.changePlayerNotesValue('');
 	}
 
 	dismissNotes() {
@@ -69,34 +72,32 @@ class Playernotes extends React.Component {
 		);
 	}
 
-	resizeDragStart(e) {
-		// this.setState
-		// console.log(e.clientY, 'ecy');
-	}
+	saveNotes() {}
 
 	render() {
-		const notesChange = e => {
-			this.props.changeNotesValue(`${e.target.value}`);
+		const playerNotesChange = e => {
+			this.props.changePlayerNotesValue(`${e.target.value}`);
 		};
 
 		return (
 			<section
 				draggable="true"
 				onDragStart={this.noteDragStart}
-				className="notes-container"
+				className="notes-container player"
 				style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, height: `${this.state.height}px`, width: `${this.state.width}px` }}
 			>
 				<div className="notes-header">
 					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
 					<div className="drag-boundry 2d top-left" />
 					<div className="drag-boundry 2d top-right" />
-					<p>Game Notes</p>
+					<p>Notes for </p>
 					<div className="icon-container">
+						<i className="large save icon" onClick={this.saveNotes} title="Click here to save your notes" />
 						<i className="large ban icon" onClick={this.clearNotes} title="Click here to clear notes" />
 						<i className="large window minus icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
 					</div>
 				</div>
-				<textarea style={{ height: this.state.height }} autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />
+				<textarea style={{ height: this.state.height }} autoFocus spellCheck="false" value={this.props.value} onChange={playerNotesChange} />
 			</section>
 		);
 	}
@@ -104,7 +105,8 @@ class Playernotes extends React.Component {
 
 Playernotes.propTypes = {
 	toggleNotes: PropTypes.func,
-	value: PropTypes.string
+	value: PropTypes.string,
+	changePlayerNotesValue: PropTypes.func
 };
 
 export default connect(null, mapDispatchToProps)(Playernotes);

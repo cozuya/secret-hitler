@@ -97,6 +97,13 @@
 		background: lightyellow;
 		display: flex;
 		flex-direction: column;
+		&.player .notes-header {
+			background: $thirteen;
+		}
+		&.player textarea:focus {
+			border-color: $thirteen;
+			box-shadow: 0 0 3px $thirteen;
+		}
 		.drag-boundry {
 			display: none;
 			position: absolute;
@@ -807,19 +814,19 @@ div {
 
 @for $i from 1 through 5 {
 	.experienced#{$i} {
-		color: rgb(19, (222 - ($i * 20)), 19) !important;
+		color: rgb(19,  (222 - ($i * 20)), 19) !important;
 	}
 	.player-small-cardback.experienced#{$i} {
-		box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
+		box-shadow: 0 0 5px 2px rgb(0,  (175 - ($i * 20)), 0) !important;
 	}
 }
 
 @for $i from 1 through 10 {
 	.onfire#{$i} {
-		color: rgb(183, (10 - $i) * 15, 167) !important;
+		color: rgb(183,  (10 - $i) * 15, 167) !important;
 	}
 	.player-small-cardback.onfire#{$i} {
-		box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
+		box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
 	}
 }
 
