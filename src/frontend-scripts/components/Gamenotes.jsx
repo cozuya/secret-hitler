@@ -69,11 +69,6 @@ class Gamenotes extends React.Component {
 		);
 	}
 
-	resizeDragStart(e) {
-		// this.setState
-		// console.log(e.clientY, 'ecy');
-	}
-
 	render() {
 		const notesChange = e => {
 			this.props.changeNotesValue(`${e.target.value}`);

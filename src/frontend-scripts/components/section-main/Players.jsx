@@ -63,7 +63,6 @@ export default class Players extends React.Component {
 	}
 
 	handlePlayerClick(e) {
-		console.log('hpc 2');
 		const { userInfo, gameInfo, socket } = this.props;
 		const { gameState } = gameInfo;
 		const { phase, clickActionInfo } = gameState;
@@ -139,7 +138,8 @@ export default class Players extends React.Component {
 		if (userInfo.userName && gameInfo.publicPlayersState[index].userName !== userInfo.userName) {
 			return (
 				<i
-					onClick={() => {
+					onClick={e => {
+						e.stopPropagation();
 						clickedPlayerNote(index);
 					}}
 					className="large edit icon playernote"
@@ -192,10 +192,10 @@ export default class Players extends React.Component {
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-							}
+						  }
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
-							}
+						  }
 				}
 				className={(() => {
 					let classes = 'player-container';

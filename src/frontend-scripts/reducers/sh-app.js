@@ -1,5 +1,14 @@
 import { combineReducers } from 'redux';
-import { UPDATE_USER, UPDATE_MIDSECTION, UPDATE_GAMELIST, UPDATE_GAMEINFO, UPDATE_USERLIST, UPDATE_GENERALCHATS, TOGGLE_NOTES } from '../actions/actions.js';
+import {
+	UPDATE_USER,
+	UPDATE_MIDSECTION,
+	UPDATE_GAMELIST,
+	UPDATE_GAMEINFO,
+	UPDATE_USERLIST,
+	UPDATE_GENERALCHATS,
+	TOGGLE_NOTES,
+	TOGGLE_PLAYER_NOTES
+} from '../actions/actions.js';
 
 const userInfo = (state = {}, action) => {
 	switch (action.type) {
@@ -23,6 +32,15 @@ const notesActive = (state = false, action) => {
 	switch (action.type) {
 		case TOGGLE_NOTES:
 			state = action.notesShown;
+			break;
+	}
+	return state;
+};
+
+const playerNotesActive = (state = false, action) => {
+	switch (action.type) {
+		case TOGGLE_PLAYER_NOTES:
+			state = action.playerNotesShown;
 			break;
 	}
 	return state;
@@ -127,5 +145,6 @@ export default combineReducers({
 	profile,
 	replay,
 	version,
-	notesActive
+	notesActive,
+	playerNotesActive
 });

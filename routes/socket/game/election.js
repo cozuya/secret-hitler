@@ -205,7 +205,7 @@ const handToLog = hand =>
 module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (game || !game.private.seatedPlayers || (game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+	if (!game || !game.private.seatedPlayers || (game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		return;
 	}
 

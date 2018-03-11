@@ -25,6 +25,15 @@ export function toggleNotes(notesShown) {
 	};
 }
 
+export const TOGGLE_PLAYER_NOTES = 'TOGGLE_PLAYER_NOTES';
+
+export function togglePlayerNotes(playerNotesShown) {
+	return {
+		type: TOGGLE_PLAYER_NOTES,
+		playerNotesShown
+	};
+}
+
 export const UPDATE_GAMELIST = 'UPDATE_GAMELIST';
 
 export function updateGameList(gameList) {
