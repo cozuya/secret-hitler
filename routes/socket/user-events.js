@@ -379,6 +379,17 @@ module.exports.handleChangeUsername = (socket, data) => {
 		}
 	});
 };
+
+/**
+ * @param {object} data - from socket emit.
+ */
+module.exports.handleUpdatedPlayerNote = data => {
+	const { passport } = socket.handshake.session;
+
+	if (!passport) {
+		return;
+	}
+};
 /**
  * @param {object} socket - user socket reference.
  * @param {object} data - from socket emit.

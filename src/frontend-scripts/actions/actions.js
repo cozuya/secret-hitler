@@ -27,10 +27,10 @@ export function toggleNotes(notesShown) {
 
 export const TOGGLE_PLAYER_NOTES = 'TOGGLE_PLAYER_NOTES';
 
-export function togglePlayerNotes(playerNotesShown) {
+export function togglePlayerNotes(playerName) {
 	return {
 		type: TOGGLE_PLAYER_NOTES,
-		playerNotesShown
+		playerName
 	};
 }
 

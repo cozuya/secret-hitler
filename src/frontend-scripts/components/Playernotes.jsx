@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { toggleNotes } from '../actions/actions';
+import { togglePlayerNotes } from '../actions/actions';
 import PropTypes from 'prop-types';
 
 const mapDispatchToProps = dispatch => ({
-		toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus))
+		togglePlayerNotes: userName => dispatch(togglePlayerNotes(userName))
 	}),
 	dragOverFn = e => {
 		e.preventDefault();
@@ -37,9 +37,9 @@ class Playernotes extends React.Component {
 	}
 
 	dismissNotes() {
-		const { toggleNotes } = this.props;
+		console.log(this.props);
 
-		toggleNotes(false);
+		togglePlayerNotes('');
 	}
 
 	noteDrop(e) {
@@ -72,9 +72,12 @@ class Playernotes extends React.Component {
 		);
 	}
 
-	saveNotes() {}
+	saveNotes() {
+		this.props.socket.emit('handleUpdatedPlayerNote');
+	}
 
 	render() {
+		const { userName } = this.props;
 		const playerNotesChange = e => {
 			this.props.changePlayerNotesValue(`${e.target.value}`);
 		};
@@ -90,9 +93,13 @@ class Playernotes extends React.Component {
 					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
 					<div className="drag-boundry 2d top-left" />
 					<div className="drag-boundry 2d top-right" />
-					<p>Notes for </p>
+					<p>Notes for {userName}</p>
 					<div className="icon-container">
-						<i className="large save icon" onClick={this.saveNotes} title="Click here to save your notes" />
+						<i
+							className={this.props.value.length ? 'large save icon' : 'large save icon disabled'}
+							onClick={this.saveNotes}
+							title="Click here to save your notes"
+						/>
 						<i className="large ban icon" onClick={this.clearNotes} title="Click here to clear notes" />
 						<i className="large window minus icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
 					</div>
@@ -104,9 +111,11 @@ class Playernotes extends React.Component {
 }
 
 Playernotes.propTypes = {
-	toggleNotes: PropTypes.func,
+	userName: PropTypes.string,
+	togglePlayerNotes: PropTypes.func,
 	value: PropTypes.string,
-	changePlayerNotesValue: PropTypes.func
+	changePlayerNotesValue: PropTypes.func,
+	socket: PropTypes.object
 };
 
 export default connect(null, mapDispatchToProps)(Playernotes);

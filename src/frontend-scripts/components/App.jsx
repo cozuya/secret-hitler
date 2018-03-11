@@ -332,7 +332,14 @@ export class App extends React.Component {
 			>
 				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 
-				{this.props.playerNotesActive && <Playernotes value={this.state.playerNotesValue} changePlayerNotesValue={this.changePlayerNotesValue} />}
+				{this.props.playerNotesActive && (
+					<Playernotes
+						socket={socket}
+						userName={this.props.playerNotesActive}
+						value={this.state.playerNotesValue}
+						changePlayerNotesValue={this.changePlayerNotesValue}
+					/>
+				)}
 
 				<DevHelpers />
 

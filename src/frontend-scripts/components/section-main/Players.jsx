@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 $.fn.dropdown = Dropdown;
 
 const mapDispatchToProps = dispatch => ({
-	togglePlayerNotes: playerNotesStatus => dispatch(togglePlayerNotes(playerNotesStatus))
+	togglePlayerNotes: playerName => dispatch(togglePlayerNotes(playerName))
 });
 
 const mapStateToProps = ({ playerNotesActive }) => ({ playerNotesActive });
@@ -141,7 +141,8 @@ class Players extends React.Component {
 	renderPlayerNotesIcon(index) {
 		const { userInfo, gameInfo, togglePlayerNotes, playerNotesActive } = this.props;
 		const clickedPlayerNote = playerNoteSeatEnabled => {
-			togglePlayerNotes(!playerNotesActive);
+			togglePlayerNotes(!playerNotesActive ? gameInfo.publicPlayersState[index].userName : '');
+
 			this.setState({
 				playerNoteSeatEnabled
 			});
@@ -154,7 +155,7 @@ class Players extends React.Component {
 						e.stopPropagation();
 						clickedPlayerNote(index);
 					}}
-					className="large edit icon playernote"
+					className={playerNotesActive.length ? 'large window minus icon playernote' : 'large edit icon playernote'}
 				/>
 			);
 		}
@@ -508,7 +509,7 @@ Players.propTypes = {
 	selectedGamerole: PropTypes.func,
 	isReplay: PropTypes.bool,
 	toggleNotes: PropTypes.func,
-	playerNotesActive: PropTypes.bool
+	playerNotesActive: PropTypes.string
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Players);

@@ -37,10 +37,10 @@ const notesActive = (state = false, action) => {
 	return state;
 };
 
-const playerNotesActive = (state = false, action) => {
+const playerNotesActive = (state = '', action) => {
 	switch (action.type) {
 		case TOGGLE_PLAYER_NOTES:
-			state = action.playerNotesShown;
+			state = action.playerName;
 			break;
 	}
 	return state;

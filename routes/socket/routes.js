@@ -16,7 +16,8 @@ const {
 	handlePlayerReportDismiss,
 	handleUpdatedBio,
 	handleUpdatedRemakeGame,
-	handleChangeUsername
+	handleChangeUsername,
+	handleUpdatedPlayerNote
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -83,6 +84,9 @@ module.exports = () => {
 
 			.on('disconnect', () => {
 				handleSocketDisconnect(socket);
+			})
+			.on('handleUpdatedPlayerNote', () => {
+				handleUpdatedPlayerNote(data);
 			})
 			.on('updateModAction', data => {
 				handleModerationAction(socket, data);
