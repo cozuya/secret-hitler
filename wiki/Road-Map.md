@@ -118,6 +118,15 @@
 - seasonal mode implemented
 
 
+### version 0.13:
+
+- saveable player notes
+
+- ping notifications for afk players
+
+- one time name change option
+
+
 ### future:
 
 - (#205) player notes
