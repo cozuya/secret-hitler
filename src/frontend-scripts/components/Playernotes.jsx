@@ -26,7 +26,8 @@ class Playernotes extends React.Component {
 			left: 690,
 			width: 400,
 			height: 320,
-			isResizing: false
+			isResizing: false,
+			isSavingNotes: false
 		};
 	}
 
@@ -37,9 +38,7 @@ class Playernotes extends React.Component {
 	}
 
 	dismissNotes() {
-		console.log(this.props);
-
-		togglePlayerNotes('');
+		this.props.togglePlayerNotes('');
 	}
 
 	noteDrop(e) {
@@ -73,7 +72,15 @@ class Playernotes extends React.Component {
 	}
 
 	saveNotes() {
-		this.props.socket.emit('handleUpdatedPlayerNote');
+		this.props.socket.emit('handleUpdatedPlayerNote', {
+			userName: this.props.userInfo.userName,
+			notedUser: this.props.userName,
+			note: this.props.value
+		});
+		this.setState({ isSavingNotes: true });
+		setTimeout(() => {
+			this.setState({ isSavingNotes: false });
+		}, 1000);
 	}
 
 	render() {
@@ -93,14 +100,16 @@ class Playernotes extends React.Component {
 					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
 					<div className="drag-boundry 2d top-left" />
 					<div className="drag-boundry 2d top-right" />
-					<p>Notes for {userName}</p>
+					<p>
+						Notes for <b>{userName}</b>
+					</p>
 					<div className="icon-container">
-						<i
-							className={this.props.value.length ? 'large save icon' : 'large save icon disabled'}
-							onClick={this.saveNotes}
-							title="Click here to save your notes"
-						/>
-						<i className="large ban icon" onClick={this.clearNotes} title="Click here to clear notes" />
+						{this.state.isSavingNotes ? (
+							<i className="large check icon" />
+						) : (
+							<i className="large save icon" onClick={this.saveNotes} title="Click here to save your notes" />
+						)}
+						<i className={this.props.value.length ? 'large ban icon' : 'large ban icon disabled'} onClick={this.clearNotes} title="Click here to clear notes" />
 						<i className="large window minus icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
 					</div>
 				</div>
@@ -111,6 +120,7 @@ class Playernotes extends React.Component {
 }
 
 Playernotes.propTypes = {
+	userInfo: PropTypes.object,
 	userName: PropTypes.string,
 	togglePlayerNotes: PropTypes.func,
 	value: PropTypes.string,

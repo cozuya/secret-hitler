@@ -131,11 +131,17 @@ module.exports.sendUserGameSettings = (socket, username) => {
 		});
 };
 
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} data - data about the request
+ */
 module.exports.sendPlayerNotes = (socket, data) => {
-	PlayerNote.findOne({ username: data.userName })
+	console.log(data, 'nu');
+	PlayerNote.find({ userName: data.userName, notedUser: { $in: data.seatedPlayers } })
 		.then(notes => {
+			console.log(notes, 'notes');
 			if (notes) {
-				socket.emit('notesUpdate', notes.notes.filter(note => data.seatedPlayers.includes(note.userName)));
+				socket.emit('notesUpdate', notes);
 			}
 		})
 		.catch(err => {

@@ -338,6 +338,7 @@ export class App extends React.Component {
 						userName={this.props.playerNotesActive}
 						value={this.state.playerNotesValue}
 						changePlayerNotesValue={this.changePlayerNotesValue}
+						userInfo={this.props.userInfo}
 					/>
 				)}
 

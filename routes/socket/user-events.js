@@ -1,13 +1,14 @@
 let generalChatCount = 0;
 
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber } = require('./models');
-const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports } = require('./user-requests');
+const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const Account = require('../../models/account');
 const Generalchats = require('../../models/generalchats');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
 const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
+const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
 const { secureGame } = require('./util.js');
 const crypto = require('crypto');
@@ -381,14 +382,30 @@ module.exports.handleChangeUsername = (socket, data) => {
 };
 
 /**
+ * @param {object} socket - user socket reference.
  * @param {object} data - from socket emit.
  */
-module.exports.handleUpdatedPlayerNote = data => {
-	const { passport } = socket.handshake.session;
+module.exports.handleUpdatedPlayerNote = (socket, data) => {
+	console.log(data, 'hupn data');
 
-	if (!passport) {
-		return;
-	}
+	PlayerNote.findOne({ userName: data.userName, notedUser: data.notedUser }).then(note => {
+		if (note) {
+			note.note = data.note;
+			note.save(() => {
+				sendPlayerNotes(socket, { userName: data.userName, seatedPlayers: [data.notedUser] });
+			});
+		} else {
+			const playerNote = new PlayerNote({
+				userName: data.userName,
+				notedUser: data.notedUser,
+				note: data.note
+			});
+
+			playerNote.save(() => {
+				sendPlayerNotes(socket, { userName: data.userName, seatedPlayers: [data.notedUser] });
+			});
+		}
+	});
 };
 /**
  * @param {object} socket - user socket reference.

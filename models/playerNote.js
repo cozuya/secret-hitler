@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const playerNote = new Schema({
 	userName: String,
-	userNoted: String,
+	notedUser: String,
 	note: String
 });
 

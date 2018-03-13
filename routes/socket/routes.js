@@ -85,8 +85,8 @@ module.exports = () => {
 			.on('disconnect', () => {
 				handleSocketDisconnect(socket);
 			})
-			.on('handleUpdatedPlayerNote', () => {
-				handleUpdatedPlayerNote(data);
+			.on('handleUpdatedPlayerNote', data => {
+				handleUpdatedPlayerNote(socket, data);
 			})
 			.on('updateModAction', data => {
 				handleModerationAction(socket, data);

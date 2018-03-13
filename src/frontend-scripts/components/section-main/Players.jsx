@@ -27,12 +27,13 @@ class Players extends React.Component {
 			passwordValue: '',
 			reportedPlayer: '',
 			reportTextValue: '',
-			playerNotes: [],
+			playerNotes: {},
 			playerNoteSeatEnabled: false
 		};
 	}
 
 	componentWillReceiveProps(nextProps) {
+		console.log(nextProps, 'np');
 		const { userName } = this.props;
 		const { publicPlayersState } = nextProps.gameInfo;
 
@@ -44,18 +45,33 @@ class Players extends React.Component {
 		}
 	}
 
+	componentDidUpdate() {
+		console.log(this.state, 'state');
+	}
+
 	componentDidMount() {
 		const { socket, userInfo } = this.props;
 
-		if (userInfo.userName) {
-			socket.on('notesUpdate', playerNotes => {
+		if (userInfo.gameSettings && !userInfo.gameSettings.disablePlayerNotes) {
+			socket.on('notesUpdate', notes => {
+				console.log(notes, 'notes update');
+				const { playerNotes } = this.state;
+
+				for (const key in notes) {
+					playerNotes[key] = notes[key];
+				}
+
 				this.setState({ playerNotes });
 			});
 
-			socket.emit('getPlayerNotes', {
-				userName: userInfo.userName,
-				seatedPlayer: this.props.gameInfo.publicPlayersState.filter(player => player.userName !== userInfo.userName).map(player => player.userName)
-			});
+			const seatedPlayers = this.props.gameInfo.publicPlayersState.filter(player => player.userName !== userInfo.userName).map(player => player.userName);
+
+			if (seatedPlayers.length) {
+				socket.emit('getPlayerNotes', {
+					userName: userInfo.userName,
+					seatedPlayers
+				});
+			}
 		}
 	}
 
@@ -205,10 +221,10 @@ class Players extends React.Component {
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-							}
+						  }
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
-							}
+						  }
 				}
 				className={(() => {
 					let classes = 'player-container';
