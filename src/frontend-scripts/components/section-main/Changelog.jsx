@@ -14,8 +14,8 @@ const Changelog = () => (
 		<h3>New feature: player notes</h3>
 		<p>
 			Piggybacking on the game notes feature, all players now have a small icon on their cardback that will now open a dragable box. You can now take notes on
-			any player (limit: 500 characters) by typing into that box and hitting close, which doubles as save. Hovering on that icon will also give you a smaller
-			preview of the note for that player.
+			any player (limit: 500 characters) by typing into that box and hitting save. Hovering on that icon will also give you a smaller preview of the note for
+			that player.
 		</p>
 		<h3>New feature: player notifications (pings)</h3>
 		<p>When you enter the site for the first time, you will receive a notification that looks like this:</p>
@@ -40,8 +40,10 @@ const Changelog = () => (
 			Dislike your old name, but want to keep your stats and profile? Hit the big new big red button on your settings page to change your name. This only works
 			once for every account so choose wisely.
 		</p>
+		<h3>Other items</h3>
 		<ul>
 			<li>Tournaments now make the usual "bong" noise when they start.</li>
+			<li>The "rules" page has been updated thanks to a contributor. The big change is a description of common terms used on the site.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.5 released 2-20-2018</p>
