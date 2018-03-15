@@ -27,7 +27,7 @@ class Players extends React.Component {
 			passwordValue: '',
 			reportedPlayer: '',
 			reportTextValue: '',
-			playerNotes: {},
+			playerNotes: [],
 			playerNoteSeatEnabled: false
 		};
 	}
@@ -55,13 +55,8 @@ class Players extends React.Component {
 		if (userInfo.gameSettings && !userInfo.gameSettings.disablePlayerNotes) {
 			socket.on('notesUpdate', notes => {
 				console.log(notes, 'notes update');
-				const { playerNotes } = this.state;
 
-				for (const key in notes) {
-					playerNotes[key] = notes[key];
-				}
-
-				this.setState({ playerNotes });
+				this.setState({ playerNotes: notes });
 			});
 
 			const seatedPlayers = this.props.gameInfo.publicPlayersState.filter(player => player.userName !== userInfo.userName).map(player => player.userName);
@@ -156,22 +151,29 @@ class Players extends React.Component {
 
 	renderPlayerNotesIcon(index) {
 		const { userInfo, gameInfo, togglePlayerNotes, playerNotesActive } = this.props;
+		const { userName } = gameInfo.publicPlayersState[index];
 		const clickedPlayerNote = playerNoteSeatEnabled => {
-			togglePlayerNotes(!playerNotesActive ? gameInfo.publicPlayersState[index].userName : '');
+			togglePlayerNotes(!playerNotesActive ? userName : '');
 
 			this.setState({
 				playerNoteSeatEnabled
 			});
 		};
+		const note = this.state.playerNotes.find(note => note.notedUser === userName);
 
-		if (userInfo.userName && gameInfo.publicPlayersState[index].userName !== userInfo.userName) {
+		if (userInfo.userName && userName !== userInfo.userName) {
 			return (
 				<i
 					onClick={e => {
 						e.stopPropagation();
 						clickedPlayerNote(index);
 					}}
-					className={playerNotesActive.length ? 'large window minus icon playernote' : 'large edit icon playernote'}
+					title={note ? note.note : ''}
+					className={
+						note
+							? playerNotesActive.length ? 'large window minus icon playernote has-note' : 'large edit icon playernote has-note'
+							: 'large edit icon playernote'
+					}
 				/>
 			);
 		}
