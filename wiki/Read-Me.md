@@ -10,8 +10,8 @@ Known only to each other, the fascists coordinate to sow distrust and install th
 before it’s too late.
 
 Effectively this is a take on the classic social deduction/hidden role board game genre such as Werewolf and Mafia, but closer to the Resistance. Games are 5-10
-players, the minority (fascists) know who everyone is and the majority (liberals) don't know anything. Over the course of the game the liberals need to try to
-figure out the fascists to win and the fascists need to remain hidden, with an extra "superfascist" role with an additional win condition for both sides. This
+players, the minority (fascists) know who everyone is and the majority (liberals) don't know anything. Over the course of the game the liberals tend to seek out the
+fascists in order to have a stronger advantage, thus the fascists need to blend in, as well as protect their hitler, who provides an additional win condition for both sides (if killed, libs win & if elected after 3R enacted, fasc win), in order to succeed on their end. This
 codebase is a "lobby style" implementation of this game - anyone can make a game which is displayed on a list on the "home" page, when enough players are seated
 it starts, anyone can watch a game in progress, etc.
 
