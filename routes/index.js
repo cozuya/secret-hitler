@@ -24,11 +24,11 @@ const ensureAuthenticated = (req, res, next) => {
 
 module.exports = () => {
 	/**
- 	 * @param {object} req - express request object.
- 	 * @param {object} res - express response object.
- 	 * @param {string} pageName - name of the pug page to render
- 	 * @param {string} varName - name of the pug variable to insert.
- 	 */
+	 * @param {object} req - express request object.
+	 * @param {object} res - express response object.
+	 * @param {string} pageName - name of the pug page to render
+	 * @param {string} varName - name of the pug variable to insert.
+	 */
 	const renderPage = (req, res, pageName, varName) => {
 		const renderObj = {};
 
@@ -83,10 +83,15 @@ module.exports = () => {
 			res.redirect('/observe/');
 		} else {
 			Account.findOne({ username }, (err, account) => {
+				const { blacklist } = account.gameSettings;
+
+				account.gameSettings.blacklist = [];
+
 				res.render('game', {
 					game: true,
 					username,
-					gameSettings: account.gameSettings
+					gameSettings: account.gameSettings,
+					blacklist
 				});
 			});
 		}
