@@ -136,10 +136,8 @@ module.exports.sendUserGameSettings = (socket, username) => {
  * @param {object} data - data about the request
  */
 module.exports.sendPlayerNotes = (socket, data) => {
-	console.log(data, 'nu');
 	PlayerNote.find({ userName: data.userName, notedUser: { $in: data.seatedPlayers } })
 		.then(notes => {
-			console.log(notes, 'notes');
 			if (notes) {
 				socket.emit('notesUpdate', notes);
 			}

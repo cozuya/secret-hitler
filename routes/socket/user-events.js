@@ -386,8 +386,6 @@ module.exports.handleChangeUsername = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedPlayerNote = (socket, data) => {
-	console.log(data, 'hupn data');
-
 	PlayerNote.findOne({ userName: data.userName, notedUser: data.notedUser }).then(note => {
 		if (note) {
 			note.note = data.note;
