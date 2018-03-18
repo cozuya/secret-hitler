@@ -152,6 +152,10 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
 
+	if (game.general.timedMode) {
+		game.gameState.timedModeEnabled = true;
+	}
+
 	game.gameState.clickActionInfo =
 		game.general.livingPlayerCount > 5
 			? [
@@ -159,12 +163,12 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 					seatedPlayers
 						.filter((player, index) => !player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index))
 						.map(el => seatedPlayers.indexOf(el))
-				]
+			  ]
 			: [
 					pendingPresidentPlayer.userName,
 					seatedPlayers
 						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
 						.map(el => seatedPlayers.indexOf(el))
-				];
+			  ];
 	sendInProgressGameUpdate(game);
 };

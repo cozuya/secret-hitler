@@ -225,6 +225,7 @@ export default class Creategame extends React.Component {
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
 					blindMode: this.state.blindMode,
+					timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : undefined,
 					casualGame: this.state.casualgame,
 					rebalance6p: this.state.checkedRebalanceValues[0],
 					rebalance7p: this.state.checkedRebalanceValues[1],

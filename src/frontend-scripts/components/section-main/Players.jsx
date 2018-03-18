@@ -33,7 +33,6 @@ class Players extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		console.log(nextProps, 'np');
 		const { userName } = this.props;
 		const { publicPlayersState } = nextProps.gameInfo;
 
@@ -45,16 +44,16 @@ class Players extends React.Component {
 		}
 	}
 
-	componentDidUpdate() {
-		console.log(this.state, 'state');
-	}
+	// componentDidUpdate() {
+	// 	console.log(this.state, 'state');
+	// }
 
 	componentDidMount() {
 		const { socket, userInfo } = this.props;
 
 		if (userInfo.gameSettings && !userInfo.gameSettings.disablePlayerNotes) {
 			socket.on('notesUpdate', notes => {
-				console.log(notes, 'notes update');
+				// console.log(notes, 'notes update');
 
 				this.setState({ playerNotes: notes });
 			});

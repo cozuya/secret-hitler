@@ -4,6 +4,7 @@ gameState
 	isVetoEnabled bool
 	isTracksFlipped bool
 	pendingChancellorIndex number 
+	timedModeEnabled bool
 	phase string ?
 	previousElectedGovernment array of numbers, 1st is pres 2nd is chanc,
 	presidentIndex number
@@ -27,6 +28,7 @@ general
 	status string
 	whitelistedPlayers array of strings (userNames)
 	uid string
+	timedMode number
 	rainbowgame bool
   private bool
 	gameCreatorName string
