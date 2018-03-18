@@ -14,6 +14,8 @@ export default class Creategame extends React.Component {
 
 		this.createNewGame = this.createNewGame.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
+		this.timedSliderChange = this.timedSliderChange.bind(this);
+
 		this.state = {
 			sliderValues: [5, 10],
 			experiencedmode: false,
@@ -28,7 +30,9 @@ export default class Creategame extends React.Component {
 			privateonlygame: false,
 			isTourny: false,
 			casualgame: false,
-			blindMode: false
+			blindMode: false,
+			timedMode: false,
+			timedSliderValue: [3]
 		};
 	}
 
@@ -133,6 +137,15 @@ export default class Creategame extends React.Component {
 			},
 			onUnchecked() {
 				self.setState({ casualgame: false });
+			}
+		});
+
+		$(this.timed).checkbox({
+			onChecked() {
+				self.setState({ timedMode: true });
+			},
+			onUnchecked() {
+				self.setState({ timedMode: false });
 			}
 		});
 	}
@@ -1126,6 +1139,10 @@ export default class Creategame extends React.Component {
 		);
 	}
 
+	timedSliderChange(timedSliderValue) {
+		this.setState({ timedSliderValue });
+	}
+
 	render() {
 		return (
 			<section className="creategame">
@@ -1306,6 +1323,36 @@ export default class Creategame extends React.Component {
 									</div>
 								</div>
 							)}
+					</div>
+					{this.state.timedMode && (
+						<div className="row">
+							<div className="sixteen wide column">
+								<Range
+									onChange={this.timedSliderChange}
+									min={1}
+									max={5}
+									defaultValue={[3]}
+									value={this.state.timedSliderValue}
+									marks={{ 1: '1 minute', 2: '2 minutes', 3: '3 minutes', 5: '5 minutes' }}
+								/>
+							</div>
+						</div>
+					)}
+					<div className="row">
+						<div className="sixteen wide column">
+							<i className="big hourglass half icon" />
+							<h4 className="ui header">
+								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
+							</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.timed = c;
+								}}
+							>
+								<input type="checkbox" name="timedmode" defaultChecked={false} />
+							</div>
+						</div>
 					</div>
 				</div>
 
