@@ -7,7 +7,7 @@
 ***We are NOT currently seeking applicants at this time. When we do seek applicants, a [GitHub issue](https://github.com/cozuya/secret-hitler/issues) will be opened and the direct link for that specific issue will be added to this page.***
 
 
-> - [List of current Moderators](https://github.com/cozuya/secret-hitler/wiki/Moderation#list-of-current-moderators)
+> - [List of current Moderators](https://github.com/cozuya/secret-hitler/wiki/Moderation#list-of-the-current-moderators)
 
  
 ### **Absolutely no tolerance for:**
@@ -141,9 +141,9 @@ Below are listed the extra powers Editors have:
 **Reset server (double click)** - Resets the server. Use sparingly!
 
 ***
-### List of the current 📛🔰🌀 AEM Team (17):
+### List of the current Moderators
 
-#### 📛Administrators (2): 
+#### 📛Administrators (ARE NOT MODS!) (2): 
 - 📛coz 
 - 📛Stine 
 
