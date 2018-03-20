@@ -20,6 +20,20 @@
 		border: 2px solid lightblue;
 	}
 
+	.timed-mode-counter {
+		position: absolute;
+		bottom: 10px;
+		z-index: 1;
+		right: 15px;
+		background: #333;
+		padding: 5px;
+		color: #be0804;
+		font-weight: bold;
+		border: 1px dashed #be0804;
+		width: 190px;
+		text-align: center;
+	}
+
 	.icon.repeat,
 	.icon.remove {
 		opacity: 1 !important;

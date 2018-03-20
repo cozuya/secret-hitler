@@ -31,14 +31,8 @@ const {
 	sendReplayGameChats,
 	updateUserStatus
 } = require('./user-requests');
-const {
-	selectChancellor,
-	selectVoting,
-	selectPresidentPolicy,
-	selectChancellorPolicy,
-	selectChancellorVoteOnVeto,
-	selectPresidentVoteOnVeto
-} = require('./game/election');
+const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
+const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
 const { games } = require('./models');
 const gamesGarbageCollector = () => {

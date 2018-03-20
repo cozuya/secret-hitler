@@ -50,29 +50,37 @@ class Tracks extends React.Component {
 			!gameInfo.gameState.timedModeEnabled &&
 			nextProps.gameInfo.gameState.timedModeEnabled
 		) {
-			console.log('Hello, World!');
 			let minutes = gameInfo.general.timedMode - 1;
-			let seconds = 60;
-			const intervalId = window.setInterval(() => {
+			let seconds = 59;
+			this.intervalId = window.setInterval(() => {
 				if (!seconds) {
 					if (minutes) {
 						minutes--;
 					}
-					seconds = 60;
+					seconds = 59;
 				} else {
 					seconds--;
 				}
 
 				if ((!seconds && !minutes) || !nextProps.gameInfo.gameState.timedModeEnabled) {
+					console.log('timedmodetimer state removed');
 					this.setState({ timedModeTimer: '' }, () => {
-						clearInterval(intervalId);
+						window.clearInterval(this.intervalId);
 					});
 				} else {
+					console.log('timedmodetimer state set');
 					this.setState({
 						timedModeTimer: `Action forced in ${minutes}: ${seconds > 9 ? seconds : `0${seconds}`}`
 					});
 				}
 			}, 1000);
+		}
+
+		if (gameInfo.gameState && gameInfo.gameState.timedModeEnabled && nextProps.gameInfo.gameState && !nextProps.gameInfo.gameState.timedModeEnabled) {
+			window.clearInterval(this.intervalId);
+			this.setState({
+				timedModeTimer: ''
+			});
 		}
 	}
 
@@ -267,7 +275,7 @@ class Tracks extends React.Component {
 								}
 							/>
 						)}
-					{this.state.timedModeEnabled && <div className="timed-mode-counter">{this.state.timedModeTimer}</div>}
+					{this.state.timedModeTimer && <div className="timed-mode-counter">{this.state.timedModeTimer}</div>}
 				</div>
 				<section
 					className={(() => {

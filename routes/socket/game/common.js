@@ -1,5 +1,6 @@
-const { sendInProgressGameUpdate } = require('../util.js');
-const { sendGameList } = require('../user-requests.js');
+const { sendInProgressGameUpdate } = require('../util');
+const { sendGameList } = require('../user-requests');
+const { selectChancellor } = require('./election-util');
 const _ = require('lodash');
 
 /**
@@ -154,6 +155,18 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 
 	if (game.general.timedMode) {
 		game.gameState.timedModeEnabled = true;
+		game.private.timerId = setTimeout(() => {
+			if (game.gameState.timedModeEnabled) {
+				game.gameState.timedModeEnabled = false;
+				const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
+
+				selectChancellor({
+					chancellorIndex,
+					uid: game.general.uid
+				});
+			}
+			// }, game.general.timedMode * 6000);
+		}, 3000);
 	}
 
 	game.gameState.clickActionInfo =
@@ -170,5 +183,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
 						.map(el => seatedPlayers.indexOf(el))
 			  ];
+
+	console.log(game.gameState.clickActionInfo);
 	sendInProgressGameUpdate(game);
 };
