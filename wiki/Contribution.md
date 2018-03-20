@@ -6,7 +6,7 @@
 
 ***Want to [contribute](https://github.com/cozuya/secret-hitler/blob/master/CONTRIBUTING.md) to this open source product?  Check out the github page and issues - any accepted [pull request](https://github.com/cozuya/secret-hitler/pulls) will get you a cool orange name!***
 
-> - [List of current Contributors](https://github.com/cozuya/secret-hitler/wiki/Contribution#list-of-the-current-contributors)
+> - [List of the current Contributors](https://github.com/cozuya/secret-hitler/wiki/Contribution#list-of-the-current-contributors)
 
 ### **Contributing Guidelines:**
 
