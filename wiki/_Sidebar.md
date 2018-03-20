@@ -44,11 +44,11 @@
 
 **Useful Links:**
 
-**>[Secret Hitler Site](https://www.secrethitler.io/)**
+**>[Secret Hitler Site](https://secrethitler.io/)**
 
 **>[Discord](https://discord.gg/secrethitlerio)**
 
-**>[Polls](https://www.secrethitler.io/polls)**
+**>[Polls](https://secrethitler.io/polls)**
 
 **>[Bug Report](https://github.com/cozuya/secret-hitler/issues)**  
 
