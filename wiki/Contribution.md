@@ -114,6 +114,7 @@ I only have the following guidelines:
 - 💛goonbee
 - 💛jbasari
 - 💛JerMej1s
+- 💛OuchYouHitMe
 - 💛LordVader
 - 💛sethe
 - 💛Skyrra
