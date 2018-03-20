@@ -6,7 +6,7 @@
 
 ***Want to [contribute](https://github.com/cozuya/secret-hitler/blob/master/CONTRIBUTING.md) to this open source product?  Check out the github page and issues - any accepted [pull request](https://github.com/cozuya/secret-hitler/pulls) will get you a cool orange name!***
 
-> - [List of current Contributors](https://github.com/cozuya/secret-hitler/wiki/Contribution#list-of-current-contributors)
+> - [List of current Contributors](https://github.com/cozuya/secret-hitler/wiki/Contribution#list-of-the-current-contributors)
 
 ### **Contributing Guidelines:**
 
@@ -96,19 +96,17 @@ I only have the following guidelines:
 - This will help be evident of your prior experience in coding for the site.
 
 ***
-### List of the current 📛🔰💛 GitHub Contributing Team (17):
+### List of the current Contributors
 
-#### 📛Owners (2): 
+#### 📛Owners (1): 
 - 📛coz 
-- 📛Stine 
 
-#### 🔰Collaborators (4): 
+#### 🔰Collaborators (3): 
 - 🔰cbell 
-- 🔰Faaiz1999 
 - 🔰Invidia 
 - 🔰Max 
 
-#### 💛Contributors (11): 
+#### 💛Contributors (12): 
 - 💛conundrum 
 - 💛DFinn 
 - 💛goonbee
