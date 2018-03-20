@@ -37,7 +37,7 @@ After that, if they have less than 52% win rate, their player color varies betwe
 
 Additionally, if a player has at least 50 games played *and* a win rate of 52% or higher, their player color ranges from **light purple** to **dark purple** depending on how high it is. The highest tier is 70%.
 
-Also, Administrators have a **red** color and are always on top; Editors, placed under Administrators, have a special **rainbow** range of chosen colors with a red (E); and Moderators, placed under Editors, have a **blue** color with a light red (M). Contributors get a special **orange** color as well! [Contribute code](https://github.com/cozuya/secret-hitler) to this open source project to be endlessly pestered about why you're orange.
+Also, Administrators have a **red** color with a dark red (A) and are always on top; Editors, placed under Administrators, have a special **rainbow** range of chosen colors with a red (E); and Moderators, placed under Editors, have a **blue** color with a light red (M). Contributors get a special **orange** color as well! [Contribute code](https://github.com/cozuya/secret-hitler) to this open source project to be endlessly pestered about why you're orange.
 
 ## Changelog  
 
