@@ -1,5 +1,5 @@
-const { sendInProgressGameUpdate } = require('../util.js');
-const { games } = require('../models.js');
+const { sendInProgressGameUpdate } = require('../util');
+const { games } = require('../models');
 
 /**
  * @param {object} data from socket emit
@@ -113,6 +113,30 @@ module.exports.selectChancellor = data => {
 					};
 				}
 			});
+
+			if (game.general.timedMode) {
+				game.gameState.timedModeEnabled = true;
+
+				game.private.timerId = setTimeout(() => {
+					if (game.gameState.timedModeEnabled) {
+						const unvotedPlayerNames = game.private.seatedPlayers
+							.filter(player => !player.voteStatus.hasVoted && !player.isDead)
+							.map(player => player.userName);
+
+						game.gameState.timedModeEnabled = false;
+						unvotedPlayerNames.forEach(userName => {
+							const { selectVoting } = require('./election');
+
+							selectVoting({
+								userName,
+								uid: game.general.uid,
+								vote: Boolean(Math.random() > 0.5)
+							});
+						});
+					}
+					// }, game.general.timedMode * 6000);
+				}, 500);
+			}
 			sendInProgressGameUpdate(game);
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1500);
 	}

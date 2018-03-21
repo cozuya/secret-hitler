@@ -132,8 +132,6 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		});
 	}
 
-	// todo-release if spec election fails, next president shows the prev government with notification blink (but is not clickable).  Dunno if this is true any more haven't heard about this in months.
-
 	pendingPresidentPlayer.playersState
 		.filter(
 			(player, index) =>
@@ -157,7 +155,6 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		game.gameState.timedModeEnabled = true;
 		game.private.timerId = setTimeout(() => {
 			if (game.gameState.timedModeEnabled) {
-				game.gameState.timedModeEnabled = false;
 				const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
 
 				selectChancellor({
@@ -166,7 +163,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 				});
 			}
 			// }, game.general.timedMode * 6000);
-		}, 3000);
+		}, 500);
 	}
 
 	game.gameState.clickActionInfo =
@@ -176,14 +173,13 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 					seatedPlayers
 						.filter((player, index) => !player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index))
 						.map(el => seatedPlayers.indexOf(el))
-			  ]
+				]
 			: [
 					pendingPresidentPlayer.userName,
 					seatedPlayers
 						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
 						.map(el => seatedPlayers.indexOf(el))
-			  ];
+				];
 
-	console.log(game.gameState.clickActionInfo);
 	sendInProgressGameUpdate(game);
 };

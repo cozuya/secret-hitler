@@ -86,9 +86,9 @@ const enactPolicy = (game, team) => {
 					type: team === 'liberal' ? 'liberal' : 'fascist'
 				},
 				{
-					text: ` policy has been enacted. (${
-						team === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()
-					}/${team === 'liberal' ? '5' : '6'})`
+					text: ` policy has been enacted. (${team === 'liberal'
+						? game.trackState.liberalPolicyCount.toString()
+						: game.trackState.fascistPolicyCount.toString()}/${team === 'liberal' ? '5' : '6'})`
 				}
 			]
 		};
@@ -202,7 +202,7 @@ const handToLog = hand =>
 /**
  * @param {object} data from socket emit
  */
-const selectVoting = (module.exports.selectVoting = data => {
+module.exports.selectVoting = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
 	if (!game) {
@@ -529,11 +529,12 @@ const selectVoting = (module.exports.selectVoting = data => {
 				});
 			}, experiencedMode ? 200 : 2000);
 			setTimeout(() => {
+				game.gameState.timedModeEnabled = false;
 				flipBallotCards();
 			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 2500 : 3000);
 		}
 	}
-});
+};
 
 /**
  * @param {object} data - socket emit
