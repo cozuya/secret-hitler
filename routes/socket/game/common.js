@@ -154,7 +154,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	if (game.general.timedMode) {
 		game.gameState.timedModeEnabled = true;
 		game.private.timerId = setTimeout(() => {
-			if (game.gameState.timedModeEnabled) {
+			if (game.gameState.timedModeEnabled && !game.private.lock.selectChancellor) {
 				const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
 
 				selectChancellor({
@@ -162,8 +162,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 					uid: game.general.uid
 				});
 			}
-			// }, game.general.timedMode * 6000);
-		}, 500);
+		}, game.general.timedMode * 60000);
 	}
 
 	game.gameState.clickActionInfo =

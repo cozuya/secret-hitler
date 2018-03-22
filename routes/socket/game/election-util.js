@@ -134,8 +134,7 @@ module.exports.selectChancellor = data => {
 							});
 						});
 					}
-					// }, game.general.timedMode * 6000);
-				}, 500);
+				}, game.general.timedMode * 60000);
 			}
 			sendInProgressGameUpdate(game);
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1500);

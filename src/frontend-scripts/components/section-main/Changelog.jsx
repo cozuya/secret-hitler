@@ -11,6 +11,14 @@ const Changelog = () => (
 		<div className="ui header">
 			<p>Version 0.13.0 released -2018</p>
 		</div>
+		<h3>New game mode: Timed mode</h3>
+		<p>
+			When you make a timed mode game, you select the amount of time until an action is forced randomly. A countdown in the lower right corner of the game board
+			will be visible. Example: in a 5 minute timed mode game, if someone does not make a required action in 5 minutes such as selecting a chancellor or policy
+			power execution, that action is taken for them at random (within the rules of the game). Note that in order to save stress on the server, this countdown
+			is held client-side and will only be visible to players/observers if they are present in the game when it starts. This mode will likely favor fascists!
+			Feedback requested. <small>People abusing this mode to do.. something.. will be subject to moderation action.</small>
+		</p>
 		<h3>New feature: player notes</h3>
 		<p>
 			Piggybacking on the game notes feature, all players now have a small icon on their cardback that will now open a dragable box. You can now take notes on
