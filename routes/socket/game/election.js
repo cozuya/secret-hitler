@@ -1,7 +1,16 @@
 const { sendInProgressGameUpdate } = require('../util');
 const { startElection, shufflePolicies } = require('./common');
 const { sendGameList } = require('../user-requests');
-const { specialElection, policyPeek, investigateLoyalty, executePlayer } = require('./policy-powers');
+const {
+	specialElection,
+	policyPeek,
+	investigateLoyalty,
+	executePlayer,
+	selectPolicies,
+	selectPlayerToExecute,
+	selectPartyMembershipInvestigate,
+	selectSpecialElection
+} = require('./policy-powers');
 const { completeGame } = require('./end-game');
 const { games } = require('../models');
 const _ = require('lodash');
@@ -171,8 +180,10 @@ const enactPolicy = (game, team) => {
 				chat: [{ text: powerToEnact[1] }]
 			};
 
+			const { seatedPlayers } = game.private;
+
 			if (!game.general.disableGamechat) {
-				game.private.seatedPlayers.forEach(player => {
+				seatedPlayers.forEach(player => {
 					player.gameChats.push(chat);
 				});
 
@@ -180,6 +191,42 @@ const enactPolicy = (game, team) => {
 			}
 			powerToEnact[0](game);
 			addPreviousGovernmentStatus();
+
+			if (game.general.timedMode) {
+				const { presidentIndex } = game.gameState;
+
+				game.gameState.timedModeEnabled = true;
+				game.private.timerId = setTimeout(() => {
+					if (game.gameState.timedModeEnabled) {
+						switch (powerToEnact[0].name) {
+							case 'policyPeak':
+								selectPolicies({ uid: game.general.uid });
+								break;
+							case 'executePlayer':
+								selectPlayerToExecute({
+									uid: game.general.uid,
+									playerIndex: seatedPlayers.indexOf(_.shuffle(seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead))[0])
+								});
+								break;
+							case 'investigateLoyalty':
+								selectPartyMembershipInvestigate({
+									uid: game.general.uid,
+									playerIndex: seatedPlayers.indexOf(
+										_.shuffle(seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated))[0]
+									)
+								});
+								break;
+							case 'selectElection':
+								selectSpecialElection({
+									uid: game.general.uid,
+									playerIndex: seatedPlayers.indexOf(_.shuffle(seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead))[0])
+								});
+								break;
+						}
+					}
+					// }, game.general.timedMode * 60000);
+				}, 2000);
+			}
 		} else {
 			sendInProgressGameUpdate(game);
 			addPreviousGovernmentStatus();
@@ -419,8 +466,7 @@ const selectPresidentPolicy = data => {
 
 						selectChancellorPolicy(data);
 					}
-					// }, game.general.timedMode * 60000);
-				}, 2000);
+				}, game.general.timedMode * 60000);
 			}
 
 			sendInProgressGameUpdate(game);
@@ -574,8 +620,7 @@ module.exports.selectVoting = data => {
 							uid: game.general.uid
 						});
 					}
-					// }, game.general.timedMode * 60000);
-				}, 2000);
+				}, game.general.timedMode * 60000);
 			}
 			sendInProgressGameUpdate(game);
 		}, experiencedMode ? 200 : 600);
