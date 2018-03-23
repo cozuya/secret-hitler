@@ -68,7 +68,6 @@ class Tracks extends React.Component {
 						window.clearInterval(this.intervalId);
 					});
 				} else {
-					console.log('timedmodetimer state set');
 					this.setState({
 						timedModeTimer: `Action forced in ${minutes}: ${seconds > 9 ? seconds : `0${seconds}`}`
 					});

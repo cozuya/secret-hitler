@@ -1207,6 +1207,36 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					</div>
+					{this.state.timedMode && (
+						<div className="row timedmode-slider">
+							<div className="sixteen wide column">
+								<Range
+									onChange={this.timedSliderChange}
+									min={1}
+									max={5}
+									defaultValue={[3]}
+									value={this.state.timedSliderValue}
+									marks={{ 1: '1 minute', 2: '2 minutes', 3: '3 minutes', 5: '5 minutes' }}
+								/>
+							</div>
+						</div>
+					)}
+					<div className="row timedmode-check">
+						<div className="sixteen wide column">
+							<i className="big hourglass half icon" />
+							<h4 className="ui header">
+								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
+							</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.timed = c;
+								}}
+							>
+								<input type="checkbox" name="timedmode" defaultChecked={false} />
+							</div>
+						</div>
+					</div>
 					<div className="row sliderrow">
 						<div className="four wide column disablechat">
 							<i className="big unmute icon" />
@@ -1324,36 +1354,6 @@ export default class Creategame extends React.Component {
 									</div>
 								</div>
 							)}
-					</div>
-					{this.state.timedMode && (
-						<div className="row">
-							<div className="sixteen wide column">
-								<Range
-									onChange={this.timedSliderChange}
-									min={1}
-									max={5}
-									defaultValue={[3]}
-									value={this.state.timedSliderValue}
-									marks={{ 1: '1 minute', 2: '2 minutes', 3: '3 minutes', 5: '5 minutes' }}
-								/>
-							</div>
-						</div>
-					)}
-					<div className="row">
-						<div className="sixteen wide column">
-							<i className="big hourglass half icon" />
-							<h4 className="ui header">
-								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
-							</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.timed = c;
-								}}
-							>
-								<input type="checkbox" name="timedmode" defaultChecked={false} />
-							</div>
-						</div>
 					</div>
 				</div>
 

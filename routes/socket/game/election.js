@@ -225,7 +225,7 @@ const enactPolicy = (game, team) => {
 						}
 					}
 					// }, game.general.timedMode * 60000);
-				}, 2000);
+				}, 3000);
 			}
 		} else {
 			sendInProgressGameUpdate(game);
