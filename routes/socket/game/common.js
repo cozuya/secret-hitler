@@ -154,7 +154,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	if (game.general.timedMode) {
 		game.gameState.timedModeEnabled = true;
 		game.private.timerId = setTimeout(() => {
-			if (game.gameState.timedModeEnabled && !game.private.lock.selectChancellor) {
+			if (game.gameState.timedModeEnabled) {
 				const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
 
 				selectChancellor({
@@ -162,9 +162,9 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 					uid: game.general.uid
 				});
 			}
-		}, game.general.timedMode * 60000);
+		}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
 	}
-
+	/* eslint-disable */
 	game.gameState.clickActionInfo =
 		game.general.livingPlayerCount > 5
 			? [
@@ -172,13 +172,13 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 					seatedPlayers
 						.filter((player, index) => !player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index))
 						.map(el => seatedPlayers.indexOf(el))
-				]
+			  ]
 			: [
 					pendingPresidentPlayer.userName,
 					seatedPlayers
 						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
 						.map(el => seatedPlayers.indexOf(el))
-				];
-
+			  ];
+	/* eslint-enable */
 	sendInProgressGameUpdate(game);
 };

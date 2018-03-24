@@ -1,5 +1,6 @@
 const { sendInProgressGameUpdate } = require('../util');
 const { startElection, shufflePolicies } = require('./common');
+const { selectChancellor } = require('./election-util');
 const { sendGameList } = require('../user-requests');
 const {
 	specialElection,
@@ -62,6 +63,8 @@ const enactPolicy = (game, team) => {
 	if (game.private.lock.selectPolicies) {
 		game.private.lock.selectPolicies = false;
 	}
+
+	game.gameState.pendingChancellorIndex = null;
 
 	game.private.summary = game.private.summary.updateLog({
 		enactedPolicy: team
@@ -198,17 +201,18 @@ const enactPolicy = (game, team) => {
 				game.gameState.timedModeEnabled = true;
 				game.private.timerId = setTimeout(() => {
 					if (game.gameState.timedModeEnabled) {
-						switch (powerToEnact[0].name) {
-							case 'policyPeak':
+						game.gameState.timedModeEnabled = false;
+						switch (powerToEnact[1]) {
+							case 'The president must examine the top 3 policies.':
 								selectPolicies({ uid: game.general.uid });
 								break;
-							case 'executePlayer':
+							case 'The president must select a player for execution.':
 								selectPlayerToExecute({
 									uid: game.general.uid,
 									playerIndex: seatedPlayers.indexOf(_.shuffle(seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead))[0])
 								});
 								break;
-							case 'investigateLoyalty':
+							case 'The president must investigate the party membership of another player.':
 								selectPartyMembershipInvestigate({
 									uid: game.general.uid,
 									playerIndex: seatedPlayers.indexOf(
@@ -216,7 +220,7 @@ const enactPolicy = (game, team) => {
 									)
 								});
 								break;
-							case 'selectElection':
+							case 'The president must select a player for a special election.':
 								selectSpecialElection({
 									uid: game.general.uid,
 									playerIndex: seatedPlayers.indexOf(_.shuffle(seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead))[0])
@@ -224,8 +228,8 @@ const enactPolicy = (game, team) => {
 								break;
 						}
 					}
-					// }, game.general.timedMode * 60000);
-				}, 3000);
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+				sendInProgressGameUpdate(game);
 			}
 		} else {
 			sendInProgressGameUpdate(game);
@@ -236,6 +240,288 @@ const enactPolicy = (game, team) => {
 		game.trackState.electionTrackerCount = 0;
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 4000);
 };
+
+/**
+ * @param {object} data - socket emit
+ */
+const selectPresidentVoteOnVeto = data => {
+	const game = games.find(el => el.general.uid === data.uid);
+	const { experiencedMode } = game.general;
+	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
+	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
+	const publicChancellor = game.publicPlayersState[chancellorIndex];
+	const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
+
+	game.private.summary = game.private.summary.updateLog({
+		presidentVeto: data.vote
+	});
+
+	if (
+		!game.private.lock.selectPresidentVoteOnVeto &&
+		Number.isInteger(chancellorIndex) &&
+		game.publicPlayersState[chancellorIndex] &&
+		!(game.general.isTourny && game.general.tournyInfo.isCancelled) &&
+		president.cardFlingerState &&
+		president.cardFlingerState[0]
+	) {
+		game.private.lock.selectPresidentVoteOnVeto = true;
+
+		game.publicPlayersState[chancellorIndex].isLoader = false;
+		publicPresident.isLoader = false;
+		president.cardFlingerState[0].action = president.cardFlingerState[1].action = '';
+		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = false;
+
+		if (data.vote) {
+			president.cardFlingerState[0].notificationStatus = 'selected';
+			president.cardFlingerState[1].notificationStatus = '';
+		} else {
+			president.cardFlingerState[0].notificationStatus = '';
+			president.cardFlingerState[1].notificationStatus = 'selected';
+		}
+
+		publicPresident.cardStatus = {
+			cardDisplayed: true,
+			cardFront: 'ballot',
+			cardBack: {
+				cardName: data.vote ? 'ja' : 'nein'
+			}
+		};
+
+		sendInProgressGameUpdate(game);
+
+		setTimeout(() => {
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{ text: 'President ' },
+					{
+						text: game.general.blindMode
+							? `{${game.private.seatedPlayers.indexOf(president) + 1}}`
+							: `${data.userName} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
+						type: 'player'
+					},
+					{
+						text: data.vote ? ' has voted to veto this election.' : ' has voted not to veto this election.'
+					}
+				]
+			};
+
+			if (!game.general.disableGamechat) {
+				game.private.seatedPlayers.forEach(player => {
+					player.gameChats.push(chat);
+				});
+				game.private.unSeatedGameChats.push(chat);
+			}
+
+			publicPresident.cardStatus.isFlipped = true;
+
+			sendInProgressGameUpdate(game);
+
+			if (data.vote) {
+				const chat = {
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'The President and Chancellor have voted to veto this election and the election tracker moves forward.'
+						}
+					]
+				};
+
+				game.gameState.pendingChancellorIndex = null;
+				game.private.lock.selectChancellorPolicy = game.private.lock.selectPresidentVoteOnVeto = game.private.lock.selectChancellorVoteOnVeto = false;
+				game.trackState.electionTrackerCount++;
+
+				if (!game.general.disableGamechat) {
+					game.private.seatedPlayers.forEach(player => {
+						player.gameChats.push(chat);
+					});
+
+					game.private.unSeatedGameChats.push(chat);
+				}
+
+				setTimeout(() => {
+					president.cardFlingerState = [];
+					if (game.trackState.electionTrackerCount >= 3) {
+						if (!game.gameState.undrawnPolicyCount) {
+							shufflePolicies(game);
+						}
+
+						enactPolicy(game, game.private.policies.shift());
+					} else {
+						startElection(game);
+					}
+				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000);
+			} else {
+				setTimeout(() => {
+					publicPresident.cardStatus.cardDisplayed = false;
+					publicChancellor.cardStatus.cardDisplayed = false;
+					president.cardFlingerState = [];
+					enactPolicy(game, game.private.currentElectionPolicies[0]);
+					setTimeout(() => {
+						publicChancellor.cardStatus.isFlipped = publicPresident.cardStatus.isFlipped = false;
+					}, 1000);
+				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 2000);
+			}
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
+	}
+};
+
+module.exports.selectPresidentVoteOnVeto = selectPresidentVoteOnVeto;
+
+/**
+ * @param {object} data - socket emit
+ */
+const selectChancellorVoteOnVeto = data => {
+	const game = games.find(el => el.general.uid === data.uid);
+	const { experiencedMode } = game.general;
+	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
+	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
+	const chancellor = game.private.seatedPlayers.find(player => player.userName === game.private._chancellorPlayerName);
+	const publicChancellor = game.publicPlayersState[chancellorIndex];
+
+	game.private.summary = game.private.summary.updateLog({
+		chancellorVeto: data.vote
+	});
+
+	game.private.lock.selectPresidentVoteOnVeto = false;
+	if (
+		!game.private.lock.selectChancellorVoteOnVeto &&
+		chancellor &&
+		chancellor.cardFlingerState &&
+		chancellor.cardFlingerState.length &&
+		game.publicPlayersState[chancellorIndex] &&
+		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
+	) {
+		game.private.lock.selectChancellorVoteOnVeto = true;
+
+		game.publicPlayersState[chancellorIndex].isLoader = false;
+
+		chancellor.cardFlingerState[0].action = chancellor.cardFlingerState[1].action = '';
+		chancellor.cardFlingerState[0].cardStatus.isFlipped = chancellor.cardFlingerState[1].cardStatus.isFlipped = false;
+
+		if (data.vote) {
+			chancellor.cardFlingerState[0].notificationStatus = 'selected';
+			chancellor.cardFlingerState[1].notificationStatus = '';
+		} else {
+			chancellor.cardFlingerState[0].notificationStatus = '';
+			chancellor.cardFlingerState[1].notificationStatus = 'selected';
+		}
+
+		publicChancellor.cardStatus = {
+			cardDisplayed: true,
+			cardFront: 'ballot',
+			cardBack: {
+				cardName: data.vote ? 'ja' : 'nein'
+			}
+		};
+
+		sendInProgressGameUpdate(game);
+
+		setTimeout(() => {
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{ text: 'Chancellor ' },
+					{
+						text: game.general.blindMode ? `{${chancellorIndex + 1}}` : `${data.userName} {${chancellorIndex + 1}}`,
+						type: 'player'
+					},
+					{
+						text: data.vote ? ' has voted to veto this election.' : ' has voted not to veto this election.'
+					}
+				]
+			};
+
+			if (!game.general.disableGamechat) {
+				game.private.seatedPlayers.forEach(player => {
+					player.gameChats.push(chat);
+				});
+
+				game.private.unSeatedGameChats.push(chat);
+			}
+
+			publicChancellor.cardStatus.isFlipped = true;
+			sendInProgressGameUpdate(game);
+
+			if (data.vote) {
+				president.cardFlingerState = [
+					{
+						position: 'middle-left',
+						notificationStatus: '',
+						action: 'active',
+						cardStatus: {
+							isFlipped: false,
+							cardFront: 'ballot',
+							cardBack: 'ja'
+						}
+					},
+					{
+						position: 'middle-right',
+						action: 'active',
+						notificationStatus: '',
+						cardStatus: {
+							isFlipped: false,
+							cardFront: 'ballot',
+							cardBack: 'nein'
+						}
+					}
+				];
+
+				if (!game.general.disableGamechat) {
+					president.gameChats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text:
+									'You must vote whether or not to veto these policies.  Select Ja to veto the policies you passed to the Chancellor or select Nein to enact the policy the Chancellor has chosen in secret.'
+							}
+						]
+					});
+				}
+
+				game.general.status = 'President to vote on policy veto.';
+				sendInProgressGameUpdate(game);
+				setTimeout(() => {
+					president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = true;
+					president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = 'notification';
+					chancellor.cardFlingerState = [];
+					game.publicPlayersState[game.gameState.presidentIndex].isLoader = true;
+					game.gameState.phase = 'presidentVoteOnVeto';
+					sendInProgressGameUpdate(game);
+
+					if (game.general.timedMode) {
+						game.gameState.timedModeEnabled = true;
+						game.private.timerId = setTimeout(() => {
+							if (game.gameState.timedModeEnabled) {
+								game.gameState.timedModeEnabled = false;
+								selectPresidentVoteOnVeto({
+									vote: Boolean(Math.floor(Math.random() * 2)),
+									uid: game.general.uid,
+									userName: president.userName
+								});
+							}
+						}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+					}
+				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
+			} else {
+				setTimeout(() => {
+					publicChancellor.cardStatus.cardDisplayed = false;
+					chancellor.cardFlingerState = [];
+					setTimeout(() => {
+						publicChancellor.cardStatus.isFlipped = false;
+					}, 1000);
+					enactPolicy(game, game.private.currentElectionPolicies[0]);
+				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
+			}
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
+	}
+};
+
+module.exports.selectChancellorVoteOnVeto = selectChancellorVoteOnVeto;
 
 // todo check this argument for jsdoc
 const handToLog = hand =>
@@ -266,8 +552,11 @@ const selectChancellorPolicy = data => {
 		chancellor.cardFlingerState.length &&
 		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
-		game.gameState.timedModeEnabled = false;
 		game.private.lock.selectChancellorPolicy = true;
+
+		if (game.general.timedMode && game.private.timerId) {
+			clearInterval(game.private.timerId);
+		}
 
 		if (data.selection === 3) {
 			chancellor.cardFlingerState[0].notificationStatus = '';
@@ -332,6 +621,22 @@ const selectChancellorPolicy = data => {
 					chancellor.cardFlingerState[0].cardStatus.isFlipped = chancellor.cardFlingerState[1].cardStatus.isFlipped = true;
 					chancellor.cardFlingerState[0].notificationStatus = chancellor.cardFlingerState[1].notificationStatus = 'notification';
 					game.gameState.phase = 'chancellorVoteOnVeto';
+
+					if (game.general.timedMode) {
+						game.gameState.timedModeEnabled = true;
+						game.private.timerId = setTimeout(() => {
+							if (game.gameState.timedModeEnabled) {
+								game.gameState.timedModeEnabled = false;
+
+								selectChancellorVoteOnVeto({
+									vote: Boolean(Math.floor(Math.random() * 2)),
+									uid: game.general.uid,
+									userName: chancellor.userName
+								});
+							}
+						}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+					}
+
 					sendInProgressGameUpdate(game);
 				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
 			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 2000);
@@ -379,10 +684,13 @@ const selectPresidentPolicy = data => {
 		game.publicPlayersState[chancellorIndex] &&
 		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
+		if (game.general.timedMode && game.private.timerId) {
+			clearInterval(game.private.timerId);
+		}
+
 		game.private.lock.selectPresidentPolicy = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 		game.publicPlayersState[chancellorIndex].isLoader = true;
-		game.gameState.timedModeEnabled = false;
 
 		try {
 			if (data.selection === 0) {
@@ -452,8 +760,11 @@ const selectPresidentPolicy = data => {
 
 			if (game.general.timedMode) {
 				game.gameState.timedModeEnabled = true;
+				console.log('Hello, World!');
 				game.private.timerId = setTimeout(() => {
+					console.log('hi');
 					if (game.gameState.timedModeEnabled) {
+						console.log('yo');
 						const isRightPolicy = Boolean(Math.floor(Math.random() * 2));
 						const data = {
 							userName: chancellor.userName,
@@ -466,7 +777,7 @@ const selectPresidentPolicy = data => {
 
 						selectChancellorPolicy(data);
 					}
-				}, game.general.timedMode * 60000);
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
 			}
 
 			sendInProgressGameUpdate(game);
@@ -523,6 +834,23 @@ module.exports.selectVoting = data => {
 				enactPolicy(game, game.private.policies.shift());
 			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
 		} else {
+			if (game.general.timedMode) {
+				game.gameState.timedModeEnabled = true;
+				game.private.timerId = setTimeout(() => {
+					if (game.gameState.timedModeEnabled) {
+						const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
+
+						game.gameState.pendingChancellorIndex = null;
+						game.gameState.timedModeEnabled = false;
+
+						selectChancellor({
+							chancellorIndex,
+							uid: game.general.uid
+						});
+					}
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+			}
+
 			setTimeout(() => {
 				startElection(game);
 			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
@@ -614,13 +942,14 @@ module.exports.selectVoting = data => {
 				game.gameState.timedModeEnabled = true;
 				game.private.timerId = setTimeout(() => {
 					if (game.gameState.timedModeEnabled) {
+						game.gameState.timedModeEnabled = false;
 						selectPresidentPolicy({
 							userName: seatedPlayers[presidentIndex].userName,
 							selection: Math.floor(Math.random() * 3),
 							uid: game.general.uid
 						});
 					}
-				}, game.general.timedMode * 60000);
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
 			}
 			sendInProgressGameUpdate(game);
 		}, experiencedMode ? 200 : 600);
@@ -661,8 +990,9 @@ module.exports.selectVoting = data => {
 			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
 
 			if (seatedPlayers.filter(play => play.voteStatus.didVoteYes && !play.isDead).length / game.general.livingPlayerCount > 0.5) {
-				const chancellorIndex = game.gameState.pendingChancellorIndex,
-					{ presidentIndex } = game.gameState;
+				const chancellorIndex = game.gameState.pendingChancellorIndex;
+				const { presidentIndex } = game.gameState;
+
 				game.publicPlayersState[presidentIndex].governmentStatus = 'isPresident';
 
 				game.publicPlayersState[chancellorIndex].governmentStatus = 'isChancellor';
@@ -819,273 +1149,12 @@ module.exports.selectVoting = data => {
 				});
 			}, experiencedMode ? 200 : 2000);
 			setTimeout(() => {
-				game.gameState.timedModeEnabled = false;
+				if (game.general.timedMode && game.private.timerId) {
+					clearInterval(game.private.timerId);
+				}
 				flipBallotCards();
 			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 2500 : 3000);
 		}
-	}
-};
-
-/**
- * @param {object} data - socket emit
- */
-module.exports.selectChancellorVoteOnVeto = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-	const { experiencedMode } = game.general;
-	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
-	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
-	const chancellor = game.private.seatedPlayers.find(player => player.userName === game.private._chancellorPlayerName);
-	const publicChancellor = game.publicPlayersState[chancellorIndex];
-
-	game.private.summary = game.private.summary.updateLog({
-		chancellorVeto: data.vote
-	});
-
-	game.private.lock.selectPresidentVoteOnVeto = false;
-	if (
-		!game.private.lock.selectChancellorVoteOnVeto &&
-		chancellor &&
-		chancellor.cardFlingerState &&
-		chancellor.cardFlingerState.length &&
-		game.publicPlayersState[chancellorIndex] &&
-		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
-	) {
-		game.private.lock.selectChancellorVoteOnVeto = true;
-
-		game.publicPlayersState[chancellorIndex].isLoader = false;
-
-		chancellor.cardFlingerState[0].action = chancellor.cardFlingerState[1].action = '';
-		chancellor.cardFlingerState[0].cardStatus.isFlipped = chancellor.cardFlingerState[1].cardStatus.isFlipped = false;
-
-		if (data.vote) {
-			chancellor.cardFlingerState[0].notificationStatus = 'selected';
-			chancellor.cardFlingerState[1].notificationStatus = '';
-		} else {
-			chancellor.cardFlingerState[0].notificationStatus = '';
-			chancellor.cardFlingerState[1].notificationStatus = 'selected';
-		}
-
-		publicChancellor.cardStatus = {
-			cardDisplayed: true,
-			cardFront: 'ballot',
-			cardBack: {
-				cardName: data.vote ? 'ja' : 'nein'
-			}
-		};
-
-		sendInProgressGameUpdate(game);
-
-		setTimeout(() => {
-			const chat = {
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{ text: 'Chancellor ' },
-					{
-						text: game.general.blindMode ? `{${chancellorIndex + 1}}` : `${data.userName} {${chancellorIndex + 1}}`,
-						type: 'player'
-					},
-					{
-						text: data.vote ? ' has voted to veto this election.' : ' has voted not to veto this election.'
-					}
-				]
-			};
-
-			if (!game.general.disableGamechat) {
-				game.private.seatedPlayers.forEach(player => {
-					player.gameChats.push(chat);
-				});
-
-				game.private.unSeatedGameChats.push(chat);
-			}
-
-			publicChancellor.cardStatus.isFlipped = true;
-			sendInProgressGameUpdate(game);
-
-			if (data.vote) {
-				president.cardFlingerState = [
-					{
-						position: 'middle-left',
-						notificationStatus: '',
-						action: 'active',
-						cardStatus: {
-							isFlipped: false,
-							cardFront: 'ballot',
-							cardBack: 'ja'
-						}
-					},
-					{
-						position: 'middle-right',
-						action: 'active',
-						notificationStatus: '',
-						cardStatus: {
-							isFlipped: false,
-							cardFront: 'ballot',
-							cardBack: 'nein'
-						}
-					}
-				];
-
-				if (!game.general.disableGamechat) {
-					president.gameChats.push({
-						gameChat: true,
-						timestamp: new Date(),
-						chat: [
-							{
-								text:
-									'You must vote whether or not to veto these policies.  Select Ja to veto the policies you passed to the Chancellor or select Nein to enact the policy the Chancellor has chosen in secret.'
-							}
-						]
-					});
-				}
-
-				game.general.status = 'President to vote on policy veto.';
-				sendInProgressGameUpdate(game);
-				setTimeout(() => {
-					president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = true;
-					president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = 'notification';
-					chancellor.cardFlingerState = [];
-					game.publicPlayersState[game.gameState.presidentIndex].isLoader = true;
-					game.gameState.phase = 'presidentVoteOnVeto';
-					sendInProgressGameUpdate(game);
-				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
-			} else {
-				setTimeout(() => {
-					publicChancellor.cardStatus.cardDisplayed = false;
-					chancellor.cardFlingerState = [];
-					setTimeout(() => {
-						publicChancellor.cardStatus.isFlipped = false;
-					}, 1000);
-					enactPolicy(game, game.private.currentElectionPolicies[0]);
-				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
-			}
-		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
-	}
-};
-
-/**
- * @param {object} data - socket emit
- */
-module.exports.selectPresidentVoteOnVeto = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-	const { experiencedMode } = game.general;
-	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
-	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
-	const publicChancellor = game.publicPlayersState[chancellorIndex];
-	const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
-
-	game.private.summary = game.private.summary.updateLog({
-		presidentVeto: data.vote
-	});
-
-	if (
-		!game.private.lock.selectPresidentVoteOnVeto &&
-		Number.isInteger(chancellorIndex) &&
-		game.publicPlayersState[chancellorIndex] &&
-		!(game.general.isTourny && game.general.tournyInfo.isCancelled) &&
-		president.cardFlingerState &&
-		president.cardFlingerState[0]
-	) {
-		game.private.lock.selectPresidentVoteOnVeto = true;
-
-		game.publicPlayersState[chancellorIndex].isLoader = false; // crash here 9/17
-		publicPresident.isLoader = false;
-		president.cardFlingerState[0].action = president.cardFlingerState[1].action = '';
-		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = false;
-
-		if (data.vote) {
-			president.cardFlingerState[0].notificationStatus = 'selected';
-			president.cardFlingerState[1].notificationStatus = '';
-		} else {
-			president.cardFlingerState[0].notificationStatus = '';
-			president.cardFlingerState[1].notificationStatus = 'selected';
-		}
-
-		publicPresident.cardStatus = {
-			cardDisplayed: true,
-			cardFront: 'ballot',
-			cardBack: {
-				cardName: data.vote ? 'ja' : 'nein'
-			}
-		};
-
-		sendInProgressGameUpdate(game);
-
-		setTimeout(() => {
-			const chat = {
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{ text: 'President ' },
-					{
-						text: game.general.blindMode
-							? `{${game.private.seatedPlayers.indexOf(president) + 1}}`
-							: `${data.userName} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
-						type: 'player'
-					},
-					{
-						text: data.vote ? ' has voted to veto this election.' : ' has voted not to veto this election.'
-					}
-				]
-			};
-
-			if (!game.general.disableGamechat) {
-				game.private.seatedPlayers.forEach(player => {
-					player.gameChats.push(chat);
-				});
-				game.private.unSeatedGameChats.push(chat);
-			}
-
-			publicPresident.cardStatus.isFlipped = true;
-
-			sendInProgressGameUpdate(game);
-
-			if (data.vote) {
-				const chat = {
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'The President and Chancellor have voted to veto this election and the election tracker moves forward.'
-						}
-					]
-				};
-
-				game.private.lock.selectChancellorPolicy = game.private.lock.selectPresidentVoteOnVeto = game.private.lock.selectChancellorVoteOnVeto = false;
-				game.trackState.electionTrackerCount++;
-
-				if (!game.general.disableGamechat) {
-					game.private.seatedPlayers.forEach(player => {
-						player.gameChats.push(chat);
-					});
-
-					game.private.unSeatedGameChats.push(chat);
-				}
-
-				setTimeout(() => {
-					president.cardFlingerState = [];
-					if (game.trackState.electionTrackerCount >= 3) {
-						if (!game.gameState.undrawnPolicyCount) {
-							shufflePolicies(game);
-						}
-
-						enactPolicy(game, game.private.policies.shift());
-					} else {
-						startElection(game);
-					}
-				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000);
-			} else {
-				setTimeout(() => {
-					publicPresident.cardStatus.cardDisplayed = false;
-					publicChancellor.cardStatus.cardDisplayed = false;
-					president.cardFlingerState = [];
-					enactPolicy(game, game.private.currentElectionPolicies[0]);
-					setTimeout(() => {
-						publicChancellor.cardStatus.isFlipped = publicPresident.cardStatus.isFlipped = false;
-					}, 1000);
-				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 2000);
-			}
-		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
 	}
 };
 

@@ -18,10 +18,14 @@ module.exports.selectChancellor = data => {
 	const presidentPlayer = game.private.seatedPlayers[presidentIndex];
 	const chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
 
-	if (!game.private.lock.selectChancellor) {
+	console.log(game.gameState, 'gs in select chanc');
+	if (!game.private.lock.selectChancellor && !Number.isInteger(game.gameState.pendingChancellorIndex)) {
 		game.private.lock.selectChancellor = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
-		game.gameState.timedModeEnabled = false;
+
+		if (game.general.timedMode && game.private.timerId) {
+			clearInterval(game.private.timerId);
+		}
 
 		game.private.summary = game.private.summary.updateLog({
 			chancellorId: chancellorIndex
@@ -118,6 +122,7 @@ module.exports.selectChancellor = data => {
 				game.gameState.timedModeEnabled = true;
 
 				game.private.timerId = setTimeout(() => {
+					console.log('timer completed in selectChancellor');
 					if (game.gameState.timedModeEnabled) {
 						const unvotedPlayerNames = game.private.seatedPlayers
 							.filter(player => !player.voteStatus.hasVoted && !player.isDead)
@@ -134,7 +139,7 @@ module.exports.selectChancellor = data => {
 							});
 						});
 					}
-				}, game.general.timedMode * 60000);
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
 			}
 			sendInProgressGameUpdate(game);
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1500);
