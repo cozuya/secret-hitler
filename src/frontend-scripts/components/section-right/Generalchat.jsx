@@ -141,10 +141,11 @@ export default class Generalchat extends React.Component {
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
 					const { gameSettings } = userInfo;
-					const isMod = MODERATORS.includes(chat.userName) ||
-																 EDITORS.includes(chat.userName) ||
-																 ADMINS.includes(chat.userName) ||
-																 chat.userName.substring(0, 11) == '[BROADCAST]';
+					const isMod =
+						MODERATORS.includes(chat.userName) ||
+						EDITORS.includes(chat.userName) ||
+						ADMINS.includes(chat.userName) ||
+						chat.userName.substring(0, 11) == '[BROADCAST]';
 					const userClasses = classnames(
 						{
 							[chat.color]:
@@ -181,7 +182,7 @@ export default class Generalchat extends React.Component {
 							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat, isMod)}</span>
 						</div>
 					);
-				})
+			  })
 			: null;
 	}
 
