@@ -294,14 +294,14 @@ class Gamechat extends React.Component {
 						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
 						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 				)
-				.map((chat, i) => {
-					const chatContents = processEmotes(chat.chat);
-					const isSeated = seatedUserNames.includes(chat.userName);
+        .map((chat, i) => {
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-					const isGreenText = /^>/i.test(chatContents[0]);
 					const isMod = playerListPlayer
 						? ADMINS.includes(playerListPlayer.userName) || EDITORS.includes(playerListPlayer.userName) || MODERATORS.includes(playerListPlayer.userName)
 						: false;
+          const chatContents = processEmotes(chat.chat, isMod);
+          const isSeated = seatedUserNames.includes(chat.userName);
+          const isGreenText = /^>/i.test(chatContents[0]);
 					let w;
 					let l;
 
@@ -365,7 +365,7 @@ class Gamechat extends React.Component {
 							<span className="chat-user broadcast">
 								{this.handleTimestamps(chat.timestamp)} {`${chat.userName}: `}{' '}
 							</span>
-							<span className="broadcast-chat">{processEmotes(chat.chat)}</span>
+							<span className="broadcast-chat">{processEmotes(chat.chat, true)}</span>
 						</div>
 					) : (
 						<div className="item" key={i}>

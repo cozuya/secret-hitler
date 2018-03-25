@@ -141,6 +141,10 @@ export default class Generalchat extends React.Component {
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
 					const { gameSettings } = userInfo;
+					const isMod = MODERATORS.includes(chat.userName) ||
+																 EDITORS.includes(chat.userName) ||
+																 ADMINS.includes(chat.userName) ||
+																 chat.userName.substring(0, 11) == '[BROADCAST]';
 					const userClasses = classnames(
 						{
 							[chat.color]:
@@ -174,7 +178,7 @@ export default class Generalchat extends React.Component {
 									{`${chat.userName}: `}
 								</a>
 							</span>
-							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat)}</span>
+							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat, isMod)}</span>
 						</div>
 					);
 				})
@@ -191,7 +195,7 @@ export default class Generalchat extends React.Component {
 				<div className="sticky">
 					<span>
 						<span>Sticky: </span>
-						{this.props.generalChats.sticky}
+						{processEmotes(this.props.generalChats.sticky, true)}
 					</span>
 					<i className="remove icon" onClick={dismissSticky} />
 				</div>

@@ -46,6 +46,7 @@
 		"react-custom-scrollbars": "^4.2.1",
 		"react-dom": "^16.1.1",
 		"react-dropzone": "^4.2.8",
+		"react-linkify": "^0.2.2",
 		"react-redux": "^5.0.6",
 		"redux": "^3.7.2",
 		"redux-devtools": "^3.4.0",

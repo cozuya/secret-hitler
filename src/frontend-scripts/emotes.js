@@ -1,5 +1,6 @@
 import React from 'react'; // eslint-disable-line
 import { Button, Popup } from 'semantic-ui-react';
+import Linkify from 'react-linkify';
 
 export const allEmotes = [
 	'BangBang',
@@ -68,7 +69,7 @@ export function renderEmotesButton(handleInsertEmote) {
 	);
 }
 
-export function processEmotes(input) {
+export function processEmotes(input, isMod) {
 	if (typeof input !== 'string') {
 		return input;
 	}
@@ -125,5 +126,8 @@ export function processEmotes(input) {
 			formatedMsg.push(word, ' ');
 		}
 	});
+	if (isMod) {
+		return <Linkify properties={{ target: '_blank', title: 'External Link', style: { color: 'inherit', textDecoration: 'underline' } }}>{formatedMsg}</Linkify>;
+	}
 	return formatedMsg;
 }
