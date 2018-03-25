@@ -299,6 +299,13 @@
 					cursor: pointer;
 					margin: 0 3px;
 				}
+				a.shio-link {
+					color: #f4f439 !important;
+					text-decoration: underline !important;
+					&:hover {
+						color: #608cb3 !important;
+					}
+				}
 			}
 		}
 		.chats.discord {
