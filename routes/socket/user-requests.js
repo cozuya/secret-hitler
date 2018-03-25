@@ -181,6 +181,7 @@ module.exports.sendGameList = socket => {
 		excludedPlayerCount: game.general.excludedPlayerCount,
 		casualGame: game.general.casualGame,
 		isTourny: game.general.isTourny,
+		timedMode: game.general.timedMode,
 		tournyStatus: (() => {
 			if (game.general.isTourny) {
 				if (game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length) {

@@ -1213,10 +1213,10 @@ export default class Creategame extends React.Component {
 								<Range
 									onChange={this.timedSliderChange}
 									min={1}
-									max={5}
-									defaultValue={[3]}
+									max={10}
+									defaultValue={[5]}
 									value={this.state.timedSliderValue}
-									marks={{ 1: '1 minute', 2: '2 minutes', 3: '3 minutes', 5: '5 minutes' }}
+									marks={{ 1: '1 minute', 2: '2 minutes', 3: '3 minutes', 5: '5 minutes', 10: '10 minutes' }}
 								/>
 							</div>
 						</div>

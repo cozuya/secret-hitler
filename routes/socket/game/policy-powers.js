@@ -40,7 +40,8 @@ module.exports.selectPolicies = data => {
 		game.publicPlayersState[presidentIndex].isLoader = false;
 
 		if (game.general.timedMode && game.private.timerId) {
-			clearInterval(game.private.timerId);
+			clearTimeout(game.private.timerId);
+			game.gameState.timedModeEnabled = game.private.timerId = null;
 		}
 
 		if (game.private.policies.length < 3) {
@@ -183,7 +184,8 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		game.private.lock.selectPartyMembershipInvestigate = true;
 
 		if (game.general.timedMode && game.private.timerId) {
-			clearInterval(game.private.timerId);
+			clearTimeout(game.private.timerId);
+			game.gameState.timedModeEnabled = game.private.timerId = null;
 		}
 
 		if (!seatedPlayers[playerIndex].wasInvestigated) {
@@ -319,7 +321,8 @@ module.exports.selectSpecialElection = data => {
 		game.private.lock.selectSpecialElection = true;
 
 		if (game.general.timedMode && game.private.timerId) {
-			clearInterval(game.private.timerId);
+			clearTimeout(game.private.timerId);
+			game.gameState.timedModeEnabled = game.private.timerId = null;
 		}
 
 		game.private.summary = game.private.summary.updateLog({
@@ -415,7 +418,8 @@ module.exports.selectPlayerToExecute = data => {
 		game.private.lock.selectPlayerToExecute = true;
 
 		if (game.general.timedMode && game.private.timerId) {
-			clearInterval(game.private.timerId);
+			clearTimeout(game.private.timerId);
+			game.gameState.timedModeEnabled = game.private.timerId = null;
 		}
 
 		game.private.summary = game.private.summary.updateLog({

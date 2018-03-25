@@ -51,13 +51,13 @@ class Tracks extends React.Component {
 			nextProps.gameInfo.gameState.timedModeEnabled
 		) {
 			let minutes = gameInfo.general.timedMode - 1;
-			let seconds = 59;
+			let seconds = 60;
 			this.intervalId = window.setInterval(() => {
 				if (!seconds) {
 					if (minutes) {
 						minutes--;
 					}
-					seconds = 59;
+					seconds = 60;
 				} else {
 					seconds--;
 				}
@@ -101,6 +101,8 @@ class Tracks extends React.Component {
 		let rainbowgameTooltip;
 		let casualgame;
 		let casualgameTooltip;
+		let timedMode;
+		let timedModeTooltip;
 
 		{
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
@@ -163,6 +165,16 @@ class Tracks extends React.Component {
 			casualgameTooltip = 'Casual game - results do not count towards wins and losses';
 		}
 
+		if (game.timedMode) {
+			timedMode = (
+				<span>
+					<i className="hourglass half icon" />
+					<span style={{ color: 'peru' }}>{game.timedMode}M</span>
+				</span>
+			);
+			timedModeTooltip = `Timed Mode: ${game.timedMode} minute(s)`;
+		}
+
 		return (
 			<div className="options-icons-container">
 				<span className="rebalanced">
@@ -188,6 +200,9 @@ class Tracks extends React.Component {
 				</span>
 				<span>
 					<Popup inverted trigger={casualgame} content={casualgameTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={timedMode} content={timedModeTooltip} />
 				</span>
 			</div>
 		);

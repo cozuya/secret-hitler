@@ -75,6 +75,8 @@ const DisplayLobbies = props => {
 		let privateOnlyTooltip;
 		let casualGame;
 		let casualGameTooltip;
+		let timedMode;
+		let timedModeTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
@@ -152,6 +154,16 @@ const DisplayLobbies = props => {
 			rainbowgameTooltip = 'Experienced Game';
 		}
 
+		if (game.timedMode) {
+			timedMode = (
+				<span style={{ color: 'peru' }}>
+					<i className="hourglass half icon" />
+					{game.timedMode}M
+				</span>
+			);
+			timedModeTooltip = `Timed Mode: ${game.timedMode} minute(s)`;
+		}
+
 		return (
 			<div className="options-icons-container">
 				<span data-tooltip={casualGameTooltip} data-inverted="">
@@ -180,6 +192,9 @@ const DisplayLobbies = props => {
 				</span>
 				<span data-tooltip={rainbowgameTooltip} data-inverted="">
 					{rainbowgame}
+				</span>
+				<span data-tooltip={timedModeTooltip} data-inverted="">
+					{timedMode}
 				</span>
 			</div>
 		);

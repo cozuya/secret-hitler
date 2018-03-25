@@ -555,7 +555,8 @@ const selectChancellorPolicy = data => {
 		game.private.lock.selectChancellorPolicy = true;
 
 		if (game.general.timedMode && game.private.timerId) {
-			clearInterval(game.private.timerId);
+			clearTimeout(game.private.timerId);
+			game.gameState.timedModeEnabled = game.private.timerId = null;
 		}
 
 		if (data.selection === 3) {
@@ -685,7 +686,8 @@ const selectPresidentPolicy = data => {
 		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
 		if (game.general.timedMode && game.private.timerId) {
-			clearInterval(game.private.timerId);
+			clearTimeout(game.private.timerId);
+			game.gameState.timedModeEnabled = game.private.timerId = null;
 		}
 
 		game.private.lock.selectPresidentPolicy = true;
@@ -760,11 +762,8 @@ const selectPresidentPolicy = data => {
 
 			if (game.general.timedMode) {
 				game.gameState.timedModeEnabled = true;
-				console.log('Hello, World!');
 				game.private.timerId = setTimeout(() => {
-					console.log('hi');
 					if (game.gameState.timedModeEnabled) {
-						console.log('yo');
 						const isRightPolicy = Boolean(Math.floor(Math.random() * 2));
 						const data = {
 							userName: chancellor.userName,
@@ -957,7 +956,7 @@ module.exports.selectVoting = data => {
 	const flipBallotCards = () => {
 		const isConsensus = game.publicPlayersState
 			.filter(player => !player.isDead)
-			.every((el, i) => seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes); // first time every who says old dog new tricks etc..
+			.every((el, i) => seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes);
 
 		game.publicPlayersState.forEach((player, i) => {
 			if (!player.isDead) {
@@ -1060,6 +1059,7 @@ module.exports.selectVoting = data => {
 					});
 
 					game.private.unSeatedGameChats.push(chat);
+					game.gameState.pendingChancellorIndex = null;
 				}
 
 				failedElection();
@@ -1150,7 +1150,8 @@ module.exports.selectVoting = data => {
 			}, experiencedMode ? 200 : 2000);
 			setTimeout(() => {
 				if (game.general.timedMode && game.private.timerId) {
-					clearInterval(game.private.timerId);
+					clearTimeout(game.private.timerId);
+					game.gameState.timedModeEnabled = game.private.timerId = null;
 				}
 				flipBallotCards();
 			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 2500 : 3000);
