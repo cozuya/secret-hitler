@@ -50,6 +50,9 @@ const Changelog = () => (
 		</p>
 		<h3>Other items</h3>
 		<ul>
+			<li>
+				New emotes courtesy of contributor LordVader! ThinkFace, PIZZA, ExpressionlessFace, PopCorn, RedHeart. They are in the popup menu as well of course.
+			</li>
 			<li>Tournaments now make the usual "bong" noise when they start.</li>
 			<li>The "rules" page has been updated thanks to a contributor. The big change is a description of common terms used on the site.</li>
 			<li>A bug where people with extensive blacklists will have an error preventing them from adding new blacklists has been fixed.</li>

@@ -17,7 +17,6 @@ module.exports.selectChancellor = data => {
 	const seatedPlayers = game.private.seatedPlayers.filter(player => !player.isDead);
 	const presidentPlayer = game.private.seatedPlayers[presidentIndex];
 	const chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
-	console.log(game.gameState, 'gs in select chanc');
 	if (!game.private.lock.selectChancellor && !Number.isInteger(game.gameState.pendingChancellorIndex)) {
 		game.private.lock.selectChancellor = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
