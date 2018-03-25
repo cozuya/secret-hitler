@@ -19,6 +19,8 @@ const MODERATORS = (module.exports.MODERATORS = [
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Faaiz1999', 'Invidia']);
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
+	'Auengun',
+	'OuchYouHitMe',
 	'Skyrra',
 	'jbasrai',
 	'sethe',
