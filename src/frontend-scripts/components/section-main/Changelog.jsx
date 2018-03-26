@@ -55,6 +55,7 @@ const Changelog = () => (
 			</li>
 			<li>Tournaments now make the usual "bong" noise when they start.</li>
 			<li>The "rules" page has been updated thanks to a contributor. The big change is a description of common terms used on the site.</li>
+			<li>Players can now submit up to 3 moderator reports per game, up from 1.</li>
 			<li>A bug where people with extensive blacklists will have an error preventing them from adding new blacklists has been fixed.</li>
 		</ul>
 		<div className="ui header">

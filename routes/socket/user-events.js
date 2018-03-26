@@ -1686,8 +1686,8 @@ module.exports.handlePlayerReport = data => {
 		}
 	};
 
-	PlayerReport.findOne({ gameUid: data.uid, reportingPlayer: data.userName }).then(report => {
-		if (!report) {
+	PlayerReport.find({ gameUid: data.uid, reportingPlayer: data.userName }).then(reports => {
+		if (!reports || reports.length < 4) {
 			playerReport.save(() => {
 				Account.find({ username: mods }).then(accounts => {
 					accounts.forEach(account => {
