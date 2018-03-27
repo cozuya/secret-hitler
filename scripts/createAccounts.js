@@ -14,15 +14,13 @@ const options = {
 
 const createUser = function(username) {
 	const req = http.request(options, function(res) {
-		var chunks = [];
+		const chunks = [];
 
 		res.on('data', function(chunk) {
 			chunks.push(chunk);
 		});
 
 		res.on('end', function() {
-			var body = Buffer.concat(chunks);
-
 			if (res.statusCode == 200) {
 				console.log(`Successfully created ${username}`);
 			} else if (res.statusCode == 401) {
@@ -42,7 +40,9 @@ const fileString = fs.readFileSync(filePath, 'utf8');
 const nameRegex = /data-name="([A-z]+)" className="loginquick">/g;
 
 console.log('Creating accounts in MongoDB.  May give errors for repeated runs.');
-var m;
+
+let m;
+
 while ((m = nameRegex.exec(fileString))) {
 	createUser(m[1]);
 }
