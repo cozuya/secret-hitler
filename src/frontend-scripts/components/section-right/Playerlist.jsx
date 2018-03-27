@@ -357,30 +357,27 @@ class Playerlist extends React.Component {
 					<div className="ui basic modal playerlistinfo">
 						<div className="header">Lobby and player color info:</div>
 						<p>
-							Players in the lobby, general chat, and game chat are grey/white until they reach 50 games played. These are known as "rainbow players" and have
-							access to play in special rainbow player only games.
+							Players in the lobby, general chat, and game chat are grey/white until they reach 50 games played. After that, they are known as "rainbow players"
+							because their color changes based on their stats. Rainbow players have access to play in special rainbow player only games.
 						</p>
 						<p>
-							After that, if they have less than 52% win rate, their player color varies between <span className="experienced1">light green</span> and{' '}
-							<span className="experienced5">dark green</span>, depending on how many games played they have.
+							If rainbow players have a less than 52% win rate, their player color varies between <span className="experienced1">light green</span> and{' '}
+							<span className="experienced5">dark green</span>, depending on how many games they have played. Conversely, with a win rate of 52% or higher, 
+							their player color ranges from{' '}
+							<span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how high it is. The highest tier is 70%.
 						</p>
 						<p>
-							Additionally, if a player has at least 50 games played and a win rate of 52% or higher, their player color ranges from{' '}
-							<span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how high it is. The highest tier is
-							70%.
-						</p>
-						<p>
-							Also, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
-							<span className="admin-name">dark red (A)</span> and are always on top,<span className="cbell">Ed</span>
+							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
+							<span className="admin-name">dark red (A)</span> and are always at the top of the list.<br /><span className="cbell">Ed</span>
 							<span className="max">it</span>
 							<span className="invidia">or</span>
-							<span className="faaiz">s</span>, placed under <span className="admin">Administrators</span>, have a range of special colors to stand out as well
-							as a <span className="editor-name">red (E)</span> and appear at the top, <span className="moderatorcolor">Moderators</span>, placed under{' '}
+							<span className="faaiz">s</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to stand out, as well
+							as a <span className="editor-name">red (E)</span>.<br /><span className="moderatorcolor">Moderators</span>, placed at the top below{' '}
 							<span className="cbell">Ed</span>
 							<span className="max">it</span>
 							<span className="invidia">or</span>
 							<span className="faaiz">s</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
-							<span className="moderator-name">light red (M)</span> and also appear at the top, and <span className="contributer">Contributors</span> get a{' '}
+							<span className="moderator-name">light red (M)</span>.<br />Lastly, <span className="contributer">Contributors</span> get a{' '}
 							<span className="contributer">special orange color</span> as well! Contribute code to this open source project to be endlessly pestered about why
 							you're <span className="contributer">orange</span>.
 						</p>
