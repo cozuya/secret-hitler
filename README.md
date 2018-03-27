@@ -35,24 +35,28 @@ Install [yarn](https://yarnpkg.com/en/docs/install) for your OS.
 
 then
 
-> git clone https://github.com/cozuya/secret-hitler.git
-
-> cd secret-hitler
-
-> mkdir data logs
-
-> yarn
+```bash
+git clone https://github.com/cozuya/secret-hitler.git
+cd secret-hitler
+yarn
+```
 
 ## Running in dev mode
 
 Start development:
 
-> yarn dev
+```bash
+yarn dev
+```
 
 Navigate to: http://localhost:8080
 
 You'll most likely need a browser extension such as Chrome's [openMultiLogin](https://chrome.google.com/webstore/detail/openmultilogin/lbofelamdnfmipbbgkebcpkapahbmcgm?hl=en) to have multiple sessions on the same browser. No, incognito will not work. Also it
-will be very helpful to make all of the "quickdefault" accounts with the default password, snipsnap, so that you can log in to an account in one click. There's an open issue on github to provide a mongo script with that prepopulated but haven't got to it yet, sorry.
+will be very helpful to make all of the "quickdefault" accounts with the default password, snipsnap, so that you can log in to an account in one click. There is a yarn script you may run once `server` or `dev` yarn scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
+
+```bash
+yarn create-accounts
+```
 
 ## Important note for Windows users
 
