@@ -216,10 +216,10 @@ class Players extends React.Component {
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						  }
+							}
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
-						  }
+							}
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -390,11 +390,13 @@ class Players extends React.Component {
 			return;
 		}
 
+		const index = gameInfo.publicPlayersState.findIndex(player => player.userName === this.state.reportedPlayer);
+
 		this.props.socket.emit('playerReport', {
 			uid: gameInfo.general.uid,
 			userName: this.props.userInfo.userName || 'from replay',
 			gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
-			reportedPlayer: this.state.reportedPlayer,
+			reportedPlayer: `${index ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
 			reason: $('input[name="reason"]').attr('value'),
 			comment: this.state.reportTextValue
 		});
