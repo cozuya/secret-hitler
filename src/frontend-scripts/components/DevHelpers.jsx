@@ -10,8 +10,9 @@ export default class DevHelpers extends React.PureComponent {
 	render() {
 		return (
 			<section style={{ display: 'flex', maxWidth: '95%', margin: 'auto' }}>
-				<button style={{ padding: '5px', background: '#333', color: 'white' }} data-name="h">
-					default
+				<br />
+				<button style={{ padding: '5px', background: '#333', color: 'white' }} data-name="h" onClick={quickDefault}>
+					default game
 				</button>
 				<br />
 				<button style={{ padding: '5px', width: '80px', color: 'black' }} data-name="Uther" className="loginquick">
