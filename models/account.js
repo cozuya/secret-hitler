@@ -66,6 +66,11 @@ Account = new Schema({
 	lossesSeason1: Number,
 	rainbowWinsSeason1: Number,
 	rainbowLossesSeason1: Number,
+	winsSeason2: Number,
+	lossesSeason2: Number,
+	rainbowWinsSeason2: Number,
+	rainbowLossesSeason2: Number,
+	previousSeasonAward: String,
 	created: Date,
 	lastVersionSeen: String,
 	isFixed: Boolean
