@@ -10,7 +10,6 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Ophxlia',
 	'Idrissa',
 	'cayseron',
-	'maki2',
 	'safi',
 	'Wilmeister',
 	'MrEth3real'
@@ -21,6 +20,7 @@ const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'OuchYouHitMe',
 	'Auengun',
+	'Royal2000H',
 	'Skyrra',
 	'jbasrai',
 	'sethe',
