@@ -32,6 +32,7 @@ Account = new Schema({
 		blacklist: Array,
 		tournyWins: Array,
 		hasChangedName: Boolean,
+		previousSeasonAward: String,
 		gameNotes: {
 			top: Number,
 			left: Number,
@@ -70,7 +71,6 @@ Account = new Schema({
 	lossesSeason2: Number,
 	rainbowWinsSeason2: Number,
 	rainbowLossesSeason2: Number,
-	previousSeasonAward: String,
 	created: Date,
 	lastVersionSeen: String,
 	isFixed: Boolean

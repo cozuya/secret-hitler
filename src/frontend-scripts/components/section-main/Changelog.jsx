@@ -46,7 +46,7 @@ const Changelog = () => (
 		<h3>New feature: one time name change.</h3>
 		<p>
 			Dislike your old name, but want to keep your stats and profile? Hit the big new big red button on your settings page to change your name. This only works
-			once for every account so choose wisely.
+			once per account so choose wisely.
 		</p>
 		<h3>Other items</h3>
 		<ul>
@@ -56,7 +56,7 @@ const Changelog = () => (
 			<li>Tournaments now make the usual "bong" noise when they start.</li>
 			<li>The "rules" page has been updated thanks to a contributor. The big change is a description of common terms used on the site.</li>
 			<li>Players can now submit up to 3 moderator reports per game, up from 1.</li>
-			<li>A bug where people with extensive blacklists will have an error preventing them from adding new blacklists has been fixed.</li>
+			<li>A bug where people with blacklists over 100 will have an error preventing them from adding new blacklists has been fixed.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.5 released 2-20-2018</p>

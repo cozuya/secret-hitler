@@ -85,6 +85,23 @@
 		display: inline-block;
 		margin-right: 2px;
 	}
+	.season-award {
+		width: 16px;
+		height: 16px;
+		display: inline-block;
+		margin-right: 2px;
+		&.gold {
+			background: url('/images/gold.png') no-repeat;
+		}
+
+		&.silver {
+			background: url('/images/silver.png') no-repeat;
+		}
+
+		&.bronze {
+			background: url('/images/bronze.png') no-repeat;
+		}
+	}
 	.notes-container {
 		-webkit-transition: all 0.15s ease-in-out;
 		-moz-transition: all 0.15s ease-in-out;

@@ -35,10 +35,10 @@ Account.find({ winsSeason1: { $gte: 150 } })
 // 		const winrate = account.winsSeason1 / (account.winsSeason1 + account.lossesSeason1);
 
 // 		if (winrate > 0.52 && winrate < 0.54) {
-// 			account.previousSeasonAward = 'bronze';
+// 			account.gameSettings.previousSeasonAward = 'bronze';
 // 		} else if (winrate >= 0.54 && winrate < 0.562) {
-// 			account.previousSeasonAward = 'silver';
+// 			account.gameSettings.previousSeasonAward = 'silver';
 // 		} else if (winrate >= 0.562) {
-// 			account.previousSeasonAward = 'gold';
+// 			account.gameSettings.previousSeasonAward = 'gold';
 // 		}
 // 	});

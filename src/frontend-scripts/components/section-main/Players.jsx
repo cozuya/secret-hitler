@@ -180,12 +180,31 @@ class Players extends React.Component {
 		const time = new Date().getTime();
 		const renderPlayerName = (player, i) => {
 			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
+			const prependSeasonAward = () => {
+				switch (player.previousSeasonAward) {
+					case 'bronze':
+						return <span className="season-award bronze" />;
+						break;
+					case 'silver':
+						return <span className="season-award silver" />;
+						break;
+					case 'gold':
+						return <span className="season-award gold" />;
+						break;
+				}
+			};
+
 			const prependCrowns = str => (
 				<span>
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.tournyWins &&
 						player.tournyWins.filter(winTime => time - winTime < 10800000).map((crown, ind) => <span className="crown-icon" key={player.tournyWins[ind]} />)}
+
+					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
+						player.previousSeasonAward &&
+						prependSeasonAward()}
 					{str}
 				</span>
 			);
@@ -216,10 +235,10 @@ class Players extends React.Component {
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-							}
+						  }
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
-							}
+						  }
 				}
 				className={(() => {
 					let classes = 'player-container';
