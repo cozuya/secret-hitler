@@ -86,10 +86,11 @@
 		margin-right: 2px;
 	}
 	.season-award {
-		width: 16px;
-		height: 16px;
+		width: 14px;
+		height: 14px;
 		display: inline-block;
 		margin-right: 2px;
+		background-size: contain !important;
 		&.gold {
 			background: url('/images/gold.png') no-repeat;
 		}
@@ -831,19 +832,19 @@ div {
 
 @for $i from 1 through 5 {
 	.experienced#{$i} {
-		color: rgb(19, (222 - ($i * 20)), 19) !important;
+		color: rgb(19,  (222 - ($i * 20)), 19) !important;
 	}
 	.player-small-cardback.experienced#{$i} {
-		box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
+		box-shadow: 0 0 5px 2px rgb(0,  (175 - ($i * 20)), 0) !important;
 	}
 }
 
 @for $i from 1 through 10 {
 	.onfire#{$i} {
-		color: rgb(183, (10 - $i) * 15, 167) !important;
+		color: rgb(183,  (10 - $i) * 15, 167) !important;
 	}
 	.player-small-cardback.onfire#{$i} {
-		box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
+		box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
 	}
 }
 

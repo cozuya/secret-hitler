@@ -102,6 +102,17 @@ class Playerlist extends React.Component {
 		}
 	}
 
+	renderPreviousSeasonAward(type) {
+		switch (type) {
+			case 'bronze':
+				return <span title="This player was in the 3rd tier of winrate in the previous season" className="season-award bronze" />;
+			case 'silver':
+				return <span title="This player was in the 2nd tier of winrate in the previous season" className="season-award silver" />;
+			case 'gold':
+				return <span title="This player was in the top tier of winrate in the previous season" className="season-award gold" />;
+		}
+	}
+
 	renderPlayerlist() {
 		if (Object.keys(this.props.userList).length) {
 			const { list } = this.props.userList;
@@ -296,6 +307,9 @@ class Playerlist extends React.Component {
 						<div key={i} className="user-container">
 							<div className="userlist-username">
 								{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()}
+								{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+									user.previousSeasonAward &&
+									this.renderPreviousSeasonAward(user.previousSeasonAward)}
 								{(() => {
 									const userAdminRole = ADMINS.includes(user.userName)
 										? 'Admin'
@@ -362,18 +376,19 @@ class Playerlist extends React.Component {
 						</p>
 						<p>
 							If rainbow players have a less than 52% win rate, their player color varies between <span className="experienced1">light green</span> and{' '}
-							<span className="experienced5">dark green</span>, depending on how many games they have played. Conversely, with a win rate of 52% or higher, 
-							their player color ranges from{' '}
-							<span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how high it is. The highest tier is 70%.
+							<span className="experienced5">dark green</span>, depending on how many games they have played. Conversely, with a win rate of 52% or higher,
+							their player color ranges from <span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how
+							high it is. The highest tier is 70%.
 						</p>
 						<p>
 							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
-							<span className="admin-name">dark red (A)</span> and are always at the top of the list.<br /><span className="cbell">Ed</span>
+							<span className="admin-name">dark red (A)</span> and are always at the top of the list.<br />
+							<span className="cbell">Ed</span>
 							<span className="max">it</span>
 							<span className="invidia">or</span>
-							<span className="faaiz">s</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to stand out, as well
-							as a <span className="editor-name">red (E)</span>.<br /><span className="moderatorcolor">Moderators</span>, placed at the top below{' '}
-							<span className="cbell">Ed</span>
+							<span className="faaiz">s</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to
+							stand out, as well as a <span className="editor-name">red (E)</span>.<br />
+							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="cbell">Ed</span>
 							<span className="max">it</span>
 							<span className="invidia">or</span>
 							<span className="faaiz">s</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}

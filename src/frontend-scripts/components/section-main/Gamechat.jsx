@@ -154,6 +154,7 @@ class Gamechat extends React.Component {
 				userName: userInfo.userName,
 				tournyWins: userInfo.gameSettings.tournyWins,
 				chat: currentValue,
+				previousSeasonAward: userInfo.gameSettings.previousSeasonAward,
 				gameChat: false,
 				uid: gameInfo.general.uid,
 				inProgress: gameInfo.gameState.isStarted
@@ -275,6 +276,17 @@ class Gamechat extends React.Component {
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
 
+		const renderPreviousSeasonAward = type => {
+			switch (type) {
+				case 'bronze':
+					return <span title="This player was in the 3rd tier of winrate in the previous season" className="season-award bronze" />;
+				case 'silver':
+					return <span title="This player was in the 2nd tier of winrate in the previous season" className="season-award silver" />;
+				case 'gold':
+					return <span title="This player was in the top tier of winrate in the previous season" className="season-award gold" />;
+			}
+		};
+
 		if (
 			isReplay ||
 			!gameInfo.general.private ||
@@ -374,6 +386,10 @@ class Gamechat extends React.Component {
 								chat.tournyWins &&
 								!isBlind &&
 								renderCrowns(chat.tournyWins)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								chat.previousSeasonAward &&
+								!isBlind &&
+								renderPreviousSeasonAward(chat.previousSeasonAward)}
 							<span
 								className={
 									playerListPlayer
@@ -389,7 +405,7 @@ class Gamechat extends React.Component {
 																ADMINS.includes(playerListPlayer.userName) ||
 																EDITORS.includes(playerListPlayer.userName)
 															) || !(gameSettings && gameSettings.disableSeasonal)
-													  )}`
+														)}`
 													: 'chat-user'
 										: 'chat-user'
 								}
@@ -419,7 +435,7 @@ class Gamechat extends React.Component {
 										? isBlind
 											? `${
 													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
 									: isBlind ? '?' : chat.userName}

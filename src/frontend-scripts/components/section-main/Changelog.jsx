@@ -9,8 +9,25 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.13.0 released -2018</p>
+			<p>Version 0.13.0 released 4-1-2018</p>
 		</div>
+		<h3>Season 2 has begun</h3>
+		<p>
+			Seasonal awards have been implemented: the top 60 players with more than 150 wins in season 1 have been separated into 3 tiers, and receive special award
+			flair on the lines of gold/silver/bronze.
+		</p>
+		<p>This flair can be disabled via the disable tournament crowns setting which has been renamed to disable tournament crowns and seasonal awards.</p>
+		<h3>Congratulations to the top players of season 1:</h3>
+		<ul>
+			<li>maki2 66% wr</li>
+			<li>karamia 65% wr</li>
+			<li>TheDaniMan 64% wr</li>
+			<li>NotIconic 63% wr</li>
+			<li>TheJustStop0 62% wr</li>
+			<li>qwefjz 61% wr</li>
+			<li>BunchOfAnima 60% wr</li>
+			<li>Zeek 60% wr</li>
+		</ul>
 		<h3>New game mode: Timed mode</h3>
 		<p>
 			When you make a timed mode game, you select the amount of time until an action is forced randomly. A countdown in the lower right corner of the game board

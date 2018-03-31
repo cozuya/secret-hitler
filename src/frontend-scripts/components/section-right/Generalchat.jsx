@@ -52,6 +52,17 @@ export default class Generalchat extends React.Component {
 		this.setState({ inputValue: `${e.target.value}` });
 	}
 
+	renderPreviousSeasonAward(type) {
+		switch (type) {
+			case 'bronze':
+				return <span title="This player was in the 3rd tier of winrate in the previous season" className="season-award bronze" />;
+			case 'silver':
+				return <span title="This player was in the 2nd tier of winrate in the previous season" className="season-award silver" />;
+			case 'gold':
+				return <span title="This player was in the top tier of winrate in the previous season" className="season-award gold" />;
+		}
+	}
+
 	handleSubmit(e) {
 		const inputValue = this.chatInput.value;
 		const { userInfo } = this.props;
@@ -61,7 +72,8 @@ export default class Generalchat extends React.Component {
 				userName: userInfo.userName,
 				tournyWins: userInfo.gameSettings.tournyWins ? userInfo.gameSettings.tournyWins : [],
 				chat: inputValue,
-				isPrivate: userInfo.gameSettings.isPrivate
+				isPrivate: userInfo.gameSettings.isPrivate,
+				previousSeasonAward: userInfo.gameSettings.previousSeasonAward
 			});
 
 			this.chatInput.value = '';
@@ -168,6 +180,9 @@ export default class Generalchat extends React.Component {
 							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 								chat.tournyWins &&
 								renderCrowns(chat.tournyWins)}
+							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+								chat.previousSeasonAward &&
+								this.renderPreviousSeasonAward(chat.previousSeasonAward)}
 							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
 								{MODERATORS.includes(chat.userName) && <span className="moderator-name">(M) </span>}
 								{EDITORS.includes(chat.userName) && <span className="editor-name">(E) </span>}
@@ -182,7 +197,7 @@ export default class Generalchat extends React.Component {
 							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat, isMod)}</span>
 						</div>
 					);
-			  })
+				})
 			: null;
 	}
 

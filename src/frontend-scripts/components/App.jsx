@@ -277,6 +277,7 @@ export class App extends React.Component {
 		const data = {
 			uid: gameInfo.general.uid,
 			userName: userInfo.userName,
+			previousSeasonAward: userInfo.gameSettings.previousSeasonAward,
 			isPrivate: userInfo.gameSettings.isPrivate,
 			customCardback: userInfo.gameSettings.customCardback,
 			customCardbackUid: userInfo.gameSettings.customCardbackUid,

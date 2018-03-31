@@ -183,14 +183,11 @@ class Players extends React.Component {
 			const prependSeasonAward = () => {
 				switch (player.previousSeasonAward) {
 					case 'bronze':
-						return <span className="season-award bronze" />;
-						break;
+						return <span title="This player was in the 3rd tier of winrate in the previous season" className="season-award bronze" />;
 					case 'silver':
-						return <span className="season-award silver" />;
-						break;
+						return <span title="This player was in the 2nd tier of winrate in the previous season" className="season-award silver" />;
 					case 'gold':
-						return <span className="season-award gold" />;
-						break;
+						return <span title="This player was in the top tier of winrate in the previous season" className="season-award gold" />;
 				}
 			};
 
@@ -235,10 +232,10 @@ class Players extends React.Component {
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						  }
+							}
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
-						  }
+							}
 				}
 				className={(() => {
 					let classes = 'player-container';

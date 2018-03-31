@@ -434,6 +434,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 			customCardbackUid: data.customCardbackUid,
 			isPrivate: data.isPrivate,
 			tournyWins: data.tournyWins,
+			previousSeasonAward: data.previousSeasonAward,
 			cardStatus: {
 				cardDisplayed: false,
 				isFlipped: false,
@@ -1211,6 +1212,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 					text: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber].userName}.`
 				}
 			],
+			previousSeasonAward: data.previousSeasonAward,
 			uid: data.uid,
 			timestamp: new Date(),
 			inProgress: game.gameState.isStarted
@@ -1280,7 +1282,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
  */
 module.exports.handleUpdatedGameSettings = (socket, data) => {
 	if (!socket.handshake.session.passport) {
-		// yes, even THIS crashed the game once.
+		// yes, even THIS crashed the site once.
 		return;
 	}
 
