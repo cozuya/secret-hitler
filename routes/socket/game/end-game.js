@@ -66,7 +66,6 @@ const saveGame = game => {
  */
 module.exports.completeGame = (game, winningTeamName) => {
 	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
-	const losingPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team !== winningTeamName);
 	const winningPlayerNames = winningPrivatePlayers.map(player => player.userName);
 	const { seatedPlayers } = game.private;
 	const { publicPlayersState } = game;
@@ -100,30 +99,15 @@ module.exports.completeGame = (game, winningTeamName) => {
 		)
 	};
 
-	// if (!(game.general.isTourny && game.general.tournyInfo.round === 1)) {
-	// 	winningPrivatePlayers.forEach((player, index) => {
-	// 		publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
-	// 		publicPlayersState.find(play => play.userName === player.userName).isConfetti = true;
-	// 		player.wonGame = true;
-	// 	});
-
-	// 	setTimeout(() => {
-	// 		winningPrivatePlayers.forEach((player, index) => {
-	// 			publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
-	// 		});
-	// 		sendInProgressGameUpdate(game);
-	// 	}, 15000);
-	// }
-
 	if (!(game.general.isTourny && game.general.tournyInfo.round === 1)) {
-		losingPrivatePlayers.forEach((player, index) => {
+		winningPrivatePlayers.forEach((player, index) => {
 			publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
 			publicPlayersState.find(play => play.userName === player.userName).isConfetti = true;
 			player.wonGame = true;
 		});
 
 		setTimeout(() => {
-			losingPrivatePlayers.forEach((player, index) => {
+			winningPrivatePlayers.forEach((player, index) => {
 				publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
 			});
 			sendInProgressGameUpdate(game);

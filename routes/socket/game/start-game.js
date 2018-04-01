@@ -58,15 +58,7 @@ const beginGame = game => {
 		player.playersState.forEach((play, index) => {
 			play.notificationStatus = play.nameStatus = '';
 
-			// delete this 4/2
-			const _role = {
-				cardName: 'hitler',
-				icon: 0,
-				team: 'fascist'
-			};
-
-			play.cardStatus = i === index ? { cardBack: _role } : {};
-			// play.cardStatus = i === index ? { cardBack: player.role } : {};
+			play.cardStatus = i === index ? { cardBack: player.role } : {};
 		});
 
 		if (!game.general.disableGamechat) {

@@ -344,11 +344,10 @@ class Playerlist extends React.Component {
 								})()}
 								{renderStatus()}
 							</div>
-							{/* <span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '} */}
 							{!ADMINS.includes(user.userName) && (
 								<div className="userlist-stats-container">
 									(
-									<span className="userlist-stats">{user[l] ? user[l] : '0'}</span> / <span className="userlist-stats">{user[w] ? user[w] : '0'}</span>){' '}
+									<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
 									<span className="userlist-stats"> {percentDisplay}</span>
 								</div>
 							)}
