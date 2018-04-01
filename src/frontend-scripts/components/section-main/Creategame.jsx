@@ -1222,7 +1222,7 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					)}
-					<div className="row timedmode-check">
+					{/* <div className="row timedmode-check">
 						<div className="sixteen wide column">
 							<i className="big hourglass half icon" />
 							<h4 className="ui header">
@@ -1237,7 +1237,7 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="timedmode" defaultChecked={false} />
 							</div>
 						</div>
-					</div>
+					</div> */}
 					<div className="row sliderrow">
 						<div className="four wide column disablechat">
 							<i className="big unmute icon" />

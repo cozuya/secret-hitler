@@ -82,6 +82,7 @@
 			top: 2px;
 			right: -4px;
 			cursor: pointer;
+			z-index: 100;
 
 			&.has-note {
 				color: orange !important;

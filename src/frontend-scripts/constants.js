@@ -35,7 +35,7 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'goonbee'
 ]);
 
-const CURRENTSEASONNUMBER = 1;
+const CURRENTSEASONNUMBER = 2;
 
 module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
 

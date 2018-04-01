@@ -17,8 +17,8 @@ const Changelog = () => (
 			flair on the lines of gold/silver/bronze.
 		</p>
 		<p>This flair can be disabled via the disable tournament crowns setting which has been renamed to disable tournament crowns and seasonal awards.</p>
-		<h3>Congratulations to the top players of season 1:</h3>
-		<ul>
+		<h3>Congratulations to the top players of season 1 (more than 150 wins):</h3>
+		<ul style={{ color: 'orange' }}>
 			<li>maki2 66% wr</li>
 			<li>karamia 65% wr</li>
 			<li>TheDaniMan 64% wr</li>
@@ -28,19 +28,19 @@ const Changelog = () => (
 			<li>BunchOfAnima 60% wr</li>
 			<li>Zeek 60% wr</li>
 		</ul>
-		<h3>New game mode: Timed mode</h3>
+		{/* <h3>New game mode: Timed mode</h3>
 		<p>
 			When you make a timed mode game, you select the amount of time until an action is forced randomly. A countdown in the lower right corner of the game board
 			will be visible. Example: in a 5 minute timed mode game, if someone does not make a required action in 5 minutes such as selecting a chancellor or policy
 			power execution, that action is taken for them at random (within the rules of the game). Note that in order to save stress on the server, this countdown
 			is held client-side and will only be visible to players/observers if they are present in the game when it starts. This mode will likely favor fascists!
 			Feedback requested. <small>People abusing this mode to do.. something.. will be subject to moderation action.</small>
-		</p>
+		</p> */}
 		<h3>New feature: player notes</h3>
 		<p>
 			Piggybacking on the game notes feature, all players now have a small icon on their cardback that will now open a dragable box. You can now take notes on
 			any player (limit: 500 characters) by typing into that box and hitting save. Hovering on that icon will also give you a smaller preview of the note for
-			that player.
+			that player. You can also edit your notes on a player by going to their profile and clicking the edit icon next to their name.
 		</p>
 		<h3>New feature: player notifications (pings)</h3>
 		<p>When you enter the site for the first time, you will receive a notification that looks like this:</p>
@@ -74,6 +74,7 @@ const Changelog = () => (
 			<li>The "rules" page has been updated thanks to a contributor. The big change is a description of common terms used on the site.</li>
 			<li>Players can now submit up to 3 moderator reports per game, up from 1.</li>
 			<li>A bug where people with blacklists over 100 will have an error preventing them from adding new blacklists has been fixed.</li>
+			<li>The planned "timed game mode" feature which is mostly in had to be pushed back due to some issues with it, will get it in soon.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.5 released 2-20-2018</p>
