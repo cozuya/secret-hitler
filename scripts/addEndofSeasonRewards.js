@@ -36,9 +36,12 @@ Account.find({ winsSeason1: { $gte: 150 } })
 
 // 		if (winrate > 0.52 && winrate < 0.54) {
 // 			account.gameSettings.previousSeasonAward = 'bronze';
+//			account.save();
 // 		} else if (winrate >= 0.54 && winrate < 0.562) {
 // 			account.gameSettings.previousSeasonAward = 'silver';
+//			account.save();
 // 		} else if (winrate >= 0.562) {
 // 			account.gameSettings.previousSeasonAward = 'gold';
+//			account.save();
 // 		}
 // 	});
