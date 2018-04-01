@@ -36,12 +36,12 @@ const Changelog = () => (
 			is held client-side and will only be visible to players/observers if they are present in the game when it starts. This mode will likely favor fascists!
 			Feedback requested. <small>People abusing this mode to do.. something.. will be subject to moderation action.</small>
 		</p> */}
-		<h3>New feature: player notes</h3>
+		{/* <h3>New feature: player notes</h3>
 		<p>
 			Piggybacking on the game notes feature, all players now have a small icon on their cardback that will now open a dragable box. You can now take notes on
 			any player (limit: 500 characters) by typing into that box and hitting save. Hovering on that icon will also give you a smaller preview of the note for
 			that player. You can also edit your notes on a player by going to their profile and clicking the edit icon next to their name.
-		</p>
+		</p> */}
 		<h3>New feature: player notifications (pings)</h3>
 		<p>When you enter the site for the first time, you will receive a notification that looks like this:</p>
 		<div style={{ textAlign: 'center' }}>
@@ -74,7 +74,7 @@ const Changelog = () => (
 			<li>The "rules" page has been updated thanks to a contributor. The big change is a description of common terms used on the site.</li>
 			<li>Players can now submit up to 3 moderator reports per game, up from 1.</li>
 			<li>A bug where people with blacklists over 100 will have an error preventing them from adding new blacklists has been fixed.</li>
-			<li>The planned "timed game mode" feature which is mostly in had to be pushed back due to some issues with it, will get it in soon.</li>
+			<li>The planned "timed game mode" and "player notes" feature didn't quite get wrapped up prior to today's update, look for those soon.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.12.5 released 2-20-2018</p>

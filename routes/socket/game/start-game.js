@@ -9,11 +9,10 @@ const GameSummaryBuilder = require('../../../models/game-summary/GameSummaryBuil
  */
 const beginGame = game => {
 	const { experiencedMode } = game.general;
-
-	game.general.timeStarted = new Date().getTime();
-
 	const libCount = Math.floor(game.publicPlayersState.length / 2) + 1;
 	const fasCount = game.publicPlayersState.length - libCount - 1;
+
+	game.general.timeStarted = new Date().getTime();
 	game.general.type = Math.floor((game.publicPlayersState.length - 5) / 2);
 
 	const roles = [
@@ -52,12 +51,22 @@ const beginGame = game => {
 		const index = Math.floor(Math.random() * roles.length);
 
 		player.role = roles[index];
+
 		roles.splice(index, 1);
 		player.playersState = _.range(0, game.publicPlayersState.length).map(play => ({}));
 
 		player.playersState.forEach((play, index) => {
 			play.notificationStatus = play.nameStatus = '';
-			play.cardStatus = i === index ? { cardBack: player.role } : {};
+
+			// delete this 4/2
+			const _role = {
+				cardName: 'hitler',
+				icon: 0,
+				team: 'fascist'
+			};
+
+			play.cardStatus = i === index ? { cardBack: _role } : {};
+			// play.cardStatus = i === index ? { cardBack: player.role } : {};
 		});
 
 		if (!game.general.disableGamechat) {

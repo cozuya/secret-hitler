@@ -76,7 +76,7 @@ const enactPolicy = (game, team) => {
 
 	game.trackState.enactedPolicies.push({
 		position: 'middle',
-		cardBack: team,
+		cardBack: team === 'fascist' ? 'liberal' : 'fascist',
 		isFlipped: false
 	});
 
@@ -960,7 +960,8 @@ module.exports.selectVoting = data => {
 
 		game.publicPlayersState.forEach((player, i) => {
 			if (!player.isDead) {
-				player.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? 'ja' : 'nein';
+				player.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? 'nein' : 'ja';
+				// player.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? 'ja' : 'nein';
 				player.cardStatus.isFlipped = true;
 			}
 		});

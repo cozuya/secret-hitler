@@ -232,10 +232,10 @@ class Players extends React.Component {
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
 								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-							}
+						  }
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`
-							}
+						  }
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -301,7 +301,7 @@ class Players extends React.Component {
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
 				{this.renderGovtToken(i)}
-				{this.renderPlayerNotesIcon(i)}
+				{/* {this.renderPlayerNotesIcon(i)} */}
 				<div
 					className={(() => {
 						let classes = 'card-container';
