@@ -10,7 +10,6 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Ophxlia',
 	'Idrissa',
 	'cayseron',
-	'maki2',
 	'safi',
 	'Wilmeister',
 	'MrEth3real'
