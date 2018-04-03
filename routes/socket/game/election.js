@@ -24,6 +24,10 @@ const enactPolicy = (game, team) => {
 	const index = game.trackState.enactedPolicies.length;
 	const { experiencedMode } = game.general;
 
+	if (game.private.lock.selectChancellor) {
+		game.private.lock.selectChancellor = false;
+	}
+
 	if (game.private.lock.selectChancellorVoteOnVeto) {
 		game.private.lock.selectChancellorVoteOnVeto = false;
 	}
@@ -836,7 +840,7 @@ module.exports.selectVoting = data => {
 			if (game.general.timedMode) {
 				game.gameState.timedModeEnabled = true;
 				game.private.timerId = setTimeout(() => {
-					if (game.gameState.timedModeEnabled) {
+					if (game.gameState.timedModeEnabled && game.gameState.phase === 'selectingChancellor') {
 						const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
 
 						game.gameState.pendingChancellorIndex = null;

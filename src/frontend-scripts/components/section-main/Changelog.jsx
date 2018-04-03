@@ -9,6 +9,24 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.13.1 released 4-3-2018</p>
+		</div>
+		<h3>New game mode: Timed mode</h3>
+		<p>In a timed mode game, a timer on all actions appears in the lower right part of the fascist board, after which the next action is chosen at random.</p>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/timed-mode-example.png" style={{ border: '1px solid grey' }} />
+		</div>
+		<p>
+			Example: in a 5 minute timed mode game, if someone does not make a required action in 5 minutes such as voting on an election, their nein or ja vote is
+			chosen for them at random by the server. Note that in order to save stress on the server, this countdown is held client-side and will only be visible to
+			players/observers if they are present in the game when each timer starts (but still goes on in the background on the server, of course). This mode will
+			likely favor fascists! Feedback requested. <small>People abusing this mode to do.. something.. will be subject to moderation action.</small>
+		</p>
+		<p>
+			Complicated magical changes were made in the back end in order to enable this functionality and it may be subject to.. not being perfect. Please report
+			any problems you see. Hopefully problems != crashes.
+		</p>
+		<div className="ui header">
 			<p>Version 0.13.0 released 4-1-2018</p>
 		</div>
 		<h3>Season 2 has begun</h3>

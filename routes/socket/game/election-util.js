@@ -17,7 +17,8 @@ module.exports.selectChancellor = data => {
 	const seatedPlayers = game.private.seatedPlayers.filter(player => !player.isDead);
 	const presidentPlayer = game.private.seatedPlayers[presidentIndex];
 	const chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
-	if (!game.private.lock.selectChancellor && !Number.isInteger(game.gameState.pendingChancellorIndex)) {
+
+	if (!game.private.lock.selectChancellor && !Number.isInteger(game.gameState.pendingChancellorIndex) && game.gameState.phase !== 'voting') {
 		game.private.lock.selectChancellor = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 
@@ -105,8 +106,9 @@ module.exports.selectChancellor = data => {
 			sendInProgressGameUpdate(game);
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
 
+		game.gameState.phase = 'voting';
+
 		setTimeout(() => {
-			game.gameState.phase = 'voting';
 			seatedPlayers.forEach(player => {
 				if (player.cardFlingerState && player.cardFlingerState.length) {
 					player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = true;
