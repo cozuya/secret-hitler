@@ -26,6 +26,7 @@ const Changelog = () => (
 			Complicated magical changes were made in the back end in order to enable this functionality and it may be subject to.. not being perfect. Please report
 			any problems you see. Hopefully problems != crashes.
 		</p>
+		<h3>Bug fix: game now once again works on iOS devices</h3>
 		<div className="ui header">
 			<p>Version 0.13.0 released 4-1-2018</p>
 		</div>

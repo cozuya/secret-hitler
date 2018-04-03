@@ -225,7 +225,7 @@ export default class Creategame extends React.Component {
 					disableGamechat: this.state.disablegamechat,
 					rainbowgame: this.state.rainbowgame,
 					blindMode: this.state.blindMode,
-					timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : undefined,
+					timedMode: this.state.timedMode ? this.state.timedSliderValue[0] / 2 : undefined,
 					casualGame: this.state.casualgame,
 					rebalance6p: this.state.checkedRebalanceValues[0],
 					rebalance7p: this.state.checkedRebalanceValues[1],
@@ -1214,10 +1214,10 @@ export default class Creategame extends React.Component {
 								<Range
 									onChange={this.timedSliderChange}
 									min={1}
-									max={10}
-									defaultValue={[5]}
+									max={20}
+									defaultValue={[10]}
 									value={this.state.timedSliderValue}
-									marks={{ 1: '1 minute', 2: '2 minutes', 3: '3 minutes', 5: '5 minutes', 10: '10 minutes' }}
+									marks={{ 1: '30 seconds', 4: '2 minutes', 10: '5 minutes', 20: '10 minutes' }}
 								/>
 							</div>
 						</div>

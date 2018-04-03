@@ -19,7 +19,7 @@ class Tracks extends React.Component {
 
 		this._ismounted = true;
 
-		if (Notification.permission === 'granted' && this.props.socket) {
+		if (Notification && Notification.permission === 'granted' && this.props.socket) {
 			this.props.socket.on('pingPlayer', data => {
 				new Notification(data);
 			});
@@ -27,9 +27,11 @@ class Tracks extends React.Component {
 	}
 
 	componentWillUnmount() {
+		const { Notification } = window;
+
 		this._ismounted = false;
 
-		if (Notification.permission === 'granted' && this.props.socket) {
+		if (Notification && Notification.permission === 'granted' && this.props.socket) {
 			this.props.socket.off('pingPlayer');
 		}
 	}
@@ -50,8 +52,8 @@ class Tracks extends React.Component {
 			!gameInfo.gameState.timedModeEnabled &&
 			nextProps.gameInfo.gameState.timedModeEnabled
 		) {
-			let minutes = gameInfo.general.timedMode - 1;
-			let seconds = 60;
+			let minutes = Math.ceil(gameInfo.general.timedMode) - 1;
+			let seconds = Number.isInteger(gameInfo.general.timedMode) ? 60 : 30;
 			this.intervalId = window.setInterval(() => {
 				if (!seconds) {
 					if (minutes) {

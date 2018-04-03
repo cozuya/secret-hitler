@@ -30,6 +30,11 @@ module.exports.policyPeek = game => {
  */
 module.exports.selectPolicies = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game || !game.gameState) {
+		return;
+	}
+
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
@@ -173,6 +178,11 @@ module.exports.investigateLoyalty = game => {
  */
 module.exports.selectPartyMembershipInvestigate = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game || !game.gameState) {
+		return;
+	}
+
 	const { playerIndex } = data;
 	const { experiencedMode } = game.general;
 	const { presidentIndex } = game.gameState;
@@ -317,6 +327,10 @@ module.exports.specialElection = game => {
 module.exports.selectSpecialElection = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
+	if (!game || !game.gameState) {
+		return;
+	}
+
 	if (!game.private.lock.selectSpecialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectSpecialElection = true;
 
@@ -390,6 +404,11 @@ module.exports.executePlayer = game => {
  */
 module.exports.selectPlayerToExecute = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game || !game.gameState) {
+		return;
+	}
+
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;

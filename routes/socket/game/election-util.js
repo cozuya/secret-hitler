@@ -7,7 +7,7 @@ const { games } = require('../models');
 module.exports.selectChancellor = data => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (!game || !game.private.seatedPlayers || (game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+	if (!game || !game.gameState || !game.private.seatedPlayers || (game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		return;
 	}
 

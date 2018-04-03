@@ -250,6 +250,11 @@ const enactPolicy = (game, team) => {
  */
 const selectPresidentVoteOnVeto = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game || !game.gameState) {
+		return;
+	}
+
 	const { experiencedMode } = game.general;
 	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
@@ -379,6 +384,11 @@ module.exports.selectPresidentVoteOnVeto = selectPresidentVoteOnVeto;
  */
 const selectChancellorVoteOnVeto = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game || !game.gameState) {
+		return;
+	}
+
 	const { experiencedMode } = game.general;
 	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
@@ -541,6 +551,11 @@ const handToLog = hand =>
  */
 const selectChancellorPolicy = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game || !game.gameState) {
+		return;
+	}
+
 	const { experiencedMode } = game.general;
 	const presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPresident');
 	const president = game.private.seatedPlayers[presidentIndex];
@@ -674,6 +689,11 @@ module.exports.selectChancellorPolicy = selectChancellorPolicy;
  */
 const selectPresidentPolicy = data => {
 	const game = games.find(el => el.general.uid === data.uid);
+
+	if (!game || !game.gameState) {
+		return;
+	}
+
 	const { presidentIndex } = game.gameState;
 	const president = game.private.seatedPlayers[presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
