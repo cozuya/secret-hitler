@@ -18,6 +18,7 @@ chats array
 	isBroadcast bool
 	timestamp time
 general
+	blindMode bool
 	name string
 	isRemade bool, so that people can't click remake after its remade
 	gameCreatorBlacklist array of strings of usernames

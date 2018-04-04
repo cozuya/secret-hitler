@@ -1205,7 +1205,10 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 		if (!io.sockets.sockets[affectedSocketId]) {
 			return;
 		}
-		io.sockets.sockets[affectedSocketId].emit('pingPlayer', `Secret Hitler IO: Player ${data.userName} just pinged you.`);
+		io.sockets.sockets[affectedSocketId].emit(
+			'pingPlayer',
+			game.general.blindMode ? 'Secret Hitler IO: A player has pinged you.' : `Secret Hitler IO: Player ${data.userName} just pinged you.`
+		);
 
 		game.chats.push({
 			gameChat: true,

@@ -294,6 +294,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 								winningPrivatePlayers.map(player => player.userName).includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 						);
 
+						// crash here line 302 map of undefined.  Not sure how this didn't exist at this time.  Race condition in settimeout/interval?  Both games completed at almost the same time?  Dunno.
 						const otherGameWinningPlayerSocketIds = Object.keys(io.sockets.sockets).filter(
 							socketId =>
 								io.sockets.sockets[socketId].handshake.session.passport &&
