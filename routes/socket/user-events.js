@@ -975,8 +975,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 		gameChat: true,
 		chat: [
 			{
-				text: game.general.blindMode ? `{${playerIndex + 1}}` : `${data.userName} {${playerIndex + 1}}`,
-				type: 'player'
+				text: 'A player'
 			}
 		]
 	};
