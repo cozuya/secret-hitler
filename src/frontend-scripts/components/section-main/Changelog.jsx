@@ -9,6 +9,15 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.13.2 released 4-2018</p>
+		</div>
+		<ul>
+			<li>
+				Previous "timed mode" idea credit to player HREmperor who gets orange contributor color. Contribute to this open source product to get it also! ~140
+				open issues on github! -_-
+			</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.13.1 released 4-3-2018</p>
 		</div>
 		<h3>New game mode: Timed mode</h3>
