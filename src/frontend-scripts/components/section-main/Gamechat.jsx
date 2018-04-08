@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, TRIALMODS, MODERATORS, ADMINS, EDITORS, CURRENTSEASONNUMBER } from '../../constants';
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -240,12 +240,14 @@ class Gamechat extends React.Component {
 			(gameInfo.general.disableObserver &&
 				!userInfo.isSeated &&
 				!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) &&
+				!TRIALMODS.includes(userInfo.userName) ||
 				!EDITORS.includes(userInfo.userName)) ||
 			(isDead && !gameState.isCompleted) ||
 			isGovernmentDuringPolicySelection ||
 			gameInfo.general.disableChat ||
 			(gameInfo.general.private &&
 				!userInfo.isSeated &&
+				!TRIALMODS.includes(userInfo.userName) &&
 				!MODERATORS.includes(userInfo.userName) &&
 				!ADMINS.includes(userInfo.userName) &&
 				!EDITORS.includes(userInfo.userName)) ||
@@ -291,7 +293,7 @@ class Gamechat extends React.Component {
 			isReplay ||
 			!gameInfo.general.private ||
 			userInfo.isSeated ||
-			(userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)))
+			(userInfo.userName && (TRIALMODS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)))
 		) {
 			return gameInfo.chats
 				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
@@ -300,6 +302,7 @@ class Gamechat extends React.Component {
 						(chatFilter === 'No observer chat' &&
 							(chat.gameChat ||
 								seatedUserNames.includes(chat.userName) ||
+								TRIALMODS.includes(chat.userName) ||
 								MODERATORS.includes(chat.userName) ||
 								ADMINS.includes(chat.userName) ||
 								EDITORS.includes(chat.userName))) ||
@@ -309,7 +312,7 @@ class Gamechat extends React.Component {
 				.map((chat, i) => {
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 					const isMod = playerListPlayer
-						? ADMINS.includes(playerListPlayer.userName) || EDITORS.includes(playerListPlayer.userName) || MODERATORS.includes(playerListPlayer.userName)
+						? ADMINS.includes(playerListPlayer.userName) || EDITORS.includes(playerListPlayer.userName) || MODERATORS.includes(playerListPlayer.userName) || TRIALMODS.includes(playerListPlayer.userName)
 						: false;
 					const chatContents = processEmotes(chat.chat, isMod);
 					const isSeated = seatedUserNames.includes(chat.userName);
@@ -401,6 +404,7 @@ class Gamechat extends React.Component {
 													? `chat-user ${PLAYERCOLORS(
 															playerListPlayer,
 															!(
+																TRIALMODS.includes(playerListPlayer.userName) ||
 																MODERATORS.includes(playerListPlayer.userName) ||
 																ADMINS.includes(playerListPlayer.userName) ||
 																EDITORS.includes(playerListPlayer.userName)
@@ -412,6 +416,11 @@ class Gamechat extends React.Component {
 							>
 								{isReplay || isSeated ? (
 									''
+								) : TRIALMODS.includes(chat.userName) ? (
+									<span data-tooltip="Trial Mod" data-inverted>
+										<span className="observer-chat">(Observer) </span>
+										<span className="trialmods-name">(m) </span>
+									</span>
 								) : MODERATORS.includes(chat.userName) ? (
 									<span data-tooltip="Moderator" data-inverted>
 										<span className="observer-chat">(Observer) </span>
