@@ -18,7 +18,7 @@ const { sendInProgressGameUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
-const { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
+const { PLAYERCOLORS, TRIALMODS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
 
 /**
  * @param {object} game - game to act on.
@@ -1167,7 +1167,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	if (
 		(player && player.isDead && !game.gameState.isCompleted) ||
 		(player && player.leftGame) ||
-		(!player && game.general.disableObserver && !(MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) ||
+		(!player && game.general.disableObserver && !(TRIALMODS.includes(passport.user) || MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) ||
 		(user && !player && user.wins + user.losses < 2)
 	) {
 		return;
@@ -1334,7 +1334,7 @@ module.exports.handleModerationAction = (socket, data) => {
 		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 	);
 
-	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
+	if (passport && (TRIALMODS.includes(passport.user) || MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
 		if (data.isReportResolveChange) {
 			PlayerReport.findOne({ _id: data._id })
 				.then(report => {
@@ -1374,7 +1374,7 @@ module.exports.handleModerationAction = (socket, data) => {
 			 * @param {string} username - name of user.
 			 */
 			const banAccount = username => {
-				if (!ADMINS.includes(username) && (!MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
+				if (!ADMINS.includes(username) && (!TRIALMODS.includes(username) || !MODERATORS.includes(username) || !EDITORS.includes(username) || isSuperMod)) {
 					Account.findOne({ username })
 						.then(account => {
 							if (account) {
@@ -1666,7 +1666,7 @@ module.exports.handlePlayerReport = data => {
 		return;
 	}
 
-	const mods = MODERATORS.concat(ADMINS);
+	const mods = TRIALMODS.concat(ADMINS);
 	const playerReport = new PlayerReport({
 		date: new Date(),
 		gameUid: data.uid,
@@ -1724,7 +1724,7 @@ module.exports.handlePlayerReport = data => {
 };
 
 module.exports.handlePlayerReportDismiss = () => {
-	const mods = MODERATORS.concat(ADMINS);
+	const mods = TRIALMODS.concat(ADMINS);
 
 	Account.find({ username: mods }).then(accounts => {
 		accounts.forEach(account => {
