@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { MODERATORS, EDITORS, ADMINS } from '../../constants';
+import { TRIALMODS, MODERATORS, EDITORS, ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
 import { processEmotes } from '../../emotes';
 
@@ -82,6 +82,10 @@ export default class Generalchat extends React.Component {
 					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
 						{chat.userName}
 						{(() => {
+							if (TRIALMODS.includes(chat.userName)) {
+								return <span className="trialmods-name"> (m)</span>;
+							}
+							
 							if (MODERATORS.includes(chat.userName)) {
 								return <span className="moderator-name"> (M)</span>;
 							}
