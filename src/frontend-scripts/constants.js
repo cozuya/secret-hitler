@@ -1,5 +1,6 @@
 const cn = require('classnames');
 
+const TRIALMODS = (module.exports.TRIALMODS = ['Uther']);
 const MODERATORS = (module.exports.MODERATORS = [
 	'RavenCaps',
 	'JerMej1s',
@@ -53,6 +54,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal) => {
 		admin: ADMINS.includes(user.userName),
 		moderatorcolor: MODERATORS.includes(user.userName),
 		editorcolor: EDITORS.includes(user.userName),
+		trialmods: TRIALMODS.includes(user.userName),
 		experienced1: w + l > 49,
 		experienced2: w + l > 99,
 		experienced3: w + l > 199,
