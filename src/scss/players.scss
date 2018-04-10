@@ -18,12 +18,12 @@
 	}
 	@for $i from 1 through 5 {
 		.player-container.experienced#{$i} {
-			box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
+			box-shadow: 0 0 5px 2px rgb(0,  (175 - ($i * 20)), 0) !important;
 		}
 	}
 	@for $i from 1 through 10 {
 		.player-container.onfire#{$i} {
-			box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
+			box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
 		}
 	}
 
@@ -45,6 +45,10 @@
 
 	.player-container.cbell {
 		box-shadow: 0 0 5px 2px #ff1a75 !important;
+	}
+
+	.player-container.thestopjusto {
+		box-shadow: 0 0 5px 2px #dc143c !important;
 	}
 
 	.player-container.max {
