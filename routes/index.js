@@ -6,7 +6,7 @@ const socketRoutes = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
-const { MODERATORS, TRIALMODS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants');
+const { MODERATORS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants');
 const fs = require('fs');
 /**
  * @param {object} req - express request object.
@@ -128,7 +128,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 					}
 
-					if (!(MODERATORS.includes(requestingUser) || TRIALMODS.includes(requestingUser) || ADMINS.includes(requestingUser) || EDITORS.includes(requestingUser))) {
+					if (!(MODERATORS.includes(requestingUser) || ADMINS.includes(requestingUser) || EDITORS.includes(requestingUser))) {
 						_profile.lastConnectedIP = 'no looking';
 					}
 					res.json(_profile);
