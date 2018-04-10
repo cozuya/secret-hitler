@@ -857,6 +857,13 @@ div {
 	box-shadow: 0 0 5px 2px orange !important;
 }
 
+.trialmods {
+	color: #00ffff !important;
+}
+.player-small-cardback.trialmods {
+	box-shadow: 0 0 5px 2px #00ffff !important;
+}
+
 .moderatorcolor {
 	color: #007fff !important;
 }
@@ -1023,6 +1030,10 @@ div {
 	font-weight: bold;
 	margin-top: 10px;
 	margin: 10px 0 0;
+}
+
+.trialmods-name {
+	color: $lightfascistteam !important;
 }
 
 .moderator-name {

@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { MODERATORS, EDITORS, ADMINS } from '../../constants';
+import { TRIALMODS, MODERATORS, EDITORS, ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -154,6 +154,7 @@ export default class Generalchat extends React.Component {
 			? generalChats.list.map((chat, i) => {
 					const { gameSettings } = userInfo;
 					const isMod =
+						TRIALMODS.includes(chat.userName) ||
 						MODERATORS.includes(chat.userName) ||
 						EDITORS.includes(chat.userName) ||
 						ADMINS.includes(chat.userName) ||
@@ -161,6 +162,7 @@ export default class Generalchat extends React.Component {
 					const userClasses = classnames(
 						{
 							[chat.color]:
+								TRIALMODS.includes(chat.userName) ||
 								MODERATORS.includes(chat.userName) ||
 								EDITORS.includes(chat.userName) ||
 								ADMINS.includes(chat.userName) ||
@@ -184,6 +186,7 @@ export default class Generalchat extends React.Component {
 								chat.previousSeasonAward &&
 								this.renderPreviousSeasonAward(chat.previousSeasonAward)}
 							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
+								{TRIALMODS.includes(chat.userName) && <span className="trialmods-name">(m) </span>}
 								{MODERATORS.includes(chat.userName) && <span className="moderator-name">(M) </span>}
 								{EDITORS.includes(chat.userName) && <span className="editor-name">(E) </span>}
 								{ADMINS.includes(chat.userName) && <span className="admin-name">(A) </span>}

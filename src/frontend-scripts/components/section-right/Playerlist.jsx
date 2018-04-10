@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { EDITORS, ADMINS, PLAYERCOLORS, TRIALMODS, MODERATORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -62,7 +62,7 @@ class Playerlist extends React.Component {
 		if (
 			userInfo &&
 			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
+			(TRIALMODS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
 		) {
 			return (
 				<a href="#/moderation">
@@ -78,7 +78,7 @@ class Playerlist extends React.Component {
 		if (
 			userInfo &&
 			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
+			(TRIALMODS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
 		) {
 			let classes = 'comment icon report-button';
 
@@ -136,14 +136,14 @@ class Playerlist extends React.Component {
 					user =>
 						(this.state.userListFilter === 'all' || user[w] + user[l] > 49) &&
 						(!user.isPrivate ||
-							(userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))))
+							(userInfo.userName && (TRIALMODS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))))
 				)
 				.sort((a, b) => {
 					const aTotal = a[w] + a[l];
 					const bTotal = b[w] + b[l];
 
-					const aIsSuperuser = ADMINS.includes(a.userName) || EDITORS.includes(a.userName) || MODERATORS.includes(a.userName);
-					const bIsSuperuser = ADMINS.includes(b.userName) || EDITORS.includes(b.userName) || MODERATORS.includes(b.userName);
+					const aIsSuperuser = ADMINS.includes(a.userName) || EDITORS.includes(a.userName) || MODERATORS.includes(a.userName) || TRIALMODS.includes(a.userName);
+					const bIsSuperuser = ADMINS.includes(b.userName) || EDITORS.includes(b.userName) || MODERATORS.includes(b.userName) || TRIALMODS.includes(b.userName);
 
 					if (ADMINS.includes(a.userName) && ADMINS.includes(b.userName)) {
 						return a.userName > b.userName ? 1 : -1;
@@ -218,6 +218,18 @@ class Playerlist extends React.Component {
 						return a.userName > b.userName ? 1 : -1;
 					}
 
+					if (TRIALMODS.includes(a.userName) && !ADMINS.includes(b.userName)) {
+						return -1;
+					}
+
+					if (TRIALMODS.includes(b.userName) && !ADMINS.includes(a.userName)) {
+						return 1;
+					}
+
+					if (TRIALMODS.includes(a.userName) && TRIALMODS.includes(b.userName)) {
+						return a.userName > b.userName ? 1 : -1;
+					}
+
 					if (aTotal > 49 && bTotal > 49) {
 						return b[w] / bTotal - a[w] / aTotal;
 					} else if (aTotal > 49) {
@@ -256,6 +268,7 @@ class Playerlist extends React.Component {
 						ADMINS.includes(user.userName) ||
 						EDITORS.includes(user.userName) ||
 						MODERATORS.includes(user.userName) ||
+						TRIALMODS.includes(user.userName) ||
 						CONTRIBUTORS.includes(user.userName)
 							? cn(
 									PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal)),
@@ -315,7 +328,7 @@ class Playerlist extends React.Component {
 										? 'Admin'
 										: EDITORS.includes(user.userName)
 											? 'Editor'
-											: MODERATORS.includes(user.userName) ? 'Moderator' : CONTRIBUTORS.includes(user.userName) ? 'Contributor' : null;
+											: MODERATORS.includes(user.userName) ? 'Moderator' : TRIALMODS.includes(user.userName) ? 'Trial Mod' : CONTRIBUTORS.includes(user.userName) ? 'Contributor' : null;
 
 									if (userAdminRole) {
 										const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
@@ -392,7 +405,8 @@ class Playerlist extends React.Component {
 							<span className="max">it</span>
 							<span className="invidia">or</span>
 							<span className="faaiz">s</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
-							<span className="moderator-name">light red (M)</span>.<br />Lastly, <span className="contributer">Contributors</span> get a{' '}
+							<span className="moderator-name">light red (M)</span>.<br /><span className="trialmods">Trial Mods</span>, placed at the top below <span className="moderatorcolor">Moderators</span>{' '}
+							have a <span className="trialmods">cyan color</span> with a <span className="trialmods-name">light red (m)</span>.<br />Lastly, <span className="contributer">Contributors</span> get a{' '}
 							<span className="contributer">special orange color</span> as well! Contribute code to this open source project to be endlessly pestered about why
 							you're <span className="contributer">orange</span>.
 						</p>

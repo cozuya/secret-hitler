@@ -14,7 +14,7 @@ import {
 	fetchProfile,
 	fetchReplay
 } from '../actions/actions.js';
-import { MODERATORS, ADMINS, EDITORS } from '../constants';
+import { TRIALMODS, MODERATORS, ADMINS, EDITORS } from '../constants';
 import socket from '../socket';
 import PropTypes from 'prop-types';
 import RightSidebar from './section-right/RightSidebar.jsx';
@@ -190,14 +190,14 @@ export class App extends React.Component {
 		} else if (
 			hash === '#/moderation' &&
 			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
+			(TRIALMODS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
 		) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('moderation'));
 		} else if (
 			hash === '#/playerreports' &&
 			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
+			(TRIALMODS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
 		) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
