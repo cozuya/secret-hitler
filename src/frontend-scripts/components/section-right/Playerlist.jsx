@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -78,7 +78,7 @@ class Playerlist extends React.Component {
 		if (
 			userInfo &&
 			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
+			(MODERATORS.includes(userInfo.userName) || TRIALMODS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
 		) {
 			let classes = 'comment icon report-button';
 
