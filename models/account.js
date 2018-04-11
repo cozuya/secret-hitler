@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 const { Schema } = mongoose;
-Account = new Schema({
+const Account = new Schema({
 	username: {
 		type: String,
 		required: true,
@@ -33,6 +33,7 @@ Account = new Schema({
 		tournyWins: Array,
 		hasChangedName: Boolean,
 		previousSeasonAward: String,
+		disableElo: Boolean,
 		gameNotes: {
 			top: Number,
 			left: Number,
@@ -73,7 +74,9 @@ Account = new Schema({
 	rainbowLossesSeason2: Number,
 	created: Date,
 	lastVersionSeen: String,
-	isFixed: Boolean
+	isFixed: Boolean,
+	eloSeason: Number,
+	eloOverall: Number
 });
 
 Account.plugin(passportLocalMongoose);
