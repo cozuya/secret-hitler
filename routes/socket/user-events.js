@@ -1666,7 +1666,7 @@ module.exports.handlePlayerReport = data => {
 		return;
 	}
 
-	const mods = TRIALMODS.concat(ADMINS);
+	const mods = MODERATORS.concat(ADMINS);
 	const playerReport = new PlayerReport({
 		date: new Date(),
 		gameUid: data.uid,
@@ -1724,7 +1724,7 @@ module.exports.handlePlayerReport = data => {
 };
 
 module.exports.handlePlayerReportDismiss = () => {
-	const mods = TRIALMODS.concat(ADMINS);
+	const mods = MODERATORS.concat(ADMINS);
 
 	Account.find({ username: mods }).then(accounts => {
 		accounts.forEach(account => {
