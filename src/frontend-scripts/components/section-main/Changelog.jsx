@@ -18,6 +18,16 @@ const Changelog = () => (
 			</li>
 		</ul>
 		<div className="ui header">
+			<p>Version 0.13.2 released 4-15-2018</p>
+		</div>
+		<h3>New feature: elo system</h3>
+		<p>
+			Where's my winrate, and what's this weird number? There is now an elo system on sh.io. If you don't know what that is, it is number that reflects your
+			weighted winrate. Win a game against other players who collectively have high elo? Your own elo will go up more than if you won a game against low elo
+			players. You'll get it!
+		</p>
+		<p>Like other similar changes, if you'd rather have the previous winrate-based display and colors, you can disable elo on your settings screen.</p>
+		<div className="ui header">
 			<p>Version 0.13.1 released 4-3-2018</p>
 		</div>
 		<h3>New game mode: Timed mode</h3>

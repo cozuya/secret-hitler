@@ -38,6 +38,7 @@ class Settings extends React.Component {
 			disableConfetti: '',
 			disableCrowns: '',
 			disableSeasonal: '',
+			disableElo: '',
 			isPrivate: '',
 			failedNameChangeMessage: ''
 		};
@@ -58,6 +59,7 @@ class Settings extends React.Component {
 			disablePlayerCardbacks: gameSettings.disablePlayerCardbacks,
 			disableConfetti: gameSettings.disableConfetti,
 			disableSeasonal: gameSettings.disableSeasonal,
+			disableElo: gameSettings.disableElo,
 			isPrivate: gameSettings.isPrivate
 		});
 	}
@@ -370,6 +372,11 @@ class Settings extends React.Component {
 									checked={this.state.disableHelpIcons}
 									onChange={() => this.toggleGameSettings('disableHelpIcons')}
 								/>
+								<label />
+							</div>
+							<h4 className="ui header">Disable elo system</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
 								<label />
 							</div>
 						</div>
