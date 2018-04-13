@@ -14,7 +14,7 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'MrEth3real'
 ]);
 
-const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Faaiz1999', 'Invidia', 'TheJustStopO']);
+const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'HREmperor',
