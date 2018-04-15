@@ -1,7 +1,6 @@
 /* TEAM */
 Author: Chris Ozols
 Design: Chris Ozols
-Site: todo
 Contact: chris.v.ozols@gmail.com
 IDE: Visual Studio Code
 Twitter: https://twitter.com/cozuya
@@ -12,7 +11,7 @@ Language: English
 Doctype: HTML5
 Front end: React, Redux, Sass, SocketIO, SemanticUI, jQuery, Lodash.
 Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO, Lodash.
-Build: Gulp, Browserify, Babel.
+Build: Babel, Webpack.
 
 /* ATTRIBUTION */
 

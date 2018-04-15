@@ -11,11 +11,14 @@ const Changelog = () => (
 		<div className="ui header">
 			<p>Version 0.13.2 released 4-2018</p>
 		</div>
+		<p>Other issues</p>
 		<ul>
 			<li>
 				Previous "timed mode" idea credit to player HREmperor who gets orange contributor color. Contribute to this open source product to get it also! ~140
 				open issues on github! -_-
 			</li>
+			<li>Remake messages in chat no longer say what player has voted to remake it.</li>
+			<li>To avoid libs abandoning "lost" games, the remake threshold for 6p games is now 5, up from 4.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.13.1 released 4-3-2018</p>
