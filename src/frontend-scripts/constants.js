@@ -72,6 +72,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal) => {
 		max: user.userName === 'Max',
 		dfinn: user.userName === 'DFinn',
 		faaiz: user.userName === 'Faaiz1999',
-		invidia: user.userName === 'Invidia'
+		invidia: user.userName === 'Invidia',
+		thejuststopo: user.userName === 'TheJustStopO'
 	});
 };
