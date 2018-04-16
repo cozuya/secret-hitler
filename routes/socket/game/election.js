@@ -1101,7 +1101,7 @@ module.exports.selectVoting = data => {
 		game.private.lock.selectChancellor = false;
 	}
 
-	if (seatedPlayers.length !== seatedPlayers.filter(play => play && play.voteStatus && play.voteStatus.hasVoted).length && player) {
+	if (seatedPlayers.length !== seatedPlayers.filter(play => play && play.voteStatus && play.voteStatus.hasVoted).length && player && player.voteStatus) {
 		player.voteStatus.hasVoted = !player.voteStatus.hasVoted ? true : player.voteStatus.didVoteYes ? !data.vote : data.vote;
 		player.voteStatus.didVoteYes = player.voteStatus.hasVoted ? data.vote : false;
 		game.publicPlayersState[playerIndex].isLoader = !player.voteStatus.hasVoted;
