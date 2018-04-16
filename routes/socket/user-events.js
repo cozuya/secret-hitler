@@ -959,7 +959,7 @@ module.exports.handleUpdatedRemakeGame = data => {
 			case 5:
 				return 4;
 			case 6:
-				return 4;
+				return 5;
 			case 7:
 				return 5;
 			case 8:
