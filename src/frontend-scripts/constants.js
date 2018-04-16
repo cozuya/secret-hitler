@@ -14,10 +14,6 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'MrEth3real'
 ]);
 
-const TRIALMODS = (module.exports.TRIALMODS = [
-	'maki'
-]);
-
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
