@@ -61,12 +61,14 @@ tournament mode
 version 0.12:
 seasonal mode
 
-future:
-(#205) player notes
-(#204) notes enhancements
-(#198) game creator should have extra powers - kick/pause timer/etc
+version 0.13:
+timed mode
+player notifications
 
-version 1.0
-convert to webpack
-all desired features in all bugs fixed
+version 1.0 (future):
+player notes
+turbo mode (forced to social timed mode)
+"pending mod" role
+elo system
+fixes to various glaring issues
 
