@@ -5,6 +5,7 @@ import Linkify from 'react-linkify';
 export const allEmotes = [
 	'BangBang',
 	'BigNose',
+	'CantBeBothered',
 	'CNH',
 	'ExpressionlessFace',
 	'FasCroc',
@@ -47,6 +48,7 @@ export const allEmotes = [
 	'RIP',
 	'RedFace',
 	'RedHeart',
+	'Salty',
 	'SecretHitler',
 	'Shrug',
 	'SillyLib',
