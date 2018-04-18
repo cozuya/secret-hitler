@@ -1,5 +1,5 @@
 module.exports = {
-	number: '0.13.1',
-	color: 'playernotes2',
-	date: '4-3-2018'
+	number: '1.0.0',
+	color: 'v1',
+	date: '5-5-2018'
 };
