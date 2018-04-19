@@ -1214,7 +1214,9 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 			userName: data.userName,
 			chat: [
 				{
-					text: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber].userName}.`
+					text: game.general.blindMode
+						? `A player has pinged player number ${affectedPlayerNumber}.`
+						: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber}).`
 				}
 			],
 			previousSeasonAward: data.previousSeasonAward,

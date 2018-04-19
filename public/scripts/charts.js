@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 	// this page/code is total shit but I would need to get a different graphing library to make it better.
 
 	const processWinrateData = (fascistWinCount, totalGameCount) => {
-		const fWins = Math.round(fascistWinCount / totalGameCount * 100000) / 1000,
-			lWins = Math.round((totalGameCount - fascistWinCount) / totalGameCount * 100000) / 1000;
+		const fWins = Math.round(fascistWinCount / totalGameCount * 100000) / 1000;
+		const lWins = Math.round((totalGameCount - fascistWinCount) / totalGameCount * 100000) / 1000;
 
 		return {
 			series: [fWins, lWins],
@@ -20,10 +20,10 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			});
 
 			setTimeout(() => {
-				const { labels } = data.completedGames,
-					$labels = $('#chart-completed-games .ct-label.ct-horizontal'),
-					showingLabelIndexes = [0, Math.round(labels.length / 4), Math.round(labels.length / 2), Math.round(labels.length / 1.5), labels.length - 1],
-					$shownlabels = $labels.filter(index => showingLabelIndexes.includes(index));
+				const { labels } = data.completedGames;
+				const $labels = $('#chart-completed-games .ct-label.ct-horizontal');
+				const showingLabelIndexes = [0, Math.round(labels.length / 4), Math.round(labels.length / 2), Math.round(labels.length / 1.5), labels.length - 1];
+				const $shownlabels = $labels.filter(index => showingLabelIndexes.includes(index));
 
 				$shownlabels.show(); // barf
 			}, 500);
@@ -107,14 +107,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
 					data.ninePlayerGameData.totalGameCount
 				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p><h2 class="ui header centered">Winrate for 9 player games (rebalanced)</h2><div class="chart" id="chart-nineplayer-rebalanced-games-winrate"></div><p style="text-align: center">Total 9 player rebalanced games played: ${
 					data.ninePlayerGameData.rebalanced2fFascistWinCount
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p><div class="chart" id="chart-nineplayer-rerebalanced-games-winrate"></div><p style="text-align: center">Total 9 player rebalanced2f games played: ${
-					data.ninePlayerGameData.rebalanced2fTotalGameCount
 				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p>`
 			);
 
 			new Chartist.Pie(
-				'#chart-nineplayer-rerebalanced-games-winrate',
-				processWinrateData(data.ninePlayerGameData.rerebalancedFascistWinCount, data.ninePlayerGameData.rerebalancedTotalGameCount),
+				'#chart-nineplayer-rebalanced-games-winrate',
+				processWinrateData(data.ninePlayerGameData.rebalanced2fFascistWinCount, data.ninePlayerGameData.rebalanced2fTotalGameCount),
 				{ width: '400px', height: '400px' }
 			);
 

@@ -74,6 +74,16 @@ export class GamesList extends React.Component {
 						}}
 					/>
 				</div>
+				<div className="three wide column">
+					<i title="Filter by timed mode games" className="hourglass half icon" />
+					<Checkbox
+						toggle
+						checked={this.props.gameFilter.timedMode}
+						onChange={() => {
+							this.toggleFilter('timedMode');
+						}}
+					/>
+				</div>
 				<div className="three wide column iconcolumn">
 					<i title="Filter by standard games" className="standard-icon" />
 					<Checkbox
@@ -104,13 +114,14 @@ export class GamesList extends React.Component {
 		if (gameList.length) {
 			return gameList
 				.filter(game => {
-					const { pub, priv, unstarted, inprogress, completed, rainbow, standard } = this.props.gameFilter;
+					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard } = this.props.gameFilter;
 
 					return !(
 						(game.private && !priv) ||
 						(!game.private && !pub) ||
 						(game.rainbowgame && !rainbow) ||
 						(!game.rainbowgame && !standard) ||
+						(game.timedMode && !timedMode) ||
 						(game.gameStatus === 'notStarted' && !unstarted) ||
 						(game.gameStatus === 'isStarted' && !inprogress) ||
 						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && !completed)
@@ -180,10 +191,10 @@ export class GamesList extends React.Component {
 		return (
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
-					{/* <h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">
-						Season ends {new Date().getTime() < new Date('4-1-2018').getTime() ? moment(new Date('4-1-2018')).fromNow() : 'Welcome to season 2!'}.
-					</h5> */}
-					<h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">Welcome to season 2</h5>
+					<h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">
+						Season ends {new Date().getTime() < new Date('7-1-2018').getTime() ? moment(new Date('7-1-2018')).fromNow() : 'Welcome to season 3'}.
+					</h5>
+					{/* <h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">Welcome to season 2</h5> */}
 				</a>
 				<h3>Game filters</h3>
 				{this.renderFilters()}

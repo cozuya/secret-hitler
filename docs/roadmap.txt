@@ -61,12 +61,27 @@ tournament mode
 version 0.12:
 seasonal mode
 
-future:
-(#205) player notes
-(#204) notes enhancements
-(#198) game creator should have extra powers - kick/pause timer/etc
+version 0.13:
+timed mode
+player notifications
 
-version 1.0
-convert to webpack
-all desired features in all bugs fixed
-
+version 1.0 (future):
+player notes
+	https://github.com/cozuya/secret-hitler/issues/205
+fix to timed mode randomly picking chancellor before its supposed to
+	https://github.com/cozuya/secret-hitler/issues/758
+DONE - fix to pings in blind mode revealing player name
+	https://github.com/cozuya/secret-hitler/issues/777
+turbo mode (forced to social timed mode)
+	https://github.com/cozuya/secret-hitler/issues/760
+"trial mod" role
+	https://github.com/cozuya/secret-hitler/issues/782
+	https://github.com/cozuya/secret-hitler/issues/776
+fix to front end crash when people are moved to final tournament table
+	https://github.com/cozuya/secret-hitler/issues/779
+DONE - new game filter for timed mode games
+	https://github.com/cozuya/secret-hitler/issues/771
+elo system
+	https://github.com/cozuya/secret-hitler/issues/741
+DONE (maybe) - fix to stats page being broken for 9pR
+	https://github.com/cozuya/secret-hitler/issues/658
