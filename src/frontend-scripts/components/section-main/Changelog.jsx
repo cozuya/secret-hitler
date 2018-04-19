@@ -17,8 +17,10 @@ const Changelog = () => (
 				Previous "timed mode" idea credit to player HREmperor who gets orange contributor color. Contribute to this open source product to get it also! ~140
 				open issues on github! -_-
 			</li>
+			<li>There's a new timed mode game filter (funnel icon next to create game button), disable this if you don't want to see timed mode games.</li>
 			<li>Remake messages in chat no longer say what player has voted to remake it.</li>
 			<li>To avoid libs abandoning "lost" games, the remake threshold for 6p games is now 5, up from 4.</li>
+			<li>New emotes: CantBeBothered and Salty, thanks to contributor LordVader.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.13.2 released 4-15-2018</p>

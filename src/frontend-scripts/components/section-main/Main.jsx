@@ -22,6 +22,7 @@ export class Main extends React.Component {
 				unstarted: true,
 				inprogress: true,
 				completed: true,
+				timedMode: true,
 				rainbow: true,
 				standard: true
 			}
