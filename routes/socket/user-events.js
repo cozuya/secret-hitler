@@ -339,48 +339,6 @@ const handleUserLeaveGame = (socket, data) => {
 	sendGameList();
 };
 
-module.exports.handleChangeUsername = (socket, data) => {
-	const { passport } = socket.handshake.session;
-
-	if (!passport) {
-		return;
-	}
-
-	Account.findOne({ username: data }).then(account => {
-		if (account) {
-			socket.emit('failedNameChange', 'That account name already exists.');
-		} else {
-			if (!/^[a-z0-9]+$/i.test(data)) {
-				socket.emit('failedNameChange', 'Sorry, your username can only be alphanumeric.');
-			} else if (data.length < 3) {
-				socket.emit('failedNameChange', 'Sorry, your username is too short.');
-			} else if (data.length > 12) {
-				socket.emit('failedNameChange', 'Sorry, your username is too long.');
-			} else if (/88$/i.test(data)) {
-				socket.emit('failedNameChange', 'Sorry, usernames that end with 88 are not allowed.');
-			} else {
-				Profile.findOne({ username: passport.user }).then(profile => {
-					if (profile) {
-						profile.username = data;
-						profile.save();
-					}
-					Account.findOne({ username: passport.user }).then(oldAccount => {
-						if (oldAccount.gameSettings.hasChangedName) {
-							socket.emit('failedNameChange', 'You have already changed your account name once.');
-						} else {
-							oldAccount.username = data;
-							oldAccount.gameSettings.hasChangedName = true;
-							oldAccount.save(() => {
-								socket.emit('manualDisconnection');
-							});
-						}
-					});
-				});
-			}
-		}
-	});
-};
-
 /**
  * @param {object} socket - user socket reference.
  * @param {object} data - from socket emit.
@@ -1215,8 +1173,8 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 			chat: [
 				{
 					text: game.general.blindMode
-						? `A player has pinged player number ${affectedPlayerNumber}.`
-						: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber}).`
+						? `A player has pinged player number ${affectedPlayerNumber + 1}.`
+						: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber + 1].userName} (${affectedPlayerNumber + 1}).`
 				}
 			],
 			previousSeasonAward: data.previousSeasonAward,
@@ -1662,6 +1620,7 @@ module.exports.handleModerationAction = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handlePlayerReport = data => {
+	console.log(data, 'd');
 	const user = userList.find(u => data.userName === u.userName);
 
 	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2)) {

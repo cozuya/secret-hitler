@@ -102,7 +102,8 @@ const beginGame = game => {
 			rebalance6p: game.general.rebalance6p && game.private.seatedPlayers.length === 6,
 			rebalance7p: game.general.rebalance7p && game.private.seatedPlayers.length === 7,
 			rebalance9p: false,
-			rerebalance9p: game.general.rerebalance9p && game.private.seatedPlayers.length === 9
+			rerebalance9p: game.general.rerebalance9p && game.private.seatedPlayers.length === 9,
+			casualGame: Boolean(game.general.casualGame)
 		},
 		game.private.seatedPlayers.map(p => ({
 			username: p.userName,

@@ -16,6 +16,7 @@ const Game = new Schema({
 	rebalance9p2f: Boolean,
 	isTournyFirstRound: Boolean,
 	isTournySecondRound: Boolean,
+	casualGame: Boolean,
 	chats: Array
 });
 
