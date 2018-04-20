@@ -315,11 +315,6 @@ class Settings extends React.Component {
 							</div>
 							<button className={this.state.profileSearchValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
 						</form>
-						{!gameSettings.hasChangedName && (
-							<button className="ui primary button namechange-button" onClick={namechangeClick}>
-								1-time name change
-							</button>
-						)}
 					</div>
 				</div>
 				<div className="ui grid">

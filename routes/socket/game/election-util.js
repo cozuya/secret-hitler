@@ -18,7 +18,12 @@ module.exports.selectChancellor = data => {
 	const presidentPlayer = game.private.seatedPlayers[presidentIndex];
 	const chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
 
-	if (!game.private.lock.selectChancellor && !Number.isInteger(game.gameState.pendingChancellorIndex) && game.gameState.phase !== 'voting') {
+	if (
+		!game.private.lock.selectChancellor &&
+		!Number.isInteger(game.gameState.pendingChancellorIndex) &&
+		game.gameState.phase !== 'voting' &&
+		game.gameState.phase !== 'enactPolicy'
+	) {
 		game.private.lock.selectChancellor = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 
