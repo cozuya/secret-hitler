@@ -75,6 +75,8 @@ function buildEnhancedGameSummary(_summary) {
 	const isRebalanced =
 		summary.gameSetting.rebalance6p || summary.gameSetting.rebalance7p || summary.gameSetting.rebalance9p || summary.gameSetting.rerebalance9p;
 
+	const casualGame = summary.gameSetting.casualGame;
+
 	// String
 	const winningTeam = (() => {
 		const lastTurn = turns.last();
@@ -161,6 +163,7 @@ function buildEnhancedGameSummary(_summary) {
 		hitlerZone,
 		winningTeam,
 		isRebalanced,
+		casualGame,
 		usernameOf,
 		tagOf,
 		indexOf,

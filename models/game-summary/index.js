@@ -14,7 +14,8 @@ const gameSummary = new Schema({
 		rebalance6p: Boolean,
 		rebalance7p: Boolean,
 		rebalance9p: Boolean,
-		rerebalance9p: Boolean
+		rerebalance9p: Boolean,
+		casualGame: Boolean
 	},
 	players: [
 		{
