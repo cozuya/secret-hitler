@@ -9,15 +9,21 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.13.2 released 4-15-2018</p>
+			<p>Version 0.13.2 released 4-21-2018</p>
 		</div>
-		<h3>New feature: elo system</h3>
+		<h3>New feature: expanded timed mode (turbo mode)</h3>
+		<p>
+			Want to play a super fast game (or tournament)? Timed mode has been changed from 30 second increments to 1 second increments, and the minimum time is now
+			1 second! Important note: as the game clearly wasn't meant to be played this way, timed mode games under 30 seconds are forced to be casual games. Have
+			fun! The display in creategame page has been updated slightly.
+		</p>
+		{/* <h3>New feature: elo system</h3>
 		<p>
 			Where's my winrate, and what's this weird number? There is now an elo system on sh.io. If you don't know what that is, it is number that reflects your
 			weighted winrate. Win a game against other players who collectively have high elo? Your own elo will go up more than if you won a game against low elo
-			players. You'll get it!
+			players. You'll get it! This can be toggled off in player settings and the old win/loss rate will show for you, but give it a shot.
 		</p>
-		<p>Like other similar changes, if you'd rather have the previous winrate-based display and colors, you can disable elo on your settings screen.</p>
+		<p>Like other similar changes, if you'd rather have the previous winrate-based display and colors, you can disable elo on your settings screen.</p> */}
 		<p>Other issues</p>
 		<ul>
 			<li>
@@ -27,6 +33,11 @@ const Changelog = () => (
 			<li>There's a new timed mode game filter (funnel icon next to create game button), disable this if you don't want to see timed mode games.</li>
 			<li>Remake messages in chat no longer say what player has voted to remake it.</li>
 			<li>To avoid libs abandoning "lost" games, the remake threshold for 6p games is now 5, up from 4.</li>
+			<li>
+				The whole remake system that was semi-bugged and needed to be rescinded and then revoted in order to get started on remaking may have been fixed?
+				Somehow? I swear I didn't do anything but it seems to be working as intended now. Please update if not.
+			</li>
+			<li>The stats page works again for 9p rebalanced.</li>
 			<li>The one time name change feature has been removed, didn't work right and wasn't a great idea to begin with.</li>
 			<li>Replays now have the casual game icon when available.</li>
 			<li>New emotes: CantBeBothered and Salty, thanks to contributor LordVader.</li>

@@ -1151,38 +1151,42 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 		(parseInt(chat.charAt(4)) <= game.publicPlayersState.length || chat.substr(4, 5) === '10') &&
 		(!player.pingTime || new Date().getTime() - player.pingTime > 180000)
 	) {
-		const affectedPlayerNumber = parseInt(chat.substr(4, 5) === '10' ? 10 : chat.charAt(4)) - 1;
-		const affectedSocketId = Object.keys(io.sockets.sockets).find(
-			socketId =>
-				io.sockets.sockets[socketId].handshake.session.passport &&
-				io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
-		);
+		try {
+			const affectedPlayerNumber = parseInt(chat.substr(4, 5) === '10' ? 10 : chat.charAt(4)) - 1;
+			const affectedSocketId = Object.keys(io.sockets.sockets).find(
+				socketId =>
+					io.sockets.sockets[socketId].handshake.session.passport &&
+					io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
+			);
 
-		player.pingTime = new Date().getTime();
-		if (!io.sockets.sockets[affectedSocketId]) {
-			return;
+			player.pingTime = new Date().getTime();
+			if (!io.sockets.sockets[affectedSocketId]) {
+				return;
+			}
+			io.sockets.sockets[affectedSocketId].emit(
+				'pingPlayer',
+				game.general.blindMode ? 'Secret Hitler IO: A player has pinged you.' : `Secret Hitler IO: Player ${data.userName} just pinged you.`
+			);
+
+			game.chats.push({
+				gameChat: true,
+				userName: data.userName,
+				chat: [
+					{
+						text: game.general.blindMode
+							? `A player has pinged player number ${affectedPlayerNumber + 1}.`
+							: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber + 1].userName} (${affectedPlayerNumber + 1}).`
+					}
+				],
+				previousSeasonAward: data.previousSeasonAward,
+				uid: data.uid,
+				timestamp: new Date(),
+				inProgress: game.gameState.isStarted
+			});
+			sendInProgressGameUpdate(game);
+		} catch (e) {
+			console.log(e, 'caught exception in ping chat');
 		}
-		io.sockets.sockets[affectedSocketId].emit(
-			'pingPlayer',
-			game.general.blindMode ? 'Secret Hitler IO: A player has pinged you.' : `Secret Hitler IO: Player ${data.userName} just pinged you.`
-		);
-
-		game.chats.push({
-			gameChat: true,
-			userName: data.userName,
-			chat: [
-				{
-					text: game.general.blindMode
-						? `A player has pinged player number ${affectedPlayerNumber + 1}.`
-						: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber + 1].userName} (${affectedPlayerNumber + 1}).`
-				}
-			],
-			previousSeasonAward: data.previousSeasonAward,
-			uid: data.uid,
-			timestamp: new Date(),
-			inProgress: game.gameState.isStarted
-		});
-		sendInProgressGameUpdate(game);
 	} else if (!/^Ping/i.test(chat)) {
 		game.chats.push(data);
 

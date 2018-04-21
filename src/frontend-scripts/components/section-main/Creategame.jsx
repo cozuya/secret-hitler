@@ -1142,6 +1142,14 @@ export default class Creategame extends React.Component {
 	}
 
 	timedSliderChange(timedSliderValue) {
+		console.log(timedSliderValue);
+
+		if (timedSliderValue < 4 && !this.state.casualgame) {
+			// this.setState({
+			// 	casualgame: true
+			// });
+			$(this.casualgame).click();
+		}
 		this.setState({ timedSliderValue });
 	}
 
@@ -1236,6 +1244,7 @@ export default class Creategame extends React.Component {
 							>
 								<input type="checkbox" name="timedmode" defaultChecked={false} />
 							</div>
+							<span className="timed-slider-value">{this.state.timedSliderValue[0]}</span>
 						</div>
 					</div>
 					<div className="row sliderrow">
