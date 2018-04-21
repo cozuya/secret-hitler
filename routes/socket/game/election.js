@@ -232,7 +232,7 @@ const enactPolicy = (game, team) => {
 								break;
 						}
 					}
-				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 100);
 				sendInProgressGameUpdate(game);
 			}
 		} else {
@@ -518,7 +518,7 @@ const selectChancellorVoteOnVeto = data => {
 									userName: president.userName
 								});
 							}
-						}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+						}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 100);
 					}
 				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
 			} else {
@@ -654,7 +654,7 @@ const selectChancellorPolicy = data => {
 									userName: chancellor.userName
 								});
 							}
-						}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+						}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 100);
 					}
 
 					sendInProgressGameUpdate(game);
@@ -800,7 +800,7 @@ const selectPresidentPolicy = data => {
 
 						selectChancellorPolicy(data);
 					}
-				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 100);
 			}
 
 			sendInProgressGameUpdate(game);
@@ -871,7 +871,7 @@ module.exports.selectVoting = data => {
 							uid: game.general.uid
 						});
 					}
-				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 100);
 			}
 
 			setTimeout(() => {
@@ -972,7 +972,7 @@ module.exports.selectVoting = data => {
 							uid: game.general.uid
 						});
 					}
-				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 100);
 			}
 			sendInProgressGameUpdate(game);
 		}, experiencedMode ? 200 : 600);

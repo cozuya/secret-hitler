@@ -32,7 +32,7 @@ export default class Creategame extends React.Component {
 			casualgame: false,
 			blindMode: false,
 			timedMode: false,
-			timedSliderValue: [3]
+			timedSliderValue: [120]
 		};
 	}
 
@@ -136,7 +136,9 @@ export default class Creategame extends React.Component {
 				self.setState({ casualgame: true });
 			},
 			onUnchecked() {
-				self.setState({ casualgame: false });
+				if (!(self.state.casualgame && self.state.timedSliderValue[0] < 29)) {
+					self.setState({ casualgame: false });
+				}
 			}
 		});
 
@@ -1142,12 +1144,7 @@ export default class Creategame extends React.Component {
 	}
 
 	timedSliderChange(timedSliderValue) {
-		console.log(timedSliderValue);
-
-		if (timedSliderValue < 4 && !this.state.casualgame) {
-			// this.setState({
-			// 	casualgame: true
-			// });
+		if (timedSliderValue < 30 && !this.state.casualgame) {
 			$(this.casualgame).click();
 		}
 		this.setState({ timedSliderValue });
@@ -1221,17 +1218,26 @@ export default class Creategame extends React.Component {
 							<div className="sixteen wide column">
 								<Range
 									onChange={this.timedSliderChange}
-									min={1}
-									max={20}
-									defaultValue={[10]}
+									defaultValue={[120]}
 									value={this.state.timedSliderValue}
-									marks={{ 1: '30 seconds', 4: '2 minutes', 10: '5 minutes', 20: '10 minutes' }}
+									min={1}
+									max={600}
+									marks={{ 1: '1 second', 120: '2 minutes', 300: '5 minutes', 600: '10 minutes' }}
 								/>
 							</div>
 						</div>
 					)}
 					<div className="row timedmode-check">
 						<div className="sixteen wide column">
+							{this.state.timedMode && (
+								<span className="timed-slider-value">
+									{(() => {
+										const timeInSeconds = this.state.timedSliderValue[0];
+
+										return `${Math.floor(timeInSeconds / 60)}: ${timeInSeconds % 60 < 10 ? `0${timeInSeconds % 60}` : timeInSeconds % 60}`;
+									})()}
+								</span>
+							)}
 							<i className="big hourglass half icon" />
 							<h4 className="ui header">
 								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
@@ -1244,7 +1250,6 @@ export default class Creategame extends React.Component {
 							>
 								<input type="checkbox" name="timedmode" defaultChecked={false} />
 							</div>
-							<span className="timed-slider-value">{this.state.timedSliderValue[0]}</span>
 						</div>
 					</div>
 					<div className="row sliderrow">

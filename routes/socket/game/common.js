@@ -162,7 +162,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 					uid: game.general.uid
 				});
 			}
-		}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 60000);
+		}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 100);
 	}
 	/* eslint-disable */
 	game.gameState.clickActionInfo =
@@ -172,13 +172,13 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 					seatedPlayers
 						.filter((player, index) => !player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index))
 						.map(el => seatedPlayers.indexOf(el))
-			  ]
+				]
 			: [
 					pendingPresidentPlayer.userName,
 					seatedPlayers
 						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
 						.map(el => seatedPlayers.indexOf(el))
-			  ];
+				];
 	/* eslint-enable */
 	sendInProgressGameUpdate(game);
 };
