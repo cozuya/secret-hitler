@@ -15,7 +15,12 @@ const MODERATORS = (module.exports.MODERATORS = [
 ]);
 
 const TRIALMODS = (module.exports.TRIALMODS = [
-	'Uther'
+	'ZeroCool',
+	'neffni',
+	'waluigiwario',
+	'benjamin172',
+	'Hexicube',
+	'littlebird'
 ]);
 
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
