@@ -14,6 +14,15 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'MrEth3real'
 ]);
 
+const TRIALMODS = (module.exports.TRIALMODS = [
+	'ZeroCool',
+	'neffni',
+	'waluigiwario',
+	'benjamin172',
+	'Hexicube',
+	'littlebird'
+]);
+
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
