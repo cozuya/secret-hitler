@@ -46,7 +46,7 @@ const Changelog = () => (
 				Somehow? I swear I didn't do anything but it seems to be working as intended now. Please update if not.
 			</li>
 			<li>The stats page works again for 9p rebalanced.</li>
-			<li>The one time name change feature has been removed, didn't work right and wasn't a great idea to begin with.</li>
+			<li>The one time name change feature has been removed, didn't work right and it turned out it wasn't a great idea to begin with.</li>
 			<li>Replays now have the casual game icon when available.</li>
 			<li>New emotes: CantBeBothered and Salty, thanks to contributor LordVader.</li>
 		</ul>

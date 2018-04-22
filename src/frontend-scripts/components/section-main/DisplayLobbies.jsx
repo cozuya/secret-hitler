@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS, CURRENTSEASONNUMBER, EDITORS, ADMINS, MODERATORS } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER, EDITORS, ADMINS, MODERATORS, TRIALMODS } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -342,7 +342,7 @@ const DisplayLobbies = props => {
 	};
 
 	const isModerator =
-		userInfo.userName && (EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName));
+		userInfo.userName && (EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || TRIALMODS.includes(userInfo.userName));
 
 	return (
 		<div
