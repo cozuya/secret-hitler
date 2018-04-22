@@ -52,8 +52,8 @@ class Tracks extends React.Component {
 			!gameInfo.gameState.timedModeEnabled &&
 			nextProps.gameInfo.gameState.timedModeEnabled
 		) {
-			let minutes = Math.ceil(gameInfo.general.timedMode) - 1;
-			let seconds = Number.isInteger(gameInfo.general.timedMode) ? 60 : 30;
+			let minutes = Math.floor(gameInfo.general.timedMode / 60);
+			let seconds = gameInfo.general.timedMode % 61;
 			this.intervalId = window.setInterval(() => {
 				if (!seconds) {
 					if (minutes) {
@@ -70,7 +70,7 @@ class Tracks extends React.Component {
 					});
 				} else {
 					this.setState({
-						timedModeTimer: `Action forced in ${minutes}: ${seconds > 9 ? seconds : `0${seconds}`}`
+						timedModeTimer: `Action forced in ${minutes}:${seconds > 9 ? seconds : `0${seconds}`}`
 					});
 				}
 			}, 1000);
@@ -171,10 +171,12 @@ class Tracks extends React.Component {
 			timedMode = (
 				<span>
 					<i className="hourglass half icon" />
-					<span style={{ color: 'peru' }}>{game.timedMode}M</span>
+					<span style={{ color: 'peru' }}>
+						{`${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`}
+					</span>
 				</span>
 			);
-			timedModeTooltip = `Timed Mode: ${game.timedMode} minute(s)`;
+			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
 		}
 
 		return (
@@ -254,7 +256,7 @@ class Tracks extends React.Component {
 							remakeStatusDisabled: false
 						});
 					}
-				}, 2000);
+				}, 15000);
 			}
 		};
 
