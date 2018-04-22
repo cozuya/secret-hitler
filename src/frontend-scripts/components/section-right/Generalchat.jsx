@@ -92,10 +92,10 @@ export default class Generalchat extends React.Component {
 	handleChatScrolled() {
 		const bar = this.scrollbar;
 
-		if (this.state.lock && bar.getValues().top > 0.9) {
+		if (this.state.lock && bar.getValues().top > 0.96) {
 			this.setState({ lock: false });
 			this.scrollbar.scrollToBottom();
-		} else if (!this.state.lock && bar.getValues().top <= 0.9) {
+		} else if (!this.state.lock && bar.getValues().top <= 0.96) {
 			this.setState({ lock: true });
 		}
 	}
@@ -197,7 +197,7 @@ export default class Generalchat extends React.Component {
 							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat, isMod)}</span>
 						</div>
 					);
-				})
+			  })
 			: null;
 	}
 

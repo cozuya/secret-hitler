@@ -18,7 +18,7 @@ const { sendInProgressGameUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
-const { PLAYERCOLORS, MODERATORS, TRIALMODS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
+const { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
 
 /**
  * @param {object} game - game to act on.
@@ -1298,7 +1298,7 @@ module.exports.handleModerationAction = (socket, data) => {
 		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 	);
 
-	if (passport && (MODERATORS.includes(passport.user) || TRIALMODS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
+	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
 		if (data.isReportResolveChange) {
 			PlayerReport.findOne({ _id: data._id })
 				.then(report => {
