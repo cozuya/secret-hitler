@@ -243,7 +243,8 @@ class Gamechat extends React.Component {
 				!EDITORS.includes(userInfo.userName)) ||
 			(isDead && !gameState.isCompleted) ||
 			isGovernmentDuringPolicySelection ||
-			gameInfo.general.disableChat ||
+			(gameInfo.general.disableChat &&
+				!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))) ||
 			(gameInfo.general.private &&
 				!userInfo.isSeated &&
 				!MODERATORS.includes(userInfo.userName) &&
@@ -405,7 +406,7 @@ class Gamechat extends React.Component {
 																ADMINS.includes(playerListPlayer.userName) ||
 																EDITORS.includes(playerListPlayer.userName)
 															) || !(gameSettings && gameSettings.disableSeasonal)
-														)}`
+													  )}`
 													: 'chat-user'
 										: 'chat-user'
 								}
@@ -435,7 +436,7 @@ class Gamechat extends React.Component {
 										? isBlind
 											? `${
 													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
 									: isBlind ? '?' : chat.userName}

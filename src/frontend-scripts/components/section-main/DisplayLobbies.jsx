@@ -158,10 +158,10 @@ const DisplayLobbies = props => {
 			timedMode = (
 				<span style={{ color: 'peru' }}>
 					<i className="hourglass half icon" />
-					{game.timedMode}M
+					{`${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`}
 				</span>
 			);
-			timedModeTooltip = `Timed Mode: ${game.timedMode} minute(s)`;
+			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
 		}
 
 		return (

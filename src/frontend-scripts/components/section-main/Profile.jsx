@@ -3,6 +3,7 @@ import { updateActiveStats, fetchReplay } from '../../actions/actions';
 import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
+import $ from 'jquery';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
@@ -17,8 +18,11 @@ class ProfileWrapper extends React.Component {
 		this.state = {
 			bioStatus: 'displayed',
 			bioValue: '',
-			blacklistClicked: false
+			blacklistClicked: false,
+			blacklistShown: false
 		};
+
+		this.showBlacklist = this.showBlacklist.bind(this);
 	}
 
 	formatDateString(dateString) {
@@ -111,7 +115,12 @@ class ProfileWrapper extends React.Component {
 			onClick: e => {
 				window.location.hash = `/replay/${game._id}`;
 			},
-			cells: [game.loyalty === 'liberal' ? 'Liberal' : 'Fascist', game.isRebalanced ? game.playerSize + 'R' : game.playerSize, game.isWinner ? 'Win' : 'Loss', this.formatDateString(game.date)]
+			cells: [
+				game.loyalty === 'liberal' ? 'Liberal' : 'Fascist',
+				game.isRebalanced ? game.playerSize + 'R' : game.playerSize,
+				game.isWinner ? 'Win' : 'Loss',
+				this.formatDateString(game.date)
+			]
 		}));
 
 		return (
@@ -208,7 +217,7 @@ class ProfileWrapper extends React.Component {
 					blacklistClicked: true
 				},
 				() => {
-					if (gameSettings.blacklist.includes(name)) {
+					if (gameSettings && gameSettings.blacklist.includes(name)) {
 						gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(name), 1);
 					} else {
 						gameSettings.blacklist.push(name);
@@ -225,8 +234,12 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
+	showBlacklist() {
+		$(this.blacklistModal).modal('show');
+	}
+
 	Profile() {
-		const { profile } = this.props;
+		const { profile, userInfo } = this.props;
 
 		return (
 			<div>
@@ -250,6 +263,11 @@ class ProfileWrapper extends React.Component {
 						</span>
 						<span>{this.formatDateString(profile.created)}</span>
 						{profile.lastConnectedIP !== 'no looking' && <p>Last connected IP: {profile.lastConnectedIP}</p>}
+						{userInfo.userName === profile._id && (
+							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
+								Show your blacklist
+							</a>
+						)}
 					</div>
 				</div>
 				{this.renderBio()}
@@ -300,6 +318,31 @@ class ProfileWrapper extends React.Component {
 					<i className="remove icon" />
 				</a>
 				{children}
+				<div
+					className="ui basic small modal blacklistmodal"
+					ref={c => {
+						this.blacklistModal = c;
+					}}
+				>
+					<div className="ui header">Your blacklist</div>
+					{this.props.userInfo.gameSettings &&
+						this.props.userInfo.gameSettings.blacklist.map(playerName => (
+							<div key={playerName} className={`blacklist-${playerName}`}>
+								<i
+									onClick={() => {
+										const { gameSettings } = this.props.userInfo;
+
+										gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(name), 1);
+										this.props.socket.emit('updateGameSettings', gameSettings);
+										$(`.blacklist-${playerName}`).remove(); // lmao.. screw it
+									}}
+									className="large close icon"
+									style={{ cursor: 'pointer' }}
+								/>
+								{playerName}
+							</div>
+						))}
+				</div>
 			</section>
 		);
 	}

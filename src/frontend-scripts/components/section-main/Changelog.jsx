@@ -14,9 +14,10 @@ const Changelog = () => (
 		<h3>New feature: expanded timed mode (turbo mode)</h3>
 		<p>
 			Want to play a super fast game (or tournament)? Timed mode has been changed from 30 second increments to 1 second increments, and the minimum time is now
-			1 second! Important note: as the game clearly wasn't meant to be played this way, timed mode games under 30 seconds are forced to be casual games. Have
-			fun! The display in creategame page has been updated slightly.
+			2 seconds (due to animations, can't be 1 second)! Important note: as the game clearly wasn't meant to be played this way, timed mode games under 30
+			seconds are forced to be casual games. Have fun! The display in creategame page has been updated slightly.
 		</p>
+		<h3>Bug fix: fix to issue with timed mode some times auto choosing chancellor erroneously (I hope, please update if you still see this)</h3>
 		{/* <h3>New feature: elo system</h3>
 		<p>
 			Where's my winrate, and what's this weird number? There is now an elo system on sh.io. If you don't know what that is, it is number that reflects your
@@ -30,8 +31,15 @@ const Changelog = () => (
 				Previous "timed mode" idea credit to player HREmperor who gets orange contributor color. Contribute to this open source product to get it also! 140+
 				open issues on github! -_-
 			</li>
+			<li>
+				In your profile you can now view everyone on your blacklist, and remove them from it as well by clicking the remove icon.{' '}
+				<small>
+					For reasons I'm not going to get into this will not work if you go to your profile from a direct link/when you're not already on the site.
+				</small>
+			</li>
 			<li>There's a new timed mode game filter (funnel icon next to create game button), disable this if you don't want to see timed mode games.</li>
 			<li>Remake messages in chat no longer say what player has voted to remake it.</li>
+			<li>The "cooldown" of the remake button being able to be clicked has been moved from 2 seconds to 15 seconds.</li>
 			<li>To avoid libs abandoning "lost" games, the remake threshold for 6p games is now 5, up from 4.</li>
 			<li>
 				The whole remake system that was semi-bugged and needed to be rescinded and then revoted in order to get started on remaking may have been fixed?
