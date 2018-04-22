@@ -9,13 +9,13 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.13.2 released 4-21-2018</p>
+			<p>Version 0.13.2 released 4-22-2018</p>
 		</div>
 		<h3>New feature: expanded timed mode (turbo mode)</h3>
 		<p>
-			Want to play a super fast game (or tournament)? Timed mode has been changed from 30 second increments to 1 second increments, and the minimum time is now
-			2 seconds (due to animations, can't be 1 second)! Important note: as the game clearly wasn't meant to be played this way, timed mode games under 30
-			seconds are forced to be casual games. Have fun! The display in creategame page has been updated slightly.
+			Want to play a super fast game (or tournament)? The timed mode slider has been changed from 30 second increments to 1 second increments, and the minimum
+			time is now 2 seconds (due to animations, can't be 1 second)! Important note: as the game clearly wasn't meant to be played this way, timed mode games
+			under 30 seconds are forced to be casual games. Have fun! The display in creategame page has been updated slightly.
 		</p>
 		<h3>Bug fix: fix to issue with timed mode some times auto choosing chancellor erroneously (I hope, please update if you still see this)</h3>
 		{/* <h3>New feature: elo system</h3>
@@ -39,7 +39,7 @@ const Changelog = () => (
 			</li>
 			<li>There's a new timed mode game filter (funnel icon next to create game button), disable this if you don't want to see timed mode games.</li>
 			<li>Remake messages in chat no longer say what player has voted to remake it.</li>
-			<li>The "cooldown" of the remake button being able to be clicked has been moved from 2 seconds to 15 seconds.</li>
+			<li>The "cooldown" of the remake button being able to be vote for against remake has been moved from 2 seconds to 10 seconds.</li>
 			<li>To avoid libs abandoning "lost" games, the remake threshold for 6p games is now 5, up from 4.</li>
 			<li>
 				The whole remake system that was semi-bugged and needed to be rescinded and then revoted in order to get started on remaking may have been fixed?
@@ -47,7 +47,8 @@ const Changelog = () => (
 			</li>
 			<li>The stats page works again for 9p rebalanced.</li>
 			<li>The one time name change feature has been removed, didn't work right and it turned out it wasn't a great idea to begin with.</li>
-			<li>Replays now have the casual game icon when available.</li>
+			<li>Replays now show the casual game icon when available.</li>
+			<li>Casual game tournaments no longer award crowns.</li>
 			<li>New emotes: CantBeBothered and Salty, thanks to contributor LordVader.</li>
 		</ul>
 		<div className="ui header">

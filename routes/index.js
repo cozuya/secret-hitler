@@ -128,8 +128,21 @@ module.exports = () => {
 						_profile.bio = account.bio;
 					}
 
-					if (!(MODERATORS.includes(requestingUser) || TRIALMODS.includes(requestingUser) || ADMINS.includes(requestingUser) || EDITORS.includes(requestingUser))) {
+					if (!(MODERATORS.includes(requestingUser) || ADMINS.includes(requestingUser) || EDITORS.includes(requestingUser))) {
 						_profile.lastConnectedIP = 'no looking';
+					}
+
+					if (TRIALMODS.includes(requestingUser)) {
+						try {
+							const tmIP = [];
+
+							tmIP[0] = tmIP[1] = tmIP[2] = 'xxx';
+							tmIP[3] = _profile.lastConnectedIP.split('.')[3];
+
+							_profile.lastConnectedIP = tmIP.join('.');
+						} catch (e) {
+							_profile.lastConnectedIP = 'something went wrong';
+						}
 					}
 					res.json(_profile);
 				});

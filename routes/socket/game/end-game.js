@@ -163,7 +163,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						player[`lossesSeason${currentSeasonNumber}`] = player[`lossesSeason${currentSeasonNumber}`] ? player[`lossesSeason${currentSeasonNumber}`] : 0;
 						winner = true;
 
-						if (isTournamentFinalGame) {
+						if (isTournamentFinalGame && !game.general.casualGame) {
 							player.gameSettings.tournyWins.push(new Date().getTime());
 							const playerSocketId = Object.keys(io.sockets.sockets).find(
 								socketId =>
@@ -212,7 +212,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 									? userEntry[`lossesSeason${currentSeasonNumber}`]
 									: 0;
 
-								if (isTournamentFinalGame) {
+								if (isTournamentFinalGame && !game.general.casualGame) {
 									userEntry.tournyWins.push(new Date().getTime());
 								}
 							} else {
@@ -365,11 +365,13 @@ module.exports.completeGame = (game, winningTeamName) => {
 				sendInProgressGameUpdate(game);
 			}
 		} else {
-			game.publicPlayersState.forEach(player => {
-				if (winningPlayerNames.includes(player.userName)) {
-					player.tournyWins.push(new Date().getTime());
-				}
-			});
+			if (!game.general.casualGame) {
+				game.publicPlayersState.forEach(player => {
+					if (winningPlayerNames.includes(player.userName)) {
+						player.tournyWins.push(new Date().getTime());
+					}
+				});
+			}
 			game.chats.push({
 				gameChat: true,
 				timestamp: new Date(),

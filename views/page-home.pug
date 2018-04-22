@@ -25,6 +25,24 @@ block content
 				.eight.wide.column.news
 					h2(style="color: #000").ui.header News
 					p Issues/bugs can be reported #[a(href="/about") here]. Or come to the discord development channel, or open a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
+					p Version 0.13.2 released 4-22-2018<
+					h3 New feature: expanded timed mode (turbo mode)
+					p Want to play a super fast game (or tournament)? The timed mode slider has been changed from 30 second increments to 1 second increments, and the minimum time is now 2 seconds (due to animations, can't be 1 second)! Important note: as the game clearly wasn't meant to be played this way, timed mode games under 30 seconds are forced to be casual games. Have fun! The display in creategame page has been updated slightly.
+					h3 Bug fix: attempted fix to issue with timed mode some times auto choosing chancellor erroneously.  If this is still happening please update on discord or github - I don't have exact reproduction steps and am kind of shooting in the dark here.
+					p Other issues
+					ul
+						li Previous "timed mode" idea credit to player HREmperor who gets orange contributor color. Contribute to this open source product to get it also! 140+ open issues on github! -_-
+						li In your profile you can now view everyone on your blacklist, and remove them from it as well by clicking the remove icon.
+						li There's a new timed mode game filter (funnel icon next to create game button), disable this if you don't want to see timed mode games.
+						li Remake messages in chat no longer say what player has voted to remake it.
+						li The "cooldown" of the remake button being able to be vote for against remake has been moved from 2 seconds to 10 seconds.
+						li To avoid libs abandoning "lost" games, the remake threshold for 6p games is now 5, up from 4.
+						li The whole remake system that was semi-bugged and needed to be rescinded and then revoted in order to get started on remaking may have been fixed? Somehow? I swear I didn't do anything but it seems to be working as intended now. Please update if not.
+						li The stats page works again for 9p rebalanced, which apparently did almost nothing.
+						li The one time name change feature has been removed, didn't work right and it turned out it wasn't a great idea to begin with.
+						li Replays now show the casual game icon when available.
+						li Casual game tournaments no longer award crowns.
+						li New emotes: CantBeBothered and Salty, thanks to contributor LordVader.
 					p Version 0.13.1 released 4-3-2018
 					h3 New game mode: Timed mode
 					p In a timed mode game, a timer on all actions appears in the lower right part of the fascist board, after which the next action is chosen at random.

@@ -256,7 +256,7 @@ class Tracks extends React.Component {
 							remakeStatusDisabled: false
 						});
 					}
-				}, 15000);
+				}, 10000);
 			}
 		};
 
