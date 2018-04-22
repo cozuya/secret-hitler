@@ -17,7 +17,7 @@ const MODERATORS = (module.exports.MODERATORS = [
 const TRIALMODS = (module.exports.TRIALMODS = [
 	'ZeroCool',
 	'neffni',
-	'waluigiwario',
+	'waluigiwaro',
 	'benjamin172',
 	'Hexicube',
 	'littlebird'
