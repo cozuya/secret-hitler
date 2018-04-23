@@ -1624,7 +1624,6 @@ module.exports.handleModerationAction = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handlePlayerReport = data => {
-	console.log(data, 'd');
 	const user = userList.find(u => data.userName === u.userName);
 
 	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2)) {

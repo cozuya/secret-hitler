@@ -564,6 +564,12 @@ const selectChancellorPolicy = data => {
 	const enactedPolicy = data.policy;
 
 	game.private.lock.selectPresidentPolicy = false;
+
+	if (game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
 	if (
 		!game.private.lock.selectChancellorPolicy &&
 		chancellor &&
@@ -572,11 +578,6 @@ const selectChancellorPolicy = data => {
 		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
 		game.private.lock.selectChancellorPolicy = true;
-
-		if (game.general.timedMode && game.private.timerId) {
-			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
-		}
 
 		if (data.selection === 3) {
 			chancellor.cardFlingerState[0].notificationStatus = '';
@@ -700,6 +701,11 @@ const selectPresidentPolicy = data => {
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
+	if (game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
 	if (
 		!game.private.lock.selectPresidentPolicy &&
 		president &&
@@ -709,11 +715,6 @@ const selectPresidentPolicy = data => {
 		game.publicPlayersState[chancellorIndex] &&
 		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
-		if (game.general.timedMode && game.private.timerId) {
-			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
-		}
-
 		game.private.lock.selectPresidentPolicy = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 		game.publicPlayersState[chancellorIndex].isLoader = true;

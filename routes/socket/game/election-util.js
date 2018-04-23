@@ -18,6 +18,11 @@ module.exports.selectChancellor = data => {
 	const presidentPlayer = game.private.seatedPlayers[presidentIndex];
 	const chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
 
+	if (game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
 	if (
 		!game.private.lock.selectChancellor &&
 		!Number.isInteger(game.gameState.pendingChancellorIndex) &&
@@ -26,11 +31,6 @@ module.exports.selectChancellor = data => {
 	) {
 		game.private.lock.selectChancellor = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
-
-		if (game.general.timedMode && game.private.timerId) {
-			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
-		}
 
 		game.private.summary = game.private.summary.updateLog({
 			chancellorId: chancellorIndex

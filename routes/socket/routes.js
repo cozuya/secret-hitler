@@ -97,7 +97,6 @@ module.exports = () => {
 				handleAddNewGameChat(socket, data);
 			})
 			.on('updateReportGame', data => {
-				console.log(data, 'dd');
 				handleUpdatedReportGame(socket, data);
 			})
 			.on('addNewGame', data => {

@@ -40,14 +40,14 @@ module.exports.selectPolicies = data => {
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
 
+	if (game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
 	if (!game.private.lock.selectPolicies && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectPolicies = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
-
-		if (game.general.timedMode && game.private.timerId) {
-			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
-		}
 
 		if (game.private.policies.length < 3) {
 			shufflePolicies(game);
@@ -183,6 +183,11 @@ module.exports.selectPartyMembershipInvestigate = data => {
 		return;
 	}
 
+	if (game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
 	const { playerIndex } = data;
 	const { experiencedMode } = game.general;
 	const { presidentIndex } = game.gameState;
@@ -192,11 +197,6 @@ module.exports.selectPartyMembershipInvestigate = data => {
 
 	if (!game.private.lock.selectPartyMembershipInvestigate && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectPartyMembershipInvestigate = true;
-
-		if (game.general.timedMode && game.private.timerId) {
-			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
-		}
 
 		if (!seatedPlayers[playerIndex].wasInvestigated) {
 			seatedPlayers[playerIndex].wasInvestigated = true;
@@ -331,13 +331,13 @@ module.exports.selectSpecialElection = data => {
 		return;
 	}
 
+	if (game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
 	if (!game.private.lock.selectSpecialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectSpecialElection = true;
-
-		if (game.general.timedMode && game.private.timerId) {
-			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
-		}
 
 		game.private.summary = game.private.summary.updateLog({
 			specialElection: data.playerIndex
@@ -433,13 +433,13 @@ module.exports.selectPlayerToExecute = data => {
 		]
 	};
 
+	if (game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
 	if (!game.private.lock.selectPlayerToExecute && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectPlayerToExecute = true;
-
-		if (game.general.timedMode && game.private.timerId) {
-			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
-		}
 
 		game.private.summary = game.private.summary.updateLog({
 			execution: playerIndex

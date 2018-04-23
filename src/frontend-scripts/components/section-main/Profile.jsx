@@ -334,7 +334,9 @@ class ProfileWrapper extends React.Component {
 
 										gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(name), 1);
 										this.props.socket.emit('updateGameSettings', gameSettings);
-										$(`.blacklist-${playerName}`).remove(); // lmao.. screw it
+										setTimeout(() => {
+											this.forceUpdate();
+										}, 500);
 									}}
 									className="large close icon"
 									style={{ cursor: 'pointer' }}
