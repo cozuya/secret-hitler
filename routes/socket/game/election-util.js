@@ -23,12 +23,7 @@ module.exports.selectChancellor = data => {
 		game.gameState.timedModeEnabled = game.private.timerId = null;
 	}
 
-	if (
-		!game.private.lock.selectChancellor &&
-		!Number.isInteger(game.gameState.pendingChancellorIndex) &&
-		game.gameState.phase !== 'voting' &&
-		game.gameState.phase !== 'enactPolicy'
-	) {
+	if (!game.private.lock.selectChancellor && !Number.isInteger(game.gameState.pendingChancellorIndex) && game.gameState.phase !== 'voting') {
 		game.private.lock.selectChancellor = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 

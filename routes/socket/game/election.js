@@ -565,7 +565,7 @@ const selectChancellorPolicy = data => {
 
 	game.private.lock.selectPresidentPolicy = false;
 
-	if (game.general.timedMode && game.private.timerId) {
+	if (game.general.timedMode && game.private.timerId && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
 	}
@@ -701,7 +701,15 @@ const selectPresidentPolicy = data => {
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
-	if (game.general.timedMode && game.private.timerId) {
+	if (
+		game.general.timedMode &&
+		game.private.timerId &&
+		president &&
+		president.cardFlingerState &&
+		president.cardFlingerState.length &&
+		Number.isInteger(chancellorIndex) &&
+		game.publicPlayersState[chancellorIndex]
+	) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
 	}
