@@ -8,6 +8,10 @@ const Changelog = () => (
 		<div className="ui header">
 			<h2>Changelog</h2>
 		</div>
+		<p>Other issues</p>
+		<ul>
+			<li>The cooldown for remaking games has been changed to 2 seconds if remake is on, and 10 seconds if remake is off.</li>
+		</ul>
 		<div className="ui header">
 			<p>Version 0.13.2 released 4-22-2018</p>
 		</div>
