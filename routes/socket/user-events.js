@@ -18,6 +18,7 @@ const { sendInProgressGameUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
+const { generateCombination } = require('gfycat-style-urls');
 const { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
 
 /**
@@ -454,64 +455,149 @@ module.exports.handleUpdatedBio = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleAddNewGame = (socket, data) => {
-	if (socket.handshake.session.passport && !gameCreationDisabled.status) {
-		// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
-		const username = socket.handshake.session.passport.user;
-		const user = userList.find(obj => obj.userName === username);
-		const currentTime = new Date();
+	if (!socket.handshake.session.passport || !socket.handshake.session.passport.user || gameCreationDisabled.status) {
+		return;
+	}
 
-		if (!user || currentTime - user.timeLastGameCreated < 8000) {
-			// Check if !user here in case of bug where user doesn't appear on userList
-			return;
+	// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
+	const username = socket.handshake.session.passport.user;
+	const user = userList.find(obj => obj.userName === username);
+	const currentTime = new Date();
+
+	if (!user || currentTime - user.timeLastGameCreated < 8000) {
+		// Check if !user here in case of bug where user doesn't appear on userList
+		return;
+	}
+
+	const newGame = {
+		gameState: {
+			previousElectedGovernment: [],
+			undrawnPolicyCount: 17,
+			discardedPolicyCount: 0,
+			presidentIndex: -1
+		},
+		chats: [],
+		general: {
+			whitelistedPlayers: [],
+			uid: data.isTourny ? `${generateCombination(2, '', true)}Tournament` : generateCombination(2, '', true),
+			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
+			flag: data.flag || 'none',
+			minPlayersCount: typeof data.minPlayersCount === 'number' && data.minPlayersCount > 4 && data.minPlayersCount < 11 ? data.minPlayersCount : 5,
+			gameCreatorName: username,
+			gameCreatorBlacklist: user.blacklist,
+			excludedPlayerCount: data.excludedPlayerCount, // should check this but its minor
+			maxPlayersCount: typeof data.maxPlayersCount === 'number' && data.maxPlayersCount > 4 && data.maxPlayersCount < 11 ? data.maxPlayersCount : 10,
+			status: `Waiting for ${typeof data.minPlayersCount === 'number' ? data.minPlayersCount - 1 : 4} more players..`,
+			experiencedMode: data.experiencedMode,
+			disableChat: data.disableChat,
+			disableObserver: data.disableObserver && !data.isTourny,
+			// isTourny: data.isTourny, // temp
+			isTourny: false,
+			disableGamechat: data.disablegamechat,
+			rainbowGame: user.wins + user.losses > 49 ? data.rainbowGame : false,
+			blindMode: data.blindMode,
+			timedMode: typeof data.timedMode === 'number' && data.timedMode > 2 && data.timedMode < 6001 ? data.timedMode : false,
+			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 && !data.casualGame ? true : data.casualGame,
+			rebalance6p: data.rebalance6p,
+			rebalance7p: data.rebalance7p,
+			rebalance9p2f: data.rebalance9p2f,
+			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : data.privatePassword,
+			privateOnly: user.isPrivate,
+			electionCount: 0
+		},
+		publicPlayersState: [],
+		playersState: [],
+		cardFlingerState: [],
+		trackState: {
+			liberalPolicyCount: 0,
+			fascistPolicyCount: 0,
+			electionTrackerCount: 0,
+			enactedPolicies: []
 		}
+	};
 
-		if (data.general.isTourny) {
-			const { minPlayersCount } = data.general;
-
-			data.general.minPlayersCount = data.general.maxPlayersCount = minPlayersCount === 1 ? 14 : minPlayersCount === 2 ? 16 : 18;
-			data.general.status = `Waiting for ${data.general.minPlayersCount - 1} more players..`;
-			data.chats.push({
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{
-						text: `${username}`,
-						type: 'player'
-					},
-					{
-						text: ` (${data.general.tournyInfo.queuedPlayers.length}/${data.general.maxPlayersCount}) has entered the tournament queue.`
+	if (data.isTourny) {
+		newGame.general.tournyInfo = {
+			round: 0,
+			queuedPlayers: [
+				{
+					userName: username,
+					customCardback: user.customCardback,
+					customCardbackUid: user.customCardbackUid,
+					tournyWins: user.tournyWins,
+					connected: true,
+					cardStatus: {
+						cardDisplayed: false,
+						isFlipped: false,
+						cardFront: 'secretrole',
+						cardBack: {}
 					}
-				]
-			});
-		}
-
-		user.timeLastGameCreated = currentTime;
-
-		Account.findOne({ username }).then(account => {
-			data.private = {
-				reports: {},
-				unSeatedGameChats: [],
-				lock: {}
-			};
-
-			if (data.general.private) {
-				data.private.privatePassword = data.general.private;
-				data.general.private = true;
+				}
+			]
+		};
+	} else {
+		newGame.publicPlayersState = [
+			{
+				userName: username,
+				customCardback: user.customCardback,
+				customCardbackUid: user.customCardbackUid,
+				previousSeasonAward: user.previousSeasonAward,
+				tournyWins: user.tournyWins,
+				connected: true,
+				isPrivate: user.isPrivate,
+				cardStatus: {
+					cardDisplayed: false,
+					isFlipped: false,
+					cardFront: 'secretrole',
+					cardBack: {}
+				}
 			}
+		];
+	}
 
-			if (data.general.rainbowgame) {
-				data.general.rainbowgame = Boolean(account.wins + account.losses > 49);
-			}
-			data.general.timeCreated = currentTime;
-			updateUserStatus(username, data.general.rainbowgame ? 'rainbow' : 'playing', data.general.uid);
-			games.push(data);
-			sendGameList();
-			socket.join(data.general.uid);
-			socket.emit('updateSeatForUser');
-			socket.emit('gameUpdate', data);
-			socket.emit('joinGameRedirect', data.general.uid);
+	if (data.isTourny) {
+		const { minPlayersCount } = newGame.general;
+
+		newGame.general.minPlayersCount = newGame.general.maxPlayersCount = minPlayersCount === 1 ? 14 : minPlayersCount === 2 ? 16 : 18;
+		newGame.general.status = `Waiting for ${newGame.general.minPlayersCount - 1} more players..`;
+		newGame.chats.push({
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: `${username}`,
+					type: 'player'
+				},
+				{
+					text: ` (${data.general.tournyInfo.queuedPlayers.length}/${data.general.maxPlayersCount}) has entered the tournament queue.`
+				}
+			]
 		});
 	}
+
+	user.timeLastGameCreated = currentTime;
+
+	Account.findOne({ username }).then(account => {
+		newGame.private = {
+			reports: {},
+			unSeatedGameChats: [],
+			lock: {}
+		};
+
+		if (newGame.general.private) {
+			newGame.private.privatePassword = newGame.general.private;
+			newGame.general.private = true;
+		}
+
+		newGame.general.timeCreated = currentTime;
+		updateUserStatus(username, newGame.general.rainbowgame ? 'rainbow' : 'playing', newGame.general.uid);
+		games.push(newGame);
+		sendGameList();
+		socket.join(newGame.general.uid);
+		socket.emit('updateSeatForUser');
+		socket.emit('gameUpdate', newGame);
+		socket.emit('joinGameRedirect', newGame.general.uid);
+	});
 };
 
 /**
