@@ -294,6 +294,7 @@ const handleUserLeaveGame = (socket, data) => {
 	const { passport } = socket.handshake.session;
 
 	if (!passport || !passport.user) {
+		return;
 	}
 
 	if (io.sockets.adapter.rooms[data.uid] && socket) {
@@ -301,7 +302,7 @@ const handleUserLeaveGame = (socket, data) => {
 	}
 
 	if (game) {
-		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 		if (playerIndex > -1) {
 			if (game.gameState.isTracksFlipped) {
@@ -311,7 +312,7 @@ const handleUserLeaveGame = (socket, data) => {
 				games.splice(games.indexOf(game), 1);
 			}
 			if (!game.gameState.isTracksFlipped) {
-				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === data.userName), 1);
+				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
 				checkStartConditions(game);
 				io.sockets.in(data.uid).emit('gameUpdate', game);
 			}
@@ -320,8 +321,8 @@ const handleUserLeaveGame = (socket, data) => {
 		if (
 			game.general.isTourny &&
 			game.general.tournyInfo.round === 0 &&
-			socket.handshake.session.passport &&
-			game.general.tournyInfo.queuedPlayers.map(player => player.userName).find(name => name === socket.handshake.session.passport.user)
+			passport &&
+			game.general.tournyInfo.queuedPlayers.map(player => player.userName).find(name => name === passport.user)
 		) {
 			playerLeavePretourny(game, data.userName);
 		}
