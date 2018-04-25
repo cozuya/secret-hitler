@@ -551,7 +551,7 @@ const selectChancellorPolicy = (passport, game, data) => {
 	const president = game.private.seatedPlayers[presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
-	const enactedPolicy = data.policy;
+	const enactedPolicy = game.private.currentChancellorOptions[data.selection === 3 ? 1 : 0];
 
 	if (chancellor.userName !== passport.user) {
 		return;
@@ -691,7 +691,7 @@ const selectPresidentPolicy = (passport, game, data) => {
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
-	if (!presidentPlayer.userName !== passport.user) {
+	if (president.userName !== passport.user) {
 		return;
 	}
 
@@ -740,6 +740,10 @@ const selectPresidentPolicy = (passport, game, data) => {
 		game.private.summary = game.private.summary.updateLog({
 			chancellorHand: handToLog(game.private.currentElectionPolicies.filter((p, i) => i !== data.selection))
 		});
+		game.private.currentChancellorOptions = [
+			game.private.currentElectionPolicies[nonDiscardedPolicies[0]],
+			game.private.currentElectionPolicies[nonDiscardedPolicies[1]]
+		];
 
 		president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;

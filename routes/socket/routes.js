@@ -214,7 +214,7 @@ module.exports = () => {
 				sendUserReports(socket);
 			})
 			.on('updateUserStatus', (type, gameId) => {
-				const game = findGame(data);
+				const game = findGame({uid: gameId});
 				if (authenticated && ensureInGame(passport, game)) {
 					updateUserStatus(passport, game, type);
 				}

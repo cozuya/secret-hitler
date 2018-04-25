@@ -44,12 +44,7 @@ class CardFlinger extends React.Component {
 			if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedChancellorPolicy', {
 					uid: gameInfo.general.uid,
-					selection: index,
-					policy: $(e.currentTarget)
-						.find('.back')
-						.hasClass('liberalp')
-						? 'liberal'
-						: 'fascist'
+					selection: index
 				});
 			}
 
