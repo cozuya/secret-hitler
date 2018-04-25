@@ -30,14 +30,12 @@ class CardFlinger extends React.Component {
 			if (phase === 'voting' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedVoting', {
 					vote: index === 1,
-					userName: this.props.userInfo.userName,
 					uid: gameInfo.general.uid
 				});
 			}
 
 			if (phase === 'presidentSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedPresidentPolicy', {
-					userName: this.props.userInfo.userName,
 					uid: gameInfo.general.uid,
 					selection: index ? (index === 2 ? 1 : 2) : 0
 				});
@@ -45,7 +43,6 @@ class CardFlinger extends React.Component {
 
 			if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedChancellorPolicy', {
-					userName: this.props.userInfo.userName,
 					uid: gameInfo.general.uid,
 					selection: index,
 					policy: $(e.currentTarget)
@@ -59,7 +56,6 @@ class CardFlinger extends React.Component {
 			if (phase === 'chancellorVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedChancellorVoteOnVeto', {
 					vote: index === 1,
-					userName: this.props.userInfo.userName,
 					uid: gameInfo.general.uid
 				});
 			}
@@ -67,7 +63,6 @@ class CardFlinger extends React.Component {
 			if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedPresidentVoteOnVeto', {
 					vote: index === 1,
-					userName: this.props.userInfo.userName,
 					uid: gameInfo.general.uid
 				});
 			}

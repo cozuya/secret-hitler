@@ -94,6 +94,8 @@ module.exports.sendUserGameSettings = socket => {
 		.then(account => {
 			socket.emit('gameSettings', account.gameSettings);
 
+			const userListNames = userList.map(user => user.userName);
+
 			getProfile(passport.user);
 			if (!userListNames.includes(passport.user)) {
 				const userListInfo = {
@@ -257,15 +259,17 @@ const sendUserList = (module.exports.sendUserList = socket => {
 });
 
 /**
- * @param {string} username - name of updating user.
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {string} type - type of user status to be displayed.
- * @param {string} gameId - uid of game that user is displaying if applicable.
  */
-const updateUserStatus = (module.exports.updateUserStatus = (username, type, gameId) => {
-	const user = userList.find(user => user.userName === username);
+const updateUserStatus = (module.exports.updateUserStatus = (passport, game, type) => {
+	const user = userList.find(user => user.userName === passport.user);
 
 	if (user) {
-		user.status = { type, gameId };
+		user.status = {
+			type, gameId: game.general.uid
+		};
 		sendUserList();
 	}
 });

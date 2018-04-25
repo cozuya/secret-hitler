@@ -473,23 +473,23 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		// Check if !user here in case of bug where user doesn't appear on userList
 		return;
 	}
-	
+
 	// Make sure it exists
-	if(!data) return;
-	
-	var a;
-	var playerCounts = [];
-	for(a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
-		if(!data.excludedPlayerCount.includes(a)) playerCounts.push(a);
+	if (!data) return;
+
+	let a;
+	let playerCounts = [];
+	for (a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
+		if (!data.excludedPlayerCount.includes(a)) playerCounts.push(a);
 	}
-	if(playerCounts.length == 0) {
+	if (playerCounts.length === 0) {
 		// Someone is messing with the data, ignore it
 		return;
 	}
-	
-	var excludes = [];
-	for(a = playerCounts[0]; a <= playerCounts[playerCounts.length-1]; a++) {
-		if(!playerCounts.includes(a)) excludes.push(a);
+
+	let excludes = [];
+	for (a = playerCounts[0]; a <= playerCounts[playerCounts.length-1]; a++) {
+		if (!playerCounts.includes(a)) excludes.push(a);
 	}
 
 	const newGame = {
@@ -504,7 +504,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			whitelistedPlayers: [],
 			uid: data.isTourny ? `${generateCombination(2, '', true)}Tournament` : generateCombination(2, '', true),
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
-			flag: data.flag || 'none', //TODO: verify that the flag exists, or that an invalid flag does not cause issues
+			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
 			gameCreatorName: user.userName,
 			gameCreatorBlacklist: user.blacklist,
@@ -1013,16 +1013,14 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-module.exports.handleUpdatedRemakeGame = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-	if (!game) {
-		return;
-	}
+module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { publicPlayersState } = game;
-	const playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName);
+	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = publicPlayersState[playerIndex];
 
 	/**
@@ -1341,7 +1339,7 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  */
 module.exports.handleNewGeneralChat = (socket, passport, data) => {
     // Authentication Assured in routes.js
-	const user = userList.find(u => passport.user === u.userName);
+	const user = userList.find(u => u.userName === passport.user);
 
 	if (data.chat.length > 300 || !data.chat.trim().length || !user || user.isPrivate) {
 		return;
@@ -1748,10 +1746,11 @@ module.exports.handleModerationAction = (socket, passport, data) => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handlePlayerReport = data => {
-	const user = userList.find(u => data.userName === u.userName);
+module.exports.handlePlayerReport = (passport, data) => {
+	const user = userList.find(u => data.userName === passport.user);
 
 	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2)) {
 		return;
@@ -1761,7 +1760,7 @@ module.exports.handlePlayerReport = data => {
 	const playerReport = new PlayerReport({
 		date: new Date(),
 		gameUid: data.uid,
-		reportingPlayer: data.userName,
+		reportingPlayer: passport.user,
 		reportedPlayer: data.reportedPlayer,
 		reason: data.reason,
 		gameType: data.gameType,

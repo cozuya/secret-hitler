@@ -8,7 +8,7 @@ const { sendInProgressGameUpdate } = require('../util');
  */
 module.exports.selectChancellor = (socket, passport, game, data) => {
 	if ((game.general.isTourny && game.general.tournyInfo.isCancelled) ||
-		data.chancellorIndex < game.general.playerCount) {
+		data.chancellorIndex > game.general.playerCount) {
 		return;
 	}
 
@@ -18,6 +18,10 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 	const seatedPlayers = game.private.seatedPlayers.filter(player => !player.isDead);
 	const presidentPlayer = game.private.seatedPlayers[presidentIndex];
 	const chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
+
+	if (!presidentPlayer.userName !== passport.user) {
+		return;
+	}
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);

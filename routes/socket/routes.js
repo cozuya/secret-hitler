@@ -63,8 +63,12 @@ const ensureAuthenticated = socket => {
 	return false;
 };
 
+const findGame = (data) => {
+	return games.find(el => el.general.uid === data.uid);
+};
+
 const ensureInGame = (passport, game) => {
-	if (game) {
+	if (game && game.gameState) {
 		const player = game.publicPlayersState.find(player => player.userName === passport.user);
 		if (player) {
 			return true;
@@ -106,17 +110,17 @@ module.exports = () => {
 			})
 			.on('updateModAction', data => {
 				if (authenticated) {
-					handleModerationAction(socket, data);
+					handleModerationAction(socket, passport, data);
 				}
 			})
 			.on('addNewClaim', data => {
-				const game = games.find(el => el.general.uid === data.uid);
+				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					handleAddNewClaim(passport, game, data);
 				}
 			})
 			.on('updateGameWhitelist', data => {
-				const game = games.find(el => el.general.uid === data.uid);
+				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					handleUpdateWhitelist(passport, game, data);
 				}
@@ -144,11 +148,11 @@ module.exports = () => {
 			})
 			.on('addNewGeneralChat', data => {
 				if (authenticated) {
-					handleNewGeneralChat(socket, data);
+					handleNewGeneralChat(socket, passport, data);
 				}
 			})
 			.on('leaveGame', data => {
-				const game = games.find(el => el.general.uid === data.uid);
+				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					handleUserLeaveGame(socket, passport, game, data);
 				}
@@ -159,13 +163,18 @@ module.exports = () => {
 				}
 			})
 			.on('playerReport', data => {
-				handlePlayerReport(data);
+				if (authenticated) {
+					handlePlayerReport(passport, data);
+				}
 			})
 			.on('playerReportDismiss', () => {
 				handlePlayerReportDismiss();
 			})
 			.on('updateRemake', data => {
-				handleUpdatedRemakeGame(data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleUpdatedRemakeGame(passport, game, data);
+				}
 			})
 			.on('updateBio', data => {
 				if (authenticated) {
@@ -193,17 +202,21 @@ module.exports = () => {
 				sendUserGameSettings(socket);
 			})
 			.on('selectedChancellorVoteOnVeto', data => {
-				selectChancellorVoteOnVeto(data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectChancellorVoteOnVeto(game, data);
+				}
 			})
-			.on('getModInfo', count => {
+			.on('getModInfo', count => { // I cant tell if this needs to be secure or not
 				sendModInfo(socket, count);
 			})
-			.on('getUserReports', () => {
+			.on('getUserReports', () => { // This one too
 				sendUserReports(socket);
 			})
 			.on('updateUserStatus', (type, gameId) => {
-				if (socket.handshake.session.passport && socket.handshake.session.passport.user) {
-					updateUserStatus(socket.handshake.session.passport.user, type, gameId);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					updateUserStatus(passport, game, type);
 				}
 			})
 			.on('getReplayGameChats', uid => {
@@ -212,32 +225,53 @@ module.exports = () => {
 			// election
 
 			.on('presidentSelectedChancellor', data => {
-				const game = games.find(el => el.general.uid === data.uid);
+				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellor(socket, passport, game, data);
 				}
 			})
 			.on('selectedVoting', data => {
-				selectVoting(socket, data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectVoting(passport, game, data);
+				}
 			})
 			.on('selectedPresidentPolicy', data => {
-				selectPresidentPolicy(data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPresidentPolicy(passport, game, data);
+				}
 			})
 			.on('selectedChancellorPolicy', data => {
-				selectChancellorPolicy(data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectChancellorPolicy(passport, game, data);
+				}
 			})
 			.on('selectedPresidentVoteOnVeto', data => {
-				selectPresidentVoteOnVeto(data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPresidentVoteOnVeto(passport, game, data);
+				}
 			})
 			// policy-powers
 			.on('selectPartyMembershipInvestigate', data => {
-				selectPartyMembershipInvestigate(data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPartyMembershipInvestigate(passport, game, data);
+				}
 			})
 			.on('selectedPolicies', data => {
-				selectPolicies(data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPolicies(data);
+				}
 			})
 			.on('selectedPlayerToExecute', data => {
-				selectPlayerToExecute(data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPlayerToExecute(data);
+				}
 			})
 			.on('selectedSpecialElection', data => {
 				selectSpecialElection(data);
