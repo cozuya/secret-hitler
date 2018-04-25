@@ -1147,7 +1147,8 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
 
 	if (
-        pinged && player &&
+		pinged && 
+		player &&
 		game.gameState.isStarted &&
 		(parseInt(pinged[1]) <= game.publicPlayersState.length) &&
 		(!player.pingTime || new Date().getTime() - player.pingTime > 180000)
