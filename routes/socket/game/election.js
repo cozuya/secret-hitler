@@ -306,7 +306,7 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 					{
 						text: game.general.blindMode
 							? `{${game.private.seatedPlayers.indexOf(president) + 1}}`
-							: `${data.userName} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
+							: `${passport.user} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
 						type: 'player'
 					},
 					{
@@ -434,7 +434,7 @@ const selectChancellorVoteOnVeto = (game, data) => {
 				chat: [
 					{ text: 'Chancellor ' },
 					{
-						text: game.general.blindMode ? `{${chancellorIndex + 1}}` : `${data.userName} {${chancellorIndex + 1}}`,
+						text: game.general.blindMode ? `{${chancellorIndex + 1}}` : `${passport.user} {${chancellorIndex + 1}}`,
 						type: 'player'
 					},
 					{
@@ -586,7 +586,7 @@ const selectChancellorPolicy = (passport, game, data) => {
 		chancellor.cardFlingerState[0].cardStatus.isFlipped = chancellor.cardFlingerState[1].cardStatus.isFlipped = false;
 
 		if (game.gameState.isVetoEnabled) {
-			game.private.currentElectionPolicies = [data.policy];
+			game.private.currentElectionPolicies = [enactedPolicy];
 			game.general.status = 'Chancellor to vote on policy veto.';
 			sendInProgressGameUpdate(game);
 
