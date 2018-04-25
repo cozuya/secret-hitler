@@ -53,6 +53,27 @@ const gamesGarbageCollector = () => {
 	sendGameList();
 };
 
+const ensureAuthenticated = (socket) => {
+	if (socket.handshake && socket.handshake.session) {
+        const { passport } = socket.handshake.session;
+        if (passport && passport.user && Object.keys(passport).length) {
+			return true;
+		}
+	}
+	return false;
+};
+
+const ensureIngame = (passport, uid) => {
+    const game = games.find(el => el.general.uid === uid);
+    if (game) {
+        const player = game.publicPlayersState.find(player => player.userName === passport.user);
+        if (player) {
+			return true;
+		}
+	}
+	return false;
+};
+
 module.exports = () => {
 	setInterval(gamesGarbageCollector, 100000);
 
@@ -72,6 +93,9 @@ module.exports = () => {
 			}
 		});
 
+        const { passport } = socket.handshake.session;
+        const authenticated = ensureAuthenticated(socket);
+
 		socket
 			// user-events
 
@@ -82,37 +106,55 @@ module.exports = () => {
 				handleUpdatedPlayerNote(socket, data);
 			})
 			.on('updateModAction', data => {
-				handleModerationAction(socket, data);
+				if (authenticated) {
+                    handleModerationAction(socket, data);
+				}
 			})
 			.on('addNewClaim', data => {
-				handleAddNewClaim(data);
+				if (authenticated && ensureIngame(passport, data.uid)) {
+                    handleAddNewClaim(passport, data);
+				}
 			})
 			.on('updateGameWhitelist', data => {
-				handleUpdateWhitelist(data);
+                if (authenticated && ensureIngame(passport, data.uid)) {
+                    handleUpdateWhitelist(passport, data);
+                }
 			})
 			.on('updateTruncateGame', data => {
 				handleUpdatedTruncateGame(data);
 			})
 			.on('addNewGameChat', data => {
-				handleAddNewGameChat(socket, data);
+                if (authenticated) {
+                    handleAddNewGameChat(socket, passport, data);
+                }
 			})
 			.on('updateReportGame', data => {
 				handleUpdatedReportGame(socket, data);
 			})
 			.on('addNewGame', data => {
-				handleAddNewGame(socket, data);
+				if (authenticated) {
+                    handleAddNewGame(socket, passport, data);
+				}
 			})
 			.on('updateGameSettings', data => {
-				handleUpdatedGameSettings(socket, data);
+				if (authenticated) {
+                    handleUpdatedGameSettings(socket, data);
+				}
 			})
 			.on('addNewGeneralChat', data => {
-				handleNewGeneralChat(socket, data);
+				if (authenticated) {
+                    handleNewGeneralChat(socket, data);
+				}
 			})
 			.on('leaveGame', data => {
-				handleUserLeaveGame(socket, data);
+                if (authenticated && ensureIngame(passport, data.uid)) {
+                    handleUserLeaveGame(socket, passport, data);
+                }
 			})
 			.on('updateSeatedUser', data => {
-				updateSeatedUser(socket, data);
+				if (authenticated) {
+                    updateSeatedUser(socket, passport, data);
+				}
 			})
 			.on('playerReport', data => {
 				handlePlayerReport(data);
@@ -124,7 +166,9 @@ module.exports = () => {
 				handleUpdatedRemakeGame(data);
 			})
 			.on('updateBio', data => {
-				handleUpdatedBio(socket, data);
+				if (authenticated) {
+                    handleUpdatedBio(socket, passport, data);
+				}
 			})
 			// user-requests
 

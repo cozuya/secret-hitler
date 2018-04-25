@@ -94,7 +94,7 @@ module.exports.sendUserGameSettings = socket => {
 		.then(account => {
 			socket.emit('gameSettings', account.gameSettings);
 
-			getProfile(username);
+			getProfile(passport.user);
 
 			socket.emit('version', {
 				current: version,

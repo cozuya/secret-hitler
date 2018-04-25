@@ -12,10 +12,10 @@ module.exports.selectChancellor = (socket, data) => {
 		!game ||
 		!game.gameState ||
 		!game.private.seatedPlayers ||
-		!socket.passport.handshake.session ||
-		!game.publicPlayersState.find(player => player.userName === socket.passport.handshake.session).length ||
+		!socket.handshake.session.passport ||
+		!game.publicPlayersState.find(player => player.userName === socket.handshake.session.passport.user) ||
 		((game.general.isTourny && game.general.tournyInfo.isCancelled) ||
-			data.chancellorIndex < game.generel.minPlayersCount ||
+			data.chancellorIndex < game.general.minPlayersCount ||
 			data.chancellorIndex > game.general.maxPlayersCount)
 	) {
 		return;
