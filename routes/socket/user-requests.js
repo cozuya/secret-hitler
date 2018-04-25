@@ -95,6 +95,33 @@ module.exports.sendUserGameSettings = socket => {
 			socket.emit('gameSettings', account.gameSettings);
 
 			getProfile(passport.user);
+			if (!userListNames.includes(passport.user)) {
+				const userListInfo = {
+					userName: passport.user,
+					wins: account.wins,
+					losses: account.losses,
+					rainbowWins: account.rainbowWins,
+					rainbowLosses: account.rainbowLosses,
+					isPrivate: account.gameSettings.isPrivate,
+					tournyWins: account.gameSettings.tournyWins,
+					blacklist: account.gameSettings.blacklist,
+					customCardback: account.gameSettings.customCardback,
+					customCardbackUid: account.gameSettings.customCardbackUid,
+					previousSeasonAward: account.gameSettings.previousSeasonAward,
+					status: {
+						type: 'none',
+						gameId: null
+					}
+				};
+
+				userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
+				userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
+				userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
+				userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+				userList.push(userListInfo);
+			}
+
+			getProfile(passport.user);
 
 			socket.emit('version', {
 				current: version,

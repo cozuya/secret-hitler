@@ -63,8 +63,7 @@ const ensureAuthenticated = socket => {
 	return false;
 };
 
-const ensureIngame = (passport, uid) => {
-	const game = games.find(el => el.general.uid === uid);
+const ensureInGame = (passport, game) => {
 	if (game) {
 		const player = game.publicPlayersState.find(player => player.userName === passport.user);
 		if (player) {
@@ -111,13 +110,15 @@ module.exports = () => {
 				}
 			})
 			.on('addNewClaim', data => {
-				if (authenticated && ensureIngame(passport, data.uid)) {
-					handleAddNewClaim(passport, data);
+				const game = games.find(el => el.general.uid === data.uid);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleAddNewClaim(passport, game, data);
 				}
 			})
 			.on('updateGameWhitelist', data => {
-				if (authenticated && ensureIngame(passport, data.uid)) {
-					handleUpdateWhitelist(passport, data);
+				const game = games.find(el => el.general.uid === data.uid);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleUpdateWhitelist(passport, game, data);
 				}
 			})
 			.on('updateTruncateGame', data => {
@@ -147,8 +148,9 @@ module.exports = () => {
 				}
 			})
 			.on('leaveGame', data => {
-				if (authenticated && ensureIngame(passport, data.uid)) {
-					handleUserLeaveGame(socket, passport, data);
+				const game = games.find(el => el.general.uid === data.uid);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleUserLeaveGame(socket, passport, game, data);
 				}
 			})
 			.on('updateSeatedUser', data => {
@@ -210,7 +212,10 @@ module.exports = () => {
 			// election
 
 			.on('presidentSelectedChancellor', data => {
-				selectChancellor(socket, data);
+				const game = games.find(el => el.general.uid === data.uid);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectChancellor(socket, passport, game, data);
+				}
 			})
 			.on('selectedVoting', data => {
 				selectVoting(socket, data);
