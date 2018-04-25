@@ -1346,6 +1346,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data) => {
 			time: new Date(),
 			color,
 			seasonColor,
+			chat: data.chat,
 			userName: passport.user
 		};
 

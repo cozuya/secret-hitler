@@ -8,7 +8,14 @@ const Changelog = () => (
 		<div className="ui header">
 			<h2>Changelog</h2>
 		</div>
-		<p>Other issues</p>
+		<div className="ui header">
+			<p>Version 0.13.3 released 4-24-2018</p>
+		</div>
+		<h3>Security update</h3>
+		<p>
+			It was brought to my attention that there's some issues with security around certain actions. This update has addressed these issues. Its important to
+			note that these were game related issues, not account: your password is secure and not visible by anyone including me.
+		</p>
 		<ul>
 			<li>The cooldown for remaking games has been changed to 2 seconds if remake is on, and 10 seconds if remake is off.</li>
 		</ul>
