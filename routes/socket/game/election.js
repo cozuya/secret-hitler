@@ -13,7 +13,6 @@ const {
 	selectSpecialElection
 } = require('./policy-powers');
 const { completeGame } = require('./end-game');
-const { games } = require('../models');
 const _ = require('lodash');
 
 /**
@@ -246,20 +245,20 @@ const enactPolicy = (game, team) => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - socket emit
  */
-const selectPresidentVoteOnVeto = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (!game || !game.gameState) {
-		return;
-	}
-
+const selectPresidentVoteOnVeto = (passport, game, data) => {
 	const { experiencedMode } = game.general;
 	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 	const publicChancellor = game.publicPlayersState[chancellorIndex];
 	const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
+
+	if (president.userName !== passport.user) {
+		return;
+	}
 
 	game.private.summary = game.private.summary.updateLog({
 		presidentVeto: data.vote
@@ -307,7 +306,7 @@ const selectPresidentVoteOnVeto = data => {
 					{
 						text: game.general.blindMode
 							? `{${game.private.seatedPlayers.indexOf(president) + 1}}`
-							: `${data.userName} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
+							: `${passport.user} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
 						type: 'player'
 					},
 					{
@@ -380,15 +379,10 @@ const selectPresidentVoteOnVeto = data => {
 module.exports.selectPresidentVoteOnVeto = selectPresidentVoteOnVeto;
 
 /**
+ * @param {object} game - target game.
  * @param {object} data - socket emit
  */
-const selectChancellorVoteOnVeto = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (!game || !game.gameState) {
-		return;
-	}
-
+const selectChancellorVoteOnVeto = (game, data) => {
 	const { experiencedMode } = game.general;
 	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
@@ -440,7 +434,7 @@ const selectChancellorVoteOnVeto = data => {
 				chat: [
 					{ text: 'Chancellor ' },
 					{
-						text: game.general.blindMode ? `{${chancellorIndex + 1}}` : `${data.userName} {${chancellorIndex + 1}}`,
+						text: game.general.blindMode ? `{${chancellorIndex + 1}}` : `${passport.user} {${chancellorIndex + 1}}`,
 						type: 'player'
 					},
 					{
@@ -547,21 +541,21 @@ const handToLog = hand =>
 	);
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - socket emit
  */
-const selectChancellorPolicy = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (!game || !game.gameState) {
-		return;
-	}
-
+const selectChancellorPolicy = (passport, game, data) => {
 	const { experiencedMode } = game.general;
 	const presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPresident');
 	const president = game.private.seatedPlayers[presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
-	const enactedPolicy = data.policy;
+	const enactedPolicy = game.private.currentChancellorOptions[data.selection === 3 ? 1 : 0];
+
+	if (chancellor.userName !== passport.user) {
+		return;
+	}
 
 	game.private.lock.selectPresidentPolicy = false;
 
@@ -592,7 +586,7 @@ const selectChancellorPolicy = data => {
 		chancellor.cardFlingerState[0].cardStatus.isFlipped = chancellor.cardFlingerState[1].cardStatus.isFlipped = false;
 
 		if (game.gameState.isVetoEnabled) {
-			game.private.currentElectionPolicies = [data.policy];
+			game.private.currentElectionPolicies = [enactedPolicy];
 			game.general.status = 'Chancellor to vote on policy veto.';
 			sendInProgressGameUpdate(game);
 
@@ -686,20 +680,20 @@ const selectChancellorPolicy = data => {
 module.exports.selectChancellorPolicy = selectChancellorPolicy;
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - socket emit
  */
-const selectPresidentPolicy = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (!game || !game.gameState) {
-		return;
-	}
-
+const selectPresidentPolicy = (passport, game, data) => {
 	const { presidentIndex } = game.gameState;
 	const president = game.private.seatedPlayers[presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
+
+	if (president.userName !== passport.user) {
+		return;
+	}
 
 	if (
 		game.general.timedMode &&
@@ -746,6 +740,10 @@ const selectPresidentPolicy = data => {
 		game.private.summary = game.private.summary.updateLog({
 			chancellorHand: handToLog(game.private.currentElectionPolicies.filter((p, i) => i !== data.selection))
 		});
+		game.private.currentChancellorOptions = [
+			game.private.currentElectionPolicies[nonDiscardedPolicies[0]],
+			game.private.currentElectionPolicies[nonDiscardedPolicies[1]]
+		];
 
 		president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
@@ -820,21 +818,15 @@ const selectPresidentPolicy = data => {
 module.exports.selectPresidentPolicy = selectPresidentPolicy;
 
 /**
- * @param {object} socket socket reference
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data from socket emit
  */
-module.exports.selectVoting = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
-	const { passport } = socket.handshake.session;
-
-	if (!passport || !game) {
-		return;
-	}
-
+module.exports.selectVoting = (passport, game, data) => {
 	const { seatedPlayers } = game.private;
 	const { experiencedMode } = game.general;
 	const player = seatedPlayers.find(player => player.userName === passport.user);
-	const playerIndex = seatedPlayers.findIndex(play => play.userName === data.userName);
+	const playerIndex = seatedPlayers.findIndex(play => play.userName === passport.user);
 	const failedElection = () => {
 		game.trackState.electionTrackerCount++;
 

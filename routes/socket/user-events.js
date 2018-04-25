@@ -287,59 +287,55 @@ if (process.env.NODE_ENV === 'production') {
 
 /**
  * @param {object} socket - user socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-const handleUserLeaveGame = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
-	const { passport } = socket.handshake.session;
+const handleUserLeaveGame = (socket, passport, game, data) => {
+    // Authentication Assured in routes.js
+    // In-game Assured in routes.js
 
-	if (!passport || !passport.user) {
-		return;
+	if (io.sockets.adapter.rooms[game.general.uid] && socket) {
+		socket.leave(game.general.uid);
 	}
 
-	if (io.sockets.adapter.rooms[data.uid] && socket) {
-		socket.leave(data.uid);
-	}
+	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
-	if (game) {
-		const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
-
-		if (playerIndex > -1) {
-			if (game.gameState.isTracksFlipped) {
-				game.publicPlayersState[playerIndex].leftGame = true;
-			}
-			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-				games.splice(games.indexOf(game), 1);
-			}
-			if (!game.gameState.isTracksFlipped) {
-				game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
-				checkStartConditions(game);
-				io.sockets.in(data.uid).emit('gameUpdate', game);
-			}
+	if (playerIndex > -1) {
+		if (game.gameState.isTracksFlipped) {
+			game.publicPlayersState[playerIndex].leftGame = true;
 		}
-
-		if (
-			game.general.isTourny &&
-			game.general.tournyInfo.round === 0 &&
-			passport &&
-			game.general.tournyInfo.queuedPlayers.map(player => player.userName).find(name => name === passport.user)
-		) {
-			playerLeavePretourny(game, data.userName);
-		}
-
-		if (
-			(!game.publicPlayersState.length && !(game.general.isTourny && game.general.tournyInfo.round === 0)) ||
-			(game.general.isTourny && game.general.tournyInfo.round === 0 && !game.general.tournyInfo.queuedPlayers.length)
-		) {
-			io.sockets.in(data.uid).emit('gameUpdate', {});
+		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 			games.splice(games.indexOf(game), 1);
-		} else if (game.gameState.isTracksFlipped) {
-			sendInProgressGameUpdate(game);
 		}
+		if (!game.gameState.isTracksFlipped) {
+			game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
+			checkStartConditions(game);
+			io.sockets.in(game.general.uid).emit('gameUpdate', game);
+		}
+	}
+
+	if (
+		game.general.isTourny &&
+		game.general.tournyInfo.round === 0 &&
+		passport &&
+		game.general.tournyInfo.queuedPlayers.map(player => player.userName).find(name => name === passport.user)
+	) {
+		playerLeavePretourny(game, passport.user);
+	}
+
+	if (
+		(!game.publicPlayersState.length && !(game.general.isTourny && game.general.tournyInfo.round === 0)) ||
+		(game.general.isTourny && game.general.tournyInfo.round === 0 && !game.general.tournyInfo.queuedPlayers.length)
+	) {
+		io.sockets.in(game.general.uid).emit('gameUpdate', {});
+		games.splice(games.indexOf(game), 1);
+	} else if (game.gameState.isTracksFlipped) {
+		sendInProgressGameUpdate(game);
 	}
 
 	if (!data.isRemake) {
-		updateUserStatus(passport.user, 'none', data.uid);
+		updateUserStatus(passport.user, 'none', game.general.uid);
 		socket.emit('gameUpdate', {});
 	}
 	sendGameList();
@@ -371,116 +367,129 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
 };
 /**
  * @param {object} socket - user socket reference.
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.updateSeatedUser = (socket, data) => {
+module.exports.updateSeatedUser = (socket, passport, data) => {
+    // Authentication Assured in routes.js
+    // In-game Assured in routes.js
 	const game = games.find(el => el.general.uid === data.uid);
 	// prevents race condition between 1) taking a seat and 2) the game starting
 
-	if (game && game.gameState.isTracksFlipped) {
-		return;
+	if (game.gameState.isTracksFlipped) {
+		return; // Game already started
 	}
 
-	const { passport } = socket.handshake.session;
+	Account.findOne({ username: passport.user })
+		.then(account => {
+			const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
+			const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
+            const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.isRainbow);
+			const isPrivateSafe = !game.general.private || (game.general.private &&
+				(data.password === game.private.privatePassword ||
+					game.general.whitelistedPlayers.includes(passport.user)));
 
-	if (!passport || !passport.user) {
-		return;
-	}
+            if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe) {
+                const { publicPlayersState } = game;
+                const player = {
+                    userName: passport.user,
+                    connected: true,
+                    isDead: false,
+                    customCardback: account.gameSettings.customCardback,
+                    customCardbackUid: account.gameSettings.customCardbackUid,
+                    isPrivate: account.gameSettings.isPrivate,
+                    tournyWins: account.gameSettings.tournyWins,
+                    previousSeasonAward: account.gameSettings.previousSeasonAward,
+                    cardStatus: {
+                        cardDisplayed: false,
+                        isFlipped: false,
+                        cardFront: 'secretrole',
+                        cardBack: {}
+                    }
+                };
 
-	const user = userList.find(u => passport.user === u.userName);
+                if (game.general.isTourny) {
+                    if (
+                        game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(player.userName) ||
+                        game.general.tournyInfo.queuedPlayers.length >= game.general.maxPlayersCount
+                    ) {
+                        return;
+                    }
+                    game.general.tournyInfo.queuedPlayers.push(player);
+                    game.chats.push({
+                        timestamp: new Date(),
+                        gameChat: true,
+                        chat: [
+                            {
+                                text: `${passport.user}`,
+                                type: 'player'
+                            },
+                            {
+                                text: ` (${game.general.tournyInfo.queuedPlayers.length}/${game.general.maxPlayersCount}) has entered the tournament queue.`
+                            }
+                        ]
+                    });
+                } else {
+                    publicPlayersState.push(player);
+                }
 
-	if (
-		game &&
-		game.publicPlayersState.length < game.general.maxPlayersCount &&
-		!game.publicPlayersState.find(player => player.userName === user.userName) &&
-		user &&
-		(!game.general.private ||
-			((game.general.private && data.password === game.private.privatePassword) ||
-				(game.general.private && game.general.whitelistedPlayers.includes(user.userName))))
-	) {
-		const { publicPlayersState } = game;
-		const player = {
-			userName: socket.handshake.session.passport.user,
-			connected: true,
-			isDead: false,
-			customCardback: user.customCardback,
-			customCardbackUid: user.customCardbackUid,
-			isPrivate: user.isPrivate,
-			tournyWins: user.tournyWins,
-			previousSeasonAward: user.previousSeasonAward,
-			cardStatus: {
-				cardDisplayed: false,
-				isFlipped: false,
-				cardFront: 'secretrole',
-				cardBack: {}
-			}
-		};
-
-		if (game.general.isTourny) {
-			if (
-				game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(player.userName) ||
-				game.general.tournyInfo.queuedPlayers.length >= game.general.maxPlayersCount
-			) {
-				return;
-			}
-			game.general.tournyInfo.queuedPlayers.push(player);
-			game.chats.push({
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{
-						text: `${data.userName}`,
-						type: 'player'
-					},
-					{
-						text: ` (${game.general.tournyInfo.queuedPlayers.length}/${game.general.maxPlayersCount}) has entered the tournament queue.`
-					}
-				]
-			});
-		} else {
-			publicPlayersState.push(player);
-		}
-
-		socket.emit('updateSeatForUser', true);
-		checkStartConditions(game);
-		updateUserStatus(user.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
-		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
-		sendGameList();
-	}
-};
-
-/**
- * @param {object} socket - user socket reference.
- * @param {object} data - from socket emit.
- */
-module.exports.handleUpdatedBio = (socket, data) => {
-	if (socket.handshake.session.passport) {
-		const username = socket.handshake.session.passport.user;
-
-		Account.findOne({ username }).then(account => {
-			account.bio = data;
-			account.save();
+                socket.emit('updateSeatForUser', true);
+                checkStartConditions(game);
+                updateUserStatus(passport.user, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
+                io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
+                sendGameList();
+            }
 		});
-	}
 };
 
 /**
  * @param {object} socket - user socket reference.
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handleAddNewGame = (socket, data) => {
-	if (!socket.handshake.session.passport || !socket.handshake.session.passport.user || gameCreationDisabled.status) {
+module.exports.handleUpdatedBio = (socket, passport, data) => {
+	// Authentication Assured in routes.js
+	Account.findOne({ username: passport.user }).then(account => {
+		account.bio = data;
+		account.save();
+	});
+};
+
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} data - from socket emit.
+ */
+module.exports.handleAddNewGame = (socket, passport, data) => {
+    // Authentication Assured in routes.js
+	if (gameCreationDisabled.status) {
 		return;
 	}
 
-	// seems ridiculous to do this i.e. how can someone who's not logged in fire this function at all but here I go crashing again..
-	const username = socket.handshake.session.passport.user;
-	const user = userList.find(obj => obj.userName === username);
+	const user = userList.find(obj => obj.userName === passport.user);
 	const currentTime = new Date();
 
 	if (!user || currentTime - user.timeLastGameCreated < 8000) {
 		// Check if !user here in case of bug where user doesn't appear on userList
 		return;
+	}
+
+	// Make sure it exists
+	if (!data) return;
+
+	let a;
+	let playerCounts = [];
+	for (a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
+		if (!data.excludedPlayerCount.includes(a)) playerCounts.push(a);
+	}
+	if (playerCounts.length === 0) {
+		// Someone is messing with the data, ignore it
+		return;
+	}
+
+	let excludes = [];
+	for (a = playerCounts[0]; a <= playerCounts[playerCounts.length-1]; a++) {
+		if (!playerCounts.includes(a)) excludes.push(a);
 	}
 
 	const newGame = {
@@ -495,13 +504,13 @@ module.exports.handleAddNewGame = (socket, data) => {
 			whitelistedPlayers: [],
 			uid: data.isTourny ? `${generateCombination(2, '', true)}Tournament` : generateCombination(2, '', true),
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
-			flag: data.flag || 'none',
-			minPlayersCount: typeof data.minPlayersCount === 'number' && data.minPlayersCount > 4 && data.minPlayersCount < 11 ? data.minPlayersCount : 5,
-			gameCreatorName: username,
+			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
+			minPlayersCount: playerCounts[0],
+			gameCreatorName: user.userName,
 			gameCreatorBlacklist: user.blacklist,
-			excludedPlayerCount: data.excludedPlayerCount, // should check this but its minor
-			maxPlayersCount: typeof data.maxPlayersCount === 'number' && data.maxPlayersCount > 4 && data.maxPlayersCount < 11 ? data.maxPlayersCount : 10,
-			status: `Waiting for ${typeof data.minPlayersCount === 'number' ? data.minPlayersCount - 1 : 4} more players..`,
+			excludedPlayerCount: excludes,
+			maxPlayersCount: playerCounts[playerCounts.length-1],
+			status: `Waiting for ${playerCounts[0]-1} more players..`,
 			experiencedMode: data.experiencedMode,
 			disableChat: data.disableChat,
 			disableObserver: data.disableObserver && !data.isTourny,
@@ -535,7 +544,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 			round: 0,
 			queuedPlayers: [
 				{
-					userName: username,
+					userName: user.userName,
 					customCardback: user.customCardback,
 					customCardbackUid: user.customCardbackUid,
 					tournyWins: user.tournyWins,
@@ -552,7 +561,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 	} else {
 		newGame.publicPlayersState = [
 			{
-				userName: username,
+				userName: user.userName,
 				customCardback: user.customCardback,
 				customCardbackUid: user.customCardbackUid,
 				previousSeasonAward: user.previousSeasonAward,
@@ -579,7 +588,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 			gameChat: true,
 			chat: [
 				{
-					text: `${username}`,
+					text: `${user.userName}`,
 					type: 'player'
 				},
 				{
@@ -591,7 +600,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 
 	user.timeLastGameCreated = currentTime;
 
-	Account.findOne({ username }).then(account => {
+	Account.findOne({ username: user.userName }).then(account => {
 		newGame.private = {
 			reports: {},
 			unSeatedGameChats: [],
@@ -604,7 +613,7 @@ module.exports.handleAddNewGame = (socket, data) => {
 		}
 
 		newGame.general.timeCreated = currentTime;
-		updateUserStatus(username, newGame.general.rainbowgame ? 'rainbow' : 'playing', newGame.general.uid);
+		updateUserStatus(user.userName, newGame.general.rainbowgame ? 'rainbow' : 'playing', newGame.general.uid);
 		games.push(newGame);
 		sendGameList();
 		socket.join(newGame.general.uid);
@@ -615,16 +624,16 @@ module.exports.handleAddNewGame = (socket, data) => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-module.exports.handleAddNewClaim = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (!game || !game.private || !game.private.summary) {
+module.exports.handleAddNewClaim = (passport, game, data) => {
+	if (!game.private || !game.private.summary) {
 		return;
 	}
 
-	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
+	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 	const { blindMode, replacementNames } = game.general;
 
 	const chat = (() => {
@@ -637,7 +646,7 @@ module.exports.handleAddNewClaim = data => {
 						text: 'President '
 					},
 					{
-						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
 						type: 'player'
 					}
 				];
@@ -746,7 +755,7 @@ module.exports.handleAddNewClaim = data => {
 						text: 'Chancellor '
 					},
 					{
-						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
 						type: 'player'
 					}
 				];
@@ -828,7 +837,7 @@ module.exports.handleAddNewClaim = data => {
 						text: 'President '
 					},
 					{
-						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
 						type: 'player'
 					}
 				];
@@ -936,7 +945,7 @@ module.exports.handleAddNewClaim = data => {
 						text: 'President '
 					},
 					{
-						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${data.userName} {${playerIndex + 1}} `,
+						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
 						type: 'player'
 					},
 					{
@@ -987,26 +996,31 @@ module.exports.handleAddNewClaim = data => {
 		if (game.private.seatedPlayers[playerIndex]) {
 			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
 		}
-		data.chat = chat;
-		data.isClaim = true;
-		data.timestamp = new Date();
 
-		game.chats.push(data);
+		const claimChat = {
+			chat: chat,
+			isClaim: true,
+			timestamp: new Date(),
+			uid: game.general.uid,
+			userName: passport.user,
+			claim: data.claim,
+			claimState: data.claimState
+		};
+
+		game.chats.push(claimChat);
 		sendInProgressGameUpdate(game);
 	}
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-module.exports.handleUpdatedRemakeGame = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-	if (!game) {
-		return;
-	}
+module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { publicPlayersState } = game;
-	const playerIndex = publicPlayersState.findIndex(player => player.userName === data.userName);
+	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = publicPlayersState[playerIndex];
 
 	/**
@@ -1109,12 +1123,13 @@ module.exports.handleUpdatedRemakeGame = data => {
 				if (io.sockets.sockets[id]) {
 					io.sockets.sockets[id].leave(game.general.uid);
 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-					handleUserLeaveGame(io.sockets.sockets[id], {
-						uid: game.general.uid,
-						userName: remakePlayerNames[index],
-						isSeated: true,
-						isRemake: true
-					});
+					handleUserLeaveGame(io.sockets.sockets[id], passport,
+						game,
+						{
+							isSeated: true,
+							isRemake: true
+						}
+					);
 				}
 			});
 			checkStartConditions(newGame);
@@ -1155,13 +1170,12 @@ module.exports.handleUpdatedRemakeGame = data => {
 	player.isRemakeVoting = data.remakeStatus;
 
 	if (data.remakeStatus) {
-		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName);
 		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
 		chat.chat.push({
 			text: ` has voted to ${remakeText} this ${game.general.isTourny ? 'tournament.' : 'game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
-		publicPlayer.isRemaking = true;
+		player.isRemaking = true;
 
 		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
 			game.general.isRemaking = true;
@@ -1207,14 +1221,15 @@ module.exports.handleUpdatedRemakeGame = data => {
 
 /**
  * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handleAddNewGameChat = (socket, data) => {
-	const { passport } = socket.handshake.session;
+module.exports.handleAddNewGameChat = (socket, passport, data) => {
+    // Authentication Assured in routes.js
 	const game = games.find(el => el.general.uid === data.uid);
 	const { chat } = data;
 
-	if (!passport || !passport.user || chat.length > 300 || !chat.trim().length || !game) {
+	if (!chat.length > 300 || !chat.trim().length || !game) {
 		return;
 	}
 
@@ -1225,7 +1240,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	if (
 		(player && player.isDead && !game.gameState.isCompleted) ||
 		(player && player.leftGame) ||
-		(!player && game.general.disableObserver && !(MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) ||
+		(!player && game.general.disableObserver && (!(MODERATORS.includes(passport.user) || !ADMINS.includes(passport.user) || !EDITORS.includes(passport.user)))) ||
 		(user && !player && user.wins + user.losses < 2)
 	) {
 		return;
@@ -1283,7 +1298,6 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 				],
 				previousSeasonAward: user.previousSeasonAward,
 				uid: data.uid,
-				timestamp: new Date(),
 				inProgress: game.gameState.isStarted
 			});
 			sendInProgressGameUpdate(game);
@@ -1302,24 +1316,31 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-module.exports.handleUpdateWhitelist = data => {
-	const game = games.find(el => el.general.uid === data.uid);
+module.exports.handleUpdateWhitelist = (passport, game, data) => {
+    const isPrivateSafe = !game.general.private || (game.general.private &&
+        (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
 
-	game.general.whitelistedPlayers = data.whitelistPlayers;
-	io.in(data.uid).emit('gameUpdate', secureGame(game));
+    // Only update the whitelist if whitelistsed, has password, or is the creator
+    if (isPrivateSafe || game.general.gameCreatorName === passport.user) {
+        game.general.whitelistedPlayers = data.whitelistPlayers;
+        io.in(data.uid).emit('gameUpdate', secureGame(game));
+	}
 };
 
 /**
  * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handleNewGeneralChat = (socket, data) => {
-	const { passport } = socket.handshake.session;
-	const user = userList.find(u => passport.user === u.userName);
+module.exports.handleNewGeneralChat = (socket, passport, data) => {
+    // Authentication Assured in routes.js
+	const user = userList.find(u => u.userName === passport.user);
 
-	if (!user || !passport || !passport.user || data.chat.length > 300 || !data.chat.trim().length || user.isPrivate) {
+	if (data.chat.length > 300 || !data.chat.trim().length || !user || user.isPrivate) {
 		return;
 	}
 
@@ -1355,15 +1376,13 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 
 /**
  * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handleUpdatedGameSettings = (socket, data) => {
-	if (!socket.handshake.session.passport) {
-		// yes, even THIS crashed the site once.
-		return;
-	}
+module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
+    // Authentication Assured in routes.js
 
-	Account.findOne({ username: socket.handshake.session.passport.user })
+	Account.findOne({ username: passport.user })
 		.then(account => {
 			const currentPrivate = account.gameSettings.isPrivate;
 
@@ -1392,21 +1411,18 @@ module.exports.handleUpdatedGameSettings = (socket, data) => {
 
 /**
  * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handleModerationAction = (socket, data) => {
-	const { passport } = socket.handshake.session;
-
-	if (!passport || !Object.keys(passport).length) {
-		return;
-	}
+module.exports.handleModerationAction = (socket, passport, data) => {
+    // Authentication Assured in routes.js
 
 	const isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user);
 	const affectedSocketId = Object.keys(io.sockets.sockets).find(
 		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 	);
 
-	if (passport && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
+	if (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user)) {
 		if (data.isReportResolveChange) {
 			PlayerReport.findOne({ _id: data._id })
 				.then(report => {
@@ -1729,10 +1745,11 @@ module.exports.handleModerationAction = (socket, data) => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handlePlayerReport = data => {
-	const user = userList.find(u => data.userName === u.userName);
+module.exports.handlePlayerReport = (passport, data) => {
+	const user = userList.find(u => data.userName === passport.user);
 
 	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2)) {
 		return;
@@ -1742,7 +1759,7 @@ module.exports.handlePlayerReport = data => {
 	const playerReport = new PlayerReport({
 		date: new Date(),
 		gameUid: data.uid,
-		reportingPlayer: data.userName,
+		reportingPlayer: passport.user,
 		reportedPlayer: data.reportedPlayer,
 		reason: data.reason,
 		gameType: data.gameType,
@@ -1817,7 +1834,7 @@ module.exports.handlePlayerReportDismiss = () => {
 /**
  * @param {object} socket - socket reference.
  */
-module.exports.checkUserStatus = socket => {
+module.exports.checkUserStatus = (socket) => {
 	const { passport } = socket.handshake.session;
 
 	if (passport && Object.keys(passport).length) {
@@ -1842,7 +1859,36 @@ module.exports.checkUserStatus = socket => {
 			socket.emit('updateSeatForUser');
 			sendInProgressGameUpdate(game);
 		}
-	}
+
+      Account.findOne({ username: user })
+        .then(account => {
+          const userListNames = userList.map(user => user.userName);
+          if (!userListNames.includes(user)) {
+            const userListInfo = {
+              userName: user,
+              wins: account.wins,
+              losses: account.losses,
+              rainbowWins: account.rainbowWins,
+              rainbowLosses: account.rainbowLosses,
+              isPrivate: account.gameSettings.isPrivate,
+              tournyWins: account.gameSettings.tournyWins,
+              blacklist: account.gameSettings.blacklist,
+              customCardback: account.gameSettings.customCardback,
+              customCardbackUid: account.gameSettings.customCardbackUid,
+              previousSeasonAward: account.gameSettings.previousSeasonAward,
+              status: {
+								type: game ? (game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
+								gameId: game ? game.general.uid : null
+              }
+            };
+            userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
+            userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
+            userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
+            userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+            userList.push(userListInfo);
+          }
+        });
+    }
 
 	socket.emit('version', { current: version });
 

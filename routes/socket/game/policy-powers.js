@@ -26,19 +26,19 @@ module.exports.policyPeek = game => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data from socket emit
  */
-module.exports.selectPolicies = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (!game || !game.gameState) {
-		return;
-	}
-
+module.exports.selectPolicies = (passport, game, data) => {
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
+
+	if (president.userName !== passport.user) {
+		return;
+	}
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
@@ -174,15 +174,11 @@ module.exports.investigateLoyalty = game => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data from socket emit
  */
-module.exports.selectPartyMembershipInvestigate = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (!game || !game.gameState) {
-		return;
-	}
-
+module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
@@ -194,6 +190,10 @@ module.exports.selectPartyMembershipInvestigate = data => {
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
 	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
+
+	if (president.userName !== passport.user) {
+		return;
+	}
 
 	if (!game.private.lock.selectPartyMembershipInvestigate && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectPartyMembershipInvestigate = true;
@@ -400,21 +400,22 @@ module.exports.executePlayer = game => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data from socket emit
  */
-module.exports.selectPlayerToExecute = data => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (!game || !game.gameState) {
-		return;
-	}
-
+module.exports.selectPlayerToExecute = (passport, game, data) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
 	const selectedPlayer = seatedPlayers[playerIndex];
 	const publicSelectedPlayer = game.publicPlayersState[playerIndex];
 	const president = seatedPlayers[presidentIndex];
+
+	if (president.userName !== passport.user) {
+		return;
+	}
+
 	const nonPresidentChat = {
 		gameChat: true,
 		timestamp: new Date(),

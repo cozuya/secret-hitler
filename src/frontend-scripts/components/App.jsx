@@ -57,7 +57,7 @@ export class App extends React.Component {
 			const username = classList[0].split('username-')[1];
 			const info = { userName: username };
 
-			socket.emit('getUserGameSettings', username);
+			socket.emit('getUserGameSettings');
 
 			// ** begin devhelpers **
 			//			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var
@@ -223,54 +223,25 @@ export class App extends React.Component {
 	// ***** begin dev helpers *****
 
 	makeQuickDefault() {
-		const { userInfo } = this.props;
-		const game = {
-			gameState: {
-				previousElectedGovernment: [],
-				undrawnPolicyCount: 17,
-				discardedPolicyCount: 0,
-				presidentIndex: -1
-			},
-			chats: [],
-			general: {
-				uid: 'devgame',
-				name: 'New Game',
-				minPlayersCount: 5,
-				maxPlayersCount: 5,
-				excludedPlayerCount: [6],
-				private: false,
-				rainbowgame: false,
-				experiencedMode: true,
-				disableChat: false,
-				disableGamechat: false,
-				status: 'Waiting for more players..',
-				electionCount: 0
-			},
-			publicPlayersState: [
-				{
-					userName: userInfo.userName,
-					connected: true,
-					isDead: false,
-					customCardback: 'png',
-					cardStatus: {
-						cardDisplayed: false,
-						isFlipped: false,
-						cardFront: 'secretrole',
-						cardBack: {}
-					}
-				}
-			],
-			playersState: [],
-			cardFlingerState: [],
-			trackState: {
-				liberalPolicyCount: 0,
-				fascistPolicyCount: 0,
-				electionTrackerCount: 0,
-				enactedPolicies: []
-			}
+		const data = {
+			flag: 'none',
+			name: 'New Game',
+			minPlayersCount: 5,
+			excludedPlayerCount: [6],
+			maxPlayersCount: 5,
+			experiencedMode: false,
+			disableChat: false,
+			disableObserver: false,
+			isTourny: false,
+			disableGamechat: false,
+			rainbowgame: false,
+			blindMode: false,
+			timedMode: false,
+			casualGame: false,
+			privatePassword: false
 		};
 
-		socket.emit('addNewGame', game);
+		this.props.socket.emit('addNewGame', data);
 	}
 
 	// ***** end dev helpers *****
