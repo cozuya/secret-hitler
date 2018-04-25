@@ -295,8 +295,8 @@ const handleUserLeaveGame = (socket, passport, game, data) => {
     // Authentication Assured in routes.js
     // In-game Assured in routes.js
 
-	if (io.sockets.adapter.rooms[data.uid] && socket) {
-		socket.leave(data.uid);
+	if (io.sockets.adapter.rooms[game.general.uid] && socket) {
+		socket.leave(game.general.uid);
 	}
 
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
@@ -311,7 +311,7 @@ const handleUserLeaveGame = (socket, passport, game, data) => {
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
 			checkStartConditions(game);
-			io.sockets.in(data.uid).emit('gameUpdate', game);
+			io.sockets.in(game.general.uid).emit('gameUpdate', game);
 		}
 	}
 
@@ -321,21 +321,21 @@ const handleUserLeaveGame = (socket, passport, game, data) => {
 		passport &&
 		game.general.tournyInfo.queuedPlayers.map(player => player.userName).find(name => name === passport.user)
 	) {
-		playerLeavePretourny(game, data.userName);
+		playerLeavePretourny(game, passport.user);
 	}
 
 	if (
 		(!game.publicPlayersState.length && !(game.general.isTourny && game.general.tournyInfo.round === 0)) ||
 		(game.general.isTourny && game.general.tournyInfo.round === 0 && !game.general.tournyInfo.queuedPlayers.length)
 	) {
-		io.sockets.in(data.uid).emit('gameUpdate', {});
+		io.sockets.in(game.general.uid).emit('gameUpdate', {});
 		games.splice(games.indexOf(game), 1);
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
 
 	if (!data.isRemake) {
-		updateUserStatus(passport.user, 'none', data.uid);
+		updateUserStatus(passport.user, 'none', game.general.uid);
 		socket.emit('gameUpdate', {});
 	}
 	sendGameList();
@@ -1123,12 +1123,13 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 				if (io.sockets.sockets[id]) {
 					io.sockets.sockets[id].leave(game.general.uid);
 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-					handleUserLeaveGame(io.sockets.sockets[id], {
-						uid: game.general.uid,
-						userName: remakePlayerNames[index],
-						isSeated: true,
-						isRemake: true
-					});
+					handleUserLeaveGame(io.sockets.sockets[id], passport,
+						game,
+						{
+							isSeated: true,
+							isRemake: true
+						}
+					);
 				}
 			});
 			checkStartConditions(newGame);
@@ -1834,7 +1835,7 @@ module.exports.handlePlayerReportDismiss = () => {
 /**
  * @param {object} socket - socket reference.
  */
-module.exports.checkUserStatus = socket => {
+module.exports.checkUserStatus = (socket) => {
 	const { passport } = socket.handshake.session;
 
 	if (passport && Object.keys(passport).length) {
@@ -1860,35 +1861,34 @@ module.exports.checkUserStatus = socket => {
 			sendInProgressGameUpdate(game);
 		}
 
-        Account.findOne({ username: user })
-            .then(account => {
-                const userListNames = userList.map(user => user.userName);
-                if (!userListNames.includes(user)) {
-                    const userListInfo = {
-                        userName: user,
-                        wins: account.wins,
-                        losses: account.losses,
-                        rainbowWins: account.rainbowWins,
-                        rainbowLosses: account.rainbowLosses,
-                        isPrivate: account.gameSettings.isPrivate,
-                        tournyWins: account.gameSettings.tournyWins,
-                        blacklist: account.gameSettings.blacklist,
-                        customCardback: account.gameSettings.customCardback,
-                        customCardbackUid: account.gameSettings.customCardbackUid,
-                        previousSeasonAward: account.gameSettings.previousSeasonAward,
-                        status: {
-							type: game ? (game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
-							gameId: game ? game.general.uid : null
-                        }
-                    };
-
-                    userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
-                    userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
-                    userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
-                    userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
-                    userList.push(userListInfo);
-                }
-            });
+      Account.findOne({ username: user })
+        .then(account => {
+          const userListNames = userList.map(user => user.userName);
+          if (!userListNames.includes(user)) {
+            const userListInfo = {
+              userName: user,
+              wins: account.wins,
+              losses: account.losses,
+              rainbowWins: account.rainbowWins,
+              rainbowLosses: account.rainbowLosses,
+              isPrivate: account.gameSettings.isPrivate,
+              tournyWins: account.gameSettings.tournyWins,
+              blacklist: account.gameSettings.blacklist,
+              customCardback: account.gameSettings.customCardback,
+              customCardbackUid: account.gameSettings.customCardbackUid,
+              previousSeasonAward: account.gameSettings.previousSeasonAward,
+              status: {
+								type: game ? (game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
+								gameId: game ? game.general.uid : null
+              }
+            };
+            userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
+            userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
+            userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
+            userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+            userList.push(userListInfo);
+          }
+        });
     }
 
 	socket.emit('version', { current: version });
