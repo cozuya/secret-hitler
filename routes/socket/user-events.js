@@ -1855,6 +1855,9 @@ module.exports.checkUserStatus = socket => {
                         rainbowLosses: account.rainbowLosses,
                         isPrivate: account.gameSettings.isPrivate,
                         tournyWins: account.gameSettings.tournyWins,
+                        blacklist: account.gameSettings.blacklist,
+                        customCardback: account.gameSettings.customCardback,
+                        customCardbackUid: account.gameSettings.customCardbackUid,
                         previousSeasonAward: account.gameSettings.previousSeasonAward,
                         status: {
 							type: game ? (game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
