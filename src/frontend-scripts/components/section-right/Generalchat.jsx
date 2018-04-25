@@ -65,15 +65,10 @@ export default class Generalchat extends React.Component {
 
 	handleSubmit(e) {
 		const inputValue = this.chatInput.value;
-		const { userInfo } = this.props;
 
 		if (inputValue && inputValue.length < 300) {
 			this.props.socket.emit('addNewGeneralChat', {
-				userName: userInfo.userName,
-				tournyWins: userInfo.gameSettings.tournyWins ? userInfo.gameSettings.tournyWins : [],
-				chat: inputValue,
-				isPrivate: userInfo.gameSettings.isPrivate,
-				previousSeasonAward: userInfo.gameSettings.previousSeasonAward
+				chat: inputValue
 			});
 
 			this.chatInput.value = '';

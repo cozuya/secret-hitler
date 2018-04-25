@@ -1318,8 +1318,9 @@ module.exports.handleUpdateWhitelist = data => {
  */
 module.exports.handleNewGeneralChat = (socket, data) => {
 	const { passport } = socket.handshake.session;
+	const user = userList.find(u => passport.user === u.userName);
 
-	if (!passport || !passport.user || passport.user !== data.userName || data.chat.length > 300 || !data.chat.trim().length || data.isPrivate) {
+	if (!user || !passport || !passport.user || data.chat.length > 300 || !data.chat.trim().length || user.isPrivate) {
 		return;
 	}
 
@@ -1331,16 +1332,19 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 		});
 	}
 
-	const user = userList.find(u => data.userName === u.userName);
 	const seasonColor = user && user[`winsSeason${currentSeasonNumber}`] + user[`lossesSeason${currentSeasonNumber}`] > 49 ? PLAYERCOLORS(user, true) : '';
 	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
 
-	if (user && (user.wins > 0 || user.losses > 0)) {
+	if (user.wins > 0 || user.losses > 0) {
 		generalChatCount++;
-		data.time = new Date();
-		data.color = color;
-		data.seasonColor = seasonColor;
-		generalChats.list.push(data);
+		const newChat = {
+			time: new Date(),
+			color,
+			seasonColor,
+			userName: passport.user
+		};
+
+		generalChats.list.push(newChat);
 
 		if (generalChats.list.length > 99) {
 			generalChats.list.shift();
