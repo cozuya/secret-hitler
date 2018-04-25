@@ -691,7 +691,7 @@ const selectPresidentPolicy = (passport, game, data) => {
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
-	if (!presidentPlayer.userName !== passport.user) {
+	if (presidentPlayer.userName !== passport.user) {
 		return;
 	}
 

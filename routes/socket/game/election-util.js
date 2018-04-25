@@ -19,7 +19,7 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 	const presidentPlayer = game.private.seatedPlayers[presidentIndex];
 	const chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
 
-	if (!presidentPlayer.userName !== passport.user) {
+	if (presidentPlayer.userName !== passport.user) {
 		return;
 	}
 
