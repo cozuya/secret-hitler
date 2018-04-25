@@ -164,7 +164,7 @@ module.exports = () => {
 			// election
 
 			.on('presidentSelectedChancellor', data => {
-				selectChancellor(data);
+				selectChancellor(socket, data);
 			})
 			.on('selectedVoting', data => {
 				selectVoting(socket, data);

@@ -2,12 +2,22 @@ const { sendInProgressGameUpdate } = require('../util');
 const { games } = require('../models');
 
 /**
+ * @param {object} socket socket reference
  * @param {object} data from socket emit
  */
-module.exports.selectChancellor = data => {
+module.exports.selectChancellor = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (!game || !game.gameState || !game.private.seatedPlayers || (game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+	if (
+		!game ||
+		!game.gameState ||
+		!game.private.seatedPlayers ||
+		!socket.passport.handshake.session ||
+		!game.publicPlayersState.find(player => player.userName === socket.passport.handshake.session).length ||
+		((game.general.isTourny && game.general.tournyInfo.isCancelled) ||
+			data.chancellorIndex < game.generel.minPlayersCount ||
+			data.chancellorIndex > game.general.maxPlayersCount)
+	) {
 		return;
 	}
 
