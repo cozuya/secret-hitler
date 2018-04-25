@@ -8,7 +8,8 @@ const { sendInProgressGameUpdate } = require('../util');
  */
 module.exports.selectChancellor = (socket, passport, game, data) => {
 	if ((game.general.isTourny && game.general.tournyInfo.isCancelled) ||
-		data.chancellorIndex > game.general.playerCount) {
+		data.chancellorIndex >= game.general.playerCount ||
+		data.chancellorIndex < 0) {
 		return;
 	}
 
@@ -18,6 +19,14 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 	const seatedPlayers = game.private.seatedPlayers.filter(player => !player.isDead);
 	const presidentPlayer = game.private.seatedPlayers[presidentIndex];
 	const chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
+	
+	// Make sure the pick is valid
+	if (game.publicPlayersState[chancellorIndex].isDead ||
+		chancellorIndex === presidentIndex ||
+	    chancellorIndex === game.gameState.previousElectedGovernment[1] ||
+       (chancellorIndex ===	game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5)) {
+		return;
+	}
 
 	if (presidentPlayer.userName !== passport.user) {
 		return;
