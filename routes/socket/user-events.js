@@ -1220,7 +1220,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 
 	const { publicPlayersState } = game;
 	const player = publicPlayersState.find(player => player.userName === passport.user);
-	const user = userList.find(u => data.userName === u.userName);
+	const user = userList.find(u => passport.user === u.userName);
 
 	if (
 		(player && player.isDead && !game.gameState.isCompleted) ||
@@ -1241,8 +1241,6 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	) {
 		return;
 	}
-
-	data.timestamp = new Date();
 
 	if (
 		/^Ping/i.test(chat) &&
@@ -1270,15 +1268,16 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 
 			game.chats.push({
 				gameChat: true,
-				userName: data.userName,
+				userName: passport.user,
+				timestamp: new Date(),
 				chat: [
 					{
 						text: game.general.blindMode
 							? `A player has pinged player number ${affectedPlayerNumber + 1}.`
-							: `${data.userName} has pinged ${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1}).`
+							: `${passport.user} has pinged ${publicPlayersState[affectedPlayerNumber].userName} (${affectedPlayerNumber + 1}).`
 					}
 				],
-				previousSeasonAward: data.previousSeasonAward,
+				previousSeasonAward: user.previousSeasonAward,
 				uid: data.uid,
 				timestamp: new Date(),
 				inProgress: game.gameState.isStarted
@@ -1288,7 +1287,12 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 			console.log(e, 'caught exception in ping chat');
 		}
 	} else if (!/^Ping/i.test(chat)) {
-		game.chats.push(data);
+		game.chats.push({
+			gameChat: false,
+			userName: passport.user,
+			chat: data.chat,
+			timestamp: new Date()
+		});
 
 		if (game.gameState.isTracksFlipped) {
 			sendInProgressGameUpdate(game);

@@ -145,19 +145,14 @@ class Gamechat extends React.Component {
 
 	handleSubmit(e) {
 		const currentValue = this.gameChatInput.value;
-		const { gameInfo, userInfo } = this.props;
+		const { gameInfo } = this.props;
 
 		e.preventDefault();
 
 		if (currentValue.length < 300 && currentValue && !$('.expando-container + div').hasClass('disabled')) {
 			const chat = {
-				userName: userInfo.userName,
-				tournyWins: userInfo.gameSettings.tournyWins,
 				chat: currentValue,
-				previousSeasonAward: userInfo.gameSettings.previousSeasonAward,
-				gameChat: false,
-				uid: gameInfo.general.uid,
-				inProgress: gameInfo.gameState.isStarted
+				uid: gameInfo.general.uid
 			};
 
 			this.props.socket.emit('addNewGameChat', chat);
