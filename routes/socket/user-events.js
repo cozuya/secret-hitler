@@ -1842,7 +1842,34 @@ module.exports.checkUserStatus = socket => {
 			socket.emit('updateSeatForUser');
 			sendInProgressGameUpdate(game);
 		}
-	}
+
+        Account.findOne({ username: user })
+            .then(account => {
+                const userListNames = userList.map(user => user.userName);
+                if (!userListNames.includes(user)) {
+                    const userListInfo = {
+                        userName: user,
+                        wins: account.wins,
+                        losses: account.losses,
+                        rainbowWins: account.rainbowWins,
+                        rainbowLosses: account.rainbowLosses,
+                        isPrivate: account.gameSettings.isPrivate,
+                        tournyWins: account.gameSettings.tournyWins,
+                        previousSeasonAward: account.gameSettings.previousSeasonAward,
+                        status: {
+							type: game ? (game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
+							gameId: game ? game.general.uid : null
+                        }
+                    };
+
+                    userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
+                    userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
+                    userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
+                    userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+                    userList.push(userListInfo);
+                }
+            });
+    }
 
 	socket.emit('version', { current: version });
 
