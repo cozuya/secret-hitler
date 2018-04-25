@@ -1144,16 +1144,16 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 
 	data.timestamp = new Date();
 
-	const pinged = /^Ping(\d{1,2})/i.exec(chat)[0];
+	const pinged = /^Ping(\d{1,2})/i.exec(chat);
 
 	if (
         pinged && player &&
 		game.gameState.isStarted &&
-		(parseInt(pinged[0]) <= game.publicPlayersState.length) &&
+		(parseInt(pinged[1]) <= game.publicPlayersState.length) &&
 		(!player.pingTime || new Date().getTime() - player.pingTime > 180000)
 	) {
 		try {
-			const affectedPlayerNumber = parseInt(pinged[0]) - 1;
+			const affectedPlayerNumber = parseInt(pinged[1]) - 1;
 			const affectedSocketId = Object.keys(io.sockets.sockets).find(
 				socketId =>
 					io.sockets.sockets[socketId].handshake.session.passport &&
