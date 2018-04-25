@@ -401,7 +401,7 @@ class Gamechat extends React.Component {
 																ADMINS.includes(playerListPlayer.userName) ||
 																EDITORS.includes(playerListPlayer.userName)
 															) || !(gameSettings && gameSettings.disableSeasonal)
-													  )}`
+														)}`
 													: 'chat-user'
 										: 'chat-user'
 								}

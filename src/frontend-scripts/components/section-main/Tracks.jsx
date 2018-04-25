@@ -244,7 +244,6 @@ class Tracks extends React.Component {
 					() => {
 						this.props.socket.emit('updateRemake', {
 							remakeStatus: this.state.remakeStatus,
-							userName: userInfo.userName,
 							uid: gameInfo.general.uid
 						});
 					}

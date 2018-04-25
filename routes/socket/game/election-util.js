@@ -1,23 +1,13 @@
 const { sendInProgressGameUpdate } = require('../util');
-const { games } = require('../models');
 
 /**
- * @param {object} socket socket reference
- * @param {object} data from socket emit
+ * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} game - verifyed target game.
+ * @param {object} data - from socket emit.
  */
-module.exports.selectChancellor = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
-	const { passport } = socket.handshake.session;
-
-	// todo: check to see if this selection is valid per term limits/dead people/ranges
-	if (
-		!game ||
-		!game.gameState ||
-		!game.private.seatedPlayers ||
-		!passport ||
-		!game.publicPlayersState.find(player => player.userName === passport.user) ||
-		(game.general.isTourny && game.general.tournyInfo.isCancelled)
-	) {
+module.exports.selectChancellor = (socket, passport, game, data) => {
+	if ((game.general.isTourny && game.general.tournyInfo.isCancelled) || data.chancellorIndex > game.general.playerCount) {
 		return;
 	}
 
@@ -27,6 +17,10 @@ module.exports.selectChancellor = (socket, data) => {
 	const seatedPlayers = game.private.seatedPlayers.filter(player => !player.isDead);
 	const presidentPlayer = game.private.seatedPlayers[presidentIndex];
 	const chancellorPlayer = game.private.seatedPlayers[chancellorIndex];
+
+	if (presidentPlayer.userName !== passport.user) {
+		return;
+	}
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
