@@ -56,14 +56,12 @@ const gamesGarbageCollector = () => {
 const ensureAuthenticated = socket => {
 	if (socket.handshake && socket.handshake.session) {
 		const { passport } = socket.handshake.session;
-		if (passport && passport.user && Object.keys(passport).length) {
-			return true;
-		}
+
+		return Boolean(passport && passport.user && Object.keys(passport).length);
 	}
-	return false;
 };
 
-const findGame = (data) => {
+const findGame = data => {
 	if (games && data && data.uid) {
 		return games.find(el => el.general.uid === data.uid);
 	}
@@ -72,11 +70,9 @@ const findGame = (data) => {
 const ensureInGame = (passport, game) => {
 	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
 		const player = game.publicPlayersState.find(player => player.userName === passport.user);
-		if (player) {
-			return true;
-		}
+
+		return Boolean(player);
 	}
-	return false;
 };
 
 module.exports = () => {
@@ -209,14 +205,16 @@ module.exports = () => {
 					selectChancellorVoteOnVeto(game, data);
 				}
 			})
-			.on('getModInfo', count => { // I cant tell if this needs to be secure or not
+			.on('getModInfo', count => {
+				// I cant tell if this needs to be secure or not
 				sendModInfo(socket, count);
 			})
-			.on('getUserReports', () => { // This one too
+			.on('getUserReports', () => {
+				// This one too
 				sendUserReports(socket);
 			})
 			.on('updateUserStatus', (type, gameId) => {
-				const game = findGame({uid: gameId});
+				const game = findGame({ uid: gameId });
 				if (authenticated && ensureInGame(passport, game)) {
 					updateUserStatus(passport, game, type);
 				}

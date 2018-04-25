@@ -11,10 +11,13 @@ const Changelog = () => (
 		<div className="ui header">
 			<p>Version 0.13.3 released 4-24-2018</p>
 		</div>
+		<h3>Tournaments temporarily disabled, see below.</h3>
 		<h3>Security update</h3>
 		<p>
 			It was brought to my attention that there's some issues with security around certain actions. This update has addressed these issues. Its important to
-			note that these were game related issues, not account: your password is secure and not visible by anyone including me.
+			note that these were game related issues, not account: your password is secure and not visible by anyone including me. And by game related issues I mean
+			it was possible for people to take actions they should not be able to take, but important info like who is each role and what the policy deck looks like,
+			is and always was secure.
 		</p>
 		<ul>
 			<li>The cooldown for remaking games has been changed to 2 seconds if remake is on, and 10 seconds if remake is off.</li>
