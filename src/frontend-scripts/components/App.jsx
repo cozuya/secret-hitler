@@ -57,7 +57,7 @@ export class App extends React.Component {
 			const username = classList[0].split('username-')[1];
 			const info = { userName: username };
 
-			socket.emit('getUserGameSettings', username);
+			socket.emit('getUserGameSettings');
 
 			// ** begin devhelpers **
 			//			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var

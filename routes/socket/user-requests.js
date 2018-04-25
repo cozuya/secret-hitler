@@ -4,7 +4,7 @@ const PlayerReport = require('../../models/playerReport');
 const PlayerNote = require('../../models/playerNote');
 const Game = require('../../models/game');
 //	const BannedIP = require('../../models/bannedIP');
-const { games, userList, generalChats, currentSeasonNumber, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
+const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
@@ -84,37 +84,12 @@ module.exports.sendModInfo = (socket, count) => {
 
 /**
  * @param {object} socket - user socket reference.
- * @param {string} username - name of user.
  */
-module.exports.sendUserGameSettings = (socket, username) => {
+module.exports.sendUserGameSettings = (socket) => {
+    const username = socket.handshake.session.passport.user;
 	Account.findOne({ username })
 		.then(account => {
-			const userListNames = userList.map(user => user.userName);
-
 			socket.emit('gameSettings', account.gameSettings);
-
-			if (!userListNames.includes(username)) {
-				const userListInfo = {
-					userName: username,
-					wins: account.wins,
-					losses: account.losses,
-					rainbowWins: account.rainbowWins,
-					rainbowLosses: account.rainbowLosses,
-					isPrivate: account.gameSettings.isPrivate,
-					tournyWins: account.gameSettings.tournyWins,
-					previousSeasonAward: account.gameSettings.previousSeasonAward,
-					status: {
-						type: 'none',
-						gameId: null
-					}
-				};
-
-				userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
-				userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
-				userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
-				userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
-				userList.push(userListInfo);
-			}
 
 			getProfile(username);
 
