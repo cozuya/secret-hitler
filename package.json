@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
-	"version": "0.13.2",
+	"version": "0.13.3",
 	"license": "CC-BY-NC-SA-4.0",
 	"keywords": ["boardgame", "social deduction", "hidden roles", "secret hitler"],
 	"repository": {
