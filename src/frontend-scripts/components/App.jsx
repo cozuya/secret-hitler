@@ -197,7 +197,10 @@ export class App extends React.Component {
 		} else if (
 			hash === '#/playerreports' &&
 			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) || TRIALMODS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
+			(MODERATORS.includes(userInfo.userName) ||
+				TRIALMODS.includes(userInfo.userName) ||
+				EDITORS.includes(userInfo.userName) ||
+				ADMINS.includes(userInfo.userName))
 		) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
@@ -273,15 +276,9 @@ export class App extends React.Component {
 	// ***** end dev helpers *****
 
 	handleSeatingUser(password) {
-		const { gameInfo, userInfo } = this.props;
+		const { gameInfo } = this.props;
 		const data = {
 			uid: gameInfo.general.uid,
-			userName: userInfo.userName,
-			previousSeasonAward: userInfo.gameSettings.previousSeasonAward,
-			isPrivate: userInfo.gameSettings.isPrivate,
-			customCardback: userInfo.gameSettings.customCardback,
-			customCardbackUid: userInfo.gameSettings.customCardbackUid,
-			tournyWins: userInfo.gameSettings.tournyWins,
 			password
 		};
 
