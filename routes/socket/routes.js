@@ -272,7 +272,7 @@ module.exports = () => {
 			.on('selectedPlayerToExecute', data => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					selectPlayerToExecute(data);
+					selectPlayerToExecute(passport, game, data);
 				}
 			})
 			.on('selectedSpecialElection', data => {

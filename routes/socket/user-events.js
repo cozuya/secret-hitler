@@ -1169,13 +1169,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 	player.isRemakeVoting = data.remakeStatus;
 
 	if (data.remakeStatus) {
-		const publicPlayer = game.publicPlayersState.find(player => player.userName === data.userName);
 		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
 		chat.chat.push({
 			text: ` has voted to ${remakeText} this ${game.general.isTourny ? 'tournament.' : 'game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
-		publicPlayer.isRemaking = true;
+		player.isRemaking = true;
 
 		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
 			game.general.isRemaking = true;
