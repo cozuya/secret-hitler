@@ -86,8 +86,12 @@ module.exports.sendModInfo = (socket, count) => {
  * @param {object} socket - user socket reference.
  * @param {string} username - name of user.
  */
-module.exports.sendUserGameSettings = (socket, username) => {
-	Account.findOne({ username })
+module.exports.sendUserGameSettings = socket => {
+	const { passport } = socket.handshake.session;
+	if (!passport || !passport.user) {
+		return;
+	}
+	Account.findOne({ username: passport.user })
 		.then(account => {
 			const userListNames = userList.map(user => user.userName);
 

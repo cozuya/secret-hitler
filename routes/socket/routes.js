@@ -143,8 +143,8 @@ module.exports = () => {
 			.on('getGeneralChats', () => {
 				sendGeneralChats(socket);
 			})
-			.on('getUserGameSettings', data => {
-				sendUserGameSettings(socket, data);
+			.on('getUserGameSettings', () => {
+				sendUserGameSettings(socket);
 			})
 			.on('selectedChancellorVoteOnVeto', data => {
 				selectChancellorVoteOnVeto(data);
