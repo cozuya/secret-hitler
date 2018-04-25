@@ -376,24 +376,33 @@ module.exports.updateSeatedUser = (socket, data) => {
 		return;
 	}
 
+	const { passport } = socket.handshake.session;
+
+	if (!passport || !passport.user) {
+		return;
+	}
+
+	const user = userList.find(u => passport.user === u.userName);
+
 	if (
 		game &&
 		game.publicPlayersState.length < game.general.maxPlayersCount &&
-		!game.publicPlayersState.find(player => player.userName === data.userName) &&
+		!game.publicPlayersState.find(player => player.userName === user.userName) &&
+		user &&
 		(!game.general.private ||
 			((game.general.private && data.password === game.private.privatePassword) ||
-				(game.general.private && game.general.whitelistedPlayers.includes(data.userName))))
+				(game.general.private && game.general.whitelistedPlayers.includes(user.userName))))
 	) {
 		const { publicPlayersState } = game;
 		const player = {
-			userName: data.userName,
+			userName: socket.handshake.session.passport.user,
 			connected: true,
 			isDead: false,
-			customCardback: data.customCardback,
-			customCardbackUid: data.customCardbackUid,
-			isPrivate: data.isPrivate,
-			tournyWins: data.tournyWins,
-			previousSeasonAward: data.previousSeasonAward,
+			customCardback: user.customCardback,
+			customCardbackUid: user.customCardbackUid,
+			isPrivate: user.isPrivate,
+			tournyWins: user.tournyWins,
+			previousSeasonAward: user.previousSeasonAward,
 			cardStatus: {
 				cardDisplayed: false,
 				isFlipped: false,
@@ -429,7 +438,7 @@ module.exports.updateSeatedUser = (socket, data) => {
 
 		socket.emit('updateSeatForUser', true);
 		checkStartConditions(game);
-		updateUserStatus(data.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
+		updateUserStatus(user.userName, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
 		io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 		sendGameList();
 	}
