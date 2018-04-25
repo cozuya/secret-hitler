@@ -288,12 +288,12 @@ if (process.env.NODE_ENV === 'production') {
 /**
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-const handleUserLeaveGame = (socket, passport, data) => {
+const handleUserLeaveGame = (socket, passport, game, data) => {
     // Authentication Assured in routes.js
     // In-game Assured in routes.js
-	const game = games.find(el => el.general.uid === data.uid);
 
 	if (io.sockets.adapter.rooms[data.uid] && socket) {
 		socket.leave(data.uid);
@@ -607,13 +607,10 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 
 /**
  * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-module.exports.handleAddNewClaim = (passport, data) => {
-    // Authentication Assured in routes.js
-    // In-game Assured in routes.js
-	const game = games.find(el => el.general.uid === data.uid);
-
+module.exports.handleAddNewClaim = (passport, game, data) => {
 	if (!game.private || !game.private.summary) {
 		return;
 	}
@@ -1305,13 +1302,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data) => {
 
 /**
  * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-module.exports.handleUpdateWhitelist = (passport, data) => {
-    // Authentication Assured in routes.js
-    // In-game Assured in routes.js
-	const game = games.find(el => el.general.uid === data.uid);
-
+module.exports.handleUpdateWhitelist = (passport, game, data) => {
     const isPrivateSafe = !game.general.private || (game.general.private &&
         (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
 

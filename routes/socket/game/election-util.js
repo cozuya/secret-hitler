@@ -1,23 +1,14 @@
 const { sendInProgressGameUpdate } = require('../util');
-const { games } = require('../models');
 
 /**
- * @param {object} socket socket reference
- * @param {object} data from socket emit
+ * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} game - verifyed target game.
+ * @param {object} data - from socket emit.
  */
-module.exports.selectChancellor = (socket, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (
-		!game ||
-		!game.gameState ||
-		!game.private.seatedPlayers ||
-		!socket.handshake.session.passport ||
-		!game.publicPlayersState.find(player => player.userName === socket.handshake.session.passport.user) ||
-		((game.general.isTourny && game.general.tournyInfo.isCancelled) ||
-			data.chancellorIndex < game.general.minPlayersCount ||
-			data.chancellorIndex > game.general.maxPlayersCount)
-	) {
+module.exports.selectChancellor = (socket, passport, game, data) => {
+	if ((game.general.isTourny && game.general.tournyInfo.isCancelled) ||
+		data.chancellorIndex < game.general.playerCount) {
 		return;
 	}
 
