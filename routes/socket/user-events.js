@@ -1225,7 +1225,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleAddNewGameChat = (socket, passport, data) => {
-    // Authentication Assured in routes.js
+	// Authentication Assured in routes.js
 	const game = games.find(el => el.general.uid === data.uid);
 	const { chat } = data;
 
@@ -1240,7 +1240,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data) => {
 	if (
 		(player && player.isDead && !game.gameState.isCompleted) ||
 		(player && player.leftGame) ||
-		(!player && game.general.disableObserver && (!(MODERATORS.includes(passport.user) || !ADMINS.includes(passport.user) || !EDITORS.includes(passport.user)))) ||
+		(!player && game.general.disableObserver) ||
+		(!player && !(MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) ||
 		(user && !player && user.wins + user.losses < 2)
 	) {
 		return;
@@ -1338,7 +1339,6 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleNewGeneralChat = (socket, passport, data) => {
-    // Authentication Assured in routes.js
 	const user = userList.find(u => u.userName === passport.user);
 
 	if (data.chat.length > 300 || !data.chat.trim().length || !user || user.isPrivate) {
