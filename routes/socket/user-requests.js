@@ -97,9 +97,9 @@ module.exports.sendUserGameSettings = socket => {
 
 			socket.emit('gameSettings', account.gameSettings);
 
-			if (!userListNames.includes(username)) {
+			if (!userListNames.includes(passport.user)) {
 				const userListInfo = {
-					userName: username,
+					userName: passport.user,
 					wins: account.wins,
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,
@@ -123,7 +123,7 @@ module.exports.sendUserGameSettings = socket => {
 				userList.push(userListInfo);
 			}
 
-			getProfile(username);
+			getProfile(passport.user);
 
 			socket.emit('version', {
 				current: version,

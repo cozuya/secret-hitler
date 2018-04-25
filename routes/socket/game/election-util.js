@@ -7,16 +7,16 @@ const { games } = require('../models');
  */
 module.exports.selectChancellor = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
+	const { passport } = socket.handshake.session;
 
+	// todo: check to see if this selection is valid per term limits/dead people/ranges
 	if (
 		!game ||
 		!game.gameState ||
 		!game.private.seatedPlayers ||
-		!socket.passport.handshake.session ||
-		!game.publicPlayersState.find(player => player.userName === socket.passport.handshake.session).length ||
-		((game.general.isTourny && game.general.tournyInfo.isCancelled) ||
-			data.chancellorIndex < game.generel.minPlayersCount ||
-			data.chancellorIndex > game.general.maxPlayersCount)
+		!passport ||
+		!game.publicPlayersState.find(player => player.userName === passport.user) ||
+		(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
 		return;
 	}

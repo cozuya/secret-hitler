@@ -1214,7 +1214,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 	const { chat } = data;
 
-	if (!passport || !passport.user || passport.user !== data.userName || chat.length > 300 || !chat.trim().length || !game) {
+	if (!passport || !passport.user || chat.length > 300 || !chat.trim().length || !game) {
 		return;
 	}
 
@@ -1341,6 +1341,7 @@ module.exports.handleNewGeneralChat = (socket, data) => {
 			time: new Date(),
 			color,
 			seasonColor,
+			chat: data.chat,
 			userName: passport.user
 		};
 
