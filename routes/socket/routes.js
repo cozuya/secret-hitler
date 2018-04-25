@@ -155,8 +155,10 @@ module.exports = () => {
 			.on('getUserReports', () => {
 				sendUserReports(socket);
 			})
-			.on('updateUserStatus', (username, type, gameId) => {
-				updateUserStatus(username, type, gameId);
+			.on('updateUserStatus', (type, gameId) => {
+				if (socket.handshake.session.passport && socket.handshake.session.passport.user) {
+					updateUserStatus(socket.handshake.session.passport.user, type, gameId);
+				}
 			})
 			.on('getReplayGameChats', uid => {
 				sendReplayGameChats(socket, uid);

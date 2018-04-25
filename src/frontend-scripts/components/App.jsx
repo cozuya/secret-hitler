@@ -146,7 +146,7 @@ export class App extends React.Component {
 		 */
 		const updateStatus = (type, uid) => {
 			if (userInfo.userName) {
-				socket.emit('updateUserStatus', userInfo.userName, type, uid);
+				socket.emit('updateUserStatus', type, uid);
 			}
 		};
 

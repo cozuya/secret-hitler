@@ -291,6 +291,10 @@ if (process.env.NODE_ENV === 'production') {
  */
 const handleUserLeaveGame = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
+	const { passport } = socket.handshake.session;
+
+	if (!passport || !passport.user) {
+	}
 
 	if (io.sockets.adapter.rooms[data.uid] && socket) {
 		socket.leave(data.uid);
@@ -334,7 +338,7 @@ const handleUserLeaveGame = (socket, data) => {
 	}
 
 	if (!data.isRemake) {
-		updateUserStatus(data.userName, 'none', data.uid);
+		updateUserStatus(passport.user, 'none', data.uid);
 		socket.emit('gameUpdate', {});
 	}
 	sendGameList();
