@@ -473,6 +473,24 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		// Check if !user here in case of bug where user doesn't appear on userList
 		return;
 	}
+	
+	// Make sure it exists
+	if(!data || !data.general) return;
+	
+	var a;
+	var playerCounts = [];
+	for(a = Math.max(data.general.minPlayersCount, 5); a <= Math.min(10, data.general.maxPlayersCount); a++) {
+		if(!data.general.excludedPlayerCount.includes(a)) playerCounts.push(a);
+	}
+	if(playerCounts.length == 0) {
+		// Someone is messing with the data, ignore it
+		return;
+	}
+	
+	var excludes = [];
+	for(a = playerCounts[0]; a <= playerCounts[playerCounts.length-1]; a++) {
+		if(!playerCounts.includes(a)) excludes.push(a);
+	}
 
 	const newGame = {
 		gameState: {
@@ -486,13 +504,13 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			whitelistedPlayers: [],
 			uid: data.isTourny ? `${generateCombination(2, '', true)}Tournament` : generateCombination(2, '', true),
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
-			flag: data.flag || 'none',
-			minPlayersCount: typeof data.minPlayersCount === 'number' && data.minPlayersCount > 4 && data.minPlayersCount < 11 ? data.minPlayersCount : 5,
+			flag: data.flag || 'none', //TODO: verify that the flag exists, or that an invalid flag does not cause issues
+			minPlayersCount: playerCounts[0],
 			gameCreatorName: user.userName,
 			gameCreatorBlacklist: user.blacklist,
-			excludedPlayerCount: data.excludedPlayerCount, // should check this but its minor
-			maxPlayersCount: typeof data.maxPlayersCount === 'number' && data.maxPlayersCount > 4 && data.maxPlayersCount < 11 ? data.maxPlayersCount : 10,
-			status: `Waiting for ${typeof data.minPlayersCount === 'number' ? data.minPlayersCount - 1 : 4} more players..`,
+			excludedPlayerCount: excludes,
+			maxPlayersCount: playerCounts[playerCounts.length-1],
+			status: `Waiting for ${playerCounts[0]-1} more players..`,
 			experiencedMode: data.experiencedMode,
 			disableChat: data.disableChat,
 			disableObserver: data.disableObserver && !data.isTourny,
