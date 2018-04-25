@@ -70,7 +70,7 @@ const findGame = (data) => {
 };
 
 const ensureInGame = (passport, game) => {
-	if (game && publicPlayersState && game.gameState && passport && passport.user) {
+	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
 		const player = game.publicPlayersState.find(player => player.userName === passport.user);
 		if (player) {
 			return true;
@@ -266,7 +266,7 @@ module.exports = () => {
 			.on('selectedPolicies', data => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					selectPolicies(data);
+					selectPolicies(passport, game, data);
 				}
 			})
 			.on('selectedPlayerToExecute', data => {
