@@ -820,18 +820,20 @@ const selectPresidentPolicy = data => {
 module.exports.selectPresidentPolicy = selectPresidentPolicy;
 
 /**
+ * @param {object} socket socket reference
  * @param {object} data from socket emit
  */
-module.exports.selectVoting = data => {
+module.exports.selectVoting = (socket, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
+	const { passport } = socket.handshake.session;
 
-	if (!game) {
+	if (!passport || !game) {
 		return;
 	}
 
 	const { seatedPlayers } = game.private;
 	const { experiencedMode } = game.general;
-	const player = seatedPlayers.find(player => player.userName === data.userName);
+	const player = seatedPlayers.find(player => player.userName === passport.user);
 	const playerIndex = seatedPlayers.findIndex(play => play.userName === data.userName);
 	const failedElection = () => {
 		game.trackState.electionTrackerCount++;
