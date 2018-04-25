@@ -64,11 +64,13 @@ const ensureAuthenticated = socket => {
 };
 
 const findGame = (data) => {
-	return games.find(el => el.general.uid === data.uid);
+	if (games && data && data.uid) {
+		return games.find(el => el.general.uid === data.uid);
+	}
 };
 
 const ensureInGame = (passport, game) => {
-	if (game && game.gameState) {
+	if (game && publicPlayersState && game.gameState && passport && passport.user) {
 		const player = game.publicPlayersState.find(player => player.userName === passport.user);
 		if (player) {
 			return true;
@@ -87,7 +89,7 @@ module.exports = () => {
 		socket.use((packet, next) => {
 			const data = packet[1];
 			const uid = data && data.uid;
-			const isGameFound = uid && games.find(g => g.general.uid === uid);
+			const isGameFound = uid && findGame(data);
 
 			if (!uid || isGameFound) {
 				return next();
