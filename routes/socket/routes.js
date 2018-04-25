@@ -53,10 +53,10 @@ const gamesGarbageCollector = () => {
 	sendGameList();
 };
 
-const ensureAuthenticated = (socket) => {
+const ensureAuthenticated = socket => {
 	if (socket.handshake && socket.handshake.session) {
-        const { passport } = socket.handshake.session;
-        if (passport && passport.user && Object.keys(passport).length) {
+		const { passport } = socket.handshake.session;
+		if (passport && passport.user && Object.keys(passport).length) {
 			return true;
 		}
 	}
@@ -64,10 +64,10 @@ const ensureAuthenticated = (socket) => {
 };
 
 const ensureIngame = (passport, uid) => {
-    const game = games.find(el => el.general.uid === uid);
-    if (game) {
-        const player = game.publicPlayersState.find(player => player.userName === passport.user);
-        if (player) {
+	const game = games.find(el => el.general.uid === uid);
+	if (game) {
+		const player = game.publicPlayersState.find(player => player.userName === passport.user);
+		if (player) {
 			return true;
 		}
 	}
@@ -93,8 +93,8 @@ module.exports = () => {
 			}
 		});
 
-        const { passport } = socket.handshake.session;
-        const authenticated = ensureAuthenticated(socket);
+		const { passport } = socket.handshake.session;
+		const authenticated = ensureAuthenticated(socket);
 
 		socket
 			// user-events
@@ -107,53 +107,53 @@ module.exports = () => {
 			})
 			.on('updateModAction', data => {
 				if (authenticated) {
-                    handleModerationAction(socket, data);
+					handleModerationAction(socket, data);
 				}
 			})
 			.on('addNewClaim', data => {
 				if (authenticated && ensureIngame(passport, data.uid)) {
-                    handleAddNewClaim(passport, data);
+					handleAddNewClaim(passport, data);
 				}
 			})
 			.on('updateGameWhitelist', data => {
-                if (authenticated && ensureIngame(passport, data.uid)) {
-                    handleUpdateWhitelist(passport, data);
-                }
+				if (authenticated && ensureIngame(passport, data.uid)) {
+					handleUpdateWhitelist(passport, data);
+				}
 			})
 			.on('updateTruncateGame', data => {
 				handleUpdatedTruncateGame(data);
 			})
 			.on('addNewGameChat', data => {
-                if (authenticated) {
-                    handleAddNewGameChat(socket, passport, data);
-                }
+				if (authenticated) {
+					handleAddNewGameChat(socket, passport, data);
+				}
 			})
 			.on('updateReportGame', data => {
 				handleUpdatedReportGame(socket, data);
 			})
 			.on('addNewGame', data => {
 				if (authenticated) {
-                    handleAddNewGame(socket, passport, data);
+					handleAddNewGame(socket, passport, data);
 				}
 			})
 			.on('updateGameSettings', data => {
 				if (authenticated) {
-                    handleUpdatedGameSettings(socket, data);
+					handleUpdatedGameSettings(socket, data);
 				}
 			})
 			.on('addNewGeneralChat', data => {
 				if (authenticated) {
-                    handleNewGeneralChat(socket, data);
+					handleNewGeneralChat(socket, data);
 				}
 			})
 			.on('leaveGame', data => {
-                if (authenticated && ensureIngame(passport, data.uid)) {
-                    handleUserLeaveGame(socket, passport, data);
-                }
+				if (authenticated && ensureIngame(passport, data.uid)) {
+					handleUserLeaveGame(socket, passport, data);
+				}
 			})
 			.on('updateSeatedUser', data => {
 				if (authenticated) {
-                    updateSeatedUser(socket, passport, data);
+					updateSeatedUser(socket, passport, data);
 				}
 			})
 			.on('playerReport', data => {
@@ -167,7 +167,7 @@ module.exports = () => {
 			})
 			.on('updateBio', data => {
 				if (authenticated) {
-                    handleUpdatedBio(socket, passport, data);
+					handleUpdatedBio(socket, passport, data);
 				}
 			})
 			// user-requests
