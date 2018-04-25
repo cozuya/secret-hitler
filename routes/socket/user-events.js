@@ -475,12 +475,12 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	}
 	
 	// Make sure it exists
-	if(!data || !data.general) return;
+	if(!data) return;
 	
 	var a;
 	var playerCounts = [];
-	for(a = Math.max(data.general.minPlayersCount, 5); a <= Math.min(10, data.general.maxPlayersCount); a++) {
-		if(!data.general.excludedPlayerCount.includes(a)) playerCounts.push(a);
+	for(a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
+		if(!data.excludedPlayerCount.includes(a)) playerCounts.push(a);
 	}
 	if(playerCounts.length == 0) {
 		// Someone is messing with the data, ignore it
