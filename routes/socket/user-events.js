@@ -1144,15 +1144,16 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 
 	data.timestamp = new Date();
 
+	const pinged = /^Ping(\d{1,2})/i.exec(chat)[0];
+
 	if (
-		/^Ping/i.test(chat) &&
+        pinged && player &&
 		game.gameState.isStarted &&
-		player &&
-		(parseInt(chat.charAt(4)) <= game.publicPlayersState.length || chat.substr(4, 5) === '10') &&
+		(parseInt(pinged[0]) <= game.publicPlayersState.length) &&
 		(!player.pingTime || new Date().getTime() - player.pingTime > 180000)
 	) {
 		try {
-			const affectedPlayerNumber = parseInt(chat.substr(4, 5) === '10' ? 10 : chat.charAt(4)) - 1;
+			const affectedPlayerNumber = parseInt(pinged[0]) - 1;
 			const affectedSocketId = Object.keys(io.sockets.sockets).find(
 				socketId =>
 					io.sockets.sockets[socketId].handshake.session.passport &&
@@ -1187,7 +1188,7 @@ module.exports.handleAddNewGameChat = (socket, data) => {
 		} catch (e) {
 			console.log(e, 'caught exception in ping chat');
 		}
-	} else if (!/^Ping/i.test(chat)) {
+	} else if (!pinged) {
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
