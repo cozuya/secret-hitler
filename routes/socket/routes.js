@@ -276,7 +276,10 @@ module.exports = () => {
 				}
 			})
 			.on('selectedSpecialElection', data => {
-				selectSpecialElection(passport, game, data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectSpecialElection(passport, game, data);
+				}
 			});
 	});
 };

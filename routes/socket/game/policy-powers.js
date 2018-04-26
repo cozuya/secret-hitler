@@ -326,15 +326,11 @@ module.exports.specialElection = game => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data from socket emit
  */
 module.exports.selectSpecialElection = (passport, game, data) => {
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (!game || !game.gameState) {
-		return;
-	}
-
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const selectedPlayer = seatedPlayers[playerIndex];
