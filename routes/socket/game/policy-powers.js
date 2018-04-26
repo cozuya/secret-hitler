@@ -411,6 +411,13 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 	const selectedPlayer = seatedPlayers[playerIndex];
 	const publicSelectedPlayer = game.publicPlayersState[playerIndex];
 	const president = seatedPlayers[presidentIndex];
+	
+	// Make sure the target is valid
+	if (playerIndex === presidentIndex ||
+		selectedPlayer.isDead ||
+	   (selectedPlayer.role.cardName === "hitler" && president.role.cardName === "fascist")) {
+		return;
+	}
 
 	if (president.userName !== passport.user) {
 		return;

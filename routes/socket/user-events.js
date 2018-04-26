@@ -511,7 +511,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			excludedPlayerCount: excludes,
 			maxPlayersCount: playerCounts[playerCounts.length-1],
 			status: `Waiting for ${playerCounts[0]-1} more players..`,
-			//experiencedMode: data.experiencedMode,
+			experiencedMode: data.experiencedMode,
 			disableChat: data.disableChat,
 			disableObserver: data.disableObserver && !data.isTourny,
 			// isTourny: data.isTourny, // temp
@@ -613,7 +613,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		}
 
 		newGame.general.timeCreated = currentTime;
-		updateUserStatus(user.userName, newGame.general.rainbowgame ? 'rainbow' : 'playing', newGame.general.uid);
+		updateUserStatus(user.userName, newGame.general.rainbowGame ? 'rainbow' : 'playing', newGame.general.uid);
 		games.push(newGame);
 		sendGameList();
 		socket.join(newGame.general.uid);
