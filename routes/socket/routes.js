@@ -276,7 +276,7 @@ module.exports = () => {
 				}
 			})
 			.on('selectedSpecialElection', data => {
-				selectSpecialElection(data);
+				selectSpecialElection(passport, game, data);
 			});
 	});
 };

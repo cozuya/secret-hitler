@@ -190,6 +190,10 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
 	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
+	
+	if (playerIndex === presidentIndex) {
+		return;
+	}
 
 	if (president.userName !== passport.user) {
 		return;
@@ -324,10 +328,22 @@ module.exports.specialElection = game => {
 /**
  * @param {object} data from socket emit
  */
-module.exports.selectSpecialElection = data => {
+module.exports.selectSpecialElection = (passport, game, data) => {
 	const game = games.find(el => el.general.uid === data.uid);
 
 	if (!game || !game.gameState) {
+		return;
+	}
+
+	const { playerIndex } = data;
+	const { presidentIndex } = game.gameState;
+	const selectedPlayer = seatedPlayers[playerIndex];
+	const president = seatedPlayers[presidentIndex];
+	if (president.userName !== passport.user) {
+		return;
+	}
+	
+	if (playerIndex === presidentIndex) {
 		return;
 	}
 
