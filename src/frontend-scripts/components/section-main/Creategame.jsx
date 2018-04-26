@@ -16,6 +16,7 @@ export default class Creategame extends React.Component {
 		this.timedSliderChange = this.timedSliderChange.bind(this);
 
 		this.state = {
+			gameName: "",
 			sliderValues: [5, 10],
 			experiencedmode: false,
 			disablechat: false,
@@ -190,6 +191,7 @@ export default class Creategame extends React.Component {
 		} else {
 			const excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 			const data = {
+				gameName: $creategame.find('div.gamename input').val(),
 				flag: $creategame.find('div.flag input').val() || 'none',
 				minPlayersCount: this.state.sliderValues[0],
 				// gameCreatorBlacklist: userInfo.gameSettings.blacklist,
