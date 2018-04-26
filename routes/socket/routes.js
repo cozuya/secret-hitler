@@ -145,7 +145,7 @@ module.exports = () => {
 			})
 			.on('updateGameSettings', data => {
 				if (authenticated) {
-					handleUpdatedGameSettings(socket, data);
+					handleUpdatedGameSettings(socket, passport, data);
 				}
 			})
 			.on('addNewGeneralChat', data => {
