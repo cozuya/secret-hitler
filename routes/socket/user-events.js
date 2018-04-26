@@ -384,7 +384,7 @@ updateSeatedUser = (socket, passport, data) => {
 		.then(account => {
 			const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
 			const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
-            const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.isRainbow);
+            const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && (account.wins + account.losses > 49));
 			const isPrivateSafe = !game.general.private || (game.general.private &&
 				(data.password === game.private.privatePassword ||
 					game.general.whitelistedPlayers.includes(passport.user)));
@@ -519,7 +519,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			// isTourny: data.isTourny, // temp
 			isTourny: false,
 			disableGamechat: data.disablegamechat,
-			rainbowGame: user.wins + user.losses > 49 ? data.rainbowgame : false,
+			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 && !data.casualGame ? true : data.casualGame,
@@ -1868,35 +1868,6 @@ module.exports.checkUserStatus = (socket) => {
 			socket.emit('updateSeatForUser');
 			sendInProgressGameUpdate(game);
 		}
-
-      Account.findOne({ username: user })
-        .then(account => {
-          const userListNames = userList.map(user => user.userName);
-          if (!userListNames.includes(user)) {
-            const userListInfo = {
-              userName: user,
-              wins: account.wins,
-              losses: account.losses,
-              rainbowWins: account.rainbowWins,
-              rainbowLosses: account.rainbowLosses,
-              isPrivate: account.gameSettings.isPrivate,
-              tournyWins: account.gameSettings.tournyWins,
-              blacklist: account.gameSettings.blacklist,
-              customCardback: account.gameSettings.customCardback,
-              customCardbackUid: account.gameSettings.customCardbackUid,
-              previousSeasonAward: account.gameSettings.previousSeasonAward,
-              status: {
-								type: game ? (game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
-								gameId: game ? game.general.uid : null
-              }
-            };
-            userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
-            userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
-            userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
-            userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
-            userList.push(userListInfo);
-          }
-        });
     }
 
 	socket.emit('version', { current: version });
