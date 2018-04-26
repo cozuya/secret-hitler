@@ -1245,14 +1245,21 @@ module.exports.handleAddNewGameChat = (socket, passport, data) => {
 	const player = publicPlayersState.find(player => player.userName === passport.user);
 	const user = userList.find(u => passport.user === u.userName);
 
-	if (
-		(player && player.isDead && !game.gameState.isCompleted) ||
-		(player && player.leftGame) ||
-		(!player && game.general.disableObserver) ||
-		(!player && !(MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) ||
-		(user && !player && user.wins + user.losses < 2)
-	) {
-		return;
+	if (!user) return;
+	
+	if (!(MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
+		if (player) {
+			if ((player.isDead && !game.gameState.isCompleted) ||
+				(player.leftGame)) {
+				 return;
+			 }
+		}
+		else {
+			if((game.general.disableObserver) ||
+			   (user.wins + user.losses < 2)) {
+			   return;
+		   }
+		}
 	}
 
 	const { gameState } = game;
