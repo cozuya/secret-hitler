@@ -370,7 +370,7 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.updateSeatedUser = (socket, passport, data) => {
+updateSeatedUser = (socket, passport, data) => {
     // Authentication Assured in routes.js
     // In-game Assured in routes.js
 	const game = games.find(el => el.general.uid === data.uid);
@@ -441,6 +441,8 @@ module.exports.updateSeatedUser = (socket, passport, data) => {
             }
 		});
 };
+
+module.exports.updateSeatedUser = updateSeatedUser;
 
 /**
  * @param {object} socket - user socket reference.
@@ -1018,6 +1020,8 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
+	if(game.general.isRemade) return;
+	
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { publicPlayersState } = game;
 	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
@@ -1113,17 +1117,20 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		sendInProgressGameUpdate(game);
 
 		setTimeout(() => {
-			remakePlayerNames.forEach(name => {
-				const play = game.publicPlayersState.find(p => p.userName === name);
-
-				play.leftGame = true;
+			game.publicPlayersState.forEach(player => {
+				if (remakePlayerNames.includes(player.userName)) player.leftGame = true;
 			});
+			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+				games.splice(games.indexOf(game), 1);
+			}
+			else sendInProgressGameUpdate(game);
 			games.push(newGame);
 			sendGameList();
 			remakePlayerSocketIDs.forEach((id, index) => {
 				if (io.sockets.sockets[id]) {
-					//io.sockets.sockets[id].leave(game.general.uid);
+					io.sockets.sockets[id].leave(game.general.uid);
 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
+					updateSeatedUser(io.sockets.sockets[id], passport, {uid: newGame.general.uid});
 					/*handleUserLeaveGame(io.sockets.sockets[id], passport,
 						game,
 						{
@@ -1134,9 +1141,6 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 				}
 			});
 			checkStartConditions(newGame);
-			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-				games.splice(games.indexOf(game), 1);
-			}
 		}, 3000);
 	};
 
