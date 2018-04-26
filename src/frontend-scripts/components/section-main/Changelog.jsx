@@ -9,7 +9,7 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.13.3 released 4-24-2018</p>
+			<p>Version 0.13.3 released 4-25-2018</p>
 		</div>
 		<h3>Tournaments temporarily disabled, see below.</h3>
 		<h3>Security update</h3>
