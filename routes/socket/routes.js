@@ -216,9 +216,10 @@ module.exports = () => {
 				sendUserReports(socket);
 			})
 			.on('updateUserStatus', (type, gameId) => {
+				// TODO: see if type is ever 'replay', not sure where replay viewing is handled
 				const game = findGame({uid: gameId});
 				if (authenticated && ensureInGame(passport, game)) {
-					updateUserStatus(passport, game, type);
+					updateUserStatus(passport, game);
 				}
 			})
 			.on('getReplayGameChats', uid => {

@@ -335,7 +335,7 @@ const handleUserLeaveGame = (socket, passport, game, data) => {
 	}
 
 	if (!data.isRemake) {
-		updateUserStatus(passport.user, 'none', game.general.uid);
+		updateUserStatus(passport, null);
 		socket.emit('gameUpdate', {});
 	}
 	sendGameList();
@@ -435,7 +435,7 @@ updateSeatedUser = (socket, passport, data) => {
 
                 socket.emit('updateSeatForUser', true);
                 checkStartConditions(game);
-                updateUserStatus(passport.user, game.general.rainbowgame ? 'rainbow' : 'playing', data.uid);
+                updateUserStatus(passport, game);
                 io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
                 sendGameList();
             }
@@ -615,7 +615,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		}
 
 		newGame.general.timeCreated = currentTime;
-		updateUserStatus(user.userName, newGame.general.rainbowGame ? 'rainbow' : 'playing', newGame.general.uid);
+		updateUserStatus(passport, newGame);
 		games.push(newGame);
 		sendGameList();
 		socket.join(newGame.general.uid);
