@@ -146,11 +146,10 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 						unvotedPlayerNames.forEach(userName => {
 							const { selectVoting } = require('./election');
 
-							selectVoting({
-								userName,
-								uid: game.general.uid,
-								vote: Boolean(Math.random() > 0.5)
-							});
+							selectVoting({user: userName},
+								game,
+								{vote: Boolean(Math.random() > 0.5)}
+							);
 						});
 					}
 				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);

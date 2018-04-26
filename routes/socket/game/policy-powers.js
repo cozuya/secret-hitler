@@ -28,9 +28,8 @@ module.exports.policyPeek = game => {
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
- * @param {object} data from socket emit
  */
-module.exports.selectPolicies = (passport, game, data) => {
+module.exports.selectPolicies = (passport, game) => {
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
@@ -333,8 +332,8 @@ module.exports.specialElection = game => {
 module.exports.selectSpecialElection = (passport, game, data) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
-	const selectedPlayer = seatedPlayers[playerIndex];
-	const president = seatedPlayers[presidentIndex];
+	const selectedPlayer = game.private.seatedPlayers[playerIndex];
+	const president = game.private.seatedPlayers[presidentIndex];
 	if (president.userName !== passport.user) {
 		return;
 	}

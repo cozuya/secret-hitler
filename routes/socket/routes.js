@@ -206,7 +206,7 @@ module.exports = () => {
 			.on('selectedChancellorVoteOnVeto', data => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					selectChancellorVoteOnVeto(game, data);
+					selectChancellorVoteOnVeto(passport, game, data);
 				}
 			})
 			.on('getModInfo', count => { // I cant tell if this needs to be secure or not
@@ -266,7 +266,7 @@ module.exports = () => {
 			.on('selectedPolicies', data => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					selectPolicies(passport, game, data);
+					selectPolicies(passport, game);
 				}
 			})
 			.on('selectedPlayerToExecute', data => {
