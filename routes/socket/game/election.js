@@ -205,14 +205,15 @@ const enactPolicy = (game, team) => {
 				game.private.timerId = setTimeout(() => {
 					if (game.gameState.timedModeEnabled) {
 						game.gameState.timedModeEnabled = false;
+						const president = seatedPlayers[presidentIndex];
 						switch (powerToEnact[1]) {
 							case 'The president must examine the top 3 policies.':
-								selectPolicies({user: game.private.seatedPlayers[game.gameState.presidentIndex].userName}, game);
+								selectPolicies({user: president.userName}, game);
 								break;
 							case 'The president must select a player for execution.':
 								
 								let list = seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead);
-								if (game.private.seatedPlayers[game.gameState.presidentIndex].role.cardName === "fascist") {
+								if (president.role.cardName === "fascist") {
 									list = list.filter((player) => player.role.cardName !== "hitler");
 								}
 								
@@ -221,12 +222,12 @@ const enactPolicy = (game, team) => {
 								);
 								break;
 							case 'The president must investigate the party membership of another player.':
-								selectPartyMembershipInvestigate({user: game.private.seatedPlayers[game.gameState.presidentIndex].userName}, game,
+								selectPartyMembershipInvestigate({user: president.userName}, game,
 									{playerIndex: seatedPlayers.indexOf(_.shuffle(seatedPlayers.filter((player, i) => i !== presidentIndex))[0])}
 								);
 								break;
 							case 'The president must select a player for a special election.':
-								selectSpecialElection({user: game.private.seatedPlayers[game.gameState.presidentIndex].userName}, game,
+								selectSpecialElection({user: president.userName}, game,
 									{playerIndex: seatedPlayers.indexOf(_.shuffle(seatedPlayers.filter((player, i) => i !== presidentIndex))[0])}
 								);
 								break;
