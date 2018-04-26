@@ -1121,18 +1121,21 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 			sendGameList();
 			remakePlayerSocketIDs.forEach((id, index) => {
 				if (io.sockets.sockets[id]) {
-					io.sockets.sockets[id].leave(game.general.uid);
+					//io.sockets.sockets[id].leave(game.general.uid);
 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-					handleUserLeaveGame(io.sockets.sockets[id], passport,
+					/*handleUserLeaveGame(io.sockets.sockets[id], passport,
 						game,
 						{
 							isSeated: true,
 							isRemake: true
 						}
-					);
+					);*/
 				}
 			});
 			checkStartConditions(newGame);
+			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+				games.splice(games.indexOf(game), 1);
+			}
 		}, 3000);
 	};
 
