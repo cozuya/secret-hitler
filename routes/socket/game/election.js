@@ -210,9 +210,14 @@ const enactPolicy = (game, team) => {
 								selectPolicies({user: game.private.seatedPlayers[game.gameState.presidentIndex].userName}, game);
 								break;
 							case 'The president must select a player for execution.':
+								
+								let list = seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead);
+								if (game.private.seatedPlayers[game.gameState.presidentIndex].role.cardName === "fascist") {
+									list = list.filter((player) => player.role.cardName !== "hitler");
+								}
+								
 								selectPlayerToExecute({user: game.private.seatedPlayers[game.gameState.presidentIndex].userName}, game,
-									// TODO: prevent fas killing hit
-									{playerIndex: seatedPlayers.indexOf(_.shuffle(seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead))[0])}
+									{playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0])}
 								);
 								break;
 							case 'The president must investigate the party membership of another player.':
