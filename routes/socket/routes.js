@@ -56,11 +56,9 @@ const gamesGarbageCollector = () => {
 const ensureAuthenticated = socket => {
 	if (socket.handshake && socket.handshake.session) {
 		const { passport } = socket.handshake.session;
-		if (passport && passport.user && Object.keys(passport).length) {
-			return true;
-		}
+
+		return Boolean(passport && passport.user && Object.keys(passport).length);
 	}
-	return false;
 };
 
 const findGame = data => {
@@ -72,11 +70,9 @@ const findGame = data => {
 const ensureInGame = (passport, game) => {
 	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
 		const player = game.publicPlayersState.find(player => player.userName === passport.user);
-		if (player) {
-			return true;
-		}
+
+		return Boolean(player);
 	}
-	return false;
 };
 
 module.exports = () => {
