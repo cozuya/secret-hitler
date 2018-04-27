@@ -332,7 +332,7 @@ class ProfileWrapper extends React.Component {
 									onClick={() => {
 										const { gameSettings } = this.props.userInfo;
 
-										gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(name), 1);
+										gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(playerName), 1);
 										this.props.socket.emit('updateGameSettings', gameSettings);
 										setTimeout(() => {
 											this.forceUpdate();

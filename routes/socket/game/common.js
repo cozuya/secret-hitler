@@ -17,7 +17,9 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 				1,
 				(game.general.rebalance7p && game.private.seatedPlayers.length === 7
 					? 11
-					: game.general.rebalance9p2f && is9pRebalanceStart && game.private.seatedPlayers.length === 9 ? 10 : 12) -
+					: game.general.rebalance9p2f && is9pRebalanceStart && game.private.seatedPlayers.length === 9
+						? 10
+						: 12) -
 					(game.trackState.fascistPolicyCount + (count.fascist || 0))
 			)
 				.map(num => 'fascist')
@@ -157,10 +159,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			if (game.gameState.timedModeEnabled) {
 				const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
 
-				selectChancellor({
-					chancellorIndex,
-					uid: game.general.uid
-				});
+				selectChancellor(null, { user: pendingPresidentPlayer.userName }, game, { chancellorIndex });
 			}
 		}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 	}

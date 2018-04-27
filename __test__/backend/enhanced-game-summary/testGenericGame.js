@@ -62,19 +62,20 @@ export default () => {
 		});
 
 		it('should track votes', () => {
-			const getVotes = turnNum => turns.get(turnNum).votes
-				.map(v => v.isSome() ? v.value() : null);
+			const getVotes = turnNum => turns.get(turnNum).votes.map(v => (v.isSome() ? v.value() : null));
 
 			// immutable collections don't deep compare so convert to array then check
-			const allJas = Range(0, 7).map(i => true).toArray();
+			const allJas = Range(0, 7)
+				.map(i => true)
+				.toArray();
 
 			Range(0, 8).forEach(i => {
 				expect(getVotes(i).size).toBe(7);
 			});
 
 			expect(getVotes(0).toArray()).toEqual(allJas);
-			expect(getVotes(5).toArray()).toEqual([ true, false, false, null, false, false, false ]);
-			expect(getVotes(7).toArray()).toEqual([ true, false, null, null, true, true, true ]);
+			expect(getVotes(5).toArray()).toEqual([true, false, false, null, false, false, false]);
+			expect(getVotes(7).toArray()).toEqual([true, false, null, null, true, true, true]);
 		});
 
 		it('should track jas', () => {
@@ -360,13 +361,25 @@ export default () => {
 		});
 
 		it('should track votes', () => {
-			expect(game.votesOf('Uther').value().get(4)).toEqual(some({
-				ja: true,
-				presidentId: 4,
-				chancellorId: 2
-			}));
+			expect(
+				game
+					.votesOf('Uther')
+					.value()
+					.get(4)
+			).toEqual(
+				some({
+					ja: true,
+					presidentId: 4,
+					chancellorId: 2
+				})
+			);
 
-			expect(game.votesOf('Malfurian').value().get(5)).toEqual(none);
+			expect(
+				game
+					.votesOf('Malfurian')
+					.value()
+					.get(5)
+			).toEqual(none);
 		});
 
 		it('should track hitler zone', () => {
