@@ -261,7 +261,7 @@ const sendUserList = (module.exports.sendUserList = socket => {
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
- * @param {string} type - type of user status to be displayed.
+ * @param {string} override - type of user status to be displayed.
  */
 const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
 	const user = userList.find(user => user.userName === passport.user);
