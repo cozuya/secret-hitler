@@ -63,7 +63,7 @@ const ensureAuthenticated = socket => {
 	return false;
 };
 
-const findGame = (data) => {
+const findGame = data => {
 	if (games && data && data.uid) {
 		return games.find(el => el.general.uid === data.uid);
 	}
@@ -209,15 +209,15 @@ module.exports = () => {
 					selectChancellorVoteOnVeto(passport, game, data);
 				}
 			})
-			.on('getModInfo', count => { // I cant tell if this needs to be secure or not
+			.on('getModInfo', count => {
 				sendModInfo(socket, count);
 			})
-			.on('getUserReports', () => { // This one too
+			.on('getUserReports', () => {
 				sendUserReports(socket);
 			})
 			.on('updateUserStatus', (type, gameId) => {
 				// TODO: see if type is ever 'replay', not sure where replay viewing is handled
-				const game = findGame({uid: gameId});
+				const game = findGame({ uid: gameId });
 				if (authenticated && ensureInGame(passport, game)) {
 					updateUserStatus(passport, game);
 				}
