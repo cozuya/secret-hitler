@@ -27,6 +27,7 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Skyrra',
 	'jbasrai',
 	'sethe',
+	'bot',
 	'veggiemanz',
 	'DFinn',
 	'conundrum',
