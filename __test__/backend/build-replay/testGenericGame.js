@@ -24,9 +24,10 @@ export default () => {
 			});
 		};
 
-		const findPhase = (phase, turnNum) => replay.find(t => {
-			return t.turnNum === turnNum && t.phase === phase;
-		});
+		const findPhase = (phase, turnNum) =>
+			replay.find(t => {
+				return t.turnNum === turnNum && t.phase === phase;
+			});
 
 		const testCandidacy = (snapshot, turnNum, phase, track, deadPlayers, electionTracker, presidentId) => {
 			testSnapshot(snapshot, turnNum, phase, track, deadPlayers, electionTracker);
@@ -102,10 +103,18 @@ export default () => {
 
 		describe('should take the correct snapshot for turn', () => {
 			it('0', () => {
-				testCandidacy(findCandidacy(0), 0, 'candidacy', {
-					reds: 0,
-					blues: 0
-				}, [], 0, 0);
+				testCandidacy(
+					findCandidacy(0),
+					0,
+					'candidacy',
+					{
+						reds: 0,
+						blues: 0
+					},
+					[],
+					0,
+					0
+				);
 
 				testNomination(0, 0, 1);
 
@@ -123,10 +132,18 @@ export default () => {
 			});
 
 			it('1', () => {
-				testCandidacy(findCandidacy(1), 1, 'candidacy', {
-					reds: 1,
-					blues: 0
-				}, [], 0, 1);
+				testCandidacy(
+					findCandidacy(1),
+					1,
+					'candidacy',
+					{
+						reds: 1,
+						blues: 0
+					},
+					[],
+					0,
+					1
+				);
 
 				testNomination(1, 1, 3);
 
@@ -150,10 +167,18 @@ export default () => {
 			});
 
 			it('5', () => {
-				testCandidacy(findCandidacy(5), 5, 'candidacy', {
-					reds: 4,
-					blues: 0
-				}, [3], 1, 5);
+				testCandidacy(
+					findCandidacy(5),
+					5,
+					'candidacy',
+					{
+						reds: 4,
+						blues: 0
+					},
+					[3],
+					1,
+					5
+				);
 
 				testNomination(5, 5, 4);
 
@@ -171,10 +196,18 @@ export default () => {
 			});
 
 			it('6', () => {
-				testCandidacy(findCandidacy(6), 6, 'candidacy', {
-					reds: 4,
-					blues: 0
-				}, [3], 2, 6);
+				testCandidacy(
+					findCandidacy(6),
+					6,
+					'candidacy',
+					{
+						reds: 4,
+						blues: 0
+					},
+					[3],
+					2,
+					6
+				);
 
 				testNomination(6, 6, 2);
 
@@ -192,10 +225,18 @@ export default () => {
 			});
 
 			it('7', () => {
-				testCandidacy(findCandidacy(7), 7, 'candidacy', {
-					reds: 5,
-					blues: 0
-				}, [2, 3], 0, 0);
+				testCandidacy(
+					findCandidacy(7),
+					7,
+					'candidacy',
+					{
+						reds: 5,
+						blues: 0
+					},
+					[2, 3],
+					0,
+					0
+				);
 
 				testNomination(7, 0, 5);
 

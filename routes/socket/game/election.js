@@ -204,24 +204,26 @@ const enactPolicy = (game, team) => {
 				game.gameState.timedModeEnabled = true;
 				game.private.timerId = setTimeout(() => {
 					if (game.gameState.timedModeEnabled) {
-						game.gameState.timedModeEnabled = false;
 						const president = seatedPlayers[presidentIndex];
 						let list = seatedPlayers.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead);
+
+						game.gameState.timedModeEnabled = false;
+
 						switch (powerToEnact[1]) {
 							case 'The president must examine the top 3 policies.':
-								selectPolicies({user: president.userName}, game);
+								selectPolicies({ user: president.userName }, game);
 								break;
 							case 'The president must select a player for execution.':
-								if (president.role.cardName === "fascist") {
-									list = list.filter((player) => player.role.cardName !== "hitler");
+								if (president.role.cardName === 'fascist') {
+									list = list.filter(player => player.role.cardName !== 'hitler');
 								}
-								selectPlayerToExecute({user: president.userName}, game, {playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0])});
+								selectPlayerToExecute({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) });
 								break;
 							case 'The president must investigate the party membership of another player.':
-								selectPartyMembershipInvestigate({user: president.userName}, game, {playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0])});
+								selectPartyMembershipInvestigate({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) });
 								break;
 							case 'The president must select a player for a special election.':
-								selectSpecialElection({user: president.userName}, game, {playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0])});
+								selectSpecialElection({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) });
 								break;
 						}
 					}
@@ -373,6 +375,7 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 module.exports.selectPresidentVoteOnVeto = selectPresidentVoteOnVeto;
 
 /**
+ * @param {object} passport - passport auth.
  * @param {object} game - target game.
  * @param {object} data - socket emit
  */
@@ -382,7 +385,7 @@ const selectChancellorVoteOnVeto = (passport, game, data) => {
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 	const chancellor = game.private.seatedPlayers.find(player => player.userName === game.private._chancellorPlayerName);
 	const publicChancellor = game.publicPlayersState[chancellorIndex];
-	
+
 	if (passport.user !== publicChancellor.userName) {
 		return;
 	}
@@ -504,10 +507,7 @@ const selectChancellorVoteOnVeto = (passport, game, data) => {
 						game.private.timerId = setTimeout(() => {
 							if (game.gameState.timedModeEnabled) {
 								game.gameState.timedModeEnabled = false;
-								selectPresidentVoteOnVeto({user: president.userName},
-														  game,
-														  {vote: Boolean(Math.floor(Math.random() * 2))}
-							    );
+								selectPresidentVoteOnVeto({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
 							}
 						}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 					}
@@ -635,15 +635,12 @@ const selectChancellorPolicy = (passport, game, data) => {
 					game.gameState.phase = 'chancellorVoteOnVeto';
 
 					if (game.general.timedMode) {
-						game.gameState.timedModeEnabled = true;//(passport, game, data)
+						game.gameState.timedModeEnabled = true; // (passport, game, data)
 						game.private.timerId = setTimeout(() => {
 							if (game.gameState.timedModeEnabled) {
 								game.gameState.timedModeEnabled = false;
 
-								selectChancellorVoteOnVeto({user: chancellor.userName},
-														   game,
-														   {vote: Boolean(Math.floor(Math.random() * 2))}
-								);
+								selectChancellorVoteOnVeto({ user: chancellor.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
 							}
 						}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 					}
@@ -793,9 +790,7 @@ const selectPresidentPolicy = (passport, game, data) => {
 					if (game.gameState.timedModeEnabled) {
 						const isRightPolicy = Boolean(Math.floor(Math.random() * 2));
 
-						selectChancellorPolicy({user: chancellor.userName},
-											   game,
-											   {selection: isRightPolicy ? 3 : 1});
+						selectChancellorPolicy({ user: chancellor.userName }, game, { selection: isRightPolicy ? 3 : 1 });
 					}
 				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 			}
@@ -859,11 +854,7 @@ module.exports.selectVoting = (passport, game, data) => {
 						game.gameState.pendingChancellorIndex = null;
 						game.gameState.timedModeEnabled = false;
 
-						selectChancellor(null,
-						    {user: game.private.seatedPlayers[game.gameState.presidentIndex].userName},
-							game,
-							{chancellorIndex: chancellorIndex}
-						);
+						selectChancellor(null, { user: game.private.seatedPlayers[game.gameState.presidentIndex].userName }, game, { chancellorIndex: chancellorIndex });
 					}
 				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 			}
@@ -960,11 +951,7 @@ module.exports.selectVoting = (passport, game, data) => {
 				game.private.timerId = setTimeout(() => {
 					if (game.gameState.timedModeEnabled) {
 						game.gameState.timedModeEnabled = false;
-						selectPresidentPolicy(
-							{user: seatedPlayers[presidentIndex].userName},
-							game,
-							{selection: Math.floor(Math.random() * 3)}
-						);
+						selectPresidentPolicy({ user: seatedPlayers[presidentIndex].userName }, game, { selection: Math.floor(Math.random() * 3) });
 					}
 				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 			}

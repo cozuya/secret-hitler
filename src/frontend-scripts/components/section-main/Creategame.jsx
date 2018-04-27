@@ -16,7 +16,7 @@ export default class Creategame extends React.Component {
 		this.timedSliderChange = this.timedSliderChange.bind(this);
 
 		this.state = {
-			gameName: "",
+			gameName: '',
 			sliderValues: [5, 10],
 			experiencedmode: false,
 			disablechat: false,

@@ -189,7 +189,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
 	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
-	
+
 	if (playerIndex === presidentIndex) {
 		return;
 	}
@@ -337,7 +337,7 @@ module.exports.selectSpecialElection = (passport, game, data) => {
 	if (president.userName !== passport.user) {
 		return;
 	}
-	
+
 	if (playerIndex === presidentIndex) {
 		return;
 	}
@@ -422,11 +422,9 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 	const selectedPlayer = seatedPlayers[playerIndex];
 	const publicSelectedPlayer = game.publicPlayersState[playerIndex];
 	const president = seatedPlayers[presidentIndex];
-	
+
 	// Make sure the target is valid
-	if (playerIndex === presidentIndex ||
-		selectedPlayer.isDead ||
-	   (selectedPlayer.role.cardName === "hitler" && president.role.cardName === "fascist")) {
+	if (playerIndex === presidentIndex || selectedPlayer.isDead || (selectedPlayer.role.cardName === 'hitler' && president.role.cardName === 'fascist')) {
 		return;
 	}
 

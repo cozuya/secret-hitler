@@ -1019,7 +1019,9 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
-	if (game.general.isRemade) return;
+	if (game.general.isRemade) {
+		return;
+	}
 
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { publicPlayersState } = game;
@@ -1119,11 +1121,16 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 			game.publicPlayersState.forEach(player => {
 				if (remakePlayerNames.includes(player.userName)) player.leftGame = true;
 			});
+
 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 				games.splice(games.indexOf(game), 1);
-			} else sendInProgressGameUpdate(game);
+			} else {
+				sendInProgressGameUpdate(game);
+			}
+
 			games.push(newGame);
 			sendGameList();
+
 			remakePlayerSocketIDs.forEach((id, index) => {
 				if (io.sockets.sockets[id]) {
 					io.sockets.sockets[id].leave(game.general.uid);
@@ -1237,7 +1244,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data) => {
 	const player = publicPlayersState.find(player => player.userName === passport.user);
 	const user = userList.find(u => passport.user === u.userName);
 
-	if (!user) return;
+	if (!user) {
+		return;
+	}
 
 	if (!(MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user))) {
 		if (player) {
@@ -1711,11 +1720,19 @@ module.exports.handleModerationAction = (socket, passport, data) => {
 					} else if (isSuperMod && data.action.type) {
 						const setType = /setRWins/.test(data.action.type)
 							? 'rainbowWins'
-							: /setRLosses/.test(data.action.type) ? 'rainbowLosses' : /setWins/.test(data.action.type) ? 'wins' : 'losses';
+							: /setRLosses/.test(data.action.type)
+								? 'rainbowLosses'
+								: /setWins/.test(data.action.type)
+									? 'wins'
+									: 'losses';
 						const number =
 							setType === 'wins'
 								? data.action.type.substr(7)
-								: setType === 'losses' ? data.action.type.substr(9) : setType === 'rainbowWins' ? data.action.type.substr(8) : data.action.type.substr(10);
+								: setType === 'losses'
+									? data.action.type.substr(9)
+									: setType === 'rainbowWins'
+										? data.action.type.substr(8)
+										: data.action.type.substr(10);
 						const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
 
 						if (!isNaN(parseInt(number, 10)) || isPlusOrMinus) {
