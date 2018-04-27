@@ -28,9 +28,8 @@ module.exports.policyPeek = game => {
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
- * @param {object} data from socket emit
  */
-module.exports.selectPolicies = (passport, game, data) => {
+module.exports.selectPolicies = (passport, game) => {
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
@@ -191,6 +190,10 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 	const president = seatedPlayers[presidentIndex];
 	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
 
+	if (playerIndex === presidentIndex) {
+		return;
+	}
+
 	if (president.userName !== passport.user) {
 		return;
 	}
@@ -322,12 +325,20 @@ module.exports.specialElection = game => {
 };
 
 /**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
  * @param {object} data from socket emit
  */
-module.exports.selectSpecialElection = data => {
-	const game = games.find(el => el.general.uid === data.uid);
+module.exports.selectSpecialElection = (passport, game, data) => {
+	const { playerIndex } = data;
+	const { presidentIndex } = game.gameState;
+	const selectedPlayer = game.private.seatedPlayers[playerIndex];
+	const president = game.private.seatedPlayers[presidentIndex];
+	if (president.userName !== passport.user) {
+		return;
+	}
 
-	if (!game || !game.gameState) {
+	if (playerIndex === presidentIndex) {
 		return;
 	}
 
@@ -411,6 +422,11 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 	const selectedPlayer = seatedPlayers[playerIndex];
 	const publicSelectedPlayer = game.publicPlayersState[playerIndex];
 	const president = seatedPlayers[presidentIndex];
+
+	// Make sure the target is valid
+	if (playerIndex === presidentIndex || selectedPlayer.isDead || (selectedPlayer.role.cardName === 'hitler' && president.role.cardName === 'fascist')) {
+		return;
+	}
 
 	if (president.userName !== passport.user) {
 		return;

@@ -7,7 +7,7 @@ import '../../matchers';
 export default () => {
 	describe('Veto top deck', () => {
 		const game = buildEnhancedGameSummary(veto);
-		const { turns } = game
+		const { turns } = game;
 
 		it('penultimate turn should be veto', () => {
 			const turn = turns.get(-2);
@@ -20,6 +20,6 @@ export default () => {
 			const turn = turns.last();
 
 			expect(turn.isElectionTrackerMaxed).toBe(true);
-		})
+		});
 	});
 };

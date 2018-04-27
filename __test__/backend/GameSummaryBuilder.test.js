@@ -15,7 +15,7 @@ describe('GameSummaryBuilder', () => {
 				rebalance9p: false,
 				rerebalance9p: false
 			},
-			[ 'liberal', 'fascist', 'liberal', 'fascist', 'liberal' ]
+			['liberal', 'fascist', 'liberal', 'fascist', 'liberal']
 		);
 
 		expect(gsb._id).toBeDefined();

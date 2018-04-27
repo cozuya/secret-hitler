@@ -4,7 +4,7 @@ const PlayerReport = require('../../models/playerReport');
 const PlayerNote = require('../../models/playerNote');
 const Game = require('../../models/game');
 //	const BannedIP = require('../../models/bannedIP');
-const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled } = require('./models');
+const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
@@ -261,14 +261,15 @@ const sendUserList = (module.exports.sendUserList = socket => {
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
- * @param {string} type - type of user status to be displayed.
+ * @param {string} override - type of user status to be displayed.
  */
-const updateUserStatus = (module.exports.updateUserStatus = (passport, game, type) => {
+const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
 	const user = userList.find(user => user.userName === passport.user);
 
 	if (user) {
 		user.status = {
-			type, gameId: game.general.uid
+			type: override ? override : game ? (game.general.rainbowGame ? 'rainbow' : 'playing') : 'none',
+			gameId: game ? game.general.uid : false
 		};
 		sendUserList();
 	}
@@ -293,9 +294,9 @@ module.exports.sendGameInfo = (socket, uid) => {
 				player.leftGame = false;
 				player.connected = true;
 				socket.emit('updateSeatForUser', true);
-				updateUserStatus(passport.user, game.general.rainbowgame ? 'rainbow' : 'playing', uid);
+				updateUserStatus(passport, game);
 			} else {
-				updateUserStatus(passport.user, 'observing', uid);
+				updateUserStatus(passport, game, 'observing');
 			}
 		}
 
