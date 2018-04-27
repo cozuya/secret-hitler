@@ -302,6 +302,37 @@ const handleUserLeaveGame = (socket, passport, game, data) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (playerIndex > -1) {
+		if (game.publicPlayersState[playerIndex].isRemaking) {
+			// Count leaving the game as rescinded remake vote.
+			const minimumRemakeVoteCount = (() => {
+				switch (game.general.playerCount) {
+					case 5:
+						return 4;
+					case 6:
+						return 5;
+					case 7:
+						return 5;
+					case 8:
+						return 6;
+					case 9:
+						return 6;
+					case 10:
+						return 7;
+				}
+			})();
+			const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+
+			if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+				game.general.isRemaking = false;
+				game.general.status = 'Game remaking has been cancelled.';
+				clearInterval(game.private.remakeTimer);
+			}
+			game.chats.push({
+				text: ` has rescinded their vote to ${
+					game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
+					} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+			});
+		}
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
@@ -527,7 +558,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			rebalance9p2f: data.rebalance9p2f,
 			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : data.privatePassword,
 			privateOnly: user.isPrivate,
-			electionCount: 0
+			electionCount: 0,
+			isRemade: false
 		},
 		publicPlayersState: [],
 		playersState: [],
@@ -1020,7 +1052,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
  */
 module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 	if (game.general.isRemade) {
-		return;
+		return; // Games can only be remade once.
 	}
 
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
