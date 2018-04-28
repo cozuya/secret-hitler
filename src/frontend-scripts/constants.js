@@ -1,6 +1,8 @@
 const cn = require('classnames');
 
 const MODERATORS = (module.exports.MODERATORS = [
+	'littlebird',
+	'Hexicube',
 	'RavenCaps',
 	'JerMej1s',
 	'jdudle3',
@@ -14,7 +16,7 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'MrEth3real'
 ]);
 
-const TRIALMODS = (module.exports.TRIALMODS = ['ZeroCool', 'neffni', 'waluigiwaro', 'benjamin172', 'Hexicube', 'littlebird']);
+module.exports.TRIALMODS = ['ZeroCool', 'neffni', 'waluigiwaro', 'benjamin172'];
 
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);

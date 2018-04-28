@@ -9,7 +9,7 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.13.3 released 4-25-2018</p>
+			<p>Version 0.13.4 released 4-28-2018</p>
 		</div>
 		<h3>Tournaments temporarily disabled, see below.</h3>
 		<h3>Security update</h3>
@@ -19,9 +19,16 @@ const Changelog = () => (
 			it was possible for people to take actions they should not be able to take, but important info like who is each role and what the policy deck looks like,
 			is and always was secure.
 		</p>
+		<h3>Other items</h3>
 		<ul>
+			<li>A bug with the new blacklist modal and deleting entries has been fixed.</li>
+			<li>There's some new helpful messages when you try to take actions like chat without 2 games played or chat while dead.</li>
 			<li>The cooldown for remaking games has been changed to 2 seconds if remake is on, and 10 seconds if remake is off.</li>
+			<li>Several fixes to issues with remaking games have occured.</li>
+			<li>Welcome new moderators littlebird and Hexicube!</li>
 		</ul>
+		<h2>Huge callouts to contributors Hexicube and Nth for a ton of this work!</h2>
+		<h3>We don't talk about version 0.13.3</h3>
 		<div className="ui header">
 			<p>Version 0.13.2 released 4-22-2018</p>
 		</div>

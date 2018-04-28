@@ -66,6 +66,8 @@ timed mode
 player notifications
 
 version 1.0 (future):
+reenable tournaments
+	https://github.com/cozuya/secret-hitler/issues/829
 player notes
 	https://github.com/cozuya/secret-hitler/issues/205
 fix to front end crash when people are moved to final tournament table
@@ -74,8 +76,8 @@ elo system
 	https://github.com/cozuya/secret-hitler/issues/741
 	https://github.com/cozuya/secret-hitler/issues/632
 IP related bans do not work when a player is typed/pasted into the box (only works if they are online and you click their name on the list)
-https://github.com/cozuya/secret-hitler/issues/671
+	https://github.com/cozuya/secret-hitler/issues/671
 HighLight Your Number In The Game Chat 
-https://github.com/cozuya/secret-hitler/issues/689
+	https://github.com/cozuya/secret-hitler/issues/689
 Rebalanced 9p doesn't display correctly ingame, on profile, shows all 17 cards on replays, and all replays show as 9PR instead of whatever they are.
-https://github.com/cozuya/secret-hitler/issues/711
+	https://github.com/cozuya/secret-hitler/issues/711
