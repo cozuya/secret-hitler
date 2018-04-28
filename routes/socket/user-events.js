@@ -287,16 +287,20 @@ if (process.env.NODE_ENV === 'production') {
 
 /**
  * @param {object} socket - user socket reference.
- * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data - from socket emit.
+ * @param {object} passport - socket authentication.
  */
-const handleUserLeaveGame = (socket, passport, game, data) => {
+const handleUserLeaveGame = (socket, game, data, passport) => {
 	// Authentication Assured in routes.js
 	// In-game Assured in routes.js
 
 	if (io.sockets.adapter.rooms[game.general.uid] && socket) {
 		socket.leave(game.general.uid);
+	}
+
+	if (!passport) {
+		return;
 	}
 
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
@@ -330,7 +334,7 @@ const handleUserLeaveGame = (socket, passport, game, data) => {
 			game.chats.push({
 				text: ` has rescinded their vote to ${
 					game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
-					} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+				} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 			});
 		}
 		if (game.gameState.isTracksFlipped) {

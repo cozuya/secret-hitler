@@ -52,10 +52,7 @@ module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
  * @return {string} list of classes for colors.
  */
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass) => {
-	if (MODERATORS.includes(user.userName) ||
-		ADMINS.includes(user.userName) ||
-		EDITORS.includes(user.userName) ||
-		CONTRIBUTORS.includes(user.userName)) {
+	if (MODERATORS.includes(user.userName) || ADMINS.includes(user.userName) || EDITORS.includes(user.userName) || CONTRIBUTORS.includes(user.userName)) {
 		return cn(defaultClass, {
 			admin: ADMINS.includes(user.userName),
 			moderatorcolor: MODERATORS.includes(user.userName),
@@ -87,7 +84,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass) => {
 			onfire7: w / (w + l) > 0.64,
 			onfire8: w / (w + l) > 0.66,
 			onfire9: w / (w + l) > 0.68,
-			onfire10: w / (w + l) > 0.7,
+			onfire10: w / (w + l) > 0.7
 		});
 	}
 };

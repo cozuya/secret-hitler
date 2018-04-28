@@ -151,8 +151,9 @@ module.exports = () => {
 			})
 			.on('leaveGame', data => {
 				const game = findGame(data);
-				if (authenticated && ensureInGame(passport, game)) {
-					handleUserLeaveGame(socket, passport, game, data);
+
+				if (game) {
+					handleUserLeaveGame(socket, game, data, passport);
 				}
 			})
 			.on('updateSeatedUser', data => {
