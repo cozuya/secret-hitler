@@ -7,7 +7,7 @@ import '../../matchers';
 export default () => {
 	describe('Liberal win: 7p', () => {
 		const game = buildEnhancedGameSummary(p7LiberalWin);
-		const { turns } = game
+		const { turns } = game;
 
 		it('last turn should have hitler elected', () => {
 			expect(turns.last().isGameEndingPolicyEnacted).toBe(true);

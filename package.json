@@ -26,6 +26,7 @@
 		"express-session": "^1.15.1",
 		"express-socket.io-session": "^1.3.2",
 		"gfycat-style-urls": "git://github.com/cozuya/gfycat-style-urls.git",
+		"husky": "^0.14.3",
 		"immutable": "^4.0.0-rc.6",
 		"isomorphic-fetch": "^2.2.1",
 		"jest-cli": "^21.2.1",
@@ -88,7 +89,7 @@
 		"node-notifier": "^5.1.2",
 		"node-sass": "^4.7.2",
 		"npm-run-all": "^4.1.2",
-		"prettier": "^1.5.3",
+		"prettier": "^1.12.1",
 		"require-dot-file": "^0.4.0",
 		"sass-loader": "^6.0.7",
 		"style-loader": "^0.20.3",
@@ -98,6 +99,7 @@
 		"webpack-livereload-plugin": "^2.1.1"
 	},
 	"scripts": {
+		"format": "prettier --write **/*.js",
 		"dev": "npm-run-all --parallel db server start",
 		"dev-docker": "npm-run-all --parallel db-docker server start",
 		"create-accounts": "node scripts/createAccounts.js",
@@ -107,6 +109,7 @@
 		"db-docker": "docker run -it --rm -p 15726:15726 -v \"$(PWD)/data\":/data/db --name Secret-Hitler-Dev-MongoDB mongo:latest --port 15726",
 		"build": "webpack --config webpack/webpack.config.prod --mode production",
 		"server": "nodemon bin/dev",
-		"start": "webpack --watch --config webpack/webpack.config.dev --mode development"
+		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
+		"precommit": "yarn format"
 	}
 }

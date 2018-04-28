@@ -29,7 +29,7 @@ class Gamechat extends React.Component {
 		this.handleNoteClick = this.handleNoteClick.bind(this);
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
 		this.handleInsertEmote = this.handleInsertEmote.bind(this);
-		this.checkIsChatDisabled = this.checkIsChatDisabled.bind(this);
+		this.gameChatStatus = this.gameChatStatus.bind(this);
 
 		this.state = {
 			chatFilter: 'All',
@@ -212,7 +212,7 @@ class Gamechat extends React.Component {
 		this.gameChatInput.focus();
 	}
 
-	checkIsChatDisabled() {
+	gameChatStatus() {
 		const { userInfo, gameInfo } = this.props;
 		const { gameState, publicPlayersState } = gameInfo;
 		const { gameSettings, userName, isSeated } = userInfo;
@@ -229,24 +229,92 @@ class Gamechat extends React.Component {
 				);
 			}
 		})();
+		const isStaff = ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName);
+		const user = this.props.userList.list.find(play => play.userName === userName);
 
-		return (
-			!userName ||
-			(gameInfo.general.disableObserver &&
-				!userInfo.isSeated &&
-				!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName)) &&
-				!EDITORS.includes(userInfo.userName)) ||
-			(isDead && !gameState.isCompleted) ||
-			isGovernmentDuringPolicySelection ||
-			(gameInfo.general.disableChat &&
-				!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))) ||
-			(gameInfo.general.private &&
-				!userInfo.isSeated &&
-				!MODERATORS.includes(userInfo.userName) &&
-				!ADMINS.includes(userInfo.userName) &&
-				!EDITORS.includes(userInfo.userName)) ||
-			(gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date())
-		);
+		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
+			return {
+				isDisabled: true,
+				placeholder: 'Chat disabled'
+			};
+		}
+
+		if (!userName) {
+			return {
+				isDisabled: true,
+				placeholder: 'You must log in to use chat'
+			};
+		}
+
+		if (!userName && !user) {
+			return {
+				isDisabled: true,
+				placeholder: 'Please reload...'
+			};
+		}
+
+		if (userInfo.isSeated) {
+			if (isDead && !gameState.isCompleted) {
+				return {
+					isDisabled: true,
+					placeholder: 'Dead men tell no tales'
+				};
+			}
+
+			if (isGovernmentDuringPolicySelection) {
+				return {
+					isDisabled: true,
+					placeholder: 'Chat disabled for card selection'
+				};
+			}
+
+			if (gameInfo.general.disableChat && !isStaff) {
+				return {
+					isDisabled: true,
+					placeholder: 'Chat disabled'
+				};
+			}
+
+			if (gameInfo.general.disableChat && isStaff) {
+				return {
+					isDisabled: false,
+					placeholder: 'Send a staff message'
+				};
+			}
+		} else {
+			if ((gameInfo.general.disableObserver || gameInfo.general.private) && !isStaff) {
+				return {
+					isDisabled: true,
+					placeholder: 'Observer chat disabled'
+				};
+			}
+
+			if ((gameInfo.general.disableObserver || gameInfo.general.private) && isStaff) {
+				return {
+					isDisabled: false,
+					placeholder: 'Send a staff message'
+				};
+			}
+
+			if (user.wins + user.losses < 2) {
+				return {
+					isDisabled: true,
+					placeholder: 'You must finish two games to use observer chat'
+				};
+			}
+
+			if (user.isPrivate && !gameInfo.general.private) {
+				return {
+					isDisabled: true,
+					placeholder: 'Non-private observer chat disabled'
+				};
+			}
+		}
+
+		return {
+			isDisabled: false,
+			placeholder: 'Send a message'
+		};
 	}
 
 	processChats() {
@@ -431,7 +499,7 @@ class Gamechat extends React.Component {
 										? isBlind
 											? `${
 													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
 									: isBlind ? '?' : chat.userName}
@@ -727,19 +795,19 @@ class Gamechat extends React.Component {
 				</section>
 				{!this.props.isReplay && (
 					<form className="segment inputbar" onSubmit={this.handleSubmit}>
-						<div className={this.checkIsChatDisabled() ? 'ui action input disabled' : 'ui action input'}>
+						<div className={this.gameChatStatus().isDisabled ? 'ui action input disabled' : 'ui action input'}>
 							<input
 								onSubmit={this.handleSubmit}
 								maxLength="300"
 								autoComplete="off"
 								spellCheck="false"
-								placeholder="Send a message"
+								placeholder={this.gameChatStatus().placeholder}
 								id="gameChatInput"
 								ref={c => {
 									this.gameChatInput = c;
 								}}
 							/>
-							{this.checkIsChatDisabled() ? null : renderEmotesButton(this.handleInsertEmote)}
+							{this.gameChatStatus().isDisabled ? null : renderEmotesButton(this.handleInsertEmote)}
 							<button type="submit" className="ui primary button">
 								Chat
 							</button>

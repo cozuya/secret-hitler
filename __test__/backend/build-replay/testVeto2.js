@@ -5,9 +5,9 @@ import buildEnhancedGameSummary from '../../../models/game-summary/buildEnhanced
 import { veto2 } from '../../mocks';
 
 export default () => {
-    it('builds a replay without failing', () => {
-        const game = buildEnhancedGameSummary(veto2);
-        const replay = buildReplay(game);
-        expect(true).toBe(true);
-    });
+	it('builds a replay without failing', () => {
+		const game = buildEnhancedGameSummary(veto2);
+		const replay = buildReplay(game);
+		expect(true).toBe(true);
+	});
 };

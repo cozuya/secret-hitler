@@ -39,7 +39,9 @@ function buildEnhancedGameSummary(_summary) {
 						return Object.assign({}, log, logOptions);
 					})
 					.toList()
-			: isIndexed(value) ? value.toList() : value.toObject();
+			: isIndexed(value)
+				? value.toList()
+				: value.toObject();
 	});
 
 	// String

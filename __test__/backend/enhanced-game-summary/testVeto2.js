@@ -7,7 +7,7 @@ import '../../matchers';
 export default () => {
 	describe('Veto top deck', () => {
 		const game = buildEnhancedGameSummary(veto2);
-		const { turns } = game
+		const { turns } = game;
 
 		it('should have attempted veto on turn 5', () => {
 			const turn = turns.get(5);
@@ -24,7 +24,7 @@ export default () => {
 			expect(turn.chancellorVeto).toEqual(some(false));
 			expect(turn.isVetoSuccessful).toBe(false);
 			expect(turn.presidentVeto).toEqual(none);
-		})
+		});
 
 		it('should have successful veto on turn 9', () => {
 			const turn = turns.get(9);

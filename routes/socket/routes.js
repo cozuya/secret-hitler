@@ -141,7 +141,7 @@ module.exports = () => {
 			})
 			.on('updateGameSettings', data => {
 				if (authenticated) {
-					handleUpdatedGameSettings(socket, data);
+					handleUpdatedGameSettings(socket, passport, data);
 				}
 			})
 			.on('addNewGeneralChat', data => {
@@ -202,21 +202,20 @@ module.exports = () => {
 			.on('selectedChancellorVoteOnVeto', data => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					selectChancellorVoteOnVeto(game, data);
+					selectChancellorVoteOnVeto(passport, game, data);
 				}
 			})
 			.on('getModInfo', count => {
-				// I cant tell if this needs to be secure or not
 				sendModInfo(socket, count);
 			})
 			.on('getUserReports', () => {
-				// This one too
 				sendUserReports(socket);
 			})
 			.on('updateUserStatus', (type, gameId) => {
+				// TODO: see if type is ever 'replay', not sure where replay viewing is handled
 				const game = findGame({ uid: gameId });
 				if (authenticated && ensureInGame(passport, game)) {
-					updateUserStatus(passport, game, type);
+					updateUserStatus(passport, game);
 				}
 			})
 			.on('getReplayGameChats', uid => {
@@ -264,7 +263,7 @@ module.exports = () => {
 			.on('selectedPolicies', data => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					selectPolicies(passport, game, data);
+					selectPolicies(passport, game);
 				}
 			})
 			.on('selectedPlayerToExecute', data => {
@@ -274,7 +273,10 @@ module.exports = () => {
 				}
 			})
 			.on('selectedSpecialElection', data => {
-				selectSpecialElection(data);
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectSpecialElection(passport, game, data);
+				}
 			});
 	});
 };
