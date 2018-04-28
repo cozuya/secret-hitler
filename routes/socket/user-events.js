@@ -324,7 +324,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 						return 7;
 				}
 			})();
-			const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+			const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
 
 			if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
 				game.general.isRemaking = false;
