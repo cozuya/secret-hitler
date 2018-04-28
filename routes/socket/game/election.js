@@ -386,7 +386,7 @@ const selectChancellorVoteOnVeto = (passport, game, data) => {
 	const chancellor = game.private.seatedPlayers.find(player => player.userName === game.private._chancellorPlayerName);
 	const publicChancellor = game.publicPlayersState[chancellorIndex];
 
-	if (passport.user !== publicChancellor.userName) {
+	if (!publicChancellor || !publicChancellor.userName || passport.user !== publicChancellor.userName) {
 		return;
 	}
 
