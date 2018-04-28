@@ -15,9 +15,8 @@ const Changelog = () => (
 		<h3>Security update</h3>
 		<p>
 			It was brought to my attention that there's some issues with security around certain actions. This update has addressed these issues. Its important to
-			note that these were game related issues, not account: your password is secure and not visible by anyone including me. And by game related issues I mean
-			it was possible for people to take actions they should not be able to take, but important info like who is each role and what the policy deck looks like,
-			is and always was secure.
+			note that these were game related issues, not account: your password is secure and not visible by anyone including me, and important info like who is each
+			role and what the policy deck looks like, is and always was secure.
 		</p>
 		<h3>Other items</h3>
 		<ul>
@@ -25,6 +24,7 @@ const Changelog = () => (
 			<li>There's some new helpful messages when you try to take actions like chat without 2 games played or chat while dead.</li>
 			<li>The cooldown for remaking games has been changed to 2 seconds if remake is on, and 10 seconds if remake is off.</li>
 			<li>Several fixes to issues with remaking games have occured.</li>
+			<li>Some fixes to issues with player colors have been implemented.</li>
 			<li>Welcome new moderators littlebird and Hexicube!</li>
 		</ul>
 		<h2>Huge callouts to contributors Hexicube and Nth for a ton of this work!</h2>
