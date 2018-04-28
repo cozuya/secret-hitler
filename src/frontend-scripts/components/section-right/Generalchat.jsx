@@ -1,6 +1,5 @@
 import React from 'react';
-import classnames from 'classnames';
-import { MODERATORS, EDITORS, ADMINS } from '../../constants';
+import { MODERATORS, EDITORS, ADMINS, PLAYERCOLORS } from '../../constants';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -133,7 +132,7 @@ export default class Generalchat extends React.Component {
 
 	renderChats() {
 		let timestamp;
-		const { userInfo, generalChats } = this.props;
+		const { userInfo, userList, generalChats } = this.props;
 		const time = new Date().getTime();
 
 		/**
@@ -153,17 +152,11 @@ export default class Generalchat extends React.Component {
 						EDITORS.includes(chat.userName) ||
 						ADMINS.includes(chat.userName) ||
 						chat.userName.substring(0, 11) == '[BROADCAST]';
-					const userClasses = classnames(
-						{
-							[chat.color]:
-								MODERATORS.includes(chat.userName) ||
-								EDITORS.includes(chat.userName) ||
-								ADMINS.includes(chat.userName) ||
-								(!(gameSettings && gameSettings.disablePlayerColorsInChat) && (gameSettings && gameSettings.disableSeasonal)),
-							[chat.seasonColor]: !(gameSettings && gameSettings.disablePlayerColorsInChat) && !(gameSettings && gameSettings.disableSeasonal)
-						},
-						'chat-user'
-					);
+					const user = chat.userName ? userList.list.find(player => player.userName === chat.userName) : undefined;
+					const userClasses =
+						!user || (gameSettings && gameSettings.disablePlayerColorsInChat)
+							? 'chat-user'
+							: PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'chat-user');
 
 					if (userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
 						timestamp = <span className="timestamp">{moment(chat.time).format('HH:mm')} </span>;
@@ -192,7 +185,7 @@ export default class Generalchat extends React.Component {
 							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat, isMod)}</span>
 						</div>
 					);
-			  })
+				})
 			: null;
 	}
 

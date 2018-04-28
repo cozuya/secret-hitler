@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -246,7 +246,7 @@ class Gamechat extends React.Component {
 			};
 		}
 
-		if (!userName && !user) {
+		if (!user) {
 			return {
 				isDisabled: true,
 				placeholder: 'Please reload...'
@@ -378,13 +378,6 @@ class Gamechat extends React.Component {
 					const chatContents = processEmotes(chat.chat, isMod);
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const isGreenText = /^>/i.test(chatContents[0]);
-					let w;
-					let l;
-
-					if (playerListPlayer) {
-						w = !(gameSettings && gameSettings.disableSeasonal) && !isMod ? playerListPlayer[`winsSeason${CURRENTSEASONNUMBER}`] : playerListPlayer.wins;
-						l = !(gameSettings && gameSettings.disableSeasonal) && !isMod ? playerListPlayer[`lossesSeason${CURRENTSEASONNUMBER}`] : playerListPlayer.losses;
-					}
 
 					return chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item gamechat ${chat.chat[1].type}` : 'item gamechat'} key={i}>
@@ -456,22 +449,9 @@ class Gamechat extends React.Component {
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
 							<span
 								className={
-									playerListPlayer
-										? gameSettings && gameSettings.disablePlayerColorsInChat
-											? 'chat-user'
-											: isBlind
-												? 'chat-user'
-												: w + l > 49
-													? `chat-user ${PLAYERCOLORS(
-															playerListPlayer,
-															!(
-																MODERATORS.includes(playerListPlayer.userName) ||
-																ADMINS.includes(playerListPlayer.userName) ||
-																EDITORS.includes(playerListPlayer.userName)
-															) || !(gameSettings && gameSettings.disableSeasonal)
-														)}`
-													: 'chat-user'
-										: 'chat-user'
+									!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
+										? 'chat-user'
+										: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 								}
 							>
 								{isReplay || isSeated ? (
