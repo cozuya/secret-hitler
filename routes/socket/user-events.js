@@ -31,7 +31,9 @@ const displayWaitingForPlayers = game => {
 
 		return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
 	}
-	const includedPlayerCounts = [5, 6, 7, 8, 9, 10].filter(value => !game.general.excludedPlayerCount.includes(value));
+	const includedPlayerCounts = _.range(game.general.minPlayersCount, game.general.maxPlayersCount).filter(
+		value => !game.general.excludedPlayerCount.includes(value)
+	);
 
 	for (value of includedPlayerCounts) {
 		if (value > game.publicPlayersState.length) {
@@ -324,7 +326,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 						return 7;
 				}
 			})();
-			const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+			const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
 
 			if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
 				game.general.isRemaking = false;
