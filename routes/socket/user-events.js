@@ -1399,15 +1399,10 @@ module.exports.handleNewGeneralChat = (socket, passport, data) => {
 		});
 	}
 
-	const seasonColor = user && user[`winsSeason${currentSeasonNumber}`] + user[`lossesSeason${currentSeasonNumber}`] > 49 ? PLAYERCOLORS(user, true) : '';
-	const color = user && user.wins + user.losses > 49 ? PLAYERCOLORS(user) : '';
-
 	if (user.wins > 0 || user.losses > 0) {
 		generalChatCount++;
 		const newChat = {
 			time: new Date(),
-			color,
-			seasonColor,
 			chat: data.chat,
 			userName: passport.user
 		};

@@ -258,12 +258,11 @@ class Playerlist extends React.Component {
 						MODERATORS.includes(user.userName) ||
 						CONTRIBUTORS.includes(user.userName)
 							? cn(
-									PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal)),
+									PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username'),
 									{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
 									{ unclickable: !this.props.isUserClickable },
-									{ clickable: this.props.isUserClickable },
-									'username'
-							  )
+									{ clickable: this.props.isUserClickable }
+							)
 							: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
 					const renderStatus = () => {
 						const status = user.status;

@@ -258,8 +258,8 @@ class Players extends React.Component {
 						classes = `${classes} isDead`;
 					}
 
-					if (user && w + l > 49 && !isBlind) {
-						classes = `${classes} ${PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal))}`;
+					if (user && !isBlind) {
+						classes = `${classes} ${PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), '')}`;
 					}
 
 					return classes;
