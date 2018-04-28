@@ -252,7 +252,7 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 	const publicChancellor = game.publicPlayersState[chancellorIndex];
 	const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
 
-	if (president.userName !== passport.user) {
+	if (!president || president.userName !== passport.user) {
 		return;
 	}
 
@@ -550,7 +550,7 @@ const selectChancellorPolicy = (passport, game, data) => {
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
 	const enactedPolicy = game.private.currentChancellorOptions[data.selection === 3 ? 1 : 0];
 
-	if (chancellor.userName !== passport.user) {
+	if (!chancellor || chancellor.userName !== passport.user) {
 		return;
 	}
 
@@ -684,7 +684,7 @@ const selectPresidentPolicy = (passport, game, data) => {
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
-	if (president.userName !== passport.user) {
+	if (!president || president.userName !== passport.user) {
 		return;
 	}
 

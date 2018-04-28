@@ -28,7 +28,7 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 		return;
 	}
 
-	if (presidentPlayer.userName !== passport.user) {
+	if (!presidentPlayer || presidentPlayer.userName !== passport.user) {
 		return;
 	}
 

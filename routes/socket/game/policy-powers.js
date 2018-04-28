@@ -1,5 +1,4 @@
 const { sendInProgressGameUpdate } = require('../util.js');
-const { games } = require('../models.js');
 const { startElection, shufflePolicies } = require('./common.js');
 const { completeGame } = require('./end-game.js');
 
@@ -35,7 +34,7 @@ module.exports.selectPolicies = (passport, game) => {
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
 
-	if (president.userName !== passport.user) {
+	if (!president || president.userName !== passport.user) {
 		return;
 	}
 
@@ -194,7 +193,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 		return;
 	}
 
-	if (president.userName !== passport.user) {
+	if (!president || president.userName !== passport.user) {
 		return;
 	}
 
@@ -332,9 +331,8 @@ module.exports.specialElection = game => {
 module.exports.selectSpecialElection = (passport, game, data) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
-	const selectedPlayer = game.private.seatedPlayers[playerIndex];
 	const president = game.private.seatedPlayers[presidentIndex];
-	if (president.userName !== passport.user) {
+	if (!president || president.userName !== passport.user) {
 		return;
 	}
 
@@ -428,7 +426,7 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 		return;
 	}
 
-	if (president.userName !== passport.user) {
+	if (!president || president.userName !== passport.user) {
 		return;
 	}
 
