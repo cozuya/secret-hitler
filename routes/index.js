@@ -60,6 +60,10 @@ module.exports = () => {
 		renderPage(req, res, 'page-stats', 'stats');
 	});
 
+	app.get('/stats-season', (req, res) => {
+		renderPage(req, res, 'page-stats-season', 'stats-season');
+	});
+
 	app.get('/about', (req, res) => {
 		renderPage(req, res, 'page-about', 'about');
 	});

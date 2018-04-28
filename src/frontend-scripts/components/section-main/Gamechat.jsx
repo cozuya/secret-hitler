@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -479,10 +479,12 @@ class Gamechat extends React.Component {
 										? isBlind
 											? `${
 													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-												} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
-									: isBlind ? '?' : chat.userName}
+									: isBlind
+										? '?'
+										: chat.userName}
 								{': '}
 							</span>
 							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
@@ -565,7 +567,9 @@ class Gamechat extends React.Component {
 			this.props.updateUser(userInfo);
 			window.location.hash = isRound1TableThatFinished2nd
 				? `${hash.substr(0, hash.length - 1)}Final`
-				: tableUidLastLetter === 'A' ? `${hash.substr(0, hash.length - 1)}B` : `${hash.substr(0, hash.length - 1)}A`;
+				: tableUidLastLetter === 'A'
+					? `${hash.substr(0, hash.length - 1)}B`
+					: `${hash.substr(0, hash.length - 1)}A`;
 		};
 
 		return (
