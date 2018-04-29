@@ -93,7 +93,9 @@ Game.find({})
 
 				if (game.season && game.season === CURRENTSEASONNUMBER) {
 					fivePlayerGameData.totalGameCountSeason++;
-					fivePlayerGameData.fascistWinCountSeason++;
+					if (fascistsWon) {
+						fivePlayerGameData.fascistWinCountSeason++;
+					}
 				}
 				break;
 			case 6:
@@ -105,7 +107,9 @@ Game.find({})
 
 					if (game.season && game.season === CURRENTSEASONNUMBER) {
 						sixPlayerGameData.rebalancedTotalGameCountSeason++;
-						sixPlayerGameData.rebalancedFascistWinCountSeason++;
+						if (fascistsWon) {
+							sixPlayerGameData.rebalancedFascistWinCountSeason++;
+						}
 					}
 				} else {
 					if (fascistsWon) {
@@ -115,7 +119,9 @@ Game.find({})
 
 					if (game.season && game.season === CURRENTSEASONNUMBER) {
 						sixPlayerGameData.totalGameCountSeason++;
-						sixPlayerGameData.fascistWinCountSeason++;
+						if (fascistsWon) {
+							sixPlayerGameData.fascistWinCountSeason++;
+						}
 					}
 				}
 				break;
@@ -128,7 +134,9 @@ Game.find({})
 
 					if (game.season && game.season === CURRENTSEASONNUMBER) {
 						sevenPlayerGameData.rebalancedTotalGameCountSeason++;
-						sevenPlayerGameData.rebalancedFascistWinCountSeason++;
+						if (fascistsWon) {
+							sevenPlayerGameData.rebalancedFascistWinCountSeason++;
+						}
 					}
 				} else {
 					if (fascistsWon) {
@@ -138,7 +146,9 @@ Game.find({})
 
 					if (game.season && game.season === CURRENTSEASONNUMBER) {
 						sevenPlayerGameData.totalGameCountSeason++;
-						sevenPlayerGameData.fascistWinCountSeason++;
+						if (fascistsWon) {
+							sevenPlayerGameData.fascistWinCountSeason++;
+						}
 					}
 				}
 				break;
@@ -149,7 +159,9 @@ Game.find({})
 				}
 				if (game.season && game.season === CURRENTSEASONNUMBER) {
 					eightPlayerGameData.totalGameCountSeason++;
-					eightPlayerGameData.fascistWinCountSeason++;
+					if (fascistsWon) {
+						eightPlayerGameData.fascistWinCountSeason++;
+					}
 				}
 				break;
 			case 9:
@@ -166,7 +178,9 @@ Game.find({})
 
 					if (game.season && game.season === CURRENTSEASONNUMBER) {
 						ninePlayerGameData.rebalanced2fTotalGameCountSeason++;
-						ninePlayerGameData.rebalanced2fFascistWinCountSeason++;
+						if (fascistsWon) {
+							ninePlayerGameData.rebalanced2fFascistWinCountSeason++;
+						}
 					}
 				} else {
 					if (fascistsWon) {
@@ -175,7 +189,9 @@ Game.find({})
 					ninePlayerGameData.totalGameCount++;
 					if (game.season && game.season === CURRENTSEASONNUMBER) {
 						ninePlayerGameData.totalGameCountSeason++;
-						ninePlayerGameData.fascistWinCountSeason++;
+						if (fascistsWon) {
+							ninePlayerGameData.fascistWinCountSeason++;
+						}
 					}
 				}
 				break;
@@ -186,7 +202,9 @@ Game.find({})
 				}
 				if (game.season && game.season === CURRENTSEASONNUMBER) {
 					tenPlayerGameData.totalGameCountSeason++;
-					tenPlayerGameData.fascistWinCountSeason++;
+					if (fascistsWon) {
+						tenPlayerGameData.fascistWinCountSeason++;
+					}
 				}
 				break;
 		}
@@ -196,7 +214,9 @@ Game.find({})
 		}
 		if (game.season && game.season === CURRENTSEASONNUMBER) {
 			allPlayerGameData.totalGameCountSeason++;
-			allPlayerGameData.fascistWinCountSeason++;
+			if (fascistsWon) {
+				allPlayerGameData.fascistWinCountSeason++;
+			}
 		}
 		labels.push(moment(new Date(game.date)).format('l'));
 	})
