@@ -333,11 +333,22 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				game.general.status = 'Game remaking has been cancelled.';
 				clearInterval(game.private.remakeTimer);
 			}
-			game.chats.push({
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: 'A player'
+					}
+				]
+			};
+			chat.chat.push({
 				text: ` has rescinded their vote to ${
 					game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
-				} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+				} (${remakePlayerCount-1}/${minimumRemakeVoteCount})`
 			});
+			game.chats.push(chat);
+			game.publicPlayersState[playerIndex].isRemaking = false;
 		}
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
