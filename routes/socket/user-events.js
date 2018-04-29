@@ -333,11 +333,22 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				game.general.status = 'Game remaking has been cancelled.';
 				clearInterval(game.private.remakeTimer);
 			}
-			game.chats.push({
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: 'A player'
+					}
+				]
+			};
+			chat.chat.push({
 				text: ` has rescinded their vote to ${
 					game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
-				} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+				} (${remakePlayerCount-1}/${minimumRemakeVoteCount})`
 			});
+			game.chats.push(chat);
+			game.publicPlayersState[playerIndex].isRemaking = false;
 		}
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
@@ -424,8 +435,8 @@ updateSeatedUser = (socket, passport, data) => {
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-
-		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe) {
+		const isBlacklistSafe = !game.general.gameCreatorBlacklist.includes(passport.user);
+		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe) {
 			const { publicPlayersState } = game;
 			const player = {
 				userName: passport.user,
@@ -1437,6 +1448,9 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			for (const setting in data) {
 				account.gameSettings[setting] = data[setting];
 			}
+			
+			const user = userList.find(u => u.userName === passport.user);
+			if (user) user.blacklist = account.gameSettings.blacklist;
 
 			if (
 				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&
