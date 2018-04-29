@@ -424,8 +424,8 @@ updateSeatedUser = (socket, passport, data) => {
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-
-		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe) {
+		const isBlacklistSafe = !game.general.gameCreatorBlacklist.includes(passport.user);
+		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe) {
 			const { publicPlayersState } = game;
 			const player = {
 				userName: passport.user,
@@ -1437,6 +1437,9 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			for (const setting in data) {
 				account.gameSettings[setting] = data[setting];
 			}
+			
+			const user = userList.find(u => u.userName === passport.user);
+			if (user) user.blacklist = account.gameSettings.blacklist;
 
 			if (
 				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&
