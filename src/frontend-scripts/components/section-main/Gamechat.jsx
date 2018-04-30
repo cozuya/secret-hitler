@@ -323,6 +323,12 @@ class Gamechat extends React.Component {
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
 		const { chatFilter } = this.state;
+		const compareChatStrings = (a, b) => {
+			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
+			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
+
+			return stringA > stringB ? 1 : -1;
+		};
 		const time = new Date().getTime();
 		/**
 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
@@ -352,6 +358,7 @@ class Gamechat extends React.Component {
 			(userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)))
 		) {
 			return gameInfo.chats
+				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
 				.filter(
 					chat =>
 						(chatFilter === 'No observer chat' &&
