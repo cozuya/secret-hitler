@@ -308,7 +308,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (playerIndex > -1) {
-		if (game.publicPlayersState[playerIndex].isRemaking) {
+		if (game.publicPlayersState[playerIndex].isRemakeVoting) {
 			// Count leaving the game as rescinded remake vote.
 			const minimumRemakeVoteCount = (() => {
 				switch (game.general.playerCount) {
@@ -348,7 +348,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				} (${remakePlayerCount-1}/${minimumRemakeVoteCount})`
 			});
 			game.chats.push(chat);
-			game.publicPlayersState[playerIndex].isRemaking = false;
+			game.publicPlayersState[playerIndex].isRemakeVoting = false;
 		}
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
