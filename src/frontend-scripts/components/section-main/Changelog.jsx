@@ -9,6 +9,12 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.13.5 released 4-29-2018</p>
+		</div>
+		<h3>New feature: seasonal stats page.</h3>
+		<p>Check out the link in the normal stats page to toggle between current season and overall stats.</p>
+		<h3>Other bugfixes to various issues.</h3>
+		<div className="ui header">
 			<p>Version 0.13.4 released 4-28-2018</p>
 		</div>
 		<h3>Tournaments temporarily disabled, see below.</h3>
