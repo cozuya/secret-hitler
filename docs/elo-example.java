@@ -36,7 +36,6 @@ double k = 64;
 // Update player ratings
 updateRatings(game.getWinningPlayers(), k * p / game.getWinningPlayers().size());
 updateRatings(game.getLosingPlayers(), -k * p / game.getLosingPlayers().size());
-
 // This change makes sure that the average of all ratings remains at constant 1600, I overlooked that in the initial version - usually teams are the same size 
 
 // Some notes on the choice of K: Highest accuracy seems to be around k=40, but players usually prefer ratings to be a bit more dynamic. I'd rather go with something higher even if accuracy is slightly worse (e.g. k=64).
