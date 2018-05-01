@@ -193,7 +193,7 @@ class Playerlist extends React.Component {
 				.sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && !experienced.includes(user))
-				.sort(this.winRate(this.alphabetical()));
+				.sort(this.alphabetical());
 
 			return [...aem, ...tournyWinners, ...experienced, ...inexperienced]
 				.map((user, i) => {
