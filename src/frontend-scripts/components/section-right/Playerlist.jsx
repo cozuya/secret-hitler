@@ -42,6 +42,45 @@ class Playerlist extends React.Component {
 		window.location = `#/table/${gameId}`;
 	}
 
+	alphabetical(sort) {
+		return (a, b) => {
+			return a.userName > b.userName ? 1 : -1;
+		};
+	};
+
+	winRate(sort) {
+		const gameSettings = this.props.userInfo.gameSettings;
+		const w =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins'
+				: this.state.userListFilter === 'all' ? `winsSeason${CURRENTSEASONNUMBER}` : `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+		const l =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses'
+				: this.state.userListFilter === 'all' ? `lossesSeason${CURRENTSEASONNUMBER}` : `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+		return (a, b) => {
+			const awr = a[w] / a[l];
+			const bwr = b[w] / b[l];
+			if (awr !== bwr) {
+				return awr < bwr ? 1 : -1;
+			} else {
+				return sort(a, b);
+			}
+		};
+	};
+
+	tounryWins(sort) {
+		return (a, b) => {
+			const aTWinCount = a.tournyWins.filter(winTime => time - winTime < 10800000).length;
+			const bTWinCount = b.tournyWins.filter(winTime => time - winTime < 10800000).length;
+			if (aTWinCount !== bTWinCount) {
+				return aTWinCount > bTWinCount ? -1 : 1;
+			} else {
+				return sort(a, b);
+			}
+		};
+	}
+
 	renderFilterIcons() {
 		const filterClick = filter => {
 			this.setState({
@@ -130,116 +169,33 @@ class Playerlist extends React.Component {
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
+			const isStaff = MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName);
+			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 
-			return list
-				.filter(
-					user =>
-						(this.state.userListFilter === 'all' || user[w] + user[l] > 49) &&
-						(!user.isPrivate ||
-							(userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))))
-				)
-				.sort((a, b) => {
-					const aTotal = a[w] + a[l];
-					const bTotal = b[w] + b[l];
+			const admins = visible.filter(user => ADMINS.includes(user.userName))
+				.sort(this.alphabetical());
 
-					const aIsSuperuser = ADMINS.includes(a.userName) || EDITORS.includes(a.userName) || MODERATORS.includes(a.userName);
-					const bIsSuperuser = ADMINS.includes(b.userName) || EDITORS.includes(b.userName) || MODERATORS.includes(b.userName);
+			const editors = visible.filter(user => EDITORS.includes(user.userName))
+				.sort(this.alphabetical());
 
-					if (ADMINS.includes(a.userName) && ADMINS.includes(b.userName)) {
-						return a.userName > b.userName ? 1 : -1;
-					}
+			const moderators = visible.filter(user => MODERATORS.includes(user.userName))
+				.sort(this.alphabetical());
 
-					if (ADMINS.includes(a.userName)) {
-						return -1;
-					}
+			const contributors = visible.filter(user => CONTRIBUTORS.includes(user.userName))
+				.sort(this.alphabetical());
 
-					if (ADMINS.includes(b.userName)) {
-						return 1;
-					}
+			const aem = [...admins, ...editors, ...moderators, ...contributors];
 
-					if (a.tournyWins.length || b.tournyWins.length) {
-						const aTWinCount = a.tournyWins.filter(winTime => time - winTime < 10800000).length;
-						const bTWinCount = b.tournyWins.filter(winTime => time - winTime < 10800000).length;
+			const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length)
+				.sort(this.tounryWins(this.winRate(this.alphabetical())));
 
-						if (aTWinCount > 2) {
-							if (aTWinCount === bTWinCount) {
-								return a.userName > b.userName ? 1 : -1;
-							}
-							return aTWinCount > bTWinCount ? -1 : 1;
-						}
+			const experienced = visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50)
+				.sort(this.winRate(this.alphabetical()));
 
-						if (bTWinCount > 2) {
-							if (aTWinCount === bTWinCount) {
-								return a.userName > b.userName ? 1 : -1;
-							}
-							return bTWinCount > aTWinCount ? 1 : -1;
-						}
+			const inexperienced = visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && !experienced.includes(user))
+				.sort(this.winRate(this.alphabetical()));
 
-						if (aTWinCount) {
-							if (!bIsSuperuser) {
-								if (aTWinCount === bTWinCount) {
-									return a.userName > b.userName ? 1 : -1;
-								}
-								return bTWinCount > aTWinCount ? 1 : -1;
-							}
-						}
-
-						if (bTWinCount) {
-							if (!aIsSuperuser) {
-								if (aTWinCount === bTWinCount) {
-									return a.userName > b.userName ? 1 : -1;
-								}
-								return aTWinCount > bTWinCount ? -1 : 1;
-							}
-						}
-					}
-
-					if (EDITORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
-						return -1;
-					}
-
-					if (EDITORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
-						return 1;
-					}
-
-					if (EDITORS.includes(a.userName) && EDITORS.includes(b.userName)) {
-						return a.userName > b.userName ? 1 : -1;
-					}
-
-					if (MODERATORS.includes(a.userName) && !ADMINS.includes(b.userName)) {
-						return -1;
-					}
-
-					if (MODERATORS.includes(b.userName) && !ADMINS.includes(a.userName)) {
-						return 1;
-					}
-
-					if (MODERATORS.includes(a.userName) && MODERATORS.includes(b.userName)) {
-						return a.userName > b.userName ? 1 : -1;
-					}
-
-					if (aTotal > 49 && bTotal > 49) {
-						return b[w] / bTotal - a[w] / aTotal;
-					} else if (aTotal > 49) {
-						return -1;
-					} else if (bTotal > 49) {
-						return 1;
-					}
-
-					if (b[w] / b[l] === a[w] / a[l]) {
-						return a.userName > b.userName ? 1 : -1;
-					}
-
-					if (aTotal > 9 && bTotal < 10) {
-						return -1;
-					}
-
-					if (bTotal > 9 && aTotal < 10) {
-						return 1;
-					}
-
-					return a[w] / a[l] < b[w] / b[l] ? 1 : -1;
-				})
+			return [...aem, ...tournyWinners, ...experienced, ...inexperienced]
 				.map((user, i) => {
 					const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
 					const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
