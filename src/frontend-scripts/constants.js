@@ -9,7 +9,6 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Rose',
 	'Number5',
 	'Ophxlia',
-	'Idrissa',
 	'cayseron',
 	'safi',
 	'Wilmeister',
