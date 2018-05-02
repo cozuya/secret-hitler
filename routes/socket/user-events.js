@@ -19,7 +19,7 @@ const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
-const { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
+const { MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
 
 /**
  * @param {object} game - game to act on.
