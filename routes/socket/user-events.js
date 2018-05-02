@@ -343,9 +343,8 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				]
 			};
 			chat.chat.push({
-				text: ` has rescinded their vote to ${
-					game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
-				} (${remakePlayerCount-1}/${minimumRemakeVoteCount})`
+				text: ` has rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
+					1}/${minimumRemakeVoteCount})`
 			});
 			game.chats.push(chat);
 			game.publicPlayersState[playerIndex].isRemakeVoting = false;
@@ -1448,7 +1447,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			for (const setting in data) {
 				account.gameSettings[setting] = data[setting];
 			}
-			
+
 			const user = userList.find(u => u.userName === passport.user);
 			if (user) user.blacklist = account.gameSettings.blacklist;
 
