@@ -164,7 +164,7 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="player-input">
-				<input placeholder="Player or game name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
+				<input id="playernameelem" placeholder="Player or game name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText}/>
 			</div>
 		);
 	}
@@ -502,6 +502,9 @@ export default class Moderation extends React.Component {
 			);
 		};
 
+		const elem = document.getElementById("playernameelem");
+		const name = elem ? elem.value : "";
+
 		return (
 			<div>
 				<table className="ui celled table">
@@ -553,6 +556,9 @@ export default class Moderation extends React.Component {
 					</thead>
 					<tbody>
 						{this.state.log
+							.filter(report => (report.userActedOn && report.userActedOn.includes(name)) ||
+											  (report.modUserName && report.modUserName.includes(name)) ||
+											  (report.ip          && report.ip.includes(name)))
 							.filter(entry => (this.state.modLogToday ? new Date(entry.date).toDateString() === new Date().toDateString() : true))
 							.sort((a, b) => {
 								const { logSort } = this.state;
@@ -672,6 +678,7 @@ export default class Moderation extends React.Component {
 							<a href="#" onClick={toggleModLogToday} style={{ textDecoration: 'underline', fontSize: '12px' }}>
 								{this.state.modLogToday ? 'Show all' : 'Show today only'}
 							</a>
+							
 						</h3>
 						{this.renderModLog()}
 					</div>
