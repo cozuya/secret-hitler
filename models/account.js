@@ -76,7 +76,8 @@ const Account = new Schema({
 	lastVersionSeen: String,
 	isFixed: Boolean,
 	eloSeason: Number,
-	eloOverall: Number
+	eloOverall: Number,
+	hashUid: String
 });
 
 Account.plugin(passportLocalMongoose);

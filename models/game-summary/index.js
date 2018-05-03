@@ -21,7 +21,8 @@ const gameSummary = new Schema({
 		{
 			username: String,
 			role: String,
-			icon: Number
+			icon: Number,
+			hashUid: String
 		}
 	],
 	logs: [

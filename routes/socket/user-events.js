@@ -19,7 +19,7 @@ const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
-const { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
+const { MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
 
 /**
  * @param {object} game - game to act on.
@@ -343,9 +343,8 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				]
 			};
 			chat.chat.push({
-				text: ` has left and rescinded their vote to ${
-					game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
-				} (${remakePlayerCount-1}/${minimumRemakeVoteCount})`
+				text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
+					1}/${minimumRemakeVoteCount})`
 			});
 			game.chats.push(chat);
 			game.publicPlayersState[playerIndex].isRemakeVoting = false;
@@ -1448,7 +1447,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			for (const setting in data) {
 				account.gameSettings[setting] = data[setting];
 			}
-			
+
 			const user = userList.find(u => u.userName === passport.user);
 			if (user) user.blacklist = account.gameSettings.blacklist;
 
