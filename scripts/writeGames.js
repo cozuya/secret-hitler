@@ -1,41 +1,52 @@
-const child_process = require('child_process');
 const fs = require('fs');
-const os = require('os');
-const path = require('path');
 const mongoose = require('mongoose');
 const Game = require('../models/game');
 const Account = require('../models/account');
-
-const OUTPUT_DIR = '/var/www/secret-hitler/public/data';
 
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
 
 const games = [];
 
-Game.find({})
-	.limit(1)
+Game.find({}, { chats: 0 })
+	.limit(1000)
 	.lean()
 	.cursor()
 	.eachAsync(game => {
 		const playerNames = game.winningPlayers.map(player => player.userName).concat(game.losingPlayers.map(player => player.userName));
-		const { winningTeam } = game;
 
-		// game.winningPlayers = winningPlayersHash;
-		// game.losingPlayers = losingPlayersHash;
+		Account.find({ username: { $in: playerNames } }, { hashUid: 1, username: 1 }).then(accounts => {
+			game.winningPlayers.map(player => {
+				try {
+					player.userName = accounts.find(account => account.username === player.userName).hashUid;
+				} catch (e) {
+					player.userName = 'NOHASHUID';
+				}
 
-		// games.push(game);
-		console.log(`processed game ${game.uid}`);
+				return player;
+			});
+
+			game.losingPlayers.map(player => {
+				try {
+					player.userName = accounts.find(account => account.username === player.userName).hashUid;
+				} catch (e) {
+					player.userName = 'NOHASHUID';
+				}
+
+				return player;
+			});
+
+			games.push(game);
+		});
+
+		// console.log(`processed game ${game.uid}`);
 	})
 	.then(() => {
-		const playerNames = game.winningPlayers.map(player => player.userName).concat(game.losingPlayers.map(player => player.userName));
-
-		Account.find({ username: { $in: playerNames } }).then(accounts => {
-			games.push('test');
-			console.log(games, 'games');
+		console.log('done');
+		fs.writeFile('/var/www/secret-hitler/public/gamedumps/games1.json', JSON.stringify(games), () => {
+			console.log('file written');
 			mongoose.connection.close();
 		});
-		console.log('done');
 		// for (let game of games) {
 		// 	fs.writeFileSync(OUTPUT_DIR + '1', JSON.stringify(game));
 		// }
