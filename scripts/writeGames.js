@@ -1,6 +1,6 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
-const Game = require('../models/game');
+const Game = require('../models/game-summary/index');
 const Account = require('../models/account');
 
 mongoose.Promise = global.Promise;
@@ -9,49 +9,36 @@ mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
 const games = [];
 
 Game.find({}, { chats: 0 })
-	.limit(1000)
-	.lean()
+	//.limit(1)
+	//.lean()
 	.cursor()
 	.eachAsync(game => {
-		const playerNames = game.winningPlayers.map(player => player.userName).concat(game.losingPlayers.map(player => player.userName));
-
+		/*console.log(game);
+		const playerNames = game.players.map(player => player.username);
 		Account.find({ username: { $in: playerNames } }, { hashUid: 1, username: 1 }).then(accounts => {
-			game.winningPlayers.map(player => {
+			game.players.map(player => {
 				try {
-					player.userName = accounts.find(account => account.username === player.userName).hashUid;
+					player.username = accounts.find(account => account.username === player.username).hashUid;
 				} catch (e) {
-					player.userName = 'NOHASHUID';
+					player.username = "NOHASHUID";
 				}
-
 				return player;
 			});
+		});*/
+		game.players.map(player => player.username = "");
+		game.players.map(player => player._id = null);
+		game.logs.map(log => log._id = null);
+		games.push(game);
 
-			game.losingPlayers.map(player => {
-				try {
-					player.userName = accounts.find(account => account.username === player.userName).hashUid;
-				} catch (e) {
-					player.userName = 'NOHASHUID';
-				}
-
-				return player;
-			});
-
-			games.push(game);
-		});
-
-		// console.log(`processed game ${game.uid}`);
+		console.log(`processed game ${game._id}`);
 	})
 	.then(() => {
 		console.log('done');
-		fs.writeFile('/var/www/secret-hitler/public/gamedumps/games1.json', JSON.stringify(games), () => {
-			console.log('file written');
+		fs.writeFile('./out/games1.json', JSON.stringify(games), (err) => {
+			if (err) console.log(err);
+			else console.log('File written.');
 			mongoose.connection.close();
 		});
-		// for (let game of games) {
-		// 	fs.writeFileSync(OUTPUT_DIR + '1', JSON.stringify(game));
-		// }
-
-		// child_process.execSync(`tar -zcvf test.tar.gz .`, { cwd: OUTPUT_DIR });
 	})
 	.catch(err => {
 		console.log(err, 'err');
