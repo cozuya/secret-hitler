@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { fetchProfile } from '../../actions/actions';
+import { fetchProfile, updateStatus } from '../../actions/actions';
 import cn from 'classnames';
 import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 import $ from 'jquery';
@@ -15,7 +15,10 @@ $.fn.modal = Modal;
 const mapStateToProps = ({ midSection }) => ({ midSection });
 const mapDispatchToProps = dispatch => ({
 	fetchProfile: username => dispatch(fetchProfile(username)),
-	fetchReplay: gameId => dispatch({ type: 'FETCH_REPLAY', gameId })
+	fetchReplay: gameId => {
+		updateStatus('replay', uid);
+		dispatch({ type: 'FETCH_REPLAY', gameId });
+	}
 });
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
 	const isUserClickable = stateProps.midSection !== 'game' && stateProps.midSection !== 'replay';
