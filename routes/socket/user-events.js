@@ -343,7 +343,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				]
 			};
 			chat.chat.push({
-				text: ` has rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
+				text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
 					1}/${minimumRemakeVoteCount})`
 			});
 			game.chats.push(chat);
