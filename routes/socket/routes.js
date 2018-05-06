@@ -150,9 +150,13 @@ module.exports = () => {
 				}
 			})
 			.on('leaveGame', data => {
+				if (io.sockets.adapter.rooms[game.general.uid] && socket) {
+					socket.leave(game.general.uid);
+				}
+
 				const game = findGame(data);
 
-				if (game) {
+				if (authenticated && game) {
 					handleUserLeaveGame(socket, game, data, passport);
 				}
 			})

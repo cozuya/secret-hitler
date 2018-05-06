@@ -297,14 +297,6 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	// Authentication Assured in routes.js
 	// In-game Assured in routes.js
 
-	if (io.sockets.adapter.rooms[game.general.uid] && socket) {
-		socket.leave(game.general.uid);
-	}
-
-	if (!passport) {
-		return;
-	}
-
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (playerIndex > -1) {
