@@ -368,6 +368,13 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 		(game.general.isTourny && game.general.tournyInfo.round === 0 && !game.general.tournyInfo.queuedPlayers.length)
 	) {
 		io.sockets.in(game.general.uid).emit('gameUpdate', {});
+		if (!game.summarySaved && game.gameState.isTracksFlipped) {
+			const summary = game.private.summary.publish();
+			if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
+				summary.save();
+				game.summarySaved = true;
+			}
+		}
 		games.splice(games.indexOf(game), 1);
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
@@ -1155,6 +1162,13 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		});
 
 		game.general.status = 'Game is being remade..';
+		if (!game.summarySaved) {
+			const summary = game.private.summary.publish();
+			if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
+				summary.save();
+				game.summarySaved = true;
+			}
+		}
 		sendInProgressGameUpdate(game);
 
 		setTimeout(() => {

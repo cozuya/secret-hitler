@@ -49,7 +49,10 @@ const saveGame = game => {
 		if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
 			enhanced = buildEnhancedGameSummary(summary.toObject());
 			updateProfiles(enhanced, { cache: true });
-			summary.save();
+			if (!game.summarySaved) {
+				summary.save();
+				game.summarySaved = true;
+			}
 		} else {
 			// console.log(summary, 'problem with summary');
 		}
