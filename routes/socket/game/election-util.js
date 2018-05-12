@@ -137,15 +137,44 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 				game.gameState.timedModeEnabled = true;
 
 				game.private.timerId = setTimeout(() => {
+					const neededPlayers = (() => {
+						switch (game.general.playerCount) {
+							case 5:
+								return 4;
+							case 6:
+								return 5;
+							case 7:
+								return 5;
+							case 8:
+								return 6;
+							case 9:
+								return 6;
+							case 10:
+								return 7;
+						}
+					})();
+					const activePlayerCount = game.publicPlayersState.filter(player => !player.leftGame).length;
+					if (activePlayerCount < neededPlayers) {
+						player.gameChats.push({
+							gameChat: true,
+							timestamp: new Date(),
+							chat: [
+								{
+									text: 'Not enough players are present, votes will not be auto-picked.'
+								}
+							]
+						});
+						return;
+					}
+
 					if (game.gameState.timedModeEnabled) {
 						const unvotedPlayerNames = game.private.seatedPlayers
 							.filter(player => !player.voteStatus.hasVoted && !player.isDead)
 							.map(player => player.userName);
 
 						game.gameState.timedModeEnabled = false;
+						const { selectVoting } = require('./election');
 						unvotedPlayerNames.forEach(userName => {
-							const { selectVoting } = require('./election');
-
 							selectVoting({ user: userName }, game, { vote: Boolean(Math.random() > 0.5) });
 						});
 					}
