@@ -11,8 +11,7 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Ophxlia',
 	'cayseron',
 	'safi',
-	'Wilmeister',
-	'MrEth3real'
+	'Wilmeister'
 ]);
 
 module.exports.TRIALMODS = ['ZeroCool', 'neffni', 'waluigiwaro', 'benjamin172'];
