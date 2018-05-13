@@ -542,7 +542,7 @@ const handToLog = hand =>
  * @param {object} game - target game.
  * @param {object} data - socket emit
  */
-const selectChancellorPolicy = (passport, game, data) => {
+const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 	const { experiencedMode } = game.general;
 	const presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPresident');
 	const president = game.private.seatedPlayers[presidentIndex];
@@ -552,6 +552,14 @@ const selectChancellorPolicy = (passport, game, data) => {
 
 	if (!chancellor || chancellor.userName !== passport.user) {
 		return;
+	}
+
+	if (!wasTimer && chancellor.role.team == "liberal" && enactedPolicy === "fascist" &&
+	    (game.private.currentChancellorOptions[0] === "liberal" ||
+		 game.private.currentChancellorOptions[1] === "liberal")) {
+		//Liberal chancellor chose to play fascist, probably throwing.
+		const { makeReport } = require("../report.js");
+		makeReport(`Player ${chancellor.userName} in seat ${chancellorIndex+1} is liberal, was given choice as chancellor, and played fascist.`, game.general.uid);
 	}
 
 	game.private.lock.selectPresidentPolicy = false;
@@ -790,7 +798,7 @@ const selectPresidentPolicy = (passport, game, data) => {
 					if (game.gameState.timedModeEnabled) {
 						const isRightPolicy = Boolean(Math.floor(Math.random() * 2));
 
-						selectChancellorPolicy({ user: chancellor.userName }, game, { selection: isRightPolicy ? 3 : 1 });
+						selectChancellorPolicy({ user: chancellor.userName }, game, { selection: isRightPolicy ? 3 : 1 }, true);
 					}
 				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 			}
