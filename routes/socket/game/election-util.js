@@ -155,15 +155,20 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 					})();
 					const activePlayerCount = game.publicPlayersState.filter(player => !player.leftGame).length;
 					if (activePlayerCount < neededPlayers) {
-						player.gameChats.push({
-							gameChat: true,
-							timestamp: new Date(),
-							chat: [
-								{
-									text: 'Not enough players are present, votes will not be auto-picked.'
-								}
-							]
-						});
+						if (!game.general.disableGamechat) {
+							seatedPlayers.forEach(player => {
+								player.gameChats.push({
+									gameChat: true,
+									timestamp: new Date(),
+									chat: [
+										{
+											text: 'Not enough players are present, votes will not be auto-picked.'
+										}
+									]
+								});
+							});
+							sendInProgressGameUpdate(game);
+						}
 						return;
 					}
 
