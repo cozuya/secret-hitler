@@ -5,56 +5,68 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
 
-// const rateGame = () => {
-Game.findOne({ uid: 'MelodicAfraidSwallow' }).then(game => {
-	console.log('found a game');
-	const liberalsWon = game.winningTeam === 'liberal';
+const libWinAdjust = {
+	5: -19.253,
+	6: 20.637,
+	7: -17.282,
+	8: 45.418,
+	9: -70.679,
+	10: -31.539
+};
 
-	// async function getAverageElos(accounts) {
-	// 	const accountElos = await Account.find({ username: { $in: accounts } }).then(acc => {
-	// 		const elos = acc.map(a => a.eloOverall || 1600);
-	// 		console.log(elos, 'elos');
-	// 		const avg = elos.reduce((prev, curr) => prev + curr, 0) / elos.length;
-	// 		console.log(avg, 'avg');
-	// 		return avg;
-	// 	});
+let gameCount = 0;
 
-	// 	console.log(accountElos, 'acelos');
+Game.findOne({})
+	.limit(50000)
+	.cursor()
+	.eachAsync(game => {
+		const winningPlayerNames = game.winningPlayers.map(player => player.userName);
+		const losingPlayerNames = game.losingPlayers.map(player => player.userName);
 
-	// 	return accountElos;
-	// }
+		Account.find({ username: { $in: winningPlayerNames.concat(losingPlayerNames) } }, { eloOverall: 1, eloSeason: 1, username: 1 }).then(accounts => {
+			const liberalsWon = game.winningTeam === 'liberal';
 
-	async function getAverageElos(accounts) {
-		// const accelo = await Account.find({ username: { $in: accounts } }).then(acc => {
-		// 	const elos = acc.map(a => a.eloOverall || 1600);
-		// 	console.log(elos, 'elos');
-		// 	const avg = elos.reduce((prev, curr) => prev + curr, 0) / elos.length;
-		// 	console.log(avg, 'avg');
-		// 	return avg;
-		// });
+			let averageRatingWinners =
+				winningPlayerNames.reduce((prev, curr) => (accounts.find(account => account.username === curr).eloOverall || 1600) + prev, 0) /
+				winningPlayerNames.length;
+			let averageRatingLosers =
+				losingPlayerNames.reduce((prev, curr) => (accounts.find(account => account.username === curr).eloOverall || 1600) + prev, 0) / losingPlayerNames.length;
 
-		// console.log(accelo, 'accelo');
+			if (liberalsWon) {
+				averageRatingWinners += libWinAdjust[game.playerCount];
+			} else {
+				averageRatingLosers += libWinAdjust[game.playerCount];
+			}
 
-		// return Promise.resolve(accelo);
+			// double p = 1.0 / (1.0 + Math.pow(10.0, (avgRatingWinners - avgRatingLosers) / 400.0));
 
-		return Account.find({ username: { $in: accounts } });
+			const k = 64;
+			const p = 1 / (1 + 10 ** ((averageRatingWinners - averageRatingLosers) / 400));
+			const winningPlayerAdjustment = k * p / winningPlayerNames.length;
+			const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
 
-		// console.log(accountElos, 'acelos');
+			// if (Number.isInteger(gameCount / 50)) {
+			// 	console.log(winningPlayerAdjustment, 'win');
+			// 	console.log(losingPlayerAdjustment, 'lose');
+			// }
 
-		// return accountElos;
-	}
+			accounts.forEach(account => {
+				account.eloOverall = winningPlayerNames.includes(account.username)
+					? (account.eloOverall || 1600) + winningPlayerAdjustment
+					: (account.eloOverall || 1600) + losingPlayerAdjustment;
 
-	const liberalsAverageElo = getAverageElos(
-		liberalsWon ? game.winningPlayers.map(player => player.userName) : game.losingPlayers.map(player => player.userName)
-	).then(acc => {
-		const elos = acc.map(a => a.eloOverall || 1600);
-		console.log(elos, 'elos');
-		const avg = elos.reduce((prev, curr) => prev + curr, 0) / elos.length;
-		console.log(avg, 'avg');
-		return avg;
+				account.save();
+			});
+
+			// 		double k = 64;
+
+			// // Update player ratings
+			// updateRatings(game.getWinningPlayers(), k * p / game.getWinningPlayers().size());
+			// updateRatings(game.getLosingPlayers(), -k * p / game.getLosingPlayers().size());
+		});
+		gameCount++;
+		if (Number.isInteger(gameCount / 100)) {
+			console.log('processed game ' + gameCount);
+		}
 	});
-
-	console.log(liberalsAverageElo, 'libelo');
-	console.log(liberalsAverageElo / 2, 'div');
-});
 // }
