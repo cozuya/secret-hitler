@@ -16,6 +16,5 @@ module.exports.makeReport = (text, roomID) => {
 	if (process.env.NODE_ENV === 'production') {
 		const req = https.request(options);
 		req.end(report);
-	}
-	else console.log(`${text}\n${roomID}`);
-}
+	} else console.log(`${text}\n${roomID}`);
+};
