@@ -79,3 +79,79 @@ module.exports.sendInProgressGameUpdate = game => {
 };
 
 module.exports.secureGame = secureGame;
+
+module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
+	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
+	const libWinAdjust = {
+		5: -19.253,
+		6: 20.637,
+		7: -17.282,
+		8: 45.418,
+		9: -70.679,
+		10: -31.539
+	};
+	let averageRatingWinners =
+		winningPlayerNames.reduce(
+			(prev, curr) =>
+				accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall + prev : 1600,
+			0
+		) / winningPlayerNames.length;
+	let averageRatingWinnersSeason =
+		winningPlayerNames.reduce(
+			(prev, curr) =>
+				accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall + prev : 1600,
+			0
+		) / winningPlayerNames.length;
+	let averageRatingLosers =
+		losingPlayerNames.reduce(
+			(prev, curr) =>
+				accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason + prev : 1600,
+			0
+		) / losingPlayerNames.length;
+	let averageRatingLosersSeason =
+		losingPlayerNames.reduce(
+			(prev, curr) =>
+				accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason + prev : 1600,
+			0
+		) / losingPlayerNames.length;
+
+	if (game.gameState.isCompleted === 'liberal') {
+		averageRatingWinners += libWinAdjust[game.private.seatedPlayers.length];
+		averageRatingWinnersSeason += libWinAdjust[game.private.seatedPlayers.length];
+	} else {
+		averageRatingLosers += libWinAdjust[game.private.seatedPlayers.length];
+		averageRatingLosersSeason += libWinAdjust[game.private.seatedPlayers.length];
+	}
+
+	const k = 64;
+	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
+	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
+
+	const winningPlayerAdjustment = k * p / winningPlayerNames.length;
+	const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
+	const winningPlayerAdjustmentSeason = k * pSeason / winningPlayerNames.length;
+	const losingPlayerAdjustmentSeason = -k * pSeason / losingPlayerNames.length;
+
+	accounts.forEach(account => {
+		let eloOverall;
+		let eloSeason;
+
+		if (!account.eloOverall) {
+			eloOverall = 1600;
+			eloSeason = 1600;
+		} else {
+			eloOverall = account.eloOverall;
+			eloSeason = account.eloSeason;
+		}
+
+		account.eloOverall = winningPlayerNames.includes(account.username) ? eloOverall + winningPlayerAdjustment : eloOverall + losingPlayerAdjustment;
+		account.eloSeason = winningPlayerNames.includes(account.username) ? eloSeason + winningPlayerAdjustmentSeason : eloSeason + losingPlayerAdjustmentSeason;
+
+		account.save();
+	});
+
+	return {
+		winningPlayerAdjustment,
+		losingPlayerAdjustment
+	};
+};

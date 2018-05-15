@@ -18,8 +18,7 @@ const libWinAdjust = {
 let gameCount = 0;
 
 Game.findOne({}, { chats: 0 })
-	// .skip(170000)
-	// .limit(2)
+	.skip(130000)
 	.cursor()
 	.eachAsync(game => {
 		const winningPlayerNames = game.winningPlayers.map(player => player.userName);
@@ -33,26 +32,41 @@ Game.findOne({}, { chats: 0 })
 							accounts.find(account => account.username === curr) ? accounts.find(account => account.username === curr).eloOverall + prev : 1600,
 						0
 					) / winningPlayerNames.length;
+				let averageRatingWinnersSeason =
+					winningPlayerNames.reduce(
+						(prev, curr) => (accounts.find(account => account.username === curr) ? accounts.find(account => account.username === curr).eloSeason + prev : 1600),
+						0
+					) / winningPlayerNames.length;
 				let averageRatingLosers =
 					losingPlayerNames.reduce(
 						(prev, curr) =>
 							accounts.find(account => account.username === curr) ? accounts.find(account => account.username === curr).eloOverall + prev : 1600,
 						0
 					) / losingPlayerNames.length;
+				let averageRatingLosersSeason =
+					losingPlayerNames.reduce(
+						(prev, curr) => (accounts.find(account => account.username === curr) ? accounts.find(account => account.username === curr).eloSeason + prev : 1600),
+						0
+					) / losingPlayerNames.length;
 
 				if (game.winningTeam === 'liberal') {
 					averageRatingWinners += libWinAdjust[game.playerCount];
+					averageRatingWinnersSeason += libWinAdjust[game.playerCount];
 				} else {
 					averageRatingLosers += libWinAdjust[game.playerCount];
+					averageRatingLosersSeason += libWinAdjust[game.playerCount];
 				}
 
 				// double p = 1.0 / (1.0 + Math.pow(10.0, (avgRatingWinners - avgRatingLosers) / 400.0));
 
-				const k = 64;
+				const k = 10;
 				const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
+				const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
 
 				const winningPlayerAdjustment = k * p / winningPlayerNames.length;
 				const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
+				const winningPlayerAdjustmentSeason = k * pSeason / winningPlayerNames.length;
+				const losingPlayerAdjustmentSeason = -k * pSeason / losingPlayerNames.length;
 
 				accounts.forEach(account => {
 					account.eloOverall = winningPlayerNames.includes(account.username)
@@ -61,8 +75,8 @@ Game.findOne({}, { chats: 0 })
 
 					if (game.season === CURRENTSEASONNUMBER) {
 						account.eloSeason = winningPlayerNames.includes(account.username)
-							? (account.eloSeason || 1600) + winningPlayerAdjustment
-							: (account.eloSeason || 1600) + losingPlayerAdjustment;
+							? (account.eloSeason || 1600) + winningPlayerAdjustmentSeason
+							: (account.eloSeason || 1600) + losingPlayerAdjustmentSeason;
 					}
 
 					account.save();

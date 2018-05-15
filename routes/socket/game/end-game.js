@@ -1,4 +1,4 @@
-const { sendInProgressGameUpdate } = require('../util.js');
+const { sendInProgressGameUpdate, rateEloGame } = require('../util.js');
 const { userList, games, currentSeasonNumber } = require('../models.js');
 const { sendUserList, sendGameList } = require('../user-requests.js');
 const Account = require('../../../models/account.js');
@@ -146,6 +146,50 @@ module.exports.completeGame = (game, winningTeamName) => {
 			.then(results => {
 				const isRainbow = game.general.rainbowgame;
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
+
+				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
+				const adjustmentChat = {
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: winningTeamName === 'fascist' ? 'Fascists' : 'Liberals',
+							type: winningTeamName === 'fascist' ? 'fascist' : 'liberal'
+						},
+						{
+							text: ' gain '
+						},
+						{
+							text: eloAdjustments.winningPlayerAdjustment.toFixed(0),
+							type: 'player'
+						},
+						{
+							text: ' elo. '
+						},
+						{
+							text: winningTeamName === 'fascist' ? 'Liberals' : 'Fascists',
+							type: winningTeamName === 'fascist' ? 'liberal' : 'fascist'
+						},
+						{
+							text: ' lose '
+						},
+						{
+							text: -1 * eloAdjustments.losingPlayerAdjustment.toFixed(0),
+							type: 'player'
+						},
+						{
+							text: ' elo.'
+						}
+					]
+				};
+
+				seatedPlayers.forEach(player => {
+					player.gameChats.push(adjustmentChat);
+				});
+
+				game.private.unSeatedGameChats.push(adjustmentChat);
+
+				sendInProgressGameUpdate(game);
 
 				results.forEach(player => {
 					let winner = false;
