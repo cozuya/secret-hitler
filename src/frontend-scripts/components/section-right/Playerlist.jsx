@@ -204,7 +204,8 @@ class Playerlist extends React.Component {
 
 			const aem = [...admins, ...editors, ...moderators, ...contributors];
 
-			const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
+			// const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
+			const tournyWinners = [];
 
 			const experienced = visible
 				.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50)
