@@ -192,11 +192,15 @@ class Playerlist extends React.Component {
 			};
 			const isStaff = MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
+			let aem = [];
 			const admins = visible.filter(user => ADMINS.includes(user.userName)).sort(this.alphabetical());
-			const editors = visible.filter(user => EDITORS.includes(user.userName)).sort(this.alphabetical());
-			const moderators = visible.filter(user => MODERATORS.includes(user.userName)).sort(this.alphabetical());
-			const contributors = visible.filter(user => CONTRIBUTORS.includes(user.userName)).sort(this.alphabetical());
-			const aem = [...admins, ...editors, ...moderators, ...contributors];
+			aem.push(admins);
+			const editors = visible.filter(user => !aem.includes(user) && EDITORS.includes(user.userName)).sort(this.alphabetical());
+			aem.push(editors);
+			const moderators = visible.filter(user => !aem.includes(user) && MODERATORS.includes(user.userName)).sort(this.alphabetical());
+			aem.push(moderators);
+			const contributors = visible.filter(user => !aem.includes(user) && CONTRIBUTORS.includes(user.userName)).sort(this.alphabetical());
+			aem.push(contributors);
 
 			const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
 
