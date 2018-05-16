@@ -46,9 +46,7 @@ class Playerlist extends React.Component {
 	}
 
 	alphabetical(sort) {
-		return (a, b) => {
-			return a.userName > b.userName ? 1 : -1;
-		};
+		return (a, b) => (a.userName > b.userName ? 1 : -1);
 	}
 
 	winRate(sort) {
@@ -187,25 +185,20 @@ class Playerlist extends React.Component {
 					: this.state.userListFilter === 'all'
 						? `lossesSeason${CURRENTSEASONNUMBER}`
 						: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
 			const time = new Date().getTime();
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
 			const isStaff = MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
-
 			const admins = visible.filter(user => ADMINS.includes(user.userName)).sort(this.alphabetical());
-
 			const editors = visible.filter(user => EDITORS.includes(user.userName)).sort(this.alphabetical());
-
 			const moderators = visible.filter(user => MODERATORS.includes(user.userName)).sort(this.alphabetical());
-
 			const contributors = visible.filter(user => CONTRIBUTORS.includes(user.userName)).sort(this.alphabetical());
-
 			const aem = [...admins, ...editors, ...moderators, ...contributors];
 
-			// const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
-			const tournyWinners = [];
+			const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
 
 			const experienced = visible
 				.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50)
@@ -233,7 +226,7 @@ class Playerlist extends React.Component {
 					MODERATORS.includes(user.userName) ||
 					CONTRIBUTORS.includes(user.userName)
 						? cn(
-								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username'),
+								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
 								{ unclickable: !this.props.isUserClickable },
 								{ clickable: this.props.isUserClickable }

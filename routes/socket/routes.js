@@ -144,17 +144,18 @@ module.exports = () => {
 					handleUpdatedGameSettings(socket, passport, data);
 				}
 			})
+
 			.on('addNewGeneralChat', data => {
 				if (authenticated) {
 					handleNewGeneralChat(socket, passport, data);
 				}
 			})
 			.on('leaveGame', data => {
+				const game = findGame(data);
+
 				if (io.sockets.adapter.rooms[game.general.uid] && socket) {
 					socket.leave(game.general.uid);
 				}
-
-				const game = findGame(data);
 
 				if (authenticated && game) {
 					handleUserLeaveGame(socket, game, data, passport);
