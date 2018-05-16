@@ -49,18 +49,26 @@ class Playerlist extends React.Component {
 		return (a, b) => {
 			return a.userName > b.userName ? 1 : -1;
 		};
-	};
+	}
 
 	winRate(sort) {
 		const gameSettings = this.props.userInfo.gameSettings;
 		const w =
 			gameSettings && gameSettings.disableSeasonal
-				? this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins'
-				: this.state.userListFilter === 'all' ? `winsSeason${CURRENTSEASONNUMBER}` : `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+				? this.state.userListFilter === 'all'
+					? 'wins'
+					: 'rainbowWins'
+				: this.state.userListFilter === 'all'
+					? `winsSeason${CURRENTSEASONNUMBER}`
+					: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
 		const l =
 			gameSettings && gameSettings.disableSeasonal
-				? this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses'
-				: this.state.userListFilter === 'all' ? `lossesSeason${CURRENTSEASONNUMBER}` : `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+				? this.state.userListFilter === 'all'
+					? 'losses'
+					: 'rainbowLosses'
+				: this.state.userListFilter === 'all'
+					? `lossesSeason${CURRENTSEASONNUMBER}`
+					: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
 		return (a, b) => {
 			const awr = a[w] / a[l];
 			const bwr = b[w] / b[l];
@@ -70,7 +78,7 @@ class Playerlist extends React.Component {
 				return sort(a, b);
 			}
 		};
-	};
+	}
 
 	tounryWins(sort) {
 		return (a, b) => {
@@ -120,7 +128,10 @@ class Playerlist extends React.Component {
 		if (
 			userInfo &&
 			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) || TRIALMODS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
+			(MODERATORS.includes(userInfo.userName) ||
+				TRIALMODS.includes(userInfo.userName) ||
+				ADMINS.includes(userInfo.userName) ||
+				EDITORS.includes(userInfo.userName))
 		) {
 			let classes = 'comment icon report-button';
 
@@ -162,12 +173,20 @@ class Playerlist extends React.Component {
 			const { gameSettings } = userInfo;
 			const w =
 				gameSettings && gameSettings.disableSeasonal
-					? this.state.userListFilter === 'all' ? 'wins' : 'rainbowWins'
-					: this.state.userListFilter === 'all' ? `winsSeason${CURRENTSEASONNUMBER}` : `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+					? this.state.userListFilter === 'all'
+						? 'wins'
+						: 'rainbowWins'
+					: this.state.userListFilter === 'all'
+						? `winsSeason${CURRENTSEASONNUMBER}`
+						: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
 			const l =
 				gameSettings && gameSettings.disableSeasonal
-					? this.state.userListFilter === 'all' ? 'losses' : 'rainbowLosses'
-					: this.state.userListFilter === 'all' ? `lossesSeason${CURRENTSEASONNUMBER}` : `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+					? this.state.userListFilter === 'all'
+						? 'losses'
+						: 'rainbowLosses'
+					: this.state.userListFilter === 'all'
+						? `lossesSeason${CURRENTSEASONNUMBER}`
+						: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
 			const time = new Date().getTime();
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
@@ -175,143 +194,143 @@ class Playerlist extends React.Component {
 			const isStaff = MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 
-			const admins = visible.filter(user => ADMINS.includes(user.userName))
-				.sort(this.alphabetical());
+			const admins = visible.filter(user => ADMINS.includes(user.userName)).sort(this.alphabetical());
 
-			const editors = visible.filter(user => EDITORS.includes(user.userName))
-				.sort(this.alphabetical());
+			const editors = visible.filter(user => EDITORS.includes(user.userName)).sort(this.alphabetical());
 
-			const moderators = visible.filter(user => MODERATORS.includes(user.userName))
-				.sort(this.alphabetical());
+			const moderators = visible.filter(user => MODERATORS.includes(user.userName)).sort(this.alphabetical());
 
-			const contributors = visible.filter(user => CONTRIBUTORS.includes(user.userName))
-				.sort(this.alphabetical());
+			const contributors = visible.filter(user => CONTRIBUTORS.includes(user.userName)).sort(this.alphabetical());
 
 			const aem = [...admins, ...editors, ...moderators, ...contributors];
 
-			const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length)
-				.sort(this.tounryWins(this.winRate(this.alphabetical())));
+			const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
 
-			const experienced = visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50)
+			const experienced = visible
+				.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50)
 				.sort(this.winRate(this.alphabetical()));
 
-			const inexperienced = visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && !experienced.includes(user))
+			const inexperienced = visible
+				.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && !experienced.includes(user))
 				.sort(this.alphabetical());
 
-			return [...aem, ...tournyWinners, ...experienced, ...inexperienced]
-				.map((user, i) => {
-					const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
-					const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
-					const disableIfUnclickable = f => {
-						if (this.props.isUserClickable) {
-							return f;
-						}
+			return [...aem, ...tournyWinners, ...experienced, ...inexperienced].map((user, i) => {
+				const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
+				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
+				const disableIfUnclickable = f => {
+					if (this.props.isUserClickable) {
+						return f;
+					}
 
-						return () => null;
-					};
+					return () => null;
+				};
 
-					const userClasses =
-						user[w] + user[l] > 49 ||
-						ADMINS.includes(user.userName) ||
-						EDITORS.includes(user.userName) ||
-						MODERATORS.includes(user.userName) ||
-						CONTRIBUTORS.includes(user.userName)
-							? cn(
-									PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username'),
-									{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
-									{ unclickable: !this.props.isUserClickable },
-									{ clickable: this.props.isUserClickable }
-							)
-							: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
-					const renderStatus = () => {
-						const status = user.status;
-
-						if (!status || status.type === 'none') {
-							return null;
-						} else {
-							const iconClasses = classnames(
-								'status',
+				const userClasses =
+					user[w] + user[l] > 49 ||
+					ADMINS.includes(user.userName) ||
+					EDITORS.includes(user.userName) ||
+					MODERATORS.includes(user.userName) ||
+					CONTRIBUTORS.includes(user.userName)
+						? cn(
+								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username'),
+								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
 								{ unclickable: !this.props.isUserClickable },
-								{ clickable: this.props.isUserClickable },
-								{ search: status.type === 'observing' },
-								{ fav: status.type === 'playing' },
-								{ rainbow: status.type === 'rainbow' },
-								{ record: status.type === 'replay' },
-								'icon'
-							);
-							const title = {
-								playing: 'This player is playing in a standard game.',
-								observing: 'This player is observing a game.',
-								rainbow: 'This player is playing in a experienced-player-only game.',
-								replay: 'This player is watching a replay.'
-							};
-							const onClick = {
-								playing: this.routeToGame,
-								observing: this.routeToGame,
-								rainbow: this.routeToGame,
-								replay: this.props.fetchReplay
-							};
+								{ clickable: this.props.isUserClickable }
+						  )
+						: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
+				const renderStatus = () => {
+					const status = user.status;
 
-							return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
-						}
-					};
+					if (!status || status.type === 'none') {
+						return null;
+					} else {
+						const iconClasses = classnames(
+							'status',
+							{ unclickable: !this.props.isUserClickable },
+							{ clickable: this.props.isUserClickable },
+							{ search: status.type === 'observing' },
+							{ fav: status.type === 'playing' },
+							{ rainbow: status.type === 'rainbow' },
+							{ record: status.type === 'replay' },
+							'icon'
+						);
+						const title = {
+							playing: 'This player is playing in a standard game.',
+							observing: 'This player is observing a game.',
+							rainbow: 'This player is playing in a experienced-player-only game.',
+							replay: 'This player is watching a replay.'
+						};
+						const onClick = {
+							playing: this.routeToGame,
+							observing: this.routeToGame,
+							rainbow: this.routeToGame,
+							replay: this.props.fetchReplay
+						};
 
-					const renderCrowns = () =>
-						user.tournyWins
-							.filter(winTime => time - winTime < 10800000)
-							.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
+						return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
+					}
+				};
 
-					return (
-						<div key={i} className="user-container">
-							<div className="userlist-username">
-								{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()}
-								{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
-									user.previousSeasonAward &&
-									this.renderPreviousSeasonAward(user.previousSeasonAward)}
-								{(() => {
-									const userAdminRole = ADMINS.includes(user.userName)
-										? 'Admin'
-										: EDITORS.includes(user.userName)
-											? 'Editor'
-											: MODERATORS.includes(user.userName) ? 'Moderator' : CONTRIBUTORS.includes(user.userName) ? 'Contributor' : null;
+				const renderCrowns = () =>
+					user.tournyWins
+						.filter(winTime => time - winTime < 10800000)
+						.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
-									if (userAdminRole) {
-										const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
+				return (
+					<div key={i} className="user-container">
+						<div className="userlist-username">
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								user.previousSeasonAward &&
+								this.renderPreviousSeasonAward(user.previousSeasonAward)}
+							{(() => {
+								const userAdminRole = ADMINS.includes(user.userName)
+									? 'Admin'
+									: EDITORS.includes(user.userName)
+										? 'Editor'
+										: MODERATORS.includes(user.userName)
+											? 'Moderator'
+											: CONTRIBUTORS.includes(user.userName)
+												? 'Contributor'
+												: null;
 
-										return (
-											<Popup
-												inverted
-												className="admin-popup"
-												trigger={
-													<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
-														{prefix}
-														{` ${user.userName}`}
-													</span>
-												}
-												content={userAdminRole}
-											/>
-										);
-									} else {
-										return (
-											<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
-												{user.isPrivate ? 'P - ' : ''}
-												{user.userName}
-											</span>
-										);
-									}
-								})()}
-								{renderStatus()}
-							</div>
-							{!ADMINS.includes(user.userName) && (
-								<div className="userlist-stats-container">
-									(
-									<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
-									<span className="userlist-stats"> {percentDisplay}</span>
-								</div>
-							)}
+								if (userAdminRole) {
+									const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
+
+									return (
+										<Popup
+											inverted
+											className="admin-popup"
+											trigger={
+												<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+													{prefix}
+													{` ${user.userName}`}
+												</span>
+											}
+											content={userAdminRole}
+										/>
+									);
+								} else {
+									return (
+										<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
+											{user.isPrivate ? 'P - ' : ''}
+											{user.userName}
+										</span>
+									);
+								}
+							})()}
+							{renderStatus()}
 						</div>
-					);
-				});
+						{!ADMINS.includes(user.userName) && (
+							<div className="userlist-stats-container">
+								(
+								<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
+								<span className="userlist-stats"> {percentDisplay}</span>
+							</div>
+						)}
+					</div>
+				);
+			});
 		}
 	}
 

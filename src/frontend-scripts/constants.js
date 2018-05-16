@@ -11,10 +11,12 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Ophxlia',
 	'cayseron',
 	'safi',
-	'Wilmeister'
+	'Wilmeister',
+	'neffni',
+	'benjamin172'
 ]);
 
-module.exports.TRIALMODS = ['ZeroCool', 'neffni', 'waluigiwaro', 'benjamin172'];
+module.exports.TRIALMODS = ['ZeroCool', 'waluigiwaro'];
 
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);

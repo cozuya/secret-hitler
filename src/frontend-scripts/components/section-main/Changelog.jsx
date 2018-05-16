@@ -9,22 +9,6 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.14.0 released 5--2018</p>
-		</div>
-		<h3>New feature: elo system</h3>
-		<p>An elo system has come to sh.io. What is it/where is your winrate/why did your color change? See below.</p>
-		<p>
-			Effectively an elo system is a point-based representation of your weighted skill based off of your teammates and your opponent's elo. The easiest way to
-			think of it is that, when you win a game, your elo will go up more if you are playing against high rated players (their collective average) than low rated
-			players.
-		</p>
-		<p>
-			Player colors for elo mode have been redone - check the information icon on the player list. There is some drastic changes: based off percents, most
-			players will be green. Some will be purple, and a very small percent will be ORANGE. Contributor color has been reassigned.
-		</p>
-		<p>Elo changes will be communicated when a game ends. Remember that all elo is based on the average of your and your opponent's team elo.</p>
-		<p>This feature can be disabled in your player settings screen.</p>
-		<div className="ui header">
 			<p>Version 0.13.5 released 4-29-2018</p>
 		</div>
 		<h3>New feature: seasonal stats page.</h3>
