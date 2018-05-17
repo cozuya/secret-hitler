@@ -118,7 +118,11 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	if (game.gameState.isCompleted === 'liberal') {
 		averageRatingWinners += libWinAdjust[game.private.seatedPlayers.length];
 		averageRatingWinnersSeason += libWinAdjust[game.private.seatedPlayers.length];
+		averageRatingLosers -= libWinAdjust[game.private.seatedPlayers.length];
+		averageRatingLosersSeason -= libWinAdjust[game.private.seatedPlayers.length];
 	} else {
+		averageRatingWinners -= libWinAdjust[game.private.seatedPlayers.length];
+		averageRatingWinnersSeason -= libWinAdjust[game.private.seatedPlayers.length];
 		averageRatingLosers += libWinAdjust[game.private.seatedPlayers.length];
 		averageRatingLosersSeason += libWinAdjust[game.private.seatedPlayers.length];
 	}
