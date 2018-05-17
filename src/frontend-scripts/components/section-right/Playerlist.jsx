@@ -185,22 +185,21 @@ class Playerlist extends React.Component {
 					: this.state.userListFilter === 'all'
 						? `lossesSeason${CURRENTSEASONNUMBER}`
 						: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
-			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
+			// const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
 			const time = new Date().getTime();
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
 			const isStaff = MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
-			let aem = [];
 			const admins = visible.filter(user => ADMINS.includes(user.userName)).sort(this.alphabetical());
-			aem.push(admins);
+			let aem = [...admins];
 			const editors = visible.filter(user => !aem.includes(user) && EDITORS.includes(user.userName)).sort(this.alphabetical());
-			aem.push(editors);
+			aem.push(...editors);
 			const moderators = visible.filter(user => !aem.includes(user) && MODERATORS.includes(user.userName)).sort(this.alphabetical());
-			aem.push(moderators);
+			aem.push(...moderators);
 			const contributors = visible.filter(user => !aem.includes(user) && CONTRIBUTORS.includes(user.userName)).sort(this.alphabetical());
-			aem.push(contributors);
+			aem.push(...contributors);
 
 			const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
 
