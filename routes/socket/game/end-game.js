@@ -161,14 +161,14 @@ module.exports.completeGame = (game, winningTeamName) => {
 								text: (eloAdjustments[player.userName][0] > 0) ? ' gain ' : ' lose '
 							},
 							{
-								text: Math.abs(eloAdjustments[player.userName][0]).toFixed(1),
+								text: Math.abs(eloAdjustments[player.userName].change).toFixed(1),
 								type: 'player'
 							},
 							{
 								text: ' elo and '
 							},
 							{
-								text: Math.abs(eloAdjustments[player.userName][1]).toFixed(1),
+								text: Math.abs(eloAdjustments[player.userName].changeSeason).toFixed(1),
 								type: 'player'
 							},
 							{
@@ -178,8 +178,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 					};
 					player.gameChats.push(adjustmentChat);
 				});
-
-				game.private.unSeatedGameChats.push(adjustmentChat);
 
 				sendInProgressGameUpdate(game);
 

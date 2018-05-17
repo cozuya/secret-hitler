@@ -157,10 +157,10 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 			changeSeason = pSeason * loseFactor;
 		}
 
-		account.eloOverall = account.eloOverall + change;
-		account.eloSeason = account.eloSeason + changeSeason;
+		account.eloOverall = eloOverall + change;
+		account.eloSeason = eloSeason + changeSeason;
 
-		eloAdjustment[account.username] = {change, changeSeason};
+		eloAdjustment[account.username] = { change, changeSeason };
 
 		account.save();
 	});
