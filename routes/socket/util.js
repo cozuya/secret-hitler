@@ -93,25 +93,25 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	let averageRatingWinners =
 		winningPlayerNames.reduce(
 			(prev, curr) =>
-				accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall + prev : 1600,
+				(accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall : 1600) + prev,
 			0
 		) / winningPlayerNames.length;
 	let averageRatingWinnersSeason =
 		winningPlayerNames.reduce(
 			(prev, curr) =>
-				accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall + prev : 1600,
+				(accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason : 1600) + prev,
 			0
 		) / winningPlayerNames.length;
 	let averageRatingLosers =
 		losingPlayerNames.reduce(
 			(prev, curr) =>
-				accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason + prev : 1600,
+				(accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall : 1600) + prev,
 			0
 		) / losingPlayerNames.length;
 	let averageRatingLosersSeason =
 		losingPlayerNames.reduce(
 			(prev, curr) =>
-				accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason + prev : 1600,
+				(accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason : 1600) + prev,
 			0
 		) / losingPlayerNames.length;
 
@@ -124,13 +124,11 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	}
 
 	const k = 64;
-	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
-	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
 
-	const winningPlayerAdjustment = k * p / winningPlayerNames.length;
-	const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
-	const winningPlayerAdjustmentSeason = k * pSeason / winningPlayerNames.length;
-	const losingPlayerAdjustmentSeason = -k * pSeason / losingPlayerNames.length;
+	const winFactor = k / winningPlayerNames.length;
+	const loseFactor = -k / losingPlayerNames.length;
+
+	let eloAdjustment = {};
 
 	accounts.forEach(account => {
 		let eloOverall;
@@ -144,14 +142,28 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 			eloSeason = account.eloSeason;
 		}
 
-		account.eloOverall = winningPlayerNames.includes(account.username) ? eloOverall + winningPlayerAdjustment : eloOverall + losingPlayerAdjustment;
-		account.eloSeason = winningPlayerNames.includes(account.username) ? eloSeason + winningPlayerAdjustmentSeason : eloSeason + losingPlayerAdjustmentSeason;
+		const win = winningPlayerNames.includes(account.username);
+		let change;
+		let changeSeason;
+		if (win) {
+			const p = 1 / (1 + Math.pow(10, (eloOverall - averageRatingLosers) / 400));
+			const pSeason = 1 / (1 + Math.pow(10, (eloSeason - averageRatingLosersSeason) / 400));
+			change = p * winFactor;
+			changeSeason = pSeason * winFactor;
+		} else {
+			const p = 1 / (1 + Math.pow(10, (averageRatingWinners - eloOverall) / 400));
+			const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - eloSeason) / 400));
+			change = p * loseFactor;
+			changeSeason = pSeason * loseFactor;
+		}
+
+		account.eloOverall = account.eloOverall + change;
+		account.eloSeason = account.eloSeason + changeSeason;
+
+		eloAdjustment[account.username] = {change, changeSeason};
 
 		account.save();
 	});
 
-	return {
-		winningPlayerAdjustment,
-		losingPlayerAdjustment
-	};
+	return eloAdjustment;
 };
