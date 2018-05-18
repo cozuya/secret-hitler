@@ -69,6 +69,12 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		const w = isSeasonal ? user[`winsSeason${CURRENTSEASONNUMBER}`] : user.wins;
 		const l = isSeasonal ? user[`lossesSeason${CURRENTSEASONNUMBER}`] : user.losses;
 		const elo = isSeasonal ? user.eloSeason : user.eloOverall;
+		let grade;
+		if      (elo < 1500) grade = (1500) / 5;
+		else if (elo > 2000) grade = (2000) / 5;
+		else                 grade = (elo - 1500) / 5;
+		const gradeObj = {};
+		gradeObj["elo"+grade] = true;
 
 		return w + l >= 50
 			? eloDisabled
@@ -89,18 +95,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 						onfire9: w / (w + l) > 0.68,
 						onfire10: w / (w + l) > 0.7
 				  })
-				: cn(defaultClass, {
-						eloTier1: elo > 0,
-						eloTier2: elo > 1460,
-						eloTier3: elo > 1480,
-						eloTier4: elo > 1500,
-						eloTier5: elo > 1520,
-						eloTier5: elo > 1560,
-						eloTier6: elo > 1580,
-						eloTier7: elo > 1600,
-						eloTier8: elo > 1620,
-						eloTier9: elo > 1640
-				  })
+				: cn(defaultClass, gradeObj)
 			: defaultClass;
 	}
 };
