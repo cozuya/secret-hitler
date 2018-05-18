@@ -1,69 +1,86 @@
-const AllGames = require('./allGames');
+const Summary = require('../../models/game-summary');
 const Account = require('../../models/account');
-const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
+const buildEnhancedGameSummary = require('../../models/game-summary/buildEnhancedGameSummary');
+const mongoose = require('mongoose');
 
-const winAdjust = {
-	5: -19.253,
-	6: 20.637,
-	7: -17.282,
-	8: 45.418,
-	9: -70.679,
-	10: -31.539
-};
+// Players will be considered more influential when:
+// + Voting with the majority (+1pt per majority vote)
+// + Spending more time in government (+4pt per government)
+// + Using the special powers (+7pt for special power use)
 
-function avg(accounts, players, acsessor, fallback) {
-	return (
-		players.reduce(
-			(prev, curr) =>
-				acsessor(accounts.find(account => account.username === curr)) ? acsessor(accounts.find(account => account.username === curr)) + prev : fallback,
-			0
-		) / players.length
-	);
+liberalRank = 1600;
+fascistRank = 1600;
+liberalSeasonRank = 1600;
+fascistSeasonRank = 1600;
+
+ja = async votes => votes.toArray().filter(b => b).length;
+nein = async votes => votes.toArray().filter(b => !b).length;
+passed = async votes => await ja(votes) > await nein(votes);
+
+async function softmax(arr) {
+	return arr.map(function(value, index) {
+		return Math.exp(value) / arr.map(Math.exp).reduce((a, b) => a + b);
+	});
 }
 
-async function rate(game) {
-	console.log(game);
-	// Get the players
-	const winningPlayerNames = game.winningPlayers.map(player => player.userName);
-	const losingPlayerNames = game.losingPlayers.map(player => player.userName);
-	const playerNames = winningPlayerNames.concat(losingPlayerNames);
-	// Then look up account information
-	let accounts = await Account.find({ username: { $in: playerNames } }, { eloOverall: 1, eloSeason: 1, username: 1 });
+async function influence(game) {
+	let weighting = new Array(game.playerSize).fill(0);
+	let red = 0;
+	for (let turn of game.summary.logs) {
+		p = passed(turn.votes);
+		if (Math.abs(await ja(turn.votes) - await nein(turn.votes)) === 1) {
+			for (let v of turn.votes) {
+				if (turn.votes[v] === await p) {
+					// voting with the majority on a close vote
+					weighting[v]++;
+				}
+			}
+		}
+		if (await p) {
+			// In government influence
+			weighting[turn.presidentId]++;
+			weighting[turn.chancellorId]++;
+			if (red > 3 && turn.enactedPolicy._value === 'fascist') {
+				// President powers influence
+				weighting[turn.presidentId]++;
+			}
+			if (turn.enactedPolicy._value === 'fascist') {
+				red += 1;
+			}
+		}
+	}
+	return softmax(weighting);
+}
+
+async function rate(summary) {
+	let game = buildEnhancedGameSummary(summary.toObject());
+	// Construct extra game info
+	const liberalPlayerNames = game.players.filter(player => player.role === 'liberal').map(player => player.username);
+	const fascistPlayerNames = game.players.filter(player => liberalPlayerNames.indexOf(player.username) === -1).map(player => player.username);
+	const winningPlayerNames = game.winningTeam === 'liberal' ? liberalPlayerNames : fascistPlayerNames;
+	const losingPlayerNames = game.winningTeam === 'liberal' ? fascistPlayerNames : liberalPlayerNames;
+	const playerNames = game.players.map(player => player.username);
+	const playerInfluence = influence(game);
 	// Construct some basic statistics for each team
 	const b = game.winningTeam === 'liberal' ? 1 : -1;
-	const averageRatingWinners = avg(accounts, winningPlayerNames, a => a.eloOverall, 1600) + b * winAdjust[game.playerCount];
-	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, 1600) - b * winAdjust[game.playerCount];
-	const averageRatingWinnersSeason = avg(accounts, winningPlayerNames, a => a.eloSeason, 1600) + b * winAdjust[game.playerCount];
-	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, 1600) - b * winAdjust[game.playerCount];
-	// Elo Formula
-	const k = 64;
-	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
-	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
-	// Calculate ratings deltas
-	const winningPlayerAdjustment = k * p / winningPlayerNames.length;
-	const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
-	const winningPlayerAdjustmentSeason = k * pSeason / winningPlayerNames.length;
-	const losingPlayerAdjustmentSeason = -k * pSeason / losingPlayerNames.length;
-	// Apply the rating changes
-	for (let account of accounts) {
-		let eloOverall;
-		let eloSeason;
+	const plauersSeasonalRank = 0;
+	console.log(playersRank);
+}
 
-		if (!account.eloOverall) {
-			eloOverall = 1600;
-			eloSeason = 1600;
-		} else {
-			eloOverall = account.eloOverall;
-			eloSeason = account.eloSeason;
+async function allSummaries(rate) {
+	try {
+		mongoose.Promise = global.Promise;
+		await mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+		const cursor = await Summary.find().cursor();
+		for (let summary = await cursor.next(); summary != null; summary = await cursor.next()) {
+			// Ignore casual games
+			rate(summary);
 		}
-
-		account.eloOverall = winningPlayerNames.includes(account.username) ? eloOverall + winningPlayerAdjustment : eloOverall + losingPlayerAdjustment;
-		if (game.season === CURRENTSEASONNUMBER) {
-			account.eloSeason = winningPlayerNames.includes(account.username) ? eloSeason + winningPlayerAdjustmentSeason : eloSeason + losingPlayerAdjustmentSeason;
-		}
-
-		await account.save();
+	} catch (error) {
+		console.error(error);
+	} finally {
+		await mongoose.disconnect();
 	}
 }
 
-AllGames(rate);
+allSummaries(rate);
