@@ -832,6 +832,62 @@ div {
 	margin-left: -237px;
 }
 
+$eloValues: (1500 0.0*255 0.4*255 0.0*255)
+			(1825 0.0*255 1.0*255 0.0*255)
+			(1850 0.8*255 0.5*255 0.8*255)
+			(1950 1.0*255 0.2*255 0.8*255)
+			(1970 1.0*255 0.2*255 0.8*255)
+			(2000 1.0*255 0.5*255 0.2*255);
+
+
+@function lerp($low, $high, $elo) {
+	$scale: nth($high, 1) - nth($low, 1);
+	@if $scale <= 0 {
+		@return rgb(
+			nth($low, 2),
+			nth($low, 3),
+			nth($low, 4)
+		);
+	}
+	$lerp:  ($elo - nth($low, 1)) / $scale;
+	@if $lerp < 0 { $lerp: 0; }
+	@if $lerp > 1 { $lerp: 1; }
+	@return rgb(
+		(nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp),
+		(nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp),
+		(nth($low, 4) * (1-$lerp)) + (nth($high, 4) * $lerp)
+	);
+}
+
+@function calcEloCol($elo) {
+	$low:  nth($eloValues, 1);
+	$high: nth($eloValues, -1);
+	@for $i from 1 through length($eloValues) {
+		$val: nth($eloValues, $i);
+		$val2: nth($val, 1);
+		@if $val2 > nth($low, 1) {
+			@if $val2 <= $elo {
+				$low: $val;
+			}
+		}
+		@if $val2 < nth($high, 1) {
+			@if $val2 >= $elo {
+				$high: $val;
+			}
+		}
+	}
+	@return lerp($low, $high, $elo);
+}
+
+@for $i from 0 through 20 {
+	.elo#{$i} {
+		color: calcEloCol($i*25+1500) !important;
+	}
+	.player-small-cardback.elo#{$i} {
+		box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
+	}
+}
+
 @for $i from 1 through 5 {
 	.experienced#{$i} {
 		color: rgb(19, (222 - ($i * 20)), 19) !important;

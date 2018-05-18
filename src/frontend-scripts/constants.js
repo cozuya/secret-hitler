@@ -90,16 +90,27 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 						onfire10: w / (w + l) > 0.7
 				  })
 				: cn(defaultClass, {
-						eloTier1: elo > 0,
-						eloTier2: elo > 1460,
-						eloTier3: elo > 1480,
-						eloTier4: elo > 1500,
-						eloTier5: elo > 1520,
-						eloTier5: elo > 1560,
-						eloTier6: elo > 1580,
-						eloTier7: elo > 1600,
-						eloTier8: elo > 1620,
-						eloTier9: elo > 1640
+						elo0:  elo > 1500,
+						elo1:  elo > 1525,
+						elo2:  elo > 1550,
+						elo3:  elo > 1575,
+						elo4:  elo > 1600,
+						elo5:  elo > 1625,
+						elo6:  elo > 1650,
+						elo7:  elo > 1675,
+						elo8:  elo > 1700,
+						elo9:  elo > 1725,
+						elo10: elo > 1750,
+						elo11: elo > 1775,
+						elo12: elo > 1800,
+						elo13: elo > 1825,
+						elo14: elo > 1850,
+						elo15: elo > 1875,
+						elo16: elo > 1900,
+						elo17: elo > 1925,
+						elo18: elo > 1950,
+						elo19: elo > 1975,
+						elo20: elo > 2000
 				  })
 			: defaultClass;
 	}
