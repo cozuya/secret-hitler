@@ -59,6 +59,9 @@ module.exports.sendInProgressGameUpdate = game => {
 			if (!game.gameState.isCompleted && game.gameState.isTracksFlipped) {
 				const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
 
+				if (!_game || !privatePlayer) {
+					return;
+				}
 				_game.playersState = privatePlayer.playersState;
 				_game.cardFlingerState = privatePlayer.cardFlingerState || [];
 			}
