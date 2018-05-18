@@ -29,6 +29,10 @@ async function cozRatings() {
 		await Game.find({}, { chats: 0 })
 			.cursor()
 			.eachAsync(async game => {
+				// Ignore casual games
+				if (game.casualGame) {
+					return;
+				}
 				// Get the players
 				const winningPlayerNames = game.winningPlayers.map(player => player.userName);
 				const losingPlayerNames = game.losingPlayers.map(player => player.userName);
@@ -50,7 +54,7 @@ async function cozRatings() {
 				const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
 				const winningPlayerAdjustmentSeason = k * pSeason / winningPlayerNames.length;
 				const losingPlayerAdjustmentSeason = -k * pSeason / losingPlayerNames.length;
-				// Apply the rating chaanges
+				// Apply the rating changes
 				for (let account of accounts) {
 					let eloOverall;
 					let eloSeason;

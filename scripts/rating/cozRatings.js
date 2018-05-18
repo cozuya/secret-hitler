@@ -29,6 +29,10 @@ async function cozRatings() {
 		await Game.find({}, { chats: 0 })
 			.cursor()
 			.eachAsync(async game => {
+				// Ignore casual games
+				if (game.casualGame) {
+					return;
+				}
 				// Get the players
 				const winningPlayerNames = game.winningPlayers.map(player => player.userName);
 				const losingPlayerNames = game.losingPlayers.map(player => player.userName);
