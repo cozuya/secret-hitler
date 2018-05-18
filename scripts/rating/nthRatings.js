@@ -22,6 +22,7 @@ function avg(accounts, players, acsessor, fallback) {
 }
 
 async function rate(game) {
+	console.log(game);
 	// Get the players
 	const winningPlayerNames = game.winningPlayers.map(player => player.userName);
 	const losingPlayerNames = game.losingPlayers.map(player => player.userName);
@@ -61,7 +62,7 @@ async function rate(game) {
 			account.eloSeason = winningPlayerNames.includes(account.username) ? eloSeason + winningPlayerAdjustmentSeason : eloSeason + losingPlayerAdjustmentSeason;
 		}
 
-		account.save();
+		await account.save();
 	}
 }
 

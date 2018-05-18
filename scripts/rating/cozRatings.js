@@ -43,7 +43,7 @@ async function rate(game) {
 	const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
 	const winningPlayerAdjustmentSeason = k * pSeason / winningPlayerNames.length;
 	const losingPlayerAdjustmentSeason = -k * pSeason / losingPlayerNames.length;
-	// Apply the rating chaanges
+	// Apply the rating changes
 	for (let account of accounts) {
 		let eloOverall;
 		let eloSeason;

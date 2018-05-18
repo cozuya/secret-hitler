@@ -67,7 +67,7 @@ async function rate(game) {
 		if (game.season === CURRENTSEASONNUMBER) {
 			account.eloSeason = eloSeason + changeSeason;
 		}
-		account.save();
+		await account.save();
 	}
 }
 
