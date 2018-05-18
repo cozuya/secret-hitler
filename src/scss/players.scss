@@ -1,27 +1,28 @@
-$eloValues: (1500 0.0*255 0.4*255 0.0*255)
-			(1825 0.0*255 1.0*255 0.0*255)
-			(1850 0.8*255 0.5*255 0.8*255)
-			(1950 1.0*255 0.2*255 0.8*255)
-			(1970 1.0*255 0.2*255 0.8*255)
-			(2000 1.0*255 0.5*255 0.2*255);
+$eloValues: (1500 0.2 1.0 0.2)
+			(1800 0.3 1.0 0.3)
+			(1849 0.3 1.0 0.5)
+			(1850 0.8 1.0 0.7)
+			(1950 0.8 1.0 0.6)
+			(1999 0.8 1.0 0.4)
+			(2000 0.1 1.0 0.5);
 
 
 @function lerp($low, $high, $elo) {
 	$scale: nth($high, 1) - nth($low, 1);
 	@if $scale <= 0 {
-		@return rgb(
-			nth($low, 2),
-			nth($low, 3),
-			nth($low, 4)
+		@return hsl(
+			nth($low, 2) * 360,
+			nth($low, 3) * 100,
+			nth($low, 4) * 100
 		);
 	}
 	$lerp:  ($elo - nth($low, 1)) / $scale;
 	@if $lerp < 0 { $lerp: 0; }
 	@if $lerp > 1 { $lerp: 1; }
-	@return rgb(
-		(nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp),
-		(nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp),
-		(nth($low, 4) * (1-$lerp)) + (nth($high, 4) * $lerp)
+	@return hsl(
+		((nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp)) * 360,
+		((nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp)) * 100,
+		((nth($low, 4) * (1-$lerp)) + (nth($high, 4) * $lerp)) * 100
 	);
 }
 
@@ -63,9 +64,9 @@ $eloValues: (1500 0.0*255 0.4*255 0.0*255)
 			background: $tourny;
 		}
 	}
-	@for $i from 0 through 20 {
+	@for $i from 0 through 100 {
 		.player-container.elo#{$i} {
-			box-shadow: 0 0 5px 2px calcEloCol($i*25+1500) !important;
+			box-shadow: 0 0 5px 2px calcEloCol($i*5+1500) !important;
 		}
 	}
 	@for $i from 1 through 5 {
