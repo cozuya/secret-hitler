@@ -1,24 +1,30 @@
 const Summary = require('../../models/game-summary');
 const Account = require('../../models/account');
 const buildEnhancedGameSummary = require('../../models/game-summary/buildEnhancedGameSummary');
+const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
 const mongoose = require('mongoose');
 
-// Players will be considered more influential when:
-// + Voting with the majority (+1pt per majority vote)
-// + Spending more time in government (+4pt per government)
-// + Using the special powers (+7pt for special power use)
-
-liberalRank = 1600;
-fascistRank = 1600;
-liberalSeasonRank = 1600;
-fascistSeasonRank = 1600;
+const winAdjust = {
+	5: -19.253,
+	6: 20.637,
+	7: -17.282,
+	8: 45.418,
+	9: -70.679,
+	10: -31.539
+};
 
 ja = async votes => votes.toArray().filter(b => b).length;
 nein = async votes => votes.toArray().filter(b => !b).length;
 passed = async votes => await ja(votes) > await nein(votes);
 
 softmax = arr => arr.map((value, index) => Math.exp(value) / arr.map(Math.exp).reduce((a, b) => a + b));
+avg = arr => arr.reduce( ( p, c ) => p + c, 0 ) / arr.length;
 
+// This function approximates the degree to wich each player may have influenced the end game result.
+// Players will be considered more influential when:
+// + Casting votes that may have changed the outcome of an election.
+// + Elected to governments.
+// + Using the presidential powers.
 async function influence(game) {
 	let weighting = new Array(game.playerSize).fill(0.0);
 	let red = 0;
@@ -30,6 +36,12 @@ async function influence(game) {
 					// voting with the majority on a close vote
 					weighting[v]++;
 				}
+			}
+		}
+		if (Math.abs(await ja(turn.votes) - await nein(turn.votes)) === 0) {
+			for (let v of turn.votes) {
+				// even number of fascist and liberal votes: everyone gets a point
+				weighting[v]++;
 			}
 		}
 		if (await p) {
@@ -46,8 +58,8 @@ async function influence(game) {
 		}
 	}
 	return softmax(weighting)
-		.map(v => (v + 5/game.playerSize)/6)
-		.map(v => game.playerSize * v);
+		.map(v => (v + 5/game.playerSize)/6) // Dampen so as to only account for 16% of ELO
+		.map(v => game.playerSize * v); // Normalise
 }
 
 async function rate(summary) {
@@ -68,8 +80,42 @@ async function rate(summary) {
 		weightedPlayerRank[i] = playerInfluence[i] * account.eloOverall;
 		weightedPlayerSeasonRank[i] = playerInfluence[i] * account.eloSeason;
 	}
-	console.log(playerInfluence);
-	console.log(weightedPlayerRank);
+	const averageRatingWinners = avg(weightedPlayerRank.filter((_, i) => game.isWinner(i)._value)) + b * winAdjust[game.playerSize];
+	const averageRatingLosers = avg(weightedPlayerRank.filter((_, i) => !game.isWinner(i)._value)) - b * winAdjust[game.playerSize];
+	const averageRatingWinnersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => game.isWinner(i)._value)) + b * winAdjust[game.playerSize];
+	const averageRatingLosersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => !game.isWinner(i)._value)) - b * winAdjust[game.playerSize];
+
+	// Elo Formula
+	const k = 64;
+	const winFactor = k / winningPlayerNames.length;
+	const loseFactor = -k / losingPlayerNames.length;
+	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
+	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
+	// Apply the rating changes
+	for (let account of await Account.find({ username: { $in: playerNames } }, { eloOverall: 1, eloSeason: 1, username: 1 })) {
+		let eloOverall, eloSeason;
+		if (!account.eloOverall) {
+			eloOverall = 1600;
+			eloSeason = 1600;
+		} else {
+			eloOverall = account.eloOverall;
+			eloSeason = account.eloSeason;
+		}
+		const influence = playerInfluence[playerNames.indexOf(account.username)];
+		const win = winningPlayerNames.includes(account.username);
+		if (win) {
+			change = p * winFactor * influence;
+			changeSeason = pSeason * winFactor * influence;
+		} else {
+			change = p * loseFactor * influence;
+			changeSeason = pSeason * loseFactor * influence;
+		}
+		account.eloOverall = eloOverall + change;
+		if (game.season === CURRENTSEASONNUMBER) {
+			account.eloSeason = eloSeason + changeSeason;
+		}
+		await account.save();
+	}
 }
 
 async function allSummaries(rate) {
