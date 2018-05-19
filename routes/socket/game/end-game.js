@@ -149,7 +149,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
 				seatedPlayers.forEach(player => {
-					rank = eloAdjustments[player.username];
+					const rank = eloAdjustments[player.userName];
 					player.gameChats.push({
 						gameChat: true,
 						timestamp: new Date(),

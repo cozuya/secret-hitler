@@ -87,7 +87,7 @@ function avg(accounts, players, accessor, fallback) {
 	return (
 		players.reduce(
 			(prev, curr) =>
-				accessor(accounts.find(account => account.username === curr)) ? acsessor(accounts.find(account => account.username === curr)) + prev : fallback,
+				accessor(accounts.find(account => account.username === curr)) ? accessor(accounts.find(account => account.username === curr)) + prev : fallback,
 			0
 		) / players.length
 	);
@@ -106,13 +106,16 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	};
 	const k = 64;
 	// Players
-	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
+	const losingPlayerNames = game.private.seatedPlayers
+		.filter(player => !winningPlayerNames.includes(player.userName))
+		.map(player => player.userName);
 	// Construct some basic statistics for each team
-	const b = game.winningTeam === 'liberal' ? 1 : -1;
-	const averageRatingWinners = avg(accounts, winningPlayerNames, a => a.eloOverall, defaultELO) + b * winAdjust[game.playerCount];
-	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, defaultELO) - b * winAdjust[game.playerCount];
-	const averageRatingWinnersSeason = avg(accounts, winningPlayerNames, a => a.eloSeason, defaultELO) + b * winAdjust[game.playerCount];
-	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, defaultELO) - b * winAdjust[game.playerCount];
+	const b = game.gameState.isCompleted === 'liberal' ? 1 : -1;
+	const size = game.private.seatedPlayers.length;
+	const averageRatingWinners = avg(accounts, winningPlayerNames, a => a.eloOverall, defaultELO) + b * winAdjust[size];
+	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, defaultELO) - b * winAdjust[size];
+	const averageRatingWinnersSeason = avg(accounts, winningPlayerNames, a => a.eloSeason, defaultELO) + b * winAdjust[size];
+	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, defaultELO) - b * winAdjust[size];
 	// Elo Formula
 	const winFactor = k / winningPlayerNames.length;
 	const loseFactor = -k / losingPlayerNames.length;
