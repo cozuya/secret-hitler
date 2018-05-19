@@ -83,11 +83,11 @@ module.exports.sendInProgressGameUpdate = game => {
 
 module.exports.secureGame = secureGame;
 
-function avg(accounts, players, acsessor, fallback) {
+function avg(accounts, players, accessor, fallback) {
 	return (
 		players.reduce(
 			(prev, curr) =>
-				acsessor(accounts.find(account => account.username === curr)) ? acsessor(accounts.find(account => account.username === curr)) + prev : fallback,
+				accessor(accounts.find(account => account.username === curr)) ? acsessor(accounts.find(account => account.username === curr)) + prev : fallback,
 			0
 		) / players.length
 	);

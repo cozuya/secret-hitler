@@ -158,12 +158,12 @@ module.exports.completeGame = (game, winningTeamName) => {
 								text: `Your overall rank has ${rank.change > 0 ? 'increased' : 'decreased'} by `
 							},
 							{
-								text: Math.abs((rank.change).toFixed(1)),
+								text: Math.abs(rank.change.toFixed(1)),
 								type: 'player'
 							},
 							{
 								text: ` points.`
-							},
+							}
 						]
 					});
 					player.gameChats.push({
@@ -174,7 +174,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 								text: `Your seasonal rank has ${rank.changeSeason > 0 ? 'increased' : 'decreased'} by`
 							},
 							{
-								text: Math.abs((rank.changeSeason).toFixed(1)),
+								text: Math.abs(rank.changeSeason.toFixed(1)),
 								type: 'player'
 							},
 							{
