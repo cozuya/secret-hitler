@@ -125,6 +125,9 @@ async function allSummaries(rate) {
 		const cursor = await Summary.find().cursor();
 		for (let summary = await cursor.next(); summary != null; summary = await cursor.next()) {
 			// Ignore casual games
+			if (summary.casualGame) {
+				return;
+			}
 			await rate(summary);
 		}
 	} catch (error) {
