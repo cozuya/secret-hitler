@@ -1123,6 +1123,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		newGame.chats = [];
 		newGame.general.isRemade = false;
 		newGame.general.isRemaking = false;
+		newGame.summarySaved = false;
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = new Date().getTime();
