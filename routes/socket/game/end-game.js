@@ -148,41 +148,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
-				const adjustmentChat = {
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: winningTeamName === 'fascist' ? 'Fascists' : 'Liberals',
-							type: winningTeamName === 'fascist' ? 'fascist' : 'liberal'
-						},
-						{
-							text: ' gain '
-						},
-						{
-							text: eloAdjustments.winningPlayerAdjustment.toFixed(0),
-							type: 'player'
-						},
-						{
-							text: ' elo. '
-						},
-						{
-							text: winningTeamName === 'fascist' ? 'Liberals' : 'Fascists',
-							type: winningTeamName === 'fascist' ? 'liberal' : 'fascist'
-						},
-						{
-							text: ' lose '
-						},
-						{
-							text: -1 * eloAdjustments.losingPlayerAdjustment.toFixed(0),
-							type: 'player'
-						},
-						{
-							text: ' elo.'
-						}
-					]
-				};
-
 				seatedPlayers.forEach(player => {
 					rank = eloAdjustments[player.username];
 					player.gameChats.push({
@@ -195,7 +160,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 							{
 								text: Math.abs((rank.change).toFixed(1)),
 								type: 'player'
-							}
+							},
+							{
+								text: ` points.`
+							},
 						]
 					});
 					player.gameChats.push({
@@ -208,6 +176,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 							{
 								text: Math.abs((rank.changeSeason).toFixed(1)),
 								type: 'player'
+							},
+							{
+								text: ` points.`
 							}
 						]
 					});
