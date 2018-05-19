@@ -184,7 +184,33 @@ module.exports.completeGame = (game, winningTeamName) => {
 				};
 
 				seatedPlayers.forEach(player => {
-					player.gameChats.push(adjustmentChat);
+					rank = eloAdjustments[player.username];
+					player.gameChats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: `Your overall rank has ${rank.change > 0 ? 'increased' : 'decreased'} by `
+							},
+							{
+								text: Math.abs((rank.change).toFixed(1)),
+								type: 'player'
+							}
+						]
+					});
+					player.gameChats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: `Your seasonal rank has ${rank.changeSeason > 0 ? 'increased' : 'decreased'} by`
+							},
+							{
+								text: Math.abs((rank.changeSeason).toFixed(1)),
+								type: 'player'
+							}
+						]
+					});
 				});
 
 				game.private.unSeatedGameChats.push(adjustmentChat);
