@@ -17,14 +17,10 @@ ja = async votes => votes.toArray().filter(b => b).length;
 nein = async votes => votes.toArray().filter(b => !b).length;
 passed = async votes => await ja(votes) > await nein(votes);
 
-async function softmax(arr) {
-	return arr.map(function(value, index) {
-		return Math.exp(value) / arr.map(Math.exp).reduce((a, b) => a + b);
-	});
-}
+softmax = arr => arr.map((value, index) => Math.exp(value) / arr.map(Math.exp).reduce((a, b) => a + b));
 
 async function influence(game) {
-	let weighting = new Array(game.playerSize).fill(0);
+	let weighting = new Array(game.playerSize).fill(0.0);
 	let red = 0;
 	for (let turn of game.summary.logs) {
 		p = passed(turn.votes);
@@ -49,22 +45,31 @@ async function influence(game) {
 			}
 		}
 	}
-	return softmax(weighting);
+	return softmax(weighting)
+		.map(v => (v + 5/game.playerSize)/6)
+		.map(v => game.playerSize * v);
 }
 
 async function rate(summary) {
 	let game = buildEnhancedGameSummary(summary.toObject());
 	// Construct extra game info
-	const liberalPlayerNames = game.players.filter(player => player.role === 'liberal').map(player => player.username);
-	const fascistPlayerNames = game.players.filter(player => liberalPlayerNames.indexOf(player.username) === -1).map(player => player.username);
+	const liberalPlayerNames = game.players.filter(player => player.role === 'liberal').map(player => player.username).toArray();
+	const fascistPlayerNames = game.players.filter(player => liberalPlayerNames.indexOf(player.username) === -1).map(player => player.username).toArray();
 	const winningPlayerNames = game.winningTeam === 'liberal' ? liberalPlayerNames : fascistPlayerNames;
 	const losingPlayerNames = game.winningTeam === 'liberal' ? fascistPlayerNames : liberalPlayerNames;
-	const playerNames = game.players.map(player => player.username);
-	const playerInfluence = influence(game);
+	const playerNames = game.players.map(player => player.username).toArray();
+	const playerInfluence = await influence(game);
 	// Construct some basic statistics for each team
 	const b = game.winningTeam === 'liberal' ? 1 : -1;
-	const plauersSeasonalRank = 0;
-	console.log(playersRank);
+	let weightedPlayerRank = new Array(game.playerSize);
+	let weightedPlayerSeasonRank = new Array(game.playerSize);
+	for (let i in playerNames) {
+		const account = await Account.findOne({ username: playerNames[i] });
+		weightedPlayerRank[i] = playerInfluence[i] * account.eloOverall;
+		weightedPlayerSeasonRank[i] = playerInfluence[i] * account.eloSeason;
+	}
+	console.log(playerInfluence);
+	console.log(weightedPlayerRank);
 }
 
 async function allSummaries(rate) {
@@ -74,7 +79,7 @@ async function allSummaries(rate) {
 		const cursor = await Summary.find().cursor();
 		for (let summary = await cursor.next(); summary != null; summary = await cursor.next()) {
 			// Ignore casual games
-			rate(summary);
+			await rate(summary);
 		}
 	} catch (error) {
 		console.error(error);
