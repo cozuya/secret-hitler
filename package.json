@@ -110,6 +110,6 @@
 		"build": "webpack --config webpack/webpack.config.prod --mode production",
 		"server": "nodemon bin/dev",
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
-		"precommit": "yarn format"
+		"precommit": "yarn format && git add -A"
 	}
 }

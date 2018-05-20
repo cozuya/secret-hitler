@@ -320,17 +320,20 @@ class Playerlist extends React.Component {
 							})()}
 							{renderStatus()}
 						</div>
-						{!ADMINS.includes(user.userName) && elo ? (
-							<div className="userlist-stats-container">
-								<span className="userlist-stats">{user[elo].toFixed(0)}</span>
-							</div>
-						) : (
-							<div className="userlist-stats-container">
-								(
-								<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
-								<span className="userlist-stats"> {percentDisplay}</span>
-							</div>
-						)}
+						{!ADMINS.includes(user.userName) &&
+							(() => {
+								return elo ? (
+									<div className="userlist-stats-container">
+										<span className="userlist-stats">{user[elo].toFixed(0)}</span>
+									</div>
+								) : (
+									<div className="userlist-stats-container">
+										(
+										<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
+										<span className="userlist-stats"> {percentDisplay}</span>
+									</div>
+								);
+							})()}
 					</div>
 				);
 			});

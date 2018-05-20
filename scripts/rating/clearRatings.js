@@ -5,8 +5,7 @@ async function clearRatings() {
 	try {
 		mongoose.Promise = global.Promise;
 		await mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
-		await Account
-			.find()
+		await Account.find()
 			.cursor()
 			.eachAsync(account => {
 				account.eloSeason = 1600;

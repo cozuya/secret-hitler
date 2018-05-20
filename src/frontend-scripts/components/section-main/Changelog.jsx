@@ -9,21 +9,27 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.14.0 released 5--2018</p>
+			<p>Version 0.14.0 released 5-20-2018</p>
 		</div>
 		<h3>New feature: elo system</h3>
 		<p>An elo system has come to sh.io. What is it/where is your winrate/why did your color change? See below.</p>
 		<p>
 			Effectively an elo system is a point-based representation of your weighted skill based off of your teammates and your opponent's elo. The easiest way to
 			think of it is that, when you win a game, your elo will go up more if you are playing against high rated players (their collective average) than low rated
-			players.
+			players. This is adjusted for the "normal" winrate of your team and the game size.
 		</p>
 		<p>
 			Player colors for elo mode have been redone - check the information icon on the player list. There is some drastic changes: based off percents, most
-			players will be green. Some will be purple, and a very small percent will be ORANGE. Contributor color has been reassigned.
+			players will be green. Some will be orange, and a small percent will be purple. Contributor color has been reassigned to teal.
 		</p>
 		<p>Elo changes will be communicated when a game ends. Remember that all elo is based on the average of your and your opponent's team elo.</p>
 		<p>This feature can be disabled in your player settings screen.</p>
+		<h3>Redone blacklists</h3>
+		<p>
+			All blacklists have been wiped, and a limit of 20 players that can be blacklisted has been applied. This will fail silently if you try to go over that.
+			Blacklists are intended to be a way to avoid players you personally don't like playing with, not to be wielded as a weapon against players you can't
+			control. Some players have blacklists in the hundreds and thats not what the feature was meant for - if there's a player breaking the rules, report them.
+		</p>
 		<div className="ui header">
 			<p>Version 0.13.5 released 4-29-2018</p>
 		</div>

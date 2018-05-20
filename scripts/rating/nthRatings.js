@@ -15,10 +15,10 @@ const winAdjust = {
 
 ja = async votes => votes.toArray().filter(b => b).length;
 nein = async votes => votes.toArray().filter(b => !b).length;
-passed = async votes => await ja(votes) > await nein(votes);
+passed = async votes => (await ja(votes)) > (await nein(votes));
 
 softmax = arr => arr.map((value, index) => Math.exp(value) / arr.map(Math.exp).reduce((a, b) => a + b));
-avg = arr => arr.reduce( ( p, c ) => p + c, 0 ) / arr.length;
+avg = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
 
 // This function approximates the degree to wich each player may have influenced the end game result.
 // Players will be considered more influential when:
@@ -30,15 +30,15 @@ async function influence(game) {
 	let red = 0;
 	for (let turn of game.summary.logs) {
 		p = passed(turn.votes);
-		if (Math.abs(await ja(turn.votes) - await nein(turn.votes)) === 1) {
+		if (Math.abs((await ja(turn.votes)) - (await nein(turn.votes))) === 1) {
 			for (let v of turn.votes) {
-				if (turn.votes[v] === await p) {
+				if (turn.votes[v] === (await p)) {
 					// voting with the majority on a close vote
 					weighting[v]++;
 				}
 			}
 		}
-		if (Math.abs(await ja(turn.votes) - await nein(turn.votes)) === 0) {
+		if (Math.abs((await ja(turn.votes)) - (await nein(turn.votes))) === 0) {
 			for (let v of turn.votes) {
 				// even number of fascist and liberal votes: everyone gets a point
 				weighting[v]++;
@@ -58,15 +58,21 @@ async function influence(game) {
 		}
 	}
 	return softmax(weighting)
-		.map(v => (v + 5/game.playerSize)/6) // Dampen so as to only account for 16% of ELO
+		.map(v => (v + 5 / game.playerSize) / 6) // Dampen so as to only account for 16% of ELO
 		.map(v => game.playerSize * v); // Normalise
 }
 
 async function rate(summary) {
 	let game = buildEnhancedGameSummary(summary.toObject());
 	// Construct extra game info
-	const liberalPlayerNames = game.players.filter(player => player.role === 'liberal').map(player => player.username).toArray();
-	const fascistPlayerNames = game.players.filter(player => liberalPlayerNames.indexOf(player.username) === -1).map(player => player.username).toArray();
+	const liberalPlayerNames = game.players
+		.filter(player => player.role === 'liberal')
+		.map(player => player.username)
+		.toArray();
+	const fascistPlayerNames = game.players
+		.filter(player => liberalPlayerNames.indexOf(player.username) === -1)
+		.map(player => player.username)
+		.toArray();
 	const winningPlayerNames = game.winningTeam === 'liberal' ? liberalPlayerNames : fascistPlayerNames;
 	const losingPlayerNames = game.winningTeam === 'liberal' ? fascistPlayerNames : liberalPlayerNames;
 	const playerNames = game.players.map(player => player.username).toArray();
