@@ -171,7 +171,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						timestamp: new Date(),
 						chat: [
 							{
-								text: `Your seasonal rank has ${rank.changeSeason > 0 ? 'increased' : 'decreased'} by`
+								text: `Your seasonal rank has ${rank.changeSeason > 0 ? 'increased' : 'decreased'} by `
 							},
 							{
 								text: Math.abs(rank.changeSeason.toFixed(1)),
