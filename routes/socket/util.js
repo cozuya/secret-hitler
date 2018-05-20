@@ -87,7 +87,7 @@ function avg(accounts, players, accessor, fallback) {
 	return (
 		players.reduce(
 			(prev, curr) =>
-				(accessor(accounts.find(account => account.username === curr)) ? accessor(accounts.find(account => account.username === curr)) : fallback) + prev ,
+				(accessor(accounts.find(account => account.username === curr)) ? accessor(accounts.find(account => account.username === curr)) : fallback) + prev,
 			0
 		) / players.length
 	);
@@ -106,16 +106,14 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	};
 	const k = 64;
 	// Players
-	const losingPlayerNames = game.private.seatedPlayers
-		.filter(player => !winningPlayerNames.includes(player.userName))
-		.map(player => player.userName);
+	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
 	// Construct some basic statistics for each team
 	const b = game.gameState.isCompleted === 'liberal' ? 1 : 0;
 	const size = game.private.seatedPlayers.length;
 	const averageRatingWinners = avg(accounts, winningPlayerNames, a => a.eloOverall, defaultELO) + b * libAdjust[size];
 	const averageRatingWinnersSeason = avg(accounts, winningPlayerNames, a => a.eloSeason, defaultELO) + b * libAdjust[size];
-	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, defaultELO) + (1-b) * libAdjust[size];
-	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, defaultELO) + (1-b) * libAdjust[size];
+	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, defaultELO) + (1 - b) * libAdjust[size];
+	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, defaultELO) + (1 - b) * libAdjust[size];
 	// Elo Formula
 	const winFactor = k / winningPlayerNames.length;
 	const loseFactor = -k / losingPlayerNames.length;

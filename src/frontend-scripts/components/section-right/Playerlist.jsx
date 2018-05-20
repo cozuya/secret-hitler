@@ -309,7 +309,6 @@ class Playerlist extends React.Component {
 										/>
 									);
 								} else {
-									console.log(userClasses, 'uc');
 									return (
 										<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
 											{user.isPrivate ? 'P - ' : ''}

@@ -25,6 +25,15 @@ block content
 				.eight.wide.column.news
 					h2(style="color: #000").ui.header News
 					p Issues/bugs can be reported #[a(href="/about") here]. Or come to the discord development channel, or open a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
+					p Version 0.14.0 released 5-20-2018
+					h3 New feature: elo system
+					p An elo system has come to sh.io. What is it/where is your winrate/why did your color change? See below.
+					p Effectively an elo system is a point-based representation of your weighted skill based off of your teammates and your opponent's elo. The easiest way to think of it is that, when you win a game, your elo will go up more if you are playing against high rated players (their collective average) than low rated players. This is adjusted for the "normal" winrate of your team and the game size.
+					p Player colors for elo mode have been redone - check the information icon on the player list. There is some drastic changes: based off percents, most players will be green. Some will be orange, and a small percent will be purple. Contributor color has been reassigned to teal.
+					p Elo changes will be communicated when a game ends. Remember that all elo is based on the average of your and your opponent's team elo.
+					p This feature can be disabled in your player settings screen.
+					h3 Redone blacklists
+					p All blacklists have been wiped, and a limit of 20 players that can be blacklisted has been applied. This will fail silently if you try to go over that. Blacklists are intended to be a way to avoid players you personally don't like playing with, not to be wielded as a weapon against players you can't control. Some players have blacklists in the hundreds and thats not what the feature was meant for - if there's a player breaking the rules, report them.
 					p Version 0.13.5 released 4-29-2018
 					h3 New feature: seasonal stats page.
 					p Check out the link in the normal stats page to toggle between current season and overall stats.

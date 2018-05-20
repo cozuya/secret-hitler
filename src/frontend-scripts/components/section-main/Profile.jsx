@@ -23,6 +23,7 @@ class ProfileWrapper extends React.Component {
 		};
 
 		this.showBlacklist = this.showBlacklist.bind(this);
+		this.blackListClick = this.blackListClick.bind(this);
 	}
 
 	formatDateString(dateString) {
@@ -204,31 +205,36 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
-	renderBlacklist() {
+	blackListClick(e) {
+		const { gameSettings } = this.props.userInfo;
 		const { profile } = this.props;
 		const name = profile._id;
-		const { gameSettings } = this.props.userInfo;
-
-		const blackListClick = e => {
-			e.preventDefault();
-
-			this.setState(
-				{
-					blacklistClicked: true
-				},
-				() => {
-					if (gameSettings && gameSettings.blacklist.includes(name)) {
-						gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(name), 1);
+		e.preventDefault();
+		console.log(JSON.parse(JSON.stringify(gameSettings)));
+		this.setState(
+			{
+				blacklistClicked: true
+			},
+			() => {
+				if (gameSettings && gameSettings.blacklist.includes(name)) {
+					gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(name), 1);
+				} else if (gameSettings) {
+					if (!gameSettings.blacklist) {
+						gameSettings.blacklist = [name];
 					} else {
 						gameSettings.blacklist.push(name);
 					}
-					this.props.socket.emit('updateGameSettings', gameSettings);
 				}
-			);
-		};
+				this.props.socket.emit('updateGameSettings', gameSettings);
+			}
+		);
+	}
+
+	renderBlacklist() {
+		const { gameSettings } = this.props.userInfo;
 
 		return (
-			<button className="ui primary button blacklist-button" onClick={blackListClick}>
+			<button className="ui primary button blacklist-button" onClick={this.blackListClick}>
 				{gameSettings && gameSettings.blacklist.includes(name) ? 'Unblacklist player' : 'Blacklist player'}
 			</button>
 		);

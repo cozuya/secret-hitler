@@ -30,39 +30,43 @@ async function rate(game) {
 	let accounts = await Account.find({ username: { $in: playerNames } }, { eloOverall: 1, eloSeason: 1, username: 1 });
 	// Construct some basic statistics for each team
 	const b = game.winningTeam === 'liberal' ? 1 : 0;
-	const averageRatingWinners = avg(accounts, winningPlayerNames, a => a.eloOverall, 1600) + b * libAdjust[game.playerCount];
-	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, 1600) - b * libAdjust[game.playerCount];
-	const averageRatingWinnersSeason = avg(accounts, winningPlayerNames, a => a.eloSeason, 1600) + (1-b) * libAdjust[game.playerCount];
-	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, 1600) - (1-b) * libAdjust[game.playerCount];
-	// Elo Formula
-	const k = 64;
-	const winFactor = k / winningPlayerNames.length;
-	const loseFactor = -k / losingPlayerNames.length;
-	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
-	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
-	// Apply the rating changes
-	for (let account of accounts) {
-		let eloOverall, eloSeason;
-		if (!account.eloOverall) {
-			eloOverall = 1600;
-			eloSeason = 1600;
-		} else {
-			eloOverall = account.eloOverall;
-			eloSeason = account.eloSeason;
+	try {
+		const averageRatingWinners = avg(accounts, winningPlayerNames, a => a.eloOverall, 1600) + b * libAdjust[game.playerCount];
+		const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, 1600) - b * libAdjust[game.playerCount];
+		const averageRatingWinnersSeason = avg(accounts, winningPlayerNames, a => a.eloSeason, 1600) + b * libAdjust[game.playerCount];
+		const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, 1600) - b * libAdjust[game.playerCount];
+		// Elo Formula
+		const k = 64;
+		const winFactor = k / winningPlayerNames.length;
+		const loseFactor = -k / losingPlayerNames.length;
+		const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
+		const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
+		// Apply the rating changes
+		for (let account of accounts) {
+			let eloOverall, eloSeason;
+			if (!account.eloOverall) {
+				eloOverall = 1600;
+				eloSeason = 1600;
+			} else {
+				eloOverall = account.eloOverall;
+				eloSeason = account.eloSeason;
+			}
+			const win = winningPlayerNames.includes(account.username);
+			if (win) {
+				change = p * winFactor;
+				changeSeason = pSeason * winFactor;
+			} else {
+				change = p * loseFactor;
+				changeSeason = pSeason * loseFactor;
+			}
+			account.eloOverall = eloOverall + change;
+			if (game.season === CURRENTSEASONNUMBER) {
+				account.eloSeason = eloSeason + changeSeason;
+			}
+			await account.save();
 		}
-		const win = winningPlayerNames.includes(account.username);
-		if (win) {
-			change = p * winFactor;
-			changeSeason = pSeason * winFactor;
-		} else {
-			change = p * loseFactor;
-			changeSeason = pSeason * loseFactor;
-		}
-		account.eloOverall = eloOverall + change;
-		if (game.season === CURRENTSEASONNUMBER) {
-			account.eloSeason = eloSeason + changeSeason;
-		}
-		await account.save();
+	} catch (e) {
+		console.log('err');
 	}
 }
 
