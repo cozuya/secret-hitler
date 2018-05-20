@@ -218,6 +218,8 @@ const DisplayLobbies = props => {
 				players[index].losses = userStats.losses;
 				players[index][`winsSeason${CURRENTSEASONNUMBER}`] = userStats[`winsSeason${CURRENTSEASONNUMBER}`];
 				players[index][`lossesSeason${CURRENTSEASONNUMBER}`] = userStats[`lossesSeason${CURRENTSEASONNUMBER}`];
+				players[index].eloOverall = userStats.eloOverall;
+				players[index].eloSeason = userStats.eloSeason;
 			}
 		});
 

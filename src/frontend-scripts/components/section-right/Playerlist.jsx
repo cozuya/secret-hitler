@@ -194,7 +194,8 @@ class Playerlist extends React.Component {
 			const contributors = visible.filter(user => !aem.includes(user) && CONTRIBUTORS.includes(user.userName)).sort(this.alphabetical());
 			aem.push(...contributors);
 
-			const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
+			//const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
+			const tournyWinners = [];
 
 			const experienced = elo
 				? visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user)).sort((a, b) => a[elo] < b[elo])
