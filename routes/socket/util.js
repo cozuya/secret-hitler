@@ -96,25 +96,25 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	let averageRatingWinners =
 		winningPlayerNames.reduce(
 			(prev, curr) =>
-				accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall + prev : 1600,
+				(accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall : 1600) + prev,
 			0
 		) / winningPlayerNames.length;
 	let averageRatingWinnersSeason =
 		winningPlayerNames.reduce(
 			(prev, curr) =>
-				accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall + prev : 1600,
+				(accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason : 1600) + prev,
 			0
 		) / winningPlayerNames.length;
 	let averageRatingLosers =
 		losingPlayerNames.reduce(
 			(prev, curr) =>
-				accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason + prev : 1600,
+				(accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall : 1600) + prev,
 			0
 		) / losingPlayerNames.length;
 	let averageRatingLosersSeason =
 		losingPlayerNames.reduce(
 			(prev, curr) =>
-				accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason + prev : 1600,
+				(accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason : 1600) + prev,
 			0
 		) / losingPlayerNames.length;
 
