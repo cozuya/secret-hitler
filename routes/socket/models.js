@@ -33,3 +33,20 @@ module.exports.profiles = (() => {
 
 	return { get, push };
 })();
+
+const userListEmitter = {
+	state: 1,
+	send: false,
+	timer: setInterval(() => {
+		if (userListEmitter.state > 0) userListEmitter.state--;
+		else if (userListEmitter.send) {
+			userListEmitter.send = false;
+			userListEmitter.state = 9;
+			io.sockets.emit('userList', {
+				list: module.exports.userList
+			});
+		}
+	}, 100)
+};
+
+module.exports.userListEmitter = userListEmitter;

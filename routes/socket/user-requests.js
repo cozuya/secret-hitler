@@ -4,7 +4,16 @@ const PlayerReport = require('../../models/playerReport');
 const PlayerNote = require('../../models/playerNote');
 const Game = require('../../models/game');
 //	const BannedIP = require('../../models/bannedIP');
-const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber } = require('./models');
+const {
+	games,
+	userList,
+	generalChats,
+	accountCreationDisabled,
+	ipbansNotEnforced,
+	gameCreationDisabled,
+	currentSeasonNumber,
+	userListEmitter
+} = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
@@ -254,9 +263,7 @@ const sendUserList = (module.exports.sendUserList = socket => {
 			list: userList
 		});
 	} else {
-		io.sockets.emit('userList', {
-			list: userList
-		});
+		userListEmitter.send = true;
 	}
 });
 
