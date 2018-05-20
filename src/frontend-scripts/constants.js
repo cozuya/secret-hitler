@@ -79,7 +79,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			grade = (elo - 1500) / 5;
 		}
 		const gradeObj = {};
-		gradeObj['elo' + grade] = true;
+		gradeObj['elo' + grade.toFixed(0)] = true;
 
 		return w + l >= 50
 			? eloDisabled

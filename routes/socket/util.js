@@ -87,7 +87,7 @@ function avg(accounts, players, accessor, fallback) {
 	return (
 		players.reduce(
 			(prev, curr) =>
-				accessor(accounts.find(account => account.username === curr)) ? accessor(accounts.find(account => account.username === curr)) + prev : fallback,
+				(accessor(accounts.find(account => account.username === curr)) ? accessor(accounts.find(account => account.username === curr)) : fallback) + prev ,
 			0
 		) / players.length
 	);
