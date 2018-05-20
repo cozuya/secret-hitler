@@ -4,7 +4,7 @@ const buildEnhancedGameSummary = require('../../models/game-summary/buildEnhance
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
 const mongoose = require('mongoose');
 
-const winAdjust = {
+const libAdjust = {
 	5: -19.253,
 	6: 20.637,
 	7: -17.282,
@@ -78,7 +78,7 @@ async function rate(summary) {
 	const playerNames = game.players.map(player => player.username).toArray();
 	const playerInfluence = await influence(game);
 	// Construct some basic statistics for each team
-	const b = game.winningTeam === 'liberal' ? 1 : -1;
+	const b = game.winningTeam === 'liberal' ? 1 : 0;
 	let weightedPlayerRank = new Array(game.playerSize);
 	let weightedPlayerSeasonRank = new Array(game.playerSize);
 	for (let i in playerNames) {
@@ -86,10 +86,10 @@ async function rate(summary) {
 		weightedPlayerRank[i] = playerInfluence[i] * account.eloOverall;
 		weightedPlayerSeasonRank[i] = playerInfluence[i] * account.eloSeason;
 	}
-	const averageRatingWinners = avg(weightedPlayerRank.filter((_, i) => game.isWinner(i)._value)) + b * winAdjust[game.playerSize];
-	const averageRatingLosers = avg(weightedPlayerRank.filter((_, i) => !game.isWinner(i)._value)) - b * winAdjust[game.playerSize];
-	const averageRatingWinnersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => game.isWinner(i)._value)) + b * winAdjust[game.playerSize];
-	const averageRatingLosersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => !game.isWinner(i)._value)) - b * winAdjust[game.playerSize];
+	const averageRatingWinners = avg(weightedPlayerRank.filter((_, i) => game.isWinner(i)._value)) + b * libAdjust[game.playerSize];
+	const averageRatingLosers = avg(weightedPlayerRank.filter((_, i) => !game.isWinner(i)._value)) - b * libAdjust[game.playerSize];
+	const averageRatingWinnersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => game.isWinner(i)._value)) + b * libAdjust[game.playerSize];
+	const averageRatingLosersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => !game.isWinner(i)._value)) - b * libAdjust[game.playerSize];
 
 	// Elo Formula
 	const k = 64;
