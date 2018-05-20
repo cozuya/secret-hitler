@@ -39,6 +39,7 @@ const saveGame = game => {
 		rebalance7p: game.general.rebalance7p,
 		rebalance9p2f: game.general.rebalance9p2f,
 		casualGame: game.general.casualGame,
+		isRainbow: game.general.rainbowgame,
 		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
 		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2
 	});
