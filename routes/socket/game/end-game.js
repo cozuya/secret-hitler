@@ -184,8 +184,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 					});
 				});
 
-				game.private.unSeatedGameChats.push(adjustmentChat);
-
 				sendInProgressGameUpdate(game);
 
 				results.forEach(player => {
