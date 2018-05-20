@@ -79,6 +79,21 @@ class Playerlist extends React.Component {
 		};
 	}
 
+	sortByElo(sort) {
+		const { gameSettings } = this.props.userInfo;
+		const elo = gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason';
+
+		return (a, b) => {
+			const e1 = a[elo] ? a[elo] : 0;
+			const e2 = && b[elo] ? b[elo] : 0;
+			if (a !== b) {
+				return a < b ? 1 : -1;
+			} else {
+				return sort(a, b);
+			}
+		};
+	}
+
 	tounryWins(sort) {
 		return sort(a, b);
 	}
@@ -198,7 +213,7 @@ class Playerlist extends React.Component {
 			const tournyWinners = [];
 
 			const experienced = elo
-				? visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user)).sort((a, b) => a[elo] < b[elo])
+				? visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50).sort(this.sortByElo(this.alphabetical()))
 				: visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50).sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = visible
