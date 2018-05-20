@@ -80,15 +80,7 @@ class Playerlist extends React.Component {
 	}
 
 	tounryWins(sort) {
-		return (a, b) => {
-			const aTWinCount = a.tournyWins.filter(winTime => time - winTime < 10800000).length;
-			const bTWinCount = b.tournyWins.filter(winTime => time - winTime < 10800000).length;
-			if (aTWinCount !== bTWinCount) {
-				return aTWinCount > bTWinCount ? -1 : 1;
-			} else {
-				return sort(a, b);
-			}
-		};
+		return sort(a, b);
 	}
 
 	renderFilterIcons() {
