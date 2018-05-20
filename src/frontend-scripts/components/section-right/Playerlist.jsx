@@ -324,7 +324,7 @@ class Playerlist extends React.Component {
 							(() => {
 								return elo ? (
 									<div className="userlist-stats-container">
-										<span className="userlist-stats">{user[elo].toFixed(0)}</span>
+										<span className="userlist-stats">{user[elo] ? user[elo].toFixed(0) : 1600}</span>
 									</div>
 								) : (
 									<div className="userlist-stats-container">
