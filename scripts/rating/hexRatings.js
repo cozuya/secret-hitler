@@ -11,11 +11,11 @@ const winAdjust = {
 	10: -31.539
 };
 
-function avg(accounts, players, acsessor, fallback) {
+function avg(accounts, players, accessor, fallback) {
 	return (
 		players.reduce(
 			(prev, curr) =>
-				acsessor(accounts.find(account => account.username === curr)) ? acsessor(accounts.find(account => account.username === curr)) + prev : fallback,
+				(accessor(accounts.find(account => account.username === curr)) ? accessor(accounts.find(account => account.username === curr)) : fallback) + prev,
 			0
 		) / players.length
 	);
