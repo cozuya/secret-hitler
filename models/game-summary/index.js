@@ -25,6 +25,14 @@ const gameSummary = new Schema({
 			hashUid: String
 		}
 	],
+	libElo: {
+		overall: Number,
+		season: Number
+	},
+	fasElo: {
+		overall: Number,
+		season: Number
+	},
 	logs: [
 		{
 			// election

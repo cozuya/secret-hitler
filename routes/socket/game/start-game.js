@@ -3,6 +3,7 @@ const _ = require('lodash');
 const { startElection } = require('./election.js');
 const { shufflePolicies } = require('./common.js');
 const GameSummaryBuilder = require('../../../models/game-summary/GameSummaryBuilder');
+const Account = require('../../../models/account.js');
 
 /**
  * @param {object} game - game to act on.
@@ -95,6 +96,41 @@ const beginGame = game => {
 		}
 	});
 
+	const libPlayers = game.private.seatedPlayers.filter(player => player.role.team === 'liberal');
+	const fasPlayers = game.private.seatedPlayers.filter(player => player.role.team !== 'liberal');
+	const lib = libPlayers.map(player => player.userName);
+	const fas = fasPlayers.map(player => player.userName);
+	var libElo = { overall: 1600, season: 1600 };
+	var fasElo = { overall: 1600, season: 1600 };
+	Account.find({
+		username: { $in: game.private.seatedPlayers.map(player => player.userName) }
+	}).then(accounts => {
+		libElo.overall =
+			lib.reduce(
+				(prev, curr) =>
+					(accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall : 1600) + prev,
+				0
+			) / lib.length;
+		libElo.season =
+			lib.reduce(
+				(prev, curr) =>
+					(accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason : 1600) + prev,
+				0
+			) / lib.length;
+		fasElo.overall =
+			fas.reduce(
+				(prev, curr) =>
+					(accounts.find(account => account.username === curr).eloOverall ? accounts.find(account => account.username === curr).eloOverall : 1600) + prev,
+				0
+			) / fas.length;
+		fasElo.season =
+			fas.reduce(
+				(prev, curr) =>
+					(accounts.find(account => account.username === curr).eloSeason ? accounts.find(account => account.username === curr).eloSeason : 1600) + prev,
+				0
+			) / fas.length;
+	});
+
 	game.private.summary = new GameSummaryBuilder(
 		game.general.uid,
 		new Date(),
@@ -109,7 +145,9 @@ const beginGame = game => {
 			username: p.userName,
 			role: p.role.cardName,
 			icon: p.role.icon
-		}))
+		})),
+		libElo,
+		fasElo
 	);
 
 	game.private.unSeatedGameChats = [
