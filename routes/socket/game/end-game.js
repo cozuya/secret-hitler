@@ -148,46 +148,41 @@ module.exports.completeGame = (game, winningTeamName) => {
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
-				const adjustmentChat = {
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: winningTeamName === 'fascist' ? 'Fascists' : 'Liberals',
-							type: winningTeamName === 'fascist' ? 'fascist' : 'liberal'
-						},
-						{
-							text: ' gain '
-						},
-						{
-							text: eloAdjustments.winningPlayerAdjustment.toFixed(0),
-							type: 'player'
-						},
-						{
-							text: ' elo. '
-						},
-						{
-							text: winningTeamName === 'fascist' ? 'Liberals' : 'Fascists',
-							type: winningTeamName === 'fascist' ? 'liberal' : 'fascist'
-						},
-						{
-							text: ' lose '
-						},
-						{
-							text: -1 * eloAdjustments.losingPlayerAdjustment.toFixed(0),
-							type: 'player'
-						},
-						{
-							text: ' elo.'
-						}
-					]
-				};
-
 				seatedPlayers.forEach(player => {
-					player.gameChats.push(adjustmentChat);
+					const rank = eloAdjustments[player.userName];
+					player.gameChats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: `Your overall rank has ${rank.change > 0 ? 'increased' : 'decreased'} by `
+							},
+							{
+								text: Math.abs(rank.change.toFixed(1)),
+								type: 'player'
+							},
+							{
+								text: ` points.`
+							}
+						]
+					});
+					player.gameChats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: `Your seasonal rank has ${rank.changeSeason > 0 ? 'increased' : 'decreased'} by `
+							},
+							{
+								text: Math.abs(rank.changeSeason.toFixed(1)),
+								type: 'player'
+							},
+							{
+								text: ` points.`
+							}
+						]
+					});
 				});
-
-				game.private.unSeatedGameChats.push(adjustmentChat);
 
 				sendInProgressGameUpdate(game);
 
