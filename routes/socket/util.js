@@ -114,8 +114,8 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	const size = game.private.seatedPlayers.length;
 	const averageRatingWinners = avg(accounts, winningPlayerNames, a => a.eloOverall, defaultELO) + b * libAdjust[size];
 	const averageRatingWinnersSeason = avg(accounts, winningPlayerNames, a => a.eloSeason, defaultELO) + b * libAdjust[size];
-	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, defaultELO) - b * libAdjust[size];
-	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, defaultELO) - b * libAdjust[size];
+	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, defaultELO) + (1-b) * libAdjust[size];
+	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, defaultELO) + (1-b) * libAdjust[size];
 	// Elo Formula
 	const winFactor = k / winningPlayerNames.length;
 	const loseFactor = -k / losingPlayerNames.length;

@@ -87,9 +87,9 @@ async function rate(summary) {
 		weightedPlayerSeasonRank[i] = playerInfluence[i] * account.eloSeason;
 	}
 	const averageRatingWinners = avg(weightedPlayerRank.filter((_, i) => game.isWinner(i)._value)) + b * libAdjust[game.playerSize];
-	const averageRatingLosers = avg(weightedPlayerRank.filter((_, i) => !game.isWinner(i)._value)) - b * libAdjust[game.playerSize];
 	const averageRatingWinnersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => game.isWinner(i)._value)) + b * libAdjust[game.playerSize];
-	const averageRatingLosersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => !game.isWinner(i)._value)) - b * libAdjust[game.playerSize];
+	const averageRatingLosers = avg(weightedPlayerRank.filter((_, i) => !game.isWinner(i)._value)) + (1-b) * libAdjust[game.playerSize];
+	const averageRatingLosersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => !game.isWinner(i)._value)) + (1-b) * libAdjust[game.playerSize];
 
 	// Elo Formula
 	const k = 64;

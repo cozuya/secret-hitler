@@ -31,9 +31,9 @@ async function rate(game) {
 	// Construct some basic statistics for each team
 	const b = game.winningTeam === 'liberal' ? 1 : 0;
 	const averageRatingWinners = avg(accounts, winningPlayerNames, a => a.eloOverall, 1600) + b * libAdjust[game.playerCount];
-	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, 1600) - b * libAdjust[game.playerCount];
 	const averageRatingWinnersSeason = avg(accounts, winningPlayerNames, a => a.eloSeason, 1600) + b * libAdjust[game.playerCount];
-	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, 1600) - b * libAdjust[game.playerCount];
+	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, 1600) + (1-b) * libAdjust[game.playerCount];
+	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, 1600) + (1-b) * libAdjust[game.playerCount];
 	// Hexi's Elo constants
 	const k = 64;
 	const winFactor = k / winningPlayerNames.length;
