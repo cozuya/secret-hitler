@@ -17,7 +17,7 @@
 		.gamestatus {
 			font-size: 22px;
 			font-style: italic;
-			color: $darkfascistteam;
+			color: teal;
 			background: #1b1b1b;
 			padding: 7px 0px 3px 2px;
 
@@ -270,7 +270,7 @@
 					flex-grow: 1;
 					button {
 						padding: 0px 10px;
-						background: $darkfascistteam;
+						background: teal;
 						&:hover {
 							background: #e44023;
 						}

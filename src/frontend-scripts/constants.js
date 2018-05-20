@@ -49,6 +49,7 @@ module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
  * @param {object} user - user from userlist.
  * @param {boolean} isSeasonal - whether or not to display seasonal colors.
  * @param {string} defaultClass - the default class
+ * @param {boolean} eloDisabled - true if elo is off
  * @return {string} list of classes for colors.
  */
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
@@ -70,11 +71,15 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		const l = isSeasonal ? user[`lossesSeason${CURRENTSEASONNUMBER}`] : user.losses;
 		const elo = isSeasonal ? user.eloSeason : user.eloOverall;
 		let grade;
-		if      (elo < 1500) grade = (1500) / 5;
-		else if (elo > 2000) grade = (2000) / 5;
-		else                 grade = (elo - 1500) / 5;
+		if (elo < 1500) {
+			grade = 1500 / 5;
+		} else if (elo > 2000) {
+			grade = 2000 / 5;
+		} else {
+			grade = (elo - 1500) / 5;
+		}
 		const gradeObj = {};
-		gradeObj["elo"+grade] = true;
+		gradeObj['elo' + grade] = true;
 
 		return w + l >= 50
 			? eloDisabled

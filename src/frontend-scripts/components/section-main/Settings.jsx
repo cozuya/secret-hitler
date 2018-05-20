@@ -155,7 +155,7 @@ class Settings extends React.Component {
 								fontSize: this.state.fontSize
 							}}
 						>
-							The quick brown fascist jumped over the lazy liberal. (lato, prior to v0.8)
+							The quick brown fascist jumped over the lazy liberal.
 						</label>
 					</div>
 				</div>
@@ -234,12 +234,6 @@ class Settings extends React.Component {
 
 		const displayCardbackInfoModal = () => {
 			$('.cardbackinfo')
-				.modal('setting', 'transition', 'scale')
-				.modal('show');
-		};
-
-		const namechangeClick = () => {
-			$('.namechangeinfo')
 				.modal('setting', 'transition', 'scale')
 				.modal('show');
 		};
@@ -335,9 +329,7 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							<h4 className="ui header" style={{ color: '#fbbd08' }}>
-								Show overall winrates and colors (instead of current season)
-							</h4>
+							<h4 className="ui header">Show overall winrates and colors (instead of current season)</h4>
 							<div className="ui fitted toggle checkbox">
 								<input
 									type="checkbox"

@@ -29,7 +29,7 @@
 			padding: 5px 0 3px;
 			display: flex;
 			justify-content: space-between;
-			color: $darkfascistteam;
+			color: teal;
 			border-bottom: 1px solid #262626;
 			.mod-button,
 			.report-button {
@@ -182,7 +182,7 @@
 				button {
 					padding: 2px;
 					float: right;
-					background: $darkfascistteam;
+					background: teal;
 					&:hover {
 						background: #e44023;
 					}

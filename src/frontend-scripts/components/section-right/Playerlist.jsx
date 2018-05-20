@@ -50,7 +50,7 @@ class Playerlist extends React.Component {
 	}
 
 	winRate(sort) {
-		const gameSettings = this.props.userInfo.gameSettings;
+		const { gameSettings } = this.props.userInfo;
 		const w =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
@@ -67,6 +67,7 @@ class Playerlist extends React.Component {
 				: this.state.userListFilter === 'all'
 					? `lossesSeason${CURRENTSEASONNUMBER}`
 					: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+
 		return (a, b) => {
 			const awr = a[w] / a[l];
 			const bwr = b[w] / b[l];
@@ -185,8 +186,8 @@ class Playerlist extends React.Component {
 					: this.state.userListFilter === 'all'
 						? `lossesSeason${CURRENTSEASONNUMBER}`
 						: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
-			// const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
-			const time = new Date().getTime();
+			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
+			// const time = new Date().getTime();
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
@@ -203,9 +204,9 @@ class Playerlist extends React.Component {
 
 			const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
 
-			const experienced = visible
-				.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50)
-				.sort(this.winRate(this.alphabetical()));
+			const experienced = elo
+				? visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user)).sort((a, b) => a[elo] < b[elo])
+				: visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50).sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = visible
 				.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && !experienced.includes(user))
@@ -268,15 +269,15 @@ class Playerlist extends React.Component {
 					}
 				};
 
-				const renderCrowns = () =>
-					user.tournyWins
-						.filter(winTime => time - winTime < 10800000)
-						.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
+				// const renderCrowns = () =>
+				// 	user.tournyWins
+				// 		.filter(winTime => time - winTime < 10800000)
+				// 		.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
 				return (
 					<div key={i} className="user-container">
 						<div className="userlist-username">
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()}
+							{/* {!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()} */}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
@@ -308,6 +309,7 @@ class Playerlist extends React.Component {
 										/>
 									);
 								} else {
+									console.log(userClasses, 'uc');
 									return (
 										<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
 											{user.isPrivate ? 'P - ' : ''}
@@ -318,7 +320,11 @@ class Playerlist extends React.Component {
 							})()}
 							{renderStatus()}
 						</div>
-						{!ADMINS.includes(user.userName) && (
+						{!ADMINS.includes(user.userName) && elo ? (
+							<div className="userlist-stats-container">
+								<span className="userlist-stats">{user[elo].toFixed(0)}</span>
+							</div>
+						) : (
 							<div className="userlist-stats-container">
 								(
 								<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}

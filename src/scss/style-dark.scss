@@ -165,8 +165,8 @@
 			border-width: 0 1px 1px 1px;
 			&:focus {
 				outline: none;
-				border-color: #f2654c;
-				box-shadow: 0 0 3px #f2654c;
+				border-color: teal;
+				box-shadow: 0 0 3pxteal;
 			}
 		}
 	}
@@ -176,7 +176,7 @@
 		flex-direction: column;
 	}
 	.menu-container {
-		background-color: $thirteen;
+		background-color: teal;
 		min-height: 42px;
 		a {
 			cursor: pointer;
@@ -590,8 +590,8 @@
 		color: white;
 		&:focus {
 			outline: none;
-			border: 1px solid #f2654c !important;
-			box-shadow: 0 0 3px #f2654c;
+			border: 1px solid teal !important;
+			box-shadow: 0 0 3px teal;
 		}
 		&::placeholder {
 			color: #8c8c8c;
@@ -668,7 +668,7 @@
 		border-right: 1px solid #111;
 	}
 	i.icon {
-		color: $darkfascistteam;
+		color: teal !important;
 	}
 	.remove.icon {
 		cursor: pointer;
@@ -688,7 +688,7 @@
 }
 
 .ui.header {
-	color: $darkfascistteam;
+	color: teal;
 }
 
 .ui.primary.buttons .button:hover,
@@ -744,7 +744,7 @@ div {
 	border: 0;
 	box-shadow: none;
 	overflow: hidden;
-	background-color: $thirteen;
+	background-color: teal;
 	margin: auto;
 	width: 95%;
 	max-width: 1920px;
@@ -832,26 +832,20 @@ div {
 	margin-left: -237px;
 }
 
-$eloValues: (1500 0.3 1.0 0.3)
-			(1600 0.3 1.0 0.5)
-			(1849 0.0 1.0 0.7)
-			(1850 1.0 1.0 0.7)
-			(1900 0.9 1.0 0.6)
-			(2000 0.8 1.0 0.4);
-
+$eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (1900 0.9 1 0.6) (2000 0.8 1 0.4);
 
 @function lerp($low, $high, $elo) {
 	$scale: nth($high, 1) - nth($low, 1);
 	@if $scale <= 0 {
-		@return hsl(
-			nth($low, 2) * 360,
-			nth($low, 3) * 100,
-			nth($low, 4) * 100
-		);
+		@return hsl(nth($low, 2) * 360, nth($low, 3) * 100, nth($low, 4) * 100);
 	}
-	$lerp:  ($elo - nth($low, 1)) / $scale;
-	@if $lerp < 0 { $lerp: 0; }
-	@if $lerp > 1 { $lerp: 1; }
+	$lerp: ($elo - nth($low, 1)) / $scale;
+	@if $lerp < 0 {
+		$lerp: 0;
+	}
+	@if $lerp > 1 {
+		$lerp: 1;
+	}
 	@return hsl(
 		((nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp)) * 360,
 		((nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp)) * 100,
@@ -860,7 +854,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 }
 
 @function calcEloCol($elo) {
-	$low:  nth($eloValues, 1);
+	$low: nth($eloValues, 1);
 	$high: nth($eloValues, -1);
 	@for $i from 1 through length($eloValues) {
 		$val: nth($eloValues, $i);
@@ -881,7 +875,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 
 @for $i from 0 through 100 {
 	.elo#{$i} {
-		color: calcEloCol($i*5+1500) !important;
+		color: calcEloCol($i * 5+1500) !important;
 	}
 	.player-small-cardback.elo#{$i} {
 		box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
