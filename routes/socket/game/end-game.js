@@ -148,46 +148,36 @@ module.exports.completeGame = (game, winningTeamName) => {
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
-				const adjustmentChat = {
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: winningTeamName === 'fascist' ? 'Fascists' : 'Liberals',
-							type: winningTeamName === 'fascist' ? 'fascist' : 'liberal'
-						},
-						{
-							text: ' gain '
-						},
-						{
-							text: eloAdjustments.winningPlayerAdjustment.toFixed(0),
-							type: 'player'
-						},
-						{
-							text: ' elo. '
-						},
-						{
-							text: winningTeamName === 'fascist' ? 'Liberals' : 'Fascists',
-							type: winningTeamName === 'fascist' ? 'liberal' : 'fascist'
-						},
-						{
-							text: ' lose '
-						},
-						{
-							text: -1 * eloAdjustments.losingPlayerAdjustment.toFixed(0),
-							type: 'player'
-						},
-						{
-							text: ' elo.'
-						}
-					]
-				};
 
 				seatedPlayers.forEach(player => {
+					const adjustmentChat = {
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'You'
+							},
+							{
+								text: (eloAdjustments[player.userName][0] > 0) ? ' gain ' : ' lose '
+							},
+							{
+								text: Math.abs(eloAdjustments[player.userName].change).toFixed(1),
+								type: 'player'
+							},
+							{
+								text: ' elo and '
+							},
+							{
+								text: Math.abs(eloAdjustments[player.userName].changeSeason).toFixed(1),
+								type: 'player'
+							},
+							{
+								text: ' seasonal elo.'
+							}
+						]
+					};
 					player.gameChats.push(adjustmentChat);
 				});
-
-				game.private.unSeatedGameChats.push(adjustmentChat);
 
 				sendInProgressGameUpdate(game);
 

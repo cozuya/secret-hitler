@@ -121,19 +121,21 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	if (game.gameState.isCompleted === 'liberal') {
 		averageRatingWinners += libWinAdjust[game.private.seatedPlayers.length];
 		averageRatingWinnersSeason += libWinAdjust[game.private.seatedPlayers.length];
+		averageRatingLosers -= libWinAdjust[game.private.seatedPlayers.length];
+		averageRatingLosersSeason -= libWinAdjust[game.private.seatedPlayers.length];
 	} else {
+		averageRatingWinners -= libWinAdjust[game.private.seatedPlayers.length];
+		averageRatingWinnersSeason -= libWinAdjust[game.private.seatedPlayers.length];
 		averageRatingLosers += libWinAdjust[game.private.seatedPlayers.length];
 		averageRatingLosersSeason += libWinAdjust[game.private.seatedPlayers.length];
 	}
 
 	const k = 64;
-	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
-	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
 
-	const winningPlayerAdjustment = k * p / winningPlayerNames.length;
-	const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
-	const winningPlayerAdjustmentSeason = k * pSeason / winningPlayerNames.length;
-	const losingPlayerAdjustmentSeason = -k * pSeason / losingPlayerNames.length;
+	const winFactor = k / winningPlayerNames.length;
+	const loseFactor = -k / losingPlayerNames.length;
+
+	let eloAdjustment = {};
 
 	accounts.forEach(account => {
 		let eloOverall;
@@ -147,14 +149,28 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 			eloSeason = account.eloSeason;
 		}
 
-		account.eloOverall = winningPlayerNames.includes(account.username) ? eloOverall + winningPlayerAdjustment : eloOverall + losingPlayerAdjustment;
-		account.eloSeason = winningPlayerNames.includes(account.username) ? eloSeason + winningPlayerAdjustmentSeason : eloSeason + losingPlayerAdjustmentSeason;
+		const win = winningPlayerNames.includes(account.username);
+		let change;
+		let changeSeason;
+		if (win) {
+			const p = 1 / (1 + Math.pow(10, (eloOverall - averageRatingLosers) / 400));
+			const pSeason = 1 / (1 + Math.pow(10, (eloSeason - averageRatingLosersSeason) / 400));
+			change = p * winFactor;
+			changeSeason = pSeason * winFactor;
+		} else {
+			const p = 1 / (1 + Math.pow(10, (averageRatingWinners - eloOverall) / 400));
+			const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - eloSeason) / 400));
+			change = p * loseFactor;
+			changeSeason = pSeason * loseFactor;
+		}
+
+		account.eloOverall = eloOverall + change;
+		account.eloSeason = eloSeason + changeSeason;
+
+		eloAdjustment[account.username] = { change, changeSeason };
 
 		account.save();
 	});
 
-	return {
-		winningPlayerAdjustment,
-		losingPlayerAdjustment
-	};
+	return eloAdjustment;
 };
