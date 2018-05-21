@@ -141,9 +141,7 @@ module.exports.sendUserGameSettings = socket => {
 				lastSeen: account.lastVersionSeen || 'none'
 			});
 
-			io.sockets.emit('userList', {
-				list: userList
-			});
+			userListEmitter.send = true;
 		})
 		.catch(err => {
 			console.log(err);
@@ -260,7 +258,7 @@ const sendUserList = (module.exports.sendUserList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
 		socket.emit('userList', {
-			list: userList
+			list: formattedUserList()
 		});
 	} else {
 		userListEmitter.send = true;

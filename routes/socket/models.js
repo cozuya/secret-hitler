@@ -34,16 +34,48 @@ module.exports.profiles = (() => {
 	return { get, push };
 })();
 
+module.exports.formattedUserList = () => {
+	return module.exports.userList.map(user => ({
+		userName: user.userName,
+		wins: user.wins,
+		losses: user.losses,
+		rainbowWins: user.rainbowWins,
+		rainbowLosses: user.rainbowLosses,
+		isPrivate: user.isPrivate,
+
+		//Tournaments are disabled, no point sending this.
+		//tournyWins: user.tournyWins,
+
+		//Blacklists are sent in the sendUserGameSettings event.
+		//blacklist: user.blacklist,
+		customCardback: user.customCardback,
+		customCardbackUid: user.customCardbackUid,
+		eloOverall: user.eloOverall ? user.eloOverall.toFixed(0) : none,
+		eloSeason: user.eloSeason ? user.eloSeason.toFixed(0) : none,
+		status: user.status,
+		winsSeason2: user.winsSeason2,
+		lossesSeason2: user.lossesSeason2,
+		rainbowWinsSeason2: user.rainbowWinsSeason2,
+		rainbowLossesSeason2: user.rainbowLossesSeason2,
+		previousSeasonAward: user.previousSeasonAward,
+		timeLastGameCreated: user.timeLastGameCreated
+		//oldData: user
+	}));
+};
+
 const userListEmitter = {
 	state: 1,
 	send: false,
 	timer: setInterval(() => {
-		if (userListEmitter.state > 0) userListEmitter.state--;
-		else if (userListEmitter.send) {
-			userListEmitter.send = false;
+		if (!userListEmitter.send) {
 			userListEmitter.state = 9;
+			return;
+		}
+		if (userListEmitter.state > 0) userListEmitter.state--;
+		else {
+			userListEmitter.send = false;
 			io.sockets.emit('userList', {
-				list: module.exports.userList
+				list: module.exports.formattedUserList()
 			});
 		}
 	}, 100)
