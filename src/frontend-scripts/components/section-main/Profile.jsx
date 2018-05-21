@@ -4,6 +4,8 @@ import Table from '../reusable/Table.jsx';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 import $ from 'jquery';
+import cn from 'classnames';
+import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
@@ -245,13 +247,41 @@ class ProfileWrapper extends React.Component {
 	}
 
 	Profile() {
-		const { profile, userInfo } = this.props;
-
+		const { gameSettings, profile, userInfo } = this.props;
+		const w =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all'
+					? 'wins'
+					: 'rainbowWins'
+				: this.state.userListFilter === 'all'
+					? `winsSeason${CURRENTSEASONNUMBER}`
+					: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+		const l =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all'
+					? 'losses'
+					: 'rainbowLosses'
+				: this.state.userListFilter === 'all'
+					? `lossesSeason${CURRENTSEASONNUMBER}`
+					: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+		const userClasses =
+			userInfo[w] + userInfo[l] > 49 ||
+			ADMINS.includes(userInfo.userName) ||
+			EDITORS.includes(userInfo.userName) ||
+			MODERATORS.includes(userInfo.userName) ||
+			CONTRIBUTORS.includes(userInfo.userName)
+				? cn(
+						PLAYERCOLORS(userInfo, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
+						{ blacklisted: gameSettings && gameSettings.blacklist.includes(userInfo.userName) },
+						{ unclickable: !this.props.isUserClickable },
+						{ clickable: this.props.isUserClickable }
+				  )
+				: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(userInfo.userName) }, 'profile-picture');
 		return (
 			<div>
 				{profile.customCardback && (
 					<div
-						className="profile-picture"
+						className={userClasses}
 						style={{
 							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random()
 								.toString(36)

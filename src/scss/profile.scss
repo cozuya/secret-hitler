@@ -1,3 +1,50 @@
+$eloValues: (1500 0.3 1.0 0.3)
+			(1600 0.3 1.0 0.5)
+			(1849 0.0 1.0 0.7)
+			(1850 1.0 1.0 0.7)
+			(1900 0.9 1.0 0.6)
+			(2000 0.8 1.0 0.4);
+
+
+@function lerp($low, $high, $elo) {
+	$scale: nth($high, 1) - nth($low, 1);
+	@if $scale <= 0 {
+		@return hsl(
+			nth($low, 2) * 360,
+			nth($low, 3) * 100,
+			nth($low, 4) * 100
+		);
+	}
+	$lerp:  ($elo - nth($low, 1)) / $scale;
+	@if $lerp < 0 { $lerp: 0; }
+	@if $lerp > 1 { $lerp: 1; }
+	@return hsl(
+		((nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp)) * 360,
+		((nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp)) * 100,
+		((nth($low, 4) * (1-$lerp)) + (nth($high, 4) * $lerp)) * 100
+	);
+}
+
+@function calcEloCol($elo) {
+	$low:  nth($eloValues, 1);
+	$high: nth($eloValues, -1);
+	@for $i from 1 through length($eloValues) {
+		$val: nth($eloValues, $i);
+		$val2: nth($val, 1);
+		@if $val2 > nth($low, 1) {
+			@if $val2 <= $elo {
+				$low: $val;
+			}
+		}
+		@if $val2 < nth($high, 1) {
+			@if $val2 >= $elo {
+				$high: $val;
+			}
+		}
+	}
+	@return lerp($low, $high, $elo);
+}
+
 #profile {
 	border: 0;
 	border-radius: 0;
@@ -15,6 +62,62 @@
 		top: 5px;
 		background-size: 70px;
 		background-repeat: no-repeat;
+	}
+
+	@for $i from 0 through 100 {
+		.profile-picture.elo#{$i} {
+			box-shadow: 0 0 5px 2px calcEloCol($i*5+1500) !important;
+		}
+	}
+	@for $i from 1 through 5 {
+		.profile-picture.experienced#{$i} {
+			box-shadow: 0 0 5px 2px rgb(0,  (175 - ($i * 20)), 0) !important;
+		}
+	}
+	@for $i from 1 through 10 {
+		.profile-picture.onfire#{$i} {
+			box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
+		}
+	}
+
+	.profile-picture.contributer {
+		box-shadow: 0 0 5px 2px teal !important;
+	}
+
+	.profile-picture.admin {
+		box-shadow: 0 0 5px 2px red !important;
+	}
+
+	.profile-picture.editorcolor {
+		box-shadow: 0 0 5px 2px #05bba0 !important;
+	}
+
+	.profile-picture.moderatorcolor {
+		box-shadow: 0 0 5px 2px #007fff !important;
+	}
+
+	.profile-picture.cbell {
+		box-shadow: 0 0 5px 2px #ff1a75 !important;
+	}
+
+	.profile-picture.thejuststopo {
+		box-shadow: 0 0 5px 2px #dc143c !important;
+	}
+
+	.profile-picture.max {
+		box-shadow: 0 0 5px 2px #b7ae0b !important;
+	}
+
+	.profile-picture.dfinn {
+		box-shadow: 0 0 5px 2px #00ffd8 !important;
+	}
+
+	.profile-picture.invidia {
+		box-shadow: 0 0 5px 2px #ec7d04 !important;
+	}
+
+	.profile-picture.faaiz {
+		box-shadow: 0 0 5px 2px #c7c1ff !important;
 	}
 
 	.blacklist-button {
