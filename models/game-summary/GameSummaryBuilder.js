@@ -19,9 +19,6 @@ module.exports = class GameSummaryBuilder {
 
 	publish() {
 		const { _id, date, gameSetting, players, libElo, fasElo, logs } = this;
-		console.log('PUBLISH');
-		console.log(libElo);
-		console.log(fasElo);
 		return new GameSummary({ _id, date, gameSetting, players, libElo, fasElo, logs: logs.toArray() });
 	}
 

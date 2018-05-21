@@ -150,7 +150,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
 
 				results.forEach(player => {
-
 					const listUser = userList.find(user => user.userName === player.username);
 					if (listUser) {
 						listUser.eloOverall = player.eloOverall;
