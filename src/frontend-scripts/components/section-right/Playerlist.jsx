@@ -380,10 +380,8 @@ class Playerlist extends React.Component {
 							because their color changes based on their stats. Rainbow players have access to play in special rainbow player only games.
 						</p>
 						<p>
-							If rainbow players have a less than 52% win rate, their player color varies between <span className="experienced1">light green</span> and{' '}
-							<span className="experienced5">dark green</span>, depending on how many games they have played. Conversely, with a win rate of 52% or higher,
-							their player color ranges from <span className="onfire1">light purple</span> to <span className="onfire10">dark purple</span> depending on how
-							high it is. The highest tier is 70%.
+							The color of a rainbow player depends on their ELO, a type of matchmaking rating. The spectrum of colors goes from deep green as lowest ELO
+							to deep purple as highest ELO, passing through yellow and orange on its way.
 						</p>
 						<p>
 							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
@@ -398,8 +396,8 @@ class Playerlist extends React.Component {
 							<span className="invidia">or</span>
 							<span className="faaiz">s</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
 							<span className="moderator-name">light red (M)</span>.<br />Lastly, <span className="contributer">Contributors</span> get a{' '}
-							<span className="contributer">special orange color</span> as well! Contribute code to this open source project to be endlessly pestered about why
-							you're <span className="contributer">orange</span>.
+							<span className="contributer">special teal color</span> as well! Contribute code to this open source project to be endlessly pestered about why
+							you're <span className="contributer">teal</span>.
 						</p>
 					</div>
 					{Object.keys(this.props.userList).length && (
