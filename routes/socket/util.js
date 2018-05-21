@@ -106,7 +106,8 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		9: -70.679,
 		10: -31.539
 	};
-	const k = 64;
+	const rk = 9;
+	const nk = 3;
 	// Players
 	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
 	// Construct some basic statistics for each team
@@ -117,6 +118,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	const averageRatingLosers = avg(accounts, losingPlayerNames, a => a.eloOverall, defaultELO) + (1 - b) * libAdjust[size];
 	const averageRatingLosersSeason = avg(accounts, losingPlayerNames, a => a.eloSeason, defaultELO) + (1 - b) * libAdjust[size];
 	// Elo Formula
+	const k = accounts.length * (game.isRainbow ? rk : nk); // non-rainbow games are capped at k/r
 	const winFactor = k / winningPlayerNames.length;
 	const loseFactor = -k / losingPlayerNames.length;
 	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
@@ -132,7 +134,6 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		account.eloSeason = eloSeason + changeSeason;
 		account.save();
 		ratingUpdates[account.username] = { change, changeSeason };
-
 		const user = userList.find(user => user.userName === account.username);
 		if (user) {
 			user.eloOverall = account.eloOverall;

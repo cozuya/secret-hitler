@@ -168,7 +168,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 										text: ` ${activeChange > 0 ? 'increased' : 'decreased'} by `
 									},
 									{
-										text: Math.abs(activeChange.toFixed(0)),
+										text: Math.abs(activeChange.toFixed(1)),
 										type: 'player'
 									},
 									{
