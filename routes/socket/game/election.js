@@ -556,6 +556,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 
 	if (
 		!wasTimer &&
+		!game.general.private &&
 		chancellor.role.team == 'liberal' &&
 		enactedPolicy === 'fascist' &&
 		(game.private.currentChancellorOptions[0] === 'liberal' || game.private.currentChancellorOptions[1] === 'liberal')
