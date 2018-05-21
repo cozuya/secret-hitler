@@ -1,3 +1,5 @@
+const { userList } = require('./models.js');
+
 /**
  * @param {object} game - game to act on.
  * @return {object} game
@@ -130,6 +132,12 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		account.eloSeason = eloSeason + changeSeason;
 		account.save();
 		ratingUpdates[account.username] = { change, changeSeason };
+
+		const user = userList.find(user => user.userName === account.username);
+		if (user) {
+			user.eloOverall = account.eloOverall;
+			user.eloSeason = account.eloSeason;
+		}
 	});
 	return ratingUpdates;
 };
