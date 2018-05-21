@@ -82,12 +82,30 @@ class Playerlist extends React.Component {
 	sortByElo(sort) {
 		const { gameSettings } = this.props.userInfo;
 		const elo = gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason';
+		const w =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all'
+				? 'wins'
+				: 'rainbowWins'
+				: this.state.userListFilter === 'all'
+				? `winsSeason${CURRENTSEASONNUMBER}`
+				: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+		const l =
+			gameSettings && gameSettings.disableSeasonal
+				? this.state.userListFilter === 'all'
+				? 'losses'
+				: 'rainbowLosses'
+				: this.state.userListFilter === 'all'
+				? `lossesSeason${CURRENTSEASONNUMBER}`
+				: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
 
 		return (a, b) => {
-			const e1 = a[elo] ? a[elo] : 0;
-			const e2 = && b[elo] ? b[elo] : 0;
-			if (a !== b) {
-				return a < b ? 1 : -1;
+			const wl1 = a[w] + a[l];
+			const wl2 = b[w] - b[l];
+			const e1 = (wl1 >= 50 && a[elo]) ? a[elo] : 0;
+			const e2 = (wl2 >= 50 && b[elo]) ? b[elo] : 0;
+			if (e1 !== e2) {
+				return e1 < e2 ? 1 : -1;
 			} else {
 				return sort(a, b);
 			}
@@ -209,18 +227,15 @@ class Playerlist extends React.Component {
 			const contributors = visible.filter(user => !aem.includes(user) && CONTRIBUTORS.includes(user.userName)).sort(this.alphabetical());
 			aem.push(...contributors);
 
-			//const tournyWinners = visible.filter(user => !aem.includes(user) && user.tournyWins.length).sort(this.tounryWins(this.winRate(this.alphabetical())));
-			const tournyWinners = [];
-
 			const experienced = elo
-				? visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50).sort(this.sortByElo(this.alphabetical()))
-				: visible.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && user[w] + user[l] >= 50).sort(this.winRate(this.alphabetical()));
+				? visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.sortByElo(this.alphabetical()))
+				: visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = visible
-				.filter(user => !aem.includes(user) && !tournyWinners.includes(user) && !experienced.includes(user))
+				.filter(user => !aem.includes(user) && !experienced.includes(user))
 				.sort(this.alphabetical());
 
-			return [...aem, ...tournyWinners, ...experienced, ...inexperienced].map((user, i) => {
+			return [...aem, ...experienced, ...inexperienced].map((user, i) => {
 				const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
 				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
 				const disableIfUnclickable = f => {

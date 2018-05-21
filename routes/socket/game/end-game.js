@@ -147,47 +147,38 @@ module.exports.completeGame = (game, winningTeamName) => {
 			.then(results => {
 				const isRainbow = game.general.rainbowgame;
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
-
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
-				seatedPlayers.forEach(player => {
-					const rank = eloAdjustments[player.userName];
-					player.gameChats.push({
-						gameChat: true,
-						timestamp: new Date(),
-						chat: [
-							{
-								text: `Your overall rank has ${rank.change > 0 ? 'increased' : 'decreased'} by `
-							},
-							{
-								text: Math.abs(rank.change.toFixed(1)),
-								type: 'player'
-							},
-							{
-								text: ` points.`
-							}
-						]
-					});
-					player.gameChats.push({
-						gameChat: true,
-						timestamp: new Date(),
-						chat: [
-							{
-								text: `Your seasonal rank has ${rank.changeSeason > 0 ? 'increased' : 'decreased'} by `
-							},
-							{
-								text: Math.abs(rank.changeSeason.toFixed(1)),
-								type: 'player'
-							},
-							{
-								text: ` points.`
-							}
-						]
-					});
-				});
-
-				sendInProgressGameUpdate(game);
 
 				results.forEach(player => {
+					const seatedPlayer = seatedPlayers.find(p => p.userName == player.username);
+
+					seatedPlayers.forEach(eachPlayer => {
+						const playerChange = eloAdjustments[eachPlayer.userName];
+						const activeChange = player.gameSettings.disableSeasonal ? playerChange.changeSeason : playerChange.change;
+						if (!player.gameSettings.disableElo) {
+							seatedPlayer.gameChats.push({
+								gameChat: true,
+								timestamp: new Date(),
+								chat: [
+									{
+										text: eachPlayer.userName,
+										type: eachPlayer.role.team
+									},
+									{
+										text: ` ${activeChange > 0 ? 'increased' : 'decreased'} by `
+									},
+									{
+										text: Math.abs(activeChange.toFixed(0)),
+										type: 'player'
+									},
+									{
+										text: ` points.`
+									}
+								]
+							});
+						}
+					});
+
 					let winner = false;
 
 					if (winningPlayerNames.includes(player.username)) {
@@ -281,6 +272,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						}
 					});
 				});
+				sendInProgressGameUpdate(game);
 			})
 			.catch(err => {
 				console.log(err, 'error in updating accounts at end of game');
