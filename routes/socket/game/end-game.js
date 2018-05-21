@@ -150,8 +150,14 @@ module.exports.completeGame = (game, winningTeamName) => {
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
 
 				results.forEach(player => {
-					const seatedPlayer = seatedPlayers.find(p => p.userName == player.username);
 
+					const listUser = userList.find(user => user.userName === player.username);
+					if (listUser) {
+						listUser.eloOverall = player.eloOverall;
+						listUser.eloSeason = player.eloSeason;
+					}
+
+					const seatedPlayer = seatedPlayers.find(p => p.userName === player.username);
 					seatedPlayers.forEach(eachPlayer => {
 						const playerChange = eloAdjustments[eachPlayer.userName];
 						const activeChange = player.gameSettings.disableSeasonal ? playerChange.changeSeason : playerChange.change;
@@ -168,7 +174,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 										text: ` ${activeChange > 0 ? 'increased' : 'decreased'} by `
 									},
 									{
-										text: Math.abs(activeChange.toFixed(1)),
+										text: Math.abs(activeChange).toFixed(1),
 										type: 'player'
 									},
 									{
