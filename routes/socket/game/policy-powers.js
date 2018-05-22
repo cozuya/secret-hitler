@@ -94,6 +94,7 @@ module.exports.selectPolicies = (passport, game) => {
 			}
 		];
 
+		game.gameState.audioCue = 'policyPeek';
 		president.playersState[presidentIndex].policyNotification = false;
 		sendInProgressGameUpdate(game);
 
@@ -106,6 +107,7 @@ module.exports.selectPolicies = (passport, game) => {
 			president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
 			president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action = '';
 			sendInProgressGameUpdate(game);
+			game.gameState.audioCue = '';
 		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 3500 : 6000);
 
 		setTimeout(() => {
@@ -201,6 +203,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 		game.private.lock.selectPartyMembershipInvestigate = true;
 
 		if (!seatedPlayers[playerIndex].wasInvestigated) {
+			game.gameState.audioCue = 'selectedInvestigate';
 			seatedPlayers[playerIndex].wasInvestigated = true;
 
 			president.playersState.forEach(player => {
@@ -281,6 +284,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000);
 
 			setTimeout(() => {
+				game.gameState.audioCue = '';
 				president.playersState[playerIndex].cardStatus.isFlipped = false;
 				sendInProgressGameUpdate(game);
 			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4000 : 6000);
@@ -454,6 +458,7 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 	}
 
 	if (!game.private.lock.selectPlayerToExecute && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+		game.gameState.audioCue = 'selectedExecution';
 		game.private.lock.selectPlayerToExecute = true;
 
 		game.private.summary = game.private.summary.updateLog({
@@ -494,6 +499,7 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 		sendInProgressGameUpdate(game);
 
 		setTimeout(() => {
+			game.gameState.audioCue = '';
 			selectedPlayer.isDead = publicSelectedPlayer.isDead = true;
 			publicSelectedPlayer.notificationStatus = '';
 			game.general.livingPlayerCount--;
@@ -527,6 +533,7 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 						player.cardStatus.cardDisplayed = true;
 						player.cardStatus.cardBack = seatedPlayers[i].role;
 					});
+					game.gameState.audioCue = 'hitlerShot';
 					sendInProgressGameUpdate(game);
 				}, process.env.NODE_ENV === 'development' ? 100 : 1000);
 
@@ -534,6 +541,8 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 					game.publicPlayersState.forEach(player => {
 						player.cardStatus.isFlipped = true;
 					});
+
+					game.gameState.audioCue = '';
 					completeGame(game, 'liberal');
 				}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 			} else {

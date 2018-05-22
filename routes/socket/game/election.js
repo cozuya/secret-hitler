@@ -87,10 +87,12 @@ const enactPolicy = (game, team) => {
 
 	setTimeout(() => {
 		game.trackState.enactedPolicies[index].isFlipped = true;
+		game.gameState.audioCue = 'enactPolicy';
 		sendInProgressGameUpdate(game);
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 300 : 2000);
 
 	setTimeout(() => {
+		game.gameState.audioCue = '';
 		const chat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -169,10 +171,12 @@ const enactPolicy = (game, team) => {
 
 			sendInProgressGameUpdate(game);
 
+			game.gameState.audioCue = game.trackState.liberalPolicyCount === 5 ? 'liberalsWin' : 'fascistsWin';
 			setTimeout(() => {
 				game.publicPlayersState.forEach((player, i) => {
 					player.cardStatus.isFlipped = true;
 				});
+				game.gameState.audioCue = '';
 				if (process.env.NODE_ENV === 'development') {
 					completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
 				} else {
@@ -344,8 +348,9 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 
 					game.private.unSeatedGameChats.push(chat);
 				}
-
+				game.gameState.audioCue = 'passedVeto';
 				setTimeout(() => {
+					game.gameState.audioCue = '';
 					president.cardFlingerState = [];
 					if (game.trackState.electionTrackerCount >= 3) {
 						if (!game.gameState.undrawnPolicyCount) {
@@ -358,7 +363,10 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 					}
 				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000);
 			} else {
+				game.gameState.audioCue = 'failedVeto';
+				sendInProgressGameUpdate(game);
 				setTimeout(() => {
+					game.gameState.audioCue = '';
 					publicPresident.cardStatus.cardDisplayed = false;
 					publicChancellor.cardStatus.cardDisplayed = false;
 					president.cardFlingerState = [];
@@ -513,7 +521,10 @@ const selectChancellorVoteOnVeto = (passport, game, data) => {
 					}
 				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
 			} else {
+				game.gameState.audioCue = 'failedVeto';
+				sendInProgressGameUpdate(game);
 				setTimeout(() => {
+					game.gameState.audioCue = '';
 					publicChancellor.cardStatus.cardDisplayed = false;
 					chancellor.cardFlingerState = [];
 					setTimeout(() => {
@@ -541,6 +552,7 @@ const handToLog = hand =>
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data - socket emit
+ * @param {boolean} wasTimer - came from timer
  */
 const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 	const { experiencedMode } = game.general;
@@ -561,7 +573,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 		enactedPolicy === 'fascist' &&
 		(game.private.currentChancellorOptions[0] === 'liberal' || game.private.currentChancellorOptions[1] === 'liberal')
 	) {
-		//Liberal chancellor chose to play fascist, probably throwing.
+		// Liberal chancellor chose to play fascist, probably throwing.
 		const { makeReport } = require('../report.js');
 		makeReport(
 			`Player ${chancellor.userName} in seat ${chancellorIndex + 1} is liberal, was given choice as chancellor, and played fascist.`,
@@ -1052,12 +1064,14 @@ module.exports.selectVoting = (passport, game, data) => {
 								player.gameChats.push(chat);
 							});
 
+							game.gameState.audioCue = 'fascistsWinHitlerElected';
 							game.private.unSeatedGameChats.push(chat);
 						}
 						sendInProgressGameUpdate(game);
 					}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000);
 
 					setTimeout(() => {
+						game.gameState.audioCue = '';
 						game.publicPlayersState.forEach(player => {
 							player.cardStatus.isFlipped = true;
 						});

@@ -10,6 +10,7 @@ gameState
 	presidentIndex number
 	undrawnPolicyCount number
 	specialElectionFormerPresidentIndex number
+	audioCue string no op - a hint for the front end to play a sound
 chats array
 	chat string
 	type string

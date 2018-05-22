@@ -100,8 +100,8 @@ const beginGame = game => {
 	const fasPlayers = game.private.seatedPlayers.filter(player => player.role.team !== 'liberal');
 	const lib = libPlayers.map(player => player.userName);
 	const fas = fasPlayers.map(player => player.userName);
-	var libElo = { overall: 1600, season: 1600 };
-	var fasElo = { overall: 1600, season: 1600 };
+	const libElo = { overall: 1600, season: 1600 };
+	const fasElo = { overall: 1600, season: 1600 };
 	Account.find({
 		username: { $in: game.private.seatedPlayers.map(player => player.userName) }
 	}).then(accounts => {
@@ -403,6 +403,7 @@ module.exports = game => {
 		player.wasInvestigated = false;
 	});
 	game.gameState.isTracksFlipped = true;
+	game.gameState.audioCue = '';
 	game.private.policies = [];
 
 	shufflePolicies(

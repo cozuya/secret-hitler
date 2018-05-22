@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs');
 const mongoose = require('mongoose');
 const Game = require('../models/game-summary/index');

@@ -39,6 +39,7 @@ class Settings extends React.Component {
 			disableCrowns: '',
 			disableSeasonal: '',
 			disableElo: '',
+			disableSounds: '',
 			isPrivate: '',
 			failedNameChangeMessage: ''
 		};
@@ -60,19 +61,11 @@ class Settings extends React.Component {
 			disableConfetti: gameSettings.disableConfetti,
 			disableSeasonal: gameSettings.disableSeasonal,
 			disableElo: gameSettings.disableElo,
+			disableSounds: gameSettings.disableSounds,
 			isPrivate: gameSettings.isPrivate
 		});
 	}
 
-	componentDidMount() {
-		this.props.socket.on('failedNameChange', failedNameChangeMessage => {
-			this.setState({ failedNameChangeMessage });
-		});
-	}
-
-	componentWillUnmount() {
-		this.props.socket.off('failedNameChangeMessage');
-	}
 	/**
 	 * @param {string} value - todo
 	 */
@@ -267,10 +260,6 @@ class Settings extends React.Component {
 			this.setState({ profileSearchValue: e.currentTarget.value });
 		};
 
-		const handleNamechangeChange = e => {
-			this.setState({ namechangeValue: e.currentTarget.value });
-		};
-
 		const gameSettings = this.props.gameSettings || window.gameSettings;
 
 		const ownProfileSubmit = e => {
@@ -400,6 +389,11 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
+							<h4 className="ui header">Disable sounds</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="sounds" checked={this.state.disableSounds} onChange={() => this.toggleGameSettings('disableSounds')} />
+								<label />
+							</div>
 							<h4 className="ui header" style={{ color: 'red' }}>
 								Private-games-only (this action will log you out, 18 hour cooldown)
 							</h4>
@@ -494,18 +488,6 @@ class Settings extends React.Component {
 									<p>
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
-								</div>
-								<div className="ui basic modal namechangeinfo">
-									<div className="header">
-										Enter a new name below to change this account's name. You may only do this once per account. On success, you will be logged out.
-									</div>
-									<form className="namechange-form" onSubmit={this.namechangeSubmit}>
-										<div className="ui action input">
-											<input placeholder="New name.." value={this.state.namechangeValue} onChange={handleNamechangeChange} maxLength="20" spellCheck="false" />
-										</div>
-										<button className={this.state.namechangeValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
-										<p style={{ color: 'red' }}>{this.state.failedNameChangeMessage}</p>
-									</form>
 								</div>
 							</div>
 							<div className="centered row cardback-message-container">{this.state.cardbackUploadStatus}</div>

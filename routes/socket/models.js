@@ -43,11 +43,11 @@ module.exports.formattedUserList = () => {
 		rainbowLosses: user.rainbowLosses,
 		isPrivate: user.isPrivate,
 
-		//Tournaments are disabled, no point sending this.
-		//tournyWins: user.tournyWins,
+		// Tournaments are disabled, no point sending this.
+		// tournyWins: user.tournyWins,
 
-		//Blacklists are sent in the sendUserGameSettings event.
-		//blacklist: user.blacklist,
+		// Blacklists are sent in the sendUserGameSettings event.
+		// blacklist: user.blacklist,
 		customCardback: user.customCardback,
 		customCardbackUid: user.customCardbackUid,
 		eloOverall: user.eloOverall ? user.eloOverall.toFixed(0) : null,
@@ -59,7 +59,7 @@ module.exports.formattedUserList = () => {
 		rainbowLossesSeason2: user.rainbowLossesSeason2,
 		previousSeasonAward: user.previousSeasonAward,
 		timeLastGameCreated: user.timeLastGameCreated
-		//oldData: user
+		// oldData: user
 	}));
 };
 

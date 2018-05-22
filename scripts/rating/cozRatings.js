@@ -1,7 +1,6 @@
 const AllGames = require('./allGames');
 const Account = require('../../models/account');
-const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
-
+/* eslint-disable */
 const libAdjust = {
 	5: -19.253,
 	6: 20.637,

@@ -206,13 +206,15 @@ const DisplayLobbies = props => {
 		const { gameSettings } = userInfo;
 		// Might be a simpler way to write this. Just getting all the data we need and storing it in players[]
 		if (game.blindMode) {
-			return;
+			return null;
 		}
+
 		game.userNames.forEach(el => players.push({ userName: game.private ? '' : el }));
 		game.customCardback.forEach((el, index) => (players[index].customCardback = el));
 		game.customCardbackUid.forEach((el, index) => (players[index].customCardbackUid = el));
 		players.forEach((player, index) => {
-			const userStats = userList.list.find(el => el.userName === player.userName);
+			const userStats = userList.list ? userList.list.find(el => el.userName === player.userName) : null;
+
 			if (userStats) {
 				players[index].wins = userStats.wins;
 				players[index].losses = userStats.losses;

@@ -9,6 +9,14 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.1 released 5-22-2018</p>
+		</div>
+		<h3>New feature: sound effects!</h3>
+		<p>
+			Thanks to contributor Idrissa, most common sounds have a sound effect associated with them. Fun! You can disable these in player settings. You can (still)
+			not disable the starting "bong" sound.
+		</p>
+		<div className="ui header">
 			<p>Version 0.14.0 released 5-20-2018</p>
 		</div>
 		<h3>New feature: elo system</h3>

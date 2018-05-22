@@ -1,3 +1,4 @@
+/* eslint-disable */
 // ==UserScript==
 // @name         Socket Hitler
 // @namespace    http://tampermonkey.net/
