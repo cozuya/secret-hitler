@@ -101,9 +101,9 @@ class Playerlist extends React.Component {
 
 		return (a, b) => {
 			const wl1 = a[w] + a[l];
-			const wl2 = b[w] - b[l];
-			const e1 = wl1 >= 50 && a[elo] ? a[elo] : 0;
-			const e2 = wl2 >= 50 && b[elo] ? b[elo] : 0;
+			const wl2 = b[w] + b[l];
+			const e1 = (wl1 >= 50 && a[elo]) ? a[elo] : 0;
+			const e2 = (wl2 >= 50 && b[elo]) ? b[elo] : 0;
 			if (e1 !== e2) {
 				return e1 < e2 ? 1 : -1;
 			} else {
