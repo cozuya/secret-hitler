@@ -101,7 +101,7 @@
 	},
 	"scripts": {
 		"format": "prettier --write **/*.js",
-		"dev": "npm-run-all --parallel db server start",
+		"dev": "npm-run-all --parallel db inspect start",
 		"dev-docker": "npm-run-all --parallel db-docker server start",
 		"create-accounts": "node scripts/createAccounts.js",
 		"test": "jest __test__",
@@ -110,6 +110,7 @@
 		"db-docker": "docker run -it --rm -p 15726:15726 -v \"$(PWD)/data\":/data/db --name Secret-Hitler-Dev-MongoDB mongo:latest --port 15726",
 		"build": "webpack --config webpack/webpack.config.prod --mode production",
 		"build-nomin": "webpack --config webpack/webpack.config.prod-nomin --mode production",
+		"inspect": "nodemon --inspect=9137 bin/dev",
 		"server": "nodemon bin/dev",
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
 		"precommit": "yarn format && git add -A",
