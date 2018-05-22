@@ -1,7 +1,7 @@
-const playSound = (soundName, extension, duration) => {
+const playSound = (soundName, duration) => {
 	const sound = document.createElement('audio');
 
-	sound.setAttribute('src', `../sounds/${soundName}.${extension}`);
+	sound.setAttribute('src', `../sounds/${soundName}.mp3`);
 	sound.play();
 
 	setTimeout(() => {
