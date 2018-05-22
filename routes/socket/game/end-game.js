@@ -152,8 +152,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 				results.forEach(player => {
 					const listUser = userList.find(user => user.userName === player.username);
 					if (listUser) {
-						listUser.eloOverall = player.eloOverall;
-						listUser.eloSeason = player.eloSeason;
+						listUser.eloOverall = player.eloOverall.toFixed(0);
+						listUser.eloSeason = player.eloSeason.toFixed(0);
 					}
 
 					const seatedPlayer = seatedPlayers.find(p => p.userName === player.username);
