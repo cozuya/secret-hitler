@@ -1,0 +1,51 @@
+All Sound Effects & Links:
+Policy Enacted - https://freesound.org/people/Daphne_in_Wonderland/sounds/127157/
+Deck Shuffle - https://freesound.org/people/f4ngy/sounds/240778/
+President Drawing - https://freesound.org/people/hmilleo/sounds/412550/
+Chancellor Receiving - https://freesound.org/people/simosco/sounds/235556/
+Policy Peek - https://freesound.org/people/themfish/sounds/45813/
+Player Shot - https://freesound.org/people/Jaturo/sounds/196361/
+Investigation - https://freesound.org/people/emitex/sounds/213378/
+Special Election Given - https://freesound.org/people/Dublie/sounds/170255/
+Liberals Win - https://freesound.org/people/memz/sounds/325141/
+Liberals Win (Hitler shot) - https://freesound.org/people/SamWelkerTV/sounds/147625/
+Fascists Win (Hitler Elected) - https://freesound.org/people/smacks999/sounds/387578/
+Fascists Win - https://freesound.org/people/dominictreis/sounds/362281/
+Veto Succeeds - https://freesound.org/people/the_very_Real_Horst/sounds/239040/
+Veto Fails - https://freesound.org/people/InspectorJ/sounds/411729/
+
+All Sound Effects in terms of legal use/status:
+Policy Enacted - zero(cc0)
+Deck Shuffle - attribution (by)
+President Drawing - zero(cc0)
+Chancellor Receiving - zero(cc0)
+Policy Peek - attribution (by)
+Player Shot - zero(cc0)
+Investigation - attribution (by)
+Special Election - zero(cc0)
+Liberals Win - attribution (by)
+Liberals Win (Hitler shot) - attribution (by)
+Fascists Win (Hitler Elected) - zero(cc0)
+Fascists Win - zero(cc0)
+Veto Succeeds - zero(cc0)
+Veto Fails - attribution (by)
+
+Attribution & Credits for sound effects:
+This online game uses these sounds from freesound:
+Bridging Cards by F4ngy (https://freesound.org/people/f4ngy/sounds/240778/)
+playing_cards>draw-card.wav by themfish (https://freesound.org/people/themfish/sounds/45813/)
+flute.wav by emitex (https://freesound.org/people/emitex/sounds/213378/)
+Pretty Pluck Sound by memz (https://freesound.org/people/memz/sounds/325141/)
+Loops_Hero.aif by SamWelkerTV (https://freesound.org/people/SamWelkerTV/sounds/147625/)
+Wind Chime, Tolling, A.wav by InspectorJ (https://freesound.org/people/InspectorJ/sounds/411729/)
+
+Sound for specific people/timing:
+- Policy enaction sound effect does not play during veto stage, and is overtake by the veto sound effects
+- Observers are unable to hear sound from in game
+- Investigation sound effect is only heard by investigator and player investigated
+- Policy peek sound effect is only heard by player peeking
+- President drawing sound effect is only heard by current President
+- Chancellor receiving sound effect is only heard by current chancellor
+- Special Election sound effect is only heard by player who has been given the Special Election
+- Every other sound effect runs normally throughout the game and is heard by every player
+- In a players personal settings they can disable all sound effects, as I can see some may find it disturbing for gameplay
