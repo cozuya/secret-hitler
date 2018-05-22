@@ -219,12 +219,14 @@ const playerLeavePretourny = (game, playerName) => {
 const handleSocketDisconnect = socket => {
 	const { passport } = socket.handshake.session;
 
+	var listUpdate = false;
 	if (passport && Object.keys(passport).length) {
 		const userIndex = userList.findIndex(user => user.userName === passport.user);
 		const gamesPlayerSeatedIn = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user && !player.leftGame));
 
 		if (userIndex !== -1) {
 			userList.splice(userIndex, 1);
+			listUpdate = true;
 		}
 
 		if (gamesPlayerSeatedIn.length) {
@@ -251,6 +253,7 @@ const handleSocketDisconnect = socket => {
 				}
 			});
 			sendGameList();
+			listUpdate = true;
 		} else {
 			const tournysPlayerQueuedIn = games.filter(
 				game =>
@@ -264,7 +267,7 @@ const handleSocketDisconnect = socket => {
 			});
 		}
 	}
-	sendUserList();
+	if (listUpdate) sendUserList();
 };
 
 const crashReport = JSON.stringify({
@@ -1935,11 +1938,11 @@ module.exports.checkUserStatus = socket => {
 			socket.emit('updateSeatForUser');
 			sendInProgressGameUpdate(game);
 		}
+		if (user) sendUserList();
 	}
 
 	socket.emit('version', { current: version });
 
-	sendUserList();
 	sendGeneralChats(socket);
 	sendGameList(socket);
 };

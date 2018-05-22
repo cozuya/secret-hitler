@@ -12,7 +12,8 @@ const {
 	ipbansNotEnforced,
 	gameCreationDisabled,
 	currentSeasonNumber,
-	userListEmitter
+	userListEmitter,
+	formattedUserList
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
@@ -140,8 +141,6 @@ module.exports.sendUserGameSettings = socket => {
 				current: version,
 				lastSeen: account.lastVersionSeen || 'none'
 			});
-
-			userListEmitter.send = true;
 		})
 		.catch(err => {
 			console.log(err);
