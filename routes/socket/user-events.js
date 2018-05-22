@@ -219,7 +219,7 @@ const playerLeavePretourny = (game, playerName) => {
 const handleSocketDisconnect = socket => {
 	const { passport } = socket.handshake.session;
 
-	var listUpdate = false;
+	let listUpdate = false;
 	if (passport && Object.keys(passport).length) {
 		const userIndex = userList.findIndex(user => user.userName === passport.user);
 		const gamesPlayerSeatedIn = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user && !player.leftGame));

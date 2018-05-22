@@ -97,8 +97,8 @@ module.exports = () => {
 		const { passport } = socket.handshake.session;
 		const authenticated = ensureAuthenticated(socket);
 
-		//Instantly sends the userlist as soon as the websocket is created.
-		//For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
+		// Instantly sends the userlist as soon as the websocket is created.
+		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 		socket.conn.on('upgrade', () => {
 			sendUserList(socket);
 		});
