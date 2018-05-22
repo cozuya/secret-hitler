@@ -85,35 +85,31 @@ class Playerlist extends React.Component {
 		const w =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
-				? 'wins'
-				: 'rainbowWins'
+					? 'wins'
+					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-				? `winsSeason${CURRENTSEASONNUMBER}`
-				: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+					? `winsSeason${CURRENTSEASONNUMBER}`
+					: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
-				? 'losses'
-				: 'rainbowLosses'
+					? 'losses'
+					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-				? `lossesSeason${CURRENTSEASONNUMBER}`
-				: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+					? `lossesSeason${CURRENTSEASONNUMBER}`
+					: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
 
 		return (a, b) => {
 			const wl1 = a[w] + a[l];
 			const wl2 = b[w] - b[l];
-			const e1 = (wl1 >= 50 && a[elo]) ? a[elo] : 0;
-			const e2 = (wl2 >= 50 && b[elo]) ? b[elo] : 0;
+			const e1 = wl1 >= 50 && a[elo] ? a[elo] : 0;
+			const e2 = wl2 >= 50 && b[elo] ? b[elo] : 0;
 			if (e1 !== e2) {
 				return e1 < e2 ? 1 : -1;
 			} else {
 				return sort(a, b);
 			}
 		};
-	}
-
-	tounryWins(sort) {
-		return sort(a, b);
 	}
 
 	renderFilterIcons() {
@@ -231,9 +227,7 @@ class Playerlist extends React.Component {
 				? visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.sortByElo(this.alphabetical()))
 				: visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.winRate(this.alphabetical()));
 
-			const inexperienced = visible
-				.filter(user => !aem.includes(user) && !experienced.includes(user))
-				.sort(this.alphabetical());
+			const inexperienced = visible.filter(user => !aem.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
 
 			return [...aem, ...experienced, ...inexperienced].map((user, i) => {
 				const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
@@ -380,8 +374,8 @@ class Playerlist extends React.Component {
 							because their color changes based on their stats. Rainbow players have access to play in special rainbow player only games.
 						</p>
 						<p>
-							The color of a rainbow player depends on their ELO, a type of matchmaking rating. The spectrum of colors goes from deep green as lowest ELO
-							to deep purple as highest ELO, passing through yellow and orange on its way.
+							The color of a rainbow player depends on their ELO, a type of matchmaking rating. The spectrum of colors goes from deep green as lowest ELO to
+							deep purple as highest ELO, passing through yellow and orange on its way.
 						</p>
 						<p>
 							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
@@ -414,6 +408,12 @@ class Playerlist extends React.Component {
 		);
 	}
 }
+
+Playerlist.defaultProps = {
+	userInfo: {},
+	userList: {},
+	socket: {}
+};
 
 Playerlist.propTypes = {
 	userInfo: PropTypes.object,

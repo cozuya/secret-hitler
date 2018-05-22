@@ -344,7 +344,11 @@ const DisplayLobbies = props => {
 	};
 
 	const isModerator =
-		userInfo.userName && (EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || TRIALMODS.includes(userInfo.userName));
+		userInfo.userName &&
+		(EDITORS.includes(userInfo.userName) ||
+			ADMINS.includes(userInfo.userName) ||
+			MODERATORS.includes(userInfo.userName) ||
+			TRIALMODS.includes(userInfo.userName));
 
 	return (
 		<div
@@ -385,6 +389,13 @@ const DisplayLobbies = props => {
 			</div>
 		</div>
 	);
+};
+
+DisplayLobbies.defaultProps = {
+	game: {},
+	socket: {},
+	userInfo: {},
+	userList: {}
 };
 
 DisplayLobbies.propTypes = {
