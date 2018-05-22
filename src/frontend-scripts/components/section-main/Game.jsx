@@ -54,7 +54,7 @@ export default class Game extends React.Component {
 			}
 
 			if (gameInfo.gameState.audioCue === 'hitlerShot' && prevProps.gameInfo.gameState.audioCue !== 'hitlerShot') {
-				playSound('liberalswinhitlershot', 'wav', 26000);
+				playSound('liberalswinhitlershot', 'aiff', 26000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'liberalsWin' && prevProps.gameInfo.gameState.audioCue !== 'liberalsWin') {
