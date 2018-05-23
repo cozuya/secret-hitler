@@ -717,6 +717,7 @@ module.exports.selectChancellorPolicy = selectChancellorPolicy;
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data - socket emit
+ * @param {boolean} wasTimer - came from timer
  */
 const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 	const { presidentIndex } = game.gameState;
@@ -745,7 +746,6 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 	if (!wasTimer && !game.general.private) {
 		const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
 		const track4blue = game.trackState.liberalPolicyCount >= 4;
-		const cards = game.private.currentElectionPolicies;
 
 		const passed = (game.private.currentChancellorOptions = [
 			game.private.currentElectionPolicies[nonDiscardedPolicies[0]],
@@ -815,7 +815,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 					);
 				}
 				// leaving this check commented out, as it's possible hit knows the chancellor is fascist
-				/*else if (passedNicer === 'BR') {
+				/* else if (passedNicer === 'BR') {
 					// offered 5th blue choice as hit
 					makeReport(
 						`Player ${president.userName} in seat ${presidentIndex + 1} is hitler, got BRR with 4 blues on the track, and offered choice.`,
