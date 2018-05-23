@@ -411,7 +411,7 @@ class Playerlist extends React.Component {
 
 Playerlist.defaultProps = {
 	userInfo: {},
-	userList: {},
+	userList: { list: [] },
 	socket: {}
 };
 
