@@ -111,7 +111,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	const averageRatingLosers = avg(loosingAccounts, a => a.eloOverall || defaultELO) + (1 - b) * libAdjust[size];
 	const averageRatingLosersSeason = avg(loosingAccounts, a => a.eloSeason || defaultELO) + (1 - b) * libAdjust[size];
 	// Elo Formula
-	const k = size * (game.isRainbow ? rk : nk); // non-rainbow games are capped at k/r
+	const k = size * (game.general.rainbowgame ? rk : nk); // non-rainbow games are capped at k/r
 	const winFactor = k / winningPlayerNames.length;
 	const loseFactor = -k / losingPlayerNames.length;
 	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
