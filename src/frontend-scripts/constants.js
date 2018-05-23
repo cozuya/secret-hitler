@@ -18,6 +18,7 @@ module.exports.TRIALMODS = ['waluigiwaro'];
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
+	'straightleft',
 	'Idrissa',
 	'banc',
 	'HREmperor',
