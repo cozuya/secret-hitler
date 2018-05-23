@@ -46,7 +46,7 @@ class Playerlist extends React.Component {
 	}
 
 	alphabetical(sort) {
-		return (a, b) => (a.userName > b.userName ? 1 : -1);
+		return (a, b) => (a.userName.toLowerCase() > b.userName.toLowerCase() ? 1 : -1);
 	}
 
 	winRate(sort) {
