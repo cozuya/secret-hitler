@@ -9,13 +9,14 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.14.1 released 5-22-2018</p>
+			<p>Version 0.14.2 released 5-22-2018</p>
 		</div>
 		<h3>New feature: sound effects!</h3>
 		<p>
-			Thanks to contributor Idrissa, most common sounds have a sound effect associated with them. Fun! You can disable these in player settings. You can (still)
-			not disable the starting "bong" sound.
+			Thanks to contributor Idrissa, most common sounds have a sound effect associated with them. Fun! You can disable these in player settings. This setting
+			does not effect the starting "bong" sound.
 		</p>
+		<p>Also some bug fix attempts.</p>
 		<div className="ui header">
 			<p>Version 0.14.0 released 5-20-2018</p>
 		</div>
@@ -75,13 +76,6 @@ const Changelog = () => (
 			under 30 seconds are forced to be casual games. Have fun! The display in creategame page has been updated slightly.
 		</p>
 		<h3>Bug fix: fix to issue with timed mode some times auto choosing chancellor erroneously (I hope, please update if you still see this)</h3>
-		{/* <h3>New feature: elo system</h3>
-		<p>
-			Where's my winrate, and what's this weird number? There is now an elo system on sh.io. If you don't know what that is, it is number that reflects your
-			weighted winrate. Win a game against other players who collectively have high elo? Your own elo will go up more than if you won a game against low elo
-			players. You'll get it! This can be toggled off in player settings and the old win/loss rate will show for you, but give it a shot.
-		</p>
-		<p>Like other similar changes, if you'd rather have the previous winrate-based display and colors, you can disable elo on your settings screen.</p> */}
 		<p>Other issues</p>
 		<ul>
 			<li>
@@ -148,20 +142,6 @@ const Changelog = () => (
 			<li>BunchOfAnima 60% wr</li>
 			<li>Zeek 60% wr</li>
 		</ul>
-		{/* <h3>New game mode: Timed mode</h3>
-		<p>
-			When you make a timed mode game, you select the amount of time until an action is forced randomly. A countdown in the lower right corner of the game board
-			will be visible. Example: in a 5 minute timed mode game, if someone does not make a required action in 5 minutes such as selecting a chancellor or policy
-			power execution, that action is taken for them at random (within the rules of the game). Note that in order to save stress on the server, this countdown
-			is held client-side and will only be visible to players/observers if they are present in the game when it starts. This mode will likely favor fascists!
-			Feedback requested. <small>People abusing this mode to do.. something.. will be subject to moderation action.</small>
-		</p> */}
-		{/* <h3>New feature: player notes</h3>
-		<p>
-			Piggybacking on the game notes feature, all players now have a small icon on their cardback that will now open a dragable box. You can now take notes on
-			any player (limit: 500 characters) by typing into that box and hitting save. Hovering on that icon will also give you a smaller preview of the note for
-			that player. You can also edit your notes on a player by going to their profile and clicking the edit icon next to their name.
-		</p> */}
 		<h3>New feature: player notifications (pings)</h3>
 		<p>When you enter the site for the first time, you will receive a notification that looks like this:</p>
 		<div style={{ textAlign: 'center' }}>
