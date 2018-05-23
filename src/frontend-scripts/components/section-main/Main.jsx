@@ -74,7 +74,7 @@ export class Main extends React.Component {
 				case 'settings':
 					return <Settings userInfo={userInfo} socket={socket} />;
 				case 'profile':
-					return <Profile userInfo={userInfo} socket={socket} />;
+					return <Profile userInfo={userInfo} socket={socket} userList={userList} />;
 				case 'replay':
 					return <Replay />;
 				case 'reports':

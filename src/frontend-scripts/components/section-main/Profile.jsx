@@ -247,7 +247,8 @@ class ProfileWrapper extends React.Component {
 	}
 
 	Profile() {
-		const { gameSettings, profile, userInfo } = this.props;
+		const { gameSettings, profile, userInfo, userList } = this.props;
+		const user = userList.list ? userList.list.find(u => u.userName == profile._id) : null;
 		const w =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
@@ -264,19 +265,22 @@ class ProfileWrapper extends React.Component {
 				: this.state.userListFilter === 'all'
 					? `lossesSeason${CURRENTSEASONNUMBER}`
 					: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
-		const userClasses =
-			userInfo[w] + userInfo[l] > 49 ||
-			ADMINS.includes(userInfo.userName) ||
-			EDITORS.includes(userInfo.userName) ||
-			MODERATORS.includes(userInfo.userName) ||
-			CONTRIBUTORS.includes(userInfo.userName)
-				? cn(
-						PLAYERCOLORS(userInfo, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
-						{ blacklisted: gameSettings && gameSettings.blacklist.includes(userInfo.userName) },
-						{ unclickable: !this.props.isUserClickable },
-						{ clickable: this.props.isUserClickable }
-				  )
-				: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(userInfo.userName) }, 'profile-picture');
+		let userClasses = 'profile-picture';
+		if (user) {
+			userClasses =
+				user[w] + user[l] > 49 ||
+				ADMINS.includes(user.userName) ||
+				EDITORS.includes(user.userName) ||
+				MODERATORS.includes(user.userName) ||
+				CONTRIBUTORS.includes(user.userName)
+					? cn(
+							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
+							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
+							{ unclickable: !this.props.isUserClickable },
+							{ clickable: this.props.isUserClickable }
+					  )
+					: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'profile-picture');
+		}
 		return (
 			<div>
 				{profile.customCardback && (
@@ -386,8 +390,15 @@ class ProfileWrapper extends React.Component {
 	}
 }
 
+ProfileWrapper.defaultProps = {
+	userInfo: {},
+	userList: { list: [] },
+	socket: {}
+};
+
 ProfileWrapper.propTypes = {
 	userInfo: PropTypes.object,
+	userList: PropTypes.object,
 	socket: PropTypes.object
 };
 
