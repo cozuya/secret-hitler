@@ -21,7 +21,7 @@ const rateEloGame = (size, libElo, fasElo, libWin) => {
 	const averageRatingWinners = (libWin ? libElo : fasElo) + b * libAdjust[size];
 	const averageRatingLosers = (libWin ? fasElo : libElo) + (1 - b) * libAdjust[size];
 
-	const k = size * 9;
+	const k = size * 3;
 	const winFactor = k / winSize();
 	const loseFactor = -k / (size - winSize());
 	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
