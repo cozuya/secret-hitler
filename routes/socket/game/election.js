@@ -568,7 +568,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 		return;
 	}
 
-	if (!wasTimer && !game.general.private) {
+	if (!wasTimer && !game.general.private && !game.general.rainbowgame) {
 		if (
 			chancellor.role.team === 'liberal' &&
 			enactedPolicy === 'fascist' &&
@@ -743,7 +743,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 		game.gameState.timedModeEnabled = game.private.timerId = null;
 	}
 
-	if (!wasTimer && !game.general.private) {
+	if (!wasTimer && !game.general.private && !game.general.rainbowgame) {
 		const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
 		const track4blue = game.trackState.liberalPolicyCount >= 4;
 
