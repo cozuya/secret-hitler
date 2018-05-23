@@ -25,10 +25,10 @@ const rateEloGame = (size, libElo, fasElo, libWin) => {
 	const winFactor = k / winSize();
 	const loseFactor = -k / (size - winSize());
 	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
-	console.log('Gain: ' + (p * winFactor).toFixed(1));
-	console.log('Loss: ' + (p * loseFactor).toFixed(1));
-	console.log('RGain: ' + (p * winFactor * 3).toFixed(1));
-	console.log('RLoss: ' + (p * loseFactor * 3).toFixed(1));
+	console.log(' Gain: ' + (p * winFactor).toFixed(1));
+	console.log(' Loss: ' + (p * loseFactor).toFixed(1));
+	console.log('RGain: ' + (p * winFactor * 4).toFixed(1));
+	console.log('RLoss: ' + (p * loseFactor * 4).toFixed(1));
 };
 
 let stdin = process.openStdin();
