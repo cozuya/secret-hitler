@@ -1662,11 +1662,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 						ip: data.ip
 					});
 
-					if (isSuperMod) {
-						ipban.save(() => {
-							banAccount(data.userName);
+					ipban.save(() => {
+						Account.find({ lastConnectedIP: data.ip }, function(err, user) {
+							if (user) {
+								if (isSuperMod) banAccount(user.username);
+								else logOutUser(data.userName);
+							}
 						});
-					}
+					});
 					break;
 				case 'timeOut':
 					const timeout = new BannedIP({
@@ -1675,7 +1678,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 						ip: data.ip
 					});
 					timeout.save(() => {
-						logOutUser(data.userName);
+						Account.find({ lastConnectedIP: data.ip }, function(err, user) {
+							if (user) logOutUser(user.username);
+						});
 					});
 					break;
 				case 'timeOut2':
