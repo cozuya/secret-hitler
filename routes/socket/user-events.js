@@ -1522,7 +1522,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 			return;
 		}
 	}
-	console.log(data);
+
 	if ((!data.ip || data.ip === '') && (data.action === 'timeOut' || data.action === 'ipban')) return; // Failed to get a relevant IP, abort the action since it needs one.
 
 	const isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user);
