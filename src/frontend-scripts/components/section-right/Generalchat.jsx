@@ -152,7 +152,7 @@ export default class Generalchat extends React.Component {
 						EDITORS.includes(chat.userName) ||
 						ADMINS.includes(chat.userName) ||
 						chat.userName.substring(0, 11) == '[BROADCAST]';
-					const user = chat.userName ? userList.list.find(player => player.userName === chat.userName) : undefined;
+					const user = chat.userName && Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 					const userClasses =
 						!user || (gameSettings && gameSettings.disablePlayerColorsInChat)
 							? 'chat-user'
@@ -185,7 +185,7 @@ export default class Generalchat extends React.Component {
 							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat, isMod)}</span>
 						</div>
 					);
-				})
+			  })
 			: null;
 	}
 
