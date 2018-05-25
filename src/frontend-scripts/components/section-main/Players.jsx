@@ -239,7 +239,7 @@ class Players extends React.Component {
 				}
 				className={(() => {
 					let classes = 'player-container';
-					let user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+					let user = this.props.userList.list ? this.props.userList.list.find(play => play.userName === player.userName) : null;
 					let w;
 					let l;
 
