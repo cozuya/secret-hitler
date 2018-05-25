@@ -17,60 +17,63 @@ export default class Game extends React.Component {
 				gameInfo.general.status === 'Tournament starts in 5 seconds.' &&
 				prevProps.gameInfo.general.status !== 'Tournament starts in 5 seconds.')
 		) {
-			playSound('alarm', 2400);
+			playSound('alarm', 'pack1', 2400);
 		}
 
 		if ((userInfo.gameSettings && !userInfo.gameSettings.disableSounds) || !userInfo.gameSettings) {
 			if (gameInfo.general.status === 'Dealing roles..' && prevProps.gameInfo.general.status !== 'Dealing roles..') {
-				playSound('shuffle', 3000);
+				playSound('shuffle', 'pack1', 3000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'enactPolicy' && prevProps.gameInfo.gameState.audioCue !== 'enactPolicy') {
-				playSound('enactpolicy', 4000);
+				playSound('enactpolicy', 'pack1', 4000);
 			}
 
 			if (gameInfo.general.status === 'Waiting on presidential discard.' && prevProps.gameInfo.general.status !== 'Waiting on presidential discard.') {
-				playSound('presidentreceivespolicies', 3000);
+				playSound('presidentreceivespolicies', 'pack1', 3000);
 			}
 
 			if (gameInfo.general.status === 'Waiting on chancellor enactment.' && prevProps.gameInfo.general.status !== 'Waiting on chancellor enactment.') {
-				playSound('chancellorreceivespolicies', 2000);
+				playSound('chancellorreceivespolicies', 'pack1', 2000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'policyPeek' && prevProps.gameInfo.gameState.audioCue !== 'policyPeek') {
-				playSound('policypeek', 3000);
+				playSound('policypeek', 'pack1', 3000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'selectedExecution' && prevProps.gameInfo.gameState.audioCue !== 'selectedExecution') {
-				playSound('playershot', 11000);
+				playSound('playershot', 'pack1', 11000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'selectedInvestigate' && prevProps.gameInfo.gameState.audioCue !== 'selectedInvestigate') {
-				playSound('policyinvestigate', 11000);
+				playSound('policyinvestigate', 'pack1', 11000);
 			}
 
-			if (prevProps.gameInfo.general.status === 'President to select special election.' && gameInfo.general.status !== 'Waiting on chancellor enactment.') {
-				playSound('policyspecialelection', 9000);
+			if (
+				prevProps.gameInfo.general.status === 'President to select special election.' &&
+				gameInfo.general.status !== 'President to select special election.'
+			) {
+				playSound('policyspecialelection', 'pack1', 9000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'hitlerShot' && prevProps.gameInfo.gameState.audioCue !== 'hitlerShot') {
-				playSound('liberalswinhitlershot', 26000);
+				playSound('liberalswinhitlershot', 'pack1', 26000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'liberalsWin' && prevProps.gameInfo.gameState.audioCue !== 'liberalsWin') {
-				playSound('liberalswin', 19000);
+				playSound('liberalswin', 'pack1', 19000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'fascistsWin' && prevProps.gameInfo.gameState.audioCue !== 'fascistsWin') {
-				playSound('fascistswin', 19000);
+				playSound('fascistswin', 'pack1', 19000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'fascistsWinHitlerElected' && prevProps.gameInfo.gameState.audioCue !== 'fascistsWinHitlerElected') {
-				playSound('fascistswinhitlerelected', 11000);
+				playSound('fascistswinhitlerelected', 'pack1', 11000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'passedVeto' && prevProps.gameInfo.gameState.audioCue !== 'passedVeto') {
-				playSound('vetosucceeds', 10000);
+				playSound('vetosucceeds', 'pack1', 10000);
 			}
 		}
 
