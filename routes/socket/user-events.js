@@ -1484,6 +1484,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
+ * @param {boolean} skipCheck - true if there was an account lookup to find the IP
  */
 module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 	// Authentication Assured in routes.js
