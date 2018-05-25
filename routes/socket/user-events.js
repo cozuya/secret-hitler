@@ -1485,8 +1485,44 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handleModerationAction = (socket, passport, data) => {
+module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 	// Authentication Assured in routes.js
+
+	if (!skipCheck && !data.isReportResolveChange && (!data.ip || data.ip === '') && data.userName) {
+		// Check that the username is a valid IP, or failing that, get it from their last IP.
+
+		const userIsIPv4 = user => {
+			const valid = val => {
+				const v = parseInt(val);
+				if (isNaN(v)) return false;
+				return v >= 0 && v <= 255;
+			};
+
+			const data = user.split('.');
+			if (data.length !== 4) return false;
+			return valid(data[0]) && valid(data[1]) && valid(data[2]) && valid(data[3]);
+		};
+
+		const userIsIPv6 = user => {
+			// TODO: implement
+			// This actually shouldn't be needed for the time being, most of the internet still uses IPv4.
+			return false;
+		};
+
+		if (userIsIPv4(data.userName) || userIsIPv6(data.userName)) {
+			data.ip = data.userName;
+			data.userName = '';
+		} else {
+			// Need to wait for the response, which means re-calling the function with a flag set.
+			Account.findOne({ username: data.userName }, { lastConnectedIP: 1 }, function(err, acc) {
+				if (!err && acc) data.ip = acc.lastConnectedIP;
+				module.exports.handleModerationAction(socket, passport, data, true);
+			});
+			return;
+		}
+	}
+	console.log(data);
+	if ((!data.ip || data.ip === '') && (data.action === 'timeOut' || data.action === 'ipban')) return; // Failed to get a relevant IP, abort the action since it needs one.
 
 	const isSuperMod = EDITORS.includes(passport.user) || ADMINS.includes(passport.user);
 	const affectedSocketId = Object.keys(io.sockets.sockets).find(
