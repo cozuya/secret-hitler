@@ -13,7 +13,7 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'benjamin172'
 ]);
 
-module.exports.TRIALMODS = ['mara717', 'Tubadevil'];
+module.exports.TRIALMODS = ['waluigiwaro', 'mara717', 'Tubadevil'];
 
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
