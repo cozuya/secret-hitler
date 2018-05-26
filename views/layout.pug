@@ -79,7 +79,6 @@ html(lang="en")
 		section.signin-modal.ui.modal.small.segment.column
 			h2.header Sign in to your account
 			p.tou By playing here, you agree to follow the Terms of Use.
-			p.modal-warning Please note: this application currently works best in Chrome, Firefox, and Edge.  Users of Internet Explorer, and Safari may not have the best user experience.  This is being worked on and will be resolved soon.
 			form.ui.form(style="text-align: center;")
 				.field
 					.ui.left.icon.input
@@ -111,7 +110,6 @@ html(lang="en")
 		section.signup-modal.ui.modal.small.segment.column
 			h2.header Sign up for an account
 			p.tou By playing here, you agree to follow the #[a(href="/about#TOU", target="_blank") Terms of Use]. Players with less than 5 games played can not chat in general chat, chat as an observer, or make player reports.
-			p.modal-warning Please note: this application currently works best in Chrome, Firefox, and Edge.  Users of Internet Explorer, and Safari may not have the best user experience.  This is being worked on and will be resolved soon.
 			form.ui.form
 				.field
 					.ui.left.icon.input
@@ -129,9 +127,14 @@ html(lang="en")
 						input#signup-password2(placeholder="Repeat password", type="password", maxlength="255")
 					.ui.info.message.hidden
 				.field
+					.ui.left.icon.input
+						i.envelope.outline.icon
+						input#signup-email(placeholder="Email (OPTIONAL)", maxlength="255")
+					.ui.info.message.hidden
+				.field
 					label
 						input#private-player(type="checkbox", style="margin-right: 5px")
-						span Private game player only - your name will not be visible in the sidebar, you can't chat in general chat, you can't play in public games.
+						span Private game player only - select this if you only plan on playing in private games.  Your name will not be visible in the sidebar, you can't chat in general chat, and you can't play in public games.
 				//- .field
 				//- 	.ui.left.icon.input
 				//- 		i.mail.icon
@@ -154,5 +157,5 @@ html(lang="en")
 			script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")
 			script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
 			script(src="//cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js")
-			script(src="/scripts/site.js?abcde")
+			script(src="/scripts/site.js?abcdef")
 		block footer

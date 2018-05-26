@@ -124,7 +124,7 @@ module.exports = () => {
 			});
 		} else if (accountCreationDisabled.status) {
 			res.status(403).json({
-				message: 'Sorry, creating new accounts is temporarily disabled.'
+				message: 'Sorry, creating new accounts is temporarily disabled.  If you need an account created, please contact our moderators on discord.'
 			});
 		} else if (signupIP === '174.201.24.41' || signupIP === '199.231.178.151') {
 			res.status(401).json({

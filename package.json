@@ -3,7 +3,12 @@
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
 	"version": "0.14.2",
 	"license": "CC-BY-NC-SA-4.0",
-	"keywords": ["boardgame", "social deduction", "hidden roles", "secret hitler"],
+	"keywords": [
+		"boardgame",
+		"social deduction",
+		"hidden roles",
+		"secret hitler"
+	],
 	"repository": {
 		"url": "https://github.com/cozuya/secret-hitler.git",
 		"type": "git"
@@ -28,6 +33,8 @@
 		"lodash": "^4.17.4",
 		"mongoose": "^5.0.8",
 		"morgan": "^1.8.1",
+		"nodemailer": "^4.6.5",
+		"nodemailer-mailgun-transport": "^1.4.0",
 		"nodemon": "^1.17.1",
 		"option": "^0.2.3",
 		"passport": "^0.4.0",

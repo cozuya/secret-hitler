@@ -1,7 +1,7 @@
 const passport = require('passport'); // eslint-disable-line no-unused-vars
 const Account = require('../models/account');
-// const nodemailer = require('nodemailer');
-// const mg = require('nodemailer-mailgun-transport');
+const nodemailer = require('nodemailer');
+const mg = require('nodemailer-mailgun-transport');
 const _ = require('lodash');
 const fs = require('fs');
 const template = _.template(
