@@ -24,7 +24,7 @@ describe('Creategame', () => {
 			isVerifiedOnly: false,
 			timedSliderValue: [120]
 		};
-		const component = shallow(<Creategame />);
+		const component = shallow(<Creategame userList={{ list: [] }} userInfo={{ gameSettings: {} }} />);
 
 		expect(component.state()).toEqual(initialState);
 	});

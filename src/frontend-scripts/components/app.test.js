@@ -1,4 +1,9 @@
+import React from 'react'; // eslint-disable-line
 import { App } from './App';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 describe('App', () => {
 	it('should initialize correctly', () => {
@@ -6,7 +11,7 @@ describe('App', () => {
 			notesValue: '',
 			playerNotesValue: ''
 		};
-		const component = <App />;
+		const component = shallow(<App userInfo={{ gameSettings: {} }} />);
 
 		expect(component.state()).toEqual(initialState);
 	});

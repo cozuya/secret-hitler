@@ -8,7 +8,9 @@ describe('Cardflinger', () => {
 			isHovered: false,
 			hoveredClass: null
 		};
-		const component = shallow(<Cardflinger />);
+		const component = shallow(
+			<Cardflinger userInfo={{ userName: '' }} gameInfo={{ general: { status: '' }, cardFlingerState: {}, gameState: { phase: '' } }} />
+		);
 
 		expect(component.state()).toEqual(initialState);
 	});

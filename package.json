@@ -72,6 +72,8 @@
 		"clean-webpack-plugin": "^0.1.19",
 		"crypto": "^1.0.1",
 		"css-loader": "^0.28.11",
+		"enzyme": "^3.3.0",
+		"enzyme-adapter-react-16": "^1.1.1",
 		"eslint": "^4.8.0",
 		"eslint-config-google": "^0.9.1",
 		"eslint-config-prettier": "^2.3.0",
@@ -85,7 +87,8 @@
 		"html-loader": "^0.5.5",
 		"html-webpack-plugin": "^3.1.0",
 		"husky": "^0.14.3",
-		"jest-cli": "^21.2.1",
+		"jest": "^23.0.0",
+		"jest-cli": "^23.0.0",
 		"moment": "^2.18.1",
 		"node-notifier": "^5.1.2",
 		"node-sass": "^4.7.2",
@@ -95,8 +98,8 @@
 		"sass-loader": "^6.0.7",
 		"style-loader": "^0.20.3",
 		"uglifyjs-webpack-plugin": "^1.2.2",
-		"webpack": "^4.4.1",
-		"webpack-cli": "^2.0.13",
+		"webpack": "^4.9.1",
+		"webpack-cli": "^2.1.4",
 		"webpack-livereload-plugin": "^2.1.1"
 	},
 	"scripts": {
@@ -117,5 +120,11 @@
 		"precommit": "yarn format && git add -A",
 		"prepush": "yarn lint",
 		"lint": "esw src/ scripts/ routes/ webpack/ models/ iso/"
+	},
+	"jest": {
+		"setupTestFrameworkScriptFile": "<rootDir>/__test__/test-setup.js",
+		"moduleNameMapper": {
+			"\\.(css|scss)$": "<rootDir>/__test__/mocks/styleMock.js"
+		}
 	}
 }
