@@ -563,6 +563,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
 			experiencedMode: data.experiencedMode,
 			disableChat: data.disableChat,
+			isVerifiedOnly: data.isVerifiedOnly,
 			disableObserver: data.disableObserver && !data.isTourny,
 			// isTourny: data.isTourny, // temp
 			isTourny: false,
@@ -671,6 +672,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		socket.emit('updateSeatForUser');
 		socket.emit('gameUpdate', newGame);
 		socket.emit('joinGameRedirect', newGame.general.uid);
+		console.log(games);
 	});
 };
 

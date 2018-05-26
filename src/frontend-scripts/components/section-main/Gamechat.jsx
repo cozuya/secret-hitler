@@ -230,7 +230,7 @@ class Gamechat extends React.Component {
 			}
 		})();
 		const isStaff = ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName);
-		const user = this.props.userList.list.find(play => play.userName === userName);
+		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			return {

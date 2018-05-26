@@ -32,6 +32,7 @@ export default class Creategame extends React.Component {
 			casualgame: false,
 			blindMode: false,
 			timedMode: false,
+			isVerifiedOnly: false,
 			timedSliderValue: [120]
 		};
 	}
@@ -40,6 +41,15 @@ export default class Creategame extends React.Component {
 		const self = this;
 
 		$(this._select).dropdown();
+
+		$(this.verified).checkbox({
+			onChecked() {
+				self.setState({ isVerifiedOnly: true });
+			},
+			onUnchecked() {
+				self.setState({ isVerifiedOnly: false });
+			}
+		});
 
 		$(this.experiencedmode).checkbox({
 			onChecked() {
@@ -194,13 +204,13 @@ export default class Creategame extends React.Component {
 				gameName: $creategame.find('div.gamename input').val(),
 				flag: $creategame.find('div.flag input').val() || 'none',
 				minPlayersCount: this.state.sliderValues[0],
-				// gameCreatorBlacklist: userInfo.gameSettings.blacklist,
 				excludedPlayerCount,
 				maxPlayersCount: this.state.isTourny ? undefined : this.state.sliderValues[1],
 				experiencedMode: this.state.experiencedmode,
 				disableChat: this.state.disablechat,
 				disableObserver: this.state.disableobserver && !this.state.isTourny,
 				isTourny: this.state.isTourny,
+				isVerifiedOnly: this.state.isVerifiedOnly,
 				disableGamechat: this.state.disablegamechat,
 				rainbowgame: this.state.rainbowgame,
 				blindMode: this.state.blindMode,
@@ -1316,6 +1326,20 @@ export default class Creategame extends React.Component {
 									</div>
 								</div>
 							)}
+					</div>
+					<div className="row">
+						<div className="four wide column">
+							<i className="big hide icon" />
+							<h4 className="ui header">Verified - only email-verified players can play in this game.</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.verified = c;
+								}}
+							>
+								<input type="checkbox" name="verified" defaultChecked={false} />
+							</div>
+						</div>
 					</div>
 				</div>
 

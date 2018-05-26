@@ -77,6 +77,8 @@ const DisplayLobbies = props => {
 		let casualGameTooltip;
 		let timedMode;
 		let timedModeTooltip;
+		let isVerifiedOnly;
+		let isVerifiedOnlyTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
@@ -149,6 +151,11 @@ const DisplayLobbies = props => {
 			experiancedModeTooltip = 'Speed Mode';
 		}
 
+		if (game.isVerifiedOnly) {
+			isVerifiedOnly = <i className="game icon" />;
+			isVerifiedOnlyTooltip = 'Only email-verified players can sit in thei game.';
+		}
+
 		if (game.rainbowgame) {
 			rainbowgame = <img style={{ maxHeight: '14px', marginBottom: '-2px' }} src="../images/rainbow.png" />;
 			rainbowgameTooltip = 'Experienced Game';
@@ -195,6 +202,9 @@ const DisplayLobbies = props => {
 				</span>
 				<span data-tooltip={timedModeTooltip} data-inverted="">
 					{timedMode}
+				</span>
+				<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
+					{isVerifiedOnly}
 				</span>
 			</div>
 		);

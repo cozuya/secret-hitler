@@ -1,14 +1,14 @@
-const passport = require('passport'), // eslint-disable-line no-unused-vars
-	Account = require('../models/account'),
-	nodemailer = require('nodemailer'),
-	mg = require('nodemailer-mailgun-transport'),
-	_ = require('lodash'),
-	fs = require('fs'),
-	template = _.template(
-		fs.readFileSync('./routes/reset-password-email.template', {
-			encoding: 'UTF-8'
-		})
-	);
+const passport = require('passport'); // eslint-disable-line no-unused-vars
+const Account = require('../models/account');
+// const nodemailer = require('nodemailer');
+// const mg = require('nodemailer-mailgun-transport');
+const _ = require('lodash');
+const fs = require('fs');
+const template = _.template(
+	fs.readFileSync('./routes/reset-password-email.template', {
+		encoding: 'UTF-8'
+	})
+);
 
 let tokens = [];
 
@@ -55,21 +55,21 @@ module.exports = {
 			}
 
 			if (account) {
-				const tomorrow = new Date(),
-					{ username } = account,
-					token = `${Math.random()
-						.toString(36)
-						.substring(2)}${Math.random()
-						.toString(36)
-						.substring(2)}`,
-					nmMailgun = nodemailer.createTransport(
-						mg({
-							auth: {
-								api_key: process.env.MGKEY,
-								domain: 'todo'
-							}
-						})
-					);
+				const tomorrow = new Date();
+				const { username } = account;
+				const token = `${Math.random()
+					.toString(36)
+					.substring(2)}${Math.random()
+					.toString(36)
+					.substring(2)}`;
+				const nmMailgun = nodemailer.createTransport(
+					mg({
+						auth: {
+							api_key: process.env.MGKEY,
+							domain: 'todo'
+						}
+					})
+				);
 
 				tomorrow.setDate(tomorrow.getDate() + 1);
 				account.resetPassword.resetToken = token;
@@ -82,9 +82,9 @@ module.exports = {
 
 				nmMailgun.sendMail(
 					{
-						from: 'Secret Hitler <admin@todo>',
+						from: 'Secret Hitler.io <chris.v.ozols@gmail.com>',
 						// to: account.verification.email,
-						to: 'todo@mailinator.com',
+						to: 'shiotestemail@mailinator.com',
 						subject: 'Secret Hitler - reset your password',
 						'h:Reply-To': 'chris.v.ozols@gmail.com',
 						html: template({ username, token })

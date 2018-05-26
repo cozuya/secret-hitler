@@ -105,6 +105,8 @@ class Tracks extends React.Component {
 		let casualgameTooltip;
 		let timedMode;
 		let timedModeTooltip;
+		let isVerifiedOnly;
+		let isVerifiedOnlyTooltip;
 
 		{
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
@@ -132,9 +134,9 @@ class Tracks extends React.Component {
 			disableChatTooltip = 'Player Chat Disabled';
 		}
 
-		if (game.privateOnly) {
-			privateOnly = <i className="spy icon" />;
-			privateOnlyTooltip = 'Private game only - only anonymous players may be seated here.';
+		if (game.isVerifiedOnly) {
+			isVerifiedOnly = <i className="spy icon" />;
+			isVerifiedOnlyTooltip = 'Only email-verified players can sit in this game.';
 		}
 
 		if (!game.privateOnly && game.private) {
@@ -207,6 +209,9 @@ class Tracks extends React.Component {
 				</span>
 				<span>
 					<Popup inverted trigger={timedMode} content={timedModeTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
 				</span>
 			</div>
 		);

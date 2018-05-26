@@ -3,8 +3,8 @@ const Account = require('../models/account');
 const Profile = require('../models/profile/index');
 const BannedIP = require('../models/bannedIP');
 const { ipbansNotEnforced, accountCreationDisabled } = require('./socket/models');
-// verifyAccount = require('./verify-account'),
-// resetPassword = require('./reset-password'),
+const verifyAccount = require('./verify-account');
+const resetPassword = require('./reset-password');
 const blacklistedWords = require('../iso/blacklistwords');
 /**
  * @param {object} req - express request object.
@@ -20,8 +20,8 @@ const ensureAuthenticated = (req, res, next) => {
 };
 
 module.exports = () => {
-	// verifyAccount.setRoutes();
-	// resetPassword.setRoutes();
+	verifyAccount.setRoutes();
+	resetPassword.setRoutes();
 
 	app.get('/account', ensureAuthenticated, (req, res) => {
 		res.render('page-account', {

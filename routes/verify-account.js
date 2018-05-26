@@ -1,14 +1,14 @@
-const passport = require('passport'), // eslint-disable-line no-unused-vars
-	Account = require('../models/account'),
-	nodemailer = require('nodemailer'),
-	mg = require('nodemailer-mailgun-transport'),
-	_ = require('lodash'),
-	fs = require('fs'),
-	template = _.template(
-		fs.readFileSync('./routes/account-verification-email.template', {
-			encoding: 'UTF-8'
-		})
-	);
+const passport = require('passport'); // eslint-disable-line no-unused-vars
+const Account = require('../models/account');
+// const nodemailer = require('nodemailer');
+// const mg = require('nodemailer-mailgun-transport');
+const _ = require('lodash');
+const fs = require('fs');
+const template = _.template(
+	fs.readFileSync('./routes/account-verification-email.template', {
+		encoding: 'UTF-8'
+	})
+);
 
 let tokens = [];
 
@@ -53,20 +53,20 @@ module.exports = {
 				console.log(err);
 			}
 
-			const tomorrow = new Date(),
-				token = `${Math.random()
-					.toString(36)
-					.substring(2)}${Math.random()
-					.toString(36)
-					.substring(2)}`,
-				nmMailgun = nodemailer.createTransport(
-					mg({
-						auth: {
-							api_key: process.env.MGKEY,
-							domain: 'todo'
-						}
-					})
-				);
+			const tomorrow = new Date();
+			const token = `${Math.random()
+				.toString(36)
+				.substring(2)}${Math.random()
+				.toString(36)
+				.substring(2)}`;
+			const nmMailgun = nodemailer.createTransport(
+				mg({
+					auth: {
+						api_key: process.env.MGKEY,
+						domain: 'todo'
+					}
+				})
+			);
 
 			tomorrow.setDate(tomorrow.getDate() + 1);
 			account.verification.verificationToken = token;
@@ -79,11 +79,11 @@ module.exports = {
 
 			nmMailgun.sendMail(
 				{
-					from: 'Secret Hitler <admin@todo>',
+					from: 'Secret Hitler.io <chris.v.ozols@gmail.com>',
 					html: template({ username, token }),
 					// to: email,
 					// html: `<a href="https://todo/verify-account/${username}/${token}">click here</a>`
-					to: 'todo@mailinator.com',
+					to: 'shiotestemail@mailinator.com',
 					subject: 'Secret Hitler - confirm your account',
 					'h:Reply-To': 'chris.v.ozols@gmail.com'
 				},
