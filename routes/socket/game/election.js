@@ -808,21 +808,21 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 		} else {
 			// hitler
 			if (discarded === 'fascist' && track4blue) {
-				if (passedNicer === 'BB') {
+				if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
 					// forced 5th blue as hit
 					makeReport(
-						`Player ${president.userName} in seat ${presidentIndex + 1} is hitler, got BBR with 4 blues on the track, and forced blues.`,
+						`Player ${president.userName} in seat ${presidentIndex +
+							1} is hitler, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
+						game.general.uid
+					);
+				} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
+					// offered 5th blue choice as hit
+					makeReport(
+						`Player ${president.userName} in seat ${presidentIndex +
+							1} is hitler, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
 						game.general.uid
 					);
 				}
-				// leaving this check commented out, as it's possible hit knows the chancellor is fascist
-				/* else if (passedNicer === 'BR') {
-					// offered 5th blue choice as hit
-					makeReport(
-						`Player ${president.userName} in seat ${presidentIndex + 1} is hitler, got BRR with 4 blues on the track, and offered choice.`,
-						game.general.uid
-					);
-				}*/
 			}
 		}
 	}
