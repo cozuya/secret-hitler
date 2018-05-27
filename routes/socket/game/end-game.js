@@ -9,6 +9,7 @@ const debug = require('debug')('game:summary');
 const animals = require('../../../utils/animals');
 const adjectives = require('../../../utils/adjectives');
 const _ = require('lodash');
+const { makeReport } = require('../report.js');
 
 /**
  * @param {object} game - game to act on.
@@ -70,6 +71,12 @@ const saveGame = game => {
  * @param {string} winningTeamName - name of the team that won this game.
  */
 module.exports.completeGame = (game, winningTeamName) => {
+	if (game && game.unsentReports) {
+		game.unsentReports.forEach(report => {
+			makeReport(report, game);
+		});
+	}
+
 	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
 	const winningPlayerNames = winningPrivatePlayers.map(player => player.userName);
 	const { seatedPlayers } = game.private;
