@@ -178,6 +178,9 @@ module.exports = () => {
 									if (err) {
 										return next(err);
 									}
+									if (email) {
+										verifyAccount.sendToken(username, email);
+									}
 
 									passport.authenticate('local')(req, res, () => {
 										const newPlayerBan = new BannedIP({
