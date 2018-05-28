@@ -575,10 +575,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 			(game.private.currentChancellorOptions[0] === 'liberal' || game.private.currentChancellorOptions[1] === 'liberal')
 		) {
 			// Liberal chancellor chose to play fascist, probably throwing.
-			makeReport(
-				`Player ${chancellor.userName} in seat ${chancellorIndex + 1} is liberal, was given choice as chancellor, and played fascist.`,
-				game.general.uid
-			);
+			makeReport(`Player ${chancellor.userName} in seat ${chancellorIndex + 1} is liberal, was given choice as chancellor, and played fascist.`, game);
 		}
 		if (
 			chancellor.role.team === 'fascist' &&
@@ -590,7 +587,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 			makeReport(
 				`Player ${chancellor.userName} in seat ${chancellorIndex +
 					1} is fascist, was given choice as chancellor with 4 blues on the track, and played liberal.`,
-				game.general.uid
+				game
 			);
 		}
 	}
@@ -765,24 +762,15 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 				if (track4blue) {
 					if (passedNicer === 'RR') {
 						// tossed only blue on 4 blues
-						makeReport(
-							`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with 4 blues on the track, and tossed the blue.`,
-							game.general.uid
-						);
+						makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with 4 blues on the track, and tossed the blue.`, game);
 					} else if (passedNicer === 'BR') {
 						// did not force 5th blue
-						makeReport(
-							`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR with 4 blues on the track, and did not force.`,
-							game.general.uid
-						);
+						makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR with 4 blues on the track, and did not force.`, game);
 					}
 				} else if (!presGetsPower) {
 					if (passedNicer === 'RR') {
 						// tossed only blue with no benefit
-						makeReport(
-							`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with no power on red, and tossed the blue.`,
-							game.general.uid
-						);
+						makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with no power on red, and tossed the blue.`, game);
 					}
 				}
 			}
@@ -794,35 +782,35 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 					makeReport(
 						`Player ${president.userName} in seat ${presidentIndex +
 							1} is fascist, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
-						game.general.uid
+						game
 					);
 				} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
 					// offered 5th blue choice as fas
 					makeReport(
 						`Player ${president.userName} in seat ${presidentIndex +
 							1} is fascist, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
-						game.general.uid
+						game
 					);
 				}
 			}
 		} else {
 			// hitler
 			if (discarded === 'fascist' && track4blue) {
-				if (passedNicer === 'BB') {
+				if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
 					// forced 5th blue as hit
 					makeReport(
-						`Player ${president.userName} in seat ${presidentIndex + 1} is hitler, got BBR with 4 blues on the track, and forced blues.`,
-						game.general.uid
+						`Player ${president.userName} in seat ${presidentIndex +
+							1} is hitler, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
+						game
 					);
-				}
-				// leaving this check commented out, as it's possible hit knows the chancellor is fascist
-				/* else if (passedNicer === 'BR') {
+				} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
 					// offered 5th blue choice as hit
 					makeReport(
-						`Player ${president.userName} in seat ${presidentIndex + 1} is hitler, got BRR with 4 blues on the track, and offered choice.`,
-						game.general.uid
+						`Player ${president.userName} in seat ${presidentIndex +
+							1} is hitler, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
+						game
 					);
-				}*/
+				}
 			}
 		}
 	}
