@@ -222,12 +222,12 @@ module.exports = () => {
 					let unbannedTime;
 					const ip = ips[ips.length - 1];
 
-					const ip2 =
+					/* const ip2 =
 						req.headers['x-real-ip'] ||
 						req.headers['X-Real-IP'] ||
 						req.headers['X-Forwarded-For'] ||
 						req.headers['x-forwarded-for'] ||
-						req.connection.remoteAddress;
+						req.connection.remoteAddress;*/
 
 					if (err) {
 						return next(err);
