@@ -1379,6 +1379,25 @@ module.exports.handleAddNewGameChat = (socket, passport, data) => {
 			console.log(e, 'caught exception in ping chat');
 		}
 	} else if (!pinged) {
+		const lastMessage = game.chats
+			.filter(chat => !chat.gameChat)
+			.filter(chat => chat.userName === user.userName)
+			.reduce(
+				(acc, cur) => {
+					return acc.timestamp > cur.timestamp ? acc : cur;
+				},
+				{ timestamp: new Date(0) }
+			);
+
+		if (lastMessage.chat) {
+			let leniancy; // How much time (in seconds) must pass before allowing the message.
+			if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 1.5;
+			else leniancy = 0.25;
+
+			const timeSince = data.timestamp - lastMessage.timestamp;
+			if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
+		}
+
 		data.userName = passport.user;
 		game.chats.push(data);
 
@@ -1419,6 +1438,23 @@ module.exports.handleNewGeneralChat = (socket, passport, data) => {
 		return;
 	}
 
+	const curTime = new Date();
+	const lastMessage = generalChats.list.filter(chat => chat.userName === user.userName).reduce(
+		(acc, cur) => {
+			return acc.time > cur.time ? acc : cur;
+		},
+		{ time: new Date(0) }
+	);
+
+	if (lastMessage.chat) {
+		let leniancy; // How much time (in seconds) must pass before allowing the message.
+		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 3;
+		else leniancy = 0.5;
+
+		const timeSince = curTime - lastMessage.time;
+		if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
+	}
+
 	if (generalChatCount === 100) {
 		const chats = new Generalchats({ chats: generalChats.list });
 
@@ -1430,7 +1466,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data) => {
 	if (user.wins > 0 || user.losses > 0) {
 		generalChatCount++;
 		const newChat = {
-			time: new Date(),
+			time: curTime,
 			chat: data.chat,
 			userName: passport.user
 		};
