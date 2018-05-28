@@ -48,6 +48,12 @@ module.exports = () => {
 		});
 	});
 
+	app.post('/account/delete-account', passport.authenticate('local'), (req, res) => {
+		Account.deleteOne({ username: req.user.username }).then(() => {
+			res.send();
+		});
+	});
+
 	// app.post('/account/change-email', ensureAuthenticated, (req, res) => {
 	// 	const { newEmail, newEmailConfirm } = req.body,
 	// 		{ user } = req;
@@ -125,10 +131,6 @@ module.exports = () => {
 		} else if (accountCreationDisabled.status) {
 			res.status(403).json({
 				message: 'Sorry, creating new accounts is temporarily disabled.  If you need an account created, please contact our moderators on discord.'
-			});
-		} else if (signupIP === '174.201.24.41' || signupIP === '199.231.178.151') {
-			res.status(401).json({
-				message: 'Beth, seek serious mental health counseling.'
 			});
 		} else {
 			let doesContainBadWord = false;
@@ -234,21 +236,6 @@ module.exports = () => {
 					if (ip) {
 						date = new Date().getTime();
 						unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
-					}
-
-					if (
-						ip === '50.202.175.243' ||
-						ip2 === '50.202.175.243' ||
-						ip === '174.201.24.41' ||
-						ip === '199.231.178.151' ||
-						ip2 === '174.201.24.41' ||
-						ip2 === '199.231.178.151'
-					) {
-						res.status(401).json({
-							message: 'Seek serious mental health counseling.'
-						});
-
-						return;
 					}
 
 					if (ip && unbannedTime > date) {

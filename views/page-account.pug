@@ -2,22 +2,25 @@ extends layout
 block content
 	.ui.container.howtoplay-container
 		h1.ui.centered.header My account
-		h3.ui.centered.header Account verification status: 
+		h3.ui.centered.header(style="color: #e36248; margin: 0") Account verification status: 
 			if verified
-				span.verified-yes Verified
+				span.verified-yes(style="color: teal") Verified
 			else
-				span.verified-no Not verified
+				span.verified-no(style="color: bisque") Not verified
 			if email
-				p.current-email Current Email: 
-					span(style="color: blue")
+				p.current-email(style="color: #e36248; margin: 5px auto 0;") Current Email: 
+					span(style="color: darkorange")
 						= email
 				button#change-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your email address
 				if !verified
 					button#request-verification.ui.primary.button(style="display: block; margin: 5px auto 0;") Request a new verification email
 			else
 				button#add-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Add an email address (sends verification email)
+		
 
-		button#change-password.ui.primary.button(style="display: block; margin: 0 auto;") Change your password
+		button#change-password.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your password
+
+		button#delete-account.ui.primay.button(style="display: block; margin: 5px auto 0; background: red; color: white") Delete your account
 
 	section.passwordchange-modal.ui.modal.small.segment.column
 		h2.header Change your password
@@ -58,13 +61,15 @@ block content
 		p Please check your email to verify your account.
 
 	section.deleteaccount-modal.ui.modal.small.segment.column
-		h2.header Delete your account
+		h2.header Delete account 
+			span#delete-account-name
+				= username
 		.ui.warning.message This cannot be undone.
 		form.ui.form
 			.field
 				.ui.left.icon.input
 					i.lock.icon
-					input#deleteaccount-password(placeholder="Your current password")
+					input#deleteaccount-password(placeholder="Your current password", type="password")
 			button.ui.primary.button.fluid.large#deleteaccount-submit Submit
 			.ui.dimmer.inverted
 				.ui.text.loader Deleting your account..

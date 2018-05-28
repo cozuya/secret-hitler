@@ -322,14 +322,13 @@ $(document).ready(function() {
 	});
 
 	$('button#deleteaccount-submit').on('click', function(event) {
-		return; // todo-release
 		event.preventDefault();
 
 		var password = $('#deleteaccount-password').val(),
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
 			$successMessage = $errMessage.next(),
-			data = JSON.stringify({ password: password });
+			data = JSON.stringify({ username: $('#delete-account-name').text(), password: password });
 
 		$loader.addClass('active');
 
@@ -349,7 +348,7 @@ $(document).ready(function() {
 						$errMessage.addClass('hidden');
 					}
 				},
-				400: function() {
+				401: function() {
 					$loader.removeClass('active');
 					$errMessage.text('Your password did not match.').removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
