@@ -1851,6 +1851,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 
 						if (game) {
 							games.splice(games.indexOf(game), 1);
+							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}
 					} else if (isSuperMod && data.action.type) {
