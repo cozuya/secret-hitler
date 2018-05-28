@@ -40,6 +40,7 @@ export class App extends React.Component {
 		};
 
 		this.prevHash = '';
+		this.lastReconnectAttempt = new Date();
 	}
 
 	compononentDidUpdate() {
@@ -114,6 +115,18 @@ export class App extends React.Component {
 
 		socket.on('userList', list => {
 			dispatch(updateUserList(list));
+			const now = new Date();
+			const since = now - this.lastReconnectAttempt;
+			if (since > 1000*5) {
+				this.lastReconnectAttempt = now;
+				const { userInfo } = this.props;
+				if (userInfo && userInfo.userName) {
+					if (!list.list.map(user => user.userName).includes(userInfo.userName)) {
+						console.log('Detected own user not in list, attempting to reconnect...');
+						socket.emit('getUserGameSettings');
+					}
+				}
+			}
 		});
 
 		socket.on('updateSeatForUser', () => {

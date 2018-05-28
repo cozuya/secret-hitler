@@ -133,6 +133,7 @@ module.exports.sendUserGameSettings = socket => {
 				userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
 				userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
 				userList.push(userListInfo);
+				sendUserList();
 			}
 
 			getProfile(passport.user);
