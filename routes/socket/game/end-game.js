@@ -73,7 +73,7 @@ const saveGame = game => {
 module.exports.completeGame = (game, winningTeamName) => {
 	if (game && game.unsentReports) {
 		game.unsentReports.forEach(report => {
-			makeReport(report, game);
+			makeReport(report, game, true);
 		});
 	}
 
