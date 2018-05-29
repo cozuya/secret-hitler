@@ -1612,8 +1612,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 					Account.findOne({ username })
 						.then(account => {
 							if (account) {
-								account.hash = crypto.randomBytes(20).toString('hex');
-								account.salt = crypto.randomBytes(20).toString('hex');
+								// account.hash = crypto.randomBytes(20).toString('hex');
+								// account.salt = crypto.randomBytes(20).toString('hex');
 								account.isBanned = true;
 								account.save(() => {
 									const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);

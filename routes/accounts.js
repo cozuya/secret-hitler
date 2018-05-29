@@ -239,8 +239,9 @@ module.exports = () => {
 					}
 
 					if (ip && unbannedTime > date) {
-						res.status(401).json({
+						res.status(403).json({
 							message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
+							// TODO: include the reason moderators provided for the IP ban, if it exists
 						});
 					} else {
 						return next();
@@ -253,6 +254,14 @@ module.exports = () => {
 			Account.findOne({
 				username: req.user.username
 			}).then(player => {
+				if (player.isBanned) {
+					res.status(403).json({
+						message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
+						// TODO: include the reason moderators provided for the account ban, if it exists
+					});
+					return;
+				}
+
 				const ip =
 					req.headers['x-real-ip'] ||
 					req.headers['X-Real-IP'] ||

@@ -63,7 +63,7 @@ export default () => {
 
 					submitErr(message);
 				},
-				403: function(xhr) {
+				403(xhr) {
 					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
 
 					submitErr(message);
@@ -134,6 +134,9 @@ export default () => {
 				},
 				401() {
 					submitErr('Sorry, that was not the correct password for that username.');
+				},
+				403(xhr) {
+					submitErr(xhr.responseJSON.message);
 				}
 			}
 		});
