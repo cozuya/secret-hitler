@@ -1,6 +1,6 @@
-const { EDITORS, ADMINS, MODERATORS } = require('../../src/frontend-scripts/constants');
+const { EDITORS, ADMINS, MODERATORS, TRIALMODS } = require('../../src/frontend-scripts/constants');
 const https = require('https');
-const AEM = [...EDITORS, ...ADMINS, ...MODERATORS];
+const AEM = [...EDITORS, ...ADMINS, ...MODERATORS, ...TRIALMODS];
 const checkAEM = names => {
 	return names.some(n => AEM.includes(n));
 };
