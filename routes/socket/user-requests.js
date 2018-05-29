@@ -109,20 +109,6 @@ module.exports.sendModInfo = (socket, count) => {
 /**
  * @param {object} socket - user socket reference.
  */
-const sendUserList = (module.exports.sendUserList = socket => {
-	// eslint-disable-line one-var
-	if (socket) {
-		socket.emit('userList', {
-			list: formattedUserList()
-		});
-	} else {
-		userListEmitter.send = true;
-	}
-});
-
-/**
- * @param {object} socket - user socket reference.
- */
 module.exports.sendUserGameSettings = socket => {
 	const { passport } = socket.handshake.session;
 	if (!passport || !passport.user) {
