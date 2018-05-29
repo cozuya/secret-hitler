@@ -55,6 +55,21 @@ block content
 				.ui.text.loader Changing your email..
 			.ui.negative.hidden.message
 			.ui.hidden.message Successfully changed your email!
+		
+	section.emailadd-modal.ui.modal.small.segment.column
+		h2.header Add an email address for account 
+			span#emailadd-account-name
+				= username
+		form.ui.form
+			.field
+				.ui.left.icon.input
+					i.lock.icon
+					input#emailadd-email(placeholder="Email")
+			button.ui.primary.button.fluid.large#emailadd-submit Submit
+			.ui.dimmer.inverted
+				.ui.text.loader Adding your email and sending a verification email..
+			.ui.negative.hidden.message
+			.ui.hidden.message Successfully added an email, please check it for your verification link.
 
 	section.requestemail-modal.ui.modal.small.segment.column
 		h2.header Email sent!

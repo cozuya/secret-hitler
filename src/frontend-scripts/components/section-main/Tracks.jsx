@@ -358,6 +358,11 @@ class Tracks extends React.Component {
 	}
 }
 
+Tracks.defaultProps = {
+	gameInfo: {},
+	userInfo: {}
+};
+
 Tracks.propTypes = {
 	onSeatingUser: PropTypes.func,
 	userInfo: PropTypes.object,

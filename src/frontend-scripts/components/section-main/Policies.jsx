@@ -85,8 +85,15 @@ const Policies = props => {
 	);
 };
 
+Policies.defaultProps = {
+	gameInfo: {},
+	userInfo: {}
+};
+
 Policies.propTypes = {
-	gameInfo: PropTypes.object
+	gameInfo: PropTypes.object,
+	userInfo: PropTypes.object,
+	socket: PropTypes.object
 };
 
 export default Policies;

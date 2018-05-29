@@ -49,20 +49,20 @@ class Settings extends React.Component {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
 
 		this.setState({
-			fontChecked: gameSettings.fontFamily,
+			fontChecked: gameSettings.fontFamily || 'comfortaa',
 			fontSize: gameSettings.fontSize ? gameSettings.fontSize : 16,
-			enableTimestamps: gameSettings.enableTimestamps,
-			disableHelpMessages: gameSettings.disableHelpMessages,
-			disableHelpIcons: gameSettings.disableHelpIcons,
-			enableRightSidebarInGame: gameSettings.enableRightSidebarInGame,
-			disablePlayerColorsInChat: gameSettings.disablePlayerColorsInChat,
-			disableCrowns: gameSettings.disableCrowns,
-			disablePlayerCardbacks: gameSettings.disablePlayerCardbacks,
-			disableConfetti: gameSettings.disableConfetti,
-			disableSeasonal: gameSettings.disableSeasonal,
-			disableElo: gameSettings.disableElo,
-			disableSounds: gameSettings.disableSounds,
-			isPrivate: gameSettings.isPrivate
+			enableTimestamps: gameSettings.enableTimestamps || '',
+			disableHelpMessages: gameSettings.disableHelpMessages || '',
+			disableHelpIcons: gameSettings.disableHelpIcons || '',
+			enableRightSidebarInGame: gameSettings.enableRightSidebarInGame || '',
+			disablePlayerColorsInChat: gameSettings.disablePlayerColorsInChat || '',
+			disableCrowns: gameSettings.disableCrowns || '',
+			disablePlayerCardbacks: gameSettings.disablePlayerCardbacks || '',
+			disableConfetti: gameSettings.disableConfetti || '',
+			disableSeasonal: gameSettings.disableSeasonal || '',
+			disableElo: gameSettings.disableElo || '',
+			disableSounds: gameSettings.disableSounds || '',
+			isPrivate: gameSettings.isPrivate || ''
 		});
 	}
 
@@ -442,7 +442,7 @@ class Settings extends React.Component {
 											return <img src={this.state.isUploaded} />;
 										}
 
-										if (gameSettings.customCardback) {
+										if (gameSettings && gameSettings.customCardback) {
 											return (
 												<div
 													className="current-cardback"
@@ -498,6 +498,11 @@ class Settings extends React.Component {
 		);
 	}
 }
+
+Settings.defaultProps = {
+	gameInfo: {},
+	userInfo: {}
+};
 
 Settings.propTypes = {
 	userInfo: PropTypes.object,

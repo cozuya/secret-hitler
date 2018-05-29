@@ -419,7 +419,7 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-updateSeatedUser = (socket, passport, data) => {
+const updateSeatedUser = (socket, passport, data) => {
 	// Authentication Assured in routes.js
 	// In-game Assured in routes.js
 	const game = games.find(el => el.general.uid === data.uid);

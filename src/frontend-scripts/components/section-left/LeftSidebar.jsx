@@ -2,10 +2,8 @@ import React from 'react'; // eslint-disable-line
 import SidebarGame from './SidebarGame.jsx';
 import PropTypes from 'prop-types';
 
-const LeftSidebar = props => {
+const LeftSidebar = ({ userInfo, midSection, gameList, onCreateGameButtonClick, socket }) => {
 	const renderGameList = () => {
-		const { gameList } = props;
-
 		if (gameList.length) {
 			return gameList
 				.sort((a, b) => {
@@ -44,15 +42,15 @@ const LeftSidebar = props => {
 
 					return a.uid > b.uid ? 1 : -1;
 				})
-				.map((game, index) => <SidebarGame key={index} game={game} socket={props.socket} userInfo={props.userInfo} />);
+				.map((game, index) => <SidebarGame key={index} game={game} socket={socket} userInfo={userInfo} />);
 		}
 	};
 
 	return (
 		<section className="section-left three wide column leftsidebar">
 			{(() => {
-				const { userName } = props.userInfo;
-				const gameBeingCreated = props.midSection === 'createGame';
+				const { userName } = userInfo;
+				const gameBeingCreated = midSection === 'createGame';
 
 				return userName && !gameBeingCreated ? (
 					<a className="ui button primary" href="#/creategame">
@@ -70,6 +68,11 @@ const LeftSidebar = props => {
 			</div>
 		</section>
 	);
+};
+
+LeftSidebar.defaultProps = {
+	userInfo: {},
+	gameList: []
 };
 
 LeftSidebar.propTypes = {

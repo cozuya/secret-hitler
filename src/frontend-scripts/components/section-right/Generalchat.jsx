@@ -252,6 +252,11 @@ export default class Generalchat extends React.Component {
 	}
 }
 
+Generalchat.defaultProps = {
+	generalChats: {},
+	userInfo: {}
+};
+
 Generalchat.propTypes = {
 	gameInfo: PropTypes.object,
 	userInfo: PropTypes.object,

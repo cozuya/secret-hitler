@@ -2,8 +2,7 @@ import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-const SidebarGame = props => {
-	const { game } = props;
+const SidebarGame = ({ game, socket }) => {
 	const gameClasses = () => {
 		let classes = 'ui vertical segment';
 
@@ -54,7 +53,7 @@ const SidebarGame = props => {
 		<div
 			data-uid={game.uid}
 			onClick={() => {
-				props.socket.emit('getGameInfo', game.uid);
+				socket.emit('getGameInfo', game.uid);
 			}}
 			className={gameClasses()}
 		>
@@ -76,7 +75,13 @@ const SidebarGame = props => {
 									? 'R67'
 									: game.rebalance6p && game.rebalance9p
 										? 'R69'
-										: game.rebalance7p && game.rebalance9p ? 'R79' : game.rebalance6p ? 'R6' : game.rebalance7p ? 'R7' : 'R9'}
+										: game.rebalance7p && game.rebalance9p
+											? 'R79'
+											: game.rebalance6p
+												? 'R6'
+												: game.rebalance7p
+													? 'R7'
+													: 'R9'}
 						</div>
 					)}
 					<div
@@ -169,8 +174,7 @@ const SidebarGame = props => {
 
 SidebarGame.propTypes = {
 	game: PropTypes.object,
-	socket: PropTypes.object,
-	userInfo: PropTypes.object
+	socket: PropTypes.object
 };
 
 export default SidebarGame;

@@ -222,6 +222,13 @@ export class GamesList extends React.Component {
 		);
 	}
 }
+
+GamesList.defaultProps = {
+	gameFilter: {},
+	userInfo: {},
+	gameList: []
+};
+
 GamesList.propTypes = {
 	userInfo: PropTypes.object,
 	midSection: PropTypes.string,

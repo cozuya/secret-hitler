@@ -195,6 +195,45 @@ $(document).ready(function() {
 		});
 	});
 
+	$('button#emailadd-submit').on('click', function(event) {
+		event.preventDefault();
+
+		var username = $('#emailadd-account-name').val(),
+			email = $('#emailadd-email').val(),
+			$loader = $(this).next(),
+			$message = $(this)
+				.next()
+				.next(),
+			submitErr = function(message) {
+				$loader.removeClass('active');
+				$message.text(message).removeClass('hidden');
+			};
+
+		$loader.addClass('active');
+
+		$.ajax({
+			url: '/account/add-email',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: JSON.stringify({ email: email, username: username }),
+			statusCode: {
+				200: function() {
+					$message.addClass('hidden');
+					$loader.removeClass('active');
+					$('.emailadd-modal .ui.info.hidden.message')
+						.removeClass('hidden')
+						.html("We've sent you a verification email, please follow the link inside to verify your account.");
+				},
+				400: function() {
+					submitErr('Sorry, that request did not look right.');
+				},
+				401: function() {
+					submitErr("Sorry, we don't have an account associated with that verified email address.");
+				}
+			}
+		});
+	});
+
 	$('a#logout').on('click', function(event) {
 		event.preventDefault();
 

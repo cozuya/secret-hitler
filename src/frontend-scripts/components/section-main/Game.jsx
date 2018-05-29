@@ -143,6 +143,11 @@ export default class Game extends React.Component {
 	}
 }
 
+Game.defaultProps = {
+	gameInfo: {},
+	userInfo: {}
+};
+
 Game.propTypes = {
 	onSeatingUser: PropTypes.func,
 	userInfo: PropTypes.object,
