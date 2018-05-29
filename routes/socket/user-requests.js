@@ -59,6 +59,20 @@ module.exports.torIps = torIps;
 
 /**
  * @param {object} socket - user socket reference.
+ */
+const sendUserList = (module.exports.sendUserList = socket => {
+	// eslint-disable-line one-var
+	if (socket) {
+		socket.emit('userList', {
+			list: formattedUserList()
+		});
+	} else {
+		userListEmitter.send = true;
+	}
+});
+
+/**
+ * @param {object} socket - user socket reference.
  * @param {number} count - depth of modinfo requested.
  */
 module.exports.sendModInfo = (socket, count) => {
