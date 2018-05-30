@@ -176,6 +176,7 @@ export default class Moderation extends React.Component {
 		const { userList } = this.state;
 		const ipCounts = {};
 		const ips = userList.map(user => user.ip);
+		const bannedips = this.state.log.filter(log => log.actionTaken === 'ban').map(log => log.ip);
 		const splitIP = ip => {
 			const idx = ip.lastIndexOf('.');
 			return [ip.substring(0, idx - 1), ip.substring(idx + 1)];
@@ -192,6 +193,7 @@ export default class Moderation extends React.Component {
 		});
 		const getIPType = user => {
 			if (user.isTor) return 'istor';
+			if (bannedips.includes(user.ip)) return 'isbannedbefore';
 			const data = splitIP(user.ip);
 			if (IPdata[data[0]][data[1]] > 1) return 'multi';
 			if (IPdata[data[0]].unique > 1) return 'multi2';

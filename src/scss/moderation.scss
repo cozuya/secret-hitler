@@ -60,6 +60,9 @@
 	.istor { // IP is part of the TOR network.
 		color: red;
 	}
+	.isbannedbefore { // Another user with the same IP is in the ban list.
+		color: darkorange;
+	}
 	.multi { // IP fully matches another user.
 		color: yellow;
 	}
@@ -89,7 +92,7 @@
 		width: 100%;
 	}
 	.ip {
-		color: orange;
+		color: turquoise;
 	}
 	.broadcast {
 		cursor: pointer;
