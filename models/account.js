@@ -76,8 +76,12 @@ const Account = new Schema({
 	created: Date,
 	lastVersionSeen: String,
 	isFixed: Boolean,
-	eloSeason: Number,
-	eloOverall: Number,
+	eloSeason: Array,
+	eloSeasonDisplay: Number,
+	eloSeasonMax: Number,
+	eloOverall: Array,
+	eloOverallDisplay: Number,
+	eloOverallMax: Number,
 	hashUid: String
 });
 

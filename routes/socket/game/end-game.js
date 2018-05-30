@@ -154,44 +154,46 @@ module.exports.completeGame = (game, winningTeamName) => {
 			.then(results => {
 				const isRainbow = game.general.rainbowgame;
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
-				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
+				const delta = rateEloGame(game, results, winningPlayerNames);
+				seatedPlayers.forEach(player => {
+					const playerDelta = delta[player.userName];
+					game.chats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: player.userName,
+								type: player.role.team
+							},
+							{
+								text: `: `
+							},
+							{
+								text: playerDelta.changeOverall.toFixed(1),
+								type: 'player'
+							},
+							{
+								text: ` overall (`
+							},
+							{
+								text: playerDelta.changeSeason.toFixed(1),
+								type: 'player'
+							},
+							{
+								text: ` season)`
+							}
+						]
+					});
+				});
 
 				results.forEach(player => {
+					let winner = false;
+
 					const listUser = userList.find(user => user.userName === player.username);
 					if (listUser) {
-						listUser.eloOverall = player.eloOverall;
-						listUser.eloSeason = player.eloSeason;
+						listUser.eloOverall = player.eloOverallDisplay;
+						listUser.eloSeason = player.eloSeasonDisplay;
 					}
-
-					const seatedPlayer = seatedPlayers.find(p => p.userName === player.username);
-					seatedPlayers.forEach(eachPlayer => {
-						const playerChange = eloAdjustments[eachPlayer.userName];
-						const activeChange = player.gameSettings.disableSeasonal ? playerChange.changeSeason : playerChange.change;
-						if (!player.gameSettings.disableElo) {
-							seatedPlayer.gameChats.push({
-								gameChat: true,
-								timestamp: new Date(),
-								chat: [
-									{
-										text: eachPlayer.userName,
-										type: eachPlayer.role.team
-									},
-									{
-										text: ` ${activeChange > 0 ? 'increased' : 'decreased'} by `
-									},
-									{
-										text: Math.abs(activeChange).toFixed(1),
-										type: 'player'
-									},
-									{
-										text: ` points.`
-									}
-								]
-							});
-						}
-					});
-
-					let winner = false;
 
 					if (winningPlayerNames.includes(player.username)) {
 						if (isRainbow) {
