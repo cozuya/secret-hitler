@@ -57,11 +57,14 @@
 			text-align: center;
 		}
 	}
-	.multi {
+	.istor { // IP is part of the TOR network.
+		color: red;
+	}
+	.multi { // IP fully matches another user.
 		color: yellow;
 	}
-	.istor {
-		color: red;
+	.multi2 { // First three blocks of IP fully matches another user.
+		color: yellowgreen;
 	}
 	table {
 		font-size: 12px;

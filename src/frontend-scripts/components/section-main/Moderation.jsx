@@ -174,13 +174,35 @@ export default class Moderation extends React.Component {
 			this.setState({ selectedUser: userName });
 		};
 		const { userList } = this.state;
+		const ipCounts = {};
 		const ips = userList.map(user => user.ip);
-		const multiIPs = _.uniq(_.filter(ips, (x, i, ips) => _.includes(ips, x, i + 1)));
+		const splitIP = ip => {
+			const idx = ip.lastIndexOf('.');
+			return [ip.substring(0, idx - 1), ip.substring(idx + 1)];
+		};
+		const IPdata = {};
+		ips.forEach(ip => {
+			const data = splitIP(ip);
+			if (!IPdata[data[0]]) IPdata[data[0]] = { unique: 0 };
+			if (!IPdata[data[0]][data[1]]) {
+				IPdata[data[0]][data[1]] = 0;
+				IPdata[data[0]].unique++;
+			}
+			IPdata[data[0]][data[1]]++;
+		});
+		const getIPType = user => {
+			if (user.isTor) return 'istor';
+			const data = splitIP(user.ip);
+			if (IPdata[data[0]][data[1]] > 1) return 'multi';
+			if (IPdata[data[0]].unique > 1) return 'multi2';
+			return '';
+		};
 
 		return userList
 			.sort((a, b) =>
 				(() => {
-					if (a.isRainbow && !b.isRainbow) {
+					return a.userName.toLowerCase() > b.userName.toLowerCase() ? 1 : -1;
+					/* if (a.isRainbow && !b.isRainbow) {
 						return 1;
 					}
 
@@ -192,11 +214,11 @@ export default class Moderation extends React.Component {
 						return a.userName > b.userName ? -1 : 1;
 					}
 
-					return a.userName > b.userName ? -1 : 1;
+					return a.userName > b.userName ? -1 : 1;*/
 				})()
 			)
 			.map((user, index) => (
-				<li key={index} title={user.isTor ? 'TOR user' : ''} className={user.isTor ? 'istor' : multiIPs.includes(user.ip) ? 'multi' : ''}>
+				<li key={index} title={user.isTor ? 'TOR user' : ''} className={getIPType(user)}>
 					<label>
 						<input
 							type="radio"
