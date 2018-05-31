@@ -17,6 +17,7 @@ class Settings extends React.Component {
 		this.profileSearchSubmit = this.profileSearchSubmit.bind(this);
 		this.namechangeSubmit = this.namechangeSubmit.bind(this);
 		this.toggleGameSettings = this.toggleGameSettings.bind(this);
+		this.handleSoundChange = this.handleSoundChange.bind(this);
 		this.state = {
 			namechangeValue: '',
 			sliderValues: [8, 24],
@@ -39,14 +40,16 @@ class Settings extends React.Component {
 			disableCrowns: '',
 			disableSeasonal: '',
 			disableElo: '',
-			disableSounds: '',
+			soundStatus: '',
 			isPrivate: '',
-			failedNameChangeMessage: ''
+			failedNameChangeMessage: '',
+			soundSelected: 'Pack 1'
 		};
 	}
 
 	componentWillMount() {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
+		console.log(gameSettings.soundStatus);
 
 		this.setState({
 			fontChecked: gameSettings.fontFamily || 'comfortaa',
@@ -61,9 +64,22 @@ class Settings extends React.Component {
 			disableConfetti: gameSettings.disableConfetti || '',
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
-			disableSounds: gameSettings.disableSounds || '',
-			isPrivate: gameSettings.isPrivate || ''
+			isPrivate: gameSettings.isPrivate || '',
+			soundSelected: gameSettings.soundStatus || 'Off'
 		});
+	}
+
+	handleSoundChange(e) {
+		this.setState(
+			{
+				soundSelected: e.target.value
+			},
+			() => {
+				this.props.socket.emit('updateGameSettings', {
+					soundStatus: this.state.soundSelected
+				});
+			}
+		);
 	}
 
 	/**
@@ -389,11 +405,12 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							<h4 className="ui header">Disable sounds</h4>
-							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="sounds" checked={this.state.disableSounds} onChange={() => this.toggleGameSettings('disableSounds')} />
-								<label />
-							</div>
+							<h4 className="ui header">Sound effect status</h4>
+							<select onChange={this.handleSoundChange} value={this.state.soundSelected}>
+								<option>Off</option>
+								<option>Pack1</option>
+								<option>Pack2</option>
+							</select>
 							<h4 className="ui header" style={{ color: 'red' }}>
 								Private-games-only (this action will log you out, 18 hour cooldown)
 							</h4>

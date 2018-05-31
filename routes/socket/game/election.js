@@ -115,7 +115,7 @@ const enactPolicy = (game, team) => {
 
 	setTimeout(() => {
 		game.trackState.enactedPolicies[index].isFlipped = true;
-		game.gameState.audioCue = 'enactPolicy';
+		game.gameState.audioCue = team === 'liberal' ? 'enactPolicyL' : 'enactPolicyF';
 		sendInProgressGameUpdate(game);
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 300 : 2000);
 

@@ -20,60 +20,65 @@ export default class Game extends React.Component {
 			playSound('alarm', 'pack1', 2400);
 		}
 
-		if ((userInfo.gameSettings && !userInfo.gameSettings.disableSounds) || !userInfo.gameSettings) {
+		if ((userInfo.gameSettings && userInfo.gameSettings.soundStatus !== 'Off') || !userInfo.gameSettings) {
+			const pack = userInfo.gameSettings.soundStatus;
+
 			if (gameInfo.general.status === 'Dealing roles..' && prevProps.gameInfo.general.status !== 'Dealing roles..') {
 				playSound('shuffle', 'pack1', 3000);
 			}
 
-			if (gameInfo.gameState.audioCue === 'enactPolicy' && prevProps.gameInfo.gameState.audioCue !== 'enactPolicy') {
-				playSound('enactpolicy', 'pack1', 4000);
+			if (
+				(gameInfo.gameState.audioCue === 'enactPolicyL' || gameInfo.gameState.audioCue === 'enactPolicyF') &&
+				(prevProps.gameInfo.gameState.audioCue !== 'enactPolicyL' || prevProps.gameInfo.gameState.audioCue !== 'enactPolicyF')
+			) {
+				playSound(pack === 'Pack1' ? 'enactpolicy' : gameInfo.gameState.audioCue === 'enactPolicyL' ? 'enactpolicyl' : 'enactpolicyf', pack, 4000);
 			}
 
 			if (gameInfo.general.status === 'Waiting on presidential discard.' && prevProps.gameInfo.general.status !== 'Waiting on presidential discard.') {
-				playSound('presidentreceivespolicies', 'pack1', 3000);
+				playSound('presidentreceivespolicies', 'Pack1', 3000);
 			}
 
 			if (gameInfo.general.status === 'Waiting on chancellor enactment.' && prevProps.gameInfo.general.status !== 'Waiting on chancellor enactment.') {
-				playSound('chancellorreceivespolicies', 'pack1', 2000);
+				playSound('chancellorreceivespolicies', 'Pack1', 2000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'policyPeek' && prevProps.gameInfo.gameState.audioCue !== 'policyPeek') {
-				playSound('policypeek', 'pack1', 3000);
+				playSound('policypeek', 'Pack1', 3000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'selectedExecution' && prevProps.gameInfo.gameState.audioCue !== 'selectedExecution') {
-				playSound('playershot', 'pack1', 11000);
+				playSound('playershot', pack, pack === 'Pack1' ? 11000 : 5000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'selectedInvestigate' && prevProps.gameInfo.gameState.audioCue !== 'selectedInvestigate') {
-				playSound('policyinvestigate', 'pack1', 11000);
+				playSound(pack === 'Pack1' ? 'policyinvestigate' : 'policypeek', 'Pack1', pack === 'Pack1' ? 11000 : 3000);
 			}
 
 			if (
 				prevProps.gameInfo.general.status === 'President to select special election.' &&
 				gameInfo.general.status !== 'President to select special election.'
 			) {
-				playSound('policyspecialelection', 'pack1', 9000);
+				playSound(pack === 'Pack1' ? 'policyspecialelection' : 'policypeek', 'Pack1', pack === 'Pack1' ? 9000 : 3000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'hitlerShot' && prevProps.gameInfo.gameState.audioCue !== 'hitlerShot') {
-				playSound('liberalswinhitlershot', 'pack1', 26000);
+				playSound(pack === 'Pack1' ? 'liberalswinhitlershot' : 'liberalswin', pack, pack === 'Pack1' ? 26000 : 8000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'liberalsWin' && prevProps.gameInfo.gameState.audioCue !== 'liberalsWin') {
-				playSound('liberalswin', 'pack1', 19000);
+				playSound('liberalswin', pack, pack === 'Pack1' ? 19000 : 8000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'fascistsWin' && prevProps.gameInfo.gameState.audioCue !== 'fascistsWin') {
-				playSound('fascistswin', 'pack1', 19000);
+				playSound('fascistswin', pack, pack === 'Pack1' ? 19000 : 13000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'fascistsWinHitlerElected' && prevProps.gameInfo.gameState.audioCue !== 'fascistsWinHitlerElected') {
-				playSound('fascistswinhitlerelected', 'pack1', 11000);
+				playSound('fascistswinhitlerelected', pack, pack === 'Pack1' ? 11000 : 13000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'passedVeto' && prevProps.gameInfo.gameState.audioCue !== 'passedVeto') {
-				playSound('vetosucceeds', 'pack1', 10000);
+				playSound(pack === 'Pack1' ? 'vetosucceeds' : 'policypeek', 'Pack1', pack === 'Pack1' ? 10000 : 3000);
 			}
 		}
 

@@ -1327,7 +1327,7 @@ export default class Creategame extends React.Component {
 								</div>
 							)}
 					</div>
-					<div className="row">
+					{/* <div className="row">
 						<div className="four wide column">
 							<i className="big hide icon" />
 							<h4 className="ui header">Verified - only email-verified players can play in this game.</h4>
@@ -1340,7 +1340,7 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="verified" defaultChecked={false} />
 							</div>
 						</div>
-					</div>
+					</div> */}
 				</div>
 
 				<div className="ui grid centered footer">

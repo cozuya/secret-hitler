@@ -9,6 +9,21 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.3 released 5-30-2018</p>
+		</div>
+		<h3>New feature: sound pack #2!</h3>
+		<p>
+			Thanks to contributor straightleft, a new pack of sounds has been implemented, more tonal/synth like. Players with sounds off are still off, players with
+			sounds on have one of the two packs chosen at random right now - change it in settings.
+		</p>
+		<h3>Many bug fixes thanks to contributor Hexicube.</h3>
+		<h3>New feature: enhanced account actions.</h3>
+		<p>
+			Like a real app, I am implementing some things that should have been done some time ago. In this update, only the delete account action is new, and should
+			work as expected. Soon I will be rolling out email-verified accounts. Don't worry, these will be optional.
+		</p>
+		<p>Our terms of use has been updated...</p>
+		<div className="ui header">
 			<p>Version 0.14.2 released 5-22-2018</p>
 		</div>
 		<h3>New feature: sound effects!</h3>
