@@ -1381,6 +1381,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data) => {
 	} else if (!pinged) {
 		const lastMessage = game.chats
 			.filter(chat => !chat.gameChat)
+			.filter(chat => typeof chat.message === 'string')
 			.filter(chat => chat.userName === user.userName)
 			.reduce(
 				(acc, cur) => {
