@@ -49,7 +49,6 @@ class Settings extends React.Component {
 
 	componentWillMount() {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
-		console.log(gameSettings.soundStatus);
 
 		this.setState({
 			fontChecked: gameSettings.fontFamily || 'comfortaa',

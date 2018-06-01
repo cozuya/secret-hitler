@@ -9,12 +9,12 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.14.3 released 5-30-2018</p>
+			<p>Version 0.14.3 released 6-1-2018</p>
 		</div>
 		<h3>New feature: sound pack #2!</h3>
 		<p>
-			Thanks to contributor straightleft, a new pack of sounds has been implemented, more tonal/synth like. Players with sounds off are still off, players with
-			sounds on have one of the two packs chosen at random right now - change it in settings.
+			Thanks to contributor straightleft, a new pack of sounds has been implemented, more tonal/synth like. As this is a different type of setting change, if
+			you want to use sound pack #1 or turn your sound off, you'll have to go to your settings screen now.
 		</p>
 		<h3>Many bug fixes thanks to contributor Hexicube.</h3>
 		<h3>New feature: enhanced account actions.</h3>

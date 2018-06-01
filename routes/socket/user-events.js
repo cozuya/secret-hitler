@@ -672,7 +672,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		socket.emit('updateSeatForUser');
 		socket.emit('gameUpdate', newGame);
 		socket.emit('joinGameRedirect', newGame.general.uid);
-		console.log(games);
 	});
 };
 
