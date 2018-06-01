@@ -34,6 +34,7 @@ const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChanc
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
 const { games } = require('./models');
+const { MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
 	const toRemoveIndexes = games
@@ -96,6 +97,7 @@ module.exports = () => {
 
 		const { passport } = socket.handshake.session;
 		const authenticated = ensureAuthenticated(socket);
+		const isAEM = authenticated && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user));
 
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
@@ -113,7 +115,7 @@ module.exports = () => {
 				handleUpdatedPlayerNote(socket, data);
 			})
 			.on('updateModAction', data => {
-				if (authenticated) {
+				if (authenticated && isAEM) {
 					handleModerationAction(socket, passport, data);
 				}
 			})
@@ -178,7 +180,9 @@ module.exports = () => {
 				}
 			})
 			.on('playerReportDismiss', () => {
-				handlePlayerReportDismiss();
+				if (authenticated && isAEM) {
+					handlePlayerReportDismiss();
+				}
 			})
 			.on('updateRemake', data => {
 				const game = findGame(data);
@@ -218,10 +222,14 @@ module.exports = () => {
 				}
 			})
 			.on('getModInfo', count => {
-				sendModInfo(socket, count);
+				if (authenticated && isAEM) {
+					sendModInfo(socket, count);
+				}
 			})
 			.on('getUserReports', () => {
-				sendUserReports(socket);
+				if (authenticated && isAEM) {
+					sendUserReports(socket);
+				}
 			})
 			.on('updateUserStatus', (type, gameId) => {
 				const game = findGame({ uid: gameId });
