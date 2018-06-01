@@ -1378,16 +1378,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data) => {
 			console.log(e, 'caught exception in ping chat');
 		}
 	} else if (!pinged) {
-		const lastMessage = game.chats
-			.filter(chat => !chat.gameChat)
-			.filter(chat => typeof chat.message === 'string')
-			.filter(chat => chat.userName === user.userName)
-			.reduce(
-				(acc, cur) => {
-					return acc.timestamp > cur.timestamp ? acc : cur;
-				},
-				{ timestamp: new Date(0) }
-			);
+		const lastMessage = game.chats.filter(chat => !chat.gameChat && typeof chat.message === 'string' && chat.userName === user.userName).reduce(
+			(acc, cur) => {
+				return acc.timestamp > cur.timestamp ? acc : cur;
+			},
+			{ timestamp: new Date(0) }
+		);
 
 		if (lastMessage.chat) {
 			let leniancy; // How much time (in seconds) must pass before allowing the message.
