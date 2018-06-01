@@ -21,7 +21,7 @@ export default class Game extends React.Component {
 		}
 
 		if ((userInfo.gameSettings && userInfo.gameSettings.soundStatus !== 'Off') || !userInfo.gameSettings) {
-			const pack = userInfo.gameSettings.soundStatus;
+			const pack = userInfo.gameSettings.soundStatus || 'Pack2';
 
 			if (gameInfo.general.status === 'Dealing roles..' && prevProps.gameInfo.general.status !== 'Dealing roles..') {
 				playSound('shuffle', 'pack1', 3000);
