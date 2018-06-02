@@ -1940,7 +1940,11 @@ module.exports.handlePlayerReport = (passport, data) => {
 
 	PlayerReport.find({ gameUid: data.uid, reportingPlayer: data.userName }).then(reports => {
 		if (!reports || reports.length < 4) {
-			playerReport.save(() => {
+			playerReport.save(err => {
+				if (err) {
+					console.log(err, 'Failed to save player report');
+					return;
+				}
 				Account.find({ username: mods }).then(accounts => {
 					accounts.forEach(account => {
 						const onlineSocketId = Object.keys(io.sockets.sockets).find(
@@ -1961,7 +1965,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 					const req = https.request(options);
 					req.end(body);
 				} catch (error) {
-					console.log(err, 'Caught exception in player request https request to discord server');
+					console.log(error, 'Caught exception in player request https request to discord server');
 				}
 			});
 		}
