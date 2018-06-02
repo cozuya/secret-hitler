@@ -744,10 +744,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 		const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
 		const track4blue = game.trackState.liberalPolicyCount >= 4;
 
-		const passed = (game.private.currentChancellorOptions = [
-			game.private.currentElectionPolicies[nonDiscardedPolicies[0]],
-			game.private.currentElectionPolicies[nonDiscardedPolicies[1]]
-		]);
+		const passed = [game.private.currentElectionPolicies[nonDiscardedPolicies[0]], game.private.currentElectionPolicies[nonDiscardedPolicies[1]]];
 		let passedNicer = '';
 		if (passed[0] === 'liberal') {
 			if (passed[1] === 'liberal') passedNicer = 'BB';
