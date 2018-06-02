@@ -568,37 +568,6 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 		return;
 	}
 
-	if (!wasTimer && !game.general.private) {
-		if (
-			chancellor.role.team === 'liberal' &&
-			enactedPolicy === 'fascist' &&
-			(game.private.currentChancellorOptions[0] === 'liberal' || game.private.currentChancellorOptions[1] === 'liberal')
-		) {
-			// Liberal chancellor chose to play fascist, probably throwing.
-			makeReport(`Player ${chancellor.userName} in seat ${chancellorIndex + 1} is liberal, was given choice as chancellor, and played fascist.`, game);
-		}
-		if (
-			chancellor.role.team === 'fascist' &&
-			enactedPolicy === 'liberal' &&
-			game.trackState.liberalPolicyCount >= 4 &&
-			(game.private.currentChancellorOptions[0] === 'fascist' || game.private.currentChancellorOptions[1] === 'fascist')
-		) {
-			// Fascist chancellor chose to play 5th liberal.
-			makeReport(
-				`Player ${chancellor.userName} in seat ${chancellorIndex +
-					1} is fascist, was given choice as chancellor with 4 blues on the track, and played liberal.`,
-				game
-			);
-		}
-	}
-
-	game.private.lock.selectPresidentPolicy = false;
-
-	if (game.general.timedMode && game.private.timerId && chancellor && chancellor.cardFlingerState && chancellor.cardFlingerState.length) {
-		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
-	}
-
 	if (
 		!game.private.lock.selectChancellorPolicy &&
 		chancellor &&
@@ -606,6 +575,37 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 		chancellor.cardFlingerState.length &&
 		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
+		if (!wasTimer && !game.general.private) {
+			if (
+				chancellor.role.team === 'liberal' &&
+				enactedPolicy === 'fascist' &&
+				(game.private.currentChancellorOptions[0] === 'liberal' || game.private.currentChancellorOptions[1] === 'liberal')
+			) {
+				// Liberal chancellor chose to play fascist, probably throwing.
+				makeReport(`Player ${chancellor.userName} in seat ${chancellorIndex + 1} is liberal, was given choice as chancellor, and played fascist.`, game);
+			}
+			if (
+				chancellor.role.team === 'fascist' &&
+				enactedPolicy === 'liberal' &&
+				game.trackState.liberalPolicyCount >= 4 &&
+				(game.private.currentChancellorOptions[0] === 'fascist' || game.private.currentChancellorOptions[1] === 'fascist')
+			) {
+				// Fascist chancellor chose to play 5th liberal.
+				makeReport(
+					`Player ${chancellor.userName} in seat ${chancellorIndex +
+						1} is fascist, was given choice as chancellor with 4 blues on the track, and played liberal.`,
+					game
+				);
+			}
+		}
+
+		game.private.lock.selectPresidentPolicy = false;
+
+		if (game.general.timedMode && game.private.timerId) {
+			clearTimeout(game.private.timerId);
+			game.gameState.timedModeEnabled = game.private.timerId = null;
+		}
+
 		game.private.lock.selectChancellorPolicy = true;
 
 		if (data.selection === 3) {
@@ -728,91 +728,6 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 	}
 
 	if (
-		game.general.timedMode &&
-		game.private.timerId &&
-		president &&
-		president.cardFlingerState &&
-		president.cardFlingerState.length &&
-		Number.isInteger(chancellorIndex) &&
-		game.publicPlayersState[chancellorIndex]
-	) {
-		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
-	}
-
-	if (!wasTimer && !game.general.private) {
-		const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
-		const track4blue = game.trackState.liberalPolicyCount >= 4;
-
-		const passed = [game.private.currentElectionPolicies[nonDiscardedPolicies[0]], game.private.currentElectionPolicies[nonDiscardedPolicies[1]]];
-		let passedNicer = '';
-		if (passed[0] === 'liberal') {
-			if (passed[1] === 'liberal') passedNicer = 'BB';
-			else passedNicer = 'BR';
-		} else if (passed[1] === 'liberal') passedNicer = 'BR';
-		else passedNicer = 'RR';
-
-		const discarded = game.private.currentElectionPolicies[data.selection];
-		if (president.role.team === 'liberal') {
-			// liberal
-			if (discarded === 'liberal') {
-				if (track4blue) {
-					if (passedNicer === 'RR') {
-						// tossed only blue on 4 blues
-						makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with 4 blues on the track, and tossed the blue.`, game);
-					} else if (passedNicer === 'BR') {
-						// did not force 5th blue
-						makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR with 4 blues on the track, and did not force.`, game);
-					}
-				} else if (!presGetsPower) {
-					if (passedNicer === 'RR') {
-						// tossed only blue with no benefit
-						makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with no power on red, and tossed the blue.`, game);
-					}
-				}
-			}
-		} else if (president.role.cardName === 'fascist') {
-			// regular fascist
-			if (discarded === 'fascist' && track4blue) {
-				if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
-					// forced 5th blue on another fas
-					makeReport(
-						`Player ${president.userName} in seat ${presidentIndex +
-							1} is fascist, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
-						game
-					);
-				} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
-					// offered 5th blue choice as fas
-					makeReport(
-						`Player ${president.userName} in seat ${presidentIndex +
-							1} is fascist, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
-						game
-					);
-				}
-			}
-		} else {
-			// hitler
-			if (discarded === 'fascist' && track4blue) {
-				if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
-					// forced 5th blue as hit
-					makeReport(
-						`Player ${president.userName} in seat ${presidentIndex +
-							1} is hitler, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
-						game
-					);
-				} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
-					// offered 5th blue choice as hit
-					makeReport(
-						`Player ${president.userName} in seat ${presidentIndex +
-							1} is hitler, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
-						game
-					);
-				}
-			}
-		}
-	}
-
-	if (
 		!game.private.lock.selectPresidentPolicy &&
 		president &&
 		president.cardFlingerState &&
@@ -821,6 +736,86 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 		game.publicPlayersState[chancellorIndex] &&
 		!(game.general.isTourny && game.general.tournyInfo.isCancelled)
 	) {
+		if (game.general.timedMode && game.private.timerId) {
+			clearTimeout(game.private.timerId);
+			game.gameState.timedModeEnabled = game.private.timerId = null;
+		}
+
+		if (!wasTimer && !game.general.private) {
+			const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
+			const track4blue = game.trackState.liberalPolicyCount >= 4;
+
+			const passed = [game.private.currentElectionPolicies[nonDiscardedPolicies[0]], game.private.currentElectionPolicies[nonDiscardedPolicies[1]]];
+			let passedNicer = '';
+			if (passed[0] === 'liberal') {
+				if (passed[1] === 'liberal') passedNicer = 'BB';
+				else passedNicer = 'BR';
+			} else if (passed[1] === 'liberal') passedNicer = 'BR';
+			else passedNicer = 'RR';
+
+			const discarded = game.private.currentElectionPolicies[data.selection];
+			if (president.role.team === 'liberal') {
+				// liberal
+				if (discarded === 'liberal') {
+					if (track4blue) {
+						if (passedNicer === 'RR') {
+							// tossed only blue on 4 blues
+							makeReport(
+								`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with 4 blues on the track, and tossed the blue.`,
+								game
+							);
+						} else if (passedNicer === 'BR') {
+							// did not force 5th blue
+							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR with 4 blues on the track, and did not force.`, game);
+						}
+					} else if (!presGetsPower) {
+						if (passedNicer === 'RR') {
+							// tossed only blue with no benefit
+							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with no power on red, and tossed the blue.`, game);
+						}
+					}
+				}
+			} else if (president.role.cardName === 'fascist') {
+				// regular fascist
+				if (discarded === 'fascist' && track4blue) {
+					if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
+						// forced 5th blue on another fas
+						makeReport(
+							`Player ${president.userName} in seat ${presidentIndex +
+								1} is fascist, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
+							game
+						);
+					} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
+						// offered 5th blue choice as fas
+						makeReport(
+							`Player ${president.userName} in seat ${presidentIndex +
+								1} is fascist, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
+							game
+						);
+					}
+				}
+			} else {
+				// hitler
+				if (discarded === 'fascist' && track4blue) {
+					if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
+						// forced 5th blue as hit
+						makeReport(
+							`Player ${president.userName} in seat ${presidentIndex +
+								1} is hitler, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
+							game
+						);
+					} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
+						// offered 5th blue choice as hit
+						makeReport(
+							`Player ${president.userName} in seat ${presidentIndex +
+								1} is hitler, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
+							game
+						);
+					}
+				}
+			}
+		}
+
 		game.private.lock.selectPresidentPolicy = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 		game.publicPlayersState[chancellorIndex].isLoader = true;
