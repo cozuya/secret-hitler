@@ -1003,6 +1003,18 @@ module.exports.selectVoting = (passport, game, data) => {
 
 		gameState.undrawnPolicyCount--;
 		game.private.currentElectionPolicies = [game.private.policies.shift(), game.private.policies.shift(), game.private.policies.shift()];
+		const verifyCorrect = policy => {
+			if (policy === 'liberal') return true;
+			if (policy === 'fascist') return true;
+			return false;
+		};
+		if (
+			!verifyCorrect(game.private.currentElectionPolicies[0]) ||
+			!verifyCorrect(game.private.currentElectionPolicies[1]) ||
+			!verifyCorrect(game.private.currentElectionPolicies[2])
+		) {
+			makeReport(`A player has just received an invalid hand! Investigate immediately!\n${JSON.stringify(game.private.currentElectionPolicies)}`, game);
+		}
 
 		game.private.summary = game.private.summary.updateLog({
 			presidentHand: handToLog(game.private.currentElectionPolicies)
