@@ -64,8 +64,7 @@ html(lang="en")
 
 		section.signup-modal.ui.modal.small.segment.column
 			h2.header Sign up for an account
-			p.tou By playing here, you agree to follow the #[a(href="/about#TOU", target="_blank") Terms of Use]. Players with less than 5 games played can not chat in general chat, chat as an observer, or make player reports.
-			p.modal-warning Please note: this application currently works best in Chrome, Firefox, and Edge.  Users of Internet Explorer, and Safari may not have the best user experience.  This is being worked on and will be resolved soon.
+			p.tou By playing here, you agree to follow the #[a(href="/about#TOU", target="_blank") Terms of Use]. Players with less than 2 games played can not chat in general chat, chat as an observer, or make player reports.
 			form.ui.form
 				.field
 					.ui.left.icon.input
@@ -82,15 +81,15 @@ html(lang="en")
 						i.lock.icon
 						input#signup-password2(placeholder="Repeat password", type="password", maxlength="255")
 					.ui.info.message.hidden
+
+				.field
+					.ui.left.icon.input
+						i.mail.icon
+						input#signup-email(placeholder="Email (OPTIONAL)", maxlength="100", spellcheck="false")
 				.field
 					label
 						input#private-player(type="checkbox", style="margin-right: 5px")
 						span Private game player only - your name will not be visible in the sidebar, you can't chat in general chat, you can't play in public games.
-
-				//- .field
-				//- 	.ui.left.icon.input
-				//- 		i.mail.icon
-				//- 		input#signup-email(placeholder="Email (optional)", maxlength="100", spellcheck="false")
 				button.ui.primary.button.fluid.large.signup-submit Submit
 				.ui.dimmer.inverted
 					.ui.text.loader Signing up..

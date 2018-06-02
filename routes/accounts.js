@@ -50,7 +50,9 @@ module.exports = () => {
 
 	app.post('/account/delete-account', passport.authenticate('local'), (req, res) => {
 		Account.deleteOne({ username: req.user.username }).then(() => {
-			res.send();
+			Profile.deleteOne({ _id: req.user.username }).then(() => {
+				res.send();
+			});
 		});
 	});
 
