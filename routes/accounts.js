@@ -115,6 +115,8 @@ module.exports = () => {
 			signupIP
 		};
 
+		console.log(email, 'email');
+
 		if (!/^[a-z0-9]+$/i.test(username)) {
 			res.status(401).json({ message: 'Sorry, your username can only be alphanumeric.' });
 		} else if (username.length < 3) {

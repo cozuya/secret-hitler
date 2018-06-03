@@ -24,6 +24,7 @@ export default () => {
 		const username = $('#signup-username').val();
 		const password = $('#signup-password1').val();
 		const password2 = $('#signup-password2').val();
+		const email = $('#signup-email').val();
 		const $loader = $(this).next();
 		const $message = $loader.next();
 		const isPrivate = $('#private-player').is(':checked');
@@ -42,6 +43,7 @@ export default () => {
 				username,
 				password,
 				password2,
+				email,
 				isPrivate
 			}),
 			statusCode: {
