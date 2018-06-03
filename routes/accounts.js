@@ -97,6 +97,7 @@ module.exports = () => {
 				enableTimestamps: false,
 				disableRightSidebarInGame: false,
 				enableDarkTheme: false,
+				soundStatus: 'Pack2',
 				isPrivate
 			},
 			verification: {

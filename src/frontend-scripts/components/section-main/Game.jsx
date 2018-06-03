@@ -17,14 +17,14 @@ export default class Game extends React.Component {
 				gameInfo.general.status === 'Tournament starts in 5 seconds.' &&
 				prevProps.gameInfo.general.status !== 'Tournament starts in 5 seconds.')
 		) {
-			playSound('alarm', 'pack1', 2400);
+			playSound('alarm', 'Pack1', 2400);
 		}
 
 		if ((userInfo.gameSettings && userInfo.gameSettings.soundStatus !== 'Off') || !userInfo.gameSettings) {
-			const pack = userInfo.gameSettings.soundStatus || 'Pack2';
+			const pack = userInfo.gameSettings ? userInfo.gameSettings.soundStatus : 'Pack2';
 
 			if (gameInfo.general.status === 'Dealing roles..' && prevProps.gameInfo.general.status !== 'Dealing roles..') {
-				playSound('shuffle', 'pack1', 3000);
+				playSound('shuffle', 'Pack1', 3000);
 			}
 
 			if (

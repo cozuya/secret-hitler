@@ -68,6 +68,10 @@ class Settings extends React.Component {
 		});
 	}
 
+	componentDidMount() {
+		console.log(this.props.userInfo, 'ui');
+	}
+
 	handleSoundChange(e) {
 		this.setState(
 			{
