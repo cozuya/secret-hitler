@@ -1,6 +1,7 @@
 const { EDITORS, ADMINS, MODERATORS, TRIALMODS } = require('../../src/frontend-scripts/constants');
 const https = require('https');
-const AEM = [...EDITORS, ...ADMINS, ...MODERATORS, ...TRIALMODS];
+const AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy'];
+const AEM = [...EDITORS, ...ADMINS, ...MODERATORS, ...TRIALMODS, ...AEM_ALTS];
 const checkAEM = names => {
 	return names.some(n => AEM.includes(n));
 };
@@ -9,8 +10,7 @@ module.exports.makeReport = (text, game, gameEnd) => {
 	const players = game.private.seatedPlayers.map(player => player.userName);
 	if (!gameEnd && checkAEM(players)) {
 		if (!game.unsentReports) game.unsentReports = [];
-		game.unsentReports[game.unsentReports.length] = 'AEM DELAYED - ' + text;
-		console.log(`Delayed report due to AEM presence:\n${text}\n${game.general.uid}`);
+		game.unsentReports[game.unsentReports.length] = `AEM DELAYED - ${text}`;
 		return;
 	}
 	const report = JSON.stringify({
