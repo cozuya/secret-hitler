@@ -1,8 +1,6 @@
 function main() {
-	const { obfIP, obfBlock } = require('../routes/socket/ip-obfuscator-v4');
-	const IPv6 = require('../routes/socket/ip-obfuscator-v6');
-	const obfIP2 = IPv6.obfIP;
-	const obfBlock2 = IPv6.obfBlock;
+	const obfBlock = require('../routes/socket/ip-obfuscator-v4').obfBlock;
+	const obfBlock2 = require('../routes/socket/ip-obfuscator-v6').obfBlock;
 	const obfTrue = require('../routes/socket/ip-obf').obfIP;
 	const convertToHex = val => {
 		let output = '';
