@@ -20,7 +20,7 @@ const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
-const { obfIP } = require('./ip-obf');
+const { obfIP, checkIPEquality } = require('./ip-obf');
 
 /**
  * @param {object} game - game to act on.
@@ -1687,8 +1687,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 					});
 
 					ipban.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, user) {
-							if (user) {
+						Account.find().forEach(function(user) {
+							if (user && checkIPEquality(user.lastConnectedIP, data.ip)) {
 								if (isSuperMod) banAccount(user.username);
 								else logOutUser(data.userName);
 							}
@@ -1702,8 +1702,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 						ip: data.ip
 					});
 					timeout.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, user) {
-							if (user) logOutUser(user.username);
+						Account.find().forEach(function(user) {
+							if (user && checkIPEquality(user.lastConnectedIP, data.ip)) {
+								logOutUser(user.username);
+							}
 						});
 					});
 					break;
@@ -1789,7 +1791,11 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 
 					if (isSuperMod) {
 						ipbanl.save(() => {
-							banAccount(data.userName);
+							Account.find().forEach(function(user) {
+								if (user && checkIPEquality(user.lastConnectedIP, data.ip)) {
+									banAccount(user.username);
+								}
+							});
 						});
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can perform large IP bans.');
