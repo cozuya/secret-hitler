@@ -36,6 +36,12 @@ const expandAndSimplify = ip => {
 	return ip; // IPv4
 };
 
+module.exports.checkIPEquality = (ip1, ip2) => {
+	const first = expandAndSimplify(ip1);
+	const second = expandAndSimplify(ip2);
+	return first === second;
+};
+
 module.exports.obfIP = ip => {
 	const ip2 = expandAndSimplify(ip);
 	if (isIPv4(ip2)) return ipv4(ip2);
