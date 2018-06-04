@@ -8,6 +8,8 @@ const accounts = require('./accounts');
 const version = require('../version');
 const { MODERATORS, TRIALMODS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants');
 const fs = require('fs');
+const { obfIP } = require('./socket/ip-obf');
+
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.
@@ -134,6 +136,15 @@ module.exports = () => {
 
 					if (!(MODERATORS.includes(requestingUser) || ADMINS.includes(requestingUser) || EDITORS.includes(requestingUser))) {
 						_profile.lastConnectedIP = 'no looking';
+					} else {
+						try {
+							_profile.lastConnectedIP = obfIP(_profile.lastConnectedIP);
+							_profile.ipObf = true;
+						} catch (e) {
+							_profile.lastConnectedIP = 'something went wrong';
+							_profile.ipObf = false;
+							console.log(e);
+						}
 					}
 
 					if (TRIALMODS.includes(requestingUser)) {

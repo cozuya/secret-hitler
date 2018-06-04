@@ -50,6 +50,10 @@ export default class Moderation extends React.Component {
 			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
 		});
 
+		socket.on('sendAlert', ip => {
+			window.alert(ip);
+		});
+
 		socket.emit('getModInfo', 1);
 
 		$(this.toggleUserSort).checkbox({
@@ -247,6 +251,7 @@ export default class Moderation extends React.Component {
 					modName: this.props.userInfo.userName,
 					userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
 					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+					ipObf: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ipObf : false,
 					comment: this.state.actionTextValue,
 					action
 				});
@@ -276,6 +281,14 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Clear/delete general chat
+				</button>
+				<button
+					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
+					onClick={() => {
+						takeModAction('getIP');
+					}}
+				>
+					Get user IP
 				</button>
 				<br />
 				<button

@@ -18,6 +18,7 @@ const {
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
+const { obfIP } = require('./ip-obf');
 //	const https = require('https');
 //	const options = {
 //	hostname: 'check.torproject.org',
@@ -84,17 +85,37 @@ module.exports.sendModInfo = (socket, count) => {
 				.sort({ $natural: -1 })
 				.limit(500 * count)
 				.then(actions => {
+					const list = users.map(user => ({
+						isRainbow: user.wins + user.losses > 49,
+						userName: user.username,
+						isTor: torIps && torIps.includes(user.lastConnectedIP || user.signupIP),
+						ip: user.lastConnectedIP || user.signupIP,
+						ipObf: false
+					}));
+					list.forEach(user => {
+						let ipObf;
+						try {
+							ipObf = obfIP(user.ip);
+							user.ip = ipObf;
+							user.ipObf = true;
+						} catch (e) {}
+					});
+					actions.forEach(action => {
+						let ipObf;
+						try {
+							ipObf = obfIP(action.ip);
+							action.ip = ipObf;
+							action.ipObf = true;
+						} catch (e) {
+							action.ipObf = false;
+						}
+					});
 					socket.emit('modInfo', {
 						modReports: actions,
 						accountCreationDisabled,
 						ipbansNotEnforced,
 						gameCreationDisabled,
-						userList: users.map(user => ({
-							isRainbow: user.wins + user.losses > 49,
-							userName: user.username,
-							isTor: torIps && torIps.includes(user.lastConnectedIP || user.signupIP),
-							ip: user.lastConnectedIP || user.signupIP
-						}))
+						userList: list
 					});
 				})
 				.catch(err => {
