@@ -30,7 +30,8 @@ export default class Moderation extends React.Component {
 			logSort: {
 				type: 'date',
 				direction: 'descending'
-			}
+			},
+			sortByIP: false
 		};
 	}
 
@@ -50,6 +51,19 @@ export default class Moderation extends React.Component {
 		});
 
 		socket.emit('getModInfo', 1);
+
+		$(this.toggleUserSort).checkbox({
+			onChecked() {
+				self.setState({
+					sortByIP: true
+				});
+			},
+			onUnchecked() {
+				self.setState({
+					sortByIP: false
+				});
+			}
+		});
 
 		$(this.toggleAccountCreation).checkbox({
 			onChecked() {
@@ -173,10 +187,11 @@ export default class Moderation extends React.Component {
 		const radioChange = userName => {
 			this.setState({ selectedUser: userName });
 		};
-		const { userList } = this.state;
+		const { userList, sortByIP } = this.state;
 		const ipCounts = {};
 		const ips = userList.map(user => user.ip);
-		const bannedips = this.state.log.filter(log => log.actionTaken === 'ban').map(log => log.ip);
+		const bannedips = this.state.log.filter(log => log.actionTaken === 'ban' || log.actionTaken === 'timeOut').map(log => log.ip);
+		const timednames = this.state.log.filter(log => log.actionTaken === 'timeOut2').map(log => log.userActedOn);
 		const splitIP = ip => {
 			const idx = ip.lastIndexOf('.');
 			return [ip.substring(0, idx - 1), ip.substring(idx + 1)];
@@ -193,7 +208,7 @@ export default class Moderation extends React.Component {
 		});
 		const getIPType = user => {
 			if (user.isTor) return 'istor';
-			if (bannedips.includes(user.ip)) return 'isbannedbefore';
+			if (bannedips.includes(user.ip) || timednames.includes(user.userName)) return 'isbannedbefore';
 			const data = splitIP(user.ip);
 			if (IPdata[data[0]][data[1]] > 1) return 'multi';
 			if (IPdata[data[0]].unique > 1) return 'multi2';
@@ -203,20 +218,8 @@ export default class Moderation extends React.Component {
 		return userList
 			.sort((a, b) =>
 				(() => {
+					if (sortByIP && a.ip != b.ip) return a.ip > b.ip ? 1 : -1;
 					return a.userName.toLowerCase() > b.userName.toLowerCase() ? 1 : -1;
-					/* if (a.isRainbow && !b.isRainbow) {
-						return 1;
-					}
-
-					if (b.isRainbow && !a.isRainbow) {
-						return -1;
-					}
-
-					if (a.isRainbow && b.isRainbow) {
-						return a.userName > b.userName ? -1 : 1;
-					}
-
-					return a.userName > b.userName ? -1 : 1;*/
 				})()
 			)
 			.map((user, index) => (
@@ -691,6 +694,17 @@ export default class Moderation extends React.Component {
 					{this.state.playerListShown && (
 						<div className="modplayerlist">
 							<h3>Current player list</h3>
+							<div className="toggle-containers">
+								<h4 className="ui header">Sort by IP</h4>
+								<div
+									className="ui fitted toggle checkbox"
+									ref={c => {
+										this.toggleUserSort = c;
+									}}
+								>
+									<input type="checkbox" name="usersort" />
+								</div>
+							</div>
 							<ul className="userlist">{this.renderUserlist()}</ul>
 							<div className="ui horizontal divider">or</div>
 							{this.renderPlayerInput()}
