@@ -93,21 +93,25 @@ module.exports.sendModInfo = (socket, count) => {
 						ipObf: false
 					}));
 					list.forEach(user => {
-						let ipObf;
-						try {
-							ipObf = obfIP(user.ip);
-							user.ip = ipObf;
-							user.ipObf = true;
-						} catch (e) {}
+						if (user.ip && user.ip != '') {
+							let ipObf;
+							try {
+								user.ip = '-' + obfIP(user.ip);
+							} catch (e) {
+								user.ip = 'ERROR';
+								console.log(e);
+							}
+						}
 					});
 					actions.forEach(action => {
-						let ipObf;
-						try {
-							ipObf = obfIP(action.ip);
-							action.ip = ipObf;
-							action.ipObf = true;
-						} catch (e) {
-							action.ipObf = false;
+						if (action.ip && action.ip != '') {
+							let ipObf;
+							try {
+								action.ip = '-' + obfIP(action.ip);
+							} catch (e) {
+								action.ip = 'ERROR';
+								console.log(e);
+							}
 						}
 					});
 					socket.emit('modInfo', {

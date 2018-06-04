@@ -1,15 +1,15 @@
 const ipv4 = require('./ip-obfuscator-v4').obfIP;
 const ipv6 = require('./ip-obfuscator-v6').obfIP;
 
-const is0to255 = val => {
+const is0to999 = val => {
 	const num = parseInt(val);
 	if (isNaN(num)) return false;
-	return num >= 0 && num <= 255;
+	return num >= 0 && num <= 999;
 };
 const isIPv4 = ip => {
 	const data = ip.split('.');
 	if (data.length != 4) return false;
-	return is0to255(data[0]) && is0to255(data[1]) && is0to255(data[2]) && is0to255(data[3]);
+	return is0to999(data[0]) && is0to999(data[1]) && is0to999(data[2]) && is0to999(data[3]);
 };
 const expandAndSimplify = ip => {
 	if (ip.includes(':')) {

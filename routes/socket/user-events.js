@@ -1524,50 +1524,12 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 	// Authentication Assured in routes.js
 
-	if (!skipCheck && !data.isReportResolveChange) {
-		if ((!data.ip || data.ip === '') && data.userName) {
-			// Check that the username is a valid IP, or failing that, get it from their last IP.
-
-			const userIsIPv4 = user => {
-				const valid = val => {
-					const v = parseInt(val);
-					if (isNaN(v)) return false;
-					return v >= 0 && v <= 255;
-				};
-
-				const data = user.split('.');
-				if (data.length !== 4) return false;
-				return valid(data[0]) && valid(data[1]) && valid(data[2]) && valid(data[3]);
-			};
-
-			const userIsIPv6 = user => {
-				// TODO: implement
-				// This actually shouldn't be needed for the time being, most of the internet still uses IPv4.
-				return false;
-			};
-
-			if (userIsIPv4(data.userName) || userIsIPv6(data.userName)) {
-				data.ip = data.userName;
-				data.userName = '';
-			} else {
-				// Need to wait for the response, which means re-calling the function with a flag set.
-				Account.findOne({ username: data.userName }, { lastConnectedIP: 1 }, function(err, acc) {
-					if (!err && acc) data.ip = acc.lastConnectedIP;
-					module.exports.handleModerationAction(socket, passport, data, true);
-				});
-				return;
-			}
-
-			data.ipObf = true;
-		}
-
-		if (data.ipObf) {
-			try {
-				data.ip = obfIP(data.ip);
-			} catch (e) {
-				data.ip = '';
-				console.log(e);
-			}
+	if (!skipCheck && !data.isReportResolveChange && (!data.ip || data.ip === '') && data.userName && data.userName.startsWith('-')) {
+		try {
+			data.ip = obfIP(data.userName.substring(1));
+		} catch (e) {
+			data.ip = '';
+			console.log(e);
 		}
 	}
 
@@ -1646,13 +1608,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 				}
 			};
 
-			modaction.save();
 			switch (data.action) {
 				case 'getIP':
 					if (isSuperMod) {
 						socket.emit('sendAlert', `Requested IP: ${data.ip}`);
 					} else {
-						socket.emit('sendAlert', 'Only editors and admins can request a raw ip.');
+						socket.emit('sendAlert', 'Only editors and admins can request a raw IP.');
+						return;
 					}
 					break;
 				case 'deleteUser':
@@ -1664,6 +1626,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 						});
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can delete users.');
+						return;
 					}
 					break;
 				case 'ban':
@@ -1792,6 +1755,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 							});
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can delete profiles.');
+						return;
 					}
 					break;
 				// case 'renamePlayer':
@@ -1829,6 +1793,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 						});
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can perform large IP bans.');
+						return;
 					}
 					break;
 				case 'deleteCardback':
@@ -1872,6 +1837,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 						crashServer();
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can restart the server.');
+						return;
 					}
 					break;
 				default:
@@ -1929,6 +1895,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 						}
 					}
 			}
+			modaction.save();
 		}
 	}
 };

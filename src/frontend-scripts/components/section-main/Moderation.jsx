@@ -251,7 +251,6 @@ export default class Moderation extends React.Component {
 					modName: this.props.userInfo.userName,
 					userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
 					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
-					ipObf: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ipObf : false,
 					comment: this.state.actionTextValue,
 					action
 				});

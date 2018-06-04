@@ -138,11 +138,9 @@ module.exports = () => {
 						_profile.lastConnectedIP = 'no looking';
 					} else {
 						try {
-							_profile.lastConnectedIP = obfIP(_profile.lastConnectedIP);
-							_profile.ipObf = true;
+							_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
 						} catch (e) {
 							_profile.lastConnectedIP = 'something went wrong';
-							_profile.ipObf = false;
 							console.log(e);
 						}
 					}
