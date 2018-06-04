@@ -94,7 +94,6 @@ module.exports.sendModInfo = (socket, count) => {
 					}));
 					list.forEach(user => {
 						if (user.ip && user.ip != '') {
-							let ipObf;
 							try {
 								user.ip = '-' + obfIP(user.ip);
 							} catch (e) {
@@ -105,7 +104,6 @@ module.exports.sendModInfo = (socket, count) => {
 					});
 					actions.forEach(action => {
 						if (action.ip && action.ip != '') {
-							let ipObf;
 							try {
 								action.ip = '-' + obfIP(action.ip);
 							} catch (e) {
