@@ -7,6 +7,7 @@ const verifyAccount = require('./verify-account');
 const resetPassword = require('./reset-password');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
+const { expandAndSimplify } = require('./socket/ip-obf');
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.
@@ -273,12 +274,18 @@ module.exports = () => {
 					return;
 				}
 
-				const ip =
+				let ip =
 					req.headers['x-real-ip'] ||
 					req.headers['X-Real-IP'] ||
 					req.headers['X-Forwarded-For'] ||
 					req.headers['x-forwarded-for'] ||
 					req.connection.remoteAddress;
+
+				try {
+					ip = expandAndSimplify(ip);
+				} catch (e) {
+					console.log(e);
+				}
 
 				player.lastConnectedIP = ip;
 				player.save(() => {
