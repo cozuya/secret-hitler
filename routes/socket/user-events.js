@@ -1696,7 +1696,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 					});
 
 					ipban.save(() => {
-						Account.find().forEach(function(user) {
+						Account.find({}).forEach(function(user) {
 							if (user && checkIPEquality(user.lastConnectedIP, data.ip)) {
 								if (isSuperMod) banAccount(user.username);
 								else logOutUser(data.userName);
@@ -1711,7 +1711,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 						ip: data.ip
 					});
 					timeout.save(() => {
-						Account.find().forEach(function(user) {
+						Account.find({}).forEach(function(user) {
 							if (user && checkIPEquality(user.lastConnectedIP, data.ip)) {
 								logOutUser(user.username);
 							}
@@ -1800,7 +1800,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 
 					if (isSuperMod) {
 						ipbanl.save(() => {
-							Account.find().forEach(function(user) {
+							Account.find({}).forEach(function(user) {
 								if (user && checkIPEquality(user.lastConnectedIP, data.ip)) {
 									banAccount(user.username);
 								}
