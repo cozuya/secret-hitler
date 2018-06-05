@@ -68,10 +68,6 @@ class Settings extends React.Component {
 		});
 	}
 
-	componentDidMount() {
-		console.log(this.props.userInfo, 'ui');
-	}
-
 	handleSoundChange(e) {
 		this.setState(
 			{
@@ -297,10 +293,9 @@ class Settings extends React.Component {
 						Game settings
 						<div className="sub header">
 							Account settings can be found{' '}
-							<a href="/account" target="_blank" rel="noopener noreferrer">
-								here
-							</a>{' '}
-							(new tab).
+							<a href="/account" rel="noopener noreferrer">
+								here.
+							</a>
 						</div>
 						<button className="ui primary button" onClick={ownProfileSubmit}>
 							View your profile

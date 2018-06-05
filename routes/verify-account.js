@@ -10,6 +10,13 @@ const template = _.template(
 	})
 );
 
+const ensureAuthenticated = (req, res, next) => {
+	if (req.isAuthenticated()) {
+		return next();
+	}
+	res.redirect('/');
+};
+
 let tokens = [];
 
 module.exports = {
@@ -26,7 +33,7 @@ module.exports = {
 			}));
 		});
 
-		app.get('/verify-account/:user/:token', (req, res, next) => {
+		app.get('/verify-account/:user/:token', ensureAuthenticated, (req, res, next) => {
 			const token = tokens.find(toke => toke.token === req.params.token);
 
 			if (token && token.expires >= new Date() && req.user.username === req.params.user) {
@@ -80,9 +87,9 @@ module.exports = {
 			nmMailgun.sendMail({
 				from: 'Secret Hitler.io <chris.v.ozols@gmail.com>',
 				html: template({ username, token }),
-				// to: email,
+				to: email,
 				// html: `<a href="https://todo/verify-account/${username}/${token}">click here</a>`,
-				to: 'shiotestemail@mailinator.com',
+				// to: 'shiotestemail@mailinator.com',
 				subject: 'Secret Hitler IO - verify your account',
 				'h:Reply-To': 'chris.v.ozols@gmail.com'
 			});

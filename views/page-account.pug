@@ -8,12 +8,12 @@ block content
 			else
 				span.verified-no(style="color: bisque") Not verified
 			if email
-				p.current-email(style="color: #e36248; margin: 5px auto 0;") Current Email: 
-					span(style="color: darkorange")
-						= email
-				button#change-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your email address
-				if !verified
-					button#request-verification.ui.primary.button(style="display: block; margin: 5px auto 0;") Request a new verification email
+				//- p.current-email(style="color: #e36248; margin: 5px auto 0;") Current Email: 
+				//- 	span(style="color: darkorange")
+				//- 		= email
+				//- button#change-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your email address
+				//- if !verified
+				//- 	button#request-verification.ui.primary.button(style="display: block; margin: 5px auto 0;") Request a new verification email
 			else
 				button#add-email.ui.primary.button(style="display: none; margin: 5px auto 0;") Add an email address (sends verification email)
 		
@@ -39,22 +39,22 @@ block content
 			.ui.negative.hidden.message
 			.ui.hidden.message Successfully changed your password!
 
-	section.emailchange-modal.ui.modal.small.segment.column
-		h2.header Change your email
-		form.ui.form
-			.field
-				.ui.left.icon.input
-					i.lock.icon
-					input#emailchange-email(placeholder="New email")
-			.field
-				.ui.left.icon.input
-					i.lock.icon
-					input#emailchange-confirmemail(placeholder="Confirm new email")
-			button.ui.primary.button.fluid.large#emailchange-submit Submit
-			.ui.dimmer.inverted
-				.ui.text.loader Changing your email..
-			.ui.negative.hidden.message
-			.ui.hidden.message Successfully changed your email!
+	//- section.emailchange-modal.ui.modal.small.segment.column
+	//- 	h2.header Change your email
+	//- 	form.ui.form
+	//- 		.field
+	//- 			.ui.left.icon.input
+	//- 				i.lock.icon
+	//- 				input#emailchange-email(placeholder="New email")
+	//- 		.field
+	//- 			.ui.left.icon.input
+	//- 				i.lock.icon
+	//- 				input#emailchange-confirmemail(placeholder="Confirm new email")
+	//- 		button.ui.primary.button.fluid.large#emailchange-submit Submit
+	//- 		.ui.dimmer.inverted
+	//- 			.ui.text.loader Changing your email..
+	//- 		.ui.negative.hidden.message
+	//- 		.ui.hidden.message Successfully changed your email!
 		
 	section.emailadd-modal.ui.modal.small.segment.column
 		h2.header Add an email address for account 

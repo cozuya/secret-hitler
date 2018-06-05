@@ -6,6 +6,7 @@ const { ipbansNotEnforced, accountCreationDisabled } = require('./socket/models'
 const verifyAccount = require('./verify-account');
 const resetPassword = require('./reset-password');
 const blacklistedWords = require('../iso/blacklistwords');
+const bannedEmails = require('../utils/disposibleEmails');
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.
@@ -115,8 +116,6 @@ module.exports = () => {
 			signupIP
 		};
 
-		console.log(email, 'email');
-
 		if (!/^[a-z0-9]+$/i.test(username)) {
 			res.status(401).json({ message: 'Sorry, your username can only be alphanumeric.' });
 		} else if (username.length < 3) {
@@ -145,6 +144,13 @@ module.exports = () => {
 					doesContainBadWord = true;
 				}
 			});
+
+			if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
+				res.status(401).json({
+					message: 'Only non-disposible email providers are allowed to create verified accounts.'
+				});
+				return;
+			}
 
 			if (doesContainBadWord) {
 				res.status(401).json({
