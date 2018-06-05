@@ -1524,12 +1524,21 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 	// Authentication Assured in routes.js
 
-	if (!skipCheck && !data.isReportResolveChange && (!data.ip || data.ip === '') && data.userName && data.userName.startsWith('-')) {
-		try {
-			data.ip = obfIP(data.userName.substring(1));
-		} catch (e) {
-			data.ip = '';
-			console.log(e);
+	if (!skipCheck && !data.isReportResolveChange) {
+		if ((!data.ip || data.ip === '') && data.userName && data.userName.startsWith('-')) {
+			try {
+				data.ip = obfIP(data.userName.substring(1));
+			} catch (e) {
+				data.ip = '';
+				console.log(e);
+			}
+		} else if (data.ip && data.ip.startsWith('-')) {
+			try {
+				data.ip = obfIP(data.ip.substring(1));
+			} catch (e) {
+				data.ip = '';
+				console.log(e);
+			}
 		}
 	}
 
