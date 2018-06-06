@@ -104,11 +104,15 @@ module.exports.sendModInfo = (socket, count) => {
 					});
 					actions.forEach(action => {
 						if (action.ip && action.ip != '') {
-							try {
-								action.ip = '-' + obfIP(action.ip);
-							} catch (e) {
-								action.ip = 'ERROR';
-								console.log(e);
+							if (action.ip.startsWith('-')) {
+								action.ip = 'ERROR'; // There are some bugged IPs in the list right now, need to suppress it.
+							} else {
+								try {
+									action.ip = '-' + obfIP(action.ip);
+								} catch (e) {
+									action.ip = 'ERROR';
+									console.log(e);
+								}
 							}
 						}
 					});
