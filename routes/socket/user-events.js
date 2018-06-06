@@ -1960,7 +1960,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 		}
 	};
 
-	PlayerReport.find({ gameUid: data.uid, reportingPlayer: data.userName }).then(reports => {
+	PlayerReport.find({ gameUid: data.uid, reportingPlayer: data.userName, date: { $gte: new Date(playerReport.date.getTime() - 86400000) } }).then(reports => {
 		if (!reports || reports.length < 4) {
 			playerReport.save(err => {
 				if (err) {
