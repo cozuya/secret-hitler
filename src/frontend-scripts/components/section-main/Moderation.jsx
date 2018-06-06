@@ -31,7 +31,10 @@ export default class Moderation extends React.Component {
 				type: 'date',
 				direction: 'descending'
 			},
-			sortByIP: false
+			userSort: {
+				type: 'username',
+				direction: 'descending'
+			}
 		};
 	}
 
@@ -55,19 +58,6 @@ export default class Moderation extends React.Component {
 		});
 
 		socket.emit('getModInfo', 1);
-
-		$(this.toggleUserSort).checkbox({
-			onChecked() {
-				self.setState({
-					sortByIP: true
-				});
-			},
-			onUnchecked() {
-				self.setState({
-					sortByIP: false
-				});
-			}
-		});
 
 		$(this.toggleAccountCreation).checkbox({
 			onChecked() {
@@ -191,7 +181,7 @@ export default class Moderation extends React.Component {
 		const radioChange = userName => {
 			this.setState({ selectedUser: userName });
 		};
-		const { userList, sortByIP } = this.state;
+		const { userList, userSort } = this.state;
 		const ipCounts = {};
 		const ips = userList.map(user => user.ip);
 		const bannedips = this.state.log.filter(log => log.actionTaken === 'ban' || log.actionTaken === 'timeOut').map(log => log.ip);
@@ -211,34 +201,36 @@ export default class Moderation extends React.Component {
 			IPdata[data[0]][data[1]]++;
 		});
 		const getIPType = user => {
-			if (user.isTor) return 'istor';
-			if (bannedips.includes(user.ip) || timednames.includes(user.userName)) return 'isbannedbefore';
 			const data = splitIP(user.ip);
 			if (IPdata[data[0]][data[1]] > 1) return 'multi';
 			if (IPdata[data[0]].unique > 1) return 'multi2';
+			return '';
+		};
+		const getUserType = user => {
+			if (user.isTor) return 'istor';
+			if (bannedips.includes(user.ip) || timednames.includes(user.userName)) return 'isbannedbefore';
 			return '';
 		};
 
 		return userList
 			.sort((a, b) =>
 				(() => {
-					if (sortByIP && a.ip != b.ip) return a.ip > b.ip ? 1 : -1;
+					if (userSort.type === 'IP' && a.ip != b.ip) return a.ip > b.ip ? 1 : -1;
+					if (userSort.type === 'email' && a.email.toLowerCase() != b.email.toLowerCase()) return a.email > b.email ? 1 : -1;
 					return a.userName.toLowerCase() > b.userName.toLowerCase() ? 1 : -1;
 				})()
 			)
 			.map((user, index) => (
-				<li key={index} title={user.isTor ? 'TOR user' : ''} className={getIPType(user)}>
-					<label>
-						<input
-							type="radio"
-							name="users"
-							onChange={() => {
-								radioChange(user.userName);
-							}}
-						/>
-						{user.userName} <span className="ip">{user.ip}</span>
-					</label>
-				</li>
+				<tr key={index} title={user.isTor ? 'TOR user' : ''} className={getUserType(user)}>
+					<td><input
+						type="radio"
+						name="users"
+						onChange={() => {
+							radioChange(user.userName);
+						}}
+					/></td>
+					<td>{user.userName}</td><td className={getIPType(user)}>{user.ip}</td><td>{user.email}</td>
+				</tr>
 			));
 	}
 
@@ -524,7 +516,7 @@ export default class Moderation extends React.Component {
 			this.setState({
 				logSort: {
 					type,
-					direction: this.state.logSort.direction === 'descending' ? 'ascending' : 'descending'
+					direction: this.state.logSort.direction === 'descending' && type === logSort.type ? 'ascending' : 'descending'
 				}
 			});
 		};
@@ -544,47 +536,67 @@ export default class Moderation extends React.Component {
 		const elem = document.getElementById('playernameelem');
 		const name = elem ? elem.value : '';
 
+		const niceAction = {
+			comment: 'Comment',
+			getIP: 'Get IP',
+			ban: 'Ban',
+			ipbanlarge: 'Large IP Ban',
+			enableAccountCreation: 'Enable Account Creation',
+			disableAccountCreation: 'Disable Account Creation',
+			togglePrivate: 'Toggle Private',
+			timeOut: 'Timeout (IP)',
+			timeOut2: 'Timeout',
+			delGame: 'Delete Game',
+			enableIpBans: 'Enable IP Bans',
+			disableIpBans: 'Disable IP Bans',
+			broadcast: 'Broadcast',
+			clearGenchat: 'Clear General Chat',
+			deleteUser: 'Delete User',
+			deleteBio: 'Delete Bio',
+			deleteCardback: 'Delete Cardback'
+		};
+
 		return (
 			<div>
 				<table className="ui celled table">
 					<thead>
 						<tr>
-							<th
+							<th style={{"white-space": "nowrap"}}
 								onClick={() => {
 									clickSort('modUserName');
 								}}
 							>
-								mod {logSort.type === 'modUserName' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Mod {logSort.type === 'modUserName' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th
+							<th style={{"white-space": "nowrap"}}
 								onClick={() => {
 									clickSort('date');
 								}}
 							>
 								Date {logSort.type === 'date' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th
+							<th style={{"white-space": "nowrap"}}
 								onClick={() => {
 									clickSort('actionTaken');
 								}}
 							>
 								Action {logSort.type === 'actionTaken' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th
+							<th style={{"white-space": "nowrap"}}
 								onClick={() => {
 									clickSort('userActedOn');
 								}}
 							>
 								Player {logSort.type === 'userActedOn' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th
+							<th style={{"white-space": "nowrap"}}
 								onClick={() => {
 									clickSort('ip');
 								}}
 							>
 								IP {logSort.type === 'ip' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th
+							<th style={{"white-space": "nowrap"}}
 								onClick={() => {
 									clickSort('modNotes');
 								}}
@@ -628,12 +640,12 @@ export default class Moderation extends React.Component {
 							})
 							.map((report, index) => (
 								<tr key={index}>
-									<td>{report.modUserName}</td>
-									<td>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
-									<td>{report.actionTaken}</td>
-									<td>{report.userActedOn}</td>
-									<td>{report.ip}</td>
-									<td>{report.modNotes}</td>
+									<td style={{"white-space": "nowrap"}}>{report.modUserName}</td>
+									<td style={{"white-space": "nowrap"}}>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
+									<td style={{width: "120px", "min-width": "120px"}}>{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}</td>
+									<td style={{"white-space": "nowrap"}}>{report.userActedOn}</td>
+									<td style={{"white-space": "nowrap"}}>{report.ip}</td>
+									<td style={{width: "200px", "min-width": "200px"}}>{report.modNotes}</td>
 								</tr>
 							))}
 					</tbody>
@@ -676,6 +688,8 @@ export default class Moderation extends React.Component {
 	}
 
 	render() {
+		const { userSort } = this.state;
+
 		const broadcastKeyup = e => {
 			this.setState({
 				broadcastText: e.currentTarget.value
@@ -687,6 +701,14 @@ export default class Moderation extends React.Component {
 
 			this.setState({
 				modLogToday: !modLogToday
+			});
+		};
+		const clickSort = type => {
+			this.setState({
+				userSort: {
+					type,
+					direction: this.state.userSort.direction === 'descending' && type === userSort.type ? 'ascending' : 'descending'
+				}
 			});
 		};
 
@@ -706,18 +728,26 @@ export default class Moderation extends React.Component {
 					{this.state.playerListShown && (
 						<div className="modplayerlist">
 							<h3>Current player list</h3>
-							<div className="toggle-containers">
-								<h4 className="ui header">Sort by IP</h4>
-								<div
-									className="ui fitted toggle checkbox"
-									ref={c => {
-										this.toggleUserSort = c;
-									}}
-								>
-									<input type="checkbox" name="usersort" />
-								</div>
-							</div>
-							<ul className="userlist">{this.renderUserlist()}</ul>
+							<table className="ui celled table userlist">
+								<thead>
+									<tr>
+										<th></th>
+										<th style={{"white-space": "nowrap"}}
+										onClick={() => {
+											clickSort('username');
+										}}>Username {userSort.type === 'username' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}</th>
+										<th style={{"white-space": "nowrap"}}
+										onClick={() => {
+											clickSort('IP');
+										}}>IP {userSort.type === 'IP' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}</th>
+										<th style={{"white-space": "nowrap"}}
+										onClick={() => {
+											clickSort('email');
+										}}>Email suffix {userSort.type === 'email' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}</th>
+									</tr>
+								</thead>
+								<tbody>{this.renderUserlist()}</tbody>
+							</table>
 							<div className="ui horizontal divider">or</div>
 							{this.renderPlayerInput()}
 							<div className="ui horizontal divider">-</div>
