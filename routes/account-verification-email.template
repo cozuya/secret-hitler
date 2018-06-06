@@ -167,7 +167,7 @@ ol li {
             <table class="btn-primary" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td>
-                  <a href="https://localhost:8080/verify-account/<%= username %>/<%= token %>">Click here to get verified!</a>
+                  <a href="https://secrethitler.io/verify-account/<%= username %>/<%= token %>">Click here to get verified!</a>
                 </td>
               </tr>
             </table>

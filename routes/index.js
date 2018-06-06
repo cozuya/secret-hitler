@@ -95,6 +95,7 @@ module.exports = () => {
 
 				res.render('game', {
 					game: true,
+					verified: req.user.verified,
 					username,
 					gameSettings: account.gameSettings,
 					blacklist

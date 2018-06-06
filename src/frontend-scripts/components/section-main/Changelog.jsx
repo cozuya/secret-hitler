@@ -9,6 +9,27 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.5 released 6-6-2018</p>
+		</div>
+		<h3>New feature: email verified accounts</h3>
+		<p>
+			Your account can now have a new verified status by adding an email, and clicking a link when you receive an email from the site. New players can now
+			(optionally) add their email while signing up. Only non-disposible email providers can be used, and its possible that the site's email will wind up in
+			your spam folder so check there before requesting a new email.
+		</p>
+		<p>
+			I want to make it very clear that I do not want or will use your email addresses for any reason other than to have it possible to be verified. The terms
+			of use has the following added:
+		</p>
+		<ul>
+			<li>Email addresses are used for ONLY the following actions: verifying your account, and reseting your password.</li>
+			<li>In no circumstances will your email address be used for anything other than the above including any sort of mass "email blast".</li>
+			<li>Only administrators have access to see your email address.</li>
+			<li>Your email address will never leave the site/will never be given away or sold.</li>
+		</ul>
+		<h3>New game mode: verified accounts only</h3>
+		<p>Verified accounts will now optionally be able to make a game where only other verified accounts can sit in.</p>
+		<div className="ui header">
 			<p>Version 0.14.3 released 6-1-2018</p>
 		</div>
 		<h3>New feature: sound pack #2!</h3>

@@ -1108,6 +1108,7 @@ export default class Creategame extends React.Component {
 	}
 
 	render() {
+		console.log(this.props.userInfo);
 		return (
 			<section className="creategame">
 				<a href="#/">
@@ -1209,6 +1210,21 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					</div>
+					{this.props.userInfo.verified && (
+						<div className="row">
+							<i className="big hide icon" />
+							<h4 className="ui header">Verified - only email-verified players can play in this game.</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.verified = c;
+								}}
+							>
+								<input type="checkbox" name="verified" defaultChecked={false} />
+							</div>
+						</div>
+					)}
+
 					<div className="row sliderrow">
 						<div className="four wide column disablechat">
 							<i className="big unmute icon" />
@@ -1327,20 +1343,6 @@ export default class Creategame extends React.Component {
 								</div>
 							)}
 					</div>
-					{/* <div className="row">
-						<div className="four wide column">
-							<i className="big hide icon" />
-							<h4 className="ui header">Verified - only email-verified players can play in this game.</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.verified = c;
-								}}
-							>
-								<input type="checkbox" name="verified" defaultChecked={false} />
-							</div>
-						</div>
-					</div> */}
 				</div>
 
 				<div className="ui grid centered footer">

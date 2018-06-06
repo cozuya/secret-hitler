@@ -12,6 +12,7 @@ block content
 			}
 		script.
 			var gameSettings = #{gameSettings}
+			var verified = #{verified}
 			gameSettings.blacklist = !{JSON.stringify(blacklist).replace(/<\//g, '<\\/')}
 			
 	else

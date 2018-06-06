@@ -56,7 +56,7 @@ export class App extends React.Component {
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1];
-			const info = { userName: username };
+			const info = { userName: username, verified: window.verified };
 
 			socket.emit('getUserGameSettings');
 
@@ -117,7 +117,7 @@ export class App extends React.Component {
 			dispatch(updateUserList(list));
 			const now = new Date();
 			const since = now - this.lastReconnectAttempt;
-			if (since > 1000*5) {
+			if (since > 1000 * 5) {
 				this.lastReconnectAttempt = now;
 				const { userInfo } = this.props;
 				if (userInfo && userInfo.userName) {
@@ -308,7 +308,9 @@ export class App extends React.Component {
 				className="app-container"
 				style={{
 					fontFamily: gameSettings
-						? gameSettings.fontFamily ? `'${gameSettings.fontFamily}', Lato, sans-serif` : '"Comfortaa", Lato, sans-serif'
+						? gameSettings.fontFamily
+							? `'${gameSettings.fontFamily}', Lato, sans-serif`
+							: '"Comfortaa", Lato, sans-serif'
 						: '"Comfortaa", Lato, sans-serif'
 				}}
 			>
