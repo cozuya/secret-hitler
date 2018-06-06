@@ -7,16 +7,18 @@ block content
 				span.verified-yes(style="color: teal") Verified
 			else
 				span.verified-no(style="color: bisque") Not verified
+		h3.ui.centered.header(style="color: #e36248; margin: 0") Email address: 
 			if email
-				//- p.current-email(style="color: #e36248; margin: 5px auto 0;") Current Email: 
-				//- 	span(style="color: darkorange")
-				//- 		= email
-				//- button#change-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your email address
-				//- if !verified
-				//- 	button#request-verification.ui.primary.button(style="display: block; margin: 5px auto 0;") Request a new verification email
+				span.current-email(style="color: teal")
+					= email
 			else
-				button#add-email.ui.primary.button(style="display: none; margin: 5px auto 0;") Add an email address (sends verification email)
-		
+				span(style="color: bisque") None on record
+		if email
+			if !verified
+				button#request-verification.ui.primary.button(style="display: block; margin: 5px auto 0;") Request a new verification email
+			button#change-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your email address
+		else
+			button#add-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Add an email address and send verification email
 
 		button#change-password.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your password
 

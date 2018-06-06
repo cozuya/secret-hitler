@@ -21,6 +21,55 @@ $(document).ready(function() {
 			.modal('show');
 	});
 
+	$('body').on('click', '#add-email', function(event) {
+		event.preventDefault();
+
+		$('section.add-email-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
+	});
+
+	$('button.email-submit').on('click', function(event) {
+		event.preventDefault();
+		var email = $('#add-email-input').val(),
+			$loader = $(this).next(),
+			$message = $loader.next(),
+			submitErr = function(message) {
+				$loader.removeClass('active');
+				$message.text(message).removeClass('hidden');
+			};
+
+		$loader.addClass('active');
+
+		$.ajax({
+			url: '/account/add-email',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: JSON.stringify({
+				email: email
+			}),
+			statusCode: {
+				200: function() {
+					window.location.reload();
+				},
+				400: function() {
+					submitErr('Sorry, that request did not look right.');
+				},
+				401: function(xhr) {
+					var message =
+						typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : 'Only non-disposible email addresses can be added for verification purposes.';
+
+					submitErr(message);
+				},
+				403: function(xhr) {
+					var message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
+
+					submitErr(message);
+				}
+			}
+		});
+	});
+
 	$('button.signup-submit').on('click', function(event) {
 		event.preventDefault();
 		var username = $('#signup-username').val(),

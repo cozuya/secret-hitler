@@ -75,6 +75,18 @@ html(lang="en")
 								.or
 								button.ui.button#signup Sign Up
 			block content
+		
+		section.add-email-modal.ui.modal.small.segment.column
+			h2.header Add an email address to your account and request a verification email
+			form.ui.form(style="text-align: center;")
+				.field
+					.ui.left.icon.input
+						i.user.icon
+						input#add-email-input(placeholder="Non-disposible email address", spellcheck="false")
+				button.ui.primary.button.fluid.large.email-submit Submit
+				.ui.dimmer.inverted
+					.ui.text.loader Adding email..
+				.ui.negative.hidden.message
 
 		section.signin-modal.ui.modal.small.segment.column
 			h2.header Sign in to your account
@@ -157,5 +169,5 @@ html(lang="en")
 			script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")
 			script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
 			script(src="//cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js")
-			script(src="/scripts/site.js?abcdefghij")
+			script(src="/scripts/site.js?abcdefghija")
 		block footer

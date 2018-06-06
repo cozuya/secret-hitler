@@ -79,11 +79,6 @@ module.exports = () => {
 	// 	});
 	// });
 
-	// app.post('/account/request-verification', ensureAuthenticated, (req, res) => {
-	// 	verifyAccount.sendToken(req.user.username, req.user.verification.email);
-	// 	res.send();
-	// });
-
 	// app.post('/account/reset-password', (req, res) => {
 	// 	resetPassword.sendToken(req.body.email, res);
 	// });
@@ -310,6 +305,23 @@ module.exports = () => {
 			});
 		}
 	);
+
+	app.post('/account/add-email', ensureAuthenticated, (req, res, next) => {
+		const { email } = req.body;
+
+		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
+			res.status(401).json({
+				message: 'Only non-disposible email providers are allowed to create verified accounts.'
+			});
+			return;
+		}
+
+		verifyAccount.sendToken(req.user.username, email, res);
+	});
+
+	app.post('/account/request-verification', ensureAuthenticated, (req, res, next) => {
+		verifyAccount.sendToken(req.user.username, email, res);
+	});
 
 	app.post('/account/logout', ensureAuthenticated, (req, res) => {
 		req.logOut();
