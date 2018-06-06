@@ -208,7 +208,8 @@ export default class Moderation extends React.Component {
 		};
 		const getUserType = user => {
 			if (user.isTor) return 'istor';
-			if (bannedips.includes(user.ip) || timednames.includes(user.userName)) return 'isbannedbefore';
+			if (bannedips.includes(user.ip)) return 'isbannedbefore';
+			if (timednames.includes(user.userName)) return 'istimedbefore';
 			return '';
 		};
 
@@ -221,7 +222,7 @@ export default class Moderation extends React.Component {
 				})()
 			)
 			.map((user, index) => (
-				<tr key={index} title={user.isTor ? 'TOR user' : ''} className={getUserType(user)}>
+				<tr key={index} className={getUserType(user)}>
 					<td><input
 						type="radio"
 						name="users"
@@ -728,6 +729,14 @@ export default class Moderation extends React.Component {
 					{this.state.playerListShown && (
 						<div className="modplayerlist">
 							<h3>Current player list</h3>
+							<div class="ui table">
+								<h4>Colour chart:</h4>
+								<span class="istor">User is playing via the TOR network.</span><br/>
+								<span class="isbannedbefore">User has been banned before.</span><br/>
+								<span class="istimedbefore">User has been timed before.</span><br/>
+								<span class="multi">IP fully matches another IP.</span><br/>
+								<span class="multi2">IP mostly matches another IP.</span><br/>
+							</div>
 							<table className="ui celled table userlist">
 								<thead>
 									<tr>

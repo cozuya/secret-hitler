@@ -58,10 +58,14 @@
 		}
 	}
 	.istor { // IP is part of the TOR network.
-		color: red;
+		color: maroon;
 		font-weight: bold;
 	}
 	.isbannedbefore { // Another user with the same IP is in the ban list.
+		color: red;
+		font-weight: bold;
+	}
+	.istimedbefore { // This user has been timed out.
 		color: darkorange;
 		font-weight: bold;
 	}
