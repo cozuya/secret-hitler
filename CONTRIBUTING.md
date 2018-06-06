@@ -1,4 +1,4 @@
-Hello and thanks for considering contributing to this project. Any accepted PR will be rewarded with a special contributor status on the site and orange color!
+Hello and thanks for considering contributing to this project. Any accepted PR will be rewarded with a special contributor status on the site and color!
 If you're new to programming in general and want to get started, I would recommend the visual studio code editor (not visual studio) and I like my setup which
 you can find here: https://github.com/cozuya/visual-studio-code-settings-and-snippets
 
