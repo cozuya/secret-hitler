@@ -2041,7 +2041,44 @@ module.exports.checkUserStatus = socket => {
 			socket.emit('updateSeatForUser');
 			sendInProgressGameUpdate(game);
 		}
-		if (user) sendUserList();
+		if (user) {
+			// Double-check the user isn't sneaking past IP bans.
+			const logOutUser = username => {
+				const bannedUserlistIndex = userList.findIndex(user => user.userName === data.userName);
+
+				if (io.sockets.sockets[affectedSocketId]) {
+					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+				}
+
+				if (bannedUserlistIndex >= 0) {
+					userList.splice(bannedUserlistIndex, 1);
+				}
+			};
+			Account.findOne({ username: user }, function(err, account) {
+				if (account) {
+					BannedIP.find(
+						{
+							ip: account.lastConnectedIP,
+							type: 'small' || 'big'
+						},
+						(err, ips) => {
+							let date;
+							let unbannedTime;
+							const ip = ips[ips.length - 1];
+
+							if (ip) {
+								date = new Date().getTime();
+								unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+							}
+
+							if (ip && unbannedTime > date) logOutUser(user);
+						}
+					);
+				}
+			});
+
+			sendUserList();
+		}
 	}
 
 	socket.emit('version', { current: version });
