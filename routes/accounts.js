@@ -7,6 +7,7 @@ const verifyAccount = require('./verify-account');
 const resetPassword = require('./reset-password');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
+const { expandAndSimplify } = require('./socket/ip-obf');
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.
@@ -76,11 +77,6 @@ module.exports = () => {
 	// 			res.send();
 	// 		});
 	// 	});
-	// });
-
-	// app.post('/account/request-verification', ensureAuthenticated, (req, res) => {
-	// 	verifyAccount.sendToken(req.user.username, req.user.verification.email);
-	// 	res.send();
 	// });
 
 	// app.post('/account/reset-password', (req, res) => {
@@ -273,12 +269,18 @@ module.exports = () => {
 					return;
 				}
 
-				const ip =
+				let ip =
 					req.headers['x-real-ip'] ||
 					req.headers['X-Real-IP'] ||
 					req.headers['X-Forwarded-For'] ||
 					req.headers['x-forwarded-for'] ||
 					req.connection.remoteAddress;
+
+				try {
+					ip = expandAndSimplify(ip);
+				} catch (e) {
+					console.log(e);
+				}
 
 				player.lastConnectedIP = ip;
 				player.save(() => {
@@ -303,6 +305,23 @@ module.exports = () => {
 			});
 		}
 	);
+
+	app.post('/account/add-email', ensureAuthenticated, (req, res, next) => {
+		const { email } = req.body;
+
+		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
+			res.status(401).json({
+				message: 'Only non-disposible email providers are allowed to create verified accounts.'
+			});
+			return;
+		}
+
+		verifyAccount.sendToken(req.user.username, email, res);
+	});
+
+	app.post('/account/request-verification', ensureAuthenticated, (req, res, next) => {
+		verifyAccount.sendToken(req.user.username, email, res);
+	});
 
 	app.post('/account/logout', ensureAuthenticated, (req, res) => {
 		req.logOut();

@@ -11,7 +11,7 @@ const isIPv4 = ip => {
 	if (data.length != 4) return false;
 	return is0to999(data[0]) && is0to999(data[1]) && is0to999(data[2]) && is0to999(data[3]);
 };
-const expandAndSimplify = ip => {
+module.exports.expandAndSimplify = ip => {
 	if (ip.includes(':')) {
 		if (ip.startsWith('::ffff:')) {
 			const shortened = ip.substring(7);
@@ -36,14 +36,8 @@ const expandAndSimplify = ip => {
 	return ip; // IPv4
 };
 
-module.exports.checkIPEquality = (ip1, ip2) => {
-	const first = expandAndSimplify(ip1);
-	const second = expandAndSimplify(ip2);
-	return first === second;
-};
-
 module.exports.obfIP = ip => {
-	const ip2 = expandAndSimplify(ip);
+	const ip2 = module.exports.expandAndSimplify(ip);
 	if (isIPv4(ip2)) return ipv4(ip2);
 	return ipv6(ip2);
 };

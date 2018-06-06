@@ -54,7 +54,7 @@ module.exports = {
 			}
 		});
 	},
-	sendToken(username, email) {
+	sendToken(username, email, res) {
 		Account.findOne({ username }, (err, account) => {
 			if (err) {
 				console.log(err);
@@ -76,6 +76,7 @@ module.exports = {
 			);
 
 			tomorrow.setDate(tomorrow.getDate() + 1);
+			account.verification.email = email;
 			account.verification.verificationToken = token;
 			account.verification.verificationTokenExpiration = tomorrow;
 			tokens.push({
@@ -94,7 +95,11 @@ module.exports = {
 				'h:Reply-To': 'chris.v.ozols@gmail.com'
 			});
 
-			account.save();
+			account.save(() => {
+				if (res) {
+					res.send();
+				}
+			});
 		});
 	}
 };

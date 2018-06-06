@@ -20,7 +20,7 @@ const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
-const { obfIP, checkIPEquality } = require('./ip-obf');
+const { obfIP, expandAndSimplify } = require('./ip-obf');
 
 /**
  * @param {object} game - game to act on.
@@ -1524,12 +1524,28 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 	// Authentication Assured in routes.js
 
-	if (!skipCheck && !data.isReportResolveChange && (!data.ip || data.ip === '') && data.userName && data.userName.startsWith('-')) {
-		try {
-			data.ip = obfIP(data.userName.substring(1));
-		} catch (e) {
-			data.ip = '';
-			console.log(e);
+	if (!skipCheck && !data.isReportResolveChange) {
+		if ((!data.ip || data.ip === '') && data.userName && data.userName.startsWith('-')) {
+			try {
+				data.ip = obfIP(data.userName.substring(1));
+			} catch (e) {
+				data.ip = '';
+				console.log(e);
+			}
+		} else if (data.ip && data.ip.startsWith('-')) {
+			try {
+				data.ip = obfIP(data.ip.substring(1));
+			} catch (e) {
+				data.ip = '';
+				console.log(e);
+			}
+		} else if (data.ip) {
+			try {
+				data.ip = expandAndSimplify(data.ip);
+			} catch (e) {
+				data.ip = '';
+				console.log(e);
+			}
 		}
 	}
 
@@ -1687,8 +1703,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 					});
 
 					ipban.save(() => {
-						Account.find().forEach(function(user) {
-							if (user && checkIPEquality(user.lastConnectedIP, data.ip)) {
+						Account.find({ lastConnectedIP: data.ip }, function(err, user) {
+							if (user) {
 								if (isSuperMod) banAccount(user.username);
 								else logOutUser(data.userName);
 							}
@@ -1702,8 +1718,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 						ip: data.ip
 					});
 					timeout.save(() => {
-						Account.find().forEach(function(user) {
-							if (user && checkIPEquality(user.lastConnectedIP, data.ip)) {
+						Account.find({ lastConnectedIP: data.ip }, function(err, user) {
+							if (user) {
 								logOutUser(user.username);
 							}
 						});
@@ -1791,8 +1807,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 
 					if (isSuperMod) {
 						ipbanl.save(() => {
-							Account.find().forEach(function(user) {
-								if (user && checkIPEquality(user.lastConnectedIP, data.ip)) {
+							Account.find({ lastConnectedIP: data.ip }, function(err, user) {
+								if (user) {
 									banAccount(user.username);
 								}
 							});
