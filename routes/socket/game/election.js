@@ -742,8 +742,9 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 		}
 
 		if (!wasTimer && !game.general.private) {
-			const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
+			// const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
 			const track4blue = game.trackState.liberalPolicyCount >= 4;
+			const trackReds = game.trackState.fascistPolicyCount;
 
 			const passed = [game.private.currentElectionPolicies[nonDiscardedPolicies[0]], game.private.currentElectionPolicies[nonDiscardedPolicies[1]]];
 			let passedNicer = '';
@@ -768,49 +769,56 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 							// did not force 5th blue
 							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR with 4 blues on the track, and did not force.`, game);
 						}
-					} else if (!presGetsPower) {
+					} else if (trackReds < 3) {
 						if (passedNicer === 'RR') {
 							// tossed only blue with no benefit
-							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with no power on red, and tossed the blue.`, game);
+							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR before HZ, and tossed the blue.`, game);
+						}
+					} else if (trackReds === 5) {
+						if (passedNicer === 'RR') {
+							// tossed blue in VZ
+							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR during veto zone, and tossed the blue.`, game);
+						} else if (passedNicer === 'BR') {
+							// tossed blue in VZ
+							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR during veto zone, and did not force.`, game);
 						}
 					}
 				}
-			} else if (president.role.cardName === 'fascist') {
-				// regular fascist
-				if (discarded === 'fascist' && track4blue) {
-					if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
-						// forced 5th blue on another fas
-						makeReport(
-							`Player ${president.userName} in seat ${presidentIndex +
-								1} is fascist, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
-							game
-						);
-					} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
-						// offered 5th blue choice as fas
-						makeReport(
-							`Player ${president.userName} in seat ${presidentIndex +
-								1} is fascist, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
-							game
-						);
-					}
-				}
 			} else {
-				// hitler
-				if (discarded === 'fascist' && track4blue) {
-					if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
-						// forced 5th blue as hit
-						makeReport(
-							`Player ${president.userName} in seat ${presidentIndex +
-								1} is hitler, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
-							game
-						);
-					} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
-						// offered 5th blue choice as hit
-						makeReport(
-							`Player ${president.userName} in seat ${presidentIndex +
-								1} is hitler, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
-							game
-						);
+				// fascist
+				if (discarded === 'fascist') {
+					if (track4blue) {
+						if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
+							// forced 5th blue on another fas
+							makeReport(
+								`Player ${president.userName} in seat ${presidentIndex +
+									1} is fascist, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
+								game
+							);
+						} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
+							// offered 5th blue choice as fas
+							makeReport(
+								`Player ${president.userName} in seat ${presidentIndex +
+									1} is fascist, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
+								game
+							);
+						}
+					} else if (trackReds === 5) {
+						if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
+							// forced 5th blue as hit
+							makeReport(
+								`Player ${president.userName} in seat ${presidentIndex +
+									1} is fascist, got BBR with 5 reds on the track, and forced blues on a fascist chancellor.`,
+								game
+							);
+						} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
+							// offered 5th blue choice as hit
+							makeReport(
+								`Player ${president.userName} in seat ${presidentIndex +
+									1} is fascist, got BRR with 5 reds on the track, and offered choice to a liberal chancellor.`,
+								game
+							);
+						}
 					}
 				}
 			}
