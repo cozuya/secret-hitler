@@ -9,13 +9,13 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.14.5 released 6-6-2018</p>
+			<p>Version 0.14.5 released 6-7-2018</p>
 		</div>
 		<h3>New feature: email verified accounts</h3>
 		<p>
-			Your account can now have a new verified status by adding an email, and clicking a link when you receive an email from the site. New players can now
-			(optionally) add their email while signing up. Only non-disposible email providers can be used, and its possible that the site's email will wind up in
-			your spam folder so check there before requesting a new email.
+			Your <a href="/account">account</a> can now have a new verified status by adding an email, and clicking a link when you receive an email from the site.
+			New players can now (optionally) add their email while signing up. Only non-disposible email providers can be used, and its possible that the site's email
+			will wind up in your spam folder so check there before requesting a new email.
 		</p>
 		<p>
 			I want to make it very clear that I do not want or will use your email addresses for any reason other than to have it possible to be verified. The terms
@@ -27,6 +27,7 @@ const Changelog = () => (
 			<li>Only administrators have access to see your email address.</li>
 			<li>Your email address will never leave the site/will never be given away or sold.</li>
 		</ul>
+		<p>In addition, you can also change your email address and request a new verification email. Password reset coming soon.</p>
 		<h3>New game mode: verified accounts only</h3>
 		<p>Verified accounts will now optionally be able to make a game where only other verified accounts can sit in.</p>
 		<div className="ui header">
