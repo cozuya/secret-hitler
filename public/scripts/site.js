@@ -310,6 +310,7 @@ $(document).ready(function() {
 	$('button#request-verification').on('click', function(event) {
 		event.preventDefault();
 
+		$(this).hide();
 		$.ajax({
 			url: '/account/request-verification',
 			method: 'POST',
@@ -366,16 +367,16 @@ $(document).ready(function() {
 	$('button#emailchange-submit').on('click', function(event) {
 		event.preventDefault();
 
-		var newEmail = $('#emailchange-email').val(),
-			newEmailConfirm = $('#emailchange-confirmemail').val(),
+		var newEmail = $('#emailchange-input').val(),
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
-			$successMessage = $errMessage.next(),
 			data = JSON.stringify({
-				newEmail: newEmail,
-				newEmailConfirm: newEmailConfirm
-			});
-
+				email: newEmail
+			}),
+			submitErr = function(message) {
+				$loader.removeClass('active');
+				$errMessage.text(message).removeClass('hidden');
+			};
 		$loader.addClass('active');
 
 		$.ajax({
@@ -385,19 +386,11 @@ $(document).ready(function() {
 			data: data,
 			statusCode: {
 				200: function() {
-					$loader.removeClass('active');
-					$successMessage.removeClass('hidden');
-					if (!$errMessage.hasClass('hidden')) {
-						$errMessage.addClass('hidden');
-					}
-					$('.current-email > span').html(newEmail);
+					window.location.reload();
 				},
-				401: function() {
-					$loader.removeClass('active');
-					$errMessage.text('Your new email and your confirm email did not match.').removeClass('hidden');
-					if (!$successMessage.hasClass('hidden')) {
-						$successMessage.addClass('hidden');
-					}
+				401: function(xhr) {
+					console.log(xhr, 'xhr');
+					submitErr(xhr.responseJSON.message);
 				}
 			}
 		});

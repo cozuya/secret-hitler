@@ -32,7 +32,7 @@ export default class Creategame extends React.Component {
 			casualgame: false,
 			blindMode: false,
 			timedMode: false,
-			isVerifiedOnly: false,
+			isVerifiedOnly: true,
 			timedSliderValue: [120]
 		};
 	}
@@ -210,7 +210,7 @@ export default class Creategame extends React.Component {
 				disableChat: this.state.disablechat,
 				disableObserver: this.state.disableobserver && !this.state.isTourny,
 				isTourny: this.state.isTourny,
-				isVerifiedOnly: this.state.isVerifiedOnly,
+				isVerifiedOnly: userInfo.verified ? this.state.isVerifiedOnly : false,
 				disableGamechat: this.state.disablegamechat,
 				rainbowgame: this.state.rainbowgame,
 				blindMode: this.state.blindMode,
@@ -1108,7 +1108,6 @@ export default class Creategame extends React.Component {
 	}
 
 	render() {
-		console.log(this.props.userInfo);
 		return (
 			<section className="creategame">
 				<a href="#/">
@@ -1211,16 +1210,20 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 					{this.props.userInfo.verified && (
-						<div className="row">
-							<i className="big hide icon" />
-							<h4 className="ui header">Verified - only email-verified players can play in this game.</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.verified = c;
-								}}
-							>
-								<input type="checkbox" name="verified" defaultChecked={false} />
+						<div className="row verified-row">
+							<div className="sixteen wide column">
+								<i className="big thumbs up icon" style={{ color: 'tan !important' }} />
+								<h4 className="ui header" style={{ color: 'tan' }}>
+									Verified - only email-verified players can play in this game.
+								</h4>
+								<div
+									className="ui fitted toggle checkbox"
+									ref={c => {
+										this.verified = c;
+									}}
+								>
+									<input type="checkbox" name="verified" defaultChecked />
+								</div>
 							</div>
 						</div>
 					)}

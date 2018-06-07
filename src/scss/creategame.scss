@@ -55,6 +55,11 @@
 		}
 	}
 
+	#main .row .thumbs.up.icon,
+	#main .row .thumbs.up.icon + h4 {
+		color: tan !important;
+	}
+
 	.ui.search.dropdown > .text {
 		color: black;
 	}
@@ -167,4 +172,13 @@
 #main .scrollbar-container-main .ui.grid .timedmode-check {
 	width: 44% !important;
 	margin: 0 auto;
+}
+
+#main .verified-row {
+	width: 44% !important;
+
+	.thumbs.up.icon,
+	.thumbs.up.icon + h4 {
+		color: tan !important;
+	}
 }

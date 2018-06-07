@@ -52,10 +52,6 @@ const Account = new Schema({
 	},
 	signupIP: String,
 	lastConnectedIP: String,
-	resetPassword: {
-		resetToken: String,
-		resetTokenExpiration: Date
-	},
 	verified: Boolean,
 	isBanned: Boolean,
 	isTimeout: Date,

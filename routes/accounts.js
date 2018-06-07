@@ -21,6 +21,8 @@ const ensureAuthenticated = (req, res, next) => {
 	res.redirect('/');
 };
 
+const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+
 module.exports = () => {
 	verifyAccount.setRoutes();
 	resetPassword.setRoutes();
@@ -145,6 +147,14 @@ module.exports = () => {
 				res.status(401).json({
 					message: 'Only non-disposible email providers are allowed to create verified accounts.'
 				});
+				return;
+			}
+
+			if (email && !emailRegex.test(email)) {
+				res.status(401).json({
+					message: `That doesn't look like a valid email address.`
+				});
+
 				return;
 			}
 
@@ -316,11 +326,53 @@ module.exports = () => {
 			return;
 		}
 
+		if (email && !emailRegex.test(email)) {
+			res.status(401).json({
+				message: `That doesn't look like a valid email address.`
+			});
+			return;
+		}
+
 		verifyAccount.sendToken(req.user.username, email, res);
 	});
 
+	app.post('/account/change-email', ensureAuthenticated, (req, res, next) => {
+		const { email } = req.body;
+		const { verified, username } = req.user;
+
+		console.log(req.body);
+		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
+			res.status(401).json({
+				message: 'Only non-disposible email providers are allowed to create verified accounts.'
+			});
+			return;
+		}
+
+		if (email && !emailRegex.test(email)) {
+			res.status(401).json({
+				message: `That doesn't look like a valid email address.`
+			});
+			return;
+		}
+
+		Account.findOne({ username }).then(account => {
+			account.verification.email = email;
+			account.save(() => {
+				if (!verified) {
+					verifyAccount.sendToken(username, email, res);
+				} else {
+					res.send();
+				}
+			});
+		});
+	});
+
 	app.post('/account/request-verification', ensureAuthenticated, (req, res, next) => {
-		verifyAccount.sendToken(req.user.username, email, res);
+		if (req.user.verification.email) {
+			verifyAccount.sendToken(req.user.username, req.user.verification.email, res);
+		} else {
+			return next();
+		}
 	});
 
 	app.post('/account/logout', ensureAuthenticated, (req, res) => {

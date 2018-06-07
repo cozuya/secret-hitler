@@ -164,7 +164,9 @@ class Players extends React.Component {
 					title={note ? note.note : ''}
 					className={
 						note
-							? playerNotesActive.length ? 'large window minus icon playernote has-note' : 'large edit icon playernote has-note'
+							? playerNotesActive.length
+								? 'large window minus icon playernote has-note'
+								: 'large edit icon playernote has-note'
 							: 'large edit icon playernote'
 					}
 				/>
@@ -425,6 +427,8 @@ class Players extends React.Component {
 		if (userInfo.userName) {
 			if (gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
 				$(this.blacklistModal).modal('show');
+			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
+				$(this.verifiedModal).modal('show');
 			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 				window.alert('Sorry, this service is currently unavailable.');
 			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
@@ -467,6 +471,17 @@ class Players extends React.Component {
 					}}
 				>
 					<div className="ui header">This game's creator has you blacklisted.</div>
+				</div>
+
+				<div
+					className="ui basic small modal"
+					ref={c => {
+						this.verifiedModal = c;
+					}}
+				>
+					<div className="ui header">
+						This game is for email-verified only accounts. Have your account become verified by adding an email address in your <a href="/account">settings.</a>
+					</div>
 				</div>
 
 				<div

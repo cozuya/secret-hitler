@@ -152,8 +152,8 @@ const DisplayLobbies = props => {
 		}
 
 		if (game.isVerifiedOnly) {
-			isVerifiedOnly = <i className="game icon" />;
-			isVerifiedOnlyTooltip = 'Only email-verified players can sit in thei game.';
+			isVerifiedOnly = <i className="thumbs up icon" />;
+			isVerifiedOnlyTooltip = 'Only email-verified players can sit in this game.';
 		}
 
 		if (game.rainbowgame) {

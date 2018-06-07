@@ -137,6 +137,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	pendingPresidentPlayer.playersState
 		.filter(
 			(player, index) =>
+				seatedPlayers[index] &&
 				!seatedPlayers[index].isDead &&
 				(index !== presidentIndex && (game.general.livingPlayerCount > 5 ? !previousElectedGovernment.includes(index) : previousElectedGovernment[1] !== index))
 		)
