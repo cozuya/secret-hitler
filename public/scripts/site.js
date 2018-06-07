@@ -389,7 +389,6 @@ $(document).ready(function() {
 					window.location.reload();
 				},
 				401: function(xhr) {
-					console.log(xhr, 'xhr');
 					submitErr(xhr.responseJSON.message);
 				}
 			}

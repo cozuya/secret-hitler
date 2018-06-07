@@ -340,7 +340,6 @@ module.exports = () => {
 		const { email } = req.body;
 		const { verified, username } = req.user;
 
-		console.log(req.body);
 		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
 			res.status(401).json({
 				message: 'Only non-disposible email providers are allowed to create verified accounts.'
