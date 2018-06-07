@@ -1960,12 +1960,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 		}
 	};
 
-	const findGame = data => {
-		if (games && data && data.uid) {
-			return games.find(el => el.general.uid === data.uid);
-		}
-	};
-	const game = findGame(data.uid);
+	const game = games.find(el => el.general.uid === data.uid);
 	if (game) {
 		if (!game.reportCounts) game.reportCounts = {};
 		if (!game.reportCounts[passport.user]) game.reportCounts[passport.user] = 0;
