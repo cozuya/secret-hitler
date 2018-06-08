@@ -225,7 +225,7 @@ export default class Moderation extends React.Component {
 				})()
 			)
 			.map((user, index) => (
-				<tr key={index} className={getUserType(user)}>
+				<tr key={index}>
 					<td><input
 						type="radio"
 						name="users"
@@ -233,7 +233,7 @@ export default class Moderation extends React.Component {
 							radioChange(user.userName);
 						}}
 					/></td>
-					<td>{user.userName}</td><td className={getIPType(user)}>{user.ip}</td><td>{user.email}</td>
+					<td className={getUserType(user)}>{user.userName}</td><td className={getIPType(user)}>{user.ip}</td><td>{user.email}</td>
 				</tr>
 			));
 	}
