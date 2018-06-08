@@ -1960,37 +1960,41 @@ module.exports.handlePlayerReport = (passport, data) => {
 		}
 	};
 
-	PlayerReport.find({ gameUid: data.uid, reportingPlayer: data.userName, date: { $gte: new Date(playerReport.date.getTime() - 86400000) } }).then(reports => {
-		if (!reports || reports.length < 4) {
-			playerReport.save(err => {
-				if (err) {
-					console.log(err, 'Failed to save player report');
-					return;
-				}
-				Account.find({ username: mods }).then(accounts => {
-					accounts.forEach(account => {
-						const onlineSocketId = Object.keys(io.sockets.sockets).find(
-							socketId =>
-								io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
-						);
+	const game = games.find(el => el.general.uid === data.uid);
+	if (game) {
+		if (!game.reportCounts) game.reportCounts = {};
+		if (!game.reportCounts[passport.user]) game.reportCounts[passport.user] = 0;
+		if (game.reportCounts[passport.user] >= 4) return;
+		game.reportCounts[passport.user]++;
+	}
 
-						account.gameSettings.newReport = true;
+	try {
+		const req = https.request(options);
+		req.end(body);
+	} catch (error) {
+		console.log(error, 'Caught exception in player request https request to discord server');
+	}
 
-						if (onlineSocketId) {
-							io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
-						}
-						account.save();
-					});
-				});
-
-				try {
-					const req = https.request(options);
-					req.end(body);
-				} catch (error) {
-					console.log(error, 'Caught exception in player request https request to discord server');
-				}
-			});
+	playerReport.save(err => {
+		if (err) {
+			console.log(err, 'Failed to save player report');
+			return;
 		}
+		Account.find({ username: mods }).then(accounts => {
+			accounts.forEach(account => {
+				const onlineSocketId = Object.keys(io.sockets.sockets).find(
+					socketId =>
+						io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
+				);
+
+				account.gameSettings.newReport = true;
+
+				if (onlineSocketId) {
+					io.sockets.sockets[onlineSocketId].emit('reportUpdate', true);
+				}
+				account.save();
+			});
+		});
 	});
 };
 
