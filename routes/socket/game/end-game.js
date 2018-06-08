@@ -235,6 +235,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 					}
 
 					player.games.push(game.general.uid);
+					player.lastCompletedGame = new Date();
 					player.save(() => {
 						const userEntry = userList.find(user => user.userName === player.username);
 
