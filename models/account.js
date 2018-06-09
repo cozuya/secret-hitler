@@ -76,6 +76,7 @@ const Account = new Schema({
 	previousDayElo: Number,
 	previousWeekElo: Number,
 	created: Date,
+	isOnFire: Boolean,
 	lastCompletedGame: Date,
 	lastVersionSeen: String,
 	isFixed: Boolean,

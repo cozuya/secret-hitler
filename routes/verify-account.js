@@ -89,8 +89,6 @@ module.exports = {
 				from: 'Secret Hitler.io <chris.v.ozols@gmail.com>',
 				html: template({ username, token }),
 				to: email,
-				// html: `<a href="https://todo/verify-account/${username}/${token}">click here</a>`,
-				// to: 'shiotestemail@mailinator.com',
 				subject: 'Secret Hitler IO - verify your account',
 				'h:Reply-To': 'chris.v.ozols@gmail.com'
 			});

@@ -15,7 +15,7 @@ Account.find({})
 	.cursor()
 	.eachAsync(account => {
 		if (account.previousDayElo) {
-			dailyLeaderboard.push({
+			data.dailyLeaderboard.push({
 				userName: account.username,
 				dailyEloDifference: account.eloSeason - account.previousDayElo
 			});
@@ -23,8 +23,12 @@ Account.find({})
 		account.previousDayElo = account.eloSeason;
 	})
 	.then(() => {
-		Account.find({});
-		fs.writeFile('/var/www/secret-hitler/data/leaderboardData.json', JSON.stringify(data), () => {
-			mongoose.connection.close();
-		});
+		Account.find({ lastCompletedGame: { $gte: new Date(Date.now() - 86400000) } })
+			.cursor()
+			.eachAsync(account => {})
+			.then(() => {
+				fs.writeFile('/var/www/secret-hitler/data/leaderboardData.json', JSON.stringify(data), () => {
+					mongoose.connection.close();
+				});
+			});
 	});
