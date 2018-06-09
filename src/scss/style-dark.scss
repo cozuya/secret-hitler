@@ -1115,6 +1115,20 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	font-family: $textfont;
 }
 
+.leaderboards {
+	h2 {
+		margin-top: 20px !important;
+		text-align: center;
+	}
+	li {
+		text-decoration: none;
+		display: flex;
+		justify-content: space-between;
+		height: 28px;
+		padding: 0 70px;
+	}
+}
+
 // ::-webkit-scrollbar {
 // 	width: 3px;
 // 	height: 3px;
