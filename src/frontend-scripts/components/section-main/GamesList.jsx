@@ -3,6 +3,7 @@ import DisplayLobbies from './DisplayLobbies.jsx';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'semantic-ui-react';
 import moment from 'moment';
+import { CURRENTSEASONNUMBER } from '../../constants';
 
 export class GamesList extends React.Component {
 	constructor() {
@@ -191,8 +192,9 @@ export class GamesList extends React.Component {
 		return (
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
-					<h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">
-						Season ends {new Date().getTime() < new Date('7-1-2018').getTime() ? moment(new Date('7-1-2018')).fromNow() : 'Welcome to season 3'}.
+					<h5 title="A season is an optional new tier of wins and losses that is reset after 3 months.">
+						Season ends{' '}
+						{new Date().getTime() < new Date('7-1-2018').getTime() ? moment(new Date('7-1-2018')).fromNow() : `Welcome to season ${CURRENTSEASONNUMBER + 1}`}.
 					</h5>
 					{/* <h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">Welcome to season 2</h5> */}
 				</a>
@@ -217,6 +219,9 @@ export class GamesList extends React.Component {
 						<i className="large filter icon" title="Game filters" />
 					</span>
 				</div>
+				<a href="#/leaderboards" className="leaderboard">
+					Seasonal leaderboards
+				</a>
 				<div className="browser-body">{this.renderGameList()}</div>
 			</section>
 		);

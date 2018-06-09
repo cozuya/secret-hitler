@@ -223,6 +223,8 @@ export class App extends React.Component {
 			dispatch(updateMidsection('createGame'));
 		} else if (hash.substr(0, 8) === '#/table/') {
 			socket.emit('getGameInfo', hash.split('#/table/')[1]);
+		} else if (hash === '#/leaderboards') {
+			dispatch(updateMidsection('leaderboards'));
 		} else if (hash !== '#/') {
 			window.location.hash = '#/';
 		} else {

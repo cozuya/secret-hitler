@@ -7,6 +7,7 @@ import Replay from './replay/Replay.jsx';
 import Changelog from './Changelog.jsx';
 import Moderation from './Moderation.jsx';
 import Reports from './Reports.jsx';
+import Leaderboards from './Leaderboards.jsx';
 import PropTypes from 'prop-types';
 import GamesList from './GamesList.jsx';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -79,6 +80,8 @@ export class Main extends React.Component {
 					return <Replay />;
 				case 'reports':
 					return <Reports socket={socket} userInfo={userInfo} />;
+				case 'leaderboards':
+					return <Leaderboards />;
 				default:
 					return (
 						<GamesList

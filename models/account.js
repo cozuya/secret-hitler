@@ -74,7 +74,6 @@ const Account = new Schema({
 	rainbowWinsSeason3: Number,
 	rainbowLossesSeason3: Number,
 	previousDayElo: Number,
-	previousWeekElo: Number,
 	created: Date,
 	isOnFire: Boolean,
 	lastCompletedGame: Date,
