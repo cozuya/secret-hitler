@@ -65,8 +65,6 @@ module.exports = {
 			if (err) {
 				console.log(err);
 			}
-			console.log(process.env.EMAIL_USER);
-			console.log(process.env.EMAIL_PASS);
 
 			const tomorrow = new Date();
 			const token = `${Math.random()
