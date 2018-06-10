@@ -212,6 +212,10 @@ export default class Moderation extends React.Component {
 			if (timednames.includes(user.userName)) return 'istimedbefore';
 			return '';
 		};
+		const checkEmail = email => {
+			if (email.startsWith('-') return 'emailunverified';
+			return '';
+		};
 
 		return userList
 			.sort((a, b) =>
@@ -233,7 +237,7 @@ export default class Moderation extends React.Component {
 							radioChange(user.userName);
 						}}
 					/></td>
-					<td className={getUserType(user)}>{user.userName}</td><td className={getIPType(user)}>{user.ip}</td><td>{user.email}</td>
+					<td className={getUserType(user)}>{user.userName}</td><td className={getIPType(user)}>{user.ip}</td><td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
 				</tr>
 			));
 	}
@@ -743,6 +747,7 @@ export default class Moderation extends React.Component {
 								<span class="istimedbefore">User has been timed before.</span><br/>
 								<span class="multi">IP fully matches another IP.</span><br/>
 								<span class="multi2">IP mostly matches another IP.</span><br/>
+								<span class="emailunverified">Email is not yet verified.</span><br/>
 							</div>
 							<table className="ui celled table userlist">
 								<thead>

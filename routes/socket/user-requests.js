@@ -97,7 +97,7 @@ module.exports.sendModInfo = (socket, count) => {
 						userName: user.username,
 						isTor: torIps && torIps.includes(user.lastConnectedIP || user.signupIP),
 						ip: user.lastConnectedIP || user.signupIP,
-						email: user.verified ? maskEmail(user.verification.email) : ''
+						email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`
 					}));
 					list.forEach(user => {
 						if (user.ip && user.ip != '') {
