@@ -237,7 +237,9 @@ export default class Moderation extends React.Component {
 							radioChange(user.userName);
 						}}
 					/></td>
-					<td className={getUserType(user)}>{user.userName}</td><td className={getIPType(user)}>{user.ip}</td><td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
+					<td className={getUserType(user)}>{user.userName}</td>
+					<td className={getIPType(user)}>{user.ip}</td>
+					<td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
 				</tr>
 			));
 	}
@@ -297,6 +299,15 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Ban user
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('setVerified');
+					}}
+					style={{ width: '100%', background: 'aquamarine' }}
+				>
+					Set as verified
 				</button>
 				<br />
 				<button
@@ -573,42 +584,48 @@ export default class Moderation extends React.Component {
 				<table className="ui celled table">
 					<thead>
 						<tr>
-							<th style={{"white-space": "nowrap"}}
+							<th
+								style={{ whiteSpace: 'nowrap' }}
 								onClick={() => {
 									clickSort('modUserName');
 								}}
 							>
 								Mod {logSort.type === 'modUserName' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th style={{"white-space": "nowrap"}}
+							<th
+								style={{ whiteSpace: 'nowrap' }}
 								onClick={() => {
 									clickSort('date');
 								}}
 							>
 								Date {logSort.type === 'date' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th style={{"white-space": "nowrap"}}
+							<th
+								style={{ whiteSpace: 'nowrap' }}
 								onClick={() => {
 									clickSort('actionTaken');
 								}}
 							>
 								Action {logSort.type === 'actionTaken' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th style={{"white-space": "nowrap"}}
+							<th
+								style={{ whiteSpace: 'nowrap' }}
 								onClick={() => {
 									clickSort('userActedOn');
 								}}
 							>
 								Player {logSort.type === 'userActedOn' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th style={{"white-space": "nowrap"}}
+							<th
+								style={{ whiteSpace: 'nowrap' }}
 								onClick={() => {
 									clickSort('ip');
 								}}
 							>
 								IP {logSort.type === 'ip' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
-							<th style={{"white-space": "nowrap"}}
+							<th
+								style={{ whiteSpace: 'nowrap' }}
 								onClick={() => {
 									clickSort('modNotes');
 								}}
@@ -652,12 +669,12 @@ export default class Moderation extends React.Component {
 							})
 							.map((report, index) => (
 								<tr key={index}>
-									<td style={{"white-space": "nowrap"}}>{report.modUserName}</td>
-									<td style={{"white-space": "nowrap"}}>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
-									<td style={{width: "120px", "min-width": "120px"}}>{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}</td>
-									<td style={{"white-space": "nowrap"}}>{report.userActedOn}</td>
-									<td style={{"white-space": "nowrap"}}>{report.ip}</td>
-									<td style={{width: "200px", "min-width": "200px"}}>{report.modNotes}</td>
+									<td style={{ whiteSpace: 'nowrap' }}>{report.modUserName}</td>
+									<td style={{ whiteSpace: 'nowrap' }}>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
+									<td style={{ width: '120px', minWidth: '120px' }}>{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}</td>
+									<td style={{ whiteSpace: 'nowrap' }}>{report.userActedOn}</td>
+									<td style={{ whiteSpace: 'nowrap' }}>{report.ip}</td>
+									<td style={{ Width: '200px', minWidth: '200px' }}>{report.modNotes}</td>
 								</tr>
 							))}
 					</tbody>
@@ -740,7 +757,7 @@ export default class Moderation extends React.Component {
 					{this.state.playerListShown && (
 						<div className="modplayerlist">
 							<h3>Current player list</h3>
-							<div class="ui table">
+							<div className="ui table">
 								<h4>Colour chart:</h4>
 								<span class="istor">User is playing via the TOR network.</span><br/>
 								<span class="isbannedbefore">User has been banned before.</span><br/>
@@ -752,19 +769,31 @@ export default class Moderation extends React.Component {
 							<table className="ui celled table userlist">
 								<thead>
 									<tr>
-										<th></th>
-										<th style={{"white-space": "nowrap"}}
-										onClick={() => {
-											clickSort('username');
-										}}>Username {userSort.type === 'username' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}</th>
-										<th style={{"white-space": "nowrap"}}
-										onClick={() => {
-											clickSort('IP');
-										}}>IP {userSort.type === 'IP' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}</th>
-										<th style={{"white-space": "nowrap"}}
-										onClick={() => {
-											clickSort('email');
-										}}>Email suffix {userSort.type === 'email' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}</th>
+										<th />
+										<th
+											style={{ 'white-space': 'nowrap' }}
+											onClick={() => {
+												clickSort('username');
+											}}
+										>
+											Username {userSort.type === 'username' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+										<th
+											style={{ 'white-space': 'nowrap' }}
+											onClick={() => {
+												clickSort('IP');
+											}}
+										>
+											IP {userSort.type === 'IP' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+										<th
+											style={{ 'white-space': 'nowrap' }}
+											onClick={() => {
+												clickSort('email');
+											}}
+										>
+											Email suffix {userSort.type === 'email' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
 									</tr>
 								</thead>
 								<tbody>{this.renderUserlist()}</tbody>
