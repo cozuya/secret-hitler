@@ -9,26 +9,26 @@ const data = {
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
 
-Account.find({ 'games.1': { $exists: true } })
+Account.find({ lastCompletedGame: { $gte: new Date(Date.now() - 86400000) } })
 	.cursor()
 	.eachAsync(account => {
-		if (account.account.previousDayElo > 1620) {
-			data.seasonalLeaderboard.push({
-				userName: account.username,
-				elo: account.eloSeason
-			});
-		}
-		account.previousDayElo = account.eloSeason;
-		account.save();
+		data.dailyLeaderboard.push({
+			userName: account.username,
+			dailyEloDifference: account.eloSeason - (account.previousDayElo || 0)
+		});
 	})
 	.then(() => {
-		Account.find({ lastCompletedGame: { $gte: new Date(Date.now() - 86400000) } })
+		Account.find({ 'games.2': { $exists: true } })
 			.cursor()
 			.eachAsync(account => {
-				data.dailyLeaderboard.push({
-					userName: account.username,
-					dailyEloDifference: account.eloSeason - account.previousDayElo
-				});
+				if (account.previousDayElo > 1620) {
+					data.seasonalLeaderboard.push({
+						userName: account.username,
+						elo: account.eloSeason
+					});
+				}
+				account.previousDayElo = account.eloSeason;
+				account.save();
 			})
 			.then(() => {
 				data.dailyLeaderboard = data.dailyLeaderboard.sort((a, b) => b.dailyEloDifference - a.dailyEloDifference).slice(0, 20);
