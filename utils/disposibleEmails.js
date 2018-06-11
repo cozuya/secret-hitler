@@ -696,6 +696,7 @@ module.exports = [
 	'civilizationdesign.xyz',
 	'civvic.ro',
 	'civx.org',
+	'cjpeg.com',
 	'ckaazaza.tk',
 	'ckiso.com',
 	'cko.kr',

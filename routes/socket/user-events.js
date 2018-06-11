@@ -1625,6 +1625,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 			};
 
 			switch (data.action) {
+				case 'setVerified':
+					Account.findOne({ username: data.userName }).then(account => {
+						account.verified = true;
+						account.verification.email = 'mod@VERIFIEDVIAMOD.info';
+						account.save();
+					});
+					break;
+
 				case 'getIP':
 					if (isSuperMod) {
 						socket.emit('sendAlert', `Requested IP: ${data.ip}`);

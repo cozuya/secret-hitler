@@ -312,6 +312,11 @@ module.exports = () => {
 					req.logOut();
 					res.send();
 				}
+				const email = player.verification.email;
+				if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
+					player.verified = false;
+					player.verification.email = '';
+				}
 			});
 		}
 	);

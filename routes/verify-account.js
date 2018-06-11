@@ -1,14 +1,20 @@
 const passport = require('passport'); // eslint-disable-line no-unused-vars
 const Account = require('../models/account');
-const nodemailer = require('nodemailer');
-const mg = require('nodemailer-mailgun-transport');
 const _ = require('lodash');
 const fs = require('fs');
+const emailjs = require('emailjs');
 const template = _.template(
 	fs.readFileSync('./routes/account-verification-email.template', {
 		encoding: 'UTF-8'
 	})
 );
+// Keep one reference of the server, so that send calls are async.
+const email_server = emailjs.server.connect({
+	host: 'smtp.gmail.com',
+	ssl: true,
+	user: `${process.env.EMAIL_USER}`,
+	password: `${process.env.EMAIL_PASS}`
+});
 
 const ensureAuthenticated = (req, res, next) => {
 	if (req.isAuthenticated()) {
@@ -66,14 +72,6 @@ module.exports = {
 				.substring(2)}${Math.random()
 				.toString(36)
 				.substring(2)}`;
-			const nmMailgun = nodemailer.createTransport(
-				mg({
-					auth: {
-						api_key: process.env.MGKEY,
-						domain: process.env.MGDOMAIN
-					}
-				})
-			);
 
 			tomorrow.setDate(tomorrow.getDate() + 1);
 			account.verification.email = email;
@@ -85,18 +83,21 @@ module.exports = {
 				expires: tomorrow
 			});
 
-			nmMailgun.sendMail({
+			const message = emailjs.message.create({
 				from: 'Secret Hitler.io <chris.v.ozols@gmail.com>',
-				html: template({ username, token }),
 				to: email,
 				subject: 'Secret Hitler IO - verify your account',
-				'h:Reply-To': 'chris.v.ozols@gmail.com'
+				'h:Reply-To': 'chris.v.ozols@gmail.com',
+				attachment: [{ data: template({ username, token }), alternative: true }]
 			});
-
-			account.save(() => {
-				if (res) {
-					res.send();
-				}
+			email_server.send(message, function(err, message) {
+				console.log(err || message);
+				if (res) res.send('ok');
+				account.save(() => {
+					if (res) {
+						res.send();
+					}
+				});
 			});
 		});
 	}

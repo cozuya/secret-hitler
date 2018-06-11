@@ -75,6 +75,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 		game.unsentReports.forEach(report => {
 			makeReport(report, game, true);
 		});
+		game.unsentReports = [];
 	}
 
 	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
