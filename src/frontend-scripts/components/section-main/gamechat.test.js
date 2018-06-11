@@ -1,19 +1,21 @@
 import React from 'react'; // eslint-disable-line
-import { shallow } from 'enzyme';
+import { shallowWithStore } from 'enzyme-redux';
+import { createMockStore } from 'redux-test-utils';
 import Gamechat from './Gamechat';
 
 describe('Gamechat', () => {
 	it('should initialize correctly', () => {
-		const initialState = {
-			chatFilter: 'All',
-			lock: false,
-			claim: '',
-			playersToWhitelist: [],
-			notesEnabled: false
+		const initialProps = {
+			loadReplay: () => {},
+			toggleNotes: () => {},
+			updateUser: () => {},
+			notesActive: false
 		};
 
-		const component = shallow(<Gamechat />);
+		const store = createMockStore(initialProps);
 
-		expect(component.state()).toEqual(initialState);
+		const component = shallowWithStore(<Gamechat />, store);
+
+		expect(component).toHaveLength(1);
 	});
 });
