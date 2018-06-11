@@ -9,6 +9,13 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.6 released 6-11-2018</p>
+		</div>
+		<h3>New feature: seasonal leaderboards</h3>
+		<p>Click the big words on the lobby to see who's top elo for the season, and also who's went up the most in the last 24 hours.</p>
+		<h3>Attempt to fix "verification email goes to spam/sometimes rejected" issue has gone in.</h3>
+		<h3>Also moderators can now mainly set accounts to verified, if you are getting no where with the emails, contact a mod, thanks.</h3>
+		<div className="ui header">
 			<p>Version 0.14.5 released 6-7-2018</p>
 		</div>
 		<h3>New feature: email verified accounts</h3>
