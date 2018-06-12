@@ -14,7 +14,7 @@ Account.find({ lastCompletedGame: { $gte: new Date(Date.now() - 86400000) } })
 	.eachAsync(account => {
 		data.dailyLeaderboard.push({
 			userName: account.username,
-			dailyEloDifference: account.eloSeason - (account.previousDayElo || 0)
+			dailyEloDifference: account.eloSeason - (account.previousDayElo || 1600)
 		});
 	})
 	.then(() => {
