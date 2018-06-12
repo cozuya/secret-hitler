@@ -2058,9 +2058,7 @@ module.exports.checkUserStatus = socket => {
 			const logOutUser = username => {
 				const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
 
-				if (io.sockets.sockets[affectedSocketId]) {
-					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-				}
+				socket.emit('manualDisconnection');
 
 				if (bannedUserlistIndex >= 0) {
 					userList.splice(bannedUserlistIndex, 1);
