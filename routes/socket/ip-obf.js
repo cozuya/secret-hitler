@@ -36,8 +36,10 @@ module.exports.expandAndSimplify = ip => {
 	return ip; // IPv4
 };
 
+const obfCache = {};
 module.exports.obfIP = ip => {
+	if (obfCache[ip]) return obfCache[ip];
 	const ip2 = module.exports.expandAndSimplify(ip);
-	if (isIPv4(ip2)) return ipv4(ip2);
-	return ipv6(ip2);
+	if (isIPv4(ip2)) return (obfCache[ip] = ipv4(ip2));
+	return (obfCache[ip] = ipv6(ip2));
 };
