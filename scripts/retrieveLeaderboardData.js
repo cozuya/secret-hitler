@@ -21,7 +21,7 @@ Account.find({ lastCompletedGame: { $gte: new Date(Date.now() - 86400000) } })
 		Account.find({ 'games.2': { $exists: true } })
 			.cursor()
 			.eachAsync(account => {
-				if (account.previousDayElo > 1620) {
+				if (account.previousDayElo > 1620 && !account.isBanned) {
 					data.seasonalLeaderboard.push({
 						userName: account.username,
 						elo: account.eloSeason
