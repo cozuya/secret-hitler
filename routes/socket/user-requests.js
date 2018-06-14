@@ -83,7 +83,7 @@ module.exports.sendModInfo = (socket, count) => {
 		const data = email.split('@');
 		// if (data[0].length < 7) return '#####@' + data[1]; // Too short to show first/last two chars.
 		// return data[0].substring(2) + '#' + data[0].substring(data[0].length-2, data[0].length) + '@' + data[1];
-		return data[1];
+		return data[1] || '';
 	};
 
 	Account.find({ username: userNames, 'gameSettings.isPrivate': false })

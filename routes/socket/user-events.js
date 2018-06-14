@@ -2056,11 +2056,9 @@ module.exports.checkUserStatus = socket => {
 		if (user) {
 			// Double-check the user isn't sneaking past IP bans.
 			const logOutUser = username => {
-				const bannedUserlistIndex = userList.findIndex(user => user.userName === data.userName);
+				const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
 
-				if (io.sockets.sockets[affectedSocketId]) {
-					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-				}
+				socket.emit('manualDisconnection');
 
 				if (bannedUserlistIndex >= 0) {
 					userList.splice(bannedUserlistIndex, 1);

@@ -213,7 +213,7 @@ export default class Moderation extends React.Component {
 			return '';
 		};
 		const checkEmail = email => {
-			if (email.startsWith('-') return 'emailunverified';
+			if (email.startsWith('-')) return 'emailunverified';
 			return '';
 		};
 
@@ -230,13 +230,15 @@ export default class Moderation extends React.Component {
 			)
 			.map((user, index) => (
 				<tr key={index}>
-					<td><input
-						type="radio"
-						name="users"
-						onChange={() => {
-							radioChange(user.userName);
-						}}
-					/></td>
+					<td>
+						<input
+							type="radio"
+							name="users"
+							onChange={() => {
+								radioChange(user.userName);
+							}}
+						/>
+					</td>
 					<td className={getUserType(user)}>{user.userName}</td>
 					<td className={getIPType(user)}>{user.ip}</td>
 					<td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
@@ -759,12 +761,18 @@ export default class Moderation extends React.Component {
 							<h3>Current player list</h3>
 							<div className="ui table">
 								<h4>Colour chart:</h4>
-								<span class="istor">User is playing via the TOR network.</span><br/>
-								<span class="isbannedbefore">User has been banned before.</span><br/>
-								<span class="istimedbefore">User has been timed before.</span><br/>
-								<span class="multi">IP fully matches another IP.</span><br/>
-								<span class="multi2">IP mostly matches another IP.</span><br/>
-								<span class="emailunverified">Email is not yet verified.</span><br/>
+								<span class="istor">User is playing via the TOR network.</span>
+								<br />
+								<span class="isbannedbefore">User has been banned before.</span>
+								<br />
+								<span class="istimedbefore">User has been timed before.</span>
+								<br />
+								<span class="multi">IP fully matches another IP.</span>
+								<br />
+								<span class="multi2">IP mostly matches another IP.</span>
+								<br />
+								<span class="emailunverified">Email is not yet verified.</span>
+								<br />
 							</div>
 							<table className="ui celled table userlist">
 								<thead>

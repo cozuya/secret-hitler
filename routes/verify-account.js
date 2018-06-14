@@ -84,20 +84,21 @@ module.exports = {
 			});
 
 			const message = emailjs.message.create({
-				from: 'Secret Hitler.io <chris.v.ozols@gmail.com>',
+				from: `secrethitler.io <${process.env.EMAIL_USER}>`,
 				to: email,
 				subject: 'Secret Hitler IO - verify your account',
-				'h:Reply-To': 'chris.v.ozols@gmail.com',
 				attachment: [{ data: template({ username, token }), alternative: true }]
 			});
 			email_server.send(message, function(err, message) {
-				console.log(err || message);
-				if (res) res.send('ok');
-				account.save(() => {
-					if (res) {
-						res.send();
-					}
-				});
+				if (err) console.log(err);
+				else {
+					if (res) res.send('ok');
+					account.save(() => {
+						if (res) {
+							res.send();
+						}
+					});
+				}
 			});
 		});
 	}
