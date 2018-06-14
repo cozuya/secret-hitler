@@ -140,7 +140,11 @@ module.exports = () => {
 				}
 			})
 			.on('updateReportGame', data => {
-				handleUpdatedReportGame(socket, data);
+				try {
+					handleUpdatedReportGame(socket, data);
+				} catch (e) {
+					console.log(e, 'err in player report');
+				}
 			})
 			.on('addNewGame', data => {
 				if (authenticated) {
