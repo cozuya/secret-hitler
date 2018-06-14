@@ -11,10 +11,11 @@ const MODERATORS = (module.exports.MODERATORS = [
 	'Ophxlia',
 	'cayseron',
 	'neffni',
-	'benjamin172'
+	'benjamin172',
+	'mara717'
 ]);
 
-module.exports.TRIALMODS = ['mara717', 'dia', 'Yawner'];
+module.exports.TRIALMODS = ['dia', 'Yawner'];
 
 const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
 const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
