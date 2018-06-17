@@ -7,6 +7,7 @@ const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
 const { MODERATORS, TRIALMODS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants');
+const AEM = [...ADMINS, ...EDITORS, ...MODERATORS];
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
 
@@ -135,7 +136,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 					}
 
-					if (!(MODERATORS.includes(requestingUser) || ADMINS.includes(requestingUser) || EDITORS.includes(requestingUser))) {
+					if (!AEM.includes(requestingUser) && !TRIALMODS.includes(requestingUser)) {
 						_profile.lastConnectedIP = 'no looking';
 					} else {
 						try {
