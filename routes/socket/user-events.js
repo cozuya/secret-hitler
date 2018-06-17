@@ -1526,26 +1526,35 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 	if (data.userName) data.userName = data.userName.trim();
 
 	if (!skipCheck && !data.isReportResolveChange) {
-		if ((!data.ip || data.ip === '') && data.userName && data.userName.startsWith('-')) {
-			try {
-				data.ip = obfIP(data.userName.substring(1));
-			} catch (e) {
-				data.ip = '';
-				console.log(e);
+		if (!data.ip || data.ip === '') {
+			if (data.userName && data.userName.startsWith('-')) {
+				try {
+					data.ip = obfIP(data.userName.substring(1));
+				} catch (e) {
+					data.ip = '';
+					console.log(e);
+				}
+			} else {
+				//Try to find the IP from the account specified if possible.
+				Account.findOne({ username }).then(account => {
+					if (account) data.ip = account.lastConnectedIP || account.signupIP;
+					handleModerationAction(socket, passport, data, true);
+				});
+				return;
 			}
-		} else if (data.ip && data.ip.startsWith('-')) {
-			try {
-				data.ip = obfIP(data.ip.substring(1));
-			} catch (e) {
+		} else {
+			if (data.ip && data.ip.startsWith('-')) {
+				try {
+					data.ip = obfIP(data.ip.substring(1));
+				} catch (e) {
+					data.ip = '';
+					console.log(e);
+				}
+			} else {
+				//Should never happen, so pass it back in with no IP.
 				data.ip = '';
-				console.log(e);
-			}
-		} else if (data.ip) {
-			try {
-				data.ip = expandAndSimplify(data.ip);
-			} catch (e) {
-				data.ip = '';
-				console.log(e);
+				handleModerationAction(socket, passport, data); //Note: Check is not skipped here, we want to still check the username.
+				return;
 			}
 		}
 	}
