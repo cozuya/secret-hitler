@@ -20,7 +20,7 @@ const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
-const { obfIP, expandAndSimplify } = require('./ip-obf');
+const { obfIP } = require('./ip-obf');
 
 /**
  * @param {object} game - game to act on.
@@ -1535,7 +1535,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 					console.log(e);
 				}
 			} else {
-				//Try to find the IP from the account specified if possible.
+				// Try to find the IP from the account specified if possible.
 				Account.findOne({ username }).then(account => {
 					if (account) data.ip = account.lastConnectedIP || account.signupIP;
 					handleModerationAction(socket, passport, data, true);
@@ -1551,9 +1551,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 					console.log(e);
 				}
 			} else {
-				//Should never happen, so pass it back in with no IP.
+				// Should never happen, so pass it back in with no IP.
 				data.ip = '';
-				handleModerationAction(socket, passport, data); //Note: Check is not skipped here, we want to still check the username.
+				handleModerationAction(socket, passport, data); // Note: Check is not skipped here, we want to still check the username.
 				return;
 			}
 		}
