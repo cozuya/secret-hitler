@@ -18,7 +18,7 @@ export default class Creategame extends React.Component {
 		this.state = {
 			gameName: '',
 			sliderValues: [5, 10],
-			experiencedmode: false,
+			experiencedmode: true,
 			disablechat: false,
 			disablegamechat: false,
 			disableobserver: false,
