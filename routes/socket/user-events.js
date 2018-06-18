@@ -1536,8 +1536,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 				}
 			} else {
 				// Try to find the IP from the account specified if possible.
-				Account.findOne({ username: data.userName }).then(account => {
-					if (account) data.ip = account.lastConnectedIP || account.signupIP;
+				Account.findOne({ username: data.userName }, (err, account) => {
+					if (err) console.log(err, 'err finding user');
+					else if (account) data.ip = account.lastConnectedIP || account.signupIP;
 					handleModerationAction(socket, passport, data, true);
 				});
 				return;
