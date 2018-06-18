@@ -1539,7 +1539,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 				Account.findOne({ username: data.userName }, (err, account) => {
 					if (err) console.log(err, 'err finding user');
 					else if (account) data.ip = account.lastConnectedIP || account.signupIP;
-					handleModerationAction(socket, passport, data, true);
+					module.exports.handleModerationAction(socket, passport, data, true);
 				});
 				return;
 			}
@@ -1554,7 +1554,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 			} else {
 				// Should never happen, so pass it back in with no IP.
 				data.ip = '';
-				handleModerationAction(socket, passport, data); // Note: Check is not skipped here, we want to still check the username.
+				module.exports.handleModerationAction(socket, passport, data); // Note: Check is not skipped here, we want to still check the username.
 				return;
 			}
 		}
