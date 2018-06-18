@@ -9,6 +9,12 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.7 released 6-17-2018</p>
+		</div>
+		<p>Verification emails should be fixed.</p>
+		<p>New leaderboard component now has a working link on the lobby.</p>
+		<p>Due to popular demand, verified only games are now default off instead of on.</p>
+		<div className="ui header">
 			<p>Version 0.14.6 released 6-12-2018</p>
 		</div>
 		<h3>New feature: seasonal leaderboards</h3>
