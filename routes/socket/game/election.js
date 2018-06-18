@@ -1090,7 +1090,7 @@ module.exports.selectVoting = (passport, game, data) => {
 			.every((el, i) => seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes);
 
 		game.publicPlayersState.forEach((player, i) => {
-			if (!player.isDead) {
+			if (!player.isDead && seatedPlayers[i]) {
 				player.cardStatus.cardBack.cardName = seatedPlayers[i].voteStatus.didVoteYes ? 'ja' : 'nein';
 				player.cardStatus.isFlipped = true;
 			}
