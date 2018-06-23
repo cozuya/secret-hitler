@@ -1085,6 +1085,9 @@ module.exports.selectVoting = (passport, game, data) => {
 		}, experiencedMode ? 200 : 600);
 	};
 	const flipBallotCards = () => {
+		if (!seatedPlayers[0]) {
+			return;
+		}
 		const isConsensus = game.publicPlayersState
 			.filter(player => !player.isDead)
 			.every((el, i) => seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes);
