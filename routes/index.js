@@ -7,6 +7,7 @@ const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
 const { MODERATORS, TRIALMODS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants');
+const AEM = [...ADMINS, ...EDITORS, ...MODERATORS];
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
 
@@ -135,7 +136,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 					}
 
-					if (!(MODERATORS.includes(requestingUser) || ADMINS.includes(requestingUser) || EDITORS.includes(requestingUser))) {
+					if (!AEM.includes(requestingUser) && !TRIALMODS.includes(requestingUser)) {
 						_profile.lastConnectedIP = 'no looking';
 					} else {
 						try {
@@ -146,18 +147,6 @@ module.exports = () => {
 						}
 					}
 
-					if (TRIALMODS.includes(requestingUser)) {
-						try {
-							const tmIP = [];
-
-							tmIP[0] = tmIP[1] = tmIP[2] = 'xxx';
-							tmIP[3] = _profile.lastConnectedIP.split('.')[3];
-
-							_profile.lastConnectedIP = tmIP.join('.');
-						} catch (e) {
-							_profile.lastConnectedIP = 'something went wrong';
-						}
-					}
 					res.json(_profile);
 				});
 			}

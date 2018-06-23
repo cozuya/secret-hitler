@@ -32,7 +32,7 @@ export default class Creategame extends React.Component {
 			casualgame: false,
 			blindMode: false,
 			timedMode: false,
-			isVerifiedOnly: true,
+			isVerifiedOnly: false,
 			timedSliderValue: [120]
 		};
 	}
@@ -1222,7 +1222,7 @@ export default class Creategame extends React.Component {
 										this.verified = c;
 									}}
 								>
-									<input type="checkbox" name="verified" defaultChecked />
+									<input type="checkbox" name="verified" defaultChecked={false} />
 								</div>
 							</div>
 						</div>

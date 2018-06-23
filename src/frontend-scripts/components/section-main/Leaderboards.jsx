@@ -15,7 +15,7 @@ class Leaderboard extends React.Component {
 		const self = this;
 
 		$.ajax({
-			url: 'leaderboardData.json',
+			url: '../leaderboardData.json',
 			success(data) {
 				self.setState({
 					seasonalLeaderboard: data.seasonalLeaderboard,

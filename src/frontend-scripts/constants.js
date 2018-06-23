@@ -1,7 +1,6 @@
 const cn = require('classnames');
 
 const MODERATORS = (module.exports.MODERATORS = [
-	'mara717',
 	'Tubadevil',
 	'Faaiz1999',
 	'littlebird',
