@@ -1262,7 +1262,7 @@ export default class Creategame extends React.Component {
 									this.experiencedmode = c;
 								}}
 							>
-								<input type="checkbox" name="experiencedmode" defaultChecked={false} />
+								<input type="checkbox" name="experiencedmode" defaultChecked={true} />
 							</div>
 						</div>
 						{(() => {
