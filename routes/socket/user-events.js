@@ -1527,24 +1527,26 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck) => {
 
 	if (!skipCheck && !data.isReportResolveChange) {
 		if (!data.ip || data.ip === '') {
-			if (data.userName && data.userName.startsWith('-')) {
-				try {
-					data.ip = obfIP(data.userName.substring(1));
-				} catch (e) {
-					data.ip = '';
-					console.log(e);
+			if (data.userName && data.userName !== '') {
+				if (data.userName.startsWith('-')) {
+					try {
+						data.ip = obfIP(data.userName.substring(1));
+					} catch (e) {
+						data.ip = '';
+						console.log(e);
+					}
+				} else {
+					// Try to find the IP from the account specified if possible.
+					Account.findOne({ username: data.userName }, (err, account) => {
+						if (err) console.log(err, 'err finding user');
+						else if (account) data.ip = account.lastConnectedIP || account.signupIP;
+						module.exports.handleModerationAction(socket, passport, data, true);
+					});
+					return;
 				}
-			} else {
-				// Try to find the IP from the account specified if possible.
-				Account.findOne({ username: data.userName }, (err, account) => {
-					if (err) console.log(err, 'err finding user');
-					else if (account) data.ip = account.lastConnectedIP || account.signupIP;
-					module.exports.handleModerationAction(socket, passport, data, true);
-				});
-				return;
 			}
 		} else {
-			if (data.ip && data.ip.startsWith('-')) {
+			if (data.ip.startsWith('-')) {
 				try {
 					data.ip = obfIP(data.ip.substring(1));
 				} catch (e) {
