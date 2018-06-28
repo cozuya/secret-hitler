@@ -1118,30 +1118,47 @@ export default class Creategame extends React.Component {
 		this.setState({ timedSliderValue });
 	}
 
-	eloSliderChange(sliderValues) {}
+	eloSliderChange(sliderValues) {
+		console.log(sliderValues, 'sv');
+	}
 
 	renderEloSlider() {
 		const { userInfo, userList } = this.props;
-		const player = userList.list.find(name => name === userInfo.userName);
-		const isSeason = userInfo.gameSettings.console.log(this.props, 'props');
+		const player = userList.list.find(p => p.userName === userInfo.userName);
+		const isSeason = !userInfo.gameSettings.disableSeasonal;
+		const playerElo = player.eloSeason;
 
-		return (
-			<div className="sixteen wide column">
-				{this.state.isEloLimited}
-				<div className="four wide column elorow" style={{ margin: '-50 auto 0' }}>
-					<i className="big arrows alternate horizontal icon" />
-					<h4 className="ui header">Elo limited game</h4>
-					<div
-						className="ui fitted toggle checkbox"
-						ref={c => {
-							this.elolimited = c;
-						}}
-					>
-						<input type="checkbox" name="elolimited" defaultChecked={false} />
+		if (isSeason && playerElo && playerElo > 1699) {
+			return (
+				<div className="sixteen wide column" style={{ marginTop: '-50px' }}>
+					{this.state.isEloLimited && (
+						<div>
+							<h4 className="ui header">Minimum and maximum elo to sit in this game</h4>
+							<Range
+								onChange={this.eloSliderChange}
+								min={1700}
+								max={2300}
+								defaultValue={[1700, 1800]}
+								value={this.state.eloSliderValue}
+								marks={{ 1700: '1700', 2000: '2000', 2300: '2300' }}
+							/>
+						</div>
+					)}
+					<div className="four wide column elorow" style={{ margin: '-50 auto 0' }}>
+						<i className="big arrows alternate horizontal icon" />
+						<h4 className="ui header">Elo limited game</h4>
+						<div
+							className="ui fitted toggle checkbox"
+							ref={c => {
+								this.elolimited = c;
+							}}
+						>
+							<input type="checkbox" name="elolimited" defaultChecked={false} />
+						</div>
 					</div>
 				</div>
-			</div>
-		);
+			);
+		}
 	}
 
 	render() {

@@ -9,6 +9,22 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.8 released 7-1-2018</p>
+		</div>
+		<h3>Welcome to season 3!</h3>
+		<p>
+			All seasonal elo has been reset to 1600 and all seasonal winrates are 0-0. Season 2 badges have been applied to the top ~75 players of season 2 by elo.
+		</p>
+		<h3>New feature: elo slider/limiter</h3>
+		<p>
+			Players above 1700 elo will now see a new slider while creating a game - use this to limit what players can play in the new game you are creating. Players
+			who are under or over the threshold will not be able to sit.
+		</p>
+		<p>
+			This feature will be watched for feedback - I don't want to lock players out of games, but I also think its nice to be able to play with high elo players
+			exclusively if you want. This feature only applies to seasonal elo right now.
+		</p>
+		<div className="ui header">
 			<p>Version 0.14.7 released 6-17-2018</p>
 		</div>
 		<p>Verification emails should be fixed.</p>
