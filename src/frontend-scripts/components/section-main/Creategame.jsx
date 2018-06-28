@@ -33,7 +33,9 @@ export default class Creategame extends React.Component {
 			blindMode: false,
 			timedMode: false,
 			isVerifiedOnly: false,
-			timedSliderValue: [120]
+			timedSliderValue: [120],
+			eloSliderValue: [1700, 2300],
+			isEloLimited: false
 		};
 	}
 
@@ -66,6 +68,15 @@ export default class Creategame extends React.Component {
 			},
 			onUnchecked() {
 				self.setState({ disablechat: false });
+			}
+		});
+
+		$(this.elolimited).checkbox({
+			onChecked() {
+				self.setState({ isEloLimited: true });
+			},
+			onUnchecked() {
+				self.setState({ isEloLimited: false });
 			}
 		});
 
@@ -1107,7 +1118,35 @@ export default class Creategame extends React.Component {
 		this.setState({ timedSliderValue });
 	}
 
+	eloSliderChange(sliderValues) {}
+
+	renderEloSlider() {
+		const { userInfo, userList } = this.props;
+		const player = userList.list.find(name => name === userInfo.userName);
+		const isSeason = userInfo.gameSettings.console.log(this.props, 'props');
+
+		return (
+			<div className="sixteen wide column">
+				{this.state.isEloLimited}
+				<div className="four wide column elorow" style={{ margin: '-50 auto 0' }}>
+					<i className="big arrows alternate horizontal icon" />
+					<h4 className="ui header">Elo limited game</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.elolimited = c;
+						}}
+					>
+						<input type="checkbox" name="elolimited" defaultChecked={false} />
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	render() {
+		const { userInfo } = this.props;
+
 		return (
 			<section className="creategame">
 				<a href="#/">
@@ -1157,6 +1196,7 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row slider">{this.renderPlayerSlider()}</div>
 					<div className="row rebalance">{this.renderRebalanceCheckboxes()}</div>
+
 					{/* <div className="row tourny-row">
 						<div className="sixteen wide column tourny-container">
 							<h4 className="ui header">Tournament mode</h4>
@@ -1227,7 +1267,7 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					)}
-
+					{userInfo.gameSettings && !userInfo.gameSettings.disableElo && this.renderEloSlider()}
 					<div className="row sliderrow">
 						<div className="four wide column disablechat">
 							<i className="big unmute icon" />
