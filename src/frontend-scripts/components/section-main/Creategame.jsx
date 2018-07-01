@@ -13,6 +13,7 @@ export default class Creategame extends React.Component {
 
 		this.createNewGame = this.createNewGame.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
+		this.eloSliderChange = this.eloSliderChange.bind(this);
 		this.timedSliderChange = this.timedSliderChange.bind(this);
 
 		this.state = {
@@ -1118,8 +1119,9 @@ export default class Creategame extends React.Component {
 		this.setState({ timedSliderValue });
 	}
 
-	eloSliderChange(sliderValues) {
-		console.log(sliderValues, 'sv');
+	eloSliderChange(eloSliderValue) {
+		console.log(eloSliderValue);
+		this.setState(eloSliderValue);
 	}
 
 	renderEloSlider() {
@@ -1130,7 +1132,7 @@ export default class Creategame extends React.Component {
 
 		if (isSeason && playerElo && playerElo > 1699) {
 			return (
-				<div className="sixteen wide column" style={{ marginTop: '-50px' }}>
+				<div className="sixteen wide column" style={{ marginTop: '-30px' }}>
 					{this.state.isEloLimited && (
 						<div>
 							<h4 className="ui header">Minimum and maximum elo to sit in this game</h4>
