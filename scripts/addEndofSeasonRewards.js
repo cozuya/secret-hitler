@@ -4,9 +4,9 @@ const Account = require('../models/account');
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
 
-const bronze = [];
-const silver = [];
-const gold = [];
+// const bronze = [];
+// const silver = [];
+// const gold = [];
 const cutoff = 1765;
 
 // Account.find({ eloSeason: { $gte: cutoff } })
