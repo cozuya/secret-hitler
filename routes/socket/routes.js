@@ -33,7 +33,7 @@ const {
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
-const { games } = require('./models');
+const { games, AEM } = require('./models');
 const { MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
@@ -115,9 +115,16 @@ module.exports = () => {
 				handleUpdatedPlayerNote(socket, data);
 			})
 			.on('updateModAction', data => {
-				if (authenticated && isAEM) {
-					handleModerationAction(socket, passport, data);
-				}
+				AEM.then(accounts => {
+					if (
+						authenticated &&
+						accounts
+							.filter(account => account.staffRole === 'moderator' || account.staffRole === 'admin' || account.staffRole === 'editor')
+							.find(account => account.username === socket.handshake.session.passport.user)
+					) {
+						handleModerationAction(socket, passport, data);
+					}
+				});
 			})
 			.on('addNewClaim', data => {
 				const game = findGame(data);

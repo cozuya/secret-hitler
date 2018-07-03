@@ -1,4 +1,5 @@
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
+const Account = require('../../models/account');
 
 module.exports.games = [];
 module.exports.userList = [];
@@ -82,3 +83,5 @@ const userListEmitter = {
 };
 
 module.exports.userListEmitter = userListEmitter;
+
+module.exports.AEM = Account.find({ staffRole: { $exists: true } });
