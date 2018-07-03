@@ -2,9 +2,7 @@ const { EDITORS, ADMINS, MODERATORS, TRIALMODS } = require('../../src/frontend-s
 const https = require('https');
 const AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy'];
 const AEM = [...EDITORS, ...ADMINS, ...MODERATORS, ...TRIALMODS, ...AEM_ALTS];
-const checkAEM = names => {
-	return names.some(n => AEM.includes(n));
-};
+const checkAEM = names => names.some(n => AEM.includes(n));
 
 module.exports.makeReport = (text, game, gameEnd) => {
 	const players = game.private.seatedPlayers.map(player => player.userName);
@@ -26,7 +24,11 @@ module.exports.makeReport = (text, game, gameEnd) => {
 		}
 	};
 	if (process.env.NODE_ENV === 'production') {
-		const req = https.request(options);
-		req.end(report);
+		try {
+			const req = https.request(options);
+			req.end(report);
+		} catch (e) {
+			console.log(e);
+		}
 	} else console.log(`${text}\n${game.general.uid}`);
 };

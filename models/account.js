@@ -8,6 +8,7 @@ const Account = new Schema({
 		unique: true
 	},
 	password: String,
+	staffRole: String,
 	gameSettings: {
 		isRainbow: Boolean,
 		newReport: Boolean,

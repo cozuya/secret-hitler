@@ -54,12 +54,13 @@ module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
  * @return {string} list of classes for colors.
  */
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
-	if (MODERATORS.includes(user.userName) || ADMINS.includes(user.userName) || EDITORS.includes(user.userName) || CONTRIBUTORS.includes(user.userName)) {
+	// if (MODERATORS.includes(user.userName) || ADMINS.includes(user.userName) || EDITORS.includes(user.userName) || CONTRIBUTORS.includes(user.userName)) {
+	if (user.staffRole) {
 		return cn(defaultClass, {
-			admin: ADMINS.includes(user.userName),
-			moderatorcolor: MODERATORS.includes(user.userName),
-			editorcolor: EDITORS.includes(user.userName),
-			contributer: CONTRIBUTORS.includes(user.userName),
+			admin: user.staffRole === 'admin',
+			moderatorcolor: user.staffRole === 'moderator',
+			editorcolor: user.staffRole === 'editor',
+			contributer: user.staffRole === 'contributor',
 			cbell: user.userName === 'cbell',
 			max: user.userName === 'Max',
 			dfinn: user.userName === 'DFinn',
