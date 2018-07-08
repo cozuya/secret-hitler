@@ -1,25 +1,25 @@
 const cn = require('classnames');
 
-const MODERATORS = (module.exports.MODERATORS = [
-	'Uther',
-	'Tubadevil',
-	'Faaiz1999',
-	'littlebird',
-	'Hexicube',
-	'RavenCaps',
-	'jdudle3',
-	'Number5',
-	'Ophxlia',
-	'cayseron',
-	'neffni',
-	'benjamin172',
-	'mara717'
-]);
+// const MODERATORS = (module.exports.MODERATORS = [
+// 	'Uther',
+// 	'Tubadevil',
+// 	'Faaiz1999',
+// 	'littlebird',
+// 	'Hexicube',
+// 	'RavenCaps',
+// 	'jdudle3',
+// 	'Number5',
+// 	'Ophxlia',
+// 	'cayseron',
+// 	'neffni',
+// 	'benjamin172',
+// 	'mara717'
+// ]);
 
 module.exports.TRIALMODS = ['dia', 'Yawner'];
 
-const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO', 'Uther']);
-const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
+// const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO', 'Uther']);
+// const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'straightleft',
 	'Idrissa',
@@ -55,8 +55,7 @@ module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
  * @return {string} list of classes for colors.
  */
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
-	// if (MODERATORS.includes(user.userName) || ADMINS.includes(user.userName) || EDITORS.includes(user.userName) || CONTRIBUTORS.includes(user.userName)) {
-	if (user.staffRole) {
+	if (Boolean(user.staffRole.length)) {
 		return cn(defaultClass, {
 			admin: user.staffRole === 'admin',
 			moderatorcolor: user.staffRole === 'moderator',

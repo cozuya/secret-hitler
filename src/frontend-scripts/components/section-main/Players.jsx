@@ -4,7 +4,7 @@ import Policies from './Policies.jsx';
 import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
 import { togglePlayerNotes } from '../../actions/actions';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
 import PropTypes from 'prop-types';
 
 $.fn.dropdown = Dropdown;
@@ -208,11 +208,7 @@ class Players extends React.Component {
 				</span>
 			);
 
-			if (
-				player.isPrivate &&
-				!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)) &&
-				!userInfo.isSeated
-			) {
+			if (player.isPrivate && !userInfo.staffRole && !userInfo.isSeated) {
 				return prependCrowns('Anonymous');
 			}
 

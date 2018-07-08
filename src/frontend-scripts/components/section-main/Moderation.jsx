@@ -1,7 +1,6 @@
 import React from 'react';
 import moment from 'moment';
 import $ from 'jquery';
-import { ADMINS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
 import Checkbox from 'semantic-ui-checkbox';
 
@@ -264,6 +263,7 @@ export default class Moderation extends React.Component {
 			}
 		};
 		const { selectedUser, actionTextValue, playerInputText } = this.state;
+		const { userInfo } = this.props;
 
 		return (
 			<div className="button-container">
@@ -462,9 +462,7 @@ export default class Moderation extends React.Component {
 				</div>
 				<button
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -476,9 +474,7 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -500,9 +496,7 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'darkblue' }}
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -515,9 +509,7 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'grey' }}
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -530,9 +522,7 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'blueviolet' }}
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -545,9 +535,7 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'violet' }}
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -560,7 +548,7 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'black' }}
 					className={
-						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}

@@ -5,7 +5,7 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 import cn from 'classnames';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
@@ -268,11 +268,7 @@ class ProfileWrapper extends React.Component {
 		let userClasses = 'profile-picture';
 		if (user) {
 			userClasses =
-				user[w] + user[l] > 49 ||
-				ADMINS.includes(user.userName) ||
-				EDITORS.includes(user.userName) ||
-				MODERATORS.includes(user.userName) ||
-				CONTRIBUTORS.includes(user.userName)
+				user[w] + user[l] > 49 || Boolean(user.staffRole.length)
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
 							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
