@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-import _ from 'lodash';
 import $ from 'jquery';
 import { ADMINS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
@@ -182,7 +181,6 @@ export default class Moderation extends React.Component {
 			this.setState({ selectedUser: userName });
 		};
 		const { userList, userSort } = this.state;
-		const ipCounts = {};
 		const ips = userList.map(user => user.ip);
 		const bannedips = this.state.log.filter(log => log.actionTaken === 'ban' || log.actionTaken === 'timeOut').map(log => log.ip);
 		const timednames = this.state.log.filter(log => log.actionTaken === 'timeOut2').map(log => log.userActedOn);
@@ -513,6 +511,51 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Delete/reset player profile
+				</button>
+				<button
+					style={{ background: 'grey' }}
+					className={
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('removeStaffRole');
+					}}
+				>
+					Remove mod or editor status and log them out
+				</button>
+				<button
+					style={{ background: 'blueviolet' }}
+					className={
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToMod');
+					}}
+				>
+					Promote player to mod
+				</button>
+				<button
+					style={{ background: 'violet' }}
+					className={
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToEditor');
+					}}
+				>
+					Promote player to editor
 				</button>
 				<button
 					style={{ background: 'black' }}

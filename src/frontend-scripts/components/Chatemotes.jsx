@@ -1,6 +1,5 @@
 import React from 'react';
 import classnames from 'classnames';
-import { MODERATORS, EDITORS, ADMINS } from '../../constants';
 import PropTypes from 'prop-types';
 import { processEmotes } from '../../emotes';
 
@@ -82,15 +81,15 @@ export default class Generalchat extends React.Component {
 					<span className={chat.isBroadcast ? 'chat-user--broadcast' : userClasses}>
 						{chat.userName}
 						{(() => {
-							if (MODERATORS.includes(chat.userName)) {
+							if (chat.staffRole === 'moderator') {
 								return <span className="moderator-name"> (M)</span>;
 							}
 
-							if (EDITORS.includes(chat.userName)) {
+							if (chat.staffRole === 'editor') {
 								return <span className="editor-name"> (E)</span>;
 							}
 
-							if (ADMINS.includes(chat.userName)) {
+							if (chat.staffRole === 'admin') {
 								return <span className="admin-name"> (A)</span>;
 							}
 						})()}
@@ -140,7 +139,7 @@ export default class Generalchat extends React.Component {
 					</div>
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div className={this.props.userInfo.userName ? !this.state.disabled ? 'ui action input' : 'ui action input disabled' : 'ui action input disabled'}>
+					<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
 						<input
 							placeholder="Chat.."
 							value={this.state.inputValue}

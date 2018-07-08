@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS, CURRENTSEASONNUMBER, EDITORS, ADMINS, MODERATORS, TRIALMODS } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -355,13 +355,6 @@ const DisplayLobbies = props => {
 		}
 	};
 
-	const isModerator =
-		userInfo.userName &&
-		(EDITORS.includes(userInfo.userName) ||
-			ADMINS.includes(userInfo.userName) ||
-			MODERATORS.includes(userInfo.userName) ||
-			TRIALMODS.includes(userInfo.userName));
-
 	return (
 		<div
 			data-uid={game.uid}
@@ -377,7 +370,7 @@ const DisplayLobbies = props => {
 						<div className="gamename-column">
 							{renderFlag()}
 							{game.name}
-							{isModerator && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
+							{userInfo.staffRole && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
 						</div>
 						<div className="options-column experienced">{optionIcons()}</div>
 					</div>

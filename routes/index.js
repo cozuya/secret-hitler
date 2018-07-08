@@ -43,7 +43,14 @@ module.exports = () => {
 	};
 
 	accounts();
-	socketRoutes();
+
+	Account.find({ staffRole: { $exists: true } }).then(accounts => {
+		const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.userName);
+		const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.userName);
+		const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.userName);
+
+		socketRoutes(modUserNames, editorUserNames, adminUserNames);
+	});
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
