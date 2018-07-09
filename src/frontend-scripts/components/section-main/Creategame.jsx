@@ -1126,6 +1126,9 @@ export default class Creategame extends React.Component {
 
 	renderEloSlider() {
 		const { userInfo, userList } = this.props;
+		if (!userList.list.length) {
+			return null;
+		}
 		const player = userList.list.find(p => p.userName === userInfo.userName);
 		const isSeason = !userInfo.gameSettings.disableSeasonal;
 		const playerElo = player.eloSeason;

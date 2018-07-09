@@ -363,7 +363,7 @@ class Gamechat extends React.Component {
 				)
 				.map((chat, i) => {
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-					const isMod = Boolean(playerListPlayer.staffRole.length);
+					const isMod = playerListPlayer.staffRole && Boolean(playerListPlayer.staffRole.length);
 					const chatContents = processEmotes(chat.chat, isMod);
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const isGreenText = /^>/i.test(chatContents[0]);

@@ -129,7 +129,7 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const { userInfo } = this.props;
 
-		if (userInfo && Boolean(userInfo.staffRole.length)) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole.length)) {
 			return (
 				<a href="#/moderation">
 					<i className="fire icon mod-button" />
@@ -141,7 +141,7 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 
-		if (userInfo && Boolean(userInfo.staffRole.length)) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole.length)) {
 			let classes = 'comment icon report-button';
 
 			const reportClick = () => {
@@ -200,7 +200,7 @@ class Playerlist extends React.Component {
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
-			const isStaff = Boolean(userInfo.staffRole.length);
+			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole.length);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			let aem = [...admins];
@@ -229,7 +229,7 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole.length) || CONTRIBUTORS.includes(user.userName)
+					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || CONTRIBUTORS.includes(user.userName)
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },

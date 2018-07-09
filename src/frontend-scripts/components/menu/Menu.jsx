@@ -268,7 +268,7 @@ class Menu extends React.Component {
 										className="loggedin"
 										trigger={
 											<a href={`#/profile/${userInfo.userName}`}>
-												<span className={`${PLAYERCOLORS(userInfo.userName)} playername`}>{userInfo.userName}</span>
+												<span className="playername">{userInfo.userName}</span>
 											</a>
 										}
 										content="Profile"

@@ -20,7 +20,7 @@ module.exports.TRIALMODS = ['dia', 'Yawner'];
 
 // const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO', 'Uther']);
 // const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
-const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
+module.exports.CONTRIBUTORS = [
 	'straightleft',
 	'Idrissa',
 	'banc',
@@ -41,7 +41,7 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'LordVader',
 	'voldemort',
 	'goonbee'
-]);
+];
 
 const CURRENTSEASONNUMBER = 3;
 
@@ -55,7 +55,7 @@ module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
  * @return {string} list of classes for colors.
  */
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
-	if (Boolean(user.staffRole.length)) {
+	if (Boolean(user.staffRole && user.staffRole.length)) {
 		return cn(defaultClass, {
 			admin: user.staffRole === 'admin',
 			moderatorcolor: user.staffRole === 'moderator',
