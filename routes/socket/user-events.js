@@ -1484,6 +1484,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			} else if (adminUserNames.includes(passport.user)) {
 				return 'admin';
 			}
+			return '';
 		};
 		const newChat = {
 			time: curTime,
