@@ -67,7 +67,8 @@ module.exports.formattedUserList = () => {
 		rainbowWinsSeason3: user.rainbowWinsSeason3,
 		rainbowLossesSeason3: user.rainbowLossesSeason3,
 		previousSeasonAward: user.previousSeasonAward,
-		timeLastGameCreated: user.timeLastGameCreated
+		timeLastGameCreated: user.timeLastGameCreated,
+		staffRole: user.staffRole
 		// oldData: user
 	}));
 };

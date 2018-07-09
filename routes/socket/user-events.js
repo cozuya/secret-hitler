@@ -1375,16 +1375,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 				],
 				previousSeasonAward: user.previousSeasonAward,
 				uid: data.uid,
-				inProgress: game.gameState.isStarted,
-				staffRole: (() => {
-					if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
-						return 'moderator';
-					} else if (editorUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user)) {
-						return 'editor';
-					} else if (adminUserNames.includes(passport.user)) {
-						return 'admin';
-					}
-				})()
+				inProgress: game.gameState.isStarted
 			});
 			sendInProgressGameUpdate(game);
 		} catch (e) {
@@ -1408,6 +1399,15 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		}
 
 		data.userName = passport.user;
+		data.staffRole = (() => {
+			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
+				return 'moderator';
+			} else if (editorUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user)) {
+				return 'editor';
+			} else if (adminUserNames.includes(passport.user)) {
+				return 'admin';
+			}
+		})();
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
@@ -1492,7 +1492,6 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			userName: passport.user,
 			staffRole: getStaffRole()
 		};
-
 		generalChatCount++;
 		generalChats.list.push(newChat);
 
