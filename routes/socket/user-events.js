@@ -20,6 +20,7 @@ const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
+const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
 
 /**
  * @param {object} game - game to act on.
@@ -540,6 +541,11 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	let excludes = [];
 	for (a = playerCounts[0]; a <= playerCounts[playerCounts.length - 1]; a++) {
 		if (!playerCounts.includes(a)) excludes.push(a);
+	}
+
+	if (!data.gameName || data.gameName.length > 20 || !LEGALCHARACTERS(data.gameName)) {
+		// Should be enforced on the client. Copy-pasting characters can get past the LEGALCHARACTERS client check.
+		return;
 	}
 
 	const newGame = {

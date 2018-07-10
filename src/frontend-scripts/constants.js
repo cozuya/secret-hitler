@@ -47,6 +47,17 @@ const CURRENTSEASONNUMBER = 3;
 
 module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
 
+const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
+const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
+
+const ALLCHARS = [...ALPHANUMERIC, ...SYMBOLS];
+
+module.exports.LEGALCHARACTERS = text => {
+	const arr = [...text];
+	const pass = arr.every(c => ALLCHARS.includes(c));
+	return pass;
+};
+
 /**
  * @param {object} user - user from userlist.
  * @param {boolean} isSeasonal - whether or not to display seasonal colors.

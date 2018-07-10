@@ -1186,7 +1186,12 @@ export default class Creategame extends React.Component {
 						<div className="five wide column gamename">
 							<h4 className="ui header">Game name:</h4>
 							<div className="ui input">
-								<input maxLength="20" placeholder="New Game" />
+								<input maxLength="20" placeholder="New Game" onKeyPress={
+									e => {
+										const { LEGALCHARACTERS } = require('../../constants');
+										if (!LEGALCHARACTERS(e.key)) e.preventDefault();
+									}
+								} />
 							</div>
 							{this.state.containsBadWord && <p className="contains-bad-word">This game name has a banned word or word fragment.</p>}
 						</div>
