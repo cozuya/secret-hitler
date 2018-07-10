@@ -53,7 +53,7 @@ class Tracks extends React.Component {
 			nextProps.gameInfo.gameState.timedModeEnabled
 		) {
 			let minutes = Math.floor(gameInfo.general.timedMode / 60);
-			let seconds = gameInfo.general.timedMode % 61;
+			let seconds = gameInfo.general.timedMode % 60;
 			this.intervalId = window.setInterval(() => {
 				if (!seconds) {
 					if (minutes) {
