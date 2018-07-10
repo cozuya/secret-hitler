@@ -327,6 +327,14 @@ export default class Moderation extends React.Component {
 					Timeout - non-IP version.
 				</button>
 				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('timeOut3');
+					}}
+				>
+					Timeout - 1 hour IP version.
+				</button>
+				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}
 					onClick={() => {
 						takeModAction('deleteCardback');

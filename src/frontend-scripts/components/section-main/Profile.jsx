@@ -212,7 +212,7 @@ class ProfileWrapper extends React.Component {
 		const { profile } = this.props;
 		const name = profile._id;
 		e.preventDefault();
-		console.log(JSON.parse(JSON.stringify(gameSettings)));
+
 		this.setState(
 			{
 				blacklistClicked: true

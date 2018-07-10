@@ -1515,7 +1515,9 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			const currentPrivate = account.gameSettings.isPrivate;
 
 			for (const setting in data) {
-				account.gameSettings[setting] = data[setting];
+				if (setting !== 'blacklist' || (account.gameSettings.blacklist && account.gameSettings.blacklist.length < 10)) {
+					account.gameSettings[setting] = data[setting];
+				}
 			}
 
 			const user = userList.find(u => u.userName === passport.user);
@@ -1812,6 +1814,22 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						.catch(err => {
 							console.log(err, 'timeout2 user err');
 						});
+					break;
+				case 'timeOut3':
+					const timeout3 = new BannedIP({
+						bannedDate: new Date(),
+						type: 'tiny',
+						ip: data.ip
+					});
+					timeout3.save(() => {
+						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+							if (users && users.length > 0) {
+								users.forEach(user => {
+									logOutUser(user.username);
+								});
+							}
+						});
+					});
 					break;
 				case 'togglePrivate':
 					Account.findOne({ username: data.userName })
@@ -2185,7 +2203,7 @@ module.exports.checkUserStatus = socket => {
 					BannedIP.find(
 						{
 							ip: account.lastConnectedIP,
-							type: 'small' || 'big'
+							type: 'tiny' || 'small' || 'big'
 						},
 						(err, ips) => {
 							let date;
@@ -2194,7 +2212,12 @@ module.exports.checkUserStatus = socket => {
 
 							if (ip) {
 								date = new Date().getTime();
-								unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+								unbannedTime =
+									ip.type === 'small'
+										? ip.bannedDate.getTime() + 64800000
+										: ip.type === 'tiny'
+											? ip.bannedDate.getTime() + 60000
+											: ip.bannedDate.getTime() + 604800000;
 							}
 
 							if (ip && unbannedTime > date) logOutUser(user);

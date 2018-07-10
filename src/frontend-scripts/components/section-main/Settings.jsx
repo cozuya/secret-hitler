@@ -88,6 +88,7 @@ class Settings extends React.Component {
 		const obj = {};
 
 		obj[value] = !this.state[value];
+		console.log(obj, 'o');
 		this.props.socket.emit('updateGameSettings', obj);
 		this.setState(obj);
 	}
