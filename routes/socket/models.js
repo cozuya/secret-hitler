@@ -47,6 +47,8 @@ module.exports.formattedUserList = () => {
 		rainbowWins: user.rainbowWins,
 		rainbowLosses: user.rainbowLosses,
 		isPrivate: user.isPrivate,
+		staffDisableVisibleElo: user.staffDisableVisibleElo,
+		staffDisableStaffColor: user.staffDisableStaffColor,
 
 		// Tournaments are disabled, no point sending this.
 		// tournyWins: user.tournyWins,

@@ -322,6 +322,7 @@ class Playerlist extends React.Component {
 							{renderStatus()}
 						</div>
 						{user.staffRole !== 'admin' &&
+							Boolean(!user.staffDisableVisibleElo) &&
 							(() => {
 								return elo ? (
 									<div className="userlist-stats-container">

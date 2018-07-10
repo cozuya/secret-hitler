@@ -68,16 +68,16 @@ module.exports.LEGALCHARACTERS = text => {
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	if (Boolean(user.staffRole && user.staffRole.length)) {
 		return cn(defaultClass, {
-			admin: user.staffRole === 'admin',
-			moderatorcolor: user.staffRole === 'moderator',
-			editorcolor: user.staffRole === 'editor',
-			contributer: user.staffRole === 'contributor',
-			cbell: user.userName === 'cbell',
-			max: user.userName === 'Max',
-			dfinn: user.userName === 'DFinn',
-			faaiz: user.userName === 'Faaiz1999',
-			invidia: user.userName === 'Invidia',
-			thejuststopo: user.userName === 'TheJustStopO'
+			admin: user.staffRole === 'admin' && !user.staffDisableStaffColor,
+			moderatorcolor: user.staffRole === 'moderator' && !user.staffDisableStaffColor,
+			editorcolor: user.staffRole === 'editor' && !user.staffDisableStaffColor,
+			contributer: user.staffRole === 'contributor' && !user.staffDisableStaffColor,
+			cbell: user.userName === 'cbell' && !user.staffDisableStaffColor,
+			max: user.userName === 'Max' && !user.staffDisableStaffColor,
+			dfinn: user.userName === 'DFinn' && !user.staffDisableStaffColor,
+			faaiz: user.userName === 'Faaiz1999' && !user.staffDisableStaffColor,
+			invidia: user.userName === 'Invidia' && !user.staffDisableStaffColor,
+			thejuststopo: user.userName === 'TheJustStopO' && !user.staffDisableStaffColor
 		});
 	} else {
 		const w = isSeasonal ? user[`winsSeason${CURRENTSEASONNUMBER}`] : user.wins;

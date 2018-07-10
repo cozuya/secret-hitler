@@ -1521,7 +1521,11 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			const currentPrivate = account.gameSettings.isPrivate;
 
 			for (const setting in data) {
-				if (setting !== 'blacklist' || (account.gameSettings.blacklist && account.gameSettings.blacklist.length < 10)) {
+				if (
+					setting !== 'blacklist' ||
+					(account.gameSettings.blacklist && account.gameSettings.blacklist.length < 10) ||
+					(setting === 'staffDisableVisibleElo' && account.staffRole)
+				) {
 					account.gameSettings[setting] = data[setting];
 				}
 			}
@@ -2007,6 +2011,25 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'resetServer':
 					if (isSuperMod) {
 						console.log('server crashing manually via mod action');
+						const crashReport = JSON.stringify({
+							content: `${process.env.DISCORDADMINPING} the site was just reset manually by an admin or editor.`
+						});
+
+						const crashOptions = {
+							hostname: 'discordapp.com',
+							path: process.env.DISCORDCRASHURL,
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'Content-Length': Buffer.byteLength(crashReport)
+							}
+						};
+
+						if (process.env.NODE_ENV === 'production') {
+							const crashReq = https.request(crashOptions);
+
+							crashReq.end(crashReport);
+						}
 						crashServer();
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can restart the server.');
