@@ -59,7 +59,7 @@ class Tracks extends React.Component {
 					if (minutes) {
 						minutes--;
 					}
-					seconds = 60;
+					seconds = 59;
 				} else {
 					seconds--;
 				}
