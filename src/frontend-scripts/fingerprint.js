@@ -38,12 +38,14 @@ module.exports.simpleFingerprint = () => {
 	keys.push({ key: 'hardware_concurrency', value: navigator.hardwareConcurrency || 'unknown' });
 
 	let res = [];
-	if (window.screen.availWidth && window.screen.availHeight)
+	if (window.screen.availWidth && window.screen.availHeight) {
 		res =
 			window.screen.availHeight > window.screen.availWidth
 				? [window.screen.availHeight, window.screen.availWidth]
 				: [window.screen.availWidth, window.screen.availHeight];
-	else res = window.screen.height > window.screen.width ? [window.screen.height, window.screen.width] : [window.screen.width, window.screen.height];
+	} else {
+		res = window.screen.height > window.screen.width ? [window.screen.height, window.screen.width] : [window.screen.width, window.screen.height];
+	}
 	keys.push({ key: 'resolution', value: res[0] + 'x' + res[1] + '@' + (window.screen.colorDepth || -1) });
 
 	keys.push({ key: 'timezone_offset', value: new Date().getTimezoneOffset() });
