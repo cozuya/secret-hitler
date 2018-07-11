@@ -438,7 +438,9 @@ const updateSeatedUser = (socket, passport, data) => {
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
 		const isBlacklistSafe = !game.general.gameCreatorBlacklist.includes(passport.user);
-		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe) {
+		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason;
+
+		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum) {
 			const { publicPlayersState } = game;
 			const player = {
 				userName: passport.user,
@@ -548,6 +550,10 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
+	if (data.eloSliderValue && user.eloSeason < data.eloSliderValue) {
+		return;
+	}
+
 	const newGame = {
 		gameState: {
 			previousElectedGovernment: [],
@@ -584,7 +590,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : data.privatePassword,
 			privateOnly: user.isPrivate,
 			electionCount: 0,
-			isRemade: false
+			isRemade: false,
+			eloMinimum: data.eloSliderValue
 		},
 		publicPlayersState: [],
 		playersState: [],

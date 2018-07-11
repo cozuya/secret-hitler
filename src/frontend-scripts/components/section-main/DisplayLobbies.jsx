@@ -79,6 +79,8 @@ const DisplayLobbies = props => {
 		let timedModeTooltip;
 		let isVerifiedOnly;
 		let isVerifiedOnlyTooltip;
+		let eloMinimum;
+		let eloMinimumTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
@@ -171,6 +173,11 @@ const DisplayLobbies = props => {
 			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
 		}
 
+		if (game.eloMinimum) {
+			eloMinimum = <span style={{ color: 'yellow' }}>Elo min: {game.eloMinimum}</span>;
+			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
+		}
+
 		return (
 			<div className="options-icons-container">
 				<span data-tooltip={casualGameTooltip} data-inverted="">
@@ -203,6 +210,10 @@ const DisplayLobbies = props => {
 				<span data-tooltip={timedModeTooltip} data-inverted="">
 					{timedMode}
 				</span>
+				<span data-tooltip={eloMinimumTooltip} data-inverted="">
+					{eloMinimum}
+				</span>
+
 				<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
 					{isVerifiedOnly}
 				</span>

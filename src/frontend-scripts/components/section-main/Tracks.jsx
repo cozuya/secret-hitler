@@ -107,6 +107,8 @@ class Tracks extends React.Component {
 		let timedModeTooltip;
 		let isVerifiedOnly;
 		let isVerifiedOnlyTooltip;
+		let eloMinimum;
+		let eloMinimumTooltip;
 
 		{
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
@@ -181,6 +183,15 @@ class Tracks extends React.Component {
 			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
 		}
 
+		if (game.eloMinimum) {
+			eloMinimum = (
+				<span>
+					<span style={{ color: 'yellow' }}>Elo min: {game.eloMinimum}</span>
+				</span>
+			);
+			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
+		}
+
 		return (
 			<div className="options-icons-container">
 				<span className="rebalanced">
@@ -212,6 +223,9 @@ class Tracks extends React.Component {
 				</span>
 				<span>
 					<Popup inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
+				</span>
+				<span>
+					<Popup inverted trigger={eloMinimum} content={eloMinimumTooltip} />
 				</span>
 			</div>
 		);
