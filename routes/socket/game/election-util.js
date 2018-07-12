@@ -153,7 +153,7 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 								return 7;
 						}
 					})();
-					const activePlayerCount = game.publicPlayersState.filter(player => !player.leftGame).length;
+					const activePlayerCount = game.publicPlayersState.filter(player => !player.leftGame || player.isDead).length;
 					if (activePlayerCount < neededPlayers) {
 						if (!game.general.disableGamechat) {
 							seatedPlayers.forEach(player => {
