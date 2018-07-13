@@ -1115,7 +1115,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : data.privatePassword,
 			privateOnly: user.isPrivate,
 			electionCount: 0,
-			eloMinimum: data.eloSliderValue
+			eloMinimum: data.eloSliderValue,
 			host: user.userName,
 			hostBlacklist: user.blacklist,
 			kickedPlayers: []
