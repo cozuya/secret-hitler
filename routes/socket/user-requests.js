@@ -158,7 +158,9 @@ module.exports.sendUserGameSettings = socket => {
 			if (!userListNames.includes(passport.user)) {
 				const userListInfo = {
 					userName: passport.user,
-					staffRoll: account.staffRoll,
+					staffRole: account.staffRole || '',
+					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 					wins: account.wins,
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,
@@ -246,6 +248,7 @@ module.exports.sendGameList = socket => {
 		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
 		excludedPlayerCount: game.general.excludedPlayerCount,
 		casualGame: game.general.casualGame,
+		eloMinimum: game.general.eloMinimum,
 		isVerifiedOnly: game.general.isVerifiedOnly,
 		isTourny: game.general.isTourny,
 		timedMode: game.general.timedMode,

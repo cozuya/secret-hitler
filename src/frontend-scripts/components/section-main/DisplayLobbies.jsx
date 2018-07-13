@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS, CURRENTSEASONNUMBER, EDITORS, ADMINS, MODERATORS, TRIALMODS } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -79,6 +79,8 @@ const DisplayLobbies = props => {
 		let timedModeTooltip;
 		let isVerifiedOnly;
 		let isVerifiedOnlyTooltip;
+		let eloMinimum;
+		let eloMinimumTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
@@ -171,6 +173,11 @@ const DisplayLobbies = props => {
 			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
 		}
 
+		if (game.eloMinimum) {
+			eloMinimum = <span style={{ color: 'yellow' }}>Elo min: {game.eloMinimum}</span>;
+			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
+		}
+
 		return (
 			<div className="options-icons-container">
 				<span data-tooltip={casualGameTooltip} data-inverted="">
@@ -203,6 +210,10 @@ const DisplayLobbies = props => {
 				<span data-tooltip={timedModeTooltip} data-inverted="">
 					{timedMode}
 				</span>
+				<span data-tooltip={eloMinimumTooltip} data-inverted="">
+					{eloMinimum}
+				</span>
+
 				<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
 					{isVerifiedOnly}
 				</span>
@@ -355,13 +366,6 @@ const DisplayLobbies = props => {
 		}
 	};
 
-	const isModerator =
-		userInfo.userName &&
-		(EDITORS.includes(userInfo.userName) ||
-			ADMINS.includes(userInfo.userName) ||
-			MODERATORS.includes(userInfo.userName) ||
-			TRIALMODS.includes(userInfo.userName));
-
 	return (
 		<div
 			data-uid={game.uid}
@@ -377,7 +381,7 @@ const DisplayLobbies = props => {
 						<div className="gamename-column">
 							{renderFlag()}
 							{game.name}
-							{isModerator && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
+							{userInfo.staffRole && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
 						</div>
 						<div className="options-column experienced">{optionIcons()}</div>
 					</div>

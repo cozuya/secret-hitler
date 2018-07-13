@@ -43,7 +43,9 @@ class Settings extends React.Component {
 			soundStatus: '',
 			isPrivate: '',
 			failedNameChangeMessage: '',
-			soundSelected: 'Pack 1'
+			soundSelected: 'Pack 1',
+			staffDisableVisibleElo: '',
+			staffDisableStaffColor: ''
 		};
 	}
 
@@ -64,7 +66,9 @@ class Settings extends React.Component {
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
 			isPrivate: gameSettings.isPrivate || '',
-			soundSelected: gameSettings.soundStatus || 'Off'
+			soundSelected: gameSettings.soundStatus || 'Off',
+			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
+			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false
 		});
 	}
 
@@ -369,6 +373,23 @@ class Settings extends React.Component {
 								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
 								<label />
 							</div>
+
+							{window.staffRole && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Disable visible elo
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="staffDisableVisibleElo"
+											checked={this.state.staffDisableVisibleElo}
+											onChange={() => this.toggleGameSettings('staffDisableVisibleElo')}
+										/>
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Disable player cardbacks</h4>
@@ -391,6 +412,22 @@ class Settings extends React.Component {
 								<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
 								<label />
 							</div>
+							{window.staffRole && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Disable staff color (show elo color)
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="staffDisableStaffColor"
+											checked={this.state.staffDisableStaffColor}
+											onChange={() => this.toggleGameSettings('staffDisableStaffColor')}
+										/>
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Disable player colors in chat</h4>

@@ -1,26 +1,26 @@
 const cn = require('classnames');
 
-const MODERATORS = (module.exports.MODERATORS = [
-	'Uther',
-	'Tubadevil',
-	'Faaiz1999',
-	'littlebird',
-	'Hexicube',
-	'RavenCaps',
-	'jdudle3',
-	'Number5',
-	'Ophxlia',
-	'cayseron',
-	'neffni',
-	'benjamin172',
-	'mara717'
-]);
+// const MODERATORS = (module.exports.MODERATORS = [
+// 	'Uther',
+// 	'Tubadevil',
+// 	'Faaiz1999',
+// 	'littlebird',
+// 	'Hexicube',
+// 	'RavenCaps',
+// 	'jdudle3',
+// 	'Number5',
+// 	'Ophxlia',
+// 	'cayseron',
+// 	'neffni',
+// 	'benjamin172',
+// 	'mara717'
+// ]);
 
 module.exports.TRIALMODS = ['dia', 'Yawner'];
 
-const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO']);
-const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
-const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
+// const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO', 'Uther']);
+// const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
+module.exports.CONTRIBUTORS = [
 	'straightleft',
 	'Idrissa',
 	'banc',
@@ -41,11 +41,22 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'LordVader',
 	'voldemort',
 	'goonbee'
-]);
+];
 
 const CURRENTSEASONNUMBER = 3;
 
 module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
+
+const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
+const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
+
+const ALLCHARS = [...ALPHANUMERIC, ...SYMBOLS];
+
+module.exports.LEGALCHARACTERS = text => {
+	const arr = [...text];
+	const pass = arr.every(c => ALLCHARS.includes(c));
+	return pass;
+};
 
 /**
  * @param {object} user - user from userlist.
@@ -55,19 +66,18 @@ module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
  * @return {string} list of classes for colors.
  */
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
-	// if (MODERATORS.includes(user.userName) || ADMINS.includes(user.userName) || EDITORS.includes(user.userName) || CONTRIBUTORS.includes(user.userName)) {
-	if (user.staffRole) {
+	if (Boolean(user.staffRole && user.staffRole.length)) {
 		return cn(defaultClass, {
-			admin: user.staffRole === 'admin',
-			moderatorcolor: user.staffRole === 'moderator',
-			editorcolor: user.staffRole === 'editor',
-			contributer: user.staffRole === 'contributor',
-			cbell: user.userName === 'cbell',
-			max: user.userName === 'Max',
-			dfinn: user.userName === 'DFinn',
-			faaiz: user.userName === 'Faaiz1999',
-			invidia: user.userName === 'Invidia',
-			thejuststopo: user.userName === 'TheJustStopO'
+			admin: user.staffRole === 'admin' && !user.staffDisableStaffColor,
+			moderatorcolor: user.staffRole === 'moderator' && !user.staffDisableStaffColor,
+			editorcolor: user.staffRole === 'editor' && !user.staffDisableStaffColor,
+			contributer: user.staffRole === 'contributor' && !user.staffDisableStaffColor,
+			cbell: user.userName === 'cbell' && !user.staffDisableStaffColor,
+			max: user.userName === 'Max' && !user.staffDisableStaffColor,
+			dfinn: user.userName === 'DFinn' && !user.staffDisableStaffColor,
+			faaiz: user.userName === 'Faaiz1999' && !user.staffDisableStaffColor,
+			invidia: user.userName === 'Invidia' && !user.staffDisableStaffColor,
+			thejuststopo: user.userName === 'TheJustStopO' && !user.staffDisableStaffColor
 		});
 	} else {
 		const w = isSeasonal ? user[`winsSeason${CURRENTSEASONNUMBER}`] : user.wins;

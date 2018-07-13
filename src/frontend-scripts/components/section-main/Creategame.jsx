@@ -35,7 +35,7 @@ export default class Creategame extends React.Component {
 			timedMode: false,
 			isVerifiedOnly: false,
 			timedSliderValue: [120],
-			eloSliderValue: [1700, 2300],
+			eloSliderValue: [1675],
 			isEloLimited: false
 		};
 	}
@@ -213,7 +213,7 @@ export default class Creategame extends React.Component {
 		} else {
 			const excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 			const data = {
-				gameName: $creategame.find('div.gamename input').val(),
+				gameName: $creategame.find('div.gamename input').val() || 'New Game',
 				flag: $creategame.find('div.flag input').val() || 'none',
 				minPlayersCount: this.state.sliderValues[0],
 				excludedPlayerCount,
@@ -231,6 +231,7 @@ export default class Creategame extends React.Component {
 				rebalance6p: this.state.checkedRebalanceValues[0],
 				rebalance7p: this.state.checkedRebalanceValues[1],
 				rebalance9p2f: this.state.checkedRebalanceValues[2],
+				eloSliderValue: this.state.isEloLimited ? this.state.eloSliderValue[0] : null,
 				privatePassword: this.state.privateShowing ? $(this.privategamepassword).val() : false
 			};
 
@@ -1121,28 +1122,31 @@ export default class Creategame extends React.Component {
 
 	eloSliderChange(eloSliderValue) {
 		console.log(eloSliderValue);
-		this.setState(eloSliderValue);
+		this.setState({ eloSliderValue });
 	}
 
 	renderEloSlider() {
 		const { userInfo, userList } = this.props;
+		if (!userList.list.length) {
+			return null;
+		}
 		const player = userList.list.find(p => p.userName === userInfo.userName);
 		const isSeason = !userInfo.gameSettings.disableSeasonal;
 		const playerElo = player.eloSeason;
 
-		if (isSeason && playerElo && playerElo > 1699) {
+		if (isSeason && playerElo && playerElo > 1675) {
 			return (
 				<div className="sixteen wide column" style={{ marginTop: '-30px' }}>
 					{this.state.isEloLimited && (
 						<div>
-							<h4 className="ui header">Minimum and maximum elo to sit in this game</h4>
+							<h4 className="ui header">Minimum elo to sit in this game</h4>
 							<Range
 								onChange={this.eloSliderChange}
-								min={1700}
+								min={1675}
 								max={2300}
-								defaultValue={[1700, 1800]}
+								defaultValue={[1675]}
 								value={this.state.eloSliderValue}
-								marks={{ 1700: '1700', 2000: '2000', 2300: '2300' }}
+								marks={{ 1675: '1675', 1800: '1800', 1900: '1900', 2000: '2000', 2300: '2300' }}
 							/>
 						</div>
 					)}
@@ -1183,7 +1187,14 @@ export default class Creategame extends React.Component {
 						<div className="five wide column gamename">
 							<h4 className="ui header">Game name:</h4>
 							<div className="ui input">
-								<input maxLength="20" placeholder="New Game" />
+								<input
+									maxLength="20"
+									placeholder="New Game"
+									onKeyPress={e => {
+										const { LEGALCHARACTERS } = require('../../constants');
+										if (!LEGALCHARACTERS(e.key)) e.preventDefault();
+									}}
+								/>
 							</div>
 							{this.state.containsBadWord && <p className="contains-bad-word">This game name has a banned word or word fragment.</p>}
 						</div>

@@ -11,6 +11,10 @@ module.exports.accountCreationDisabled = { status: false };
 module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
 module.exports.currentSeasonNumber = CURRENTSEASONNUMBER;
+module.exports.newStaff = {
+	modUserNames: [],
+	editorUserNames: []
+};
 
 // set of profiles, no duplicate usernames
 /**
@@ -43,6 +47,8 @@ module.exports.formattedUserList = () => {
 		rainbowWins: user.rainbowWins,
 		rainbowLosses: user.rainbowLosses,
 		isPrivate: user.isPrivate,
+		staffDisableVisibleElo: user.staffDisableVisibleElo,
+		staffDisableStaffColor: user.staffDisableStaffColor,
 
 		// Tournaments are disabled, no point sending this.
 		// tournyWins: user.tournyWins,
@@ -58,8 +64,13 @@ module.exports.formattedUserList = () => {
 		lossesSeason2: user.lossesSeason2,
 		rainbowWinsSeason2: user.rainbowWinsSeason2,
 		rainbowLossesSeason2: user.rainbowLossesSeason2,
+		winsSeason3: user.winsSeason3,
+		lossesSeason3: user.lossesSeason3,
+		rainbowWinsSeason3: user.rainbowWinsSeason3,
+		rainbowLossesSeason3: user.rainbowLossesSeason3,
 		previousSeasonAward: user.previousSeasonAward,
-		timeLastGameCreated: user.timeLastGameCreated
+		timeLastGameCreated: user.timeLastGameCreated,
+		staffRole: user.staffRole
 		// oldData: user
 	}));
 };

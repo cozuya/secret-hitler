@@ -1,8 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import _ from 'lodash';
 import $ from 'jquery';
-import { ADMINS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
 import Checkbox from 'semantic-ui-checkbox';
 
@@ -182,7 +180,6 @@ export default class Moderation extends React.Component {
 			this.setState({ selectedUser: userName });
 		};
 		const { userList, userSort } = this.state;
-		const ipCounts = {};
 		const ips = userList.map(user => user.ip);
 		const bannedips = this.state.log.filter(log => log.actionTaken === 'ban' || log.actionTaken === 'timeOut').map(log => log.ip);
 		const timednames = this.state.log.filter(log => log.actionTaken === 'timeOut2').map(log => log.userActedOn);
@@ -266,6 +263,7 @@ export default class Moderation extends React.Component {
 			}
 		};
 		const { selectedUser, actionTextValue, playerInputText } = this.state;
+		const { userInfo } = this.props;
 
 		return (
 			<div className="button-container">
@@ -327,6 +325,14 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Timeout - non-IP version.
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('timeOut3');
+					}}
+				>
+					Timeout - 1 hour IP version.
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}
@@ -464,9 +470,7 @@ export default class Moderation extends React.Component {
 				</div>
 				<button
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -478,9 +482,7 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -502,9 +504,7 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'darkblue' }}
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -515,9 +515,48 @@ export default class Moderation extends React.Component {
 					Delete/reset player profile
 				</button>
 				<button
+					style={{ background: 'grey' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('removeStaffRole');
+					}}
+				>
+					Remove mod or editor status and log them out
+				</button>
+				<button
+					style={{ background: 'blueviolet' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToMod');
+					}}
+				>
+					Promote player to mod
+				</button>
+				<button
+					style={{ background: 'violet' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToEditor');
+					}}
+				>
+					Promote player to editor
+				</button>
+				<button
 					style={{ background: 'black' }}
 					className={
-						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
