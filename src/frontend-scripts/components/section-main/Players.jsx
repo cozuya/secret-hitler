@@ -4,7 +4,7 @@ import Policies from './Policies.jsx';
 import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
 import { togglePlayerNotes } from '../../actions/actions';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
 import PropTypes from 'prop-types';
 
 $.fn.dropdown = Dropdown;
@@ -207,11 +207,7 @@ class Players extends React.Component {
 				</span>
 			);
 
-			if (
-				player.isPrivate &&
-				!(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)) &&
-				!userInfo.isSeated
-			) {
+			if (player.isPrivate && !userInfo.staffRole && !userInfo.isSeated) {
 				return prependCrowns('Anonymous');
 			}
 
@@ -520,6 +516,14 @@ class Players extends React.Component {
 				window.alert('Sorry, this service is currently unavailable.');
 			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
 				$(this.passwordModal).modal('show');
+			} else if (gameInfo.general.eloMinimum) {
+				const user = userList.list.find(user => user.userName === userInfo.userName);
+
+				if (!user || parseInt(user.eloSeason, 10) < gameInfo.general.eloMinimum) {
+					$(this.elominimumModal).modal('show');
+				} else {
+					onClickedTakeSeat();
+				}
 			} else {
 				onClickedTakeSeat(null, index);
 			}
@@ -588,6 +592,15 @@ class Players extends React.Component {
 					<div className="ui header">
 						This game is for email-verified only accounts. Have your account become verified by adding an email address in your <a href="/account">settings.</a>
 					</div>
+				</div>
+
+				<div
+					className="ui basic small modal"
+					ref={c => {
+						this.elominimumModal = c;
+					}}
+				>
+					<div className="ui header">You do not meet the elo minimum to play in this game.</div>
 				</div>
 
 				<div

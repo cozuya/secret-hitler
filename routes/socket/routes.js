@@ -41,8 +41,7 @@ const {
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
-const { games, AEM } = require('./models');
-const { MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
+const { games } = require('./models');
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
 	const toRemoveIndexes = games
@@ -90,7 +89,7 @@ const isHost = (passport, game) => {
 	}
 };
 
-module.exports = () => {
+module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 	setInterval(gamesGarbageCollector, 100000);
 
 	io.on('connection', socket => {
@@ -111,7 +110,7 @@ module.exports = () => {
 
 		const { passport } = socket.handshake.session;
 		const authenticated = ensureAuthenticated(socket);
-		const isAEM = authenticated && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user));
+		const isAEM = authenticated && passport && passport.user && (modUserNames.includes(passport.user) || editorUserNames.includes(passport.user));
 
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
@@ -129,16 +128,9 @@ module.exports = () => {
 				handleUpdatedPlayerNote(socket, data);
 			})
 			.on('updateModAction', data => {
-				AEM.then(accounts => {
-					if (
-						authenticated &&
-						accounts
-							.filter(account => account.staffRole === 'moderator' || account.staffRole === 'admin' || account.staffRole === 'editor')
-							.find(account => account.username === socket.handshake.session.passport.user)
-					) {
-						handleModerationAction(socket, passport, data);
-					}
-				});
+				if (authenticated && isAEM) {
+					handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));
+				}
 			})
 			.on('addNewClaim', data => {
 				const game = findGame(data);
@@ -157,7 +149,7 @@ module.exports = () => {
 			})
 			.on('addNewGameChat', data => {
 				if (authenticated) {
-					handleAddNewGameChat(socket, passport, data);
+					handleAddNewGameChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
 			})
 			.on('updateReportGame', data => {
@@ -179,7 +171,7 @@ module.exports = () => {
 			})
 			.on('addNewGeneralChat', data => {
 				if (authenticated) {
-					handleNewGeneralChat(socket, passport, data);
+					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
 			})
 			.on('leaveGame', data => {

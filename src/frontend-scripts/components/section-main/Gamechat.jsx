@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import { PLAYERCOLORS, MODERATORS, ADMINS, EDITORS } from '../../constants';
+import { PLAYERCOLORS } from '../../constants';
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -235,7 +235,7 @@ class Gamechat extends React.Component {
 				);
 			}
 		})();
-		const isStaff = ADMINS.includes(userInfo.userName) || MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName);
+		const isStaff = Boolean(userInfo.staffRole.length);
 		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
@@ -345,6 +345,7 @@ class Gamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
+		const isStaff = Boolean(userInfo.staffRole.length);
 
 		const renderPreviousSeasonAward = type => {
 			switch (type) {
@@ -357,30 +358,18 @@ class Gamechat extends React.Component {
 			}
 		};
 
-		if (
-			isReplay ||
-			!gameInfo.general.private ||
-			userInfo.isSeated ||
-			(userInfo.userName && (MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName)))
-		) {
+		if (isReplay || !gameInfo.general.private || userInfo.isSeated || isStaff) {
 			return gameInfo.chats
 				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
 				.filter(
 					chat =>
-						(chatFilter === 'No observer chat' &&
-							(chat.gameChat ||
-								seatedUserNames.includes(chat.userName) ||
-								MODERATORS.includes(chat.userName) ||
-								ADMINS.includes(chat.userName) ||
-								EDITORS.includes(chat.userName))) ||
+						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName) || isStaff)) ||
 						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
 						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 				)
 				.map((chat, i) => {
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-					const isMod = playerListPlayer
-						? ADMINS.includes(playerListPlayer.userName) || EDITORS.includes(playerListPlayer.userName) || MODERATORS.includes(playerListPlayer.userName)
-						: false;
+					const isMod = playerListPlayer && playerListPlayer.staffRole && Boolean(playerListPlayer.staffRole.length);
 					const chatContents = processEmotes(chat.chat, isMod);
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const isGreenText = /^>/i.test(chatContents[0]);
@@ -487,17 +476,17 @@ class Gamechat extends React.Component {
 							>
 								{isReplay || isSeated ? (
 									''
-								) : MODERATORS.includes(chat.userName) ? (
+								) : chat.staffRole === 'moderator' ? (
 									<span data-tooltip="Moderator" data-inverted>
 										<span className="observer-chat">(Observer) </span>
 										<span className="moderator-name">(M) </span>
 									</span>
-								) : EDITORS.includes(chat.userName) ? (
+								) : chat.staffRole === 'editor' ? (
 									<span data-tooltip="Editor" data-inverted>
 										<span className="observer-chat">(Observer) </span>
 										<span className="editor-name">(E) </span>
 									</span>
-								) : ADMINS.includes(chat.userName) ? (
+								) : chat.staffRole === 'admin' ? (
 									<span data-tooltip="Admin" data-inverted>
 										<span className="observer-chat">(Observer) </span>
 										<span className="admin-name">(A) </span>

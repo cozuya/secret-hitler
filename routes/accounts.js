@@ -182,13 +182,18 @@ module.exports = () => {
 
 							if (ip) {
 								date = new Date().getTime();
-								unbannedTime = ip.type === 'small' || ip.type === 'new' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+								unbannedTime =
+									ip.type === 'small' || ip.type === 'new'
+										? ip.bannedDate.getTime() + 64800000
+										: ip.type === 'tiny'
+											? ip.bannedDate.getTime() + 60000
+											: ip.bannedDate.getTime() + 604800000;
 							}
 
 							if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
 								res.status(403).json({
 									message:
-										ip.type === 'small'
+										ip.type === 'small' || ip.type === 'tiny'
 											? 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
 											: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators.'
 								});
@@ -232,7 +237,7 @@ module.exports = () => {
 						req.headers['X-Forwarded-For'] ||
 						req.headers['x-forwarded-for'] ||
 						req.connection.remoteAddress,
-					type: 'small' || 'big'
+					type: 'tiny' || 'small' || 'big'
 				},
 				(err, ips) => {
 					let date;
@@ -252,7 +257,12 @@ module.exports = () => {
 
 					if (ip) {
 						date = new Date().getTime();
-						unbannedTime = ip.type === 'small' ? ip.bannedDate.getTime() + 64800000 : ip.bannedDate.getTime() + 604800000;
+						unbannedTime =
+							ip.type === 'small'
+								? ip.bannedDate.getTime() + 64800000
+								: ip.type === 'tiny'
+									? ip.bannedDate.getTime() + 60000
+									: ip.bannedDate.getTime() + 604800000;
 					}
 
 					if (ip && unbannedTime > date) {

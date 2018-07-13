@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile, updateStatus } from '../../actions/actions';
 import cn from 'classnames';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -129,11 +129,7 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const { userInfo } = this.props;
 
-		if (
-			userInfo &&
-			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName))
-		) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole.length)) {
 			return (
 				<a href="#/moderation">
 					<i className="fire icon mod-button" />
@@ -145,14 +141,7 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 
-		if (
-			userInfo &&
-			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) ||
-				TRIALMODS.includes(userInfo.userName) ||
-				ADMINS.includes(userInfo.userName) ||
-				EDITORS.includes(userInfo.userName))
-		) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole.length)) {
 			let classes = 'comment icon report-button';
 
 			const reportClick = () => {
@@ -208,17 +197,16 @@ class Playerlist extends React.Component {
 						? `lossesSeason${CURRENTSEASONNUMBER}`
 						: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
-			// const time = new Date().getTime();
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
-			const isStaff = MODERATORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName);
+			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole.length);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
-			const admins = visible.filter(user => ADMINS.includes(user.userName)).sort(this.alphabetical());
+			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			let aem = [...admins];
-			const editors = visible.filter(user => !aem.includes(user) && EDITORS.includes(user.userName)).sort(this.alphabetical());
+			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());
 			aem.push(...editors);
-			const moderators = visible.filter(user => !aem.includes(user) && MODERATORS.includes(user.userName)).sort(this.alphabetical());
+			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
 			const contributors = visible.filter(user => !aem.includes(user) && CONTRIBUTORS.includes(user.userName)).sort(this.alphabetical());
 			aem.push(...contributors);
@@ -241,11 +229,7 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 ||
-					ADMINS.includes(user.userName) ||
-					EDITORS.includes(user.userName) ||
-					MODERATORS.includes(user.userName) ||
-					CONTRIBUTORS.includes(user.userName)
+					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || CONTRIBUTORS.includes(user.userName)
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -299,15 +283,16 @@ class Playerlist extends React.Component {
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{(() => {
-								const userAdminRole = ADMINS.includes(user.userName)
-									? 'Admin'
-									: EDITORS.includes(user.userName)
-										? 'Editor'
-										: MODERATORS.includes(user.userName)
-											? 'Moderator'
-											: CONTRIBUTORS.includes(user.userName)
-												? 'Contributor'
-												: null;
+								const userAdminRole =
+									user.staffRole === 'admin'
+										? 'Admin'
+										: user.staffRole === 'editor'
+											? 'Editor'
+											: user.staffRole === 'moderator'
+												? 'Moderator'
+												: CONTRIBUTORS.includes(user.userName)
+													? 'Contributor'
+													: null;
 
 								if (userAdminRole) {
 									const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
@@ -336,7 +321,8 @@ class Playerlist extends React.Component {
 							})()}
 							{renderStatus()}
 						</div>
-						{!ADMINS.includes(user.userName) &&
+						{user.staffRole !== 'admin' &&
+							Boolean(!user.staffDisableVisibleElo) &&
 							(() => {
 								return elo ? (
 									<div className="userlist-stats-container">
