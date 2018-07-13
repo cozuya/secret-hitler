@@ -3,7 +3,7 @@
 
 let	http = require('http'),
 	express = require('express'),
-	port = normalizePort(process.env.PORT || '8081'),
+	port = normalizePort(process.env.PORT || '8080'),
 	debug, server;
 
 require('dotenv').config();
