@@ -239,9 +239,17 @@ module.exports.sendGameList = socket => {
 		userNames: game.publicPlayersState.map(val => val.userName),
 		customCardback: game.publicPlayersState.map(val => val.customCardback),
 		customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
-		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
+		gameStatus: game.gameState.isCompleted
+			? game.gameState.isCompleted
+			: game.gameState.isTracksFlipped
+				? game.gameState.waitingForReplacement
+					? 'waitingForReplacement'
+					: 'isStarted'
+				: 'notStarted',
 		seatedCount: game.publicPlayersState.length,
 		gameCreatorName: game.general.gameCreatorName,
+		host: game.general.host,
+		kickedStatus: game.publicPlayersState.map(player => player.kicked),
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
 		excludedPlayerCount: game.general.excludedPlayerCount,
@@ -260,7 +268,7 @@ module.exports.sendGameList = socket => {
 			return null;
 		})(),
 		experiencedMode: game.general.experiencedMode,
-		disableChat: game.general.disableChat,
+		voiceGame: game.general.voiceGame,
 		disableGamechat: game.general.disableGamechat,
 		blindMode: game.general.blindMode,
 		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
@@ -268,7 +276,7 @@ module.exports.sendGameList = socket => {
 		electionCount: game.general.electionCount,
 		rebalance6p: game.general.rebalance6p,
 		rebalance7p: game.general.rebalance7p,
-		rebalance9p: game.general.rerebalance9p,
+		rebalance9p: game.general.rebalance9p,
 		privateOnly: game.general.privateOnly,
 		private: game.general.private,
 		uid: game.general.uid,

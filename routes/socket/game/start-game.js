@@ -380,7 +380,7 @@ const beginGame = game => {
  * @param {object} game - game to act on.
  */
 module.exports = game => {
-	let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 5;
+	let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 3;
 
 	const countDown = setInterval(() => {
 		if (!startGamePause) {

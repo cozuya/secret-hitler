@@ -14,8 +14,6 @@ const secureGame = game => {
  */
 // todo-release make this accept a socket argument and emit only to it if it exists
 module.exports.sendInProgressGameUpdate = game => {
-	const seatedPlayerNames = game.publicPlayersState.map(player => player.userName);
-
 	/**
 	 * @param {object} game - game to act on.
 	 * @param {string} userName - name of user to act on.
@@ -31,6 +29,12 @@ module.exports.sendInProgressGameUpdate = game => {
 		return player ? player.gameChats.concat(game.chats) : game.private.unSeatedGameChats.concat(game.chats);
 	};
 
+	const seatedPlayers = game.publicPlayersState.map(player => {
+		return { userName: player.userName, waitingForHostAccept: player.waitingForHostAccept };
+	});
+	const isSeated = socket => seatedPlayers.map(player => player.userName).includes(socket.handshake.session.passport.user);
+	const isWaitingForHostAccept = socket => seatedPlayers.find(player => player.userName === socket.handshake.session.passport.user).waitingForHostAccept;
+
 	let roomSockets;
 	let playerSockets;
 	let observerSockets;
@@ -43,12 +47,11 @@ module.exports.sendInProgressGameUpdate = game => {
 				socket &&
 				socket.handshake.session.passport &&
 				Object.keys(socket.handshake.session.passport).length &&
-				seatedPlayerNames.includes(socket.handshake.session.passport.user)
+				isSeated(socket) &&
+				!isWaitingForHostAccept(socket)
 		);
 
-		observerSockets = roomSockets.filter(
-			socket => (socket && !socket.handshake.session.passport) || (socket && !seatedPlayerNames.includes(socket.handshake.session.passport.user))
-		);
+		observerSockets = roomSockets.filter(socket => socket && (!socket.handshake.session.passport || !isSeated(socket) || isWaitingForHostAccept(socket)));
 	}
 
 	if (playerSockets) {

@@ -3,6 +3,7 @@ import CardFlinger from './CardFlinger.jsx';
 import EnactedPolicies from './EnactedPolicies.jsx';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
+import HostMenu from './HostMenu.jsx';
 
 class Tracks extends React.Component {
 	constructor() {
@@ -89,8 +90,8 @@ class Tracks extends React.Component {
 
 		let rebalance69p;
 		let rebalance69pTooltip;
-		let disableChat;
-		let disableChatTooltip;
+		let voiceGame;
+		let voiceGameTooltip;
 		let disableGamechat;
 		let disableGamechatTooltip;
 		let experiencedMode;
@@ -121,17 +122,16 @@ class Tracks extends React.Component {
 								? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
 								: game.rebalance7p
 									? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
-									: ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'));
+									: game.rebalance9p ? ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games')) : null;
 		}
 
-		if (game.disableChat) {
-			disableChat = (
+		if (game.voiceGame) {
+			voiceGame = (
 				<i className="icons">
 					<i className="unmute icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
 				</i>
 			);
-			disableChatTooltip = 'Player Chat Disabled';
+			voiceGameTooltip = 'Voice Game';
 		}
 
 		if (game.isVerifiedOnly) {
@@ -187,7 +187,7 @@ class Tracks extends React.Component {
 					<Popup inverted trigger={rebalance69p} content={rebalance69pTooltip} />
 				</span>
 				<span>
-					<Popup inverted trigger={disableChat} content={disableChatTooltip} />
+					<Popup inverted trigger={voiceGame} content={voiceGameTooltip} />
 				</span>
 				<span>
 					<Popup inverted trigger={disableGamechat} content={disableGamechatTooltip} />
@@ -267,17 +267,20 @@ class Tracks extends React.Component {
 		return (
 			<section className="tracks-container">
 				<CardFlinger userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
-				<EnactedPolicies gameInfo={gameInfo} />
+				<EnactedPolicies gameInfo={gameInfo} userInfo={userInfo} />
 				<div>
 					<div className="game-name">
 						{gameInfo.general.flag !== 'none' && <i className={`ui flag ${gameInfo.general.flag}`} />}
 						<span>{gameInfo.general.name}</span>
 					</div>
+					<HostMenu socket={socket} gameInfo={gameInfo} userInfo={userInfo} userList={this.props.userList} />
 					<div className="option-icons">{this.optionIcons(gameInfo)}</div>
 					<div className="player-count">
-						Players: <span>{gameInfo.publicPlayersState.length}</span>
+						<span>
+							{gameInfo.publicPlayersState.length} / {gameInfo.general.maxPlayersCount}
+						</span>
 					</div>
-					{userInfo.userName &&
+					{/* userInfo.userName &&
 						userInfo.isSeated &&
 						gameInfo.gameState.isTracksFlipped &&
 						!gameInfo.general.isRemade &&
@@ -295,14 +298,18 @@ class Tracks extends React.Component {
 										: 'Enable this button to show that you would like to remake this game'
 								}
 							/>
-						)}
+						) */}
 					{this.state.timedModeTimer && <div className="timed-mode-counter">{this.state.timedModeTimer}</div>}
 				</div>
 				<section
 					className={(() => {
 						let classes = 'tracks';
 
-						if (gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
+						if (
+							gameInfo.cardFlingerState.length ||
+							gameInfo.trackState.isBlurred ||
+							(gameInfo.general.host === userInfo.userName && (!gameInfo.gameState.isTracksFlipped || gameInfo.gameState.isCompleted))
+						) {
 							classes += ' blurred';
 						}
 
@@ -367,7 +374,8 @@ Tracks.propTypes = {
 	onSeatingUser: PropTypes.func,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	userList: PropTypes.object
 };
 
 export default Tracks;

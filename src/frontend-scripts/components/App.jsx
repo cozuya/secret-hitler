@@ -93,7 +93,7 @@ export class App extends React.Component {
 
 			userInfo.gameSettings = settings;
 			dispatch(updateUser(userInfo));
-			this.forceUpdate(); // dunno why I need this to make it work I'm bad at this.
+			//this.forceUpdate(); // dunno why I need this to make it work I'm bad at this.
 		});
 
 		socket.on('gameList', list => {
@@ -144,6 +144,12 @@ export class App extends React.Component {
 			const { userInfo } = this.props;
 
 			userInfo.gameSettings.newReport = reportStatus;
+			dispatch(updateUser(userInfo));
+		});
+
+		socket.on('playerKicked', () => {
+			const { userInfo } = this.props;
+			userInfo.isSeated = false;
 			dispatch(updateUser(userInfo));
 		});
 	}
@@ -261,10 +267,11 @@ export class App extends React.Component {
 
 	// ***** end dev helpers *****
 
-	handleSeatingUser(password) {
+	handleSeatingUser(password, seatIndex) {
 		const { gameInfo } = this.props;
 		const data = {
 			uid: gameInfo.general.uid,
+			seatIndex,
 			password
 		};
 
@@ -310,9 +317,7 @@ export class App extends React.Component {
 				className="app-container"
 				style={{
 					fontFamily: gameSettings
-						? gameSettings.fontFamily
-							? `'${gameSettings.fontFamily}', Lato, sans-serif`
-							: '"Comfortaa", Lato, sans-serif'
+						? gameSettings.fontFamily ? `'${gameSettings.fontFamily}', Lato, sans-serif` : '"Comfortaa", Lato, sans-serif'
 						: '"Comfortaa", Lato, sans-serif'
 				}}
 			>

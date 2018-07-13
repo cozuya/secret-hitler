@@ -59,8 +59,8 @@ const DisplayLobbies = props => {
 	const optionIcons = () => {
 		let rebalance;
 		let rebalanceTooltip;
-		let disableChat;
-		let disableChatTooltip;
+		let voiceGame;
+		let voiceGameTooltip;
 		let disableGamechat;
 		let disableGamechatTooltip;
 		let experiencedMode;
@@ -111,14 +111,13 @@ const DisplayLobbies = props => {
 			}
 		}
 
-		if (game.disableChat) {
-			disableChat = (
+		if (game.voiceGame) {
+			voiceGame = (
 				<i className="icons">
 					<i className="unmute icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
 				</i>
 			);
-			disableChatTooltip = 'Player Chat Disabled';
+			voiceGameTooltip = 'Voice Game';
 		}
 
 		if (game.privateOnly) {
@@ -179,8 +178,8 @@ const DisplayLobbies = props => {
 				<span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
 					{rebalance}
 				</span>
-				<span data-tooltip={disableChatTooltip} data-inverted="">
-					{disableChat}
+				<span data-tooltip={voiceGameTooltip} data-inverted="">
+					{voiceGame}
 				</span>
 				<span data-tooltip={disableGamechatTooltip} data-inverted="">
 					{disableGamechat}
@@ -214,6 +213,7 @@ const DisplayLobbies = props => {
 		const players = [];
 		const total = [];
 		const { gameSettings } = userInfo;
+		const hostIcon = <img className="small-host-icon" src="../images/host-icon.png" />;
 		// Might be a simpler way to write this. Just getting all the data we need and storing it in players[]
 		if (game.blindMode) {
 			return null;
@@ -224,7 +224,7 @@ const DisplayLobbies = props => {
 		game.customCardbackUid.forEach((el, index) => (players[index].customCardbackUid = el));
 		players.forEach((player, index) => {
 			const userStats = userList.list ? userList.list.find(el => el.userName === player.userName) : null;
-
+			players[index].kicked = game.kickedStatus[index];
 			if (userStats) {
 				players[index].wins = userStats.wins;
 				players[index].losses = userStats.losses;
@@ -241,16 +241,24 @@ const DisplayLobbies = props => {
 					? PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback')
 					: 'player-small-cardback';
 
-			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
+			if (player.kicked) {
+				total.push(<div key={total.length} className="empty-seat-icons" />);
+			} else if (
+				player.customCardback &&
+				!game.private &&
+				(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+			) {
 				total.push(
 					<div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
-						<img src={`../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid}`} />
+						{game.host === player.userName && hostIcon}
+						<img className="cardback" src={`../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid}`} />
 					</div>
 				);
 			} else {
 				total.push(
 					<div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
-						<img src={`../images/default_cardback.png`} />
+						{game.host === player.userName && hostIcon}
+						<img className="cardback" src={`../images/default_cardback.png`} />
 					</div>
 				);
 			}
@@ -377,7 +385,7 @@ const DisplayLobbies = props => {
 						<div className="gamename-column">
 							{renderFlag()}
 							{game.name}
-							{isModerator && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
+							{!game.blindMode && !game.private && <span style={{ color: 'rgb(194, 107, 238)', float: 'right' }}>{` Host: ${game.host}`}</span>}
 						</div>
 						<div className="options-column experienced">{optionIcons()}</div>
 					</div>

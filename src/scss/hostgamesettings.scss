@@ -1,0 +1,163 @@
+.host-game-settings {
+	.host-settings.remove.icon {
+		position: absolute;
+		left: 600px;
+		top: 10px;
+		border: 0;
+		background: transparent;
+		font-size: 30px !important;
+	}
+	.ui.header {
+		margin: 0;
+	}
+	padding: 2%;
+
+	.contains-bad-word {
+		color: red;
+	}
+
+	> .header {
+		text-align: center;
+		margin-bottom: 20px;
+	}
+
+	.grid {
+		margin: 0;
+	}
+
+	.grid h4 {
+		margin-bottom: 5px;
+		font-size: 12px;
+	}
+
+	.grid > div {
+		text-align: center;
+	}
+
+	.sliderrow {
+		margin-top: 20px;
+	}
+
+	.flag {
+		margin-right: 5px;
+	}
+
+	.gamename {
+		margin-right: -8px;
+		h4 small {
+			margin-left: 8px;
+		}
+
+		input {
+			width: 80%;
+		}
+	}
+
+	.ui.search.dropdown > .text {
+		color: black;
+	}
+
+	.lock.icon {
+		margin-top: -15px;
+	}
+	.private {
+		padding-top: 10px;
+	}
+	.password-input {
+		margin-top: 20px !important;
+	}
+	.footer {
+		margin-top: 10px;
+		.button {
+			margin-left: 15px;
+			width: 400px;
+		}
+	}
+
+	.rebalance {
+		> div {
+			margin-left: -350px;
+		}
+		span {
+			color: $hitlerteam;
+			i {
+				cursor: pointer;
+				color: $hitlerteam !important;
+			}
+		}
+
+		label {
+			position: absolute;
+			height: 28px;
+			border: 2px solid $hitlerteam;
+		}
+
+		.rebalance-0 {
+			left: 60px;
+		}
+		.rebalance-1 {
+			left: 113px;
+		}
+		.rebalance-2 {
+			left: 222px;
+		}
+		input {
+			cursor: pointer;
+			width: 25px;
+			height: 25px;
+		}
+	}
+
+	.checkbox-container {
+		width: 104%;
+		margin-left: -6px;
+		//position: relative;
+		top: 30px;
+		display: flex;
+		justify-content: space-between;
+
+		input {
+			cursor: pointer;
+			width: 25px;
+			height: 25px;
+		}
+	}
+
+	.rainbowgame {
+		img {
+			margin-bottom: 5px;
+		}
+	}
+
+	.checkbox.private {
+		input {
+			margin-top: 20px; // quick fix to align label and input (makes clickable area the same as visible area)
+		}
+	}
+
+	.checkbox {
+		input,
+		label {
+			margin-top: 10px;
+		}
+	}
+
+	.time.validity {
+		margin-right: 20px;
+	}
+
+	input.time:valid + span:after {
+		position: absolute;
+		content: '✓';
+		padding-left: 5px;
+	}
+	input.time:invalid + span:after {
+		position: absolute;
+		content: '✖';
+		padding-left: 5px;
+	}
+
+	.timedmode-check {
+		margin-bottom: -21px !important;
+	}
+}

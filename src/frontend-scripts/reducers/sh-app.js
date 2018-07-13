@@ -13,11 +13,20 @@ import {
 const userInfo = (state = {}, action) => {
 	switch (action.type) {
 		case UPDATE_USER:
-			state = action.user;
-			break;
+			return Object.assign({}, state, action.user);
+		default:
+			return state;
 	}
-	return state;
 };
+
+// const userInfo = (state = {}, action) => {
+// 	switch (action.type) {
+// 		case UPDATE_USER:
+// 			state = action.user;
+// 			break;
+// 	}
+// 	return state;
+// };
 
 const midSection = (state = 'default', action) => {
 	switch (action.type) {
