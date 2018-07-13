@@ -190,6 +190,37 @@ const startCountdown = game => {
 // };
 
 /**
+ * Called when a player leaves to check if we should transfer the host to another player
+ *
+ * @param {object} game - target game.
+ * @param {number} playerIndex - target player.
+ */
+const checkTransferHost = (game, playerIndex) => {
+	if (game.publicPlayersState[playerIndex].userName === game.general.host) {
+		for (let i = 0; i < game.publicPlayersState.length; i++) {
+			// Make sure the host we are transfering to is not the current player or a player who has left
+			if (i !== playerIndex && !game.publicPlayersState[i].leftGame && !game.publicPlayersState[i].waitingForHostAccept) {
+				game.general.host = game.publicPlayersState[i].userName;
+				break;
+			}
+		}
+		Account.findOne({ username: game.general.host }, { username: 1, 'gameSettings.blacklist': 1 })
+			.then(account => {
+				account.gameSettings.blacklist ? (game.general.hostBlacklist = account.gameSettings.blacklist) : (game.general.hostBlacklist = []);
+				game.chats.push({
+					timestamp: Date.now(),
+					hostChat: true,
+					chat: [{ text: `Host left the game. Host power has TRANSFERED to ${game.general.host}` }]
+				});
+				sendInProgressGameUpdate(game);
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	}
+};
+
+/**
  * @param {object} game - game to act on.
  * @param {string} playerName - name of player leaving pretourny.
  */
@@ -249,14 +280,14 @@ const handleSocketDisconnect = socket => {
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 					checkTransferHost(game, playerIndex);
 					publicPlayersState.splice(playerIndex, 1);
-					//checkStartConditions(game);
+					// checkStartConditions(game);
 					if (game.gameState.isStarted) {
 						game.gameState.cancellStart = true;
 					} else {
 						game.general.status = displayWaitingForPlayers(game);
 						io.in(game.general.uid).emit('gameUpdate', secureGame(game));
 					}
-					//io.sockets.in(game.uid).emit('gameUpdate', game);
+					// io.sockets.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isTracksFlipped) {
 					publicPlayersState[playerIndex].connected = false;
 					publicPlayersState[playerIndex].leftGame = true;
@@ -368,14 +399,14 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 		checkTransferHost(game, playerIndex);
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
-			//checkStartConditions(game);
+			// checkStartConditions(game);
 			if (game.gameState.isStarted) {
 				game.gameState.cancellStart = true;
 			} else {
 				game.general.status = displayWaitingForPlayers(game);
 				io.sockets.in(data.uid).emit('gameUpdate', game);
 			}
-			//io.sockets.in(game.general.uid).emit('gameUpdate', game);
+			// io.sockets.in(game.general.uid).emit('gameUpdate', game);
 		}
 	}
 
@@ -413,35 +444,130 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 };
 
 /**
- * Called when a player leaves to check if we should transfer the host to another player
- *
- * @param {object} game - target game.
- * @param {number} playerIndex - target player.
+ * @param {object} socket - user socket reference.
+ * @param {object} data - from socket emit.
  */
-const checkTransferHost = (game, playerIndex) => {
-	if (game.publicPlayersState[playerIndex].userName === game.general.host) {
-		for (let i = 0; i < game.publicPlayersState.length; i++) {
-			// Make sure the host we are transfering to is not the current player or a player who has left
-			if (i !== playerIndex && !game.publicPlayersState[i].leftGame && !game.publicPlayersState[i].waitingForHostAccept) {
-				game.general.host = game.publicPlayersState[i].userName;
-				break;
-			}
-		}
-		Account.findOne({ username: game.general.host }, { username: 1, 'gameSettings.blacklist': 1 })
-			.then(account => {
-				account.gameSettings.blacklist ? (game.general.hostBlacklist = account.gameSettings.blacklist) : (game.general.hostBlacklist = []);
-				game.chats.push({
-					timestamp: Date.now(),
-					hostChat: true,
-					chat: [{ text: `Host left the game. Host power has TRANSFERED to ${game.general.host}` }]
-				});
-				sendInProgressGameUpdate(game);
-			})
-			.catch(err => {
-				console.log(err);
+module.exports.handleUpdatedPlayerNote = (socket, data) => {
+	PlayerNote.findOne({ userName: data.userName, notedUser: data.notedUser }).then(note => {
+		if (note) {
+			note.note = data.note;
+			note.save(() => {
+				sendPlayerNotes(socket, { userName: data.userName, seatedPlayers: [data.notedUser] });
 			});
+		} else {
+			const playerNote = new PlayerNote({
+				userName: data.userName,
+				notedUser: data.notedUser,
+				note: data.note
+			});
+
+			playerNote.save(() => {
+				sendPlayerNotes(socket, { userName: data.userName, seatedPlayers: [data.notedUser] });
+			});
+		}
+	});
+};
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} data - from socket emit.
+ */
+const updateSeatedUser = (socket, passport, data) => {
+	// Authentication Assured in routes.js
+	const game = games.find(el => el.general.uid === data.uid);
+
+	if (game && (!game.gameState.isStarted || game.gameState.waitingForReplacement)) {
+		Account.findOne({ username: passport.user }).then(account => {
+			const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
+			const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
+			const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.wins + account.losses > 49);
+			const isPrivateSafe =
+				!game.general.private ||
+				(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
+			const isBlacklistSafe = !game.general.hostBlacklist.includes(passport.user);
+			const isKickedTimeoutSafe = !game.general.kickedPlayers.find(player => {
+				if (player.userName === passport.user && Date.now() - player.timeKicked < 20000) {
+					return player;
+				}
+			});
+			if (isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isKickedTimeoutSafe) {
+				const { publicPlayersState } = game;
+				const player = {
+					userName: passport.user,
+					connected: true,
+					isDead: false,
+					customCardback: account.gameSettings.customCardback,
+					customCardbackUid: account.gameSettings.customCardbackUid,
+					isPrivate: account.gameSettings.isPrivate,
+					tournyWins: account.gameSettings.tournyWins,
+					previousSeasonAward: account.gameSettings.previousSeasonAward,
+					cardStatus: {
+						cardDisplayed: false,
+						isFlipped: false,
+						cardFront: 'secretrole',
+						cardBack: {}
+					}
+				};
+
+				if (game.general.isTourny) {
+					if (
+						game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(player.userName) ||
+						game.general.tournyInfo.queuedPlayers.length >= game.general.maxPlayersCount
+					) {
+						return;
+					}
+					game.general.tournyInfo.queuedPlayers.push(player);
+					game.chats.push({
+						timestamp: new Date(),
+						gameChat: true,
+						chat: [
+							{
+								text: `${passport.user}`,
+								type: 'player'
+							},
+							{
+								text: ` (${game.general.tournyInfo.queuedPlayers.length}/${game.general.maxPlayersCount}) has entered the tournament queue.`
+							}
+						]
+					});
+				} else {
+					if (game.gameState.waitingForReplacement && publicPlayersState[data.seatIndex].kicked === true) {
+						publicPlayersState[data.seatIndex].leftGame = false;
+						publicPlayersState[data.seatIndex].kicked = false;
+						publicPlayersState[data.seatIndex].userName = passport.user;
+						publicPlayersState[data.seatIndex].customCardback = account.gameSettings.customCardback;
+						publicPlayersState[data.seatIndex].customCardbackUid = account.gameSettings.customCardbackUid;
+						game.private.seatedPlayers[data.seatIndex].userName = passport.user;
+						if (
+							(game.gameState.phase === 'selectingChancellor' && publicPlayersState[data.seatIndex].governmentStatus === 'isPendingPresident') ||
+							(data.seatIndex === game.gameState.presidentIndex &&
+								(game.gameState.phase === 'selectPartyMembershipInvestigate' ||
+									game.gameState.phase === 'specialElection' ||
+									game.gameState.phase === 'execution'))
+						) {
+							game.gameState.clickActionInfo[0] = passport.user;
+						}
+						game.chats.push({
+							timestamp: Date.now(),
+							hostChat: true,
+							chat: [{ text: `${passport.user} is asking the host to sit in seat #${data.seatIndex + 1}` }]
+						});
+					} else if (!game.gameState.isStarted && isNotMaxedOut) {
+						publicPlayersState.push(player);
+						game.general.status = displayWaitingForPlayers(game);
+					}
+				}
+
+				socket.emit('updateSeatForUser', true);
+				updateUserStatus(passport, game);
+				sendInProgressGameUpdate(game);
+				sendGameList();
+			}
+		});
 	}
 };
+
+module.exports.updateSeatedUser = updateSeatedUser;
 
 /**
  * @param {object} game - target game.
@@ -625,9 +751,6 @@ module.exports.hostKickPlayer = (game, data) => {
 		sendGameList();
 	}
 };
-
-//BE CAREFUL EMITING PARTIAL DATA BACK TO THE CLIENT WHEN YOU ONLY GET SELECTED ENTRIES FROM THE DB USING ACCOUNT.FINDONE
-//TODO: Look to see if sending partial data works if you don't mutate the state in reducers
 
 /**
  * @param {object} socket - user socket reference.
@@ -897,132 +1020,6 @@ module.exports.hostUpdateTableSettings = (passport, game, data) => {
 		updateClients();
 	}
 };
-
-/**
- * @param {object} socket - user socket reference.
- * @param {object} data - from socket emit.
- */
-module.exports.handleUpdatedPlayerNote = (socket, data) => {
-	PlayerNote.findOne({ userName: data.userName, notedUser: data.notedUser }).then(note => {
-		if (note) {
-			note.note = data.note;
-			note.save(() => {
-				sendPlayerNotes(socket, { userName: data.userName, seatedPlayers: [data.notedUser] });
-			});
-		} else {
-			const playerNote = new PlayerNote({
-				userName: data.userName,
-				notedUser: data.notedUser,
-				note: data.note
-			});
-
-			playerNote.save(() => {
-				sendPlayerNotes(socket, { userName: data.userName, seatedPlayers: [data.notedUser] });
-			});
-		}
-	});
-};
-/**
- * @param {object} socket - user socket reference.
- * @param {object} passport - socket authentication.
- * @param {object} data - from socket emit.
- */
-const updateSeatedUser = (socket, passport, data) => {
-	// Authentication Assured in routes.js
-	const game = games.find(el => el.general.uid === data.uid);
-
-	if (game && (!game.gameState.isStarted || game.gameState.waitingForReplacement)) {
-		Account.findOne({ username: passport.user }).then(account => {
-			const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
-			const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
-			const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.wins + account.losses > 49);
-			const isPrivateSafe =
-				!game.general.private ||
-				(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-			const isBlacklistSafe = !game.general.hostBlacklist.includes(passport.user);
-			const isKickedTimeoutSafe = !game.general.kickedPlayers.find(player => {
-				if (player.userName === passport.user && Date.now() - player.timeKicked < 20000) {
-					return player;
-				}
-			});
-			if (isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isKickedTimeoutSafe) {
-				const { publicPlayersState } = game;
-				const player = {
-					userName: passport.user,
-					connected: true,
-					isDead: false,
-					customCardback: account.gameSettings.customCardback,
-					customCardbackUid: account.gameSettings.customCardbackUid,
-					isPrivate: account.gameSettings.isPrivate,
-					tournyWins: account.gameSettings.tournyWins,
-					previousSeasonAward: account.gameSettings.previousSeasonAward,
-					cardStatus: {
-						cardDisplayed: false,
-						isFlipped: false,
-						cardFront: 'secretrole',
-						cardBack: {}
-					}
-				};
-
-				if (game.general.isTourny) {
-					if (
-						game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(player.userName) ||
-						game.general.tournyInfo.queuedPlayers.length >= game.general.maxPlayersCount
-					) {
-						return;
-					}
-					game.general.tournyInfo.queuedPlayers.push(player);
-					game.chats.push({
-						timestamp: new Date(),
-						gameChat: true,
-						chat: [
-							{
-								text: `${passport.user}`,
-								type: 'player'
-							},
-							{
-								text: ` (${game.general.tournyInfo.queuedPlayers.length}/${game.general.maxPlayersCount}) has entered the tournament queue.`
-							}
-						]
-					});
-				} else {
-					if (game.gameState.waitingForReplacement && publicPlayersState[data.seatIndex].kicked === true) {
-						publicPlayersState[data.seatIndex].leftGame = false;
-						publicPlayersState[data.seatIndex].kicked = false;
-						publicPlayersState[data.seatIndex].userName = passport.user;
-						publicPlayersState[data.seatIndex].customCardback = account.gameSettings.customCardback;
-						publicPlayersState[data.seatIndex].customCardbackUid = account.gameSettings.customCardbackUid;
-						game.private.seatedPlayers[data.seatIndex].userName = passport.user;
-						if (
-							(game.gameState.phase === 'selectingChancellor' && publicPlayersState[data.seatIndex].governmentStatus === 'isPendingPresident') ||
-							(data.seatIndex === game.gameState.presidentIndex &&
-								(game.gameState.phase === 'selectPartyMembershipInvestigate' ||
-									game.gameState.phase === 'specialElection' ||
-									game.gameState.phase === 'execution'))
-						) {
-							game.gameState.clickActionInfo[0] = passport.user;
-						}
-						game.chats.push({
-							timestamp: Date.now(),
-							hostChat: true,
-							chat: [{ text: `${passport.user} is asking the host to sit in seat #${data.seatIndex + 1}` }]
-						});
-					} else if (!game.gameState.isStarted && isNotMaxedOut) {
-						publicPlayersState.push(player);
-						game.general.status = displayWaitingForPlayers(game);
-					}
-				}
-
-				socket.emit('updateSeatForUser', true);
-				updateUserStatus(passport, game);
-				sendInProgressGameUpdate(game);
-				sendGameList();
-			}
-		});
-	}
-};
-
-module.exports.updateSeatedUser = updateSeatedUser;
 
 /**
  * @param {object} socket - user socket reference.
