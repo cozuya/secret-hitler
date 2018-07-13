@@ -20,10 +20,15 @@
 			color: teal;
 			background: #1b1b1b;
 			padding: 7px 0px 3px 2px;
+			height: 30px;
 
 			&.tourny {
 				color: $tourny;
 			}
+		}
+
+		.hostchat {
+			color: #9933cc;
 		}
 
 		.gamechat {

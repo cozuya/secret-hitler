@@ -20,6 +20,25 @@
 		border: 2px solid lightblue;
 	}
 
+	.host-icon {
+		border: 2px solid lightblue;
+		background: #5b9bc4;
+		height: 20px;
+	}
+	.host-icon.button {
+		z-index: 110;
+		position: absolute;
+		cursor: pointer;
+		top: 43px;
+		left: 10px;
+		width: 35px;
+		height: 35px;
+		text-align: center;
+		img {
+			margin-top: 3px;
+		}
+	}
+
 	.timed-mode-counter {
 		position: absolute;
 		bottom: 10px;
@@ -60,7 +79,7 @@
 		// gameuid not used since routing update displays it in url
 		position: absolute;
 		top: 10px;
-		left: 555px;
+		left: 582px;
 		z-index: 105;
 		color: #ddd;
 		background: #5b9cc4;
@@ -77,7 +96,7 @@
 	.option-icons {
 		position: absolute;
 		z-index: 108;
-		left: 213px;
+		left: 234px;
 		top: 10px;
 		background: #5b9cc4;
 		border: 2px solid lightblue;
@@ -221,6 +240,17 @@
 	top: 70px;
 	span {
 		color: red;
+	}
+}
+.help-message.host {
+	div {
+		margin: 10px 0 10px 0;
+	}
+	.start {
+		width: 400px;
+	}
+	.remake {
+		margin-top: 120px;
 	}
 }
 .cardflinger-container {
@@ -479,4 +509,74 @@
 		transition-delay: 0.5s, 0.5s, 1s, 1s, 0.5s;
 		transition-duration: 0.5s, 0.5s, 1s, 1s, 1s;
 	}
+}
+
+.host-container {
+	width: 650px;
+	height: 440px;
+	position: absolute;
+	display: flex;
+}
+
+.host-warning-portal {
+	position: fixed;
+	left: 184px;
+	top: 300px;
+	z-index: 1000;
+}
+
+.host-confirm-prompt {
+	margin: auto;
+	z-index: 1000;
+	background: #1b1b1b;
+	border: 3px solid black;
+	text-align: center;
+	padding: 25px;
+	font-size: 25px !important;
+	max-width: 400px;
+	.button-container {
+		display: flex;
+		.button {
+			flex: 1;
+			margin: 0 10px;
+			font-size: 17px;
+		}
+	}
+	.confirm {
+		font-size: 20px !important;
+	}
+	.player-name {
+		color: white !important;
+	}
+	.message {
+		font-size: 14px;
+	}
+}
+
+.host-popup-menu {
+	cursor: default;
+	font-size: 20px;
+	line-height: 1.25;
+	.title {
+		font-size: 14px;
+		color: #9933cc;
+	}
+	.link {
+		&:hover {
+			color: #608cb3;
+			cursor: pointer;
+		}
+	}
+	.link.inactive {
+		cursor: default;
+		color: gray;
+	}
+}
+
+.host-game-settings-container {
+	z-index: 115;
+	position: absolute;
+	background: #1b1b1b;
+	width: 650px;
+	height: 440px;
 }

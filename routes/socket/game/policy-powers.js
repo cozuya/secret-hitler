@@ -38,6 +38,10 @@ module.exports.selectPolicies = (passport, game) => {
 		return;
 	}
 
+	if (game.gameState.waitingForReplacement) {
+		return;
+	}
+
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
@@ -199,6 +203,10 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 		return;
 	}
 
+	if (game.gameState.waitingForReplacement) {
+		return;
+	}
+
 	if (!game.private.lock.selectPartyMembershipInvestigate && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectPartyMembershipInvestigate = true;
 
@@ -344,6 +352,10 @@ module.exports.selectSpecialElection = (passport, game, data) => {
 		return;
 	}
 
+	if (game.gameState.waitingForReplacement) {
+		return;
+	}
+
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
@@ -431,6 +443,10 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 	}
 
 	if (!president || president.userName !== passport.user) {
+		return;
+	}
+
+	if (game.gameState.waitingForReplacement) {
 		return;
 	}
 
