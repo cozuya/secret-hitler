@@ -18,6 +18,7 @@ const Changelog = () => (
 			Several players are using the blacklist feature in an unintended way, causing some grief for everyone. All blacklists have been deleted, and there now is
 			a (working this time..) limit of 10 players that can be on your blacklist at once.
 		</p>
+		<h3>Some changes have been made in the back end that should make some performance increases/less lag and crashes. I hope.</h3>
 		<div className="ui header">
 			<p>Version 0.14.8 released 7-1-2018</p>
 		</div>

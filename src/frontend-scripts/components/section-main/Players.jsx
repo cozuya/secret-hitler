@@ -438,6 +438,7 @@ class Players extends React.Component {
 					onClickedTakeSeat();
 				}
 			} else {
+				onClickedTakeSeat();
 			}
 		} else {
 			$(this.signinModal).modal('show');

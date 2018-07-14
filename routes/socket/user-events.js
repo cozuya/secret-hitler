@@ -14,7 +14,7 @@ const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
-const { sendInProgressGameUpdate } = require('./util.js');
+const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
@@ -1424,7 +1424,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
-			sendInProgressGameUpdate(game);
+			sendPlayerChatUpdate(game, data);
 		} else {
 			io.in(data.uid).emit('gameUpdate', secureGame(game));
 		}
