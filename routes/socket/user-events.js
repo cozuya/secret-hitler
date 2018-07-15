@@ -21,7 +21,7 @@ const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
-const { makeReport } = require('../report.js');
+const { makeReport } = require('./report.js');
 
 /**
  * @param {object} game - game to act on.
@@ -1578,7 +1578,7 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 	}
 
 	game.private.hiddenInfoSubscriptions.push(passport.user);
-	sendInProgressModChatUpdate(game);
+	sendInProgressModChatUpdate(game, game.private.hiddenInfoChat, passport.user);
 };
 
 /**

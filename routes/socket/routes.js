@@ -240,7 +240,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			})
 			.on('subscribeModChat', uid => {
 				if (authenticated && isAEM) {
-					const game = findGame(data);
+					const game = findGame({ uid });
 					if (game) {
 						const players = game.private.seatedPlayers.map(player => player.userName);
 						Account.find({ staffRole: { $exists: true } }).then(accounts => {

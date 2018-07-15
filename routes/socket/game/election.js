@@ -599,7 +599,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 			}
 		}
 
-		game.private.hiddenInfoChat.push({
+		const modOnlyChat = {
 			timestamp: new Date(),
 			gameChat: true,
 			chat: [
@@ -621,8 +621,9 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 					text: wasTimer ? 'policy due to the timer expiring.' : ' policy.'
 				}
 			]
-		});
-		sendInProgressModChatUpdate(game);
+		};
+		game.private.hiddenInfoChat.push(modOnlyChat);
+		sendInProgressModChatUpdate(game, modOnlyChat);
 
 		game.private.lock.selectPresidentPolicy = false;
 
@@ -767,7 +768,8 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 		}
 
 		const discarded = game.private.currentElectionPolicies[data.selection];
-		game.private.hiddenInfoChat.push({
+
+		const modOnlyChat = {
 			timestamp: new Date(),
 			gameChat: true,
 			chat: [
@@ -789,8 +791,9 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 					text: wasTimer ? 'policy due to the timer expiring.' : ' policy.'
 				}
 			]
-		});
-		sendInProgressModChatUpdate(game);
+		};
+		game.private.hiddenInfoChat.push(modOnlyChat);
+		sendInProgressModChatUpdate(game, modOnlyChat);
 
 		if (!wasTimer && !game.general.private) {
 			// const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
@@ -1068,7 +1071,8 @@ module.exports.selectVoting = (passport, game, data) => {
 		) {
 			makeReport(`A player has just received an invalid hand!\n${JSON.stringify(game.private.currentElectionPolicies)}`, game);
 		}
-		game.private.hiddenInfoChat.push({
+
+		const modOnlyChat = {
 			timestamp: new Date(),
 			gameChat: true,
 			chat: [
@@ -1098,8 +1102,9 @@ module.exports.selectVoting = (passport, game, data) => {
 					text: '.'
 				}
 			]
-		});
-		sendInProgressModChatUpdate(game);
+		};
+		game.private.hiddenInfoChat.push(modOnlyChat);
+		sendInProgressModChatUpdate(game, modOnlyChat);
 
 		game.private.summary = game.private.summary.updateLog({
 			presidentHand: handToLog(game.private.currentElectionPolicies)

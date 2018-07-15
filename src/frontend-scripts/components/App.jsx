@@ -121,6 +121,14 @@ export class App extends React.Component {
 			dispatch(updateGameInfo(_game));
 		});
 
+		socket.on('gameModChat', chat => {
+			const { gameInfo } = this.props;
+			const _game = _.cloneDeep(gameInfo);
+
+			_game.chats.push(chat);
+			dispatch(updateGameInfo(_game));
+		});
+
 		socket.on('userList', list => {
 			dispatch(updateUserList(list));
 			const now = new Date();

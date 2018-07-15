@@ -99,7 +99,7 @@ const beginGame = game => {
 			});
 		}
 
-		game.private.hiddenInfoChat.push({
+		const modOnlyChat = {
 			timestamp: new Date(),
 			gameChat: true,
 			chat: [
@@ -118,9 +118,10 @@ const beginGame = game => {
 					text: ' role.'
 				}
 			]
-		});
+		};
+		game.private.hiddenInfoChat.push(modOnlyChat);
+		sendInProgressModChatUpdate(game, modOnlyChat);
 	});
-	sendInProgressModChatUpdate(game);
 
 	const libPlayers = game.private.seatedPlayers.filter(player => player.role.team === 'liberal');
 	const fasPlayers = game.private.seatedPlayers.filter(player => player.role.team !== 'liberal');

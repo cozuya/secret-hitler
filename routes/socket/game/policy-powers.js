@@ -113,7 +113,7 @@ module.exports.selectPolicies = (passport, game) => {
 		setTimeout(() => {
 			president.cardFlingerState = [];
 
-			game.private.hiddenInfoChat.push({
+			const modOnlyChat = {
 				timestamp: new Date(),
 				gameChat: true,
 				chat: [
@@ -143,8 +143,9 @@ module.exports.selectPolicies = (passport, game) => {
 						text: '.'
 					}
 				]
-			});
-			sendInProgressModChatUpdate(game);
+			};
+			game.private.hiddenInfoChat.push(modOnlyChat);
+			sendInProgressModChatUpdate(game, modOnlyChat);
 
 			if (!game.general.disableGamechat) {
 				president.gameChats.push({
@@ -309,7 +310,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 					});
 				}
 
-				game.private.hiddenInfoChat.push({
+				const modOnlyChat = {
 					timestamp: new Date(),
 					gameChat: true,
 					chat: [
@@ -331,8 +332,9 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 							text: ' loyalty card.'
 						}
 					]
-				});
-				sendInProgressModChatUpdate(game);
+				};
+				game.private.hiddenInfoChat.push(modOnlyChat);
+				sendInProgressModChatUpdate(game, modOnlyChat);
 
 				if (!game.general.disableGamechat && !(game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' && president.role.team === 'fascist')) {
 					president.playersState[playerIndex].nameStatus = playersTeam;

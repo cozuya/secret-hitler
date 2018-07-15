@@ -30,6 +30,7 @@ class Gamechat extends React.Component {
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
 		this.handleInsertEmote = this.handleInsertEmote.bind(this);
 		this.gameChatStatus = this.gameChatStatus.bind(this);
+		this.handleSubscribeModChat = this.handleSubscribeModChat.bind(this);
 
 		this.state = {
 			chatFilter: 'All',
@@ -165,6 +166,13 @@ class Gamechat extends React.Component {
 					this.gameChatInput.focus();
 				}
 			}, 80);
+		}
+	}
+
+	handleSubscribeModChat() {
+		if (confirm('Are you sure you want to subscribe to mod-only chat to see private information?')) {
+			const { gameInfo } = this.props;
+			this.props.socket.emit('subscribeModChat', gameInfo.general.uid);
 		}
 	}
 
@@ -560,6 +568,7 @@ class Gamechat extends React.Component {
 					? `${hash.substr(0, hash.length - 1)}B`
 					: `${hash.substr(0, hash.length - 1)}A`;
 		};
+		const isStaff = Boolean(userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'contributor');
 
 		return (
 			<section className="gamechat">
@@ -768,6 +777,20 @@ class Gamechat extends React.Component {
 				</section>
 				{!this.props.isReplay && (
 					<form className="segment inputbar" onSubmit={this.handleSubmit}>
+						{(() => {
+							if (
+								gameInfo.playersState &&
+								gameInfo.playersState.length &&
+								userInfo.userName &&
+								isStaff
+							) {
+								return (
+									<div className="ui primary button" title="Click here to subscribe to mod-only chat" onClick={this.handleSubscribeModChat}>
+										Mod Chat
+									</div>
+								);
+							}
+						})()}
 						<div className={this.gameChatStatus().isDisabled ? 'ui action input disabled' : 'ui action input'}>
 							<input
 								onSubmit={this.handleSubmit}
