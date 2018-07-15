@@ -194,39 +194,61 @@ class Tracks extends React.Component {
 
 		return (
 			<div className="options-icons-container">
-				<span className="rebalanced">
-					<Popup inverted trigger={rebalance69p} content={rebalance69pTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={voiceGame} content={voiceGameTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={disableGamechat} content={disableGamechatTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={experiencedMode} content={experiancedModeTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={privateOnly} content={privateOnlyTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={priv} content={privTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={casualgame} content={casualgameTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={timedMode} content={timedModeTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={eloMinimum} content={eloMinimumTooltip} />
-				</span>
+				{rebalance69p && (
+					<span className="rebalanced">
+						<Popup inverted trigger={rebalance69p} content={rebalance69pTooltip} />
+					</span>
+				)}
+				{voiceGame && (
+					<span>
+						<Popup inverted trigger={voiceGame} content={voiceGameTooltip} />
+					</span>
+				)}
+				{disableGamechat && (
+					<span>
+						<Popup inverted trigger={disableGamechat} content={disableGamechatTooltip} />
+					</span>
+				)}
+				{experiencedMode && (
+					<span>
+						<Popup inverted trigger={experiencedMode} content={experiancedModeTooltip} />
+					</span>
+				)}
+				{privateOnly && (
+					<span>
+						<Popup inverted trigger={privateOnly} content={privateOnlyTooltip} />
+					</span>
+				)}
+				{priv && (
+					<span>
+						<Popup inverted trigger={priv} content={privTooltip} />
+					</span>
+				)}
+				{rainbowgame && (
+					<span>
+						<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
+					</span>
+				)}
+				{casualgame && (
+					<span>
+						<Popup inverted trigger={casualgame} content={casualgameTooltip} />
+					</span>
+				)}
+				{timedMode && (
+					<span>
+						<Popup inverted trigger={timedMode} content={timedModeTooltip} />
+					</span>
+				)}
+				{isVerifiedOnly && (
+					<span>
+						<Popup inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
+					</span>
+				)}
+				{eloMinimum && (
+					<span>
+						<Popup inverted trigger={eloMinimum} content={eloMinimumTooltip} />
+					</span>
+				)}
 			</div>
 		);
 	}

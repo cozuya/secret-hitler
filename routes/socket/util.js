@@ -9,52 +9,37 @@ const secureGame = game => {
 	return _game;
 };
 
+const combineInProgressChats = (game, userName) =>
+	userName && game.gameState.isTracksFlipped
+		? game.private.seatedPlayers.find(player => player.userName === userName).gameChats.concat(game.chats)
+		: game.private.unSeatedGameChats.concat(game.chats);
+
 /**
  * @param {object} game - game to act on.
  */
 // todo-release make this accept a socket argument and emit only to it if it exists
 module.exports.sendInProgressGameUpdate = game => {
-	/**
-	 * @param {object} game - game to act on.
-	 * @param {string} userName - name of user to act on.
-	 * @return {array} list of chats.
-	 */
-	const combineInProgressChats = (game, userName) => {
-		let player;
-
-		if (userName && game.gameState.isTracksFlipped) {
-			player = game.private.seatedPlayers.find(player => player.userName === userName);
-		}
-
-		return player ? player.gameChats.concat(game.chats) : game.private.unSeatedGameChats.concat(game.chats);
-	};
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		return;
+	}
 
 	const seatedPlayers = game.publicPlayersState.map(player => {
 		return { userName: player.userName, waitingForHostAccept: player.waitingForHostAccept };
 	});
 	const isSeated = socket => seatedPlayers.map(player => player.userName).includes(socket.handshake.session.passport.user);
 	const isWaitingForHostAccept = socket => seatedPlayers.find(player => player.userName === socket.handshake.session.passport.user).waitingForHostAccept;
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+	const playerSockets = roomSockets.filter(
+		socket =>
+			socket &&
+			socket.handshake.session.passport &&
+			Object.keys(socket.handshake.session.passport).length &&
+			isSeated(socket) &&
+			!isWaitingForHostAccept(socket)
+	);
+	const observerSockets = roomSockets.filter(socket => socket && (!socket.handshake.session.passport || !isSeated(socket) || isWaitingForHostAccept(socket)));
 
-	let roomSockets;
-	let playerSockets;
-	let observerSockets;
-
-	if (io.sockets.adapter.rooms[game.general.uid]) {
-		roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
-
-		playerSockets = roomSockets.filter(
-			socket =>
-				socket &&
-				socket.handshake.session.passport &&
-				Object.keys(socket.handshake.session.passport).length &&
-				isSeated(socket) &&
-				!isWaitingForHostAccept(socket)
-		);
-
-		observerSockets = roomSockets.filter(socket => socket && (!socket.handshake.session.passport || !isSeated(socket) || isWaitingForHostAccept(socket)));
-	}
-
-	if (playerSockets) {
+	if (playerSockets.length) {
 		playerSockets.forEach(sock => {
 			const _game = Object.assign({}, game);
 			const { user } = sock.handshake.session.passport;
@@ -65,6 +50,7 @@ module.exports.sendInProgressGameUpdate = game => {
 				if (!_game || !privatePlayer) {
 					return;
 				}
+
 				_game.playersState = privatePlayer.playersState;
 				_game.cardFlingerState = privatePlayer.cardFlingerState || [];
 			}
@@ -74,7 +60,7 @@ module.exports.sendInProgressGameUpdate = game => {
 		});
 	}
 
-	if (observerSockets) {
+	if (observerSockets.length) {
 		observerSockets.forEach(sock => {
 			const _game = Object.assign({}, game);
 
@@ -82,6 +68,18 @@ module.exports.sendInProgressGameUpdate = game => {
 			sock.emit('gameUpdate', secureGame(_game));
 		});
 	}
+};
+
+module.exports.sendPlayerChatUpdate = (game, chat) => {
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		return;
+	}
+
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+
+	roomSockets.forEach(sock => {
+		sock.emit('playerChatUpdate', chat);
+	});
 };
 
 module.exports.secureGame = secureGame;

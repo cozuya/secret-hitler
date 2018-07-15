@@ -179,43 +179,66 @@ const DisplayLobbies = props => {
 
 		return (
 			<div className="options-icons-container">
-				<span data-tooltip={casualGameTooltip} data-inverted="">
-					{casualGame}
-				</span>
-				<span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
-					{rebalance}
-				</span>
-				<span data-tooltip={voiceGameTooltip} data-inverted="">
-					{voiceGame}
-				</span>
-				<span data-tooltip={disableGamechatTooltip} data-inverted="">
-					{disableGamechat}
-				</span>
-				<span data-tooltip={privateOnlyTooltip} data-inverted="">
-					{privateOnly}
-				</span>
-				<span data-tooltip={privTooltip} data-inverted="">
-					{priv}
-				</span>
-				<span data-tooltip={blindTooltip} data-inverted="">
-					{blind}
-				</span>
-				<span data-tooltip={experiancedModeTooltip} data-inverted="">
-					{experiencedMode}
-				</span>
-				<span data-tooltip={rainbowgameTooltip} data-inverted="">
-					{rainbowgame}
-				</span>
-				<span data-tooltip={timedModeTooltip} data-inverted="">
-					{timedMode}
-				</span>
-				<span data-tooltip={eloMinimumTooltip} data-inverted="">
-					{eloMinimum}
-				</span>
-
-				<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
-					{isVerifiedOnly}
-				</span>
+				{casualGame && (
+					<span data-tooltip={casualGameTooltip} data-inverted="">
+						{casualGame}
+					</span>
+				)}
+				{rebalance && (
+					<span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
+						{rebalance}
+					</span>
+				)}
+				{voiceGame && (
+					<span data-tooltip={voiceGameTooltip} data-inverted="">
+						{voiceGame}
+					</span>
+				)}
+				{disableGamechat && (
+					<span data-tooltip={disableGamechatTooltip} data-inverted="">
+						{disableGamechat}
+					</span>
+				)}
+				{privateOnly && (
+					<span data-tooltip={privateOnlyTooltip} data-inverted="">
+						{privateOnly}
+					</span>
+				)}
+				{priv && (
+					<span data-tooltip={privTooltip} data-inverted="">
+						{priv}
+					</span>
+				)}
+				{blind && (
+					<span data-tooltip={blindTooltip} data-inverted="">
+						{blind}
+					</span>
+				)}
+				{experiencedMode && (
+					<span data-tooltip={experiancedModeTooltip} data-inverted="">
+						{experiencedMode}
+					</span>
+				)}
+				{rainbowgame && (
+					<span data-tooltip={rainbowgameTooltip} data-inverted="">
+						{rainbowgame}
+					</span>
+				)}
+				{timedMode && (
+					<span data-tooltip={timedModeTooltip} data-inverted="">
+						{timedMode}
+					</span>
+				)}
+				{eloMinimum && (
+					<span data-tooltip={eloMinimumTooltip} data-inverted="">
+						{eloMinimum}
+					</span>
+				)}
+				{isVerifiedOnly && (
+					<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
+						{isVerifiedOnly}
+					</span>
+				)}
 			</div>
 		);
 	};
