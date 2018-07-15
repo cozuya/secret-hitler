@@ -134,7 +134,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		width: 100%;
 		height: 100%;
 		cursor: pointer;
-		z-index: 1001;
+		z-index: 1001;  // Prevents spinning loader rendering in front of seat buttons
 		.take-seat-button {
 			position: absolute;
 			left: 0;

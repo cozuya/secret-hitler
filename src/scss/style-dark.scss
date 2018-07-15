@@ -1140,3 +1140,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		color: $darkfascistteam;
 	}
 }
+
+.ui.dimmer {
+	z-index: 1002; // Prevent seat buttons rendering in front of leave game modal
+}

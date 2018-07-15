@@ -193,31 +193,39 @@ const startCountdown = game => {
  * Called when a player leaves to check if we should transfer the host to another player
  *
  * @param {object} game - target game.
- * @param {number} playerIndex - target player.
+ * @param {number} playerIndex - player who has left the game.
  */
 const checkTransferHost = (game, playerIndex) => {
-	if (game.publicPlayersState[playerIndex].userName === game.general.host) {
-		for (let i = 0; i < game.publicPlayersState.length; i++) {
-			// Make sure the host we are transfering to is not the current player or a player who has left
-			if (i !== playerIndex && !game.publicPlayersState[i].leftGame && !game.publicPlayersState[i].waitingForHostAccept) {
-				game.general.host = game.publicPlayersState[i].userName;
-				break;
-			}
-		}
-		Account.findOne({ username: game.general.host }, { username: 1, 'gameSettings.blacklist': 1 })
-			.then(account => {
-				account.gameSettings.blacklist ? (game.general.hostBlacklist = account.gameSettings.blacklist) : (game.general.hostBlacklist = []);
-				game.chats.push({
-					timestamp: Date.now(),
-					hostChat: true,
-					chat: [{ text: `Host left the game. Host power has TRANSFERED to ${game.general.host}` }]
-				});
-				sendInProgressGameUpdate(game);
-			})
-			.catch(err => {
-				console.log(err);
-			});
+	if (game.publicPlayersState[playerIndex].userName !== game.general.host) {
+		return;
 	}
+	for (let i = 0; i < game.publicPlayersState.length; i++) {
+		// Make sure the host we are transfering to is not the current host or a player who has left
+		if (i !== playerIndex && !game.publicPlayersState[i].leftGame && !game.publicPlayersState[i].waitingForHostAccept) {
+			game.general.host = game.publicPlayersState[i].userName;
+			break;
+		}
+	}
+	if (game.general.host === game.publicPlayersState[playerIndex].userName) {
+		// host hasn't transfered, no viable players
+		games.splice(games.indexOf(game), 1);
+		sendGameList();
+		return;
+	}
+	// Get the blacklist of our new host
+	Account.findOne({ username: game.general.host }, { username: 1, 'gameSettings.blacklist': 1 })
+		.then(account => {
+			account.gameSettings.blacklist ? (game.general.hostBlacklist = account.gameSettings.blacklist) : (game.general.hostBlacklist = []);
+			game.chats.push({
+				timestamp: Date.now(),
+				hostChat: true,
+				chat: [{ text: `Host left the game. Host power has TRANSFERED to ${game.general.host}` }]
+			});
+			sendInProgressGameUpdate(game);
+		})
+		.catch(err => {
+			console.log(err);
+		});
 };
 
 /**
@@ -485,11 +493,7 @@ const updateSeatedUser = (socket, passport, data) => {
 				!game.general.private ||
 				(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
 			const isBlacklistSafe = !game.general.hostBlacklist.includes(passport.user);
-			const isKickedTimeoutSafe = !game.general.kickedPlayers.find(player => {
-				if (player.userName === passport.user && Date.now() - player.timeKicked < 20000) {
-					return player;
-				}
-			});
+			const isKickedTimeoutSafe = !game.general.kickedTimes[passport.user] || Date.now() - game.general.kickedTimes[passport.user] > 20000;
 			if (isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isKickedTimeoutSafe) {
 				const { publicPlayersState } = game;
 				const player = {
@@ -530,32 +534,30 @@ const updateSeatedUser = (socket, passport, data) => {
 							}
 						]
 					});
-				} else {
-					if (game.gameState.waitingForReplacement && publicPlayersState[data.seatIndex].kicked === true) {
-						publicPlayersState[data.seatIndex].leftGame = false;
-						publicPlayersState[data.seatIndex].kicked = false;
-						publicPlayersState[data.seatIndex].userName = passport.user;
-						publicPlayersState[data.seatIndex].customCardback = account.gameSettings.customCardback;
-						publicPlayersState[data.seatIndex].customCardbackUid = account.gameSettings.customCardbackUid;
-						game.private.seatedPlayers[data.seatIndex].userName = passport.user;
-						if (
-							(game.gameState.phase === 'selectingChancellor' && publicPlayersState[data.seatIndex].governmentStatus === 'isPendingPresident') ||
-							(data.seatIndex === game.gameState.presidentIndex &&
-								(game.gameState.phase === 'selectPartyMembershipInvestigate' ||
-									game.gameState.phase === 'specialElection' ||
-									game.gameState.phase === 'execution'))
-						) {
-							game.gameState.clickActionInfo[0] = passport.user;
-						}
-						game.chats.push({
-							timestamp: Date.now(),
-							hostChat: true,
-							chat: [{ text: `${passport.user} is asking the host to sit in seat #${data.seatIndex + 1}` }]
-						});
-					} else if (!game.gameState.isStarted && isNotMaxedOut) {
-						publicPlayersState.push(player);
-						game.general.status = displayWaitingForPlayers(game);
+				} else if (game.gameState.waitingForReplacement && publicPlayersState[data.seatIndex].kicked === true) {
+					publicPlayersState[data.seatIndex].leftGame = false;
+					publicPlayersState[data.seatIndex].kicked = false;
+					publicPlayersState[data.seatIndex].userName = passport.user;
+					publicPlayersState[data.seatIndex].customCardback = account.gameSettings.customCardback;
+					publicPlayersState[data.seatIndex].customCardbackUid = account.gameSettings.customCardbackUid;
+					game.private.seatedPlayers[data.seatIndex].userName = passport.user;
+					if (
+						(game.gameState.phase === 'selectingChancellor' && publicPlayersState[data.seatIndex].governmentStatus === 'isPendingPresident') ||
+						(data.seatIndex === game.gameState.presidentIndex &&
+							(game.gameState.phase === 'selectPartyMembershipInvestigate' ||
+								game.gameState.phase === 'specialElection' ||
+								game.gameState.phase === 'execution'))
+					) {
+						game.gameState.clickActionInfo[0] = passport.user;
 					}
+					game.chats.push({
+						timestamp: Date.now(),
+						hostChat: true,
+						chat: [{ text: `${passport.user} is asking the host to sit in seat {${data.seatIndex + 1}}` }]
+					});
+				} else if (!game.gameState.isStarted && isNotMaxedOut) {
+					publicPlayersState.push(player);
+					game.general.status = displayWaitingForPlayers(game);
 				}
 
 				socket.emit('updateSeatForUser', true);
@@ -653,6 +655,13 @@ module.exports.hostRemake = (passport, game) => {
 		privatePassword: game.private.privatePassword
 	};
 
+	game.publicPlayersState.forEach((player, i) => {
+		player.cardStatus.cardFront = 'secretrole';
+		player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+		player.cardStatus.cardDisplayed = true;
+		player.cardStatus.isFlipped = true;
+	});
+
 	game.general.status = 'Game is being remade..';
 	game.chats.push({
 		timestamp: Date.now(),
@@ -708,13 +717,12 @@ module.exports.hostKickPlayer = (game, data) => {
 		const msg = data.blacklist
 			? `Host BLACKLISTED ${playerKicked.userName}`
 			: `Host KICKED ${playerKicked.userName}. They will be unable to rejoin for 20 seconds`;
-		const chat = {
+		game.chats.push({
 			timestamp: currentTime,
 			hostChat: true,
 			chat: [{ text: msg }]
-		};
-		game.chats.push(chat);
-		game.general.kickedPlayers.push({ userName: playerKicked.userName, timeKicked: currentTime });
+		});
+		game.general.kickedTimes[playerKicked.userName] = currentTime;
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerKickedIndex].leftGame = true;
 			game.publicPlayersState[playerKickedIndex].kicked = true;
@@ -837,7 +845,7 @@ module.exports.hostAcceptPlayer = (game, data) => {
 		game.chats.push({
 			timestamp: Date.now(),
 			hostChat: true,
-			chat: [{ text: `Host has accepted ${game.publicPlayersState[data.seatIndex].userName} in seat #${data.seatIndex + 1}` }]
+			chat: [{ text: `Host has accepted ${game.publicPlayersState[data.seatIndex].userName} in seat {${data.seatIndex + 1}}` }]
 		});
 		sendInProgressGameUpdate(game);
 		if (!game.publicPlayersState.map(player => player.waitingForHostAccept).includes(true)) {
@@ -1118,7 +1126,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			eloMinimum: data.eloSliderValue,
 			host: user.userName,
 			hostBlacklist: user.blacklist,
-			kickedPlayers: []
+			kickedTimes: {}
 		},
 		publicPlayersState: [],
 		playersState: [],

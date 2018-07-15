@@ -69,7 +69,8 @@ class Players extends React.Component {
 	}
 
 	handlePlayerDoubleClick(userName) {
-		if ((!this.props.gameInfo.general.private && this.props.userInfo.userName && this.props.userInfo.userName !== userName) || this.props.isReplay) {
+		// check if userName here so we can't report players after they are kicked, since their userName is changed to "" (blank string)
+		if ((!this.props.gameInfo.general.private && this.props.userInfo.userName && userName && this.props.userInfo.userName !== userName) || this.props.isReplay) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
@@ -406,9 +407,10 @@ class Players extends React.Component {
 		const isHost = user && user.userName === gameInfo.general.host;
 		const isPrivateSafe = userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private);
 		const isPrivateOnlySafe = !gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate);
+		const isCompleted = gameInfo.gameState.isCompleted;
 
 		if (seatIndex !== undefined) {
-			if (seat.kicked && isRainbowSafe) {
+			if (seat.kicked && isRainbowSafe && !isCompleted) {
 				return (
 					<div className="take-seat-container">
 						<div className="ui left pointing label take-seat-button" onClick={() => this.clickedTakeSeat(seatIndex)}>

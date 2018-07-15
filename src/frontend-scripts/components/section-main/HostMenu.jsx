@@ -227,7 +227,7 @@ class HostMenu extends React.Component {
 
 	render() {
 		const { gameInfo, userInfo } = this.props;
-		if (gameInfo.general.host === userInfo.userName) {
+		if (userInfo.userName && userInfo.userName === gameInfo.general.host) {
 			return (
 				<div className="host-container">
 					{this.renderHostWarning()}
