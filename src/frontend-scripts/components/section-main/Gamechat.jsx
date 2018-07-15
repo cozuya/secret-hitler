@@ -229,7 +229,7 @@ class Gamechat extends React.Component {
 				);
 			}
 		})();
-		const isStaff = Boolean(userInfo.staffRole.length);
+		const isStaff = Boolean(userInfo.staffRole);
 		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
@@ -339,7 +339,7 @@ class Gamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
-		const isStaff = Boolean(userInfo.staffRole.length);
+		const isStaff = Boolean(userInfo.staffRole);
 
 		const renderPreviousSeasonAward = type => {
 			switch (type) {
@@ -363,7 +363,7 @@ class Gamechat extends React.Component {
 				)
 				.map((chat, i) => {
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-					const isMod = playerListPlayer && playerListPlayer.staffRole && Boolean(playerListPlayer.staffRole.length);
+					const isMod = playerListPlayer && playerListPlayer.staffRole;
 					const chatContents = processEmotes(chat.chat, isMod);
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const isGreenText = /^>/i.test(chatContents[0]);

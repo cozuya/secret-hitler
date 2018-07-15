@@ -268,7 +268,7 @@ class ProfileWrapper extends React.Component {
 		let userClasses = 'profile-picture';
 		if (user) {
 			userClasses =
-				user[w] + user[l] > 49 || Boolean(user.staffRole.length)
+				user[w] + user[l] > 49 || Boolean(user.staffRole)
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
 							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
