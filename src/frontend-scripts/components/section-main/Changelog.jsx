@@ -9,7 +9,7 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.14.9 released 7-12-2018</p>
+			<p>Version 0.14.9 released 7-15-2018</p>
 		</div>
 		<h3>New feature: elo limiter has gone in.</h3>
 		<p>Minimum you can set this to is 1675, we'll keep an eye on it.</p>
@@ -18,6 +18,7 @@ const Changelog = () => (
 			Several players are using the blacklist feature in an unintended way, causing some grief for everyone. All blacklists have been deleted, and there now is
 			a (working this time..) limit of 10 players that can be on your blacklist at once.
 		</p>
+		<h3>Timed mode may have its long standing bug fixed thanks to contributor/mod Hexicube.</h3>
 		<h3>Some changes have been made in the back end that should make some performance increases/less lag and crashes. I hope.</h3>
 		<div className="ui header">
 			<p>Version 0.14.8 released 7-1-2018</p>
