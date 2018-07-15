@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile, updateStatus } from '../../actions/actions';
 import cn from 'classnames';
-import { PLAYERCOLORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -129,7 +129,7 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole.length)) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole)) {
 			return (
 				<a href="#/moderation">
 					<i className="fire icon mod-button" />
@@ -141,7 +141,7 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole.length)) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole)) {
 			let classes = 'comment icon report-button';
 
 			const reportClick = () => {
@@ -200,7 +200,7 @@ class Playerlist extends React.Component {
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
-			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole.length);
+			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			let aem = [...admins];

@@ -147,7 +147,7 @@ export default class Generalchat extends React.Component {
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
 					const { gameSettings } = userInfo;
-					const isMod = Boolean(chat.staffRole.length) || chat.userName.substring(0, 11) == '[BROADCAST]';
+					const isMod = Boolean(chat.staffRole) || chat.userName.substring(0, 11) == '[BROADCAST]';
 					const user = chat.userName && Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 					const userClasses =
 						!user || (gameSettings && gameSettings.disablePlayerColorsInChat)
