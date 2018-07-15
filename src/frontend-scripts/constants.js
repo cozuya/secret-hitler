@@ -74,6 +74,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			editorcolor: user.staffRole === 'editor',
 			contributer: user.staffRole === 'contributor',
 			cbell: user.userName === 'cbell',
+			jdudle3: user.userName === 'jdudle3',
 			max: user.userName === 'Max',
 			dfinn: user.userName === 'DFinn',
 			faaiz: user.userName === 'Faaiz1999',
