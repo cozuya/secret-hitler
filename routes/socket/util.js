@@ -67,7 +67,7 @@ module.exports.sendInProgressGameUpdate = game => {
 	}
 };
 
-module.exports.sendInProgressModChatUpdate = game => {
+module.exports.sendInProgressModChatUpdate = (game, specificUser) => {
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
@@ -78,8 +78,8 @@ module.exports.sendInProgressModChatUpdate = game => {
 		playerSockets.forEach(sock => {
 			const { user } = sock.handshake.session.passport;
 			if (game.private.hiddenInfoSubscriptions.includes(user)) {
-				// verify AEM status
-				if (true) {
+				if (!specificUser || specificUser === user) {
+					// AEM status is ensured when adding to the subscription list
 					sock.emit('gameModChat', { uid: game.general.uid, chat: game.private.hiddenInfoChat });
 				}
 			}

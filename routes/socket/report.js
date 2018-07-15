@@ -39,5 +39,7 @@ module.exports.makeReport = (text, game, gameEnd) => {
 		} else {
 			console.log(`${text}\n${game.general.uid}`);
 		}
+
+		game.private.hiddenInfoShouldNotify = false;
 	});
 };
