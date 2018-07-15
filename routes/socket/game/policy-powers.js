@@ -1,4 +1,4 @@
-const { sendInProgressGameUpdate } = require('../util.js');
+const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../util.js');
 const { startElection, shufflePolicies } = require('./common.js');
 const { completeGame } = require('./end-game.js');
 
@@ -112,6 +112,39 @@ module.exports.selectPolicies = (passport, game) => {
 
 		setTimeout(() => {
 			president.cardFlingerState = [];
+
+			game.private.hiddenInfoChat.push({
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: 'President '
+					},
+					{
+						text: `${seatedPlayers[presidentIndex].userName} #${presidentIndex + 1}.`,
+						type: 'player'
+					},
+					{
+						text: ' peeks and sees '
+					},
+					{
+						text: game.private.policies[0] === 'liberal' ? 'B' : 'R',
+						type: game.private.policies[0]
+					},
+					{
+						text: game.private.policies[1] === 'liberal' ? 'B' : 'R',
+						type: game.private.policies[1]
+					},
+					{
+						text: game.private.policies[2] === 'liberal' ? 'B' : 'R',
+						type: game.private.policies[2]
+					},
+					{
+						text: '.'
+					}
+				]
+			});
+			sendInProgressModChatUpdate(game);
 
 			if (!game.general.disableGamechat) {
 				president.gameChats.push({
@@ -275,6 +308,31 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 						]
 					});
 				}
+
+				game.private.hiddenInfoChat.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: 'President '
+						},
+						{
+							text: `${seatedPlayers[presidentIndex].userName} #${presidentIndex + 1}.`,
+							type: 'player'
+						},
+						{
+							text: ' sees a '
+						},
+						{
+							text: playersTeam,
+							type: playersTeam
+						},
+						{
+							text: ' loyalty card.'
+						}
+					]
+				});
+				sendInProgressModChatUpdate(game);
 
 				if (!game.general.disableGamechat && !(game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' && president.role.team === 'fascist')) {
 					president.playersState[playerIndex].nameStatus = playersTeam;

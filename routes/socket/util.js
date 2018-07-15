@@ -67,6 +67,26 @@ module.exports.sendInProgressGameUpdate = game => {
 	}
 };
 
+module.exports.sendInProgressModChatUpdate = game => {
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		return;
+	}
+
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+
+	if (roomSockets.length) {
+		playerSockets.forEach(sock => {
+			const { user } = sock.handshake.session.passport;
+			if (game.private.hiddenInfoSubscriptions.includes(user)) {
+				// verify AEM status
+				if (true) {
+					sock.emit('gameModChat', { uid: game.general.uid, chat: game.private.hiddenInfoChat });
+				}
+			}
+		});
+	}
+};
+
 module.exports.sendPlayerChatUpdate = (game, chat) => {
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		return;

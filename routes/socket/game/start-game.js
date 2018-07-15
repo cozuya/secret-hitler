@@ -1,4 +1,4 @@
-const { sendInProgressGameUpdate } = require('../util.js');
+const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../util.js');
 const _ = require('lodash');
 const { startElection } = require('./election.js');
 const { shufflePolicies } = require('./common.js');
@@ -15,6 +15,10 @@ const beginGame = game => {
 
 	game.general.timeStarted = new Date().getTime();
 	game.general.type = Math.floor((game.publicPlayersState.length - 5) / 2);
+
+	game.private.hiddenInfoChat = [];
+	game.private.hiddenInfoSubscriptions = [];
+	game.private.hiddenInfoShouldNotify = true;
 
 	const roles = [
 		{
@@ -94,7 +98,29 @@ const beginGame = game => {
 				]
 			});
 		}
+
+		game.private.hiddenInfoChat.push({
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: `${player.userName} #${i + 1}.`,
+					type: 'player'
+				},
+				{
+					text: ' is assigned the '
+				},
+				{
+					text: player.role.cardName === 'hitler' ? 'hitler' : player.role.cardName,
+					type: player.role.cardName
+				},
+				{
+					text: ' role.'
+				}
+			]
+		});
 	});
+	sendInProgressModChatUpdate(game);
 
 	const libPlayers = game.private.seatedPlayers.filter(player => player.role.team === 'liberal');
 	const fasPlayers = game.private.seatedPlayers.filter(player => player.role.team !== 'liberal');
