@@ -229,7 +229,7 @@ class Gamechat extends React.Component {
 				);
 			}
 		})();
-		const isStaff = Boolean(userInfo.staffRole);
+		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length);
 		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
@@ -339,7 +339,7 @@ class Gamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
-		const isStaff = Boolean(userInfo.staffRole);
+		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length);
 
 		const renderPreviousSeasonAward = type => {
 			switch (type) {

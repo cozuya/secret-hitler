@@ -5,7 +5,7 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 import cn from 'classnames';
-import { PLAYERCOLORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
