@@ -70,7 +70,10 @@ class Players extends React.Component {
 
 	handlePlayerDoubleClick(userName) {
 		// check if userName here so we can't report players after they are kicked, since their userName is changed to "" (blank string)
-		if ((!this.props.gameInfo.general.private && this.props.userInfo.userName && userName && this.props.userInfo.userName !== userName) || this.props.isReplay) {
+		if (
+			(!this.props.gameInfo.general.private && this.props.userInfo.userName && userName && this.props.userInfo.userName !== userName) ||
+			this.props.isReplay
+		) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
@@ -524,7 +527,7 @@ class Players extends React.Component {
 				if (!user || parseInt(user.eloSeason, 10) < gameInfo.general.eloMinimum) {
 					$(this.elominimumModal).modal('show');
 				} else {
-					onClickedTakeSeat();
+					onClickedTakeSeat(null, index);
 				}
 			} else {
 				onClickedTakeSeat(null, index);

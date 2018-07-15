@@ -8,7 +8,7 @@ module.exports.makeReport = (text, game, gameEnd) => {
 			.filter(account => account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin')
 			.map(account => account.userName);
 		const players = game.private.seatedPlayers.map(player => player.userName);
-		const isStaff = players.some(n => staffUserNames.includes(n) || newStaff.modUserNames.includes(n) || newStaff.editorUserNames(includes(n)));
+		const isStaff = players.some(n => staffUserNames.includes(n) || newStaff.modUserNames.includes(n) || newStaff.editorUserNames.includes(n));
 
 		if (!gameEnd && isStaff) {
 			if (!game.unsentReports) game.unsentReports = [];
