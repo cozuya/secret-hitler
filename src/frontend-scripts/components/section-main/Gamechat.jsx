@@ -339,7 +339,7 @@ class Gamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
-		const isStaff = Boolean(userInfo.staffRole.length);
+		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length);
 
 		const renderPreviousSeasonAward = type => {
 			switch (type) {
