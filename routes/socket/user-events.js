@@ -1,7 +1,7 @@
 let generalChatCount = 0;
 
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, newStaff } = require('./models');
-const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const Account = require('../../models/account');
 const Generalchats = require('../../models/generalchats');
 const ModAction = require('../../models/modAction');
@@ -28,29 +28,34 @@ const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
  */
 const displayWaitingForPlayers = game => {
 	if (game.general.isTourny) {
-		const count = game.general.maxPlayersCount - game.general.tournyInfo.queuedPlayers.length;
+		const requiredPlayerCount = game.general.maxPlayersCount - game.general.tournyInfo.queuedPlayers.length;
 
-		return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
+		return requiredPlayerCount === 1 ? `Waiting for ${requiredPlayerCount} more player..` : `Waiting for ${requiredPlayerCount} more players..`;
 	}
+
+	if (game.general.maxPlayersCount === game.publicPlayersState.length) {
+		return `Waiting for host to start..`;
+	}
+
 	const includedPlayerCounts = _.range(game.general.minPlayersCount, game.general.maxPlayersCount + 1).filter(
 		value => !game.general.excludedPlayerCount.includes(value)
 	);
 
-	for (value of includedPlayerCounts) {
-		if (value > game.publicPlayersState.length) {
-			const count = value - game.publicPlayersState.length;
+	for (startPlayerCount of includedPlayerCounts) {
+		if (startPlayerCount > game.publicPlayersState.length) {
+			const requiredPlayerCount = startPlayerCount - game.publicPlayersState.length;
 
-			return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
-		} else {
-			return `Waiting for host to start..`;
+			return requiredPlayerCount === 1 ? `Waiting for ${requiredPlayerCount} more player..` : `Waiting for ${requiredPlayerCount} more players..`;
 		}
 	}
 };
 
+module.exports.displayWaitingForPlayers = displayWaitingForPlayers;
+
 /**
  * @param {object} game - game to act on.
  */
-const startCountdown = game => {
+module.exports.startCountdown = game => {
 	if (game.gameState.isStarted) {
 		return;
 	}
@@ -159,6 +164,7 @@ const startCountdown = game => {
 	}, 1000);
 };
 
+// NOT USED - hosts now start the game with hostStartGame()
 /**
  * @param {object} game - game to act on.
  */
@@ -212,20 +218,17 @@ const checkTransferHost = (game, playerIndex) => {
 		sendGameList();
 		return;
 	}
-	// Get the blacklist of our new host
-	Account.findOne({ username: game.general.host }, { username: 1, 'gameSettings.blacklist': 1 })
-		.then(account => {
-			account.gameSettings.blacklist ? (game.general.hostBlacklist = account.gameSettings.blacklist) : (game.general.hostBlacklist = []);
-			game.chats.push({
-				timestamp: Date.now(),
-				hostChat: true,
-				chat: [{ text: `Host left the game. Host power has TRANSFERED to ${game.general.host}` }]
-			});
-			sendInProgressGameUpdate(game);
-		})
-		.catch(err => {
-			console.log(err);
-		});
+
+	// get the new hosts blacklist
+	const newHost = userList.find(user => user.userName === game.general.host);
+	game.general.hostBlacklist = newHost.blacklist;
+
+	game.chats.push({
+		timestamp: Date.now(),
+		hostChat: true,
+		chat: [{ text: `Host left the game. Host power has TRANSFERED to ${game.general.host}` }]
+	});
+	sendInProgressGameUpdate(game);
 };
 
 /**
@@ -571,464 +574,6 @@ const updateSeatedUser = (socket, passport, data) => {
 };
 
 module.exports.updateSeatedUser = updateSeatedUser;
-
-/**
- * @param {object} game - target game.
- */
-module.exports.hostStartGame = game => {
-	// Authentication Assured in routes.js
-	// Host Assured in routes.js
-	startCountdown(game);
-};
-
-/**
- * @param {object} game - target game.
- */
-module.exports.hostCancelStart = game => {
-	// Authentication Assured in routes.js
-	// Host Assured in routes.js
-	if (game.gameState.isStarted && !game.gameState.isTracksFlipped) {
-		game.gameState.cancellStart = true;
-	}
-};
-
-/**
- * @param {object} passport - socket authentication.
- * @param {object} game - target game.
- */
-module.exports.hostRemake = (passport, game) => {
-	// Authentication Assured in routes.js
-	// Host Assured in routes.js
-
-	if (game.general.isRemaking) {
-		return;
-	}
-
-	const { publicPlayersState } = game;
-	const newGame = _.cloneDeep(game);
-	const remakePlayerNames = publicPlayersState.filter(player => !player.leftGame).map(player => player.userName);
-	const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
-		socketId =>
-			io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
-	);
-
-	game.general.isRemaking = true;
-
-	newGame.gameState = {
-		previousElectedGovernment: [],
-		undrawnPolicyCount: 17,
-		discardedPolicyCount: 0,
-		presidentIndex: -1
-	};
-
-	newGame.chats = [];
-	newGame.general.isRemaking = false;
-	newGame.summarySaved = false;
-	newGame.general.uid = generateCombination(2, '', true);
-	newGame.general.electionCount = 0;
-	newGame.timeCreated = new Date().getTime();
-	newGame.publicPlayersState = game.publicPlayersState.filter(player => !player.leftGame).map(player => ({
-		userName: player.userName,
-		customCardback: player.customCardback,
-		customCardbackUid: player.customCardbackUid,
-		connected: player.connected,
-		isRemakeVoting: false,
-		cardStatus: {
-			cardDisplayed: false,
-			isFlipped: false,
-			cardFront: 'secretrole',
-			cardBack: {}
-		}
-	}));
-	newGame.general.status = displayWaitingForPlayers(game);
-	newGame.playersState = [];
-	newGame.cardFlingerState = [];
-	newGame.trackState = {
-		liberalPolicyCount: 0,
-		fascistPolicyCount: 0,
-		electionTrackerCount: 0,
-		enactedPolicies: []
-	};
-	newGame.private = {
-		reports: {},
-		unSeatedGameChats: [],
-		lock: {},
-		privatePassword: game.private.privatePassword
-	};
-
-	game.publicPlayersState.forEach((player, i) => {
-		player.cardStatus.cardFront = 'secretrole';
-		player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-		player.cardStatus.cardDisplayed = true;
-		player.cardStatus.isFlipped = true;
-	});
-
-	game.general.status = 'Game is being remade..';
-	game.chats.push({
-		timestamp: Date.now(),
-		hostChat: true,
-		chat: [{ text: `Host is REMAKING the game...` }]
-	});
-
-	if (!game.summarySaved) {
-		const summary = game.private.summary.publish();
-		if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
-			summary.save();
-			game.summarySaved = true;
-		}
-	}
-	sendInProgressGameUpdate(game);
-
-	setTimeout(() => {
-		game.publicPlayersState.forEach(player => {
-			if (remakePlayerNames.includes(player.userName)) player.leftGame = true;
-		});
-
-		games.splice(games.indexOf(game), 1);
-		games.push(newGame);
-		sendGameList();
-
-		remakePlayerSocketIDs.forEach((id, index) => {
-			if (io.sockets.sockets[id]) {
-				io.sockets.sockets[id].leave(game.general.uid);
-				sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-				updateSeatedUser(io.sockets.sockets[id], passport, { uid: newGame.general.uid });
-			}
-		});
-	}, 3000);
-};
-
-/**
- * @param {object} game - target game.
- * @param {object} data - from socket emit.
- */
-module.exports.hostKickPlayer = (game, data) => {
-	// Authentication Assured in routes.js
-	// Host Assured in routes.js
-
-	if (game.gameState.isCompleted) {
-		return;
-	}
-
-	const playerKicked = game.publicPlayersState.find(player => player.userName === data.userName);
-
-	if (playerKicked && playerKicked.userName !== game.general.host && !playerKicked.kicked) {
-		const currentTime = Date.now();
-		const playerKickedIndex = game.publicPlayersState.findIndex(player => player.userName === data.userName);
-		const msg = data.blacklist
-			? `Host BLACKLISTED ${playerKicked.userName}`
-			: `Host KICKED ${playerKicked.userName}. They will be unable to rejoin for 20 seconds`;
-		game.chats.push({
-			timestamp: currentTime,
-			hostChat: true,
-			chat: [{ text: msg }]
-		});
-		game.general.kickedTimes[playerKicked.userName] = currentTime;
-		if (game.gameState.isTracksFlipped) {
-			game.publicPlayersState[playerKickedIndex].leftGame = true;
-			game.publicPlayersState[playerKickedIndex].kicked = true;
-			game.publicPlayersState[playerKickedIndex].waitingForHostAccept = true; // used to prevent players immediately taking actions upon sitting without host first accepting them
-			game.publicPlayersState[playerKickedIndex].userName = '';
-			game.publicPlayersState[playerKickedIndex].customCardback = '';
-			game.publicPlayersState[playerKickedIndex].customCardbackUid = '';
-			game.private.seatedPlayers[playerKickedIndex].userName = '';
-			game.gameState.waitingForReplacement = true;
-			game.general.casualGame = true; // Don't rate games when a player is kicked mid-game
-
-			game.chats.push({
-				timestamp: currentTime,
-				hostChat: true,
-				chat: [{ text: `Waiting for replacement player..` }]
-			});
-		} else {
-			game.publicPlayersState.splice(playerKickedIndex, 1);
-			if (game.gameState.isStarted) {
-				game.gameState.cancellStart = true;
-			} else {
-				game.general.status = displayWaitingForPlayers(game);
-			}
-		}
-		// Send kicked player an emit so that isSeated is changed to false on their client.
-		const affectedSocketId = Object.keys(io.sockets.sockets).find(
-			socketId =>
-				io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === playerKicked.userName
-		);
-		if (io.sockets.sockets[affectedSocketId]) {
-			io.sockets.sockets[affectedSocketId].emit('playerKicked');
-		}
-		sendInProgressGameUpdate(game);
-		sendGameList();
-	}
-};
-
-/**
- * @param {object} socket - user socket reference.
- * @param {object} game - target game.
- * @param {object} data - from socket emit.
- */
-module.exports.hostBlacklistPlayer = (socket, game, data) => {
-	// Authentication Assured in routes.js
-	// Host Assured in routes.js
-	const { passport } = socket.handshake.session;
-	const blacklistPlayer = data.userName;
-
-	// Make sure we can't blacklist ourselves
-	if (passport.user !== blacklistPlayer) {
-		// Make sure the blacklistPlayer exists in the db
-		Account.find({ username: blacklistPlayer }, { username: 1 })
-			.limit(1)
-			.then(cursor => {
-				if (cursor.length > 0) {
-					// Update hosts gameSettings
-					Account.findOne({ username: passport.user }, { gameSettings: 1 })
-						.then(account => {
-							if (!account.gameSettings.blacklist.includes(blacklistPlayer)) {
-								account.gameSettings.blacklist.push(blacklistPlayer);
-								account.save(() => {
-									socket.emit('gameSettings', account.gameSettings);
-								});
-							}
-						})
-						.catch(err => {
-							console.log(err);
-						});
-
-					game.general.hostBlacklist.push(data.userName);
-					data.blacklist = true; // checked in hostKickPlayer() to change the chat message
-					module.exports.hostKickPlayer(game, data);
-				}
-			})
-			.catch(err => {
-				console.log(err);
-			});
-	}
-};
-
-/**
- * @param {object} socket - user socket reference.
- * @param {object} game - target game.
- * @param {object} data - from socket emit.
- */
-module.exports.hostRemoveFromBlacklist = (socket, game, data) => {
-	// Authentication Assured in routes.js
-	// Host Assured in routes.js
-	const { passport } = socket.handshake.session;
-	const blacklistPlayer = data.userName;
-	const gameBlacklistIndex = game.general.hostBlacklist.findIndex(player => player === blacklistPlayer);
-
-	// Update the games current blacklist
-	if (gameBlacklistIndex >= 0) {
-		game.general.hostBlacklist.splice(gameBlacklistIndex, 1);
-		sendInProgressGameUpdate(game);
-	}
-
-	// Update our gamesettings
-	Account.findOne({ username: passport.user }, { gameSettings: 1 }).then(account => {
-		const settingsBlacklistIndex = account.gameSettings.blacklist.findIndex(player => player === blacklistPlayer);
-		if (settingsBlacklistIndex >= 0) {
-			account.gameSettings.blacklist.splice(settingsBlacklistIndex, 1);
-			account.save(() => {
-				socket.emit('gameSettings', account.gameSettings);
-			});
-		}
-	});
-};
-
-/**
- * @param {object} game - target game.
- * @param {object} data - from socket emit.
- */
-module.exports.hostAcceptPlayer = (game, data) => {
-	// Authentication Assured in routes.js
-	// Host Assured in routes.js
-	if (game.publicPlayersState[data.seatIndex]) {
-		game.publicPlayersState[data.seatIndex].waitingForHostAccept = false;
-		game.chats.push({
-			timestamp: Date.now(),
-			hostChat: true,
-			chat: [{ text: `Host has accepted ${game.publicPlayersState[data.seatIndex].userName} in seat {${data.seatIndex + 1}}` }]
-		});
-		sendInProgressGameUpdate(game);
-		if (!game.publicPlayersState.map(player => player.waitingForHostAccept).includes(true)) {
-			let gamePause = 3;
-			const countDown = setInterval(() => {
-				if (game.publicPlayersState.map(player => player.waitingForHostAccept).includes(true)) {
-					clearInterval(countDown);
-				} else {
-					if (!gamePause) {
-						clearInterval(countDown);
-						game.gameState.waitingForReplacement = false;
-						game.chats.push({
-							timestamp: Date.now(),
-							hostChat: true,
-							chat: [{ text: `Game Resumed` }]
-						});
-						sendInProgressGameUpdate(game);
-					} else {
-						game.chats.push({
-							timestamp: Date.now(),
-							hostChat: true,
-							chat: [{ text: `Resuming game in ${gamePause}` }]
-						});
-
-						sendInProgressGameUpdate(game);
-						gamePause--;
-					}
-				}
-			}, 1000);
-		}
-	}
-};
-
-/**
- * @param {object} passport - socket authentication.
- * @param {object} game - target game.
- * @param {object} data - from socket emit.
- */
-module.exports.hostUpdateTableSettings = (passport, game, data) => {
-	// Authentication Assured in routes.js
-	// Host Assured in routes.js
-	const updateClients = () => {
-		const chat = {
-			timestamp: Date.now(),
-			hostChat: true,
-			chat: [{ text: 'Host has changed the SETTINGS' }]
-		};
-		game.chats.push(chat);
-		game.general.status = displayWaitingForPlayers(game);
-		sendInProgressGameUpdate(game);
-		sendGameList();
-	};
-
-	if (game.gameState.isStarted) {
-		return;
-	}
-
-	if (typeof data.name === 'string' && data.name.length <= 20 && data.name !== '') {
-		game.general.name = data.name;
-	}
-
-	if (typeof data.flag === 'string' && data.flag.length < 10) {
-		game.general.flag = data.flag;
-	}
-
-	if (typeof data.minPlayersCount === 'number' && data.minPlayersCount >= 5 && data.minPlayersCount <= 10) {
-		game.general.minPlayersCount = data.minPlayersCount;
-	}
-
-	if (typeof data.maxPlayersCount === 'number' && data.maxPlayersCount >= 5 && data.maxPlayersCount <= 10) {
-		game.general.maxPlayersCount = data.maxPlayersCount;
-		// Kick players who exceed the new max player count
-		if (data.maxPlayersCount < game.publicPlayersState.length) {
-			while (game.publicPlayersState.length > data.maxPlayersCount) {
-				const index = data.maxPlayersCount;
-				module.exports.hostKickPlayer(game, { userName: game.publicPlayersState[index].userName });
-			}
-		}
-	}
-
-	if (data.excludedPlayerCount.constructor === Array && data.excludedPlayerCount.length < 6) {
-		game.general.excludedPlayerCount = [];
-		data.excludedPlayerCount.forEach(val => {
-			if (typeof val === 'number' && val >= 5 && val <= 10) {
-				game.general.excludedPlayerCount.push(val);
-			}
-		});
-	}
-
-	if (typeof data.experiencedMode === 'boolean') {
-		game.general.experiencedMode = data.experiencedMode;
-	}
-
-	if (data.voiceGame && !game.general.voiceGame) {
-		game.chats.push({
-			timestamp: Date.now(),
-			gameChat: true,
-			chat: [{ text: `This is a VOICE GAME. Join Discord or the host may kick you.` }]
-		});
-	}
-
-	if (typeof data.voiceGame === 'boolean') {
-		game.general.voiceGame = data.voiceGame;
-	}
-
-	if (typeof data.disableGamechat === 'boolean') {
-		game.general.disableGamechat = data.disableGamechat;
-	}
-
-	if (typeof data.blindMode === 'boolean') {
-		game.general.blindMode = data.blindMode;
-	}
-
-	if (typeof data.disableObserver === 'boolean') {
-		game.general.disableObserver = data.disableObserver;
-	}
-
-	game.general.timedMode = typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 600 ? data.timedMode : false;
-
-	game.general.casualGame = typeof data.timedMode === 'number' && data.timedMode < 30 && !data.casualGame ? true : data.casualGame;
-
-	if (typeof data.rebalance6p === 'boolean') {
-		game.general.rebalance6p = data.rebalance6p;
-	}
-
-	if (typeof data.rebalance7p === 'boolean') {
-		game.general.rebalance7p = data.rebalance7p;
-	}
-
-	if (typeof data.rebalance9p === 'boolean') {
-		game.general.rebalance9p = data.rebalance9p;
-	}
-
-	if (data.private || data.private === false) {
-		if (typeof data.private === 'string' && data.private.length <= 20) {
-			game.private.privatePassword = data.private;
-			game.general.private = true;
-		} else if (data.private === false) {
-			game.general.private = false;
-		}
-	}
-
-	if (data.rainbowgame && !game.general.rainbowgame) {
-		// Only run this if we are changing from non-rainbow to rainbow
-		Account.findOne({ username: passport.user }, { wins: 1, losses: 1 })
-			.then(account => {
-				game.general.rainbowgame = Boolean(account.wins + account.losses > 49);
-				if (game.general.rainbowgame) {
-					const promises = [];
-					for (let i = game.publicPlayersState.length - 1; i >= 0; i--) {
-						promises.push(
-							Account.findOne({ username: game.publicPlayersState[i].userName }, { wins: 1, losses: 1 })
-								.then(account => {
-									// Kick any players who aren't rainbowSafe
-									if (account.wins + account.losses < 50) {
-										module.exports.hostKickPlayer(game, { userName: game.publicPlayersState[i].userName });
-									}
-								})
-								.catch(err => {
-									console.log(err);
-								})
-						);
-					}
-					Promise.all(promises)
-						.then(updateClients)
-						.catch(err => {
-							console.log(err);
-						});
-				} else {
-					updateClients();
-				}
-			})
-			.catch(err => {
-				console.log(err);
-			});
-	} else if (!data.rainbowgame) {
-		game.general.rainbowgame = false;
-		updateClients();
-	} else {
-		updateClients();
-	}
-};
 
 /**
  * @param {object} socket - user socket reference.

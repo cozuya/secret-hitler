@@ -16,15 +16,7 @@ const {
 	handlePlayerReportDismiss,
 	handleUpdatedBio,
 	// handleUpdatedRemakeGame,
-	handleUpdatedPlayerNote,
-	hostStartGame,
-	hostCancelStart,
-	hostRemake,
-	hostKickPlayer,
-	hostBlacklistPlayer,
-	hostRemoveFromBlacklist,
-	hostAcceptPlayer,
-	hostUpdateTableSettings
+	handleUpdatedPlayerNote
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -38,6 +30,16 @@ const {
 	sendReplayGameChats,
 	updateUserStatus
 } = require('./user-requests');
+const {
+	hostStartGame,
+	hostCancelStart,
+	hostRemake,
+	hostKickPlayer,
+	hostBlacklistPlayer,
+	hostRemoveFromBlacklist,
+	hostAcceptPlayer,
+	hostUpdateTableSettings
+} = require('./host-events');
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
@@ -219,6 +221,8 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					handleUpdatedBio(socket, passport, data);
 				}
 			})
+			// host-events
+
 			.on('hostStartGame', data => {
 				const game = findGame(data);
 				if (authenticated && isHost(passport, game)) {
