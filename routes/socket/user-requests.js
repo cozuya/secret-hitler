@@ -16,7 +16,7 @@ const {
 	formattedUserList
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
-const { sendInProgressGameUpdate } = require('./util');
+const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('./util');
 const version = require('../../version');
 const { obfIP } = require('./ip-obf');
 //	const https = require('https');
@@ -330,9 +330,6 @@ module.exports.sendGameInfo = (socket, uid) => {
 	const { passport } = socket.handshake.session;
 
 	if (game) {
-		// Not sure if we need this copy of game anymore? all it's doing is being passed to sendInProgressGameUpdate
-		const _game = Object.assign({}, game);
-
 		if (passport && Object.keys(passport).length) {
 			const player = game.publicPlayersState.find(player => player.userName === passport.user);
 
@@ -343,11 +340,12 @@ module.exports.sendGameInfo = (socket, uid) => {
 				updateUserStatus(passport, game);
 			} else {
 				updateUserStatus(passport, game, 'observing');
+				if (game.private.hiddenInfoSubscriptions.includes(passport.user)) sendInProgressModChatUpdate(game, game.private.hiddenInfoChat, passport.user);
 			}
 		}
 
 		socket.join(uid);
-		sendInProgressGameUpdate(_game);
+		sendInProgressGameUpdate(game);
 		socket.emit('joinGameRedirect', game.general.uid);
 	} else {
 		Game.findOne({ uid }).then((game, err) => {
