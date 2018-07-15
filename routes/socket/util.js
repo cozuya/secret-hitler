@@ -80,9 +80,11 @@ module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
 			if (game.private.hiddenInfoSubscriptions.includes(user)) {
 				// AEM status is ensured when adding to the subscription list
 				if (!specificUser) {
+					// single message
 					sock.emit('gameModChat', chat);
 				} else if (specificUser === user) {
-					game.private.hiddenInfoChat.forEach(chat => sock.emit('gameModChat', chat));
+					// list of messages
+					chat.forEach(msg => sock.emit('gameModChat', msg));
 				}
 			}
 		});
