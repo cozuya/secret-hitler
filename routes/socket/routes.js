@@ -42,6 +42,8 @@ const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChanc
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
 const { games } = require('./models');
+const Account = require('../../models/account');
+
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
 	const toRemoveIndexes = games
@@ -110,7 +112,13 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 
 		const { passport } = socket.handshake.session;
 		const authenticated = ensureAuthenticated(socket);
-		const isAEM = authenticated && passport && passport.user && (modUserNames.includes(passport.user) || editorUserNames.includes(passport.user));
+
+		let isAEM = false;
+		if (authenticated && passport && passport.user) {
+			Account.findOne({ username: passport.user }).then(account => {
+				if (account.staffRole && account.staffRole.length > 0) isAEM = true;
+			});
+		}
 
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
