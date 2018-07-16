@@ -61,7 +61,8 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 	});
 
 	let chatWithHidden = game.chats;
-	if (game.private && game.private.hiddenInfoChat) chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];
+	if (!noChats && game.private && game.private.hiddenInfoChat && game.private.hiddenInfoSubscriptions.length)
+		chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];
 	if (observerSockets.length) {
 		observerSockets.forEach(sock => {
 			const _game = Object.assign({}, game);
