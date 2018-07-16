@@ -16,7 +16,7 @@ const {
 	formattedUserList
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
-const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('./util');
+const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
 const { obfIP } = require('./ip-obf');
 //	const https = require('https');
