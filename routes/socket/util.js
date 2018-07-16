@@ -57,9 +57,15 @@ module.exports.sendInProgressGameUpdate = game => {
 		});
 	}
 
+	let chatWithHidden = game.chats;
+	if (game.private && game.private.hiddenInfoChat) chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];
 	if (observerSockets.length) {
 		observerSockets.forEach(sock => {
 			const _game = Object.assign({}, game);
+			const { user } = sock.handshake.session.passport;
+
+			// AEM status is ensured when adding to the subscription list
+			if (game.private.hiddenInfoSubscriptions.includes(user)) _game.chats = chatWithHidden;
 
 			_game.chats = combineInProgressChats(_game);
 			sock.emit('gameUpdate', secureGame(_game));
@@ -75,7 +81,7 @@ module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
 
 	if (roomSockets.length) {
-		playerSockets.forEach(sock => {
+		roomSockets.forEach(sock => {
 			const { user } = sock.handshake.session.passport;
 			if (game.private.hiddenInfoSubscriptions.includes(user)) {
 				// AEM status is ensured when adding to the subscription list

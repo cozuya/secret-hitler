@@ -781,7 +781,6 @@ class Gamechat extends React.Component {
 							if (
 								gameInfo.playersState &&
 								gameInfo.playersState.length &&
-								userInfo.userName &&
 								isStaff
 							) {
 								return (
