@@ -340,9 +340,6 @@ module.exports.sendGameInfo = (socket, uid) => {
 				updateUserStatus(passport, game);
 			} else {
 				updateUserStatus(passport, game, 'observing');
-				if (game.private.hiddenInfoSubscriptions && game.private.hiddenInfoSubscriptions.includes(passport.user)) {
-					sendInProgressModChatUpdate(game, game.private.hiddenInfoChat, passport.user);
-				}
 			}
 		}
 

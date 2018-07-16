@@ -65,7 +65,7 @@ module.exports.sendInProgressGameUpdate = game => {
 			const { user } = sock.handshake.session.passport;
 
 			// AEM status is ensured when adding to the subscription list
-			if (game.private.hiddenInfoSubscriptions.includes(user)) _game.chats = chatWithHidden;
+			if (user && game.private.hiddenInfoSubscriptions.includes(user)) _game.chats = chatWithHidden;
 
 			_game.chats = combineInProgressChats(_game);
 			sock.emit('gameUpdate', secureGame(_game));
