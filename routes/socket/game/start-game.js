@@ -355,14 +355,14 @@ const beginGame = game => {
 				play.notificationStatus = '';
 			});
 		});
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 	}, process.env.NODE_ENV === 'development' ? 100 : 5000);
 
 	setTimeout(() => {
 		game.publicPlayersState.forEach(player => {
 			player.cardStatus.cardDisplayed = false;
 		});
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5200 : 7000);
 
 	setTimeout(() => {
@@ -388,7 +388,7 @@ module.exports = game => {
 			beginGame(game);
 		} else {
 			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
-			sendInProgressGameUpdate(game);
+			sendInProgressGameUpdate(game, true);
 			startGamePause--;
 		}
 	}, 1000);
