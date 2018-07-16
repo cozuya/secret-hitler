@@ -164,7 +164,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			}
 		}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 	}
-	/* eslint-disable */
+
 	game.gameState.clickActionInfo =
 		game.general.livingPlayerCount > 5
 			? [
@@ -179,6 +179,6 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
 						.map(el => seatedPlayers.indexOf(el))
 			  ];
-	/* eslint-enable */
+
 	sendInProgressGameUpdate(game);
 };

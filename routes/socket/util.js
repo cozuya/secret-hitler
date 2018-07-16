@@ -16,9 +16,9 @@ const combineInProgressChats = (game, userName) =>
 
 /**
  * @param {object} game - game to act on.
+ * @param {boolean} noChats - remove chats for client to handle.
  */
-// todo-release make this accept a socket argument and emit only to it if it exists
-module.exports.sendInProgressGameUpdate = game => {
+module.exports.sendInProgressGameUpdate = (game, noChats) => {
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
@@ -36,26 +36,29 @@ module.exports.sendInProgressGameUpdate = game => {
 		socket => (socket && !socket.handshake.session.passport) || (socket && !seatedPlayerNames.includes(socket.handshake.session.passport.user))
 	);
 
-	if (playerSockets.length) {
-		playerSockets.forEach(sock => {
-			const _game = Object.assign({}, game);
-			const { user } = sock.handshake.session.passport;
+	playerSockets.forEach(sock => {
+		const _game = Object.assign({}, game);
+		const { user } = sock.handshake.session.passport;
 
-			if (!game.gameState.isCompleted && game.gameState.isTracksFlipped) {
-				const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
+		if (!game.gameState.isCompleted && game.gameState.isTracksFlipped) {
+			const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
 
-				if (!_game || !privatePlayer) {
-					return;
-				}
-
-				_game.playersState = privatePlayer.playersState;
-				_game.cardFlingerState = privatePlayer.cardFlingerState || [];
+			if (!_game || !privatePlayer) {
+				return;
 			}
 
+			_game.playersState = privatePlayer.playersState;
+			_game.cardFlingerState = privatePlayer.cardFlingerState || [];
+		}
+
+		if (noChats) {
+			delete _game.chats;
+			sock.emit('gameUpdate', secureGame(_game), true);
+		} else {
 			_game.chats = combineInProgressChats(_game, user);
 			sock.emit('gameUpdate', secureGame(_game));
-		});
-	}
+		}
+	});
 
 	let chatWithHidden = game.chats;
 	if (game.private && game.private.hiddenInfoChat) chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];
@@ -64,11 +67,18 @@ module.exports.sendInProgressGameUpdate = game => {
 			const _game = Object.assign({}, game);
 			const { user } = sock.handshake.session.passport;
 
-			// AEM status is ensured when adding to the subscription list
-			if (user && game.private.hiddenInfoSubscriptions.includes(user)) _game.chats = chatWithHidden;
-
-			_game.chats = combineInProgressChats(_game);
-			sock.emit('gameUpdate', secureGame(_game));
+			if (noChats) {
+				delete _game.chats;
+				sock.emit('gameUpdate', secureGame(_game), true);
+			} else if (user && game.private.hiddenInfoSubscriptions.includes(user)) {
+				// AEM status is ensured when adding to the subscription list
+				_game.chats = chatWithHidden;
+				_game.chats = combineInProgressChats(_game);
+				sock.emit('gameUpdate', secureGame(_game));
+			} else {
+				_game.chats = combineInProgressChats(_game);
+				sock.emit('gameUpdate', secureGame(_game));
+			}
 		});
 	}
 };

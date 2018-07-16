@@ -14,7 +14,6 @@ import {
 	fetchProfile,
 	fetchReplay
 } from '../actions/actions.js';
-import _ from 'lodash';
 import socket from '../socket';
 import PropTypes from 'prop-types';
 import RightSidebar from './section-right/RightSidebar.jsx';
@@ -109,13 +108,19 @@ export class App extends React.Component {
 			window.location.hash = `#/table/${uid}`;
 		});
 
-		socket.on('gameUpdate', game => {
-			dispatch(updateGameInfo(game));
+		socket.on('gameUpdate', (game, noChat) => {
+			if (noChat) {
+				const { gameInfo } = this.props;
+				game.chats = gameInfo.chats;
+				dispatch(updateGameInfo(game));
+			} else {
+				dispatch(updateGameInfo(game));
+			}
 		});
 
 		socket.on('playerChatUpdate', chat => {
 			const { gameInfo } = this.props;
-			const _game = _.cloneDeep(gameInfo);
+			const _game = Object.assign({}, gameInfo);
 
 			_game.chats.push(chat);
 			dispatch(updateGameInfo(_game));

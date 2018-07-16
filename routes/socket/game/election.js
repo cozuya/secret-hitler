@@ -111,12 +111,12 @@ const enactPolicy = (game, team) => {
 		isFlipped: false
 	});
 
-	sendInProgressGameUpdate(game);
+	sendInProgressGameUpdate(game, true);
 
 	setTimeout(() => {
 		game.trackState.enactedPolicies[index].isFlipped = true;
 		game.gameState.audioCue = team === 'liberal' ? 'enactPolicyL' : 'enactPolicyF';
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 300 : 2000);
 
 	setTimeout(() => {
@@ -1190,7 +1190,7 @@ module.exports.selectVoting = (passport, game, data) => {
 			votes: seatedPlayers.map(p => p.voteStatus.didVoteYes)
 		});
 
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 
 		setTimeout(() => {
 			const chat = {
@@ -1353,7 +1353,7 @@ module.exports.selectVoting = (passport, game, data) => {
 			];
 		}
 
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 
 		if (seatedPlayers.filter(play => play.voteStatus.hasVoted && !play.isDead).length === game.general.livingPlayerCount) {
 			game.general.status = 'Tallying results of ballots..';
@@ -1364,11 +1364,11 @@ module.exports.selectVoting = (passport, game, data) => {
 					player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = false;
 				}
 			});
-			sendInProgressGameUpdate(game);
+			sendInProgressGameUpdate(game, true);
 			setTimeout(() => {
 				seatedPlayers.forEach(player => {
 					player.cardFlingerState = [];
-					sendInProgressGameUpdate(game);
+					sendInProgressGameUpdate(game, true);
 				});
 			}, experiencedMode ? 200 : 2000);
 			setTimeout(() => {

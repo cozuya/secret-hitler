@@ -63,7 +63,7 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 			};
 		});
 
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 
 		seatedPlayers.forEach(player => {
 			if (!game.general.disableGamechat) {
