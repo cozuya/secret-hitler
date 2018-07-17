@@ -109,11 +109,11 @@ module.exports.formattedGameList = () => {
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
 		excludedPlayerCount: game.general.excludedPlayerCount,
-		casualGame: game.general.casualGame,
-		eloMinimum: game.general.eloMinimum,
-		isVerifiedOnly: game.general.isVerifiedOnly,
-		isTourny: game.general.isTourny,
-		timedMode: game.general.timedMode,
+		casualGame: game.general.casualGame || undefined,
+		eloMinimum: game.general.eloMinimum || undefined,
+		isVerifiedOnly: game.general.isVerifiedOnly || undefined,
+		isTourny: game.general.isTourny || undefined,
+		timedMode: game.general.timedMode || undefined,
 		tournyStatus: (() => {
 			if (game.general.isTourny) {
 				if (game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length) {
@@ -122,22 +122,22 @@ module.exports.formattedGameList = () => {
 					};
 				}
 			}
-			return null;
+			return undefined;
 		})(),
-		experiencedMode: game.general.experiencedMode,
-		disableChat: game.general.disableChat,
-		disableGamechat: game.general.disableGamechat,
-		blindMode: game.general.blindMode,
+		experiencedMode: game.general.experiencedMode || undefined,
+		disableChat: game.general.disableChat || undefined,
+		disableGamechat: game.general.disableGamechat || undefined,
+		blindMode: game.general.blindMode || undefined,
 		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
 		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
 		electionCount: game.general.electionCount,
-		rebalance6p: game.general.rebalance6p,
-		rebalance7p: game.general.rebalance7p,
-		rebalance9p: game.general.rerebalance9p,
-		privateOnly: game.general.privateOnly,
-		private: game.general.private,
+		rebalance6p: game.general.rebalance6p || undefined,
+		rebalance7p: game.general.rebalance7p || undefined,
+		rebalance9p: game.general.rerebalance9p || undefined,
+		privateOnly: game.general.privateOnly || undefined,
+		private: game.general.private || undefined,
 		uid: game.general.uid,
-		rainbowgame: game.general.rainbowgame
+		rainbowgame: game.general.rainbowgame || undefined
 	}));
 };
 
