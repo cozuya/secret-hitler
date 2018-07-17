@@ -72,7 +72,7 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 			if (noChats) {
 				delete _game.chats;
 				sock.emit('gameUpdate', secureGame(_game), true);
-			} else if (user && game.private.hiddenInfoSubscriptions.includes(user)) {
+			} else if (user && game.private && game.private.hiddenInfoSubscriptions && game.private.hiddenInfoSubscriptions.includes(user)) {
 				// AEM status is ensured when adding to the subscription list
 				_game.chats = chatWithHidden;
 				_game.chats = combineInProgressChats(_game);
