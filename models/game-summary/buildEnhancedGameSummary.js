@@ -74,8 +74,7 @@ function buildEnhancedGameSummary(_summary) {
 	const playerSize = players.size;
 
 	// Boolean
-	const isRebalanced =
-		summary.gameSetting.rebalance6p || summary.gameSetting.rebalance7p || summary.gameSetting.rebalance9p || summary.gameSetting.rerebalance9p;
+	const isRebalanced = summary.gameSetting.rebalance6p || summary.gameSetting.rebalance7p || summary.gameSetting.rebalance9p;
 
 	const casualGame = summary.gameSetting.casualGame;
 

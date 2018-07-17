@@ -12,8 +12,6 @@ const Game = new Schema({
 	rebalance6p: Boolean,
 	rebalance7p: Boolean,
 	rebalance9p: Boolean,
-	rerebalance9p: Boolean,
-	rebalance9p2f: Boolean,
 	isTournyFirstRound: Boolean,
 	isTournySecondRound: Boolean,
 	casualGame: Boolean,

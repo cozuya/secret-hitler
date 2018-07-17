@@ -358,9 +358,23 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 						if (!game.gameState.undrawnPolicyCount) {
 							shufflePolicies(game);
 						}
-
+						// Clear previous Gov. Top deck, so all players are eligible again
+						game.gameState.previousElectedGovernment = [];
 						enactPolicy(game, game.private.policies.shift());
 					} else {
+						// Clear old previousGovernmentStatus
+						game.publicPlayersState.forEach(player => {
+							if (player.previousGovernmentStatus) {
+								player.previousGovernmentStatus = '';
+							}
+						});
+						// Set new previousGovernmentStatus
+						if (game.trackState.electionTrackerCount <= 2 && game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor') > -1) {
+							game.publicPlayersState[game.gameState.presidentIndex].previousGovernmentStatus = 'wasPresident';
+							game.publicPlayersState[game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor')].previousGovernmentStatus =
+								'wasChancellor';
+						}
+
 						startElection(game);
 					}
 				}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000);
