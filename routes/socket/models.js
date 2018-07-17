@@ -46,7 +46,7 @@ module.exports.formattedUserList = () => {
 		losses: user.losses,
 		rainbowWins: user.rainbowWins,
 		rainbowLosses: user.rainbowLosses,
-		isPrivate: user.isPrivate,
+		isPrivate: user.isPrivate ? true : undefined,
 		staffDisableVisibleElo: user.staffDisableVisibleElo,
 		staffDisableStaffColor: user.staffDisableStaffColor,
 
@@ -57,8 +57,8 @@ module.exports.formattedUserList = () => {
 		// blacklist: user.blacklist,
 		customCardback: user.customCardback,
 		customCardbackUid: user.customCardbackUid,
-		eloOverall: user.eloOverall ? user.eloOverall.toFixed(0) : null,
-		eloSeason: user.eloSeason ? user.eloSeason.toFixed(0) : null,
+		eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
+		eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
 		status: user.status,
 		winsSeason2: user.winsSeason2,
 		lossesSeason2: user.lossesSeason2,
@@ -70,7 +70,7 @@ module.exports.formattedUserList = () => {
 		rainbowLossesSeason3: user.rainbowLossesSeason3,
 		previousSeasonAward: user.previousSeasonAward,
 		timeLastGameCreated: user.timeLastGameCreated,
-		staffRole: user.staffRole
+		staffRole: user.staffRole ? user.staffRole : undefined
 		// oldData: user
 	}));
 };
