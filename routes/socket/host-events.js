@@ -90,6 +90,14 @@ module.exports.hostRemake = (passport, game) => {
 		privatePassword: game.private.privatePassword
 	};
 
+	if (newGame.general.voiceGame) {
+		newGame.chats.push({
+			timestamp: Date.now(),
+			gameChat: true,
+			chat: [{ text: `This is a VOICE GAME. Join Discord or the host may kick you.` }]
+		});
+	}
+
 	game.publicPlayersState.forEach((player, i) => {
 		player.cardStatus.cardFront = 'secretrole';
 		player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
@@ -134,7 +142,7 @@ module.exports.hostRemake = (passport, game) => {
 
 /**
  * @param {object} game - target game.
- * @param {object} data - from socket emit.
+ * @param {object} data - from socket emit, userName = player to be kicked, blacklist = boolean set to true if function called in hostBlacklistPlayer()
  */
 const hostKickPlayer = (game, data) => {
 	// Authentication Assured in routes.js
@@ -157,7 +165,11 @@ const hostKickPlayer = (game, data) => {
 			hostChat: true,
 			chat: [{ text: msg }]
 		});
+
+		// Save the time we kicked the player so we can prevent them from rejoining instantly
 		game.general.kickedTimes[playerKicked.userName] = currentTime;
+
+		// If the game is in progress then just set their name, cardback etc. to empty strings, we will replace these when a new player takes the seat
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerKickedIndex].leftGame = true;
 			game.publicPlayersState[playerKickedIndex].kicked = true;
@@ -175,6 +187,7 @@ const hostKickPlayer = (game, data) => {
 				chat: [{ text: `Waiting for replacement player..` }]
 			});
 		} else {
+			// If the tracks haven't flipped yet then just remove the player
 			game.publicPlayersState.splice(playerKickedIndex, 1);
 			if (game.gameState.isStarted) {
 				game.gameState.cancellStart = true;
@@ -182,7 +195,7 @@ const hostKickPlayer = (game, data) => {
 				game.general.status = displayWaitingForPlayers(game);
 			}
 		}
-		// Send kicked player an emit so that isSeated is changed to false on their client.
+		// Send kicked player an emit so that isSeated is changed to false on their client (lets them see the Take a Seat button again)
 		const affectedSocketId = Object.keys(io.sockets.sockets).find(
 			socketId =>
 				io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === playerKicked.userName
@@ -200,7 +213,7 @@ module.exports.hostKickPlayer = hostKickPlayer;
 /**
  * @param {object} socket - user socket reference.
  * @param {object} game - target game.
- * @param {object} data - from socket emit.
+ * @param {object} data - userName of player to blacklist from socket emit.
  */
 module.exports.hostBlacklistPlayer = (socket, game, data) => {
 	// Authentication Assured in routes.js
@@ -215,7 +228,7 @@ module.exports.hostBlacklistPlayer = (socket, game, data) => {
 			.limit(1)
 			.then(cursor => {
 				if (cursor.length > 0) {
-					// Update hosts gameSettings
+					// Add the player to the hosts gameSettings blacklist
 					Account.findOne({ username: passport.user }, { gameSettings: 1 })
 						.then(account => {
 							if (!account.gameSettings.blacklist.includes(blacklistPlayer)) {
@@ -229,6 +242,7 @@ module.exports.hostBlacklistPlayer = (socket, game, data) => {
 							console.log(err);
 						});
 
+					// Add the player to the current game blacklist
 					game.general.hostBlacklist.push(data.userName);
 					data.blacklist = true; // checked in hostKickPlayer() to change the chat message
 					hostKickPlayer(game, data);
@@ -243,7 +257,7 @@ module.exports.hostBlacklistPlayer = (socket, game, data) => {
 /**
  * @param {object} socket - user socket reference.
  * @param {object} game - target game.
- * @param {object} data - from socket emit.
+ * @param {object} data - userName of player to remove from blacklist from socket emit.
  */
 module.exports.hostRemoveFromBlacklist = (socket, game, data) => {
 	// Authentication Assured in routes.js
@@ -252,13 +266,13 @@ module.exports.hostRemoveFromBlacklist = (socket, game, data) => {
 	const blacklistPlayer = data.userName;
 	const gameBlacklistIndex = game.general.hostBlacklist.findIndex(player => player === blacklistPlayer);
 
-	// Update the games current blacklist
+	// Remove the player from the games current blacklist
 	if (gameBlacklistIndex >= 0) {
 		game.general.hostBlacklist.splice(gameBlacklistIndex, 1);
 		sendInProgressGameUpdate(game);
 	}
 
-	// Update our gamesettings
+	// Remove the player from the hosts gamesettings blacklist
 	Account.findOne({ username: passport.user }, { gameSettings: 1 }).then(account => {
 		const settingsBlacklistIndex = account.gameSettings.blacklist.findIndex(player => player === blacklistPlayer);
 		if (settingsBlacklistIndex >= 0) {
@@ -275,7 +289,7 @@ module.exports.hostRemoveFromBlacklist = (socket, game, data) => {
  * Resumes the game (allows player actions) if no more players need the host to accept them
  *
  * @param {object} game - target game.
- * @param {object} data - from socket emit.
+ * @param {object} data - seatIndex of player from socket emit.
  */
 module.exports.hostAcceptPlayer = (game, data) => {
 	// Authentication Assured in routes.js
@@ -288,9 +302,11 @@ module.exports.hostAcceptPlayer = (game, data) => {
 			chat: [{ text: `Host has accepted ${game.publicPlayersState[data.seatIndex].userName} in seat {${data.seatIndex + 1}}` }]
 		});
 		sendInProgressGameUpdate(game);
+		// If no other players need the host to accept them, start countdown to resume game
 		if (!game.publicPlayersState.map(player => player.waitingForHostAccept).includes(true)) {
 			let gamePause = 3;
 			const countDown = setInterval(() => {
+				// If the host kicks someone during countdown then just clear it and the game remains paused
 				if (game.publicPlayersState.map(player => player.waitingForHostAccept).includes(true)) {
 					clearInterval(countDown);
 				} else {
@@ -322,7 +338,7 @@ module.exports.hostAcceptPlayer = (game, data) => {
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
- * @param {object} data - from socket emit.
+ * @param {object} data - game settings from client socket emit.
  */
 module.exports.hostUpdateTableSettings = (passport, game, data) => {
 	// Authentication Assured in routes.js
@@ -340,10 +356,25 @@ module.exports.hostUpdateTableSettings = (passport, game, data) => {
 		game.general.flag = data.flag;
 	}
 
-	if (typeof data.minPlayersCount === 'number' && data.minPlayersCount >= 5 && data.minPlayersCount <= 10) {
-		game.general.minPlayersCount = data.minPlayersCount;
+	// Only run this if we are changing from non-rainbow to rainbow
+	if (data.rainbowgame && !game.general.rainbowgame) {
+		// Check if host is allowed to toggle rainbow
+		const host = userList.find(player => player.userName === passport.user);
+		if (host.wins + host.losses > 49) {
+			game.general.rainbowgame = true;
+			// Check each player and kick any not allowed in rainbow games
+			for (let i = game.publicPlayersState.length - 1; i >= 0; i--) {
+				const user = userList.find(player => player.userName === game.publicPlayersState[i].userName);
+				if (user.wins + user.losses < 50) {
+					hostKickPlayer(game, { userName: user.userName });
+				}
+			}
+		}
+	} else if (!data.rainbowgame) {
+		game.general.rainbowgame = false;
 	}
 
+	// Make sure we run rainbow game kick check before this so that any non-rainbow players are kicked first before we check max player count
 	if (typeof data.maxPlayersCount === 'number' && data.maxPlayersCount >= 5 && data.maxPlayersCount <= 10) {
 		game.general.maxPlayersCount = data.maxPlayersCount;
 		// Kick players who exceed the new max player count
@@ -355,6 +386,10 @@ module.exports.hostUpdateTableSettings = (passport, game, data) => {
 		}
 	}
 
+	if (typeof data.minPlayersCount === 'number' && data.minPlayersCount >= 5 && data.minPlayersCount <= 10) {
+		game.general.minPlayersCount = data.minPlayersCount;
+	}
+
 	if (data.excludedPlayerCount.constructor === Array && data.excludedPlayerCount.length < 6) {
 		game.general.excludedPlayerCount = [];
 		data.excludedPlayerCount.forEach(val => {
@@ -364,6 +399,15 @@ module.exports.hostUpdateTableSettings = (passport, game, data) => {
 		});
 	}
 
+	if (data.voiceGame && !game.general.voiceGame) {
+		game.chats.push({
+			timestamp: Date.now(),
+			gameChat: true,
+			chat: [{ text: `This is a VOICE GAME. Join Discord or the host may kick you.` }]
+		});
+	}
+
+	// Don't push data directly from client, just check it exists and then set boolean
 	game.general.voiceGame = data.voiceGame ? true : false;
 	game.general.experiencedMode = data.experiencedMode ? true : false;
 	game.general.disableGamechat = data.disableGamechat ? true : false;
@@ -385,7 +429,11 @@ module.exports.hostUpdateTableSettings = (passport, game, data) => {
 		game.general.casualGame = data.casualGame ? true : false;
 	}
 
-	// Check if we are adding a password or if we are turning private off - client will emit empty string if they don't make changes to pw with private enabled
+	/**
+	 * Check if we are adding a password or if we are turning private off
+	 * Client will emit an empty string if they don't make changes to password with private enabled
+	 * Empty string is neither data.private or === false, therefore this won't run and password stays the same
+	 */
 	if (data.private || data.private === false) {
 		if (typeof data.private === 'string' && data.private.length <= 20) {
 			game.private.privatePassword = data.private;
@@ -395,37 +443,12 @@ module.exports.hostUpdateTableSettings = (passport, game, data) => {
 		}
 	}
 
-	// Only run this if we are changing from non-rainbow to rainbow
-	if (data.rainbowgame && !game.general.rainbowgame) {
-		// Check if host is allowed to toggle rainbow
-		const host = userList.find(player => player.userName === passport.user);
-		if (host.wins + host.losses > 49) {
-			game.general.rainbowgame = true;
-			// Check each player and kick any not allowed in rainbow games
-			for (let i = game.publicPlayersState.length - 1; i >= 0; i--) {
-				const user = userList.find(player => player.userName === game.publicPlayersState[i].userName);
-				if (user.wins + user.losses < 50) {
-					hostKickPlayer(game, { userName: user.userName });
-				}
-			}
-		}
-	} else if (!data.rainbowgame) {
-		game.general.rainbowgame = false;
-	}
-
 	game.chats.push({
 		timestamp: Date.now(),
 		hostChat: true,
 		chat: [{ text: 'Host has changed the SETTINGS' }]
 	});
 
-	if (data.voiceGame && !game.general.voiceGame) {
-		game.chats.push({
-			timestamp: Date.now(),
-			gameChat: true,
-			chat: [{ text: `This is a VOICE GAME. Join Discord or the host may kick you.` }]
-		});
-	}
 	game.general.status = displayWaitingForPlayers(game);
 	sendInProgressGameUpdate(game);
 	sendGameList();
