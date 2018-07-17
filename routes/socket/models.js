@@ -76,11 +76,12 @@ module.exports.formattedUserList = () => {
 };
 
 const userListEmitter = {
-	state: 1,
+	state: 0,
 	send: false,
 	timer: setInterval(() => {
+		// 0.01s delay per user (1s per 100), always delay
 		if (!userListEmitter.send) {
-			userListEmitter.state = 9;
+			userListEmitter.state = module.exports.userList.length / 10;
 			return;
 		}
 		if (userListEmitter.state > 0) userListEmitter.state--;
@@ -94,5 +95,69 @@ const userListEmitter = {
 };
 
 module.exports.userListEmitter = userListEmitter;
+
+module.exports.formattedGameList = () => {
+	return module.exports.games.map(game => ({
+		name: game.general.name,
+		flag: game.general.flag,
+		userNames: game.publicPlayersState.map(val => val.userName),
+		customCardback: game.publicPlayersState.map(val => val.customCardback),
+		customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
+		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
+		seatedCount: game.publicPlayersState.length,
+		gameCreatorName: game.general.gameCreatorName,
+		minPlayersCount: game.general.minPlayersCount,
+		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
+		excludedPlayerCount: game.general.excludedPlayerCount,
+		casualGame: game.general.casualGame,
+		eloMinimum: game.general.eloMinimum,
+		isVerifiedOnly: game.general.isVerifiedOnly,
+		isTourny: game.general.isTourny,
+		timedMode: game.general.timedMode,
+		tournyStatus: (() => {
+			if (game.general.isTourny) {
+				if (game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length) {
+					return {
+						queuedPlayers: game.general.tournyInfo.queuedPlayers.length
+					};
+				}
+			}
+			return null;
+		})(),
+		experiencedMode: game.general.experiencedMode,
+		disableChat: game.general.disableChat,
+		disableGamechat: game.general.disableGamechat,
+		blindMode: game.general.blindMode,
+		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
+		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
+		electionCount: game.general.electionCount,
+		rebalance6p: game.general.rebalance6p,
+		rebalance7p: game.general.rebalance7p,
+		rebalance9p: game.general.rerebalance9p,
+		privateOnly: game.general.privateOnly,
+		private: game.general.private,
+		uid: game.general.uid,
+		rainbowgame: game.general.rainbowgame
+	}));
+};
+
+const gameListEmitter = {
+	state: 0,
+	send: false,
+	timer: setInterval(() => {
+		// 3 second delay, instant send
+		if (gameListEmitter.state > 0) gameListEmitter.state--;
+		else {
+			if (!gameListEmitter.send) return;
+			gameListEmitter.send = false;
+			io.sockets.emit('gameList', {
+				list: module.exports.formattedGameList()
+			});
+			gameListEmitter.state = 30;
+		}
+	}, 100)
+};
+
+module.exports.gameListEmitter = gameListEmitter;
 
 module.exports.AEM = Account.find({ staffRole: { $exists: true } });
