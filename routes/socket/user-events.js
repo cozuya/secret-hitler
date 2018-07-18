@@ -525,7 +525,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	const user = userList.find(obj => obj.userName === passport.user);
 	const currentTime = new Date();
 
-	if (!user || currentTime - user.timeLastGameCreated < 8000) {
+	if (!user || currentTime - user.timeLastGameCreated < 8000 || user.status.type !== 'none') {
 		// Check if !user here in case of bug where user doesn't appear on userList
 		return;
 	}
