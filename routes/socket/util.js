@@ -117,7 +117,9 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
 
 	roomSockets.forEach(sock => {
-		sock.emit('playerChatUpdate', chat);
+		if (sock) {
+			sock.emit('playerChatUpdate', chat);
+		}
 	});
 };
 
