@@ -239,9 +239,7 @@ module.exports.sendReplayGameChats = (socket, uid) => {
 module.exports.sendGameList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
-		socket.emit('gameList', {
-			list: formattedGameList()
-		});
+		socket.emit('gameList', formattedGameList());
 	} else {
 		gameListEmitter.send = true;
 	}
