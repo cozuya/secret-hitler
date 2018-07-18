@@ -150,9 +150,7 @@ const gameListEmitter = {
 		else {
 			if (!gameListEmitter.send) return;
 			gameListEmitter.send = false;
-			io.sockets.emit('gameList', {
-				list: module.exports.formattedGameList()
-			});
+			io.sockets.emit('gameList', module.exports.formattedGameList());
 			gameListEmitter.state = 30;
 		}
 	}, 100)
