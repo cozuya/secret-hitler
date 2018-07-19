@@ -38,7 +38,7 @@ const saveGame = game => {
 		playerCount: game.general.playerCount,
 		rebalance6p: game.general.rebalance6p,
 		rebalance7p: game.general.rebalance7p,
-		rebalance9p2f: game.general.rebalance9p2f,
+		rebalance9p: game.general.rebalance9p,
 		casualGame: game.general.casualGame,
 		isRainbow: game.general.rainbowgame,
 		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,

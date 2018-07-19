@@ -15,7 +15,7 @@ const {
 	handlePlayerReport,
 	handlePlayerReportDismiss,
 	handleUpdatedBio,
-	handleUpdatedRemakeGame,
+	// handleUpdatedRemakeGame,
 	handleUpdatedPlayerNote
 } = require('./user-events');
 const {
@@ -30,6 +30,16 @@ const {
 	sendReplayGameChats,
 	updateUserStatus
 } = require('./user-requests');
+const {
+	hostStartGame,
+	hostCancelStart,
+	hostRemake,
+	hostKickPlayer,
+	hostBlacklistPlayer,
+	hostRemoveFromBlacklist,
+	hostAcceptPlayer,
+	hostUpdateTableSettings
+} = require('./host-events');
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
@@ -74,6 +84,12 @@ const ensureInGame = (passport, game) => {
 		const player = game.publicPlayersState.find(player => player.userName === passport.user);
 
 		return Boolean(player);
+	}
+};
+
+const isHost = (passport, game) => {
+	if (passport && game) {
+		return Boolean(passport.user === game.general.host);
 	}
 };
 
@@ -163,7 +179,6 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					handleUpdatedGameSettings(socket, passport, data);
 				}
 			})
-
 			.on('addNewGeneralChat', data => {
 				if (authenticated) {
 					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
@@ -195,15 +210,65 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					handlePlayerReportDismiss();
 				}
 			})
-			.on('updateRemake', data => {
-				const game = findGame(data);
-				if (authenticated && ensureInGame(passport, game)) {
-					handleUpdatedRemakeGame(passport, game, data);
-				}
-			})
+			// .on('updateRemake', data => {
+			// 	const game = findGame(data);
+			// 	if (authenticated && ensureInGame(passport, game)) {
+			// 		handleUpdatedRemakeGame(passport, game, data);
+			// 	}
+			// })
 			.on('updateBio', data => {
 				if (authenticated) {
 					handleUpdatedBio(socket, passport, data);
+				}
+			})
+			// host-events
+
+			.on('hostStartGame', data => {
+				const game = findGame(data);
+				if (authenticated && isHost(passport, game)) {
+					hostStartGame(game);
+				}
+			})
+			.on('hostCancelStart', data => {
+				const game = findGame(data);
+				if (authenticated && isHost(passport, game)) {
+					hostCancelStart(game);
+				}
+			})
+			.on('hostRemake', data => {
+				const game = findGame(data);
+				if (authenticated && isHost(passport, game)) {
+					hostRemake(passport, game);
+				}
+			})
+			.on('hostKickPlayer', data => {
+				const game = findGame(data);
+				if (authenticated && isHost(passport, game)) {
+					hostKickPlayer(game, data);
+				}
+			})
+			.on('hostBlacklistPlayer', data => {
+				const game = findGame(data);
+				if (authenticated && isHost(passport, game)) {
+					hostBlacklistPlayer(socket, game, data);
+				}
+			})
+			.on('hostRemoveFromBlacklist', data => {
+				const game = findGame(data);
+				if (authenticated && isHost(passport, game)) {
+					hostRemoveFromBlacklist(socket, game, data);
+				}
+			})
+			.on('hostAcceptPlayer', data => {
+				const game = findGame(data);
+				if (authenticated && isHost(passport, game)) {
+					hostAcceptPlayer(game, data);
+				}
+			})
+			.on('hostUpdateTableSettings', data => {
+				const game = findGame(data);
+				if (authenticated && isHost(passport, game)) {
+					hostUpdateTableSettings(passport, game, data);
 				}
 			})
 			// user-requests

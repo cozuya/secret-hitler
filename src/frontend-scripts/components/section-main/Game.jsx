@@ -99,7 +99,7 @@ export default class Game extends React.Component {
 				<div className="ui grid">
 					<div className="row">
 						<div className="ten wide column tracks-container">
-							<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
+							<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} userList={this.props.userList} />
 						</div>
 						<div className="six wide column chat-container game-chat">
 							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>

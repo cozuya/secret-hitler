@@ -9,8 +9,7 @@ module.exports = (
 	gameSetting = {
 		rebalance6p: false,
 		rebalance7p: false,
-		rebalance9p: false,
-		rerebalance9p: false
+		rebalance9p: false
 	}
 ) => buildTurns(List(), logs, players, gameSetting);
 
@@ -23,9 +22,9 @@ const buildTurns = (turns, logs, players, gameSetting) => {
 };
 
 const initialDeckSize = gameSetting => {
-	if (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p) {
+	if (gameSetting.rebalance6p || gameSetting.rebalance7p) {
 		return 16;
-	} else if (gameSetting.rebalance9p2f) {
+	} else if (gameSetting.rebalance9p) {
 		return 15;
 	}
 	return 17;
@@ -36,11 +35,6 @@ const initialTrack = gameSetting => {
 		return {
 			reds: 1,
 			blues: 0
-		};
-	} else if (gameSetting.rebalance9p) {
-		return {
-			reds: 0,
-			blues: 1
 		};
 	}
 	return {

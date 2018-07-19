@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 const EnactedPolicies = props => {
 	let classes = 'enactedpolicies-container';
 
-	const { gameInfo } = props;
+	const { gameInfo, userInfo } = props;
 
-	if (gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred) {
+	if (gameInfo.cardFlingerState.length || gameInfo.trackState.isBlurred || (gameInfo.general.host === userInfo.userName && gameInfo.gameState.isCompleted)) {
 		classes += ' blurred';
 	}
 
@@ -46,7 +46,8 @@ const EnactedPolicies = props => {
 };
 
 EnactedPolicies.propTypes = {
-	gameInfo: PropTypes.object
+	gameInfo: PropTypes.object,
+	userInfo: PropTypes.object
 };
 
 export default EnactedPolicies;

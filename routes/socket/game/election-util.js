@@ -7,7 +7,12 @@ const { sendInProgressGameUpdate } = require('../util');
  * @param {object} data - from socket emit.
  */
 module.exports.selectChancellor = (socket, passport, game, data) => {
-	if ((game.general.isTourny && game.general.tournyInfo.isCancelled) || data.chancellorIndex >= game.general.playerCount || data.chancellorIndex < 0) {
+	if (
+		(game.general.isTourny && game.general.tournyInfo.isCancelled) ||
+		data.chancellorIndex >= game.general.playerCount ||
+		data.chancellorIndex < 0 ||
+		game.gameState.waitingForReplacement
+	) {
 		return;
 	}
 

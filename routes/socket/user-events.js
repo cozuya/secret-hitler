@@ -1,7 +1,7 @@
 let generalChatCount = 0;
 
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, newStaff } = require('./models');
-const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const Account = require('../../models/account');
 const Generalchats = require('../../models/generalchats');
 const ModAction = require('../../models/modAction');
@@ -28,40 +28,51 @@ const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
  */
 const displayWaitingForPlayers = game => {
 	if (game.general.isTourny) {
-		const count = game.general.maxPlayersCount - game.general.tournyInfo.queuedPlayers.length;
+		const requiredPlayerCount = game.general.maxPlayersCount - game.general.tournyInfo.queuedPlayers.length;
 
-		return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
+		return requiredPlayerCount === 1 ? `Waiting for ${requiredPlayerCount} more player..` : `Waiting for ${requiredPlayerCount} more players..`;
 	}
-	const includedPlayerCounts = _.range(game.general.minPlayersCount, game.general.maxPlayersCount).filter(
+
+	if (game.general.maxPlayersCount === game.publicPlayersState.length) {
+		return `Waiting for host to start..`;
+	}
+
+	const includedPlayerCounts = _.range(game.general.minPlayersCount, game.general.maxPlayersCount + 1).filter(
 		value => !game.general.excludedPlayerCount.includes(value)
 	);
 
-	for (value of includedPlayerCounts) {
-		if (value > game.publicPlayersState.length) {
-			const count = value - game.publicPlayersState.length;
+	for (startPlayerCount of includedPlayerCounts) {
+		if (startPlayerCount > game.publicPlayersState.length) {
+			const requiredPlayerCount = startPlayerCount - game.publicPlayersState.length;
 
-			return count === 1 ? `Waiting for ${count} more player..` : `Waiting for ${count} more players..`;
+			return requiredPlayerCount === 1 ? `Waiting for ${requiredPlayerCount} more player..` : `Waiting for ${requiredPlayerCount} more players..`;
 		}
 	}
 };
 
+module.exports.displayWaitingForPlayers = displayWaitingForPlayers;
+
 /**
  * @param {object} game - game to act on.
  */
-const startCountdown = game => {
+module.exports.startCountdown = game => {
 	if (game.gameState.isStarted) {
 		return;
 	}
 
 	game.gameState.isStarted = true;
-	let startGamePause = game.general.isTourny ? 5 : 20;
+	let startGamePause = game.general.isTourny ? 5 : 10;
 
 	const countDown = setInterval(() => {
 		if (game.gameState.cancellStart) {
 			game.gameState.cancellStart = false;
 			game.gameState.isStarted = false;
+
+			game.general.status = displayWaitingForPlayers(game);
+			io.in(game.general.uid).emit('gameUpdate', secureGame(game));
+
 			clearInterval(countDown);
-		} else if (startGamePause === 4 || game.publicPlayersState.length === game.general.maxPlayersCount) {
+		} else if (startGamePause === 3) {
 			clearInterval(countDown);
 
 			if (game.general.isTourny) {
@@ -153,34 +164,73 @@ const startCountdown = game => {
 	}, 1000);
 };
 
+// NOT USED - hosts now start the game with hostStartGame()
 /**
  * @param {object} game - game to act on.
  */
-const checkStartConditions = game => {
-	if (game.gameState.isTracksFlipped) {
+// const checkStartConditions = game => {
+// 	if (game.gameState.isTracksFlipped) {
+// 		return;
+// 	}
+
+// 	if (game.electionCount !== 0) {
+// 		game.electionCount = 0;
+// 	}
+
+// 	if (
+// 		game.gameState.isStarted &&
+// 		(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
+// 	) {
+// 		game.gameState.cancellStart = true;
+// 		game.general.status = displayWaitingForPlayers(game);
+// 	} else if (
+// 		(!game.gameState.isStarted &&
+// 			game.publicPlayersState.length >= game.general.minPlayersCount &&
+// 			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) ||
+// 		(game.general.isTourny && game.general.tournyInfo.queuedPlayers.length === game.general.maxPlayersCount)
+// 	) {
+// 		startCountdown(game);
+// 	} else if (!game.gameState.isStarted) {
+// 		game.general.status = displayWaitingForPlayers(game);
+// 	}
+// };
+
+/**
+ * Called when a player leaves to check if we should transfer the host to another player
+ *
+ * @param {object} game - target game.
+ * @param {number} playerIndex - player who has left the game.
+ */
+const checkTransferHost = (game, playerIndex) => {
+	if (game.publicPlayersState[playerIndex].userName !== game.general.host) {
+		return;
+	}
+	for (let i = 0; i < game.publicPlayersState.length; i++) {
+		// Make sure the host we are transfering to is not the current host or a player who has left
+		if (i !== playerIndex && !game.publicPlayersState[i].leftGame && !game.publicPlayersState[i].waitingForHostAccept) {
+			game.general.host = game.publicPlayersState[i].userName;
+			break;
+		}
+	}
+	if (game.general.host === game.publicPlayersState[playerIndex].userName) {
+		// host hasn't transfered, no viable players
+		games.splice(games.indexOf(game), 1);
+		sendGameList();
 		return;
 	}
 
-	if (game.electionCount !== 0) {
-		game.electionCount = 0;
+	// get the new hosts blacklist
+	const newHost = userList.find(user => user.userName === game.general.host);
+	if (newHost) {
+		game.general.hostBlacklist = newHost.blacklist;
 	}
 
-	if (
-		game.gameState.isStarted &&
-		(game.publicPlayersState.length < game.general.minPlayersCount || game.general.excludedPlayerCount.includes(game.publicPlayersState.length))
-	) {
-		game.gameState.cancellStart = true;
-		game.general.status = displayWaitingForPlayers(game);
-	} else if (
-		(!game.gameState.isStarted &&
-			game.publicPlayersState.length >= game.general.minPlayersCount &&
-			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) ||
-		(game.general.isTourny && game.general.tournyInfo.queuedPlayers.length === game.general.maxPlayersCount)
-	) {
-		startCountdown(game);
-	} else if (!game.gameState.isStarted) {
-		game.general.status = displayWaitingForPlayers(game);
-	}
+	game.chats.push({
+		timestamp: Date.now(),
+		hostChat: true,
+		chat: [{ text: `Host left the game. Host power has TRANSFERED to ${game.general.host}` }]
+	});
+	sendInProgressGameUpdate(game);
 };
 
 /**
@@ -241,12 +291,20 @@ const handleSocketDisconnect = socket => {
 				) {
 					games.splice(games.indexOf(game), 1);
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
+					checkTransferHost(game, playerIndex);
 					publicPlayersState.splice(playerIndex, 1);
-					checkStartConditions(game);
-					io.sockets.in(game.uid).emit('gameUpdate', game);
+					// checkStartConditions(game);
+					if (game.gameState.isStarted) {
+						game.gameState.cancellStart = true;
+					} else {
+						game.general.status = displayWaitingForPlayers(game);
+						io.in(game.general.uid).emit('gameUpdate', secureGame(game));
+					}
+					// io.sockets.in(game.uid).emit('gameUpdate', game);
 				} else if (gameState.isTracksFlipped) {
 					publicPlayersState[playerIndex].connected = false;
 					publicPlayersState[playerIndex].leftGame = true;
+					checkTransferHost(game, playerIndex);
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 						games.splice(games.indexOf(game), 1);
@@ -304,57 +362,64 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (playerIndex > -1) {
-		if (game.publicPlayersState[playerIndex].isRemakeVoting) {
-			// Count leaving the game as rescinded remake vote.
-			const minimumRemakeVoteCount = (() => {
-				switch (game.general.playerCount) {
-					case 5:
-						return 4;
-					case 6:
-						return 5;
-					case 7:
-						return 5;
-					case 8:
-						return 6;
-					case 9:
-						return 6;
-					case 10:
-						return 7;
-				}
-			})();
-			const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
+		// if (game.publicPlayersState[playerIndex].isRemakeVoting) {
+		// 	Count leaving the game as rescinded remake vote.
+		// 	const minimumRemakeVoteCount = (() => {
+		// 		switch (game.general.playerCount) {
+		// 			case 5:
+		// 				return 4;
+		// 			case 6:
+		// 				return 5;
+		// 			case 7:
+		// 				return 5;
+		// 			case 8:
+		// 				return 6;
+		// 			case 9:
+		// 				return 6;
+		// 			case 10:
+		// 				return 7;
+		// 		}
+		// 	})();
+		// 	const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-			if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
-				game.general.isRemaking = false;
-				game.general.status = 'Game remaking has been cancelled.';
-				clearInterval(game.private.remakeTimer);
-			}
-			const chat = {
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{
-						text: 'A player'
-					}
-				]
-			};
-			chat.chat.push({
-				text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
-					1}/${minimumRemakeVoteCount})`
-			});
-			game.chats.push(chat);
-			game.publicPlayersState[playerIndex].isRemakeVoting = false;
-		}
+		// 	if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+		// 		game.general.isRemaking = false;
+		// 		game.general.status = 'Game remaking has been cancelled.';
+		// 		clearInterval(game.private.remakeTimer);
+		// 	}
+		// 	const chat = {
+		// 		timestamp: new Date(),
+		// 		gameChat: true,
+		// 		chat: [
+		// 			{
+		// 				text: 'A player'
+		// 			}
+		// 		]
+		// 	};
+		// 	chat.chat.push({
+		// 		text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
+		// 			1}/${minimumRemakeVoteCount})`
+		// 	});
+		// 	game.chats.push(chat);
+		// 	game.publicPlayersState[playerIndex].isRemakeVoting = false;
+		// }
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 			games.splice(games.indexOf(game), 1);
 		}
+		checkTransferHost(game, playerIndex);
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
-			checkStartConditions(game);
-			io.sockets.in(game.general.uid).emit('gameUpdate', game);
+			// checkStartConditions(game);
+			if (game.gameState.isStarted) {
+				game.gameState.cancellStart = true;
+			} else {
+				game.general.status = displayWaitingForPlayers(game);
+				io.sockets.in(data.uid).emit('gameUpdate', game);
+			}
+			// io.sockets.in(game.general.uid).emit('gameUpdate', game);
 		}
 	}
 
@@ -422,77 +487,99 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
  */
 const updateSeatedUser = (socket, passport, data) => {
 	// Authentication Assured in routes.js
-	// In-game Assured in routes.js
 	const game = games.find(el => el.general.uid === data.uid);
-	// prevents race condition between 1) taking a seat and 2) the game starting
 
-	if (game.gameState.isTracksFlipped) {
-		return; // Game already started
-	}
+	if (game && (!game.gameState.isStarted || game.gameState.waitingForReplacement)) {
+		Account.findOne({ username: passport.user }).then(account => {
+			const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
+			const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
+			const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.wins + account.losses > 49);
+			const isPrivateSafe =
+				!game.general.private ||
+				(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
+			const isBlacklistSafe = !game.general.hostBlacklist.includes(passport.user);
+			const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason;
+			const isKickedTimeoutSafe = !game.general.kickedTimes[passport.user] || Date.now() - game.general.kickedTimes[passport.user] > 20000;
+			if (isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum && isKickedTimeoutSafe) {
+				const { publicPlayersState } = game;
+				const player = {
+					userName: passport.user,
+					connected: true,
+					isDead: false,
+					customCardback: account.gameSettings.customCardback,
+					customCardbackUid: account.gameSettings.customCardbackUid,
+					isPrivate: account.gameSettings.isPrivate,
+					tournyWins: account.gameSettings.tournyWins,
+					previousSeasonAward: account.gameSettings.previousSeasonAward,
+					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+					cardStatus: {
+						cardDisplayed: false,
+						isFlipped: false,
+						cardFront: 'secretrole',
+						cardBack: {}
+					}
+				};
 
-	Account.findOne({ username: passport.user }).then(account => {
-		const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
-		const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
-		const isRainbowSafe = !game.general.rainbowgame || (game.general.rainbowgame && account.wins + account.losses > 49);
-		const isPrivateSafe =
-			!game.general.private ||
-			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-		const isBlacklistSafe = !game.general.gameCreatorBlacklist.includes(passport.user);
-		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason;
+				if (game.general.isTourny) {
+					if (
+						game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(player.userName) ||
+						game.general.tournyInfo.queuedPlayers.length >= game.general.maxPlayersCount
+					) {
+						return;
+					}
+					game.general.tournyInfo.queuedPlayers.push(player);
+					game.chats.push({
+						timestamp: new Date(),
+						gameChat: true,
+						chat: [
+							{
+								text: `${passport.user}`,
+								type: 'player'
+							},
+							{
+								text: ` (${game.general.tournyInfo.queuedPlayers.length}/${game.general.maxPlayersCount}) has entered the tournament queue.`
+							}
+						]
+					});
+				} else if (game.gameState.waitingForReplacement && publicPlayersState[data.seatIndex].kicked === true) {
+					publicPlayersState[data.seatIndex].leftGame = false;
+					publicPlayersState[data.seatIndex].kicked = false;
+					publicPlayersState[data.seatIndex].userName = passport.user;
+					publicPlayersState[data.seatIndex].customCardback = account.gameSettings.customCardback;
+					publicPlayersState[data.seatIndex].customCardbackUid = account.gameSettings.customCardbackUid;
+					(publicPlayersState[data.seatIndex].tournyWins = account.gameSettings.tournyWins),
+						(publicPlayersState[data.seatIndex].previousSeasonAward = account.gameSettings.previousSeasonAward),
+						(publicPlayersState[data.seatIndex].staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo),
+						(publicPlayersState[data.seatIndex].staffDisableStaffColor = account.gameSettings.staffDisableStaffColor),
+						(game.private.seatedPlayers[data.seatIndex].userName = passport.user);
 
-		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum) {
-			const { publicPlayersState } = game;
-			const player = {
-				userName: passport.user,
-				connected: true,
-				isDead: false,
-				customCardback: account.gameSettings.customCardback,
-				customCardbackUid: account.gameSettings.customCardbackUid,
-				isPrivate: account.gameSettings.isPrivate,
-				tournyWins: account.gameSettings.tournyWins,
-				previousSeasonAward: account.gameSettings.previousSeasonAward,
-				staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
-				staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
-				cardStatus: {
-					cardDisplayed: false,
-					isFlipped: false,
-					cardFront: 'secretrole',
-					cardBack: {}
+					if (
+						(game.gameState.phase === 'selectingChancellor' && publicPlayersState[data.seatIndex].governmentStatus === 'isPendingPresident') ||
+						(data.seatIndex === game.gameState.presidentIndex &&
+							(game.gameState.phase === 'selectPartyMembershipInvestigate' ||
+								game.gameState.phase === 'specialElection' ||
+								game.gameState.phase === 'execution'))
+					) {
+						game.gameState.clickActionInfo[0] = passport.user;
+					}
+					game.chats.push({
+						timestamp: Date.now(),
+						hostChat: true,
+						chat: [{ text: `${passport.user} is asking the host to sit in seat {${data.seatIndex + 1}}` }]
+					});
+				} else if (!game.gameState.isStarted && isNotMaxedOut) {
+					publicPlayersState.push(player);
+					game.general.status = displayWaitingForPlayers(game);
 				}
-			};
 
-			if (game.general.isTourny) {
-				if (
-					game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(player.userName) ||
-					game.general.tournyInfo.queuedPlayers.length >= game.general.maxPlayersCount
-				) {
-					return;
-				}
-				game.general.tournyInfo.queuedPlayers.push(player);
-				game.chats.push({
-					timestamp: new Date(),
-					gameChat: true,
-					chat: [
-						{
-							text: `${passport.user}`,
-							type: 'player'
-						},
-						{
-							text: ` (${game.general.tournyInfo.queuedPlayers.length}/${game.general.maxPlayersCount}) has entered the tournament queue.`
-						}
-					]
-				});
-			} else {
-				publicPlayersState.push(player);
+				socket.emit('updateSeatForUser', true);
+				updateUserStatus(passport, game);
+				sendInProgressGameUpdate(game);
+				sendGameList();
 			}
-
-			socket.emit('updateSeatForUser', true);
-			checkStartConditions(game);
-			updateUserStatus(passport, game);
-			io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
-			sendGameList();
-		}
-	});
+		});
+	}
 };
 
 module.exports.updateSeatedUser = updateSeatedUser;
@@ -571,29 +658,30 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
 			gameCreatorName: user.userName,
-			gameCreatorBlacklist: user.blacklist,
 			excludedPlayerCount: excludes,
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
 			experiencedMode: data.experiencedMode,
-			disableChat: data.disableChat,
+			voiceGame: data.voiceGame,
 			isVerifiedOnly: data.isVerifiedOnly,
 			disableObserver: data.disableObserver && !data.isTourny,
 			// isTourny: data.isTourny, // temp
 			isTourny: false,
-			disableGamechat: data.disablegamechat,
+			disableGamechat: data.disableGamechat,
 			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 && !data.casualGame ? true : data.casualGame,
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
-			rebalance9p2f: data.rebalance9p2f,
+			rebalance9p: data.rebalance9p,
 			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : data.privatePassword,
 			privateOnly: user.isPrivate,
 			electionCount: 0,
-			isRemade: false,
-			eloMinimum: data.eloSliderValue
+			eloMinimum: data.eloSliderValue,
+			host: user.userName,
+			hostBlacklist: user.blacklist,
+			kickedTimes: {}
 		},
 		publicPlayersState: [],
 		playersState: [],
@@ -605,6 +693,14 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			enactedPolicies: []
 		}
 	};
+
+	if (data.voiceGame) {
+		newGame.chats.push({
+			timestamp: currentTime,
+			gameChat: true,
+			chat: [{ text: `This is a VOICE GAME. Join Discord or the host may kick you.` }]
+		});
+	}
 
 	if (data.isTourny) {
 		newGame.general.tournyInfo = {
@@ -1079,226 +1175,226 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 	}
 };
 
-/**
- * @param {object} passport - socket authentication.
- * @param {object} game - target game.
- * @param {object} data - from socket emit.
- */
-module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
-	if (game.general.isRemade) {
-		return; // Games can only be remade once.
-	}
+// /**
+//  * @param {object} passport - socket authentication.
+//  * @param {object} game - target game.
+//  * @param {object} data - from socket emit.
+//  */
+// module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
+// 	if (game.general.isRemade) {
+// 		return; // Games can only be remade once.
+// 	}
 
-	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
-	const { publicPlayersState } = game;
-	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
-	const player = publicPlayersState[playerIndex];
+// 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
+// 	const { publicPlayersState } = game;
+// 	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+// 	const player = publicPlayersState[playerIndex];
 
-	/**
-	 * @return {number} minimum number of remake votes to remake a game
-	 */
-	const minimumRemakeVoteCount = (() => {
-		switch (game.general.playerCount) {
-			case 5:
-				return 4;
-			case 6:
-				return 5;
-			case 7:
-				return 5;
-			case 8:
-				return 6;
-			case 9:
-				return 6;
-			case 10:
-				return 7;
-		}
-	})();
-	const chat = {
-		timestamp: new Date(),
-		gameChat: true,
-		chat: [
-			{
-				text: 'A player'
-			}
-		]
-	};
-	const makeNewGame = () => {
-		const newGame = _.cloneDeep(game);
-		const remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName);
-		const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
-			socketId =>
-				io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
-		);
+// 	/**
+// 	 * @return {number} minimum number of remake votes to remake a game
+// 	 */
+// 	const minimumRemakeVoteCount = (() => {
+// 		switch (game.general.playerCount) {
+// 			case 5:
+// 				return 4;
+// 			case 6:
+// 				return 5;
+// 			case 7:
+// 				return 5;
+// 			case 8:
+// 				return 6;
+// 			case 9:
+// 				return 6;
+// 			case 10:
+// 				return 7;
+// 		}
+// 	})();
+// 	const chat = {
+// 		timestamp: new Date(),
+// 		gameChat: true,
+// 		chat: [
+// 			{
+// 				text: 'A player'
+// 			}
+// 		]
+// 	};
+// 	const makeNewGame = () => {
+// 		const newGame = _.cloneDeep(game);
+// 		const remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName);
+// 		const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
+// 			socketId =>
+// 				io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+// 		);
 
-		sendInProgressGameUpdate(game);
+// 		sendInProgressGameUpdate(game);
 
-		newGame.gameState = {
-			previousElectedGovernment: [],
-			undrawnPolicyCount: 17,
-			discardedPolicyCount: 0,
-			presidentIndex: -1
-		};
+// 		newGame.gameState = {
+// 			previousElectedGovernment: [],
+// 			undrawnPolicyCount: 17,
+// 			discardedPolicyCount: 0,
+// 			presidentIndex: -1
+// 		};
 
-		newGame.chats = [];
-		newGame.general.isRemade = false;
-		newGame.general.isRemaking = false;
-		newGame.summarySaved = false;
-		newGame.general.uid = `${game.general.uid}Remake`;
-		newGame.general.electionCount = 0;
-		newGame.timeCreated = new Date().getTime();
-		newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
-			userName: player.userName,
-			customCardback: player.customCardback,
-			customCardbackUid: player.customCardbackUid,
-			connected: player.connected,
-			isRemakeVoting: false,
-			cardStatus: {
-				cardDisplayed: false,
-				isFlipped: false,
-				cardFront: 'secretrole',
-				cardBack: {}
-			}
-		}));
-		newGame.playersState = [];
-		newGame.cardFlingerState = [];
-		newGame.trackState = {
-			liberalPolicyCount: 0,
-			fascistPolicyCount: 0,
-			electionTrackerCount: 0,
-			enactedPolicies: []
-		};
-		newGame.private = {
-			reports: {},
-			unSeatedGameChats: [],
-			lock: {},
-			privatePassword: game.private.privatePassword
-		};
+// 		newGame.chats = [];
+// 		newGame.general.isRemade = false;
+// 		newGame.general.isRemaking = false;
+// 		newGame.summarySaved = false;
+// 		newGame.general.uid = `${game.general.uid}Remake`;
+// 		newGame.general.electionCount = 0;
+// 		newGame.timeCreated = new Date().getTime();
+// 		newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
+// 			userName: player.userName,
+// 			customCardback: player.customCardback,
+// 			customCardbackUid: player.customCardbackUid,
+// 			connected: player.connected,
+// 			isRemakeVoting: false,
+// 			cardStatus: {
+// 				cardDisplayed: false,
+// 				isFlipped: false,
+// 				cardFront: 'secretrole',
+// 				cardBack: {}
+// 			}
+// 		}));
+// 		newGame.playersState = [];
+// 		newGame.cardFlingerState = [];
+// 		newGame.trackState = {
+// 			liberalPolicyCount: 0,
+// 			fascistPolicyCount: 0,
+// 			electionTrackerCount: 0,
+// 			enactedPolicies: []
+// 		};
+// 		newGame.private = {
+// 			reports: {},
+// 			unSeatedGameChats: [],
+// 			lock: {},
+// 			privatePassword: game.private.privatePassword
+// 		};
 
-		game.publicPlayersState.forEach((player, i) => {
-			player.cardStatus.cardFront = 'secretrole';
-			player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-			player.cardStatus.cardDisplayed = true;
-			player.cardStatus.isFlipped = true;
-		});
+// 		game.publicPlayersState.forEach((player, i) => {
+// 			player.cardStatus.cardFront = 'secretrole';
+// 			player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+// 			player.cardStatus.cardDisplayed = true;
+// 			player.cardStatus.isFlipped = true;
+// 		});
 
-		game.general.status = 'Game is being remade..';
-		if (!game.summarySaved) {
-			const summary = game.private.summary.publish();
-			if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
-				summary.save();
-				game.summarySaved = true;
-			}
-		}
-		sendInProgressGameUpdate(game);
+// 		game.general.status = 'Game is being remade..';
+// 		if (!game.summarySaved) {
+// 			const summary = game.private.summary.publish();
+// 			if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
+// 				summary.save();
+// 				game.summarySaved = true;
+// 			}
+// 		}
+// 		sendInProgressGameUpdate(game);
 
-		setTimeout(() => {
-			game.publicPlayersState.forEach(player => {
-				if (remakePlayerNames.includes(player.userName)) player.leftGame = true;
-			});
+// 		setTimeout(() => {
+// 			game.publicPlayersState.forEach(player => {
+// 				if (remakePlayerNames.includes(player.userName)) player.leftGame = true;
+// 			});
 
-			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-				games.splice(games.indexOf(game), 1);
-			} else {
-				sendInProgressGameUpdate(game);
-			}
+// 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+// 				games.splice(games.indexOf(game), 1);
+// 			} else {
+// 				sendInProgressGameUpdate(game);
+// 			}
 
-			games.push(newGame);
-			sendGameList();
+// 			games.push(newGame);
+// 			sendGameList();
 
-			remakePlayerSocketIDs.forEach((id, index) => {
-				if (io.sockets.sockets[id]) {
-					io.sockets.sockets[id].leave(game.general.uid);
-					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-					updateSeatedUser(io.sockets.sockets[id], passport, { uid: newGame.general.uid });
-					// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
-				}
-			});
-			checkStartConditions(newGame);
-		}, 3000);
-	};
+// 			remakePlayerSocketIDs.forEach((id, index) => {
+// 				if (io.sockets.sockets[id]) {
+// 					io.sockets.sockets[id].leave(game.general.uid);
+// 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
+// 					updateSeatedUser(io.sockets.sockets[id], passport, { uid: newGame.general.uid });
+// 					// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
+// 				}
+// 			});
+// 			checkStartConditions(newGame);
+// 		}, 3000);
+// 	};
 
-	/**
-	 * @param {string} firstTableUid - the UID of the first tournament table
-	 */
-	const cancellTourny = firstTableUid => {
-		const secondTableUid =
-			firstTableUid.charAt(firstTableUid.length - 1) === 'A'
-				? `${firstTableUid.slice(0, firstTableUid.length - 1)}B`
-				: `${firstTableUid.slice(0, firstTableUid.length - 1)}A`;
-		const secondTable = games.find(game => game.general.uid === secondTableUid);
+// 	/**
+// 	 * @param {string} firstTableUid - the UID of the first tournament table
+// 	 */
+// 	const cancellTourny = firstTableUid => {
+// 		const secondTableUid =
+// 			firstTableUid.charAt(firstTableUid.length - 1) === 'A'
+// 				? `${firstTableUid.slice(0, firstTableUid.length - 1)}B`
+// 				: `${firstTableUid.slice(0, firstTableUid.length - 1)}A`;
+// 		const secondTable = games.find(game => game.general.uid === secondTableUid);
 
-		if (secondTable) {
-			secondTable.general.tournyInfo.isCancelled = true;
-			secondTable.chats.push({
-				gameChat: true,
-				timestamp: new Date(),
-				chat: [
-					{
-						text: 'Due to the other tournament table voting for cancellation, this tournament has been cancelled.',
-						type: 'hitler'
-					}
-				]
-			});
-			secondTable.general.status = 'Tournament has been cancelled.';
-			sendInProgressGameUpdate(secondTable);
-		}
-	};
+// 		if (secondTable) {
+// 			secondTable.general.tournyInfo.isCancelled = true;
+// 			secondTable.chats.push({
+// 				gameChat: true,
+// 				timestamp: new Date(),
+// 				chat: [
+// 					{
+// 						text: 'Due to the other tournament table voting for cancellation, this tournament has been cancelled.',
+// 						type: 'hitler'
+// 					}
+// 				]
+// 			});
+// 			secondTable.general.status = 'Tournament has been cancelled.';
+// 			sendInProgressGameUpdate(secondTable);
+// 		}
+// 	};
 
-	if (!game || !player || !game.publicPlayersState) {
-		return;
-	}
+// 	if (!game || !player || !game.publicPlayersState) {
+// 		return;
+// 	}
 
-	player.isRemakeVoting = data.remakeStatus;
+// 	player.isRemakeVoting = data.remakeStatus;
 
-	if (data.remakeStatus) {
-		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+// 	if (data.remakeStatus) {
+// 		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-		chat.chat.push({
-			text: ` has voted to ${remakeText} this ${game.general.isTourny ? 'tournament.' : 'game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
-		});
-		player.isRemaking = true;
+// 		chat.chat.push({
+// 			text: ` has voted to ${remakeText} this ${game.general.isTourny ? 'tournament.' : 'game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+// 		});
+// 		player.isRemaking = true;
 
-		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
-			game.general.isRemaking = true;
-			game.general.remakeCount = 5;
+// 		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
+// 			game.general.isRemaking = true;
+// 			game.general.remakeCount = 5;
 
-			game.private.remakeTimer = setInterval(() => {
-				if (game.general.remakeCount !== 0) {
-					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
-						game.general.remakeCount === 1 ? 'second' : 'seconds'
-					}.`;
-					game.general.remakeCount--;
-				} else {
-					clearInterval(game.private.remakeTimer);
-					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
-					game.general.isRemade = true;
-					if (game.general.isTourny) {
-						cancellTourny(game.general.uid);
-					} else {
-						makeNewGame();
-					}
-				}
-				sendInProgressGameUpdate(game);
-			}, 1000);
-		}
-	} else {
-		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+// 			game.private.remakeTimer = setInterval(() => {
+// 				if (game.general.remakeCount !== 0) {
+// 					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
+// 						game.general.remakeCount === 1 ? 'second' : 'seconds'
+// 					}.`;
+// 					game.general.remakeCount--;
+// 				} else {
+// 					clearInterval(game.private.remakeTimer);
+// 					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
+// 					game.general.isRemade = true;
+// 					if (game.general.isTourny) {
+// 						cancellTourny(game.general.uid);
+// 					} else {
+// 						makeNewGame();
+// 					}
+// 				}
+// 				sendInProgressGameUpdate(game);
+// 			}, 1000);
+// 		}
+// 	} else {
+// 		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-		if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
-			game.general.isRemaking = false;
-			game.general.status = 'Game remaking has been cancelled.';
-			clearInterval(game.private.remakeTimer);
-		}
-		chat.chat.push({
-			text: ` has rescinded their vote to ${
-				game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
-			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
-		});
-	}
-	game.chats.push(chat);
+// 		if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+// 			game.general.isRemaking = false;
+// 			game.general.status = 'Game remaking has been cancelled.';
+// 			clearInterval(game.private.remakeTimer);
+// 		}
+// 		chat.chat.push({
+// 			text: ` has rescinded their vote to ${
+// 				game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
+// 			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+// 		});
+// 	}
+// 	game.chats.push(chat);
 
-	sendInProgressGameUpdate(game);
-};
+// 	sendInProgressGameUpdate(game);
+// };
 
 /**
  * @param {object} socket - socket reference.
@@ -1530,11 +1626,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			const currentPrivate = account.gameSettings.isPrivate;
 
 			for (const setting in data) {
-				if (
-					setting !== 'blacklist' ||
-					(account.gameSettings.blacklist && account.gameSettings.blacklist.length < 10) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole)
-				) {
+				if (setting !== 'blacklist' || (setting === 'blacklist' && data[setting].length <= 10) || (setting === 'staffDisableVisibleElo' && account.staffRole)) {
 					account.gameSettings[setting] = data[setting];
 				}
 			}

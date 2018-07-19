@@ -164,7 +164,7 @@ const Replay = ({ replay, isSmall, to, replayChats }) => {
 					<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
 					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
 				</div>
-				<div className="right-side eight wide column">
+				<div className="right-side eight wide column chat-container">
 					{replayChats.length ? (
 						<Gamechat
 							isReplay={true}

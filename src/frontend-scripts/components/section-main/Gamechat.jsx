@@ -222,7 +222,13 @@ class Gamechat extends React.Component {
 			}
 		})();
 		const isGovernmentDuringPolicySelection = (() => {
-			if (gameState && (gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
+			if (
+				gameState &&
+				(gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') &&
+				userName &&
+				isSeated &&
+				publicPlayersState.find(player => player.userName === userName)
+			) {
 				return (
 					publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
 					publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
@@ -393,6 +399,31 @@ class Gamechat extends React.Component {
 								})}
 							</span>
 						</div>
+					) : chat.hostChat ? (
+						<div className="item hostchat" key={i}>
+							{this.handleTimestamps(chat.timestamp)}
+							<span className="host-chat">
+								{chatContents.map((chatSegment, index) => {
+									if (chatSegment.type) {
+										let classes;
+
+										if (chatSegment.type === 'player') {
+											classes = 'chat-player';
+										} else {
+											classes = `chat-role--${chatSegment.type}`;
+										}
+
+										return (
+											<span key={index} className={classes}>
+												{chatSegment.text}
+											</span>
+										);
+									}
+
+									return chatSegment.text;
+								})}
+							</span>
+						</div>
 					) : chat.isClaim ? (
 						<div className="item claim-item" key={i}>
 							{this.handleTimestamps(chat.timestamp)}
@@ -466,14 +497,12 @@ class Gamechat extends React.Component {
 								{this.props.isReplay || gameInfo.gameState.isTracksFlipped
 									? isSeated
 										? isBlind
-											? `${
-													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											? `${gameInfo.general.replacementNames[
+													gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)
+												]} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
-									: isBlind
-										? '?'
-										: chat.userName}
+									: isBlind ? '?' : chat.userName}
 								{': '}
 							</span>
 							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
@@ -556,9 +585,7 @@ class Gamechat extends React.Component {
 			this.props.updateUser(userInfo);
 			window.location.hash = isRound1TableThatFinished2nd
 				? `${hash.substr(0, hash.length - 1)}Final`
-				: tableUidLastLetter === 'A'
-					? `${hash.substr(0, hash.length - 1)}B`
-					: `${hash.substr(0, hash.length - 1)}A`;
+				: tableUidLastLetter === 'A' ? `${hash.substr(0, hash.length - 1)}B` : `${hash.substr(0, hash.length - 1)}A`;
 		};
 
 		return (

@@ -137,8 +137,7 @@ const beginGame = game => {
 		{
 			rebalance6p: game.general.rebalance6p && game.private.seatedPlayers.length === 6,
 			rebalance7p: game.general.rebalance7p && game.private.seatedPlayers.length === 7,
-			rebalance9p: false,
-			rerebalance9p: game.general.rerebalance9p && game.private.seatedPlayers.length === 9,
+			rebalance9p: game.general.rebalance9p && game.private.seatedPlayers.length === 9,
 			casualGame: Boolean(game.general.casualGame)
 		},
 		game.private.seatedPlayers.map(p => ({
@@ -384,7 +383,7 @@ const beginGame = game => {
  * @param {object} game - game to act on.
  */
 module.exports = game => {
-	let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 5;
+	let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 3;
 
 	const countDown = setInterval(() => {
 		if (!startGamePause) {
@@ -413,6 +412,6 @@ module.exports = game => {
 	shufflePolicies(
 		game,
 		Boolean(game.private.seatedPlayers.length === 6) && game.general.rebalance6p,
-		Boolean(game.private.seatedPlayers.length === 9) && game.general.rebalance9p2f
+		Boolean(game.private.seatedPlayers.length === 9) && game.general.rebalance9p
 	);
 };

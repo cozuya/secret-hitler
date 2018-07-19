@@ -19,8 +19,8 @@ export default class Creategame extends React.Component {
 		this.state = {
 			gameName: '',
 			sliderValues: [5, 10],
-			experiencedmode: false,
-			disablechat: false,
+			experiencedmode: true,
+			voiceGame: false,
 			disablegamechat: false,
 			disableobserver: false,
 			privateShowing: false,
@@ -63,12 +63,12 @@ export default class Creategame extends React.Component {
 			}
 		});
 
-		$(this.disablechat).checkbox({
+		$(this.voiceGame).checkbox({
 			onChecked() {
-				self.setState({ disablechat: true });
+				self.setState({ voiceGame: true });
 			},
 			onUnchecked() {
-				self.setState({ disablechat: false });
+				self.setState({ voiceGame: false });
 			}
 		});
 
@@ -219,7 +219,7 @@ export default class Creategame extends React.Component {
 				excludedPlayerCount,
 				maxPlayersCount: this.state.isTourny ? undefined : this.state.sliderValues[1],
 				experiencedMode: this.state.experiencedmode,
-				disableChat: this.state.disablechat,
+				voiceGame: this.state.voiceGame,
 				disableObserver: this.state.disableobserver && !this.state.isTourny,
 				isTourny: this.state.isTourny,
 				isVerifiedOnly: userInfo.verified ? this.state.isVerifiedOnly : false,
@@ -230,7 +230,7 @@ export default class Creategame extends React.Component {
 				casualGame: this.state.casualgame,
 				rebalance6p: this.state.checkedRebalanceValues[0],
 				rebalance7p: this.state.checkedRebalanceValues[1],
-				rebalance9p2f: this.state.checkedRebalanceValues[2],
+        rebalance9p: this.state.checkedRebalanceValues[2],
 				eloSliderValue: this.state.isEloLimited ? this.state.eloSliderValue[0] : null,
 				privatePassword: this.state.privateShowing ? $(this.privategamepassword).val() : false
 			};
@@ -1089,20 +1089,6 @@ export default class Creategame extends React.Component {
 						<input
 							type="checkbox"
 							checked={this.state.checkedRebalanceValues[index]}
-							disabled={(() => {
-								const firstSlider = this.state.sliderValues[0];
-								const secondSlider = this.state.sliderValues[1];
-
-								if (index === 0) {
-									return firstSlider > 6 || secondSlider < 6;
-								}
-
-								if (index === 1) {
-									return firstSlider > 7 || secondSlider < 7;
-								}
-
-								return firstSlider > 9 || secondSlider < 9;
-							})()}
 							onChange={() => {
 								rebalancedInputClick(index);
 							}}
@@ -1299,13 +1285,13 @@ export default class Creategame extends React.Component {
 					)}
 					{userInfo.gameSettings && !userInfo.gameSettings.disableElo && this.renderEloSlider()}
 					<div className="row sliderrow">
-						<div className="four wide column disablechat">
+						<div className="four wide column voicegame">
 							<i className="big unmute icon" />
-							<h4 className="ui header">Disable player chat - use this for voice-only games</h4>
+							<h4 className="ui header">VOICE GAME - Join discord and play with mics!</h4>
 							<div
 								className="ui fitted toggle checkbox"
 								ref={c => {
-									this.disablechat = c;
+									this.voiceGame = c;
 								}}
 							>
 								<input type="checkbox" name="disablechat" defaultChecked={false} />
@@ -1332,7 +1318,7 @@ export default class Creategame extends React.Component {
 									this.experiencedmode = c;
 								}}
 							>
-								<input type="checkbox" name="experiencedmode" defaultChecked={false} />
+								<input type="checkbox" name="experiencedmode" defaultChecked={true} />
 							</div>
 						</div>
 						{(() => {

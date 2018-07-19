@@ -30,6 +30,7 @@ class Players extends React.Component {
 			playerNotes: [],
 			playerNoteSeatEnabled: false
 		};
+		this.seatIndex = '';
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -68,7 +69,11 @@ class Players extends React.Component {
 	}
 
 	handlePlayerDoubleClick(userName) {
-		if ((!this.props.gameInfo.general.private && this.props.userInfo.userName && this.props.userInfo.userName !== userName) || this.props.isReplay) {
+		// check if userName here so we can't report players after they are kicked, since their userName is changed to "" (blank string)
+		if (
+			(!this.props.gameInfo.general.private && this.props.userInfo.userName && userName && this.props.userInfo.userName !== userName) ||
+			this.props.isReplay
+		) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
@@ -219,21 +224,30 @@ class Players extends React.Component {
 			return prependCrowns(userName);
 		};
 
+		const renderHostIcon = player => {
+			const isHost = player.userName === gameInfo.general.host;
+			if (isHost && !gameInfo.general.blindMode) {
+				return <img className="small-host-icon" src="../images/host-icon.png" />;
+			}
+		};
+
 		return publicPlayersState.map((player, i) => (
 			<div
 				key={i}
 				data-index={i}
 				onClick={this.handlePlayerClick}
 				style={
-					player.customCardback &&
-					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
-						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						  }
-						: {
-								backgroundImage: `url(../images/default_cardback.png)`
-						  }
+					player.kicked
+						? { backgroundImage: `url(../images/empty_seat.png)` }
+						: player.customCardback &&
+						  !isBlind &&
+						  (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+							? {
+									backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+							  }
+							: {
+									backgroundImage: `url(../images/default_cardback.png)`
+							  }
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -246,7 +260,7 @@ class Players extends React.Component {
 						l = !(gameSettings && gameSettings.disableSeasonal) ? user[`lossesSeason${CURRENTSEASONNUMBER}`] : user.losses;
 					}
 
-					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
+					if (!gameState.waitingForReplacement && playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
 					} else if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].notificationStatus) {
 						classes = `${classes} notifier ${publicPlayersState[i].notificationStatus}`;
@@ -258,6 +272,10 @@ class Players extends React.Component {
 
 					if (user && !isBlind) {
 						classes = `${classes} ${PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), '')}`;
+					}
+
+					if (user && user.userName === gameInfo.general.host) {
+						classes = `${classes} host`;
 					}
 
 					return classes;
@@ -294,8 +312,10 @@ class Players extends React.Component {
 						return classes;
 					})()}
 				>
+					{renderHostIcon(player)}
 					{renderPlayerName(player, i)}
 				</div>
+				{this.renderSeatButtons(i)}
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
 				{this.renderGovtToken(i)}
@@ -305,8 +325,9 @@ class Players extends React.Component {
 						let classes = 'card-container';
 
 						if (
-							(playersState && Object.keys(playersState).length && playersState[i] && playersState[i].cardStatus.cardDisplayed) ||
-							(publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)
+							!publicPlayersState[i].kicked &&
+							((playersState && Object.keys(playersState).length && playersState[i] && playersState[i].cardStatus.cardDisplayed) ||
+								(publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed))
 						) {
 							classes += ' showing';
 						}
@@ -363,36 +384,113 @@ class Players extends React.Component {
 		));
 	}
 
-	renderTakeSeat() {
-		const { userInfo, gameInfo, userList } = this.props;
-		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
+	renderEmptySeatIcons() {
+		const { gameInfo } = this.props;
+		const { gameState, publicPlayersState } = gameInfo;
+		const numberOfEmptySeats = gameInfo.general.maxPlayersCount - publicPlayersState.length;
+		const emptySeatIcons = [];
 
-		if (
+		if (!gameState.isStarted && numberOfEmptySeats > 0) {
+			for (let i = 1; i <= numberOfEmptySeats; i++) {
+				let classes = 'empty-seat-number';
+				if (
+					publicPlayersState.length + i >= gameInfo.general.minPlayersCount &&
+					!gameInfo.general.excludedPlayerCount.includes(publicPlayersState.length + i)
+				) {
+					classes += ' included-player-count';
+				}
+				emptySeatIcons.push(
+					<div key={i} className="player-container empty-seat">
+						{i === 1 ? this.renderSeatButtons() : null /* Only render 1 take seat button */}
+						<div className={classes}>{publicPlayersState.length + i}</div>
+					</div>
+				);
+			}
+			return emptySeatIcons;
+		}
+	}
+
+	renderSeatButtons(seatIndex) {
+		const { gameInfo, userInfo, userList } = this.props;
+		const { publicPlayersState, gameState } = gameInfo;
+		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
+		const seat = publicPlayersState[seatIndex];
+		const isRainbowSafe = !gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49);
+		const isHost = user && user.userName === gameInfo.general.host;
+		const isPrivateSafe = userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private);
+		const isPrivateOnlySafe = !gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate);
+		const isCompleted = gameInfo.gameState.isCompleted;
+
+		if (seatIndex !== undefined) {
+			if (seat.kicked && isRainbowSafe && !isCompleted) {
+				return (
+					<div className="take-seat-container">
+						<div className="ui left pointing label take-seat-button" onClick={() => this.clickedTakeSeat(seatIndex)}>
+							Take a seat
+						</div>
+					</div>
+				);
+			} else if (isHost && seat.waitingForHostAccept && !isCompleted) {
+				return (
+					<div className="take-seat-container">
+						<div className="ui button host-player-buttons primary" onClick={() => this.hostAcceptPlayer(seatIndex)}>
+							Accept
+						</div>
+						<div className="ui button host-player-buttons kick" onClick={() => this.hostKickPlayer(seatIndex)}>
+							Kick
+						</div>
+					</div>
+				);
+			}
+		} else if (
+			!gameState.isStarted &&
 			!userInfo.isSeated &&
 			userInfo.userName &&
-			!gameInfo.gameState.isTracksFlipped &&
-			gameInfo.publicPlayersState.length < 10 &&
-			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
-			(!gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
-			(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private)) &&
-			(!gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
+			publicPlayersState.length < 10 &&
+			isRainbowSafe &&
+			isPrivateSafe &&
+			isPrivateOnlySafe
 		) {
-			return gameInfo.general.isTourny ? (
-				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
-					Queue for tournament
-				</div>
-			) : (
-				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
-					Take a seat
+			return (
+				<div className="take-seat-container">
+					<div className="ui left pointing label take-seat-button" onClick={() => this.clickedTakeSeat()}>
+						Take a seat
+					</div>
 				</div>
 			);
 		}
 	}
 
+	// renderTakeSeat() {
+	// 	const { userInfo, gameInfo, userList } = this.props;
+	// 	const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
+
+	// 	if (
+	// 		!userInfo.isSeated &&
+	// 		userInfo.userName &&
+	// 		!gameInfo.gameState.isTracksFlipped &&
+	// 		gameInfo.publicPlayersState.length < 10 &&
+	// 		(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
+	// 		(!gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
+	// 		(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private)) &&
+	// 		(!gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
+	// 	) {
+	// 		return gameInfo.general.isTourny ? (
+	// 			<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
+	// 				Queue for tournament
+	// 			</div>
+	// 		) : (
+	// 			<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
+	// 				Take a seat
+	// 			</div>
+	// 		);
+	// 	}
+	// }
+
 	handlePasswordSubmit(e) {
 		e.preventDefault();
 
-		this.props.onClickedTakeSeat(this.state.passwordValue);
+		this.props.onClickedTakeSeat(this.state.passwordValue, this.seatIndex);
 		$(this.passwordModal).modal('hide');
 	}
 
@@ -417,11 +515,14 @@ class Players extends React.Component {
 		$(this.reportModal).modal('hide');
 	}
 
-	clickedTakeSeat() {
-		const { gameInfo, userInfo, onClickedTakeSeat, userList } = this.props;
+	clickedTakeSeat(index) {
+		const { gameInfo, userInfo, onClickedTakeSeat } = this.props;
+
+		// save our seatIndex to a var so we can access it from the password modal
+		this.seatIndex = index;
 
 		if (userInfo.userName) {
-			if (gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
+			if (gameInfo.general.hostBlacklist.includes(userInfo.userName)) {
 				$(this.blacklistModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
@@ -435,14 +536,33 @@ class Players extends React.Component {
 				if (!user || parseInt(user.eloSeason, 10) < gameInfo.general.eloMinimum) {
 					$(this.elominimumModal).modal('show');
 				} else {
-					onClickedTakeSeat();
+					onClickedTakeSeat(null, index);
 				}
 			} else {
-				onClickedTakeSeat();
+				onClickedTakeSeat(null, index);
 			}
 		} else {
 			$(this.signinModal).modal('show');
 		}
+	}
+
+	hostAcceptPlayer(seatIndex, e) {
+		const { gameInfo, socket } = this.props;
+		const data = {
+			uid: gameInfo.general.uid,
+			seatIndex
+		};
+		socket.emit('hostAcceptPlayer', data);
+	}
+
+	hostKickPlayer(seatIndex, e) {
+		const { gameInfo, socket } = this.props;
+		const userName = gameInfo.publicPlayersState[seatIndex].userName;
+		const data = {
+			uid: gameInfo.general.uid,
+			userName
+		};
+		socket.emit('hostKickPlayer', data);
 	}
 
 	render() {
@@ -457,7 +577,7 @@ class Players extends React.Component {
 		return (
 			<section className="players">
 				{this.renderPlayers()}
-				{this.renderTakeSeat()}
+				{this.renderEmptySeatIcons()}
 
 				<div
 					className="ui basic small modal signinnag"
@@ -569,4 +689,7 @@ Players.propTypes = {
 	playerNotesActive: PropTypes.string
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Players);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Players);
