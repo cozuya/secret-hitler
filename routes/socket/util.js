@@ -67,7 +67,7 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 	if (observerSockets.length) {
 		observerSockets.forEach(sock => {
 			const _game = Object.assign({}, game);
-			const { user } = sock.handshake.session.passport;
+			const user = sock.handshake.session.passport ? sock.handshake.session.passport.user : null;
 
 			if (noChats) {
 				delete _game.chats;
