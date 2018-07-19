@@ -221,7 +221,9 @@ const checkTransferHost = (game, playerIndex) => {
 
 	// get the new hosts blacklist
 	const newHost = userList.find(user => user.userName === game.general.host);
-	game.general.hostBlacklist = newHost.blacklist;
+	if (newHost) {
+		game.general.hostBlacklist = newHost.blacklist;
+	}
 
 	game.chats.push({
 		timestamp: Date.now(),

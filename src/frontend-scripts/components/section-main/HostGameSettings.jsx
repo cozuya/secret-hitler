@@ -69,7 +69,6 @@ export default class HostGameSettings extends React.Component {
 			disablegamechat: general.disableGamechat,
 			rainbowgame: general.rainbowgame,
 			privateShowing: general.private,
-			//privategamepassword: this.props.hostPassword,
 			blindMode: general.blindMode,
 			disableobserver: general.disableObserver,
 			casualGame: general.casualGame,
@@ -86,7 +85,6 @@ export default class HostGameSettings extends React.Component {
 	}
 
 	componentDidMount() {
-		const self = this;
 		$(this.flagDropdown).dropdown('set selected', this.state.flag);
 	}
 
@@ -185,9 +183,6 @@ export default class HostGameSettings extends React.Component {
 				this.props.handleEmitTableSettings(data);
 			}
 
-			// if (this.state.privateShowing) {
-			// 	this.props.storeHostPassword(this.state.privategamepassword);
-			// }
 			this.props.handleCloseGameSettings();
 		}
 	}

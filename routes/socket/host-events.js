@@ -299,7 +299,7 @@ module.exports.hostRemoveFromBlacklist = (socket, game, data) => {
 module.exports.hostAcceptPlayer = (game, data) => {
 	// Authentication Assured in routes.js
 	// Host Assured in routes.js
-	if (game.publicPlayersState[data.seatIndex]) {
+	if (game.publicPlayersState[data.seatIndex] && game.publicPlayersState[data.seatIndex].waitingForHostAccept === true) {
 		game.publicPlayersState[data.seatIndex].waitingForHostAccept = false;
 		game.chats.push({
 			timestamp: Date.now(),
@@ -365,12 +365,12 @@ module.exports.hostUpdateTableSettings = (passport, game, data) => {
 	if (data.rainbowgame && !game.general.rainbowgame) {
 		// Check if host is allowed to toggle rainbow
 		const host = userList.find(player => player.userName === passport.user);
-		if (host.wins + host.losses > 49) {
+		if (host && host.wins + host.losses > 49) {
 			game.general.rainbowgame = true;
 			// Check each player and kick any not allowed in rainbow games
 			for (let i = game.publicPlayersState.length - 1; i >= 0; i--) {
 				const user = userList.find(player => player.userName === game.publicPlayersState[i].userName);
-				if (user.wins + user.losses < 50) {
+				if (user && user.wins + user.losses < 50) {
 					hostKickPlayer(game, { userName: user.userName });
 				}
 			}
