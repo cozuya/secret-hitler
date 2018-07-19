@@ -779,8 +779,8 @@ class Gamechat extends React.Component {
 					<form className="segment inputbar" onSubmit={this.handleSubmit}>
 						{(() => {
 							if (
-								gameInfo.playersState &&
-								gameInfo.playersState.length &&
+								gameInfo.gameState &&
+								gameInfo.gameState.isStarted &&
 								isStaff
 							) {
 								return (
