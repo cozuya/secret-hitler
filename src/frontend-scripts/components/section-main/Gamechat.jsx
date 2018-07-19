@@ -492,7 +492,7 @@ class Gamechat extends React.Component {
 	}
 
 	render() {
-		const { userInfo, gameInfo, isReplay } = this.props;
+		const { userInfo, gameInfo, isReplay, userList } = this.props;
 		const selectedWhitelistplayer = playerName => {
 			const { playersToWhitelist } = this.state;
 			const playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
@@ -569,6 +569,12 @@ class Gamechat extends React.Component {
 					: `${hash.substr(0, hash.length - 1)}A`;
 		};
 		const isStaff = Boolean(userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'contributor');
+		const hasNoAEM = players => {
+			return userList.list.every(user => {
+				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'contributor') return false;
+				else return true;
+			});
+		};
 
 		return (
 			<section className="gamechat">
@@ -784,7 +790,7 @@ class Gamechat extends React.Component {
 								isStaff
 							) {
 								return (
-									<div className="ui primary button" title="Click here to subscribe to mod-only chat" onClick={this.handleSubscribeModChat}>
+									<div className={hasNoAEM(gameInfo.publicPlayersState.map(player => player.userName)) ? 'ui primary button' : 'ui primary button disabled'} title="Click here to subscribe to mod-only chat" onClick={this.handleSubscribeModChat}>
 										Mod Chat
 									</div>
 								);
