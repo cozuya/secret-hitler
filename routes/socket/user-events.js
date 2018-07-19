@@ -546,7 +546,12 @@ const updateSeatedUser = (socket, passport, data) => {
 					publicPlayersState[data.seatIndex].userName = passport.user;
 					publicPlayersState[data.seatIndex].customCardback = account.gameSettings.customCardback;
 					publicPlayersState[data.seatIndex].customCardbackUid = account.gameSettings.customCardbackUid;
-					game.private.seatedPlayers[data.seatIndex].userName = passport.user;
+					(publicPlayersState[data.seatIndex].tournyWins = account.gameSettings.tournyWins),
+						(publicPlayersState[data.seatIndex].previousSeasonAward = account.gameSettings.previousSeasonAward),
+						(publicPlayersState[data.seatIndex].staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo),
+						(publicPlayersState[data.seatIndex].staffDisableStaffColor = account.gameSettings.staffDisableStaffColor),
+						(game.private.seatedPlayers[data.seatIndex].userName = passport.user);
+
 					if (
 						(game.gameState.phase === 'selectingChancellor' && publicPlayersState[data.seatIndex].governmentStatus === 'isPendingPresident') ||
 						(data.seatIndex === game.gameState.presidentIndex &&

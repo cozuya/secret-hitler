@@ -198,14 +198,6 @@ class Players extends React.Component {
 				}
 			};
 
-			const isHost = userName === gameInfo.general.host;
-
-			const prependHostIcon = () => {
-				if (isHost && !gameInfo.general.blindMode) {
-					return <img className="small-host-icon" src="../images/host-icon.png" />;
-				}
-			};
-
 			const prependCrowns = str => (
 				<span>
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
@@ -221,22 +213,22 @@ class Players extends React.Component {
 				</span>
 			);
 
-			const prependAllIcons = str => (
-				<div>
-					{prependHostIcon()}
-					{prependCrowns(str)}
-				</div>
-			);
-
 			if (player.isPrivate && !userInfo.staffRole && !userInfo.isSeated) {
-				return prependAllIcons('Anonymous');
+				return prependCrowns('Anonymous');
 			}
 
 			if (gameState.isTracksFlipped) {
-				return prependAllIcons(`${i + 1}. ${userName}`);
+				return prependCrowns(`${i + 1}. ${userName}`);
 			}
 
-			return prependAllIcons(userName);
+			return prependCrowns(userName);
+		};
+
+		const renderHostIcon = player => {
+			const isHost = player.userName === gameInfo.general.host;
+			if (isHost && !gameInfo.general.blindMode) {
+				return <img className="small-host-icon" src="../images/host-icon.png" />;
+			}
 		};
 
 		return publicPlayersState.map((player, i) => (
@@ -320,6 +312,7 @@ class Players extends React.Component {
 						return classes;
 					})()}
 				>
+					{renderHostIcon(player)}
 					{renderPlayerName(player, i)}
 				</div>
 				{this.renderSeatButtons(i)}

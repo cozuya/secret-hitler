@@ -177,6 +177,11 @@ const hostKickPlayer = (game, data) => {
 			game.publicPlayersState[playerKickedIndex].userName = '';
 			game.publicPlayersState[playerKickedIndex].customCardback = '';
 			game.publicPlayersState[playerKickedIndex].customCardbackUid = '';
+			game.publicPlayersState[playerKickedIndex].tournyWins = undefined;
+			game.publicPlayersState[playerKickedIndex].previousSeasonAward = undefined;
+			game.publicPlayersState[playerKickedIndex].staffDisableVisibleElo = undefined;
+			game.publicPlayersState[playerKickedIndex].staffDisableStaffColor = undefined;
+
 			game.private.seatedPlayers[playerKickedIndex].userName = '';
 			game.gameState.waitingForReplacement = true;
 			game.general.casualGame = true; // Don't rate games when a player is kicked mid-game
