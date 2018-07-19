@@ -177,6 +177,10 @@ const beginGame = game => {
 					const otherFascist = seatedPlayers.find(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 					const otherFascistIndex = seatedPlayers.indexOf(otherFascist);
 
+					if (!otherFascist) {
+						return;
+					}
+
 					if (!game.general.disableGamechat) {
 						player.gameChats.push({
 							timestamp: new Date(),
