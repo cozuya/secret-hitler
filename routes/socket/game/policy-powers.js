@@ -121,7 +121,7 @@ module.exports.selectPolicies = (passport, game) => {
 						text: 'President '
 					},
 					{
-						text: `${seatedPlayers[presidentIndex].userName} #${presidentIndex + 1}.`,
+						text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
 						type: 'player'
 					},
 					{
@@ -318,7 +318,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 							text: 'President '
 						},
 						{
-							text: `${seatedPlayers[presidentIndex].userName} #${presidentIndex + 1}.`,
+							text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
 							type: 'player'
 						},
 						{

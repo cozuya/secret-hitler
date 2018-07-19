@@ -607,7 +607,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 					text: 'Chancellor '
 				},
 				{
-					text: `${chancellor.userName} #${chancellorIndex + 1}.`,
+					text: `${chancellor.userName} {${chancellorIndex + 1}}`,
 					type: 'player'
 				},
 				{
@@ -777,7 +777,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 					text: 'President '
 				},
 				{
-					text: `${president.userName} #${presidentIndex + 1}.`,
+					text: `${president.userName} {${presidentIndex + 1}}`,
 					type: 'player'
 				},
 				{
@@ -1080,7 +1080,7 @@ module.exports.selectVoting = (passport, game, data) => {
 					text: 'President '
 				},
 				{
-					text: `${seatedPlayers[presidentIndex].userName} #${presidentIndex + 1}.`,
+					text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
 					type: 'player'
 				},
 				{

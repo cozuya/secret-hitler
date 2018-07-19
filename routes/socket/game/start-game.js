@@ -104,7 +104,7 @@ const beginGame = game => {
 			gameChat: true,
 			chat: [
 				{
-					text: `${player.userName} #${i + 1}.`,
+					text: `${player.userName} {${i + 1}}`,
 					type: 'player'
 				},
 				{
