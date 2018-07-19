@@ -1626,11 +1626,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			const currentPrivate = account.gameSettings.isPrivate;
 
 			for (const setting in data) {
-				if (
-					setting !== 'blacklist' ||
-					(account.gameSettings.blacklist && account.gameSettings.blacklist.length < 10) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole)
-				) {
+				if (setting !== 'blacklist' || (setting === 'blacklist' && data[setting].length <= 10) || (setting === 'staffDisableVisibleElo' && account.staffRole)) {
 					account.gameSettings[setting] = data[setting];
 				}
 			}

@@ -430,7 +430,7 @@ class Players extends React.Component {
 						</div>
 					</div>
 				);
-			} else if (isHost && seat.waitingForHostAccept === true) {
+			} else if (isHost && seat.waitingForHostAccept && !isCompleted) {
 				return (
 					<div className="take-seat-container">
 						<div className="ui button host-player-buttons primary" onClick={() => this.hostAcceptPlayer(seatIndex)}>
