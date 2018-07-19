@@ -169,7 +169,9 @@ class Players extends React.Component {
 					title={note ? note.note : ''}
 					className={
 						note
-							? playerNotesActive.length ? 'large window minus icon playernote has-note' : 'large edit icon playernote has-note'
+							? playerNotesActive.length
+								? 'large window minus icon playernote has-note'
+								: 'large edit icon playernote has-note'
 							: 'large edit icon playernote'
 					}
 				/>
@@ -196,6 +198,14 @@ class Players extends React.Component {
 				}
 			};
 
+			const isHost = userName === gameInfo.general.host;
+
+			const prependHostIcon = () => {
+				if (isHost && !gameInfo.general.blindMode) {
+					return <img className="small-host-icon" src="../images/host-icon.png" />;
+				}
+			};
+
 			const prependCrowns = str => (
 				<span>
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
@@ -211,15 +221,22 @@ class Players extends React.Component {
 				</span>
 			);
 
+			const prependAllIcons = str => (
+				<div>
+					{prependHostIcon()}
+					{prependCrowns(str)}
+				</div>
+			);
+
 			if (player.isPrivate && !userInfo.staffRole && !userInfo.isSeated) {
-				return prependCrowns('Anonymous');
+				return prependAllIcons('Anonymous');
 			}
 
 			if (gameState.isTracksFlipped) {
-				return prependCrowns(`${i + 1}. ${userName}`);
+				return prependAllIcons(`${i + 1}. ${userName}`);
 			}
 
-			return prependCrowns(userName);
+			return prependAllIcons(userName);
 		};
 
 		return publicPlayersState.map((player, i) => (
@@ -231,14 +248,14 @@ class Players extends React.Component {
 					player.kicked
 						? { backgroundImage: `url(../images/empty_seat.png)` }
 						: player.customCardback &&
-							!isBlind &&
-							(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+						  !isBlind &&
+						  (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 							? {
 									backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-								}
+							  }
 							: {
 									backgroundImage: `url(../images/default_cardback.png)`
-								}
+							  }
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -303,7 +320,6 @@ class Players extends React.Component {
 						return classes;
 					})()}
 				>
-					{player.userName === gameInfo.general.host && !gameInfo.general.blindMode && <img className="small-host-icon" src="../images/host-icon.png" />}{' '}
 					{renderPlayerName(player, i)}
 				</div>
 				{this.renderSeatButtons(i)}
@@ -680,4 +696,7 @@ Players.propTypes = {
 	playerNotesActive: PropTypes.string
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Players);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Players);

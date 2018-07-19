@@ -412,7 +412,7 @@ const DisplayLobbies = props => {
 						<div className="gamename-column">
 							{renderFlag()}
 							{game.name}
-							{!game.blindMode && !game.private && <span style={{ color: 'rgb(194, 107, 238)', float: 'right' }}>{` Host: ${game.host}`}</span>}
+							{!game.blindMode && !game.private && <span style={{ color: '#00807f', float: 'right' }}>{` Host: ${game.host}`}</span>}
 						</div>
 						<div className="options-column experienced">{optionIcons()}</div>
 					</div>

@@ -38,6 +38,8 @@ module.exports.hostRemake = (passport, game) => {
 		return;
 	}
 
+	game.general.isRemaking = true;
+
 	const { publicPlayersState } = game;
 	const newGame = _.cloneDeep(game);
 	const remakePlayerNames = publicPlayersState.filter(player => !player.leftGame).map(player => player.userName);
@@ -45,8 +47,6 @@ module.exports.hostRemake = (passport, game) => {
 		socketId =>
 			io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 	);
-
-	game.general.isRemaking = true;
 
 	newGame.gameState = {
 		previousElectedGovernment: [],
