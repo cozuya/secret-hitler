@@ -56,7 +56,7 @@ list.forEach(user => {
 			if (key !== undefined) counts[key] = counts[key] ? counts[key] + 1 : 1;
 		});
 	}
-	//counts[amt] = counts[amt] ? (counts[amt]+1) : 1;
+	// counts[amt] = counts[amt] ? (counts[amt]+1) : 1;
 });
 
 Object.keys(counts).forEach(key => console.log(`${key}: ${counts[key]}`));
