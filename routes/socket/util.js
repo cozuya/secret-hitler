@@ -94,15 +94,17 @@ module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
 
 	if (roomSockets.length) {
 		roomSockets.forEach(sock => {
-			const { user } = sock.handshake.session.passport;
-			if (game.private.hiddenInfoSubscriptions.includes(user)) {
-				// AEM status is ensured when adding to the subscription list
-				if (!specificUser) {
-					// single message
-					sock.emit('gameModChat', chat);
-				} else if (specificUser === user) {
-					// list of messages
-					chat.forEach(msg => sock.emit('gameModChat', msg));
+			if (sock.handshake.passport && sock.handshake.passport.user) {
+				const { user } = sock.handshake.session.passport;
+				if (game.private.hiddenInfoSubscriptions.includes(user)) {
+					// AEM status is ensured when adding to the subscription list
+					if (!specificUser) {
+						// single message
+						sock.emit('gameModChat', chat);
+					} else if (specificUser === user) {
+						// list of messages
+						chat.forEach(msg => sock.emit('gameModChat', msg));
+					}
 				}
 			}
 		});
