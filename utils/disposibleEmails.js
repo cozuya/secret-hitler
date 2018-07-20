@@ -2501,6 +2501,7 @@ module.exports = [
 	'nutpa.net',
 	'nuts2trade.com',
 	'nwldx.com',
+	'nwytg.net',
 	'ny7.me',
 	'o.spamtrap.ro',
 	'o060bgr3qg.com',
