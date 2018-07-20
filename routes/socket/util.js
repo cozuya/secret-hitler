@@ -60,17 +60,53 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 		}
 	});
 
-	observerSockets.forEach(sock => {
-		const _game = Object.assign({}, game);
+	let chatWithHidden = game.chats;
+	if (!noChats && game.private && game.private.hiddenInfoChat && game.private.hiddenInfoSubscriptions.length) {
+		chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];
+	}
+	if (observerSockets.length) {
+		observerSockets.forEach(sock => {
+			const _game = Object.assign({}, game);
+			const user = sock.handshake.session.passport ? sock.handshake.session.passport.user : null;
 
-		if (noChats) {
-			delete _game.chats;
-			sock.emit('gameUpdate', secureGame(_game), true);
-		} else {
-			_game.chats = combineInProgressChats(_game);
-			sock.emit('gameUpdate', secureGame(_game));
-		}
-	});
+			if (noChats) {
+				delete _game.chats;
+				sock.emit('gameUpdate', secureGame(_game), true);
+			} else if (user && game.private && game.private.hiddenInfoSubscriptions && game.private.hiddenInfoSubscriptions.includes(user)) {
+				// AEM status is ensured when adding to the subscription list
+				_game.chats = chatWithHidden;
+				_game.chats = combineInProgressChats(_game);
+				sock.emit('gameUpdate', secureGame(_game));
+			} else {
+				_game.chats = combineInProgressChats(_game);
+				sock.emit('gameUpdate', secureGame(_game));
+			}
+		});
+	}
+};
+
+module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		return;
+	}
+
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+
+	if (roomSockets.length) {
+		roomSockets.forEach(sock => {
+			const { user } = sock.handshake.session.passport;
+			if (game.private.hiddenInfoSubscriptions.includes(user)) {
+				// AEM status is ensured when adding to the subscription list
+				if (!specificUser) {
+					// single message
+					sock.emit('gameModChat', chat);
+				} else if (specificUser === user) {
+					// list of messages
+					chat.forEach(msg => sock.emit('gameModChat', msg));
+				}
+			}
+		});
+	}
 };
 
 module.exports.sendPlayerChatUpdate = (game, chat) => {

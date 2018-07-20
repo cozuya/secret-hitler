@@ -14,13 +14,14 @@ const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
-const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
+const { sendInProgressGameUpdate, sendPlayerChatUpdate, sendInProgressModChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
+const { makeReport } = require('./report.js');
 
 /**
  * @param {object} game - game to act on.
@@ -524,7 +525,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	const user = userList.find(obj => obj.userName === passport.user);
 	const currentTime = new Date();
 
-	if (!user || currentTime - user.timeLastGameCreated < 8000) {
+	if (!user || currentTime - user.timeLastGameCreated < 8000 || user.status.type !== 'none') {
 		// Check if !user here in case of bug where user doesn't appear on userList
 		return;
 	}
@@ -1555,6 +1556,25 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 		.catch(err => {
 			console.log(err);
 		});
+};
+
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} game - game reference.
+ */
+module.exports.handleSubscribeModChat = (socket, passport, game) => {
+	// Authentication Assured in routes.js
+
+	if (game.private.hiddenInfoSubscriptions.includes(passport.user)) return;
+
+	if (game.private.hiddenInfoShouldNotify) {
+		makeReport(`AEM user ${passport.user} has subscribed to mod chat for a game without an auto-report.`, game);
+		game.private.hiddenInfoShouldNotify = false;
+	}
+
+	game.private.hiddenInfoSubscriptions.push(passport.user);
+	sendInProgressModChatUpdate(game, game.private.hiddenInfoChat, passport.user);
 };
 
 /**
