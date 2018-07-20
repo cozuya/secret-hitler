@@ -40,15 +40,20 @@ module.exports.profiles = (() => {
 })();
 
 module.exports.formattedUserList = () => {
+	const prune = value => {
+		// Converts things like zero and null to undefined to remove it from the sent data.
+		return value ? value : undefined;
+	};
+
 	return module.exports.userList.map(user => ({
 		userName: user.userName,
-		wins: user.wins,
-		losses: user.losses,
-		rainbowWins: user.rainbowWins,
-		rainbowLosses: user.rainbowLosses,
-		isPrivate: user.isPrivate,
-		staffDisableVisibleElo: user.staffDisableVisibleElo,
-		staffDisableStaffColor: user.staffDisableStaffColor,
+		wins: prune(user.wins),
+		losses: prune(user.losses),
+		rainbowWins: prune(user.rainbowWins),
+		rainbowLosses: prune(user.rainbowLosses),
+		isPrivate: prune(user.isPrivate),
+		staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
+		staffDisableStaffColor: prune(user.staffDisableStaffColor),
 
 		// Tournaments are disabled, no point sending this.
 		// tournyWins: user.tournyWins,
@@ -57,30 +62,31 @@ module.exports.formattedUserList = () => {
 		// blacklist: user.blacklist,
 		customCardback: user.customCardback,
 		customCardbackUid: user.customCardbackUid,
-		eloOverall: user.eloOverall ? user.eloOverall.toFixed(0) : null,
-		eloSeason: user.eloSeason ? user.eloSeason.toFixed(0) : null,
-		status: user.status,
-		winsSeason2: user.winsSeason2,
-		lossesSeason2: user.lossesSeason2,
-		rainbowWinsSeason2: user.rainbowWinsSeason2,
-		rainbowLossesSeason2: user.rainbowLossesSeason2,
-		winsSeason3: user.winsSeason3,
-		lossesSeason3: user.lossesSeason3,
-		rainbowWinsSeason3: user.rainbowWinsSeason3,
-		rainbowLossesSeason3: user.rainbowLossesSeason3,
+		eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
+		eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
+		status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
+		winsSeason2: prune(user.winsSeason2),
+		lossesSeason2: prune(user.lossesSeason2),
+		rainbowWinsSeason2: prune(user.rainbowWinsSeason2),
+		rainbowLossesSeason2: prune(user.rainbowLossesSeason2),
+		winsSeason3: prune(user.winsSeason3),
+		lossesSeason3: prune(user.lossesSeason3),
+		rainbowWinsSeason3: prune(user.rainbowWinsSeason3),
+		rainbowLossesSeason3: prune(user.rainbowLossesSeason3),
 		previousSeasonAward: user.previousSeasonAward,
 		timeLastGameCreated: user.timeLastGameCreated,
-		staffRole: user.staffRole
+		staffRole: prune(user.staffRole)
 		// oldData: user
 	}));
 };
 
 const userListEmitter = {
-	state: 1,
+	state: 0,
 	send: false,
 	timer: setInterval(() => {
+		// 0.01s delay per user (1s per 100), always delay
 		if (!userListEmitter.send) {
-			userListEmitter.state = 9;
+			userListEmitter.state = module.exports.userList.length / 10;
 			return;
 		}
 		if (userListEmitter.state > 0) userListEmitter.state--;
@@ -94,5 +100,67 @@ const userListEmitter = {
 };
 
 module.exports.userListEmitter = userListEmitter;
+
+module.exports.formattedGameList = () => {
+	return module.exports.games.map(game => ({
+		name: game.general.name,
+		flag: game.general.flag,
+		userNames: game.publicPlayersState.map(val => val.userName),
+		customCardback: game.publicPlayersState.map(val => val.customCardback),
+		customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
+		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
+		seatedCount: game.publicPlayersState.length,
+		gameCreatorName: game.general.gameCreatorName,
+		minPlayersCount: game.general.minPlayersCount,
+		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
+		excludedPlayerCount: game.general.excludedPlayerCount,
+		casualGame: game.general.casualGame || undefined,
+		eloMinimum: game.general.eloMinimum || undefined,
+		isVerifiedOnly: game.general.isVerifiedOnly || undefined,
+		isTourny: game.general.isTourny || undefined,
+		timedMode: game.general.timedMode || undefined,
+		tournyStatus: (() => {
+			if (game.general.isTourny) {
+				if (game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length) {
+					return {
+						queuedPlayers: game.general.tournyInfo.queuedPlayers.length
+					};
+				}
+			}
+			return undefined;
+		})(),
+		experiencedMode: game.general.experiencedMode || undefined,
+		disableChat: game.general.disableChat || undefined,
+		disableGamechat: game.general.disableGamechat || undefined,
+		blindMode: game.general.blindMode || undefined,
+		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
+		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
+		electionCount: game.general.electionCount,
+		rebalance6p: game.general.rebalance6p || undefined,
+		rebalance7p: game.general.rebalance7p || undefined,
+		rebalance9p: game.general.rerebalance9p || undefined,
+		privateOnly: game.general.privateOnly || undefined,
+		private: game.general.private || undefined,
+		uid: game.general.uid,
+		rainbowgame: game.general.rainbowgame || undefined
+	}));
+};
+
+const gameListEmitter = {
+	state: 0,
+	send: false,
+	timer: setInterval(() => {
+		// 3 second delay, instant send
+		if (gameListEmitter.state > 0) gameListEmitter.state--;
+		else {
+			if (!gameListEmitter.send) return;
+			gameListEmitter.send = false;
+			io.sockets.emit('gameList', module.exports.formattedGameList());
+			gameListEmitter.state = 30;
+		}
+	}, 100)
+};
+
+module.exports.gameListEmitter = gameListEmitter;
 
 module.exports.AEM = Account.find({ staffRole: { $exists: true } });
