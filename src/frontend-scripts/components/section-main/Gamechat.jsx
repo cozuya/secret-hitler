@@ -570,6 +570,7 @@ class Gamechat extends React.Component {
 		};
 		const isStaff = Boolean(userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'contributor');
 		const hasNoAEM = players => {
+			if (!userList || !userList.list) return false;
 			return userList.list.every(user => {
 				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'contributor') return false;
 				else return true;
