@@ -552,7 +552,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	if (data.eloSliderValue && user.eloSeason < data.eloSliderValue) {
+	if (data.eloSliderValue && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
 		return;
 	}
 
@@ -1530,11 +1530,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			const currentPrivate = account.gameSettings.isPrivate;
 
 			for (const setting in data) {
-				if (
-					setting !== 'blacklist' ||
-					(account.gameSettings.blacklist && account.gameSettings.blacklist.length < 10) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole)
-				) {
+				if (setting !== 'blacklist' || (setting === 'blacklist' && data[setting].length <= 10) || (setting === 'staffDisableVisibleElo' && account.staffRole)) {
 					account.gameSettings[setting] = data[setting];
 				}
 			}
@@ -1571,6 +1567,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
  */
 module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
 	// Authentication Assured in routes.js
+
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
@@ -1671,28 +1668,26 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			 * @param {string} username - name of user.
 			 */
 			const banAccount = username => {
-				if (!isSuperMod) {
-					Account.findOne({ username })
-						.then(account => {
-							if (account) {
-								// account.hash = crypto.randomBytes(20).toString('hex');
-								// account.salt = crypto.randomBytes(20).toString('hex');
-								account.isBanned = true;
-								account.save(() => {
-									const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
+				Account.findOne({ username })
+					.then(account => {
+						if (account) {
+							// account.hash = crypto.randomBytes(20).toString('hex');
+							// account.salt = crypto.randomBytes(20).toString('hex');
+							account.isBanned = true;
+							account.save(() => {
+								const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
 
-									bannedAccountGeneralChats.reverse().forEach(chat => {
-										generalChats.list.splice(generalChats.list.indexOf(chat), 1);
-									});
-									logOutUser(username);
-									io.sockets.emit('generalChats', generalChats);
+								bannedAccountGeneralChats.reverse().forEach(chat => {
+									generalChats.list.splice(generalChats.list.indexOf(chat), 1);
 								});
-							}
-						})
-						.catch(err => {
-							console.log(err, 'ban user err');
-						});
-				}
+								logOutUser(username);
+								io.sockets.emit('generalChats', generalChats);
+							});
+						}
+					})
+					.catch(err => {
+						console.log(err, 'ban user err');
+					});
 			};
 
 			switch (data.action) {

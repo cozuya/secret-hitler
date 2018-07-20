@@ -237,13 +237,12 @@ module.exports = () => {
 						req.headers['X-Forwarded-For'] ||
 						req.headers['x-forwarded-for'] ||
 						req.connection.remoteAddress,
-					type: 'tiny' || 'small' || 'big'
+					type: { $in: ['tiny', 'small', 'big'] }
 				},
 				(err, ips) => {
 					let date;
 					let unbannedTime;
 					const ip = ips[ips.length - 1];
-
 					// const ip2 =
 					// 	req.headers['x-real-ip'] ||
 					// 	req.headers['X-Real-IP'] ||
