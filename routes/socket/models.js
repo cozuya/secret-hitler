@@ -40,15 +40,20 @@ module.exports.profiles = (() => {
 })();
 
 module.exports.formattedUserList = () => {
+	const prune = value => {
+		// Converts things like zero and null to undefined to remove it from the sent data.
+		return value ? value : undefined;
+	};
+
 	return module.exports.userList.map(user => ({
 		userName: user.userName,
-		wins: user.wins,
-		losses: user.losses,
-		rainbowWins: user.rainbowWins,
-		rainbowLosses: user.rainbowLosses,
-		isPrivate: user.isPrivate ? true : undefined,
-		staffDisableVisibleElo: user.staffDisableVisibleElo,
-		staffDisableStaffColor: user.staffDisableStaffColor,
+		wins: prune(user.wins),
+		losses: prune(user.losses),
+		rainbowWins: prune(user.rainbowWins),
+		rainbowLosses: prune(user.rainbowLosses),
+		isPrivate: prune(user.isPrivate),
+		staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
+		staffDisableStaffColor: prune(user.staffDisableStaffColor),
 
 		// Tournaments are disabled, no point sending this.
 		// tournyWins: user.tournyWins,
@@ -59,18 +64,18 @@ module.exports.formattedUserList = () => {
 		customCardbackUid: user.customCardbackUid,
 		eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
 		eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
-		status: user.status,
-		winsSeason2: user.winsSeason2,
-		lossesSeason2: user.lossesSeason2,
-		rainbowWinsSeason2: user.rainbowWinsSeason2,
-		rainbowLossesSeason2: user.rainbowLossesSeason2,
-		winsSeason3: user.winsSeason3,
-		lossesSeason3: user.lossesSeason3,
-		rainbowWinsSeason3: user.rainbowWinsSeason3,
-		rainbowLossesSeason3: user.rainbowLossesSeason3,
+		status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
+		winsSeason2: prune(user.winsSeason2),
+		lossesSeason2: prune(user.lossesSeason2),
+		rainbowWinsSeason2: prune(user.rainbowWinsSeason2),
+		rainbowLossesSeason2: prune(user.rainbowLossesSeason2),
+		winsSeason3: prune(user.winsSeason3),
+		lossesSeason3: prune(user.lossesSeason3),
+		rainbowWinsSeason3: prune(user.rainbowWinsSeason3),
+		rainbowLossesSeason3: prune(user.rainbowLossesSeason3),
 		previousSeasonAward: user.previousSeasonAward,
 		timeLastGameCreated: user.timeLastGameCreated,
-		staffRole: user.staffRole ? user.staffRole : undefined
+		staffRole: prune(user.staffRole)
 		// oldData: user
 	}));
 };
