@@ -439,7 +439,7 @@ const updateSeatedUser = (socket, passport, data) => {
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
 		const isBlacklistSafe = !game.general.gameCreatorBlacklist.includes(passport.user);
-		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason;
+		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
 
 		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum) {
 			const { publicPlayersState } = game;
@@ -553,7 +553,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	if (data.eloSliderValue && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
+	if (data.eloSliderValue && user.eloOverallata.eloSliderValue) {
 		return;
 	}
 
