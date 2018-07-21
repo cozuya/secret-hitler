@@ -32,7 +32,7 @@ module.exports.getPrefixFromRole = (role, modView) => {
 
 	// Shown in user list in mod view
 	if (role === 'altmod') return '{M*}';
-	if (role === 'contributor') return '{C}';
+	if (role === 'contributor') return '{C*}';
 	return null;
 };
 

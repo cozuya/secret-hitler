@@ -100,12 +100,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 		const { passport } = socket.handshake.session;
 		const authenticated = ensureAuthenticated(socket);
 
-		let isAEM = false;
-		if (authenticated && passport && passport.user) {
-			Account.findOne({ username: passport.user }).then(account => {
-				if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'contributor') isAEM = true;
-			});
-		}
+		const isAEM = authenticated && getRoleFromName(passport.user) > 0;
 
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
@@ -242,13 +237,8 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				if (authenticated && isAEM) {
 					const game = findGame({ uid });
 					if (game && game.private && game.private.seatedPlayers) {
-						const players = game.private.seatedPlayers.map(player => player.userName);
-						Account.find({ staffRole: { $exists: true } }).then(accounts => {
-							const hasAEM = accounts.some(acc => {
-								return acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'contributor' && players.includes(acc.username);
-							});
-							if (!hasAEM) handleSubscribeModChat(socket, passport, game);
-						});
+						const hasAEM = game.private.seatedPlayers.map(player => player.userName).some(n => getPowerFromName(n) >= 0);
+						if (!hasAEM) handleSubscribeModChat(socket, passport, game);
 					}
 				}
 			})
