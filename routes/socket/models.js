@@ -29,12 +29,9 @@ module.exports.getPowerFromName = name => {
 	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
 
-	let role = null;
-	module.exports.userList.forEach(user => {
-		if (user.userName === name) role = user.staffRole;
-	});
-
-	return getPowerFromRole(role);
+	const user = module.exports.userList.find(user => user.userName === name);
+	if (user) return getPowerFromRole(user.staffRole);
+	else return -1;
 };
 
 module.exports.getPowerFromUser = user => {
