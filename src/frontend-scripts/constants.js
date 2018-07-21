@@ -59,6 +59,8 @@ module.exports.LEGALCHARACTERS = text => {
 	return pass;
 };
 
+const { getRoleFromName, getPowerFromRole } = require('../../routes/socket/models');
+
 /**
  * @param {object} user - user from userlist.
  * @param {boolean} isSeasonal - whether or not to display seasonal colors.
@@ -67,12 +69,13 @@ module.exports.LEGALCHARACTERS = text => {
  * @return {string} list of classes for colors.
  */
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
-	if (Boolean(user.staffRole && user.staffRole.length) && !user.staffDisableStaffColor) {
+	const role = getRoleFromName(user);
+	if (role || !user.staffDisableStaffColor) {
 		return cn(defaultClass, {
-			admin: user.staffRole === 'admin',
-			moderatorcolor: user.staffRole === 'moderator',
-			editorcolor: user.staffRole === 'editor',
-			contributer: user.staffRole === 'contributor',
+			admin: role === 'admin',
+			editorcolor: role === 'editor',
+			moderatorcolor: role === 'moderator',
+			contributer: role === 'contributor',
 			cbell: user.userName === 'cbell',
 			jdudle3: user.userName === 'jdudle3',
 			max: user.userName === 'Max',

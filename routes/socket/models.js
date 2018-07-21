@@ -21,6 +21,19 @@ Account.find({ staffRole: { $exists: true } }).then(accounts => {
 	accounts.forEach(user => (staffList[user.username] = user.staffRole));
 });
 
+module.exports.getPrefixFromRole = (role, modView) => {
+	// Shown almost everywhere
+	if (role === 'admin') return '{A}';
+	if (role === 'editor') return '{E}';
+	if (role === 'moderator') return '{M}';
+	if (!modView) return null;
+
+	// Shown in user list in mod view
+	if (role === 'altmod') return '{M*}';
+	if (role === 'contributor') return '{C}';
+	return null;
+};
+
 module.exports.getPowerFromRole = role => {
 	if (role === 'admin') return 3;
 	if (role === 'editor') return 2;
@@ -30,14 +43,19 @@ module.exports.getPowerFromRole = role => {
 	return -1;
 };
 
-module.exports.getPowerFromName = name => {
-	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
-	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
+module.exports.getRoleFromName = name => {
+	if (module.exports.newStaff.editorUserNames.includes(name)) return 'editor';
+	if (module.exports.newStaff.modUserNames.includes(name)) return 'moderator';
 
 	const user = module.exports.userList.find(user => user.userName === name);
-	if (user) return getPowerFromRole(user.staffRole);
-	else if (staffList[name]) return getPowerFromRole(staffList[name]);
-	else return -1;
+	if (user) return user.staffRole;
+	else if (staffList[name]) return staffList[name];
+	else return null;
+};
+
+// Convenience function.
+module.exports.getPowerFromName = name => {
+	return getPowerFromRole(getRoleFromName(name));
 };
 
 module.exports.getPowerFromUser = user => {
