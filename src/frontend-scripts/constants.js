@@ -69,13 +69,12 @@ const { getRoleFromName } = require('../../routes/socket/models');
  * @return {string} list of classes for colors.
  */
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
-	const role = getRoleFromName(user);
-	if (role && role !== 'altmod' && !user.staffDisableStaffColor) {
+	if (Boolean(user.staffRole && user.staffRole.length) && !user.staffDisableStaffColor) {
 		return cn(defaultClass, {
-			admin: role === 'admin',
-			editorcolor: role === 'editor',
-			moderatorcolor: role === 'moderator',
-			contributer: role === 'contributor',
+			admin: user.staffRole === 'admin',
+			editorcolor: user.staffRole === 'editor',
+			moderatorcolor: user.staffRole === 'moderator',
+			contributer: user.staffRole === 'contributor',
 			cbell: user.userName === 'cbell',
 			jdudle3: user.userName === 'jdudle3',
 			max: user.userName === 'Max',
