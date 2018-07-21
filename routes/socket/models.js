@@ -16,6 +16,11 @@ module.exports.newStaff = {
 	editorUserNames: []
 };
 
+const staffList = [];
+Account.find({ staffRole: { $exists: true } }).then(accounts => {
+	accounts.forEach(user => (staffList[user.username] = user.staffRole));
+});
+
 module.exports.getPowerFromRole = role => {
 	if (role === 'admin') return 3;
 	if (role === 'editor') return 2;
@@ -31,6 +36,7 @@ module.exports.getPowerFromName = name => {
 
 	const user = module.exports.userList.find(user => user.userName === name);
 	if (user) return getPowerFromRole(user.staffRole);
+	else if (staffList[name]) return getPowerFromRole(staffList[name]);
 	else return -1;
 };
 
