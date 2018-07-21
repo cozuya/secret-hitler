@@ -11,10 +11,6 @@ module.exports.accountCreationDisabled = { status: false };
 module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
 module.exports.currentSeasonNumber = CURRENTSEASONNUMBER;
-module.exports.newStaff = {
-	modUserNames: [],
-	editorUserNames: []
-};
 
 const AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy', 'Grim', 'TermsOfUse'];
 
