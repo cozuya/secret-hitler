@@ -44,26 +44,14 @@ module.exports.getPowerFromRole = role => {
 
 module.exports.getRoleFromName = name => {
 	if (AEM_ALTS.includes(name)) return 'altmod';
-
-	if (module.exports.newStaff.editorUserNames.includes(name)) return 'editor';
-	if (module.exports.newStaff.modUserNames.includes(name)) return 'moderator';
-
 	const user = module.exports.userList.find(user => user.userName === name);
 	if (user) return user.staffRole;
-	else if (staffList[name]) return staffList[name];
-	else return null;
+	else return staffList[name];
 };
 
 // Convenience function.
 module.exports.getPowerFromName = name => {
 	return getPowerFromRole(getRoleFromName(name));
-};
-
-module.exports.getPowerFromUser = user => {
-	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
-	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
-	if (AEM_ALTS.includes(user.userName)) return getPowerFromRole('altmod');
-	return getPowerFromRole(user.staffRole);
 };
 
 // set of profiles, no duplicate usernames
