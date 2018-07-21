@@ -236,7 +236,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				if (authenticated && isAEM) {
 					const game = findGame({ uid });
 					if (game && game.private && game.private.seatedPlayers) {
-						const hasAEM = game.private.seatedPlayers.map(player => player.userName).some(n => getPowerFromName(n) >= 0);
+						const hasAEM = game.private.seatedPlayers.map(player => getPowerFromName(player.userName) >= 0);
 						if (!hasAEM) handleSubscribeModChat(socket, passport, game);
 					}
 				}

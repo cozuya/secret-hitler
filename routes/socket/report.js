@@ -2,7 +2,7 @@ const https = require('https');
 const { getPowerFromName } = require('./models');
 
 module.exports.makeReport = (text, game, gameEnd) => {
-	const isStaff = game.private.seatedPlayers.map(player => player.userName).some(n => getPowerFromName(n) >= 0);
+	const isStaff = game.private.seatedPlayers.some(user => getPowerFromName(user.userName) >= 0);
 
 	if (!gameEnd && isStaff) {
 		if (!game.unsentReports) game.unsentReports = [];
