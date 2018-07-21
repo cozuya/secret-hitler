@@ -33,10 +33,15 @@ module.exports.getPowerFromName = name => {
 	module.exports.userList.forEach(user => {
 		if (user.userName === name) role = user.staffRole;
 	});
+
 	return getPowerFromRole(role);
 };
 
-module.exports.getPowerFromUser = user => getPowerFromRole(user.staffRole);
+module.exports.getPowerFromUser = user => {
+	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
+	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
+	return getPowerFromRole(user.staffRole);
+};
 
 // set of profiles, no duplicate usernames
 /**
