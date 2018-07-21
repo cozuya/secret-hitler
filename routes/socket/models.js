@@ -16,6 +16,28 @@ module.exports.newStaff = {
 	editorUserNames: []
 };
 
+module.exports.getPowerFromRole = role => {
+	if (role === 'admin') return 3;
+	if (role === 'editor') return 2;
+	if (role === 'moderator') return 1;
+	if (role === 'altmod') return 0; // Report AEM delays will check for >= 0
+	if (role === 'contributor') return -1;
+	return -1;
+};
+
+module.exports.getPowerFromName = name => {
+	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
+	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
+
+	let role = null;
+	module.exports.userList.forEach(user => {
+		if (user.userName === name) role = user.staffRole;
+	});
+	return getPowerFromRole(role);
+};
+
+module.exports.getPowerFromUser = user => getPowerFromRole(user.staffRole);
+
 // set of profiles, no duplicate usernames
 /**
  * @return // todo
