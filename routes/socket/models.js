@@ -16,6 +16,8 @@ module.exports.newStaff = {
 	editorUserNames: []
 };
 
+const AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy', 'Grim', 'TermsOfUse'];
+
 const staffList = [];
 Account.find({ staffRole: { $exists: true } }).then(accounts => {
 	accounts.forEach(user => (staffList[user.username] = user.staffRole));
@@ -44,6 +46,8 @@ module.exports.getPowerFromRole = role => {
 };
 
 module.exports.getRoleFromName = name => {
+	if (AEM_ALTS.includes(name)) return 'altmod';
+
 	if (module.exports.newStaff.editorUserNames.includes(name)) return 'editor';
 	if (module.exports.newStaff.modUserNames.includes(name)) return 'moderator';
 
@@ -61,6 +65,7 @@ module.exports.getPowerFromName = name => {
 module.exports.getPowerFromUser = user => {
 	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
+	if (AEM_ALTS.includes(user.userName)) return getPowerFromRole('altmod');
 	return getPowerFromRole(user.staffRole);
 };
 

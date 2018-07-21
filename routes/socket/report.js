@@ -1,8 +1,5 @@
 const https = require('https');
-const Account = require('../../models/account');
-const { newStaff, getPowerFromName } = require('./models');
-
-const AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy', 'Grim', 'TermsOfUse'];
+const { getPowerFromName } = require('./models');
 
 module.exports.makeReport = (text, game, gameEnd) => {
 	const isStaff = game.private.seatedPlayers.map(player => player.userName).some(n => getPowerFromName(n) >= 0);

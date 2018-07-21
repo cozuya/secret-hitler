@@ -59,7 +59,7 @@ module.exports.LEGALCHARACTERS = text => {
 	return pass;
 };
 
-const { getRoleFromName, getPowerFromRole } = require('../../routes/socket/models');
+const { getRoleFromName } = require('../../routes/socket/models');
 
 /**
  * @param {object} user - user from userlist.
