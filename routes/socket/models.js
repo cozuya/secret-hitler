@@ -22,6 +22,7 @@ const staffList = [];
 Account.find({ staffRole: { $exists: true } }).then(accounts => {
 	accounts.forEach(user => (staffList[user.username] = user.staffRole));
 });
+module.exports.staffList = staffList;
 
 module.exports.getPrefixFromRole = (role, modView) => {
 	// Shown almost everywhere

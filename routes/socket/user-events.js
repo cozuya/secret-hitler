@@ -1,6 +1,6 @@
 let generalChatCount = 0;
 
-const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, newStaff } = require('./models');
+const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, staffList } = require('./models');
 const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const Account = require('../../models/account');
 const Generalchats = require('../../models/generalchats');
@@ -1588,6 +1588,9 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
 	// Authentication Assured in routes.js
 
+	const myPower = getPowerFromName(passport.user);
+	if (myPower <= 0) return; // Should never happen, just a defensive check.
+
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
@@ -1635,305 +1638,336 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		return;
 	}
 
-	const isSuperMod = superModUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+	const otherPower = data.userName ? getPowerFromName(data.userName) : -1;
 
 	const affectedSocketId = Object.keys(io.sockets.sockets).find(
 		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 	);
 
-	if (
-		modUserNames.includes(passport.user) ||
-		superModUserNames.includes(passport.user) ||
-		newStaff.modUserNames.includes(passport.user) ||
-		newStaff.editorUserNames.includes(passport.user)
-	) {
-		if (data.isReportResolveChange) {
-			PlayerReport.findOne({ _id: data._id })
-				.then(report => {
-					if (report) {
-						report.isActive = !report.isActive;
-						report.save(() => {
-							sendUserReports(socket);
+	if (data.isReportResolveChange) {
+		PlayerReport.findOne({ _id: data._id })
+			.then(report => {
+				if (report) {
+					report.isActive = !report.isActive;
+					report.save(() => {
+						sendUserReports(socket);
+					});
+				}
+			})
+			.catch(err => {
+				console.log(err, 'err in finding player report');
+			});
+	} else {
+		const modaction = new ModAction({
+			date: new Date(),
+			modUserName: passport.user,
+			userActedOn: data.userName,
+			modNotes: data.comment,
+			ip: data.ip,
+			actionTaken: typeof data.action === 'string' ? data.action : data.action.type
+		});
+		/**
+		 * @param {string} username - name of user.
+		 */
+		const logOutUser = username => {
+			const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
+
+			if (io.sockets.sockets[affectedSocketId]) {
+				io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+			}
+
+			if (bannedUserlistIndex >= 0) {
+				userList.splice(bannedUserlistIndex, 1);
+			}
+		};
+
+		/**
+		 * @param {string} username - name of user.
+		 */
+		const banAccount = username => {
+			Account.findOne({ username })
+				.then(account => {
+					if (account) {
+						// account.hash = crypto.randomBytes(20).toString('hex');
+						// account.salt = crypto.randomBytes(20).toString('hex');
+						account.isBanned = true;
+						account.save(() => {
+							const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
+
+							bannedAccountGeneralChats.reverse().forEach(chat => {
+								generalChats.list.splice(generalChats.list.indexOf(chat), 1);
+							});
+							logOutUser(username);
+							io.sockets.emit('generalChats', generalChats);
 						});
 					}
 				})
 				.catch(err => {
-					console.log(err, 'err in finding player report');
+					console.log(err, 'ban user err');
 				});
-		} else {
-			const modaction = new ModAction({
-				date: new Date(),
-				modUserName: passport.user,
-				userActedOn: data.userName,
-				modNotes: data.comment,
-				ip: data.ip,
-				actionTaken: typeof data.action === 'string' ? data.action : data.action.type
-			});
-			/**
-			 * @param {string} username - name of user.
-			 */
-			const logOutUser = username => {
-				const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
+		};
 
-				if (io.sockets.sockets[affectedSocketId]) {
-					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+		switch (data.action) {
+			case 'setVerified':
+				Account.findOne({ username: data.userName }).then(account => {
+					if (account) {
+						account.verified = true;
+						account.verification.email = 'mod@VERIFIEDVIAMOD.info';
+						account.save();
+					} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+				});
+				break;
+
+			case 'getIP':
+				if (myPower >= 2) {
+					socket.emit('sendAlert', `Requested IP: ${data.ip}`);
+				} else {
+					socket.emit('sendAlert', 'Only editors and admins can request a raw IP.');
+					return;
+				}
+				break;
+			case 'deleteUser':
+				if (myPower >= 2) {
+					Account.findOne({ username: data.userName }).remove(() => {
+						if (io.sockets.sockets[affectedSocketId]) {
+							io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+						}
+					});
+				} else {
+					socket.emit('sendAlert', 'Only editors and admins can delete users.');
+					return;
+				}
+				break;
+			case 'ban':
+				banAccount(data.userName);
+				break;
+			case 'deleteBio':
+				Account.findOne({ username: data.userName }).then(account => {
+					if (account) {
+						account.bio = '';
+						account.save();
+					} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+				});
+				break;
+			case 'setSticky':
+				generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+				io.sockets.emit('generalChats', generalChats);
+				break;
+			case 'broadcast':
+				const discordBroadcastBody = JSON.stringify({
+					content: `Text: ${data.comment}\nMod: ${passport.user}`
+				});
+				const discordBroadcastOptions = {
+					hostname: 'discordapp.com',
+					path: process.env.DISCORDBROADCASTURL,
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': Buffer.byteLength(discordBroadcastBody)
+					}
+				};
+				try {
+					const broadcastReq = https.request(discordBroadcastOptions);
+					broadcastReq.end(discordBroadcastBody);
+				} catch (e) {
+					console.log(e, 'err in broadcast');
+				}
+				games.forEach(game => {
+					game.chats.push({
+						userName: `[BROADCAST] ${data.modName}`,
+						chat: data.comment,
+						isBroadcast: true,
+						timestamp: new Date()
+					});
+				});
+				generalChats.list.push({
+					userName: `[BROADCAST] ${data.modName}`,
+					time: new Date(),
+					chat: data.comment,
+					isBroadcast: true
+				});
+
+				if (data.isSticky) {
+					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
 				}
 
-				if (bannedUserlistIndex >= 0) {
-					userList.splice(bannedUserlistIndex, 1);
-				}
-			};
+				io.sockets.emit('generalChats', generalChats);
+				break;
+			case 'ipban':
+				const ipban = new BannedIP({
+					bannedDate: new Date(),
+					type: 'small',
+					ip: data.ip
+				});
 
-			/**
-			 * @param {string} username - name of user.
-			 */
-			const banAccount = username => {
-				Account.findOne({ username })
+				ipban.save(() => {
+					Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+						if (users && users.length > 0) {
+							users.forEach(user => {
+								if (myPower >= 2) {
+									banAccount(user.username);
+								} else {
+									logOutUser(user.username);
+								}
+							});
+						}
+					});
+				});
+				break;
+			case 'timeOut':
+				const timeout = new BannedIP({
+					bannedDate: new Date(),
+					type: 'small',
+					ip: data.ip
+				});
+				timeout.save(() => {
+					Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+						if (users && users.length > 0) {
+							users.forEach(user => {
+								logOutUser(user.username);
+							});
+						}
+					});
+				});
+				break;
+			case 'timeOut2':
+				Account.findOne({ username: data.userName })
 					.then(account => {
 						if (account) {
-							// account.hash = crypto.randomBytes(20).toString('hex');
-							// account.salt = crypto.randomBytes(20).toString('hex');
-							account.isBanned = true;
+							account.isTimeout = new Date();
 							account.save(() => {
-								const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
-
-								bannedAccountGeneralChats.reverse().forEach(chat => {
-									generalChats.list.splice(generalChats.list.indexOf(chat), 1);
-								});
-								logOutUser(username);
-								io.sockets.emit('generalChats', generalChats);
+								logOutUser(data.userName);
 							});
+						} else {
+							socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 						}
 					})
 					.catch(err => {
-						console.log(err, 'ban user err');
+						console.log(err, 'timeout2 user err');
 					});
-			};
-
-			switch (data.action) {
-				case 'setVerified':
-					Account.findOne({ username: data.userName }).then(account => {
+				break;
+			case 'timeOut3':
+				const timeout3 = new BannedIP({
+					bannedDate: new Date(),
+					type: 'tiny',
+					ip: data.ip
+				});
+				timeout3.save(() => {
+					Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+						if (users && users.length > 0) {
+							users.forEach(user => {
+								logOutUser(user.username);
+							});
+						}
+					});
+				});
+				break;
+			case 'togglePrivate':
+				Account.findOne({ username: data.userName })
+					.then(account => {
 						if (account) {
-							account.verified = true;
-							account.verification.email = 'mod@VERIFIEDVIAMOD.info';
-							account.save();
-						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-					});
-					break;
+							const { isPrivate } = account.gameSettings;
 
-				case 'getIP':
-					if (isSuperMod) {
-						socket.emit('sendAlert', `Requested IP: ${data.ip}`);
-					} else {
-						socket.emit('sendAlert', 'Only editors and admins can request a raw IP.');
-						return;
-					}
-					break;
-				case 'deleteUser':
-					if (isSuperMod) {
-						Account.findOne({ username: data.userName }).remove(() => {
+							account.gameSettings.isPrivate = !isPrivate;
+							account.gameSettings.privateToggleTime = new Date().getTime();
+							account.save(() => {
+								logOutUser(data.userName);
+							});
+						} else {
+							socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+						}
+					})
+					.catch(err => {
+						console.log(err, 'private convert user err');
+					});
+				break;
+			case 'clearGenchat':
+				generalChats.list = [];
+
+				io.sockets.emit('generalChats', generalChats);
+				break;
+			case 'deleteProfile':
+				if (myPower >= 2) {
+					Profile.findOne({ _id: data.userName })
+						.remove(() => {
 							if (io.sockets.sockets[affectedSocketId]) {
 								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 							}
-						});
-					} else {
-						socket.emit('sendAlert', 'Only editors and admins can delete users.');
-						return;
-					}
-					break;
-				case 'ban':
-					banAccount(data.userName);
-					break;
-				case 'deleteBio':
-					Account.findOne({ username: data.userName }).then(account => {
-						if (account) {
-							account.bio = '';
-							account.save();
-						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-					});
-					break;
-				case 'setSticky':
-					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
-					io.sockets.emit('generalChats', generalChats);
-					break;
-				case 'broadcast':
-					const discordBroadcastBody = JSON.stringify({
-						content: `Text: ${data.comment}\nMod: ${passport.user}`
-					});
-					const discordBroadcastOptions = {
-						hostname: 'discordapp.com',
-						path: process.env.DISCORDBROADCASTURL,
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							'Content-Length': Buffer.byteLength(discordBroadcastBody)
-						}
-					};
-					try {
-						const broadcastReq = https.request(discordBroadcastOptions);
-						broadcastReq.end(discordBroadcastBody);
-					} catch (e) {
-						console.log(e, 'err in broadcast');
-					}
-					games.forEach(game => {
-						game.chats.push({
-							userName: `[BROADCAST] ${data.modName}`,
-							chat: data.comment,
-							isBroadcast: true,
-							timestamp: new Date()
-						});
-					});
-					generalChats.list.push({
-						userName: `[BROADCAST] ${data.modName}`,
-						time: new Date(),
-						chat: data.comment,
-						isBroadcast: true
-					});
-
-					if (data.isSticky) {
-						generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
-					}
-
-					io.sockets.emit('generalChats', generalChats);
-					break;
-				case 'ipban':
-					const ipban = new BannedIP({
-						bannedDate: new Date(),
-						type: 'small',
-						ip: data.ip
-					});
-
-					ipban.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
-							if (users && users.length > 0) {
-								users.forEach(user => {
-									if (isSuperMod) {
-										banAccount(user.username);
-									} else {
-										logOutUser(user.username);
-									}
-								});
-							}
-						});
-					});
-					break;
-				case 'timeOut':
-					const timeout = new BannedIP({
-						bannedDate: new Date(),
-						type: 'small',
-						ip: data.ip
-					});
-					timeout.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
-							if (users && users.length > 0) {
-								users.forEach(user => {
-									logOutUser(user.username);
-								});
-							}
-						});
-					});
-					break;
-				case 'timeOut2':
-					Account.findOne({ username: data.userName })
-						.then(account => {
-							if (account) {
-								account.isTimeout = new Date();
-								account.save(() => {
-									logOutUser(data.userName);
-								});
-							} else {
-								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-							}
 						})
 						.catch(err => {
-							console.log(err, 'timeout2 user err');
+							console.log(err);
 						});
-					break;
-				case 'timeOut3':
-					const timeout3 = new BannedIP({
-						bannedDate: new Date(),
-						type: 'tiny',
-						ip: data.ip
-					});
-					timeout3.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
-							if (users && users.length > 0) {
-								users.forEach(user => {
-									logOutUser(user.username);
-								});
-							}
-						});
-					});
-					break;
-				case 'togglePrivate':
-					Account.findOne({ username: data.userName })
-						.then(account => {
-							if (account) {
-								const { isPrivate } = account.gameSettings;
-
-								account.gameSettings.isPrivate = !isPrivate;
-								account.gameSettings.privateToggleTime = new Date().getTime();
-								account.save(() => {
-									logOutUser(data.userName);
-								});
-							} else {
-								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-							}
-						})
-						.catch(err => {
-							console.log(err, 'private convert user err');
-						});
-					break;
-				case 'clearGenchat':
-					generalChats.list = [];
-
-					io.sockets.emit('generalChats', generalChats);
-					break;
-				case 'deleteProfile':
-					if (isSuperMod) {
-						Profile.findOne({ _id: data.userName })
-							.remove(() => {
-								if (io.sockets.sockets[affectedSocketId]) {
-									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-								}
-							})
-							.catch(err => {
-								console.log(err);
-							});
-					} else {
-						socket.emit('sendAlert', 'Only editors and admins can delete profiles.');
-						return;
-					}
-					break;
-				case 'ipbanlarge':
+				} else {
+					socket.emit('sendAlert', 'Only editors and admins can delete profiles.');
+					return;
+				}
+				break;
+			case 'ipbanlarge':
+				if (myPower >= 2) {
 					const ipbanl = new BannedIP({
 						bannedDate: new Date(),
 						type: 'big',
 						ip: data.ip
 					});
+					ipbanl.save(() => {
+						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+							if (users && users.length > 0) {
+								users.forEach(user => {
+									banAccount(user.username);
+								});
+							}
+						});
+					});
+				} else {
+					socket.emit('sendAlert', 'Only editors and admins can perform large IP bans.');
+					return;
+				}
+				break;
+			case 'deleteCardback':
+				Account.findOne({ username: data.userName })
+					.then(account => {
+						if (account) {
+							account.gameSettings.customCardback = '';
 
-					if (isSuperMod) {
-						ipbanl.save(() => {
-							Account.find({ lastConnectedIP: data.ip }, function(err, users) {
-								if (users && users.length > 0) {
-									users.forEach(user => {
-										banAccount(user.username);
-									});
+							account.save(() => {
+								if (io.sockets.sockets[affectedSocketId]) {
+									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 								}
 							});
-						});
-					} else {
-						socket.emit('sendAlert', 'Only editors and admins can perform large IP bans.');
-						return;
-					}
-					break;
-				case 'deleteCardback':
+						} else {
+							socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+						}
+					})
+					.catch(err => {
+						console.log(err);
+					});
+				break;
+			case 'disableAccountCreation':
+				accountCreationDisabled.status = true;
+				break;
+			case 'enableAccountCreation':
+				accountCreationDisabled.status = false;
+				break;
+			case 'disableIpbans':
+				ipbansNotEnforced.status = true;
+				break;
+			case 'enableIpbans':
+				ipbansNotEnforced.status = false;
+				break;
+			case 'disableGameCreation':
+				gameCreationDisabled.status = true;
+				break;
+			case 'enableGameCreation':
+				gameCreationDisabled.status = false;
+				break;
+			case 'removeStaffRole':
+				if (myPower >= 2 && myPower >= otherPower) {
 					Account.findOne({ username: data.userName })
 						.then(account => {
 							if (account) {
-								account.gameSettings.customCardback = '';
-
+								account.staffRole = '';
 								account.save(() => {
+									staffList[account.username] = null;
 									if (io.sockets.sockets[affectedSocketId]) {
 										io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 									}
@@ -1945,178 +1979,135 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						.catch(err => {
 							console.log(err);
 						});
-					break;
-				case 'disableAccountCreation':
-					accountCreationDisabled.status = true;
-					break;
-				case 'enableAccountCreation':
-					accountCreationDisabled.status = false;
-					break;
-				case 'disableIpbans':
-					ipbansNotEnforced.status = true;
-					break;
-				case 'enableIpbans':
-					ipbansNotEnforced.status = false;
-					break;
-				case 'disableGameCreation':
-					gameCreationDisabled.status = true;
-					break;
-				case 'enableGameCreation':
-					gameCreationDisabled.status = false;
-					break;
-				case 'removeStaffRole':
-					if (isSuperMod) {
-						Account.findOne({ username: data.userName })
-							.then(account => {
-								if (account) {
-									account.staffRole = '';
-									account.save(() => {
-										if (newStaff.modUserNames.includes(account.username)) {
-											newStaff.modUserNames.splice(indexOf(newStaff.modUserNames.find(name => account.username)), 1);
-										}
-										if (io.sockets.sockets[affectedSocketId]) {
-											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-										}
-									});
-								} else {
-									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-								}
-							})
-							.catch(err => {
-								console.log(err);
-							});
-					}
-					break;
-				case 'promoteToMod':
-					if (isSuperMod) {
-						Account.findOne({ username: data.userName })
-							.then(account => {
-								if (account) {
-									account.staffRole = 'moderator';
-									account.save(() => {
-										newStaff.modUserNames.push(account.username);
-
-										if (io.sockets.sockets[affectedSocketId]) {
-											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-										}
-									});
-								} else {
-									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-								}
-							})
-							.catch(err => {
-								console.log(err);
-							});
-					}
-					break;
-
-				case 'promoteToEditor':
-					if (isSuperMod) {
-						Account.findOne({ username: data.userName })
-							.then(account => {
-								if (account) {
-									account.staffRole = 'editor';
-									account.save(() => {
-										newStaff.editorUserNames.push(account.username);
-
-										if (io.sockets.sockets[affectedSocketId]) {
-											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-										}
-									});
-								} else {
-									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-								}
-							})
-							.catch(err => {
-								console.log(err);
-							});
-					}
-					break;
-				case 'resetServer':
-					if (isSuperMod) {
-						console.log('server crashing manually via mod action');
-						const crashReport = JSON.stringify({
-							content: `${process.env.DISCORDADMINPING} the site was just reset manually by an admin or editor.`
-						});
-
-						const crashOptions = {
-							hostname: 'discordapp.com',
-							path: process.env.DISCORDCRASHURL,
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json',
-								'Content-Length': Buffer.byteLength(crashReport)
-							}
-						};
-
-						if (process.env.NODE_ENV === 'production') {
-							const crashReq = https.request(crashOptions);
-
-							crashReq.end(crashReport);
-						}
-						crashServer();
-					} else {
-						socket.emit('sendAlert', 'Only editors and admins can restart the server.');
-						return;
-					}
-					break;
-				default:
-					if (data.userName.substr(0, 7) === 'DELGAME') {
-						const game = games.find(el => el.general.uid === data.userName.slice(7));
-
-						if (game) {
-							games.splice(games.indexOf(game), 1);
-							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
-							sendGameList();
-						}
-					} else if (isSuperMod && data.action.type) {
-						const setType = /setRWins/.test(data.action.type)
-							? 'rainbowWins'
-							: /setRLosses/.test(data.action.type)
-								? 'rainbowLosses'
-								: /setWins/.test(data.action.type)
-									? 'wins'
-									: 'losses';
-						const number =
-							setType === 'wins'
-								? data.action.type.substr(7)
-								: setType === 'losses'
-									? data.action.type.substr(9)
-									: setType === 'rainbowWins'
-										? data.action.type.substr(8)
-										: data.action.type.substr(10);
-						const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
-
-						if (!isNaN(parseInt(number, 10)) || isPlusOrMinus) {
-							Account.findOne({ username: data.userName })
-								.then(account => {
-									if (account) {
-										account[setType] = isPlusOrMinus
-											? number.charAt(0) === '+'
-												? account[setType] + parseInt(number.substr(1, number.length))
-												: account[setType] - parseInt(number.substr(1, number.length))
-											: parseInt(number);
-
-										if (!data.action.isNonSeason) {
-											account[`${setType}Season${currentSeasonNumber}`] = isPlusOrMinus
-												? account[`${setType}Season${currentSeasonNumber}`]
-													? number.charAt(0) === '+'
-														? account[`${setType}Season${currentSeasonNumber}`] + parseInt(number.substr(1, number.length))
-														: account[`${setType}Season${currentSeasonNumber}`] - parseInt(number.substr(1, number.length))
-													: parseInt(number.substr(1, number.length))
-												: parseInt(number);
-										}
-										account.save();
-									} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-								})
-								.catch(err => {
-									console.log(err, 'set wins/losses error');
+				}
+				break;
+			case 'promoteToMod':
+				if (myPower >= 2) {
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								account.staffRole = 'moderator';
+								account.save(() => {
+									staffList[account.username] = 'moderator';
+									if (io.sockets.sockets[affectedSocketId]) {
+										io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+									}
 								});
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err);
+						});
+				}
+				break;
+
+			case 'promoteToEditor':
+				if (myPower >= 2) {
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								account.staffRole = 'editor';
+								account.save(() => {
+									staffList[account.username] = 'editor';
+									if (io.sockets.sockets[affectedSocketId]) {
+										io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+									}
+								});
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err);
+						});
+				}
+				break;
+			case 'resetServer':
+				if (myPower >= 2) {
+					console.log('server crashing manually via mod action');
+					const crashReport = JSON.stringify({
+						content: `${process.env.DISCORDADMINPING} the site was just reset manually by an admin or editor.`
+					});
+
+					const crashOptions = {
+						hostname: 'discordapp.com',
+						path: process.env.DISCORDCRASHURL,
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'Content-Length': Buffer.byteLength(crashReport)
 						}
+					};
+
+					if (process.env.NODE_ENV === 'production') {
+						const crashReq = https.request(crashOptions);
+
+						crashReq.end(crashReport);
 					}
-			}
-			modaction.save();
+					crashServer();
+				} else {
+					socket.emit('sendAlert', 'Only editors and admins can restart the server.');
+					return;
+				}
+				break;
+			default:
+				if (data.userName.substr(0, 7) === 'DELGAME') {
+					const game = games.find(el => el.general.uid === data.userName.slice(7));
+
+					if (game) {
+						games.splice(games.indexOf(game), 1);
+						game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
+						sendGameList();
+					}
+				} else if (myPower >= 2 && data.action.type) {
+					const setType = /setRWins/.test(data.action.type)
+						? 'rainbowWins'
+						: /setRLosses/.test(data.action.type)
+							? 'rainbowLosses'
+							: /setWins/.test(data.action.type)
+								? 'wins'
+								: 'losses';
+					const number =
+						setType === 'wins'
+							? data.action.type.substr(7)
+							: setType === 'losses'
+								? data.action.type.substr(9)
+								: setType === 'rainbowWins'
+									? data.action.type.substr(8)
+									: data.action.type.substr(10);
+					const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
+
+					if (!isNaN(parseInt(number, 10)) || isPlusOrMinus) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account[setType] = isPlusOrMinus
+										? number.charAt(0) === '+'
+											? account[setType] + parseInt(number.substr(1, number.length))
+											: account[setType] - parseInt(number.substr(1, number.length))
+										: parseInt(number);
+
+									if (!data.action.isNonSeason) {
+										account[`${setType}Season${currentSeasonNumber}`] = isPlusOrMinus
+											? account[`${setType}Season${currentSeasonNumber}`]
+												? number.charAt(0) === '+'
+													? account[`${setType}Season${currentSeasonNumber}`] + parseInt(number.substr(1, number.length))
+													: account[`${setType}Season${currentSeasonNumber}`] - parseInt(number.substr(1, number.length))
+												: parseInt(number.substr(1, number.length))
+											: parseInt(number);
+									}
+									account.save();
+								} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							})
+							.catch(err => {
+								console.log(err, 'set wins/losses error');
+							});
+					}
+				}
 		}
+		modaction.save();
 	}
 };
 

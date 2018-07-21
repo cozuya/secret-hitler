@@ -35,7 +35,6 @@ const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChanc
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
 const { games } = require('./models');
-const Account = require('../../models/account');
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
