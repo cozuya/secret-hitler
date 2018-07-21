@@ -70,7 +70,7 @@ const { getRoleFromName } = require('../../routes/socket/models');
  */
 module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	const role = getRoleFromName(user);
-	if (role || !user.staffDisableStaffColor) {
+	if (role && role !== 'altmod' && !user.staffDisableStaffColor) {
 		return cn(defaultClass, {
 			admin: role === 'admin',
 			editorcolor: role === 'editor',
