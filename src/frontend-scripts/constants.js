@@ -59,8 +59,6 @@ module.exports.LEGALCHARACTERS = text => {
 	return pass;
 };
 
-const { getRoleFromName } = require('../../routes/socket/models');
-
 /**
  * @param {object} user - user from userlist.
  * @param {boolean} isSeasonal - whether or not to display seasonal colors.
