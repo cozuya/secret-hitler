@@ -785,13 +785,13 @@ class Gamechat extends React.Component {
 				{!this.props.isReplay && (
 					<form className="segment inputbar" onSubmit={this.handleSubmit}>
 						{(() => {
-							if (
-								gameInfo.gameState &&
-								gameInfo.gameState.isStarted &&
-								isStaff
-							) {
+							if (gameInfo.gameState && gameInfo.gameState.isStarted && isStaff) {
 								return (
-									<div className={hasNoAEM(gameInfo.publicPlayersState.map(player => player.userName)) ? 'ui primary button' : 'ui primary button disabled'} title="Click here to subscribe to mod-only chat" onClick={this.handleSubscribeModChat}>
+									<div
+										className={hasNoAEM(gameInfo.publicPlayersState.map(player => player.userName)) ? 'ui primary button' : 'ui primary button disabled'}
+										title="Click here to subscribe to mod-only chat"
+										onClick={this.handleSubscribeModChat}
+									>
 										Mod Chat
 									</div>
 								);
@@ -862,7 +862,7 @@ class Gamechat extends React.Component {
 				>
 					<h2 className="ui header">Select player(s) below to whitelist for seating in this private game.</h2>
 					<ul>
-						{this.state.playersToWhitelist.map((player, index) => {
+						{this.state.playersToWhitelist.sort((a, b) => (a.userName > b.userName ? 1 : -1)).map((player, index) => {
 							const uid = Math.random()
 								.toString(36)
 								.substring(2);
