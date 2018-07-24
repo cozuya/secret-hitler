@@ -94,7 +94,7 @@ module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
 
 	if (roomSockets.length) {
 		roomSockets.forEach(sock => {
-			if (sock.handshake.passport && sock.handshake.passport.user) {
+			if (sock && sock.handshake && sock.handshake.passport && sock.handshake.passport.user) {
 				const { user } = sock.handshake.session.passport;
 				if (game.private.hiddenInfoSubscriptions.includes(user)) {
 					// AEM status is ensured when adding to the subscription list
