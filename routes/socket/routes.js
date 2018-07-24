@@ -34,7 +34,7 @@ const {
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
-const { games } = require('./models');
+const { games, getRoleFromName } = require('./models');
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
@@ -105,9 +105,22 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 		socket.conn.on('upgrade', () => {
 			sendUserList(socket);
+			// if (authenticated) socket.emit('fetchFingerprint');
 		});
 
 		socket
+			// fingerprint stuff
+
+			.on('fingerprintData', data => {
+				/*
+				const fs = require('fs');
+				fs.writeFile(`./userdata/${passport.user}.json`, JSON.stringify(data, null, 2), function(err) {
+					if (err) console.log(err);
+					else console.log(`Fingerprint data for ${passport.user} stored.`);
+				});
+				*/
+			})
+
 			// user-events
 
 			.on('disconnect', () => {

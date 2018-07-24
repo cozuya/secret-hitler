@@ -75,6 +75,11 @@ export class App extends React.Component {
 			dispatch(updateUser(info));
 		}
 
+		socket.on('fetchFingerprint', () => {
+			// const { simpleFingerprint } = require('../fingerprint');
+			// socket.emit('fingerprintData', simpleFingerprint());
+		});
+
 		socket.on('manualDisconnection', () => {
 			window.location.pathname = '/observe';
 		});
