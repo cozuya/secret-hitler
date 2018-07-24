@@ -2281,6 +2281,7 @@ module.exports = [
 	'mohmal.im',
 	'mohmal.in',
 	'mohmal.tech',
+	'molms.com',
 	'momentics.ru',
 	'moncourrier.fr.nf',
 	'monemail.fr.nf',
