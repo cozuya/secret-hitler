@@ -63,10 +63,10 @@ Game.findOne({}, { chats: 0 })
 				const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
 				const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
 
-				const winningPlayerAdjustment = k * p / winningPlayerNames.length;
-				const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
-				const winningPlayerAdjustmentSeason = k * pSeason / winningPlayerNames.length;
-				const losingPlayerAdjustmentSeason = -k * pSeason / losingPlayerNames.length;
+				const winningPlayerAdjustment = (k * p) / winningPlayerNames.length;
+				const losingPlayerAdjustment = (-k * p) / losingPlayerNames.length;
+				const winningPlayerAdjustmentSeason = (k * pSeason) / winningPlayerNames.length;
+				const losingPlayerAdjustmentSeason = (-k * pSeason) / losingPlayerNames.length;
 
 				accounts.forEach(account => {
 					account.eloOverall = winningPlayerNames.includes(account.username)

@@ -163,12 +163,11 @@ module.exports = () => {
 					message: 'Sorry, your username contains a naughty word or part of a naughty word.'
 				});
 			} else {
-				Account.findOne({ username: username.toLowerCase() }, (err, account) => {
+				Account.findOne({ username }, (err, account) => {
 					if (err) {
 						return next(err);
 					}
-
-					if (account && account.username === username.toLowerCase()) {
+					if (account && account.username === username) {
 						res.status(401).json({ message: 'Sorry, that account already exists.' });
 					} else {
 						BannedIP.find({ ip: signupIP }, (err, ips) => {
