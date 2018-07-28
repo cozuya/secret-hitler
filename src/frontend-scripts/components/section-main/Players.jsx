@@ -219,6 +219,8 @@ class Players extends React.Component {
 			return prependCrowns(userName);
 		};
 
+		console.log(publicPlayersState, 'pps');
+
 		return publicPlayersState.map((player, i) => (
 			<div
 				key={i}
@@ -265,7 +267,7 @@ class Players extends React.Component {
 			>
 				<div
 					title={
-						isBlind
+						isBlind || player.isPrivate
 							? 'Double click to open a modal to report this player to the moderator team'
 							: `Double click to open a modal to report ${player.userName} to the moderator team`
 					}
