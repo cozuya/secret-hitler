@@ -219,8 +219,6 @@ class Players extends React.Component {
 			return prependCrowns(userName);
 		};
 
-		console.log(publicPlayersState, 'pps');
-
 		return publicPlayersState.map((player, i) => (
 			<div
 				key={i}

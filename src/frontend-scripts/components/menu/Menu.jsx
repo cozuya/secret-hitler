@@ -218,7 +218,7 @@ class Menu extends React.Component {
 								onClick={this.props.readPatchNotes}
 							>
 								{' '}
-								Changelog {this.props.version.current.number}{' '}
+								{`v${this.props.version.current.number}`}{' '}
 							</a>
 							|{' '}
 							<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
@@ -231,6 +231,10 @@ class Menu extends React.Component {
 							|{' '}
 							<a target="_blank" href="https://discord.gg/secrethitlerio">
 								Discord
+							</a>
+							|{' '}
+							<a target="_blank" href="/polls">
+								New Polls 9/1
 							</a>
 						</span>
 					</div>
