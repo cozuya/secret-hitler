@@ -599,6 +599,8 @@ class Gamechat extends React.Component {
 				winningTeamName,
 				action: 'modEndGame'
 			});
+
+			$(this.modendgameModal).modal('hide');
 		};
 
 		return (

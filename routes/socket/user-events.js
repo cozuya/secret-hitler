@@ -10,7 +10,7 @@ const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
-// const { completeGame } = require('./game/end-game');
+const { completeGame } = require('./game/end-game');
 const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
@@ -1712,9 +1712,23 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			};
 
 			switch (data.action) {
-				case 'endModGame':
-					// completeGame
-					console.log(data, 'data');
+				case 'modEndGame':
+					const gameToEnd = games.find(game => game.general.uid === data.uid);
+
+					if (gameToEnd) {
+						gameToEnd.chats.push({
+							userName: data.modName,
+							chat: 'This game has been ended by a moderator, game deletes in 5 seconds.',
+							isBroadcast: true,
+							timestamp: new Date()
+						});
+						completeGame(gameToEnd, data.winningTeamName);
+						setTimeout(() => {
+							gameToEnd.publicPlayersState.forEach(player => (player.leftGame = true));
+							games.splice(games.indexOf(gameToEnd), 1);
+							sendGameList();
+						}, 5000);
+					}
 				case 'setVerified':
 					Account.findOne({ username: data.userName }).then(account => {
 						if (account) {
@@ -2058,7 +2072,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 							crashReq.end(crashReport);
 						}
-						crashServer();
+						setTimeout(() => {
+							crashServer();
+						}, 1000);
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can restart the server.');
 						return;

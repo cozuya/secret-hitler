@@ -192,6 +192,11 @@ const beginGame = game => {
 	sendInProgressGameUpdate(game);
 
 	setTimeout(() => {
+		const hitlerPlayer = game.private.seatedPlayers.find(player => player.role.cardName === 'hitler');
+
+		if (!hitlerPlayer) {
+			return;
+		}
 		game.private.seatedPlayers.forEach((player, i) => {
 			const { seatedPlayers } = game.private;
 			const { playerCount } = game.general;
@@ -282,7 +287,6 @@ const beginGame = game => {
 					});
 				}
 
-				const hitlerPlayer = seatedPlayers.find(player => player.role.cardName === 'hitler');
 				const chat = {
 					timestamp: new Date(),
 					gameChat: true,

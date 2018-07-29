@@ -24,6 +24,7 @@ module.exports.CONTRIBUTORS = [
 	'straightleft',
 	'Idrissa',
 	'banc',
+	'JohnCena',
 	'HREmperor',
 	'Royal2000H',
 	'OuchYouHitMe',
