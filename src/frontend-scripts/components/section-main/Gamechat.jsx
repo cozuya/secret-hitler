@@ -506,7 +506,7 @@ class Gamechat extends React.Component {
 	}
 
 	render() {
-		const { userInfo, gameInfo, isReplay, userList } = this.props;
+		const { socket, userInfo, gameInfo, isReplay, userList } = this.props;
 		const selectedWhitelistplayer = playerName => {
 			const { playersToWhitelist } = this.state;
 			const playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
@@ -590,8 +590,15 @@ class Gamechat extends React.Component {
 				else return true;
 			});
 		};
-		const sendModEndGame = type => {
-			console.log(type);
+		const sendModEndGame = winningTeamName => {
+			socket.emit('updateModAction', {
+				modName: userInfo.userName,
+				userName: userInfo.userName,
+				comment: `End game ${gameInfo.general.uid} with team ${winningTeamName} winning`,
+				uid: gameInfo.general.uid,
+				winningTeamName,
+				action: 'modEndGame'
+			});
 		};
 
 		return (
@@ -880,10 +887,20 @@ class Gamechat extends React.Component {
 						this.modendgameModal = c;
 					}}
 				>
-					<div className="ui red positive inverted button" onClick={sendModEndGame('liberal')}>
+					<div
+						className="ui blue positive inverted button"
+						onClick={() => {
+							sendModEndGame('liberal');
+						}}
+					>
 						End game elo win for liberals
 					</div>
-					<div className="ui blue positive inverted button" onClick={sendModEndGame('fascist')}>
+					<div
+						className="ui red positive inverted button"
+						onClick={() => {
+							sendModEndGame('fascist');
+						}}
+					>
 						End game elo win for fascists
 					</div>
 				</div>

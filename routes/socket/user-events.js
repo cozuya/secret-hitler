@@ -10,6 +10,7 @@ const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
+// const { completeGame } = require('./game/end-game');
 const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
@@ -1711,6 +1712,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			};
 
 			switch (data.action) {
+				case 'endModGame':
+					// completeGame
+					console.log(data, 'data');
 				case 'setVerified':
 					Account.findOne({ username: data.userName }).then(account => {
 						if (account) {
