@@ -220,6 +220,20 @@ class Gamechat extends React.Component {
 		this.gameChatInput.focus();
 	}
 
+	renderModEndGameButtons() {
+		const modalClick = () => {
+			$(this.modendgameModal).modal('show');
+		};
+
+		return (
+			<div>
+				<div className="ui button primary" onClick={modalClick} style={{ width: '60px' }}>
+					Mod end game
+				</div>
+			</div>
+		);
+	}
+
 	gameChatStatus() {
 		const { userInfo, gameInfo } = this.props;
 		const { gameState, publicPlayersState } = gameInfo;
@@ -576,6 +590,9 @@ class Gamechat extends React.Component {
 				else return true;
 			});
 		};
+		const sendModEndGame = type => {
+			console.log(type);
+		};
 
 		return (
 			<section className="gamechat">
@@ -609,6 +626,9 @@ class Gamechat extends React.Component {
 							onClick={this.handleChatLockClick}
 						/>
 					)}
+					{/* {isStaff && gameInfo.gameState.isTracksFlipped && this.renderModEndGameButtons()} */}
+					{isStaff && this.renderModEndGameButtons()}
+
 					{gameInfo.general &&
 						gameInfo.general.tournyInfo &&
 						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
@@ -664,7 +684,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'twofascistoneliberal');
+													handleClaimButtonClick(e, 'twofascistonefascist');
 												}}
 												className="ui button twofascistoneliberal"
 											>
@@ -853,6 +873,19 @@ class Gamechat extends React.Component {
 				>
 					<h2 className="ui header">Leaving this table will leave the tournament queue</h2>
 					<div className="ui red positive inverted leave-tourny-queue button">Leave tournament queue</div>
+				</div>
+				<div
+					className="ui basic fullscreen modal modendgamemodal"
+					ref={c => {
+						this.modendgameModal = c;
+					}}
+				>
+					<div className="ui red positive inverted button" onClick={sendModEndGame('liberal')}>
+						End game elo win for liberals
+					</div>
+					<div className="ui blue positive inverted button" onClick={sendModEndGame('fascist')}>
+						End game elo win for fascists
+					</div>
 				</div>
 				<div
 					className="ui basic fullscreen modal whitelistmodal"

@@ -233,7 +233,7 @@ class Menu extends React.Component {
 								Discord
 							</a>
 							|{' '}
-							<a target="_blank" href="/polls">
+							<a target="_blank" href="/polls" style={{ color: 'yellow' }}>
 								New Polls 9/1
 							</a>
 						</span>
