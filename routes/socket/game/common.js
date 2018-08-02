@@ -17,7 +17,7 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 				1,
 				(game.general.rebalance7p && game.private.seatedPlayers.length === 7
 					? 11
-					: game.general.rebalance9p2f && is9pRebalanceStart && game.private.seatedPlayers.length === 9
+					: game.general.rebalance9p && is9pRebalanceStart && game.private.seatedPlayers.length === 9
 						? 10
 						: 12) -
 					(game.trackState.fascistPolicyCount + (count.fascist || 0))
@@ -164,7 +164,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			}
 		}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 	}
-	/* eslint-disable */
+
 	game.gameState.clickActionInfo =
 		game.general.livingPlayerCount > 5
 			? [
@@ -179,6 +179,6 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
 						.map(el => seatedPlayers.indexOf(el))
 			  ];
-	/* eslint-enable */
+
 	sendInProgressGameUpdate(game);
 };

@@ -123,7 +123,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 			winningPrivatePlayers.forEach((player, index) => {
 				publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
 			});
-			sendInProgressGameUpdate(game);
+			sendInProgressGameUpdate(game, true);
 		}, 15000);
 	}
 

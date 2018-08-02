@@ -9,6 +9,17 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.10 released 7-23-2018</p>
+		</div>
+		<ul>
+			<li>You can delete people from your blacklist again.</li>
+			<li>
+				Elo minimum games now lets a player who has either seasonal or overall elo above it play in that game. You still need to have seasons on though (will
+				get to that later).
+			</li>
+			<li>Some performance optimizations have been put in, hopefully making things more stable.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.14.9 released 7-15-2018</p>
 		</div>
 		<h3>New feature: elo limiter has gone in.</h3>

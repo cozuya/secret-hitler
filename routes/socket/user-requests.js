@@ -13,7 +13,9 @@ const {
 	gameCreationDisabled,
 	currentSeasonNumber,
 	userListEmitter,
-	formattedUserList
+	formattedUserList,
+	gameListEmitter,
+	formattedGameList
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
@@ -235,54 +237,11 @@ module.exports.sendReplayGameChats = (socket, uid) => {
  * @param {object} socket - user socket reference.
  */
 module.exports.sendGameList = socket => {
-	const formattedGames = games.map(game => ({
-		name: game.general.name,
-		flag: game.general.flag,
-		userNames: game.publicPlayersState.map(val => val.userName),
-		customCardback: game.publicPlayersState.map(val => val.customCardback),
-		customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
-		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
-		seatedCount: game.publicPlayersState.length,
-		gameCreatorName: game.general.gameCreatorName,
-		host: game.general.host,
-		minPlayersCount: game.general.minPlayersCount,
-		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
-		excludedPlayerCount: game.general.excludedPlayerCount,
-		casualGame: game.general.casualGame,
-		eloMinimum: game.general.eloMinimum,
-		isVerifiedOnly: game.general.isVerifiedOnly,
-		isTourny: game.general.isTourny,
-		timedMode: game.general.timedMode,
-		tournyStatus: (() => {
-			if (game.general.isTourny) {
-				if (game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length) {
-					return {
-						queuedPlayers: game.general.tournyInfo.queuedPlayers.length
-					};
-				}
-			}
-			return null;
-		})(),
-		experiencedMode: game.general.experiencedMode,
-		voiceGame: game.general.voiceGame,
-		disableGamechat: game.general.disableGamechat,
-		blindMode: game.general.blindMode,
-		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
-		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
-		electionCount: game.general.electionCount,
-		rebalance6p: game.general.rebalance6p,
-		rebalance7p: game.general.rebalance7p,
-		rebalance9p: game.general.rebalance9p,
-		privateOnly: game.general.privateOnly,
-		private: game.general.private,
-		uid: game.general.uid,
-		rainbowgame: game.general.rainbowgame
-	}));
-
+	// eslint-disable-line one-var
 	if (socket) {
-		socket.emit('gameList', formattedGames);
+		socket.emit('gameList', formattedGameList());
 	} else {
-		io.sockets.emit('gameList', formattedGames);
+		gameListEmitter.send = true;
 	}
 };
 
@@ -331,9 +290,6 @@ module.exports.sendGameInfo = (socket, uid) => {
 	const { passport } = socket.handshake.session;
 
 	if (game) {
-		// Not sure if we need this copy of game anymore? all it's doing is being passed to sendInProgressGameUpdate
-		const _game = Object.assign({}, game);
-
 		if (passport && Object.keys(passport).length) {
 			const player = game.publicPlayersState.find(player => player.userName === passport.user);
 
@@ -348,7 +304,7 @@ module.exports.sendGameInfo = (socket, uid) => {
 		}
 
 		socket.join(uid);
-		sendInProgressGameUpdate(_game);
+		sendInProgressGameUpdate(game);
 		socket.emit('joinGameRedirect', game.general.uid);
 	} else {
 		Game.findOne({ uid }).then((game, err) => {

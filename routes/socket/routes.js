@@ -16,7 +16,8 @@ const {
 	handlePlayerReportDismiss,
 	handleUpdatedBio,
 	handleUpdatedRemakeGame,
-	handleUpdatedPlayerNote
+	handleUpdatedPlayerNote,
+	handleSubscribeModChat
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -109,7 +110,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 		let isAEM = false;
 		if (authenticated && passport && passport.user) {
 			Account.findOne({ username: passport.user }).then(account => {
-				if (account.staffRole && account.staffRole.length > 0) isAEM = true;
+				if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'contributor') isAEM = true;
 			});
 		}
 
@@ -279,6 +280,20 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			.on('getModInfo', count => {
 				if (authenticated && isAEM) {
 					sendModInfo(socket, count);
+				}
+			})
+			.on('subscribeModChat', uid => {
+				if (authenticated && isAEM) {
+					const game = findGame({ uid });
+					if (game && game.private && game.private.seatedPlayers) {
+						const players = game.private.seatedPlayers.map(player => player.userName);
+						Account.find({ staffRole: { $exists: true } }).then(accounts => {
+							const hasAEM = accounts.some(acc => {
+								return acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'contributor' && players.includes(acc.username);
+							});
+							if (!hasAEM) handleSubscribeModChat(socket, passport, game);
+						});
+					}
 				}
 			})
 			.on('getUserReports', () => {

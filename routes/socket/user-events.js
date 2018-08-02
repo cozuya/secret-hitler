@@ -10,17 +10,19 @@ const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
+const { completeGame } = require('./game/end-game');
 const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
-const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
+const { sendInProgressGameUpdate, sendPlayerChatUpdate, sendInProgressModChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
+const { makeReport } = require('./report.js');
 
 /**
  * @param {object} game - game to act on.
@@ -497,10 +499,10 @@ const updateSeatedUser = (socket, passport, data) => {
 				!game.general.private ||
 				(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
 			const isBlacklistSafe = !game.general.hostBlacklist.includes(passport.user);
-			const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason;
+			const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
 			const isKickedTimeoutSafe = !game.general.kickedTimes[passport.user] || Date.now() - game.general.kickedTimes[passport.user] > 20000;
 
-			if (isNotInGame && isNotMaxedOut && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum && isKickedTimeoutSafe) {
+			if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum && isKickedTimeoutSafe) {
 				const { publicPlayersState } = game;
 				const player = {
 					userName: passport.user,
@@ -585,7 +587,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	const user = userList.find(obj => obj.userName === passport.user);
 	const currentTime = new Date();
 
-	if (!user || currentTime - user.timeLastGameCreated < 8000) {
+	if (!user || currentTime - user.timeLastGameCreated < 8000 || user.status.type !== 'none') {
 		// Check if !user here in case of bug where user doesn't appear on userList
 		return;
 	}
@@ -613,7 +615,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	if (data.eloSliderValue && user.eloSeason < data.eloSliderValue) {
+	if (data.eloSliderValue && user.eloOverall.eloSliderValue) {
 		return;
 	}
 
@@ -1617,7 +1619,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			const currentPrivate = account.gameSettings.isPrivate;
 
 			for (const setting in data) {
-				if (setting !== 'blacklist' || (setting === 'blacklist' && data[setting].length <= 10) || (setting === 'staffDisableVisibleElo' && account.staffRole)) {
+				if (setting !== 'blacklist' || (setting === 'blacklist' && data[setting].length <= 30) || (setting === 'staffDisableVisibleElo' && account.staffRole)) {
 					account.gameSettings[setting] = data[setting];
 				}
 			}
@@ -1647,6 +1649,25 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 /**
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
+ * @param {object} game - game reference.
+ */
+module.exports.handleSubscribeModChat = (socket, passport, game) => {
+	// Authentication Assured in routes.js
+
+	if (game.private.hiddenInfoSubscriptions.includes(passport.user)) return;
+
+	if (game.private.hiddenInfoShouldNotify) {
+		makeReport(`AEM user ${passport.user} has subscribed to mod chat for a game without an auto-report.`, game);
+		game.private.hiddenInfoShouldNotify = false;
+	}
+
+	game.private.hiddenInfoSubscriptions.push(passport.user);
+	sendInProgressModChatUpdate(game, game.private.hiddenInfoChat, passport.user);
+};
+
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  * @param {boolean} skipCheck - true if there was an account lookup to find the IP
  * @param {array} modUserNames - list of usernames that are mods
@@ -1654,6 +1675,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
  */
 module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
 	// Authentication Assured in routes.js
+
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
@@ -1754,31 +1776,46 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			 * @param {string} username - name of user.
 			 */
 			const banAccount = username => {
-				if (!isSuperMod) {
-					Account.findOne({ username })
-						.then(account => {
-							if (account) {
-								// account.hash = crypto.randomBytes(20).toString('hex');
-								// account.salt = crypto.randomBytes(20).toString('hex');
-								account.isBanned = true;
-								account.save(() => {
-									const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
+				Account.findOne({ username })
+					.then(account => {
+						if (account) {
+							// account.hash = crypto.randomBytes(20).toString('hex');
+							// account.salt = crypto.randomBytes(20).toString('hex');
+							account.isBanned = true;
+							account.save(() => {
+								const bannedAccountGeneralChats = generalChats.list.filter(chat => chat.userName === username);
 
-									bannedAccountGeneralChats.reverse().forEach(chat => {
-										generalChats.list.splice(generalChats.list.indexOf(chat), 1);
-									});
-									logOutUser(username);
-									io.sockets.emit('generalChats', generalChats);
+								bannedAccountGeneralChats.reverse().forEach(chat => {
+									generalChats.list.splice(generalChats.list.indexOf(chat), 1);
 								});
-							}
-						})
-						.catch(err => {
-							console.log(err, 'ban user err');
-						});
-				}
+								logOutUser(username);
+								io.sockets.emit('generalChats', generalChats);
+							});
+						}
+					})
+					.catch(err => {
+						console.log(err, 'ban user err');
+					});
 			};
 
 			switch (data.action) {
+				case 'modEndGame':
+					const gameToEnd = games.find(game => game.general.uid === data.uid);
+
+					if (gameToEnd) {
+						gameToEnd.chats.push({
+							userName: data.modName,
+							chat: 'This game has been ended by a moderator, game deletes in 5 seconds.',
+							isBroadcast: true,
+							timestamp: new Date()
+						});
+						completeGame(gameToEnd, data.winningTeamName);
+						setTimeout(() => {
+							gameToEnd.publicPlayersState.forEach(player => (player.leftGame = true));
+							games.splice(games.indexOf(gameToEnd), 1);
+							sendGameList();
+						}, 5000);
+					}
 				case 'setVerified':
 					Account.findOne({ username: data.userName }).then(account => {
 						if (account) {
@@ -2122,7 +2159,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 							crashReq.end(crashReport);
 						}
-						crashServer();
+						setTimeout(() => {
+							crashServer();
+						}, 1000);
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can restart the server.');
 						return;

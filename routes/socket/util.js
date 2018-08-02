@@ -16,9 +16,9 @@ const combineInProgressChats = (game, userName) =>
 
 /**
  * @param {object} game - game to act on.
+ * @param {boolean} noChats - remove chats for client to handle.
  */
-// todo-release make this accept a socket argument and emit only to it if it exists
-module.exports.sendInProgressGameUpdate = game => {
+module.exports.sendInProgressGameUpdate = (game, noChats) => {
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
@@ -31,33 +31,77 @@ module.exports.sendInProgressGameUpdate = game => {
 	);
 	const observerSockets = roomSockets.filter(socket => socket && (!socket.handshake.session.passport || !isSeated(socket)));
 
-	if (playerSockets.length) {
-		playerSockets.forEach(sock => {
-			const _game = Object.assign({}, game);
-			const { user } = sock.handshake.session.passport;
+	playerSockets.forEach(sock => {
+		const _game = Object.assign({}, game);
+		const { user } = sock.handshake.session.passport;
 
-			if (!game.gameState.isCompleted && game.gameState.isTracksFlipped) {
-				const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
+		if (!game.gameState.isCompleted && game.gameState.isTracksFlipped) {
+			const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
 
-				if (!_game || !privatePlayer) {
-					return;
-				}
-
-				_game.playersState = privatePlayer.playersState;
-				_game.cardFlingerState = privatePlayer.cardFlingerState || [];
+			if (!_game || !privatePlayer) {
+				return;
 			}
 
+			_game.playersState = privatePlayer.playersState;
+			_game.cardFlingerState = privatePlayer.cardFlingerState || [];
+		}
+
+		if (noChats) {
+			delete _game.chats;
+			sock.emit('gameUpdate', secureGame(_game), true);
+		} else {
 			_game.chats = combineInProgressChats(_game, user);
 			sock.emit('gameUpdate', secureGame(_game));
-		});
-	}
+		}
+	});
 
+	let chatWithHidden = game.chats;
+	if (!noChats && game.private && game.private.hiddenInfoChat && game.private.hiddenInfoSubscriptions.length) {
+		chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];
+	}
 	if (observerSockets.length) {
 		observerSockets.forEach(sock => {
 			const _game = Object.assign({}, game);
+			const user = sock.handshake.session.passport ? sock.handshake.session.passport.user : null;
 
-			_game.chats = combineInProgressChats(_game);
-			sock.emit('gameUpdate', secureGame(_game));
+			if (noChats) {
+				delete _game.chats;
+				sock.emit('gameUpdate', secureGame(_game), true);
+			} else if (user && game.private && game.private.hiddenInfoSubscriptions && game.private.hiddenInfoSubscriptions.includes(user)) {
+				// AEM status is ensured when adding to the subscription list
+				_game.chats = chatWithHidden;
+				_game.chats = combineInProgressChats(_game);
+				sock.emit('gameUpdate', secureGame(_game));
+			} else {
+				_game.chats = combineInProgressChats(_game);
+				sock.emit('gameUpdate', secureGame(_game));
+			}
+		});
+	}
+};
+
+module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		return;
+	}
+
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+
+	if (roomSockets.length) {
+		roomSockets.forEach(sock => {
+			if (sock && sock.handshake && sock.handshake.passport && sock.handshake.passport.user) {
+				const { user } = sock.handshake.session.passport;
+				if (game.private.hiddenInfoSubscriptions.includes(user)) {
+					// AEM status is ensured when adding to the subscription list
+					if (!specificUser) {
+						// single message
+						sock.emit('gameModChat', chat);
+					} else if (specificUser === user) {
+						// list of messages
+						chat.forEach(msg => sock.emit('gameModChat', msg));
+					}
+				}
+			}
 		});
 	}
 };
@@ -70,7 +114,9 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
 
 	roomSockets.forEach(sock => {
-		sock.emit('playerChatUpdate', chat);
+		if (sock) {
+			sock.emit('playerChatUpdate', chat);
+		}
 	});
 };
 

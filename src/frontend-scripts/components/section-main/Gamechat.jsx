@@ -30,6 +30,7 @@ class Gamechat extends React.Component {
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
 		this.handleInsertEmote = this.handleInsertEmote.bind(this);
 		this.gameChatStatus = this.gameChatStatus.bind(this);
+		this.handleSubscribeModChat = this.handleSubscribeModChat.bind(this);
 
 		this.state = {
 			chatFilter: 'All',
@@ -168,6 +169,13 @@ class Gamechat extends React.Component {
 		}
 	}
 
+	handleSubscribeModChat() {
+		if (confirm('Are you sure you want to subscribe to mod-only chat to see private information?')) {
+			const { gameInfo } = this.props;
+			this.props.socket.emit('subscribeModChat', gameInfo.general.uid);
+		}
+	}
+
 	scrollChats() {
 		if (!this.state.lock) {
 			this.scrollbar.scrollToBottom();
@@ -210,6 +218,20 @@ class Gamechat extends React.Component {
 	handleInsertEmote(emote) {
 		this.gameChatInput.value += ` ${emote}`;
 		this.gameChatInput.focus();
+	}
+
+	renderModEndGameButtons() {
+		const modalClick = () => {
+			$(this.modendgameModal).modal('show');
+		};
+
+		return (
+			<div>
+				<div className="ui button primary" onClick={modalClick} style={{ width: '60px' }}>
+					Mod end game
+				</div>
+			</div>
+		);
 	}
 
 	gameChatStatus() {
@@ -363,7 +385,7 @@ class Gamechat extends React.Component {
 				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
 				.filter(
 					chat =>
-						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName) || isStaff)) ||
+						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
 						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
 						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 				)
@@ -513,7 +535,7 @@ class Gamechat extends React.Component {
 	}
 
 	render() {
-		const { userInfo, gameInfo, isReplay } = this.props;
+		const { socket, userInfo, gameInfo, isReplay, userList } = this.props;
 		const selectedWhitelistplayer = playerName => {
 			const { playersToWhitelist } = this.state;
 			const playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
@@ -587,6 +609,26 @@ class Gamechat extends React.Component {
 				? `${hash.substr(0, hash.length - 1)}Final`
 				: tableUidLastLetter === 'A' ? `${hash.substr(0, hash.length - 1)}B` : `${hash.substr(0, hash.length - 1)}A`;
 		};
+		const isStaff = Boolean(userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'contributor');
+		const hasNoAEM = players => {
+			if (!userList || !userList.list) return false;
+			return userList.list.every(user => {
+				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'contributor') return false;
+				else return true;
+			});
+		};
+		const sendModEndGame = winningTeamName => {
+			socket.emit('updateModAction', {
+				modName: userInfo.userName,
+				userName: userInfo.userName,
+				comment: `End game ${gameInfo.general.uid} with team ${winningTeamName} winning`,
+				uid: gameInfo.general.uid,
+				winningTeamName,
+				action: 'modEndGame'
+			});
+
+			$(this.modendgameModal).modal('hide');
+		};
 
 		return (
 			<section className="gamechat">
@@ -620,6 +662,9 @@ class Gamechat extends React.Component {
 							onClick={this.handleChatLockClick}
 						/>
 					)}
+					{/* {isStaff && gameInfo.gameState.isTracksFlipped && this.renderModEndGameButtons()} */}
+					{isStaff && this.renderModEndGameButtons()}
+
 					{gameInfo.general &&
 						gameInfo.general.tournyInfo &&
 						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
@@ -675,7 +720,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'twofascistoneliberal');
+													handleClaimButtonClick(e, 'twofascistonefascist');
 												}}
 												className="ui button twofascistoneliberal"
 											>
@@ -795,6 +840,19 @@ class Gamechat extends React.Component {
 				</section>
 				{!this.props.isReplay && (
 					<form className="segment inputbar" onSubmit={this.handleSubmit}>
+						{(() => {
+							if (gameInfo.gameState && gameInfo.gameState.isStarted && isStaff) {
+								return (
+									<div
+										className={hasNoAEM(gameInfo.publicPlayersState.map(player => player.userName)) ? 'ui primary button' : 'ui primary button disabled'}
+										title="Click here to subscribe to mod-only chat"
+										onClick={this.handleSubscribeModChat}
+									>
+										Mod Chat
+									</div>
+								);
+							}
+						})()}
 						<div className={this.gameChatStatus().isDisabled ? 'ui action input disabled' : 'ui action input'}>
 							<input
 								onSubmit={this.handleSubmit}
@@ -853,6 +911,29 @@ class Gamechat extends React.Component {
 					<div className="ui red positive inverted leave-tourny-queue button">Leave tournament queue</div>
 				</div>
 				<div
+					className="ui basic fullscreen modal modendgamemodal"
+					ref={c => {
+						this.modendgameModal = c;
+					}}
+				>
+					<div
+						className="ui blue positive inverted button"
+						onClick={() => {
+							sendModEndGame('liberal');
+						}}
+					>
+						End game elo win for liberals
+					</div>
+					<div
+						className="ui red positive inverted button"
+						onClick={() => {
+							sendModEndGame('fascist');
+						}}
+					>
+						End game elo win for fascists
+					</div>
+				</div>
+				<div
 					className="ui basic fullscreen modal whitelistmodal"
 					ref={c => {
 						this.whitelistModal = c;
@@ -860,7 +941,7 @@ class Gamechat extends React.Component {
 				>
 					<h2 className="ui header">Select player(s) below to whitelist for seating in this private game.</h2>
 					<ul>
-						{this.state.playersToWhitelist.map((player, index) => {
+						{this.state.playersToWhitelist.sort((a, b) => (a.userName > b.userName ? 1 : -1)).map((player, index) => {
 							const uid = Math.random()
 								.toString(36)
 								.substring(2);

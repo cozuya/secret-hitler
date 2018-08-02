@@ -276,7 +276,7 @@ class Players extends React.Component {
 			>
 				<div
 					title={
-						isBlind
+						isBlind || player.isPrivate
 							? 'Double click to open a modal to report this player to the moderator team'
 							: `Double click to open a modal to report ${player.userName} to the moderator team`
 					}
@@ -471,10 +471,10 @@ class Players extends React.Component {
 			} else if (gameInfo.general.eloMinimum) {
 				const user = userList.list.find(user => user.userName === userInfo.userName);
 
-				if (!user || parseInt(user.eloSeason, 10) < gameInfo.general.eloMinimum) {
-					$(this.elominimumModal).modal('show');
-				} else {
+				if (user && (parseInt(user.eloSeason, 10) >= gameInfo.general.eloMinimum || parseInt(user.eloOverall, 10) >= gameInfo.general.eloMinimum)) {
 					onClickedTakeSeat();
+				} else {
+					$(this.elominimumModal).modal('show');
 				}
 			} else {
 				onClickedTakeSeat();

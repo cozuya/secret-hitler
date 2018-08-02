@@ -1,4 +1,4 @@
-const { sendInProgressGameUpdate } = require('../util');
+const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../util');
 const { startElection, shufflePolicies } = require('./common');
 const { selectChancellor } = require('./election-util');
 const { sendGameList } = require('../user-requests');
@@ -111,12 +111,12 @@ const enactPolicy = (game, team) => {
 		isFlipped: false
 	});
 
-	sendInProgressGameUpdate(game);
+	sendInProgressGameUpdate(game, true);
 
 	setTimeout(() => {
 		game.trackState.enactedPolicies[index].isFlipped = true;
 		game.gameState.audioCue = team === 'liberal' ? 'enactPolicyL' : 'enactPolicyF';
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 300 : 2000);
 
 	setTimeout(() => {
@@ -613,6 +613,32 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 			}
 		}
 
+		const modOnlyChat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'Chancellor '
+				},
+				{
+					text: `${chancellor.userName} {${chancellorIndex + 1}}`,
+					type: 'player'
+				},
+				{
+					text: wasTimer ? ' has automatically chosen to play a ' : ' has chosen to play a '
+				},
+				{
+					text: enactedPolicy,
+					type: enactedPolicy
+				},
+				{
+					text: wasTimer ? 'policy due to the timer expiring.' : ' policy.'
+				}
+			]
+		};
+		game.private.hiddenInfoChat.push(modOnlyChat);
+		sendInProgressModChatUpdate(game, modOnlyChat);
+
 		game.private.lock.selectPresidentPolicy = false;
 
 		if (game.general.timedMode && game.private.timerId) {
@@ -755,6 +781,34 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 			game.gameState.timedModeEnabled = game.private.timerId = null;
 		}
 
+		const discarded = game.private.currentElectionPolicies[data.selection];
+
+		const modOnlyChat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'President '
+				},
+				{
+					text: `${president.userName} {${presidentIndex + 1}}`,
+					type: 'player'
+				},
+				{
+					text: wasTimer ? ' has automatically discarded a ' : ' has chosen to discard a '
+				},
+				{
+					text: discarded,
+					type: discarded
+				},
+				{
+					text: wasTimer ? 'policy due to the timer expiring.' : ' policy.'
+				}
+			]
+		};
+		game.private.hiddenInfoChat.push(modOnlyChat);
+		sendInProgressModChatUpdate(game, modOnlyChat);
+
 		if (!wasTimer && !game.general.private) {
 			// const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
 			const track4blue = game.trackState.liberalPolicyCount >= 4;
@@ -768,7 +822,6 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 			} else if (passed[1] === 'liberal') passedNicer = 'BR';
 			else passedNicer = 'RR';
 
-			const discarded = game.private.currentElectionPolicies[data.selection];
 			if (president.role.team === 'liberal') {
 				// liberal
 				if (discarded === 'liberal') {
@@ -1030,8 +1083,42 @@ module.exports.selectVoting = (passport, game, data) => {
 			!verifyCorrect(game.private.currentElectionPolicies[1]) ||
 			!verifyCorrect(game.private.currentElectionPolicies[2])
 		) {
-			makeReport(`A player has just received an invalid hand! Investigate immediately!\n${JSON.stringify(game.private.currentElectionPolicies)}`, game);
+			makeReport(`A player has just received an invalid hand!\n${JSON.stringify(game.private.currentElectionPolicies)}`, game);
 		}
+
+		const modOnlyChat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'President '
+				},
+				{
+					text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+					type: 'player'
+				},
+				{
+					text: ' received '
+				},
+				{
+					text: game.private.currentElectionPolicies[0] === 'liberal' ? 'B' : 'R',
+					type: game.private.currentElectionPolicies[0]
+				},
+				{
+					text: game.private.currentElectionPolicies[1] === 'liberal' ? 'B' : 'R',
+					type: game.private.currentElectionPolicies[1]
+				},
+				{
+					text: game.private.currentElectionPolicies[2] === 'liberal' ? 'B' : 'R',
+					type: game.private.currentElectionPolicies[2]
+				},
+				{
+					text: '.'
+				}
+			]
+		};
+		game.private.hiddenInfoChat.push(modOnlyChat);
+		sendInProgressModChatUpdate(game, modOnlyChat);
 
 		game.private.summary = game.private.summary.updateLog({
 			presidentHand: handToLog(game.private.currentElectionPolicies)
@@ -1117,7 +1204,7 @@ module.exports.selectVoting = (passport, game, data) => {
 			votes: seatedPlayers.map(p => p.voteStatus.didVoteYes)
 		});
 
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 
 		setTimeout(() => {
 			const chat = {
@@ -1280,7 +1367,7 @@ module.exports.selectVoting = (passport, game, data) => {
 			];
 		}
 
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 
 		if (seatedPlayers.filter(play => play.voteStatus.hasVoted && !play.isDead).length === game.general.livingPlayerCount) {
 			game.general.status = 'Tallying results of ballots..';
@@ -1291,11 +1378,11 @@ module.exports.selectVoting = (passport, game, data) => {
 					player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = false;
 				}
 			});
-			sendInProgressGameUpdate(game);
+			sendInProgressGameUpdate(game, true);
 			setTimeout(() => {
 				seatedPlayers.forEach(player => {
 					player.cardFlingerState = [];
-					sendInProgressGameUpdate(game);
+					sendInProgressGameUpdate(game, true);
 				});
 			}, experiencedMode ? 200 : 2000);
 			setTimeout(() => {

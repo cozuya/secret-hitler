@@ -163,12 +163,11 @@ module.exports = () => {
 					message: 'Sorry, your username contains a naughty word or part of a naughty word.'
 				});
 			} else {
-				Account.findOne({ username: username.toLowerCase() }, (err, account) => {
+				Account.findOne({ username }, (err, account) => {
 					if (err) {
 						return next(err);
 					}
-
-					if (account && account.username === username.toLowerCase()) {
+					if (account && account.username === username) {
 						res.status(401).json({ message: 'Sorry, that account already exists.' });
 					} else {
 						BannedIP.find({ ip: signupIP }, (err, ips) => {
@@ -237,13 +236,12 @@ module.exports = () => {
 						req.headers['X-Forwarded-For'] ||
 						req.headers['x-forwarded-for'] ||
 						req.connection.remoteAddress,
-					type: 'tiny' || 'small' || 'big'
+					type: { $in: ['tiny', 'small', 'big'] }
 				},
 				(err, ips) => {
 					let date;
 					let unbannedTime;
 					const ip = ips[ips.length - 1];
-
 					// const ip2 =
 					// 	req.headers['x-real-ip'] ||
 					// 	req.headers['X-Real-IP'] ||
