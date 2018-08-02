@@ -124,7 +124,9 @@ class Tracks extends React.Component {
 								? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
 								: game.rebalance7p
 									? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
-									: game.rebalance9p ? ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games')) : null;
+									: game.rebalance9p
+										? ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'))
+										: null;
 		}
 
 		if (game.voiceGame) {
@@ -316,7 +318,7 @@ class Tracks extends React.Component {
 							{gameInfo.publicPlayersState.length} / {gameInfo.general.maxPlayersCount}
 						</span>
 					</div>
-					{/* userInfo.userName &&
+					{userInfo.userName &&
 						userInfo.isSeated &&
 						gameInfo.gameState.isTracksFlipped &&
 						!gameInfo.general.isRemade &&
@@ -334,7 +336,7 @@ class Tracks extends React.Component {
 										: 'Enable this button to show that you would like to remake this game'
 								}
 							/>
-						) */}
+						)}
 					{this.state.timedModeTimer && <div className="timed-mode-counter">{this.state.timedModeTimer}</div>}
 				</div>
 				<section
@@ -344,7 +346,7 @@ class Tracks extends React.Component {
 						if (
 							gameInfo.cardFlingerState.length ||
 							gameInfo.trackState.isBlurred ||
-							(gameInfo.general.host === userInfo.userName && (!gameInfo.gameState.isTracksFlipped || gameInfo.gameState.isCompleted))
+							(gameInfo.general.host === userInfo.userName && (!gameInfo.gameState.isTracksFlipped))
 						) {
 							classes += ' blurred';
 						}

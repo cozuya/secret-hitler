@@ -241,17 +241,10 @@ module.exports.sendGameList = socket => {
 		userNames: game.publicPlayersState.map(val => val.userName),
 		customCardback: game.publicPlayersState.map(val => val.customCardback),
 		customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
-		gameStatus: game.gameState.isCompleted
-			? game.gameState.isCompleted
-			: game.gameState.isTracksFlipped
-				? game.gameState.waitingForReplacement
-					? 'waitingForReplacement'
-					: 'isStarted'
-				: 'notStarted',
+		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
 		seatedCount: game.publicPlayersState.length,
 		gameCreatorName: game.general.gameCreatorName,
 		host: game.general.host,
-		kickedStatus: game.publicPlayersState.map(player => player.kicked),
 		minPlayersCount: game.general.minPlayersCount,
 		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
 		excludedPlayerCount: game.general.excludedPlayerCount,

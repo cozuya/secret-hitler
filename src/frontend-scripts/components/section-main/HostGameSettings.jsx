@@ -11,6 +11,7 @@ export default class HostGameSettings extends React.Component {
 		super();
 		this.hostUpdateTableSettings = this.hostUpdateTableSettings.bind(this);
 		this.timedValueChange = this.timedValueChange.bind(this);
+		this.eloValueChange = this.eloValueChange.bind(this);
 		this.handleNameChange = this.handleNameChange.bind(this);
 		this.toggleGameSettings = this.toggleGameSettings.bind(this);
 		this.handlePasswordChange = this.handlePasswordChange.bind(this);
@@ -33,7 +34,9 @@ export default class HostGameSettings extends React.Component {
 			disableobserver: false,
 			casualGame: false,
 			timedMode: false,
-			timedValue: '00:02:00'
+			timedValue: '00:02:00',
+			eloLimited: false,
+			eloValue: 1675
 		};
 	}
 
@@ -74,7 +77,9 @@ export default class HostGameSettings extends React.Component {
 			casualGame: general.casualGame,
 			timedMode: general.timedMode,
 			timedValue: timeString ? timeString : '00:02:00',
-			checkedRebalanceValues: [general.rebalance6p, general.rebalance7p, general.rebalance9p]
+			checkedRebalanceValues: [general.rebalance6p, general.rebalance7p, general.rebalance9p],
+			eloLimited: general.eloMinimum ? true : false,
+			eloValue: general.eloMinimum || 1675
 		});
 	}
 
@@ -90,6 +95,10 @@ export default class HostGameSettings extends React.Component {
 
 	timedValueChange(timedValue) {
 		this.setState({ timedValue: timedValue.target.value });
+	}
+
+	eloValueChange(eloValue) {
+		this.setState({ eloValue: eloValue.target.value });
 	}
 
 	renderRebalanceCheckboxes() {
@@ -169,7 +178,8 @@ export default class HostGameSettings extends React.Component {
 				timedMode: this.state.timedMode ? seconds : false,
 				rebalance6p: this.state.checkedRebalanceValues[0],
 				rebalance7p: this.state.checkedRebalanceValues[1],
-				rebalance9p: this.state.checkedRebalanceValues[2]
+				rebalance9p: this.state.checkedRebalanceValues[2],
+				eloMinimum: this.state.eloLimited ? parseInt(this.state.eloValue, 10) : false
 			};
 
 			if (data.maxPlayersCount < gameInfo.publicPlayersState.length) {
@@ -179,6 +189,9 @@ export default class HostGameSettings extends React.Component {
 			} else if (data.rainbowgame === true && !gameInfo.general.rainbowgame) {
 				this.props.handleStoreTableSettings(data);
 				this.props.handleOpenConfirmPrompt('Update Settings rainbow');
+			} else if (data.eloMinimum && gameInfo.general.eloMinimum !== data.eloMinimum) {
+				this.props.handleStoreTableSettings(data);
+				this.props.handleOpenConfirmPrompt('Update Settings eloMinimum');
 			} else {
 				this.props.handleEmitTableSettings(data);
 			}
@@ -952,6 +965,43 @@ export default class HostGameSettings extends React.Component {
 		);
 	}
 
+	renderEloLimit() {
+		const { userInfo, userList } = this.props;
+		if (!userList.list.length) {
+			return null;
+		}
+		const player = userList.list.find(p => p.userName === userInfo.userName);
+		const isSeason = !userInfo.gameSettings.disableSeasonal;
+		const playerElo = player.eloSeason;
+
+		if (isSeason && playerElo && playerElo > 1675) {
+			return (
+				<div className="three wide column elo-limited">
+					<h4 className="ui header">Elo Limit</h4>
+					<div className="ui fitted toggle checkbox">
+						<input type="checkbox" name="elo-limited" checked={this.state.eloLimited} onChange={() => this.toggleGameSettings('eloLimited')} />
+						<label />
+					</div>
+					{this.state.eloLimited && (
+						<div>
+							<input
+								type="number"
+								id="elo"
+								name="elo"
+								placeholder="1675"
+								min="1675"
+								max={player.eloSeason}
+								value={this.state.eloValue}
+								onChange={this.eloValueChange}
+							/>
+							<span className="validity" />
+						</div>
+					)}
+				</div>
+			);
+		}
+	}
+
 	render() {
 		const sliderCheckboxClick = index => {
 			const newSliderValues = this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el)),
@@ -1034,6 +1084,7 @@ export default class HostGameSettings extends React.Component {
 							</div>
 							<div className="row rebalance">{this.renderRebalanceCheckboxes()}</div>
 						</div>
+						{this.renderEloLimit()}
 						<div className="four wide column timedmode-check">
 							<i className="big hourglass half icon" />
 							<h4 className="ui header">Timed mode</h4>

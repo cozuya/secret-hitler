@@ -258,7 +258,6 @@ const DisplayLobbies = props => {
 		game.customCardbackUid.forEach((el, index) => (players[index].customCardbackUid = el));
 		players.forEach((player, index) => {
 			const userStats = userList.list ? userList.list.find(el => el.userName === player.userName) : null;
-			players[index].kicked = game.kickedStatus[index];
 			if (userStats) {
 				players[index].wins = userStats.wins;
 				players[index].losses = userStats.losses;
@@ -275,9 +274,7 @@ const DisplayLobbies = props => {
 					? PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback')
 					: 'player-small-cardback';
 
-			if (player.kicked) {
-				total.push(<div key={total.length} className="empty-seat-icons" />);
-			} else if (
+			if (
 				player.customCardback &&
 				!game.private &&
 				(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))

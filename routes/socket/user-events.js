@@ -1,7 +1,7 @@
 let generalChatCount = 0;
 
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, newStaff } = require('./models');
-const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { sendGameList, sendGameInfo, sendGeneralChats, sendUserList, updateUserStatus, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const Account = require('../../models/account');
 const Generalchats = require('../../models/generalchats');
 const ModAction = require('../../models/modAction');
@@ -164,7 +164,7 @@ module.exports.startCountdown = game => {
 	}, 1000);
 };
 
-// NOT USED - hosts now start the game with hostStartGame()
+// NOT USED - hosts now start the game with hostStartGame() in host-events.js
 /**
  * @param {object} game - game to act on.
  */
@@ -202,6 +202,10 @@ module.exports.startCountdown = game => {
  * @param {number} playerIndex - player who has left the game.
  */
 const checkTransferHost = (game, playerIndex) => {
+	if (game.gameState.isTracksFlipped) {
+		return;
+	}
+
 	if (game.publicPlayersState[playerIndex].userName !== game.general.host) {
 		return;
 	}
@@ -211,12 +215,6 @@ const checkTransferHost = (game, playerIndex) => {
 			game.general.host = game.publicPlayersState[i].userName;
 			break;
 		}
-	}
-	if (game.general.host === game.publicPlayersState[playerIndex].userName) {
-		// host hasn't transfered, no viable players
-		games.splice(games.indexOf(game), 1);
-		sendGameList();
-		return;
 	}
 
 	// get the new hosts blacklist
@@ -362,47 +360,48 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (playerIndex > -1) {
-		// if (game.publicPlayersState[playerIndex].isRemakeVoting) {
-		// 	Count leaving the game as rescinded remake vote.
-		// 	const minimumRemakeVoteCount = (() => {
-		// 		switch (game.general.playerCount) {
-		// 			case 5:
-		// 				return 4;
-		// 			case 6:
-		// 				return 5;
-		// 			case 7:
-		// 				return 5;
-		// 			case 8:
-		// 				return 6;
-		// 			case 9:
-		// 				return 6;
-		// 			case 10:
-		// 				return 7;
-		// 		}
-		// 	})();
-		// 	const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
+		if (game.publicPlayersState[playerIndex].isRemakeVoting) {
+			// Count leaving the game as rescinded remake vote.
+			const minimumRemakeVoteCount = (() => {
+				switch (game.general.playerCount) {
+					case 5:
+						return 4;
+					case 6:
+						return 5;
+					case 7:
+						return 5;
+					case 8:
+						return 6;
+					case 9:
+						return 6;
+					case 10:
+						return 7;
+				}
+			})();
+			const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-		// 	if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
-		// 		game.general.isRemaking = false;
-		// 		game.general.status = 'Game remaking has been cancelled.';
-		// 		clearInterval(game.private.remakeTimer);
-		// 	}
-		// 	const chat = {
-		// 		timestamp: new Date(),
-		// 		gameChat: true,
-		// 		chat: [
-		// 			{
-		// 				text: 'A player'
-		// 			}
-		// 		]
-		// 	};
-		// 	chat.chat.push({
-		// 		text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
-		// 			1}/${minimumRemakeVoteCount})`
-		// 	});
-		// 	game.chats.push(chat);
-		// 	game.publicPlayersState[playerIndex].isRemakeVoting = false;
-		// }
+			if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+				game.general.isRemaking = false;
+				game.general.status = 'Game remaking has been cancelled.';
+				clearInterval(game.private.remakeTimer);
+			}
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: 'A player'
+					}
+				]
+			};
+			chat.chat.push({
+				text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
+					1}/${minimumRemakeVoteCount})`
+			});
+			game.chats.push(chat);
+			game.publicPlayersState[playerIndex].isRemakeVoting = false;
+			game.publicPlayersState[playerIndex].isRemaking = false;
+		}
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
@@ -489,7 +488,7 @@ const updateSeatedUser = (socket, passport, data) => {
 	// Authentication Assured in routes.js
 	const game = games.find(el => el.general.uid === data.uid);
 
-	if (game && (!game.gameState.isStarted || game.gameState.waitingForReplacement)) {
+	if (game && !game.gameState.isStarted) {
 		Account.findOne({ username: passport.user }).then(account => {
 			const isNotMaxedOut = game.publicPlayersState.length < game.general.maxPlayersCount;
 			const isNotInGame = !game.publicPlayersState.find(player => player.userName === passport.user);
@@ -500,7 +499,8 @@ const updateSeatedUser = (socket, passport, data) => {
 			const isBlacklistSafe = !game.general.hostBlacklist.includes(passport.user);
 			const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason;
 			const isKickedTimeoutSafe = !game.general.kickedTimes[passport.user] || Date.now() - game.general.kickedTimes[passport.user] > 20000;
-			if (isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum && isKickedTimeoutSafe) {
+
+			if (isNotInGame && isNotMaxedOut && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum && isKickedTimeoutSafe) {
 				const { publicPlayersState } = game;
 				const player = {
 					userName: passport.user,
@@ -542,36 +542,10 @@ const updateSeatedUser = (socket, passport, data) => {
 							}
 						]
 					});
-				} else if (game.gameState.waitingForReplacement && publicPlayersState[data.seatIndex].kicked === true) {
-					publicPlayersState[data.seatIndex].leftGame = false;
-					publicPlayersState[data.seatIndex].kicked = false;
-					publicPlayersState[data.seatIndex].userName = passport.user;
-					publicPlayersState[data.seatIndex].customCardback = account.gameSettings.customCardback;
-					publicPlayersState[data.seatIndex].customCardbackUid = account.gameSettings.customCardbackUid;
-					(publicPlayersState[data.seatIndex].tournyWins = account.gameSettings.tournyWins),
-						(publicPlayersState[data.seatIndex].previousSeasonAward = account.gameSettings.previousSeasonAward),
-						(publicPlayersState[data.seatIndex].staffDisableVisibleElo = account.gameSettings.staffDisableVisibleElo),
-						(publicPlayersState[data.seatIndex].staffDisableStaffColor = account.gameSettings.staffDisableStaffColor),
-						(game.private.seatedPlayers[data.seatIndex].userName = passport.user);
-
-					if (
-						(game.gameState.phase === 'selectingChancellor' && publicPlayersState[data.seatIndex].governmentStatus === 'isPendingPresident') ||
-						(data.seatIndex === game.gameState.presidentIndex &&
-							(game.gameState.phase === 'selectPartyMembershipInvestigate' ||
-								game.gameState.phase === 'specialElection' ||
-								game.gameState.phase === 'execution'))
-					) {
-						game.gameState.clickActionInfo[0] = passport.user;
-					}
-					game.chats.push({
-						timestamp: Date.now(),
-						hostChat: true,
-						chat: [{ text: `${passport.user} is asking the host to sit in seat {${data.seatIndex + 1}}` }]
-					});
-				} else if (!game.gameState.isStarted && isNotMaxedOut) {
-					publicPlayersState.push(player);
-					game.general.status = displayWaitingForPlayers(game);
 				}
+
+				publicPlayersState.push(player);
+				game.general.status = displayWaitingForPlayers(game);
 
 				socket.emit('updateSeatForUser', true);
 				updateUserStatus(passport, game);
@@ -1175,226 +1149,243 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 	}
 };
 
-// /**
-//  * @param {object} passport - socket authentication.
-//  * @param {object} game - target game.
-//  * @param {object} data - from socket emit.
-//  */
-// module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
-// 	if (game.general.isRemade) {
-// 		return; // Games can only be remade once.
-// 	}
+/**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
+ * @param {object} data - from socket emit.
+ */
+module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
+	if (game.general.isRemade) {
+		return; // Games can only be remade once.
+	}
 
-// 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
-// 	const { publicPlayersState } = game;
-// 	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
-// 	const player = publicPlayersState[playerIndex];
+	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
+	const { publicPlayersState } = game;
+	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+	const player = publicPlayersState[playerIndex];
 
-// 	/**
-// 	 * @return {number} minimum number of remake votes to remake a game
-// 	 */
-// 	const minimumRemakeVoteCount = (() => {
-// 		switch (game.general.playerCount) {
-// 			case 5:
-// 				return 4;
-// 			case 6:
-// 				return 5;
-// 			case 7:
-// 				return 5;
-// 			case 8:
-// 				return 6;
-// 			case 9:
-// 				return 6;
-// 			case 10:
-// 				return 7;
-// 		}
-// 	})();
-// 	const chat = {
-// 		timestamp: new Date(),
-// 		gameChat: true,
-// 		chat: [
-// 			{
-// 				text: 'A player'
-// 			}
-// 		]
-// 	};
-// 	const makeNewGame = () => {
-// 		const newGame = _.cloneDeep(game);
-// 		const remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName);
-// 		const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
-// 			socketId =>
-// 				io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
-// 		);
+	/**
+	 * @return {number} minimum number of remake votes to remake a game
+	 */
+	const minimumRemakeVoteCount = (() => {
+		switch (game.general.playerCount) {
+			case 5:
+				return 4;
+			case 6:
+				return 5;
+			case 7:
+				return 5;
+			case 8:
+				return 6;
+			case 9:
+				return 6;
+			case 10:
+				return 7;
+		}
+	})();
+	const chat = {
+		timestamp: new Date(),
+		gameChat: true,
+		chat: [
+			{
+				text: 'A player'
+			}
+		]
+	};
+	const makeNewGame = () => {
+		const newGame = _.cloneDeep(game);
+		const remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName);
+		const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
+			socketId =>
+				io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+		);
 
-// 		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game);
 
-// 		newGame.gameState = {
-// 			previousElectedGovernment: [],
-// 			undrawnPolicyCount: 17,
-// 			discardedPolicyCount: 0,
-// 			presidentIndex: -1
-// 		};
+		newGame.gameState = {
+			previousElectedGovernment: [],
+			undrawnPolicyCount: 17,
+			discardedPolicyCount: 0,
+			presidentIndex: -1
+		};
 
-// 		newGame.chats = [];
-// 		newGame.general.isRemade = false;
-// 		newGame.general.isRemaking = false;
-// 		newGame.summarySaved = false;
-// 		newGame.general.uid = `${game.general.uid}Remake`;
-// 		newGame.general.electionCount = 0;
-// 		newGame.timeCreated = new Date().getTime();
-// 		newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
-// 			userName: player.userName,
-// 			customCardback: player.customCardback,
-// 			customCardbackUid: player.customCardbackUid,
-// 			connected: player.connected,
-// 			isRemakeVoting: false,
-// 			cardStatus: {
-// 				cardDisplayed: false,
-// 				isFlipped: false,
-// 				cardFront: 'secretrole',
-// 				cardBack: {}
-// 			}
-// 		}));
-// 		newGame.playersState = [];
-// 		newGame.cardFlingerState = [];
-// 		newGame.trackState = {
-// 			liberalPolicyCount: 0,
-// 			fascistPolicyCount: 0,
-// 			electionTrackerCount: 0,
-// 			enactedPolicies: []
-// 		};
-// 		newGame.private = {
-// 			reports: {},
-// 			unSeatedGameChats: [],
-// 			lock: {},
-// 			privatePassword: game.private.privatePassword
-// 		};
+		newGame.chats = [];
+		newGame.general.isRemade = false;
+		newGame.general.isRemaking = false;
+		newGame.summarySaved = false;
+		newGame.general.uid = generateCombination(2, '', true);
+		newGame.general.electionCount = 0;
+		newGame.timeCreated = new Date().getTime();
+		newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
+			userName: player.userName,
+			customCardback: player.customCardback,
+			customCardbackUid: player.customCardbackUid,
+			connected: player.connected,
+			isRemakeVoting: false,
+			cardStatus: {
+				cardDisplayed: false,
+				isFlipped: false,
+				cardFront: 'secretrole',
+				cardBack: {}
+			}
+		}));
+		newGame.playersState = [];
+		newGame.cardFlingerState = [];
+		newGame.trackState = {
+			liberalPolicyCount: 0,
+			fascistPolicyCount: 0,
+			electionTrackerCount: 0,
+			enactedPolicies: []
+		};
+		newGame.private = {
+			reports: {},
+			unSeatedGameChats: [],
+			lock: {},
+			privatePassword: game.private.privatePassword
+		};
 
-// 		game.publicPlayersState.forEach((player, i) => {
-// 			player.cardStatus.cardFront = 'secretrole';
-// 			player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-// 			player.cardStatus.cardDisplayed = true;
-// 			player.cardStatus.isFlipped = true;
-// 		});
+		if (newGame.general.voiceGame) {
+			newGame.chats.push({
+				timestamp: Date.now(),
+				gameChat: true,
+				chat: [{ text: `This is a VOICE GAME. Join Discord or the host may kick you.` }]
+			});
+		}
 
-// 		game.general.status = 'Game is being remade..';
-// 		if (!game.summarySaved) {
-// 			const summary = game.private.summary.publish();
-// 			if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
-// 				summary.save();
-// 				game.summarySaved = true;
-// 			}
-// 		}
-// 		sendInProgressGameUpdate(game);
+		// transfer host and get new blacklist
+		if (!remakePlayerNames.includes(game.general.host)) {
+			newGame.general.host = remakePlayerNames[0];
+			const newHost = userList.find(user => user.userName === newGame.general.host);
+			if (newHost) {
+				newGame.general.hostBlacklist = newHost.blacklist;
+			}
+		}
 
-// 		setTimeout(() => {
-// 			game.publicPlayersState.forEach(player => {
-// 				if (remakePlayerNames.includes(player.userName)) player.leftGame = true;
-// 			});
+		game.publicPlayersState.forEach((player, i) => {
+			player.cardStatus.cardFront = 'secretrole';
+			player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+			player.cardStatus.cardDisplayed = true;
+			player.cardStatus.isFlipped = true;
+		});
 
-// 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-// 				games.splice(games.indexOf(game), 1);
-// 			} else {
-// 				sendInProgressGameUpdate(game);
-// 			}
+		game.general.status = 'Game is being remade..';
+		if (!game.summarySaved) {
+			const summary = game.private.summary.publish();
+			if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
+				summary.save();
+				game.summarySaved = true;
+			}
+		}
+		sendInProgressGameUpdate(game);
 
-// 			games.push(newGame);
-// 			sendGameList();
+		setTimeout(() => {
+			game.publicPlayersState.forEach(player => {
+				if (remakePlayerNames.includes(player.userName)) player.leftGame = true;
+			});
 
-// 			remakePlayerSocketIDs.forEach((id, index) => {
-// 				if (io.sockets.sockets[id]) {
-// 					io.sockets.sockets[id].leave(game.general.uid);
-// 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-// 					updateSeatedUser(io.sockets.sockets[id], passport, { uid: newGame.general.uid });
-// 					// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
-// 				}
-// 			});
-// 			checkStartConditions(newGame);
-// 		}, 3000);
-// 	};
+			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+				games.splice(games.indexOf(game), 1);
+			} else {
+				sendInProgressGameUpdate(game);
+			}
 
-// 	/**
-// 	 * @param {string} firstTableUid - the UID of the first tournament table
-// 	 */
-// 	const cancellTourny = firstTableUid => {
-// 		const secondTableUid =
-// 			firstTableUid.charAt(firstTableUid.length - 1) === 'A'
-// 				? `${firstTableUid.slice(0, firstTableUid.length - 1)}B`
-// 				: `${firstTableUid.slice(0, firstTableUid.length - 1)}A`;
-// 		const secondTable = games.find(game => game.general.uid === secondTableUid);
+			games.push(newGame);
+			sendGameList();
 
-// 		if (secondTable) {
-// 			secondTable.general.tournyInfo.isCancelled = true;
-// 			secondTable.chats.push({
-// 				gameChat: true,
-// 				timestamp: new Date(),
-// 				chat: [
-// 					{
-// 						text: 'Due to the other tournament table voting for cancellation, this tournament has been cancelled.',
-// 						type: 'hitler'
-// 					}
-// 				]
-// 			});
-// 			secondTable.general.status = 'Tournament has been cancelled.';
-// 			sendInProgressGameUpdate(secondTable);
-// 		}
-// 	};
+			remakePlayerSocketIDs.forEach((id, index) => {
+				if (io.sockets.sockets[id]) {
+					io.sockets.sockets[id].leave(game.general.uid);
+					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
+					updateSeatedUser(io.sockets.sockets[id], passport, { uid: newGame.general.uid });
+					// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
+				}
+			});
+		}, 3000);
+	};
 
-// 	if (!game || !player || !game.publicPlayersState) {
-// 		return;
-// 	}
+	/**
+	 * @param {string} firstTableUid - the UID of the first tournament table
+	 */
+	const cancellTourny = firstTableUid => {
+		const secondTableUid =
+			firstTableUid.charAt(firstTableUid.length - 1) === 'A'
+				? `${firstTableUid.slice(0, firstTableUid.length - 1)}B`
+				: `${firstTableUid.slice(0, firstTableUid.length - 1)}A`;
+		const secondTable = games.find(game => game.general.uid === secondTableUid);
 
-// 	player.isRemakeVoting = data.remakeStatus;
+		if (secondTable) {
+			secondTable.general.tournyInfo.isCancelled = true;
+			secondTable.chats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{
+						text: 'Due to the other tournament table voting for cancellation, this tournament has been cancelled.',
+						type: 'hitler'
+					}
+				]
+			});
+			secondTable.general.status = 'Tournament has been cancelled.';
+			sendInProgressGameUpdate(secondTable);
+		}
+	};
 
-// 	if (data.remakeStatus) {
-// 		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+	if (!game || !player || !game.publicPlayersState) {
+		return;
+	}
 
-// 		chat.chat.push({
-// 			text: ` has voted to ${remakeText} this ${game.general.isTourny ? 'tournament.' : 'game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
-// 		});
-// 		player.isRemaking = true;
+	player.isRemakeVoting = data.remakeStatus;
 
-// 		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
-// 			game.general.isRemaking = true;
-// 			game.general.remakeCount = 5;
+	if (data.remakeStatus) {
+		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-// 			game.private.remakeTimer = setInterval(() => {
-// 				if (game.general.remakeCount !== 0) {
-// 					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
-// 						game.general.remakeCount === 1 ? 'second' : 'seconds'
-// 					}.`;
-// 					game.general.remakeCount--;
-// 				} else {
-// 					clearInterval(game.private.remakeTimer);
-// 					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
-// 					game.general.isRemade = true;
-// 					if (game.general.isTourny) {
-// 						cancellTourny(game.general.uid);
-// 					} else {
-// 						makeNewGame();
-// 					}
-// 				}
-// 				sendInProgressGameUpdate(game);
-// 			}, 1000);
-// 		}
-// 	} else {
-// 		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+		chat.chat.push({
+			text: ` has voted to ${remakeText} this ${game.general.isTourny ? 'tournament.' : 'game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+		});
+		player.isRemaking = true;
 
-// 		if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
-// 			game.general.isRemaking = false;
-// 			game.general.status = 'Game remaking has been cancelled.';
-// 			clearInterval(game.private.remakeTimer);
-// 		}
-// 		chat.chat.push({
-// 			text: ` has rescinded their vote to ${
-// 				game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
-// 			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
-// 		});
-// 	}
-// 	game.chats.push(chat);
+		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
+			game.general.isRemaking = true;
+			game.general.remakeCount = 5;
 
-// 	sendInProgressGameUpdate(game);
-// };
+			game.private.remakeTimer = setInterval(() => {
+				if (game.general.remakeCount !== 0) {
+					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
+						game.general.remakeCount === 1 ? 'second' : 'seconds'
+					}.`;
+					game.general.remakeCount--;
+				} else {
+					clearInterval(game.private.remakeTimer);
+					game.general.status = `Game has been ${game.general.isTourny ? 'cancelled' : 'remade'}.`;
+					game.general.isRemade = true;
+					if (game.general.isTourny) {
+						cancellTourny(game.general.uid);
+					} else {
+						makeNewGame();
+					}
+				}
+				sendInProgressGameUpdate(game);
+			}, 1000);
+		}
+	} else {
+		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
+		player.isRemaking = false;
+
+		if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+			game.general.isRemaking = false;
+			game.general.status = 'Game remaking has been cancelled.';
+			clearInterval(game.private.remakeTimer);
+		}
+		chat.chat.push({
+			text: ` has rescinded their vote to ${
+				game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
+			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+		});
+	}
+	game.chats.push(chat);
+
+	sendInProgressGameUpdate(game);
+};
 
 /**
  * @param {object} socket - socket reference.

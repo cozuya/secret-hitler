@@ -93,7 +93,7 @@ export class App extends React.Component {
 
 			userInfo.gameSettings = settings;
 			dispatch(updateUser(userInfo));
-			//this.forceUpdate(); // dunno why I need this to make it work I'm bad at this.
+			// this.forceUpdate(); // dunno why I need this to make it work I'm bad at this.
 		});
 
 		socket.on('gameList', list => {
@@ -264,11 +264,10 @@ export class App extends React.Component {
 
 	// ***** end dev helpers *****
 
-	handleSeatingUser(password, seatIndex) {
+	handleSeatingUser(password) {
 		const { gameInfo } = this.props;
 		const data = {
 			uid: gameInfo.general.uid,
-			seatIndex,
 			password
 		};
 

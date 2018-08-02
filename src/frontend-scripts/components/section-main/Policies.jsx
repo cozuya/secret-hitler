@@ -58,7 +58,6 @@ const Policies = props => {
 						userInfo.userName &&
 						userInfo.isSeated &&
 						gameInfo.gameState.isStarted &&
-						!gameInfo.gameState.waitingForReplacement &&
 						gameInfo.playersState &&
 						gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)] &&
 						gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].policyNotification

@@ -23,21 +23,13 @@ module.exports.sendInProgressGameUpdate = game => {
 		return;
 	}
 
-	const seatedPlayers = game.publicPlayersState.map(player => {
-		return { userName: player.userName, waitingForHostAccept: player.waitingForHostAccept };
-	});
-	const isSeated = socket => seatedPlayers.map(player => player.userName).includes(socket.handshake.session.passport.user);
-	const isWaitingForHostAccept = socket => seatedPlayers.find(player => player.userName === socket.handshake.session.passport.user).waitingForHostAccept;
+	const seatedPlayerNames = game.publicPlayersState.map(player => player.userName);
+	const isSeated = socket => seatedPlayerNames.includes(socket.handshake.session.passport.user);
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
 	const playerSockets = roomSockets.filter(
-		socket =>
-			socket &&
-			socket.handshake.session.passport &&
-			Object.keys(socket.handshake.session.passport).length &&
-			isSeated(socket) &&
-			!isWaitingForHostAccept(socket)
+		socket => socket && socket.handshake.session.passport && Object.keys(socket.handshake.session.passport).length && isSeated(socket)
 	);
-	const observerSockets = roomSockets.filter(socket => socket && (!socket.handshake.session.passport || !isSeated(socket) || isWaitingForHostAccept(socket)));
+	const observerSockets = roomSockets.filter(socket => socket && (!socket.handshake.session.passport || !isSeated(socket)));
 
 	if (playerSockets.length) {
 		playerSockets.forEach(sock => {

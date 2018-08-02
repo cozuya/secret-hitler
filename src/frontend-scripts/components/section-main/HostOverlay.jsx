@@ -6,17 +6,13 @@ class HostOverlay extends React.Component {
 		super();
 		this.hostStartGame = this.hostStartGame.bind(this);
 		this.hostCancelStart = this.hostCancelStart.bind(this);
-		this.hostRemake = this.hostRemake.bind(this);
 		this.timeSinceLastStartClick;
 		this.timeSinceLastCancelClick;
-		this.timeSinceLastRemakeClick;
 		this.state = {
 			showStartLoader: false,
 			showCancelLoader: false,
-			showRemakeLoader: false,
 			disableStartButton: false,
-			disableCancelButton: false,
-			disableRemakeButton: false
+			disableCancelButton: false
 		};
 	}
 
@@ -43,13 +39,6 @@ class HostOverlay extends React.Component {
 				this.setState({ disableCancelButton: false });
 			}, 3000);
 		}
-
-		if (this.state.disableRemakeButton === false && currentTime - this.timeSinceLastRemakeClick < 5000) {
-			this.setState({ disableRemakeButton: true });
-			setTimeout(() => {
-				this.setState({ disableRemakeButton: false });
-			}, 5000);
-		}
 	}
 
 	hostStartGame() {
@@ -70,14 +59,6 @@ class HostOverlay extends React.Component {
 		}
 	}
 
-	hostRemake() {
-		if (this.props.gameInfo.gameState.isCompleted && !(Date.now() - this.timeSinceLastRemakeClick < 5000)) {
-			this.timeSinceLastRemakeClick = Date.now();
-			this.setState({ showRemakeLoader: true });
-			this.props.socket.emit('hostRemake', { uid: this.props.gameInfo.general.uid });
-		}
-	}
-
 	render() {
 		const { gameInfo } = this.props;
 
@@ -88,10 +69,6 @@ class HostOverlay extends React.Component {
 		let cancelButtonClasses = 'ui button start';
 		if (this.state.disableCancelButton) {
 			cancelButtonClasses += ' disabled';
-		}
-		let remakeButtonClasses = 'ui button primary start remake';
-		if (this.state.disableRemakeButton) {
-			remakeButtonClasses += ' disabled';
 		}
 
 		if (!gameInfo.gameState.isTracksFlipped) {
@@ -114,15 +91,6 @@ class HostOverlay extends React.Component {
 							{this.state.showCancelLoader && <div className="ui active big inverted loader" />}
 						</div>
 					)}
-				</div>
-			);
-		} else if (gameInfo.gameState.isCompleted) {
-			return (
-				<div className="help-message host">
-					<div className={remakeButtonClasses} onClick={this.hostRemake}>
-						Remake Game
-						{this.state.showRemakeLoader && <div className="ui active big inverted loader" />}
-					</div>
 				</div>
 			);
 		} else {

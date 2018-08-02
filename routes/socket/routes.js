@@ -15,7 +15,7 @@ const {
 	handlePlayerReport,
 	handlePlayerReportDismiss,
 	handleUpdatedBio,
-	// handleUpdatedRemakeGame,
+	handleUpdatedRemakeGame,
 	handleUpdatedPlayerNote
 } = require('./user-events');
 const {
@@ -30,16 +30,7 @@ const {
 	sendReplayGameChats,
 	updateUserStatus
 } = require('./user-requests');
-const {
-	hostStartGame,
-	hostCancelStart,
-	hostRemake,
-	hostKickPlayer,
-	hostBlacklistPlayer,
-	hostRemoveFromBlacklist,
-	hostAcceptPlayer,
-	hostUpdateTableSettings
-} = require('./host-events');
+const { hostStartGame, hostCancelStart, hostKickPlayer, hostBlacklistPlayer, hostRemoveFromBlacklist, hostUpdateTableSettings } = require('./host-events');
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
@@ -210,12 +201,12 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					handlePlayerReportDismiss();
 				}
 			})
-			// .on('updateRemake', data => {
-			// 	const game = findGame(data);
-			// 	if (authenticated && ensureInGame(passport, game)) {
-			// 		handleUpdatedRemakeGame(passport, game, data);
-			// 	}
-			// })
+			.on('updateRemake', data => {
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleUpdatedRemakeGame(passport, game, data);
+				}
+			})
 			.on('updateBio', data => {
 				if (authenticated) {
 					handleUpdatedBio(socket, passport, data);
@@ -235,12 +226,6 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					hostCancelStart(game);
 				}
 			})
-			.on('hostRemake', data => {
-				const game = findGame(data);
-				if (authenticated && isHost(passport, game)) {
-					hostRemake(passport, game);
-				}
-			})
 			.on('hostKickPlayer', data => {
 				const game = findGame(data);
 				if (authenticated && isHost(passport, game)) {
@@ -257,12 +242,6 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				const game = findGame(data);
 				if (authenticated && isHost(passport, game)) {
 					hostRemoveFromBlacklist(socket, game, data);
-				}
-			})
-			.on('hostAcceptPlayer', data => {
-				const game = findGame(data);
-				if (authenticated && isHost(passport, game)) {
-					hostAcceptPlayer(game, data);
 				}
 			})
 			.on('hostUpdateTableSettings', data => {

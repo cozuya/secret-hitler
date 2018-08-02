@@ -11,7 +11,6 @@ class HostMenu extends React.Component {
 		super();
 		this.hostKickPlayer = this.hostKickPlayer.bind(this);
 		this.hostBlacklistPlayer = this.hostBlacklistPlayer.bind(this);
-		this.hostRemakeGame = this.hostRemakeGame.bind(this);
 		this.handleOpenHostMenu = this.handleOpenHostMenu.bind(this);
 		this.handleCloseHostMenu = this.handleCloseHostMenu.bind(this);
 		this.handleOpenWarning = this.handleOpenWarning.bind(this);
@@ -113,14 +112,6 @@ class HostMenu extends React.Component {
 		this.handleCloseConfirmPrompt();
 	}
 
-	hostRemakeGame() {
-		const { gameInfo, socket } = this.props;
-		if (gameInfo.gameState.isTracksFlipped && !gameInfo.general.isRemaking) {
-			socket.emit('hostRemake', { uid: this.props.gameInfo.general.uid });
-		}
-		this.handleCloseConfirmPrompt();
-	}
-
 	renderHostWarning() {
 		return (
 			<Portal closeOnDocumentClick={false} onClose={this.handleCloseWarning} open={this.state.openWarning}>
@@ -154,8 +145,10 @@ class HostMenu extends React.Component {
 					action = 'Update Settings';
 					message = 'This will kick any non-rainbow players.';
 					break;
-				case 'Remake Game':
-					onConfirm = this.hostRemakeGame;
+				case 'Update Settings eloMinimum':
+					onConfirm = () => this.handleEmitTableSettings();
+					action = 'Update Settings';
+					message = 'This will kick any players below the minimum Elo.';
 					break;
 			}
 			return (
@@ -193,7 +186,7 @@ class HostMenu extends React.Component {
 	renderPlayerMenu(action) {
 		const { gameInfo, userInfo } = this.props;
 
-		if (action === 'Kick' && gameInfo.gameState.isCompleted) {
+		if (action === 'Kick' && gameInfo.gameState.isStarted) {
 			return <div className="link inactive">Kick Player</div>;
 		} else {
 			return (
@@ -263,19 +256,6 @@ class HostMenu extends React.Component {
 									return (
 										<div className={classes} onClick={onClick}>
 											Game Settings
-										</div>
-									);
-								})()}
-								{(() => {
-									let classes = 'link',
-										onClick = () => this.handleOpenConfirmPrompt('Remake Game');
-									if (!gameInfo.gameState.isTracksFlipped || gameInfo.general.isRemaking) {
-										classes += ' inactive';
-										onClick = null;
-									}
-									return (
-										<div className={classes} onClick={onClick}>
-											Remake game
 										</div>
 									);
 								})()}

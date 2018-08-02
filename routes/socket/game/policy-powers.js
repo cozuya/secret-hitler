@@ -38,10 +38,6 @@ module.exports.selectPolicies = (passport, game) => {
 		return;
 	}
 
-	if (game.gameState.waitingForReplacement) {
-		return;
-	}
-
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
@@ -161,7 +157,7 @@ module.exports.investigateLoyalty = game => {
 	if (!game.private.lock.investigateLoyalty && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.investigateLoyalty = true;
 
-		game.general.status = 'Waiting for President to investigate.';
+		game.general.status = 'Waiting; for President to investigate.';
 		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).forEach(player => {
 			player.notificationStatus = 'notification';
 		});
@@ -200,10 +196,6 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
 	}
 
 	if (!president || president.userName !== passport.user) {
-		return;
-	}
-
-	if (game.gameState.waitingForReplacement) {
 		return;
 	}
 
@@ -352,10 +344,6 @@ module.exports.selectSpecialElection = (passport, game, data) => {
 		return;
 	}
 
-	if (game.gameState.waitingForReplacement) {
-		return;
-	}
-
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
@@ -443,10 +431,6 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 	}
 
 	if (!president || president.userName !== passport.user) {
-		return;
-	}
-
-	if (game.gameState.waitingForReplacement) {
 		return;
 	}
 

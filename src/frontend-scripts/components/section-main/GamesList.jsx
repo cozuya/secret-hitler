@@ -134,25 +134,6 @@ export class GamesList extends React.Component {
 					const aName = a.name.toLowerCase();
 					const bName = b.name.toLowerCase();
 
-					if (aGameStatus === 'waitingForReplacement' && bGameStatus === 'waitingForReplacement') {
-						if (a.seatedCount === b.seatedCount) {
-							if (aName === bName) {
-								return a.uid < b.uid ? 1 : -1;
-							} else {
-								return aName > bName ? 1 : -1;
-							}
-						} else {
-							return b.seatedCount - a.seatedCount;
-						}
-					}
-
-					if (aGameStatus === 'waitingForReplacement' && bGameStatus !== 'waitingForReplacement') {
-						return -1;
-					}
-					if (aGameStatus !== 'waitingForReplacement' && bGameStatus === 'waitingForReplacement') {
-						return 1;
-					}
-
 					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
 						if (a.seatedCount === b.seatedCount) {
 							if (aName === bName) {
