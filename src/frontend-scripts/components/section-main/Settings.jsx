@@ -15,7 +15,6 @@ class Settings extends React.Component {
 		this.sliderChange = this.sliderChange.bind(this);
 		this.sliderDrop = this.sliderDrop.bind(this);
 		this.profileSearchSubmit = this.profileSearchSubmit.bind(this);
-		this.namechangeSubmit = this.namechangeSubmit.bind(this);
 		this.toggleGameSettings = this.toggleGameSettings.bind(this);
 		this.handleSoundChange = this.handleSoundChange.bind(this);
 		this.state = {
@@ -45,12 +44,14 @@ class Settings extends React.Component {
 			failedNameChangeMessage: '',
 			soundSelected: 'Pack 1',
 			staffDisableVisibleElo: '',
-			staffDisableStaffColor: ''
+			staffDisableStaffColor: '',
+			fullheight: false
 		};
 	}
 
 	componentWillMount() {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
+		console.log(gameSettings);
 
 		this.setState({
 			fontChecked: gameSettings.fontFamily || 'comfortaa',
@@ -66,6 +67,7 @@ class Settings extends React.Component {
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
 			isPrivate: gameSettings.isPrivate || '',
+			fullheight: gameSettings.fullheight || false,
 			soundSelected: gameSettings.soundStatus || 'Off',
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false
@@ -104,11 +106,6 @@ class Settings extends React.Component {
 		this.props.socket.emit('updateGameSettings', {
 			fontSize: this.state.fontSize
 		});
-	}
-
-	namechangeSubmit(e) {
-		e.preventDefault();
-		this.props.socket.emit('namechange', this.state.namechangeValue);
 	}
 
 	profileSearchSubmit(e) {
@@ -446,6 +443,11 @@ class Settings extends React.Component {
 								<option>Pack1</option>
 								<option>Pack2</option>
 							</select>
+							<h4 className="ui header">UI full height in games</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="fullheight" checked={this.state.fullheight} onChange={() => this.toggleGameSettings('fullheight')} />
+								<label />
+							</div>
 							<h4 className="ui header" style={{ color: 'red' }}>
 								Private-games-only (this action will log you out, 18 hour cooldown)
 							</h4>

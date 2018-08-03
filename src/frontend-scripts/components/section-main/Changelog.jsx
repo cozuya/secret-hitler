@@ -8,6 +8,25 @@ const Changelog = () => (
 		<div className="ui header">
 			<h2>Changelog</h2>
 		</div>
+		<div>
+			<p>Version 0.14.11 released 8-4-2018</p>
+		</div>
+		<h4>New feature: full height in game player setting</h4>
+		<p>
+			There's a new setting for players when enabled, the UI will take up the full height of your monitor while in game, greatly extending the chatbox (see
+			below). This will only be apparent for (on 100% browser zoom) players with larger monitors, laptops and smaller will not see any change.
+		</p>
+		<h4>New feature: moderator manual conclusion of games.</h4>
+		<p>
+			In a ranked game where someone afks/rage quits at the very end when they're about to lose? Contact a moderator and they can end the game for the team that
+			was about to win, assigning you precious elo points. About time!
+		</p>
+		<ul>
+			<li>New emotes! Sheeped, Shepherd, and ThumbsDown. Thanks to contributor JohnCena.</li>
+			<li>There's some new polls available, please take a look.</li>
+			<li>Private/anonymous player names can no longer be seen by hovering on them..</li>
+			<li>Contributor color is back.</li>
+		</ul>
 		<div className="ui header">
 			<p>Version 0.14.10 released 7-23-2018</p>
 		</div>

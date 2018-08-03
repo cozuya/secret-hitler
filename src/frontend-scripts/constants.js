@@ -1,26 +1,8 @@
 const cn = require('classnames');
 
-// const MODERATORS = (module.exports.MODERATORS = [
-// 	'Uther',
-// 	'Tubadevil',
-// 	'Faaiz1999',
-// 	'littlebird',
-// 	'Hexicube',
-// 	'RavenCaps',
-// 	'jdudle3',
-// 	'Number5',
-// 	'Ophxlia',
-// 	'cayseron',
-// 	'neffni',
-// 	'benjamin172',
-// 	'mara717'
-// ]);
-
 module.exports.TRIALMODS = ['dia', 'Yawner'];
 
-// const EDITORS = (module.exports.EDITORS = ['Max', 'cbell', 'Invidia', 'TheJustStopO', 'Uther']);
-// const ADMINS = (module.exports.ADMINS = ['coz', 'Stine']);
-module.exports.CONTRIBUTORS = [
+const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'straightleft',
 	'Idrissa',
 	'banc',
@@ -42,7 +24,7 @@ module.exports.CONTRIBUTORS = [
 	'LordVader',
 	'voldemort',
 	'goonbee'
-];
+]);
 
 const CURRENTSEASONNUMBER = 3;
 
@@ -73,7 +55,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			admin: user.staffRole === 'admin',
 			moderatorcolor: user.staffRole === 'moderator',
 			editorcolor: user.staffRole === 'editor',
-			contributer: user.staffRole === 'contributor',
+			contributor: CONTRIBUTORS.includes(user.userName),
 			cbell: user.userName === 'cbell',
 			jdudle3: user.userName === 'jdudle3',
 			max: user.userName === 'Max',
@@ -97,9 +79,11 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		const gradeObj = {};
 		gradeObj['elo' + grade.toFixed(0)] = true;
 
+		console.log(defaultClass);
 		return w + l >= 50
 			? eloDisabled
 				? cn(defaultClass, {
+						contributer: CONTRIBUTORS.includes(user.userName),
 						experienced1: w + l > 49,
 						experienced2: w + l > 99,
 						experienced3: w + l > 199,
@@ -116,7 +100,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 						onfire9: w / (w + l) > 0.68,
 						onfire10: w / (w + l) > 0.7
 				  })
-				: cn(defaultClass, gradeObj)
+				: cn(defaultClass, { contributer: CONTRIBUTORS.includes(user.userName) }, gradeObj)
 			: defaultClass;
 	}
 };
