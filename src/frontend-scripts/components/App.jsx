@@ -315,6 +315,10 @@ export class App extends React.Component {
 			classes += ' game';
 		}
 
+		if (gameSettings && gameSettings.fullHeight) {
+			classes += ' fullheight';
+		}
+
 		return (
 			<section
 				className="app-container"

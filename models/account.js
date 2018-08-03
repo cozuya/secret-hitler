@@ -38,6 +38,7 @@ const Account = new Schema({
 		hasChangedName: Boolean,
 		previousSeasonAward: String,
 		disableElo: Boolean,
+		fullheight: Boolean,
 		gameNotes: {
 			top: Number,
 			left: Number,
