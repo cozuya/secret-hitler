@@ -191,7 +191,7 @@ module.exports.investigateLoyalty = game => {
 	if (!game.private.lock.investigateLoyalty && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.investigateLoyalty = true;
 
-		game.general.status = 'Waiting; for President to investigate.';
+		game.general.status = 'Waiting for President to investigate.';
 		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).forEach(player => {
 			player.notificationStatus = 'notification';
 		});
