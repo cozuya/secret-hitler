@@ -2254,12 +2254,15 @@ module.exports.checkUserStatus = socket => {
 			delete sockets[oldSocketID];
 		}
 
-		if (game && game.gameState.isStarted && !game.gameState.isCompleted) {
-			game.publicPlayersState.find(player => player.userName === user).connected = true;
+		const reconnectingUser = game.publicPlayersState.find(player => player.userName === user);
+
+		if (game && game.gameState.isStarted && !game.gameState.isCompleted && reconnectingUser) {
+			stopCrashingDumbGame.connected = true;
 			socket.join(game.general.uid);
 			socket.emit('updateSeatForUser');
 			sendInProgressGameUpdate(game);
 		}
+
 		if (user) {
 			// Double-check the user isn't sneaking past IP bans.
 			const logOutUser = username => {

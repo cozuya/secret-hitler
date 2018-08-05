@@ -11,6 +11,7 @@ const Changelog = () => (
 		<div>
 			<p>Version 0.14.11 released 8-4-2018</p>
 		</div>
+		<h4>250,000 games played! Wow!</h4>
 		<h4>New feature: full height in game player setting</h4>
 		<p>
 			There's a new setting for players when enabled, the UI will take up the full height of your monitor while in game, greatly extending the chatbox (see
