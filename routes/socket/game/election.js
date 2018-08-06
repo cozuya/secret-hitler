@@ -16,30 +16,34 @@ const { completeGame } = require('./end-game');
 const _ = require('lodash');
 const { makeReport } = require('../report.js');
 
+const powerMapping = {
+	investigate: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
+	deckpeek: [policyPeek, 'The president must examine the top 3 policies.'],
+	election: [specialElection, 'The president must select a player for a special election.'],
+	bullet: [executePlayer, 'The president must select a player for execution.']
+};
+
 const presidentPowers = [
 	{
 		0: null,
 		1: null,
-		2: [policyPeek, 'The president must examine the top 3 policies.'],
-		3: [executePlayer, 'The president must select a player for execution.'],
-		4: [executePlayer, 'The president must select a player for execution.'],
-		5: null
+		2: powerMapping.deckpeek,
+		3: powerMapping.bullet,
+		4: powerMapping.bullet
 	},
 	{
 		0: null,
-		1: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
-		2: [specialElection, 'The president must select a player for a special election.'],
-		3: [executePlayer, 'The president must select a player for execution.'],
-		4: [executePlayer, 'The president must select a player for execution.'],
-		5: null
+		1: powerMapping.investigate,
+		2: powerMapping.election,
+		3: powerMapping.bullet,
+		4: powerMapping.bullet
 	},
 	{
-		0: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
-		1: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
-		2: [specialElection, 'The president must select a player for a special election.'],
-		3: [executePlayer, 'The president must select a player for execution.'],
-		4: [executePlayer, 'The president must select a player for execution.'],
-		5: null
+		0: powerMapping.investigate,
+		1: powerMapping.investigate,
+		2: powerMapping.election,
+		3: powerMapping.bullet,
+		4: powerMapping.bullet
 	}
 ];
 
@@ -150,7 +154,12 @@ const enactPolicy = (game, team) => {
 					'wasChancellor';
 			}
 		};
-		const powerToEnact = team === 'fascist' ? presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1] : null;
+		const powerToEnact =
+			team === 'fascist'
+				? game.customGameSettings.enabled
+					? powerMapping[game.customGameSettings.powers[game.trackState.fascistPolicyCount - 1]]
+					: presidentPowers[game.general.type][game.trackState.fascistPolicyCount - 1]
+				: null;
 
 		game.trackState.enactedPolicies[index].position =
 			team === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;

@@ -39,8 +39,9 @@ export default class Creategame extends React.Component {
 			isEloLimited: false,
 			customGameSettings: {
 				enabled: false,
-				powers: [false, false, 'investigate', 'bullet', 'veto'], // last "power" is always a fas victory
+				powers: [false, 'investigate', 'election', 'bullet', 'bullet'], // last "power" is always a fas victory
 				hitlerZone: 3,
+				vetoZone: 5,
 				fascistCount: 2, // does not include hit
 				hitlerCanSeeFascists: true,
 				deckState: { lib: 6, fas: 11 }, // does not include track cards, which will be added server-side to make the deck shuffle code work
@@ -241,7 +242,8 @@ export default class Creategame extends React.Component {
 				rebalance7p: this.state.checkedRebalanceValues[1],
 				rebalance9p2f: this.state.checkedRebalanceValues[2],
 				eloSliderValue: this.state.isEloLimited ? this.state.eloSliderValue[0] : null,
-				privatePassword: this.state.privateShowing ? $(this.privategamepassword).val() : false
+				privatePassword: this.state.privateShowing ? $(this.privategamepassword).val() : false,
+				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
 			};
 
 			if (this.state.isTourny) {
