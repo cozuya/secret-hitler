@@ -37,7 +37,6 @@ export default class Creategame extends React.Component {
 			timedSliderValue: [120],
 			eloSliderValue: [1675],
 			isEloLimited: false,
-			isCustomGame: false,
 			customGameSettings: {
 				enabled: false,
 				powers: [false, false, 'investigate', 'bullet', 'veto'], // last "power" is always a fas victory
