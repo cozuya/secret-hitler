@@ -38,9 +38,15 @@ export default class Creategame extends React.Component {
 			eloSliderValue: [1675],
 			isEloLimited: false,
 			isCustomGame: false,
-			customGamePolicyPowers: new Array(6),
-			customGameHitlerZoneStart: [3],
-			customGameHitlerCanSeeFascists: true
+			customGameSettings: {
+				enabled: false,
+				powers: [false, false, 'investigate', 'bullet', 'veto'], // last "power" is always a fas victory
+				hitlerZone: 3,
+				fascistCount: 2, // does not include hit
+				hitlerCanSeeFascists: true,
+				deckState: { lib: 6, fas: 11 }, // does not include track cards, which will be added server-side to make the deck shuffle code work
+				trackState: { lib: 0, fas: 0 }
+			}
 		};
 	}
 
