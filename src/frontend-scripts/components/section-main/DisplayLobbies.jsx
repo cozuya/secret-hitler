@@ -270,10 +270,7 @@ const DisplayLobbies = props => {
 		});
 
 		players.forEach(player => {
-			const classes =
-				player.wins + player.losses > 49
-					? PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback')
-					: 'player-small-cardback';
+			const classes = PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback');
 
 			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
 				total.push(

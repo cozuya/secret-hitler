@@ -369,7 +369,7 @@
 
 		.section-main {
 			height: 100%;
-			.game {
+			> .game {
 				height: 100%;
 				display: flex;
 				flex-direction: column;

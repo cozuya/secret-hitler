@@ -36,7 +36,11 @@ export default class Creategame extends React.Component {
 			isVerifiedOnly: false,
 			timedSliderValue: [120],
 			eloSliderValue: [1675],
-			isEloLimited: false
+			isEloLimited: false,
+			isCustomGame: false,
+			customGamePolicyPowers: new Array(6),
+			customGameHitlerZoneStart: [3],
+			customGameHitlerCanSeeFascists: true
 		};
 	}
 
@@ -1121,7 +1125,6 @@ export default class Creategame extends React.Component {
 	}
 
 	eloSliderChange(eloSliderValue) {
-		console.log(eloSliderValue);
 		this.setState({ eloSliderValue });
 	}
 
@@ -1133,8 +1136,9 @@ export default class Creategame extends React.Component {
 		const player = userList.list.find(p => p.userName === userInfo.userName);
 		const isSeason = !userInfo.gameSettings.disableSeasonal;
 		const playerElo = player.eloSeason;
+		const playerEloNonseason = player.eloOverall;
 
-		if (isSeason && playerElo && playerElo > 1675) {
+		if ((isSeason && playerElo && playerElo > 1675) || (playerEloNonseason && playerEloNonseason > 1675)) {
 			return (
 				<div className="sixteen wide column" style={{ marginTop: '-30px' }}>
 					{this.state.isEloLimited && (
