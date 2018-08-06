@@ -568,7 +568,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		}
 
 		if (data.customGameSettings.hitlerZone < 1 || data.customGameSettings.hitlerZone > 5) return;
-		if (data.customGameSettings.vetoZone < 1 || data.customGameSettings.vetoZone > 5) return;
+		if (data.customGameSettings.vetoZone < data.customGameSettings.hitlerZone || data.customGameSettings.vetoZone > 5) return;
 
 		// Ensure that there is never a fas majority at the start.
 		// Custom games should probably require a fixed player count, which will be in playerCounts[0] regardless.
@@ -585,16 +585,18 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 				data.customGameSettings.trackState.lib +
 				data.customGameSettings.trackState.fas <
 			13
-		)
+		) {
 			return;
+		}
 
 		if (
 			data.customGameSettings.trackState.lib < 0 ||
 			data.customGameSettings.trackState.lib > 4 ||
 			data.customGameSettings.trackState.fas < 0 ||
 			data.customGameSettings.trackState.fas > 5
-		)
+		) {
 			return;
+		}
 
 		data.casualGame = true; // Force this on if everything looks ok.
 	} else {
