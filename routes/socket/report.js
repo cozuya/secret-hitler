@@ -2,7 +2,7 @@ const https = require('https');
 const Account = require('../../models/account');
 const { newStaff } = require('./models');
 
-const AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy', 'Grim', 'TermsOfUse'];
+const AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy', 'Grim', 'TermsOfUse', 'DownWithMeta'];
 
 module.exports.makeReport = (text, game, gameEnd) => {
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
