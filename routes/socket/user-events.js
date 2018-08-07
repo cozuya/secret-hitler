@@ -1930,6 +1930,22 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						});
 					});
 					break;
+				case 'timeOut4':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								account.isTimeout6Hour = new Date();
+								account.save(() => {
+									logOutUser(data.userName);
+								});
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err, 'timeout4 user err');
+						});
+					break;
 				case 'togglePrivate':
 					Account.findOne({ username: data.userName })
 						.then(account => {

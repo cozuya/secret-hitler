@@ -159,12 +159,12 @@ html(lang="en")
 					h4.header(style="color: darkred") EMAIL OPTIONAL
 					.ui.left.icon.input
 						i.envelope.outline.icon
-						input#signup-email(placeholder="Email - Using gmail? check spam", maxlength="255")
+						input#signup-email(placeholder="Email", maxlength="255")
 					.ui.info.message.hidden
 				.field
 					label
 						input#private-player(type="checkbox", style="margin-right: 5px")
-						span Private game player only - select this if you only plan on playing in private games.  Your name will not be visible in the sidebar, you can't chat in general chat, and you can't play in public games.
+						span(style="color: #aaa") READ CAREFULLY BEFORE CHECKING: Private game player only option - your name will not be visible in the sidebar, you can't chat in general chat, you can't play in public games.
 				button.ui.primary.button.fluid.large.signup-submit Submit
 				.ui.dimmer.inverted
 					.ui.text.loader Signing up..

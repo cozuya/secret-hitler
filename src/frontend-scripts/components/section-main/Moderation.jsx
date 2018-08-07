@@ -283,14 +283,7 @@ export default class Moderation extends React.Component {
 				>
 					Clear/delete general chat
 				</button>
-				<button
-					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
-					onClick={() => {
-						takeModAction('getIP');
-					}}
-				>
-					Get user IP
-				</button>
+
 				<br />
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
@@ -333,6 +326,14 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Timeout - 1 hour IP version.
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('timeOut4');
+					}}
+				>
+					Timeout - 6 hour non-IP version.
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}
@@ -468,6 +469,15 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="seasonalsetstats" />
 					</div>
 				</div>
+				<button
+					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
+					onClick={() => {
+						takeModAction('getIP');
+					}}
+					style={{ width: '100%' }}
+				>
+					Get user IP
+				</button>
 				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')

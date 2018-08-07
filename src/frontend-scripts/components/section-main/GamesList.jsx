@@ -221,7 +221,7 @@ export class GamesList extends React.Component {
 					</span>
 				</div>
 				<a href="#/leaderboards" className="leaderboard">
-					Seasonal leaderboards
+					Leaderboards
 				</a>
 				<div className="browser-body">{this.renderGameList()}</div>
 			</section>

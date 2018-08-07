@@ -9,7 +9,7 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 0.14.11 released 8-5-2018</p>
+			<p>Version 0.14.11 released 8-6-2018</p>
 		</div>
 		<h4>250,000 games played! Wow!</h4>
 		<h4>New feature: full height in game player setting</h4>
@@ -34,6 +34,7 @@ const Changelog = () => (
 			<li>Private/anonymous player names can no longer be seen by hovering on them..</li>
 			<li>You don't need >1675 seasonal elo to make an elo limited game, overall now works as well.</li>
 			<li>Contributor color is back.</li>
+			<li>iOS safari users should be able to use their profile again.</li>
 			<li>
 				Next major feature planned is <b>custom games</b>, where the game creator can do things like set different policy powers and when hitler zone starts.
 				There's some new polls available, please take a look.

@@ -316,7 +316,10 @@ module.exports = () => {
 						console.log(err, 'profile find err');
 					});
 
-				if (player.isTimeout && new Date().getTime() - new Date(player.isTimeout).getTime() < 64800000) {
+				if (
+					(player.isTimeout && new Date().getTime() - new Date(player.isTimeout).getTime() < 64800000) ||
+					(player.isTimeout6Hour && new Date().getTime() - new Date(player.isTimeout).getTime() < 21600000)
+				) {
 					req.logOut();
 					res.send();
 				}

@@ -234,7 +234,7 @@ class Menu extends React.Component {
 							</a>{' '}
 							|{' '}
 							<a target="_blank" href="/polls" style={{ color: 'yellow' }}>
-								New Polls 9/1
+								New Polls 8/6
 							</a>
 						</span>
 					</div>
