@@ -554,7 +554,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	if (data.eloSliderValue && user.eloOverallata.eloSliderValue) {
+	if (data.eloSliderValue && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
 		return;
 	}
 
