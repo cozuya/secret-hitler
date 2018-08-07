@@ -388,7 +388,7 @@ class Gamechat extends React.Component {
 					const isMod = playerListPlayer && playerListPlayer.staffRole;
 					const chatContents = processEmotes(chat.chat, isMod);
 					const isSeated = seatedUserNames.includes(chat.userName);
-					const isGreenText = /^>/i.test(chatContents[0]);
+					const isGreenText = chatContents[0] ? /^>/i.test(chatContents[0]) : false;
 
 					return chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item gamechat ${chat.chat[1].type}` : 'item gamechat'} key={i}>
