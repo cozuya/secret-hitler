@@ -412,6 +412,24 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="ipbans" />
 					</div>
 				</div>
+				<br />
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('clearTimeout');
+					}}
+				>
+					Restore User - Remove any pre-existing timeout or ban.
+				</button>
+				<br />
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('clearTimeoutIP');
+					}}
+				>
+					Restore IP - Remove any pre-existing IP ban.
+				</button>
 				<div className="ui horizontal divider">-</div>
 
 				<button
@@ -614,8 +632,12 @@ export default class Moderation extends React.Component {
 			enableAccountCreation: 'Enable Account Creation',
 			disableAccountCreation: 'Disable Account Creation',
 			togglePrivate: 'Toggle Private',
-			timeOut: 'Timeout (IP)',
-			timeOut2: 'Timeout',
+			timeOut: 'Timeout 18 hours (IP)',
+			timeOut2: 'Timeout 18 hours',
+			timeOut3: 'Timeout 1 hour (IP)',
+			timeOut4: 'Timeout 6 hours',
+			clearTimeout: 'Clear Timeout',
+			clearTimeoutIP: 'Clear IP Ban',
 			deleteGame: 'Delete Game',
 			enableIpBans: 'Enable IP Bans',
 			disableIpBans: 'Disable IP Bans',
@@ -627,7 +649,10 @@ export default class Moderation extends React.Component {
 			clearGenchat: 'Clear General Chat',
 			deleteUser: 'Delete User',
 			deleteBio: 'Delete Bio',
-			deleteCardback: 'Delete Cardback'
+			deleteCardback: 'Delete Cardback',
+			removeStaffRole: 'Remove Staff Role',
+			promoteToMod: 'Promote (Mod)',
+			promoteToEditor: 'Promote (Editor)'
 		};
 
 		return (

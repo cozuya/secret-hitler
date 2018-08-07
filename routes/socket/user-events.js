@@ -1677,7 +1677,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		}
 	}
 
-	if ((!data.ip || data.ip === '') && (data.action === 'timeOut' || data.action === 'ipban' || data.action === 'getIP')) {
+	if ((!data.ip || data.ip === '') && (data.action === 'timeOut' || data.action === 'ipban' || data.action === 'getIP' || data.action === 'clearTimeoutIP')) {
 		// Failed to get a relevant IP, abort the action since it needs one.
 		socket.emit('sendAlert', 'That action requires a valid IP.');
 		return;
@@ -1759,9 +1759,28 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			};
 
 			switch (data.action) {
+				case 'clearTimeout':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								account.isTimeout = new Date(0);
+								account.isBanned = false;
+								account.save();
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err, 'clearTimeout user err');
+						});
+					break;
+				case 'clearTimeoutIP':
+					BannedIP.remove({ ip: data.ip }, (err, res) => {
+						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
+					});
+					break;
 				case 'modEndGame':
 					const gameToEnd = games.find(game => game.general.uid === data.uid);
-
 					if (gameToEnd) {
 						gameToEnd.chats.push({
 							userName: data.modName,
@@ -1776,6 +1795,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							sendGameList();
 						}, 5000);
 					}
+					break;
 				case 'setVerified':
 					Account.findOne({ username: data.userName }).then(account => {
 						if (account) {
@@ -1785,7 +1805,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
 					break;
-
 				case 'getIP':
 					if (isSuperMod) {
 						socket.emit('sendAlert', `Requested IP: ${data.ip}`);
