@@ -1,3 +1,4 @@
+const Bias = require('../../models/bias');
 /**
  * @param {object} game - game to act on.
  * @return {object} game
@@ -127,50 +128,142 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 
 module.exports.secureGame = secureGame;
 
-const avg = (accounts, accessor) => accounts.reduce((prev, curr) => prev + accessor(curr), 0) / accounts.length;
+/**
+ * Averages a list of numbers.
+ * @param {array} elements
+ * @return {number}
+ */
+function average(elements) {
+	return elements.reduce((sum, value) => sum + value, 0) / elements.length;
+}
 
+/**
+ * Computes the standard deviation of a list of numbers.
+ * @param {array} elements
+ * @return {number}
+ */
+function standardDeviation(elements) {
+	const avg = average(elements);
+	return Math.sqrt(average(elements.map(p => (p - avg) ** 2)));
+}
+
+/**
+ * Arpad Elo's original rank formulation
+ * @param {number} w - winner's rank
+ * @param {number} l - loser's rank
+ * @param {number} k - maximum rank change multiplyer
+ * @return {number} - amount to take from the losers and give to the winners
+ */
+function elo(w, l, k) {
+	p = 1 / (1 + 10 ** ((w - l) / 400));
+	return p * k;
+}
+
+/**
+ * A generalised sigmoid builder
+ * @param {number} bias - translates the sigmoid in y
+ * @param {number} offset - translates the sigmoid in x
+ * @param {number} spread - controlls falloff of sigmoid
+ * @return {function(number): number} - parameterised sigmoid
+ */
+function sigmoid(bias, offset, spread) {
+	return x => bias + 1 / (1 + 10 ** ((x - offset) / spread));
+}
+
+/**
+ * Updates the database with rankings for a game
+ * @param {object} game - game to rate
+ * @param {array} accounts - accounts of players in game
+ * @param {array} winningPlayerNames - names of winning players
+ * @return {object} - dict of changes to players
+ */
 module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
-	// ELO constants
-	const defaultELO = 1600;
-	const libAdjust = {
-		5: -19.253,
-		6: 20.637,
-		7: -17.282,
-		8: 45.418,
-		9: -70.679,
-		10: -31.539
-	};
-	const rk = 12;
-	const nk = 3;
-	// Players
+	// Constants
+	const startingElo = 1600;
+	const kBase = 3 * 6;
+	const deviationWeight = sigmoid(.091, 200, 200);
+	// players
 	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
 	// Accounts
-	const winningAccounts = accounts.filter(account => winningPlayerNames.includes(account.username));
-	const loosingAccounts = accounts.filter(account => losingPlayerNames.includes(account.username));
-	// Construct some basic statistics for each team
-	const b = game.gameState.isCompleted === 'liberal' ? 1 : 0;
-	const size = game.private.seatedPlayers.length;
-	const averageRatingWinners = avg(winningAccounts, a => a.eloOverall || defaultELO) + b * libAdjust[size];
-	const averageRatingWinnersSeason = avg(winningAccounts, a => a.eloSeason || defaultELO) + b * libAdjust[size];
-	const averageRatingLosers = avg(loosingAccounts, a => a.eloOverall || defaultELO) + (1 - b) * libAdjust[size];
-	const averageRatingLosersSeason = avg(loosingAccounts, a => a.eloSeason || defaultELO) + (1 - b) * libAdjust[size];
-	// Elo Formula
-	const k = size * (game.general.rainbowgame ? rk : nk); // non-rainbow games are capped at k/r
-	const winFactor = k / winningPlayerNames.length;
-	const loseFactor = -k / losingPlayerNames.length;
-	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
-	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
-	let ratingUpdates = {};
-	accounts.forEach(account => {
-		const eloOverall = account.eloOverall ? account.eloOverall : defaultELO;
-		const eloSeason = account.eloSeason ? account.eloSeason : defaultELO;
-		const factor = winningPlayerNames.includes(account.username) ? winFactor : loseFactor;
-		const change = p * factor;
-		const changeSeason = pSeason * factor;
-		account.eloOverall = eloOverall + change;
-		account.eloSeason = eloSeason + changeSeason;
+	const winners = accounts.filter(account => winningPlayerNames.includes(account.username));
+	const losers = accounts.filter(account => losingPlayerNames.includes(account.username));
+	// Teams
+	const averageWinnerOverall = average(winners.map(w => w.eloOverall[0]));
+	const averageWinnerSeason = average(winners.map(w => w.eloSeason[0]));
+	const averageLoserOverall = average(losers.map(l => l.eloOverall[0]));
+	const averageLoserSeason = average(losers.map(l => l.eloSeason[0]));
+	// Bias
+	let r = 0;
+	if (game.playerCount === 6 && game.rebalance6p) r = 1;
+	if (game.playerCount === 7 && game.rebalance7p) r = 1;
+	if (game.playerCount === 9 && game.rebalance9p) r = 1;
+	if (game.playerCount === 9 && game.rerebalance9p) r = 2;
+	if (game.playerCount === 9 && game.rebalance9p2f) r = 3;
+	let bias = Bias.findOne({ size: game.playerCount, balance: r }).exec();
+	if (!bias) {
+		bias = new Bias({ size: game.playerCount, balance: r });
+	}
+	const libsWon = game.winningTeam === 'liberal';
+	const winnerBias = libsWon ? bias.liberal : bias.fascist;
+	const loserBias = libsWon ? bias.fascist : bias.liberal;
+	// Player Elo
+	let delta = {};
+	for (let account of accounts) {
+		delta[account.username] = {
+			changeOverall: 0,
+			changeSeason: 0
+		};
+	}
+	for (let winner of winners) {
+		if (winner.wins + winner.losses < 50) continue;
+		const winnerEloOverall = winner.eloOverall[0] + winnerBias + averageWinnerOverall;
+		const winnerEloSeason = winner.eloSeason[0] + winnerBias + averageWinnerSeason;
+		for (let loser of losers) {
+			if (loser.wins + loser.losses < 50) continue;
+			if (winner.username === 'cbell' || loser.username === 'cbell') continue;
+			const loserEloOverall = loser.eloOverall[0]+ loserBias + averageLoserOverall;
+			const loserEloSeason = loser.eloSeason[0] + loserBias + averageLoserSeason;
+			// Overall
+			const kOverall = kBase * deviationWeight(standardDeviation(accounts.map(w => w.eloOverall[0] || startingElo)));
+			const rewardOverall = elo(winnerEloOverall, loserEloOverall, kOverall);
+			delta[winner.username].changeOverall += rewardOverall;
+			delta[loser.username].changeOverall -= rewardOverall;
+			// Seasonal
+			const kSeason = kBase * deviationWeight(standardDeviation(accounts.map(w => w.eloSeason[0] || startingElo)));
+			const rewardSeasonal = elo(winnerEloSeason, loserEloSeason, kSeason);
+			delta[winner.username].changeSeason += rewardSeasonal;
+			delta[loser.username].changeSeason -= rewardSeasonal;
+		}
+	}
+	// Setup game data
+	game.elo = [];
+	for (let account of accounts) {
+		if (delta[account.username].changeOverall !== 0) {
+			const newOverall = account.eloOverall[0] + delta[account.username].changeOverall;
+			account.eloOverall = [newOverall, ...account.eloOverall].slice(0, 100);
+			if (newOverall > account.eloOverallMax) account.eloOverallMax = newOverall;
+			account.eloOverallDisplay = 1600 + smoothing(account.eloOverall.map(e => e - 1600), .3);
+		}
+		if (delta[account.username].changeSeason !== 0) {
+			const newSeason = account.eloSeason[0] + delta[account.username].changeSeason;
+			account.eloSeason = [newSeason, ...account.eloSeason].slice(0, 100);
+			if (newSeason > account.eloSeasonMax) account.eloSeasonMax = newSeason;
+			account.eloSeasonDisplay = 1600 + smoothing(account.eloSeason.map(e => e - 1600), .3);
+		}
 		account.save();
-		ratingUpdates[account.username] = { change, changeSeason };
-	});
-	return ratingUpdates;
+		game.elo.push({
+			username: account.username,
+			eloOverall: account.eloOverall[0],
+			changeOverall: delta[account.username].changeOverall,
+			eloSeason: account.eloSeason[0],
+			changeSeason: delta[account.username].changeSeason,
+		});
+		game.save();
+	}
+	// Team Elo
+	const rewardTeams = elo(winnerBias, loserBias, 6) * (libsWon ? 1 : -1);
+	bias.liberal += rewardTeams;
+	bias.fascist -= rewardTeams;
+	bias.save();
+	return delta;
 };
