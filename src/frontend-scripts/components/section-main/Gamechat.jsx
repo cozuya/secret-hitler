@@ -693,7 +693,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'twofascistonefascist');
+													handleClaimButtonClick(e, 'twofascistoneliberal');
 												}}
 												className="ui button twofascistoneliberal"
 											>
