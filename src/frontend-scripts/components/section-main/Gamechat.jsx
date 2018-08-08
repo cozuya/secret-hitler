@@ -381,11 +381,11 @@ class Gamechat extends React.Component {
 					chat =>
 						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
 						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
-						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
+						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat' && (!chat.staffRole || chat.staffRole === '' || chat.staffRole === 'contributor'))
 				)
 				.map((chat, i) => {
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-					const isMod = playerListPlayer && playerListPlayer.staffRole;
+					const isMod = playerListPlayer && playerListPlayer.staffRole && playerListPlayer.staffRole !== '' && playerListPlayer.staffRole !== 'contributor';
 					const chatContents = processEmotes(chat.chat, isMod);
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
