@@ -379,7 +379,7 @@ class Gamechat extends React.Component {
 				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
 				.filter(
 					chat =>
-						(chat.staffRole && chat.staffRole !== '' && chat.staffRole !== 'contributor') ||
+						(chatFilter !== 'Game' && chat.staffRole && chat.staffRole !== '' && chat.staffRole !== 'contributor') ||
 						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
 						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
 						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
