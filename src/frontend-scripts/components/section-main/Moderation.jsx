@@ -750,7 +750,7 @@ export default class Moderation extends React.Component {
 									<td style={{ width: '120px', minWidth: '120px' }}>{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.userActedOn}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.ip}</td>
-									<td style={{ Width: '200px', minWidth: '200px' }}>{report.modNotes}</td>
+									<td style={{ Width: '200px', minWidth: '200px' }}>{report.modNotes.replace('\n', '<br>')}</td>
 								</tr>
 							))}
 					</tbody>
