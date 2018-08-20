@@ -8,8 +8,8 @@ module.exports.makeReport = (text, game, gameEnd) => {
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
 		const staffUserNames = accounts
 			.filter(account => account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin')
-			.map(account => account.username)
-			.push(...AEM_ALTS);
+			.map(account => account.username);
+		staffUserNames.push(...AEM_ALTS);
 		const players = game.private.seatedPlayers.map(player => player.userName);
 		const isStaff = players.some(n => staffUserNames.includes(n) || newStaff.modUserNames.includes(n) || newStaff.editorUserNames.includes(n));
 
