@@ -66,6 +66,19 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 	// delete/comment above
 
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
+
+	const modOnlyChat = {
+		timestamp: new Date(),
+		gameChat: true,
+		chat: [(text: 'The deck has been shuffled: ')]
+	};
+	game.private.policies.forEach(policy => {
+		modOnlyChat.chat.push({
+			text: policy === 'liberal' ? 'B' : 'R',
+			type: policy
+		});
+	});
+	game.private.hiddenInfoChat.push(modOnlyChat);
 });
 
 /**

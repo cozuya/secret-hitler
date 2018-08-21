@@ -599,6 +599,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		}
 
 		data.casualGame = true; // Force this on if everything looks ok.
+		playerCounts = [playerCounts[0]]; // Lock the game to a specific player count. Eventually there should be one set of settings per size.
 	} else {
 		data.customGameSettings = {
 			enabled: false
