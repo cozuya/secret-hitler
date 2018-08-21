@@ -273,7 +273,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 										? userEntry[`rainbowWinsSeason${currentSeasonNumber}`]
 										: 0;
 								}
-								userEntry.losses ? userEntry.losses + 1 : 1;
+								userEntry.losses = userEntry.losses ? userEntry.losses + 1 : 1;
 								userEntry[`lossesSeason${currentSeasonNumber}`] = userEntry[`lossesSeason${currentSeasonNumber}`]
 									? userEntry[`lossesSeason${currentSeasonNumber}`] + 1
 									: 1;
