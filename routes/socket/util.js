@@ -127,50 +127,71 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 
 module.exports.secureGame = secureGame;
 
-const avg = (accounts, accessor) => accounts.reduce((prev, curr) => prev + accessor(curr), 0) / accounts.length;
+const formTeams = (game, accounts, winningPlayerNames) => {
+	const losingPlayerNames = game.private.seatedPlayers
+		.filter(p => !winningPlayerNames.includes(p.userName))
+		.map(p => p.userName);
+	const winners = accounts.filter(account => winningPlayerNames.includes(account.username));
+	const losers = accounts.filter(account => losingPlayerNames.includes(account.username));
+	const libWin = game.gameState.isCompleted === 'liberal';
+	return {'liberals': libWin ? winners : losers, 'fascists': libWin ? losers : winners};
+};
 
-module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
+const avg = (accounts, accessor, defaultELO) => {
+	return accounts.reduce((prev, curr) => prev + (accessor(curr) || defaultELO), 0) / accounts.length;
+};
+
+const agragateRanks = (game, liberals, fascists, gameStatistics, defaultELO, accessor) => {
+	// Average each team's rank
+	const lAvg = avg(liberals, accessor, defaultELO);
+	const fAvg = avg(fascists, accessor, defaultELO);
+	// Adjust each team
+	const lRank = lAvg + (gameStatistics.liberalBias || defaultELO);
+	const fRank = fAvg + (gameStatistics.fascistBias || defaultELO);
+	// Calculate the rank difference
+	const libWin = game.gameState.isCompleted === 'liberal';
+	return libWin ? lRank - fRank : fRank - lRank;
+};
+
+const updateRating = (delta) => 1 / (1 + Math.pow(10, delta / 400));
+
+module.exports.rateEloGame = (game, accounts, winningPlayerNames, gameStatistics) => {
 	// ELO constants
 	const defaultELO = 1600;
-	const libAdjust = {
-		5: -19.253,
-		6: 20.637,
-		7: -17.282,
-		8: 45.418,
-		9: -70.679,
-		10: -31.539
-	};
-	const rk = 12;
-	const nk = 3;
-	// Players
-	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
-	// Accounts
-	const winningAccounts = accounts.filter(account => winningPlayerNames.includes(account.username));
-	const loosingAccounts = accounts.filter(account => losingPlayerNames.includes(account.username));
-	// Construct some basic statistics for each team
-	const b = game.gameState.isCompleted === 'liberal' ? 1 : 0;
 	const size = game.private.seatedPlayers.length;
-	const averageRatingWinners = avg(winningAccounts, a => a.eloOverall || defaultELO) + b * libAdjust[size];
-	const averageRatingWinnersSeason = avg(winningAccounts, a => a.eloSeason || defaultELO) + b * libAdjust[size];
-	const averageRatingLosers = avg(loosingAccounts, a => a.eloOverall || defaultELO) + (1 - b) * libAdjust[size];
-	const averageRatingLosersSeason = avg(loosingAccounts, a => a.eloSeason || defaultELO) + (1 - b) * libAdjust[size];
-	// Elo Formula
-	const k = size * (game.general.rainbowgame ? rk : nk); // non-rainbow games are capped at k/r
-	const winFactor = k / winningPlayerNames.length;
-	const loseFactor = -k / losingPlayerNames.length;
-	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
-	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
+	const k = size * (game.general.rainbowgame ? 12 : 3);
+	const libWin = game.gameState.isCompleted === 'liberal';
+	const comp = 4;
+	// Average each team's rank
+  const { liberals, fascists } = formTeams(game, accounts, winningPlayerNames);
+	const deltaOverall = agragateRanks(game, liberals, fascists, gameStatistics, defaultELO, a => a.eloOverall);
+	const deltaSeason = agragateRanks(game, liberals, fascists, gameStatistics, defaultELO, a => a.eloSeason);
+	// Apply rating
+	const pOverall = updateRating(deltaOverall);
+	const pSeason = updateRating(deltaSeason);
+	// Update bias
+	gameStatistics.liberalBias = (gameStatistics.liberalBias || defaultELO) + ((libWin ? 1 : -1 ) * pOverall * comp);
+	gameStatistics.fascistBias = (gameStatistics.fascistBias || defaultELO) + ((libWin ? -1 : 1 ) * pOverall * comp);
+	gameStatistics.save();
+	// Calculate distribution
+	const lFactor = k / liberals.length;
+	const fFactor = k / fascists.length;
+	const winFactor = libWin ? lFactor : fFactor;
+	const loseFactor = -(libWin ? fFactor : lFactor);
+	// Apply the changes to all players
 	let ratingUpdates = {};
 	accounts.forEach(account => {
-		const eloOverall = account.eloOverall ? account.eloOverall : defaultELO;
-		const eloSeason = account.eloSeason ? account.eloSeason : defaultELO;
-		const factor = winningPlayerNames.includes(account.username) ? winFactor : loseFactor;
-		const change = p * factor;
-		const changeSeason = pSeason * factor;
-		account.eloOverall = eloOverall + change;
-		account.eloSeason = eloSeason + changeSeason;
+		const isWinner = winningPlayerNames.includes(account.username);
+		const factor = isWinner ? winFactor : loseFactor;
+		// Apply overall elo change
+		const updateOverall = pOverall * factor;
+		account.eloOverall = (account.eloOverall || defaultELO) + updateOverall;
+		// Apply seasonal elo change
+		const updateSeason = pSeason * factor;
+		account.eloSeason = (account.eloSeason || defaultELO) + updateSeason;
+
 		account.save();
-		ratingUpdates[account.username] = { change, changeSeason };
+		ratingUpdates[account.username] = { change: updateOverall, changeSeason: updateSeason };
 	});
 	return ratingUpdates;
 };
