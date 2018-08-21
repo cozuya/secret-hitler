@@ -70,7 +70,7 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 	const modOnlyChat = {
 		timestamp: new Date(),
 		gameChat: true,
-		chat: [(text: 'The deck has been shuffled: ')]
+		chat: [{ text: 'The deck has been shuffled: ' }]
 	};
 	game.private.policies.forEach(policy => {
 		modOnlyChat.chat.push({
