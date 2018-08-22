@@ -157,9 +157,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 				const isRainbow = game.general.rainbowgame;
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 				const { rebalance6p, rebalance7p, rebalance9p, rerebalance9p, rebalance9p2f } = game;
-				GameStatistics.findOne({ rebalance6p, rebalance7p, rebalance9p, rerebalance9p, rebalance9p2f }).then(stats => {
+				GameStatistics.findOne({ isRainbow, rebalance6p, rebalance7p, rebalance9p, rerebalance9p, rebalance9p2f }).then(stats => {
 					if (!stats) {
 						stats = new GameStatistics({
+							isRainbow,
 							rebalance6p,
 							rebalance7p,
 							rebalance9p,
