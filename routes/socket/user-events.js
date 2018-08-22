@@ -1225,10 +1225,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		};
 
 		game.publicPlayersState.forEach((player, i) => {
-			player.cardStatus.cardFront = 'secretrole';
-			player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-			player.cardStatus.cardDisplayed = true;
-			player.cardStatus.isFlipped = true;
+			if (game.private.seatedPlayers && game.private.seatedPlayers[i] && game.private.seatedPlayers[i].role) {
+				player.cardStatus.cardFront = 'secretrole';
+				player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+				player.cardStatus.cardDisplayed = true;
+				player.cardStatus.isFlipped = true;
+			}
 		});
 
 		game.general.status = 'Game is being remade..';
