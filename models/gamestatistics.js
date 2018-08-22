@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const Gamestatistics = new Schema({
+	isRainbow: Boolean,
 	rebalance6p: Boolean,
 	rebalance7p: Boolean,
 	rebalance9p: Boolean,
