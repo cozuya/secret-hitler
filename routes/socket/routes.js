@@ -17,7 +17,8 @@ const {
 	handleUpdatedBio,
 	handleUpdatedRemakeGame,
 	handleUpdatedPlayerNote,
-	handleSubscribeModChat
+	handleSubscribeModChat,
+	handleShoutAcknowledgement
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -219,6 +220,11 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			.on('updateBio', data => {
 				if (authenticated) {
 					handleUpdatedBio(socket, passport, data);
+				}
+			})
+			.on('shoutAcknowledgement', data => {
+				if (authenticated) {
+					handleShoutAcknowledgement(socket, passport, data);
 				}
 			})
 			// user-requests
