@@ -599,6 +599,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		}
 
 		data.casualGame = true; // Force this on if everything looks ok.
+		playerCounts = [playerCounts[0]]; // Lock the game to a specific player count. Eventually there should be one set of settings per size.
 	} else {
 		data.customGameSettings = {
 			enabled: false
@@ -1224,10 +1225,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		};
 
 		game.publicPlayersState.forEach((player, i) => {
-			player.cardStatus.cardFront = 'secretrole';
-			player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
-			player.cardStatus.cardDisplayed = true;
-			player.cardStatus.isFlipped = true;
+			if (game.private.seatedPlayers && game.private.seatedPlayers[i] && game.private.seatedPlayers[i].role) {
+				player.cardStatus.cardFront = 'secretrole';
+				player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+				player.cardStatus.cardDisplayed = true;
+				player.cardStatus.isFlipped = true;
+			}
 		});
 
 		game.general.status = 'Game is being remade..';
