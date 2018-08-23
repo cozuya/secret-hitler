@@ -9,6 +9,15 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>//VERSION_ME!//</p>
+		</div>
+		<h4>New feature: Game bias compensation</h4>
+		<p>
+			The elo formula has been updated to automatically calculate the team bias of every game size. Each game size has an Elo score which is added to both
+			teams. There are different biases for rainbow and non-rainbow games. In the long run, this should mean that no specific size of game gives better or
+			worse elo returns. However, these values may take some time to approximate the team bases. Expect a week of slightly unstable Elo returns.
+		</p>
+		<div className="ui header">
 			<p>Version 1.0.0-beta4 released 12-4-2018</p>
 		</div>
 		<h3>Some attempts to fix issues with server instability, few smaller things, thats about it.</h3>
