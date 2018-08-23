@@ -9,9 +9,10 @@ const PlayerReport = require('../../models/playerReport');
 const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
+const Shout = require('../../models/shout');
 const startGame = require('./game/start-game.js');
 const { completeGame } = require('./game/end-game');
-const { secureGame } = require('./util.js');
+const { secureGame, addShout, shoutAt } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
@@ -417,6 +418,7 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
 		}
 	});
 };
+
 /**
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
@@ -509,6 +511,24 @@ module.exports.handleUpdatedBio = (socket, passport, data) => {
 	Account.findOne({ username: passport.user }).then(account => {
 		account.bio = data;
 		account.save();
+	});
+};
+
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} data - from socket emit.
+ */
+module.exports.handleShoutAcknowledgement = (socket, passport, data) => {
+	// Authentication Assured in routes.js
+	Shout.findOne({
+		recipient: passport.user,
+		acknowledged: false,
+		_id: data
+	}).then(shout => {
+		shout.acknowledged = true;
+		shout.acknowledgedAt = new Date();
+		shout.save();
 	});
 };
 
@@ -1882,6 +1902,17 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 
 					io.sockets.emit('generalChats', generalChats);
+					break;
+				case 'shout':
+					// Todo: Hook up parameter no.3 `hideModName` to the ModUI
+					// Todo: Hoom up parameter no.5 `messageText` to the ModUI
+					let shout = addShout(
+						data.modName, data.userName, false,
+						data.comment, 'I have read and understand this message.'
+					);
+					if (io.sockets.sockets[affectedSocketId]) {
+						shoutAt(io.sockets.sockets[affectedSocketId], [shout]);
+					}
 					break;
 				case 'ipban':
 					const ipban = new BannedIP({

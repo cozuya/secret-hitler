@@ -1,3 +1,5 @@
+const { Shout } = require('./../../models/shout');
+
 /**
  * @param {object} game - game to act on.
  * @return {object} game
@@ -109,6 +111,54 @@ module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
 			}
 		});
 	}
+};
+
+/**
+ * Called on socket upgrade. Sends moderator shouts that are not marked as `acknowledged`.
+ * @param {object} socket - user socket reference.
+ * @param {array} pendingShouts - a list of undelivered shouts from the database.
+ */
+module.exports.shoutAt = (socket, pendingShouts) => {
+	if (socket) {
+		socket.emit('modShouts', pendingShouts.forEach(privateShout => {
+			privateShout.sent = (privateShout.sent || 0) + 1;
+			privateShout.lastSentAt = new Date();
+			privateShout.save();
+			return {
+				moderator: privateShout.hideModName ? '' : privateShout.moderator,
+				confirm: privateShout.confirm,
+				message: privateShout.message,
+				date: privateShout.createdAt,
+				id: privateShout._id
+			};
+		}));
+	}
+};
+
+/**
+ * Stores a new shout in the database.
+ * @param {string} moderator - the moderator who is shouting.
+ * @param {string} recipient - the account at whom is being shouted.
+ * @param {string} hideModName - weather or not the mod wishes to remain anonymous.
+ * @param {string} confirm - optional text which must be typed by the recipient to confirm that they have read.
+ * @param {string} message - preferably something loud and authoritative.
+ * @return {object} - new shout reference from database.
+ */
+module.exports.addShout = (moderator, recipient, hideModName, confirm, message) => {
+	const shout = new Shout({
+		createdAt: new Date(),
+		moderator,
+		recipient,
+		hideModName,
+		sent: 0,
+		lastSentAt: null,
+		acknowledged: false,
+		acknowledgedAt: null,
+		confirm,
+		message
+	});
+	shout.save();
+	return shout;
 };
 
 module.exports.sendPlayerChatUpdate = (game, chat) => {
