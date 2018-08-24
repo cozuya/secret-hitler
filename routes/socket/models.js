@@ -1,7 +1,8 @@
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
 const Account = require('../../models/account');
 
-module.exports.games = [];
+const games = {};
+module.exports.games = games;
 module.exports.userList = [];
 module.exports.generalChats = {
 	sticky: '',
@@ -132,47 +133,51 @@ const userListEmitter = {
 module.exports.userListEmitter = userListEmitter;
 
 module.exports.formattedGameList = () => {
-	return module.exports.games.map(game => ({
-		name: game.general.name,
-		flag: game.general.flag,
-		userNames: game.publicPlayersState.map(val => val.userName),
-		customCardback: game.publicPlayersState.map(val => val.customCardback),
-		customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
-		gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
-		seatedCount: game.publicPlayersState.length,
-		gameCreatorName: game.general.gameCreatorName,
-		minPlayersCount: game.general.minPlayersCount,
-		maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
-		excludedPlayerCount: game.general.excludedPlayerCount,
-		casualGame: game.general.casualGame || undefined,
-		eloMinimum: game.general.eloMinimum || undefined,
-		isVerifiedOnly: game.general.isVerifiedOnly || undefined,
-		isTourny: game.general.isTourny || undefined,
-		timedMode: game.general.timedMode || undefined,
+	return Object.keys(module.exports.games).map(gameName => ({
+		name: games[gameName].general.name,
+		flag: games[gameName].general.flag,
+		userNames: games[gameName].publicPlayersState.map(val => val.userName),
+		customCardback: games[gameName].publicPlayersState.map(val => val.customCardback),
+		customCardbackUid: games[gameName].publicPlayersState.map(val => val.customCardbackUid),
+		gameStatus: games[gameName].gameState.isCompleted
+			? games[gameName].gameState.isCompleted
+			: games[gameName].gameState.isTracksFlipped
+				? 'isStarted'
+				: 'notStarted',
+		seatedCount: games[gameName].publicPlayersState.length,
+		gameCreatorName: games[gameName].general.gameCreatorName,
+		minPlayersCount: games[gameName].general.minPlayersCount,
+		maxPlayersCount: games[gameName].general.maxPlayersCount || games[gameName].general.minPlayersCount,
+		excludedPlayerCount: games[gameName].general.excludedPlayerCount,
+		casualGame: games[gameName].general.casualGame || undefined,
+		eloMinimum: games[gameName].general.eloMinimum || undefined,
+		isVerifiedOnly: games[gameName].general.isVerifiedOnly || undefined,
+		isTourny: games[gameName].general.isTourny || undefined,
+		timedMode: games[gameName].general.timedMode || undefined,
 		tournyStatus: (() => {
-			if (game.general.isTourny) {
-				if (game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length) {
+			if (games[gameName].general.isTourny) {
+				if (games[gameName].general.tournyInfo.queuedPlayers && games[gameName].general.tournyInfo.queuedPlayers.length) {
 					return {
-						queuedPlayers: game.general.tournyInfo.queuedPlayers.length
+						queuedPlayers: games[gameName].general.tournyInfo.queuedPlayers.length
 					};
 				}
 			}
 			return undefined;
 		})(),
-		experiencedMode: game.general.experiencedMode || undefined,
-		disableChat: game.general.disableChat || undefined,
-		disableGamechat: game.general.disableGamechat || undefined,
-		blindMode: game.general.blindMode || undefined,
-		enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
-		enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
-		electionCount: game.general.electionCount,
-		rebalance6p: game.general.rebalance6p || undefined,
-		rebalance7p: game.general.rebalance7p || undefined,
-		rebalance9p: game.general.rerebalance9p || undefined,
-		privateOnly: game.general.privateOnly || undefined,
-		private: game.general.private || undefined,
-		uid: game.general.uid,
-		rainbowgame: game.general.rainbowgame || undefined
+		experiencedMode: games[gameName].general.experiencedMode || undefined,
+		disableChat: games[gameName].general.disableChat || undefined,
+		disableGamechat: games[gameName].general.disableGamechat || undefined,
+		blindMode: games[gameName].general.blindMode || undefined,
+		enactedLiberalPolicyCount: games[gameName].trackState.liberalPolicyCount,
+		enactedFascistPolicyCount: games[gameName].trackState.fascistPolicyCount,
+		electionCount: games[gameName].general.electionCount,
+		rebalance6p: games[gameName].general.rebalance6p || undefined,
+		rebalance7p: games[gameName].general.rebalance7p || undefined,
+		rebalance9p: games[gameName].general.rerebalance9p || undefined,
+		privateOnly: games[gameName].general.privateOnly || undefined,
+		private: games[gameName].general.private || undefined,
+		uid: games[gameName].general.uid,
+		rainbowgame: games[gameName].general.rainbowgame || undefined
 	}));
 };
 

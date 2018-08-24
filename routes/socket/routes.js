@@ -39,20 +39,19 @@ const Account = require('../../models/account');
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
-	const toRemoveIndexes = games
-		.filter(
-			game =>
-				(game.general.timeStarted && game.general.timeStarted + 4200000 < currentTime) ||
-				(game.general.timeCreated && game.general.timeCreated + 600000 < currentTime && game.general.private && game.publicPlayersState.length < 5)
-		)
-		.map(game => games.indexOf(game))
-		.reverse();
+	const toRemoveGameNames = Object.keys(games).filter(
+		gameName =>
+			(games[gameName].general.timeStarted && games[gameName].general.timeStarted + 4200000 < currentTime) ||
+			(games[gameName].general.timeCreated &&
+				games[gameName].general.timeCreated + 600000 < currentTime &&
+				games[gameName].general.private &&
+				games[gameName].publicPlayersState.length < 5)
+	);
 
-	games.forEach((game, index) => {
-		if (toRemoveIndexes.includes(index)) {
-			games.splice(index, 1);
-		}
+	toRemoveGameNames.forEach(gameName => {
+		delete games[gameName];
 	});
+
 	sendGameList();
 };
 
@@ -66,7 +65,7 @@ const ensureAuthenticated = socket => {
 
 const findGame = data => {
 	if (games && data && data.uid) {
-		return games.find(el => el.general.uid === data.uid);
+		return games[data.uid];
 	}
 };
 

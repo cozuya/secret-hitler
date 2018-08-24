@@ -286,7 +286,7 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
  * @param {string} uid - uid of game.
  */
 module.exports.sendGameInfo = (socket, uid) => {
-	const game = games.find(el => el.general.uid === uid);
+	const game = games[uid];
 	const { passport } = socket.handshake.session;
 
 	if (game) {

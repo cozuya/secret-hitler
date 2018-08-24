@@ -225,23 +225,26 @@ const handleSocketDisconnect = socket => {
 	let listUpdate = false;
 	if (passport && Object.keys(passport).length) {
 		const userIndex = userList.findIndex(user => user.userName === passport.user);
-		const gamesPlayerSeatedIn = games.filter(game => game.publicPlayersState.find(player => player.userName === passport.user && !player.leftGame));
+		const gameNamesPlayerSeatedIn = Object.keys(games).filter(gameName =>
+			games[gameName].publicPlayersState.find(player => player.userName === passport.user && !player.leftGame)
+		);
 
 		if (userIndex !== -1) {
 			userList.splice(userIndex, 1);
 			listUpdate = true;
 		}
 
-		if (gamesPlayerSeatedIn.length) {
-			gamesPlayerSeatedIn.forEach(game => {
+		if (gameNamesPlayerSeatedIn.length) {
+			gameNamesPlayerSeatedIn.forEach(gameName => {
+				const game = games[gameName];
 				const { gameState, publicPlayersState } = game;
 				const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
 				if (
 					(!gameState.isStarted && publicPlayersState.length === 1) ||
-					(gameState.isCompleted && game.publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
+					(gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
 				) {
-					games.splice(games.indexOf(game), 1);
+					delete games[gameName];
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 					publicPlayersState.splice(playerIndex, 1);
 					checkStartConditions(game);
@@ -270,7 +273,9 @@ const handleSocketDisconnect = socket => {
 			});
 		}
 	}
-	if (listUpdate) sendUserList();
+	if (listUpdate) {
+		sendUserList();
+	}
 };
 
 const crashReport = JSON.stringify({
@@ -351,7 +356,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			games.splice(games.indexOf(game), 1);
+			delete games[game.general.uid];
 		}
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
@@ -381,7 +386,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				game.summarySaved = true;
 			}
 		}
-		games.splice(games.indexOf(game), 1);
+		delete games[game.general.uid];
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
@@ -425,10 +430,10 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
 const updateSeatedUser = (socket, passport, data) => {
 	// Authentication Assured in routes.js
 	// In-game Assured in routes.js
-	const game = games.find(el => el.general.uid === data.uid);
+	const game = games[data.uid];
 	// prevents race condition between 1) taking a seat and 2) the game starting
 
-	if (game.gameState.isTracksFlipped) {
+	if (!game || game.gameState.isTracksFlipped) {
 		return; // Game already started
 	}
 
@@ -731,7 +736,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 
 		newGame.general.timeCreated = currentTime;
 		updateUserStatus(passport, newGame);
-		games.push(newGame);
+		games[newGame.general.uid] = newGame;
 		sendGameList();
 		socket.join(newGame.general.uid);
 		socket.emit('updateSeatForUser');
@@ -1249,12 +1254,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 			});
 
 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-				games.splice(games.indexOf(game), 1);
+				delete games[game.general.uid];
 			} else {
 				sendInProgressGameUpdate(game);
 			}
 
-			games.push(newGame);
+			games[newGame.general.uid] = newGame;
 			sendGameList();
 
 			remakePlayerSocketIDs.forEach((id, index) => {
@@ -1362,7 +1367,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
  */
 module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	// Authentication Assured in routes.js
-	const game = games.find(el => el.general.uid === data.uid);
+	const game = games[data.uid];
 	const { chat } = data;
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 
@@ -1783,7 +1788,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					});
 					break;
 				case 'modEndGame':
-					const gameToEnd = games.find(game => game.general.uid === data.uid);
+					const gameToEnd = games[data.uid];
+
 					if (gameToEnd) {
 						gameToEnd.chats.push({
 							userName: data.modName,
@@ -1794,7 +1800,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						completeGame(gameToEnd, data.winningTeamName);
 						setTimeout(() => {
 							gameToEnd.publicPlayersState.forEach(player => (player.leftGame = true));
-							games.splice(games.indexOf(gameToEnd), 1);
+							delete games[gameToEnd.general.uid];
 							sendGameList();
 						}, 5000);
 					}
@@ -1862,14 +1868,16 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					} catch (e) {
 						console.log(e, 'err in broadcast');
 					}
-					games.forEach(game => {
-						game.chats.push({
+
+					Object.keys(games).forEach(gameName => {
+						games[gameName].chats.push({
 							userName: `[BROADCAST] ${data.modName}`,
 							chat: data.comment,
 							isBroadcast: true,
 							timestamp: new Date()
 						});
 					});
+
 					generalChats.list.push({
 						userName: `[BROADCAST] ${data.modName}`,
 						time: new Date(),
@@ -2167,10 +2175,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				default:
 					if (data.userName.substr(0, 7) === 'DELGAME') {
-						const game = games.find(el => el.general.uid === data.userName.slice(7));
+						const game = games[data.userName.slice(7)];
 
 						if (game) {
-							games.splice(games.indexOf(game), 1);
+							delete games[game.general.uid];
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}
@@ -2262,7 +2270,8 @@ module.exports.handlePlayerReport = (passport, data) => {
 		}
 	};
 
-	const game = games.find(el => el.general.uid === data.uid);
+	const game = games[data.uid];
+
 	if (game) {
 		if (!game.reportCounts) game.reportCounts = {};
 		if (!game.reportCounts[passport.user]) game.reportCounts[passport.user] = 0;
@@ -2282,6 +2291,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 			console.log(err, 'Failed to save player report');
 			return;
 		}
+
 		Account.find({ staffRole: { $exists: true } }).then(accounts => {
 			accounts.forEach(account => {
 				const onlineSocketId = Object.keys(io.sockets.sockets).find(
@@ -2326,7 +2336,9 @@ module.exports.checkUserStatus = socket => {
 	if (passport && Object.keys(passport).length) {
 		const { user } = passport;
 		const { sockets } = io.sockets;
-		const game = games.find(game => game.publicPlayersState.find(player => player.userName === user && !player.leftGame));
+
+		const game = games[Object.keys(games).find(gameName => games[gameName].publicPlayersState.find(player => player.userName === user && !player.leftGame))];
+
 		const oldSocketID = Object.keys(sockets).find(
 			socketID =>
 				sockets[socketID].handshake.session.passport &&
