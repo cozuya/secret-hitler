@@ -185,11 +185,11 @@ class Players extends React.Component {
 			const prependSeasonAward = () => {
 				switch (player.previousSeasonAward) {
 					case 'bronze':
-						return <span title="This player was in the 3rd tier of winrate in the previous season" className="season-award bronze" />;
+						return <span title="This player was in the 3rd tier of ranks in the previous season" className="season-award bronze" />;
 					case 'silver':
-						return <span title="This player was in the 2nd tier of winrate in the previous season" className="season-award silver" />;
+						return <span title="This player was in the 2nd tier of ranks in the previous season" className="season-award silver" />;
 					case 'gold':
-						return <span title="This player was in the top tier of winrate in the previous season" className="season-award gold" />;
+						return <span title="This player was in the top tier of ranks in the previous season" className="season-award gold" />;
 				}
 			};
 
