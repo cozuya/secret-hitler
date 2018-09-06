@@ -35,9 +35,8 @@ Game.find()
 		);
 
 		// then find all hashUids at once, for efficiency
-		let usernameClauses = usernames.map(username => {
-			return { username: username };
-		});
+		const usernameClauses = usernames.map(username => ({ username }));
+
 		Account.find({ $or: usernameClauses }, 'username hashUid')
 			.lean()
 			.cursor()
@@ -78,11 +77,6 @@ Game.find()
 						chat.chat = chat.chat.replace(unameRegex, hashUid);
 					}
 				});
-
-				count++;
-				if (!(count % 500)) {
-					console.log(count + ' processed');
-				}
 			})
 			.then(() => {
 				// write each game out individually for tarring later
