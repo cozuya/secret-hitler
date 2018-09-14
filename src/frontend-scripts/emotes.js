@@ -28,6 +28,7 @@ export const allEmotes = [
 	'JaCard',
 	'LibBird',
 	'LiberalBird',
+	'LibFrown',
 	'LibGlory',
 	'LibHat',
 	'LibHmm',
