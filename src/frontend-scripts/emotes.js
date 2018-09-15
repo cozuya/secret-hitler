@@ -12,6 +12,7 @@ export const allEmotes = [
 	'FasEvil',
 	'FasFace',
 	'FasFrog',
+	'FasFrown',
 	'FasGlory',
 	'FasGoofy',
 	'FasGrin',
