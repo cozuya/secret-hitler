@@ -1,9 +1,6 @@
-let generalChatCount = 0;
-
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, newStaff } = require('./models');
 const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const Account = require('../../models/account');
-const Generalchats = require('../../models/generalchats');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
 const BannedIP = require('../../models/bannedIP');
@@ -1539,14 +1536,6 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
 	}
 
-	if (generalChatCount === 100) {
-		const chats = new Generalchats({ chats: generalChats.list });
-
-		chats.save(() => {
-			generalChatCount = 0;
-		});
-	}
-
 	if (user.wins > 0 || user.losses > 0) {
 		const getStaffRole = () => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
@@ -1564,7 +1553,6 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			userName: passport.user,
 			staffRole: getStaffRole()
 		};
-		generalChatCount++;
 		generalChats.list.push(newChat);
 
 		if (generalChats.list.length > 99) {
