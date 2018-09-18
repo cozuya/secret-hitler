@@ -369,6 +369,10 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 						}
 
 						enactPolicy(game, game.private.policies.shift());
+						game.gameState.undrawnPolicyCount--;
+						if (game.gameState.undrawnPolicyCount < 3) {
+							shufflePolicies(game);
+						}
 					} else {
 						startElection(game);
 					}
