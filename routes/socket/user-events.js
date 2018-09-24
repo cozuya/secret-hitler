@@ -1376,7 +1376,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	const player = publicPlayersState.find(player => player.userName === passport.user);
 	const user = userList.find(u => passport.user === u.userName);
 
-	if (!user) {
+	if (!user || game.general.disableChat) {
 		return;
 	}
 
