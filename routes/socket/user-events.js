@@ -1368,7 +1368,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	const { chat } = data;
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 
-	if (!chat || !chat.length > 300 || !chat.trim().length || !game) {
+	if (!chat) return;
+	chat = chat.trim();
+	if (chat.length > 300 || !chat.length || !game) {
 		return;
 	}
 
@@ -1379,6 +1381,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	if (!user) {
 		return;
 	}
+	data.userName = passport.user;
 
 	if (!staffUserNames.includes(passport.user) && !newStaff.modUserNames.includes(passport.user) && !newStaff.editorUserNames.includes(passport.user)) {
 		if (player) {
@@ -1467,7 +1470,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
 		}
 
-		data.userName = passport.user;
 		data.staffRole = (() => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
