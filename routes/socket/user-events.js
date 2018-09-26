@@ -1365,12 +1365,14 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	// Authentication Assured in routes.js
 	const game = games[data.uid];
+	if (!game || !game.general || game.general.disableChat) return;
+	if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) return;
 	const { chat } = data;
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 
 	if (!chat) return;
 	chat = chat.trim();
-	if (chat.length > 300 || !chat.length || !game) {
+	if (chat.length > 300 || !chat.length) {
 		return;
 	}
 
