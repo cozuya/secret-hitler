@@ -1368,7 +1368,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	const { chat } = data;
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 
-	if (!chat.length > 300 || !chat.trim().length || !game) {
+	if (!chat || !chat.length > 300 || !chat.trim().length || !game) {
 		return;
 	}
 
