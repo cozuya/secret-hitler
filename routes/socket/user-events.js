@@ -1366,7 +1366,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	// Authentication Assured in routes.js
 	const game = games[data.uid];
 	if (!game || !game.general || game.general.disableChat) return;
-	if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) return;
 	const { chat } = data;
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 
@@ -1378,6 +1377,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 
 	const { publicPlayersState } = game;
 	const player = publicPlayersState.find(player => player.userName === passport.user);
+	if (game.general.private && !player && !game.general.whitelistedPlayers.includes(passport.user)) return;
 	const user = userList.find(u => passport.user === u.userName);
 
 	if (!user) {
