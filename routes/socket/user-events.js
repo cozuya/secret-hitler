@@ -1,9 +1,6 @@
-let generalChatCount = 0;
-
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, newStaff } = require('./models');
 const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const Account = require('../../models/account');
-const Generalchats = require('../../models/generalchats');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
 const BannedIP = require('../../models/bannedIP');
@@ -1368,20 +1365,25 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	// Authentication Assured in routes.js
 	const game = games[data.uid];
+	if (!game || !game.general || game.general.disableChat) return;
 	const { chat } = data;
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 
-	if (!chat.length > 300 || !chat.trim().length || !game) {
+	if (!chat) return;
+	chat = chat.trim();
+	if (chat.length > 300 || !chat.length) {
 		return;
 	}
 
 	const { publicPlayersState } = game;
 	const player = publicPlayersState.find(player => player.userName === passport.user);
+	if (game.general.private && !player && !game.general.whitelistedPlayers.includes(passport.user)) return;
 	const user = userList.find(u => passport.user === u.userName);
 
 	if (!user) {
 		return;
 	}
+	data.userName = passport.user;
 
 	if (!staffUserNames.includes(passport.user) && !newStaff.modUserNames.includes(passport.user) && !newStaff.editorUserNames.includes(passport.user)) {
 		if (player) {
@@ -1470,7 +1472,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
 		}
 
-		data.userName = passport.user;
 		data.staffRole = (() => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
@@ -1539,14 +1540,6 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
 	}
 
-	if (generalChatCount === 100) {
-		const chats = new Generalchats({ chats: generalChats.list });
-
-		chats.save(() => {
-			generalChatCount = 0;
-		});
-	}
-
 	if (user.wins > 0 || user.losses > 0) {
 		const getStaffRole = () => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
@@ -1564,7 +1557,6 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			userName: passport.user,
 			staffRole: getStaffRole()
 		};
-		generalChatCount++;
 		generalChats.list.push(newChat);
 
 		if (generalChats.list.length > 99) {

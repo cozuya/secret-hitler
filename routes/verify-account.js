@@ -85,7 +85,7 @@ module.exports = {
 
 			const message = emailjs.message.create({
 				from: `secrethitler.io <${process.env.EMAIL_USER}>`,
-				to: email,
+				to: `${email} <${email}>`,
 				subject: 'Secret Hitler IO - verify your account',
 				attachment: [{ data: template({ username, token }), alternative: true }]
 			});
