@@ -15,7 +15,6 @@ class Settings extends React.Component {
 		this.sliderChange = this.sliderChange.bind(this);
 		this.sliderDrop = this.sliderDrop.bind(this);
 		this.profileSearchSubmit = this.profileSearchSubmit.bind(this);
-		this.namechangeSubmit = this.namechangeSubmit.bind(this);
 		this.toggleGameSettings = this.toggleGameSettings.bind(this);
 		this.handleSoundChange = this.handleSoundChange.bind(this);
 		this.state = {
@@ -43,7 +42,10 @@ class Settings extends React.Component {
 			soundStatus: '',
 			isPrivate: '',
 			failedNameChangeMessage: '',
-			soundSelected: 'Pack 1'
+			soundSelected: 'Pack 1',
+			staffDisableVisibleElo: '',
+			staffDisableStaffColor: '',
+			fullheight: false
 		};
 	}
 
@@ -64,7 +66,10 @@ class Settings extends React.Component {
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
 			isPrivate: gameSettings.isPrivate || '',
-			soundSelected: gameSettings.soundStatus || 'Off'
+			fullheight: gameSettings.fullheight || false,
+			soundSelected: gameSettings.soundStatus || 'Off',
+			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
+			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false
 		});
 	}
 
@@ -100,11 +105,6 @@ class Settings extends React.Component {
 		this.props.socket.emit('updateGameSettings', {
 			fontSize: this.state.fontSize
 		});
-	}
-
-	namechangeSubmit(e) {
-		e.preventDefault();
-		this.props.socket.emit('namechange', this.state.namechangeValue);
 	}
 
 	profileSearchSubmit(e) {
@@ -369,6 +369,23 @@ class Settings extends React.Component {
 								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
 								<label />
 							</div>
+
+							{window.staffRole && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Disable visible elo
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="staffDisableVisibleElo"
+											checked={this.state.staffDisableVisibleElo}
+											onChange={() => this.toggleGameSettings('staffDisableVisibleElo')}
+										/>
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Disable player cardbacks</h4>
@@ -391,6 +408,22 @@ class Settings extends React.Component {
 								<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
 								<label />
 							</div>
+							{window.staffRole && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Disable staff color (show elo color)
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="staffDisableStaffColor"
+											checked={this.state.staffDisableStaffColor}
+											onChange={() => this.toggleGameSettings('staffDisableStaffColor')}
+										/>
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Disable player colors in chat</h4>
@@ -409,6 +442,11 @@ class Settings extends React.Component {
 								<option>Pack1</option>
 								<option>Pack2</option>
 							</select>
+							<h4 className="ui header">UI full height in games</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="fullheight" checked={this.state.fullheight} onChange={() => this.toggleGameSettings('fullheight')} />
+								<label />
+							</div>
 							<h4 className="ui header" style={{ color: 'red' }}>
 								Private-games-only (this action will log you out, 18 hour cooldown)
 							</h4>

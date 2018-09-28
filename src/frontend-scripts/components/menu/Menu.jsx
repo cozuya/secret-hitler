@@ -218,7 +218,7 @@ class Menu extends React.Component {
 								onClick={this.props.readPatchNotes}
 							>
 								{' '}
-								Changelog {this.props.version.current.number}{' '}
+								{`v${this.props.version.current.number}`}{' '}
 							</a>
 							|{' '}
 							<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
@@ -231,6 +231,10 @@ class Menu extends React.Component {
 							|{' '}
 							<a target="_blank" href="https://discord.gg/secrethitlerio">
 								Discord
+							</a>{' '}
+							|{' '}
+							<a target="_blank" href="/polls" style={{ color: 'yellow' }}>
+								New Polls 8/6
 							</a>
 						</span>
 					</div>
@@ -268,7 +272,7 @@ class Menu extends React.Component {
 										className="loggedin"
 										trigger={
 											<a href={`#/profile/${userInfo.userName}`}>
-												<span className={`${PLAYERCOLORS(userInfo.userName)} playername`}>{userInfo.userName}</span>
+												<span className="playername">{userInfo.userName}</span>
 											</a>
 										}
 										content="Profile"

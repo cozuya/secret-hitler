@@ -53,13 +53,13 @@ class Tracks extends React.Component {
 			nextProps.gameInfo.gameState.timedModeEnabled
 		) {
 			let minutes = Math.floor(gameInfo.general.timedMode / 60);
-			let seconds = gameInfo.general.timedMode % 61;
+			let seconds = gameInfo.general.timedMode % 60;
 			this.intervalId = window.setInterval(() => {
 				if (!seconds) {
 					if (minutes) {
 						minutes--;
 					}
-					seconds = 60;
+					seconds = 59;
 				} else {
 					seconds--;
 				}
@@ -107,6 +107,8 @@ class Tracks extends React.Component {
 		let timedModeTooltip;
 		let isVerifiedOnly;
 		let isVerifiedOnlyTooltip;
+		let eloMinimum;
+		let eloMinimumTooltip;
 
 		{
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
@@ -181,38 +183,72 @@ class Tracks extends React.Component {
 			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
 		}
 
+		if (game.eloMinimum) {
+			eloMinimum = (
+				<span>
+					<span style={{ color: 'yellow' }}>Elo min: {game.eloMinimum}</span>
+				</span>
+			);
+			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
+		}
+
 		return (
 			<div className="options-icons-container">
-				<span className="rebalanced">
-					<Popup inverted trigger={rebalance69p} content={rebalance69pTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={disableChat} content={disableChatTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={disableGamechat} content={disableGamechatTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={experiencedMode} content={experiancedModeTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={privateOnly} content={privateOnlyTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={priv} content={privTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={casualgame} content={casualgameTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={timedMode} content={timedModeTooltip} />
-				</span>
-				<span>
-					<Popup inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
-				</span>
+				{rebalance69p && (
+					<span className="rebalanced">
+						<Popup inverted trigger={rebalance69p} content={rebalance69pTooltip} />
+					</span>
+				)}
+				{disableChat && (
+					<span>
+						<Popup inverted trigger={disableChat} content={disableChatTooltip} />
+					</span>
+				)}
+				{disableGamechat && (
+					<span>
+						<Popup inverted trigger={disableGamechat} content={disableGamechatTooltip} />
+					</span>
+				)}
+				{experiencedMode && (
+					<span>
+						<Popup inverted trigger={experiencedMode} content={experiancedModeTooltip} />
+					</span>
+				)}
+				{privateOnly && (
+					<span>
+						<Popup inverted trigger={privateOnly} content={privateOnlyTooltip} />
+					</span>
+				)}
+				{priv && (
+					<span>
+						<Popup inverted trigger={priv} content={privTooltip} />
+					</span>
+				)}
+				{rainbowgame && (
+					<span>
+						<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
+					</span>
+				)}
+				{casualgame && (
+					<span>
+						<Popup inverted trigger={casualgame} content={casualgameTooltip} />
+					</span>
+				)}
+				{timedMode && (
+					<span>
+						<Popup inverted trigger={timedMode} content={timedModeTooltip} />
+					</span>
+				)}
+				{isVerifiedOnly && (
+					<span>
+						<Popup inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
+					</span>
+				)}
+				{eloMinimum && (
+					<span>
+						<Popup inverted trigger={eloMinimum} content={eloMinimumTooltip} />
+					</span>
+				)}
 			</div>
 		);
 	}

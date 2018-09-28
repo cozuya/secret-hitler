@@ -16,7 +16,8 @@ const {
 	handlePlayerReportDismiss,
 	handleUpdatedBio,
 	handleUpdatedRemakeGame,
-	handleUpdatedPlayerNote
+	handleUpdatedPlayerNote,
+	handleSubscribeModChat
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -34,23 +35,23 @@ const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChanc
 const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
 const { games } = require('./models');
-const { MODERATORS, ADMINS, EDITORS } = require('../../src/frontend-scripts/constants');
+const Account = require('../../models/account');
+
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
-	const toRemoveIndexes = games
-		.filter(
-			game =>
-				(game.general.timeStarted && game.general.timeStarted + 4200000 < currentTime) ||
-				(game.general.timeCreated && game.general.timeCreated + 600000 < currentTime && game.general.private && game.publicPlayersState.length < 5)
-		)
-		.map(game => games.indexOf(game))
-		.reverse();
+	const toRemoveGameNames = Object.keys(games).filter(
+		gameName =>
+			(games[gameName].general.timeStarted && games[gameName].general.timeStarted + 4200000 < currentTime) ||
+			(games[gameName].general.timeCreated &&
+				games[gameName].general.timeCreated + 600000 < currentTime &&
+				games[gameName].general.private &&
+				games[gameName].publicPlayersState.length < 5)
+	);
 
-	games.forEach((game, index) => {
-		if (toRemoveIndexes.includes(index)) {
-			games.splice(index, 1);
-		}
+	toRemoveGameNames.forEach(gameName => {
+		delete games[gameName];
 	});
+
 	sendGameList();
 };
 
@@ -64,7 +65,7 @@ const ensureAuthenticated = socket => {
 
 const findGame = data => {
 	if (games && data && data.uid) {
-		return games.find(el => el.general.uid === data.uid);
+		return games[data.uid];
 	}
 };
 
@@ -76,7 +77,7 @@ const ensureInGame = (passport, game) => {
 	}
 };
 
-module.exports = () => {
+module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 	setInterval(gamesGarbageCollector, 100000);
 
 	io.on('connection', socket => {
@@ -97,7 +98,13 @@ module.exports = () => {
 
 		const { passport } = socket.handshake.session;
 		const authenticated = ensureAuthenticated(socket);
-		const isAEM = authenticated && (MODERATORS.includes(passport.user) || ADMINS.includes(passport.user) || EDITORS.includes(passport.user));
+
+		let isAEM = false;
+		if (authenticated && passport && passport.user) {
+			Account.findOne({ username: passport.user }).then(account => {
+				if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'contributor') isAEM = true;
+			});
+		}
 
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
@@ -116,7 +123,7 @@ module.exports = () => {
 			})
 			.on('updateModAction', data => {
 				if (authenticated && isAEM) {
-					handleModerationAction(socket, passport, data);
+					handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));
 				}
 			})
 			.on('addNewClaim', data => {
@@ -136,7 +143,7 @@ module.exports = () => {
 			})
 			.on('addNewGameChat', data => {
 				if (authenticated) {
-					handleAddNewGameChat(socket, passport, data);
+					handleAddNewGameChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
 			})
 			.on('updateReportGame', data => {
@@ -159,7 +166,7 @@ module.exports = () => {
 
 			.on('addNewGeneralChat', data => {
 				if (authenticated) {
-					handleNewGeneralChat(socket, passport, data);
+					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
 			})
 			.on('leaveGame', data => {
@@ -228,6 +235,20 @@ module.exports = () => {
 			.on('getModInfo', count => {
 				if (authenticated && isAEM) {
 					sendModInfo(socket, count);
+				}
+			})
+			.on('subscribeModChat', uid => {
+				if (authenticated && isAEM) {
+					const game = findGame({ uid });
+					if (game && game.private && game.private.seatedPlayers) {
+						const players = game.private.seatedPlayers.map(player => player.userName);
+						Account.find({ staffRole: { $exists: true } }).then(accounts => {
+							const hasAEM = accounts.some(acc => {
+								return acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'contributor' && players.includes(acc.username);
+							});
+							if (!hasAEM) handleSubscribeModChat(socket, passport, game);
+						});
+					}
 				}
 			})
 			.on('getUserReports', () => {

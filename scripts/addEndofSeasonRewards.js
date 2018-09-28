@@ -4,44 +4,48 @@ const Account = require('../models/account');
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
 
-const bronze = [];
-const silver = [];
-const gold = [];
+// const bronze = [];
+// const silver = [];
+// const gold = [];
+const cutoff = 1765;
 
-Account.find({ winsSeason1: { $gte: 150 } })
+// Account.find({ eloSeason: { $gte: cutoff } })
+// 	.cursor()
+// 	.eachAsync(account => {
+// 		const { eloSeason } = account;
+
+// 		if (eloSeason >= cutoff && eloSeason < cutoff + 24) {
+// 			bronze.push(account.username);
+// 		} else if (eloSeason >= cutoff + 24 && eloSeason < cutoff + 80) {
+// 			silver.push(account.username);
+// 		} else if (eloSeason >= cutoff + 80) {
+// 			gold.push(account.username);
+// 		}
+// 	})
+// 	.then(() => {
+// 		console.log(bronze.length, 'bronze');
+// 		console.log(silver.length, 'silver');
+// 		console.log(gold.length, 'gold');
+
+// 		// if this is ok, run below:
+// 	});
+
+Account.find({ eloSeason: { $gte: cutoff } })
 	.cursor()
 	.eachAsync(account => {
-		const winrate = account.winsSeason1 / (account.winsSeason1 + account.lossesSeason1);
+		const { eloSeason } = account;
 
-		if (winrate > 0.52 && winrate < 0.54) {
-			bronze.push(account.username);
-		} else if (winrate >= 0.54 && winrate < 0.562) {
-			silver.push(account.username);
-		} else if (winrate >= 0.562) {
-			gold.push(account.username);
+		if (eloSeason >= cutoff && eloSeason < cutoff + 24) {
+			account.gameSettings.previousSeasonAward = 'bronze';
+			account.save();
+		} else if (eloSeason >= cutoff + 24 && eloSeason < cutoff + 80) {
+			account.gameSettings.previousSeasonAward = 'silver';
+			account.save();
+		} else if (eloSeason >= cutoff + 80) {
+			account.gameSettings.previousSeasonAward = 'gold';
+			account.save();
 		}
 	})
 	.then(() => {
-		console.log(bronze.length, 'bronze');
-		console.log(silver.length, 'silver');
-		console.log(gold.length, 'gold');
-
-		// if this is ok, run below:
+		console.log('done');
 	});
-
-// Account.find({ winsSeason1: { $gte: 150 } })
-// 	.cursor()
-// 	.eachAsync(account => {
-// 		const winrate = account.winsSeason1 / (account.winsSeason1 + account.lossesSeason1);
-
-// 		if (winrate > 0.52 && winrate < 0.54) {
-// 			account.gameSettings.previousSeasonAward = 'bronze';
-//			account.save();
-// 		} else if (winrate >= 0.54 && winrate < 0.562) {
-// 			account.gameSettings.previousSeasonAward = 'silver';
-//			account.save();
-// 		} else if (winrate >= 0.562) {
-// 			account.gameSettings.previousSeasonAward = 'gold';
-//			account.save();
-// 		}
-// 	});

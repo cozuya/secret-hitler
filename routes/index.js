@@ -6,8 +6,6 @@ const socketRoutes = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
-const { MODERATORS, TRIALMODS, ADMINS, EDITORS } = require('../src/frontend-scripts/constants');
-const AEM = [...ADMINS, ...EDITORS, ...MODERATORS];
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
 
@@ -45,7 +43,14 @@ module.exports = () => {
 	};
 
 	accounts();
-	socketRoutes();
+
+	Account.find({ staffRole: { $exists: true } }).then(accounts => {
+		const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
+		const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
+		const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+
+		socketRoutes(modUserNames, editorUserNames, adminUserNames);
+	});
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
@@ -96,6 +101,7 @@ module.exports = () => {
 
 				res.render('game', {
 					game: true,
+					staffRole: account.staffRole || '',
 					verified: req.user.verified,
 					username,
 					gameSettings: account.gameSettings,
@@ -134,20 +140,22 @@ module.exports = () => {
 					if (account) {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
-					}
 
-					if (!AEM.includes(requestingUser) && !TRIALMODS.includes(requestingUser)) {
-						_profile.lastConnectedIP = 'no looking';
-					} else {
-						try {
-							_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
-						} catch (e) {
-							_profile.lastConnectedIP = 'something went wrong';
-							console.log(e);
-						}
-					}
+						Account.findOne({ username: requestingUser }).then(acc => {
+							if (!acc || !acc.staffRole || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
+								_profile.lastConnectedIP = 'no looking';
+							} else {
+								try {
+									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
+								} catch (e) {
+									_profile.lastConnectedIP = 'something went wrong';
+									console.log(e);
+								}
+							}
 
-					res.json(_profile);
+							res.json(_profile);
+						});
+					}
 				});
 			}
 		});

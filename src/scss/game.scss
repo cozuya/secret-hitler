@@ -362,3 +362,37 @@
 		}
 	}
 }
+
+#game-container {
+	.body-container.fullheight {
+		flex-grow: 1;
+
+		.section-main {
+			height: 100%;
+			> .game {
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+
+				> .ui.grid {
+					flex-grow: 1;
+
+					> div.row {
+						height: auto;
+
+						.gamechat {
+							height: 100%;
+							display: flex;
+							flex-direction: column;
+
+							.segment.chats {
+								height: 100%;
+								height: fit-content;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

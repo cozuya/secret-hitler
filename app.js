@@ -2,7 +2,6 @@
 
 const fs = require('fs'),
 	express = require('express'),
-	logger = require('morgan'),
 	cookieParser = require('cookie-parser'),
 	bodyParser = require('body-parser'),
 	favicon = require('serve-favicon'),
@@ -17,14 +16,12 @@ const fs = require('fs'),
 		secret: process.env.SECRETSESSIONKEY,
 		resave: false,
 		saveUninitialized: false
-	}),
-	logFile = fs.createWriteStream('./logs/express.log', { flags: 'a' });
+	});
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'pug');
 app.locals.pretty = true;
 app.use(compression());
-app.use(logger('combined', { stream: logFile }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(favicon(`${__dirname}/public/favicon.ico`));

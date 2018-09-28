@@ -1,4 +1,4 @@
-const { sendInProgressGameUpdate } = require('../util.js');
+const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../util.js');
 const _ = require('lodash');
 const { startElection } = require('./election.js');
 const { shufflePolicies } = require('./common.js');
@@ -15,6 +15,10 @@ const beginGame = game => {
 
 	game.general.timeStarted = new Date().getTime();
 	game.general.type = Math.floor((game.publicPlayersState.length - 5) / 2);
+
+	game.private.hiddenInfoChat = [];
+	game.private.hiddenInfoSubscriptions = [];
+	game.private.hiddenInfoShouldNotify = true;
 
 	const roles = [
 		{
@@ -94,6 +98,29 @@ const beginGame = game => {
 				]
 			});
 		}
+
+		const modOnlyChat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: `${player.userName} {${i + 1}}`,
+					type: 'player'
+				},
+				{
+					text: ' is assigned the '
+				},
+				{
+					text: player.role.cardName === 'hitler' ? 'hitler' : player.role.cardName,
+					type: player.role.cardName
+				},
+				{
+					text: ' role.'
+				}
+			]
+		};
+		game.private.hiddenInfoChat.push(modOnlyChat);
+		sendInProgressModChatUpdate(game, modOnlyChat);
 	});
 
 	const libPlayers = game.private.seatedPlayers.filter(player => player.role.team === 'liberal');
@@ -163,6 +190,11 @@ const beginGame = game => {
 	];
 
 	sendInProgressGameUpdate(game);
+	const hitlerPlayer = game.private.seatedPlayers.find(player => player.role.cardName === 'hitler');
+
+	if (!hitlerPlayer) {
+		return;
+	}
 
 	setTimeout(() => {
 		game.private.seatedPlayers.forEach((player, i) => {
@@ -176,6 +208,10 @@ const beginGame = game => {
 				if (playerCount > 6 && playerCount < 9) {
 					const otherFascist = seatedPlayers.find(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 					const otherFascistIndex = seatedPlayers.indexOf(otherFascist);
+
+					if (!otherFascist) {
+						return;
+					}
 
 					if (!game.general.disableGamechat) {
 						player.gameChats.push({
@@ -251,7 +287,6 @@ const beginGame = game => {
 					});
 				}
 
-				const hitlerPlayer = seatedPlayers.find(player => player.role.cardName === 'hitler');
 				const chat = {
 					timestamp: new Date(),
 					gameChat: true,
@@ -355,14 +390,14 @@ const beginGame = game => {
 				play.notificationStatus = '';
 			});
 		});
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 	}, process.env.NODE_ENV === 'development' ? 100 : 5000);
 
 	setTimeout(() => {
 		game.publicPlayersState.forEach(player => {
 			player.cardStatus.cardDisplayed = false;
 		});
-		sendInProgressGameUpdate(game);
+		sendInProgressGameUpdate(game, true);
 	}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5200 : 7000);
 
 	setTimeout(() => {
@@ -388,7 +423,7 @@ module.exports = game => {
 			beginGame(game);
 		} else {
 			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
-			sendInProgressGameUpdate(game);
+			sendInProgressGameUpdate(game, true);
 			startGamePause--;
 		}
 	}, 1000);

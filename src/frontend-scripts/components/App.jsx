@@ -14,7 +14,6 @@ import {
 	fetchProfile,
 	fetchReplay
 } from '../actions/actions.js';
-import { MODERATORS, TRIALMODS, ADMINS, EDITORS } from '../constants';
 import socket from '../socket';
 import PropTypes from 'prop-types';
 import RightSidebar from './section-right/RightSidebar.jsx';
@@ -56,7 +55,7 @@ export class App extends React.Component {
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1];
-			const info = { userName: username, verified: window.verified };
+			const info = { userName: username, verified: window.verified, staffRole: window.staffRole };
 
 			socket.emit('getUserGameSettings');
 
@@ -109,8 +108,30 @@ export class App extends React.Component {
 			window.location.hash = `#/table/${uid}`;
 		});
 
-		socket.on('gameUpdate', game => {
-			dispatch(updateGameInfo(game));
+		socket.on('gameUpdate', (game, noChat) => {
+			if (noChat) {
+				const { gameInfo } = this.props;
+				game.chats = gameInfo.chats;
+				dispatch(updateGameInfo(game));
+			} else {
+				dispatch(updateGameInfo(game));
+			}
+		});
+
+		socket.on('playerChatUpdate', chat => {
+			const { gameInfo } = this.props;
+			const _game = Object.assign({}, gameInfo);
+
+			_game.chats.push(chat);
+			dispatch(updateGameInfo(_game));
+		});
+
+		socket.on('gameModChat', chat => {
+			const { gameInfo } = this.props;
+			const _game = _.cloneDeep(gameInfo);
+
+			_game.chats.push(chat);
+			dispatch(updateGameInfo(_game));
 		});
 
 		socket.on('userList', list => {
@@ -200,21 +221,10 @@ export class App extends React.Component {
 			dispatch(fetchReplay(hash.split('#/replay/')[1]));
 		} else if (hash === '#/changelog') {
 			dispatch(updateMidsection('changelog'));
-		} else if (
-			hash === '#/moderation' &&
-			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) || EDITORS.includes(userInfo.userName) || ADMINS.includes(userInfo.userName))
-		) {
+		} else if (hash === '#/moderation' && userInfo.staffRole) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('moderation'));
-		} else if (
-			hash === '#/playerreports' &&
-			userInfo.userName &&
-			(MODERATORS.includes(userInfo.userName) ||
-				TRIALMODS.includes(userInfo.userName) ||
-				EDITORS.includes(userInfo.userName) ||
-				ADMINS.includes(userInfo.userName))
-		) {
+		} else if (hash === '#/playerreports' && userInfo.staffRole) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
 		} else if (hash === '#/settings' && isAuthed) {
@@ -303,6 +313,10 @@ export class App extends React.Component {
 
 		if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
 			classes += ' game';
+		}
+
+		if (gameSettings && gameSettings.fullheight) {
+			classes += ' fullheight';
 		}
 
 		return (

@@ -66,6 +66,19 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 	// delete/comment above
 
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
+
+	const modOnlyChat = {
+		timestamp: new Date(),
+		gameChat: true,
+		chat: [{ text: 'The deck has been shuffled: ' }]
+	};
+	game.private.policies.forEach(policy => {
+		modOnlyChat.chat.push({
+			text: policy === 'liberal' ? 'B' : 'R',
+			type: policy
+		});
+	});
+	game.private.hiddenInfoChat.push(modOnlyChat);
 });
 
 /**
@@ -164,7 +177,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			}
 		}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 	}
-	/* eslint-disable */
+
 	game.gameState.clickActionInfo =
 		game.general.livingPlayerCount > 5
 			? [
@@ -179,6 +192,6 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
 						.map(el => seatedPlayers.indexOf(el))
 			  ];
-	/* eslint-enable */
+
 	sendInProgressGameUpdate(game);
 };

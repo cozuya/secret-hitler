@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS, CURRENTSEASONNUMBER, EDITORS, ADMINS, MODERATORS, TRIALMODS } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -79,6 +79,8 @@ const DisplayLobbies = props => {
 		let timedModeTooltip;
 		let isVerifiedOnly;
 		let isVerifiedOnlyTooltip;
+		let eloMinimum;
+		let eloMinimumTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
@@ -171,41 +173,73 @@ const DisplayLobbies = props => {
 			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
 		}
 
+		if (game.eloMinimum) {
+			eloMinimum = <span style={{ color: 'yellow' }}>Elo min: {game.eloMinimum}</span>;
+			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
+		}
+
 		return (
 			<div className="options-icons-container">
-				<span data-tooltip={casualGameTooltip} data-inverted="">
-					{casualGame}
-				</span>
-				<span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
-					{rebalance}
-				</span>
-				<span data-tooltip={disableChatTooltip} data-inverted="">
-					{disableChat}
-				</span>
-				<span data-tooltip={disableGamechatTooltip} data-inverted="">
-					{disableGamechat}
-				</span>
-				<span data-tooltip={privateOnlyTooltip} data-inverted="">
-					{privateOnly}
-				</span>
-				<span data-tooltip={privTooltip} data-inverted="">
-					{priv}
-				</span>
-				<span data-tooltip={blindTooltip} data-inverted="">
-					{blind}
-				</span>
-				<span data-tooltip={experiancedModeTooltip} data-inverted="">
-					{experiencedMode}
-				</span>
-				<span data-tooltip={rainbowgameTooltip} data-inverted="">
-					{rainbowgame}
-				</span>
-				<span data-tooltip={timedModeTooltip} data-inverted="">
-					{timedMode}
-				</span>
-				<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
-					{isVerifiedOnly}
-				</span>
+				{casualGame && (
+					<span data-tooltip={casualGameTooltip} data-inverted="">
+						{casualGame}
+					</span>
+				)}
+				{rebalance && (
+					<span className="rebalanced" data-tooltip={rebalanceTooltip} data-inverted="">
+						{rebalance}
+					</span>
+				)}
+				{disableChat && (
+					<span data-tooltip={disableChatTooltip} data-inverted="">
+						{disableChat}
+					</span>
+				)}
+				{disableGamechat && (
+					<span data-tooltip={disableGamechatTooltip} data-inverted="">
+						{disableGamechat}
+					</span>
+				)}
+				{privateOnly && (
+					<span data-tooltip={privateOnlyTooltip} data-inverted="">
+						{privateOnly}
+					</span>
+				)}
+				{priv && (
+					<span data-tooltip={privTooltip} data-inverted="">
+						{priv}
+					</span>
+				)}
+				{blind && (
+					<span data-tooltip={blindTooltip} data-inverted="">
+						{blind}
+					</span>
+				)}
+				{experiencedMode && (
+					<span data-tooltip={experiancedModeTooltip} data-inverted="">
+						{experiencedMode}
+					</span>
+				)}
+				{rainbowgame && (
+					<span data-tooltip={rainbowgameTooltip} data-inverted="">
+						{rainbowgame}
+					</span>
+				)}
+				{timedMode && (
+					<span data-tooltip={timedModeTooltip} data-inverted="">
+						{timedMode}
+					</span>
+				)}
+				{eloMinimum && (
+					<span data-tooltip={eloMinimumTooltip} data-inverted="">
+						{eloMinimum}
+					</span>
+				)}
+				{isVerifiedOnly && (
+					<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
+						{isVerifiedOnly}
+					</span>
+				)}
 			</div>
 		);
 	};
@@ -236,10 +270,7 @@ const DisplayLobbies = props => {
 		});
 
 		players.forEach(player => {
-			const classes =
-				player.wins + player.losses > 49
-					? PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback')
-					: 'player-small-cardback';
+			const classes = PLAYERCOLORS(player, !(gameSettings && gameSettings.disableSeasonal), 'player-small-cardback');
 
 			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
 				total.push(
@@ -355,13 +386,6 @@ const DisplayLobbies = props => {
 		}
 	};
 
-	const isModerator =
-		userInfo.userName &&
-		(EDITORS.includes(userInfo.userName) ||
-			ADMINS.includes(userInfo.userName) ||
-			MODERATORS.includes(userInfo.userName) ||
-			TRIALMODS.includes(userInfo.userName));
-
 	return (
 		<div
 			data-uid={game.uid}
@@ -377,7 +401,7 @@ const DisplayLobbies = props => {
 						<div className="gamename-column">
 							{renderFlag()}
 							{game.name}
-							{isModerator && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
+							{userInfo.staffRole && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
 						</div>
 						<div className="options-column experienced">{optionIcons()}</div>
 					</div>

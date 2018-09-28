@@ -1,5 +1,5 @@
 import React from 'react';
-import { MODERATORS, EDITORS, ADMINS, PLAYERCOLORS } from '../../constants';
+import { PLAYERCOLORS } from '../../constants';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -147,11 +147,7 @@ export default class Generalchat extends React.Component {
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
 					const { gameSettings } = userInfo;
-					const isMod =
-						MODERATORS.includes(chat.userName) ||
-						EDITORS.includes(chat.userName) ||
-						ADMINS.includes(chat.userName) ||
-						chat.userName.substring(0, 11) == '[BROADCAST]';
+					const isMod = Boolean(chat.staffRole) || chat.userName.substring(0, 11) == '[BROADCAST]';
 					const user = chat.userName && Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 					const userClasses =
 						!user || (gameSettings && gameSettings.disablePlayerColorsInChat)
@@ -172,9 +168,9 @@ export default class Generalchat extends React.Component {
 								chat.previousSeasonAward &&
 								this.renderPreviousSeasonAward(chat.previousSeasonAward)}
 							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
-								{MODERATORS.includes(chat.userName) && <span className="moderator-name">(M) </span>}
-								{EDITORS.includes(chat.userName) && <span className="editor-name">(E) </span>}
-								{ADMINS.includes(chat.userName) && <span className="admin-name">(A) </span>}
+								{chat.staffRole === 'moderator' && <span className="moderator-name">(M) </span>}
+								{chat.staffRole === 'editor' && <span className="editor-name">(E) </span>}
+								{chat.staffRole === 'admin' && <span className="admin-name">(A) </span>}
 								<a
 									href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}
 									className={'genchat-user ' + userClasses}

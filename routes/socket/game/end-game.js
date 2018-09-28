@@ -123,7 +123,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 			winningPrivatePlayers.forEach((player, index) => {
 				publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
 			});
-			sendInProgressGameUpdate(game);
+			sendInProgressGameUpdate(game, true);
 		}, 15000);
 	}
 
@@ -273,7 +273,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 										? userEntry[`rainbowWinsSeason${currentSeasonNumber}`]
 										: 0;
 								}
-								userEntry.losses ? userEntry.losses + 1 : 1;
+								userEntry.losses = userEntry.losses ? userEntry.losses + 1 : 1;
 								userEntry[`lossesSeason${currentSeasonNumber}`] = userEntry[`lossesSeason${currentSeasonNumber}`]
 									? userEntry[`lossesSeason${currentSeasonNumber}`] + 1
 									: 1;

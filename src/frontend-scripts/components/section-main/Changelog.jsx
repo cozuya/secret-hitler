@@ -9,6 +9,82 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.12 released 8-8-2018</p>
+		</div>
+		<h4>250,000 games played! Wow!</h4>
+		<h4>New feature: full height in game player setting</h4>
+		<div style={{ textAlign: 'center' }}>
+			<img src="http://i.imgur.com/9eDIhIP.jpg" style={{ border: '1px solid grey', width: '820px' }} />
+		</div>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/fullheightsetting.png" style={{ border: '1px solid grey' }} />
+		</div>
+		<p>
+			There's a new setting for players when enabled, the UI will take up the full height of your monitor while in game, greatly extending the chatbox (see
+			below). This will only be apparent for (on 100% browser zoom) players with larger monitors, laptops and smaller will not see any change.
+		</p>
+		<h4>New feature: moderator manual conclusion of games.</h4>
+		<p>
+			In a ranked game where someone afks/rage quits at the very end when they're about to lose? Contact a moderator and they can end the game for the team that
+			was about to win, assigning you precious elo points. About time!
+		</p>
+		<h4>Other stuff:</h4>
+		<ul>
+			<li>New emotes! Sheeped, Shepherd, and ThumbsDown. Thanks to contributor JohnCena.</li>
+			<li>Private/anonymous player names can no longer be seen by hovering on them..</li>
+			<li>You don't need >1675 seasonal elo to make an elo limited game, overall now works as well.</li>
+			<li>Contributor color is back.</li>
+			<li>iOS safari users should be able to use their profile again.</li>
+			<li>
+				Next major feature planned is <b>custom games</b>, where the game creator can do things like set different policy powers and when hitler zone starts.
+				There's some new polls available, please take a look.
+			</li>
+		</ul>
+		<div className="ui header">
+			<p>Version 0.14.10 released 7-23-2018</p>
+		</div>
+		<ul>
+			<li>You can delete people from your blacklist again.</li>
+			<li>
+				Elo minimum games now lets a player who has either seasonal or overall elo above it play in that game. You still need to have seasons on though (will
+				get to that later).
+			</li>
+			<li>Some performance optimizations have been put in, hopefully making things more stable.</li>
+		</ul>
+		<div className="ui header">
+			<p>Version 0.14.9 released 7-15-2018</p>
+		</div>
+		<h3>New feature: elo limiter has gone in.</h3>
+		<p>Minimum you can set this to is 1675, we'll keep an eye on it.</p>
+		<h3>Blacklist overhaul (again)</h3>
+		<p>
+			Several players are using the blacklist feature in an unintended way, causing some grief for everyone. All blacklists have been deleted, and there now is
+			a (working this time..) limit of 10 players that can be on your blacklist at once.
+		</p>
+		<h3>Timed mode may have its long standing bug fixed thanks to contributor/mod Hexicube.</h3>
+		<h3>Some changes have been made in the back end that should make some performance increases/less lag and crashes. I hope.</h3>
+		<div className="ui header">
+			<p>Version 0.14.8 released 7-1-2018</p>
+		</div>
+		<h3>Welcome to season 3!</h3>
+		<p>
+			All seasonal elo has been reset to 1600 and all seasonal winrates are 0-0. Season 2 badges have been applied to the top ~75 players of season 2 by elo.
+		</p>
+		<h3>New feature: elo slider/limiter (not quite working, will be in this week)</h3>
+		<p>
+			Players above 1700 elo will now see a new slider while creating a game - use this to limit what players can play in the new game you are creating. Players
+			who are under or over the threshold will not be able to sit.
+		</p>
+		<p>
+			This feature will be watched for feedback - I don't want to lock players out of games, but I also think its nice to be able to play with high elo players
+			exclusively if you want. This feature only applies to seasonal elo right now.
+		</p>
+		<h3>
+			The terms of use on the about page have been somewhat adjusted. I want to make it clear that abuse by anyone is not allowed. If someone makes a mistake
+			that costs you a game, do not scream at them, do not call them "retards" or "cunts". If so you will eat a ban. Its a free web game with zero stakes, chill
+			and hunt/elect some fascists.
+		</h3>
+		<div className="ui header">
 			<p>Version 0.14.7 released 6-17-2018</p>
 		</div>
 		<p>Verification emails should be fixed.</p>

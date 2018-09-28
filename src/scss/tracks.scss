@@ -77,13 +77,16 @@
 	.option-icons {
 		position: absolute;
 		z-index: 108;
-		left: 302px;
+		right: 95px;
+		left: auto;
 		top: 10px;
 		background: #5b9cc4;
 		border: 2px solid lightblue;
 		padding: 4px;
-		width: 255px;
 		height: 31px;
+		display: flex;
+		flex-direction: row-reverse;
+		width: auto;
 	}
 	.tracks {
 		transition: all 1s;

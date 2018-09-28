@@ -5,7 +5,7 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 import cn from 'classnames';
-import { EDITORS, ADMINS, PLAYERCOLORS, MODERATORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
@@ -212,7 +212,7 @@ class ProfileWrapper extends React.Component {
 		const { profile } = this.props;
 		const name = profile._id;
 		e.preventDefault();
-		console.log(JSON.parse(JSON.stringify(gameSettings)));
+
 		this.setState(
 			{
 				blacklistClicked: true
@@ -268,11 +268,7 @@ class ProfileWrapper extends React.Component {
 		let userClasses = 'profile-picture';
 		if (user) {
 			userClasses =
-				user[w] + user[l] > 49 ||
-				ADMINS.includes(user.userName) ||
-				EDITORS.includes(user.userName) ||
-				MODERATORS.includes(user.userName) ||
-				CONTRIBUTORS.includes(user.userName)
+				user[w] + user[l] > 49 || Boolean(user.staffRole)
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
 							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -305,7 +301,7 @@ class ProfileWrapper extends React.Component {
 						{profile.lastConnectedIP !== 'no looking' && <p>Last connected IP: {profile.lastConnectedIP}</p>}
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
-								Show your blacklist
+								Your blacklist
 							</a>
 						)}
 					</div>

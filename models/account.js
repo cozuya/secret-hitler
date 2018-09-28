@@ -8,7 +8,10 @@ const Account = new Schema({
 		unique: true
 	},
 	password: String,
+	staffRole: String,
 	gameSettings: {
+		staffDisableVisibleElo: Boolean,
+		staffDisableStaffColor: Boolean,
 		isRainbow: Boolean,
 		newReport: Boolean,
 		customCardback: String,
@@ -35,6 +38,7 @@ const Account = new Schema({
 		hasChangedName: Boolean,
 		previousSeasonAward: String,
 		disableElo: Boolean,
+		fullheight: Boolean,
 		gameNotes: {
 			top: Number,
 			left: Number,

@@ -12,7 +12,7 @@ const isIPv4 = ip => {
 	return is0to999(data[0]) && is0to999(data[1]) && is0to999(data[2]) && is0to999(data[3]);
 };
 module.exports.expandAndSimplify = ip => {
-	if (ip.includes(':')) {
+	if (ip && ip.includes(':')) {
 		if (ip.startsWith('::ffff:')) {
 			const shortened = ip.substring(7);
 			if (isIPv4(shortened)) return shortened; // IPv4 embedded in IPv6

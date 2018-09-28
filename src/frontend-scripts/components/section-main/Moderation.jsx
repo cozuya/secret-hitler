@@ -1,8 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import _ from 'lodash';
 import $ from 'jquery';
-import { ADMINS, EDITORS } from '../../constants';
 import PropTypes from 'prop-types';
 import Checkbox from 'semantic-ui-checkbox';
 
@@ -182,7 +180,6 @@ export default class Moderation extends React.Component {
 			this.setState({ selectedUser: userName });
 		};
 		const { userList, userSort } = this.state;
-		const ipCounts = {};
 		const ips = userList.map(user => user.ip);
 		const bannedips = this.state.log.filter(log => log.actionTaken === 'ban' || log.actionTaken === 'timeOut').map(log => log.ip);
 		const timednames = this.state.log.filter(log => log.actionTaken === 'timeOut2').map(log => log.userActedOn);
@@ -266,6 +263,7 @@ export default class Moderation extends React.Component {
 			}
 		};
 		const { selectedUser, actionTextValue, playerInputText } = this.state;
+		const { userInfo } = this.props;
 
 		return (
 			<div className="button-container">
@@ -285,14 +283,7 @@ export default class Moderation extends React.Component {
 				>
 					Clear/delete general chat
 				</button>
-				<button
-					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
-					onClick={() => {
-						takeModAction('getIP');
-					}}
-				>
-					Get user IP
-				</button>
+
 				<br />
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
@@ -327,6 +318,22 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Timeout - non-IP version.
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('timeOut3');
+					}}
+				>
+					Timeout - 1 hour IP version.
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('timeOut4');
+					}}
+				>
+					Timeout - 6 hour non-IP version.
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}
@@ -405,6 +412,24 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="ipbans" />
 					</div>
 				</div>
+				<br />
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('clearTimeout');
+					}}
+				>
+					Restore User - Remove any pre-existing timeout or ban.
+				</button>
+				<br />
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('clearTimeoutIP');
+					}}
+				>
+					Restore IP - Remove any pre-existing IP ban.
+				</button>
 				<div className="ui horizontal divider">-</div>
 
 				<button
@@ -463,10 +488,17 @@ export default class Moderation extends React.Component {
 					</div>
 				</div>
 				<button
+					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
+					onClick={() => {
+						takeModAction('getIP');
+					}}
+					style={{ width: '100%' }}
+				>
+					Get user IP
+				</button>
+				<button
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -478,9 +510,7 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -502,9 +532,7 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'darkblue' }}
 					className={
-						(selectedUser || playerInputText) &&
-						actionTextValue &&
-						(ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -515,9 +543,48 @@ export default class Moderation extends React.Component {
 					Delete/reset player profile
 				</button>
 				<button
+					style={{ background: 'grey' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('removeStaffRole');
+					}}
+				>
+					Remove mod or editor status and log them out
+				</button>
+				<button
+					style={{ background: 'blueviolet' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToMod');
+					}}
+				>
+					Promote player to mod
+				</button>
+				<button
+					style={{ background: 'violet' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToEditor');
+					}}
+				>
+					Promote player to editor
+				</button>
+				<button
 					style={{ background: 'black' }}
 					className={
-						actionTextValue && (ADMINS.includes(this.props.userInfo.userName) || EDITORS.includes(this.props.userInfo.userName))
+						actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -565,8 +632,12 @@ export default class Moderation extends React.Component {
 			enableAccountCreation: 'Enable Account Creation',
 			disableAccountCreation: 'Disable Account Creation',
 			togglePrivate: 'Toggle Private',
-			timeOut: 'Timeout (IP)',
-			timeOut2: 'Timeout',
+			timeOut: 'Timeout 18 hours (IP)',
+			timeOut2: 'Timeout 18 hours',
+			timeOut3: 'Timeout 1 hour (IP)',
+			timeOut4: 'Timeout 6 hours',
+			clearTimeout: 'Clear Timeout',
+			clearTimeoutIP: 'Clear IP Ban',
 			deleteGame: 'Delete Game',
 			enableIpBans: 'Enable IP Bans',
 			disableIpBans: 'Disable IP Bans',
@@ -578,7 +649,10 @@ export default class Moderation extends React.Component {
 			clearGenchat: 'Clear General Chat',
 			deleteUser: 'Delete User',
 			deleteBio: 'Delete Bio',
-			deleteCardback: 'Delete Cardback'
+			deleteCardback: 'Delete Cardback',
+			removeStaffRole: 'Remove Staff Role',
+			promoteToMod: 'Promote (Mod)',
+			promoteToEditor: 'Promote (Editor)'
 		};
 
 		return (
@@ -676,7 +750,7 @@ export default class Moderation extends React.Component {
 									<td style={{ width: '120px', minWidth: '120px' }}>{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.userActedOn}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.ip}</td>
-									<td style={{ Width: '200px', minWidth: '200px' }}>{report.modNotes}</td>
+									<td style={{ Width: '200px', minWidth: '200px' }}>{report.modNotes.replace('\n', '<br>')}</td>
 								</tr>
 							))}
 					</tbody>

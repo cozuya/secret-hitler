@@ -13,6 +13,7 @@ export default class Creategame extends React.Component {
 
 		this.createNewGame = this.createNewGame.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
+		this.eloSliderChange = this.eloSliderChange.bind(this);
 		this.timedSliderChange = this.timedSliderChange.bind(this);
 
 		this.state = {
@@ -33,7 +34,19 @@ export default class Creategame extends React.Component {
 			blindMode: false,
 			timedMode: false,
 			isVerifiedOnly: false,
-			timedSliderValue: [120]
+			timedSliderValue: [120],
+			eloSliderValue: [1675],
+			isEloLimited: false,
+			customGameSettings: {
+				enabled: false,
+				powers: [false, 'investigate', 'election', 'bullet', 'bullet'], // last "power" is always a fas victory
+				hitlerZone: 3,
+				vetoZone: 5,
+				fascistCount: 2, // does not include hit
+				hitlerCanSeeFascists: true,
+				deckState: { lib: 6, fas: 11 }, // does not include track cards, which will be added server-side to make the deck shuffle code work
+				trackState: { lib: 0, fas: 0 }
+			}
 		};
 	}
 
@@ -66,6 +79,15 @@ export default class Creategame extends React.Component {
 			},
 			onUnchecked() {
 				self.setState({ disablechat: false });
+			}
+		});
+
+		$(this.elolimited).checkbox({
+			onChecked() {
+				self.setState({ isEloLimited: true });
+			},
+			onUnchecked() {
+				self.setState({ isEloLimited: false });
 			}
 		});
 
@@ -201,7 +223,7 @@ export default class Creategame extends React.Component {
 		} else {
 			const excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 			const data = {
-				gameName: $creategame.find('div.gamename input').val(),
+				gameName: $creategame.find('div.gamename input').val() || 'New Game',
 				flag: $creategame.find('div.flag input').val() || 'none',
 				minPlayersCount: this.state.sliderValues[0],
 				excludedPlayerCount,
@@ -219,7 +241,9 @@ export default class Creategame extends React.Component {
 				rebalance6p: this.state.checkedRebalanceValues[0],
 				rebalance7p: this.state.checkedRebalanceValues[1],
 				rebalance9p2f: this.state.checkedRebalanceValues[2],
-				privatePassword: this.state.privateShowing ? $(this.privategamepassword).val() : false
+				eloSliderValue: this.state.isEloLimited ? this.state.eloSliderValue[0] : null,
+				privatePassword: this.state.privateShowing ? $(this.privategamepassword).val() : false,
+				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
 			};
 
 			if (this.state.isTourny) {
@@ -1107,7 +1131,56 @@ export default class Creategame extends React.Component {
 		this.setState({ timedSliderValue });
 	}
 
+	eloSliderChange(eloSliderValue) {
+		this.setState({ eloSliderValue });
+	}
+
+	renderEloSlider() {
+		const { userInfo, userList } = this.props;
+		if (!userList.list.length) {
+			return null;
+		}
+		const player = userList.list.find(p => p.userName === userInfo.userName);
+		const isSeason = !userInfo.gameSettings.disableSeasonal;
+		const playerElo = player.eloSeason;
+		const playerEloNonseason = player.eloOverall;
+
+		if ((isSeason && playerElo && playerElo > 1675) || (playerEloNonseason && playerEloNonseason > 1675)) {
+			return (
+				<div className="sixteen wide column" style={{ marginTop: '-30px' }}>
+					{this.state.isEloLimited && (
+						<div>
+							<h4 className="ui header">Minimum elo to sit in this game</h4>
+							<Range
+								onChange={this.eloSliderChange}
+								min={1675}
+								max={2300}
+								defaultValue={[1675]}
+								value={this.state.eloSliderValue}
+								marks={{ 1675: '1675', 1800: '1800', 1900: '1900', 2000: '2000', 2300: '2300' }}
+							/>
+						</div>
+					)}
+					<div className="four wide column elorow" style={{ margin: '-50 auto 0' }}>
+						<i className="big arrows alternate horizontal icon" />
+						<h4 className="ui header">Elo limited game</h4>
+						<div
+							className="ui fitted toggle checkbox"
+							ref={c => {
+								this.elolimited = c;
+							}}
+						>
+							<input type="checkbox" name="elolimited" defaultChecked={false} />
+						</div>
+					</div>
+				</div>
+			);
+		}
+	}
+
 	render() {
+		const { userInfo } = this.props;
+
 		return (
 			<section className="creategame">
 				<a href="#/">
@@ -1125,7 +1198,14 @@ export default class Creategame extends React.Component {
 						<div className="five wide column gamename">
 							<h4 className="ui header">Game name:</h4>
 							<div className="ui input">
-								<input maxLength="20" placeholder="New Game" />
+								<input
+									maxLength="20"
+									placeholder="New Game"
+									onKeyPress={e => {
+										const { LEGALCHARACTERS } = require('../../constants');
+										if (!LEGALCHARACTERS(e.key)) e.preventDefault();
+									}}
+								/>
 							</div>
 							{this.state.containsBadWord && <p className="contains-bad-word">This game name has a banned word or word fragment.</p>}
 						</div>
@@ -1157,6 +1237,7 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row slider">{this.renderPlayerSlider()}</div>
 					<div className="row rebalance">{this.renderRebalanceCheckboxes()}</div>
+
 					{/* <div className="row tourny-row">
 						<div className="sixteen wide column tourny-container">
 							<h4 className="ui header">Tournament mode</h4>
@@ -1227,7 +1308,7 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					)}
-
+					{userInfo.gameSettings && !userInfo.gameSettings.disableElo && this.renderEloSlider()}
 					<div className="row sliderrow">
 						<div className="four wide column disablechat">
 							<i className="big unmute icon" />
