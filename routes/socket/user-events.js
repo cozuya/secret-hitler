@@ -1518,10 +1518,11 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  */
 module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	const user = userList.find(u => u.userName === passport.user);
+	if (!user || user.isPrivate) return;
 
-	if (data.chat.length > 300 || !data.chat.trim().length || !user || user.isPrivate) {
-		return;
-	}
+	if (!data.chat) return;
+	data.chat = data.chat.trim();
+	if (data.chat.length > 300 || !data.chat.length) return;
 
 	const curTime = new Date();
 	const lastMessage = generalChats.list.filter(chat => chat.userName === user.userName).reduce(
