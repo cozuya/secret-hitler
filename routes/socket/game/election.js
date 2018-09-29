@@ -1190,7 +1190,7 @@ module.exports.selectVoting = (passport, game, data) => {
 		}
 		const isConsensus = game.publicPlayersState
 			.filter(player => !player.isDead)
-			.every((el, i) => seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes);
+			.every((el, i) => (seatedPlayers[i] ? seatedPlayers[i].voteStatus.didVoteYes === seatedPlayers[0].voteStatus.didVoteYes : false));
 
 		game.publicPlayersState.forEach((player, i) => {
 			if (!player.isDead && seatedPlayers[i]) {
