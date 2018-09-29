@@ -9,6 +9,14 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.13 released 9-29-2018</p>
+		</div>
+		<h4>Welcome to season 4!</h4>
+		<p>
+			Unfortunately not a lot to report lately, I've been incredibly busy and haven't had the time. We do have 2 new emotes! LibFrown and FasFrown. Thanks for
+			playing!
+		</p>
+		<div className="ui header">
 			<p>Version 0.14.12 released 8-8-2018</p>
 		</div>
 		<h4>250,000 games played! Wow!</h4>
