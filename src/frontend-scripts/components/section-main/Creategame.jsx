@@ -19,7 +19,7 @@ export default class Creategame extends React.Component {
 		this.state = {
 			gameName: '',
 			sliderValues: [5, 10],
-			experiencedmode: false,
+			experiencedmode: true,
 			disablechat: false,
 			disablegamechat: false,
 			disableobserver: false,
@@ -1343,7 +1343,7 @@ export default class Creategame extends React.Component {
 									this.experiencedmode = c;
 								}}
 							>
-								<input type="checkbox" name="experiencedmode" defaultChecked={false} />
+								<input type="checkbox" name="experiencedmode" defaultChecked={true} />
 							</div>
 						</div>
 						{(() => {
