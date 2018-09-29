@@ -231,6 +231,12 @@ export default class Generalchat extends React.Component {
 							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
 							onClick={this.handleChatLockClick}
 						/>
+						{userInfo &&
+							userInfo.userName && (
+								<img
+									onClick={discordIconClick}
+								/>
+							)}
 					</div>
 				</section>
 				<section className="segment chats">
