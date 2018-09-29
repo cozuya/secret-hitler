@@ -105,6 +105,21 @@
 		&.bronze {
 			background: url('/images/bronze.png') no-repeat;
 		}
+		&.gold1 {
+			background: url('/images/gold1.png') no-repeat;
+		}
+		&.gold2 {
+			background: url('/images/gold2.png') no-repeat;
+		}
+		&.gold3 {
+			background: url('/images/gold3.png') no-repeat;
+		}
+		&.gold4 {
+			background: url('/images/gold4.png') no-repeat;
+		}
+		&.gold5 {
+			background: url('/images/gold5.png') no-repeat;
+		}
 	}
 	.notes-container {
 		-webkit-transition: all 0.15s ease-in-out;

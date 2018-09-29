@@ -257,18 +257,19 @@ const handleSocketDisconnect = socket => {
 			});
 			sendGameList();
 			listUpdate = true;
-		} else {
-			const tournysPlayerQueuedIn = games.filter(
-				game =>
-					game.general.isTourny &&
-					game.general.tournyInfo.queuedPlayers &&
-					game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(passport.user)
-			);
-
-			tournysPlayerQueuedIn.forEach(game => {
-				playerLeavePretourny(game, passport.user);
-			});
 		}
+		//  else {
+		// 	const tournysPlayerQueuedIn = games.filter(
+		// 		game =>
+		// 			game.general.isTourny &&
+		// 			game.general.tournyInfo.queuedPlayers &&
+		// 			game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(passport.user)
+		// 	);
+
+		// 	tournysPlayerQueuedIn.forEach(game => {
+		// 		playerLeavePretourny(game, passport.user);
+		// 	});
+		// }
 	}
 	if (listUpdate) {
 		sendUserList();
@@ -723,7 +724,10 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		newGame.private = {
 			reports: {},
 			unSeatedGameChats: [],
-			lock: {}
+			lock: {},
+			hiddenInfoChat: [],
+			hiddenInfoSubscriptions: [],
+			hiddenInfoShouldNotify: true
 		};
 
 		if (newGame.general.private) {

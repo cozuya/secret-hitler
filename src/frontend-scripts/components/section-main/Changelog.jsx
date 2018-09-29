@@ -12,9 +12,23 @@ const Changelog = () => (
 			<p>Version 0.14.13 released 9-29-2018</p>
 		</div>
 		<h4>Welcome to season 4!</h4>
+		<p>The top 10 players of season 3 are:</p>
+		<ul>
+			<li>Fusilli - 2138</li>
+			<li>SheepManu - 2127</li>
+			<li>HomoSapien - 2068</li>
+			<li>Samsung - 2035</li>
+			<li>benjamin172 - 2031</li>
+			<li>harvyyy - 2025</li>
+			<li>imbapingu - 2014</li>
+			<li>Manu1234 - 1991</li>
+			<li>Jasmine - 1989</li>
+			<li>NotIconic - 1917</li>
+		</ul>
 		<p>
-			Unfortunately not a lot to report lately, I've been incredibly busy and haven't had the time. We do have 2 new emotes! LibFrown and FasFrown. Thanks for
-			playing!
+			New this season: the top 5 players of last season now have special badges thanks to mod benjamin172. Unfortunately not a lot to report lately, I've been
+			incredibly busy and haven't had the time. We do have 2 new emotes! LibFrown and FasFrown. Also speed mode is now enabled by default when enterting create
+			game. Both by contributor LordVader. Thanks for playing!
 		</p>
 		<div className="ui header">
 			<p>Version 0.14.12 released 8-8-2018</p>
