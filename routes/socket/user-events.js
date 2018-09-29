@@ -251,7 +251,7 @@ const handleSocketDisconnect = socket => {
 					publicPlayersState[playerIndex].leftGame = true;
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-						games.splice(games.indexOf(game), 1);
+						delete games[game.general.uid];
 					}
 				}
 			});
