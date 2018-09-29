@@ -1365,12 +1365,10 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	// Authentication Assured in routes.js
 	const game = games[data.uid];
-	if (!game || !game.general || game.general.disableChat) return;
-	const { chat } = data;
+	if (!game || !game.general || game.general.disableChat || !data.chat) return;
+	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 
-	if (!chat) return;
-	chat = chat.trim();
 	if (chat.length > 300 || !chat.length) {
 		return;
 	}
@@ -1380,7 +1378,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	if (game.general.private && !player && !game.general.whitelistedPlayers.includes(passport.user)) return;
 	const user = userList.find(u => passport.user === u.userName);
 
-	if (!user) {
+	if (!user || game.general.disableChat) {
 		return;
 	}
 	data.userName = passport.user;
@@ -1518,10 +1516,11 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  */
 module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	const user = userList.find(u => u.userName === passport.user);
+	if (!user || user.isPrivate) return;
 
-	if (data.chat.length > 300 || !data.chat.trim().length || !user || user.isPrivate) {
-		return;
-	}
+	if (!data.chat) return;
+	data.chat = data.chat.trim();
+	if (data.chat.length > 300 || !data.chat.length) return;
 
 	const curTime = new Date();
 	const lastMessage = generalChats.list.filter(chat => chat.userName === user.userName).reduce(

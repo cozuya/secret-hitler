@@ -16,10 +16,6 @@ const beginGame = game => {
 	game.general.timeStarted = new Date().getTime();
 	game.general.type = Math.floor((game.publicPlayersState.length - 5) / 2);
 
-	game.private.hiddenInfoChat = [];
-	game.private.hiddenInfoSubscriptions = [];
-	game.private.hiddenInfoShouldNotify = true;
-
 	const roles = [
 		{
 			cardName: 'hitler',
@@ -427,6 +423,10 @@ module.exports = game => {
 			startGamePause--;
 		}
 	}, 1000);
+
+	game.private.hiddenInfoChat = [];
+	game.private.hiddenInfoSubscriptions = [];
+	game.private.hiddenInfoShouldNotify = true;
 
 	game.general.playerCount = game.publicPlayersState.length;
 	game.general.livingPlayerCount = game.publicPlayersState.length;
