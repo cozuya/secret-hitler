@@ -1,7 +1,5 @@
 const cn = require('classnames');
 
-const TRIALMODS = (module.exports.TRIALMODS = []);
-
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Auengun',
 	'banc',
