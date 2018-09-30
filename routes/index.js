@@ -143,7 +143,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (TRIALMODS.includes(userInfo.username)) {
+							if (TRIALMODS.includes(acc) || acc || acc.staffRole || !acc.staffRole.length === 0 || !acc.staffRole === 'contributor') {
 								try {
 									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
 								} catch (e) {
@@ -151,15 +151,8 @@ module.exports = () => {
 									console.log(e);
 								}
 
-							} else if (!acc || !acc.staffRole || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
-								_profile.lastConnectedIP = 'no looking';
 							} else {
-								try {
-									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
-								} catch (e) {
-									_profile.lastConnectedIP = 'something went wrong';
-									console.log(e);
-								}
+								_profile.lastConnectedIP = 'no looking';
 							}
 
 							res.json(_profile);
