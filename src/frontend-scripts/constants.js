@@ -23,6 +23,7 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Invidia',
 	'Wi1son',
 	'LordVader',
+	'PeeOnBus',
 	'voldemort',
 	'goonbee'
 ]);
