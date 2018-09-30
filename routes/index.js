@@ -76,6 +76,10 @@ module.exports = () => {
 		renderPage(req, res, 'page-about', 'about');
 	});
 
+	app.get('/tou', (req, res) => {
+		renderPage(req, res, 'page-tou', 'tou');
+	});
+
 	app.get('/polls', (req, res) => {
 		renderPage(req, res, 'page-polls', 'polls');
 	});
