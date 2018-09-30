@@ -217,7 +217,7 @@ export default class Generalchat extends React.Component {
 		const { userInfo } = this.props;
 		const discordIconClick = () => {
 			this.setState({
-				discordEnabled: !this.state.discordEnabled
+				discordEnabled: this.state.discordEnabled
 			});
 		};
 
@@ -234,9 +234,6 @@ export default class Generalchat extends React.Component {
 						{userInfo &&
 							userInfo.userName && (
 								<img
-									title="Click to show our discord general chat instead of the site's general chat"
-									className={this.state.discordEnabled ? 'active discord-icon' : 'discord-icon'}
-									src="/images/discord-icon.png"
 									onClick={discordIconClick}
 								/>
 							)}
@@ -245,7 +242,7 @@ export default class Generalchat extends React.Component {
 				<section className="segment chats">
 					{!this.state.discordEnabled && this.renderSticky()}
 					{this.state.discordEnabled ? (
-						<embed height="100%" width="100%" src="https://widgetbot.io/embed/323243744914571264/323243744914571264/0003/" />
+						<embed height="100%" width="100%" src="https://discord.gg/secrethitlerio" />
 					) : (
 						<Scrollbars ref={c => (this.scrollbar = c)} onScroll={this.handleChatScrolled}>
 							<div className="ui list genchat-container">{this.renderChats()}</div>
