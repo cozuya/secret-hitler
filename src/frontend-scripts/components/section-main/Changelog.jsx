@@ -27,8 +27,8 @@ const Changelog = () => (
 		</ul>
 		<p>
 			New this season: the top 5 players of last season now have special badges thanks to mod benjamin172. Unfortunately not a lot to report lately, I've been
-			incredibly busy and haven't had the time. We do have 2 new emotes! LibFrown and FasFrown. Also speed mode is now enabled by default when enterting create
-			game. Both by contributor LordVader. Thanks for playing!
+			incredibly busy and haven't had the time. We do have 2 new emotes! LibFrown and FasFrown credit to new contributor PeeOnBus. Also, speed mode is now enabled by default when enterting create
+			game credit by contributor LordVader. Thanks for playing!
 		</p>
 		<div className="ui header">
 			<p>Version 0.14.12 released 8-8-2018</p>
