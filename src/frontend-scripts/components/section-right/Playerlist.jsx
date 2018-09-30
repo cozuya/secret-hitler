@@ -266,7 +266,7 @@ class Playerlist extends React.Component {
 						const title = {
 							playing: 'This player is playing in a standard game.',
 							observing: 'This player is observing a game.',
-							rainbow: 'This player is playing in a experienced-player-only game.',
+							rainbow: 'This player is playing in an experienced-player-only game.',
 							replay: 'This player is watching a replay.'
 						};
 						const onClick = {
