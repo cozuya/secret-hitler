@@ -36,7 +36,7 @@ const Changelog = () => (
 		<h4>250,000 games played! Wow!</h4>
 		<h4>New feature: full height in game player setting</h4>
 		<div style={{ textAlign: 'center' }}>
-			<img src="http://i.imgur.com/9eDIhIP.jpg" style={{ border: '1px solid grey', width: '820px' }} />
+			<img src="https://i.imgur.com/9eDIhIP.jpg" style={{ border: '1px solid grey', width: '820px' }} />
 		</div>
 		<div style={{ textAlign: 'center' }}>
 			<img src="/images/fullheightsetting.png" style={{ border: '1px solid grey' }} />
