@@ -5,6 +5,7 @@ const TRIALMODS = (module.exports.TRIALMODS = []);
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'straightleft',
 	'Idrissa',
+	'Hexicube',
 	'banc',
 	'JohnCena',
 	'HREmperor',
