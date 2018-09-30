@@ -57,14 +57,14 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	if (Boolean(user.staffRole && user.staffRole.length) && !user.staffDisableStaffColor) {
 		return cn(defaultClass, {
 			admin: user.staffRole === 'admin',
-			moderatorcolor: user.staffRole === 'moderator',
 			editorcolor: user.staffRole === 'editor',
+			moderatorcolor: user.staffRole === 'moderator',
 			cbell: user.userName === 'cbell',
-			jdudle3: user.userName === 'jdudle3',
-			max: user.userName === 'Max',
 			dfinn: user.userName === 'DFinn',
 			faaiz: user.userName === 'Faaiz1999',
 			invidia: user.userName === 'Invidia',
+			jdudle3: user.userName === 'jdudle3',
+			max: user.userName === 'Max',
 			thejuststopo: user.userName === 'TheJustStopO'
 		});
 	} else if (CONTRIBUTORS.includes(user.userName)) {
