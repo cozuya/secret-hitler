@@ -1,6 +1,6 @@
 const cn = require('classnames');
 
-module.exports.TRIALMODS = ['dia', 'Yawner'];
+const TRIALMODS = (module.exports.TRIALMODS = []);
 
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'straightleft',
