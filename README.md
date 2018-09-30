@@ -35,7 +35,6 @@ then
 ```bash
 git clone https://github.com/cozuya/secret-hitler.git
 cd secret-hitler
-mkdir data logs
 yarn
 ```
 
