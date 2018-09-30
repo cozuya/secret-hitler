@@ -8,6 +8,7 @@ const accounts = require('./accounts');
 const version = require('../version');
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
+const { TRIALMODS } = require('../src/frontend-scripts/constants');
 
 /**
  * @param {object} req - express request object.
@@ -142,7 +143,15 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (!acc || !acc.staffRole || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
+							if (TRIALMODS.includes(userInfo.username)) {
+								try {
+									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
+								} catch (e) {
+									_profile.lastConnectedIP = 'something went wrong';
+									console.log(e);
+								}
+
+							} else if (!acc || !acc.staffRole || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {
