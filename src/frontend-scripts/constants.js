@@ -3,29 +3,31 @@ const cn = require('classnames');
 const TRIALMODS = (module.exports.TRIALMODS = []);
 
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
-	'straightleft',
-	'Idrissa',
-	'banc',
-	'JohnCena',
-	'HREmperor',
-	'Royal2000H',
-	'OuchYouHitMe',
 	'Auengun',
-	'Skyrra',
-	'jbasrai',
-	'sethe',
+	'banc',
 	'bot',
-	'nth',
-	'veggiemanz',
-	'DFinn',
 	'conundrum',
-	'JerMej1s',
+	'DFinn',
+	'goonbee',
+	'Hexicube',
+	'HREmperor',
+	'Idrissa',
 	'Invidia',
-	'Wi1son',
+	'jbasari',
+	'JerMej1s',
+	'JohnCena',
+	'jules',
 	'LordVader',
+	'nth',
+	'OuchYouHitMe',
 	'PeeOnBus',
+	'Royal2000H',
+	'sethe',
+	'Skyrra',
+	'straightleft',
+	'veggiemanz',
 	'voldemort',
-	'goonbee'
+	'Wi1son'
 ]);
 
 const CURRENTSEASONNUMBER = 4;
