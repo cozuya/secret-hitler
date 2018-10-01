@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile, updateStatus } from '../../actions/actions';
 import cn from 'classnames';
-import { PLAYERCOLORS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -141,7 +141,7 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole)) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole) || TRIALMODS.includes(userInfo.userName)) {
 			let classes = 'comment icon report-button';
 
 			const reportClick = () => {
