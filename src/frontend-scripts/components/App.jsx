@@ -88,7 +88,6 @@ export class App extends React.Component {
 					data: changeList
 				}
 			});
-			this.forceUpdate();
 		});
 
 		socket.on('manualDisconnection', () => {
@@ -445,7 +444,6 @@ export class App extends React.Component {
 }
 
 App.propTypes = {
-	alertMsg: PropTypes.object,
 	dispatch: PropTypes.func,
 	userInfo: PropTypes.object,
 	midSection: PropTypes.string,
