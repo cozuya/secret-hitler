@@ -110,10 +110,8 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 		let isRestricted = !authenticated;
 
 		let checkingRestriction = false;
-		const checkRestriction = () => {
-			if (checkingRestriction || !passport || !passport.user || !socket) return;
-			checkingRestriction = true;
-			Account.findOne({ username: passport.user }).then(account => {
+		const checkRestriction = account => {
+			if (account) {
 				let needsRestricting = false;
 				if (account.touLastAgreed) {
 					let changesSince = [];
@@ -131,14 +129,20 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				// implement other restrictions as needed
 				isRestricted = needsRestricting;
 				checkingRestriction = false;
+				return;
+			}
+			if (checkingRestriction || !passport || !passport.user || !socket) return;
+			checkingRestriction = true;
+			Account.findOne({ username: passport.user }).then(account => {
+				checkRestriction(account);
 			});
 		};
-		checkRestriction();
 
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 		socket.conn.on('upgrade', () => {
 			sendUserList(socket);
+			checkRestriction();
 		});
 
 		socket
@@ -146,6 +150,14 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 
 			.on('disconnect', () => {
 				handleSocketDisconnect(socket);
+			})
+			.on('confirmTOU', () => {
+				if (authenticated && isRestricted) {
+					Account.findOne({ username: passport.user }).then(account => {
+						account.touLastAgreed = new Date();
+						checkRestriction(account);
+					});
+				}
 			})
 			.on('handleUpdatedPlayerNote', data => {
 				handleUpdatedPlayerNote(socket, data);
