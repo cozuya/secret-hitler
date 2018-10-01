@@ -8,6 +8,7 @@ const resetPassword = require('./reset-password');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
 const { expandAndSimplify } = require('./socket/ip-obf');
+const { TOU_CHANGES } = require('../src/frontend-scripts/constants.js');
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.
@@ -111,7 +112,7 @@ module.exports = () => {
 			wins: 0,
 			losses: 0,
 			created: new Date(),
-			touLastAgreed: new Date(),
+			touLastAgreed: TOU_CHANGES[0].changeVer,
 			signupIP
 		};
 

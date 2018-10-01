@@ -2,7 +2,7 @@ const cn = require('classnames');
 
 module.exports.TOU_CHANGES = [
 	{
-		changeDate: new Date('2018-10-01'), // Oct 1st
+		changeVer: '1.0',
 		changeDesc: 'ToU fully rewritten to be more clear.'
 	}
 ];

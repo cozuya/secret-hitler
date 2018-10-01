@@ -112,11 +112,27 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 		let checkingRestriction = false;
 		const checkRestriction = account => {
 			if (account) {
+				const parseVer = ver => {
+					let vals = ver.split('.');
+					vals.forEach((v, i) => (vals[i] = parseInt(v)));
+					return vals;
+				};
+				const firstVerNew = (v1, v2) => {
+					let pos = 0;
+					while (true) {
+						if (!v2[pos]) return true;
+						if (!v1[pos] || isNaN(v1[pos]) || v1[pos] < v2[pos]) return false;
+						if (v1[pos] > v2[pos]) return true;
+						pos++;
+					}
+				};
+
 				let needsRestricting = false;
-				if (account.touLastAgreed) {
+				if (account.touLastAgreed && account.touLastAgreed.length) {
 					let changesSince = [];
+					let myVer = parseVer(account.touLastAgreed);
 					TOU_CHANGES.forEach(change => {
-						if (account.touLastAgreed < change.changeDate) changesSince.push(change);
+						if (!firstVerNew(myVer, parseVer(change.changeVer))) changesSince.push(change);
 					});
 					if (changesSince.length) {
 						socket.emit('touChange', changesSince);
@@ -154,7 +170,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			.on('confirmTOU', () => {
 				if (authenticated && isRestricted) {
 					Account.findOne({ username: passport.user }).then(account => {
-						account.touLastAgreed = new Date();
+						account.touLastAgreed = TOU_CHANGES[0].changeVer;
 						account.save();
 						checkRestriction(account);
 					});

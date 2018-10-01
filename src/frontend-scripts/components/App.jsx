@@ -387,7 +387,7 @@ export class App extends React.Component {
 													console.log(change.changeDate);
 													return (
 														<div>
-															<h4>{new Date(change.changeDate).toDateString()}</h4>
+															<h4>Version {change.changeVer}</h4>
 															<p>{change.changeDesc}</p>
 														</div>
 													)
