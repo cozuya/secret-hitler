@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile, updateStatus } from '../../actions/actions';
 import cn from 'classnames';
-import { PLAYERCOLORS, TRIALMODS, CONTRIBUTORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, TRIALMODS, CONTRIBUTORS } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -57,16 +57,16 @@ class Playerlist extends React.Component {
 					? 'wins'
 					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-					? `winsSeason${CURRENTSEASONNUMBER}`
-					: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+					? 'winsSeason'
+					: 'rainbowWinsSeason';
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
 					? 'losses'
 					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-					? `lossesSeason${CURRENTSEASONNUMBER}`
-					: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+					? 'lossesSeason'
+					: 'rainbowLossesSeason';
 
 		return (a, b) => {
 			const awr = a[w] / a[l];
@@ -88,16 +88,16 @@ class Playerlist extends React.Component {
 					? 'wins'
 					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-					? `winsSeason${CURRENTSEASONNUMBER}`
-					: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+					? 'winsSeason'
+					: 'rainbowWinsSeason';
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
 					? 'losses'
 					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-					? `lossesSeason${CURRENTSEASONNUMBER}`
-					: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+					? 'lossesSeason'
+					: 'rainbowLossesSeason';
 
 		return (a, b) => {
 			const wl1 = a[w] + a[l];
@@ -196,16 +196,16 @@ class Playerlist extends React.Component {
 						? 'wins'
 						: 'rainbowWins'
 					: this.state.userListFilter === 'all'
-						? `winsSeason${CURRENTSEASONNUMBER}`
-						: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+						? 'winsSeason'
+						: 'rainbowWinsSeason';
 			const l =
 				gameSettings && gameSettings.disableSeasonal
 					? this.state.userListFilter === 'all'
 						? 'losses'
 						: 'rainbowLosses'
 					: this.state.userListFilter === 'all'
-						? `lossesSeason${CURRENTSEASONNUMBER}`
-						: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+						? 'lossesSeason'
+						: 'rainbowLossesSeason';
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;

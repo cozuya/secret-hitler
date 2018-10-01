@@ -4,7 +4,7 @@ import Policies from './Policies.jsx';
 import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
 import { togglePlayerNotes } from '../../actions/actions';
-import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS } from '../../constants';
 import PropTypes from 'prop-types';
 
 $.fn.dropdown = Dropdown;
@@ -252,8 +252,8 @@ class Players extends React.Component {
 					let l;
 
 					if (user) {
-						w = !(gameSettings && gameSettings.disableSeasonal) ? user[`winsSeason${CURRENTSEASONNUMBER}`] : user.wins;
-						l = !(gameSettings && gameSettings.disableSeasonal) ? user[`lossesSeason${CURRENTSEASONNUMBER}`] : user.losses;
+						w = !(gameSettings && gameSettings.disableSeasonal) ? user.winsSeason : user.wins;
+						l = !(gameSettings && gameSettings.disableSeasonal) ? user.lossesSeason : user.losses;
 					}
 
 					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {

@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS, TRIALMODS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS, TRIALMODS } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -262,8 +262,8 @@ const DisplayLobbies = props => {
 			if (userStats) {
 				players[index].wins = userStats.wins;
 				players[index].losses = userStats.losses;
-				players[index][`winsSeason${CURRENTSEASONNUMBER}`] = userStats[`winsSeason${CURRENTSEASONNUMBER}`];
-				players[index][`lossesSeason${CURRENTSEASONNUMBER}`] = userStats[`lossesSeason${CURRENTSEASONNUMBER}`];
+				players[index].winsSeason = userStats.winsSeason;
+				players[index].lossesSeason = userStats.lossesSeason;
 				players[index].eloOverall = userStats.eloOverall;
 				players[index].eloSeason = userStats.eloSeason;
 			}

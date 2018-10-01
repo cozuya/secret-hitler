@@ -30,9 +30,7 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Wi1son'
 ]);
 
-const CURRENTSEASONNUMBER = 4;
-
-module.exports.CURRENTSEASONNUMBER = CURRENTSEASONNUMBER;
+module.exports.CURRENTSEASONNUMBER = 4;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -70,8 +68,8 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	} else if (CONTRIBUTORS.includes(user.userName)) {
 		return cn(defaultClass, 'contributor');
 	} else {
-		const w = isSeasonal ? user[`winsSeason${CURRENTSEASONNUMBER}`] : user.wins;
-		const l = isSeasonal ? user[`lossesSeason${CURRENTSEASONNUMBER}`] : user.losses;
+		const w = isSeasonal ? user.winsSeason : user.wins;
+		const l = isSeasonal ? user.lossesSeason : user.losses;
 		const elo = isSeasonal ? user.eloSeason : user.eloOverall;
 		let grade;
 		if (elo < 1500) {

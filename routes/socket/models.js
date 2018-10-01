@@ -11,7 +11,6 @@ module.exports.generalChats = {
 module.exports.accountCreationDisabled = { status: false };
 module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
-module.exports.currentSeasonNumber = CURRENTSEASONNUMBER;
 module.exports.newStaff = {
 	modUserNames: [],
 	editorUserNames: []
@@ -96,14 +95,10 @@ module.exports.formattedUserList = () => {
 		eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
 		eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
 		status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
-		winsSeason2: prune(user.winsSeason2),
-		lossesSeason2: prune(user.lossesSeason2),
-		rainbowWinsSeason2: prune(user.rainbowWinsSeason2),
-		rainbowLossesSeason2: prune(user.rainbowLossesSeason2),
-		winsSeason3: prune(user.winsSeason3),
-		lossesSeason3: prune(user.lossesSeason3),
-		rainbowWinsSeason3: prune(user.rainbowWinsSeason3),
-		rainbowLossesSeason3: prune(user.rainbowLossesSeason3),
+		winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
+		lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
+		rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
+		rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
 		previousSeasonAward: user.previousSeasonAward,
 		timeLastGameCreated: user.timeLastGameCreated,
 		staffRole: prune(user.staffRole)
