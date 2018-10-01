@@ -111,6 +111,7 @@ module.exports = () => {
 			wins: 0,
 			losses: 0,
 			created: new Date(),
+			touLastAgreed: new Date(),
 			signupIP
 		};
 
