@@ -3,7 +3,12 @@
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
 	"version": "0.14.12",
 	"license": "CC-BY-NC-SA-4.0",
-	"keywords": ["boardgame", "social deduction", "hidden roles", "secret hitler"],
+	"keywords": [
+		"boardgame",
+		"social deduction",
+		"hidden roles",
+		"secret hitler"
+	],
 	"repository": {
 		"url": "https://github.com/cozuya/secret-hitler.git",
 		"type": "git"
@@ -55,7 +60,7 @@
 		"semantic-ui-modal": "^2.2.9",
 		"semantic-ui-popup": "^2.2.9",
 		"semantic-ui-progress": "^2.2.9",
-		"semantic-ui-react": "^0.75.1",
+		"semantic-ui-react": "^0.77.1",
 		"semantic-ui-transition": "^2.2.9",
 		"semantic-ui-visibility": "^2.2.9",
 		"serve-favicon": "^2.4.2",
@@ -105,7 +110,7 @@
 		"style-loader": "^0.20.3",
 		"uglifyjs-webpack-plugin": "^1.2.2",
 		"webpack": "^4.9.1",
-		"webpack-cli": "^2.1.4",
+		"webpack-cli": "^3.1.1",
 		"webpack-livereload-plugin": "^2.1.1"
 	},
 	"scripts": {
