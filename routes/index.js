@@ -143,7 +143,14 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (!acc || !acc.staffRole || !TRIALMODS.includes(acc) || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
+							if (TRIALMODS.includes(requestingUser)) {
+								try {
+									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
+								} catch (e) {
+									_profile.lastConnectedIP = 'something went wrong';
+									console.log(e);
+								}
+							} else if (!acc || !acc.staffRole || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {
