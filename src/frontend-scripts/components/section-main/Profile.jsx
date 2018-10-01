@@ -5,7 +5,7 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 import cn from 'classnames';
-import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS } from '../../constants';
 
 const mapStateToProps = ({ profile }) => ({ profile });
 const mapDispatchToProps = dispatch => ({
@@ -255,16 +255,16 @@ class ProfileWrapper extends React.Component {
 					? 'wins'
 					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-					? `winsSeason${CURRENTSEASONNUMBER}`
-					: `rainbowWinsSeason${CURRENTSEASONNUMBER}`;
+					? 'winsSeason'
+					: 'rainbowWinsSeason';
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
 					? 'losses'
 					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-					? `lossesSeason${CURRENTSEASONNUMBER}`
-					: `rainbowLossesSeason${CURRENTSEASONNUMBER}`;
+					? 'lossesSeason'
+					: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
 		if (user) {
 			userClasses =
