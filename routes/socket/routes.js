@@ -155,6 +155,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				if (authenticated && isRestricted) {
 					Account.findOne({ username: passport.user }).then(account => {
 						account.touLastAgreed = new Date();
+						account.save();
 						checkRestriction(account);
 					});
 				}

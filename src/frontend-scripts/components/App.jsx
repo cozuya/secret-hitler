@@ -33,10 +33,15 @@ export class App extends React.Component {
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
 		this.changeNotesValue = this.changeNotesValue.bind(this);
 		this.changePlayerNotesValue = this.changePlayerNotesValue.bind(this);
+		this.touConfirmButton = this.touConfirmButton.bind(this);
 
 		this.state = {
 			notesValue: '',
-			playerNotesValue: ''
+			playerNotesValue: '',
+			alertMsg: {
+				type: null,
+				data: null
+			}
 		};
 
 		this.prevHash = '';
@@ -75,6 +80,16 @@ export class App extends React.Component {
 			// ** end devhelpers **
 			dispatch(updateUser(info));
 		}
+
+		socket.on('touChange', changeList => {
+			this.setState({
+				alertMsg: {
+					type: 'tou',
+					data: changeList
+				}
+			});
+			this.forceUpdate();
+		});
 
 		socket.on('manualDisconnection', () => {
 			window.location.pathname = '/observe';
@@ -168,6 +183,19 @@ export class App extends React.Component {
 			userInfo.gameSettings.newReport = reportStatus;
 			dispatch(updateUser(userInfo));
 		});
+	}
+
+	touConfirmButton(e) {
+		if (document.getElementById('touCheckBox').checked) {
+			socket.emit('confirmTOU');
+			this.setState({
+				alertMsg: {
+					type: null,
+					data: null
+				}
+			});
+		}
+		e.preventDefault();
 	}
 
 	router() {
@@ -347,6 +375,38 @@ export class App extends React.Component {
 
 				<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
 
+				{(() => {
+					if (this.state.alertMsg.type) {
+						if (this.state.alertMsg.type === 'tou') {
+							return (
+								<div style={{position: 'fixed', zIndex: 999, background: '#0008', width: '100vw', height: '100vh', display: 'flex'}}>
+									<div style={{margin: 'auto', padding: '5px', background: '#444', border: '1px solid white', borderRadius: '10px'}}>
+										<h2>Terms of Use changes</h2>
+										<div style={{height: '150px', width: '350px', border: '1px solid black', borderRadius: '5px', background: '#777', padding: '3px', overflowY: 'scroll'}}>
+											{
+												this.state.alertMsg.data.map(change => {
+													console.log(change.changeDate);
+													return (
+														<div>
+															<h4>{new Date(change.changeDate).toDateString()}</h4>
+															<p>{change.changeDesc}</p>
+														</div>
+													)
+												})
+											}
+										</div>
+										<p><a href='/tou' target='_blank'>Click here to read the full ToU.</a></p>
+										<input type='checkbox' id='touCheckBox' />
+										<label htmlFor='touCheckBox'>  I agree to the ToU changes.</label>
+										<br/>
+										<input type='button' value='Dismiss' style={{ width: '100%', borderRadius: '5px' }} onClick={this.touConfirmButton} id='touButton' />
+									</div>
+								</div>
+							);
+						}
+					}
+				})()}
+
 				<div className={classes}>
 					<Main
 						userInfo={this.props.userInfo}
@@ -385,6 +445,7 @@ export class App extends React.Component {
 }
 
 App.propTypes = {
+	alertMsg: PropTypes.object,
 	dispatch: PropTypes.func,
 	userInfo: PropTypes.object,
 	midSection: PropTypes.string,
