@@ -1,5 +1,12 @@
 const cn = require('classnames');
 
+module.exports.TOU_CHANGES = [
+	{
+		changeDate: new Date('2018-10-01'), // Oct 1st
+		changeDesc: 'ToU fully rewritten to be more clear.'
+	}
+];
+
 module.exports.TRIALMODS = [];
 
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [

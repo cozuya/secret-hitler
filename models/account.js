@@ -59,6 +59,7 @@ const Account = new Schema({
 	verified: Boolean,
 	isBanned: Boolean,
 	isTimeout: Date,
+	touLastAgreed: Date,
 	bio: String,
 	games: Array,
 	wins: Number,

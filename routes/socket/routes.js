@@ -36,6 +36,7 @@ const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
 const { games } = require('./models');
 const Account = require('../../models/account');
+const { TOU_CHANGES } = require('../../src/frontend-scripts/constants.js');
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
@@ -106,6 +107,34 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			});
 		}
 
+		let isRestricted = !authenticated;
+
+		let checkingRestriction = false;
+		const checkRestriction = () => {
+			if (checkingRestriction || !passport || !passport.user || !socket) return;
+			checkingRestriction = true;
+			Account.findOne({ username: passport.user }).then(account => {
+				let needsRestricting = false;
+				if (account.touLastAgreed) {
+					let changesSince = [];
+					TOU_CHANGES.forEach(change => {
+						if (account.touLastAgreed < change.changeDate) changesSince.push(change);
+					});
+					if (changesSince.length) {
+						socket.emit('touChange', changesSince);
+						needsRestricting = true;
+					}
+				} else {
+					socket.emit('touChange', TOU_CHANGES);
+					needsRestricting = true;
+				}
+				// implement other restrictions as needed
+				isRestricted = needsRestricting;
+				checkingRestriction = false;
+			});
+		};
+		checkRestriction();
+
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 		socket.conn.on('upgrade', () => {
@@ -142,6 +171,10 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				handleUpdatedTruncateGame(data);
 			})
 			.on('addNewGameChat', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				if (authenticated) {
 					handleAddNewGameChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
@@ -154,6 +187,10 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				}
 			})
 			.on('addNewGame', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				if (authenticated) {
 					handleAddNewGame(socket, passport, data);
 				}
@@ -165,6 +202,10 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			})
 
 			.on('addNewGeneralChat', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				if (authenticated) {
 					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
@@ -186,6 +227,10 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				}
 			})
 			.on('playerReport', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				if (authenticated) {
 					handlePlayerReport(passport, data);
 				}
@@ -227,6 +272,10 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				sendUserGameSettings(socket);
 			})
 			.on('selectedChancellorVoteOnVeto', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellorVoteOnVeto(passport, game, data);
@@ -268,30 +317,50 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			// election
 
 			.on('presidentSelectedChancellor', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellor(socket, passport, game, data);
 				}
 			})
 			.on('selectedVoting', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectVoting(passport, game, data);
 				}
 			})
 			.on('selectedPresidentPolicy', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPresidentPolicy(passport, game, data);
 				}
 			})
 			.on('selectedChancellorPolicy', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellorPolicy(passport, game, data);
 				}
 			})
 			.on('selectedPresidentVoteOnVeto', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPresidentVoteOnVeto(passport, game, data);
@@ -299,24 +368,40 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			})
 			// policy-powers
 			.on('selectPartyMembershipInvestigate', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPartyMembershipInvestigate(passport, game, data);
 				}
 			})
 			.on('selectedPolicies', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPolicies(passport, game);
 				}
 			})
 			.on('selectedPlayerToExecute', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPlayerToExecute(passport, game, data);
 				}
 			})
 			.on('selectedSpecialElection', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectSpecialElection(passport, game, data);
