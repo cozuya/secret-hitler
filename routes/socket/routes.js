@@ -117,13 +117,12 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				return vals;
 			};
 			const firstVerNew = (v1, v2) => {
-				let pos = 0;
-				while (true) {
-					if (!v2[pos]) return true;
-					if (!v1[pos] || isNaN(v1[pos]) || v1[pos] < v2[pos]) return false;
-					if (v1[pos] > v2[pos]) return true;
-					pos++;
+				for (var i = 0; i < Math.max(v1.length, v2.length); i++) {
+					if (!v2[i]) return true;
+					if (!v1[i] || isNaN(v1[i]) || v1[i] < v2[i]) return false;
+					if (v1[i] > v2[i]) return true;
 				}
+				return true;
 			};
 
 			if (account.touLastAgreed && account.touLastAgreed.length) {
