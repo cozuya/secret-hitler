@@ -378,26 +378,47 @@ export class App extends React.Component {
 					if (this.state.alertMsg.type) {
 						if (this.state.alertMsg.type === 'tou') {
 							return (
-								<div style={{position: 'fixed', zIndex: 999, background: '#0008', width: '100vw', height: '100vh', display: 'flex'}}>
-									<div style={{margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000'}}>
-										<h2 style={{fontFamily: '"Comfortaa", Lato, sans-serif'}}>Terms of Use changes</h2>
-										<div style={{height: '150px', width: '350px', border: '1px solid black', borderRadius: '5px', background: '#777', padding: '3px', overflowY: 'scroll'}}>
-											{
-												this.state.alertMsg.data.map(change => {
-													return (
-														<div>
-															<h4 style={{fontFamily: '"Comfortaa", Lato, sans-serif'}}>Version {change.changeVer}</h4>
-															<p style={{fontFamily: '"Comfortaa", Lato, sans-serif'}}>{change.changeDesc}</p>
-														</div>
-													)
-												})
-											}
+								<div style={{ position: 'fixed', zIndex: 999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
+									<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
+										<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Terms of Use changes</h2>
+										<div
+											style={{
+												height: '150px',
+												width: '350px',
+												border: '1px solid black',
+												borderRadius: '5px',
+												background: '#777',
+												padding: '3px',
+												overflowY: 'scroll'
+											}}
+										>
+											{this.state.alertMsg.data.map(change => {
+												return (
+													<div>
+														<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Version {change.changeVer}</h4>
+														<p style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{change.changeDesc}</p>
+													</div>
+												);
+											})}
 										</div>
-										<p><a href='/tou' target='_blank' style={{fontFamily: '"Comfortaa", Lato, sans-serif'}}>Click here to read the full Terms of Use.</a></p>
-										<input type='checkbox' id='touCheckBox' />
-										<label htmlFor='touCheckBox' style={{fontFamily: '"Comfortaa", Lato, sans-serif'}}>  I agree to the Terms of Use changes.</label>
-										<br/>
-										<input type='button' value='Dismiss' style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold'}} onClick={this.touConfirmButton} id='touButton' />
+										<p>
+											<a href="/tou" target="_blank" style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+												Click here to read the full Terms of Use.
+											</a>
+										</p>
+										<input type="checkbox" id="touCheckBox" />
+										<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+											{' '}
+											I agree to the Terms of Use changes.
+										</label>
+										<br />
+										<input
+											type="button"
+											value="Dismiss"
+											style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold' }}
+											onClick={this.touConfirmButton}
+											id="touButton"
+										/>
 									</div>
 								</div>
 							);
