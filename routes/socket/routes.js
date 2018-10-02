@@ -117,7 +117,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				return vals;
 			};
 			const firstVerNew = (v1, v2) => {
-				for (var i = 0; i < Math.max(v1.length, v2.length); i++) {
+				for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
 					if (!v2[i]) return true;
 					if (!v1[i] || isNaN(v1[i]) || v1[i] < v2[i]) return false;
 					if (v1[i] > v2[i]) return true;
