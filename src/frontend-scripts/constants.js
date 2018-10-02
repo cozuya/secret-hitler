@@ -4,6 +4,7 @@ module.exports.TRIALMODS = [];
 
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Auengun',
+	'Aurune',
 	'banc',
 	'bot',
 	'conundrum',
