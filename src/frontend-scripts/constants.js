@@ -19,6 +19,7 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'JohnCena',
 	'jules',
 	'LordVader',
+	'loveoken',
 	'nth',
 	'OuchYouHitMe',
 	'PeeOnBus',
