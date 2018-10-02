@@ -185,6 +185,7 @@ export class App extends React.Component {
 	}
 
 	touConfirmButton(e) {
+		e.preventDefault();
 		if (document.getElementById('touCheckBox').checked) {
 			socket.emit('confirmTOU');
 			this.setState({
@@ -194,7 +195,6 @@ export class App extends React.Component {
 				}
 			});
 		}
-		e.preventDefault();
 	}
 
 	router() {
