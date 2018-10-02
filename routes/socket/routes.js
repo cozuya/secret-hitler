@@ -251,6 +251,10 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				}
 			})
 			.on('updateSeatedUser', data => {
+				if (isRestricted) {
+					checkRestriction();
+					if (isRestricted) return;
+				}
 				if (authenticated) {
 					updateSeatedUser(socket, passport, data);
 				}

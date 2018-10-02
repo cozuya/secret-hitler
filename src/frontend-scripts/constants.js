@@ -3,7 +3,7 @@ const cn = require('classnames');
 module.exports.TOU_CHANGES = [
 	{
 		changeVer: '1.0',
-		changeDesc: 'ToU fully rewritten to be more clear.'
+		changeDesc: 'Terms of Use fully rewritten to be more clear.'
 	}
 ];
 
