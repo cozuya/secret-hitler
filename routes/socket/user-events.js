@@ -1179,6 +1179,21 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		]
 	};
 	const makeNewGame = () => {
+		if (gameCreationDisabled.status) {
+			game.chats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{
+						text: 'Game remake aborted, game creation is currently disabled.',
+						type: 'hitler'
+					}
+				]
+			});
+			sendInProgressGameUpdate(game);
+			return;
+		}
+
 		const newGame = _.cloneDeep(game);
 		const remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName);
 		const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
