@@ -379,7 +379,7 @@ export class App extends React.Component {
 						if (this.state.alertMsg.type === 'tou') {
 							return (
 								<div style={{position: 'fixed', zIndex: 999, background: '#0008', width: '100vw', height: '100vh', display: 'flex'}}>
-									<div style={{margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px'}}>
+									<div style={{margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000'}}>
 										<h2 style={{fontFamily: '"Comfortaa", Lato, sans-serif'}}>Terms of Use changes</h2>
 										<div style={{height: '150px', width: '350px', border: '1px solid black', borderRadius: '5px', background: '#777', padding: '3px', overflowY: 'scroll'}}>
 											{

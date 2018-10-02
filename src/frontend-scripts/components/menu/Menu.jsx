@@ -198,14 +198,14 @@ class Menu extends React.Component {
 		}
 
 		return (
-			<div className="menu-container">
+			<div className="menu-container" style={{zIndex: 9999}}>
 				<section className={classes}>
 					<a href="/" target="_blank">
 						SECRET HITLER.io
 					</a>
 					<div className="center-menu-links">
 						<span>
-							<a style={{ textDecoration: 'underline' }} target="_blank" href="/about#TOU">
+							<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
 								Site Rules
 							</a>{' '}
 							|{' '}
