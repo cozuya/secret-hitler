@@ -1475,7 +1475,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 					gameChat: true,
 					chat: [
 						{
-							text: `${affectedPlayer.username} {${affectedPlayerNumber + 1}}`,
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
 							type: 'player'
 						},
 						{
@@ -1497,7 +1497,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 							text: 'An AEM member has forced '
 						},
 						{
-							text: `${affectedPlayer.username} {${affectedPlayerNumber + 1}}`,
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
 							type: 'player'
 						},
 						{
@@ -1513,7 +1513,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 					]
 				}
 			];
-			selectVoting({ user: affectedPlayer.username }, game, { vote });
+			selectVoting({ user: affectedPlayer.userName }, game, { vote });
 			return;
 		}
 	}
