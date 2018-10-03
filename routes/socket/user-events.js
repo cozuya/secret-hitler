@@ -1454,7 +1454,15 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 					gameChat: true,
 					chat: [
 						{
-							text: 'There is no seat {${affectedPlayerNumber + 1}}.',
+							text: 'There is no seat ',
+							type: 'hitler'
+						},
+						{
+							text: `{${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: '.',
 							type: 'hitler'
 						}
 					]
@@ -1467,7 +1475,11 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 					gameChat: true,
 					chat: [
 						{
-							text: '${affectedPlayer.username} {${affectedPlayerNumber + 1}} has already voted.',
+							text: `${affectedPlayer.username} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' has already voted.',
 							type: 'hitler'
 						}
 					]
@@ -1482,7 +1494,21 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 					timestamp: new Date(),
 					chat: [
 						{
-							text: `An AEM member has forced ${affectedPlayer.username} {${affectedPlayerNumber + 1}} to vote ${vote ? 'ja' : 'nein'}.`
+							text: 'An AEM member has forced '
+						},
+						{
+							text: `${affectedPlayer.username} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' to vote '
+						},
+						{
+							text: `${vote ? 'ja' : 'nein'}`,
+							type: 'player'
+						},
+						{
+							text: '.'
 						}
 					]
 				}
