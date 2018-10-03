@@ -10,6 +10,7 @@ export const allEmotes = [
 	'CantBeBothered',
 	'CardBack',
 	'CucuMeta',
+	'DISCORD',
 	'DOUBT',
 	'ExpressionlessFace',
 	'FasCroc',
