@@ -48,6 +48,7 @@ export const allEmotes = [
 	'LibSmile',
 	'LibTash',
 	'LiberalBird',
+	'Lizard',
 	'Meow',
 	'NeinCard',
 	'NotHitler',
