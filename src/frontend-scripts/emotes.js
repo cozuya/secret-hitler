@@ -5,6 +5,7 @@ import Linkify from 'react-linkify';
 export const allEmotes = [
 	'BangBang',
 	'BigNose',
+	'BlueLizard',
 	'CNH',
 	'CODER',
 	'CantBeBothered',
@@ -29,6 +30,7 @@ export const allEmotes = [
 	'FasSkull',
 	'FasSnake',
 	'FascistSkull',
+	'GitHub',
 	'HeyFas',
 	'HeyLibs',
 	'IllAllowIt',
@@ -46,6 +48,7 @@ export const allEmotes = [
 	'LibSmile',
 	'LibTash',
 	'LiberalBird',
+	'Meow',
 	'NeinCard',
 	'NotHitler',
 	'PBullet',
@@ -72,7 +75,8 @@ export const allEmotes = [
 	'TopDeck',
 	'VetoPower',
 	'VoteJa',
-	'VoteNein'
+	'VoteNein',
+	'YellowLizard'
 ];
 
 export function renderEmotesButton(handleInsertEmote) {
