@@ -1,5 +1,6 @@
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, newStaff } = require('./models');
 const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { selectVoting } = require('./game/election.js');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
@@ -1402,7 +1403,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	}
 	data.userName = passport.user;
 
-	if (!staffUserNames.includes(passport.user) && !newStaff.modUserNames.includes(passport.user) && !newStaff.editorUserNames.includes(passport.user)) {
+	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+	if (!AEM) {
 		if (player) {
 			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
 				return;
@@ -1426,6 +1428,69 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	}
 
 	data.timestamp = new Date();
+
+	if (AEM) {
+		const aemForce = /forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)/i.exec(chat);
+		if (aemForce) {
+			if (player) {
+				player.gameChats.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: 'You cannot force a vote whilst playing.',
+							type: 'hitler'
+						}
+					]
+				});
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
+			const voteString = aemForce[2].toLowerCase();
+			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+			if (!affectedPlayer) {
+				player.gameChats.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: 'There is no seat {${affectedPlayerNumber + 1}}.',
+							type: 'hitler'
+						}
+					]
+				});
+				return;
+			}
+			if (affectedPlayer.voteStatus.hasVoted) {
+				player.gameChats.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: '${affectedPlayer.username} {${affectedPlayerNumber + 1}} has already voted.',
+							type: 'hitler'
+						}
+					]
+				});
+				return;
+			}
+			let vote = false;
+			if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
+			game.private.unSeatedGameChats = [
+				{
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: `An AEM member has forced ${affectedPlayer.username} {${affectedPlayerNumber + 1}} to vote ${vote ? 'ja' : 'nein'}.`
+						}
+					]
+				}
+			];
+			selectVoting({ user: affectedPlayer.username }, game, { vote });
+			return;
+		}
+	}
 
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
 
