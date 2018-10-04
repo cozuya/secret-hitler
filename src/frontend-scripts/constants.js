@@ -26,7 +26,6 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Royal2000H',
 	'sethe',
 	'Skyrra',
-	'SlipSlide',
 	'straightleft',
 	'veggiemanz',
 	'voldemort',
