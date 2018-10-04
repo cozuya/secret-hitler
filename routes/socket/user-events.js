@@ -19,7 +19,7 @@ const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
-const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
+const { LEGALCHARACTERS, TRIALMODS } = require('../../src/frontend-scripts/constants');
 const { makeReport } = require('./report.js');
 
 /**
@@ -1802,7 +1802,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		modUserNames.includes(passport.user) ||
 		superModUserNames.includes(passport.user) ||
 		newStaff.modUserNames.includes(passport.user) ||
-		newStaff.editorUserNames.includes(passport.user)
+		newStaff.editorUserNames.includes(passport.user) ||
+		TRIALMODS.includes(passport.user)
 	) {
 		if (data.isReportResolveChange) {
 			PlayerReport.findOne({ _id: data._id })
