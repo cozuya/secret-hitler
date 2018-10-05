@@ -1730,8 +1730,20 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 		game.private.hiddenInfoShouldNotify = false;
 	}
 
+	const modOnlyChat = {
+		timestamp: new Date(),
+		gameChat: true,
+		chat: [{ text: `${passport.user} has subscribed to mod chat. Current deck: ` }]
+	};
+	game.private.policies.forEach(policy => {
+		modOnlyChat.chat.push({
+			text: policy === 'liberal' ? 'B' : 'R',
+			type: policy
+		});
+	});
+	game.private.hiddenInfoChat.push(modOnlyChat);
 	game.private.hiddenInfoSubscriptions.push(passport.user);
-	sendInProgressModChatUpdate(game, game.private.hiddenInfoChat, passport.user);
+	sendInProgressGameUpdate(game, game.private.hiddenInfoChat, passport.user);
 };
 
 /**
