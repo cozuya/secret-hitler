@@ -1743,7 +1743,7 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 	});
 	game.private.hiddenInfoChat.push(modOnlyChat);
 	game.private.hiddenInfoSubscriptions.push(passport.user);
-	sendInProgressGameUpdate(game, game.private.hiddenInfoChat, passport.user);
+	sendInProgressGameUpdate(game);
 };
 
 /**
