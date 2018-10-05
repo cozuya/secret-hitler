@@ -6,6 +6,7 @@ export const allEmotes = [
 	'BangBang',
 	'BigNose',
 	'BlueLizard',
+	'Brick',
 	'CNH',
 	'CODER',
 	'CantBeBothered',
