@@ -33,10 +33,15 @@ export class App extends React.Component {
 		this.makeQuickDefault = this.makeQuickDefault.bind(this);
 		this.changeNotesValue = this.changeNotesValue.bind(this);
 		this.changePlayerNotesValue = this.changePlayerNotesValue.bind(this);
+		this.touConfirmButton = this.touConfirmButton.bind(this);
 
 		this.state = {
 			notesValue: '',
-			playerNotesValue: ''
+			playerNotesValue: '',
+			alertMsg: {
+				type: null,
+				data: null
+			}
 		};
 
 		this.prevHash = '';
@@ -75,6 +80,15 @@ export class App extends React.Component {
 			// ** end devhelpers **
 			dispatch(updateUser(info));
 		}
+
+		socket.on('touChange', changeList => {
+			this.setState({
+				alertMsg: {
+					type: 'tou',
+					data: changeList
+				}
+			});
+		});
 
 		socket.on('manualDisconnection', () => {
 			window.location.pathname = '/observe';
@@ -168,6 +182,19 @@ export class App extends React.Component {
 			userInfo.gameSettings.newReport = reportStatus;
 			dispatch(updateUser(userInfo));
 		});
+	}
+
+	touConfirmButton(e) {
+		e.preventDefault();
+		if (document.getElementById('touCheckBox').checked) {
+			socket.emit('confirmTOU');
+			this.setState({
+				alertMsg: {
+					type: null,
+					data: null
+				}
+			});
+		}
 	}
 
 	router() {
@@ -346,6 +373,58 @@ export class App extends React.Component {
 				<DevHelpers />
 
 				<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
+
+				{(() => {
+					if (this.state.alertMsg.type) {
+						if (this.state.alertMsg.type === 'tou') {
+							return (
+								<div style={{ position: 'fixed', zIndex: 999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
+									<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
+										<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Terms of Use changes</h2>
+										<div
+											style={{
+												height: '150px',
+												width: '350px',
+												border: '1px solid black',
+												borderRadius: '5px',
+												background: '#777',
+												padding: '3px',
+												overflowY: 'scroll'
+											}}
+										>
+											{this.state.alertMsg.data.map(change => {
+												return (
+													<div>
+														<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Version {change.changeVer}</h4>
+														<p style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{change.changeDesc}</p>
+													</div>
+												);
+											})}
+										</div>
+										<p>
+											<a href="/tou" target="_blank" style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+												Click here to read the full Terms of Use.
+											</a>
+										</p>
+										<input type="checkbox" id="touCheckBox" />
+										<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+											{' '}
+											I agree to the Terms of Use changes.
+										</label>
+										<br />
+										<input
+											type="button"
+											value="Dismiss"
+											style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold' }}
+											onClick={this.touConfirmButton}
+											id="touButton"
+										/>
+									</div>
+								</div>
+							);
+						}
+					}
+				})()}
 
 				<div className={classes}>
 					<Main

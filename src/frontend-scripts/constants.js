@@ -1,5 +1,12 @@
 const cn = require('classnames');
 
+module.exports.TOU_CHANGES = [
+	{
+		changeVer: '1.0',
+		changeDesc: 'Terms of Use fully rewritten to be more clear.'
+	}
+];
+
 module.exports.TRIALMODS = [];
 
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [

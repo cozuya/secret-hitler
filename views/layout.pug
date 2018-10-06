@@ -57,6 +57,11 @@ html(lang="en")
 					else
 						a.item(href="/polls") Polls
 
+					if tou
+						a.active.item Terms of Use
+					else
+						a.item(href="/tou") Terms of Use
+
 					if about
 						a.active.item About
 					else
@@ -95,7 +100,7 @@ html(lang="en")
 
 		section.signin-modal.ui.modal.small.segment.column
 			h2.header Sign in to your account
-			p.tou By playing here, you agree to follow the Terms of Use.
+			p.tou By playing here, you agree to follow the #[a(href="/tou", target="_blank") Terms of Use].
 			form.ui.form(style="text-align: center;")
 				.field
 					.ui.left.icon.input
@@ -138,7 +143,8 @@ html(lang="en")
 
 		section.signup-modal.ui.modal.small.segment.column
 			h2.header Sign up for an account
-			p.tou By playing here, you agree to follow the #[a(href="/about#TOU", target="_blank") Terms of Use]. Players with less than 2 games played can not chat in general chat, chat as an observer, or make player reports.
+			p.tou By playing here, you agree to follow the #[a(href="/tou", target="_blank") Terms of Use].
+			p.tou Players with less than 2 games played can not chat in general chat, chat as an observer, or make player reports.
 			form.ui.form
 				.field
 					.ui.left.icon.input
@@ -165,6 +171,10 @@ html(lang="en")
 					label
 						input#private-player(type="checkbox", style="margin-right: 5px")
 						span(style="color: #aaa") READ CAREFULLY BEFORE CHECKING: Private game player only option - your name will not be visible in the sidebar, you can't chat in general chat, you can't play in public games.
+				.field
+					label
+						input#tou-agree(type="checkbox", style="margin-right: 5px")
+						span(style="color: #a77") I have read and agree to the #[a(href="/tou", target="_blank") Terms of Use].
 				button.ui.primary.button.fluid.large.signup-submit Submit
 				.ui.dimmer.inverted
 					.ui.text.loader Signing up..

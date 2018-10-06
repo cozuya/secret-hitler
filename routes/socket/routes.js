@@ -36,6 +36,7 @@ const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
 const { games } = require('./models');
 const Account = require('../../models/account');
+const { TOU_CHANGES } = require('../../src/frontend-scripts/constants.js');
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
@@ -106,10 +107,51 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			});
 		}
 
+		let isRestricted = !authenticated;
+
+		const checkRestriction = account => {
+			if (account || !passport || !passport.user || !socket) return;
+			const parseVer = ver => {
+				let vals = ver.split('.');
+				vals.forEach((v, i) => (vals[i] = parseInt(v)));
+				return vals;
+			};
+			const firstVerNew = (v1, v2) => {
+				for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+					if (!v2[i]) return true;
+					if (!v1[i] || isNaN(v1[i]) || v1[i] < v2[i]) return false;
+					if (v1[i] > v2[i]) return true;
+				}
+				return true;
+			};
+
+			if (account.touLastAgreed && account.touLastAgreed.length) {
+				let changesSince = [];
+				let myVer = parseVer(account.touLastAgreed);
+				TOU_CHANGES.forEach(change => {
+					if (!firstVerNew(myVer, parseVer(change.changeVer))) changesSince.push(change);
+				});
+				if (changesSince.length) {
+					socket.emit('touChange', changesSince);
+					return true;
+				}
+			} else {
+				socket.emit('touChange', TOU_CHANGES);
+				return true;
+			}
+			// implement other restrictions as needed
+			return false;
+		};
+
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 		socket.conn.on('upgrade', () => {
 			sendUserList(socket);
+			if (passport && passport.user) {
+				Account.findOne({ username: passport.user }).then(account => {
+					isRestricted = checkRestriction(account);
+				});
+			}
 		});
 
 		socket
@@ -117,6 +159,15 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 
 			.on('disconnect', () => {
 				handleSocketDisconnect(socket);
+			})
+			.on('confirmTOU', () => {
+				if (authenticated && isRestricted) {
+					Account.findOne({ username: passport.user }).then(account => {
+						account.touLastAgreed = TOU_CHANGES[0].changeVer;
+						account.save();
+						isRestricted = checkRestriction(account);
+					});
+				}
 			})
 			.on('handleUpdatedPlayerNote', data => {
 				handleUpdatedPlayerNote(socket, data);
@@ -142,6 +193,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				handleUpdatedTruncateGame(data);
 			})
 			.on('addNewGameChat', data => {
+				if (isRestricted) return;
 				if (authenticated) {
 					handleAddNewGameChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
@@ -154,6 +206,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				}
 			})
 			.on('addNewGame', data => {
+				if (isRestricted) return;
 				if (authenticated) {
 					handleAddNewGame(socket, passport, data);
 				}
@@ -165,6 +218,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			})
 
 			.on('addNewGeneralChat', data => {
+				if (isRestricted) return;
 				if (authenticated) {
 					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
@@ -181,11 +235,13 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				}
 			})
 			.on('updateSeatedUser', data => {
+				if (isRestricted) return;
 				if (authenticated) {
 					updateSeatedUser(socket, passport, data);
 				}
 			})
 			.on('playerReport', data => {
+				if (isRestricted) return;
 				if (authenticated) {
 					handlePlayerReport(passport, data);
 				}
@@ -227,6 +283,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				sendUserGameSettings(socket);
 			})
 			.on('selectedChancellorVoteOnVeto', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellorVoteOnVeto(passport, game, data);
@@ -268,30 +325,35 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			// election
 
 			.on('presidentSelectedChancellor', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellor(socket, passport, game, data);
 				}
 			})
 			.on('selectedVoting', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectVoting(passport, game, data);
 				}
 			})
 			.on('selectedPresidentPolicy', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPresidentPolicy(passport, game, data);
 				}
 			})
 			.on('selectedChancellorPolicy', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellorPolicy(passport, game, data);
 				}
 			})
 			.on('selectedPresidentVoteOnVeto', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPresidentVoteOnVeto(passport, game, data);
@@ -299,24 +361,28 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			})
 			// policy-powers
 			.on('selectPartyMembershipInvestigate', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPartyMembershipInvestigate(passport, game, data);
 				}
 			})
 			.on('selectedPolicies', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPolicies(passport, game);
 				}
 			})
 			.on('selectedPlayerToExecute', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPlayerToExecute(passport, game, data);
 				}
 			})
 			.on('selectedSpecialElection', data => {
+				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					selectSpecialElection(passport, game, data);
