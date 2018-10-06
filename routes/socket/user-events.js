@@ -1,5 +1,6 @@
 const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, newStaff } = require('./models');
 const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { selectVoting } = require('./game/election.js');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
@@ -12,13 +13,13 @@ const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
-const { sendInProgressGameUpdate, sendPlayerChatUpdate, sendInProgressModChatUpdate } = require('./util.js');
+const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
-const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
+const { LEGALCHARACTERS, TRIALMODS } = require('../../src/frontend-scripts/constants');
 const { makeReport } = require('./report.js');
 
 /**
@@ -1402,7 +1403,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	}
 	data.userName = passport.user;
 
-	if (!staffUserNames.includes(passport.user) && !newStaff.modUserNames.includes(passport.user) && !newStaff.editorUserNames.includes(passport.user)) {
+	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+	if (!AEM) {
 		if (player) {
 			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
 				return;
@@ -1426,6 +1428,95 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	}
 
 	data.timestamp = new Date();
+
+	if (AEM) {
+		const aemForce = /forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)/i.exec(chat);
+		if (aemForce) {
+			if (player) {
+				player.gameChats.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: 'You cannot force a vote whilst playing.',
+							type: 'hitler'
+						}
+					]
+				});
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
+			const voteString = aemForce[2].toLowerCase();
+			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+			if (!affectedPlayer) {
+				player.gameChats.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: 'There is no seat ',
+							type: 'hitler'
+						},
+						{
+							text: `{${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: '.',
+							type: 'hitler'
+						}
+					]
+				});
+				return;
+			}
+			if (affectedPlayer.voteStatus.hasVoted) {
+				player.gameChats.push({
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' has already voted.',
+							type: 'hitler'
+						}
+					]
+				});
+				return;
+			}
+			let vote = false;
+			if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
+			game.private.unSeatedGameChats = [
+				{
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has forced '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' to vote '
+						},
+						{
+							text: `${vote ? 'ja' : 'nein'}`,
+							type: 'player'
+						},
+						{
+							text: '.'
+						}
+					]
+				}
+			];
+			selectVoting({ user: affectedPlayer.userName }, game, { vote });
+			return;
+		}
+	}
 
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
 
@@ -1639,8 +1730,20 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 		game.private.hiddenInfoShouldNotify = false;
 	}
 
+	const modOnlyChat = {
+		timestamp: new Date(),
+		gameChat: true,
+		chat: [{ text: `${passport.user} has subscribed to mod chat. Current deck: ` }]
+	};
+	game.private.policies.forEach(policy => {
+		modOnlyChat.chat.push({
+			text: policy === 'liberal' ? 'B' : 'R',
+			type: policy
+		});
+	});
+	game.private.hiddenInfoChat.push(modOnlyChat);
 	game.private.hiddenInfoSubscriptions.push(passport.user);
-	sendInProgressModChatUpdate(game, game.private.hiddenInfoChat, passport.user);
+	sendInProgressGameUpdate(game);
 };
 
 /**
@@ -1711,7 +1814,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		modUserNames.includes(passport.user) ||
 		superModUserNames.includes(passport.user) ||
 		newStaff.modUserNames.includes(passport.user) ||
-		newStaff.editorUserNames.includes(passport.user)
+		newStaff.editorUserNames.includes(passport.user) ||
+		TRIALMODS.includes(passport.user)
 	) {
 		if (data.isReportResolveChange) {
 			PlayerReport.findOne({ _id: data._id })
