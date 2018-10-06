@@ -85,6 +85,10 @@ $(document).ready(function() {
 			};
 
 		$loader.addClass('active');
+		if (!$('#tou-agree').is(':checked')) {
+			submitErr('You must agree to the Terms of Use.');
+			return;
+		}
 
 		$.ajax({
 			url: '/account/signup',
