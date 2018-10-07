@@ -7,6 +7,7 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Aurune',
 	'banc',
 	'bot',
+	'CIAGuy',
 	'conundrum',
 	'DFinn',
 	'goonbee',
