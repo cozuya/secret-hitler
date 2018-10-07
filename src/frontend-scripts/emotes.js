@@ -46,6 +46,7 @@ export const allEmotes = [
 	'LibPolicy',
 	'LibPolicy2',
 	'LibPolicy3',
+	'LibSeething',
 	'LibSmile',
 	'LibTash',
 	'LiberalBird',
