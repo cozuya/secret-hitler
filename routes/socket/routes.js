@@ -37,6 +37,7 @@ const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies,
 const { games } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/constants.js');
+const { AEM_ALTS } = require('./report.js');
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date().getTime();
@@ -301,7 +302,10 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 						const players = game.private.seatedPlayers.map(player => player.userName);
 						Account.find({ staffRole: { $exists: true } }).then(accounts => {
 							const hasAEM = accounts.some(acc => {
-								return acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'contributor' && players.includes(acc.username);
+								return (
+									AEM_ALTS.includes(acc.username) ||
+									(acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'contributor' && players.includes(acc.username))
+								);
 							});
 							if (!hasAEM) handleSubscribeModChat(socket, passport, game);
 						});

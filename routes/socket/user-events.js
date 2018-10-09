@@ -1847,6 +1847,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 				if (io.sockets.sockets[affectedSocketId]) {
 					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+					io.sockets.sockets[affectedSocketId].disconnect();
 				}
 
 				if (bannedUserlistIndex >= 0) {
@@ -2480,6 +2481,7 @@ module.exports.checkUserStatus = socket => {
 				const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
 
 				socket.emit('manualDisconnection');
+				socket.disconnect();
 
 				if (bannedUserlistIndex >= 0) {
 					userList.splice(bannedUserlistIndex, 1);
