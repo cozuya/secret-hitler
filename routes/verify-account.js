@@ -61,6 +61,8 @@ module.exports = {
 		});
 	},
 	sendToken(username, email, res) {
+		// Email verification is currently broken due to a lack of a working account to send the emails with.
+		return;
 		Account.findOne({ username }, (err, account) => {
 			if (err) {
 				console.log(err);
