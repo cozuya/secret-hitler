@@ -74,7 +74,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			invidia: user.userName === 'Invidia',
 			thejuststopo: user.userName === 'TheJustStopO'
 		});
-	} else if (CONTRIBUTORS.includes(user.userName)) {
+	} else if (CONTRIBUTORS.includes(user.userName) && (!Boolean(user.staffRole && user.staffRole.length) || !user.staffDisableStaffColor)) {
 		return cn(defaultClass, 'contributor');
 	} else {
 		const w = isSeasonal ? user.winsSeason : user.wins;
