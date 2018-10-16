@@ -9,6 +9,16 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.14.14 released 10-16-2018</p>
+		</div>
+		<h4>New feature: new players must agree to the terms of use.</h4>
+		<p>I want to again stress that if you don't agree with the rules of the site (cliffs: don't be an asshole), play elsewhere.</p>
+		<p>
+			Bugfix: full height player setting now auto-scrolls chat correctly, making it actually usable, thanks to a contributor. Check it out again if you have a
+			large monitor.
+		</p>
+		<p>Cleanup: emotes have had a review and some of them altered, updated, and removed.</p>
+		<div className="ui header">
 			<p>Version 0.14.13 released 9-29-2018</p>
 		</div>
 		<h4>Welcome to season 4!</h4>
@@ -27,8 +37,8 @@ const Changelog = () => (
 		</ul>
 		<p>
 			New this season: the top 5 players of last season now have special badges thanks to mod benjamin172. Unfortunately not a lot to report lately, I've been
-			incredibly busy and haven't had the time. We do have 2 new emotes! LibFrown and FasFrown credit to new contributor PeeOnBus. Also, speed mode is now enabled by default when entering create
-			game credit by contributor LordVader. Thanks for playing!
+			incredibly busy and haven't had the time. We do have 2 new emotes! LibFrown and FasFrown credit to new contributor PeeOnBus. Also, speed mode is now
+			enabled by default when entering create game credit by contributor LordVader. Thanks for playing!
 		</p>
 		<div className="ui header">
 			<p>Version 0.14.12 released 8-8-2018</p>
