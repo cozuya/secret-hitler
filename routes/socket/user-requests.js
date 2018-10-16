@@ -11,7 +11,6 @@ const {
 	accountCreationDisabled,
 	ipbansNotEnforced,
 	gameCreationDisabled,
-	currentSeasonNumber,
 	userListEmitter,
 	formattedUserList,
 	gameListEmitter,
@@ -21,6 +20,7 @@ const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
 const { obfIP } = require('./ip-obf');
+const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
 //	const https = require('https');
 //	const options = {
 //	hostname: 'check.torproject.org',
@@ -181,10 +181,10 @@ module.exports.sendUserGameSettings = socket => {
 					}
 				};
 
-				userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
-				userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
-				userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
-				userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+				userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
+				userListInfo[`lossesSeason${CURRENTSEASONNUMBER}`] = account[`lossesSeason${CURRENTSEASONNUMBER}`];
+				userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
+				userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
 				userList.push(userListInfo);
 				sendUserList();
 			}
