@@ -108,10 +108,10 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			});
 		}
 
-		let isRestricted = !authenticated;
+		let isRestricted = true;
 
 		const checkRestriction = account => {
-			if (account || !passport || !passport.user || !socket) return;
+			if (!account || !passport || !passport.user || !socket) return;
 			const parseVer = ver => {
 				let vals = ver.split('.');
 				vals.forEach((v, i) => (vals[i] = parseInt(v)));
@@ -148,7 +148,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 		socket.conn.on('upgrade', () => {
 			sendUserList(socket);
-			if (passport && passport.user) {
+			if (passport && passport.user && authenticated) {
 				Account.findOne({ username: passport.user }).then(account => {
 					isRestricted = checkRestriction(account);
 				});
