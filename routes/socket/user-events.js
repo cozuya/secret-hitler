@@ -2375,6 +2375,8 @@ module.exports.handlePlayerReport = (passport, data) => {
 		}`
 	});
 
+	console.log(`Attempting to report ${data.reportedPlayer} from ${data.reportingPlayer} at ${playerReport.date}.`);
+
 	const options = {
 		hostname: 'discordapp.com',
 		path: process.env.DISCORDURL,
@@ -2390,7 +2392,10 @@ module.exports.handlePlayerReport = (passport, data) => {
 	if (game) {
 		if (!game.reportCounts) game.reportCounts = {};
 		if (!game.reportCounts[passport.user]) game.reportCounts[passport.user] = 0;
-		if (game.reportCounts[passport.user] >= 4) return;
+		if (game.reportCounts[passport.user] >= 4) {
+			console.log('Report failed: User reported 4 times this game.');
+			return;
+		}
 		game.reportCounts[passport.user]++;
 	}
 
@@ -2406,6 +2411,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 			console.log(err, 'Failed to save player report');
 			return;
 		}
+		console.log('Report successful.');
 
 		Account.find({ staffRole: { $exists: true } }).then(accounts => {
 			accounts.forEach(account => {
