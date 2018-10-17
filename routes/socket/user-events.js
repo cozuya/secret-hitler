@@ -1434,7 +1434,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		if (aemForce) {
 			if (player) {
 				if (!player.gameChats) {
-					player.gameChats = []
+					player.gameChats = [];
 				}
 				player.gameChats.push({
 					timestamp: new Date(),
@@ -2382,7 +2382,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 		}`
 	});
 
-	console.log(`Attempting to report ${data.reportedPlayer} from ${data.reportingPlayer} at ${playerReport.date}.`);
+	console.log(`Attempting to report ${data.reportedPlayer} from ${passport.user} at ${playerReport.date}.`);
 
 	const options = {
 		hostname: 'discordapp.com',
