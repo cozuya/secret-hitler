@@ -66,6 +66,7 @@ export class Main extends React.Component {
 								gameInfo={gameInfo}
 								userList={userList}
 								socket={socket}
+								allEmotes={this.props.allEmotes}
 							/>
 						);
 					}
@@ -77,7 +78,7 @@ export class Main extends React.Component {
 				case 'profile':
 					return <Profile userInfo={userInfo} socket={socket} userList={userList} />;
 				case 'replay':
-					return <Replay />;
+					return <Replay allEmotes={this.props.allEmotes}/>;
 				case 'reports':
 					return <Reports socket={socket} userInfo={userInfo} />;
 				case 'leaderboards':
@@ -121,7 +122,8 @@ Main.propTypes = {
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
 	userList: PropTypes.object,
-	gameList: PropTypes.array
+	gameList: PropTypes.array,
+	allEmotes: PropTypes.array
 };
 
 export default Main;

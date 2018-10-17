@@ -105,7 +105,7 @@ export default class Game extends React.Component {
 							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
 								{gameInfo.general && gameInfo.general.status}
 							</section>
-							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} />
+							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
 						</div>
 					</div>
 				</div>
@@ -164,5 +164,6 @@ Game.propTypes = {
 	clickedPlayer: PropTypes.object,
 	expandoInfo: PropTypes.string,
 	dispatch: PropTypes.func,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	allEmotes: PropTypes.array
 };

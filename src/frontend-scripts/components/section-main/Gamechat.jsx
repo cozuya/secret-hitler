@@ -397,7 +397,7 @@ class Gamechat extends React.Component {
 				.map((chat, i) => {
 					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 					const isMod = playerListPlayer && playerListPlayer.staffRole && playerListPlayer.staffRole !== '' && playerListPlayer.staffRole !== 'contributor';
-					const chatContents = processEmotes(chat.chat, isMod);
+					const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
 					const isSeated = seatedUserNames.includes(chat.userName);
 					const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
 
@@ -456,7 +456,7 @@ class Gamechat extends React.Component {
 							<span className="chat-user broadcast">
 								{this.handleTimestamps(chat.timestamp)} {`${chat.userName}: `}{' '}
 							</span>
-							<span className="broadcast-chat">{processEmotes(chat.chat, true)}</span>
+							<span className="broadcast-chat">{processEmotes(chat.chat, true, this.props.allEmotes)}</span>
 						</div>
 					) : (
 						<div className="item" key={i}>
@@ -849,7 +849,7 @@ class Gamechat extends React.Component {
 									this.gameChatInput = c;
 								}}
 							/>
-							{this.gameChatStatus().isDisabled ? null : renderEmotesButton(this.handleInsertEmote)}
+							{this.gameChatStatus().isDisabled ? null : renderEmotesButton(this.handleInsertEmote, this.props.allEmotes)}
 							<button type="submit" className="ui primary button">
 								Chat
 							</button>
@@ -964,7 +964,8 @@ Gamechat.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	allEmotes: PropTypes.array
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Gamechat);

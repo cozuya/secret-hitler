@@ -130,7 +130,7 @@ export default class Generalchat extends React.Component {
 					onKeyDown={this.handleKeyPress}
 					ref={c => (this.chatInput = c)}
 				/>
-				{userInfo.userName ? renderEmotesButton(this.handleInsertEmote) : null}
+				{userInfo.userName ? renderEmotesButton(this.handleInsertEmote, this.props.allEmotes) : null}
 				<div className="chat-button">
 					<button onClick={this.handleSubmit} className="ui primary button">
 						Chat
@@ -188,7 +188,7 @@ export default class Generalchat extends React.Component {
 									{`${chat.userName}: `}
 								</a>
 							</span>
-							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat, isMod)}</span>
+							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat, isMod, this.props.allEmotes)}</span>
 						</div>
 					);
 			  })
@@ -205,7 +205,7 @@ export default class Generalchat extends React.Component {
 				<div className="sticky">
 					<span>
 						<span>Sticky: </span>
-						{processEmotes(this.props.generalChats.sticky, true)}
+						{processEmotes(this.props.generalChats.sticky, true, this.props.allEmotes)}
 					</span>
 					<i className="remove icon" onClick={dismissSticky} />
 				</div>
@@ -265,5 +265,6 @@ Generalchat.propTypes = {
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
 	generalChats: PropTypes.object,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	allEmotes: PropTypes.array
 };

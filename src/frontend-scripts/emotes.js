@@ -2,87 +2,7 @@ import React from 'react'; // eslint-disable-line
 import { Button, Popup } from 'semantic-ui-react';
 import Linkify from 'react-linkify';
 
-export const allEmotes = [
-	'BangBang',
-	// 'BigNose',
-	// 'BlueLizard',
-	// 'Brick',
-	'CNH',
-	'CantBeBothered',
-	// 'CardBack',
-	// 'CODER',
-	'CozFace',
-	// 'CucuMeta',
-	// 'DISCORD',
-	// 'DOUBT',
-	'FasCroc',
-	'FasEvil',
-	'FasFace',
-	'FasFrog',
-	'FasFrown',
-	'FasGlory',
-	'FasGoofy',
-	'FasGrin',
-	'FasHitler',
-	'FasLizard',
-	'FasPolicy',
-	// 'FasPolicy2',
-	// 'FasPolicy3',
-	'FasSkull',
-	'FasSnake',
-	'FascistSkull',
-	// 'GitHub',
-	'HeyFas',
-	'HeyLibs',
-	// 'IllAllowIt',
-	// 'JaCard',
-	'LibBird',
-	// 'LibCool',
-	'LibFrown',
-	'LibGlory',
-	'LibHat',
-	'LibHmm',
-	'LibPipe',
-	'LibPolicy',
-	// 'LibPolicy2',
-	// 'LibPolicy3',
-	// 'LibSeething',
-	'LibSmile',
-	'LibTash',
-	'LiberalBird',
-	// 'Lizard',
-	// 'Meow',
-	// 'NeinCard',
-	'NotHitler',
-	'PBullet',
-	'PDraw',
-	'PIZZA',
-	'PInvest',
-	'PPres',
-	'PopCorn',
-	'RIP',
-	// 'RainBow',
-	'RedFace',
-	'RedHeart',
-	'Salty',
-	// 'SantaHitler',
-	'SecretHitler',
-	'Sheeped',
-	'Shepherd',
-	'Shrug',
-	'SillyLib',
-	// 'SmallNose',
-	'ThinkFace',
-	'ThumbsDown',
-	'ThumbsUp',
-	'TopDeck',
-	'VetoPower',
-	'VoteJa',
-	'VoteNein'
-	// 'YellowLizard'
-];
-
-export function renderEmotesButton(handleInsertEmote) {
+export function renderEmotesButton(handleInsertEmote, allEmotes) {
 	return (
 		<Popup on="click" className="emotes-popup" trigger={<Button type="button" icon="smile" primary className="emotes-button" />}>
 			<Popup.Content>
@@ -98,7 +18,7 @@ export function renderEmotesButton(handleInsertEmote) {
 	);
 }
 
-export function processEmotes(input, isMod) {
+export function processEmotes(input, isMod, allEmotes) {
 	if (typeof input !== 'string') {
 		return input;
 	}

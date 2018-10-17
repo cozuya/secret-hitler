@@ -41,7 +41,8 @@ export class App extends React.Component {
 			alertMsg: {
 				type: null,
 				data: null
-			}
+			},
+			allEmotes: []
 		};
 
 		this.prevHash = '';
@@ -87,6 +88,12 @@ export class App extends React.Component {
 					type: 'tou',
 					data: changeList
 				}
+			});
+		});
+		
+		socket.on('emoteList', list => {
+			this.setState({
+				allEmotes: list
 			});
 		});
 
@@ -438,6 +445,7 @@ export class App extends React.Component {
 						socket={socket}
 						version={this.props.version}
 						gameList={this.props.gameList}
+						allEmotes={this.state.allEmotes}
 					/>
 
 					{(() => {
@@ -453,6 +461,7 @@ export class App extends React.Component {
 									generalChats={this.props.generalChats}
 									socket={socket}
 									midSection={this.props.midSection}
+									allEmotes={this.state.allEmotes}
 								/>
 							);
 						}

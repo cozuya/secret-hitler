@@ -1,6 +1,13 @@
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
 const Account = require('../../models/account');
 
+const fs = require('fs');
+let emotes = [];
+fs.readdirSync('@/../public/images/emotes', { withFileTypes: true }).forEach(file => {
+	if (file.endsWith('.png')) emotes[emotes.length] = file.substring(0, file.length - 4);
+});
+module.exports.emoteList = emotes;
+
 const games = {};
 module.exports.games = games;
 module.exports.userList = [];

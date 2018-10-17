@@ -12,7 +12,7 @@ const RightSidebar = props => {
 	return (
 		<section className={classes}>
 			<Playerlist userInfo={props.userInfo} userList={props.userList} socket={props.socket} />
-			<Generalchat gameInfo={props.gameInfo} socket={props.socket} generalChats={props.generalChats} userInfo={props.userInfo} userList={props.userList} />
+			<Generalchat gameInfo={props.gameInfo} socket={props.socket} generalChats={props.generalChats} userInfo={props.userInfo} userList={props.userList} allEmotes={props.allEmotes} />
 		</section>
 	);
 };
@@ -23,7 +23,8 @@ RightSidebar.propTypes = {
 	socket: PropTypes.object,
 	generalChats: PropTypes.object,
 	userList: PropTypes.object,
-	midSection: PropTypes.string
+	midSection: PropTypes.string,
+	allEmotes: PropTypes.array
 };
 
 export default RightSidebar;

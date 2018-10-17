@@ -13,6 +13,7 @@ import ReplayOverlay from './ReplayOverlay.jsx';
 import ReplayControls from './ReplayControls.jsx';
 import TrackPieces from './TrackPieces.jsx';
 import socket from '../../../socket';
+import PropTypes from 'prop-types';
 
 const mapStateToProps = ({ replay, userInfo }) => ({
 	replay,
@@ -145,7 +146,7 @@ const buildPlayback = (replay, to) => {
 	};
 };
 
-const Replay = ({ replay, isSmall, to, replayChats }) => {
+const Replay = ({ replay, isSmall, to, replayChats, allEmotes}) => {
 	const { ticks, position, game } = replay;
 	const snapshot = ticks.get(position);
 	const playback = buildPlayback(replay, to);
@@ -173,6 +174,7 @@ const Replay = ({ replay, isSmall, to, replayChats }) => {
 							gameInfo={{
 								chats: replayChats
 							}}
+							allEmotes={allEmotes}
 						/>
 					) : (
 						<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
@@ -245,6 +247,7 @@ class ReplayWrapper extends React.Component {
 							isSmall={this.props.isSmall}
 							to={this.props.to}
 							replayChats={this.state.chatsShown && this.state.replayChats.length ? this.state.replayChats : []}
+							allEmotes={this.props.allEmotes}
 						/>
 					);
 			}
@@ -266,3 +269,8 @@ class ReplayWrapper extends React.Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReplayWrapper);
+
+Replay.propTypes = {
+	allEmotes: PropTypes.array
+};
+

@@ -95,7 +95,7 @@ export default class Generalchat extends React.Component {
 						})()}
 						{chat.userName && ':'}{' '}
 					</span>
-					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
+					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat, this.props.allEmotes)}</span>
 				</div>
 			);
 		});
@@ -164,5 +164,6 @@ Generalchat.propTypes = {
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
 	generalChats: PropTypes.object,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	allEmotes: PropTypes.object
 };
