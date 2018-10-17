@@ -1443,6 +1443,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 						}
 					]
 				});
+				sendPlayerChatUpdate(game, data);
 				return;
 			}
 			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
@@ -1467,6 +1468,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 						}
 					]
 				});
+				sendPlayerChatUpdate(game, data);
 				return;
 			}
 			if (affectedPlayer.voteStatus.hasVoted) {
@@ -1484,6 +1486,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 						}
 					]
 				});
+				sendPlayerChatUpdate(game, data);
 				return;
 			}
 			let vote = false;
@@ -1514,6 +1517,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 				}
 			];
 			selectVoting({ user: affectedPlayer.userName }, game, { vote });
+			sendPlayerChatUpdate(game, data);
 			return;
 		}
 	}
