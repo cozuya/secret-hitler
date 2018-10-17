@@ -402,7 +402,7 @@ class Gamechat extends React.Component {
 					const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
 
 					return chat.gameChat ? (
-						<div className={chat.chat[1] && chat.chat[1].type ? `item gamechat ${chat.chat[1].type}` : 'item gamechat'} key={i}>
+						<div className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'} key={i}>
 							{this.handleTimestamps(chat.timestamp)}
 							<span className="game-chat">
 								{chatContents.map((chatSegment, index) => {
