@@ -1433,6 +1433,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		const aemForce = /forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)/i.exec(chat);
 		if (aemForce) {
 			if (player) {
+				if (!player.gameChats) {
+					player.gameChats = []
+				}
 				player.gameChats.push({
 					timestamp: new Date(),
 					gameChat: true,
