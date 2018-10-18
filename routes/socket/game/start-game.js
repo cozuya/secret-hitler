@@ -189,6 +189,7 @@ const beginGame = game => {
 			rerebalance9p: game.general.rerebalance9p && game.private.seatedPlayers.length === 9,
 			casualGame: Boolean(game.general.casualGame)
 		},
+		game.customGameSettings,
 		game.private.seatedPlayers.map(p => ({
 			username: p.userName,
 			role: p.role.cardName,
