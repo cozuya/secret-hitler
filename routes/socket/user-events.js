@@ -565,6 +565,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	// console.log(JSON.stringify(data.customGameSettings));
 
 	if (data.customGameSettings && data.customGameSettings.enabled) {
+		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
+
 		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet'];
 		if (!data.customGameSettings.powers || data.customGameSettings.powers.length != 5) return;
 		for (let a = 0; a < 5; a++) {
@@ -572,16 +574,17 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		}
 
 		if (!(data.customGameSettings.hitlerZone >= 1) || data.customGameSettings.hitlerZone > 5) return;
-		// Should we actually prevent VZ starting before HZ?
-		if (!data.customGameSettings.vetoZone || data.customGameSettings.vetoZone < data.customGameSettings.hitlerZone || data.customGameSettings.vetoZone > 5) {
+		if (
+			!data.customGameSettings.vetoZone ||
+			data.customGameSettings.vetoZone <= data.customGameSettings.trackState.fas ||
+			data.customGameSettings.vetoZone > 5
+		) {
 			return;
 		}
 
 		// Ensure that there is never a fas majority at the start.
 		// Custom games should probably require a fixed player count, which will be in playerCounts[0] regardless.
 		if (!(data.customGameSettings.fascistCount >= 0) || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
-
-		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
 		// Ensure standard victory conditions can be met for both teams.
 		if (!(data.customGameSettings.deckState.lib >= 5)) return;
