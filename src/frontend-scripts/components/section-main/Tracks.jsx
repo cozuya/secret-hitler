@@ -301,110 +301,109 @@ class Tracks extends React.Component {
 		};
 		
 		const renderFasTrack = () => {
-			const offX = -8;
-			const offY = -8;
-			
-			let powers = [];
-			let numFas = 0;
-			let hzStart = 3;
-			let vzPoint = 5;
-			let hitKnowsFas = false;
+			if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
+				const offX = -8;
+				const offY = -8;
+				
+				let powers = [];
+				let numFas = 0;
+				let hzStart = 3;
+				let vzPoint = 5;
+				let hitKnowsFas = false;
 
-			if (gameInfo.customGameSettings.powers) {
-				// Only need to detect one property, either they're all there or none are.
-				powers = gameInfo.customGameSettings.powers.map(p => {
-					if (p == null) return 'None';
-					if (p == 'investigate') return 'Inv';
-					if (p == 'deckpeek') return 'Peek';
-					if (p == 'election') return 'Elect';
-					if (p == 'bullet') return 'Gun';
-	
-					console.log(`Unknown power: ${p}`);
-					return null;
-				});
-				numFas = gameInfo.customGameSettings.fascistCount;
-				hzStart = gameInfo.customGameSettings.hitlerZone;
-				vzPoint = gameInfo.customGameSettings.vetoZone;
-				hitKnowsFas = gameInfo.customGameSettings.hitKnowsFas;
-			}
-			else {
-				// Should only happen before a game starts, but as a precaution typical settings are used.
-				if (gameInfo.general.playerCount < 7) {
-					powers = ['None', 'None', 'Peek', 'Gun', 'Gun'];
-					numFas = 1;
-					hitKnowsFas = true;
-				}
-				else if (gameInfo.general.playerCount < 9) {
-					powers = ['None', 'Inv', 'Elect', 'Gun', 'Gun'];
-					numFas = 2;
+				if (gameInfo.customGameSettings.powers) {
+					// Only need to detect one property, either they're all there or none are.
+					powers = gameInfo.customGameSettings.powers.map(p => {
+						if (p == null) return 'None';
+						if (p == 'investigate') return 'Inv';
+						if (p == 'deckpeek') return 'Peek';
+						if (p == 'election') return 'Elect';
+						if (p == 'bullet') return 'Gun';
+		
+						console.log(`Unknown power: ${p}`);
+						return null;
+					});
+					numFas = gameInfo.customGameSettings.fascistCount;
+					hzStart = gameInfo.customGameSettings.hitlerZone;
+					vzPoint = gameInfo.customGameSettings.vetoZone;
+					hitKnowsFas = gameInfo.customGameSettings.hitKnowsFas;
 				}
 				else {
-					powers = ['Inv', 'Inv', 'Elect', 'Gun', 'Gun'];
-					numFas = 3;
+					// Should only happen before a game starts, but as a precaution typical settings are used.
+					if (gameInfo.general.playerCount < 7) {
+						powers = ['None', 'None', 'Peek', 'Gun', 'Gun'];
+						numFas = 1;
+						hitKnowsFas = true;
+					}
+					else if (gameInfo.general.playerCount < 9) {
+						powers = ['None', 'Inv', 'Elect', 'Gun', 'Gun'];
+						numFas = 2;
+					}
+					else {
+						powers = ['Inv', 'Inv', 'Elect', 'Gun', 'Gun'];
+						numFas = 3;
+					}
 				}
+				
+				const getHZ = pos => {
+					if (pos < hzStart) return 'Off';
+					if (pos > hzStart) return 'On';
+					return 'Start';
+				};
+				
+				return (
+					<div className='track bottom-track-back custom-fastrack-base'>
+						<span style={{width:'92px', height:'120px', left:`${offX+137}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(1)}.png)`}} />
+						<span style={{width:'92px', height:'120px', left:`${offX+229}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(2)}.png)`}} />
+						<span style={{width:'92px', height:'120px', left:`${offX+321}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(3)}.png)`}} />
+						<span style={{width:'92px', height:'120px', left:`${offX+413}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(4)}.png)`}} />
+						<span style={{width:'92px', height:'120px', left:`${offX+505}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(5)}.png)`}} />
+						
+						<span className='custom-fastrack-powerslot' style={{left:`${offX+ 58}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[0]}${hzStart<=0?'Light':''}.png)`}}>
+							{vzPoint == 1 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=0)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
+						</span>
+						<span className='custom-fastrack-powerslot' style={{left:`${offX+150}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[1]}${hzStart<=1?'Light':''}.png)`}}>
+							{vzPoint == 2 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=1)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
+						</span>
+						<span className='custom-fastrack-powerslot' style={{left:`${offX+242}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[2]}${hzStart<=2?'Light':''}.png)`}}>
+							{vzPoint == 3 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=2)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
+						</span>
+						<span className='custom-fastrack-powerslot' style={{left:`${offX+334}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[3]}${hzStart<=3?'Light':''}.png)`}}>
+							{vzPoint == 4 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=3)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
+						</span>
+						<span className='custom-fastrack-powerslot' style={{left:`${offX+426}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[4]}${hzStart<=4?'Light':''}.png)`}}>
+							{vzPoint == 5 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=4)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
+						</span>
+						<span className='custom-fastrack-powerslot' style={{left:`${offX+518}px`,top:`${offY+58}px`,'background-image':'url(../images/customtracks/fasPowerEndGame.png)'}} />
+						
+						<span style={{width:'268px', height:'15px', left:`${offX+336}px`, top:`${offY+60}px`, position:'absolute', 'background-image':'url(../images/customtracks/fasTrackHZText.png)'}}></span>
+						
+						<span style={{width:'228px', height:'11px', left:`${offX+220}px`, top:`${offY+186}px`, position:'absolute',
+														   'background-image':`url(../images/customtracks/fasTrack${numFas}fas.png)`}} />
+						<span style={{width:'228px', height:'11px', left:`${offX+220}px`, top:`${offY+196}px`, position:'absolute',
+														   'background-image':`url(../images/customtracks/fasTrack${(numFas>1)?'Multi':'Single'}${hitKnowsFas?'Known':'Unknown'}.png)`}} />
+					</div>
+				);
 			}
-			
-			const getHZ = pos => {
-				if (pos < hzStart) return 'Off';
-				if (pos > hzStart) return 'On';
-				return 'Start';
-			};
-			
-			return (
-				<div className='track bottom-track-back custom-fastrack-base'>
-					<span style={{width:'92px', height:'120px', left:`${offX+137}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(1)}.png)`}} />
-					<span style={{width:'92px', height:'120px', left:`${offX+229}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(2)}.png)`}} />
-					<span style={{width:'92px', height:'120px', left:`${offX+321}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(3)}.png)`}} />
-					<span style={{width:'92px', height:'120px', left:`${offX+413}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(4)}.png)`}} />
-					<span style={{width:'92px', height:'120px', left:`${offX+505}px`, top:`${offY+58}px`, position:'absolute', 'background-image':`url(../images/customtracks/fasTrackHZ${getHZ(5)}.png)`}} />
-					
-					<span className='custom-fastrack-powerslot' style={{left:`${offX+ 58}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[0]}${hzStart<=0?'Light':''}.png)`}}>
-						{vzPoint == 1 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=0)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
-					</span>
-					<span className='custom-fastrack-powerslot' style={{left:`${offX+150}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[1]}${hzStart<=1?'Light':''}.png)`}}>
-						{vzPoint == 2 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=1)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
-					</span>
-					<span className='custom-fastrack-powerslot' style={{left:`${offX+242}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[2]}${hzStart<=2?'Light':''}.png)`}}>
-						{vzPoint == 3 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=2)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
-					</span>
-					<span className='custom-fastrack-powerslot' style={{left:`${offX+334}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[3]}${hzStart<=3?'Light':''}.png)`}}>
-						{vzPoint == 4 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=3)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
-					</span>
-					<span className='custom-fastrack-powerslot' style={{left:`${offX+426}px`,top:`${offY+58}px`,'background-image':`url(../images/customtracks/fasPower${powers[4]}${hzStart<=4?'Light':''}.png)`}}>
-						{vzPoint == 5 && <span className={'custom-fastrack-powerslot ' + ((hzStart<=4)?'custom-fastrack-vetozone-light':'custom-fastrack-vetozone')} />}
-					</span>
-					<span className='custom-fastrack-powerslot' style={{left:`${offX+518}px`,top:`${offY+58}px`,'background-image':'url(../images/customtracks/fasPowerEndGame.png)'}} />
-					
-					<span style={{width:'268px', height:'15px', left:`${offX+336}px`, top:`${offY+60}px`, position:'absolute', 'background-image':'url(../images/customtracks/fasTrackHZText.png)'}}></span>
-					
-					<span style={{width:'228px', height:'11px', left:`${offX+220}px`, top:`${offY+186}px`, position:'absolute',
-													   'background-image':`url(../images/customtracks/fasTrack${numFas}fas.png)`}} />
-					<span style={{width:'228px', height:'11px', left:`${offX+220}px`, top:`${offY+196}px`, position:'absolute',
-													   'background-image':`url(../images/customtracks/fasTrack${(numFas>1)?'Multi':'Single'}${hitKnowsFas?'Known':'Unknown'}.png)`}} />
-				</div>
-			);
-			
-			/*
-			Original track:
-			
-			return (
-				<div
-					className={(() => {
-						let classes = 'track bottom-track-back';
+			else {
+				return (
+					<div
+						className={(() => {
+							let classes = 'track bottom-track-back';
 
-						if (gameInfo.general.playerCount < 7) {
-							classes += ' track0';
-						} else if (gameInfo.general.playerCount < 9) {
-							classes += ' track1';
-						} else {
-							classes += ' track2';
-						}
+							if (gameInfo.general.playerCount < 7) {
+								classes += ' track0';
+							} else if (gameInfo.general.playerCount < 9) {
+								classes += ' track1';
+							} else {
+								classes += ' track2';
+							}
 
-						return classes;
-					})()}
-				/>
-			);
-			*/
+							return classes;
+						})()}
+					/>
+				);
+			}
 		};
 
 		return (
