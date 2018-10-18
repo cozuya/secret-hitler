@@ -10,8 +10,6 @@ const Account = require('../../../models/account.js');
  */
 const beginGame = game => {
 	const { experiencedMode } = game.general;
-	const libCount = Math.floor(game.publicPlayersState.length / 2) + 1;
-	const fasCount = game.publicPlayersState.length - libCount - 1;
 
 	game.general.timeStarted = new Date().getTime();
 	game.general.type = Math.floor((game.publicPlayersState.length - 5) / 2);
@@ -56,7 +54,7 @@ const beginGame = game => {
 					icon: el,
 					team: 'liberal'
 				}))
-			).slice(0, libCount)
+			).slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
 		)
 		.concat(
 			_.shuffle(
@@ -65,7 +63,7 @@ const beginGame = game => {
 					icon: el,
 					team: 'fascist'
 				}))
-			).slice(0, fasCount)
+			).slice(0, customGameSettings.fascistCount)
 		);
 
 	game.general.status = 'Dealing roles..';
@@ -221,13 +219,12 @@ const beginGame = game => {
 	setTimeout(() => {
 		game.private.seatedPlayers.forEach((player, i) => {
 			const { seatedPlayers } = game.private;
-			const { playerCount } = game.general;
 			const { cardName } = player.role;
 
 			if (cardName === 'fascist') {
 				player.playersState[i].nameStatus = 'fascist';
 
-				if (playerCount > 6 && playerCount < 9) {
+				if (customGameSettings.fascistCount == 2) {
 					const otherFascist = seatedPlayers.find(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 					const otherFascistIndex = seatedPlayers.indexOf(otherFascist);
 
@@ -262,7 +259,7 @@ const beginGame = game => {
 					}
 					player.playersState[otherFascistIndex].nameStatus = 'fascist';
 					player.playersState[otherFascistIndex].notificationStatus = 'fascist';
-				} else if (playerCount > 8) {
+				} else if (customGameSettings.fascistCount == 3) {
 					const otherFascists = seatedPlayers.filter(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
 
 					if (!game.general.disableGamechat) {
@@ -333,7 +330,7 @@ const beginGame = game => {
 				};
 
 				if (!game.general.disableGamechat) {
-					if (playerCount < 7) {
+					if (customGameSettings.hitKnowsFas) {
 						chat.chat.push(
 							{ text: '. They also see that you are a ' },
 							{
@@ -360,38 +357,116 @@ const beginGame = game => {
 			} else if (cardName === 'hitler') {
 				player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'hitler';
 
-				if (playerCount < 7) {
-					const otherFascist = seatedPlayers.find(player => player.role.cardName === 'fascist');
+				if (customGameSettings.hitKnowsFas) {
+					if (customGameSettings.fascistCount == 1) {
+						const otherFascist = seatedPlayers.find(player => player.role.cardName === 'fascist');
 
+						if (!game.general.disableGamechat) {
+							player.gameChats.push({
+								timestamp: new Date(),
+								gameChat: true,
+								chat: [
+									{
+										text: 'You see that the other '
+									},
+									{
+										text: 'fascist',
+										type: 'fascist'
+									},
+									{
+										text: ' in this game is '
+									},
+									{
+										text: game.general.blindMode
+											? `{${seatedPlayers.indexOf(otherFascist) + 1}}`
+											: `${otherFascist.userName} {${seatedPlayers.indexOf(otherFascist) + 1}}`,
+										type: 'player'
+									},
+									{
+										text: '.  They know who you are.'
+									}
+								]
+							});
+						}
+						player.playersState[seatedPlayers.indexOf(otherFascist)].nameStatus = 'fascist';
+						player.playersState[seatedPlayers.indexOf(otherFascist)].notificationStatus = 'fascist';
+					} else {
+						const otherFascists = seatedPlayers.filter(play => play.role.cardName === 'fascist' && play.userName !== player.userName);
+
+						if (!game.general.disableGamechat) {
+							player.gameChats.push({
+								timestamp: new Date(),
+								gameChat: true,
+								chat: [
+									{
+										text: 'You see that the other '
+									},
+									{
+										text: 'fascists',
+										type: 'fascist'
+									},
+									{
+										text: ' in this game are '
+									},
+									{
+										text: game.general.blindMode
+											? `{${seatedPlayers.indexOf(otherFascists[0]) + 1}}`
+											: `${otherFascists[0].userName} {${seatedPlayers.indexOf(otherFascists[0]) + 1}}`,
+										type: 'player'
+									},
+									{
+										text: customGameSettings.fascistCount == 3 ? ', ' : ''
+									},
+									{
+										text:
+											customGameSettings.fascistCount == 3
+												? game.general.blindMode
+													? `{${seatedPlayers.indexOf(otherFascists[2]) + 1}}`
+													: `${otherFascists[2].userName} {${seatedPlayers.indexOf(otherFascists[2]) + 1}}`
+												: '',
+										type: 'player'
+									},
+									{
+										text: customGameSettings.fascistCount == 3 ? ', and' : ' and '
+									},
+									{
+										text: game.general.blindMode
+											? `{${seatedPlayers.indexOf(otherFascists[1]) + 1}}`
+											: `${otherFascists[1].userName} {${seatedPlayers.indexOf(otherFascists[1]) + 1}}`,
+										type: 'player'
+									},
+									{
+										text: '.'
+									}
+								]
+							});
+						}
+						otherFascists.forEach(fascistPlayer => {
+							player.playersState[seatedPlayers.indexOf(fascistPlayer)].nameStatus = 'fascist';
+						});
+						otherFascists.forEach(fascistPlayer => {
+							player.playersState[seatedPlayers.indexOf(fascistPlayer)].notificationStatus = 'fascist';
+						});
+					}
+				} else {
 					if (!game.general.disableGamechat) {
 						player.gameChats.push({
 							timestamp: new Date(),
 							gameChat: true,
 							chat: [
 								{
-									text: 'You see that the other '
+									text: 'There ' + (customGameSettings.fascistCount == 1) ? 'is ' : 'are '
 								},
 								{
-									text: 'fascist',
+									text: customGameSettings.fascistCount == 1 ? '1 fascist' : customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists',
 									type: 'fascist'
 								},
 								{
-									text: ' in this game is '
-								},
-								{
-									text: game.general.blindMode
-										? `{${seatedPlayers.indexOf(otherFascist) + 1}}`
-										: `${otherFascist.userName} {${seatedPlayers.indexOf(otherFascist) + 1}}`,
-									type: 'player'
-								},
-								{
-									text: '.  They know who you are.'
+									text: ', they know who you are.'
 								}
 							]
 						});
 					}
-					player.playersState[seatedPlayers.indexOf(otherFascist)].nameStatus = 'fascist';
-					player.playersState[seatedPlayers.indexOf(otherFascist)].notificationStatus = 'fascist';
 				}
 			} else if (!game.general.disableGamechat) {
 				player.playersState[seatedPlayers.indexOf(player)].nameStatus = 'liberal';
