@@ -5,8 +5,7 @@ const _ = require('lodash');
 
 /**
  * @param {object} game - game to act on.
- * @param {boolean} is6pRebalanceStart - whether or not 6p is rebalanced
- * @param {boolean} is9pRebalanceStart - whether or not 9p is rebalanced
+ * @param {boolean} isStart - true if this is the initial shuffle.
  */
 const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
 	if (isStart) {
@@ -33,12 +32,10 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
 		}
 	}
 
-	const count = _.countBy(game.private.policies);
-
 	game.private.policies = _.shuffle(
-		_.range(1, game.customGameSettings.deckState.lib - game.trackState.liberalPolicyCount)
+		_.range(0, game.customGameSettings.deckState.lib - game.trackState.liberalPolicyCount)
 			.map(num => 'liberal')
-			.concat(_.range(1, game.customGameSettings.deckState.fas - game.trackState.fascistPolicyCount).map(num => 'fascist'))
+			.concat(_.range(0, game.customGameSettings.deckState.fas - game.trackState.fascistPolicyCount).map(num => 'fascist'))
 	);
 
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
