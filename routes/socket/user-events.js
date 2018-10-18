@@ -571,32 +571,28 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			if (data.customGameSettings.powers[a] && !validPowers.includes(data.customGameSettings.powers[a])) return;
 		}
 
-		if (data.customGameSettings.hitlerZone < 1 || data.customGameSettings.hitlerZone > 5) return;
-		if (data.customGameSettings.vetoZone < data.customGameSettings.hitlerZone || data.customGameSettings.vetoZone > 5) return;
+		if (!(data.customGameSettings.hitlerZone >= 1) || data.customGameSettings.hitlerZone > 5) return;
+		// Should we actually prevent VZ starting before HZ?
+		if (!data.customGameSettings.vetoZone || data.customGameSettings.vetoZone < data.customGameSettings.hitlerZone || data.customGameSettings.vetoZone > 5)
+			return;
 
 		// Ensure that there is never a fas majority at the start.
 		// Custom games should probably require a fixed player count, which will be in playerCounts[0] regardless.
-		if (data.customGameSettings.fascistCount < 0 || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
+		if (!(data.customGameSettings.fascistCount >= 0) || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
+
+		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
 		// Ensure standard victory conditions can be met for both teams.
-		if (data.customGameSettings.deckState.lib + data.customGameSettings.trackState.lib < 5) return;
-		if (data.customGameSettings.deckState.fas + data.customGameSettings.trackState.fas < 6) return;
+		if (!(data.customGameSettings.deckState.lib + data.customGameSettings.trackState.lib >= 5)) return;
+		if (!(data.customGameSettings.deckState.fas + data.customGameSettings.trackState.fas >= 6)) return;
 
 		// Need at least 13 cards (11 on track plus two left-overs) to ensure that the deck does not run out.
-		if (
-			data.customGameSettings.deckState.lib +
-				data.customGameSettings.deckState.fas +
-				data.customGameSettings.trackState.lib +
-				data.customGameSettings.trackState.fas <
-			13
-		) {
-			return;
-		}
+		if (data.customGameSettings.deckState.lib + data.customGameSettings.deckState.fas < 13) return;
 
 		if (
-			data.customGameSettings.trackState.lib < 0 ||
+			!(data.customGameSettings.trackState.lib >= 0) ||
 			data.customGameSettings.trackState.lib > 4 ||
-			data.customGameSettings.trackState.fas < 0 ||
+			!(data.customGameSettings.trackState.fas >= 0) ||
 			data.customGameSettings.trackState.fas > 5
 		) {
 			return;
