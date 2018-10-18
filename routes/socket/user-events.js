@@ -576,7 +576,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 
 		// Ensure that there is never a fas majority at the start.
 		// Custom games should probably require a fixed player count, which will be in playerCounts[0] regardless.
-		if (data.customGameSettings.fascistCount < 0 || data.customGameSettings.fascistCount > playerCounts[0] / 2) return;
+		if (data.customGameSettings.fascistCount < 0 || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
 
 		// Ensure standard victory conditions can be met for both teams.
 		if (data.customGameSettings.deckState.lib + data.customGameSettings.trackState.lib < 5) return;

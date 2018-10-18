@@ -16,6 +16,32 @@ const beginGame = game => {
 	game.general.timeStarted = new Date().getTime();
 	game.general.type = Math.floor((game.publicPlayersState.length - 5) / 2);
 
+	const { customGameSettings } = game;
+	if (!customGameSettings.enabled) {
+		// Standard game, this object needs populating.
+		customGameSettings.hitlerZone = 3;
+		customGameSettings.vetoZone = 5;
+		customGameSettings.trackState = { lib: 0, fas: 0 };
+		customGameSettings.deckState = { lib: 6, fas: 12 };
+		if (game.general.type == 0) {
+			// 5-6 players
+			customGameSettings.fascistCount = 1;
+			customGameSettings.hitKnowsFas = true;
+			customGameSettings.powers = [null, null, 'deckpeek', 'bullet', 'bullet'];
+			if (game.rebalance6p && game.publicPlayersState.length == 6) customGameSettings.trackState.fas = 1;
+		} else if (game.general.type == 1) {
+			// 7-8 players
+			customGameSettings.fascistCount = 2;
+			customGameSettings.powers = [null, 'investigate', 'election', 'bullet', 'bullet'];
+			if (game.rebalance7p && game.publicPlayersState.length == 7) customGameSettings.deckState.fas = 11;
+		} else {
+			// 9-10 players
+			customGameSettings.fascistCount = 3;
+			customGameSettings.powers = ['investigate', 'investigate', 'election', 'bullet', 'bullet'];
+			if (game.rebalance9p2f && game.publicPlayersState.length == 9) customGameSettings.deckState.fas = 11;
+		}
+	}
+
 	const roles = [
 		{
 			cardName: 'hitler',
