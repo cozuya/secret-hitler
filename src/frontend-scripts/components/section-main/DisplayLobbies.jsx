@@ -81,13 +81,19 @@ const DisplayLobbies = props => {
 		let isVerifiedOnlyTooltip;
 		let eloMinimum;
 		let eloMinimumTooltip;
+		let customgameactive;
+		let customgameactiveTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
 			casualGameTooltip = 'Casual game - results do not count for wins or losses';
 		}
 
-		if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
+		if (game.isCustomGame) {
+			customgameactive = <i className="setting icon" />
+			customgameactiveTooltip = 'Custom Game';
+		}
+		else if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
 			// ugly but lazy
 			if (game.rebalance6p && game.rebalance7p && game.rebalance9p) {
 				rebalance = <div> R679 </div>;
@@ -180,6 +186,11 @@ const DisplayLobbies = props => {
 
 		return (
 			<div className="options-icons-container">
+				{game.isCustomGame && (
+					<span className="customgame" data-tooltip={customgameactiveTooltip} data-inverted="">
+						{customgameactive}
+					</span>
+				)}
 				{casualGame && (
 					<span data-tooltip={casualGameTooltip} data-inverted="">
 						{casualGame}

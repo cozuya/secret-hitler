@@ -1515,7 +1515,7 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row">
 						<div className="sixteen wide column">
-							<i className="big settings icon" />
+							<i className="big setting icon" />
 							<h4 className="ui header">Custom Game - Use a custom fascist track.</h4>
 							<div
 								className="ui fitted toggle checkbox"

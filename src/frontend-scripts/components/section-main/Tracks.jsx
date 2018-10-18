@@ -109,8 +109,16 @@ class Tracks extends React.Component {
 		let isVerifiedOnlyTooltip;
 		let eloMinimum;
 		let eloMinimumTooltip;
+		let customgameactive;
+		const customgameactiveTooltip = "Custom Game";
 
-		{
+
+		if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
+			customgameactive = (
+				<i className="setting icon" />
+			);
+		}
+		else {
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
 				? ((rebalance69p = <div> R679 </div>), (rebalance69pTooltip = 'Rebalanced 6, 7, & 9 player games'))
 				: game.rebalance6p && game.rebalance7p
@@ -194,6 +202,11 @@ class Tracks extends React.Component {
 
 		return (
 			<div className="options-icons-container">
+				{gameInfo.customGameSettings && gameInfo.customGameSettings.enabled &&
+					<span className="customgame">
+						<Popup inverted trigger={customgameactive} content={customgameactiveTooltip} />
+					</span>
+				}
 				{rebalance69p && (
 					<span className="rebalanced">
 						<Popup inverted trigger={rebalance69p} content={rebalance69pTooltip} />
