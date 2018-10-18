@@ -306,20 +306,42 @@ class Tracks extends React.Component {
 			
 			let powers = [];
 			let numFas = 0;
-			const hzStart = 3;
-			const vzPoint = 5;
-			
-			if (gameInfo.general.playerCount < 7) {
-				powers = ['None', 'None', 'Peek', 'Gun', 'Gun'];
-				numFas = 1;
-			}
-			else if (gameInfo.general.playerCount < 9) {
-				powers = ['None', 'Inv', 'Elect', 'Gun', 'Gun'];
-				numFas = 2;
+			let hzStart = 3;
+			let vzPoint = 5;
+			let hitKnowsFas = false;
+
+			if (gameInfo.customGameSettings.powers) {
+				// Only need to detect one property, either they're all there or none are.
+				powers = gameInfo.customGameSettings.powers.map(p => {
+					if (p == null) return 'None';
+					if (p == 'investigate') return 'Inv';
+					if (p == 'deckpeek') return 'Peek';
+					if (p == 'election') return 'Elect';
+					if (p == 'bullet') return 'Gun';
+	
+					console.log(`Unknown power: ${p}`);
+					return null;
+				});
+				numFas = gameInfo.customGameSettings.fascistCount;
+				hzStart = gameInfo.customGameSettings.hitlerZone;
+				vzPoint = gameInfo.customGameSettings.vetoZone;
+				hitKnowsFas = gameInfo.customGameSettings.hitKnowsFas;
 			}
 			else {
-				powers = ['Inv', 'Inv', 'Elect', 'Gun', 'Gun'];
-				numFas = 3;
+				// Should only happen before a game starts, but as a precaution typical settings are used.
+				if (gameInfo.general.playerCount < 7) {
+					powers = ['None', 'None', 'Peek', 'Gun', 'Gun'];
+					numFas = 1;
+					hitKnowsFas = true;
+				}
+				else if (gameInfo.general.playerCount < 9) {
+					powers = ['None', 'Inv', 'Elect', 'Gun', 'Gun'];
+					numFas = 2;
+				}
+				else {
+					powers = ['Inv', 'Inv', 'Elect', 'Gun', 'Gun'];
+					numFas = 3;
+				}
 			}
 			
 			const getHZ = pos => {
@@ -358,7 +380,7 @@ class Tracks extends React.Component {
 					<span style={{width:'228px', height:'11px', left:`${offX+220}px`, top:`${offY+186}px`, position:'absolute',
 													   'background-image':`url(../images/customtracks/fasTrack${numFas}fas.png)`}} />
 					<span style={{width:'228px', height:'11px', left:`${offX+220}px`, top:`${offY+196}px`, position:'absolute',
-													   'background-image':`url(../images/customtracks/fasTrack${(numFas>1)?'Multi':'Single'}${(numFas>1)?'Unknown':'Known'}.png)`}} />
+													   'background-image':`url(../images/customtracks/fasTrack${(numFas>1)?'Multi':'Single'}${hitKnowsFas?'Unknown':'Known'}.png)`}} />
 				</div>
 			);
 			
