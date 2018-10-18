@@ -573,8 +573,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 
 		if (!(data.customGameSettings.hitlerZone >= 1) || data.customGameSettings.hitlerZone > 5) return;
 		// Should we actually prevent VZ starting before HZ?
-		if (!data.customGameSettings.vetoZone || data.customGameSettings.vetoZone < data.customGameSettings.hitlerZone || data.customGameSettings.vetoZone > 5)
+		if (!data.customGameSettings.vetoZone || data.customGameSettings.vetoZone < data.customGameSettings.hitlerZone || data.customGameSettings.vetoZone > 5) {
 			return;
+		}
 
 		// Ensure that there is never a fas majority at the start.
 		// Custom games should probably require a fixed player count, which will be in playerCounts[0] regardless.
