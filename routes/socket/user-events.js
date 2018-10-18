@@ -584,8 +584,12 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
 		// Ensure standard victory conditions can be met for both teams.
-		if (!(data.customGameSettings.deckState.lib + data.customGameSettings.trackState.lib >= 5)) return;
-		if (!(data.customGameSettings.deckState.fas + data.customGameSettings.trackState.fas >= 6)) return;
+		if (!(data.customGameSettings.deckState.lib >= 5)) return;
+		if (!(data.customGameSettings.deckState.fas >= 6)) return;
+
+		// Roundabout way of checking for null/undefined but not 0.
+		if (!(data.customGameSettings.trackState.lib >= 0) || data.customGameSettings.trackState.lib > 4) return;
+		if (!(data.customGameSettings.trackState.fas >= 0) || data.customGameSettings.trackState.fas > 5) return;
 
 		// Need at least 13 cards (11 on track plus two left-overs) to ensure that the deck does not run out.
 		if (data.customGameSettings.deckState.lib + data.customGameSettings.deckState.fas < 13) return;
