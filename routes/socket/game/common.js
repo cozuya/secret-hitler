@@ -13,20 +13,20 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
 		if (game.customGameSettings.trackState.lib > 0) {
 			game.trackState.liberalPolicyCount = game.customGameSettings.trackState.lib;
 			_.range(0, game.customGameSettings.trackState.lib).forEach(num => {
-				game.trackState.enactedPolicies.append({
+				game.trackState.enactedPolicies.push({
 					cardBack: 'liberal',
 					isFlipped: true,
-					position: `liberal${num}`
+					position: `liberal${num + 1}`
 				});
 			});
 		}
 		if (game.customGameSettings.trackState.fas > 0) {
 			game.trackState.fascistPolicyCount = game.customGameSettings.trackState.fas;
 			_.range(0, game.customGameSettings.trackState.fas).forEach(num => {
-				game.trackState.enactedPolicies.append({
+				game.trackState.enactedPolicies.push({
 					cardBack: 'fascist',
 					isFlipped: true,
-					position: `fascist${num}`
+					position: `fascist${num + 1}`
 				});
 			});
 		}
