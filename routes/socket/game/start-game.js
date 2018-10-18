@@ -39,6 +39,7 @@ const beginGame = game => {
 			if (game.rebalance9p2f && game.publicPlayersState.length == 9) customGameSettings.deckState.fas = 11;
 		}
 	}
+	shufflePolicies(game, true);
 
 	const roles = [
 		{
@@ -541,10 +542,4 @@ module.exports = game => {
 	game.gameState.isTracksFlipped = true;
 	game.gameState.audioCue = '';
 	game.private.policies = [];
-
-	shufflePolicies(
-		game,
-		Boolean(game.private.seatedPlayers.length === 6) && game.general.rebalance6p,
-		Boolean(game.private.seatedPlayers.length === 9) && game.general.rebalance9p2f
-	);
 };

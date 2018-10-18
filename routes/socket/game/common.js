@@ -8,62 +8,38 @@ const _ = require('lodash');
  * @param {boolean} is6pRebalanceStart - whether or not 6p is rebalanced
  * @param {boolean} is9pRebalanceStart - whether or not 9p is rebalanced
  */
-const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceStart, is9pRebalanceStart) => {
+const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
+	if (isStart) {
+		game.trackState.enactedPolicies = [];
+		if (game.customGameSettings.trackState.lib > 0) {
+			game.trackState.liberalPolicyCount = game.customGameSettings.trackState.lib;
+			_.range(1, game.customGameSettings.trackState.lib).forEach(num => {
+				game.trackState.enactedPolicies.append({
+					cardBack: 'liberal',
+					isFlipped: true,
+					position: `liberal${num}`
+				});
+			});
+		}
+		if (game.customGameSettings.trackState.fas > 0) {
+			game.trackState.fascistPolicyCount = game.customGameSettings.trackState.fas;
+			_.range(1, game.customGameSettings.trackState.fas).forEach(num => {
+				game.trackState.enactedPolicies.append({
+					cardBack: 'fascist',
+					isFlipped: true,
+					position: `fascist${num}`
+				});
+			});
+		}
+	}
+
 	const count = _.countBy(game.private.policies);
 
 	game.private.policies = _.shuffle(
-		game.private.policies.concat(
-			_.range(
-				1,
-				(game.general.rebalance7p && game.private.seatedPlayers.length === 7
-					? 11
-					: game.general.rebalance9p2f && is9pRebalanceStart && game.private.seatedPlayers.length === 9
-						? 10
-						: 12) -
-					(game.trackState.fascistPolicyCount + (count.fascist || 0))
-			)
-				.map(num => 'fascist')
-				.concat(_.range(1, 7 - (game.trackState.liberalPolicyCount + (count.liberal || 0))).map(num => 'liberal'))
-		)
+		_.range(1, game.customGameSettings.deckState.lib - game.trackState.liberalPolicyCount)
+			.map(num => 'liberal')
+			.concat(_.range(1, game.customGameSettings.deckState.fas - game.trackState.fascistPolicyCount).map(num => 'fascist'))
 	);
-
-	if (is6pRebalanceStart) {
-		game.trackState.fascistPolicyCount = 1;
-		game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-		game.trackState.enactedPolicies = [
-			{
-				cardBack: 'fascist',
-				isFlipped: true,
-				position: 'fascist1'
-			}
-		];
-	}
-
-	// delete/comment below prior to deployment..
-
-	// game.trackState.fascistPolicyCount = 3;
-	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-	// game.private.policies.splice(game.private.policies.findIndex(policy => policy === 'fascist'), 1);
-	// game.trackState.enactedPolicies = [
-	// 	{
-	// 		cardBack: 'fascist',
-	// 		isFlipped: true,
-	// 		position: 'fascist1'
-	// 	},
-	// 	{
-	// 		cardBack: 'fascist',
-	// 		isFlipped: true,
-	// 		position: 'fascist2'
-	// 	},
-	// 	{
-	// 		cardBack: 'fascist',
-	// 		isFlipped: true,
-	// 		position: 'fascist3'
-	// 	}
-	// ];
-
-	// delete/comment above
 
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
 
