@@ -1434,63 +1434,18 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		const aemForce = /forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)/i.exec(chat);
 		if (aemForce) {
 			if (player) {
-				if (!player.gameChats) {
-					player.gameChats = [];
-				}
-				player.gameChats.push({
-					timestamp: new Date(),
-					gameChat: true,
-					chat: [
-						{
-							text: 'You cannot force a vote whilst playing.',
-							type: 'hitler'
-						}
-					]
-				});
-				sendPlayerChatUpdate(game, data);
+				socket.emit('sendAlert', 'You cannot force a vote whilst playing.');
 				return;
 			}
 			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
 			const voteString = aemForce[2].toLowerCase();
 			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
 			if (!affectedPlayer) {
-				player.gameChats.push({
-					timestamp: new Date(),
-					gameChat: true,
-					chat: [
-						{
-							text: 'There is no seat ',
-							type: 'hitler'
-						},
-						{
-							text: `{${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: '.',
-							type: 'hitler'
-						}
-					]
-				});
-				sendPlayerChatUpdate(game, data);
+				socket.emit('sendAlert', `There is no seat {${affectedPlayerNumber + 1}}.`);
 				return;
 			}
 			if (affectedPlayer.voteStatus.hasVoted) {
-				player.gameChats.push({
-					timestamp: new Date(),
-					gameChat: true,
-					chat: [
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' has already voted.',
-							type: 'hitler'
-						}
-					]
-				});
-				sendPlayerChatUpdate(game, data);
+				socket.emit('sendAlert', `${affectedPlayer.userName} {${affectedPlayerNumber + 1}} has already voted.`);
 				return;
 			}
 			let vote = false;
