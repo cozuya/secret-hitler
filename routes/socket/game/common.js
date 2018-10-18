@@ -88,7 +88,7 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, is6pRebalanceSt
 module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const { experiencedMode } = game.general;
 
-	if (game.trackState.fascistPolicyCount >= 5) {
+	if (game.trackState.fascistPolicyCount >= game.customGameSettings.vetoZone) {
 		game.gameState.isVetoEnabled = true;
 	}
 

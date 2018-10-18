@@ -380,7 +380,7 @@ class Tracks extends React.Component {
 					<span style={{width:'228px', height:'11px', left:`${offX+220}px`, top:`${offY+186}px`, position:'absolute',
 													   'background-image':`url(../images/customtracks/fasTrack${numFas}fas.png)`}} />
 					<span style={{width:'228px', height:'11px', left:`${offX+220}px`, top:`${offY+196}px`, position:'absolute',
-													   'background-image':`url(../images/customtracks/fasTrack${(numFas>1)?'Multi':'Single'}${hitKnowsFas?'Unknown':'Known'}.png)`}} />
+													   'background-image':`url(../images/customtracks/fasTrack${(numFas>1)?'Multi':'Single'}${hitKnowsFas?'Known':'Unknown'}.png)`}} />
 				</div>
 			);
 			
