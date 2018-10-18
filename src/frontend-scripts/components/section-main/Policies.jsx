@@ -34,8 +34,7 @@ const Policies = props => {
 		});
 	};
 	const renderDiscard = () => {
-		if (!gameInfo.customGameSettings) return;
-		const count = (gameInfo.customGameSettings.deckState.lib + gameInfo.customGameSettings.deckState.fas) - (gameInfo.gameState.undrawnPolicyCount + gameInfo.trackState.liberalPolicyCount + gameInfo.trackState.fascistPolicyCount);
+		const count = (gameInfo.customGameSettings.enabled ? (gameInfo.customGameSettings.deckState.lib + gameInfo.customGameSettings.deckState.fas) : 17) - (gameInfo.gameState.undrawnPolicyCount + gameInfo.trackState.liberalPolicyCount + gameInfo.trackState.fascistPolicyCount);
 
 		return _.range(1, 10).map(num => {
 			let classes = `policy-card policy-discard policy-card-${num}`;

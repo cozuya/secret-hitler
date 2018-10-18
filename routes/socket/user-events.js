@@ -562,15 +562,14 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	// console.log(JSON.stringify(data.customGameSettings));
-
 	if (data.customGameSettings && data.customGameSettings.enabled) {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
 		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet'];
 		if (!data.customGameSettings.powers || data.customGameSettings.powers.length != 5) return;
 		for (let a = 0; a < 5; a++) {
-			if (data.customGameSettings.powers[a] && !validPowers.includes(data.customGameSettings.powers[a])) return;
+			if (data.customGameSettings.powers[a] == '' || data.customGameSettings.powers[a] == 'null') data.customGameSettings.powers[a] = null;
+			else if (data.customGameSettings.powers[a] && !validPowers.includes(data.customGameSettings.powers[a])) return;
 		}
 
 		if (!(data.customGameSettings.hitlerZone >= 1) || data.customGameSettings.hitlerZone > 5) return;
