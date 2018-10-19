@@ -1297,10 +1297,10 @@ export default class Creategame extends React.Component {
 							<Range
 								onChange={this.eloSliderChange}
 								min={1675}
-								max={2300}
+								max={2000}
 								defaultValue={[1675]}
 								value={this.state.eloSliderValue}
-								marks={{ 1675: '1675', 1800: '1800', 1900: '1900', 2000: '2000', 2300: '2300' }}
+								marks={{1675: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' }}
 							/>
 						</div>
 					)}
@@ -1630,7 +1630,7 @@ export default class Creategame extends React.Component {
 									value={this.state.timedSliderValue}
 									min={2}
 									max={600}
-									marks={{ 2: '2 seconds', 120: '2 minutes', 300: '5 minutes', 600: '10 minutes' }}
+									marks={{ 2: '2 seconds', 30: '', 60: '', 90: '', 120: '2 minutes', 180: '', 240: '', 300: '5 minutes', 600: '10 minutes' }}
 								/>
 							</div>
 						</div>
@@ -1912,11 +1912,11 @@ export default class Creategame extends React.Component {
 								<h4 className="ui header">Fascist policies</h4>
 								<Range
 									min={10}
-									max={16}
+									max={19}
 									defaultValue={[12]}
 									onChange={this.sliderDeckFas.bind(this)}
 									value={[this.state.customGameSettings.deckState.fas]}
-									marks={{10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16'}}
+									marks={{10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16', 17: '', 18: '', 19: '19'}}
 								/>
 							</div>
 						</div>

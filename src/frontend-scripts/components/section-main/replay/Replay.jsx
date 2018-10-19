@@ -158,14 +158,14 @@ const Replay = ({ replay, isSmall, to, replayChats, allEmotes}) => {
 	gameInfo.general.uid = game.id;
 
 	return (
-		<section className={classnames({ small: isSmall, big: !isSmall }, 'game')}>
+		<section className={classnames({ small: false/*isSmall*/, big: true /*!isSmall*/ }, 'game')}>
 			<div className="ui grid">
-				<div className="left-side eight wide column">
+				<div className="left-side nine wide column">
 					<ReplayOverlay key="replayoverlay" snapshot={snapshot} />
 					<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
-					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
+					<Tracks gameInfo={gameInfo} userInfo={userInfo} replayCustomSettings={(game && game.summary && game.summary.customGameSettings) || null} />
 				</div>
-				<div className="right-side eight wide column">
+				<div className="right-side seven wide column">
 					{replayChats.length ? (
 						<Gamechat
 							isReplay={true}
