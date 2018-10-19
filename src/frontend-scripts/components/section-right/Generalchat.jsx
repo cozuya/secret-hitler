@@ -144,6 +144,7 @@ export default class Generalchat extends React.Component {
 		let timestamp;
 		const { userInfo, userList, generalChats } = this.props;
 		const time = new Date().getTime();
+		hi();
 
 		/**
 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
@@ -188,7 +189,9 @@ export default class Generalchat extends React.Component {
 									{`${chat.userName}: `}
 								</a>
 							</span>
-							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>{processEmotes(chat.chat, isMod, this.props.allEmotes)}</span>
+							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>
+								{processEmotes(chat.chat, isMod, this.props.allEmotes)}
+							</span>
 						</div>
 					);
 			  })
@@ -231,12 +234,7 @@ export default class Generalchat extends React.Component {
 							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
 							onClick={this.handleChatLockClick}
 						/>
-						{userInfo &&
-							userInfo.userName && (
-								<img
-									onClick={discordIconClick}
-								/>
-							)}
+						{userInfo && userInfo.userName && <img onClick={discordIconClick} />}
 					</div>
 				</section>
 				<section className="segment chats">
