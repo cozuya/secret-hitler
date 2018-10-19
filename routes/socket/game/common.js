@@ -5,63 +5,6 @@ const _ = require('lodash');
 
 /**
  * @param {object} game - game to act on.
- * @param {boolean} experiencedMode - true if speed mode is on.
- */
-module.exports.failedElection = (game, experiencedMode) => {
-	game.trackState.electionTrackerCount++;
-
-	if (game.trackState.electionTrackerCount >= 3) {
-		const chat = {
-			timestamp: new Date(),
-			gameChat: true,
-			chat: [
-				{
-					text: 'The third consecutive election has failed and the top policy is enacted.'
-				}
-			]
-		};
-
-		game.gameState.previousElectedGovernment = [];
-
-		if (!game.general.disableGamechat) {
-			ame.private.seatedPlayers.forEach(player => {
-				player.gameChats.push(chat);
-			});
-
-			game.private.unSeatedGameChats.push(chat);
-		}
-
-		if (!game.gameState.undrawnPolicyCount) {
-			shufflePolicies(game);
-		}
-
-		game.gameState.undrawnPolicyCount--;
-		setTimeout(() => {
-			enactPolicy(game, game.private.policies.shift());
-		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
-	} else {
-		if (game.general.timedMode) {
-			game.gameState.timedModeEnabled = true;
-			game.private.timerId = setTimeout(() => {
-				if (game.gameState.timedModeEnabled && game.gameState.phase === 'selectingChancellor') {
-					const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
-
-					game.gameState.pendingChancellorIndex = null;
-					game.gameState.timedModeEnabled = false;
-
-					selectChancellor(null, { user: game.private.seatedPlayers[game.gameState.presidentIndex].userName }, game, { chancellorIndex: chancellorIndex });
-				}
-			}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
-		}
-
-		setTimeout(() => {
-			module.exports.startElection(game);
-		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
-	}
-};
-
-/**
- * @param {object} game - game to act on.
  * @param {boolean} isStart - true if this is the initial shuffle.
  */
 const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
@@ -257,4 +200,61 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			  ];
 
 	sendInProgressGameUpdate(game);
+};
+
+/**
+ * @param {object} game - game to act on.
+ * @param {boolean} experiencedMode - true if speed mode is on.
+ */
+module.exports.failedElection = (game, experiencedMode) => {
+	game.trackState.electionTrackerCount++;
+
+	if (game.trackState.electionTrackerCount >= 3) {
+		const chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'The third consecutive election has failed and the top policy is enacted.'
+				}
+			]
+		};
+
+		game.gameState.previousElectedGovernment = [];
+
+		if (!game.general.disableGamechat) {
+			ame.private.seatedPlayers.forEach(player => {
+				player.gameChats.push(chat);
+			});
+
+			game.private.unSeatedGameChats.push(chat);
+		}
+
+		if (!game.gameState.undrawnPolicyCount) {
+			shufflePolicies(game);
+		}
+
+		game.gameState.undrawnPolicyCount--;
+		setTimeout(() => {
+			enactPolicy(game, game.private.policies.shift());
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
+	} else {
+		if (game.general.timedMode) {
+			game.gameState.timedModeEnabled = true;
+			game.private.timerId = setTimeout(() => {
+				if (game.gameState.timedModeEnabled && game.gameState.phase === 'selectingChancellor') {
+					const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
+
+					game.gameState.pendingChancellorIndex = null;
+					game.gameState.timedModeEnabled = false;
+
+					selectChancellor(null, { user: game.private.seatedPlayers[game.gameState.presidentIndex].userName }, game, { chancellorIndex: chancellorIndex });
+				}
+			}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
+		}
+
+		setTimeout(() => {
+			module.exports.startElection(game);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
+	}
 };

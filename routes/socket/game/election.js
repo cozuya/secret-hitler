@@ -1,6 +1,5 @@
 const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../util');
 const { startElection, shufflePolicies, failedElection } = require('./common');
-const { selectChancellor } = require('./election-util');
 const { sendGameList } = require('../user-requests');
 const {
 	specialElection,
