@@ -2318,7 +2318,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
  * @param {object} data - from socket emit.
  */
 module.exports.handlePlayerReport = (passport, data) => {
-	const user = userList.find(u => data.userName === passport.user);
+	console.log(`Report request from ${passport.user} (${data.userName}).`);
+	const user = userList.find(u => u.userName === passport.user);
+	console.log(`User in list: ${user != null}`);
 
 	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2)) {
 		return;
@@ -2340,8 +2342,6 @@ module.exports.handlePlayerReport = (passport, data) => {
 		}`
 	});
 
-	console.log(`Attempting to report ${data.reportedPlayer} from ${passport.user} at ${playerReport.date}.`);
-
 	const options = {
 		hostname: 'discordapp.com',
 		path: process.env.DISCORDURL,
@@ -2358,7 +2358,6 @@ module.exports.handlePlayerReport = (passport, data) => {
 		if (!game.reportCounts) game.reportCounts = {};
 		if (!game.reportCounts[passport.user]) game.reportCounts[passport.user] = 0;
 		if (game.reportCounts[passport.user] >= 4) {
-			console.log('Report failed: User reported 4 times this game.');
 			return;
 		}
 		game.reportCounts[passport.user]++;
@@ -2376,7 +2375,6 @@ module.exports.handlePlayerReport = (passport, data) => {
 			console.log(err, 'Failed to save player report');
 			return;
 		}
-		console.log('Report successful.');
 
 		Account.find({ staffRole: { $exists: true } }).then(accounts => {
 			accounts.forEach(account => {
