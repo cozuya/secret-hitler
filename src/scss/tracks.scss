@@ -170,6 +170,23 @@
 			font-size: 30px;
 			cursor: pointer;
 		}
+		// custom image stuff
+		.custom-fastrack-base {
+			background-image: url('../../public/images/customtracks/fasTrack.png');
+		}
+		.custom-fastrack-powerslot {
+			width: 90px;
+			height: 120px;
+			left: 0px;
+			top: 0px;
+			position: absolute;
+		}
+		.custom-fastrack-vetozone {
+			background-image: url('../../public/images/customtracks/vetoZone.png');
+		}
+		.custom-fastrack-vetozone-light {
+			background-image: url('../../public/images/customtracks/vetoZoneLight.png');
+		}
 	}
 }
 

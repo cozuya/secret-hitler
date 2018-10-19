@@ -36,6 +36,7 @@ public/styles/style-light.css
 public/styles/style-web.css
 public/styles/style-main.css
 public/leaderboardData.json
+public/public/*
 coverage/*
 .idea/
 dump/

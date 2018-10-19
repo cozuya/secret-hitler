@@ -5,21 +5,22 @@ const { List } = require('immutable');
 const { objectContains } = require('../../utils');
 
 module.exports = class GameSummaryBuilder {
-	constructor(uid, date, gameSetting, players, libElo, fasElo, logs = List()) {
+	constructor(uid, date, gameSetting, customGameSettings, players, libElo, fasElo, logs = List()) {
 		this._id = uid;
 		this.date = date;
 		this.gameSetting = gameSetting;
+		this.customGameSettings = customGameSettings;
 		this.players = players;
 		this.logs = logs;
 		this.libElo = libElo;
 		this.fasElo = fasElo;
 
-		debug('%O', { uid, date, gameSetting, players, libElo, fasElo, logs: logs.toArray() });
+		debug('%O', { uid, date, gameSetting, customGameSettings, players, libElo, fasElo, logs: logs.toArray() });
 	}
 
 	publish() {
-		const { _id, date, gameSetting, players, libElo, fasElo, logs } = this;
-		return new GameSummary({ _id, date, gameSetting, players, libElo, fasElo, logs: logs.toArray() });
+		const { _id, date, gameSetting, customGameSettings, players, libElo, fasElo, logs } = this;
+		return new GameSummary({ _id, date, gameSetting, customGameSettings, players, libElo, fasElo, logs: logs.toArray() });
 	}
 
 	// (update: Object, targetAttrs: (?) Object) => GameSummaryBuilder
@@ -37,10 +38,10 @@ module.exports = class GameSummaryBuilder {
 			.push(nextTarget)
 			.concat(logs.slice(targetIndex + 1));
 
-		return new GameSummaryBuilder(this._id, this.date, this.gameSetting, this.players, this.libElo, this.fasElo, nextLogs);
+		return new GameSummaryBuilder(this._id, this.date, this.gameSetting, this.customGameSettings, this.players, this.libElo, this.fasElo, nextLogs);
 	}
 
 	nextTurn() {
-		return new GameSummaryBuilder(this._id, this.date, this.gameSetting, this.players, this.libElo, this.fasElo, this.logs.push({}));
+		return new GameSummaryBuilder(this._id, this.date, this.gameSetting, this.customGameSettings, this.players, this.libElo, this.fasElo, this.logs.push({}));
 	}
 };

@@ -39,21 +39,63 @@ export default class Creategame extends React.Component {
 			isEloLimited: false,
 			customGameSettings: {
 				enabled: false,
-				powers: [false, 'investigate', 'election', 'bullet', 'bullet'], // last "power" is always a fas victory
-				hitlerZone: 3,
-				vetoZone: 5,
-				fascistCount: 2, // does not include hit
-				hitlerCanSeeFascists: true,
-				deckState: { lib: 6, fas: 11 }, // does not include track cards, which will be added server-side to make the deck shuffle code work
+				// Valid powers: investigate, deckpeek, election, bullet; null for no power
+				powers: [null, 'investigate', 'election', 'bullet', 'bullet'], // last "power" is always a fas victory
+				hitlerZone: 3, // 1-5
+				vetoZone: 5, // 1-5, must be larger than fas track state
+				fascistCount: 2, // 1-3, does not include hit
+				hitKnowsFas: false,
+				deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 				trackState: { lib: 0, fas: 0 }
 			}
 		};
+	}
+
+	powerPicker(slot) {
+		const name = () => {
+			if (slot == 0) return "First Power";
+			if (slot == 1) return "Second Power";
+			if (slot == 2) return "Third Power";
+			if (slot == 3) return "Fourth Power";
+			return "Fifth Power";
+		};
+		return (
+			<div ref={select => (this[`power${slot+1}`] = select)} className={`ui search selection dropdown power${slot+1}val`} style={{minWidth:'11em'}}>
+				<h4 className="ui header">{name()}</h4>
+				<input type="hidden" name={`power${slot+1}val`} />
+				<i className="dropdown icon" />
+				<div className="default text">No Power</div>
+				<div className="menu">
+					<div className="item" data-value="null">
+						No Power
+					</div>
+					<div className="item" data-value="investigate">
+						Investigate
+					</div>
+					<div className="item" data-value="deckpeek">
+						Deck Peek
+					</div>
+					<div className="item" data-value="election">
+						Special Election
+					</div>
+					<div className="item" data-value="bullet">
+						Bullet
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	componentDidMount() {
 		const self = this;
 
 		$(this._select).dropdown();
+
+		$(this.power1).dropdown();
+		$(this.power2).dropdown();
+		$(this.power3).dropdown();
+		$(this.power4).dropdown();
+		$(this.power5).dropdown();
 
 		$(this.verified).checkbox({
 			onChecked() {
@@ -168,9 +210,11 @@ export default class Creategame extends React.Component {
 				self.setState({ casualgame: true });
 			},
 			onUnchecked() {
-				if (!(self.state.casualgame && self.state.timedSliderValue[0] < 29)) {
-					self.setState({ casualgame: false });
+				if ((self.state.timedMode && self.state.timedSliderValue[0] < 30) || self.state.customGameSettings.enabled) {
+					$(this.casualgame).attr('checked', true);
+					self.setState({ casualgame: true });
 				}
+				else self.setState({ casualgame: false });
 			}
 		});
 
@@ -180,6 +224,29 @@ export default class Creategame extends React.Component {
 			},
 			onUnchecked() {
 				self.setState({ timedMode: false });
+			}
+		});
+
+		$(this.customgame).checkbox({
+			onChecked() {
+				self.state.customGameSettings.enabled = true;
+				self.setState({});
+				if (!self.state.casualgame) $(this.casualgame).click();
+			},
+			onUnchecked() {
+				self.state.customGameSettings.enabled = false;
+				self.setState({});
+			}
+		});
+		
+		$(this.hitseesfas).checkbox({
+			onChecked() {
+				self.state.customGameSettings.hitKnowsFas = true;
+				self.setState({});
+			},
+			onUnchecked() {
+				self.state.customGameSettings.hitKnowsFas = false;
+				self.setState({});
 			}
 		});
 	}
@@ -245,6 +312,20 @@ export default class Creategame extends React.Component {
 				privatePassword: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
 			};
+			if (data.customGameSettings && data.customGameSettings.enabled) {
+				data.customGameSettings.powers[0] = $creategame.find('div.power1val input').val();
+				data.customGameSettings.powers[1] = $creategame.find('div.power2val input').val();
+				data.customGameSettings.powers[2] = $creategame.find('div.power3val input').val();
+				data.customGameSettings.powers[3] = $creategame.find('div.power4val input').val();
+				data.customGameSettings.powers[4] = $creategame.find('div.power5val input').val();
+				data.customGameSettings.trackState.lib = $creategame.find('div.libtrack div.rc-slider-handle').attr('aria-valuenow') * 1;
+				data.customGameSettings.trackState.fas = $creategame.find('div.fastrack div.rc-slider-handle').attr('aria-valuenow') * 1;
+				data.customGameSettings.deckState.lib = $creategame.find('div.libpolicies div.rc-slider-handle').attr('aria-valuenow') * 1;
+				data.customGameSettings.deckState.fas = $creategame.find('div.faspolicies div.rc-slider-handle').attr('aria-valuenow') * 1;
+				data.customGameSettings.hitlerZone = $creategame.find('div.hitlerzone div.rc-slider-handle').attr('aria-valuenow') * 1;
+				data.customGameSettings.vetoZone = $creategame.find('div.vetozone div.rc-slider-handle').attr('aria-valuenow') * 1;
+				data.customGameSettings.fascistCount = $creategame.find('div.fascount div.rc-slider-handle').attr('aria-valuenow') * 1;
+			}
 
 			if (this.state.isTourny) {
 				game.general.tournyInfo = {
@@ -1189,6 +1270,11 @@ export default class Creategame extends React.Component {
 				<div className="ui header">
 					<div className="content">Create a new game</div>
 				</div>
+				<div className="ui grid centered footer">
+					<div onClick={this.createNewGame} className="ui button primary">
+						Create game
+					</div>
+				</div>
 				<div className="ui grid">
 					<div className="row">
 						<div className="four wide column">
@@ -1427,7 +1513,127 @@ export default class Creategame extends React.Component {
 								</div>
 							)}
 					</div>
+					<div className="row">
+						<div className="sixteen wide column">
+							<i className="big setting icon" />
+							<h4 className="ui header">Custom Game - Use a custom fascist track.</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.customgame = c;
+								}}
+							>
+								<input type="checkbox" name="customgame" defaultChecked={false} />
+							</div>
+						</div>
+					</div>
+					<div className="row">
+						<div className="wide column" style={{width:'20%'}}>
+							{this.powerPicker(0)}
+						</div>
+						<div className="wide column" style={{width:'20%'}}>
+							{this.powerPicker(1)}
+						</div>
+						<div className="wide column" style={{width:'20%'}}>
+							{this.powerPicker(2)}
+						</div>
+						<div className="wide column" style={{width:'20%'}}>
+							{this.powerPicker(3)}
+						</div>
+						<div className="wide column" style={{width:'20%'}}>
+							{this.powerPicker(4)}
+						</div>
+					</div>
+					<div className="row">
+						<div className="four wide column">
+							<div>
+								<h4 className="ui header">Number of fascists</h4>
+								<Range className="fascount"
+									min={1}
+									max={3}
+									defaultValue={[2]}
+									marks={{1: '1', 2: '2', 3: '3'}}
+								/>
+							</div>
+						</div>
+						<div className="four wide column">
+							<h4 className="ui header">Hitler sees fascists</h4>
+							<div className="ui fitted toggle checkbox"
+								ref={c => {
+									this.hitseesfas = c;
+								}}>
+								<input type="checkbox" name="hitseesfas" defaultChecked={false} />
+							</div>
+						</div>
+						<div className="four wide column">
+							<div>
+								<h4 className="ui header">Hitler Zone</h4>
+								<Range className="hitlerzone"
+									min={1}
+									max={5}
+									defaultValue={[3]}
+									marks={{1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}}
+								/>
+							</div>
+						</div>
+						<div className="four wide column">
+							<div>
+								<h4 className="ui header">Veto Zone</h4>
+								<Range className="vetozone"
+									min={1}
+									max={5}
+									defaultValue={[5]}
+									marks={{1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}}
+								/>
+							</div>
+						</div>
+					</div>
+					<div className="row">
+						<div className="four wide column">
+							<div>
+								<h4 className="ui header">Liberal policies</h4>
+								<Range className="libpolicies"
+									min={5}
+									max={8}
+									defaultValue={[6]}
+									marks={{5: '5', 6: '6', 7: '7', 8: '8'}}
+								/>
+							</div>
+						</div>
+						<div className="four wide column">
+							<div>
+								<h4 className="ui header">Fascist policies</h4>
+								<Range className="faspolicies"
+									min={10}
+									max={14}
+									defaultValue={[12]}
+									marks={{10: '10', 11: '11', 12: '12', 13: '13', 14: '14'}}
+								/>
+							</div>
+						</div>
+						<div className="four wide column">
+							<h4 className="ui header">Starting lib policies</h4>
+							<Range className="libtrack"
+								min={0}
+								max={4}
+								defaultValue={[0]}
+								marks={{0: '0', 1: '1', 2: '2', 3: '3', 4: '4'}}
+							/>
+						</div>
+						<div className="four wide column">
+							<div>
+								<h4 className="ui header">Starting fas policies</h4>
+								<Range className="fastrack"
+									min={0}
+									max={5}
+									defaultValue={[0]}
+									marks={{0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}}
+								/>
+							</div>
+						</div>
+					</div>
 				</div>
+				<br/><br/><br/>
 
 				<div className="ui grid centered footer">
 					<div onClick={this.createNewGame} className="ui button primary">

@@ -1239,7 +1239,16 @@ module.exports.selectVoting = (passport, game, data) => {
 					game.private.unSeatedGameChats.push(chat);
 				}
 
-				if (game.trackState.fascistPolicyCount > 2 && game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler') {
+				if (
+					game.trackState.fascistPolicyCount >= game.customGameSettings.hitlerZone &&
+					game.private.seatedPlayers[chancellorIndex].role.cardName === 'hitler'
+				) {
+					const getNumberText = val => {
+						if (val == 1) return '1st';
+						if (val == 2) return '2nd';
+						if (val == 3) return '3rd';
+						return `${val}th`;
+					};
 					const chat = {
 						timestamp: new Date(),
 						gameChat: true,
@@ -1249,7 +1258,7 @@ module.exports.selectVoting = (passport, game, data) => {
 								type: 'hitler'
 							},
 							{
-								text: ' has been elected chancellor after the 3rd fascist policy has been enacted.'
+								text: ` has been elected chancellor after the ${getNumberText(game.customGameSettings.hitlerZone)} fascist policy has been enacted.`
 							}
 						]
 					};

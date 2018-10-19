@@ -5,6 +5,9 @@ const { newStaff } = require('./models');
 const AEM_ALTS = (module.exports.AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy', 'Grim', 'TermsOfUse', 'DownWithMeta', 'tesla', 'SheepManu', 'Manu1234']);
 
 module.exports.makeReport = (text, game, gameEnd) => {
+	// Custom games are strictly casual and for fun, writing proper report logic to account for it would be a massive pain.
+	if (!game || game.customGameSettings.enabled) return;
+
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
 		const staffUserNames = accounts
 			.filter(account => account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin')

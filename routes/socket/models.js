@@ -3,7 +3,7 @@ const Account = require('../../models/account');
 
 const fs = require('fs');
 let emotes = [];
-fs.readdirSync('@/../public/images/emotes', { withFileTypes: true }).forEach(file => {
+fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
 	if (file.endsWith('.png')) emotes[emotes.length] = file.substring(0, file.length - 4);
 });
 module.exports.emoteList = emotes;
@@ -179,7 +179,8 @@ module.exports.formattedGameList = () => {
 		privateOnly: games[gameName].general.privateOnly || undefined,
 		private: games[gameName].general.private || undefined,
 		uid: games[gameName].general.uid,
-		rainbowgame: games[gameName].general.rainbowgame || undefined
+		rainbowgame: games[gameName].general.rainbowgame || undefined,
+		isCustomGame: games[gameName].customGameSettings.enabled
 	}));
 };
 
