@@ -3,7 +3,7 @@ const Account = require('../../models/account');
 
 const fs = require('fs');
 let emotes = [];
-fs.readdirSync('@/../public/images/emotes', { withFileTypes: true }).forEach(file => {
+fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
 	if (file.endsWith('.png')) emotes[emotes.length] = file.substring(0, file.length - 4);
 });
 module.exports.emoteList = emotes;
