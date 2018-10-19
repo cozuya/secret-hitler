@@ -95,35 +95,35 @@ export default class Creategame extends React.Component {
 			onChange(val) {
 				self.state.customGameSettings.powers[0] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({});
+				self.setState({casualgame:true});
 			}
 		});
 		$(this.power2).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[1] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({});
+				self.setState({casualgame:true});
 			}
 		});
 		$(this.power3).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[2] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({});
+				self.setState({casualgame:true});
 			}
 		});
 		$(this.power4).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[3] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({});
+				self.setState({casualgame:true});
 			}
 		});
 		$(this.power5).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[4] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({});
+				self.setState({casualgame:true});
 			}
 		});
 

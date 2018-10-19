@@ -606,12 +606,59 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 					completeGame(game, 'liberal');
 				}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 			} else {
-				publicSelectedPlayer.cardStatus.cardDisplayed = false;
-				sendInProgressGameUpdate(game, true);
-				setTimeout(() => {
-					game.trackState.electionTrackerCount = 0;
-					startElection(game);
-				}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+				let libAlive = false;
+				seatedPlayers.forEach(p => {
+					if (p.role.cardName == 'liberal' && !p.isDead) libAlive = true;
+				});
+				if (!libAlive) {
+					const chat = {
+						timestamp: new Date(),
+						gameChat: true,
+						chat: [
+							{ text: 'All ' },
+							{
+								text: 'liberals',
+								type: 'liberal'
+							},
+							{ text: '  have been executed.' }
+						]
+					};
+
+					publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
+					publicSelectedPlayer.cardStatus.isFlipped = true;
+
+					seatedPlayers.forEach((player, i) => {
+						player.gameChats.push(chat);
+					});
+
+					game.private.unSeatedGameChats.push(chat);
+
+					setTimeout(() => {
+						game.publicPlayersState.forEach((player, i) => {
+							player.cardStatus.cardFront = 'secretrole';
+							player.cardStatus.cardDisplayed = true;
+							player.cardStatus.cardBack = seatedPlayers[i].role;
+						});
+						game.gameState.audioCue = 'hitlerShot';
+						sendInProgressGameUpdate(game);
+					}, process.env.NODE_ENV === 'development' ? 100 : 1000);
+
+					setTimeout(() => {
+						game.publicPlayersState.forEach(player => {
+							player.cardStatus.isFlipped = true;
+						});
+
+						game.gameState.audioCue = '';
+						completeGame(game, 'fascist');
+					}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+				} else {
+					publicSelectedPlayer.cardStatus.cardDisplayed = false;
+					sendInProgressGameUpdate(game, true);
+					setTimeout(() => {
+						game.trackState.electionTrackerCount = 0;
+						startElection(game);
+					}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+				}
 			}
 		}, process.env.NODE_ENV === 'development' ? 100 : 4000);
 	}

@@ -5,6 +5,63 @@ const _ = require('lodash');
 
 /**
  * @param {object} game - game to act on.
+ * @param {boolean} experiencedMode - true if speed mode is on.
+ */
+module.exports.failedElection = (game, experiencedMode) => {
+	game.trackState.electionTrackerCount++;
+
+	if (game.trackState.electionTrackerCount >= 3) {
+		const chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'The third consecutive election has failed and the top policy is enacted.'
+				}
+			]
+		};
+
+		game.gameState.previousElectedGovernment = [];
+
+		if (!game.general.disableGamechat) {
+			ame.private.seatedPlayers.forEach(player => {
+				player.gameChats.push(chat);
+			});
+
+			game.private.unSeatedGameChats.push(chat);
+		}
+
+		if (!game.gameState.undrawnPolicyCount) {
+			shufflePolicies(game);
+		}
+
+		game.gameState.undrawnPolicyCount--;
+		setTimeout(() => {
+			enactPolicy(game, game.private.policies.shift());
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
+	} else {
+		if (game.general.timedMode) {
+			game.gameState.timedModeEnabled = true;
+			game.private.timerId = setTimeout(() => {
+				if (game.gameState.timedModeEnabled && game.gameState.phase === 'selectingChancellor') {
+					const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
+
+					game.gameState.pendingChancellorIndex = null;
+					game.gameState.timedModeEnabled = false;
+
+					selectChancellor(null, { user: game.private.seatedPlayers[game.gameState.presidentIndex].userName }, game, { chancellorIndex: chancellorIndex });
+				}
+			}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
+		}
+
+		setTimeout(() => {
+			module.exports.startElection(game);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
+	}
+};
+
+/**
+ * @param {object} game - game to act on.
  * @param {boolean} isStart - true if this is the initial shuffle.
  */
 const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
@@ -104,6 +161,39 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const { seatedPlayers } = game.private; // eslint-disable-line one-var
 	const { presidentIndex, previousElectedGovernment } = game.gameState;
 	const pendingPresidentPlayer = seatedPlayers[presidentIndex];
+
+	let hasValidOption =
+		pendingPresidentPlayer.playersState.filter(
+			(player, index) =>
+				seatedPlayers[index] &&
+				!seatedPlayers[index].isDead &&
+				(index !== presidentIndex && (game.general.livingPlayerCount > 5 ? !previousElectedGovernment.includes(index) : previousElectedGovernment[1] !== index))
+		).length > 0;
+	if (!hasValidOption) {
+		if (!game.general.disableGamechat) {
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: 'President '
+					},
+					{
+						text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${pendingPresidentPlayer.userName} {${presidentIndex + 1}}`,
+						type: 'player'
+					},
+					{
+						text: ' has no options for Chancellor and was skipped.'
+					}
+				]
+			};
+			seatedPlayers.forEach(player => {
+				player.gameChats.push(chat);
+			});
+			game.private.unSeatedGameChats.push(chat);
+		}
+		module.exports.failedElection(game, experiencedMode);
+	}
 
 	game.general.electionCount++;
 	sendGameList();
