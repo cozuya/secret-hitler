@@ -489,7 +489,7 @@ class Tracks extends React.Component {
 
 						<span
 							style={{
-								width: '228px',
+								width: '227px',
 								height: '11px',
 								left: `${offX + 220}px`,
 								top: `${offY + 186}px`,
@@ -499,7 +499,7 @@ class Tracks extends React.Component {
 						/>
 						<span
 							style={{
-								width: '228px',
+								width: '227px',
 								height: '11px',
 								left: `${offX + 220}px`,
 								top: `${offY + 196}px`,
