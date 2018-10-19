@@ -94,30 +94,35 @@ export default class Creategame extends React.Component {
 		$(this.power1).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[0] = val;
+				self.state.customGameSettings.enabled = true;
 				self.setState({});
 			}
 		});
 		$(this.power2).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[1] = val;
+				self.state.customGameSettings.enabled = true;
 				self.setState({});
 			}
 		});
 		$(this.power3).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[2] = val;
+				self.state.customGameSettings.enabled = true;
 				self.setState({});
 			}
 		});
 		$(this.power4).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[3] = val;
+				self.state.customGameSettings.enabled = true;
 				self.setState({});
 			}
 		});
 		$(this.power5).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[4] = val;
+				self.state.customGameSettings.enabled = true;
 				self.setState({});
 			}
 		});
@@ -235,10 +240,7 @@ export default class Creategame extends React.Component {
 				self.setState({ casualgame: true });
 			},
 			onUnchecked() {
-				if ((self.state.timedMode && self.state.timedSliderValue[0] < 30) || self.state.customGameSettings.enabled) {
-					$(this.casualgame).attr('checked', true);
-					self.setState({ casualgame: true });
-				}
+				if ((self.state.timedMode && self.state.timedSliderValue[0] < 30) || self.state.customGameSettings.enabled) self.setState({ casualgame: true });
 				else self.setState({ casualgame: false });
 			}
 		});
@@ -255,8 +257,7 @@ export default class Creategame extends React.Component {
 		$(this.customgame).checkbox({
 			onChecked() {
 				self.state.customGameSettings.enabled = true;
-				self.setState({});
-				if (!self.state.casualgame) $(this.casualgame).click();
+				self.setState({casualgame:true});
 			},
 			onUnchecked() {
 				self.state.customGameSettings.enabled = false;
@@ -267,11 +268,13 @@ export default class Creategame extends React.Component {
 		$(this.hitseesfas).checkbox({
 			onChecked() {
 				self.state.customGameSettings.hitKnowsFas = true;
-				self.setState({});
+				self.state.customGameSettings.enabled = true;
+				self.setState({casualgame:true});
 			},
 			onUnchecked() {
 				self.state.customGameSettings.hitKnowsFas = false;
-				self.setState({});
+				self.state.customGameSettings.enabled = true;
+				self.setState({casualgame:true});
 			}
 		});
 	}
@@ -279,43 +282,50 @@ export default class Creategame extends React.Component {
 	sliderNumFas(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.fascistCount = val[0];
-		this.setState({customGameSettings});
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
 	}
 
 	sliderHitlerZone(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.hitlerZone = val[0];
-		this.setState({customGameSettings});
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
 	}
 
 	sliderVetoZone(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.vetoZone = val[0];
-		this.setState({customGameSettings});
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
 	}
 
 	sliderDeckLib(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.lib = val[0];
-		this.setState({customGameSettings});
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
 	}
 
 	sliderDeckFas(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.fas = val[0];
-		this.setState({customGameSettings});
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
 	}
 
 	sliderTrackLib(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.lib = val[0];
-		this.setState({customGameSettings});
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
 	}
 
 	sliderTrackFas(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.fas = val[0];
-		this.setState({customGameSettings});
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
 	}
 
 	sliderChange(sliderValues) {
@@ -1259,9 +1269,7 @@ export default class Creategame extends React.Component {
 	}
 
 	timedSliderChange(timedSliderValue) {
-		if (timedSliderValue < 30 && !this.state.casualgame) {
-			$(this.casualgame).click();
-		}
+		if (timedSliderValue < 30) this.state.casualgame = true;
 		this.setState({ timedSliderValue });
 	}
 
@@ -1275,6 +1283,7 @@ export default class Creategame extends React.Component {
 			return null;
 		}
 		const player = userList.list.find(p => p.userName === userInfo.userName);
+		if (!player) return null;
 		const isSeason = !userInfo.gameSettings.disableSeasonal;
 		const playerElo = player.eloSeason;
 		const playerEloNonseason = player.eloOverall;
@@ -1770,7 +1779,7 @@ export default class Creategame extends React.Component {
 									this.casualgame = c;
 								}}
 							>
-								<input type="checkbox" name="casualgame" defaultChecked={false} />
+								<input type="checkbox" name="casualgame" defaultChecked={false} checked={this.state.casualgame} />
 							</div>
 						</div>
 						{this.props.userInfo.gameSettings &&
@@ -1798,7 +1807,7 @@ export default class Creategame extends React.Component {
 									this.customgame = c;
 								}}
 							>
-								<input type="checkbox" name="customgame" defaultChecked={false} />
+								<input type="checkbox" name="customgame" defaultChecked={false} checked={this.state.customGameSettings.enabled} />
 							</div>
 						</div>
 					</div>
