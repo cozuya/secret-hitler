@@ -1262,6 +1262,19 @@ export default class Creategame extends React.Component {
 	render() {
 		const { userInfo } = this.props;
 
+		const { hitKnowsFas } = this.state.customGameSettings;
+		const renderFas = () => {
+			return _.range(0, this.state.customGameSettings.fascistCount).map(val => (
+				<div className="rolecard" style={{backgroundImage: (hitKnowsFas ? `url('../images/cards/fascist${val}.png')` : "url('../images/cards/secretrole.png')")}} />
+			)).concat('');
+		};
+
+		const renderLib = () => {
+			return _.range(0, this.state.sliderValues[0] - this.state.customGameSettings.fascistCount - 1).map(val => (
+				<div className="rolecard" style={{backgroundImage: (hitKnowsFas ? `url('../images/cards/liberal${val%6}.png')` : "url('../images/cards/secretrole.png')")}} />
+			)).concat('');
+		};
+
 		return (
 			<section className="creategame">
 				<a href="#/">
@@ -1545,27 +1558,7 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 					<div className="row">
-						<div className="four wide column">
-							<div>
-								<h4 className="ui header">Number of fascists</h4>
-								<Range className="fascount"
-									min={1}
-									max={3}
-									defaultValue={[2]}
-									marks={{1: '1', 2: '2', 3: '3'}}
-								/>
-							</div>
-						</div>
-						<div className="four wide column">
-							<h4 className="ui header">Hitler sees fascists</h4>
-							<div className="ui fitted toggle checkbox"
-								ref={c => {
-									this.hitseesfas = c;
-								}}>
-								<input type="checkbox" name="hitseesfas" defaultChecked={false} />
-							</div>
-						</div>
-						<div className="four wide column">
+						<div className="seven wide column">
 							<div>
 								<h4 className="ui header">Hitler Zone</h4>
 								<Range className="hitlerzone"
@@ -1576,7 +1569,8 @@ export default class Creategame extends React.Component {
 								/>
 							</div>
 						</div>
-						<div className="four wide column">
+						<div className="two wide column" />
+						<div className="seven wide column">
 							<div>
 								<h4 className="ui header">Veto Zone</h4>
 								<Range className="vetozone"
@@ -1589,46 +1583,95 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 					<div className="row">
-						<div className="four wide column">
-							<div>
-								<h4 className="ui header">Liberal policies</h4>
-								<Range className="libpolicies"
-									min={5}
-									max={8}
-									defaultValue={[6]}
-									marks={{5: '5', 6: '6', 7: '7', 8: '8'}}
-								/>
+						<div style={{
+							backgroundSize: 'contain',
+							backgroundRepeat: 'no-repeat',
+							top: 0,
+							left: 0,
+							height: '220px',
+							width: '650px',
+							margin: 'auto',
+							backgroundImage: "url('../images/customtracks/fasTrack.png')"
+						}} />
+					</div>
+					<div className="eight wide column ui grid">
+						<div className="row" style={{height: '5em'}}>
+							<div className="eight wide column">
+								<div>
+									<h4 className="ui header">Number of fascists</h4>
+									<Range className="fascount"
+										min={1}
+										max={3}
+										defaultValue={[2]}
+										marks={{1: '1', 2: '2', 3: '3'}}
+									/>
+								</div>
+							</div>
+							<div className="eight wide column">
+								<h4 className="ui header">Hitler sees fascists</h4>
+								<div className="ui fitted toggle checkbox"
+									ref={c => {
+										this.hitseesfas = c;
+									}}>
+									<input type="checkbox" name="hitseesfas" defaultChecked={false} />
+								</div>
 							</div>
 						</div>
-						<div className="four wide column">
-							<div>
-								<h4 className="ui header">Fascist policies</h4>
-								<Range className="faspolicies"
-									min={10}
-									max={14}
-									defaultValue={[12]}
-									marks={{10: '10', 11: '11', 12: '12', 13: '13', 14: '14'}}
-								/>
+						<div className="row">
+							<div style={{display:'flex',width:'100%',marginBottom:'6px'}}>
+								<div className="rolecard" style={{backgroundImage: "url('../images/cards/hitler0.png')"}} />
+								{renderFas()}
+							</div>
+							<div style={{display:'flex',width:'100%'}}>
+								{renderLib()}
 							</div>
 						</div>
-						<div className="four wide column">
-							<h4 className="ui header">Starting lib policies</h4>
-							<Range className="libtrack"
-								min={0}
-								max={4}
-								defaultValue={[0]}
-								marks={{0: '0', 1: '1', 2: '2', 3: '3', 4: '4'}}
-							/>
+					</div>
+					<div className="eight wide column ui grid" style={{marginTop: '-1rem'}}>
+						<div className="row">
+							<div className="eight wide column">
+								<div>
+									<h4 className="ui header">Liberal policies</h4>
+									<Range className="libpolicies"
+										min={5}
+										max={8}
+										defaultValue={[6]}
+										marks={{5: '5', 6: '6', 7: '7', 8: '8'}}
+									/>
+								</div>
+							</div>
+							<div className="eight wide column">
+								<div>
+									<h4 className="ui header">Fascist policies</h4>
+									<Range className="faspolicies"
+										min={10}
+										max={16}
+										defaultValue={[12]}
+										marks={{10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16'}}
+									/>
+								</div>
+							</div>
 						</div>
-						<div className="four wide column">
-							<div>
-								<h4 className="ui header">Starting fas policies</h4>
-								<Range className="fastrack"
+						<div className="row">
+							<div className="four wide column">
+								<h4 className="ui header">Starting lib policies</h4>
+								<Range className="libtrack"
 									min={0}
-									max={5}
+									max={2}
 									defaultValue={[0]}
-									marks={{0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}}
+									marks={{0: '0', 1: '1', 2: '2'}}
 								/>
+							</div>
+							<div className="four wide column">
+								<div>
+									<h4 className="ui header">Starting fas policies</h4>
+									<Range className="fastrack"
+										min={0}
+										max={2}
+										defaultValue={[0]}
+										marks={{0: '0', 1: '1', 2: '2'}}
+									/>
+								</div>
 							</div>
 						</div>
 					</div>

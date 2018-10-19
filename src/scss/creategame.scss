@@ -159,6 +159,15 @@
 			height: 25px;
 		}
 	}
+
+	.rolecard {
+		width: 56px;
+		height: 76px;
+		display: inline-block;
+		border-radius: 4px;
+		background-size: cover;
+		margin-right: 4px;
+	}
 }
 
 #main .scrollbar-container-main .ui.grid .timedmode-slider {

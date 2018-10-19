@@ -50,9 +50,10 @@ const beginGame = game => {
 	]
 		.concat(
 			_.shuffle(
-				_.range(0, 6).map(el => ({
+				// With custom games, up to 8 libs can be in a game, but there are only 6 cards. Two are re-used in this case.
+				_.range(0, 8).map(el => ({
 					cardName: 'liberal',
-					icon: el,
+					icon: el % 6,
 					team: 'liberal'
 				}))
 			).slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
