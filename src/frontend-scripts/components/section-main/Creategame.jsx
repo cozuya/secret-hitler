@@ -1312,6 +1312,34 @@ export default class Creategame extends React.Component {
 		}
 	}
 
+	renderDeck() {
+		const { customGameSettings } = this.state;
+		const numLib = customGameSettings.deckState.lib - customGameSettings.trackState.lib;
+		const numFas = customGameSettings.deckState.fas - customGameSettings.trackState.fas;
+		const data = _.range(0, numLib).map(val => {
+			return (
+				<div className="deckcard" style={{backgroundImage: "url('../images/cards/liberalp-l.png')"}} />
+			);
+		}).concat(
+			_.range(0, numFas).map(val => {
+			return (
+				<div className="deckcard" style={{backgroundImage: "url('../images/cards/fascistp-l.png')"}} />
+			);
+		}));
+		const thirds = [];
+		data.forEach((elem, idx) => {
+			if (thirds[Math.floor(idx / 3)] == null) thirds[Math.floor(idx / 3)] = [];
+			thirds[Math.floor(idx / 3)][(idx % 3)] = elem;
+		});
+		return thirds.map(val => {
+			return (
+				<div className="column" style={{width:'4em',marginRight:'-1em'}}>
+					{val}
+				</div>
+			);
+		});
+	}
+
 	renderFasTrack() {
 		const { customGameSettings } = this.state;
 		const offX = 94;
@@ -1459,7 +1487,6 @@ export default class Creategame extends React.Component {
 					className="custom-fastrack-powerslot"
 					style={{ left: `${offX + 518}px`, top: `${offY + 58}px`, backgroundImage: 'url(../images/customtracks/fasPowerEndGame.png)' }}
 				/>
-
 				<span
 					style={{
 						width: '268px',
@@ -1470,7 +1497,6 @@ export default class Creategame extends React.Component {
 						backgroundImage: 'url(../images/customtracks/fasTrackHZText.png)'
 					}}
 				/>
-
 				<span
 					style={{
 						width: '227px',
@@ -1502,13 +1528,13 @@ export default class Creategame extends React.Component {
 		const renderFas = () => {
 			return _.range(0, this.state.customGameSettings.fascistCount).map(val => (
 				<div className="rolecard" style={{backgroundImage: (hitKnowsFas ? `url('../images/cards/fascist${val}.png')` : "url('../images/cards/secretrole.png')")}} />
-			)).concat('');
+			));
 		};
 
 		const renderLib = () => {
 			return _.range(0, this.state.sliderValues[0] - this.state.customGameSettings.fascistCount - 1).map(val => (
 				<div className="rolecard" style={{backgroundImage: (hitKnowsFas ? `url('../images/cards/liberal${val%6}.png')` : "url('../images/cards/secretrole.png')")}} />
-			)).concat('');
+			));
 		};
 
 		return (
@@ -1826,7 +1852,7 @@ export default class Creategame extends React.Component {
 						{this.renderFasTrack()}
 					</div>
 					<div className="eight wide column ui grid">
-						<div className="row" style={{height: '5em'}}>
+						<div className="row">
 							<div className="eight wide column">
 								<div>
 									<h4 className="ui header">Number of fascists</h4>
@@ -1908,6 +1934,9 @@ export default class Creategame extends React.Component {
 									marks={{0: '0', 1: '1', 2: '2'}}
 								/>
 							</div>
+						</div>
+						<div className="row">
+							{this.renderDeck()}
 						</div>
 					</div>
 				</div>

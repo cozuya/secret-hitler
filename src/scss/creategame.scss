@@ -160,14 +160,6 @@
 		}
 	}
 
-	.rolecard {
-		width: 56px;
-		height: 76px;
-		display: inline-block;
-		border-radius: 4px;
-		background-size: cover;
-		margin-right: 4px;
-	}
 	.custom-fastrack-powerslot {
 		width: 90px;
 		height: 120px;
@@ -180,6 +172,22 @@
 	}
 	.custom-fastrack-vetozone-light {
 		background-image: url('../../public/images/customtracks/vetoZoneLight.png');
+	}
+	.rolecard {
+		width: 56px;
+		height: 76px;
+		display: inline-block;
+		border-radius: 4px;
+		background-size: cover;
+		margin-right: 4px;
+	}
+	.deckcard {
+		width: 56px;
+		height: 76px;
+		display: inline-block;
+		border-radius: 4px;
+		background-size: cover;
+		margin-bottom: -4rem;
 	}
 }
 
