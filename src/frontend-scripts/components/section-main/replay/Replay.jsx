@@ -151,6 +151,10 @@ const Replay = ({ replay, isSmall, to, replayChats, allEmotes}) => {
 	const snapshot = ticks.get(position);
 	const playback = buildPlayback(replay, to);
 	const gameInfo = toGameInfo(snapshot);
+	gameInfo.customGameSettings = game.summary.customGameSettings;
+	if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
+		if (gameInfo.customGameSettings.powers._tail) gameInfo.customGameSettings.powers = gameInfo.customGameSettings.powers._tail.array;
+	}
 	const userInfo = { username: '' };
 	const { phase } = snapshot;
 	const description = toDescription(snapshot, game);
@@ -163,7 +167,7 @@ const Replay = ({ replay, isSmall, to, replayChats, allEmotes}) => {
 				<div className="left-side nine wide column">
 					<ReplayOverlay key="replayoverlay" snapshot={snapshot} />
 					<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
-					<Tracks gameInfo={gameInfo} userInfo={userInfo} replayCustomSettings={(game && game.summary && game.summary.customGameSettings) || null} />
+					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
 				</div>
 				<div className="right-side seven wide column">
 					{replayChats.length ? (

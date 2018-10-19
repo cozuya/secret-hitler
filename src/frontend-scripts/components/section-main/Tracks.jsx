@@ -311,9 +311,7 @@ class Tracks extends React.Component {
 		};
 
 		const renderFasTrack = () => {
-			let sett = this.props.replayCustomSettings || gameInfo.customGameSettings;
-			if (sett && sett.enabled) {
-				console.log(sett);
+			if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
 				const offX = -8;
 				const offY = -8;
 
@@ -323,9 +321,9 @@ class Tracks extends React.Component {
 				let vzPoint = 5;
 				let hitKnowsFas = false;
 
-				if (sett.powers) {
+				if (gameInfo.customGameSettings.powers) {
 					// Only need to detect one property, either they're all there or none are.
-					powers = (this.props.replayCustomSettings && sett.powers._tail.array || sett.powers).map(p => {
+					powers = gameInfo.customGameSettings.powers.map(p => {
 						if (p == null) return 'None';
 						if (p == 'investigate') return 'Inv';
 						if (p == 'deckpeek') return 'Peek';
@@ -335,10 +333,10 @@ class Tracks extends React.Component {
 						console.log(`Unknown power: ${p}`);
 						return null;
 					});
-					numFas = sett.fascistCount;
-					hzStart = sett.hitlerZone;
-					vzPoint = sett.vetoZone;
-					hitKnowsFas = sett.hitKnowsFas;
+					numFas = gameInfo.customGameSettings.fascistCount;
+					hzStart = gameInfo.customGameSettings.hitlerZone;
+					vzPoint = gameInfo.customGameSettings.vetoZone;
+					hitKnowsFas = gameInfo.customGameSettings.hitKnowsFas;
 				} else {
 					// Should only happen before a game starts, but as a precaution typical settings are used.
 					if (gameInfo.general.playerCount < 7) {
@@ -621,8 +619,7 @@ Tracks.propTypes = {
 	onSeatingUser: PropTypes.func,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	socket: PropTypes.object,
-	replayCustomSettings: PropTypes.object
+	socket: PropTypes.object
 };
 
 export default Tracks;
