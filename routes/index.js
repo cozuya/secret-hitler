@@ -100,6 +100,10 @@ module.exports = () => {
 			res.redirect('/observe/');
 		} else {
 			Account.findOne({ username }, (err, account) => {
+				if (err) {
+					console.log(err);
+					return;
+				}
 				const { blacklist } = account.gameSettings;
 
 				account.gameSettings.blacklist = [];
