@@ -662,6 +662,58 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			enactedPolicies: []
 		}
 	};
+	if (newGame.customGameSettings.enabled) {
+		let chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'There will be '
+				},
+				{
+					text: `${newGame.customGameSettings.deckState.lib - newGame.customGameSettings.trackState.lib} liberal`,
+					type: 'liberal'
+				},
+				{
+					text: ' and '
+				},
+				{
+					text: `${newGame.customGameSettings.deckState.fas - newGame.customGameSettings.trackState.fas} fascist`,
+					type: 'fascist'
+				},
+				{
+					text: ' policies in the deck.'
+				}
+			]
+		};
+		const t = chat.timestamp.getMilliseconds();
+		newGame.chats.push(chat);
+		chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'The track will start with '
+				},
+				{
+					text: `${newGame.customGameSettings.trackState.lib} liberal`,
+					type: 'liberal'
+				},
+				{
+					text: ' and '
+				},
+				{
+					text: `${newGame.customGameSettings.trackState.fas} fascist`,
+					type: 'fascist'
+				},
+				{
+					text: ' policies.'
+				}
+			]
+		};
+		chat.timestamp.setMilliseconds(t + 1);
+		newGame.chats.push(chat);
+	}
 
 	if (data.isTourny) {
 		newGame.general.tournyInfo = {
@@ -1215,6 +1267,58 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		};
 
 		newGame.chats = [];
+		if (newGame.customGameSettings.enabled) {
+			let chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: 'There will be '
+					},
+					{
+						text: `${newGame.customGameSettings.deckState.lib - newGame.customGameSettings.trackState.lib} liberal`,
+						type: 'liberal'
+					},
+					{
+						text: ' and '
+					},
+					{
+						text: `${newGame.customGameSettings.deckState.fas - newGame.customGameSettings.trackState.fas} fascist`,
+						type: 'fascist'
+					},
+					{
+						text: ' policies in the deck.'
+					}
+				]
+			};
+			const t = chat.timestamp.getMilliseconds();
+			newGame.chats.push(chat);
+			chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: 'The track will start with '
+					},
+					{
+						text: `${newGame.customGameSettings.trackState.lib} liberal`,
+						type: 'liberal'
+					},
+					{
+						text: ' and '
+					},
+					{
+						text: `${newGame.customGameSettings.trackState.fas} fascist`,
+						type: 'fascist'
+					},
+					{
+						text: ' policies.'
+					}
+				]
+			};
+			chat.timestamp.setMilliseconds(t + 1);
+			newGame.chats.push(chat);
+		}
 		newGame.general.isRemade = false;
 		newGame.general.isRemaking = false;
 		newGame.summarySaved = false;
