@@ -42,8 +42,9 @@ class Gamenotes extends React.Component {
 	resizeDragStart() {}
 
 	noteDrop(e) {
+		e.preventDefault();
 		if (!this.state.isResizing) {
-			const offset = e.dataTransfer.getData('text/plain').split(',');
+			const offset = e.dataTransfer.getData('coordinates/text').split(',');
 
 			this.setState({
 				top: e.clientY + parseInt(offset[1], 10),
@@ -66,7 +67,7 @@ class Gamenotes extends React.Component {
 		const style = window.getComputedStyle(e.target, null);
 
 		e.dataTransfer.setData(
-			'text/plain',
+			'coordinates/text',
 			parseInt(style.getPropertyValue('left'), 10) - e.clientX + ',' + (parseInt(style.getPropertyValue('top'), 10) - e.clientY)
 		);
 	}
