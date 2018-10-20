@@ -46,7 +46,8 @@ class Gamenotes extends React.Component {
 
 	noteEnd(e) {
 		e.preventDefault();
-		if (!this.state.isResizing && this.lastValidX == e.clientX && this.lastValidY == e.clientY) {
+		e.dataTransfer.effectAllowed = 'drag';
+		if (!this.state.isResizing) {
 			this.setState({
 				top: this.lastValidY + this.dragOffY,
 				left: this.lastValidX + this.dragOffX
@@ -56,6 +57,7 @@ class Gamenotes extends React.Component {
 
 	dragOver(e) {
 		e.preventDefault();
+		e.dataTransfer.effectAllowed = 'none';
 		this.lastValidX = e.clientX;
 		this.lastValidY = e.clientY;
 	}
@@ -75,7 +77,7 @@ class Gamenotes extends React.Component {
 
 		this.dragOffX = parseInt(style.getPropertyValue('left'), 10) - e.clientX;
 		this.dragOffY = parseInt(style.getPropertyValue('top'), 10) - e.clientY;
-		e.dataTransfer.effectAllowed = 'none';
+		e.dataTransfer.effectAllowed = 'drag';
 	}
 
 	render() {
@@ -88,7 +90,7 @@ class Gamenotes extends React.Component {
 				draggable="true"
 				onDragStart={this.noteDragStart}
 				className="notes-container"
-				style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, height: `${this.state.height}px`, width: `${this.state.width}px` }}
+				style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, height: `${this.state.height}px`, width: `${this.state.width}px`, zIndex:9999999 }}
 			>
 				<div className="notes-header">
 					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
