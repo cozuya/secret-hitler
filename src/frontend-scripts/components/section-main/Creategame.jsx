@@ -1028,7 +1028,7 @@ export default class Creategame extends React.Component {
 						)}
 					</div>
 					<div className="row slider">{this.renderPlayerSlider()}</div>
-					<div className="row rebalance">{this.renderRebalanceCheckboxes()}</div>
+					<div className="row rebalance">{!this.state.customeGameSettings.enabled && this.renderRebalanceCheckboxes()}</div>
 
 					{/* <div className="row tourny-row">
 						<div className="sixteen wide column tourny-container">
