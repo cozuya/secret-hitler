@@ -144,7 +144,6 @@ export default class Generalchat extends React.Component {
 		let timestamp;
 		const { userInfo, userList, generalChats } = this.props;
 		const time = new Date().getTime();
-		hi();
 
 		/**
 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
