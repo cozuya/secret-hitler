@@ -14,6 +14,7 @@ export default class Creategame extends React.Component {
 
 		this.createNewGame = this.createNewGame.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
+		this.customGameSliderChange = this.customGameSliderChange.bind(this);
 		this.eloSliderChange = this.eloSliderChange.bind(this);
 		this.timedSliderChange = this.timedSliderChange.bind(this);
 
@@ -36,6 +37,7 @@ export default class Creategame extends React.Component {
 			timedMode: false,
 			isVerifiedOnly: false,
 			timedSliderValue: [120],
+			customGameSliderValue: [7],
 			eloSliderValue: [1675],
 			isEloLimited: false,
 			customGameSettings: {
@@ -52,81 +54,70 @@ export default class Creategame extends React.Component {
 		};
 	}
 
-	powerPicker(slot) {
-		const name = () => {
-			if (slot == 0) return 'First Power';
-			if (slot == 1) return 'Second Power';
-			if (slot == 2) return 'Third Power';
-			if (slot == 3) return 'Fourth Power';
-			return 'Fifth Power';
-		};
-		return (
-			<div ref={select => (this[`power${slot + 1}`] = select)} className={`ui search selection dropdown power${slot + 1}val`} style={{ minWidth: '11em' }}>
-				<h4 className="ui header">{name()}</h4>
-				<input type="hidden" name={`power${slot + 1}val`} />
-				<i className="dropdown icon" />
-				<div className="default text">No Power</div>
-				<div className="menu">
-					<div className="item" data-value="null">
-						No Power
-					</div>
-					<div className="item" data-value="investigate">
-						Investigate
-					</div>
-					<div className="item" data-value="deckpeek">
-						Deck Peek
-					</div>
-					<div className="item" data-value="election">
-						Special Election
-					</div>
-					<div className="item" data-value="bullet">
-						Bullet
-					</div>
-				</div>
-			</div>
-		);
+	componentDidUpdate(prevProps, prevState) {
+		const self = this;
+		const { customGameSettings } = this.state;
+
+		if (customGameSettings.enabled) {
+			$(this.hitseesfas).checkbox({
+				onChecked() {
+					self.state.customGameSettings.hitKnowsFas = true;
+					self.state.customGameSettings.enabled = true;
+					self.setState({ casualgame: true });
+				},
+				onUnchecked() {
+					self.state.customGameSettings.hitKnowsFas = false;
+					self.state.customGameSettings.enabled = true;
+					self.setState({ casualgame: true });
+				}
+			});
+
+			$(this.power1).dropdown({
+				onChange(val) {
+					self.state.customGameSettings.powers[0] = val;
+					self.state.customGameSettings.enabled = true;
+					self.setState({ casualgame: true });
+				}
+			});
+
+			$(this.power2).dropdown({
+				onChange(val) {
+					self.state.customGameSettings.powers[1] = val;
+					self.state.customGameSettings.enabled = true;
+					self.setState({ casualgame: true });
+				}
+			});
+
+			$(this.power3).dropdown({
+				onChange(val) {
+					self.state.customGameSettings.powers[2] = val;
+					self.state.customGameSettings.enabled = true;
+					self.setState({ casualgame: true });
+				}
+			});
+
+			$(this.power4).dropdown({
+				onChange(val) {
+					self.state.customGameSettings.powers[3] = val;
+					self.state.customGameSettings.enabled = true;
+					self.setState({ casualgame: true });
+				}
+			});
+
+			$(this.power5).dropdown({
+				onChange(val) {
+					self.state.customGameSettings.powers[4] = val;
+					self.state.customGameSettings.enabled = true;
+					self.setState({ casualgame: true });
+				}
+			});
+		}
 	}
 
 	componentDidMount() {
 		const self = this;
 
 		$(this._select).dropdown();
-
-		$(this.power1).dropdown({
-			onChange(val) {
-				self.state.customGameSettings.powers[0] = val;
-				self.state.customGameSettings.enabled = true;
-				self.setState({ casualgame: true });
-			}
-		});
-		$(this.power2).dropdown({
-			onChange(val) {
-				self.state.customGameSettings.powers[1] = val;
-				self.state.customGameSettings.enabled = true;
-				self.setState({ casualgame: true });
-			}
-		});
-		$(this.power3).dropdown({
-			onChange(val) {
-				self.state.customGameSettings.powers[2] = val;
-				self.state.customGameSettings.enabled = true;
-				self.setState({ casualgame: true });
-			}
-		});
-		$(this.power4).dropdown({
-			onChange(val) {
-				self.state.customGameSettings.powers[3] = val;
-				self.state.customGameSettings.enabled = true;
-				self.setState({ casualgame: true });
-			}
-		});
-		$(this.power5).dropdown({
-			onChange(val) {
-				self.state.customGameSettings.powers[4] = val;
-				self.state.customGameSettings.enabled = true;
-				self.setState({ casualgame: true });
-			}
-		});
 
 		$(this.verified).checkbox({
 			onChecked() {
@@ -265,19 +256,41 @@ export default class Creategame extends React.Component {
 				self.setState({});
 			}
 		});
+	}
 
-		$(this.hitseesfas).checkbox({
-			onChecked() {
-				self.state.customGameSettings.hitKnowsFas = true;
-				self.state.customGameSettings.enabled = true;
-				self.setState({ casualgame: true });
-			},
-			onUnchecked() {
-				self.state.customGameSettings.hitKnowsFas = false;
-				self.state.customGameSettings.enabled = true;
-				self.setState({ casualgame: true });
-			}
-		});
+	powerPicker(slot) {
+		const name = () => {
+			if (slot == 0) return 'First Power';
+			if (slot == 1) return 'Second Power';
+			if (slot == 2) return 'Third Power';
+			if (slot == 3) return 'Fourth Power';
+			return 'Fifth Power';
+		};
+		return (
+			<div ref={select => (this[`power${slot + 1}`] = select)} className={`ui search selection dropdown power${slot + 1}val`} style={{ minWidth: '11em' }}>
+				<h4 className="ui header">{name()}</h4>
+				<input type="hidden" name={`power${slot + 1}val`} />
+				<i className="dropdown icon" />
+				<div className="default text">No Power</div>
+				<div className="menu">
+					<div className="item" data-value="null">
+						No Power
+					</div>
+					<div className="item" data-value="investigate">
+						Investigate
+					</div>
+					<div className="item" data-value="deckpeek">
+						Deck Peek
+					</div>
+					<div className="item" data-value="election">
+						Special Election
+					</div>
+					<div className="item" data-value="bullet">
+						Bullet
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	sliderNumFas(val) {
@@ -345,9 +358,16 @@ export default class Creategame extends React.Component {
 		});
 	}
 
+	customGameSliderChange(sliderValues) {
+		this.setState({
+			customGameSliderValue: sliderValues
+		});
+	}
+
 	createNewGame() {
 		const $creategame = $('section.creategame');
 		const { userInfo } = this.props;
+		const { customGameSettings, customGameSliderValue } = this.state;
 
 		if (userInfo.gameSettings.isPrivate && !this.state.privateShowing) {
 			return;
@@ -370,9 +390,9 @@ export default class Creategame extends React.Component {
 			const data = {
 				gameName: $creategame.find('div.gamename input').val() || 'New Game',
 				flag: $creategame.find('div.flag input').val() || 'none',
-				minPlayersCount: this.state.sliderValues[0],
+				minPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.sliderValues[0],
 				excludedPlayerCount,
-				maxPlayersCount: this.state.isTourny ? undefined : this.state.sliderValues[1],
+				maxPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.isTourny ? undefined : this.state.sliderValues[1],
 				experiencedMode: this.state.experiencedmode,
 				disableChat: this.state.disablechat,
 				disableObserver: this.state.disableobserver && !this.state.isTourny,
@@ -417,6 +437,7 @@ export default class Creategame extends React.Component {
 	}
 
 	renderPlayerSlider() {
+		const { isTourny, customGameSettings } = this.state;
 		const sliderCheckboxClick = index => {
 			const newSliderValues = this.state.checkedSliderValues.map((el, i) => (i === index ? !el : el));
 			const includedPlayerCounts = newSliderValues.map((el, i) => (el ? i + 5 : null)).filter(el => el !== null);
@@ -432,7 +453,7 @@ export default class Creategame extends React.Component {
 		return (
 			<div className="eight wide column centered slider">
 				<h4 className="ui header">Number of players</h4>
-				{this.state.isTourny ? (
+				{isTourny ? (
 					<Range
 						className="tourny-slider"
 						onChange={this.sliderChange}
@@ -441,6 +462,15 @@ export default class Creategame extends React.Component {
 						defaultValue={[0]}
 						value={this.state.sliderValues}
 						marks={{ 1: '14', 2: '16', 3: '18' }}
+					/>
+				) : customGameSettings.enabled ? (
+					<Range
+						onChange={this.customGameSliderChange}
+						min={5}
+						max={10}
+						defaultValue={[7]}
+						value={this.state.customGameSliderValue}
+						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
 					/>
 				) : (
 					<Range
@@ -452,22 +482,23 @@ export default class Creategame extends React.Component {
 						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
 					/>
 				)}
-				{!this.state.isTourny && (
-					<div className="checkbox-container">
-						{new Array(6).fill(true).map((el, index) => (
-							<label key={index}>
-								<input
-									type="checkbox"
-									checked={this.state.checkedSliderValues[index]}
-									disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? (index + 5 === this.state.sliderValues[0] ? true : false) : false}
-									onChange={() => {
-										sliderCheckboxClick(index);
-									}}
-								/>
-							</label>
-						))}
-					</div>
-				)}
+				{!isTourny &&
+					!customGameSettings.enabled && (
+						<div className="checkbox-container">
+							{new Array(6).fill(true).map((el, index) => (
+								<label key={index}>
+									<input
+										type="checkbox"
+										checked={this.state.checkedSliderValues[index]}
+										disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? (index + 5 === this.state.sliderValues[0] ? true : false) : false}
+										onChange={() => {
+											sliderCheckboxClick(index);
+										}}
+									/>
+								</label>
+							))}
+						</div>
+					)}
 			</div>
 		);
 	}
@@ -770,10 +801,9 @@ export default class Creategame extends React.Component {
 		);
 	}
 
-	render() {
-		const { userInfo } = this.props;
-
+	renderCustomGames() {
 		const { hitKnowsFas } = this.state.customGameSettings;
+
 		const renderFas = () => {
 			return _.range(0, this.state.customGameSettings.fascistCount).map((val, i) => (
 				<div
@@ -793,6 +823,148 @@ export default class Creategame extends React.Component {
 				/>
 			));
 		};
+
+		return (
+			<React.Fragment>
+				<div className="row">
+					<div className="wide column" style={{ width: '20%' }}>
+						{this.powerPicker(0)}
+					</div>
+					<div className="wide column" style={{ width: '20%' }}>
+						{this.powerPicker(1)}
+					</div>
+					<div className="wide column" style={{ width: '20%' }}>
+						{this.powerPicker(2)}
+					</div>
+					<div className="wide column" style={{ width: '20%' }}>
+						{this.powerPicker(3)}
+					</div>
+					<div className="wide column" style={{ width: '20%' }}>
+						{this.powerPicker(4)}
+					</div>
+				</div>
+				<div className="row">
+					<div className="seven wide column">
+						<div>
+							<h4 className="ui header">Hitler Zone</h4>
+							<Range
+								min={1}
+								max={5}
+								defaultValue={[3]}
+								onChange={this.sliderHitlerZone.bind(this)}
+								value={[this.state.customGameSettings.hitlerZone]}
+								marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
+							/>
+						</div>
+					</div>
+					<div className="two wide column" />
+					<div className="seven wide column">
+						<div>
+							<h4 className="ui header">Veto Zone</h4>
+							<Range
+								min={1}
+								max={5}
+								defaultValue={[5]}
+								onChange={this.sliderVetoZone.bind(this)}
+								value={[this.state.customGameSettings.vetoZone]}
+								marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
+							/>
+						</div>
+					</div>
+				</div>
+				<div className="row">{this.renderFasTrack()}</div>
+				<div className="eight wide column ui grid">
+					<div className="row">
+						<div className="eight wide column">
+							<div>
+								<h4 className="ui header">Number of fascists</h4>
+								<Range
+									min={1}
+									max={3}
+									defaultValue={[2]}
+									onChange={this.sliderNumFas.bind(this)}
+									value={[this.state.customGameSettings.fascistCount]}
+									marks={{ 1: '1', 2: '2', 3: '3' }}
+								/>
+							</div>
+						</div>
+						<div className="eight wide column">
+							<h4 className="ui header">Hitler sees fascists</h4>
+							<div
+								className="ui fitted toggle checkbox"
+								ref={c => {
+									this.hitseesfas = c;
+								}}
+							>
+								<input type="checkbox" name="hitseesfas" defaultChecked={false} />
+							</div>
+						</div>
+					</div>
+					<div className="row">
+						<div style={{ display: 'flex', width: '100%', marginBottom: '6px' }}>
+							<div className="rolecard" style={{ backgroundImage: "url('../images/cards/hitler0.png')" }} />
+							{renderFas()}
+						</div>
+						<div style={{ display: 'flex', width: '100%' }}>{renderLib()}</div>
+					</div>
+				</div>
+				<div className="eight wide column ui grid" style={{ marginTop: '-1rem', marginLeft: '3rem' }}>
+					<div className="row">
+						<div className="eight wide column">
+							<h4 className="ui header">Liberal policies</h4>
+							<Range
+								min={5}
+								max={8}
+								defaultValue={[6]}
+								onChange={this.sliderDeckLib.bind(this)}
+								value={[this.state.customGameSettings.deckState.lib]}
+								marks={{ 5: '5', 6: '6', 7: '7', 8: '8' }}
+							/>
+						</div>
+						<div className="eight wide column">
+							<h4 className="ui header">Fascist policies</h4>
+							<Range
+								min={10}
+								max={19}
+								defaultValue={[12]}
+								onChange={this.sliderDeckFas.bind(this)}
+								value={[this.state.customGameSettings.deckState.fas]}
+								marks={{ 10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16', 17: '', 18: '', 19: '19' }}
+							/>
+						</div>
+					</div>
+					<div className="row">
+						<div className="eight wide column">
+							<h4 className="ui header">Starting lib policies</h4>
+							<Range
+								min={0}
+								max={2}
+								defaultValue={[0]}
+								onChange={this.sliderTrackLib.bind(this)}
+								value={[this.state.customGameSettings.trackState.lib]}
+								marks={{ 0: '0', 1: '1', 2: '2' }}
+							/>
+						</div>
+						<div className="eight wide column">
+							<h4 className="ui header">Starting fas policies</h4>
+							<Range
+								min={0}
+								max={2}
+								defaultValue={[0]}
+								onChange={this.sliderTrackFas.bind(this)}
+								value={[this.state.customGameSettings.trackState.fas]}
+								marks={{ 0: '0', 1: '1', 2: '2' }}
+							/>
+						</div>
+					</div>
+					<div className="row">{this.renderDeck()}</div>
+				</div>
+			</React.Fragment>
+		);
+	}
+
+	render() {
+		const { userInfo } = this.props;
 
 		return (
 			<section className="creategame">
@@ -1029,7 +1201,7 @@ export default class Creategame extends React.Component {
 									this.casualgame = c;
 								}}
 							>
-								<input type="checkbox" name="casualgame" checked={this.state.casualgame} />
+								<input type="checkbox" name="casualgame" defaultChecked={this.state.casualgame} />
 							</div>
 						</div>
 						{this.props.userInfo.gameSettings &&
@@ -1057,143 +1229,11 @@ export default class Creategame extends React.Component {
 									this.customgame = c;
 								}}
 							>
-								<input type="checkbox" name="customgame" checked={this.state.customGameSettings.enabled} />
+								<input type="checkbox" name="customgame" defaultChecked={false} />
 							</div>
 						</div>
 					</div>
-					<div className="row">
-						<div className="wide column" style={{ width: '20%' }}>
-							{this.powerPicker(0)}
-						</div>
-						<div className="wide column" style={{ width: '20%' }}>
-							{this.powerPicker(1)}
-						</div>
-						<div className="wide column" style={{ width: '20%' }}>
-							{this.powerPicker(2)}
-						</div>
-						<div className="wide column" style={{ width: '20%' }}>
-							{this.powerPicker(3)}
-						</div>
-						<div className="wide column" style={{ width: '20%' }}>
-							{this.powerPicker(4)}
-						</div>
-					</div>
-					<div className="row">
-						<div className="seven wide column">
-							<div>
-								<h4 className="ui header">Hitler Zone</h4>
-								<Range
-									min={1}
-									max={5}
-									defaultValue={[3]}
-									onChange={this.sliderHitlerZone.bind(this)}
-									value={[this.state.customGameSettings.hitlerZone]}
-									marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
-								/>
-							</div>
-						</div>
-						<div className="two wide column" />
-						<div className="seven wide column">
-							<div>
-								<h4 className="ui header">Veto Zone</h4>
-								<Range
-									min={1}
-									max={5}
-									defaultValue={[5]}
-									onChange={this.sliderVetoZone.bind(this)}
-									value={[this.state.customGameSettings.vetoZone]}
-									marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
-								/>
-							</div>
-						</div>
-					</div>
-					<div className="row">{this.renderFasTrack()}</div>
-					<div className="eight wide column ui grid">
-						<div className="row">
-							<div className="eight wide column">
-								<div>
-									<h4 className="ui header">Number of fascists</h4>
-									<Range
-										min={1}
-										max={3}
-										defaultValue={[2]}
-										onChange={this.sliderNumFas.bind(this)}
-										value={[this.state.customGameSettings.fascistCount]}
-										marks={{ 1: '1', 2: '2', 3: '3' }}
-									/>
-								</div>
-							</div>
-							<div className="eight wide column">
-								<h4 className="ui header">Hitler sees fascists</h4>
-								<div
-									className="ui fitted toggle checkbox"
-									ref={c => {
-										this.hitseesfas = c;
-									}}
-								>
-									<input type="checkbox" name="hitseesfas" defaultChecked={false} />
-								</div>
-							</div>
-						</div>
-						<div className="row">
-							<div style={{ display: 'flex', width: '100%', marginBottom: '6px' }}>
-								<div className="rolecard" style={{ backgroundImage: "url('../images/cards/hitler0.png')" }} />
-								{renderFas()}
-							</div>
-							<div style={{ display: 'flex', width: '100%' }}>{renderLib()}</div>
-						</div>
-					</div>
-					<div className="eight wide column ui grid" style={{ marginTop: '-1rem', marginLeft: '3rem' }}>
-						<div className="row">
-							<div className="eight wide column">
-								<h4 className="ui header">Liberal policies</h4>
-								<Range
-									min={5}
-									max={8}
-									defaultValue={[6]}
-									onChange={this.sliderDeckLib.bind(this)}
-									value={[this.state.customGameSettings.deckState.lib]}
-									marks={{ 5: '5', 6: '6', 7: '7', 8: '8' }}
-								/>
-							</div>
-							<div className="eight wide column">
-								<h4 className="ui header">Fascist policies</h4>
-								<Range
-									min={10}
-									max={19}
-									defaultValue={[12]}
-									onChange={this.sliderDeckFas.bind(this)}
-									value={[this.state.customGameSettings.deckState.fas]}
-									marks={{ 10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16', 17: '', 18: '', 19: '19' }}
-								/>
-							</div>
-						</div>
-						<div className="row">
-							<div className="eight wide column">
-								<h4 className="ui header">Starting lib policies</h4>
-								<Range
-									min={0}
-									max={2}
-									defaultValue={[0]}
-									onChange={this.sliderTrackLib.bind(this)}
-									value={[this.state.customGameSettings.trackState.lib]}
-									marks={{ 0: '0', 1: '1', 2: '2' }}
-								/>
-							</div>
-							<div className="eight wide column">
-								<h4 className="ui header">Starting fas policies</h4>
-								<Range
-									min={0}
-									max={2}
-									defaultValue={[0]}
-									onChange={this.sliderTrackFas.bind(this)}
-									value={[this.state.customGameSettings.trackState.fas]}
-									marks={{ 0: '0', 1: '1', 2: '2' }}
-								/>
-							</div>
-						</div>
-						<div className="row">{this.renderDeck()}</div>
-					</div>
+					{this.state.customGameSettings.enabled && this.renderCustomGames()}
 				</div>
 				<br />
 				<br />
