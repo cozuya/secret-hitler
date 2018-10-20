@@ -75,7 +75,6 @@ class Gamenotes extends React.Component {
 
 		this.dragOffX = parseInt(style.getPropertyValue('left'), 10) - e.clientX;
 		this.dragOffY = parseInt(style.getPropertyValue('top'), 10) - e.clientY;
-		e.dataTransfer.dropEffect = 'move';
 		e.dataTransfer.effectAllowed = 'none';
 	}
 
