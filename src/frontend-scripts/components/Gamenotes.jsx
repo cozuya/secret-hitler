@@ -5,10 +5,7 @@ import PropTypes from 'prop-types';
 
 const mapDispatchToProps = dispatch => ({
 		toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus))
-	}),
-	dragOverFn = e => {
-		e.preventDefault();
-	};
+	});
 
 class Gamenotes extends React.Component {
 	constructor() {
@@ -17,8 +14,9 @@ class Gamenotes extends React.Component {
 		this.clearNotes = this.clearNotes.bind(this);
 		this.noteDragStart = this.noteDragStart.bind(this);
 		this.dismissNotes = this.dismissNotes.bind(this);
-		this.noteDrop = this.noteDrop.bind(this);
+		this.noteEnd = this.noteEnd.bind(this);
 		this.resizeDragStart = this.resizeDragStart.bind(this);
+		this.dragOver = this.dragOver.bind(this);
 
 		this.state = {
 			top: 110,
@@ -27,6 +25,11 @@ class Gamenotes extends React.Component {
 			height: 320,
 			isResizing: false
 		};
+
+		this.dragOffX = 0;
+		this.dragOffY = 0;
+		this.lastValidX = 0;
+		this.lastValidY = 0;
 	}
 
 	clearNotes() {
@@ -41,34 +44,38 @@ class Gamenotes extends React.Component {
 
 	resizeDragStart() {}
 
-	noteDrop(e) {
-		if (!this.state.isResizing) {
-			const offset = e.dataTransfer.getData('text/plain').split(',');
-
+	noteEnd(e) {
+		if (!this.state.isResizing && this.lastValidX == e.clientX && this.lastValidY == e.clientY) {
 			this.setState({
-				top: e.clientY + parseInt(offset[1], 10),
-				left: e.clientX + parseInt(offset[0], 10)
+				top: this.lastValidY + this.dragOffY,
+				left: this.lastValidX + this.dragOffX
 			});
 		}
 	}
 
+	dragOver(e) {
+		e.preventDefault();
+		this.lastValidX = e.clientX;
+		this.lastValidY = e.clientY;
+	}
+
 	componentDidMount() {
-		document.body.addEventListener('dragover', dragOverFn);
-		document.body.addEventListener('drop', this.noteDrop);
+		document.body.addEventListener('dragover', this.dragOver);
+		document.body.addEventListener('dragend', this.noteEnd);
 	}
 
 	componentWillUnmount() {
-		document.body.removeEventListener('dragover', dragOverFn);
-		document.body.removeEventListener('drop', this.noteDrop);
+		document.body.removeEventListener('dragover', this.dragOver);
+		document.body.removeEventListener('dragend', this.noteEnd);
 	}
 
 	noteDragStart(e) {
 		const style = window.getComputedStyle(e.target, null);
 
-		e.dataTransfer.setData(
-			'text/plain',
-			parseInt(style.getPropertyValue('left'), 10) - e.clientX + ',' + (parseInt(style.getPropertyValue('top'), 10) - e.clientY)
-		);
+		this.dragOffX = parseInt(style.getPropertyValue('left'), 10) - e.clientX;
+		this.dragOffY = parseInt(style.getPropertyValue('top'), 10) - e.clientY;
+		e.dataTransfer.dropEffect = 'move';
+		e.dataTransfer.effectAllowed = 'none';
 	}
 
 	render() {

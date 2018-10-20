@@ -355,119 +355,121 @@ export class App extends React.Component {
 		}
 
 		return (
-			<section
-				className="app-container"
-				style={{
-					fontFamily: gameSettings
-						? gameSettings.fontFamily
-							? `'${gameSettings.fontFamily}', Lato, sans-serif`
+			<TopLevelErrorBoundry>
+				<section
+					className="app-container"
+					style={{
+						fontFamily: gameSettings
+							? gameSettings.fontFamily
+								? `'${gameSettings.fontFamily}', Lato, sans-serif`
+								: '"Comfortaa", Lato, sans-serif'
 							: '"Comfortaa", Lato, sans-serif'
-						: '"Comfortaa", Lato, sans-serif'
-				}}
-			>
-				{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
+					}}
+				>
+					{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 
-				{this.props.playerNotesActive && (
-					<Playernotes
-						socket={socket}
-						userName={this.props.playerNotesActive}
-						value={this.state.playerNotesValue}
-						changePlayerNotesValue={this.changePlayerNotesValue}
-						userInfo={this.props.userInfo}
-					/>
-				)}
+					{this.props.playerNotesActive && (
+						<Playernotes
+							socket={socket}
+							userName={this.props.playerNotesActive}
+							value={this.state.playerNotesValue}
+							changePlayerNotesValue={this.changePlayerNotesValue}
+							userInfo={this.props.userInfo}
+						/>
+					)}
 
-				<DevHelpers />
+					<DevHelpers />
 
-				<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
-
-				{(() => {
-					if (this.state.alertMsg.type) {
-						if (this.state.alertMsg.type === 'tou') {
-							return (
-								<div style={{ position: 'fixed', zIndex: 999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
-									<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
-										<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Terms of Use changes</h2>
-										<div
-											style={{
-												height: '150px',
-												width: '350px',
-												border: '1px solid black',
-												borderRadius: '5px',
-												background: '#777',
-												padding: '3px',
-												overflowY: 'scroll'
-											}}
-										>
-											{this.state.alertMsg.data.map((change, index) => {
-												return (
-													<div key={index}>
-														<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Version {change.changeVer}</h4>
-														<p style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{change.changeDesc}</p>
-													</div>
-												);
-											})}
-										</div>
-										<p>
-											<a href="/tou" target="_blank" style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
-												Click here to read the full Terms of Use.
-											</a>
-										</p>
-										<input type="checkbox" id="touCheckBox" style={{ height: '16px', width: '16px' }} />
-										<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif', cursor: 'pointer' }}>
-											{' '}
-											I agree to the Terms of Use changes.
-										</label>
-										<br />
-										<input
-											type="button"
-											value="Dismiss"
-											style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
-											onClick={this.touConfirmButton}
-											id="touButton"
-										/>
-									</div>
-								</div>
-							);
-						}
-					}
-				})()}
-
-				<div className={classes}>
-					<Main
-						userInfo={this.props.userInfo}
-						midSection={this.props.midSection}
-						gameInfo={this.props.gameInfo}
-						onSeatingUser={this.handleSeatingUser}
-						quickDefault={this.makeQuickDefault}
-						onClickedTakeSeat={this.handleSeatingUser}
-						userList={this.props.userList}
-						socket={socket}
-						version={this.props.version}
-						gameList={this.props.gameList}
-						allEmotes={this.state.allEmotes}
-					/>
+					<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
 
 					{(() => {
-						if (
-							(this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
-							(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)
-						) {
-							return (
-								<RightSidebar
-									gameInfo={this.props.gameInfo}
-									userInfo={this.props.userInfo}
-									userList={this.props.userList}
-									generalChats={this.props.generalChats}
-									socket={socket}
-									midSection={this.props.midSection}
-									allEmotes={this.state.allEmotes}
-								/>
-							);
+						if (this.state.alertMsg.type) {
+							if (this.state.alertMsg.type === 'tou') {
+								return (
+									<div style={{ position: 'fixed', zIndex: 999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
+										<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
+											<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Terms of Use changes</h2>
+											<div
+												style={{
+													height: '150px',
+													width: '350px',
+													border: '1px solid black',
+													borderRadius: '5px',
+													background: '#777',
+													padding: '3px',
+													overflowY: 'scroll'
+												}}
+											>
+												{this.state.alertMsg.data.map((change, index) => {
+													return (
+														<div key={index}>
+															<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Version {change.changeVer}</h4>
+															<p style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{change.changeDesc}</p>
+														</div>
+													);
+												})}
+											</div>
+											<p>
+												<a href="/tou" target="_blank" style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+													Click here to read the full Terms of Use.
+												</a>
+											</p>
+											<input type="checkbox" id="touCheckBox" style={{ height: '16px', width: '16px' }} />
+											<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif', cursor: 'pointer' }}>
+												{' '}
+												I agree to the Terms of Use changes.
+											</label>
+											<br />
+											<input
+												type="button"
+												value="Dismiss"
+												style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
+												onClick={this.touConfirmButton}
+												id="touButton"
+											/>
+										</div>
+									</div>
+								);
+							}
 						}
 					})()}
-				</div>
-			</section>
+
+					<div className={classes}>
+						<Main
+							userInfo={this.props.userInfo}
+							midSection={this.props.midSection}
+							gameInfo={this.props.gameInfo}
+							onSeatingUser={this.handleSeatingUser}
+							quickDefault={this.makeQuickDefault}
+							onClickedTakeSeat={this.handleSeatingUser}
+							userList={this.props.userList}
+							socket={socket}
+							version={this.props.version}
+							gameList={this.props.gameList}
+							allEmotes={this.state.allEmotes}
+						/>
+
+						{(() => {
+							if (
+								(this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
+								(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)
+							) {
+								return (
+									<RightSidebar
+										gameInfo={this.props.gameInfo}
+										userInfo={this.props.userInfo}
+										userList={this.props.userList}
+										generalChats={this.props.generalChats}
+										socket={socket}
+										midSection={this.props.midSection}
+										allEmotes={this.state.allEmotes}
+									/>
+								);
+							}
+						})()}
+					</div>
+				</section>
+			</TopLevelErrorBoundry>
 		);
 	}
 }
