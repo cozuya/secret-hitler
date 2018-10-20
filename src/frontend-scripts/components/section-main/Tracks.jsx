@@ -593,14 +593,14 @@ class Tracks extends React.Component {
 						className={(() => {
 							let classes = 'track-flipper track-flipper-bottom';
 
-							if (gameInfo.gameState.isTracksFlipped) {
+							if (gameInfo.gameState.isTracksFlipped || (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled)) {
 								classes += ' flipped';
 							}
 
 							return classes;
 						})()}
 					>
-						<div className="track bottom-track-front" />
+					<div className="track bottom-track-front" />
 						{renderFasTrack()}
 					</div>
 					{renderElectionTracker()}
