@@ -41,17 +41,11 @@ class Gamenotes extends React.Component {
 
 	resizeDragStart() {}
 
-<<<<<<< HEAD
-	noteEnd(e) {
-		e.preventDefault();
-		if (!this.state.isResizing && this.lastValidX == e.clientX && this.lastValidY == e.clientY) {
-=======
 	noteDrop(e) {
 		e.preventDefault();
 		if (!this.state.isResizing) {
 			const offset = e.dataTransfer.getData('coordinates/text').split(',');
 
->>>>>>> 376eef7600f9b9f62c09e6e541e962c5a2d542e5
 			this.setState({
 				top: e.clientY + parseInt(offset[1], 10),
 				left: e.clientX + parseInt(offset[0], 10)
@@ -72,16 +66,10 @@ class Gamenotes extends React.Component {
 	noteDragStart(e) {
 		const style = window.getComputedStyle(e.target, null);
 
-<<<<<<< HEAD
-		this.dragOffX = parseInt(style.getPropertyValue('left'), 10) - e.clientX;
-		this.dragOffY = parseInt(style.getPropertyValue('top'), 10) - e.clientY;
-		e.dataTransfer.effectAllowed = 'none';
-=======
 		e.dataTransfer.setData(
 			'coordinates/text',
 			parseInt(style.getPropertyValue('left'), 10) - e.clientX + ',' + (parseInt(style.getPropertyValue('top'), 10) - e.clientY)
 		);
->>>>>>> 376eef7600f9b9f62c09e6e541e962c5a2d542e5
 	}
 
 	render() {
@@ -117,4 +105,7 @@ Gamenotes.propTypes = {
 	value: PropTypes.string
 };
 
-export default connect(null, mapDispatchToProps)(Gamenotes);
+export default connect(
+	null,
+	mapDispatchToProps
+)(Gamenotes);
