@@ -5,7 +5,10 @@ import PropTypes from 'prop-types';
 
 const mapDispatchToProps = dispatch => ({
 		toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus))
-	});
+	}),
+	dragOverFn = e => {
+		e.preventDefault();
+	};
 
 class Gamenotes extends React.Component {
 	constructor() {
@@ -14,9 +17,8 @@ class Gamenotes extends React.Component {
 		this.clearNotes = this.clearNotes.bind(this);
 		this.noteDragStart = this.noteDragStart.bind(this);
 		this.dismissNotes = this.dismissNotes.bind(this);
-		this.noteEnd = this.noteEnd.bind(this);
+		this.noteDrop = this.noteDrop.bind(this);
 		this.resizeDragStart = this.resizeDragStart.bind(this);
-		this.dragOver = this.dragOver.bind(this);
 
 		this.state = {
 			top: 110,
@@ -25,11 +27,6 @@ class Gamenotes extends React.Component {
 			height: 320,
 			isResizing: false
 		};
-
-		this.dragOffX = 0;
-		this.dragOffY = 0;
-		this.lastValidX = 0;
-		this.lastValidY = 0;
 	}
 
 	clearNotes() {
@@ -44,40 +41,35 @@ class Gamenotes extends React.Component {
 
 	resizeDragStart() {}
 
-	noteEnd(e) {
+	noteDrop(e) {
 		e.preventDefault();
-		e.dataTransfer.effectAllowed = 'drag';
 		if (!this.state.isResizing) {
+			const offset = e.dataTransfer.getData('coordinates/text').split(',');
+
 			this.setState({
-				top: this.lastValidY + this.dragOffY,
-				left: this.lastValidX + this.dragOffX
+				top: e.clientY + parseInt(offset[1], 10),
+				left: e.clientX + parseInt(offset[0], 10)
 			});
 		}
 	}
 
-	dragOver(e) {
-		e.preventDefault();
-		e.dataTransfer.effectAllowed = 'none';
-		this.lastValidX = e.clientX;
-		this.lastValidY = e.clientY;
-	}
-
 	componentDidMount() {
-		document.body.addEventListener('dragover', this.dragOver);
-		document.body.addEventListener('dragend', this.noteEnd);
+		document.body.addEventListener('dragover', dragOverFn);
+		document.body.addEventListener('drop', this.noteDrop);
 	}
 
 	componentWillUnmount() {
-		document.body.removeEventListener('dragover', this.dragOver);
-		document.body.removeEventListener('dragend', this.noteEnd);
+		document.body.removeEventListener('dragover', dragOverFn);
+		document.body.removeEventListener('drop', this.noteDrop);
 	}
 
 	noteDragStart(e) {
 		const style = window.getComputedStyle(e.target, null);
 
-		this.dragOffX = parseInt(style.getPropertyValue('left'), 10) - e.clientX;
-		this.dragOffY = parseInt(style.getPropertyValue('top'), 10) - e.clientY;
-		e.dataTransfer.effectAllowed = 'drag';
+		e.dataTransfer.setData(
+			'coordinates/text',
+			parseInt(style.getPropertyValue('left'), 10) - e.clientX + ',' + (parseInt(style.getPropertyValue('top'), 10) - e.clientY)
+		);
 	}
 
 	render() {
@@ -90,7 +82,7 @@ class Gamenotes extends React.Component {
 				draggable="true"
 				onDragStart={this.noteDragStart}
 				className="notes-container"
-				style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, height: `${this.state.height}px`, width: `${this.state.width}px`, zIndex:9999999 }}
+				style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, height: `${this.state.height}px`, width: `${this.state.width}px` }}
 			>
 				<div className="notes-header">
 					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
