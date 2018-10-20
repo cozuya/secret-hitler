@@ -1779,7 +1779,7 @@ export default class Creategame extends React.Component {
 									this.casualgame = c;
 								}}
 							>
-								<input type="checkbox" name="casualgame" defaultChecked={false} checked={this.state.casualgame} />
+								<input type="checkbox" name="casualgame" checked={this.state.casualgame} />
 							</div>
 						</div>
 						{this.props.userInfo.gameSettings &&
@@ -1807,7 +1807,7 @@ export default class Creategame extends React.Component {
 									this.customgame = c;
 								}}
 							>
-								<input type="checkbox" name="customgame" defaultChecked={false} checked={this.state.customGameSettings.enabled} />
+								<input type="checkbox" name="customgame" checked={this.state.customGameSettings.enabled} />
 							</div>
 						</div>
 					</div>
