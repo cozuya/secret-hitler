@@ -914,7 +914,7 @@ export default class Creategame extends React.Component {
 						<div style={{ display: 'flex', width: '100%' }}>{renderLib()}</div>
 					</div>
 				</div>
-				<div className="eight wide column ui grid" style={{ marginTop: '-1rem', marginLeft: '3rem' }}>
+				<div className="eight wide column ui grid" style={{ marginTop: '-1rem', marginLeft: '3rem', marginBottom: '3rem' }}>
 					<div className="row">
 						<div className="eight wide column">
 							<h4 className="ui header">Liberal policies</h4>
@@ -965,8 +965,22 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row">{this.renderDeck()}</div>
 				</div>
+				{this.renderErrors()}
 			</React.Fragment>
 		);
+	}
+
+	renderErrors() {
+		const errs = [];
+		if (this.state.customGameSettings.fascistCount+1 >= this.state.customGameSliderValue/2) errs.push('There must be a liberal majority when the game starts.');
+		if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) errs.push('Veto Zone cannot be active when the game starts.');
+		if (errs.length > 0) {
+			return (
+				<div className="sixteen wide column">
+					{errs.map(e => <h4 className="ui header" style={{color:'red'}}>{e}</h4>)}
+				</div>
+			);
+		}
 	}
 
 	render() {
@@ -1241,10 +1255,6 @@ export default class Creategame extends React.Component {
 					</div>
 					{this.state.customGameSettings.enabled && this.renderCustomGames()}
 				</div>
-				<br />
-				<br />
-				<br />
-
 				<div className="ui grid centered footer">
 					<div onClick={this.createNewGame} className="ui button primary">
 						Create game
