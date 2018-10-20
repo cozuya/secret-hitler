@@ -159,6 +159,36 @@
 			height: 25px;
 		}
 	}
+
+	.custom-fastrack-powerslot {
+		width: 90px;
+		height: 120px;
+		left: 0px;
+		top: 0px;
+		position: absolute;
+	}
+	.custom-fastrack-vetozone {
+		background-image: url('../../public/images/customtracks/vetoZone.png');
+	}
+	.custom-fastrack-vetozone-light {
+		background-image: url('../../public/images/customtracks/vetoZoneLight.png');
+	}
+	.rolecard {
+		width: 56px;
+		height: 76px;
+		display: inline-block;
+		border-radius: 4px;
+		background-size: cover;
+		margin-right: 4px;
+	}
+	.deckcard {
+		width: 56px;
+		height: 76px;
+		display: inline-block;
+		border-radius: 4px;
+		background-size: cover;
+		margin-bottom: -4rem;
+	}
 }
 
 #main .scrollbar-container-main .ui.grid .timedmode-slider {

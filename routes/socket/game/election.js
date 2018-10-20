@@ -1,6 +1,5 @@
 const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../util');
-const { startElection, shufflePolicies } = require('./common');
-const { selectChancellor } = require('./election-util');
+const { startElection, shufflePolicies, failedElection } = require('./common');
 const { sendGameList } = require('../user-requests');
 const {
 	specialElection,
@@ -992,58 +991,6 @@ module.exports.selectVoting = (passport, game, data) => {
 	const { experiencedMode } = game.general;
 	const player = seatedPlayers.find(player => player.userName === passport.user);
 	const playerIndex = seatedPlayers.findIndex(play => play.userName === passport.user);
-	const failedElection = () => {
-		game.trackState.electionTrackerCount++;
-
-		if (game.trackState.electionTrackerCount >= 3) {
-			const chat = {
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{
-						text: 'The third consecutive election has failed and the top policy is enacted.'
-					}
-				]
-			};
-
-			game.gameState.previousElectedGovernment = [];
-
-			if (!game.general.disableGamechat) {
-				seatedPlayers.forEach(player => {
-					player.gameChats.push(chat);
-				});
-
-				game.private.unSeatedGameChats.push(chat);
-			}
-
-			if (!game.gameState.undrawnPolicyCount) {
-				shufflePolicies(game);
-			}
-
-			game.gameState.undrawnPolicyCount--;
-			setTimeout(() => {
-				enactPolicy(game, game.private.policies.shift());
-			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
-		} else {
-			if (game.general.timedMode) {
-				game.gameState.timedModeEnabled = true;
-				game.private.timerId = setTimeout(() => {
-					if (game.gameState.timedModeEnabled && game.gameState.phase === 'selectingChancellor') {
-						const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
-
-						game.gameState.pendingChancellorIndex = null;
-						game.gameState.timedModeEnabled = false;
-
-						selectChancellor(null, { user: game.private.seatedPlayers[game.gameState.presidentIndex].userName }, game, { chancellorIndex: chancellorIndex });
-					}
-				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
-			}
-
-			setTimeout(() => {
-				startElection(game);
-			}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000);
-		}
-	};
 	const passedElection = () => {
 		const { gameState } = game;
 		const { presidentIndex } = gameState;
@@ -1307,7 +1254,7 @@ module.exports.selectVoting = (passport, game, data) => {
 					game.gameState.pendingChancellorIndex = null;
 				}
 
-				failedElection();
+				failedElection(game, experiencedMode);
 			}
 
 			sendInProgressGameUpdate(game);

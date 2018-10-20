@@ -40,10 +40,10 @@ export default class Creategame extends React.Component {
 			customGameSettings: {
 				enabled: false,
 				// Valid powers: investigate, deckpeek, election, bullet; null for no power
-				powers: [null, 'investigate', 'election', 'bullet', 'bullet'], // last "power" is always a fas victory
+				powers: [null, null, null, null, null], // last "power" is always a fas victory
 				hitlerZone: 3, // 1-5
 				vetoZone: 5, // 1-5, must be larger than fas track state
-				fascistCount: 2, // 1-3, does not include hit
+				fascistCount: 1, // 1-3, does not include hit
 				hitKnowsFas: false,
 				deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 				trackState: { lib: 0, fas: 0 }
@@ -91,11 +91,41 @@ export default class Creategame extends React.Component {
 
 		$(this._select).dropdown();
 
-		$(this.power1).dropdown();
-		$(this.power2).dropdown();
-		$(this.power3).dropdown();
-		$(this.power4).dropdown();
-		$(this.power5).dropdown();
+		$(this.power1).dropdown({
+			onChange(val) {
+				self.state.customGameSettings.powers[0] = val;
+				self.state.customGameSettings.enabled = true;
+				self.setState({casualgame:true});
+			}
+		});
+		$(this.power2).dropdown({
+			onChange(val) {
+				self.state.customGameSettings.powers[1] = val;
+				self.state.customGameSettings.enabled = true;
+				self.setState({casualgame:true});
+			}
+		});
+		$(this.power3).dropdown({
+			onChange(val) {
+				self.state.customGameSettings.powers[2] = val;
+				self.state.customGameSettings.enabled = true;
+				self.setState({casualgame:true});
+			}
+		});
+		$(this.power4).dropdown({
+			onChange(val) {
+				self.state.customGameSettings.powers[3] = val;
+				self.state.customGameSettings.enabled = true;
+				self.setState({casualgame:true});
+			}
+		});
+		$(this.power5).dropdown({
+			onChange(val) {
+				self.state.customGameSettings.powers[4] = val;
+				self.state.customGameSettings.enabled = true;
+				self.setState({casualgame:true});
+			}
+		});
 
 		$(this.verified).checkbox({
 			onChecked() {
@@ -210,10 +240,7 @@ export default class Creategame extends React.Component {
 				self.setState({ casualgame: true });
 			},
 			onUnchecked() {
-				if ((self.state.timedMode && self.state.timedSliderValue[0] < 30) || self.state.customGameSettings.enabled) {
-					$(this.casualgame).attr('checked', true);
-					self.setState({ casualgame: true });
-				}
+				if ((self.state.timedMode && self.state.timedSliderValue[0] < 30) || self.state.customGameSettings.enabled) self.setState({ casualgame: true });
 				else self.setState({ casualgame: false });
 			}
 		});
@@ -230,8 +257,7 @@ export default class Creategame extends React.Component {
 		$(this.customgame).checkbox({
 			onChecked() {
 				self.state.customGameSettings.enabled = true;
-				self.setState({});
-				if (!self.state.casualgame) $(this.casualgame).click();
+				self.setState({casualgame:true});
 			},
 			onUnchecked() {
 				self.state.customGameSettings.enabled = false;
@@ -242,13 +268,64 @@ export default class Creategame extends React.Component {
 		$(this.hitseesfas).checkbox({
 			onChecked() {
 				self.state.customGameSettings.hitKnowsFas = true;
-				self.setState({});
+				self.state.customGameSettings.enabled = true;
+				self.setState({casualgame:true});
 			},
 			onUnchecked() {
 				self.state.customGameSettings.hitKnowsFas = false;
-				self.setState({});
+				self.state.customGameSettings.enabled = true;
+				self.setState({casualgame:true});
 			}
 		});
+	}
+
+	sliderNumFas(val) {
+		const { customGameSettings } = this.state;
+		customGameSettings.fascistCount = val[0];
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
+	}
+
+	sliderHitlerZone(val) {
+		const { customGameSettings } = this.state;
+		customGameSettings.hitlerZone = val[0];
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
+	}
+
+	sliderVetoZone(val) {
+		const { customGameSettings } = this.state;
+		customGameSettings.vetoZone = val[0];
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
+	}
+
+	sliderDeckLib(val) {
+		const { customGameSettings } = this.state;
+		customGameSettings.deckState.lib = val[0];
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
+	}
+
+	sliderDeckFas(val) {
+		const { customGameSettings } = this.state;
+		customGameSettings.deckState.fas = val[0];
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
+	}
+
+	sliderTrackLib(val) {
+		const { customGameSettings } = this.state;
+		customGameSettings.trackState.lib = val[0];
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
+	}
+
+	sliderTrackFas(val) {
+		const { customGameSettings } = this.state;
+		customGameSettings.trackState.fas = val[0];
+		customGameSettings.enabled = true;
+		this.setState({casualgame:true,customGameSettings});
 	}
 
 	sliderChange(sliderValues) {
@@ -312,20 +389,6 @@ export default class Creategame extends React.Component {
 				privatePassword: this.state.privateShowing ? $(this.privategamepassword).val() : false,
 				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
 			};
-			if (data.customGameSettings && data.customGameSettings.enabled) {
-				data.customGameSettings.powers[0] = $creategame.find('div.power1val input').val();
-				data.customGameSettings.powers[1] = $creategame.find('div.power2val input').val();
-				data.customGameSettings.powers[2] = $creategame.find('div.power3val input').val();
-				data.customGameSettings.powers[3] = $creategame.find('div.power4val input').val();
-				data.customGameSettings.powers[4] = $creategame.find('div.power5val input').val();
-				data.customGameSettings.trackState.lib = $creategame.find('div.libtrack div.rc-slider-handle').attr('aria-valuenow') * 1;
-				data.customGameSettings.trackState.fas = $creategame.find('div.fastrack div.rc-slider-handle').attr('aria-valuenow') * 1;
-				data.customGameSettings.deckState.lib = $creategame.find('div.libpolicies div.rc-slider-handle').attr('aria-valuenow') * 1;
-				data.customGameSettings.deckState.fas = $creategame.find('div.faspolicies div.rc-slider-handle').attr('aria-valuenow') * 1;
-				data.customGameSettings.hitlerZone = $creategame.find('div.hitlerzone div.rc-slider-handle').attr('aria-valuenow') * 1;
-				data.customGameSettings.vetoZone = $creategame.find('div.vetozone div.rc-slider-handle').attr('aria-valuenow') * 1;
-				data.customGameSettings.fascistCount = $creategame.find('div.fascount div.rc-slider-handle').attr('aria-valuenow') * 1;
-			}
 
 			if (this.state.isTourny) {
 				game.general.tournyInfo = {
@@ -1206,9 +1269,7 @@ export default class Creategame extends React.Component {
 	}
 
 	timedSliderChange(timedSliderValue) {
-		if (timedSliderValue < 30 && !this.state.casualgame) {
-			$(this.casualgame).click();
-		}
+		if (timedSliderValue < 30) this.state.casualgame = true;
 		this.setState({ timedSliderValue });
 	}
 
@@ -1222,6 +1283,7 @@ export default class Creategame extends React.Component {
 			return null;
 		}
 		const player = userList.list.find(p => p.userName === userInfo.userName);
+		if (!player) return null;
 		const isSeason = !userInfo.gameSettings.disableSeasonal;
 		const playerElo = player.eloSeason;
 		const playerEloNonseason = player.eloOverall;
@@ -1235,10 +1297,10 @@ export default class Creategame extends React.Component {
 							<Range
 								onChange={this.eloSliderChange}
 								min={1675}
-								max={2300}
+								max={2000}
 								defaultValue={[1675]}
 								value={this.state.eloSliderValue}
-								marks={{ 1675: '1675', 1800: '1800', 1900: '1900', 2000: '2000', 2300: '2300' }}
+								marks={{1675: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' }}
 							/>
 						</div>
 					)}
@@ -1259,8 +1321,230 @@ export default class Creategame extends React.Component {
 		}
 	}
 
+	renderDeck() {
+		const { customGameSettings } = this.state;
+		const numLib = customGameSettings.deckState.lib - customGameSettings.trackState.lib;
+		const numFas = customGameSettings.deckState.fas - customGameSettings.trackState.fas;
+		const data = _.range(0, numLib).map(val => {
+			return (
+				<div className="deckcard" style={{backgroundImage: "url('../images/cards/liberalp-l.png')"}} />
+			);
+		}).concat(
+			_.range(0, numFas).map(val => {
+			return (
+				<div className="deckcard" style={{backgroundImage: "url('../images/cards/fascistp-l.png')"}} />
+			);
+		}));
+		const thirds = [];
+		data.forEach((elem, idx) => {
+			if (thirds[Math.floor(idx / 3)] == null) thirds[Math.floor(idx / 3)] = [];
+			thirds[Math.floor(idx / 3)][(idx % 3)] = elem;
+		});
+		return thirds.map(val => {
+			return (
+				<div className="column" style={{width:'4em',marginRight:'-1em'}}>
+					{val}
+				</div>
+			);
+		});
+	}
+
+	renderFasTrack() {
+		const { customGameSettings } = this.state;
+		const offX = 94;
+		const offY = 6;
+		const powers = customGameSettings.powers.map(p => {
+			if (p == null || p == '' || p == 'null') return 'None';
+			if (p == 'investigate') return 'Inv';
+			if (p == 'deckpeek') return 'Peek';
+			if (p == 'election') return 'Elect';
+			if (p == 'bullet') return 'Gun';
+			return null;
+		});
+		const numFas = customGameSettings.fascistCount;
+		const hzStart = customGameSettings.hitlerZone;
+		const vzPoint = customGameSettings.vetoZone;
+		const hitKnowsFas = customGameSettings.hitKnowsFas;
+		const getHZ = pos => {
+			if (pos < hzStart) return 'Off';
+			if (pos > hzStart) return 'On';
+			return 'Start';
+		};
+		return (
+			<div style={{
+				backgroundSize: 'contain',
+				backgroundRepeat: 'no-repeat',
+				top: 0,
+				left: 0,
+				height: '220px',
+				width: '650px',
+				margin: 'auto',
+				backgroundImage: "url('../images/customtracks/fasTrack.png')"
+			}}>
+				<span
+					style={{
+						width: '92px',
+						height: '120px',
+						left: `${offX + 137}px`,
+						top: `${offY + 58}px`,
+						position: 'absolute',
+						backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(1)}.png)`
+					}}
+				/>
+				<span
+					style={{
+						width: '92px',
+						height: '120px',
+						left: `${offX + 229}px`,
+						top: `${offY + 58}px`,
+						position: 'absolute',
+						backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(2)}.png)`
+					}}
+				/>
+				<span
+					style={{
+						width: '92px',
+						height: '120px',
+						left: `${offX + 321}px`,
+						top: `${offY + 58}px`,
+						position: 'absolute',
+						backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(3)}.png)`
+					}}
+				/>
+				<span
+					style={{
+						width: '92px',
+						height: '120px',
+						left: `${offX + 413}px`,
+						top: `${offY + 58}px`,
+						position: 'absolute',
+						backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(4)}.png)`
+					}}
+				/>
+				<span
+					style={{
+						width: '92px',
+						height: '120px',
+						left: `${offX + 505}px`,
+						top: `${offY + 58}px`,
+						position: 'absolute',
+						backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(5)}.png)`
+					}}
+				/>
+
+				<span
+					className="custom-fastrack-powerslot"
+					style={{
+						left: `${offX + 58}px`,
+						top: `${offY + 58}px`,
+						backgroundImage: `url(../images/customtracks/fasPower${powers[0]}${hzStart <= 0 ? 'Light' : ''}.png)`
+					}}
+				>
+					{vzPoint == 1 && (
+						<span className={'custom-fastrack-powerslot ' + (hzStart <= 0 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+					)}
+				</span>
+				<span
+					className="custom-fastrack-powerslot"
+					style={{
+						left: `${offX + 150}px`,
+						top: `${offY + 58}px`,
+						backgroundImage: `url(../images/customtracks/fasPower${powers[1]}${hzStart <= 1 ? 'Light' : ''}.png)`
+					}}
+				>
+					{vzPoint == 2 && (
+						<span className={'custom-fastrack-powerslot ' + (hzStart <= 1 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+					)}
+				</span>
+				<span
+					className="custom-fastrack-powerslot"
+					style={{
+						left: `${offX + 242}px`,
+						top: `${offY + 58}px`,
+						backgroundImage: `url(../images/customtracks/fasPower${powers[2]}${hzStart <= 2 ? 'Light' : ''}.png)`
+					}}
+				>
+					{vzPoint == 3 && (
+						<span className={'custom-fastrack-powerslot ' + (hzStart <= 2 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+					)}
+				</span>
+				<span
+					className="custom-fastrack-powerslot"
+					style={{
+						left: `${offX + 334}px`,
+						top: `${offY + 58}px`,
+						backgroundImage: `url(../images/customtracks/fasPower${powers[3]}${hzStart <= 3 ? 'Light' : ''}.png)`
+					}}
+				>
+					{vzPoint == 4 && (
+						<span className={'custom-fastrack-powerslot ' + (hzStart <= 3 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+					)}
+				</span>
+				<span
+					className="custom-fastrack-powerslot"
+					style={{
+						left: `${offX + 426}px`,
+						top: `${offY + 58}px`,
+						backgroundImage: `url(../images/customtracks/fasPower${powers[4]}${hzStart <= 4 ? 'Light' : ''}.png)`
+					}}
+				>
+					{vzPoint == 5 && (
+						<span className={'custom-fastrack-powerslot ' + (hzStart <= 4 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+					)}
+				</span>
+				<span
+					className="custom-fastrack-powerslot"
+					style={{ left: `${offX + 518}px`, top: `${offY + 58}px`, backgroundImage: 'url(../images/customtracks/fasPowerEndGame.png)' }}
+				/>
+				<span
+					style={{
+						width: '268px',
+						height: '15px',
+						left: `${offX + 336}px`,
+						top: `${offY + 60}px`,
+						position: 'absolute',
+						backgroundImage: 'url(../images/customtracks/fasTrackHZText.png)'
+					}}
+				/>
+				<span
+					style={{
+						width: '227px',
+						height: '11px',
+						left: `${offX + 220}px`,
+						top: `${offY + 186}px`,
+						position: 'absolute',
+						backgroundImage: `url(../images/customtracks/fasTrack${numFas}fas.png)`
+					}}
+				/>
+				<span
+					style={{
+						width: '227px',
+						height: '11px',
+						left: `${offX + 220}px`,
+						top: `${offY + 196}px`,
+						position: 'absolute',
+						backgroundImage: `url(../images/customtracks/fasTrack${numFas > 1 ? 'Multi' : 'Single'}${hitKnowsFas ? 'Known' : 'Unknown'}.png)`
+					}}
+				/>
+			</div>
+		);
+	}
+
 	render() {
 		const { userInfo } = this.props;
+
+		const { hitKnowsFas } = this.state.customGameSettings;
+		const renderFas = () => {
+			return _.range(0, this.state.customGameSettings.fascistCount).map(val => (
+				<div className="rolecard" style={{backgroundImage: (hitKnowsFas ? `url('../images/cards/fascist${val}.png')` : "url('../images/cards/secretrole.png')")}} />
+			));
+		};
+
+		const renderLib = () => {
+			return _.range(0, this.state.sliderValues[0] - this.state.customGameSettings.fascistCount - 1).map(val => (
+				<div className="rolecard" style={{backgroundImage: (hitKnowsFas ? `url('../images/cards/liberal${val%6}.png')` : "url('../images/cards/secretrole.png')")}} />
+			));
+		};
 
 		return (
 			<section className="creategame">
@@ -1346,7 +1630,7 @@ export default class Creategame extends React.Component {
 									value={this.state.timedSliderValue}
 									min={2}
 									max={600}
-									marks={{ 2: '2 seconds', 120: '2 minutes', 300: '5 minutes', 600: '10 minutes' }}
+									marks={{ 2: '2 seconds', 30: '', 60: '', 90: '', 120: '2 minutes', 180: '', 240: '', 300: '5 minutes', 600: '10 minutes' }}
 								/>
 							</div>
 						</div>
@@ -1495,7 +1779,7 @@ export default class Creategame extends React.Component {
 									this.casualgame = c;
 								}}
 							>
-								<input type="checkbox" name="casualgame" defaultChecked={false} />
+								<input type="checkbox" name="casualgame" checked={this.state.casualgame} />
 							</div>
 						</div>
 						{this.props.userInfo.gameSettings &&
@@ -1523,7 +1807,7 @@ export default class Creategame extends React.Component {
 									this.customgame = c;
 								}}
 							>
-								<input type="checkbox" name="customgame" defaultChecked={false} />
+								<input type="checkbox" name="customgame" checked={this.state.customGameSettings.enabled} />
 							</div>
 						</div>
 					</div>
@@ -1545,91 +1829,123 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 					<div className="row">
-						<div className="four wide column">
-							<div>
-								<h4 className="ui header">Number of fascists</h4>
-								<Range className="fascount"
-									min={1}
-									max={3}
-									defaultValue={[2]}
-									marks={{1: '1', 2: '2', 3: '3'}}
-								/>
-							</div>
-						</div>
-						<div className="four wide column">
-							<h4 className="ui header">Hitler sees fascists</h4>
-							<div className="ui fitted toggle checkbox"
-								ref={c => {
-									this.hitseesfas = c;
-								}}>
-								<input type="checkbox" name="hitseesfas" defaultChecked={false} />
-							</div>
-						</div>
-						<div className="four wide column">
+						<div className="seven wide column">
 							<div>
 								<h4 className="ui header">Hitler Zone</h4>
-								<Range className="hitlerzone"
+								<Range
 									min={1}
 									max={5}
 									defaultValue={[3]}
+									onChange={this.sliderHitlerZone.bind(this)}
+									value={[this.state.customGameSettings.hitlerZone]}
 									marks={{1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}}
 								/>
 							</div>
 						</div>
-						<div className="four wide column">
+						<div className="two wide column" />
+						<div className="seven wide column">
 							<div>
 								<h4 className="ui header">Veto Zone</h4>
-								<Range className="vetozone"
+								<Range
 									min={1}
 									max={5}
 									defaultValue={[5]}
+									onChange={this.sliderVetoZone.bind(this)}
+									value={[this.state.customGameSettings.vetoZone]}
 									marks={{1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}}
 								/>
 							</div>
 						</div>
 					</div>
 					<div className="row">
-						<div className="four wide column">
-							<div>
+						{this.renderFasTrack()}
+					</div>
+					<div className="eight wide column ui grid">
+						<div className="row">
+							<div className="eight wide column">
+								<div>
+									<h4 className="ui header">Number of fascists</h4>
+									<Range
+										min={1}
+										max={3}
+										defaultValue={[2]}
+										onChange={this.sliderNumFas.bind(this)}
+										value={[this.state.customGameSettings.fascistCount]}
+										marks={{1: '1', 2: '2', 3: '3'}}
+									/>
+								</div>
+							</div>
+							<div className="eight wide column">
+								<h4 className="ui header">Hitler sees fascists</h4>
+								<div className="ui fitted toggle checkbox"
+									ref={c => {
+										this.hitseesfas = c;
+									}}>
+									<input type="checkbox" name="hitseesfas" defaultChecked={false} />
+								</div>
+							</div>
+						</div>
+						<div className="row">
+							<div style={{display:'flex',width:'100%',marginBottom:'6px'}}>
+								<div className="rolecard" style={{backgroundImage: "url('../images/cards/hitler0.png')"}} />
+								{renderFas()}
+							</div>
+							<div style={{display:'flex',width:'100%'}}>
+								{renderLib()}
+							</div>
+						</div>
+					</div>
+					<div className="eight wide column ui grid" style={{marginTop: '-1rem', marginLeft: '3rem'}}>
+						<div className="row">
+							<div className="eight wide column">
 								<h4 className="ui header">Liberal policies</h4>
-								<Range className="libpolicies"
+								<Range
 									min={5}
 									max={8}
 									defaultValue={[6]}
+									onChange={this.sliderDeckLib.bind(this)}
+									value={[this.state.customGameSettings.deckState.lib]}
 									marks={{5: '5', 6: '6', 7: '7', 8: '8'}}
 								/>
 							</div>
-						</div>
-						<div className="four wide column">
-							<div>
+							<div className="eight wide column">
 								<h4 className="ui header">Fascist policies</h4>
-								<Range className="faspolicies"
+								<Range
 									min={10}
-									max={14}
+									max={19}
 									defaultValue={[12]}
-									marks={{10: '10', 11: '11', 12: '12', 13: '13', 14: '14'}}
+									onChange={this.sliderDeckFas.bind(this)}
+									value={[this.state.customGameSettings.deckState.fas]}
+									marks={{10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16', 17: '', 18: '', 19: '19'}}
 								/>
 							</div>
 						</div>
-						<div className="four wide column">
-							<h4 className="ui header">Starting lib policies</h4>
-							<Range className="libtrack"
-								min={0}
-								max={4}
-								defaultValue={[0]}
-								marks={{0: '0', 1: '1', 2: '2', 3: '3', 4: '4'}}
-							/>
-						</div>
-						<div className="four wide column">
-							<div>
-								<h4 className="ui header">Starting fas policies</h4>
-								<Range className="fastrack"
+						<div className="row">
+							<div className="eight wide column">
+								<h4 className="ui header">Starting lib policies</h4>
+								<Range
 									min={0}
-									max={5}
+									max={2}
 									defaultValue={[0]}
-									marks={{0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}}
+									onChange={this.sliderTrackLib.bind(this)}
+									value={[this.state.customGameSettings.trackState.lib]}
+									marks={{0: '0', 1: '1', 2: '2'}}
 								/>
 							</div>
+							<div className="eight wide column">
+								<h4 className="ui header">Starting fas policies</h4>
+								<Range
+									min={0}
+									max={2}
+									defaultValue={[0]}
+									onChange={this.sliderTrackFas.bind(this)}
+									value={[this.state.customGameSettings.trackState.fas]}
+									marks={{0: '0', 1: '1', 2: '2'}}
+								/>
+							</div>
+						</div>
+						<div className="row">
+							{this.renderDeck()}
 						</div>
 					</div>
 				</div>

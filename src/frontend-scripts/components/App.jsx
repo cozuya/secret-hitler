@@ -438,9 +438,9 @@ export class App extends React.Component {
 													overflowY: 'scroll'
 												}}
 											>
-												{this.state.alertMsg.data.map(change => {
+												{this.state.alertMsg.data.map((change, index) => {
 													return (
-														<div>
+														<div key={index}>
 															<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Version {change.changeVer}</h4>
 															<p style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{change.changeDesc}</p>
 														</div>
@@ -452,8 +452,8 @@ export class App extends React.Component {
 													Click here to read the full Terms of Use.
 												</a>
 											</p>
-											<input type="checkbox" id="touCheckBox" />
-											<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+											<input type="checkbox" id="touCheckBox" style={{ height: '16px', width: '16px' }} />
+											<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif', cursor: 'pointer' }}>
 												{' '}
 												I agree to the Terms of Use changes.
 											</label>
@@ -461,7 +461,7 @@ export class App extends React.Component {
 											<input
 												type="button"
 												value="Dismiss"
-												style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold' }}
+												style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
 												onClick={this.touConfirmButton}
 												id="touButton"
 											/>
