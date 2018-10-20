@@ -42,6 +42,7 @@ class Gamenotes extends React.Component {
 	resizeDragStart() {}
 
 	noteDrop(e) {
+		e.preventDefault();
 		if (!this.state.isResizing) {
 			const offset = e.dataTransfer.getData('text/plain').split(',');
 
