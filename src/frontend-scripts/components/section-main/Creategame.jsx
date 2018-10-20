@@ -984,7 +984,7 @@ export default class Creategame extends React.Component {
 		if (errs) {
 			return (
 				<div className="sixteen wide column">
-					{errs.map(e => <h4 className="ui header" style={{color:'red'}}>{e}</h4>)}
+					{errs.map((e, i) => <h4 key={i} className="ui header" style={{color:'red'}}>{e}</h4>)}
 				</div>
 			);
 		}
