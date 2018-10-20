@@ -45,6 +45,7 @@ class Gamenotes extends React.Component {
 	resizeDragStart() {}
 
 	noteEnd(e) {
+		e.preventDefault();
 		if (!this.state.isResizing && this.lastValidX == e.clientX && this.lastValidY == e.clientY) {
 			this.setState({
 				top: this.lastValidY + this.dragOffY,

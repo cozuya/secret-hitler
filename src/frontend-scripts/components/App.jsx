@@ -24,6 +24,44 @@ import '../../scss/style-dark.scss';
 
 const select = state => state;
 
+class TopLevelErrorBoundry extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			error: null,
+			errorInfo: null
+		};
+	}
+
+	componentDidCatch(error, errorInfo) {
+		this.setState({
+			error,
+			errorInfo
+		});
+	}
+
+	render() {
+		const { errorInfo, error } = this.state;
+
+		return errorInfo ? (
+			<div>
+				<h2>You've broken the website.</h2>
+				<p>
+					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in a recent deployment. Reload your browser
+					to get back to safety.
+				</p>
+				<details style={{ whiteSpace: 'pre-wrap' }}>
+					{error && error.toString()}
+					<br />
+					{errorInfo.componentStack}
+				</details>
+			</div>
+		) : (
+			this.props.children
+		);
+	}
+}
+
 export class App extends React.Component {
 	constructor() {
 		super();
