@@ -53,16 +53,16 @@ export default class Creategame extends React.Component {
 
 	powerPicker(slot) {
 		const name = () => {
-			if (slot == 0) return "First Power";
-			if (slot == 1) return "Second Power";
-			if (slot == 2) return "Third Power";
-			if (slot == 3) return "Fourth Power";
-			return "Fifth Power";
+			if (slot == 0) return 'First Power';
+			if (slot == 1) return 'Second Power';
+			if (slot == 2) return 'Third Power';
+			if (slot == 3) return 'Fourth Power';
+			return 'Fifth Power';
 		};
 		return (
-			<div ref={select => (this[`power${slot+1}`] = select)} className={`ui search selection dropdown power${slot+1}val`} style={{minWidth:'11em'}}>
+			<div ref={select => (this[`power${slot + 1}`] = select)} className={`ui search selection dropdown power${slot + 1}val`} style={{ minWidth: '11em' }}>
 				<h4 className="ui header">{name()}</h4>
-				<input type="hidden" name={`power${slot+1}val`} />
+				<input type="hidden" name={`power${slot + 1}val`} />
 				<i className="dropdown icon" />
 				<div className="default text">No Power</div>
 				<div className="menu">
@@ -95,35 +95,35 @@ export default class Creategame extends React.Component {
 			onChange(val) {
 				self.state.customGameSettings.powers[0] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({casualgame:true});
+				self.setState({ casualgame: true });
 			}
 		});
 		$(this.power2).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[1] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({casualgame:true});
+				self.setState({ casualgame: true });
 			}
 		});
 		$(this.power3).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[2] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({casualgame:true});
+				self.setState({ casualgame: true });
 			}
 		});
 		$(this.power4).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[3] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({casualgame:true});
+				self.setState({ casualgame: true });
 			}
 		});
 		$(this.power5).dropdown({
 			onChange(val) {
 				self.state.customGameSettings.powers[4] = val;
 				self.state.customGameSettings.enabled = true;
-				self.setState({casualgame:true});
+				self.setState({ casualgame: true });
 			}
 		});
 
@@ -257,24 +257,24 @@ export default class Creategame extends React.Component {
 		$(this.customgame).checkbox({
 			onChecked() {
 				self.state.customGameSettings.enabled = true;
-				self.setState({casualgame:true});
+				self.setState({ casualgame: true });
 			},
 			onUnchecked() {
 				self.state.customGameSettings.enabled = false;
 				self.setState({});
 			}
 		});
-		
+
 		$(this.hitseesfas).checkbox({
 			onChecked() {
 				self.state.customGameSettings.hitKnowsFas = true;
 				self.state.customGameSettings.enabled = true;
-				self.setState({casualgame:true});
+				self.setState({ casualgame: true });
 			},
 			onUnchecked() {
 				self.state.customGameSettings.hitKnowsFas = false;
 				self.state.customGameSettings.enabled = true;
-				self.setState({casualgame:true});
+				self.setState({ casualgame: true });
 			}
 		});
 	}
@@ -283,49 +283,49 @@ export default class Creategame extends React.Component {
 		const { customGameSettings } = this.state;
 		customGameSettings.fascistCount = val[0];
 		customGameSettings.enabled = true;
-		this.setState({casualgame:true,customGameSettings});
+		this.setState({ casualgame: true, customGameSettings });
 	}
 
 	sliderHitlerZone(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.hitlerZone = val[0];
 		customGameSettings.enabled = true;
-		this.setState({casualgame:true,customGameSettings});
+		this.setState({ casualgame: true, customGameSettings });
 	}
 
 	sliderVetoZone(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.vetoZone = val[0];
 		customGameSettings.enabled = true;
-		this.setState({casualgame:true,customGameSettings});
+		this.setState({ casualgame: true, customGameSettings });
 	}
 
 	sliderDeckLib(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.lib = val[0];
 		customGameSettings.enabled = true;
-		this.setState({casualgame:true,customGameSettings});
+		this.setState({ casualgame: true, customGameSettings });
 	}
 
 	sliderDeckFas(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.fas = val[0];
 		customGameSettings.enabled = true;
-		this.setState({casualgame:true,customGameSettings});
+		this.setState({ casualgame: true, customGameSettings });
 	}
 
 	sliderTrackLib(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.lib = val[0];
 		customGameSettings.enabled = true;
-		this.setState({casualgame:true,customGameSettings});
+		this.setState({ casualgame: true, customGameSettings });
 	}
 
 	sliderTrackFas(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.fas = val[0];
 		customGameSettings.enabled = true;
-		this.setState({casualgame:true,customGameSettings});
+		this.setState({ casualgame: true, customGameSettings });
 	}
 
 	sliderChange(sliderValues) {
@@ -427,741 +427,985 @@ export default class Creategame extends React.Component {
 					</div>
 
 					<div className="item" data-value="us">
-						<i className="us flag" />United States
+						<i className="us flag" />
+						United States
 					</div>
 					<div className="item" data-value="ca">
-						<i className="ca flag" />Canada
+						<i className="ca flag" />
+						Canada
 					</div>
 					<div className="item" data-value="de">
-						<i className="de flag" />Germany
+						<i className="de flag" />
+						Germany
 					</div>
 					<div className="item" data-value="gb">
-						<i className="gb flag" />United Kingdom
+						<i className="gb flag" />
+						United Kingdom
 					</div>
 					<div className="item" data-value="au">
-						<i className="au flag" />Australia
+						<i className="au flag" />
+						Australia
 					</div>
 					<div className="item" data-value="af">
-						<i className="af flag" />Afghanistan
+						<i className="af flag" />
+						Afghanistan
 					</div>
 					<div className="item" data-value="ax">
-						<i className="ax flag" />Aland Islands
+						<i className="ax flag" />
+						Aland Islands
 					</div>
 					<div className="item" data-value="al">
-						<i className="al flag" />Albania
+						<i className="al flag" />
+						Albania
 					</div>
 					<div className="item" data-value="dz">
-						<i className="dz flag" />Algeria
+						<i className="dz flag" />
+						Algeria
 					</div>
 					<div className="item" data-value="as">
-						<i className="as flag" />American Samoa
+						<i className="as flag" />
+						American Samoa
 					</div>
 					<div className="item" data-value="ad">
-						<i className="ad flag" />Andorra
+						<i className="ad flag" />
+						Andorra
 					</div>
 					<div className="item" data-value="ao">
-						<i className="ao flag" />Angola
+						<i className="ao flag" />
+						Angola
 					</div>
 					<div className="item" data-value="ai">
-						<i className="ai flag" />Anguilla
+						<i className="ai flag" />
+						Anguilla
 					</div>
 					<div className="item" data-value="ag">
-						<i className="ag flag" />Antigua
+						<i className="ag flag" />
+						Antigua
 					</div>
 					<div className="item" data-value="ar">
-						<i className="ar flag" />Argentina
+						<i className="ar flag" />
+						Argentina
 					</div>
 					<div className="item" data-value="am">
-						<i className="am flag" />Armenia
+						<i className="am flag" />
+						Armenia
 					</div>
 					<div className="item" data-value="aw">
-						<i className="aw flag" />Aruba
+						<i className="aw flag" />
+						Aruba
 					</div>
 
 					<div className="item" data-value="at">
-						<i className="at flag" />Austria
+						<i className="at flag" />
+						Austria
 					</div>
 					<div className="item" data-value="az">
-						<i className="az flag" />Azerbaijan
+						<i className="az flag" />
+						Azerbaijan
 					</div>
 					<div className="item" data-value="bs">
-						<i className="bs flag" />Bahamas
+						<i className="bs flag" />
+						Bahamas
 					</div>
 					<div className="item" data-value="bh">
-						<i className="bh flag" />Bahrain
+						<i className="bh flag" />
+						Bahrain
 					</div>
 					<div className="item" data-value="bd">
-						<i className="bd flag" />Bangladesh
+						<i className="bd flag" />
+						Bangladesh
 					</div>
 					<div className="item" data-value="bb">
-						<i className="bb flag" />Barbados
+						<i className="bb flag" />
+						Barbados
 					</div>
 					<div className="item" data-value="by">
-						<i className="by flag" />Belarus
+						<i className="by flag" />
+						Belarus
 					</div>
 					<div className="item" data-value="be">
-						<i className="be flag" />Belgium
+						<i className="be flag" />
+						Belgium
 					</div>
 					<div className="item" data-value="bz">
-						<i className="bz flag" />Belize
+						<i className="bz flag" />
+						Belize
 					</div>
 					<div className="item" data-value="bj">
-						<i className="bj flag" />Benin
+						<i className="bj flag" />
+						Benin
 					</div>
 					<div className="item" data-value="bm">
-						<i className="bm flag" />Bermuda
+						<i className="bm flag" />
+						Bermuda
 					</div>
 					<div className="item" data-value="bt">
-						<i className="bt flag" />Bhutan
+						<i className="bt flag" />
+						Bhutan
 					</div>
 					<div className="item" data-value="bo">
-						<i className="bo flag" />Bolivia
+						<i className="bo flag" />
+						Bolivia
 					</div>
 					<div className="item" data-value="ba">
-						<i className="ba flag" />Bosnia
+						<i className="ba flag" />
+						Bosnia
 					</div>
 					<div className="item" data-value="bw">
-						<i className="bw flag" />Botswana
+						<i className="bw flag" />
+						Botswana
 					</div>
 					<div className="item" data-value="bv">
-						<i className="bv flag" />Bouvet Island
+						<i className="bv flag" />
+						Bouvet Island
 					</div>
 					<div className="item" data-value="br">
-						<i className="br flag" />Brazil
+						<i className="br flag" />
+						Brazil
 					</div>
 					<div className="item" data-value="vg">
-						<i className="vg flag" />British Virgin Islands
+						<i className="vg flag" />
+						British Virgin Islands
 					</div>
 					<div className="item" data-value="bn">
-						<i className="bn flag" />Brunei
+						<i className="bn flag" />
+						Brunei
 					</div>
 					<div className="item" data-value="bg">
-						<i className="bg flag" />Bulgaria
+						<i className="bg flag" />
+						Bulgaria
 					</div>
 					<div className="item" data-value="bf">
-						<i className="bf flag" />Burkina Faso
+						<i className="bf flag" />
+						Burkina Faso
 					</div>
 					<div className="item" data-value="mm">
-						<i className="mm flag" />Burma
+						<i className="mm flag" />
+						Burma
 					</div>
 					<div className="item" data-value="bi">
-						<i className="bi flag" />Burundi
+						<i className="bi flag" />
+						Burundi
 					</div>
 					<div className="item" data-value="tc">
-						<i className="tc flag" />Caicos Islands
+						<i className="tc flag" />
+						Caicos Islands
 					</div>
 					<div className="item" data-value="kh">
-						<i className="kh flag" />Cambodia
+						<i className="kh flag" />
+						Cambodia
 					</div>
 					<div className="item" data-value="cm">
-						<i className="cm flag" />Cameroon
+						<i className="cm flag" />
+						Cameroon
 					</div>
 					<div className="item" data-value="cn">
-						<i className="cn flag" />China
+						<i className="cn flag" />
+						China
 					</div>
 
 					<div className="item" data-value="cv">
-						<i className="cv flag" />Cape Verde
+						<i className="cv flag" />
+						Cape Verde
 					</div>
 					<div className="item" data-value="ky">
-						<i className="ky flag" />Cayman Islands
+						<i className="ky flag" />
+						Cayman Islands
 					</div>
 					<div className="item" data-value="cf">
-						<i className="cf flag" />Central African Republic
+						<i className="cf flag" />
+						Central African Republic
 					</div>
 					<div className="item" data-value="td">
-						<i className="td flag" />Chad
+						<i className="td flag" />
+						Chad
 					</div>
 					<div className="item" data-value="cl">
-						<i className="cl flag" />Chile
+						<i className="cl flag" />
+						Chile
 					</div>
 
 					<div className="item" data-value="cx">
-						<i className="cx flag" />Christmas Island
+						<i className="cx flag" />
+						Christmas Island
 					</div>
 					<div className="item" data-value="cc">
-						<i className="cc flag" />Cocos Islands
+						<i className="cc flag" />
+						Cocos Islands
 					</div>
 					<div className="item" data-value="co">
-						<i className="co flag" />Colombia
+						<i className="co flag" />
+						Colombia
 					</div>
 					<div className="item" data-value="km">
-						<i className="km flag" />Comoros
+						<i className="km flag" />
+						Comoros
 					</div>
 					<div className="item" data-value="cg">
-						<i className="cg flag" />Congo Brazzaville
+						<i className="cg flag" />
+						Congo Brazzaville
 					</div>
 					<div className="item" data-value="cd">
-						<i className="cd flag" />Congo
+						<i className="cd flag" />
+						Congo
 					</div>
 					<div className="item" data-value="ck">
-						<i className="ck flag" />Cook Islands
+						<i className="ck flag" />
+						Cook Islands
 					</div>
 					<div className="item" data-value="cr">
-						<i className="cr flag" />Costa Rica
+						<i className="cr flag" />
+						Costa Rica
 					</div>
 					<div className="item" data-value="ci">
-						<i className="ci flag" />Cote Divoire
+						<i className="ci flag" />
+						Cote Divoire
 					</div>
 					<div className="item" data-value="hr">
-						<i className="hr flag" />Croatia
+						<i className="hr flag" />
+						Croatia
 					</div>
 					<div className="item" data-value="cu">
-						<i className="cu flag" />Cuba
+						<i className="cu flag" />
+						Cuba
 					</div>
 					<div className="item" data-value="cy">
-						<i className="cy flag" />Cyprus
+						<i className="cy flag" />
+						Cyprus
 					</div>
 					<div className="item" data-value="cz">
-						<i className="cz flag" />Czech Republic
+						<i className="cz flag" />
+						Czech Republic
 					</div>
 					<div className="item" data-value="dk">
-						<i className="dk flag" />Denmark
+						<i className="dk flag" />
+						Denmark
 					</div>
 					<div className="item" data-value="dj">
-						<i className="dj flag" />Djibouti
+						<i className="dj flag" />
+						Djibouti
 					</div>
 					<div className="item" data-value="dm">
-						<i className="dm flag" />Dominica
+						<i className="dm flag" />
+						Dominica
 					</div>
 					<div className="item" data-value="do">
-						<i className="do flag" />Dominican Republic
+						<i className="do flag" />
+						Dominican Republic
 					</div>
 					<div className="item" data-value="ec">
-						<i className="ec flag" />Ecuador
+						<i className="ec flag" />
+						Ecuador
 					</div>
 					<div className="item" data-value="eg">
-						<i className="eg flag" />Egypt
+						<i className="eg flag" />
+						Egypt
 					</div>
 					<div className="item" data-value="sv">
-						<i className="sv flag" />El Salvador
+						<i className="sv flag" />
+						El Salvador
 					</div>
 					<div className="item" data-value="gq">
-						<i className="gq flag" />Equatorial Guinea
+						<i className="gq flag" />
+						Equatorial Guinea
 					</div>
 					<div className="item" data-value="er">
-						<i className="er flag" />Eritrea
+						<i className="er flag" />
+						Eritrea
 					</div>
 					<div className="item" data-value="ee">
-						<i className="ee flag" />Estonia
+						<i className="ee flag" />
+						Estonia
 					</div>
 					<div className="item" data-value="et">
-						<i className="et flag" />Ethiopia
+						<i className="et flag" />
+						Ethiopia
 					</div>
 					<div className="item" data-value="eu">
-						<i className="eu flag" />European Union
+						<i className="eu flag" />
+						European Union
 					</div>
 					<div className="item" data-value="fk">
-						<i className="fk flag" />Falkland Islands
+						<i className="fk flag" />
+						Falkland Islands
 					</div>
 					<div className="item" data-value="fo">
-						<i className="fo flag" />Faroe Islands
+						<i className="fo flag" />
+						Faroe Islands
 					</div>
 					<div className="item" data-value="fj">
-						<i className="fj flag" />Fiji
+						<i className="fj flag" />
+						Fiji
 					</div>
 					<div className="item" data-value="fi">
-						<i className="fi flag" />Finland
+						<i className="fi flag" />
+						Finland
 					</div>
 					<div className="item" data-value="fr">
-						<i className="fr flag" />France
+						<i className="fr flag" />
+						France
 					</div>
 					<div className="item" data-value="gf">
-						<i className="gf flag" />French Guiana
+						<i className="gf flag" />
+						French Guiana
 					</div>
 					<div className="item" data-value="pf">
-						<i className="pf flag" />French Polynesia
+						<i className="pf flag" />
+						French Polynesia
 					</div>
 					<div className="item" data-value="tf">
-						<i className="tf flag" />French Territories
+						<i className="tf flag" />
+						French Territories
 					</div>
 					<div className="item" data-value="ga">
-						<i className="ga flag" />Gabon
+						<i className="ga flag" />
+						Gabon
 					</div>
 					<div className="item" data-value="gm">
-						<i className="gm flag" />Gambia
+						<i className="gm flag" />
+						Gambia
 					</div>
 					<div className="item" data-value="ge">
-						<i className="ge flag" />Georgia
+						<i className="ge flag" />
+						Georgia
 					</div>
 
 					<div className="item" data-value="gh">
-						<i className="gh flag" />Ghana
+						<i className="gh flag" />
+						Ghana
 					</div>
 					<div className="item" data-value="gi">
-						<i className="gi flag" />Gibraltar
+						<i className="gi flag" />
+						Gibraltar
 					</div>
 					<div className="item" data-value="gr">
-						<i className="gr flag" />Greece
+						<i className="gr flag" />
+						Greece
 					</div>
 					<div className="item" data-value="gl">
-						<i className="gl flag" />Greenland
+						<i className="gl flag" />
+						Greenland
 					</div>
 					<div className="item" data-value="gd">
-						<i className="gd flag" />Grenada
+						<i className="gd flag" />
+						Grenada
 					</div>
 					<div className="item" data-value="gp">
-						<i className="gp flag" />Guadeloupe
+						<i className="gp flag" />
+						Guadeloupe
 					</div>
 					<div className="item" data-value="gu">
-						<i className="gu flag" />Guam
+						<i className="gu flag" />
+						Guam
 					</div>
 					<div className="item" data-value="gt">
-						<i className="gt flag" />Guatemala
+						<i className="gt flag" />
+						Guatemala
 					</div>
 					<div className="item" data-value="gw">
-						<i className="gw flag" />Guinea-Bissau
+						<i className="gw flag" />
+						Guinea-Bissau
 					</div>
 					<div className="item" data-value="gn">
-						<i className="gn flag" />Guinea
+						<i className="gn flag" />
+						Guinea
 					</div>
 					<div className="item" data-value="gy">
-						<i className="gy flag" />Guyana
+						<i className="gy flag" />
+						Guyana
 					</div>
 					<div className="item" data-value="ht">
-						<i className="ht flag" />Haiti
+						<i className="ht flag" />
+						Haiti
 					</div>
 					<div className="item" data-value="hm">
-						<i className="hm flag" />Heard Island
+						<i className="hm flag" />
+						Heard Island
 					</div>
 					<div className="item" data-value="hn">
-						<i className="hn flag" />Honduras
+						<i className="hn flag" />
+						Honduras
 					</div>
 					<div className="item" data-value="hk">
-						<i className="hk flag" />Hong Kong
+						<i className="hk flag" />
+						Hong Kong
 					</div>
 					<div className="item" data-value="hu">
-						<i className="hu flag" />Hungary
+						<i className="hu flag" />
+						Hungary
 					</div>
 					<div className="item" data-value="is">
-						<i className="is flag" />Iceland
+						<i className="is flag" />
+						Iceland
 					</div>
 					<div className="item" data-value="in">
-						<i className="in flag" />India
+						<i className="in flag" />
+						India
 					</div>
 					<div className="item" data-value="io">
-						<i className="io flag" />Indian Ocean Territory
+						<i className="io flag" />
+						Indian Ocean Territory
 					</div>
 					<div className="item" data-value="id">
-						<i className="id flag" />Indonesia
+						<i className="id flag" />
+						Indonesia
 					</div>
 					<div className="item" data-value="ir">
-						<i className="ir flag" />Iran
+						<i className="ir flag" />
+						Iran
 					</div>
 					<div className="item" data-value="iq">
-						<i className="iq flag" />Iraq
+						<i className="iq flag" />
+						Iraq
 					</div>
 					<div className="item" data-value="ie">
-						<i className="ie flag" />Ireland
+						<i className="ie flag" />
+						Ireland
 					</div>
 					<div className="item" data-value="il">
-						<i className="il flag" />Israel
+						<i className="il flag" />
+						Israel
 					</div>
 					<div className="item" data-value="it">
-						<i className="it flag" />Italy
+						<i className="it flag" />
+						Italy
 					</div>
 					<div className="item" data-value="jm">
-						<i className="jm flag" />Jamaica
+						<i className="jm flag" />
+						Jamaica
 					</div>
 					<div className="item" data-value="jp">
-						<i className="jp flag" />Japan
+						<i className="jp flag" />
+						Japan
 					</div>
 					<div className="item" data-value="jo">
-						<i className="jo flag" />Jordan
+						<i className="jo flag" />
+						Jordan
 					</div>
 					<div className="item" data-value="kz">
-						<i className="kz flag" />Kazakhstan
+						<i className="kz flag" />
+						Kazakhstan
 					</div>
 					<div className="item" data-value="ke">
-						<i className="ke flag" />Kenya
+						<i className="ke flag" />
+						Kenya
 					</div>
 					<div className="item" data-value="ki">
-						<i className="ki flag" />Kiribati
+						<i className="ki flag" />
+						Kiribati
 					</div>
 					<div className="item" data-value="kw">
-						<i className="kw flag" />Kuwait
+						<i className="kw flag" />
+						Kuwait
 					</div>
 					<div className="item" data-value="kg">
-						<i className="kg flag" />Kyrgyzstan
+						<i className="kg flag" />
+						Kyrgyzstan
 					</div>
 					<div className="item" data-value="la">
-						<i className="la flag" />Laos
+						<i className="la flag" />
+						Laos
 					</div>
 					<div className="item" data-value="lv">
-						<i className="lv flag" />Latvia
+						<i className="lv flag" />
+						Latvia
 					</div>
 					<div className="item" data-value="lb">
-						<i className="lb flag" />Lebanon
+						<i className="lb flag" />
+						Lebanon
 					</div>
 					<div className="item" data-value="ls">
-						<i className="ls flag" />Lesotho
+						<i className="ls flag" />
+						Lesotho
 					</div>
 					<div className="item" data-value="lr">
-						<i className="lr flag" />Liberia
+						<i className="lr flag" />
+						Liberia
 					</div>
 					<div className="item" data-value="ly">
-						<i className="ly flag" />Libya
+						<i className="ly flag" />
+						Libya
 					</div>
 					<div className="item" data-value="li">
-						<i className="li flag" />Liechtenstein
+						<i className="li flag" />
+						Liechtenstein
 					</div>
 					<div className="item" data-value="lt">
-						<i className="lt flag" />Lithuania
+						<i className="lt flag" />
+						Lithuania
 					</div>
 					<div className="item" data-value="lu">
-						<i className="lu flag" />Luxembourg
+						<i className="lu flag" />
+						Luxembourg
 					</div>
 					<div className="item" data-value="mo">
-						<i className="mo flag" />Macau
+						<i className="mo flag" />
+						Macau
 					</div>
 					<div className="item" data-value="mk">
-						<i className="mk flag" />Macedonia
+						<i className="mk flag" />
+						Macedonia
 					</div>
 					<div className="item" data-value="mg">
-						<i className="mg flag" />Madagascar
+						<i className="mg flag" />
+						Madagascar
 					</div>
 					<div className="item" data-value="mw">
-						<i className="mw flag" />Malawi
+						<i className="mw flag" />
+						Malawi
 					</div>
 					<div className="item" data-value="my">
-						<i className="my flag" />Malaysia
+						<i className="my flag" />
+						Malaysia
 					</div>
 					<div className="item" data-value="mv">
-						<i className="mv flag" />Maldives
+						<i className="mv flag" />
+						Maldives
 					</div>
 					<div className="item" data-value="ml">
-						<i className="ml flag" />Mali
+						<i className="ml flag" />
+						Mali
 					</div>
 					<div className="item" data-value="mt">
-						<i className="mt flag" />Malta
+						<i className="mt flag" />
+						Malta
 					</div>
 					<div className="item" data-value="mh">
-						<i className="mh flag" />Marshall Islands
+						<i className="mh flag" />
+						Marshall Islands
 					</div>
 					<div className="item" data-value="mq">
-						<i className="mq flag" />Martinique
+						<i className="mq flag" />
+						Martinique
 					</div>
 					<div className="item" data-value="mr">
-						<i className="mr flag" />Mauritania
+						<i className="mr flag" />
+						Mauritania
 					</div>
 					<div className="item" data-value="mu">
-						<i className="mu flag" />Mauritius
+						<i className="mu flag" />
+						Mauritius
 					</div>
 					<div className="item" data-value="yt">
-						<i className="yt flag" />Mayotte
+						<i className="yt flag" />
+						Mayotte
 					</div>
 					<div className="item" data-value="mx">
-						<i className="mx flag" />Mexico
+						<i className="mx flag" />
+						Mexico
 					</div>
 					<div className="item" data-value="fm">
-						<i className="fm flag" />Micronesia
+						<i className="fm flag" />
+						Micronesia
 					</div>
 					<div className="item" data-value="md">
-						<i className="md flag" />Moldova
+						<i className="md flag" />
+						Moldova
 					</div>
 					<div className="item" data-value="mc">
-						<i className="mc flag" />Monaco
+						<i className="mc flag" />
+						Monaco
 					</div>
 					<div className="item" data-value="mn">
-						<i className="mn flag" />Mongolia
+						<i className="mn flag" />
+						Mongolia
 					</div>
 					<div className="item" data-value="me">
-						<i className="me flag" />Montenegro
+						<i className="me flag" />
+						Montenegro
 					</div>
 					<div className="item" data-value="ms">
-						<i className="ms flag" />Montserrat
+						<i className="ms flag" />
+						Montserrat
 					</div>
 					<div className="item" data-value="ma">
-						<i className="ma flag" />Morocco
+						<i className="ma flag" />
+						Morocco
 					</div>
 					<div className="item" data-value="mz">
-						<i className="mz flag" />Mozambique
+						<i className="mz flag" />
+						Mozambique
 					</div>
 					<div className="item" data-value="na">
-						<i className="na flag" />Namibia
+						<i className="na flag" />
+						Namibia
 					</div>
 					<div className="item" data-value="nr">
-						<i className="nr flag" />Nauru
+						<i className="nr flag" />
+						Nauru
 					</div>
 					<div className="item" data-value="np">
-						<i className="np flag" />Nepal
+						<i className="np flag" />
+						Nepal
 					</div>
 					<div className="item" data-value="an">
-						<i className="an flag" />Netherlands Antilles
+						<i className="an flag" />
+						Netherlands Antilles
 					</div>
 					<div className="item" data-value="nl">
-						<i className="nl flag" />Netherlands
+						<i className="nl flag" />
+						Netherlands
 					</div>
 					<div className="item" data-value="nc">
-						<i className="nc flag" />New Caledonia
+						<i className="nc flag" />
+						New Caledonia
 					</div>
 					<div className="item" data-value="pg">
-						<i className="pg flag" />New Guinea
+						<i className="pg flag" />
+						New Guinea
 					</div>
 					<div className="item" data-value="nz">
-						<i className="nz flag" />New Zealand
+						<i className="nz flag" />
+						New Zealand
 					</div>
 					<div className="item" data-value="ni">
-						<i className="ni flag" />Nicaragua
+						<i className="ni flag" />
+						Nicaragua
 					</div>
 					<div className="item" data-value="ne">
-						<i className="ne flag" />Niger
+						<i className="ne flag" />
+						Niger
 					</div>
 					<div className="item" data-value="ng">
-						<i className="ng flag" />Nigeria
+						<i className="ng flag" />
+						Nigeria
 					</div>
 					<div className="item" data-value="nu">
-						<i className="nu flag" />Niue
+						<i className="nu flag" />
+						Niue
 					</div>
 					<div className="item" data-value="nf">
-						<i className="nf flag" />Norfolk Island
+						<i className="nf flag" />
+						Norfolk Island
 					</div>
 					<div className="item" data-value="kp">
-						<i className="kp flag" />North Korea
+						<i className="kp flag" />
+						North Korea
 					</div>
 					<div className="item" data-value="mp">
-						<i className="mp flag" />Northern Mariana Islands
+						<i className="mp flag" />
+						Northern Mariana Islands
 					</div>
 					<div className="item" data-value="no">
-						<i className="no flag" />Norway
+						<i className="no flag" />
+						Norway
 					</div>
 					<div className="item" data-value="om">
-						<i className="om flag" />Oman
+						<i className="om flag" />
+						Oman
 					</div>
 					<div className="item" data-value="pk">
-						<i className="pk flag" />Pakistan
+						<i className="pk flag" />
+						Pakistan
 					</div>
 					<div className="item" data-value="pw">
-						<i className="pw flag" />Palau
+						<i className="pw flag" />
+						Palau
 					</div>
 					<div className="item" data-value="ps">
-						<i className="ps flag" />Palestine
+						<i className="ps flag" />
+						Palestine
 					</div>
 					<div className="item" data-value="pa">
-						<i className="pa flag" />Panama
+						<i className="pa flag" />
+						Panama
 					</div>
 					<div className="item" data-value="py">
-						<i className="py flag" />Paraguay
+						<i className="py flag" />
+						Paraguay
 					</div>
 					<div className="item" data-value="pe">
-						<i className="pe flag" />Peru
+						<i className="pe flag" />
+						Peru
 					</div>
 					<div className="item" data-value="ph">
-						<i className="ph flag" />Philippines
+						<i className="ph flag" />
+						Philippines
 					</div>
 					<div className="item" data-value="pn">
-						<i className="pn flag" />Pitcairn Islands
+						<i className="pn flag" />
+						Pitcairn Islands
 					</div>
 					<div className="item" data-value="pl">
-						<i className="pl flag" />Poland
+						<i className="pl flag" />
+						Poland
 					</div>
 					<div className="item" data-value="pt">
-						<i className="pt flag" />Portugal
+						<i className="pt flag" />
+						Portugal
 					</div>
 					<div className="item" data-value="pr">
-						<i className="pr flag" />Puerto Rico
+						<i className="pr flag" />
+						Puerto Rico
 					</div>
 					<div className="item" data-value="qa">
-						<i className="qa flag" />Qatar
+						<i className="qa flag" />
+						Qatar
 					</div>
 					<div className="item" data-value="re">
-						<i className="re flag" />Reunion
+						<i className="re flag" />
+						Reunion
 					</div>
 					<div className="item" data-value="ro">
-						<i className="ro flag" />Romania
+						<i className="ro flag" />
+						Romania
 					</div>
 					<div className="item" data-value="ru">
-						<i className="ru flag" />Russia
+						<i className="ru flag" />
+						Russia
 					</div>
 					<div className="item" data-value="rw">
-						<i className="rw flag" />Rwanda
+						<i className="rw flag" />
+						Rwanda
 					</div>
 					<div className="item" data-value="sh">
-						<i className="sh flag" />Saint Helena
+						<i className="sh flag" />
+						Saint Helena
 					</div>
 					<div className="item" data-value="kn">
-						<i className="kn flag" />Saint Kitts and Nevis
+						<i className="kn flag" />
+						Saint Kitts and Nevis
 					</div>
 					<div className="item" data-value="lc">
-						<i className="lc flag" />Saint Lucia
+						<i className="lc flag" />
+						Saint Lucia
 					</div>
 					<div className="item" data-value="pm">
-						<i className="pm flag" />Saint Pierre
+						<i className="pm flag" />
+						Saint Pierre
 					</div>
 					<div className="item" data-value="vc">
-						<i className="vc flag" />Saint Vincent
+						<i className="vc flag" />
+						Saint Vincent
 					</div>
 					<div className="item" data-value="ws">
-						<i className="ws flag" />Samoa
+						<i className="ws flag" />
+						Samoa
 					</div>
 					<div className="item" data-value="sm">
-						<i className="sm flag" />San Marino
+						<i className="sm flag" />
+						San Marino
 					</div>
 					<div className="item" data-value="gs">
-						<i className="gs flag" />Sandwich Islands
+						<i className="gs flag" />
+						Sandwich Islands
 					</div>
 					<div className="item" data-value="st">
-						<i className="st flag" />Sao Tome
+						<i className="st flag" />
+						Sao Tome
 					</div>
 					<div className="item" data-value="sa">
-						<i className="sa flag" />Saudi Arabia
+						<i className="sa flag" />
+						Saudi Arabia
 					</div>
 					<div className="item" data-value="gb sct">
-						<i className="gb sct flag" />Scotland
+						<i className="gb sct flag" />
+						Scotland
 					</div>
 					<div className="item" data-value="sn">
-						<i className="sn flag" />Senegal
+						<i className="sn flag" />
+						Senegal
 					</div>
 					<div className="item" data-value="cs">
-						<i className="cs flag" />Serbia
+						<i className="cs flag" />
+						Serbia
 					</div>
 					<div className="item" data-value="rs">
-						<i className="rs flag" />Serbia
+						<i className="rs flag" />
+						Serbia
 					</div>
 					<div className="item" data-value="sc">
-						<i className="sc flag" />Seychelles
+						<i className="sc flag" />
+						Seychelles
 					</div>
 					<div className="item" data-value="sl">
-						<i className="sl flag" />Sierra Leone
+						<i className="sl flag" />
+						Sierra Leone
 					</div>
 					<div className="item" data-value="sg">
-						<i className="sg flag" />Singapore
+						<i className="sg flag" />
+						Singapore
 					</div>
 					<div className="item" data-value="sk">
-						<i className="sk flag" />Slovakia
+						<i className="sk flag" />
+						Slovakia
 					</div>
 					<div className="item" data-value="si">
-						<i className="si flag" />Slovenia
+						<i className="si flag" />
+						Slovenia
 					</div>
 					<div className="item" data-value="sb">
-						<i className="sb flag" />Solomon Islands
+						<i className="sb flag" />
+						Solomon Islands
 					</div>
 					<div className="item" data-value="so">
-						<i className="so flag" />Somalia
+						<i className="so flag" />
+						Somalia
 					</div>
 					<div className="item" data-value="za">
-						<i className="za flag" />South Africa
+						<i className="za flag" />
+						South Africa
 					</div>
 					<div className="item" data-value="kr">
-						<i className="kr flag" />South Korea
+						<i className="kr flag" />
+						South Korea
 					</div>
 					<div className="item" data-value="es">
-						<i className="es flag" />Spain
+						<i className="es flag" />
+						Spain
 					</div>
 					<div className="item" data-value="lk">
-						<i className="lk flag" />Sri Lanka
+						<i className="lk flag" />
+						Sri Lanka
 					</div>
 					<div className="item" data-value="sd">
-						<i className="sd flag" />Sudan
+						<i className="sd flag" />
+						Sudan
 					</div>
 					<div className="item" data-value="sr">
-						<i className="sr flag" />Suriname
+						<i className="sr flag" />
+						Suriname
 					</div>
 					<div className="item" data-value="sj">
-						<i className="sj flag" />Svalbard
+						<i className="sj flag" />
+						Svalbard
 					</div>
 					<div className="item" data-value="sz">
-						<i className="sz flag" />Swaziland
+						<i className="sz flag" />
+						Swaziland
 					</div>
 					<div className="item" data-value="se">
-						<i className="se flag" />Sweden
+						<i className="se flag" />
+						Sweden
 					</div>
 					<div className="item" data-value="ch">
-						<i className="ch flag" />Switzerland
+						<i className="ch flag" />
+						Switzerland
 					</div>
 					<div className="item" data-value="sy">
-						<i className="sy flag" />Syria
+						<i className="sy flag" />
+						Syria
 					</div>
 					<div className="item" data-value="tw">
-						<i className="tw flag" />Taiwan
+						<i className="tw flag" />
+						Taiwan
 					</div>
 					<div className="item" data-value="tj">
-						<i className="tj flag" />Tajikistan
+						<i className="tj flag" />
+						Tajikistan
 					</div>
 					<div className="item" data-value="tz">
-						<i className="tz flag" />Tanzania
+						<i className="tz flag" />
+						Tanzania
 					</div>
 					<div className="item" data-value="th">
-						<i className="th flag" />Thailand
+						<i className="th flag" />
+						Thailand
 					</div>
 					<div className="item" data-value="tl">
-						<i className="tl flag" />Timorleste
+						<i className="tl flag" />
+						Timorleste
 					</div>
 					<div className="item" data-value="tg">
-						<i className="tg flag" />Togo
+						<i className="tg flag" />
+						Togo
 					</div>
 					<div className="item" data-value="tk">
-						<i className="tk flag" />Tokelau
+						<i className="tk flag" />
+						Tokelau
 					</div>
 					<div className="item" data-value="to">
-						<i className="to flag" />Tonga
+						<i className="to flag" />
+						Tonga
 					</div>
 					<div className="item" data-value="tt">
-						<i className="tt flag" />Trinidad
+						<i className="tt flag" />
+						Trinidad
 					</div>
 					<div className="item" data-value="tn">
-						<i className="tn flag" />Tunisia
+						<i className="tn flag" />
+						Tunisia
 					</div>
 					<div className="item" data-value="tr">
-						<i className="tr flag" />Turkey
+						<i className="tr flag" />
+						Turkey
 					</div>
 					<div className="item" data-value="tm">
-						<i className="tm flag" />Turkmenistan
+						<i className="tm flag" />
+						Turkmenistan
 					</div>
 					<div className="item" data-value="tv">
-						<i className="tv flag" />Tuvalu
+						<i className="tv flag" />
+						Tuvalu
 					</div>
 					<div className="item" data-value="ug">
-						<i className="ug flag" />Uganda
+						<i className="ug flag" />
+						Uganda
 					</div>
 					<div className="item" data-value="ua">
-						<i className="ua flag" />Ukraine
+						<i className="ua flag" />
+						Ukraine
 					</div>
 					<div className="item" data-value="ae">
-						<i className="ae flag" />United Arab Emirates
+						<i className="ae flag" />
+						United Arab Emirates
 					</div>
 
 					<div className="item" data-value="uy">
-						<i className="uy flag" />Uruguay
+						<i className="uy flag" />
+						Uruguay
 					</div>
 					<div className="item" data-value="um">
-						<i className="um flag" />Us Minor Islands
+						<i className="um flag" />
+						Us Minor Islands
 					</div>
 					<div className="item" data-value="vi">
-						<i className="vi flag" />Us Virgin Islands
+						<i className="vi flag" />
+						Us Virgin Islands
 					</div>
 					<div className="item" data-value="uz">
-						<i className="uz flag" />Uzbekistan
+						<i className="uz flag" />
+						Uzbekistan
 					</div>
 					<div className="item" data-value="vu">
-						<i className="vu flag" />Vanuatu
+						<i className="vu flag" />
+						Vanuatu
 					</div>
 					<div className="item" data-value="va">
-						<i className="va flag" />Vatican City
+						<i className="va flag" />
+						Vatican City
 					</div>
 					<div className="item" data-value="ve">
-						<i className="ve flag" />Venezuela
+						<i className="ve flag" />
+						Venezuela
 					</div>
 					<div className="item" data-value="vn">
-						<i className="vn flag" />Vietnam
+						<i className="vn flag" />
+						Vietnam
 					</div>
 					<div className="item" data-value="gb wls">
-						<i className="gb wls flag" />Wales
+						<i className="gb wls flag" />
+						Wales
 					</div>
 					<div className="item" data-value="wf">
-						<i className="wf flag" />Wallis and Futuna
+						<i className="wf flag" />
+						Wallis and Futuna
 					</div>
 					<div className="item" data-value="eh">
-						<i className="eh flag" />Western Sahara
+						<i className="eh flag" />
+						Western Sahara
 					</div>
 					<div className="item" data-value="ye">
-						<i className="ye flag" />Yemen
+						<i className="ye flag" />
+						Yemen
 					</div>
 					<div className="item" data-value="zm">
-						<i className="zm flag" />Zambia
+						<i className="zm flag" />
+						Zambia
 					</div>
 					<div className="item" data-value="zw">
-						<i className="zw flag" />Zimbabwe
+						<i className="zw flag" />
+						Zimbabwe
 					</div>
 				</div>
 			</div>
@@ -1236,7 +1480,8 @@ export default class Creategame extends React.Component {
 		return (
 			<div className={this.state.isTourny ? 'rebalance-container isTourny' : 'rebalance-container'}>
 				<span title="When enabled, 6p games have a fascist policy already enacted, and 7p and 9p games start with one less fascist policy in the deck.">
-					<i className="info circle icon" />Rebalance:
+					<i className="info circle icon" />
+					Rebalance:
 				</span>
 
 				{new Array(3).fill(true).map((el, index) => (
@@ -1300,7 +1545,7 @@ export default class Creategame extends React.Component {
 								max={2000}
 								defaultValue={[1675]}
 								value={this.state.eloSliderValue}
-								marks={{1675: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' }}
+								marks={{ 1675: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' }}
 							/>
 						</div>
 					)}
@@ -1325,24 +1570,23 @@ export default class Creategame extends React.Component {
 		const { customGameSettings } = this.state;
 		const numLib = customGameSettings.deckState.lib - customGameSettings.trackState.lib;
 		const numFas = customGameSettings.deckState.fas - customGameSettings.trackState.fas;
-		const data = _.range(0, numLib).map(val => {
-			return (
-				<div className="deckcard" style={{backgroundImage: "url('../images/cards/liberalp-l.png')"}} />
+		const data = _.range(0, numLib)
+			.map((val, i) => {
+				return <div key={i} className="deckcard" style={{ backgroundImage: "url('../images/cards/liberalp-l.png')" }} />;
+			})
+			.concat(
+				_.range(0, numFas).map((val, i) => {
+					return <div key={i} className="deckcard" style={{ backgroundImage: "url('../images/cards/fascistp-l.png')" }} />;
+				})
 			);
-		}).concat(
-			_.range(0, numFas).map(val => {
-			return (
-				<div className="deckcard" style={{backgroundImage: "url('../images/cards/fascistp-l.png')"}} />
-			);
-		}));
 		const thirds = [];
 		data.forEach((elem, idx) => {
 			if (thirds[Math.floor(idx / 3)] == null) thirds[Math.floor(idx / 3)] = [];
-			thirds[Math.floor(idx / 3)][(idx % 3)] = elem;
+			thirds[Math.floor(idx / 3)][idx % 3] = elem;
 		});
-		return thirds.map(val => {
+		return thirds.map((val, i) => {
 			return (
-				<div className="column" style={{width:'4em',marginRight:'-1em'}}>
+				<div key={i} className="column" style={{ width: '4em', marginRight: '-1em' }}>
 					{val}
 				</div>
 			);
@@ -1371,16 +1615,18 @@ export default class Creategame extends React.Component {
 			return 'Start';
 		};
 		return (
-			<div style={{
-				backgroundSize: 'contain',
-				backgroundRepeat: 'no-repeat',
-				top: 0,
-				left: 0,
-				height: '220px',
-				width: '650px',
-				margin: 'auto',
-				backgroundImage: "url('../images/customtracks/fasTrack.png')"
-			}}>
+			<div
+				style={{
+					backgroundSize: 'contain',
+					backgroundRepeat: 'no-repeat',
+					top: 0,
+					left: 0,
+					height: '220px',
+					width: '650px',
+					margin: 'auto',
+					backgroundImage: "url('../images/customtracks/fasTrack.png')"
+				}}
+			>
 				<span
 					style={{
 						width: '92px',
@@ -1440,9 +1686,7 @@ export default class Creategame extends React.Component {
 						backgroundImage: `url(../images/customtracks/fasPower${powers[0]}${hzStart <= 0 ? 'Light' : ''}.png)`
 					}}
 				>
-					{vzPoint == 1 && (
-						<span className={'custom-fastrack-powerslot ' + (hzStart <= 0 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-					)}
+					{vzPoint == 1 && <span className={'custom-fastrack-powerslot ' + (hzStart <= 0 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />}
 				</span>
 				<span
 					className="custom-fastrack-powerslot"
@@ -1452,9 +1696,7 @@ export default class Creategame extends React.Component {
 						backgroundImage: `url(../images/customtracks/fasPower${powers[1]}${hzStart <= 1 ? 'Light' : ''}.png)`
 					}}
 				>
-					{vzPoint == 2 && (
-						<span className={'custom-fastrack-powerslot ' + (hzStart <= 1 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-					)}
+					{vzPoint == 2 && <span className={'custom-fastrack-powerslot ' + (hzStart <= 1 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />}
 				</span>
 				<span
 					className="custom-fastrack-powerslot"
@@ -1464,9 +1706,7 @@ export default class Creategame extends React.Component {
 						backgroundImage: `url(../images/customtracks/fasPower${powers[2]}${hzStart <= 2 ? 'Light' : ''}.png)`
 					}}
 				>
-					{vzPoint == 3 && (
-						<span className={'custom-fastrack-powerslot ' + (hzStart <= 2 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-					)}
+					{vzPoint == 3 && <span className={'custom-fastrack-powerslot ' + (hzStart <= 2 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />}
 				</span>
 				<span
 					className="custom-fastrack-powerslot"
@@ -1476,9 +1716,7 @@ export default class Creategame extends React.Component {
 						backgroundImage: `url(../images/customtracks/fasPower${powers[3]}${hzStart <= 3 ? 'Light' : ''}.png)`
 					}}
 				>
-					{vzPoint == 4 && (
-						<span className={'custom-fastrack-powerslot ' + (hzStart <= 3 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-					)}
+					{vzPoint == 4 && <span className={'custom-fastrack-powerslot ' + (hzStart <= 3 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />}
 				</span>
 				<span
 					className="custom-fastrack-powerslot"
@@ -1488,9 +1726,7 @@ export default class Creategame extends React.Component {
 						backgroundImage: `url(../images/customtracks/fasPower${powers[4]}${hzStart <= 4 ? 'Light' : ''}.png)`
 					}}
 				>
-					{vzPoint == 5 && (
-						<span className={'custom-fastrack-powerslot ' + (hzStart <= 4 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
-					)}
+					{vzPoint == 5 && <span className={'custom-fastrack-powerslot ' + (hzStart <= 4 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />}
 				</span>
 				<span
 					className="custom-fastrack-powerslot"
@@ -1535,14 +1771,22 @@ export default class Creategame extends React.Component {
 
 		const { hitKnowsFas } = this.state.customGameSettings;
 		const renderFas = () => {
-			return _.range(0, this.state.customGameSettings.fascistCount).map(val => (
-				<div className="rolecard" style={{backgroundImage: (hitKnowsFas ? `url('../images/cards/fascist${val}.png')` : "url('../images/cards/secretrole.png')")}} />
+			return _.range(0, this.state.customGameSettings.fascistCount).map((val, i) => (
+				<div
+					key={i}
+					className="rolecard"
+					style={{ backgroundImage: hitKnowsFas ? `url('../images/cards/fascist${val}.png')` : "url('../images/cards/secretrole.png')" }}
+				/>
 			));
 		};
 
 		const renderLib = () => {
-			return _.range(0, this.state.sliderValues[0] - this.state.customGameSettings.fascistCount - 1).map(val => (
-				<div className="rolecard" style={{backgroundImage: (hitKnowsFas ? `url('../images/cards/liberal${val%6}.png')` : "url('../images/cards/secretrole.png')")}} />
+			return _.range(0, this.state.sliderValues[0] - this.state.customGameSettings.fascistCount - 1).map((val, i) => (
+				<div
+					key={i}
+					className="rolecard"
+					style={{ backgroundImage: hitKnowsFas ? `url('../images/cards/liberal${val % 6}.png')` : "url('../images/cards/secretrole.png')" }}
+				/>
 			));
 		};
 
@@ -1812,19 +2056,19 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 					<div className="row">
-						<div className="wide column" style={{width:'20%'}}>
+						<div className="wide column" style={{ width: '20%' }}>
 							{this.powerPicker(0)}
 						</div>
-						<div className="wide column" style={{width:'20%'}}>
+						<div className="wide column" style={{ width: '20%' }}>
 							{this.powerPicker(1)}
 						</div>
-						<div className="wide column" style={{width:'20%'}}>
+						<div className="wide column" style={{ width: '20%' }}>
 							{this.powerPicker(2)}
 						</div>
-						<div className="wide column" style={{width:'20%'}}>
+						<div className="wide column" style={{ width: '20%' }}>
 							{this.powerPicker(3)}
 						</div>
-						<div className="wide column" style={{width:'20%'}}>
+						<div className="wide column" style={{ width: '20%' }}>
 							{this.powerPicker(4)}
 						</div>
 					</div>
@@ -1838,7 +2082,7 @@ export default class Creategame extends React.Component {
 									defaultValue={[3]}
 									onChange={this.sliderHitlerZone.bind(this)}
 									value={[this.state.customGameSettings.hitlerZone]}
-									marks={{1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}}
+									marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
 								/>
 							</div>
 						</div>
@@ -1852,14 +2096,12 @@ export default class Creategame extends React.Component {
 									defaultValue={[5]}
 									onChange={this.sliderVetoZone.bind(this)}
 									value={[this.state.customGameSettings.vetoZone]}
-									marks={{1: '1', 2: '2', 3: '3', 4: '4', 5: '5'}}
+									marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
 								/>
 							</div>
 						</div>
 					</div>
-					<div className="row">
-						{this.renderFasTrack()}
-					</div>
+					<div className="row">{this.renderFasTrack()}</div>
 					<div className="eight wide column ui grid">
 						<div className="row">
 							<div className="eight wide column">
@@ -1871,31 +2113,31 @@ export default class Creategame extends React.Component {
 										defaultValue={[2]}
 										onChange={this.sliderNumFas.bind(this)}
 										value={[this.state.customGameSettings.fascistCount]}
-										marks={{1: '1', 2: '2', 3: '3'}}
+										marks={{ 1: '1', 2: '2', 3: '3' }}
 									/>
 								</div>
 							</div>
 							<div className="eight wide column">
 								<h4 className="ui header">Hitler sees fascists</h4>
-								<div className="ui fitted toggle checkbox"
+								<div
+									className="ui fitted toggle checkbox"
 									ref={c => {
 										this.hitseesfas = c;
-									}}>
+									}}
+								>
 									<input type="checkbox" name="hitseesfas" defaultChecked={false} />
 								</div>
 							</div>
 						</div>
 						<div className="row">
-							<div style={{display:'flex',width:'100%',marginBottom:'6px'}}>
-								<div className="rolecard" style={{backgroundImage: "url('../images/cards/hitler0.png')"}} />
+							<div style={{ display: 'flex', width: '100%', marginBottom: '6px' }}>
+								<div className="rolecard" style={{ backgroundImage: "url('../images/cards/hitler0.png')" }} />
 								{renderFas()}
 							</div>
-							<div style={{display:'flex',width:'100%'}}>
-								{renderLib()}
-							</div>
+							<div style={{ display: 'flex', width: '100%' }}>{renderLib()}</div>
 						</div>
 					</div>
-					<div className="eight wide column ui grid" style={{marginTop: '-1rem', marginLeft: '3rem'}}>
+					<div className="eight wide column ui grid" style={{ marginTop: '-1rem', marginLeft: '3rem' }}>
 						<div className="row">
 							<div className="eight wide column">
 								<h4 className="ui header">Liberal policies</h4>
@@ -1905,7 +2147,7 @@ export default class Creategame extends React.Component {
 									defaultValue={[6]}
 									onChange={this.sliderDeckLib.bind(this)}
 									value={[this.state.customGameSettings.deckState.lib]}
-									marks={{5: '5', 6: '6', 7: '7', 8: '8'}}
+									marks={{ 5: '5', 6: '6', 7: '7', 8: '8' }}
 								/>
 							</div>
 							<div className="eight wide column">
@@ -1916,7 +2158,7 @@ export default class Creategame extends React.Component {
 									defaultValue={[12]}
 									onChange={this.sliderDeckFas.bind(this)}
 									value={[this.state.customGameSettings.deckState.fas]}
-									marks={{10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16', 17: '', 18: '', 19: '19'}}
+									marks={{ 10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16', 17: '', 18: '', 19: '19' }}
 								/>
 							</div>
 						</div>
@@ -1929,7 +2171,7 @@ export default class Creategame extends React.Component {
 									defaultValue={[0]}
 									onChange={this.sliderTrackLib.bind(this)}
 									value={[this.state.customGameSettings.trackState.lib]}
-									marks={{0: '0', 1: '1', 2: '2'}}
+									marks={{ 0: '0', 1: '1', 2: '2' }}
 								/>
 							</div>
 							<div className="eight wide column">
@@ -1940,16 +2182,16 @@ export default class Creategame extends React.Component {
 									defaultValue={[0]}
 									onChange={this.sliderTrackFas.bind(this)}
 									value={[this.state.customGameSettings.trackState.fas]}
-									marks={{0: '0', 1: '1', 2: '2'}}
+									marks={{ 0: '0', 1: '1', 2: '2' }}
 								/>
 							</div>
 						</div>
-						<div className="row">
-							{this.renderDeck()}
-						</div>
+						<div className="row">{this.renderDeck()}</div>
 					</div>
 				</div>
-				<br/><br/><br/>
+				<br />
+				<br />
+				<br />
 
 				<div className="ui grid centered footer">
 					<div onClick={this.createNewGame} className="ui button primary">
