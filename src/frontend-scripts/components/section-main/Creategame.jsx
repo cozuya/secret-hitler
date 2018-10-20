@@ -605,6 +605,7 @@ export default class Creategame extends React.Component {
 		const { customGameSettings } = this.state;
 		const numLib = customGameSettings.deckState.lib - customGameSettings.trackState.lib;
 		const numFas = customGameSettings.deckState.fas - customGameSettings.trackState.fas;
+		const rowWidth = Math.ceil((numLib+numFas)/3);
 		const data = _.range(0, numLib)
 			.map((val, i) => {
 				return <div key={i} className="deckcard" style={{ backgroundImage: "url('../images/cards/liberalp-l.png')" }} />;
@@ -616,12 +617,17 @@ export default class Creategame extends React.Component {
 			);
 		const thirds = [];
 		data.forEach((elem, idx) => {
-			if (thirds[Math.floor(idx / 3)] == null) thirds[Math.floor(idx / 3)] = [];
-			thirds[Math.floor(idx / 3)][idx % 3] = elem;
+			if (thirds[Math.floor(idx / rowWidth)] == null) thirds[Math.floor(idx / rowWidth)] = [];
+			thirds[Math.floor(idx / rowWidth)][idx % rowWidth] = elem;
 		});
+		if ((numLib+numFas) % 3 == 1) {
+			// Causes two rows to be one short, instead of one row being two short.
+			thirds[2][rowWidth-2] = thirds[1][rowWidth-1];
+			delete thirds[1][rowWidth-1];
+		}
 		return thirds.map((val, i) => {
 			return (
-				<div key={i} className="column" style={{ width: '4em', marginRight: '-1em' }}>
+				<div key={i} className="column" style={{ width: '4em', marginBottom: '-2.5rem', display: 'flex', width: 'auto' }}>
 					{val}
 				</div>
 			);
