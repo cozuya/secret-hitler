@@ -879,7 +879,7 @@ export default class Creategame extends React.Component {
 					</div>
 				</div>
 				<div className="row">{this.renderFasTrack()}</div>
-				<div className="eight wide column ui grid">
+				<div className="eight wide column ui grid" style={{height: 'fit-content'}}>
 					<div className="row">
 						<div className="eight wide column">
 							<div>
@@ -970,11 +970,18 @@ export default class Creategame extends React.Component {
 		);
 	}
 
-	renderErrors() {
+	getErrors() {
+		if (!this.state.customGameSettings.enabled) return null;
 		const errs = [];
 		if (this.state.customGameSettings.fascistCount+1 >= this.state.customGameSliderValue/2) errs.push('There must be a liberal majority when the game starts.');
 		if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) errs.push('Veto Zone cannot be active when the game starts.');
-		if (errs.length > 0) {
+		if (errs.length == 0) return null;
+		return errs;
+	}
+
+	renderErrors() {
+		const errs = this.getErrors();
+		if (errs) {
 			return (
 				<div className="sixteen wide column">
 					{errs.map(e => <h4 className="ui header" style={{color:'red'}}>{e}</h4>)}
@@ -985,6 +992,8 @@ export default class Creategame extends React.Component {
 
 	render() {
 		const { userInfo } = this.props;
+		let createClass = "ui button primary"
+		if (this.getErrors() != null) createClass += " disabled";
 
 		return (
 			<section className="creategame">
@@ -995,7 +1004,7 @@ export default class Creategame extends React.Component {
 					<div className="content">Create a new game</div>
 				</div>
 				<div className="ui grid centered footer">
-					<div onClick={this.createNewGame} className="ui button primary">
+					<div onClick={this.createNewGame} className={createClass}>
 						Create game
 					</div>
 				</div>
@@ -1256,7 +1265,7 @@ export default class Creategame extends React.Component {
 					{this.state.customGameSettings.enabled && this.renderCustomGames()}
 				</div>
 				<div className="ui grid centered footer">
-					<div onClick={this.createNewGame} className="ui button primary">
+					<div onClick={this.createNewGame} className={createClass}>
 						Create game
 					</div>
 				</div>
