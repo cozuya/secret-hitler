@@ -32,13 +32,45 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
 		}
 	}
 
+	const libCount = game.customGameSettings.deckState.lib - game.trackState.liberalPolicyCount;
+	const fasCount = game.customGameSettings.deckState.fas - game.trackState.fascistPolicyCount;
 	game.private.policies = _.shuffle(
-		_.range(0, game.customGameSettings.deckState.lib - game.trackState.liberalPolicyCount)
+		_.range(0, libCount)
 			.map(num => 'liberal')
-			.concat(_.range(0, game.customGameSettings.deckState.fas - game.trackState.fascistPolicyCount).map(num => 'fascist'))
+			.concat(_.range(0, fasCount).map(num => 'fascist'))
 	);
 
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
+
+	if (!game.general.disableGamechat) {
+		const chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'Deck shuffled: '
+				},
+				{
+					text: `${libCount} liberal`,
+					type: 'liberal'
+				},
+				{
+					text: ' and '
+				},
+				{
+					text: `${fasCount} fascist`,
+					type: 'fascist'
+				},
+				{
+					text: ' policies.'
+				}
+			]
+		};
+		seatedPlayers.forEach(player => {
+			player.gameChats.push(chat);
+		});
+		game.private.unSeatedGameChats.push(chat);
+	}
 
 	const modOnlyChat = {
 		timestamp: new Date(),
