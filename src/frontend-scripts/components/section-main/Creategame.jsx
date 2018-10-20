@@ -359,6 +359,7 @@ export default class Creategame extends React.Component {
 	}
 
 	customGameSliderChange(sliderValues) {
+		console.log(sliderValues);
 		this.setState({
 			customGameSliderValue: sliderValues
 		});
@@ -821,7 +822,7 @@ export default class Creategame extends React.Component {
 		};
 
 		const renderLib = () => {
-			return _.range(0, this.state.sliderValues[0] - this.state.customGameSettings.fascistCount - 1).map((val, i) => (
+			return _.range(0, this.state.customGameSliderValue - this.state.customGameSettings.fascistCount - 1).map((val, i) => (
 				<div
 					key={i}
 					className="rolecard"
