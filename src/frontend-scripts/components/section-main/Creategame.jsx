@@ -608,11 +608,11 @@ export default class Creategame extends React.Component {
 		const rowWidth = Math.ceil((numLib+numFas)/3);
 		const data = _.range(0, numLib)
 			.map((val, i) => {
-				return <div key={i} className="deckcard" style={{ backgroundImage: "url('../images/cards/liberalp-l.png')" }} />;
+				return <div key={`L${i}`} className="deckcard" style={{ backgroundImage: "url('../images/cards/liberalp-l.png')" }} />;
 			})
 			.concat(
 				_.range(0, numFas).map((val, i) => {
-					return <div key={i} className="deckcard" style={{ backgroundImage: "url('../images/cards/fascistp-l.png')" }} />;
+					return <div key={`F${i}`} className="deckcard" style={{ backgroundImage: "url('../images/cards/fascistp-l.png')" }} />;
 				})
 			);
 		const thirds = [];
