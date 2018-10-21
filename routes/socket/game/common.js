@@ -255,7 +255,7 @@ module.exports.failedElection = (game, experiencedMode) => {
 		game.gameState.previousElectedGovernment = [];
 
 		if (!game.general.disableGamechat) {
-			ame.private.seatedPlayers.forEach(player => {
+			game.private.seatedPlayers.forEach(player => {
 				player.gameChats.push(chat);
 			});
 
