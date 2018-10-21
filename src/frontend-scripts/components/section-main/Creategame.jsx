@@ -965,18 +965,31 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row">{this.renderDeck()}</div>
 				</div>
-				{this.renderErrors()}
 			</React.Fragment>
 		);
 	}
 
 	getErrors() {
-		if (!this.state.customGameSettings.enabled) return null;
 		const errs = [];
-		if (this.state.customGameSettings.fascistCount+1 >= this.state.customGameSliderValue/2) errs.push('There must be a liberal majority when the game starts.');
-		if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) errs.push('Veto Zone cannot be active when the game starts.');
-		if (errs.length == 0) return null;
-		return errs;
+
+		const { userInfo, userList } = this.props;
+		if (userList && userList.list) { // Can happen when refreshing.
+			const player = userList.list.find(p => p.userName === userInfo.userName);
+			if (!player) errs.push('Not logged in, please refresh.');
+			else if (this.state.isEloLimited) {
+				const isSeason = !userInfo.gameSettings.disableSeasonal;
+				const playerElo = player.eloSeason;
+				const playerEloNonseason = player.eloOverall;
+				if (this.state.eloSliderValue[0] > playerEloNonseason) errs.push(`Elo slider set too high, your overall elo is ${playerEloNonseason}.`);
+				else if (this.state.eloSliderValue[0] > playerElo) errs.push(`Elo slider set too high, your seasonal elo is ${playerElo}.`);
+			}
+		}
+		if (this.state.customGameSettings.enabled) {
+			if (this.state.customGameSettings.fascistCount+1 >= this.state.customGameSliderValue/2) errs.push('There must be a liberal majority when the game starts.');
+			if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) errs.push('Veto Zone cannot be active when the game starts.');
+		}
+		if (errs.length) return errs;
+		return null;
 	}
 
 	renderErrors() {
@@ -1263,6 +1276,7 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 					{this.state.customGameSettings.enabled && this.renderCustomGames()}
+					{this.renderErrors()}
 				</div>
 				<div className="ui grid centered footer">
 					<div onClick={this.createNewGame} className={createClass}>
