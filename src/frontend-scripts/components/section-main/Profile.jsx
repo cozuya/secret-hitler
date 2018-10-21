@@ -35,7 +35,7 @@ class ProfileWrapper extends React.Component {
 	}
 
 	successRate(trials, outcomes) {
-		return trials > 0 ? parseFloat((outcomes / trials * 100).toFixed(2)) + '%' : '---';
+		return trials > 0 ? parseFloat(((outcomes / trials) * 100).toFixed(2)) + '%' : '---';
 	}
 
 	successRow(name, trials, outcomes) {
@@ -398,4 +398,7 @@ ProfileWrapper.propTypes = {
 	socket: PropTypes.object
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileWrapper);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(ProfileWrapper);

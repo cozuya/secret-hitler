@@ -198,7 +198,7 @@ class Menu extends React.Component {
 		}
 
 		return (
-			<div className="menu-container" style={{zIndex: 9999}}>
+			<div className="menu-container" style={{ zIndex: 9999 }}>
 				<section className={classes}>
 					<a href="/" target="_blank">
 						SECRET HITLER.io
@@ -306,4 +306,7 @@ Menu.propTypes = {
 	midSection: PropTypes.string
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Menu);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Menu);

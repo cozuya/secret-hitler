@@ -15,6 +15,12 @@ const Segment = ({ segment }) => {
  * @param {object} text
  * @return {jsx}
  */
-const GameText = ({ text }) => <span className="game-text">{text.map((segment, i) => <Segment key={i} segment={segment} />)}</span>;
+const GameText = ({ text }) => (
+	<span className="game-text">
+		{text.map((segment, i) => (
+			<Segment key={i} segment={segment} />
+		))}
+	</span>
+);
 
 export default GameText;

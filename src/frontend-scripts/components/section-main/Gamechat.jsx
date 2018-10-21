@@ -968,4 +968,7 @@ Gamechat.propTypes = {
 	allEmotes: PropTypes.array
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Gamechat);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Gamechat);

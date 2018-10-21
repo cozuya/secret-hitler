@@ -3,12 +3,7 @@
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
 	"version": "0.15.0",
 	"license": "CC-BY-NC-SA-4.0",
-	"keywords": [
-		"boardgame",
-		"social deduction",
-		"hidden roles",
-		"secret hitler"
-	],
+	"keywords": ["boardgame", "social deduction", "hidden roles", "secret hitler"],
 	"repository": {
 		"url": "https://github.com/cozuya/secret-hitler.git",
 		"type": "git"
@@ -114,7 +109,7 @@
 		"webpack-livereload-plugin": "^2.1.1"
 	},
 	"scripts": {
-		"format": "prettier --write **/*.js",
+		"format": "prettier --write \"**/*.js\" && prettier --write \"**/*.jsx\"",
 		"dev": "npm-run-all --parallel db inspect start",
 		"dev-docker": "npm-run-all --parallel db-docker server start",
 		"create-accounts": "node scripts/createAccounts.js",

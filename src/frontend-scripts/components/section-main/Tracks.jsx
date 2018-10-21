@@ -201,62 +201,62 @@ class Tracks extends React.Component {
 				{gameInfo.customGameSettings &&
 					gameInfo.customGameSettings.enabled && (
 						<span className="customgame">
-							<Popup style={{zIndex:999999}} inverted trigger={customgameactive} content={customgameactiveTooltip} />
+							<Popup style={{ zIndex: 999999 }} inverted trigger={customgameactive} content={customgameactiveTooltip} />
 						</span>
 					)}
 				{rebalance69p && (
 					<span className="rebalanced">
-						<Popup style={{zIndex:999999}} inverted trigger={rebalance69p} content={rebalance69pTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={rebalance69p} content={rebalance69pTooltip} />
 					</span>
 				)}
 				{disableChat && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={disableChat} content={disableChatTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={disableChat} content={disableChatTooltip} />
 					</span>
 				)}
 				{disableGamechat && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={disableGamechat} content={disableGamechatTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={disableGamechat} content={disableGamechatTooltip} />
 					</span>
 				)}
 				{experiencedMode && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={experiencedMode} content={experiancedModeTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={experiencedMode} content={experiancedModeTooltip} />
 					</span>
 				)}
 				{privateOnly && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={privateOnly} content={privateOnlyTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={privateOnly} content={privateOnlyTooltip} />
 					</span>
 				)}
 				{priv && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={priv} content={privTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={priv} content={privTooltip} />
 					</span>
 				)}
 				{rainbowgame && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={rainbowgame} content={rainbowgameTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={rainbowgame} content={rainbowgameTooltip} />
 					</span>
 				)}
 				{casualgame && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={casualgame} content={casualgameTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={casualgame} content={casualgameTooltip} />
 					</span>
 				)}
 				{timedMode && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={timedMode} content={timedModeTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={timedMode} content={timedModeTooltip} />
 					</span>
 				)}
 				{isVerifiedOnly && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
 					</span>
 				)}
 				{eloMinimum && (
 					<span>
-						<Popup style={{zIndex:999999}} inverted trigger={eloMinimum} content={eloMinimumTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={eloMinimum} content={eloMinimumTooltip} />
 					</span>
 				)}
 			</div>
@@ -600,7 +600,7 @@ class Tracks extends React.Component {
 							return classes;
 						})()}
 					>
-					<div className="track bottom-track-front" />
+						<div className="track bottom-track-front" />
 						{renderFasTrack()}
 					</div>
 					{renderElectionTracker()}

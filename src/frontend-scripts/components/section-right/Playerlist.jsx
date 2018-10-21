@@ -141,7 +141,7 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole) || TRIALMODS.includes(userInfo.userName)) {
+		if ((Object.keys(userInfo).length && Boolean(userInfo.staffRole)) || TRIALMODS.includes(userInfo.userName)) {
 			let classes = 'comment icon report-button';
 
 			const reportClick = () => {
@@ -228,7 +228,7 @@ class Playerlist extends React.Component {
 			const inexperienced = visible.filter(user => !aem.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
 
 			return [...aem, ...experienced, ...inexperienced].map((user, i) => {
-				const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
+				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
 				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
 				const disableIfUnclickable = f => {
 					if (this.props.isUserClickable) {
@@ -340,8 +340,7 @@ class Playerlist extends React.Component {
 									</div>
 								) : (
 									<div className="userlist-stats-container">
-										(
-										<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
+										(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
 										<span className="userlist-stats"> {percentDisplay}</span>
 									</div>
 								);
@@ -375,7 +374,8 @@ class Playerlist extends React.Component {
 						</p>
 						<p>
 							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
-							<span className="admin-name">dark red (A)</span> and are always at the top of the list.<br />
+							<span className="admin-name">dark red (A)</span> and are always at the top of the list.
+							<br />
 							<span className="cbell">Ed</span>
 							<span className="max">it</span>
 							<span className="invidia">or</span>
@@ -385,9 +385,9 @@ class Playerlist extends React.Component {
 							<span className="max">it</span>
 							<span className="invidia">or</span>
 							<span className="faaiz">s</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
-							<span className="moderator-name">light red (M)</span>.<br />Lastly, <span className="contributor">Contributors</span> get a{' '}
-							<span className="contributor">special teal color</span> as well! Contribute code to this open source project to be endlessly pestered about why
-							you're <span className="contributor">teal</span>.
+							<span className="moderator-name">light red (M)</span>.<br />
+							Lastly, <span className="contributor">Contributors</span> get a <span className="contributor">special teal color</span> as well! Contribute code
+							to this open source project to be endlessly pestered about why you're <span className="contributor">teal</span>.
 						</p>
 					</div>
 					{Object.keys(this.props.userList).length && (
@@ -417,4 +417,8 @@ Playerlist.propTypes = {
 	socket: PropTypes.object
 };
 
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Playerlist);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+	mergeProps
+)(Playerlist);

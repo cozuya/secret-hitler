@@ -563,11 +563,16 @@ export default class Creategame extends React.Component {
 		if (userInfo.gameSettings && userInfo.gameSettings.disableElo) return null;
 		let player = null;
 		if (userList.list) player = userList.list.find(p => p.userName === userInfo.userName);
-		const isSeason = userInfo.gameSettings && !userInfo.gameSettings.disableSeasonal || false;
-		const playerElo = player && Math.min(2000, player.eloSeason) || 2000;
-		const playerEloNonseason = player && Math.min(2000, player.eloOverall) || 2000;
+		const isSeason = (userInfo.gameSettings && !userInfo.gameSettings.disableSeasonal) || false;
+		const playerElo = (player && Math.min(2000, player.eloSeason)) || 2000;
+		const playerEloNonseason = (player && Math.min(2000, player.eloOverall)) || 2000;
 		const max = Math.min(playerElo, playerEloNonseason);
-		const marks = Object.keys(origMarks).filter(k => origMarks[k] <= max).reduce((obj, key) => {obj[key]=origMarks[key];return obj;}, {});
+		const marks = Object.keys(origMarks)
+			.filter(k => origMarks[k] <= max)
+			.reduce((obj, key) => {
+				obj[key] = origMarks[key];
+				return obj;
+			}, {});
 
 		if ((isSeason && playerElo > 1675) || (playerEloNonseason && playerEloNonseason > 1675)) {
 			return (
@@ -575,14 +580,7 @@ export default class Creategame extends React.Component {
 					{this.state.isEloLimited && (
 						<div>
 							<h4 className="ui header">Minimum elo to sit in this game</h4>
-							<Range
-								onChange={this.eloSliderChange}
-								min={1675}
-								max={max}
-								defaultValue={[1675]}
-								value={this.state.eloSliderValue}
-								marks={marks}
-							/>
+							<Range onChange={this.eloSliderChange} min={1675} max={max} defaultValue={[1675]} value={this.state.eloSliderValue} marks={marks} />
 						</div>
 					)}
 					<div className="four wide column elorow" style={{ margin: '-50 auto 0' }}>
@@ -606,7 +604,7 @@ export default class Creategame extends React.Component {
 		const { customGameSettings } = this.state;
 		const numLib = customGameSettings.deckState.lib - customGameSettings.trackState.lib;
 		const numFas = customGameSettings.deckState.fas - customGameSettings.trackState.fas;
-		const rowWidth = Math.ceil((numLib+numFas)/3);
+		const rowWidth = Math.ceil((numLib + numFas) / 3);
 		const data = _.range(0, numLib)
 			.map((val, i) => {
 				return <div key={`L${i}`} className="deckcard" style={{ backgroundImage: "url('../images/cards/liberalp-l.png')" }} />;
@@ -621,10 +619,10 @@ export default class Creategame extends React.Component {
 			if (thirds[Math.floor(idx / rowWidth)] == null) thirds[Math.floor(idx / rowWidth)] = [];
 			thirds[Math.floor(idx / rowWidth)][idx % rowWidth] = elem;
 		});
-		if ((numLib+numFas) % 3 == 1) {
+		if ((numLib + numFas) % 3 == 1) {
 			// Causes two rows to be one short, instead of one row being two short.
-			thirds[2][rowWidth-2] = thirds[1][rowWidth-1];
-			delete thirds[1][rowWidth-1];
+			thirds[2][rowWidth - 2] = thirds[1][rowWidth - 1];
+			delete thirds[1][rowWidth - 1];
 		}
 		return thirds.map((val, i) => {
 			return (
@@ -880,7 +878,7 @@ export default class Creategame extends React.Component {
 					</div>
 				</div>
 				<div className="row">{this.renderFasTrack()}</div>
-				<div className="eight wide column ui grid" style={{height: 'fit-content'}}>
+				<div className="eight wide column ui grid" style={{ height: 'fit-content' }}>
 					<div className="row">
 						<div className="eight wide column">
 							<div>
@@ -974,7 +972,8 @@ export default class Creategame extends React.Component {
 		const errs = [];
 
 		const { userInfo, userList } = this.props;
-		if (userList && userList.list) { // Can happen when refreshing.
+		if (userList && userList.list) {
+			// Can happen when refreshing.
 			const player = userList.list.find(p => p.userName === userInfo.userName);
 			if (!player) errs.push('Not logged in, please refresh.');
 			else if (this.state.isEloLimited) {
@@ -986,7 +985,8 @@ export default class Creategame extends React.Component {
 			}
 		}
 		if (this.state.customGameSettings.enabled) {
-			if (this.state.customGameSettings.fascistCount+1 >= this.state.customGameSliderValue/2) errs.push('There must be a liberal majority when the game starts.');
+			if (this.state.customGameSettings.fascistCount + 1 >= this.state.customGameSliderValue / 2)
+				errs.push('There must be a liberal majority when the game starts.');
 			if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) errs.push('Veto Zone cannot be active when the game starts.');
 		}
 		if (errs.length) return errs;
@@ -998,7 +998,11 @@ export default class Creategame extends React.Component {
 		if (errs) {
 			return (
 				<div className="sixteen wide column">
-					{errs.map((e, i) => <h4 key={i} className="ui header" style={{color:'red'}}>{e}</h4>)}
+					{errs.map((e, i) => (
+						<h4 key={i} className="ui header" style={{ color: 'red' }}>
+							{e}
+						</h4>
+					))}
 				</div>
 			);
 		}
@@ -1006,8 +1010,8 @@ export default class Creategame extends React.Component {
 
 	render() {
 		const { userInfo } = this.props;
-		let createClass = "ui button primary"
-		if (this.getErrors() != null) createClass += " disabled";
+		let createClass = 'ui button primary';
+		if (this.getErrors() != null) createClass += ' disabled';
 
 		return (
 			<section className="creategame">

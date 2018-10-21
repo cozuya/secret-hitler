@@ -484,7 +484,8 @@ class Settings extends React.Component {
 						<div className="ui grid">
 							<div className="row centered cardback-header-container">
 								<h4 className="ui header">
-									Cardback<i className="info circle icon" title="Click to get information about user uploaded cardbacks" onClick={displayCardbackInfoModal} />
+									Cardback
+									<i className="info circle icon" title="Click to get information about user uploaded cardbacks" onClick={displayCardbackInfoModal} />
 								</h4>
 							</div>
 							<div className="row cardbacks-container">
