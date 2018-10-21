@@ -25,7 +25,8 @@ export class Main extends React.Component {
 				completed: true,
 				timedMode: true,
 				rainbow: true,
-				standard: true
+				standard: true,
+				customgame: true
 			}
 		};
 	}
@@ -78,7 +79,7 @@ export class Main extends React.Component {
 				case 'profile':
 					return <Profile userInfo={userInfo} socket={socket} userList={userList} />;
 				case 'replay':
-					return <Replay allEmotes={this.props.allEmotes}/>;
+					return <Replay allEmotes={this.props.allEmotes} />;
 				case 'reports':
 					return <Reports socket={socket} userInfo={userInfo} />;
 				case 'leaderboards':

@@ -76,6 +76,16 @@ export class GamesList extends React.Component {
 					/>
 				</div>
 				<div className="three wide column">
+					<i title="Filter by custom games" className="setting icon" />
+					<Checkbox
+						toggle
+						checked={this.props.gameFilter.customgame}
+						onChange={() => {
+							this.toggleFilter('customgame');
+						}}
+					/>
+				</div>
+				<div className="three wide column">
 					<i title="Filter by timed mode games" className="hourglass half icon" />
 					<Checkbox
 						toggle
@@ -115,7 +125,7 @@ export class GamesList extends React.Component {
 		if (gameList.length) {
 			return gameList
 				.filter(game => {
-					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard } = this.props.gameFilter;
+					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard, customgame } = this.props.gameFilter;
 
 					return !(
 						(game.private && !priv) ||
@@ -125,7 +135,8 @@ export class GamesList extends React.Component {
 						(game.timedMode && !timedMode) ||
 						(game.gameStatus === 'notStarted' && !unstarted) ||
 						(game.gameStatus === 'isStarted' && !inprogress) ||
-						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && !completed)
+						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && !completed) ||
+						(game.isCustomGame && !customgame)
 					);
 				})
 				.sort((a, b) => {
@@ -195,7 +206,8 @@ export class GamesList extends React.Component {
 					<h5 title="A season is an optional new tier of wins and losses that is reset after 3 months.">
 						{new Date().getTime() < new Date('1-1-2019').getTime()
 							? `Season ends ${moment(new Date('1-1-2019')).fromNow()}`
-							: `Welcome to season ${CURRENTSEASONNUMBER + 1}`}.
+							: `Welcome to season ${CURRENTSEASONNUMBER + 1}`}
+						.
 					</h5>
 					{/* <h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">Welcome to season 2</h5> */}
 				</a>

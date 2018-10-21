@@ -20,6 +20,7 @@ const Changelog = () => (
 			<li>Custom Games are always casual, and have a fixed player count as opposed to the selectable range of players.</li>
 			<li>It plays 5 to 10 as usual and must have a liberal majority.</li>
 			<li>Choose if hitler knows his fascists, when hitler zone starts, when veto is enabled, and what policy cards are in the game.</li>
+			<li>There's a new game filter for custom games (filter icon next to the "create a new game" button on the lobby).</li>
 			<li>All of this feature thanks to contributor Hexicube!</li>
 		</ul>
 		<p>Other items:</p>
