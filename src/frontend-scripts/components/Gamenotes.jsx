@@ -4,63 +4,33 @@ import { toggleNotes } from '../actions/actions';
 import PropTypes from 'prop-types';
 
 const mapDispatchToProps = dispatch => ({
-		toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus))
-	}),
-	dragOverFn = e => {
-		e.preventDefault();
-	};
+	dismissNotes: () => dispatch(toggleNotes(false))
+});
 
 class Gamenotes extends React.Component {
 	constructor() {
 		super();
 
-		this.clearNotes = this.clearNotes.bind(this);
 		this.noteDragStart = this.noteDragStart.bind(this);
-		this.dismissNotes = this.dismissNotes.bind(this);
-		this.noteDrop = this.noteDrop.bind(this);
-		this.resizeDragStart = this.resizeDragStart.bind(this);
+		this.noteDragOver = this.noteDragOver.bind(this);
+		this.noteDragDrop = this.noteDragDrop.bind(this);
 
 		this.state = {
 			top: 110,
 			left: 690,
 			width: 400,
-			height: 320,
-			isResizing: false
+			height: 320
 		};
 	}
 
-	clearNotes() {
-		this.props.changeNotesValue('');
-	}
-
-	dismissNotes() {
-		const { toggleNotes } = this.props;
-
-		toggleNotes(false);
-	}
-
-	resizeDragStart() {}
-
-	noteDrop(e) {
-		e.preventDefault();
-		if (!this.state.isResizing) {
-			const offset = e.dataTransfer.getData('coordinates/text').split(',');
-
-			this.setState({
-				top: e.clientY + parseInt(offset[1], 10),
-				left: e.clientX + parseInt(offset[0], 10)
-			});
-		}
-	}
-
 	componentDidMount() {
-		document.body.addEventListener('dragover', dragOverFn);
-		document.body.addEventListener('drop', this.noteDrop);
+		document.body.addEventListener('dragover', this.noteDragOver);
+		document.body.addEventListener('drop', this.noteDragDrop);
 	}
 
 	componentWillUnmount() {
-		document.body.removeEventListener('dragover', dragOverFn);
-		document.body.removeEventListener('drop', this.noteDrop);
+		document.body.removeEventListener('dragover', this.noteDragOver);
+		document.body.removeEventListener('drop', this.noteDragDrop);
 	}
 
 	noteDragStart(e) {
@@ -72,40 +42,56 @@ class Gamenotes extends React.Component {
 		);
 	}
 
+	noteDragOver(e) {
+		e.preventDefault();
+	}
+
+	noteDragDrop(e) {
+		e.preventDefault();
+		const offset = e.dataTransfer.getData('coordinates/text').split(',');
+
+		this.setState({
+			top: e.clientY + parseInt(offset[1], 10),
+			left: e.clientX + parseInt(offset[0], 10)
+		});
+	}
+
 	render() {
-		const notesChange = e => {
-			this.props.changeNotesValue(`${e.target.value}`);
-		};
+		const { changeNotesValue, dismissNotes, value } = this.props;
+		const { left: sectionLeft, top: sectionTop, height: sectionHeight, width: sectionWidth } = this.state;
 
 		return (
 			<section
 				draggable="true"
 				onDragStart={this.noteDragStart}
 				className="notes-container"
-				style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, height: `${this.state.height}px`, width: `${this.state.width}px` }}
+				style={{ top: `${sectionTop}px`, left: `${sectionLeft}px`, height: `${sectionHeight}px`, width: `${sectionWidth}px` }}
 			>
 				<div className="notes-header">
-					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
-					<div className="drag-boundry 2d top-left" />
-					<div className="drag-boundry 2d top-right" />
 					<p>Game Notes</p>
 					<div className="icon-container">
-						<i className="large ban icon" onClick={this.clearNotes} title="Click here to clear notes" />
-						<i className="large window minus icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
+						<i className="large ban icon" onClick={() => changeNotesValue('')} title="Click here to clear notes" />
+						<i className="large window minus icon" onClick={() => dismissNotes(false)} title="Click here to collapse notes" />
 					</div>
 				</div>
-				<textarea style={{ height: this.state.height }} autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />
+				<textarea style={{ height: this.state.height }} autoFocus spellCheck="false" value={value}
+									onChange={(e) => changeNotesValue(e.target.value)} />
 			</section>
 		);
 	}
 }
 
+Gamenotes.defaultProps = {
+	value: '',
+};
+
 Gamenotes.propTypes = {
-	toggleNotes: PropTypes.func,
+	changeNotesValue: PropTypes.func.isRequired,
+	dismissNotes: PropTypes.func.isRequired,
 	value: PropTypes.string
 };
 
 export default connect(
-	null,
+	() => ({}),
 	mapDispatchToProps
 )(Gamenotes);
