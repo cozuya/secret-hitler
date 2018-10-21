@@ -9,6 +9,30 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 0.15.0 released 10-21-2018</p>
+		</div>
+		<h4>New feature: custom games!</h4>
+		<p>Create a fully customised game to play the game how you want to!</p>
+		<div style={{ textAlign: 'center' }}>
+			<img src="https://i.imgur.com/sv6nq9C.png" />
+		</div>
+		<ul>
+			<li>Custom Games are always casual, and have a fixed player count as opposed to the selectable range of players.</li>
+			<li>It plays 5 to 10 as usual and must have a liberal majority.</li>
+			<li>Choose if hitler knows his fascists, when hitler zone starts, when veto is enabled, and what policy cards are in the game.</li>
+			<li>All of this feature thanks to contributor Hexicube!</li>
+		</ul>
+		<p>Other items:</p>
+		<ul>
+			<li>User reports should finally be fixed.</li>
+			<li>Dragging the game notes window to bad places should no longer open a new tab.</li>
+			<li>Lack of rainbow color for seasonal elo/WL has been fixed.</li>
+			<li>Game chat messages should no longer use an extra line.</li>
+			<li>Added extra notches to the minimum elo and timed game sliders.</li>
+			<li>Deck shuffles are now shown in game chat.</li>
+			<li>Browser crashes now show an error page instead of a blank screen.</li>
+		</ul>
+		<div className="ui header">
 			<p>Version 0.14.14 released 10-16-2018</p>
 		</div>
 		<h4>New feature: new players must agree to the terms of use.</h4>
@@ -563,10 +587,8 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
-				style={{ width: '30%', margin: '0 auto', display: 'block' }}
-				src="/images/em.png"
-			/>
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:
+			<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}

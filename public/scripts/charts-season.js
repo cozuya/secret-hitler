@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 	// this page/code is total shit but I would need to get a different graphing library to make it better.
 
 	const processWinrateData = (fascistWinCount, totalGameCount) => {
-		const fWins = Math.round(fascistWinCount / totalGameCount * 100000) / 1000;
-		const lWins = Math.round((totalGameCount - fascistWinCount) / totalGameCount * 100000) / 1000;
+		const fWins = Math.round((fascistWinCount / totalGameCount) * 100000) / 1000;
+		const lWins = Math.round(((totalGameCount - fascistWinCount) / totalGameCount) * 100000) / 1000;
 
 		return {
 			series: [fWins, lWins],

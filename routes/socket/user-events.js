@@ -693,7 +693,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			gameChat: true,
 			chat: [
 				{
-					text: 'The track will start with '
+					text: 'The game will start with '
 				},
 				{
 					text: `${newGame.customGameSettings.trackState.lib} liberal`,
@@ -1298,7 +1298,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 				gameChat: true,
 				chat: [
 					{
-						text: 'The track will start with '
+						text: 'The game will start with '
 					},
 					{
 						text: `${newGame.customGameSettings.trackState.lib} liberal`,
