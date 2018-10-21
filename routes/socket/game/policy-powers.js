@@ -1,5 +1,6 @@
 const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../util.js');
 const { startElection, shufflePolicies } = require('./common.js');
+const { sendGameList } = require('../user-requests');
 const { completeGame } = require('./end-game.js');
 
 /**
@@ -652,12 +653,109 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 						completeGame(game, 'fascist');
 					}, process.env.NODE_ENV === 'development' ? 100 : 2000);
 				} else {
-					publicSelectedPlayer.cardStatus.cardDisplayed = false;
-					sendInProgressGameUpdate(game, true);
-					setTimeout(() => {
-						game.trackState.electionTrackerCount = 0;
-						startElection(game);
-					}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+					let playersAlive = 0;
+					seatedPlayers.forEach(p => {
+						if (!p.isDead) playersAlive++;
+					});
+					if (playersAlive <= 2) {
+						const chat = {
+							timestamp: new Date(),
+							gameChat: true,
+							chat: [
+								{
+									text: 'Hitler',
+									type: 'hitler'
+								},
+								{
+									text: ' and one '
+								},
+								{
+									text: 'liberal',
+									type: 'liberal'
+								},
+								{
+									text: ' remains, top-decking to the end...'
+								}
+							]
+						};
+
+						seatedPlayers.forEach((player, i) => {
+							player.gameChats.push(chat);
+						});
+
+						game.private.unSeatedGameChats.push(chat);
+						game.general.status = 'Top-decking to the end...';
+						sendInProgressGameUpdate(game);
+
+						const playCard = () => {
+							if (game.private.policies.length < 3) shufflePolicies();
+							const index = game.trackState.enactedPolicies.length;
+							const policy = game.private.policies.shift();
+							game.trackState[`${policy}PolicyCount`]++;
+							sendGameList();
+							game.trackState.enactedPolicies.push({
+								position: 'middle',
+								cardBack: policy,
+								isFlipped: false
+							});
+							game.trackState.enactedPolicies[index].isFlipped = true;
+							const chat = {
+								timestamp: new Date(),
+								gameChat: true,
+								chat: [
+									{ text: 'A ' },
+									{
+										text: policy === 'liberal' ? 'liberal' : 'fascist',
+										type: policy === 'liberal' ? 'liberal' : 'fascist'
+									},
+									{
+										text: ` policy has been enacted. (${
+											policy === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()
+										}/${policy === 'liberal' ? '5' : '6'})`
+									}
+								]
+							};
+							game.trackState.enactedPolicies[index].position =
+								policy === 'liberal' ? `liberal${game.trackState.liberalPolicyCount}` : `fascist${game.trackState.fascistPolicyCount}`;
+
+							if (!game.general.disableGamechat) {
+								game.private.seatedPlayers.forEach(player => {
+									player.gameChats.push(chat);
+								});
+
+								game.private.unSeatedGameChats.push(chat);
+							}
+							if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) {
+								game.publicPlayersState.forEach((player, i) => {
+									player.cardStatus.cardFront = 'secretrole';
+									player.cardStatus.cardBack = game.private.seatedPlayers[i].role;
+									player.cardStatus.cardDisplayed = true;
+									player.cardStatus.isFlipped = false;
+								});
+								game.gameState.audioCue = game.trackState.liberalPolicyCount === 5 ? 'liberalsWin' : 'fascistsWin';
+								setTimeout(() => {
+									game.publicPlayersState.forEach((player, i) => {
+										player.cardStatus.isFlipped = true;
+									});
+									game.gameState.audioCue = '';
+									if (process.env.NODE_ENV === 'development') {
+										completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
+									} else {
+										completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
+									}
+								}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+							} else setTimeout(playCard, 2500);
+							sendInProgressGameUpdate(game);
+						};
+						setTimeout(playCard, 2500);
+					} else {
+						publicSelectedPlayer.cardStatus.cardDisplayed = false;
+						sendInProgressGameUpdate(game, true);
+						setTimeout(() => {
+							game.trackState.electionTrackerCount = 0;
+							startElection(game);
+						}, process.env.NODE_ENV === 'development' ? 100 : 2000);
+					}
 				}
 			}
 		}, process.env.NODE_ENV === 'development' ? 100 : 4000);
