@@ -36,8 +36,7 @@ class Gamechat extends React.Component {
 			chatFilter: 'All',
 			lock: false,
 			claim: '',
-			playersToWhitelist: [],
-			notesEnabled: false
+			playersToWhitelist: []
 		};
 	}
 
@@ -83,10 +82,6 @@ class Gamechat extends React.Component {
 			this.setState({ inputValue: '' });
 			$(this.gameChatInput).blur();
 		}
-
-		if (prevProps.notesActive && !nextProps.notesActive && this.state.notesEnabled) {
-			this.setState({ notesEnabled: false });
-		}
 	}
 
 	handleChatScrolled = () => {
@@ -115,21 +110,6 @@ class Gamechat extends React.Component {
 		const { notesActive, toggleNotes } = this.props;
 
 		toggleNotes(!notesActive);
-		this.setState({ notesEnabled: !notesActive });
-	}
-
-	renderNotes() {
-		if (this.state.notesEnabled) {
-			const notesChange = e => {
-				this.setState({ notesValue: `${e.target.value}` });
-			};
-			return (
-				<section className="notes-container">
-					<p>Notes</p>
-					<textarea autoFocus spellCheck="false" value={this.state.notesValue} onChange={notesChange} />
-				</section>
-			);
-		}
 	}
 
 	handleClickedLeaveGame() {
@@ -635,7 +615,7 @@ class Gamechat extends React.Component {
 					{userInfo.userName && (
 						<i
 							title="Click here to pop out notes"
-							className={this.state.notesEnabled ? 'large window minus icon' : 'large edit icon'}
+							className={this.props.notesActive ? 'large window minus icon' : 'large edit icon'}
 							onClick={this.handleNoteClick}
 						/>
 					)}
@@ -965,7 +945,11 @@ Gamechat.propTypes = {
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.array,
+	notesActive: PropTypes.bool.isRequired,
+	toggleNotes: PropTypes.func.isRequired,
+	updateUser: PropTypes.func.isRequired,
+	loadReplay: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Gamechat);
