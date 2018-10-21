@@ -812,11 +812,11 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 		return;
 	}
 
-    const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
+        const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
-    if (game.publicPlayersState[playerIndex].isDead) {
-        return;
-    }
+        if (game.publicPlayersState[playerIndex].isDead) {
+                return;
+        }
 
 	const { blindMode, replacementNames } = game.general;
 
