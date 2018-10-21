@@ -66,7 +66,7 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
 				}
 			]
 		};
-		seatedPlayers.forEach(player => {
+		game.private.seatedPlayers.forEach(player => {
 			player.gameChats.push(chat);
 		});
 		game.private.unSeatedGameChats.push(chat);

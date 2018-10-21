@@ -558,17 +558,18 @@ export default class Creategame extends React.Component {
 	}
 
 	renderEloSlider() {
+		const origMarks = { 1675: '1675', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' };
 		const { userInfo, userList } = this.props;
-		if (!userList.list.length) {
-			return null;
-		}
-		const player = userList.list.find(p => p.userName === userInfo.userName);
-		if (!player) return null;
-		const isSeason = !userInfo.gameSettings.disableSeasonal;
-		const playerElo = player.eloSeason;
-		const playerEloNonseason = player.eloOverall;
+		if (userInfo.gameSettings && userInfo.gameSettings.disableElo) return null;
+		let player = null;
+		if (userList.list) player = userList.list.find(p => p.userName === userInfo.userName);
+		const isSeason = userInfo.gameSettings && !userInfo.gameSettings.disableSeasonal || false;
+		const playerElo = player && Math.min(2000, player.eloSeason) || 2000;
+		const playerEloNonseason = player && Math.min(2000, player.eloOverall) || 2000;
+		const max = Math.min(playerElo, playerEloNonseason);
+		const marks = Object.keys(origMarks).filter(k => origMarks[k] <= max).reduce((obj, key) => {obj[key]=origMarks[key];return obj;}, {});
 
-		if ((isSeason && playerElo && playerElo > 1675) || (playerEloNonseason && playerEloNonseason > 1675)) {
+		if ((isSeason && playerElo > 1675) || (playerEloNonseason && playerEloNonseason > 1675)) {
 			return (
 				<div className="sixteen wide column" style={{ marginTop: '-30px' }}>
 					{this.state.isEloLimited && (
@@ -577,10 +578,10 @@ export default class Creategame extends React.Component {
 							<Range
 								onChange={this.eloSliderChange}
 								min={1675}
-								max={2000}
+								max={max}
 								defaultValue={[1675]}
 								value={this.state.eloSliderValue}
-								marks={{ 1675: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' }}
+								marks={marks}
 							/>
 						</div>
 					)}
@@ -965,18 +966,31 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row">{this.renderDeck()}</div>
 				</div>
-				{this.renderErrors()}
 			</React.Fragment>
 		);
 	}
 
 	getErrors() {
-		if (!this.state.customGameSettings.enabled) return null;
 		const errs = [];
-		if (this.state.customGameSettings.fascistCount+1 >= this.state.customGameSliderValue/2) errs.push('There must be a liberal majority when the game starts.');
-		if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) errs.push('Veto Zone cannot be active when the game starts.');
-		if (errs.length == 0) return null;
-		return errs;
+
+		const { userInfo, userList } = this.props;
+		if (userList && userList.list) { // Can happen when refreshing.
+			const player = userList.list.find(p => p.userName === userInfo.userName);
+			if (!player) errs.push('Not logged in, please refresh.');
+			else if (this.state.isEloLimited) {
+				const isSeason = !userInfo.gameSettings.disableSeasonal;
+				const playerElo = player.eloSeason;
+				const playerEloNonseason = player.eloOverall;
+				if (this.state.eloSliderValue[0] > playerEloNonseason) errs.push(`Elo slider set too high, your overall elo is ${playerEloNonseason}.`);
+				else if (this.state.eloSliderValue[0] > playerElo) errs.push(`Elo slider set too high, your seasonal elo is ${playerElo}.`);
+			}
+		}
+		if (this.state.customGameSettings.enabled) {
+			if (this.state.customGameSettings.fascistCount+1 >= this.state.customGameSliderValue/2) errs.push('There must be a liberal majority when the game starts.');
+			if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) errs.push('Veto Zone cannot be active when the game starts.');
+		}
+		if (errs.length) return errs;
+		return null;
 	}
 
 	renderErrors() {
@@ -1129,7 +1143,7 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					)}
-					{userInfo.gameSettings && !userInfo.gameSettings.disableElo && this.renderEloSlider()}
+					{this.renderEloSlider()}
 					<div className="row sliderrow">
 						<div className="four wide column disablechat">
 							<i className="big unmute icon" />
@@ -1263,6 +1277,7 @@ export default class Creategame extends React.Component {
 						</div>
 					</div>
 					{this.state.customGameSettings.enabled && this.renderCustomGames()}
+					{this.renderErrors()}
 				</div>
 				<div className="ui grid centered footer">
 					<div onClick={this.createNewGame} className={createClass}>
