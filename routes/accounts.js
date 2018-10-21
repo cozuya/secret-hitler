@@ -22,6 +22,49 @@ const ensureAuthenticated = (req, res, next) => {
 	res.redirect('/');
 };
 
+let banCache = null;
+setInterval(() => {
+	// Fetches the list of banned IPs every 5 seconds, to prevent hammering the DB on restarts as people log in.
+	BannedIP.find({}, (err, ips) => {
+		if (err) console.log(err);
+		else banCache = ips;
+	});
+}, 5000);
+// There's a mountain of "new" type bans.
+const unbanTime = new Date() - 64800000;
+BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) => {
+	if (err) throw err;
+	BannedIP.find({}, (err, ips) => {
+		if (err) throw err;
+		banCache = ips;
+	});
+});
+const testIP = (IP, callback) => {
+	if (!IP) callback(false, 'Bad IP!');
+	if (!banCache) callback(true, 'nocache');
+
+	const ips = banCache.filter(i => i.ip == IP);
+	let date;
+	let unbannedTime;
+	const ip = ips[ips.length - 1];
+
+	if (ip) {
+		date = new Date().getTime();
+		unbannedTime =
+			ip.type === 'small' || ip.type === 'new'
+				? ip.bannedDate.getTime() + 64800000
+				: ip.type === 'tiny'
+					? ip.bannedDate.getTime() + 60000
+					: ip.bannedDate.getTime() + 604800000;
+	}
+
+	if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
+		callback(ip.type);
+	} else {
+		callback(null);
+	}
+};
+
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 module.exports = () => {
@@ -172,32 +215,17 @@ module.exports = () => {
 					if (account && account.username === username) {
 						res.status(401).json({ message: 'Sorry, that account already exists.' });
 					} else {
-						BannedIP.find({ ip: signupIP }, (err, ips) => {
-							let date;
-							let unbannedTime;
-							const ip = ips[ips.length - 1];
-
-							if (err) {
-								return next(err);
-							}
-
-							if (ip) {
-								date = new Date().getTime();
-								unbannedTime =
-									ip.type === 'small' || ip.type === 'new'
-										? ip.bannedDate.getTime() + 64800000
-										: ip.type === 'tiny'
-											? ip.bannedDate.getTime() + 60000
-											: ip.bannedDate.getTime() + 604800000;
-							}
-
-							if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
-								res.status(403).json({
-									message:
-										ip.type === 'small' || ip.type === 'tiny'
-											? 'You can no longer access this service.  If you believe this is in error, contact the moderators.'
-											: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators.'
-								});
+						testIP(signupIP, banType => {
+							if (banType) {
+								if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+								else if (banType == 'small' || banType == 'tiny') {
+									res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+								} else if (banType == 'new') {
+									res.status(403).json({ message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators.' });
+								} else {
+									console.log(`Unhandled IP ban type: ${banType}`);
+									res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+								}
 							} else {
 								Account.register(new Account(save), password, err => {
 									if (err) {
@@ -230,49 +258,22 @@ module.exports = () => {
 	app.post(
 		'/account/signin',
 		(req, res, next) => {
-			BannedIP.find(
-				{
-					ip:
-						req.headers['x-real-ip'] ||
-						req.headers['X-Real-IP'] ||
-						req.headers['X-Forwarded-For'] ||
-						req.headers['x-forwarded-for'] ||
-						req.connection.remoteAddress,
-					type: { $in: ['tiny', 'small', 'big'] }
-				},
-				(err, ips) => {
-					let date;
-					let unbannedTime;
-					const ip = ips[ips.length - 1];
-					// const ip2 =
-					// 	req.headers['x-real-ip'] ||
-					// 	req.headers['X-Real-IP'] ||
-					// 	req.headers['X-Forwarded-For'] ||
-					// 	req.headers['x-forwarded-for'] ||
-					// 	req.connection.remoteAddress;
-
-					if (err) {
-						return next(err);
-					}
-
-					if (ip) {
-						date = new Date().getTime();
-						unbannedTime =
-							ip.type === 'small'
-								? ip.bannedDate.getTime() + 64800000
-								: ip.type === 'tiny'
-									? ip.bannedDate.getTime() + 60000
-									: ip.bannedDate.getTime() + 604800000;
-					}
-
-					if (ip && unbannedTime > date) {
-						res.status(403).json({
-							message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
-							// TODO: include the reason moderators provided for the IP ban, if it exists
-						});
-					} else {
-						return next();
-					}
+			testIP(
+				req.headers['x-real-ip'] ||
+					req.headers['X-Real-IP'] ||
+					req.headers['X-Forwarded-For'] ||
+					req.headers['x-forwarded-for'] ||
+					req.connection.remoteAddress,
+				banType => {
+					if (banType && banType != 'new') {
+						if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+						else if (banType == 'small' || banType == 'tiny') {
+							res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+						} else {
+							console.log(`Unhandled IP ban type: ${banType}`);
+							res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+						}
+					} else return next();
 				}
 			);
 		},
