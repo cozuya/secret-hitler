@@ -44,11 +44,11 @@ class TopLevelErrorBoundry extends React.Component {
 		const { errorInfo, error } = this.state;
 
 		return errorInfo ? (
-			<div>
+			<div style={{ padding: '20px' }}>
 				<h2>You've broken the website.</h2>
 				<p>
-					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in a recent deployment. Reload your browser
-					to get back to safety.
+					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in a recent deployment.{' '}
+					<a href="/game">Click here to get back to safety.</a>
 				</p>
 				<details style={{ whiteSpace: 'pre-wrap' }}>
 					{error && error.toString()}

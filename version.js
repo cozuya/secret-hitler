@@ -1,5 +1,5 @@
 module.exports = {
-	number: '0.14.14',
-	color: 'elo14',
-	date: '10-16-2018'
+	number: '0.15.0',
+	color: 'customgames0',
+	date: '10-21-2018'
 };

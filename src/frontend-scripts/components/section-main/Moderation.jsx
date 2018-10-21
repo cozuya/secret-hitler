@@ -834,7 +834,7 @@ export default class Moderation extends React.Component {
 						<div className="modplayerlist">
 							<h3>Current player list</h3>
 							<div className="ui table">
-								<h4>Colour chart:</h4>
+								<h4>Color chart:</h4>
 								<span class="istor">User is playing via the TOR network.</span>
 								<br />
 								<span class="isbannedbefore">User has been banned before.</span>
