@@ -90,10 +90,9 @@ const DisplayLobbies = props => {
 		}
 
 		if (game.isCustomGame) {
-			customgameactive = <i className="setting icon" />
+			customgameactive = <i className="setting icon" />;
 			customgameactiveTooltip = 'Custom Game';
-		}
-		else if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
+		} else if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
 			// ugly but lazy
 			if (game.rebalance6p && game.rebalance7p && game.rebalance9p) {
 				rebalance = <div> R679 </div>;

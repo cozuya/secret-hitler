@@ -146,7 +146,7 @@ const buildPlayback = (replay, to) => {
 	};
 };
 
-const Replay = ({ replay, isSmall, to, replayChats, allEmotes}) => {
+const Replay = ({ replay, isSmall, to, replayChats, allEmotes }) => {
 	const { ticks, position, game } = replay;
 	const snapshot = ticks.get(position);
 	const playback = buildPlayback(replay, to);
@@ -162,7 +162,7 @@ const Replay = ({ replay, isSmall, to, replayChats, allEmotes}) => {
 	gameInfo.general.uid = game.id;
 
 	return (
-		<section className={classnames({ small: false/*isSmall*/, big: true /*!isSmall*/ }, 'game')}>
+		<section className={classnames({ small: false /*isSmall*/, big: true /*!isSmall*/ }, 'game')}>
 			<div className="ui grid">
 				<div className="left-side nine wide column">
 					<ReplayOverlay key="replayoverlay" snapshot={snapshot} />
@@ -272,9 +272,11 @@ class ReplayWrapper extends React.Component {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReplayWrapper);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(ReplayWrapper);
 
 Replay.propTypes = {
 	allEmotes: PropTypes.array
 };
-

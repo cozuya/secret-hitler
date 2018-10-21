@@ -116,4 +116,7 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 Defaultmid.propTypes = {
 	quickDefault: PropTypes.func
 };
-export default connect(mapStateToProps, mapDispatchToProps)(Defaultmid);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Defaultmid);
