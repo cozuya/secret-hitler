@@ -16,20 +16,22 @@ export class GamesList extends React.Component {
 	}
 
 	toggleFilter(value) {
-		const { gameFilter } = this.props;
+		const { gameFilter, changeGameFilter } = this.props;
 
 		gameFilter[value] = !gameFilter[value];
-		this.props.changeGameFilter(gameFilter);
+		changeGameFilter(gameFilter);
 	}
 
 	renderFilters() {
+		const { gameFilter } = this.props;
+
 		return (
 			<div className="browser-filters ui grid">
 				<div className="three wide column">
 					<h4 className="ui header">Public</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.pub}
+						checked={!gameFilter.pub}
 						onChange={() => {
 							this.toggleFilter('pub');
 						}}
@@ -39,7 +41,7 @@ export class GamesList extends React.Component {
 					<h4 className="ui header">Private</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.priv}
+						checked={!gameFilter.priv}
 						onChange={() => {
 							this.toggleFilter('priv');
 						}}
@@ -49,7 +51,7 @@ export class GamesList extends React.Component {
 					<h4 className="ui header">Unstarted</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.unstarted}
+						checked={!gameFilter.unstarted}
 						onChange={() => {
 							this.toggleFilter('unstarted');
 						}}
@@ -59,7 +61,7 @@ export class GamesList extends React.Component {
 					<h4 className="ui header">In progress</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.inprogress}
+						checked={!gameFilter.inprogress}
 						onChange={() => {
 							this.toggleFilter('inprogress');
 						}}
@@ -69,7 +71,7 @@ export class GamesList extends React.Component {
 					<h4 className="ui header">Completed</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.completed}
+						checked={!gameFilter.completed}
 						onChange={() => {
 							this.toggleFilter('completed');
 						}}
@@ -79,7 +81,7 @@ export class GamesList extends React.Component {
 					<i title="Filter by custom games" className="setting icon" />
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.customgame}
+						checked={!gameFilter.customgame}
 						onChange={() => {
 							this.toggleFilter('customgame');
 						}}
@@ -89,7 +91,7 @@ export class GamesList extends React.Component {
 					<i title="Filter by timed mode games" className="hourglass half icon" />
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.timedMode}
+						checked={!gameFilter.timedMode}
 						onChange={() => {
 							this.toggleFilter('timedMode');
 						}}
@@ -99,7 +101,7 @@ export class GamesList extends React.Component {
 					<i title="Filter by standard games" className="standard-icon" />
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.standard}
+						checked={!gameFilter.standard}
 						onChange={() => {
 							this.toggleFilter('standard');
 						}}
@@ -109,7 +111,7 @@ export class GamesList extends React.Component {
 					<i title="Filter by experienced-player-only games" className="rainbow-icon" />
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.rainbow}
+						checked={!gameFilter.rainbow}
 						onChange={() => {
 							this.toggleFilter('rainbow');
 						}}
@@ -128,15 +130,15 @@ export class GamesList extends React.Component {
 					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard, customgame } = this.props.gameFilter;
 
 					return !(
-						(game.private && !priv) ||
-						(!game.private && !pub) ||
-						(game.rainbowgame && !rainbow) ||
-						(!game.rainbowgame && !standard) ||
-						(game.timedMode && !timedMode) ||
-						(game.gameStatus === 'notStarted' && !unstarted) ||
-						(game.gameStatus === 'isStarted' && !inprogress) ||
-						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && !completed) ||
-						(game.isCustomGame && !customgame)
+						(game.private && priv) ||
+						(!game.private && pub) ||
+						(game.rainbowgame && rainbow) ||
+						(!game.rainbowgame && standard) ||
+						(game.timedMode && timedMode) ||
+						(game.gameStatus === 'notStarted' && unstarted) ||
+						(game.gameStatus === 'isStarted' && inprogress) ||
+						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && completed) ||
+						(game.isCustomGame && customgame)
 					);
 				})
 				.sort((a, b) => {

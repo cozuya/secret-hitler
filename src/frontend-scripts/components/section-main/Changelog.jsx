@@ -23,6 +23,7 @@ const Changelog = () => (
 			<li>There's a new game filter for custom games (filter icon next to the "create a new game" button on the lobby).</li>
 			<li>All of this feature thanks to contributor Hexicube!</li>
 		</ul>
+		<h4>New feature: game filters now save/persist when toggled.</h4>
 		<p>Other items:</p>
 		<ul>
 			<li>User reports should finally be fixed.</li>
@@ -32,6 +33,7 @@ const Changelog = () => (
 			<li>Added extra notches to the minimum elo and timed game sliders.</li>
 			<li>Deck shuffles are now shown in game chat.</li>
 			<li>Browser crashes now show an error page instead of a blank screen.</li>
+			<li>BigNose emote is back.</li>
 		</ul>
 		<div className="ui header">
 			<p>Version 0.14.14 released 10-16-2018</p>

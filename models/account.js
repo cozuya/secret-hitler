@@ -39,6 +39,17 @@ const Account = new Schema({
 		previousSeasonAward: String,
 		disableElo: Boolean,
 		fullheight: Boolean,
+		gameFilters: {
+			pub: Boolean,
+			priv: Boolean,
+			unstarted: Boolean,
+			inprogress: Boolean,
+			completed: Boolean,
+			customgame: Boolean,
+			timedMode: Boolean,
+			standard: Boolean,
+			rainbow: Boolean
+		},
 		gameNotes: {
 			top: Number,
 			left: Number,

@@ -18,15 +18,15 @@ export class Main extends React.Component {
 
 		this.state = {
 			gameFilter: {
-				priv: true,
-				pub: true,
-				unstarted: true,
-				inprogress: true,
-				completed: true,
-				timedMode: true,
-				rainbow: true,
-				standard: true,
-				customgame: true
+				priv: false,
+				pub: false,
+				unstarted: false,
+				inprogress: false,
+				completed: false,
+				timedMode: false,
+				rainbow: false,
+				standard: false,
+				customgame: false
 			}
 		};
 	}
@@ -43,12 +43,22 @@ export class Main extends React.Component {
 		}
 	}
 
+	static getDerivedStateFromProps(props) {
+		return props.userInfo.gameSettings ? { gameFilter: props.userInfo.gameSettings.gameFilters } : null;
+	}
+
 	render() {
 		let classes = 'section-main';
 
 		const { midSection, userList, userInfo, socket, gameInfo } = this.props;
 		const changeGameFilter = gameFilter => {
 			this.setState(gameFilter);
+
+			if (userInfo.gameSettings) {
+				socket.emit('updateGameSettings', {
+					gameFilters: gameFilter
+				});
+			}
 		};
 		const RenderMidSection = () => {
 			switch (midSection) {
