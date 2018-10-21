@@ -189,6 +189,34 @@ module.exports.investigateLoyalty = game => {
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
 
+	const hasTarget =
+		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).length > 0;
+	if (!hasTarget) {
+		const chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{ text: 'President ' },
+				{
+					text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
+					type: 'player'
+				},
+				{ text: '  has no valid investigation target.' }
+			]
+		};
+
+		publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
+		publicSelectedPlayer.cardStatus.isFlipped = true;
+
+		seatedPlayers.forEach((player, i) => {
+			player.gameChats.push(chat);
+		});
+
+		game.private.unSeatedGameChats.push(chat);
+		startElection(game);
+		return;
+	}
+
 	if (!game.private.lock.investigateLoyalty && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.investigateLoyalty = true;
 
