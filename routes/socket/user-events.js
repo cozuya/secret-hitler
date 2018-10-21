@@ -2422,9 +2422,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
  * @param {object} data - from socket emit.
  */
 module.exports.handlePlayerReport = (passport, data) => {
-	console.log(`Report request from ${passport.user} (${data.userName}).`);
 	const user = userList.find(u => u.userName === passport.user);
-	console.log(`User in list: ${user != null}`);
 
 	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2)) {
 		return;
