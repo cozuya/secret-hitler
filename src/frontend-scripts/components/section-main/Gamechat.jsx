@@ -674,6 +674,9 @@ class Gamechat extends React.Component {
 				</section>
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
 					{(() => {
+						if (gameInfo.gameState.isCompleted) {
+							this.state.claim = '';
+						}
 						if (this.state.claim) {
 							const handleClaimButtonClick = (e, claim) => {
 								const chat = {
