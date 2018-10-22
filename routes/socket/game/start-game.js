@@ -458,10 +458,10 @@ const beginGame = game => {
 							gameChat: true,
 							chat: [
 								{
-									text: 'There ' + (customGameSettings.fascistCount == 1) ? 'is ' : 'are '
+									text: `There ${(customGameSettings.fascistCount == 1)?'is':'are'} `
 								},
 								{
-									text: customGameSettings.fascistCount == 1 ? '1 fascist' : customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists',
+									text: customGameSettings.fascistCount == 1 ? '1 fascist' : (customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists'),
 									type: 'fascist'
 								},
 								{
