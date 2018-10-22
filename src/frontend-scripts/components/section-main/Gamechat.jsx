@@ -674,6 +674,9 @@ class Gamechat extends React.Component {
 				</section>
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
 					{(() => {
+						if (gameInfo.gameState.isCompleted) {
+							this.state.claim = '';
+						}
 						if (this.state.claim) {
 							const handleClaimButtonClick = (e, claim) => {
 								const chat = {
@@ -855,11 +858,13 @@ class Gamechat extends React.Component {
 							</button>
 						</div>
 						{(() => {
+							const playerIndex = gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName);
 							if (
 								gameInfo.playersState &&
 								gameInfo.playersState.length &&
 								userInfo.userName &&
-								gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim
+								gameInfo.playersState[playerIndex].claim &&
+								!gameInfo.publicPlayersState[playerIndex].isDead
 							) {
 								return (
 									<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
