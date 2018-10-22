@@ -192,8 +192,10 @@ module.exports.investigateLoyalty = game => {
 	const hasTarget =
 		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).length > 0;
 	if (!hasTarget) {
+		let t = new Date()
+		t.setMilliseconds(t.getMilliseconds+1);
 		const chat = {
-			timestamp: new Date(),
+			timestamp: t,
 			gameChat: true,
 			chat: [
 				{ text: 'President ' },
@@ -204,9 +206,6 @@ module.exports.investigateLoyalty = game => {
 				{ text: '  has no valid investigation target.' }
 			]
 		};
-
-		publicSelectedPlayer.cardStatus.cardBack = selectedPlayer.role;
-		publicSelectedPlayer.cardStatus.isFlipped = true;
 
 		seatedPlayers.forEach((player, i) => {
 			player.gameChats.push(chat);
