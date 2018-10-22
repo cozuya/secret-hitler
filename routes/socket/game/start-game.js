@@ -55,8 +55,8 @@ const beginGame = game => {
 					cardName: 'liberal',
 					icon: el % 6,
 					team: 'liberal'
-				}))
-			).slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
+				})).slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
+			)
 		)
 		.concat(
 			_.shuffle(
@@ -64,8 +64,8 @@ const beginGame = game => {
 					cardName: 'fascist',
 					icon: el,
 					team: 'fascist'
-				}))
-			).slice(0, customGameSettings.fascistCount)
+				})).slice(0, customGameSettings.fascistCount)
+			)
 		);
 
 	game.general.status = 'Dealing roles..';
@@ -458,10 +458,10 @@ const beginGame = game => {
 							gameChat: true,
 							chat: [
 								{
-									text: 'There ' + (customGameSettings.fascistCount == 1) ? 'is ' : 'are '
+									text: `There ${(customGameSettings.fascistCount == 1)?'is':'are'} `
 								},
 								{
-									text: customGameSettings.fascistCount == 1 ? '1 fascist' : customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists',
+									text: customGameSettings.fascistCount == 1 ? '1 fascist' : (customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists'),
 									type: 'fascist'
 								},
 								{
