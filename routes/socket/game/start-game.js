@@ -51,20 +51,24 @@ const beginGame = game => {
 		.concat(
 			_.shuffle(
 				// With custom games, up to 8 libs can be in a game, but there are only 6 cards. Two are re-used in this case.
-				_.range(0, 8).map(el => ({
-					cardName: 'liberal',
-					icon: el % 6,
-					team: 'liberal'
-				})).slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
+				_.range(0, 8)
+					.map(el => ({
+						cardName: 'liberal',
+						icon: el % 6,
+						team: 'liberal'
+					}))
+					.slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
 			)
 		)
 		.concat(
 			_.shuffle(
-				_.range(0, 3).map(el => ({
-					cardName: 'fascist',
-					icon: el,
-					team: 'fascist'
-				})).slice(0, customGameSettings.fascistCount)
+				_.range(0, 3)
+					.map(el => ({
+						cardName: 'fascist',
+						icon: el,
+						team: 'fascist'
+					}))
+					.slice(0, customGameSettings.fascistCount)
 			)
 		);
 
@@ -458,10 +462,10 @@ const beginGame = game => {
 							gameChat: true,
 							chat: [
 								{
-									text: `There ${(customGameSettings.fascistCount == 1)?'is':'are'} `
+									text: `There ${customGameSettings.fascistCount == 1 ? 'is' : 'are'} `
 								},
 								{
-									text: customGameSettings.fascistCount == 1 ? '1 fascist' : (customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists'),
+									text: customGameSettings.fascistCount == 1 ? '1 fascist' : customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists',
 									type: 'fascist'
 								},
 								{

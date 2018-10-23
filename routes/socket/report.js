@@ -2,7 +2,19 @@ const https = require('https');
 const Account = require('../../models/account');
 const { newStaff } = require('./models');
 
-const AEM_ALTS = (module.exports.AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy', 'Grim', 'TermsOfUse', 'DownWithMeta', 'tesla', 'SheepManu', 'Manu1234', 'Scorcha']);
+const AEM_ALTS = (module.exports.AEM_ALTS = [
+	'bell',
+	'BigbyWolf',
+	'Picangel',
+	'birdy',
+	'Grim',
+	'TermsOfUse',
+	'DownWithMeta',
+	'tesla',
+	'SheepManu',
+	'Manu1234',
+	'Scorcha'
+]);
 
 module.exports.makeReport = (text, game, gameEnd) => {
 	// Custom games are strictly casual and for fun, writing proper report logic to account for it would be a massive pain.
