@@ -19,7 +19,7 @@ const combineInProgressChats = (game, userName) =>
  * @param {boolean} noChats - remove chats for client to handle.
  */
 module.exports.sendInProgressGameUpdate = (game, noChats) => {
-	if (!io.sockets.adapter.rooms[game.general.uid]) {
+	if (!game || !io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
 
