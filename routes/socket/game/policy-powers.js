@@ -715,7 +715,7 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 						sendInProgressGameUpdate(game);
 
 						const playCard = () => {
-							if (game.private.policies.length < 3) shufflePolicies();
+							if (game.private.policies.length < 3) shufflePolicies(game);
 							const index = game.trackState.enactedPolicies.length;
 							const policy = game.private.policies.shift();
 							game.trackState[`${policy}PolicyCount`]++;
