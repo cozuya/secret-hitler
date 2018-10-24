@@ -20,7 +20,7 @@ const beginGame = game => {
 		customGameSettings.hitlerZone = 3;
 		customGameSettings.vetoZone = 5;
 		customGameSettings.trackState = { lib: 0, fas: 0 };
-		customGameSettings.deckState = { lib: 6, fas: 12 };
+		customGameSettings.deckState = { lib: 6, fas: 11 };
 		if (game.general.type == 0) {
 			// 5-6 players
 			customGameSettings.fascistCount = 1;
@@ -31,12 +31,12 @@ const beginGame = game => {
 			// 7-8 players
 			customGameSettings.fascistCount = 2;
 			customGameSettings.powers = [null, 'investigate', 'election', 'bullet', 'bullet'];
-			if (game.rebalance7p && game.publicPlayersState.length == 7) customGameSettings.deckState.fas = 11;
+			if (game.rebalance7p && game.publicPlayersState.length == 7) customGameSettings.deckState.fas = 10;
 		} else {
 			// 9-10 players
 			customGameSettings.fascistCount = 3;
 			customGameSettings.powers = ['investigate', 'investigate', 'election', 'bullet', 'bullet'];
-			if (game.rebalance9p2f && game.publicPlayersState.length == 9) customGameSettings.deckState.fas = 11;
+			if (game.rebalance9p2f && game.publicPlayersState.length == 9) customGameSettings.deckState.fas = 10;
 		}
 	}
 	shufflePolicies(game, true);
