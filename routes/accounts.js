@@ -41,7 +41,7 @@ BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) =
 });
 const testIP = (IP, callback) => {
 	if (!IP) callback('Bad IP!');
-	if (!banCache) callback('nocache');
+	if (!banCache || !banCache.filter) callback('nocache');
 
 	const ips = banCache.filter(i => i.ip == IP);
 	let date;

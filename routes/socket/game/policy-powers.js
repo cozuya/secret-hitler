@@ -193,7 +193,7 @@ module.exports.investigateLoyalty = game => {
 		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).length > 0;
 	if (!hasTarget) {
 		let t = new Date();
-		t.setMilliseconds(t.getMilliseconds+1);
+		t.setMilliseconds(t.getMilliseconds + 1);
 		const chat = {
 			timestamp: t,
 			gameChat: true,
@@ -715,7 +715,7 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 						sendInProgressGameUpdate(game);
 
 						const playCard = () => {
-							if (game.private.policies.length < 3) shufflePolicies();
+							if (game.private.policies.length < 3) shufflePolicies(game);
 							const index = game.trackState.enactedPolicies.length;
 							const policy = game.private.policies.shift();
 							game.trackState[`${policy}PolicyCount`]++;

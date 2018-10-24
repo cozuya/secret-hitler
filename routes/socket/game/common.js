@@ -8,6 +8,10 @@ const _ = require('lodash');
  * @param {boolean} isStart - true if this is the initial shuffle.
  */
 const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
+	if (!game) {
+		return;
+	}
+
 	if (isStart) {
 		game.trackState.enactedPolicies = [];
 		if (game.customGameSettings.trackState.lib > 0) {

@@ -20,7 +20,7 @@ const beginGame = game => {
 		customGameSettings.hitlerZone = 3;
 		customGameSettings.vetoZone = 5;
 		customGameSettings.trackState = { lib: 0, fas: 0 };
-		customGameSettings.deckState = { lib: 6, fas: 12 };
+		customGameSettings.deckState = { lib: 6, fas: 11 };
 		if (game.general.type == 0) {
 			// 5-6 players
 			customGameSettings.fascistCount = 1;
@@ -31,12 +31,12 @@ const beginGame = game => {
 			// 7-8 players
 			customGameSettings.fascistCount = 2;
 			customGameSettings.powers = [null, 'investigate', 'election', 'bullet', 'bullet'];
-			if (game.rebalance7p && game.publicPlayersState.length == 7) customGameSettings.deckState.fas = 11;
+			if (game.rebalance7p && game.publicPlayersState.length == 7) customGameSettings.deckState.fas = 10;
 		} else {
 			// 9-10 players
 			customGameSettings.fascistCount = 3;
 			customGameSettings.powers = ['investigate', 'investigate', 'election', 'bullet', 'bullet'];
-			if (game.rebalance9p2f && game.publicPlayersState.length == 9) customGameSettings.deckState.fas = 11;
+			if (game.rebalance9p2f && game.publicPlayersState.length == 9) customGameSettings.deckState.fas = 10;
 		}
 	}
 	shufflePolicies(game, true);
@@ -51,20 +51,24 @@ const beginGame = game => {
 		.concat(
 			_.shuffle(
 				// With custom games, up to 8 libs can be in a game, but there are only 6 cards. Two are re-used in this case.
-				_.range(0, 8).map(el => ({
-					cardName: 'liberal',
-					icon: el % 6,
-					team: 'liberal'
-				})).slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
+				_.range(0, 8)
+					.map(el => ({
+						cardName: 'liberal',
+						icon: el % 6,
+						team: 'liberal'
+					}))
+					.slice(0, game.publicPlayersState.length - customGameSettings.fascistCount - 1)
 			)
 		)
 		.concat(
 			_.shuffle(
-				_.range(0, 3).map(el => ({
-					cardName: 'fascist',
-					icon: el,
-					team: 'fascist'
-				})).slice(0, customGameSettings.fascistCount)
+				_.range(0, 3)
+					.map(el => ({
+						cardName: 'fascist',
+						icon: el,
+						team: 'fascist'
+					}))
+					.slice(0, customGameSettings.fascistCount)
 			)
 		);
 
@@ -458,10 +462,10 @@ const beginGame = game => {
 							gameChat: true,
 							chat: [
 								{
-									text: `There ${(customGameSettings.fascistCount == 1)?'is':'are'} `
+									text: `There ${customGameSettings.fascistCount == 1 ? 'is' : 'are'} `
 								},
 								{
-									text: customGameSettings.fascistCount == 1 ? '1 fascist' : (customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists'),
+									text: customGameSettings.fascistCount == 1 ? '1 fascist' : customGameSettings.fascistCount == 2 ? '2 fascists' : '3 fascists',
 									type: 'fascist'
 								},
 								{
