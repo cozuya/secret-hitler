@@ -188,7 +188,7 @@ module.exports = () => {
 				}
 			});
 
-			if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
+			if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
 				res.status(401).json({
 					message: 'Only non-disposible email providers are allowed to create verified accounts.'
 				});
@@ -338,7 +338,7 @@ module.exports = () => {
 	app.post('/account/add-email', ensureAuthenticated, (req, res, next) => {
 		const { email } = req.body;
 
-		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
+		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
 			res.status(401).json({
 				message: 'Only non-disposible email providers are allowed to create verified accounts.'
 			});
@@ -359,7 +359,7 @@ module.exports = () => {
 		const { email } = req.body;
 		const { verified, username } = req.user;
 
-		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
+		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
 			res.status(401).json({
 				message: 'Only non-disposible email providers are allowed to create verified accounts.'
 			});
