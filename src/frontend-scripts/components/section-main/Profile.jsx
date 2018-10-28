@@ -266,6 +266,7 @@ class ProfileWrapper extends React.Component {
 					? 'lossesSeason'
 					: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
+		let gamesUntilRainbow = null;
 		if (user) {
 			userClasses =
 				user[w] + user[l] > 49 || Boolean(user.staffRole)
@@ -276,6 +277,10 @@ class ProfileWrapper extends React.Component {
 							{ clickable: this.props.isUserClickable }
 					  )
 					: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'profile-picture');
+			const { wins = 0, losses = 0 } = user;
+			if (wins + losses < 50) {
+				gamesUntilRainbow = 50 - wins - losses;
+			}
 		}
 		return (
 			<div>
@@ -298,6 +303,16 @@ class ProfileWrapper extends React.Component {
 							</strong>
 						</span>
 						<span>{this.formatDateString(profile.created)}</span>
+						{!isNaN(gamesUntilRainbow) && (
+							<div>
+								<span>
+									<strong>
+										<em>Games Until Rainbow: </em>
+									</strong>
+								</span>
+								<span>{gamesUntilRainbow}</span>
+							</div>
+						)}
 						{profile.lastConnectedIP !== 'no looking' && <p>Last connected IP: {profile.lastConnectedIP}</p>}
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
