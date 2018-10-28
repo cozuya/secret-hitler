@@ -86,11 +86,11 @@ module.exports = {
 			});
 
 			nmMailgun.sendMail({
-				from: 'Secret Hitler.io <donotreply@secrethitler.io>',
+				from: 'SH.io accounts <donotreply@secrethitler.io>',
 				html: template({ username, token }),
+				text: `Hello ${username}, an account has been created with this email address - go to the address below to verify your account. You will need to be logged in for verification. https://secrethitler.io/verify-account/${username}/${token}.`,
 				to: email,
-				subject: 'Secret Hitler IO - verify your account',
-				'h:Reply-To': 'chris.v.ozols@gmail.com'
+				subject: 'SH.io - verify your account'
 			});
 
 			account.save(() => {
