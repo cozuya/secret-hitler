@@ -121,7 +121,7 @@ html(lang="en")
 				.field
 					.ui.left.icon.input
 						i.user.icon
-						input#emailchange-input(placeholder="Email - Using gmail? check spam", spellcheck="false")
+						input#emailchange-input(placeholder="Email", spellcheck="false")
 				button.ui.primary.button.fluid.large#emailchange-submit Submit
 				.ui.dimmer.inverted
 					.ui.text.loader Setting your email..
@@ -165,12 +165,13 @@ html(lang="en")
 					h4.header(style="color: darkred") EMAIL OPTIONAL
 					.ui.left.icon.input
 						i.envelope.outline.icon
-						input#signup-email(placeholder="Email", maxlength="255")
+						input#signup-email(placeholder="Email", maxlength="255", spellcheck="false")
 					.ui.info.message.hidden
 				.field
 					label
 						input#private-player(type="checkbox", style="margin-right: 5px")
-						span(style="color: #aaa") READ CAREFULLY BEFORE CHECKING: Private game player only option - your name will not be visible in the sidebar, you can't chat in general chat, you can't play in public games.
+						span(style="color: #aaa") READ CAREFULLY BEFORE CHECKING: Private game player only option - your name will not be visible in the sidebar, you can't chat in general chat, 
+						b(style="color: #666") you can't play in public games.
 				.field
 					label
 						input#tou-agree(type="checkbox", style="margin-right: 5px")
