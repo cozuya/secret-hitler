@@ -10,6 +10,13 @@ const template = _.template(
 	})
 );
 
+// const ensureAuthenticated = (req, res, next) => {
+// 	if (req.isAuthenticated()) {
+// 		return next();
+// 	}
+// 	res.redirect('/');
+// };
+
 let tokens = [];
 
 module.exports = {
@@ -30,8 +37,6 @@ module.exports = {
 			const token = tokens.find(toke => toke.token === req.params.token);
 
 			if (token && token.expires >= new Date()) {
-				res.render('');
-
 				Account.findOne({ username: token.username }, (err, account) => {
 					if (err) {
 						console.log(err);
@@ -39,7 +44,7 @@ module.exports = {
 
 					account.resetPassword.resetTokenExpiration = null;
 					account.save(() => {
-						res.render('/reset-password', { username: token.username });
+						res.render('page-resetpassword', { username: token.username });
 						tokens.splice(tokens.findIndex(toke => toke.token === req.params.token), 1);
 					});
 				});

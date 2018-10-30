@@ -104,30 +104,16 @@ module.exports = () => {
 		});
 	});
 
-	// app.post('/account/change-email', ensureAuthenticated, (req, res) => {
-	// 	const { newEmail, newEmailConfirm } = req.body,
-	// 		{ user } = req;
-
-	// 	if (newEmail !== newEmailConfirm) {
-	// 		res.status(401).json({ message: 'not equal' });
-	// 		return;
-	// 	}
-
-	// 	Account.findOne({ username: user.username }, (err, account) => {
-	// 		if (err) {
-	// 			console.log(err);
-	// 		}
-
-	// 		account.verification.email = newEmail;
-	// 		account.save(() => {
-	// 			res.send();
-	// 		});
-	// 	});
-	// });
-
-	// app.post('/account/reset-password', (req, res) => {
-	// 	resetPassword.sendToken(req.body.email, res);
-	// });
+	app.post('/account/reset-password', (req, res) => {
+		Account.findOne({
+			email: req.body.email
+		}).then(player => {
+			if (!player) {
+				res.status(404).send('There is no verified account associated with that email.');
+			}
+			resetPassword.sendToken(req.body.email, res);
+		});
+	});
 
 	app.post('/account/signup', (req, res, next) => {
 		const { username, password, password2, email, isPrivate } = req.body;
