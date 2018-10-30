@@ -8,7 +8,7 @@ const Account = require('../models/account');
 const Game = require('../models/game');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
 const OUTPUT_DIR = '/var/www/secret-hitler/public/game-dumps';
 const GAMES_DIR = `${OUTPUT_DIR}/games`;
@@ -17,7 +17,7 @@ fs.accessSync(GAMES_DIR, fs.constants.W_OK);
 let count = 0;
 
 Game.find()
-	.skip(process.argv[2])
+	.skip(parseInt(process.argv[2], 10))
 	.limit(25000)
 	.lean()
 	.cursor()

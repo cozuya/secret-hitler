@@ -6,10 +6,7 @@ html(lang="en")
 		meta(name="theme-color", content="#c36563")
 		meta(name="description", content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
 		if game
-			if isLight
-				link(rel="stylesheet", type="text/css", href="/styles/style-light.css")
-			else
-				link(rel="stylesheet", type="text/css", href="/styles/style-dark.css")
+			link(rel="stylesheet", type="text/css", href="/styles/style-dark.css")
 		else
 			meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 			link(rel="stylesheet", type="text/css", href="/styles/Semantic-UI-CSS-master/semantic.min.css")
@@ -114,9 +111,10 @@ html(lang="en")
 				.ui.dimmer.inverted
 					.ui.text.loader Signing in..
 				.ui.negative.hidden.message
-				//- a#reset-password(style="cursor: pointer;") Forget your password?
+				a#reset-password(style="cursor: pointer; display: block; margin-top: 10px;") Forget your password?
+
 		section.emailchange-modal.ui.modal.small.segment.column
-			h2.header Change your email (and send a new verifcation email if you are unverified)
+			h2.header Change your email (and send a new verification email if you are unverified)
 			form.ui.form
 				.field
 					.ui.left.icon.input
@@ -171,7 +169,7 @@ html(lang="en")
 					label
 						input#private-player(type="checkbox", style="margin-right: 5px")
 						span(style="color: #aaa") READ CAREFULLY BEFORE CHECKING: Private game player only option - your name will not be visible in the sidebar, you can't chat in general chat, 
-						b(style="color: #666") you can't play in public games.
+						b(style="color: #555") you can't play in public games.
 				.field
 					label
 						input#tou-agree(type="checkbox", style="margin-right: 5px")
