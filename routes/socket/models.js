@@ -4,7 +4,8 @@ const Account = require('../../models/account');
 const fs = require('fs');
 let emotes = [];
 fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
-	if (file.endsWith('.png')) emotes[emotes.length] = file.substring(0, file.length - 4);
+	// used to be file.endsWith etc but that crashes in nodejs v10.  Appended .name and stuff seems to work?
+	if (file.name.endsWith('.png')) emotes[emotes.length] = file.name.substring(0, file.name.length - 4);
 });
 module.exports.emoteList = emotes;
 
