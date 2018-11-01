@@ -242,7 +242,7 @@ $(document).ready(function() {
 				400: function() {
 					submitErr('Sorry, that request did not look right.');
 				},
-				40: function() {
+				400: function() {
 					submitErr("Sorry, we don't have an account associated with that verified email address.");
 				}
 			}
