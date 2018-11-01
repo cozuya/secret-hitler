@@ -109,7 +109,7 @@ module.exports = () => {
 			email: req.body.email
 		}).then(player => {
 			if (!player) {
-				res.status(404).send('There is no verified account associated with that email.');
+				res.status(401).json({ message: 'There is no verified account associated with that email.' });
 			}
 			resetPassword.sendToken(req.body.email, res);
 		});

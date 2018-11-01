@@ -10,13 +10,6 @@ const template = _.template(
 	})
 );
 
-// const ensureAuthenticated = (req, res, next) => {
-// 	if (req.isAuthenticated()) {
-// 		return next();
-// 	}
-// 	res.redirect('/');
-// };
-
 let tokens = [];
 
 module.exports = {
@@ -33,7 +26,7 @@ module.exports = {
 			}));
 		});
 
-		app.get('/reset-password/:user/:token', (req, res, next) => {
+		app.get('/password-reset/:user/:token', (req, res, next) => {
 			const token = tokens.find(toke => toke.token === req.params.token);
 
 			if (token && token.expires >= new Date()) {
@@ -71,7 +64,7 @@ module.exports = {
 					mg({
 						auth: {
 							api_key: process.env.MGKEY,
-							domain: 'todo'
+							domain: process.env.MGDOMAIN
 						}
 					})
 				);
@@ -85,21 +78,13 @@ module.exports = {
 					expires: tomorrow
 				});
 
-				nmMailgun.sendMail(
-					{
-						from: 'Secret Hitler.io <chris.v.ozols@gmail.com>',
-						// to: account.verification.email,
-						to: 'shiotestemail@mailinator.com',
-						subject: 'Secret Hitler - reset your password',
-						'h:Reply-To': 'chris.v.ozols@gmail.com',
-						html: template({ username, token })
-					},
-					err => {
-						if (err) {
-							console.log(err);
-						}
-					}
-				);
+				nmMailgun.sendMail({
+					from: 'SH.io accounts <donotreply@secrethitler.io>',
+					html: template({ username, token }),
+					text: `Hello ${username}, a request to change your password has been made - go to the address below to change your password. https://secrethitler.io/reset-password/${username}/${token}.`,
+					to: email,
+					subject: 'SH.io - reset your password'
+				});
 
 				account.save(() => {
 					res.send();

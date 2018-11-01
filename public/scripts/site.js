@@ -232,6 +232,7 @@ $(document).ready(function() {
 			data: JSON.stringify({ email: email }),
 			statusCode: {
 				200: function() {
+					console.log('Hello, World!');
 					$message.addClass('hidden');
 					$loader.removeClass('active');
 					$('.password-reset-modal .ui.info.hidden.message')
@@ -241,7 +242,7 @@ $(document).ready(function() {
 				400: function() {
 					submitErr('Sorry, that request did not look right.');
 				},
-				401: function() {
+				40: function() {
 					submitErr("Sorry, we don't have an account associated with that verified email address.");
 				}
 			}
