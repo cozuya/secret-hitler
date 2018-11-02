@@ -106,10 +106,11 @@ module.exports = () => {
 
 	app.post('/account/reset-password', (req, res) => {
 		Account.findOne({
-			email: req.body.email
+			'verification.email': req.body.email
 		}).then(player => {
 			if (!player) {
 				res.status(401).json({ message: 'There is no verified account associated with that email.' });
+				return;
 			}
 			resetPassword.sendToken(req.body.email, res);
 		});

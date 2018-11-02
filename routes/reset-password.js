@@ -81,7 +81,7 @@ module.exports = {
 				nmMailgun.sendMail({
 					from: 'SH.io accounts <donotreply@secrethitler.io>',
 					html: template({ username, token }),
-					text: `Hello ${username}, a request to change your password has been made - go to the address below to change your password. https://secrethitler.io/reset-password/${username}/${token}.`,
+					text: `Hello ${username}, a request has been made to change your password - go to the address below to change your password. https://secrethitler.io/reset-password/${username}/${token}.`,
 					to: email,
 					subject: 'SH.io - reset your password'
 				});
