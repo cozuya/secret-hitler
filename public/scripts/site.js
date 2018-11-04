@@ -232,12 +232,12 @@ $(document).ready(function() {
 			data: JSON.stringify({ email: email }),
 			statusCode: {
 				200: function() {
-					console.log('Hello, World!');
 					$message.addClass('hidden');
 					$loader.removeClass('active');
+					$('#password-reset-submit').hide();
 					$('.password-reset-modal .ui.info.hidden.message')
 						.removeClass('hidden')
-						.html("We've sent you a password reset email, please check your email to a link to reset your password.");
+						.html("We've sent you a password reset email, please check your email for a link to reset your password.");
 				},
 				400: function() {
 					submitErr('Sorry, that request did not look right.');

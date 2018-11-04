@@ -24,6 +24,12 @@ const ensureAuthenticated = (req, res, next) => {
 	res.redirect('/observe');
 };
 
+const prodCacheBustToken = `${Math.random()
+	.toString(36)
+	.substring(2)}${Math.random()
+	.toString(36)
+	.substring(2)}`;
+
 module.exports = () => {
 	/**
 	 * @param {object} req - express request object.
@@ -38,6 +44,10 @@ module.exports = () => {
 
 		if (req.user) {
 			renderObj.username = req.user.username;
+		}
+
+		if (process.env.NODE_ENV === 'production') {
+			renderObj.prodCacheBustToken = prodCacheBustToken;
 		}
 
 		res.render(pageName, renderObj);
@@ -105,17 +115,22 @@ module.exports = () => {
 					return;
 				}
 				const { blacklist } = account.gameSettings;
-
-				account.gameSettings.blacklist = [];
-
-				res.render('game', {
+				const gameObj = {
 					game: true,
 					staffRole: account.staffRole || '',
 					verified: req.user.verified,
 					username,
 					gameSettings: account.gameSettings,
 					blacklist
-				});
+				};
+
+				if (process.env.NODE_ENV === 'production') {
+					gameObj.prodCacheBustToken = prodCacheBustToken;
+				}
+
+				account.gameSettings.blacklist = [];
+
+				res.render('game', gameObj);
 			});
 		}
 	});
@@ -129,7 +144,16 @@ module.exports = () => {
 			req.session.destroy();
 			req.logout();
 		}
-		res.render('game', { game: true });
+
+		const gameObj = {
+			game: true
+		};
+
+		if (process.env.NODE_ENV === 'production') {
+			gameObj.prodCacheBustToken = prodCacheBustToken;
+		}
+
+		res.render('game', gameObj);
 	});
 
 	app.get('/profile', (req, res) => {

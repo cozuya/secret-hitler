@@ -37,13 +37,18 @@ module.exports = {
 
 					account.resetPassword.resetTokenExpiration = null;
 					account.save(() => {
-						res.render('page-resetpassword', { username: token.username });
+						res.render('page-resetpassword', {});
 						tokens.splice(tokens.findIndex(toke => toke.token === req.params.token), 1);
 					});
 				});
 			} else {
 				next();
 			}
+		});
+
+		app.post('/password-reset/', (req, res, next) => {
+			console.log(req.body, 'body');
+			// const token = tokens.find(toke => toke.token === req.params.token);
 		});
 	},
 	sendToken(email, res) {

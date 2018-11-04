@@ -6,12 +6,18 @@ html(lang="en")
 		meta(name="theme-color", content="#c36563")
 		meta(name="description", content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
 		if game
-			link(rel="stylesheet", type="text/css", href="/styles/style-dark.css")
+			if prodCacheBustToken
+				link(rel="stylesheet", type="text/css", href=`/styles/style-main.css?${prodCacheBustToken}`)
+			else
+				link(rel="stylesheet", type="text/css", href="/styles/style-dark.css")
 		else
 			meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 			link(rel="stylesheet", type="text/css", href="/styles/Semantic-UI-CSS-master/semantic.min.css")
 			link(rel="stylesheet", type="text/css", href="//cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css")
-			link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
+			if prodCacheBustToken
+				link(rel="stylesheet", type="text/css", href=`/styles/style-web.css?${prodCacheBustToken}`)
+			else
+				link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
 		link(href="//fonts.googleapis.com/css?family=Comfortaa|Cuprum:400i|Germania+One|Roboto+Slab", rel="stylesheet", type="text/css")
 		link(rel="author", href="humans.txt")
 		link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
@@ -187,7 +193,10 @@ html(lang="en")
 			ga('create', 'UA-105770066-1', 'auto');
 			ga('send', 'pageview');			
 		if game
-			script(src="/scripts/bundle.js")
+			if prodCacheBustToken
+				script(src=`/scripts/bundle.js?${prodCacheBustToken}`)
+			else
+				script(src=`/scripts/bundle.js`)
 		else
 			script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")
 			script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")

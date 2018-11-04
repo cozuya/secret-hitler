@@ -41,7 +41,7 @@
 		"passport-local": "^1.0.0",
 		"passport-local-mongoose": "^5.0.0",
 		"prop-types": "^15.5.10",
-		"pug": "^2.0.0-beta11",
+		"pug": "^2.0.3",
 		"rc-slider": "^8.4.0",
 		"react": "^16.5.2",
 		"react-custom-scrollbars": "^4.2.1",
