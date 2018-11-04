@@ -38,7 +38,7 @@ module.exports = {
 					account.resetPassword.resetTokenExpiration = null;
 					account.save(() => {
 						res.render('page-resetpassword', {});
-						tokens.splice(tokens.findIndex(toke => toke.token === req.params.token), 1);
+						// tokens.splice(tokens.findIndex(toke => toke.token === req.params.token), 1);
 					});
 				});
 			} else {
