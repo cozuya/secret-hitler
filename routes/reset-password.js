@@ -46,9 +46,27 @@ module.exports = {
 			}
 		});
 
-		app.post('/password-reset/', (req, res, next) => {
-			console.log(req.body, 'body');
+		app.post('/password-reset', (req, res, next) => {
 			// const token = tokens.find(toke => toke.token === req.params.token);
+
+			console.log(req.body, 'body');
+			// if (req.body.password !== req.body.password2 || !token || req.body.password.length < 6 || req.body.password.length > 255) {
+			if (req.body.password !== req.body.password2) {
+				res.status(401).send();
+			} else {
+				Account.findOne({ username: req.body.username }, (err, account) => {
+					if (err || !account) {
+						return next();
+					}
+
+					account.password = req.body.password;
+					account.save(() => {
+						req.logIn(account, () => {
+							res.status(200).send();
+						});
+					});
+				});
+			}
 		});
 	},
 	sendToken(email, res) {

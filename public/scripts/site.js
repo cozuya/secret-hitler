@@ -29,6 +29,44 @@ $(document).ready(function() {
 			.modal('show');
 	});
 
+	$('#passwordresetchange-submit').on('click', function(event) {
+		event.preventDefault();
+
+		var pass1 = $('#passwordchange-password').val(),
+			pass2 = $('#passwordchange-confirmpassword').val(),
+			username = window.location.pathname.split('/')[2],
+			$loader = $(this).next(),
+			$message = $loader.next(),
+			submitErr = function(message) {
+				$loader.removeClass('active');
+				$message.text(message).removeClass('hidden');
+			};
+
+		$loader.addClass('active');
+
+		$.ajax({
+			url: '/password-reset',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: JSON.stringify({
+				username: username,
+				password: pass1,
+				password2: pass2
+			}),
+			statusCode: {
+				200: function() {
+					console.log('200');
+				},
+				400: function() {
+					submitErr('Sorry, that request did not look right.');
+				},
+				401: function() {
+					submitErr('Sorry, that was not authorized.');
+				}
+			}
+		});
+	});
+
 	$('button.email-submit').on('click', function(event) {
 		event.preventDefault();
 		var email = $('#add-email-input').val(),
