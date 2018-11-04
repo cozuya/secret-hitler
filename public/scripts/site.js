@@ -55,7 +55,7 @@ $(document).ready(function() {
 			}),
 			statusCode: {
 				200: function() {
-					console.log('200');
+					window.location = '/';
 				},
 				400: function() {
 					submitErr('Sorry, that request did not look right.');
