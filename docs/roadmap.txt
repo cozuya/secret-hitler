@@ -71,6 +71,12 @@ elo system
 version 0.15:
 custom games
 
-version 1.0 (future):
+version 1.0 (near future):
+account verification and password reset via automated emails
+discord ping mods from gamechat (large cooldown)
+retheme colors/remove teal
+update vetoing for custom games
+
+
+farther future:
 migrate database off of the DO box to a 3rd party cloud provider
-fix/enable emailing people to verify their accounts and enable password reset feature
