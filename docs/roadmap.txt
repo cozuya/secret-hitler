@@ -76,6 +76,7 @@ account verification and password reset via automated emails
 discord ping mods from gamechat (large cooldown)
 retheme colors/remove teal
 update vetoing for custom games
+passing unit tests
 
 
 farther future:
