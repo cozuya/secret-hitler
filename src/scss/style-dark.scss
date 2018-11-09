@@ -134,11 +134,11 @@
 		display: flex;
 		flex-direction: column;
 		&.player .notes-header {
-			background: $thirteen;
+			background: $secondary;
 		}
 		&.player textarea:focus {
-			border-color: $thirteen;
-			box-shadow: 0 0 3px $thirteen;
+			border-color: $secondary;
+			box-shadow: 0 0 3px $secondary;
 		}
 		.drag-boundry {
 			display: none;
@@ -158,7 +158,7 @@
 			font-size: 20px;
 			padding: 5px 5px 0 10px;
 			color: white;
-			background: $darkfascistteam;
+			background: $secondary;
 			font-family: $headerfont;
 			position: relative;
 			cursor: move;
@@ -181,8 +181,8 @@
 			border-width: 0 1px 1px 1px;
 			&:focus {
 				outline: none;
-				border-color: teal;
-				box-shadow: 0 0 3pxteal;
+				border-color: $primary;
+				box-shadow: 0 0 3px $primary;
 			}
 		}
 	}
@@ -192,7 +192,7 @@
 		flex-direction: column;
 	}
 	.menu-container {
-		background-color: teal;
+		background-color: $primary;
 		min-height: 42px;
 		a {
 			cursor: pointer;
@@ -207,7 +207,7 @@
 			margin: auto;
 		}
 		.button {
-			background: #3d75b9;
+			background: $secondary;
 		}
 		.patch-alert {
 			animation: blinker 2s linear infinite;
@@ -265,7 +265,7 @@
 				&.enabled {
 					color: #bbb;
 					i {
-						color: #5b3535;
+						color: $secondary;
 					}
 				}
 
@@ -321,7 +321,7 @@
 			font-size: 16px;
 			line-height: 0.9;
 			font-family: 'roboto slab', 'germania one', sans-serif;
-			color: #1c9cb9;
+			color: $secondary;
 		}
 
 		.leaderboard {
@@ -402,7 +402,7 @@
 			margin: auto;
 		}
 		&:hover {
-			border: 1px solid $darkfascistteam;
+			border: 1px solid $secondary;
 			.progress-text,
 			.victory-icon {
 				display: none;
@@ -428,7 +428,7 @@
 			margin: auto;
 		}
 		.progress-text.fascist {
-			color: $darkfascistteam;
+			color: $secondary;
 			margin: auto;
 		}
 		.progress-text.private {
@@ -517,7 +517,7 @@
 		.rebalanced {
 			min-width: 36px;
 			div {
-				color: $darkfascistteam;
+				color: $secondary;
 			}
 		}
 	}
@@ -616,8 +616,8 @@
 		color: white;
 		&:focus {
 			outline: none;
-			border: 1px solid teal !important;
-			box-shadow: 0 0 3px teal;
+			border: 1px solid $primary !important;
+			box-shadow: 0 0 3px $primary;
 		}
 		&::placeholder {
 			color: #8c8c8c;
@@ -687,7 +687,7 @@
 	}
 	.ui.toggle.checkbox input:checked ~ .box:before,
 	.ui.toggle.checkbox input:checked ~ label:before {
-		background: #3d75b9 !important;
+		background: $secondary !important;
 	}
 	.ui.pointing.menu .item:after {
 		border-bottom: 1px solid #111;
@@ -702,6 +702,10 @@
 			opacity: 1;
 		}
 	}
+
+	i.icon {
+		color: $secondary;
+	}
 }
 
 @keyframes fadeIn {
@@ -711,7 +715,7 @@
 }
 
 .ui.header {
-	color: teal;
+	color: $primary;
 }
 
 .ui.primary.buttons .button:hover,
@@ -725,7 +729,7 @@
 
 .ui.primary.button,
 .ui.primary.buttons .button {
-	background-color: #3d75b9; //#5a9bc4;
+	background-color: $secondary;
 }
 
 .ui.disabled.button {
@@ -733,7 +737,7 @@
 }
 
 .ui.button {
-	background: $darkfascistteam;
+	background: $secondary;
 }
 
 body {
@@ -767,7 +771,7 @@ div {
 	border: 0;
 	box-shadow: none;
 	overflow: hidden;
-	background-color: teal;
+	background-color: $primary;
 	margin: auto;
 	width: 95%;
 	max-width: 1920px;
@@ -791,7 +795,7 @@ div {
 		font-size: 42px;
 		font-family: $headerfont;
 		a {
-			color: $darkfascistteam;
+			color: $secondary;
 		}
 	}
 	div {
@@ -921,10 +925,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .contributor {
-	color: teal !important;
+	color: $primary !important;
 }
 .player-small-cardback.contributor {
-	box-shadow: 0 0 5px 2px teal !important;
+	box-shadow: 0 0 5px 2px $primary !important;
 }
 
 .moderatorcolor {

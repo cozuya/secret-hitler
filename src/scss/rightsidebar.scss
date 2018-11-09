@@ -29,7 +29,7 @@
 			padding: 5px 0 3px;
 			display: flex;
 			justify-content: space-between;
-			color: teal;
+			color: $primary;
 			border-bottom: 1px solid #262626;
 			.mod-button,
 			.report-button {
@@ -182,7 +182,7 @@
 				button {
 					padding: 2px;
 					float: right;
-					background: teal;
+					background: $primary;
 					&:hover {
 						background: #e44023;
 					}
@@ -203,8 +203,8 @@
 				height: 44px;
 				&:focus {
 					outline: none;
-					border: 1px solid #f2654c;
-					box-shadow: 0 0 3px #f2654c;
+					border: 1px solid $secondary;
+					box-shadow: 0 0 3px $secondary;
 				}
 			}
 			input {
@@ -277,7 +277,7 @@
 			}
 			.sticky {
 				position: absolute;
-				background: $darkfascistteam;
+				background: $secondary;
 				top: -2px;
 				left: 0;
 				color: white;

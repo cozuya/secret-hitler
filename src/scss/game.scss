@@ -16,7 +16,7 @@
 		.gamestatus {
 			font-size: 22px;
 			font-style: italic;
-			color: teal;
+			color: $primary;
 			background: #1b1b1b;
 			padding: 7px 0px 3px 2px;
 
@@ -66,7 +66,7 @@
 					background: #fbbd08 !important;
 					color: black !important;
 					&:hover {
-						background: $darkfascistteam !important;
+						background: $secondary !important;
 					}
 				}
 
@@ -246,7 +246,7 @@
 						border: 1px solid #bbb;
 						> div:hover {
 							font-weight: bold;
-							color: $lteal;
+							color: $primary;
 						}
 						div:first-child {
 							width: 75px;
@@ -269,7 +269,7 @@
 					flex-grow: 1;
 					button {
 						padding: 0px 10px;
-						background: teal;
+						background: $primary;
 						&:hover {
 							background: #e44023;
 						}
