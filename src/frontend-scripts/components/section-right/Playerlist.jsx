@@ -386,8 +386,8 @@ class Playerlist extends React.Component {
 							<span className="invidia">or</span>
 							<span className="faaiz">s</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
 							<span className="moderator-name">light red (M)</span>.<br />
-							Lastly, <span className="contributor">Contributors</span> get a <span className="contributor">special teal color</span> as well! Contribute code
-							to this open source project to be endlessly pestered about why you're <span className="contributor">teal</span>.
+							Lastly, <span className="contributor">Contributors</span> get a <span className="contributor">special color</span> as well! Contribute code to
+							this open source project!.
 						</p>
 					</div>
 					{Object.keys(this.props.userList).length && (

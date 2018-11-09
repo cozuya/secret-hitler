@@ -13,7 +13,7 @@
 		left: 10px;
 		z-index: 105;
 		color: #ddd;
-		background: #5b9cc4;
+		background: $secondary;
 		font-size: 16px;
 		padding: 4px;
 		opacity: 1;
@@ -63,7 +63,7 @@
 		left: 555px;
 		z-index: 105;
 		color: #ddd;
-		background: #5b9cc4;
+		background: $secondary;
 		font-size: 16px;
 		padding: 4px;
 		opacity: 1;
@@ -80,7 +80,7 @@
 		right: 95px;
 		left: auto;
 		top: 10px;
-		background: #5b9cc4;
+		background: $secondary;
 		border: 2px solid lightblue;
 		padding: 4px;
 		height: 31px;

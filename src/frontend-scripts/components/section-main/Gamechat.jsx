@@ -863,7 +863,7 @@ class Gamechat extends React.Component {
 							) {
 								return (
 									<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
-										C
+										Claim
 									</div>
 								);
 							}

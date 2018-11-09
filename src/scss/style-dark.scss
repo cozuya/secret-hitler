@@ -329,7 +329,7 @@
 			top: 90px;
 			right: 90px;
 			text-decoration: underline;
-			color: yellow;
+			color: $tertiary;
 		}
 	}
 
@@ -705,6 +705,10 @@
 
 	i.icon {
 		color: $secondary;
+
+		&:hover {
+			color: $tertiary;
+		}
 	}
 }
 
@@ -724,7 +728,7 @@
 .ui.primary.button:focus,
 .ui.primary.buttons .button:active,
 .ui.primary.button:active {
-	background-color: #5a9bc4;
+	background-color: $tertiary;
 }
 
 .ui.primary.button,
@@ -835,7 +839,7 @@ div {
 	.ui.button:hover,
 	.ui.button:active {
 		color: #fff;
-		background: #5a9bc4;
+		background: $tertiary;
 	}
 }
 
