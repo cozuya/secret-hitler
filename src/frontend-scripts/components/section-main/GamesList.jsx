@@ -27,7 +27,7 @@ export class GamesList extends React.Component {
 
 		return (
 			<div className="browser-filters ui grid">
-				<div className="three wide column">
+				<div className="one wide column">
 					<h4 className="ui header">Public</h4>
 					<Checkbox
 						toggle
@@ -37,7 +37,7 @@ export class GamesList extends React.Component {
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
 					<h4 className="ui header">Private</h4>
 					<Checkbox
 						toggle
@@ -47,7 +47,7 @@ export class GamesList extends React.Component {
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
 					<h4 className="ui header">Unstarted</h4>
 					<Checkbox
 						toggle
@@ -57,7 +57,7 @@ export class GamesList extends React.Component {
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
 					<h4 className="ui header">In progress</h4>
 					<Checkbox
 						toggle
@@ -67,7 +67,7 @@ export class GamesList extends React.Component {
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
 					<h4 className="ui header">Completed</h4>
 					<Checkbox
 						toggle
@@ -77,7 +77,17 @@ export class GamesList extends React.Component {
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
+					<i title="Filter by casual games" className="handshake icon" />
+					<Checkbox
+						toggle
+						checked={!gameFilter.casualgame}
+						onChange={() => {
+							this.toggleFilter('casualgame');
+						}}
+					/>
+				</div>
+				<div className="one wide column">
 					<i title="Filter by custom games" className="setting icon" />
 					<Checkbox
 						toggle
@@ -87,7 +97,7 @@ export class GamesList extends React.Component {
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
 					<i title="Filter by timed mode games" className="hourglass half icon" />
 					<Checkbox
 						toggle
@@ -97,7 +107,7 @@ export class GamesList extends React.Component {
 						}}
 					/>
 				</div>
-				<div className="three wide column iconcolumn">
+				<div className="one wide column iconcolumn">
 					<i title="Filter by standard games" className="standard-icon" />
 					<Checkbox
 						toggle
@@ -107,7 +117,7 @@ export class GamesList extends React.Component {
 						}}
 					/>
 				</div>
-				<div className="three wide column iconcolumn">
+				<div className="one wide column iconcolumn">
 					<i title="Filter by experienced-player-only games" className="rainbow-icon" />
 					<Checkbox
 						toggle
@@ -127,7 +137,9 @@ export class GamesList extends React.Component {
 		if (gameList.length) {
 			return gameList
 				.filter(game => {
-					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard, customgame } = this.props.gameFilter;
+					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard, customgame, casualgame } = this.props.gameFilter;
+
+					console.log(game);
 
 					return !(
 						(game.private && priv) ||
@@ -138,7 +150,8 @@ export class GamesList extends React.Component {
 						(game.gameStatus === 'notStarted' && unstarted) ||
 						(game.gameStatus === 'isStarted' && inprogress) ||
 						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && completed) ||
-						(game.isCustomGame && customgame)
+						(game.isCustomGame && customgame) ||
+						(game.casualGame && casualgame)
 					);
 				})
 				.sort((a, b) => {

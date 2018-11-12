@@ -46,6 +46,7 @@ const Account = new Schema({
 			inprogress: Boolean,
 			completed: Boolean,
 			customgame: Boolean,
+			casualgame: Boolean,
 			timedMode: Boolean,
 			standard: Boolean,
 			rainbow: Boolean

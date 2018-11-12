@@ -9,12 +9,11 @@ Location: Minneapolis, MN, USA
 /* SITE */
 Language: English
 Doctype: HTML5
-Front end: React, Redux, Sass, SocketIO, SemanticUI, jQuery, Lodash.
+Front end: React, Redux, Sass, SocketIO, SemanticUI with jQuery, Lodash.
 Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO, Lodash.
 Build: Babel, Webpack.
 
 /* ATTRIBUTION */
-
 Secret Hitler is designed by Max Temkin (Cards Against Humanity, Humans vs. Zombies) Mike Boxleiter (Solipskier, TouchTone), Tommy Maranges (Philosophy Bro) and illustrated by Mackenzie Schubert (Letter Tycoon, Penny Press).
 
 This game is attributed as per the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license - https://creativecommons.org/licenses/by-nc-sa/4.0/

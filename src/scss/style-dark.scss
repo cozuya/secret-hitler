@@ -364,7 +364,7 @@
 
 		> .column {
 			text-align: center;
-			width: 11% !important;
+			width: 10% !important;
 			padding: 10px 0 2px !important;
 		}
 	}
@@ -517,8 +517,12 @@
 		.rebalanced {
 			min-width: 36px;
 			div {
-				color: $secondary;
+				color: #a6b2d5;
 			}
+		}
+
+		i {
+			color: #a6b2d5 !important;
 		}
 	}
 	.game-main-bottom-row {
