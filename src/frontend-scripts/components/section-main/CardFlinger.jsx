@@ -120,6 +120,9 @@ class CardFlinger extends React.Component {
 				return (
 					<div className="help-message veto">
 						Would you like to <span>VETO</span> both of these policies?
+						<div className="secondary-message">
+							This vote is <span>SECRET</span>.
+						</div>
 					</div>
 				);
 			} else if (status === 'President to peek at policies.' && currentPlayerStatus === 'isPresident') {
