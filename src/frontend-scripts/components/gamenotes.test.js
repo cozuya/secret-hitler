@@ -1,18 +1,23 @@
 import React from 'react'; // eslint-disable-line
-import { shallow } from 'enzyme';
+import { connect } from 'react-redux';
+import { createMockStore } from 'redux-test-utils';
+import { shallowWithStore } from 'enzyme-redux';
 import Gamenotes from './Gamenotes';
 
 describe('Gamenotes', () => {
-	it('should initialize correctly', () => {
-		const initialState = {
-			top: 110,
-			left: 690,
-			width: 400,
-			height: 320,
-			isResizing: false
-		};
-		const component = shallow(<Gamenotes />);
+	let store;
 
-		expect(component.state()).toEqual(initialState);
+	beforeEach(() => {
+		store = createMockStore({});
+	});
+
+	it('should initialize correctly', () => {
+		const mapStateToProps = state => ({
+			state
+		});
+		const ConnectedComponent = connect(mapStateToProps)(Gamenotes);
+		const component = shallowWithStore(<ConnectedComponent />, store);
+
+		expect(component).toHaveLength(1);
 	});
 });

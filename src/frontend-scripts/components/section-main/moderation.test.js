@@ -19,6 +19,10 @@ describe('Moderation', () => {
 			logSort: {
 				type: 'date',
 				direction: 'descending'
+			},
+			userSort: {
+				direction: 'descending',
+				type: 'username'
 			}
 		};
 

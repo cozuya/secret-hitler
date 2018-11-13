@@ -23,7 +23,9 @@ export default class Generalchat extends React.Component {
 	}
 
 	componentDidMount() {
-		this.scrollbar.scrollToBottom();
+		if (this.scrollbar) {
+			this.scrollbar.scrollToBottom();
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {

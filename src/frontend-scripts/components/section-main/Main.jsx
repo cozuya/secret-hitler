@@ -26,7 +26,8 @@ export class Main extends React.Component {
 				timedMode: false,
 				rainbow: false,
 				standard: false,
-				customgame: false
+				customgame: false,
+				casualgame: false
 			}
 		};
 	}

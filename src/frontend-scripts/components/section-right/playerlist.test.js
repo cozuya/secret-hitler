@@ -1,15 +1,23 @@
 import React from 'react'; // eslint-disable-line
-import { shallow } from 'enzyme';
+import { connect } from 'react-redux';
+import { createMockStore } from 'redux-test-utils';
+import { shallowWithStore } from 'enzyme-redux';
 import Playerlist from './Playerlist';
 
 describe('Playerlist', () => {
+	let store;
+
+	beforeEach(() => {
+		store = createMockStore({});
+	});
+
 	it('should initialize correctly', () => {
-		const initialState = {
-			userListFilter: 'all'
-		};
+		const mapStateToProps = state => ({
+			state
+		});
+		const ConnectedComponent = connect(mapStateToProps)(Playerlist);
+		const component = shallowWithStore(<ConnectedComponent />, store);
 
-		const component = shallow(<Playerlist />);
-
-		expect(component.state()).toEqual(initialState);
+		expect(component).toHaveLength(1);
 	});
 });

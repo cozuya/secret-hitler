@@ -117,7 +117,9 @@ export default class Creategame extends React.Component {
 	componentDidMount() {
 		const self = this;
 
-		$(this._select).dropdown();
+		if (this._select) {
+			$(this._select).dropdown();
+		}
 
 		$(this.verified).checkbox({
 			onChecked() {

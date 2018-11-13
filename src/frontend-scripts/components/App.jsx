@@ -75,7 +75,6 @@ export class App extends React.Component {
 
 		this.state = {
 			notesValue: '',
-			playerNotesValue: '',
 			alertMsg: {
 				type: null,
 				data: null

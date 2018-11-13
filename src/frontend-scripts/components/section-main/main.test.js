@@ -6,18 +6,20 @@ describe('Main', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
 			gameFilter: {
-				priv: true,
-				pub: true,
-				unstarted: true,
-				inprogress: true,
-				completed: true,
-				timedMode: true,
-				rainbow: true,
-				standard: true
+				priv: false,
+				pub: false,
+				unstarted: false,
+				inprogress: false,
+				completed: false,
+				timedMode: false,
+				rainbow: false,
+				standard: false,
+				customgame: false,
+				casualgame: false
 			}
 		};
 
-		const component = shallow(<Main />);
+		const component = shallow(<Main userInfo={{}} />);
 
 		expect(component.state()).toEqual(initialState);
 	});
