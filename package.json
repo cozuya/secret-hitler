@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
-	"version": "0.15.0",
+	"version": "1.0.0-beta1",
 	"license": "CC-BY-NC-SA-4.0",
 	"keywords": [
 		"boardgame",
@@ -17,7 +17,7 @@
 	"homepage": "https://secrethitler.io",
 	"bugs": "https://github.com/cozuya/secret-hitler/issues",
 	"engines": {
-		"node": ">=6.0"
+		"node": ">=10.0"
 	},
 	"dependencies": {
 		"compression": "^1.6.2",
