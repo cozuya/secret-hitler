@@ -255,16 +255,16 @@ class ProfileWrapper extends React.Component {
 					? 'wins'
 					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-					? 'winsSeason'
-					: 'rainbowWinsSeason';
+				? 'winsSeason'
+				: 'rainbowWinsSeason';
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
 					? 'losses'
 					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-					? 'lossesSeason'
-					: 'rainbowLossesSeason';
+				? 'lossesSeason'
+				: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
 		let gamesUntilRainbow = null;
 		if (user) {

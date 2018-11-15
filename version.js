@@ -1,5 +1,5 @@
 module.exports = {
 	number: '1.0.0-beta1',
-	color: 'onepointoh',
+	color: 'onedotoh1',
 	date: ''
 };

@@ -484,23 +484,22 @@ export default class Creategame extends React.Component {
 						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
 					/>
 				)}
-				{!isTourny &&
-					!customGameSettings.enabled && (
-						<div className="checkbox-container">
-							{new Array(6).fill(true).map((el, index) => (
-								<label key={index}>
-									<input
-										type="checkbox"
-										checked={this.state.checkedSliderValues[index]}
-										disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? (index + 5 === this.state.sliderValues[0] ? true : false) : false}
-										onChange={() => {
-											sliderCheckboxClick(index);
-										}}
-									/>
-								</label>
-							))}
-						</div>
-					)}
+				{!isTourny && !customGameSettings.enabled && (
+					<div className="checkbox-container">
+						{new Array(6).fill(true).map((el, index) => (
+							<label key={index}>
+								<input
+									type="checkbox"
+									checked={this.state.checkedSliderValues[index]}
+									disabled={this.state.sliderValues[0] === this.state.sliderValues[1] ? (index + 5 === this.state.sliderValues[0] ? true : false) : false}
+									onChange={() => {
+										sliderCheckboxClick(index);
+									}}
+								/>
+							</label>
+						))}
+					</div>
+				)}
 			</div>
 		);
 	}
@@ -979,7 +978,6 @@ export default class Creategame extends React.Component {
 			const player = userList.list.find(p => p.userName === userInfo.userName);
 			if (!player) errs.push('Not logged in, please refresh.');
 			else if (this.state.isEloLimited) {
-				const isSeason = !userInfo.gameSettings.disableSeasonal;
 				const playerElo = player.eloSeason;
 				const playerEloNonseason = player.eloOverall;
 				if (this.state.eloSliderValue[0] > playerEloNonseason) errs.push(`Elo slider set too high, your overall elo is ${playerEloNonseason}.`);
@@ -987,9 +985,12 @@ export default class Creategame extends React.Component {
 			}
 		}
 		if (this.state.customGameSettings.enabled) {
-			if (this.state.customGameSettings.fascistCount + 1 >= this.state.customGameSliderValue / 2)
+			if (this.state.customGameSettings.fascistCount + 1 >= this.state.customGameSliderValue / 2) {
 				errs.push('There must be a liberal majority when the game starts.');
-			if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) errs.push('Veto Zone cannot be active when the game starts.');
+			}
+			if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) {
+				errs.push('Veto Zone cannot be active when the game starts.');
+			}
 		}
 		if (errs.length) return errs;
 		return null;
@@ -1011,9 +1012,10 @@ export default class Creategame extends React.Component {
 	}
 
 	render() {
-		const { userInfo } = this.props;
 		let createClass = 'ui button primary';
-		if (this.getErrors() != null) createClass += ' disabled';
+		if (this.getErrors() != null) {
+			createClass += ' disabled';
+		}
 
 		return (
 			<section className="creategame">
@@ -1253,20 +1255,19 @@ export default class Creategame extends React.Component {
 								<input type="checkbox" name="casualgame" defaultChecked={this.state.casualgame} />
 							</div>
 						</div>
-						{this.props.userInfo.gameSettings &&
-							this.props.userInfo.gameSettings.isPrivate && (
-								<div className="four wide column privateonlygame">
-									<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
-									<div
-										className="ui fitted toggle checkbox"
-										ref={c => {
-											this.privateonlygame = c;
-										}}
-									>
-										<input type="checkbox" name="privateonlygame" defaultChecked={false} />
-									</div>
+						{this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.isPrivate && (
+							<div className="four wide column privateonlygame">
+								<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
+								<div
+									className="ui fitted toggle checkbox"
+									ref={c => {
+										this.privateonlygame = c;
+									}}
+								>
+									<input type="checkbox" name="privateonlygame" defaultChecked={false} />
 								</div>
-							)}
+							</div>
+						)}
 					</div>
 					<div className="row">
 						<div className="sixteen wide column">

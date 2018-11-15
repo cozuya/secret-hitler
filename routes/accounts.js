@@ -54,8 +54,8 @@ const testIP = (IP, callback) => {
 			ip.type === 'small' || ip.type === 'new'
 				? ip.bannedDate.getTime() + 64800000
 				: ip.type === 'tiny'
-					? ip.bannedDate.getTime() + 60000
-					: ip.bannedDate.getTime() + 604800000;
+				? ip.bannedDate.getTime() + 60000
+				: ip.bannedDate.getTime() + 604800000;
 	}
 
 	if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {

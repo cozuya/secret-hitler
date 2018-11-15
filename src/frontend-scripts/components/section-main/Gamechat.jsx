@@ -505,8 +505,8 @@ class Gamechat extends React.Component {
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
 									: isBlind
-										? '?'
-										: chat.userName}
+									? '?'
+									: chat.userName}
 								{': '}
 							</span>
 							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
@@ -590,8 +590,8 @@ class Gamechat extends React.Component {
 			window.location.hash = isRound1TableThatFinished2nd
 				? `${hash.substr(0, hash.length - 1)}Final`
 				: tableUidLastLetter === 'A'
-					? `${hash.substr(0, hash.length - 1)}B`
-					: `${hash.substr(0, hash.length - 1)}A`;
+				? `${hash.substr(0, hash.length - 1)}B`
+				: `${hash.substr(0, hash.length - 1)}A`;
 		};
 		const isStaff = Boolean(userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'contributor');
 		const hasNoAEM = players => {
@@ -626,12 +626,11 @@ class Gamechat extends React.Component {
 					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
 						Game
 					</a>
-					{gameInfo.general &&
-						!gameInfo.general.disableObserver && (
-							<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-								No observer chat
-							</a>
-						)}
+					{gameInfo.general && !gameInfo.general.disableObserver && (
+						<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
+							No observer chat
+						</a>
+					)}
 					{userInfo.userName && (
 						<i
 							title="Click here to pop out notes"
@@ -925,25 +924,27 @@ class Gamechat extends React.Component {
 				>
 					<h2 className="ui header">Select player(s) below to whitelist for seating in this private game.</h2>
 					<ul>
-						{this.state.playersToWhitelist.sort((a, b) => (a.userName > b.userName ? 1 : -1)).map((player, index) => {
-							const uid = Math.random()
-								.toString(36)
-								.substring(2);
+						{this.state.playersToWhitelist
+							.sort((a, b) => (a.userName > b.userName ? 1 : -1))
+							.map((player, index) => {
+								const uid = Math.random()
+									.toString(36)
+									.substring(2);
 
-							return (
-								<li key={index}>
-									<input
-										type="checkbox"
-										id={uid}
-										defaultChecked={true}
-										onChange={() => {
-											selectedWhitelistplayer(player.userName);
-										}}
-									/>
-									<label htmlFor={uid}>{player.userName}</label>
-								</li>
-							);
-						})}
+								return (
+									<li key={index}>
+										<input
+											type="checkbox"
+											id={uid}
+											defaultChecked={true}
+											onChange={() => {
+												selectedWhitelistplayer(player.userName);
+											}}
+										/>
+										<label htmlFor={uid}>{player.userName}</label>
+									</li>
+								);
+							})}
 					</ul>
 					<div className="ui green positive inverted whitelist-submit button" onClick={submitWhitelist}>
 						Submit
