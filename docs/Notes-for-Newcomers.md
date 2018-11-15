@@ -19,7 +19,10 @@ That being said, at the end of the day SH is just a game, and the goal remains t
   * [[Delayed Conflicts|Notes for Newcomers#Delayed Conflicts]]
   * [[Counting the Number of Conflicts|Notes for Newcomers#Counting the Number of Conflicts]]
 * [[Misc Tips|Notes for Newcomers#Misc Tips]]
-
+  * [[Peeking at the Deck [5/6p]|Notes for Newcomers#Peeking at the Deck 56p]]
+  * [[Peek Table for Fascists|Notes for Newcomers#Peek Table for Fascists]]
+  * [[Veto Zone|Notes for Newcomers#Veto Zone]]
+  * [[Irrational Voting|Notes for Newcomers#Irrational Voting]]
 
 # Why people insist on a Meta
 On SecretHitler.io, people tend to insist on a "Meta" (_i.e._ a set of conventions as to who should you nominate as chancellor? who should you investigate as president?) Metas are considered by some to be controversial, but I think they help the game develop.
@@ -155,6 +158,27 @@ If the peek is claimed to be Blue-something-something, you should Top-deck. Eith
 If the peek is claimed to be Red-Blue-something, you can still consider Top-decking.
 
 If the peek is claimed to be Red-Red-Blue, _be aware that liberals can lose if the peek is actually RRR._
+
+[[ [back to top]|Notes for Newcomers]]
+
+## Peek Table for Fascists
+
+| Real Peek      | Safe claims | Risky claims | Scorcha claims      |
+|----------------|-------------|--------------|---------------------|
+| _What you see_ |             |              | [NOT FOR BEGINNERS] |
+| BBB            | BBR (td)    |              | BRR (td), RRB, RBB  |
+| BBR            | BRR (td)    |              |                     |
+| BRB            | BRR (td)    | RRB          |                     |
+| BRR            |             | BRB (td)     | RRR, BBR, BBB       |
+| RBB            |             | RRB,  RBR    |                     |
+| RBR            |             | RRR          |                     |
+| RRB            |             | RRR          | RBR                 |
+| RRR            |             | RRB (td)     | RBR                 | 
+
+* A _safe_ claim will never out you as fascist. That is not to mean that _safe_ claims are always the right move.
+  * Telling the claim truthfully is always safe. 
+* Claims marked with (td) mean you should, if nobody is already, push for a top-deck.
+* All _risky_ claims become _safe_ if your teammate ends up being the next president after you. 
 
 [[ [back to top]|Notes for Newcomers]]
 
