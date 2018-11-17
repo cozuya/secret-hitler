@@ -40,7 +40,7 @@ app.use(passport.session());
 passport.use(new Strategy(Account.authenticate()));
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
-mongoose.connect(`mongodb://localhost:${process.env.MONGOPORT}/secret-hitler-app`);
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 mongoose.Promise = global.Promise;
 
 routesIndex();

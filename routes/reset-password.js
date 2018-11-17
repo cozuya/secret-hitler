@@ -19,6 +19,7 @@ module.exports = {
 				console.log(err);
 			}
 
+			console.log(accounts, 'a');
 			tokens = accounts.map(account => ({
 				username: account.username,
 				token: account.verification.verificationToken,
@@ -48,13 +49,16 @@ module.exports = {
 
 		app.post('/password-reset', (req, res, next) => {
 			const { password, password2 } = req.body;
+			console.log(req.params);
 			const token = tokens.find(toke => toke.token === req.params.token);
 
 			if (password !== password2 || !token || password.length < 6 || password.length > 255) {
+				console.log('Hello, World!');
+				console.log(token);
 				res.status(401).send();
 			} else {
 				Account.findOne({ username: req.body.username }, (err, account) => {
-					if (err || !account) {
+					if (err || !account || account.staffRole) {
 						return next();
 					}
 
@@ -75,7 +79,7 @@ module.exports = {
 				console.log(err);
 			}
 
-			if (account) {
+			if (account && !account.staffRole) {
 				const tomorrow = new Date();
 				const { username } = account;
 				const token = `${Math.random()
