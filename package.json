@@ -120,7 +120,7 @@
 		"test": "jest",
 		"test:watch": "jest --watch",
 		"test:coverage": "jest --coverage",
-		"db": "mongod --dbpath data --port 15726",
+		"db": "mongod --dbpath data",
 		"db-docker": "docker run -it --rm -p 15726:15726 -v \"$(PWD)/data\":/data/db --name Secret-Hitler-Dev-MongoDB mongo:latest --port 15726",
 		"build": "webpack --config webpack/webpack.config.prod --mode production",
 		"build-nomin": "webpack --config webpack/webpack.config.prod-nomin --mode production",

@@ -17,14 +17,14 @@ module.exports = {
 		Account.find({ 'resetPassword.resetTokenExpiration': { $gte: new Date() } }, (err, accounts) => {
 			if (err) {
 				console.log(err);
+			} else {
+				console.log(accounts, 'a');
+				tokens = accounts.map(account => ({
+					username: account.username,
+					token: account.resetPassword.resetToken,
+					expires: account.resetPassword.resetTokenExpiration
+				}));
 			}
-
-			console.log(accounts, 'a');
-			tokens = accounts.map(account => ({
-				username: account.username,
-				token: account.verification.verificationToken,
-				expires: account.verification.verificationTokenExpiration
-			}));
 		});
 
 		app.get('/password-reset/:user/:token', (req, res, next) => {
@@ -36,10 +36,10 @@ module.exports = {
 						console.log(err);
 					}
 
-					account.resetPassword.resetTokenExpiration = null;
+					account.resetPassword.resetToken = account.resetPassword.resetTokenExpiration = null;
 					account.save(() => {
 						res.render('page-resetpassword', {});
-						// tokens.splice(tokens.findIndex(toke => toke.token === req.params.token), 1);
+						tokens.splice(tokens.findIndex(toke => toke.token === req.params.token), 1);
 					});
 				});
 			} else {
@@ -49,11 +49,10 @@ module.exports = {
 
 		app.post('/password-reset', (req, res, next) => {
 			const { password, password2 } = req.body;
-			console.log(req.params);
+			console.log(req.body);
 			const token = tokens.find(toke => toke.token === req.params.token);
 
 			if (password !== password2 || !token || password.length < 6 || password.length > 255) {
-				console.log('Hello, World!');
 				console.log(token);
 				res.status(401).send();
 			} else {
@@ -65,7 +64,7 @@ module.exports = {
 					account.setPassword(password, () => {
 						account.save(() => {
 							req.logIn(account, () => {
-								res.status(200).send();
+								res.send();
 							});
 						});
 					});
