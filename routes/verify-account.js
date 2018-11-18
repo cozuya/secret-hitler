@@ -40,10 +40,11 @@ module.exports = {
 				Account.findOne({ username: token.username }, (err, account) => {
 					if (err) {
 						console.log(err);
+						return;
 					}
 
 					account.verified = true;
-					account.verification.verificationTokenExpiration = null;
+					account.verification.verificationToken = account.verification.verificationTokenExpiration = null;
 					account.save(() => {
 						res.redirect('/account');
 						tokens.splice(tokens.findIndex(toke => toke.token === req.params.token), 1);
