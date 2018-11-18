@@ -54,8 +54,8 @@ const testIP = (IP, callback) => {
 			ip.type === 'small' || ip.type === 'new'
 				? ip.bannedDate.getTime() + 64800000
 				: ip.type === 'tiny'
-					? ip.bannedDate.getTime() + 60000
-					: ip.bannedDate.getTime() + 604800000;
+				? ip.bannedDate.getTime() + 60000
+				: ip.bannedDate.getTime() + 604800000;
 	}
 
 	if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
@@ -147,24 +147,25 @@ module.exports = () => {
 		};
 
 		if (!/^[a-z0-9]+$/i.test(username)) {
-			res.status(401).json({ message: 'Sorry, your username can only be alphanumeric.' });
+			res.status(401).json({ message: 'Your username can only be alphanumeric.' });
 		} else if (username.length < 3) {
-			res.status(401).json({ message: 'Sorry, your username is too short.' });
+			res.status(401).json({ message: 'Your username is too short.' });
 		} else if (username.length > 12) {
-			res.status(401).json({ message: 'Sorry, your username is too long.' });
+			res.status(401).json({ message: 'Your username is too long.' });
 		} else if (password.length < 6) {
-			res.status(401).json({ message: 'Sorry, your password is too short.' });
+			res.status(401).json({ message: 'Your password is too short.' });
 		} else if (password.length > 255) {
-			res.status(401).json({ message: 'Sorry, your password is too long.' });
+			res.status(401).json({ message: 'Your password is too long.' });
 		} else if (password !== password2) {
-			res.status(401).json({ message: 'Sorry, your passwords did not match.' });
+			res.status(401).json({ message: 'Your passwords did not match.' });
 		} else if (/88$/i.test(username)) {
 			res.status(401).json({
-				message: 'Sorry, usernames that end with 88 are not allowed.'
+				message: 'Usernames that end with 88 are not allowed.'
 			});
 		} else if (accountCreationDisabled.status) {
 			res.status(403).json({
-				message: 'Sorry, creating new accounts is temporarily disabled.  If you need an account created, please contact our moderators on discord.'
+				message:
+					'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
 			});
 		} else {
 			let doesContainBadWord = false;
@@ -186,59 +187,72 @@ module.exports = () => {
 				res.status(401).json({
 					message: `That doesn't look like a valid email address.`
 				});
-
 				return;
 			}
 
 			if (doesContainBadWord) {
 				res.status(401).json({
-					message: 'Sorry, your username contains a naughty word or part of a naughty word.'
+					message: 'Your username contains a naughty word or part of a naughty word.'
 				});
-			} else {
-				Account.findOne({ username }, (err, account) => {
-					if (err) {
-						return next(err);
-					}
-					if (account && account.username === username) {
-						res.status(401).json({ message: 'Sorry, that account already exists.' });
+				return;
+			}
+
+			Account.find({ $or: [{ username }, { 'verification.email': email }] }, (err, accounts) => {
+				if (err) {
+					return next(err);
+				}
+
+				if (accounts) {
+					const usernames = accounts.map(acc => acc.username);
+					if (usernames.includes(username)) {
+						res.status(401).json({ message: 'That account already exists.' });
 					} else {
-						testIP(signupIP, banType => {
-							if (banType) {
-								if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-								else if (banType == 'small' || banType == 'tiny') {
-									res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
-								} else if (banType == 'new') {
-									res.status(403).json({ message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators.' });
-								} else {
-									console.log(`Unhandled IP ban type: ${banType}`);
-									res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
-								}
-							} else {
-								Account.register(new Account(save), password, err => {
-									if (err) {
-										return next(err);
-									}
-									if (email) {
-										verifyAccount.sendToken(username, email);
-									}
+						res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
+					}
+					return;
+				}
 
-									passport.authenticate('local')(req, res, () => {
-										const newPlayerBan = new BannedIP({
-											bannedDate: new Date(),
-											type: 'new',
-											ip: signupIP
-										});
-
-										newPlayerBan.save(() => {
-											res.send();
-										});
-									});
-								});
+				testIP(signupIP, banType => {
+					if (banType) {
+						if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+						else if (banType == 'small' || banType == 'tiny') {
+							res
+								.status(403)
+								.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+						} else if (banType == 'new') {
+							res.status(403).json({
+								message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
+							});
+						} else {
+							console.log(`Unhandled IP ban type: ${banType}`);
+							res
+								.status(403)
+								.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+						}
+					} else {
+						Account.register(new Account(save), password, err => {
+							if (err) {
+								return next(err);
 							}
+							if (email) {
+								verifyAccount.sendToken(username, email);
+							}
+
+							passport.authenticate('local')(req, res, () => {
+								const newPlayerBan = new BannedIP({
+									bannedDate: new Date(),
+									type: 'new',
+									ip: signupIP
+								});
+
+								newPlayerBan.save(() => {
+									res.send();
+								});
+							});
 						});
 					}
 				});
-			}
+			});
 		}
 	});
 
@@ -360,15 +374,24 @@ module.exports = () => {
 			return;
 		}
 
-		Account.findOne({ username }).then(account => {
-			account.verification.email = email;
-			account.save(() => {
-				if (!verified) {
-					verifyAccount.sendToken(username, email, res);
-				} else {
-					res.send();
-				}
-			});
+		Account.find({ 'verification.email': email }, (err, accounts) => {
+			if (err) {
+				return next(err);
+			}
+
+			if (accounts) {
+				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
+				return;
+			} else {
+				account.verification.email = email;
+				account.save(() => {
+					if (!verified) {
+						verifyAccount.sendToken(username, email, res);
+					} else {
+						res.send();
+					}
+				});
+			}
 		});
 	});
 

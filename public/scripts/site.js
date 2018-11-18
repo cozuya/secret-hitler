@@ -35,6 +35,7 @@ $(document).ready(function() {
 		var pass1 = $('#passwordchange-password').val(),
 			pass2 = $('#passwordchange-confirmpassword').val(),
 			username = window.location.pathname.split('/')[2],
+			tok = window.location.pathname.split('/')[3],
 			$loader = $(this).next(),
 			$message = $loader.next(),
 			submitErr = function(message) {
@@ -51,7 +52,8 @@ $(document).ready(function() {
 			data: JSON.stringify({
 				username: username,
 				password: pass1,
-				password2: pass2
+				password2: pass2,
+				tok: tok
 			}),
 			statusCode: {
 				200: function() {

@@ -18,13 +18,11 @@ module.exports = {
 			if (err) {
 				console.log(err);
 			} else {
-				console.log(accounts, 'ac');
 				tokens = accounts.map(account => ({
 					username: account.username,
 					token: account.resetPassword.resetToken,
 					expires: account.resetPassword.resetTokenExpiration
 				}));
-				console.log(tokens, 'tokens');
 			}
 		});
 
@@ -39,15 +37,10 @@ module.exports = {
 		});
 
 		app.post('/password-reset', (req, res, next) => {
-			const { password, password2 } = req.body;
-			console.log(req.protocol, 'pro');
-			console.log(req.get('host'), 'host');
-			console.log(req.originalUrl, 'orig');
-			const token = tokens.find(toke => toke.token === req.params.token);
-			console.log(tokens);
+			const { password, password2, tok } = req.body;
+			const token = tokens.find(toke => toke.token === tok);
 
 			if (password !== password2 || !token || password.length < 6 || password.length > 255) {
-				console.log(token);
 				res.status(401).send();
 			} else {
 				Account.findOne({ username: req.body.username }, (err, account) => {
@@ -99,13 +92,13 @@ module.exports = {
 					expires: tomorrow
 				});
 
-				// nmMailgun.sendMail({
-				// 	from: 'SH.io accounts <donotreply@secrethitler.io>',
-				// 	html: template({ username, token }),
-				// 	text: `Hello ${username}, a request has been made to change your password - go to the address below to change your password. https://secrethitler.io/reset-password/${username}/${token}.`,
-				// 	to: email,
-				// 	subject: 'SH.io - reset your password'
-				// });
+				nmMailgun.sendMail({
+					from: 'SH.io accounts <donotreply@secrethitler.io>',
+					html: template({ username, token }),
+					text: `Hello ${username}, a request has been made to change your password - go to the address below to change your password. https://secrethitler.io/reset-password/${username}/${token}.`,
+					to: email,
+					subject: 'SH.io - reset your password'
+				});
 
 				account.save(() => {
 					res.send();
