@@ -1,4 +1,14 @@
-const { games, userList, generalChats, accountCreationDisabled, ipbansNotEnforced, gameCreationDisabled, currentSeasonNumber, newStaff } = require('./models');
+const {
+	games,
+	userList,
+	generalChats,
+	accountCreationDisabled,
+	ipbansNotEnforced,
+	gameCreationDisabled,
+	limitNewPlayers,
+	currentSeasonNumber,
+	newStaff
+} = require('./models');
 const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
 const Account = require('../../models/account');
@@ -446,6 +456,10 @@ const updateSeatedUser = (socket, passport, data) => {
 		const isBlacklistSafe = !game.general.gameCreatorBlacklist.includes(passport.user);
 		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
 
+		if (account.wins + account.losses < 3 && limitNewPlayers.status && !game.general.private) {
+			return;
+		}
+
 		if (isNotMaxedOut && isNotInGame && isRainbowSafe && isPrivateSafe && isBlacklistSafe && isMeetingEloMinimum) {
 			const { publicPlayersState } = game;
 			const player = {
@@ -523,7 +537,7 @@ module.exports.handleUpdatedBio = (socket, passport, data) => {
  */
 module.exports.handleAddNewGame = (socket, passport, data) => {
 	// Authentication Assured in routes.js
-	if (gameCreationDisabled.status) {
+	if (gameCreationDisabled.status || (!data.privatePassword && limitNewPlayers.status)) {
 		return;
 	}
 
@@ -1325,21 +1339,19 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = new Date().getTime();
-		newGame.publicPlayersState = game.publicPlayersState
-			.filter(player => player.isRemaking)
-			.map(player => ({
-				userName: player.userName,
-				customCardback: player.customCardback,
-				customCardbackUid: player.customCardbackUid,
-				connected: player.connected,
-				isRemakeVoting: false,
-				cardStatus: {
-					cardDisplayed: false,
-					isFlipped: false,
-					cardFront: 'secretrole',
-					cardBack: {}
-				}
-			}));
+		newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
+			userName: player.userName,
+			customCardback: player.customCardback,
+			customCardbackUid: player.customCardbackUid,
+			connected: player.connected,
+			isRemakeVoting: false,
+			cardStatus: {
+				cardDisplayed: false,
+				isFlipped: false,
+				cardFront: 'secretrole',
+				cardBack: {}
+			}
+		}));
 		newGame.playersState = [];
 		newGame.cardFlingerState = [];
 		newGame.trackState = {
@@ -1504,12 +1516,16 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 
 	const { publicPlayersState } = game;
 	const player = publicPlayersState.find(player => player.userName === passport.user);
-	if (game.general.private && !player && !game.general.whitelistedPlayers.includes(passport.user)) return;
+	if (game.general.private && !player && !game.general.whitelistedPlayers.includes(passport.user)) {
+		return;
+	}
+
 	const user = userList.find(u => passport.user === u.userName);
 
 	if (!user || game.general.disableChat) {
 		return;
 	}
+
 	data.userName = passport.user;
 
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
@@ -1635,14 +1651,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			console.log(e, 'caught exception in ping chat');
 		}
 	} else if (!pinged) {
-		const lastMessage = game.chats
-			.filter(chat => !chat.gameChat && typeof chat.message === 'string' && chat.userName === user.userName)
-			.reduce(
-				(acc, cur) => {
-					return acc.timestamp > cur.timestamp ? acc : cur;
-				},
-				{ timestamp: new Date(0) }
-			);
+		const lastMessage = game.chats.filter(chat => !chat.gameChat && typeof chat.message === 'string' && chat.userName === user.userName).reduce(
+			(acc, cur) => {
+				return acc.timestamp > cur.timestamp ? acc : cur;
+			},
+			{ timestamp: new Date(0) }
+		);
 
 		if (lastMessage.chat) {
 			let leniancy; // How much time (in seconds) must pass before allowing the message.
@@ -1706,14 +1720,12 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 	if (data.chat.length > 300 || !data.chat.length) return;
 
 	const curTime = new Date();
-	const lastMessage = generalChats.list
-		.filter(chat => chat.userName === user.userName)
-		.reduce(
-			(acc, cur) => {
-				return acc.time > cur.time ? acc : cur;
-			},
-			{ time: new Date(0) }
-		);
+	const lastMessage = generalChats.list.filter(chat => chat.userName === user.userName).reduce(
+		(acc, cur) => {
+			return acc.time > cur.time ? acc : cur;
+		},
+		{ time: new Date(0) }
+	);
 
 	if (lastMessage.chat) {
 		let leniancy; // How much time (in seconds) must pass before allowing the message.
@@ -2265,6 +2277,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'enableGameCreation':
 					gameCreationDisabled.status = false;
 					break;
+				case 'enableLimitNewPlayers':
+					limitNewPlayers.status = true;
+					break;
+				case 'disableLimitNewPlayers':
+					limitNewPlayers.status = false;
+					break;
 				case 'removeStaffRole':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
@@ -2376,18 +2394,18 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const setType = /setRWins/.test(data.action.type)
 							? 'rainbowWins'
 							: /setRLosses/.test(data.action.type)
-							? 'rainbowLosses'
-							: /setWins/.test(data.action.type)
-							? 'wins'
-							: 'losses';
+								? 'rainbowLosses'
+								: /setWins/.test(data.action.type)
+									? 'wins'
+									: 'losses';
 						const number =
 							setType === 'wins'
 								? data.action.type.substr(7)
 								: setType === 'losses'
-								? data.action.type.substr(9)
-								: setType === 'rainbowWins'
-								? data.action.type.substr(8)
-								: data.action.type.substr(10);
+									? data.action.type.substr(9)
+									: setType === 'rainbowWins'
+										? data.action.type.substr(8)
+										: data.action.type.substr(10);
 						const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
 
 						if (!isNaN(parseInt(number, 10)) || isPlusOrMinus) {
@@ -2583,8 +2601,8 @@ module.exports.checkUserStatus = socket => {
 									ip.type === 'small'
 										? ip.bannedDate.getTime() + 64800000
 										: ip.type === 'tiny'
-										? ip.bannedDate.getTime() + 60000
-										: ip.bannedDate.getTime() + 604800000;
+											? ip.bannedDate.getTime() + 60000
+											: ip.bannedDate.getTime() + 604800000;
 							}
 
 							if (ip && unbannedTime > date) logOutUser(user);

@@ -9,11 +9,16 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 1.0.0-beta1 released</p>
+			<p>Version 1.0.0-beta1 released 11-19-2018</p>
 		</div>
 		<h3>Version 1.0! Almost.. need to make sure everything works right first.</h3>
 		<h4>New feature: recolored UI. Color idea thanks to contributor/mod Hexicube.</h4>
-		<h4>New/fixed feature: email verification and password resets.</h4>
+		<h4>
+			New/fixed feature: email verification and password resets.{' '}
+			<a href="/account" target="_blank">
+				Click here to go to your account page.
+			</a>
+		</h4>
 		<p>
 			Like a real application, you can now have an email get sent to your non-disposible email address to make your account verified (again). This time it
 			shouldn't go to spam every time..
@@ -26,7 +31,8 @@ const Changelog = () => (
 			<li>Your email address will never leave the site/will never be given away or sold.</li>
 		</ul>
 		<h4>Returning feature: verified-only games in the create game page.</h4>
-		<p>Verified players can once again make games that only other verified players can sit in.</p>
+		<p>Verified players can once again make games that only other verified players can sit in in the create game panel.</p>
+		<h3>I strongly recommend you verify your account.</h3>
 		<div className="ui header">
 			<p>Version 0.15.0 released 10-21-2018</p>
 		</div>

@@ -18,6 +18,7 @@ module.exports.generalChats = {
 module.exports.accountCreationDisabled = { status: false };
 module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
+module.exports.limitNewPlayers = { status: false };
 module.exports.newStaff = {
 	modUserNames: [],
 	editorUserNames: []
@@ -144,8 +145,8 @@ module.exports.formattedGameList = () => {
 		gameStatus: games[gameName].gameState.isCompleted
 			? games[gameName].gameState.isCompleted
 			: games[gameName].gameState.isTracksFlipped
-			? 'isStarted'
-			: 'notStarted',
+				? 'isStarted'
+				: 'notStarted',
 		seatedCount: games[gameName].publicPlayersState.length,
 		gameCreatorName: games[gameName].general.gameCreatorName,
 		minPlayersCount: games[gameName].general.minPlayersCount,

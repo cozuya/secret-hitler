@@ -46,9 +46,11 @@ export default class Moderation extends React.Component {
 				log: info.modReports
 			});
 
+			console.log(info, 'info');
 			$(this.toggleIpbans).checkbox(info.ipbansNotEnforced.status ? 'set checked' : 'set unchecked');
 			$(this.toggleGameCreation).checkbox(info.gameCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
+			$(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? 'set checked' : 'set unchecked');
 		});
 
 		socket.on('sendAlert', ip => {
@@ -137,6 +139,27 @@ export default class Moderation extends React.Component {
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled game creation',
 					action: 'enableGameCreation'
+				});
+			}
+		});
+
+		$(this.toggleLimitNewPlayers).checkbox({
+			onChecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Enabled limiting new players',
+					action: 'enableLimitNewPlayers'
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Disabled limiting new players',
+					action: 'disableLimitNewPlayers'
 				});
 			}
 		});
@@ -407,6 +430,17 @@ export default class Moderation extends React.Component {
 						className="ui fitted toggle checkbox"
 						ref={c => {
 							this.toggleGameCreation = c;
+						}}
+					>
+						<input type="checkbox" name="ipbans" />
+					</div>
+				</div>
+				<div className="toggle-containers">
+					<h4 className="ui header">Limit new player actions</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleLimitNewPlayers = c;
 						}}
 					>
 						<input type="checkbox" name="ipbans" />

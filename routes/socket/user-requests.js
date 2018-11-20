@@ -11,6 +11,7 @@ const {
 	accountCreationDisabled,
 	ipbansNotEnforced,
 	gameCreationDisabled,
+	limitNewPlayers,
 	userListEmitter,
 	formattedUserList,
 	gameListEmitter,
@@ -130,6 +131,7 @@ module.exports.sendModInfo = (socket, count) => {
 						accountCreationDisabled,
 						ipbansNotEnforced,
 						gameCreationDisabled,
+						limitNewPlayers,
 						userList: list
 					});
 				})
