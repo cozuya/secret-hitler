@@ -54,8 +54,8 @@ const testIP = (IP, callback) => {
 			ip.type === 'small' || ip.type === 'new'
 				? ip.bannedDate.getTime() + 64800000
 				: ip.type === 'tiny'
-				? ip.bannedDate.getTime() + 60000
-				: ip.bannedDate.getTime() + 604800000;
+					? ip.bannedDate.getTime() + 60000
+					: ip.bannedDate.getTime() + 604800000;
 	}
 
 	if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
@@ -344,21 +344,36 @@ module.exports = () => {
 	app.post('/account/add-email', ensureAuthenticated, (req, res, next) => {
 		const { email } = req.body;
 
-		if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
+		if (!email) {
+			return next();
+		}
+
+		if (email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
 			res.status(401).json({
 				message: 'Only non-disposible email providers are allowed to create verified accounts.'
 			});
 			return;
 		}
 
-		if (email && !emailRegex.test(email)) {
+		if (!emailRegex.test(email)) {
 			res.status(401).json({
 				message: `That doesn't look like a valid email address.`
 			});
 			return;
 		}
 
-		verifyAccount.sendToken(req.user.username, email, res);
+		Account.find({ 'verification.email': email }, (err, accounts) => {
+			if (err) {
+				return next(err);
+			}
+
+			if (accounts) {
+				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
+				return;
+			} else {
+				verifyAccount.sendToken(req.user.username, email, res);
+			}
+		});
 	});
 
 	app.post('/account/change-email', ensureAuthenticated, (req, res, next) => {
@@ -401,10 +416,19 @@ module.exports = () => {
 	});
 
 	app.post('/account/request-verification', ensureAuthenticated, (req, res, next) => {
-		if (req.user.verification.email) {
-			verifyAccount.sendToken(req.user.username, req.user.verification.email, res);
-		} else {
-			return next();
+		if (req.user.verification && req.user.verification.email) {
+			Account.find({ 'verification.email': req.user.verification.email }, (err, accounts) => {
+				if (err) {
+					return next(err);
+				}
+
+				if (accounts) {
+					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
+					return next();
+				} else {
+					verifyAccount.sendToken(req.user.username, req.user.verification.email, res);
+				}
+			});
 		}
 	});
 
