@@ -197,7 +197,11 @@ module.exports = () => {
 				return;
 			}
 
-			Account.find({ $or: [{ username }, { 'verification.email': email }] }, (err, accounts) => {
+			const searchObj = {};
+			if (email) {
+				searchObj['$or'] = [{ username }, { 'verification.email': email }];
+			} else searchObj.username = username;
+			Account.find(searchObj, (err, accounts) => {
 				if (err) {
 					return next(err);
 				}
@@ -206,10 +210,11 @@ module.exports = () => {
 					const usernames = accounts.map(acc => acc.username);
 					if (usernames.includes(username)) {
 						res.status(401).json({ message: 'That account already exists.' });
-					} else {
+						return;
+					} else if (email) {
 						res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
+						return;
 					}
-					return;
 				}
 
 				testIP(signupIP, banType => {
