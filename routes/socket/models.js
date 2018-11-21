@@ -6,6 +6,7 @@ let emotes = [];
 fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
 	if (file.name.endsWith('.png')) emotes[emotes.length] = file.name.substring(0, file.name.length - 4);
 });
+
 module.exports.emoteList = emotes;
 
 const games = {};
