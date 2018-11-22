@@ -159,7 +159,7 @@ module.exports.sendUserGameSettings = socket => {
 			const userListNames = userList.map(user => user.userName);
 
 			getProfile(passport.user);
-			if (!userListNames.includes(passport.user)) {
+			if (!userListNames.includes(passport.user) && !account.gameSettings.staffIncognito) {
 				const userListInfo = {
 					userName: passport.user,
 					staffRole: account.staffRole || '',

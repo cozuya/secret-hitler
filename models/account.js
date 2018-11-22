@@ -12,6 +12,7 @@ const Account = new Schema({
 	gameSettings: {
 		staffDisableVisibleElo: Boolean,
 		staffDisableStaffColor: Boolean,
+		staffIncognito: Boolean,
 		isRainbow: Boolean,
 		newReport: Boolean,
 		customCardback: String,

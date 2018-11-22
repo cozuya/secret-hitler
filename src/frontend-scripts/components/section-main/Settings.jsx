@@ -45,6 +45,7 @@ class Settings extends React.Component {
 			soundSelected: 'Pack 1',
 			staffDisableVisibleElo: '',
 			staffDisableStaffColor: '',
+			staffIncognito: '',
 			fullheight: false
 		};
 	}
@@ -69,7 +70,8 @@ class Settings extends React.Component {
 			fullheight: gameSettings.fullheight || false,
 			soundSelected: gameSettings.soundStatus || 'Off',
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
-			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false
+			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
+			staffIncognito: gameSettings.staffIncognito || false
 		});
 	}
 
@@ -342,6 +344,17 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
+							{window.staffRole && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Incognito (hide from userlist)
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input type="checkbox" checked={this.state.staffIncognito} onChange={() => this.toggleGameSettings('staffIncognito')} />
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Show right sidebar in games</h4>

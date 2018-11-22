@@ -1781,8 +1781,49 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			const currentPrivate = account.gameSettings.isPrivate;
 
 			for (const setting in data) {
-				if (setting !== 'blacklist' || (setting === 'blacklist' && data[setting].length <= 30) || (setting === 'staffDisableVisibleElo' && account.staffRole)) {
+				if (
+					setting !== 'blacklist' ||
+					(setting === 'blacklist' && data[setting].length <= 30) ||
+					(setting === 'staffDisableVisibleElo' && account.staffRole) ||
+					(setting === 'staffIncognito' && account.staffRole)
+				) {
 					account.gameSettings[setting] = data[setting];
+				}
+
+				if (setting === 'staffIncognito' && account.staffRole) {
+					if (data.staffIncognito) {
+						userList.splice(userList.findIndex(user => user.userName === passport.user), 1);
+					} else {
+						const userListInfo = {
+							userName: passport.user,
+							staffRole: account.staffRole || '',
+							staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+							staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+							wins: account.wins,
+							losses: account.losses,
+							rainbowWins: account.rainbowWins,
+							rainbowLosses: account.rainbowLosses,
+							isPrivate: account.gameSettings.isPrivate,
+							tournyWins: account.gameSettings.tournyWins,
+							blacklist: account.gameSettings.blacklist,
+							customCardback: account.gameSettings.customCardback,
+							customCardbackUid: account.gameSettings.customCardbackUid,
+							previousSeasonAward: account.gameSettings.previousSeasonAward,
+							eloOverall: account.eloOverall,
+							eloSeason: account.eloSeason,
+							status: {
+								type: 'none',
+								gameId: null
+							}
+						};
+
+						userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
+						userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
+						userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
+						userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+						userList.push(userListInfo);
+					}
+					sendUserList();
 				}
 			}
 
