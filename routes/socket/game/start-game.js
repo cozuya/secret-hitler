@@ -26,19 +26,19 @@ const beginGame = game => {
 			customGameSettings.fascistCount = 1;
 			customGameSettings.hitKnowsFas = true;
 			customGameSettings.powers = [null, null, 'deckpeek', 'bullet', 'bullet'];
-			if (game.rebalance6p && game.publicPlayersState.length == 6) customGameSettings.trackState.fas = 1;
+			if (game.general.rebalance6p && game.publicPlayersState.length == 6) customGameSettings.trackState.fas = 1;
 		} else if (game.general.type == 1) {
 			// 7-8 players
 			customGameSettings.fascistCount = 2;
 			customGameSettings.hitKnowsFas = false;
 			customGameSettings.powers = [null, 'investigate', 'election', 'bullet', 'bullet'];
-			if (game.rebalance7p && game.publicPlayersState.length == 7) customGameSettings.deckState.fas = 10;
+			if (game.general.rebalance7p && game.publicPlayersState.length == 7) customGameSettings.deckState.fas = 10;
 		} else {
 			// 9-10 players
 			customGameSettings.fascistCount = 3;
 			customGameSettings.hitKnowsFas = false;
 			customGameSettings.powers = ['investigate', 'investigate', 'election', 'bullet', 'bullet'];
-			if (game.rebalance9p2f && game.publicPlayersState.length == 9) customGameSettings.deckState.fas = 10;
+			if (game.general.rebalance9p2f && game.publicPlayersState.length == 9) customGameSettings.deckState.fas = 10;
 		}
 	}
 	shufflePolicies(game, true);
