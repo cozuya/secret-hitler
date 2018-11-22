@@ -35,7 +35,7 @@ module.exports.makeReport = (text, game, gameEnd) => {
 		}
 
 		const report = JSON.stringify({
-			content: `${process.env.DISCORDMODPING} ${text}\nhttps://secrethitler.io/game/#/table/${game.general.uid}`
+			content: `${process.env.DISCORDMODPING} ${text}\n<https://secrethitler.io/game/#/table/${game.general.uid}>`
 		});
 		const options = {
 			hostname: 'discordapp.com',

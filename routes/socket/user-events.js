@@ -2511,7 +2511,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 	});
 	const httpEscapedComment = data.comment.split('http').join('');
 	const body = JSON.stringify({
-		content: `Game UID: https://secrethitler.io/game/#/table/${data.uid}\nReported player: ${data.reportedPlayer}\nReason: ${
+		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${data.reportedPlayer}\nReason: ${
 			data.reason
 		}\nComment: ${httpEscapedComment}`
 	});
