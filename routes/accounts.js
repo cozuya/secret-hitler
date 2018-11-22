@@ -54,8 +54,8 @@ const testIP = (IP, callback) => {
 			ip.type === 'small' || ip.type === 'new'
 				? ip.bannedDate.getTime() + 64800000
 				: ip.type === 'tiny'
-					? ip.bannedDate.getTime() + 60000
-					: ip.bannedDate.getTime() + 604800000;
+				? ip.bannedDate.getTime() + 60000
+				: ip.bannedDate.getTime() + 604800000;
 	}
 
 	if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
@@ -197,24 +197,22 @@ module.exports = () => {
 				return;
 			}
 
-			const searchObj = {};
-			if (email) {
-				searchObj['$or'] = [{ username }, { 'verification.email': email }];
-			} else searchObj.username = username;
-			Account.find(searchObj, (err, accounts) => {
+			const queryObj = email ? { $or: [{ username: new RegExp(username, 'i') }, { 'verification.email': email }] } : { username: new RegExp(username, 'i') };
+
+			Account.find(queryObj, (err, accounts) => {
 				if (err) {
 					return next(err);
 				}
 
-				if (accounts) {
-					const usernames = accounts.map(acc => acc.username);
-					if (usernames.includes(username)) {
+				if (accounts.length) {
+					const usernames = accounts.map(acc => acc.username.toLowerCase());
+
+					if (usernames.includes(username.toLowerCase())) {
 						res.status(401).json({ message: 'That account already exists.' });
-						return;
-					} else if (email) {
+					} else {
 						res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
-						return;
 					}
+					return;
 				}
 
 				testIP(signupIP, banType => {
@@ -416,8 +414,10 @@ module.exports = () => {
 	});
 
 	app.post('/account/request-verification', ensureAuthenticated, (req, res, next) => {
-		if (req.user.verification && req.user.verification.email) {
-			Account.find({ 'verification.email': req.user.verification.email }, (err, accounts) => {
+		const { verification } = req.user;
+		const { email } = verification;
+		if (verification && email) {
+			Account.find({ 'verification.email': email }, (err, accounts) => {
 				if (err) {
 					return next(err);
 				}
@@ -426,7 +426,7 @@ module.exports = () => {
 					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 					return next();
 				} else {
-					verifyAccount.sendToken(req.user.username, req.user.verification.email, res);
+					verifyAccount.sendToken(req.user.username, email, res);
 				}
 			});
 		}
