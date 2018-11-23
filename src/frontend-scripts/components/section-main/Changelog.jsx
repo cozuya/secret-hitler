@@ -16,11 +16,11 @@ const Changelog = () => (
 			become verified.
 		</h4>
 		<h4>
-			Like a real application, sessions (aka how a website knows you're logged in) will now persist beyond crashes, reboots, and updates. In other words you
-			won't have to log in so much.
+			New feature: like a real application, sessions (aka how a website knows you're logged in) will now persist beyond crashes, reboots, and updates. In other
+			words you won't have to log in so much.
 		</h4>
-		<h4>Links in discord to the game will no longer have giant nazi lizard images.</h4>
-		<h4>Contributors are back to teal color.</h4>
+		<h5>Links in discord to the game will no longer have giant lizard images.</h5>
+		<h5>Contributors are back to teal color.</h5>
 		<div className="ui header">
 			<p>Version 1.0.0-beta2 released 11-22-2018</p>
 		</div>

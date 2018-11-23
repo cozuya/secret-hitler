@@ -30,34 +30,23 @@ app.use(favicon(`${__dirname}/public/favicon.ico`));
 app.use(cookieParser());
 app.use(express.static(`${__dirname}/public`, { maxAge: 86400000 * 28 }));
 
-io.use(
-	socketSession(
-		session({
-			secret: process.env.SECRETSESSIONKEY,
-			cookie: {
-				maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
-			},
-			store,
-			resave: true,
-			saveUninitialized: true
-		}),
-		{
-			autoSave: true
-		}
-	)
-);
+const sessionSettings = {
+	secret: process.env.SECRETSESSIONKEY,
+	cookie: {
+		maxAge: 1000 * 60 * 60 * 24 * 28 // 4 weeks
+	},
+	store,
+	resave: true,
+	saveUninitialized: true
+};
 
-app.use(
-	require('express-session')({
-		secret: process.env.SECRETSESSIONKEY,
-		cookie: {
-			maxAge: 1000 * 60 * 60 * 24 * 28 // 4 weeks
-		},
-		store,
-		resave: true,
-		saveUninitialized: true
+io.use(
+	socketSession(session(sessionSettings), {
+		autoSave: true
 	})
 );
+
+app.use(session(sessionSettings));
 
 app.use(passport.initialize());
 app.use(passport.session());
