@@ -76,7 +76,7 @@ module.exports = () => {
 		res.render('page-account', {
 			username: req.user.username,
 			verified: req.user.verified,
-			email: req.user.verification.email
+			email: req.user.verification ? req.user.verification.email : ''
 		});
 	});
 
@@ -105,13 +105,17 @@ module.exports = () => {
 		});
 	});
 
-	app.post('/account/reset-password', (req, res) => {
+	app.post('/account/reset-password', (req, res, nest) => {
+		if (!req.body.email) {
+			return next();
+		}
+
 		Account.findOne({
 			'verification.email': req.body.email
-		}).then(player => {
-			if (!player) {
+		}).then(account => {
+			if (!account) {
 				res.status(401).json({ message: 'There is no verified account associated with that email.' });
-				return;
+				return next();
 			}
 			resetPassword.sendToken(req.body.email, res);
 		});
@@ -368,7 +372,7 @@ module.exports = () => {
 
 			if (accounts.length) {
 				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
-				return;
+				return next();
 			} else {
 				verifyAccount.sendToken(req.user.username, email, res);
 			}
@@ -398,7 +402,7 @@ module.exports = () => {
 				return next(err);
 			}
 
-			if (accounts) {
+			if (accounts.length) {
 				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 				return;
 			} else {
@@ -417,13 +421,14 @@ module.exports = () => {
 	app.post('/account/request-verification', ensureAuthenticated, (req, res, next) => {
 		const { verification } = req.user;
 		const { email } = verification;
+
 		if (verification && email) {
 			Account.find({ 'verification.email': email }, (err, accounts) => {
 				if (err) {
 					return next(err);
 				}
 
-				if (accounts) {
+				if (accounts.length) {
 					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 					return next();
 				} else {
