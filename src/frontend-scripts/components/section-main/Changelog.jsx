@@ -9,7 +9,20 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 1.0.0-beta1 released 11-19-2018</p>
+			<p>Version 1.0.0-beta3 released 11-23-2018</p>
+		</div>
+		<h4>
+			Fixed feature: adding email in the account page now doesn't always return "an account already has that verified email" message. Please use that button to
+			become verified.
+		</h4>
+		<h4>
+			Like a real application, sessions (aka how a website knows you're logged in) will now persist beyond crashes, reboots, and updates. In other words you
+			won't have to log in so much.
+		</h4>
+		<h4>Links in discord to the game will no longer have giant nazi lizard images.</h4>
+		<h4>Contributors are back to teal color.</h4>
+		<div className="ui header">
+			<p>Version 1.0.0-beta2 released 11-22-2018</p>
 		</div>
 		<h3>Version 1.0! Almost.. need to make sure everything works right first.</h3>
 		<h4>New feature: recolored UI. Color idea thanks to contributor/mod Hexicube.</h4>

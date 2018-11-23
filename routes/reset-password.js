@@ -41,11 +41,12 @@ module.exports = {
 			const token = tokens.find(toke => toke.token === tok);
 
 			if (password !== password2 || !token || password.length < 6 || password.length > 255) {
-				res.status(401).send();
+				res.status(400).send();
 			} else {
 				Account.findOne({ username: req.body.username }, (err, account) => {
 					if (err || !account || account.staffRole) {
-						return next();
+						res.status(404).send();
+						return;
 					}
 
 					account.setPassword(password, () => {

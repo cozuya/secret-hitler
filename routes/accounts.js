@@ -365,7 +365,7 @@ module.exports = () => {
 				return next(err);
 			}
 
-			if (accounts) {
+			if (accounts.length) {
 				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 				return;
 			} else {

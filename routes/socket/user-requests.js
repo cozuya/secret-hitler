@@ -149,9 +149,11 @@ module.exports.sendModInfo = (socket, count) => {
  */
 module.exports.sendUserGameSettings = socket => {
 	const { passport } = socket.handshake.session;
+
 	if (!passport || !passport.user) {
 		return;
 	}
+
 	Account.findOne({ username: passport.user })
 		.then(account => {
 			socket.emit('gameSettings', account.gameSettings);

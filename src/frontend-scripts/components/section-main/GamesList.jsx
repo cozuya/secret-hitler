@@ -58,7 +58,7 @@ export class GamesList extends React.Component {
 					/>
 				</div>
 				<div className="one wide column">
-					<h4 className="ui header">In progress</h4>
+					<h4 className="ui header">Progress</h4>
 					<Checkbox
 						toggle
 						checked={!gameFilter.inprogress}
@@ -138,8 +138,6 @@ export class GamesList extends React.Component {
 			return gameList
 				.filter(game => {
 					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard, customgame, casualgame } = this.props.gameFilter;
-
-					console.log(game);
 
 					return !(
 						(game.private && priv) ||
