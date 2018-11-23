@@ -41,27 +41,28 @@ BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) =
 });
 const testIP = (IP, callback) => {
 	if (!IP) callback('Bad IP!');
-	if (!banCache || !banCache.filter) callback('nocache');
+	else if (!banCache || !banCache.filter) callback('nocache');
+	else {
+		const ips = banCache.filter(i => i.ip == IP);
+		let date;
+		let unbannedTime;
+		const ip = ips[ips.length - 1];
 
-	const ips = banCache.filter(i => i.ip == IP);
-	let date;
-	let unbannedTime;
-	const ip = ips[ips.length - 1];
+		if (ip) {
+			date = new Date().getTime();
+			unbannedTime =
+				ip.type === 'small' || ip.type === 'new'
+					? ip.bannedDate.getTime() + 64800000
+					: ip.type === 'tiny'
+					? ip.bannedDate.getTime() + 60000
+					: ip.bannedDate.getTime() + 604800000;
+		}
 
-	if (ip) {
-		date = new Date().getTime();
-		unbannedTime =
-			ip.type === 'small' || ip.type === 'new'
-				? ip.bannedDate.getTime() + 64800000
-				: ip.type === 'tiny'
-				? ip.bannedDate.getTime() + 60000
-				: ip.bannedDate.getTime() + 604800000;
-	}
-
-	if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
-		callback(ip.type);
-	} else {
-		callback(null);
+		if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
+			callback(ip.type);
+		} else {
+			callback(null);
+		}
 	}
 };
 
