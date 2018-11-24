@@ -52,23 +52,23 @@ export function processEmotes(input, isMod, allEmotes) {
 				</a>
 			);
 		} else if (word.substr(0, 2) === '**' && word.substr(word.length - 2, word.length) === '**') {
-			formatedMsg.push(<b key={index}>{word.slice(2).slice(0, word.length - 4)}</b>);
+			formatedMsg.push(<b key={index}>{word.slice(2).slice(0, word.length - 4) + ' '}</b>);
 		} else if (word.substr(0, 2) === '~~' && word.substr(word.length - 2, word.length) === '~~') {
 			formatedMsg.push(
 				<span key={index} style={{ textDecoration: 'line-through' }}>
-					{word.slice(2).slice(0, word.length - 4)}
+					{word.slice(2).slice(0, word.length - 4) + ' '}
 				</span>
 			);
 		} else if (word.substr(0, 1) === '*' && word.substr(word.length - 1, word.length) === '*') {
 			formatedMsg.push(
 				<span key={index} style={{ fontStyle: 'italic' }}>
-					{word.slice(1).slice(0, word.length - 2)}
+					{word.slice(1).slice(0, word.length - 2) + ' '}
 				</span>
 			);
 		} else if (word.substr(0, 2) === '__' && word.substr(word.length - 2, word.length) === '__') {
 			formatedMsg.push(
 				<span key={index} style={{ textDecoration: 'underline' }}>
-					{word.slice(2).slice(0, word.length - 4)}
+					{word.slice(2).slice(0, word.length - 4) + ' '}
 				</span>
 			);
 		} else {
