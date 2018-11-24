@@ -18,6 +18,7 @@ const BannedIP = require('../../models/bannedIP');
 const Profile = require('../../models/profile/index');
 const PlayerNote = require('../../models/playerNote');
 const startGame = require('./game/start-game.js');
+const Mongoclient = require('mongodb').MongoClient;
 const { completeGame } = require('./game/end-game');
 const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
@@ -1987,6 +1988,22 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				if (bannedUserlistIndex >= 0) {
 					userList.splice(bannedUserlistIndex, 1);
 				}
+
+				Mongoclient.connect(
+					'mongodb://localhost:27017',
+					(err, client) => {
+						client
+							.db('secret-hitler-app')
+							.collection('sessions')
+							.findOneAndDelete({ 'session.passport.user': username })
+							.then(err => {
+								if (err) {
+									console.log(err, 'err in logoutuser');
+								}
+								client.close();
+							});
+					}
+				);
 			};
 
 			/**
@@ -2629,6 +2646,22 @@ module.exports.checkUserStatus = socket => {
 				if (bannedUserlistIndex >= 0) {
 					userList.splice(bannedUserlistIndex, 1);
 				}
+
+				Mongoclient.connect(
+					'mongodb://localhost:27017',
+					(err, client) => {
+						client
+							.db('secret-hitler-app')
+							.collection('sessions')
+							.findOneAndDelete({ 'session.passport.user': username })
+							.then(err => {
+								if (err) {
+									console.log(err, 'err in logoutuser');
+								}
+								client.close();
+							});
+					}
+				);
 			};
 			Account.findOne({ username: user }, function(err, account) {
 				if (account) {
