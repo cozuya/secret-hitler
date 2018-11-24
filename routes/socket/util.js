@@ -1,3 +1,5 @@
+const Mongoclient = require('mongodb').MongoClient;
+
 /**
  * @param {object} game - game to act on.
  * @return {object} game
@@ -173,4 +175,26 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		ratingUpdates[account.username] = { change, changeSeason };
 	});
 	return ratingUpdates;
+};
+
+let mongoClient;
+Mongoclient.connect(
+	'mongodb://localhost:27017',
+	(err, client) => {
+		mongoClient = client;
+	}
+);
+module.exports.destroySession = username => {
+	if (!mongoClient) {
+		console.log('WARN: No mongo connection, cannot destroy user session.');
+		return;
+	}
+	mongoClient
+		.db('secret-hitler-app')
+		.collection('sessions')
+		.findOneAndDelete({ 'session.passport.user': username }, err => {
+			if (err) {
+				console.log(err, 'err in logoutuser');
+			}
+		});
 };
