@@ -19,7 +19,6 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'DFinn',
 	'goonbee',
 	'Hexicube',
-	'HREmperor',
 	'Idrissa',
 	'Invidia',
 	'jbasari',
