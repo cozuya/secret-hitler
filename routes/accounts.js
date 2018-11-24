@@ -72,7 +72,7 @@ module.exports = () => {
 	verifyAccount.setRoutes();
 	resetPassword.setRoutes();
 
-	app.get('/account', ensureAuthenticated, (req, res) => {
+	app.get('/account', ensureAuthenticated, (req, res, next) => {
 		res.render('page-account', {
 			username: req.user.username,
 			verified: req.user.verified,
@@ -80,7 +80,7 @@ module.exports = () => {
 		});
 	});
 
-	app.post('/account/change-password', ensureAuthenticated, (req, res) => {
+	app.post('/account/change-password', ensureAuthenticated, (req, res, next) => {
 		const { newPassword, newPasswordConfirm } = req.body;
 		const { user } = req;
 
@@ -88,7 +88,7 @@ module.exports = () => {
 
 		if (newPassword !== newPasswordConfirm) {
 			res.status(401).json({ message: 'not equal' });
-			return;
+			return next();
 		}
 
 		user.setPassword(newPassword, () => {
@@ -97,7 +97,7 @@ module.exports = () => {
 		});
 	});
 
-	app.post('/account/delete-account', passport.authenticate('local'), (req, res) => {
+	app.post('/account/delete-account', passport.authenticate('local'), (req, res, next) => {
 		Account.deleteOne({ username: req.user.username }).then(() => {
 			Profile.deleteOne({ _id: req.user.username }).then(() => {
 				res.send();
@@ -185,21 +185,21 @@ module.exports = () => {
 				res.status(401).json({
 					message: 'Only non-disposible email providers are allowed to create verified accounts.'
 				});
-				return;
+				return next();
 			}
 
 			if (email && !emailRegex.test(email)) {
 				res.status(401).json({
 					message: `That doesn't look like a valid email address.`
 				});
-				return;
+				return next();
 			}
 
 			if (doesContainBadWord) {
 				res.status(401).json({
 					message: 'Your username contains a naughty word or part of a naughty word.'
 				});
-				return;
+				return next();
 			}
 
 			const queryObj = email ? { $or: [{ username: new RegExp(username, 'i') }, { 'verification.email': email }] } : { username: new RegExp(username, 'i') };
@@ -217,7 +217,7 @@ module.exports = () => {
 					} else {
 						res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 					}
-					return;
+					return next();
 				}
 
 				testIP(signupIP, banType => {
@@ -240,7 +240,7 @@ module.exports = () => {
 					} else {
 						Account.register(new Account(save), password, err => {
 							if (err) {
-								return next(err);
+								return next();
 							}
 							if (email) {
 								verifyAccount.sendToken(username, email);
@@ -287,7 +287,7 @@ module.exports = () => {
 			);
 		},
 		passport.authenticate('local'),
-		(req, res) => {
+		(req, res, next) => {
 			Account.findOne({
 				username: req.user.username
 			}).then(player => {
@@ -296,7 +296,7 @@ module.exports = () => {
 						message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
 						// TODO: include the reason moderators provided for the account ban, if it exists
 					});
-					return;
+					return next();
 				}
 
 				let ip =
@@ -355,14 +355,14 @@ module.exports = () => {
 			res.status(401).json({
 				message: 'Only non-disposible email providers are allowed to create verified accounts.'
 			});
-			return;
+			return next();
 		}
 
 		if (!emailRegex.test(email)) {
 			res.status(401).json({
 				message: `That doesn't look like a valid email address.`
 			});
-			return;
+			return next();
 		}
 
 		Account.find({ 'verification.email': email }, (err, accounts) => {
@@ -372,7 +372,6 @@ module.exports = () => {
 
 			if (accounts.length) {
 				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
-				return next();
 			} else {
 				verifyAccount.sendToken(req.user.username, email, res);
 			}
@@ -387,14 +386,14 @@ module.exports = () => {
 			res.status(401).json({
 				message: 'Only non-disposible email providers are allowed to create verified accounts.'
 			});
-			return;
+			return next();
 		}
 
 		if (email && !emailRegex.test(email)) {
 			res.status(401).json({
 				message: `That doesn't look like a valid email address.`
 			});
-			return;
+			return next();
 		}
 
 		Account.find({ 'verification.email': email }, (err, accounts) => {
@@ -404,7 +403,6 @@ module.exports = () => {
 
 			if (accounts.length) {
 				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
-				return;
 			} else {
 				account.verification.email = email;
 				account.save(() => {
