@@ -56,7 +56,7 @@ const testIP = (IP, callback) => {
 
 		if (ip) {
 			date = new Date().getTime();
-			unbannedTime = ip.bannedDate.getTime() + ((banLength[ip.type] && banLength[ip.type]) || banLength.big);
+			unbannedTime = ip.bannedDate.getTime() + (banLength[ip.type] || banLength.big);
 		}
 
 		if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
