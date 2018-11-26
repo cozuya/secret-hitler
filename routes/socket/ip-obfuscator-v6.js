@@ -31,12 +31,11 @@ const doWork = () => {
 		block[val1] = val2;
 		block[val2] = val1;
 		counter++;
-		if (counter == 100) {
+		if (counter === 100) {
 			setTimeout(() => doWork(), 25);
 			return;
 		}
 	}
-	console.log('IPv6 ready!');
 	map = block;
 };
 doWork();
