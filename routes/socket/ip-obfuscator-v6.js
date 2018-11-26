@@ -18,8 +18,9 @@ const convertToHex = val => {
 	return output;
 };
 for (let a = 0; a < 16 * 16 * 16 * 16; a++) avail[a] = convertToHex(a);
-let counter = 0;
+
 const doWork = () => {
+	let counter = 0;
 	while (avail.length > 0) {
 		const idx1 = Math.floor(Math.random() * avail.length);
 		const val1 = avail[idx1];
@@ -31,7 +32,6 @@ const doWork = () => {
 		block[val2] = val1;
 		counter++;
 		if (counter == 100) {
-			counter = 0;
 			setTimeout(() => doWork(), 25);
 			return;
 		}
