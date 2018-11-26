@@ -39,6 +39,12 @@ BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) =
 		banCache = ips;
 	});
 });
+const banLength = {
+	small: 18 * 60 * 60 * 1000, // 18 hours
+	new: 18 * 60 * 60 * 1000, // 18 hours
+	tiny: 1 * 60 * 60 * 1000, // 1 hour
+	big: 7 * 24 * 60 * 60 * 1000 // 7 days
+};
 const testIP = (IP, callback) => {
 	if (!IP) callback('Bad IP!');
 	else if (!banCache || !banCache.filter) callback('nocache');
@@ -50,12 +56,7 @@ const testIP = (IP, callback) => {
 
 		if (ip) {
 			date = new Date().getTime();
-			unbannedTime =
-				ip.type === 'small' || ip.type === 'new'
-					? ip.bannedDate.getTime() + 64800000
-					: ip.type === 'tiny'
-					? ip.bannedDate.getTime() + 60000
-					: ip.bannedDate.getTime() + 604800000;
+			unbannedTime = ip.bannedDate.getTime() + ((banLength[ip.type] && banLength[ip.type]) || banLength.big);
 		}
 
 		if (ip && unbannedTime > date && !ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
