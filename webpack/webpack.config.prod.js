@@ -12,7 +12,19 @@ module.exports = {
 		filename: `bundle.js`,
 		path: path.resolve(__dirname, '../public/scripts')
 	},
-	plugins: [new UglifyJSPlugin()],
+	plugins: [extractSass],
+	optimization: {
+		minimizer: [
+			new UglifyJSPlugin({
+				parallel: true,
+				uglifyOptions: {
+					mangle: false,
+					keep_classnames: true,
+					keep_fnames: true
+				}
+			})
+		]
+	},
 	module: {
 		rules: [
 			{
@@ -54,6 +66,5 @@ module.exports = {
 				})
 			}
 		]
-	},
-	plugins: [extractSass]
+	}
 };

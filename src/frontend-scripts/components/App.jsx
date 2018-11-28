@@ -51,7 +51,7 @@ class TopLevelErrorBoundry extends React.Component {
 					to happen, please ping @contributors in the discord channel or contact us any other way. <a href="/game">Click here to get back to safety.</a>
 				</p>
 				<details style={{ whiteSpace: 'pre-wrap' }}>
-					{error && error.toString()}
+					{error && (error.stack || error.toString())}
 					<br />
 					{errorInfo.componentStack}
 				</details>
