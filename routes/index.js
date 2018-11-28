@@ -5,6 +5,7 @@ const GameSummary = require('../models/game-summary');
 const socketRoutes = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
+const https = require('https');
 const version = require('../version');
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
@@ -280,6 +281,61 @@ module.exports = () => {
 		} catch (error) {
 			console.log(err, 'upload cardback crash error');
 		}
+	});
+
+	app.get('/discord-login', (req, res) => {
+		console.log('Hello, World!');
+		res.redirect(
+			`https://discordapp.com/api/oauth2/authorize?client_id=${
+				process.env.DISCORDCLIENTID
+			}&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fcallback&response_type=code&scope=email&state=TESTSTATE`
+		);
+	});
+
+	app.get('/discord/callback', (req, res) => {
+		const { code, state } = req.query;
+		const body = JSON.stringify({
+			client_id: process.env.DISCORDCLIENTID,
+			client_secret: process.env.DISCORDCLIENTSECRET,
+			grant_type: 'authorization_code',
+			code,
+			redirect_uri: 'https://localhost:8080/discord/login-callback',
+			scope: 'email'
+		});
+		const options = {
+			// protocol: 'https:',
+			hostname: 'discordapp.com',
+			port: 443,
+			path: '/api/oauth2/token',
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			}
+		};
+
+		console.log(req.query, 'body');
+
+		console.log(body, 'b');
+		const request = https.request(options, res => {
+			res.setEncoding('utf8');
+			res.on('data', chunk => {
+				console.log(`BODY: ${chunk}`);
+			});
+			console.log('token response');
+			console.log(res.statusMessage, 'res');
+			res.on('end', () => {
+				console.log('No more data in response.');
+			});
+		});
+		try {
+			request.end(body);
+		} catch (error) {
+			console.log(error);
+		}
+	});
+
+	app.get('/discord/login-callback', (req, res) => {
+		console.log('hit login cb');
 	});
 
 	app.get('*', (req, res) => {
