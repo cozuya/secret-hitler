@@ -3,7 +3,7 @@ const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
 const PlayerNote = require('../../models/playerNote');
 const Game = require('../../models/game');
-//	const BannedIP = require('../../models/bannedIP');
+
 const {
 	games,
 	userList,
@@ -22,42 +22,8 @@ const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
 const { obfIP } = require('./ip-obf');
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
-//	const https = require('https');
-//	const options = {
-//	hostname: 'check.torproject.org',
-//	path: '/cgi-bin/TorBulkExitList.py?ip=1.1.1.1'
-//	};
-//	http://torstatus.blutmagie.de/ip_list_exit.php/Tor_ip_list_EXIT.csv
 
 let torIps = [];
-
-// if (process.env.NODE_ENV) {
-// 	try {
-// 		https.get(options, res => {
-// 			let rawData = '';
-// 			res.on('data', chunk => {
-// 				rawData += chunk;
-// 			});
-// 			res.on('end', () => {
-// 				try {
-// 					torIps = rawData.split('\n').slice(3, rawData.length);
-// 				} catch (e) {
-// 					console.error(e.message, 'retrieving tor ip addresses failed');
-// 				}
-// 				torIps.forEach(ip => {
-// 					const ipban = new BannedIP({
-// 						bannedDate: new Date(),
-// 						type: 'large',
-// 						ip
-// 					});
-// 					ipban.save();
-// 				});
-// 			});
-// 		});
-// 	} catch (e) {
-// 		console.log(e, 'err receiving tor ip addresses');
-// 	}
-// }
 
 module.exports.torIps = torIps;
 
@@ -82,12 +48,7 @@ const sendUserList = (module.exports.sendUserList = socket => {
 module.exports.sendModInfo = (socket, count) => {
 	const userNames = userList.map(user => user.userName);
 
-	const maskEmail = email => {
-		const data = email.split('@');
-		// if (data[0].length < 7) return '#####@' + data[1]; // Too short to show first/last two chars.
-		// return data[0].substring(2) + '#' + data[0].substring(data[0].length-2, data[0].length) + '@' + data[1];
-		return data[1] || '';
-	};
+	const maskEmail = email => email.split('@')[1] || '';
 
 	Account.find({ username: userNames, 'gameSettings.isPrivate': false })
 		.then(users => {
