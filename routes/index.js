@@ -293,7 +293,8 @@ module.exports = () => {
 	});
 
 	app.get('/discord/callback', (req, res) => {
-		const { code, state } = req.query;
+		// const { code, state } = req.query;
+		const { code } = req.query;
 		const body = JSON.stringify({
 			client_id: process.env.DISCORDCLIENTID,
 			client_secret: process.env.DISCORDCLIENTSECRET,

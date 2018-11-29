@@ -203,7 +203,9 @@ module.exports = () => {
 				return next();
 			}
 
-			const queryObj = email ? { $or: [{ username: new RegExp(username, 'i') }, { 'verification.email': email }] } : { username: new RegExp(username, 'i') };
+			const queryObj = email
+				? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
+				: { username: new RegExp(`\\b${username}\\b`, 'i') };
 
 			Account.find(queryObj, (err, accounts) => {
 				if (err) {
