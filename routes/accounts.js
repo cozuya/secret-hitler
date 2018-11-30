@@ -106,20 +106,22 @@ module.exports = () => {
 		});
 	});
 
-	app.post('/account/reset-password', (req, res, nest) => {
+	app.post('/account/reset-password', (req, res, next) => {
 		if (!req.body.email) {
 			return next();
 		}
 
 		Account.findOne({
 			'verification.email': req.body.email
-		}).then(account => {
-			if (!account) {
-				res.status(401).json({ message: 'There is no verified account associated with that email.' });
-				return next();
-			}
-			resetPassword.sendToken(req.body.email, res);
-		});
+		})
+			.then(account => {
+				if (!account) {
+					res.status(401).json({ message: 'There is no verified account associated with that email.' });
+					return next();
+				}
+				resetPassword.sendToken(req.body.email, res);
+			})
+			.catch(err => console.log(err, 'account err'));
 	});
 
 	app.post('/account/signup', (req, res, next) => {
