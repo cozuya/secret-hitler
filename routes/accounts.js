@@ -403,19 +403,25 @@ module.exports = () => {
 
 		Account.find({ 'verification.email': email }, (err, accounts) => {
 			if (err) {
-				return next(err);
+				return next();
 			}
 
 			if (accounts.length) {
 				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 			} else {
-				account.verification.email = email;
-				account.save(() => {
-					if (!verified) {
-						verifyAccount.sendToken(username, email, res);
-					} else {
-						res.send();
+				Account.findOne({ username }, (err, account) => {
+					if (err) {
+						return next();
 					}
+
+					account.verification.email = email;
+					account.save(() => {
+						if (!verified) {
+							verifyAccount.sendToken(username, email, res);
+						} else {
+							res.send();
+						}
+					});
 				});
 			}
 		});
