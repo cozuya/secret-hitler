@@ -1654,7 +1654,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		}
 	} else if (!pinged) {
 		const lastMessage = game.chats
-			.filter(chat => !chat.gameChat && typeof chat.message === 'string' && chat.userName === user.userName)
+			.filter(chat => !chat.gameChat && typeof chat.chat === 'string' && chat.userName === user.userName)
 			.reduce(
 				(acc, cur) => {
 					return acc.timestamp > cur.timestamp ? acc : cur;
