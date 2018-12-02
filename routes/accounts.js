@@ -3,7 +3,6 @@ const Account = require('../models/account');
 const Profile = require('../models/profile/index');
 const BannedIP = require('../models/bannedIP');
 const EightEightCounter = require('../models/eightEightCounter');
-const VerifyAccount = require('../models/verifyAccount');
 const { ipbansNotEnforced, accountCreationDisabled } = require('./socket/models');
 const { setVerifyRoutes, sendVerifyToken } = require('./verify-account');
 const { setResetRoutes, sendResetToken } = require('./reset-password');
@@ -121,7 +120,7 @@ module.exports = () => {
 					res.status(401).json({ message: 'There is no verified account associated with that email.' });
 					return next();
 				}
-				sendResetToken(req.body.email, res);
+				sendResetToken(account.username, req.body.email, res);
 			})
 			.catch(err => console.log(err, 'account err'));
 	});

@@ -25,6 +25,8 @@ module.exports.setResetRoutes = () => {
 
 			if (reset) {
 				res.render('page-resetpassword', {});
+			} else {
+				return next();
 			}
 		});
 	});
@@ -38,7 +40,7 @@ module.exports.setResetRoutes = () => {
 	app.post('/password-reset', (req, res, next) => {
 		const { username, password, password2, tok } = req.body;
 
-		if (password !== password2 || !token || password.length < 6 || password.length > 255) {
+		if (password !== password2 || !tok || password.length < 6 || password.length > 255) {
 			res.status(400).send();
 			return next();
 		}
@@ -71,7 +73,7 @@ module.exports.setResetRoutes = () => {
 	});
 };
 
-module.exports.sendResetToken = (email, res) => {
+module.exports.sendResetToken = (username, email, res) => {
 	const token = `${Math.random()
 		.toString(36)
 		.substring(2)}${Math.random()
