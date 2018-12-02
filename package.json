@@ -139,5 +139,8 @@
 		"moduleNameMapper": {
 			"\\.(css|scss)$": "<rootDir>/__test__/mocks/styleMock.js"
 		}
+	},
+	"resolutions": {
+		"**/event-stream": "^4.0.1"
 	}
 }
