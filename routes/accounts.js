@@ -2,9 +2,11 @@ const passport = require('passport');
 const Account = require('../models/account');
 const Profile = require('../models/profile/index');
 const BannedIP = require('../models/bannedIP');
+const EightEightCounter = require('../models/eightEightCounter');
+const VerifyAccount = require('../models/verifyAccount');
 const { ipbansNotEnforced, accountCreationDisabled } = require('./socket/models');
-const verifyAccount = require('./verify-account');
-const resetPassword = require('./reset-password');
+const { setVerifyRoutes, sendVerifyToken } = require('./verify-account');
+const { setResetRoutes, sendResetToken } = require('./reset-password');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
 const { expandAndSimplify } = require('./socket/ip-obf');
@@ -70,8 +72,8 @@ const testIP = (IP, callback) => {
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 module.exports = () => {
-	verifyAccount.setRoutes();
-	resetPassword.setRoutes();
+	setVerifyRoutes();
+	setResetRoutes();
 
 	app.get('/account', ensureAuthenticated, (req, res, next) => {
 		res.render('page-account', {
@@ -119,7 +121,7 @@ module.exports = () => {
 					res.status(401).json({ message: 'There is no verified account associated with that email.' });
 					return next();
 				}
-				resetPassword.sendToken(req.body.email, res);
+				sendResetToken(req.body.email, res);
 			})
 			.catch(err => console.log(err, 'account err'));
 	});
@@ -139,11 +141,7 @@ module.exports = () => {
 				isPrivate
 			},
 			verification: {
-				email: email || '',
-				verificationToken: '',
-				verificationTokenExpiration: null,
-				passwordResetToken: '',
-				passwordResetTokenExpiration: null
+				email: email || ''
 			},
 			verified: false,
 			games: [],
@@ -167,8 +165,13 @@ module.exports = () => {
 		} else if (password !== password2) {
 			res.status(401).json({ message: 'Your passwords did not match.' });
 		} else if (/88$/i.test(username)) {
-			res.status(401).json({
-				message: 'Usernames that end with 88 are not allowed.'
+			const new88 = new EightEightCounter({
+				date: new Date()
+			});
+			new88.save(() => {
+				res.status(401).json({
+					message: 'Usernames that end with 88 are not allowed.'
+				});
 			});
 		} else if (accountCreationDisabled.status) {
 			res.status(403).json({
@@ -248,7 +251,7 @@ module.exports = () => {
 								return next();
 							}
 							if (email) {
-								verifyAccount.sendToken(username, email);
+								sendVerifyToken(username, email);
 							}
 
 							passport.authenticate('local')(req, res, () => {
@@ -370,15 +373,15 @@ module.exports = () => {
 			return next();
 		}
 
-		Account.find({ 'verification.email': email }, (err, accounts) => {
+		Account.findOne({ 'verification.email': email }, (err, account) => {
 			if (err) {
 				return next(err);
 			}
 
-			if (accounts.length) {
+			if (account) {
 				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 			} else {
-				verifyAccount.sendToken(req.user.username, email, res);
+				sendVerifyToken(req.user.username, email, res);
 			}
 		});
 	});
@@ -401,12 +404,12 @@ module.exports = () => {
 			return next();
 		}
 
-		Account.find({ 'verification.email': email }, (err, accounts) => {
+		Account.findOne({ 'verification.email': email }, (err, account) => {
 			if (err) {
 				return next();
 			}
 
-			if (accounts.length) {
+			if (account) {
 				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 			} else {
 				Account.findOne({ username }, (err, account) => {
@@ -417,7 +420,7 @@ module.exports = () => {
 					account.verification.email = email;
 					account.save(() => {
 						if (!verified) {
-							verifyAccount.sendToken(username, email, res);
+							sendVerifyToken(username, email, res);
 						} else {
 							res.send();
 						}
@@ -432,16 +435,15 @@ module.exports = () => {
 		const { email } = verification;
 
 		if (verification && email) {
-			Account.find({ 'verification.email': email }, (err, accounts) => {
+			Account.findOne({ 'verification.email': email }, (err, account) => {
 				if (err) {
-					return next(err);
+					return next();
 				}
 
-				if (accounts.length) {
+				if (account.length) {
 					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
-					return next();
 				} else {
-					verifyAccount.sendToken(req.user.username, email, res);
+					sendVerifyToken(req.user.username, email, res);
 				}
 			});
 		}

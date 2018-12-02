@@ -61,13 +61,7 @@ const Account = new Schema({
 		playerNotes: Array
 	},
 	verification: {
-		email: String,
-		verificationToken: String,
-		verificationTokenExpiration: Date
-	},
-	resetPassword: {
-		resetToken: String,
-		resetTokenExpiration: Date
+		email: String
 	},
 	signupIP: String,
 	lastConnectedIP: String,
