@@ -247,6 +247,56 @@ export default () => {
 		// });
 	});
 
+	$('a#reset-password').on('click', function(event) {
+		event.preventDefault();
+		$('.signin-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('hide', function() {
+				$('.password-reset-modal')
+					.modal('setting', 'transition', 'horizontal flip')
+					.modal('show');
+			});
+	});
+
+	$('button#password-reset-submit').on('click', function(event) {
+		event.preventDefault();
+
+		var email = $('#password-reset-email').val(),
+			$loader = $(this).next(),
+			$message = $(this)
+				.next()
+				.next(),
+			submitErr = function(message) {
+				$loader.removeClass('active');
+				$message.text(message).removeClass('hidden');
+			};
+
+		$loader.addClass('active');
+
+		$.ajax({
+			url: '/account/reset-password',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: JSON.stringify({ email: email }),
+			statusCode: {
+				200: function() {
+					$message.addClass('hidden');
+					$loader.removeClass('active');
+					$('#password-reset-submit').hide();
+					$('.password-reset-modal .ui.info.hidden.message')
+						.removeClass('hidden')
+						.html("We've sent you a password reset email, please check your email for a link to reset your password.");
+				},
+				400: function() {
+					submitErr('Sorry, that request did not look right.');
+				},
+				404: function() {
+					submitErr("Sorry, we don't have an account associated with that verified email address.");
+				}
+			}
+		});
+	});
+
 	// dev: autologin crap remove later
 
 	$('body').on('click', '.loginquick', function(event) {

@@ -240,7 +240,6 @@ $(document).ready(function() {
 
 	$('a#reset-password').on('click', function(event) {
 		event.preventDefault();
-
 		$('.signin-modal')
 			.modal('setting', 'transition', 'horizontal flip')
 			.modal('hide', function() {

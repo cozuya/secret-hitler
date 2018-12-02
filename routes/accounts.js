@@ -4,8 +4,7 @@ const Profile = require('../models/profile/index');
 const BannedIP = require('../models/bannedIP');
 const EightEightCounter = require('../models/eightEightCounter');
 const { ipbansNotEnforced, accountCreationDisabled } = require('./socket/models');
-const { setVerifyRoutes, sendVerifyToken } = require('./verify-account');
-const { setResetRoutes, sendResetToken } = require('./reset-password');
+const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
 const { expandAndSimplify } = require('./socket/ip-obf');
@@ -71,10 +70,9 @@ const testIP = (IP, callback) => {
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 module.exports = () => {
-	setVerifyRoutes();
-	setResetRoutes();
+	verifyRoutes();
 
-	app.get('/account', ensureAuthenticated, (req, res, next) => {
+	app.get('/account', ensureAuthenticated, (req, res) => {
 		res.render('page-account', {
 			username: req.user.username,
 			verified: req.user.verified,
@@ -86,20 +84,19 @@ module.exports = () => {
 		const { newPassword, newPasswordConfirm } = req.body;
 		const { user } = req;
 
-		// todo-release prevent tiny/huge new passwords
-
 		if (newPassword !== newPasswordConfirm) {
 			res.status(401).json({ message: 'not equal' });
-			return next();
+		} else if (newPassword.length > 255 || newPassword.length < 7) {
+			res.status(400);
+		} else {
+			user.setPassword(newPassword, () => {
+				user.save();
+				res.send();
+			});
 		}
-
-		user.setPassword(newPassword, () => {
-			user.save();
-			res.send();
-		});
 	});
 
-	app.post('/account/delete-account', passport.authenticate('local'), (req, res, next) => {
+	app.post('/account/delete-account', passport.authenticate('local'), (req, res) => {
 		Account.deleteOne({ username: req.user.username }).then(() => {
 			Profile.deleteOne({ _id: req.user.username }).then(() => {
 				res.send();
@@ -118,9 +115,9 @@ module.exports = () => {
 			.then(account => {
 				if (!account) {
 					res.status(401).json({ message: 'There is no verified account associated with that email.' });
-					return next();
+				} else {
+					setVerify({ username: account.username, email: req.body.email, res, isResetPassword: true });
 				}
-				sendResetToken(account.username, req.body.email, res);
 			})
 			.catch(err => console.log(err, 'account err'));
 	});
@@ -165,7 +162,8 @@ module.exports = () => {
 			res.status(401).json({ message: 'Your passwords did not match.' });
 		} else if (/88$/i.test(username)) {
 			const new88 = new EightEightCounter({
-				date: new Date()
+				date: new Date(),
+				username
 			});
 			new88.save(() => {
 				res.status(401).json({
@@ -190,84 +188,77 @@ module.exports = () => {
 				res.status(401).json({
 					message: 'Only non-disposible email providers are allowed to create verified accounts.'
 				});
-				return next();
-			}
-
-			if (email && !emailRegex.test(email)) {
+			} else if (email && !emailRegex.test(email)) {
 				res.status(401).json({
 					message: `That doesn't look like a valid email address.`
 				});
-				return next();
-			}
-
-			if (doesContainBadWord) {
+			} else if (doesContainBadWord) {
 				res.status(401).json({
 					message: 'Your username contains a naughty word or part of a naughty word.'
 				});
-				return next();
-			}
+			} else {
+				const queryObj = email
+					? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
+					: { username: new RegExp(`\\b${username}\\b`, 'i') };
 
-			const queryObj = email
-				? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
-				: { username: new RegExp(`\\b${username}\\b`, 'i') };
-
-			Account.find(queryObj, (err, accounts) => {
-				if (err) {
-					return next(err);
-				}
-
-				if (accounts.length) {
-					const usernames = accounts.map(acc => acc.username.toLowerCase());
-
-					if (usernames.includes(username.toLowerCase())) {
-						res.status(401).json({ message: 'That account already exists.' });
-					} else {
-						res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
+				Account.find(queryObj, (err, accounts) => {
+					if (err) {
+						return next(err);
 					}
-					return next();
-				}
 
-				testIP(signupIP, banType => {
-					if (banType) {
-						if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-						else if (banType == 'small' || banType == 'tiny') {
-							res
-								.status(403)
-								.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
-						} else if (banType == 'new') {
-							res.status(403).json({
-								message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
-							});
+					if (accounts.length) {
+						const usernames = accounts.map(acc => acc.username.toLowerCase());
+
+						if (usernames.includes(username.toLowerCase())) {
+							res.status(401).json({ message: 'That account already exists.' });
 						} else {
-							console.log(`Unhandled IP ban type: ${banType}`);
-							res
-								.status(403)
-								.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+							res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 						}
-					} else {
-						Account.register(new Account(save), password, err => {
-							if (err) {
-								return next();
-							}
-							if (email) {
-								sendVerifyToken(username, email);
-							}
+						return next();
+					}
 
-							passport.authenticate('local')(req, res, () => {
-								const newPlayerBan = new BannedIP({
-									bannedDate: new Date(),
-									type: 'new',
-									ip: signupIP
+					testIP(signupIP, banType => {
+						if (banType) {
+							if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+							else if (banType == 'small' || banType == 'tiny') {
+								res
+									.status(403)
+									.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+							} else if (banType == 'new') {
+								res.status(403).json({
+									message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
 								});
+							} else {
+								console.log(`Unhandled IP ban type: ${banType}`);
+								res
+									.status(403)
+									.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+							}
+						} else {
+							Account.register(new Account(save), password, err => {
+								if (err) {
+									return next();
+								}
+								if (email) {
+									setVerify({ username, email });
+								}
 
-								newPlayerBan.save(() => {
-									res.send();
+								passport.authenticate('local')(req, res, () => {
+									const newPlayerBan = new BannedIP({
+										bannedDate: new Date(),
+										type: 'new',
+										ip: signupIP
+									});
+
+									newPlayerBan.save(() => {
+										res.send();
+									});
 								});
 							});
-						});
-					}
+						}
+					});
 				});
-			});
+			}
 		}
 	});
 
@@ -353,6 +344,7 @@ module.exports = () => {
 
 	app.post('/account/add-email', ensureAuthenticated, (req, res, next) => {
 		const { email } = req.body;
+		const { username } = req.user;
 
 		if (!email) {
 			return next();
@@ -362,27 +354,32 @@ module.exports = () => {
 			res.status(401).json({
 				message: 'Only non-disposible email providers are allowed to create verified accounts.'
 			});
-			return next();
-		}
-
-		if (!emailRegex.test(email)) {
+		} else if (!emailRegex.test(email)) {
 			res.status(401).json({
 				message: `That doesn't look like a valid email address.`
 			});
-			return next();
+		} else {
+			Account.findOne({ 'verification.email': email }, (err, account) => {
+				if (err) {
+					return next();
+				}
+
+				if (account) {
+					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
+				} else {
+					Account.findOne({ username })
+						.then(account => {
+							account.verification.email = email;
+							account.save(() => {
+								setVerify({ username: req.user.username, email, res });
+							});
+						})
+						.catch(err => {
+							console.log(err, 'err in account in add email');
+						});
+				}
+			});
 		}
-
-		Account.findOne({ 'verification.email': email }, (err, account) => {
-			if (err) {
-				return next(err);
-			}
-
-			if (account) {
-				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
-			} else {
-				sendVerifyToken(req.user.username, email, res);
-			}
-		});
 	});
 
 	app.post('/account/change-email', ensureAuthenticated, (req, res, next) => {
@@ -393,40 +390,36 @@ module.exports = () => {
 			res.status(401).json({
 				message: 'Only non-disposible email providers are allowed to create verified accounts.'
 			});
-			return next();
-		}
-
-		if (email && !emailRegex.test(email)) {
+		} else if (email && !emailRegex.test(email)) {
 			res.status(401).json({
 				message: `That doesn't look like a valid email address.`
 			});
-			return next();
-		}
+		} else {
+			Account.findOne({ 'verification.email': email }, (err, account) => {
+				if (err) {
+					return next();
+				}
 
-		Account.findOne({ 'verification.email': email }, (err, account) => {
-			if (err) {
-				return next();
-			}
-
-			if (account) {
-				res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
-			} else {
-				Account.findOne({ username }, (err, account) => {
-					if (err) {
-						return next();
-					}
-
-					account.verification.email = email;
-					account.save(() => {
-						if (!verified) {
-							sendVerifyToken(username, email, res);
-						} else {
-							res.send();
+				if (account) {
+					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
+				} else {
+					Account.findOne({ username }, (err, account) => {
+						if (err) {
+							return next();
 						}
+
+						account.verification.email = email;
+						account.save(() => {
+							if (!verified) {
+								setVerify({ username, email, res });
+							} else {
+								res.send();
+							}
+						});
 					});
-				});
-			}
-		});
+				}
+			});
+		}
 	});
 
 	app.post('/account/request-verification', ensureAuthenticated, (req, res, next) => {
@@ -439,10 +432,10 @@ module.exports = () => {
 					return next();
 				}
 
-				if (account.length) {
+				if (account) {
 					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 				} else {
-					sendVerifyToken(req.user.username, email, res);
+					setVerify({ username: req.user.username, email, res });
 				}
 			});
 		}
