@@ -1,4 +1,4 @@
-/* eslint-disable no-invalid-this */
+/* eslint-disable */
 'use strict';
 
 import $ from 'jquery';
