@@ -54,6 +54,8 @@ module.exports = () => {
 		res.render(pageName, renderObj);
 	};
 
+	console.log('Hello, World!');
+
 	accounts();
 
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {

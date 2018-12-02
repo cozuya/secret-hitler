@@ -184,13 +184,13 @@ module.exports = () => {
 				}
 			});
 
-			if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
-				res.status(401).json({
-					message: 'Only non-disposible email providers are allowed to create verified accounts.'
-				});
-			} else if (email && !emailRegex.test(email)) {
+			if (email && !emailRegex.test(email)) {
 				res.status(401).json({
 					message: `That doesn't look like a valid email address.`
+				});
+			} else if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
+				res.status(401).json({
+					message: 'Only non-disposible email providers are allowed to create verified accounts.'
 				});
 			} else if (doesContainBadWord) {
 				res.status(401).json({
