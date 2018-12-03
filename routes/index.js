@@ -290,31 +290,39 @@ module.exports = () => {
 		res.redirect(
 			`https://discordapp.com/api/oauth2/authorize?client_id=${
 				process.env.DISCORDCLIENTID
-			}&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fcallback&response_type=code&scope=email&state=TESTSTATE`
+			}&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fcallback&response_type=code&scope=email`
 		);
 	});
 
 	app.get('/discord/callback', (req, res) => {
 		// const { code, state } = req.query;
 		const { code } = req.query;
-		const body = JSON.stringify({
+		const body = {
 			client_id: process.env.DISCORDCLIENTID,
 			client_secret: process.env.DISCORDCLIENTSECRET,
 			grant_type: 'authorization_code',
 			code,
 			redirect_uri: 'https://localhost:8080/discord/login-callback',
 			scope: 'email'
-		});
+		};
+		const qsBody = Object.keys(body)
+			.map(k => `${encodeURIComponent(k)}=${encodeURIComponent(body[k])}`)
+			.join('&');
+		console.log(qsBody, 'q');
+		// const b = require('btoa')(`${process.env.DISCORDCLIENTID}:${process.env.DISCORDCLIENTSECRET}`);
 		const options = {
-			// protocol: 'https:',
 			hostname: 'discordapp.com',
-			port: 443,
-			path: '/api/oauth2/token',
+			// port: 443,
+			// path: `/api/v6/oauth2/token?${qsBody}`,
+			path: `/api/v6/oauth2/token`,
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
+				// Authorization: `Basic ${b}`
 			}
 		};
+
+		// https://discordapp.com/api/oauth2/authorize?client_id=516294074114899983&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fcallback&response_type=code&scope=email
 
 		console.log(req.query, 'body');
 
@@ -324,13 +332,16 @@ module.exports = () => {
 			res.on('data', chunk => {
 				console.log(`BODY: ${chunk}`);
 			});
-			console.log('token response');
 			console.log(res.statusMessage, 'res');
+			res.on('error', err => {
+				console.log(`ERROR: ${err}`);
+			});
 			res.on('end', () => {
 				console.log('No more data in response.');
 			});
 		});
 		try {
+			// request.end(qsBody);
 			request.end(body);
 		} catch (error) {
 			console.log(error);
