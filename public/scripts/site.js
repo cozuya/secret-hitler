@@ -119,6 +119,7 @@ $(document).ready(function() {
 			$loader = $(this).next(),
 			$message = $loader.next(),
 			isPrivate = $('#private-player').is(':checked'),
+			bypassKey = $('#signup-bypass').val(),
 			submitErr = function(message) {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
@@ -139,7 +140,8 @@ $(document).ready(function() {
 				password: password,
 				password2: password2,
 				email: email,
-				isPrivate: isPrivate
+				isPrivate: isPrivate,
+				bypass: bypassKey
 			}),
 			statusCode: {
 				200: function() {
@@ -190,6 +192,14 @@ $(document).ready(function() {
 			.parent()
 			.next()
 			.text('6-255 characters.')
+			.slideDown();
+	});
+
+	$('body').on('focus', '#signup-bypass', function() {
+		$(this)
+			.parent()
+			.next()
+			.text('Only fill this in if instructed to do so.')
 			.slideDown();
 	});
 

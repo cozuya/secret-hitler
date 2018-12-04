@@ -56,6 +56,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(new LocalStrategy(Account.authenticate()));
+
+// if (process.env.DISCORDCLIENTID) {
 // passport.use(
 // 	new DiscordStrategy(
 // 		{
@@ -78,6 +80,8 @@ passport.use(new LocalStrategy(Account.authenticate()));
 // 		}
 // 	)
 // );
+// } else console.error('WARN: No discord client data in .env');
+
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 mongoose.connect(

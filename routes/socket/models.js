@@ -204,3 +204,27 @@ const gameListEmitter = {
 module.exports.gameListEmitter = gameListEmitter;
 
 module.exports.AEM = Account.find({ staffRole: { $exists: true } });
+
+const bypassKeys = [];
+
+module.exports.verifyBypass = key => {
+	return bypassKeys.indexOf(key) >= 0;
+};
+
+module.exports.consumeBypass = key => {
+	const idx = bypassKeys.indexOf(key);
+	if (idx >= 0) bypassKeys.splice(idx, 1);
+};
+
+module.exports.createNewBypass = () => {
+	let key;
+	do
+		key = `${Math.random()
+			.toString(36)
+			.substring(2)}${Math.random()
+			.toString(36)
+			.substring(2)}`;
+	while (bypassKeys.indexOf(key) >= 0);
+	bypassKeys.push(key);
+	return key;
+};

@@ -25,6 +25,7 @@ export default () => {
 		const password = $('#signup-password1').val();
 		const password2 = $('#signup-password2').val();
 		const email = $('#signup-email').val();
+		const bypassKey = $('#signup-bypass').val();
 		const $loader = $(this).next();
 		const $message = $loader.next();
 		const isPrivate = $('#private-player').is(':checked');
@@ -48,7 +49,8 @@ export default () => {
 				password,
 				password2,
 				email,
-				isPrivate
+				isPrivate,
+				bypassKey
 			}),
 			statusCode: {
 				200() {
@@ -99,6 +101,14 @@ export default () => {
 			.parent()
 			.next()
 			.text('6-255 characters.')
+			.slideDown();
+	});
+
+	$('body').on('focus', '#signup-bypass', function() {
+		$(this)
+			.parent()
+			.next()
+			.text('Only fill this in if instructed to do so.')
 			.slideDown();
 	});
 

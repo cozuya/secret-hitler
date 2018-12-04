@@ -52,10 +52,6 @@ export default class Moderation extends React.Component {
 			$(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? 'set checked' : 'set unchecked');
 		});
 
-		socket.on('sendAlert', ip => {
-			window.alert(ip);
-		});
-
 		socket.emit('getModInfo', 1);
 
 		$(this.toggleAccountCreation).checkbox({
@@ -401,6 +397,15 @@ export default class Moderation extends React.Component {
 				>
 					Delete/clear player bio
 				</button>
+				<button
+					style={{ width: '100%', background: 'royalblue' }}
+					className={'ui button'}
+					onClick={() => {
+						takeModAction('makeBypass');
+					}}
+				>
+					Create login bypass key
+				</button>
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable account creation</h4>
 					<div
@@ -671,6 +676,7 @@ export default class Moderation extends React.Component {
 			timeOut4: 'Timeout 6 hours',
 			clearTimeout: 'Clear Timeout',
 			clearTimeoutIP: 'Clear IP Ban',
+			modEndGame: 'End Game',
 			deleteGame: 'Delete Game',
 			enableIpBans: 'Enable IP Bans',
 			disableIpBans: 'Disable IP Bans',
@@ -682,10 +688,13 @@ export default class Moderation extends React.Component {
 			clearGenchat: 'Clear General Chat',
 			deleteUser: 'Delete User',
 			deleteBio: 'Delete Bio',
+			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
 			removeStaffRole: 'Remove Staff Role',
 			promoteToMod: 'Promote (Mod)',
-			promoteToEditor: 'Promote (Editor)'
+			promoteToEditor: 'Promote (Editor)',
+			makeBypass: 'Create Bypass Key',
+			resetServer: 'Server Restart'
 		};
 
 		return (
@@ -783,7 +792,11 @@ export default class Moderation extends React.Component {
 									<td style={{ width: '120px', minWidth: '120px' }}>{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.userActedOn}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.ip}</td>
-									<td style={{ Width: '200px', minWidth: '200px' }}>{report.modNotes.replace('\n', '<br>')}</td>
+									<td style={{ Width: '200px', minWidth: '200px' }}>
+										{report.modNotes.split('\n').map(v => (
+											<p style={{ margin: '0px' }}>{v}</p>
+										))}
+									</td>
 								</tr>
 							))}
 					</tbody>

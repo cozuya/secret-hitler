@@ -7,7 +7,8 @@ const {
 	gameCreationDisabled,
 	limitNewPlayers,
 	currentSeasonNumber,
-	newStaff
+	newStaff,
+	createNewBypass
 } = require('./models');
 const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -2064,6 +2065,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							account.save();
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
+					break;
+				case 'makeBypass':
+					const key = createNewBypass();
+					if (modaction.modNotes.length) modaction.modNotes += '\n';
+					modaction.modNotes += `Created bypass key: ${key}`;
+					socket.emit('sendAlert', `Created bypass key: ${key}`);
 					break;
 				case 'getIP':
 					if (isSuperMod) {
