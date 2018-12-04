@@ -194,7 +194,11 @@ module.exports.destroySession = username => {
 		.collection('sessions')
 		.findOneAndDelete({ 'session.passport.user': username }, err => {
 			if (err) {
-				console.log(err, 'err in logoutuser');
+				try {
+					console.log(err, 'err in logoutuser');
+					console.log(err.value);
+					console.log(err.value.session);
+				} catch (error) {}
 			}
 		});
 };

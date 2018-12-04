@@ -286,18 +286,18 @@ module.exports = () => {
 		}
 	});
 
-	app.get('/discord-login', passport.authenticate('discord'));
+	// app.get('/discord-login', passport.authenticate('discord'));
 
-	app.get('/discord/login-callback', (req, res, next) => {
-		passport.authenticate('discord', (err, user) => {
-			console.log(err, 'err');
-			console.log(user, 'user');
-			console.log(req.user, 'requser');
-			req.logIn(user, e => {
-				return res.redirect('/account');
-			});
-		})(req, res, next);
-	});
+	// app.get('/discord/login-callback', (req, res, next) => {
+	// 	passport.authenticate('discord', (err, user) => {
+	// 		console.log(err, 'err');
+	// 		console.log(user, 'user');
+	// 		console.log(req.user, 'requser');
+	// 		req.logIn(user, e => {
+	// 			return res.redirect('/account');
+	// 		});
+	// 	})(req, res, next);
+	// });
 
 	app.get('*', (req, res) => {
 		renderPage(req, res, '404', '404');
