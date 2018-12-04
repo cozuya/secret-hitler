@@ -62,12 +62,14 @@ passport.use(
 			scope: ['identify', 'email']
 		},
 		(accessToken, refreshToken, profile, cb) => {
+			console.log(profile);
 			Account.create(
 				{
-					username: 'discordtest2'
+					username: 'discordtest9'
 				},
 				(err, account) => {
-					return cb(err, account);
+					console.log(err, 'err in use');
+					return err ? cb() : cb(err, account);
 				}
 			);
 		}
