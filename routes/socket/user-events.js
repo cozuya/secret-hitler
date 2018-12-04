@@ -29,7 +29,7 @@ const adjectives = require('../../utils/adjectives');
 const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
-const { LEGALCHARACTERS, TRIALMODS } = require('../../src/frontend-scripts/constants');
+const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
 const { makeReport } = require('./report.js');
 
 /**
@@ -1672,7 +1672,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		}
 
 		data.staffRole = (() => {
-			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
+			if (trialmodUserNames.includes(passport.user) || newStaff.trialmodUserNames.includes(passport.user)) {
+				return 'trialmod';
+			} else if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
 			} else if (editorUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user)) {
 				return 'editor';
@@ -1744,7 +1746,9 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 
 	if (user.wins > 0 || user.losses > 0) {
 		const getStaffRole = () => {
-			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
+			if (trialmodUserNames.includes(passport.user) || newStaff.trialmodUserNames.includes(passport.user)) {
+				return 'trialmod';
+			} else if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
 			} else if (editorUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user)) {
 				return 'editor';
@@ -1949,7 +1953,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		superModUserNames.includes(passport.user) ||
 		newStaff.modUserNames.includes(passport.user) ||
 		newStaff.editorUserNames.includes(passport.user) ||
-		TRIALMODS.includes(passport.user)
+		newStaff.trialmodUserNames.includes(passport.user)
 	) {
 		if (data.isReportResolveChange) {
 			PlayerReport.findOne({ _id: data._id })
@@ -2355,6 +2359,52 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							});
 					}
 					break;
+				case 'promoteToContributor':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'contributor';
+									account.save(() => {
+										newStaff.contributorUserNames.push(account.username);
+
+										if (io.sockets.sockets[affectedSocketId]) {
+											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+										}
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+
+				case 'promoteToTrialMod':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'trialmod';
+									account.save(() => {
+										newStaff.trialmodUserNames.push(account.username);
+
+										if (io.sockets.sockets[affectedSocketId]) {
+											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+										}
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+
 				case 'promoteToMod':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
