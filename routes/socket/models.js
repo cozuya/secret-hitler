@@ -21,6 +21,7 @@ module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
 module.exports.limitNewPlayers = { status: false };
 module.exports.newStaff = {
+	contributorUserNames: [],
 	trialmodUserNames: [],
 	modUserNames: [],
 	editorUserNames: []
@@ -45,6 +46,7 @@ module.exports.getPowerFromName = name => {
 	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
 	if (module.exports.newStaff.trialmodUserNames.includes(name)) return getPowerFromRole('trialmod');
+	if (module.exports.newStaff.contributorUserNames.includes(name)) return getPowerFromRole('contributor');
 
 	const user = module.exports.userList.find(user => user.userName === name);
 	if (user) return getPowerFromRole(user.staffRole);
@@ -56,6 +58,7 @@ module.exports.getPowerFromUser = user => {
 	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
 	if (module.exports.newStaff.trialmodUserNames.includes(user.userName)) return getPowerFromRole('trialmod');
+	if (module.exports.newStaff.contributorUserNames.includes(user.userName)) return getPowerFromRole('contributor');
 	return getPowerFromRole(user.staffRole);
 };
 
