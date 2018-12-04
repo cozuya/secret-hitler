@@ -7,8 +7,6 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
-module.exports.TRIALMODS = [];
-
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'ArtiePendrag',
 	'Auengun',
