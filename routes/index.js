@@ -249,127 +249,55 @@ module.exports = () => {
 				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username
 			);
 
-			Account.findOne({ username }, (err, account) => {
-				if (account.wins + account.losses < 50) {
-					res.json({
-						message: 'You need to have played 50 games to upload a cardback.'
-					});
-					// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
-				} else if (
-					new Date(account.gameSettings.customCardbackSaveTime) &&
-					now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000
-				) {
-					res.json({
-						message: 'You can only change your cardback once every 30 seconds.'
-					});
-				} else {
-					fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
-						account.gameSettings.customCardback = extension;
-						account.gameSettings.customCardbackSaveTime = now.toString();
-						account.gameSettings.customCardbackUid = Math.random()
-							.toString(36)
-							.substring(2);
-						account.save(() => {
-							res.json({ message: 'Cardback successfully uploaded.' });
-							if (socketId && io.sockets.sockets[socketId]) {
-								io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
-							}
+			Account.findOne({ username })
+				.then(account => {
+					if (account.wins + account.losses < 50) {
+						res.json({
+							message: 'You need to have played 50 games to upload a cardback.'
 						});
-					});
-				}
-			}).catch(err => {
-				console.log(err, 'account err in cardbacks');
-			});
+					} else if (
+						new Date(account.gameSettings.customCardbackSaveTime) &&
+						now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000
+					) {
+						res.json({
+							message: 'You can only change your cardback once every 30 seconds.'
+						});
+					} else {
+						fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
+							account.gameSettings.customCardback = extension;
+							account.gameSettings.customCardbackSaveTime = now.toString();
+							account.gameSettings.customCardbackUid = Math.random()
+								.toString(36)
+								.substring(2);
+							account.save(() => {
+								res.json({ message: 'Cardback successfully uploaded.' });
+								if (socketId && io.sockets.sockets[socketId]) {
+									io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
+								}
+							});
+						});
+					}
+				})
+				.catch(err => {
+					console.log(err, 'account err in cardbacks');
+				});
 		} catch (error) {
 			console.log(err, 'upload cardback crash error');
 		}
 	});
 
 	app.get('/discord-login', passport.authenticate('discord'));
-	// app.get('/auth/discord/callback', passport.authenticate('discord', {
-	//     failureRedirect: '/'
-	// }), function(req, res) {
-	//     res.redirect('/secretstuff') // Successful auth
-	// });
 
-	// app.get('/discord-login', (req, res) => {
-	// 	console.log('Hello, World!');
-	// 	res.redirect(
-	// 		`https://discordapp.com/api/oauth2/authorize?client_id=${
-	// 			process.env.DISCORDCLIENTID
-	// 		}&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fcallback&response_type=code&scope=email`
-	// 	);
-	// });
-
-	app.get('/discord/callback', (req, res) => {
-		// const { code, state } = req.query;
-		const { code } = req.query;
-		const body = {
-			client_id: process.env.DISCORDCLIENTID,
-			client_secret: process.env.DISCORDCLIENTSECRET,
-			grant_type: 'authorization_code',
-			code,
-			redirect_uri: 'https://localhost:8080/discord/login-callback',
-			scope: 'email'
-		};
-		const qsBody = Object.keys(body)
-			.map(k => `${encodeURIComponent(k)}=${encodeURIComponent(body[k])}`)
-			.join('&');
-		console.log(qsBody, 'q');
-		// const b = require('btoa')(`${process.env.DISCORDCLIENTID}:${process.env.DISCORDCLIENTSECRET}`);
-		const options = {
-			hostname: 'discordapp.com',
-			// port: 443,
-			// path: `/api/v6/oauth2/token?${qsBody}`,
-			path: `/api/v6/oauth2/token`,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-				// Authorization: `Basic ${b}`
-			}
-		};
-
-		// https://discordapp.com/api/oauth2/authorize?client_id=516294074114899983&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fcallback&response_type=code&scope=email
-
-		console.log(req.query, 'body');
-
-		console.log(body, 'b');
-		const request = https.request(options, res => {
-			res.setEncoding('utf8');
-			res.on('data', chunk => {
-				console.log(`BODY: ${chunk}`);
+	app.get('/discord/login-callback', (req, res, next) => {
+		passport.authenticate('discord', (err, user) => {
+			console.log(err, 'err');
+			console.log(user, 'user');
+			console.log(req.user, 'requser');
+			req.logIn(user, e => {
+				return res.redirect('/account');
 			});
-			console.log(res.statusMessage, 'res');
-			res.on('error', err => {
-				console.log(`ERROR: ${err}`);
-			});
-			res.on('end', () => {
-				console.log('No more data in response.');
-			});
-		});
-		try {
-			// request.end(qsBody);
-			request.end(body);
-		} catch (error) {
-			console.log(error);
-		}
+		})(req, res, next);
 	});
-
-	app.get(
-		'/discord/login-callback',
-		passport.authenticate('discord', {
-			failureRedirect: '/stats'
-		}),
-		(req, res) => {
-			console.log(req.user, 'user');
-			res.redirect('/');
-		}
-	);
-
-	// app.get('/discord/login-callback', (req, res) => {
-	// 	console.log(req.user, 'user');
-	// 	res.redirect('/');
-	// });
 
 	app.get('*', (req, res) => {
 		renderPage(req, res, '404', '404');
