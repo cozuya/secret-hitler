@@ -226,6 +226,10 @@ export class App extends React.Component {
 			userInfo.gameSettings.newReport = reportStatus;
 			dispatch(updateUser(userInfo));
 		});
+
+		socket.on('sendAlert', ip => {
+			window.alert(ip);
+		});
 	}
 
 	touConfirmButton(e) {

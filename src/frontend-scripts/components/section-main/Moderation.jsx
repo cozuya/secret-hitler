@@ -52,10 +52,6 @@ export default class Moderation extends React.Component {
 			$(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? 'set checked' : 'set unchecked');
 		});
 
-		socket.on('sendAlert', ip => {
-			window.alert(ip);
-		});
-
 		socket.emit('getModInfo', 1);
 
 		$(this.toggleAccountCreation).checkbox({
