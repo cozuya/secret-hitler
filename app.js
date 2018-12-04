@@ -53,28 +53,30 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(new LocalStrategy(Account.authenticate()));
-passport.use(
-	new DiscordStrategy(
-		{
-			clientID: process.env.DISCORDCLIENTID,
-			clientSecret: process.env.DISCORDCLIENTSECRET,
-			callbackURL: '/discord/login-callback',
-			scope: ['identify', 'email']
-		},
-		(accessToken, refreshToken, profile, cb) => {
-			console.log(profile);
-			Account.create(
-				{
-					username: 'discordtest9'
-				},
-				(err, account) => {
-					console.log(err, 'err in use');
-					return err ? cb() : cb(err, account);
-				}
-			);
-		}
-	)
-);
+if (process.env.DISCORDCLIENTID) {
+	passport.use(
+		new DiscordStrategy(
+			{
+				clientID: process.env.DISCORDCLIENTID,
+				clientSecret: process.env.DISCORDCLIENTSECRET,
+				callbackURL: '/discord/login-callback',
+				scope: ['identify', 'email']
+			},
+			(accessToken, refreshToken, profile, cb) => {
+				console.log(profile);
+				Account.create(
+					{
+						username: 'discordtest9'
+					},
+					(err, account) => {
+						console.log(err, 'err in use');
+						return err ? cb() : cb(err, account);
+					}
+				);
+			}
+		)
+	);
+} else console.error('WARN: No discord client data in .env');
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 mongoose.connect(

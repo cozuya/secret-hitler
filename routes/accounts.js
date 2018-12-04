@@ -3,7 +3,7 @@ const Account = require('../models/account');
 const Profile = require('../models/profile/index');
 const BannedIP = require('../models/bannedIP');
 const EightEightCounter = require('../models/eightEightCounter');
-const { ipbansNotEnforced, accountCreationDisabled } = require('./socket/models');
+const { ipbansNotEnforced, accountCreationDisabled, verifyBypass, consumeBypass } = require('./socket/models');
 const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
@@ -123,7 +123,15 @@ module.exports = () => {
 	});
 
 	app.post('/account/signup', (req, res, next) => {
-		const { username, password, password2, email, isPrivate } = req.body;
+		const { username, password, password2, email, isPrivate, bypassKey } = req.body;
+		let hasBypass = false;
+		if (bypassKey && bypassKey.length) {
+			if (!verifyBypass(bypassKey)) {
+				res.status(401).json({ message: 'Restriction bypass key invalid, leave that field empty if it is not needed.' });
+				return;
+			}
+			hasBypass = true;
+		}
 		const signupIP =
 			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 		const save = {
@@ -170,7 +178,7 @@ module.exports = () => {
 					message: 'Usernames that end with 88 are not allowed.'
 				});
 			});
-		} else if (accountCreationDisabled.status) {
+		} else if (accountCreationDisabled.status && !hasBypass) {
 			res.status(403).json({
 				message:
 					'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
@@ -218,6 +226,7 @@ module.exports = () => {
 					}
 
 					testIP(signupIP, banType => {
+						if (hasBypass && banType == 'new') banType = null;
 						if (banType) {
 							if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 							else if (banType == 'small' || banType == 'tiny') {
@@ -239,6 +248,9 @@ module.exports = () => {
 								if (err) {
 									return next();
 								}
+
+								if (hasBypass) consumeBypass(bypassKey);
+
 								if (email) {
 									setVerify({ username, email });
 								}

@@ -5,7 +5,6 @@ const GameSummary = require('../models/game-summary');
 const socketRoutes = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
-const https = require('https');
 const version = require('../version');
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');

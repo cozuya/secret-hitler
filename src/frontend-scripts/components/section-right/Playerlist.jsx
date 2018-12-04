@@ -31,7 +31,14 @@ class Playerlist extends React.Component {
 		super();
 		this.clickInfoIcon = this.clickInfoIcon.bind(this);
 		this.state = {
-			userListFilter: 'all'
+			userListFilter: 'all',
+			expandInfo: {
+				AEM: true,
+				cont: true,
+				exp: true,
+				inexp: false,
+				priv: false
+			}
 		};
 	}
 
@@ -189,6 +196,7 @@ class Playerlist extends React.Component {
 		if (Object.keys(this.props.userList).length) {
 			const { list } = this.props.userList;
 			const { userInfo } = this.props;
+			const { expandInfo } = this.state;
 			const { gameSettings } = userInfo;
 			const w =
 				gameSettings && gameSettings.disableSeasonal
@@ -218,16 +226,21 @@ class Playerlist extends React.Component {
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
-			const contributors = visible.filter(user => !aem.includes(user) && user.staffRole === 'contributor').sort(this.alphabetical());
-			aem.push(...contributors);
+			const nonStaff = visible.filter(user => !aem.includes(user));
+			const contributors = nonStaff.filter(user => user.StaffRole === 'contributor').sort(this.alphabetical());
 
+			const privateUser = nonStaff.filter(user => !contributors.includes(user) && user.isPrivate);
 			const experienced = elo
-				? visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.sortByElo(this.alphabetical()))
-				: visible.filter(user => !aem.includes(user) && user[w] + user[l] >= 50).sort(this.winRate(this.alphabetical()));
+				? nonStaff
+						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
+						.sort(this.sortByElo(this.alphabetical()))
+				: nonStaff
+						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
+						.sort(this.winRate(this.alphabetical()));
 
-			const inexperienced = visible.filter(user => !aem.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
+			const inexperienced = nonStaff.filter(user => !contributors.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
 
-			return [...aem, ...experienced, ...inexperienced].map((user, i) => {
+			const makeUser = (user, i) => {
 				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
 				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
 				const disableIfUnclickable = f => {
@@ -251,7 +264,7 @@ class Playerlist extends React.Component {
 					const status = user.status;
 
 					if (!status || status.type === 'none') {
-						return null;
+						return <i className={'status unclickable icon'} />;
 					} else {
 						const iconClasses = classnames(
 							'status',
@@ -288,6 +301,7 @@ class Playerlist extends React.Component {
 				return (
 					<div key={i} className="user-container">
 						<div className="userlist-username">
+							{renderStatus()}
 							{/* {!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()} */}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.previousSeasonAward &&
@@ -323,13 +337,11 @@ class Playerlist extends React.Component {
 								} else {
 									return (
 										<span className={userClasses} onClick={disableIfUnclickable(routeToProfile).bind(null, user.userName)}>
-											{user.isPrivate ? 'P - ' : ''}
 											{user.userName}
 										</span>
 									);
 								}
 							})()}
-							{renderStatus()}
 						</div>
 						{user.staffRole !== 'admin' &&
 							Boolean(!user.staffDisableVisibleElo) &&
@@ -347,7 +359,45 @@ class Playerlist extends React.Component {
 							})()}
 					</div>
 				);
-			});
+			};
+
+			const toggleGroup = cat => {
+				this.state.expandInfo[cat] = !this.state.expandInfo[cat];
+				this.setState({});
+			};
+			return (
+				<div>
+					<span onClick={() => toggleGroup('AEM')} style={{ cursor: 'pointer' }}>
+						<i className={`caret ${expandInfo.AEM ? 'down' : 'right'} icon`} />
+						<span>Staff: {aem.length}</span>
+					</span>
+					<div>{expandInfo.AEM && aem.map(makeUser)}</div>
+					<span onClick={() => toggleGroup('cont')} style={{ cursor: 'pointer' }}>
+						<i className={`caret ${expandInfo.cont ? 'down' : 'right'} icon`} />
+						<span>Contributors: {contributors.length}</span>
+					</span>
+					<div>{expandInfo.cont && contributors.map(makeUser)}</div>
+					<span onClick={() => toggleGroup('exp')} style={{ cursor: 'pointer' }}>
+						<i className={`caret ${expandInfo.exp ? 'down' : 'right'} icon`} />
+						<span>Experienced: {experienced.length}</span>
+					</span>
+					<div>{expandInfo.exp && experienced.map(makeUser)}</div>
+					<span onClick={() => toggleGroup('inexp')} style={{ cursor: 'pointer' }}>
+						<i className={`caret ${expandInfo.inexp ? 'down' : 'right'} icon`} />
+						<span>Inexperienced: {inexperienced.length}</span>
+					</span>
+					<div>{expandInfo.inexp && inexperienced.map(makeUser)}</div>
+					{isStaff && (
+						<div>
+							<span onClick={() => toggleGroup('priv')} style={{ cursor: 'pointer' }}>
+								<i className={`caret ${expandInfo.priv ? 'down' : 'right'} icon`} />
+								<span>Private: {privateUser.length}</span>
+							</span>
+							<div>{expandInfo.priv && privateUser.map(makeUser)}</div>
+						</div>
+					)}
+				</div>
+			);
 		}
 	}
 
