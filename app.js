@@ -6,7 +6,8 @@ const socketSession = require('express-socket.io-session');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const compression = require('compression');
-const Strategy = require('passport-local').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
+const DiscordStrategy = require('passport-discord').Strategy;
 const Account = require('./models/account');
 const routesIndex = require('./routes/index');
 const session = require('express-session');
@@ -50,7 +51,28 @@ app.use(session(sessionSettings));
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new Strategy(Account.authenticate()));
+
+passport.use(new LocalStrategy(Account.authenticate()));
+passport.use(
+	new DiscordStrategy(
+		{
+			clientID: process.env.DISCORDCLIENTID,
+			clientSecret: process.env.DISCORDCLIENTSECRET,
+			callbackURL: '/discord/login-callback',
+			scope: ['identify', 'email']
+		},
+		(accessToken, refreshToken, profile, cb) => {
+			Account.create(
+				{
+					username: 'discordtest2'
+				},
+				(err, account) => {
+					return cb(err, account);
+				}
+			);
+		}
+	)
+);
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 mongoose.connect(

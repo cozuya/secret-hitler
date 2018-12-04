@@ -143,6 +143,7 @@ module.exports.setVerify = ({ username, email, res, isResetPassword }) => {
 
 	verify.save(() => {
 		// console.log(`localhost:8080/${isResetPassword ? 'reset-password' : 'verify-account'}/${username}/${token}`);
+
 		nmMailgun.sendMail({
 			from: 'SH.io accounts <donotreply@secrethitler.io>',
 			html: isResetPassword ? resetTemplate({ username, token }) : verifyTemplate({ username, token }),
@@ -152,6 +153,14 @@ module.exports.setVerify = ({ username, email, res, isResetPassword }) => {
 			to: email,
 			subject: isResetPassword ? 'SH.io - reset your password' : 'SH.io - verify your account'
 		});
+
+		// nmMailgun.sendMail({
+		// 	from: 'Secret Hitler.io <donotreply@secrethitler.io>',
+		// 	html: isResetPassword ? resetTemplate({ username, token }) : verifyTemplate({ username, token }),
+		// 	to: email,
+		// 	subject: 'Secret Hitler IO - verify your account',
+		// 	'h:Reply-To': 'chris.v.ozols@gmail.com'
+		// });
 
 		if (res) {
 			res.send();

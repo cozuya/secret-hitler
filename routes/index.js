@@ -54,8 +54,6 @@ module.exports = () => {
 		res.render(pageName, renderObj);
 	};
 
-	console.log('Hello, World!');
-
 	accounts();
 
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
@@ -67,6 +65,8 @@ module.exports = () => {
 	});
 
 	app.get('/', (req, res) => {
+		// console.log(req.user, 'user');
+
 		renderPage(req, res, 'page-home', 'home');
 	});
 
@@ -285,14 +285,21 @@ module.exports = () => {
 		}
 	});
 
-	app.get('/discord-login', (req, res) => {
-		console.log('Hello, World!');
-		res.redirect(
-			`https://discordapp.com/api/oauth2/authorize?client_id=${
-				process.env.DISCORDCLIENTID
-			}&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fcallback&response_type=code&scope=email`
-		);
-	});
+	app.get('/discord-login', passport.authenticate('discord'));
+	// app.get('/auth/discord/callback', passport.authenticate('discord', {
+	//     failureRedirect: '/'
+	// }), function(req, res) {
+	//     res.redirect('/secretstuff') // Successful auth
+	// });
+
+	// app.get('/discord-login', (req, res) => {
+	// 	console.log('Hello, World!');
+	// 	res.redirect(
+	// 		`https://discordapp.com/api/oauth2/authorize?client_id=${
+	// 			process.env.DISCORDCLIENTID
+	// 		}&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fcallback&response_type=code&scope=email`
+	// 	);
+	// });
 
 	app.get('/discord/callback', (req, res) => {
 		// const { code, state } = req.query;
@@ -348,9 +355,21 @@ module.exports = () => {
 		}
 	});
 
-	app.get('/discord/login-callback', (req, res) => {
-		console.log('hit login cb');
-	});
+	app.get(
+		'/discord/login-callback',
+		passport.authenticate('discord', {
+			failureRedirect: '/stats'
+		}),
+		(req, res) => {
+			console.log(req.user, 'user');
+			res.redirect('/');
+		}
+	);
+
+	// app.get('/discord/login-callback', (req, res) => {
+	// 	console.log(req.user, 'user');
+	// 	res.redirect('/');
+	// });
 
 	app.get('*', (req, res) => {
 		renderPage(req, res, '404', '404');

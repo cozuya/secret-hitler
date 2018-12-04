@@ -206,7 +206,7 @@ module.exports = () => {
 						return next(err);
 					}
 
-					if (accounts.length) {
+					if (accounts.length && process.env.NODE_ENV === 'production') {
 						const usernames = accounts.map(acc => acc.username.toLowerCase());
 
 						if (usernames.includes(username.toLowerCase())) {
@@ -364,7 +364,7 @@ module.exports = () => {
 					return next();
 				}
 
-				if (account) {
+				if (account && process.env.NODE_ENV === 'production') {
 					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 				} else {
 					Account.findOne({ username })
@@ -400,7 +400,7 @@ module.exports = () => {
 					return next();
 				}
 
-				if (account) {
+				if (account && process.env.NODE_ENV === 'production') {
 					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 				} else {
 					Account.findOne({ username }, (err, account) => {
@@ -432,7 +432,7 @@ module.exports = () => {
 					return next();
 				}
 
-				if (account) {
+				if (account && process.env.NODE_ENV === 'production') {
 					res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 				} else {
 					setVerify({ username: req.user.username, email, res });
