@@ -589,6 +589,32 @@ export default class Moderation extends React.Component {
 					Remove mod or editor status and log them out
 				</button>
 				<button
+					style={{ background: 'teal' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToContributor');
+					}}
+				>
+					Promote player to contributor
+				</button>
+				<button
+					style={{ background: 'blue' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToTrialMod');
+					}}
+				>
+					Promote player to trial mod
+				</button>
+				<button
 					style={{ background: 'blueviolet' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -684,6 +710,8 @@ export default class Moderation extends React.Component {
 			deleteBio: 'Delete Bio',
 			deleteCardback: 'Delete Cardback',
 			removeStaffRole: 'Remove Staff Role',
+			promoteToContributor: 'Promote (Contributor)',
+			promoteToTrialMod: 'Promote (Trial Mod)',
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)'
 		};
