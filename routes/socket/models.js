@@ -21,6 +21,7 @@ module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
 module.exports.limitNewPlayers = { status: false };
 module.exports.newStaff = {
+	trialmodUserNames: [],
 	modUserNames: [],
 	editorUserNames: []
 };
@@ -35,6 +36,7 @@ module.exports.getPowerFromRole = role => {
 	if (role === 'editor') return 2;
 	if (role === 'moderator') return 1;
 	if (role === 'altmod') return 0; // Report AEM delays will check for >= 0
+	if (role === 'trialmod') return -1;
 	if (role === 'contributor') return -1;
 	return -1;
 };
@@ -42,6 +44,7 @@ module.exports.getPowerFromRole = role => {
 module.exports.getPowerFromName = name => {
 	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
+	if (module.exports.newStaff.trialmodUserNames.includes(name)) return getPowerFromRole('trialmod');
 
 	const user = module.exports.userList.find(user => user.userName === name);
 	if (user) return getPowerFromRole(user.staffRole);
@@ -52,6 +55,7 @@ module.exports.getPowerFromName = name => {
 module.exports.getPowerFromUser = user => {
 	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
+	if (module.exports.newStaff.trialmodUserNames.includes(user.userName)) return getPowerFromRole('trialmod');
 	return getPowerFromRole(user.staffRole);
 };
 
