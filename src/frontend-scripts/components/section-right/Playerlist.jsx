@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile, updateStatus } from '../../actions/actions';
 import cn from 'classnames';
-import { PLAYERCOLORS, TRIALMODS, CONTRIBUTORS } from '../../constants';
+import { PLAYERCOLORS, CONTRIBUTORS } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -141,7 +141,7 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 
-		if ((Object.keys(userInfo).length && Boolean(userInfo.staffRole)) || TRIALMODS.includes(userInfo.userName)) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole)) {
 			let classes = 'comment icon report-button';
 
 			const reportClick = () => {
@@ -218,7 +218,7 @@ class Playerlist extends React.Component {
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
-			const contributors = visible.filter(user => !aem.includes(user) && CONTRIBUTORS.includes(user.userName)).sort(this.alphabetical());
+			const contributors = visible.filter(user => !aem.includes(user) && user => user.staffRole === 'contributor').sort(this.alphabetical());
 			aem.push(...contributors);
 
 			const experienced = elo
@@ -239,7 +239,7 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || CONTRIBUTORS.includes(user.userName)
+					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length)
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -300,7 +300,7 @@ class Playerlist extends React.Component {
 										? 'Editor'
 										: user.staffRole === 'moderator'
 										? 'Moderator'
-										: CONTRIBUTORS.includes(user.userName)
+										: user.staffRole === 'contributor'
 										? 'Contributor'
 										: null;
 
