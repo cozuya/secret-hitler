@@ -218,7 +218,7 @@ class Playerlist extends React.Component {
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
-			const contributors = visible.filter(user => !aem.includes(user) && user => user.staffRole === 'contributor').sort(this.alphabetical());
+			const contributors = visible.filter(user => !aem.includes(user) && user.staffRole === 'contributor').sort(this.alphabetical());
 			aem.push(...contributors);
 
 			const experienced = elo
