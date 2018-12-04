@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile, updateStatus } from '../../actions/actions';
 import cn from 'classnames';
-import { PLAYERCOLORS, CONTRIBUTORS } from '../../constants';
+import { PLAYERCOLORS } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
