@@ -694,6 +694,7 @@ export default class Moderation extends React.Component {
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',
+			bypassKeyUsed: 'Consume Bypass Key',
 			resetServer: 'Server Restart'
 		};
 

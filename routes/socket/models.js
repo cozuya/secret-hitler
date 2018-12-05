@@ -1,5 +1,6 @@
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
 const Account = require('../../models/account');
+const ModAction = require('../../models/modAction');
 
 const fs = require('fs');
 let emotes = [];
@@ -211,9 +212,19 @@ module.exports.verifyBypass = key => {
 	return bypassKeys.indexOf(key) >= 0;
 };
 
-module.exports.consumeBypass = key => {
+module.exports.consumeBypass = (key, user, ip) => {
 	const idx = bypassKeys.indexOf(key);
-	if (idx >= 0) bypassKeys.splice(idx, 1);
+	if (idx >= 0) {
+		bypassKeys.splice(idx, 1);
+		new ModAction({
+			date: new Date(),
+			modUserName: '',
+			userActedOn: user,
+			modNotes: `Bypass key used: ${key}`,
+			ip: ip,
+			actionTaken: 'bypassKeyUsed'
+		}).save();
+	}
 };
 
 module.exports.createNewBypass = () => {

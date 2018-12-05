@@ -249,7 +249,7 @@ module.exports = () => {
 									return next();
 								}
 
-								if (hasBypass) consumeBypass(bypassKey);
+								if (hasBypass) consumeBypass(bypassKey, username, signupIP);
 
 								if (email) {
 									setVerify({ username, email });
