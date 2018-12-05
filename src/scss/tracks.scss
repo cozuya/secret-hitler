@@ -55,9 +55,12 @@
 			color: #db2828 !important;
 		}
 	}
-	.player-count {
+	.player-count,
+	.gameuid {
+		// gameuid not used since routing update displays it in url
 		position: absolute;
-		right: 5px;
+		top: 10px;
+		left: 555px;
 		z-index: 105;
 		color: #ddd;
 		background: $secondary;
@@ -65,6 +68,11 @@
 		padding: 4px;
 		opacity: 1;
 		border: 2px solid lightblue;
+	}
+	.gameuid {
+		width: 280px;
+		left: 270px;
+		top: 2px;
 	}
 	.option-icons {
 		position: absolute;
