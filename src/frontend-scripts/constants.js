@@ -7,7 +7,7 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
-module.exports.TRIALMODS = [];
+module.exports.TRIALMODS = ['moira', 'SilentPlayer', 'SilentSheep', 'casdude', 'Naizea', 'Joz', 'Leftwinger', 'hitler4real', 'hitler2real'];
 
 const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'ArtiePendrag',
