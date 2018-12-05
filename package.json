@@ -66,8 +66,8 @@
 		"semantic-ui-transition": "^2.3.1",
 		"semantic-ui-visibility": "^2.3.1",
 		"serve-favicon": "^2.5.0",
-		"socket.io": "^2.2.0",
-		"socket.io-client": "^2.2.0",
+		"socket.io": "2.0.3",
+		"socket.io-client": "2.0.3",
 		"yamljs": "^0.3.0"
 	},
 	"devDependencies": {
