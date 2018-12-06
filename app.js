@@ -12,6 +12,7 @@ const Account = require('./models/account');
 const routesIndex = require('./routes/index');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const { TOU_CHANGES } = require('./src/frontend-scripts/constants.js');
 const store = new MongoDBStore({
 	uri: 'mongodb://localhost:27017/secret-hitler-app',
 	collection: 'sessions'
@@ -19,6 +20,9 @@ const store = new MongoDBStore({
 
 app.setMaxListeners(0);
 io.setMaxListeners(0);
+// require('events').EventEmitter.defaultMaxListeners = 0;
+
+process.on('warning', e => console.warn(e.stack));
 
 store.on('error', err => {
 	console.log(err, 'store session error');
@@ -57,30 +61,57 @@ app.use(passport.session());
 
 passport.use(new LocalStrategy(Account.authenticate()));
 
-// if (process.env.DISCORDCLIENTID) {
-// passport.use(
-// 	new DiscordStrategy(
-// 		{
-// 			clientID: process.env.DISCORDCLIENTID,
-// 			clientSecret: process.env.DISCORDCLIENTSECRET,
-// 			callbackURL: '/discord/login-callback',
-// 			scope: ['identify', 'email']
-// 		},
-// 		(accessToken, refreshToken, profile, cb) => {
-// 			console.log(profile);
-// 			Account.create(
-// 				{
-// 					username: 'discordtest10'
-// 				},
-// 				(err, account) => {
-// 					console.log(err, 'err in use');
-// 					return err ? cb() : cb(err, account);
-// 				}
-// 			);
-// 		}
-// 	)
-// );
-// } else console.error('WARN: No discord client data in .env');
+if (process.env.DISCORDCLIENTID) {
+	passport.use(
+		new DiscordStrategy(
+			{
+				clientID: process.env.DISCORDCLIENTID,
+				clientSecret: process.env.DISCORDCLIENTSECRET,
+				callbackURL: '/discord/login-callback',
+				scope: ['identify', 'email']
+			},
+			(accessToken, refreshToken, profile, cb) => {
+				console.log(profile);
+				// Account.findOne({ username: profile.username })
+				Account.findOne({ username: 'discordtest16' })
+					.then(account => {
+						if (!account) {
+							Account.create(
+								{
+									// username: profile.username,
+									username: 'discordtest16',
+									gameSettings: {
+										soundStatus: 'Pack2'
+									},
+									verified: true,
+									wins: 0,
+									losses: 0,
+									created: new Date(),
+									touLastAgreed: TOU_CHANGES[0].changeVer,
+									signupIP: 'discord',
+									discordUsername: profile.username,
+									discordDiscriminator: profile.discriminator,
+									discordMfa_enabled: profile.mfa_enabled,
+									verification: {
+										email: profile.email
+									}
+								},
+								(err, account) => {
+									console.log(err, 'err in use');
+									return err ? cb(null, null, err) : cb(account, profile);
+								}
+							);
+						} else {
+							return cb();
+						}
+					})
+					.catch(err => {
+						console.log(err, 'err in discord oauth');
+					});
+			}
+		)
+	);
+} else console.error('WARN: No discord client data in .env');
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());

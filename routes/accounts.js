@@ -74,9 +74,12 @@ module.exports = () => {
 
 	app.get('/account', ensureAuthenticated, (req, res) => {
 		res.render('page-account', {
+			isLocal: Boolean(req.user.hash),
 			username: req.user.username,
 			verified: req.user.verified,
-			email: req.user.verification ? req.user.verification.email : ''
+			email: req.user.verification ? req.user.verification.email : '',
+			discordUsername: req.user.discordUsername,
+			discordDiscriminator: req.user.discordDiscriminator
 		});
 	});
 

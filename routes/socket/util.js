@@ -180,10 +180,12 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 let mongoClient;
 Mongoclient.connect(
 	'mongodb://localhost:27017',
+	{ useNewUrlParser: true },
 	(err, client) => {
 		mongoClient = client;
 	}
 );
+
 module.exports.destroySession = username => {
 	if (!mongoClient) {
 		console.log('WARN: No mongo connection, cannot destroy user session.');
