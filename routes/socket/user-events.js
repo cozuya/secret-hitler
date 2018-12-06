@@ -1833,7 +1833,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 
 			if (
 				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&
-				(!account.gameSettings.privateToggleTime || account.gameSettings.privateToggleTime < new Date().getTime() - 64800000)
+				(!account.gameSettings.privateToggleTime || account.gameSettings.privateToggleTime - 64800000 < new Date().getTime())
 			) {
 				account.gameSettings.privateToggleTime = new Date().getTime();
 				account.save(() => {
