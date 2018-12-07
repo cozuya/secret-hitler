@@ -27,6 +27,7 @@ const Account = new Schema({
 		disableConfetti: Boolean,
 		disableCrowns: Boolean,
 		disableSeasonal: Boolean,
+		disableAggregations: Boolean,
 		soundStatus: String,
 		unbanTime: Date,
 		unTimeoutTime: Date,
