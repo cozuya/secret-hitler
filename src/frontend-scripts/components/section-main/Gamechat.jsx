@@ -245,10 +245,8 @@ class Gamechat extends React.Component {
 		})();
 		const isGovernmentDuringPolicySelection = (() => {
 			if (gameState && (gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') && userName && isSeated) {
-				return (
-					publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isPresident' ||
-					publicPlayersState.find(player => player.userName === userName).governmentStatus === 'isChancellor'
-				);
+				const player = publicPlayersState.find(p => p.userName === userName);
+				return player && (player.governmentStatus === 'isPresident' || player.governmentStatus === 'isChancellor');
 			}
 		})();
 		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length);

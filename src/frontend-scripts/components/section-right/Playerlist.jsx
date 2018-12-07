@@ -369,29 +369,29 @@ class Playerlist extends React.Component {
 				<div>
 					<span onClick={() => toggleGroup('AEM')} style={{ cursor: 'pointer' }}>
 						<i className={`caret ${expandInfo.AEM ? 'down' : 'right'} icon`} />
-						<span>Staff: {aem.length}</span>
+						<span style={{ userSelect: 'none' }}>Staff: {aem.length}</span>
 					</span>
 					<div>{expandInfo.AEM && aem.map(makeUser)}</div>
 					<span onClick={() => toggleGroup('cont')} style={{ cursor: 'pointer' }}>
 						<i className={`caret ${expandInfo.cont ? 'down' : 'right'} icon`} />
-						<span>Contributors: {contributors.length}</span>
+						<span style={{ userSelect: 'none' }}>Contributors: {contributors.length}</span>
 					</span>
 					<div>{expandInfo.cont && contributors.map(makeUser)}</div>
 					<span onClick={() => toggleGroup('exp')} style={{ cursor: 'pointer' }}>
 						<i className={`caret ${expandInfo.exp ? 'down' : 'right'} icon`} />
-						<span>Experienced: {experienced.length}</span>
+						<span style={{ userSelect: 'none' }}>Experienced: {experienced.length}</span>
 					</span>
 					<div>{expandInfo.exp && experienced.map(makeUser)}</div>
 					<span onClick={() => toggleGroup('inexp')} style={{ cursor: 'pointer' }}>
 						<i className={`caret ${expandInfo.inexp ? 'down' : 'right'} icon`} />
-						<span>Inexperienced: {inexperienced.length}</span>
+						<span style={{ userSelect: 'none' }}>Inexperienced: {inexperienced.length}</span>
 					</span>
 					<div>{expandInfo.inexp && inexperienced.map(makeUser)}</div>
 					{isStaff && (
 						<div>
 							<span onClick={() => toggleGroup('priv')} style={{ cursor: 'pointer' }}>
 								<i className={`caret ${expandInfo.priv ? 'down' : 'right'} icon`} />
-								<span>Private: {privateUser.length}</span>
+								<span style={{ userSelect: 'none' }}>Private: {privateUser.length}</span>
 							</span>
 							<div>{expandInfo.priv && privateUser.map(makeUser)}</div>
 						</div>
