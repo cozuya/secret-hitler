@@ -7,6 +7,38 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
+module.exports.TRIALMODS = ['moira', 'SilentPlayer', 'SilentSheep', 'casdude', 'Naizea', 'Joz', 'Leftwinger', 'hitler4real', 'hitler2real', 'Grim'];
+
+const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
+	'ArtiePendrag',
+	'Auengun',
+	'Aurune',
+	'banc',
+	'bot',
+	'conundrum',
+	'DFinn',
+	'goonbee',
+	'Hexicube',
+	'Idrissa',
+	'Invidia',
+	'jbasari',
+	'JerMej1s',
+	'JohnCena',
+	'jules',
+	'LoveOken',
+	'nth',
+	'OuchYouHitMe',
+	'PeeOnBus',
+	'Petey',
+	'Royal2000H',
+	'sethe',
+	'Skyrra',
+	'straightleft',
+	'veggiemanz',
+	'voldemort',
+	'Wi1son'
+]);
+
 module.exports.CURRENTSEASONNUMBER = 4;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];

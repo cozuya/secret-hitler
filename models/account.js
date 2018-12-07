@@ -99,7 +99,10 @@ const Account = new Schema({
 	isFixed: Boolean,
 	eloSeason: Number,
 	eloOverall: Number,
-	hashUid: String
+	hashUid: String,
+	discordUsername: String,
+	discordDiscriminator: String,
+	discordMfa_enabled: Boolean
 });
 
 Account.plugin(passportLocalMongoose);

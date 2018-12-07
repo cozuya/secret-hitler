@@ -9,6 +9,10 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 1.0.0-beta4 released 12-4-2018</p>
+		</div>
+		<h3>Some attempts to fix issues with server instability, few smaller things, thats about it.</h3>
+		<div className="ui header">
 			<p>Version 1.0.0-beta3 released 11-23-2018</p>
 		</div>
 		<h4>

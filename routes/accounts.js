@@ -74,9 +74,12 @@ module.exports = () => {
 
 	app.get('/account', ensureAuthenticated, (req, res) => {
 		res.render('page-account', {
+			isLocal: Boolean(req.user.hash),
 			username: req.user.username,
 			verified: req.user.verified,
-			email: req.user.verification ? req.user.verification.email : ''
+			email: req.user.verification ? req.user.verification.email : '',
+			discordUsername: req.user.discordUsername,
+			discordDiscriminator: req.user.discordDiscriminator
 		});
 	});
 
@@ -125,12 +128,15 @@ module.exports = () => {
 	app.post('/account/signup', (req, res, next) => {
 		const { username, password, password2, email, isPrivate, bypassKey } = req.body;
 		let hasBypass = false;
-		if (bypassKey && bypassKey.length) {
-			if (!verifyBypass(bypassKey)) {
-				res.status(401).json({ message: 'Restriction bypass key invalid, leave that field empty if it is not needed.' });
-				return;
+		if (bypassKey) {
+			bypassKey = bypassKey.trim();
+			if (bypassKey.length) {
+				if (!verifyBypass(bypassKey)) {
+					res.status(401).json({ message: 'Restriction bypass key invalid, leave that field empty if it is not needed.' });
+					return;
+				}
+				hasBypass = true;
 			}
-			hasBypass = true;
 		}
 		const signupIP =
 			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -249,7 +255,7 @@ module.exports = () => {
 									return next();
 								}
 
-								if (hasBypass) consumeBypass(bypassKey);
+								if (hasBypass) consumeBypass(bypassKey, username, signupIP);
 
 								if (email) {
 									setVerify({ username, email });
