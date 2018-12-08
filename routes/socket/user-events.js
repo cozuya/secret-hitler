@@ -2653,7 +2653,6 @@ module.exports.checkUserStatus = socket => {
 			Account.findOne({ username: user }, function(err, account) {
 				if (account) {
 					testIP(account.lastConnectedIP, banType => {
-						console.log(`${account.lastConnectedIP} = ${banType}`);
 						if (banType && banType != 'new') {
 							socket.emit('manualDisconnection');
 							socket.disconnect(true);
