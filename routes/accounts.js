@@ -29,7 +29,7 @@ module.exports = () => {
 
 	app.get('/account', ensureAuthenticated, (req, res) => {
 		res.render('page-account', {
-			isLocal: Boolean(req.user.hash),
+			isLocal: req.user.isLocal,
 			username: req.user.username,
 			verified: req.user.verified,
 			email: req.user.verification ? req.user.verification.email : '',
@@ -98,6 +98,7 @@ module.exports = () => {
 		);
 		const save = {
 			username,
+			isLocal: true,
 			gameSettings: {
 				disablePopups: false,
 				enableTimestamps: false,
@@ -420,5 +421,107 @@ module.exports = () => {
 	app.post('/account/logout', ensureAuthenticated, (req, res) => {
 		req.logOut();
 		res.send();
+	});
+
+	app.get('/discord-login', passport.authenticate('discord'));
+
+	app.get('/discord/login-callback', (req, res, next) => {
+		passport.authenticate('discord', profile => {
+			// if user is signed in already, associate the discord account with their sh account
+			if (req.user) {
+				req.user.discordUsername = profile.username;
+				req.user.discordDiscriminator = profile.discriminator;
+				req.user.discordMfa_enabled = profile.mfa_enabled;
+				req.user.verified = true;
+				req.user.save(() => {
+					res.redirect('/account');
+				});
+			} else {
+				// see if their discord information matches an account, if so sign them in
+				Account.findOne({ discordUsername: profile.username, discordDiscriminator: profile.discriminator })
+					.then(account => {
+						if (account) {
+							req.logIn(account, () => res.redirect('/account'));
+						} else {
+							// see if there's an existing sh account with their discord name, if so have them select a new username, if not make an account.
+							Account.findOne({ username: profile.username })
+								.then(account => {
+									// if (!/^[a-z0-9]+$/i.test(username)) {
+									// 	res.status(401).json({ message: 'Your username can only be alphanumeric.' });
+									// } else if (username.length < 3) {
+									// 	res.status(401).json({ message: 'Your username is too short.' });
+									// } else if (username.length > 12) {
+									// 	res.status(401).json({ message: 'Your username is too long.' });
+									// } else if (password.length < 6) {
+									// 	res.status(401).json({ message: 'Your password is too short.' });
+									// } else if (password.length > 255) {
+									// 	res.status(401).json({ message: 'Your password is too long.' });
+									// } else if (password !== password2) {
+									// 	res.status(401).json({ message: 'Your passwords did not match.' });
+									// } else if (/88$/i.test(username)) {
+									// 	const new88 = new EightEightCounter({
+									// 		date: new Date(),
+									// 		username
+									// 	});
+									// 	new88.save(() => {
+									// 		res.status(401).json({
+									// 			message: 'Usernames that end with 88 are not allowed.'
+									// 		});
+									// 	});
+									// } else if (accountCreationDisabled.status && !hasBypass) {
+
+									if (!account) {
+										Account.create(
+											{
+												username: profile.username,
+												gameSettings: {
+													soundStatus: 'Pack2'
+												},
+												verified: true,
+												wins: 0,
+												losses: 0,
+												created: new Date(),
+												touLastAgreed: TOU_CHANGES[0].changeVer,
+												signupIP: 'discord',
+												discordUsername: profile.username,
+												discordDiscriminator: profile.discriminator,
+												discordMfa_enabled: profile.mfa_enabled,
+												verification: {
+													email: profile.email
+												}
+											},
+											(err, acc) => {
+												if (err) {
+													return next();
+												}
+
+												req.logIn(acc, () => res.redirect('/account'));
+											}
+										);
+									} else {
+										res.redirect('/discord-select-username');
+									}
+								})
+								.catch(err => {
+									console.log(err, 'err in discord oauth');
+								});
+						}
+					})
+					.catch(err => {
+						console.log(err, 'err in discord oauth');
+					});
+			}
+		})(req, res, next);
+	});
+
+	app.get('/discord-select-username', (req, res) => {
+		renderPage(req, res, 'page-new-username', 'new-username');
+	});
+
+	app.get('/revoke-discord', ensureAuthenticated, (req, res) => {
+		req.user.discordUsername = req.user.discordDiscriminator = '';
+		req.user.save(() => {
+			res.redirect('/account');
+		});
 	});
 };

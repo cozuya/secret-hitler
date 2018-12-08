@@ -8,6 +8,7 @@ const Account = new Schema({
 		unique: true
 	},
 	password: String,
+	isLocal: Boolean,
 	staffRole: String,
 	gameSettings: {
 		staffDisableVisibleElo: Boolean,

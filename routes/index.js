@@ -136,11 +136,6 @@ module.exports = () => {
 			});
 		}
 	});
-	app.get('/new-username', (req, res) => {
-		console.log(req.session, 'session');
-
-		renderPage(req, res, 'page-new-username', 'new-username');
-	});
 
 	app.get('/observe', (req, res) => {
 		res.redirect('/observe/');
@@ -288,34 +283,6 @@ module.exports = () => {
 		} catch (error) {
 			console.log(err, 'upload cardback crash error');
 		}
-	});
-
-	app.get('/discord-login', passport.authenticate('discord'));
-
-	app.get('/discord/login-callback', (req, res, next) => {
-		passport.authenticate('discord', (account, profile, err) => {
-			if (err && err !== 'existing') {
-				return next();
-			}
-
-			if (err === 'existing') {
-				res.redirect('/new-username');
-			} else if (req.user) {
-				if (!req.user.discordUsername) {
-					req.user.discordUsername = profile.username;
-					req.user.discordDiscriminator = profile.discriminator;
-					req.user.discordMfa_enabled = profile.mfa_enabled;
-					req.user.verified = true;
-					req.user.save(() => {
-						res.redirect('/account');
-					});
-				} else {
-					res.redirect('/account');
-				}
-			} else {
-				req.logIn(account, () => res.redirect('/account'));
-			}
-		})(req, res, next);
 	});
 
 	app.get('*', (req, res) => {
