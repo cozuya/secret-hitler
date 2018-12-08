@@ -1,0 +1,13 @@
+extends layout
+block content
+	h2.header Select a new username
+	form.ui.form(style="width: 500px; margin: 0 auto")
+		.field
+			.ui.left.icon.input
+				i.lock.icon
+				input#passwordchange-password(placeholder="New password", type="password", spellcheck="false")
+		button.ui.primary.button.fluid.large#new-username-submit Submit
+		.ui.dimmer.inverted
+			.ui.text.loader Updating your username..
+		.ui.negative.hidden.message
+		.ui.hidden.message Successfully updated your username!
