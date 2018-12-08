@@ -136,7 +136,7 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole)) {
+		if ((Object.keys(userInfo).length && Boolean(userInfo.staffRole)) || TRIALMODS.includes(userInfo.userName)) {
 			return (
 				<a href="#/moderation">
 					<i className="fire icon mod-button" />
