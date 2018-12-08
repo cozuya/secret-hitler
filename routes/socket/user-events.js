@@ -8,7 +8,8 @@ const {
 	limitNewPlayers,
 	currentSeasonNumber,
 	newStaff,
-	createNewBypass
+	createNewBypass,
+	testIP
 } = require('./models');
 const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -32,6 +33,7 @@ const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS, TRIALMODS } = require('../../src/frontend-scripts/constants');
 const { makeReport } = require('./report.js');
+const { expandAndSimplify } = require('./ip-obf');
 
 /**
  * @param {object} game - game to act on.
@@ -2633,7 +2635,7 @@ module.exports.checkUserStatus = socket => {
 				const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
 
 				socket.emit('manualDisconnection');
-				socket.disconnect();
+				socket.disconnect(true);
 
 				if (bannedUserlistIndex >= 0) {
 					userList.splice(bannedUserlistIndex, 1);
@@ -2641,31 +2643,22 @@ module.exports.checkUserStatus = socket => {
 
 				destroySession(username);
 			};
+			testIP(expandAndSimplify(socket.handshake.address), banType => {
+				if (banType && banType != 'new') {
+					// Note: Should never be 'nocache', as that would fail when logging in.
+					socket.emit('manualDisconnection');
+					socket.disconnect(true);
+				}
+			});
 			Account.findOne({ username: user }, function(err, account) {
 				if (account) {
-					BannedIP.find(
-						{
-							ip: account.lastConnectedIP,
-							type: 'tiny' || 'small' || 'big'
-						},
-						(err, ips) => {
-							let date;
-							let unbannedTime;
-							const ip = ips[ips.length - 1];
-
-							if (ip) {
-								date = new Date().getTime();
-								unbannedTime =
-									ip.type === 'small'
-										? ip.bannedDate.getTime() + 64800000
-										: ip.type === 'tiny'
-										? ip.bannedDate.getTime() + 60000
-										: ip.bannedDate.getTime() + 604800000;
-							}
-
-							if (ip && unbannedTime > date) logOutUser(user);
+					testIP(account.lastConnectedIP, banType => {
+						console.log(`${account.lastConnectedIP} = ${banType}`);
+						if (banType && banType != 'new') {
+							socket.emit('manualDisconnection');
+							socket.disconnect(true);
 						}
-					);
+					});
 				}
 			});
 
