@@ -2644,19 +2644,12 @@ module.exports.checkUserStatus = socket => {
 				destroySession(username);
 			};
 			testIP(expandAndSimplify(socket.handshake.address), banType => {
-				if (banType && banType != 'new') {
-					// Note: Should never be 'nocache', as that would fail when logging in.
-					socket.emit('manualDisconnection');
-					socket.disconnect(true);
-				}
+				if (banType && banType != 'new') logOutUser(user);
 			});
 			Account.findOne({ username: user }, function(err, account) {
 				if (account) {
 					testIP(account.lastConnectedIP, banType => {
-						if (banType && banType != 'new') {
-							socket.emit('manualDisconnection');
-							socket.disconnect(true);
-						}
+						if (banType && banType != 'new') logOutUser(user);
 					});
 				}
 			});
