@@ -11,7 +11,7 @@ const {
 	createNewBypass,
 	testIP
 } = require('./models');
-const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
@@ -28,7 +28,6 @@ const _ = require('lodash');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate, destroySession } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
-const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS, TRIALMODS } = require('../../src/frontend-scripts/constants');
@@ -2598,8 +2597,9 @@ module.exports.handlePlayerReportDismiss = () => {
 
 /**
  * @param {object} socket - socket reference.
+ * @param {function} callback - success callback.
  */
-module.exports.checkUserStatus = socket => {
+module.exports.checkUserStatus = (socket, callback) => {
 	const { passport } = socket.handshake.session;
 
 	if (passport && Object.keys(passport).length) {
@@ -2645,23 +2645,22 @@ module.exports.checkUserStatus = socket => {
 			};
 			testIP(expandAndSimplify(socket.handshake.address), banType => {
 				if (banType && banType != 'new') logOutUser(user);
-			});
-			Account.findOne({ username: user }, function(err, account) {
-				if (account) {
-					testIP(account.lastConnectedIP, banType => {
-						if (banType && banType != 'new') logOutUser(user);
+				else {
+					Account.findOne({ username: user }, function(err, account) {
+						if (account) {
+							testIP(account.lastConnectedIP, banType => {
+								if (banType && banType != 'new') logOutUser(user);
+								else {
+									sendUserList();
+									callback();
+								}
+							});
+						}
 					});
 				}
 			});
-
-			sendUserList();
-		}
-	}
-
-	socket.emit('version', { current: version });
-
-	sendGeneralChats(socket);
-	sendGameList(socket);
+		} else callback();
+	} else callback();
 };
 
 module.exports.handleUserLeaveGame = handleUserLeaveGame;
