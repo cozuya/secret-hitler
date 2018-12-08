@@ -36,7 +36,6 @@ module.exports.getPowerFromRole = role => {
 	if (role === 'admin') return 3;
 	if (role === 'editor') return 2;
 	if (role === 'moderator') return 1;
-	if (TRIALMODS.includes(user.userName)) return 0;
 	if (role === 'altmod') return 0; // Report AEM delays will check for >= 0
 	if (role === 'contributor') return -1;
 	return -1;
