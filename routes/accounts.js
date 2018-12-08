@@ -446,29 +446,24 @@ module.exports = () => {
 							// see if there's an existing sh account with their discord name, if so have them select a new username, if not make an account.
 							Account.findOne({ username: profile.username })
 								.then(account => {
-									// if (!/^[a-z0-9]+$/i.test(username)) {
-									// 	res.status(401).json({ message: 'Your username can only be alphanumeric.' });
-									// } else if (username.length < 3) {
-									// 	res.status(401).json({ message: 'Your username is too short.' });
-									// } else if (username.length > 12) {
-									// 	res.status(401).json({ message: 'Your username is too long.' });
-									// } else if (password.length < 6) {
-									// 	res.status(401).json({ message: 'Your password is too short.' });
-									// } else if (password.length > 255) {
-									// 	res.status(401).json({ message: 'Your password is too long.' });
-									// } else if (password !== password2) {
-									// 	res.status(401).json({ message: 'Your passwords did not match.' });
-									// } else if (/88$/i.test(username)) {
-									// 	const new88 = new EightEightCounter({
-									// 		date: new Date(),
-									// 		username
-									// 	});
-									// 	new88.save(() => {
-									// 		res.status(401).json({
-									// 			message: 'Usernames that end with 88 are not allowed.'
-									// 		});
-									// 	});
-									// } else if (accountCreationDisabled.status && !hasBypass) {
+									if (/88$/i.test(profile.username)) {
+										const new88 = new EightEightCounter({
+											date: new Date(),
+											username
+										});
+										new88.save(() => {
+											req.session.discordProfile = profile;
+											res.redirect('/discord-select-username');
+										});
+									} else if (
+										!/^[a-z0-9]+$/i.test(profile.username) ||
+										profile.username.length < 3 ||
+										profile.username.length > 12 ||
+										accountCreationDisabled.status
+									) {
+										req.session.discordProfile = profile;
+										res.redirect('/discord-select-username');
+									}
 
 									if (!account) {
 										Account.create(
@@ -499,6 +494,7 @@ module.exports = () => {
 											}
 										);
 									} else {
+										req.session.discordProfile = profile;
 										res.redirect('/discord-select-username');
 									}
 								})
@@ -514,8 +510,20 @@ module.exports = () => {
 		})(req, res, next);
 	});
 
-	app.get('/discord-select-username', (req, res) => {
-		renderPage(req, res, 'page-new-username', 'new-username');
+	app.get('/discord-select-username', (req, res, next) => {
+		if (!req.session.discordProfile) {
+			return next();
+		}
+
+		res.render('page-new-username');
+	});
+
+	app.post('/discord-select-username', (req, res, next) => {
+		const { username } = req.body;
+
+		if (!req.session.discordProfile || !username) {
+			return next();
+		}
 	});
 
 	app.get('/revoke-discord', ensureAuthenticated, (req, res) => {
