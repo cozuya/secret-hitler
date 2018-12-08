@@ -1,6 +1,7 @@
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
+const BannedIP = require('../../models/bannedIP');
 
 const fs = require('fs');
 let emotes = [];
@@ -245,4 +246,49 @@ module.exports.createNewBypass = () => {
 	} while (bypassKeys.indexOf(key) >= 0);
 	bypassKeys.push(key);
 	return key;
+};
+
+let banCache = null;
+setInterval(() => {
+	// Fetches the list of banned IPs every 5 seconds, to prevent hammering the DB on restarts as people log in.
+	BannedIP.find({}, (err, ips) => {
+		if (err) console.log(err);
+		else banCache = ips;
+	});
+}, 5000);
+// There's a mountain of "new" type bans.
+const unbanTime = new Date() - 64800000;
+BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) => {
+	if (err) throw err;
+	BannedIP.find({}, (err, ips) => {
+		if (err) throw err;
+		banCache = ips;
+	});
+});
+const banLength = {
+	small: 18 * 60 * 60 * 1000, // 18 hours
+	new: 18 * 60 * 60 * 1000, // 18 hours
+	tiny: 1 * 60 * 60 * 1000, // 1 hour
+	big: 7 * 24 * 60 * 60 * 1000 // 7 days
+};
+module.exports.testIP = (IP, callback) => {
+	if (!IP) callback('Bad IP!');
+	else if (!banCache || !banCache.filter) callback('nocache');
+	else {
+		const ips = banCache.filter(i => i.ip == IP);
+		let date;
+		let unbannedTime;
+		const ip = ips[ips.length - 1];
+
+		if (ip) {
+			date = new Date().getTime();
+			unbannedTime = ip.bannedDate.getTime() + (banLength[ip.type] || banLength.big);
+		}
+
+		if (ip && unbannedTime > date && !module.exports.ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
+			callback(ip.type);
+		} else {
+			callback(null);
+		}
+	}
 };

@@ -37,6 +37,7 @@ export function processEmotes(input, isMod, allEmotes) {
 		} else if (validSiteURL.test(word)) {
 			const data = validSiteURL.exec(word);
 			const isGithub = data[1] == 'github.com/cozuya/secret-hitler';
+			/* eslint-disable */
 			formatedMsg.push(
 				<a
 					key={index}
@@ -47,6 +48,7 @@ export function processEmotes(input, isMod, allEmotes) {
 					{isGithub ? `SH.IO github: ${data[2]}` : data[2]}
 				</a>
 			);
+			/* eslint-enable */
 		} else if (word.substr(0, 2) === '**' && word.substr(word.length - 2, word.length) === '**') {
 			formatedMsg.push(<b key={index}>{word.slice(2).slice(0, word.length - 4) + ' '}</b>);
 		} else if (word.substr(0, 2) === '~~' && word.substr(word.length - 2, word.length) === '~~') {

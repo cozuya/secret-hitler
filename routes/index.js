@@ -136,6 +136,11 @@ module.exports = () => {
 			});
 		}
 	});
+	app.get('/new-username', (req, res) => {
+		console.log(req.session, 'session');
+
+		renderPage(req, res, 'page-new-username', 'new-username');
+	});
 
 	app.get('/observe', (req, res) => {
 		res.redirect('/observe/');
@@ -282,11 +287,13 @@ module.exports = () => {
 
 	app.get('/discord/login-callback', (req, res, next) => {
 		passport.authenticate('discord', (account, profile, err) => {
-			if (err) {
+			if (err && err !== 'existing') {
 				return next();
 			}
 
-			if (req.user) {
+			if (err === 'existing') {
+				res.redirect('/new-username');
+			} else if (req.user) {
 				if (!req.user.discordUsername) {
 					req.user.discordUsername = profile.username;
 					req.user.discordDiscriminator = profile.discriminator;
