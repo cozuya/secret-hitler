@@ -142,8 +142,8 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		9: -70.679,
 		10: -31.539
 	};
-	const rk = 12;
-	const nk = 3;
+	const rk = 9;
+	const nk = 4;
 	// Players
 	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
 	// Accounts
