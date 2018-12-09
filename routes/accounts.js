@@ -427,6 +427,10 @@ module.exports = () => {
 
 	app.get('/discord/login-callback', (req, res, next) => {
 		passport.authenticate('discord', profile => {
+			if (!profile) {
+				return next();
+			}
+
 			// if user is signed in already, associate the discord account with their sh account
 			if (req.user) {
 				req.user.discordUsername = profile.username;
@@ -466,6 +470,14 @@ module.exports = () => {
 									}
 
 									if (!account) {
+										const ip = expandAndSimplify(
+											req.headers['x-real-ip'] ||
+												req.headers['X-Real-IP'] ||
+												req.headers['X-Forwarded-For'] ||
+												req.headers['x-forwarded-for'] ||
+												req.connection.remoteAddress
+										);
+
 										Account.create(
 											{
 												username: profile.username,
@@ -477,20 +489,29 @@ module.exports = () => {
 												losses: 0,
 												created: new Date(),
 												touLastAgreed: TOU_CHANGES[0].changeVer,
-												signupIP: 'discord',
+												signupIP: ip,
 												discordUsername: profile.username,
 												discordDiscriminator: profile.discriminator,
 												discordMfa_enabled: profile.mfa_enabled,
 												verification: {
 													email: profile.email
-												}
+												},
+												lastConnectedIP: ip
 											},
 											(err, acc) => {
 												if (err) {
 													return next();
 												}
 
-												req.logIn(acc, () => res.redirect('/account'));
+												const newPlayerBan = new BannedIP({
+													bannedDate: new Date(),
+													type: 'new',
+													ip
+												});
+
+												newPlayerBan.save(() => {
+													req.logIn(acc, () => res.redirect('/account'));
+												});
 											}
 										);
 									} else {
@@ -520,10 +541,53 @@ module.exports = () => {
 
 	app.post('/discord-select-username', (req, res, next) => {
 		const { username } = req.body;
+		const { discordProfile } = req.session;
 
-		if (!req.session.discordProfile || !username) {
-			return next();
+		if (
+			!req.session.discordProfile ||
+			!username ||
+			!/^[a-z0-9]+$/i.test(username) ||
+			username.length < 3 ||
+			username.length > 12 ||
+			accountCreationDisabled.status
+		) {
+			res.status(401).send();
+			return;
 		}
+
+		const ip = expandAndSimplify(
+			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
+		);
+
+		Account.create(
+			{
+				username,
+				gameSettings: {
+					soundStatus: 'Pack2'
+				},
+				verified: true,
+				wins: 0,
+				losses: 0,
+				created: new Date(),
+				touLastAgreed: TOU_CHANGES[0].changeVer,
+				signupIP: ip,
+				discordUsername: discordProfile.username,
+				discordDiscriminator: discordProfile.discriminator,
+				discordMfa_enabled: discordProfile.mfa_enabled,
+				verification: {
+					email: discordProfile.email
+				},
+				lastConnectedIP: ip
+			},
+			(err, acc) => {
+				if (err) {
+					return next();
+				}
+
+				req.session.discordProfile = null;
+				req.logIn(acc, () => res.redirect('/account'));
+			}
+		);
 	});
 
 	app.get('/revoke-discord', ensureAuthenticated, (req, res) => {

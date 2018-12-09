@@ -492,4 +492,42 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+	$('button#new-username-submit').on('click', function(event) {
+		event.preventDefault();
+
+		var username = $('#new-username').val(),
+			$loader = $(this).next(),
+			$errMessage = $loader.next(),
+			$successMessage = $errMessage.next(),
+			data = JSON.stringify({ username: username });
+
+		$loader.addClass('active');
+
+		$.ajax({
+			url: '/discord-select-username',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: data,
+			statusCode: {
+				200: function() {
+					$loader.removeClass('active');
+					$successMessage.removeClass('hidden');
+					setTimeout(function() {
+						window.location = '/account';
+					}, 1000);
+					if (!$errMessage.hasClass('hidden')) {
+						$errMessage.addClass('hidden');
+					}
+				},
+				401: function() {
+					$loader.removeClass('active');
+					$errMessage.text('Your username is in use or did not meet our requirements.').removeClass('hidden');
+					if (!$successMessage.hasClass('hidden')) {
+						$successMessage.addClass('hidden');
+					}
+				}
+			}
+		});
+	});
 });
