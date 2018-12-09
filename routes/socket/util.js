@@ -130,13 +130,11 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 module.exports.secureGame = secureGame;
 
 const formTeams = (game, accounts, winningPlayerNames) => {
-	const losingPlayerNames = game.private.seatedPlayers
-		.filter(p => !winningPlayerNames.includes(p.userName))
-		.map(p => p.userName);
+	const losingPlayerNames = game.private.seatedPlayers.filter(p => !winningPlayerNames.includes(p.userName)).map(p => p.userName);
 	const winners = accounts.filter(account => winningPlayerNames.includes(account.username));
 	const losers = accounts.filter(account => losingPlayerNames.includes(account.username));
 	const libWin = game.gameState.isCompleted === 'liberal';
-	return {'liberals': libWin ? winners : losers, 'fascists': libWin ? losers : winners};
+	return { liberals: libWin ? winners : losers, fascists: libWin ? losers : winners };
 };
 
 const avg = (accounts, accessor, defaultELO) => {
@@ -155,7 +153,7 @@ const agragateRanks = (game, liberals, fascists, gameStatistics, defaultELO, acc
 	return libWin ? lRank - fRank : fRank - lRank;
 };
 
-const updateRating = (delta) => 1 / (1 + Math.pow(10, delta / 400));
+const updateRating = delta => 1 / (1 + Math.pow(10, delta / 400));
 
 module.exports.rateEloGame = (game, accounts, winningPlayerNames, gameStatistics) => {
 	// ELO constants
@@ -165,15 +163,15 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames, gameStatistics
 	const libWin = game.gameState.isCompleted === 'liberal';
 	const comp = 4;
 	// Average each team's rank
-  const { liberals, fascists } = formTeams(game, accounts, winningPlayerNames);
+	const { liberals, fascists } = formTeams(game, accounts, winningPlayerNames);
 	const deltaOverall = agragateRanks(game, liberals, fascists, gameStatistics, defaultELO, a => a.eloOverall);
 	const deltaSeason = agragateRanks(game, liberals, fascists, gameStatistics, defaultELO, a => a.eloSeason);
 	// Apply rating
 	const pOverall = updateRating(deltaOverall);
 	const pSeason = updateRating(deltaSeason);
 	// Update bias
-	gameStatistics.liberalBias = (gameStatistics.liberalBias || defaultELO) + ((libWin ? 1 : -1 ) * pOverall * comp);
-	gameStatistics.fascistBias = (gameStatistics.fascistBias || defaultELO) + ((libWin ? -1 : 1 ) * pOverall * comp);
+	gameStatistics.liberalBias = (gameStatistics.liberalBias || defaultELO) + (libWin ? 1 : -1) * pOverall * comp;
+	gameStatistics.fascistBias = (gameStatistics.fascistBias || defaultELO) + (libWin ? -1 : 1) * pOverall * comp;
 	gameStatistics.save();
 	// Calculate distribution
 	const lFactor = k / liberals.length;
@@ -199,13 +197,9 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames, gameStatistics
 };
 
 let mongoClient;
-Mongoclient.connect(
-	'mongodb://localhost:27017',
-	{ useNewUrlParser: true },
-	(err, client) => {
-		mongoClient = client;
-	}
-);
+Mongoclient.connect('mongodb://localhost:27017', { useNewUrlParser: true }, (err, client) => {
+	mongoClient = client;
+});
 
 module.exports.destroySession = username => {
 	if (!mongoClient) {

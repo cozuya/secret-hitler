@@ -14,8 +14,8 @@ const Changelog = () => (
 		<h4>New feature: Game bias compensation</h4>
 		<p>
 			The elo formula has been updated to automatically calculate the team bias of every game size. Each game size has an Elo score which is added to both
-			teams. There are different biases for rainbow and non-rainbow games. In the long run, this should mean that no specific size of game gives better or
-			worse elo returns. However, these values may take some time to approximate the team bases. Expect a week of slightly unstable Elo returns.
+			teams. There are different biases for rainbow and non-rainbow games. In the long run, this should mean that no specific size of game gives better or worse
+			elo returns. However, these values may take some time to approximate the team bases. Expect a week of slightly unstable Elo returns.
 		</p>
 		<div className="ui header">
 			<p>Version 1.0.0-beta4 released 12-4-2018</p>
@@ -124,7 +124,7 @@ const Changelog = () => (
 		<h4>250,000 games played! Wow!</h4>
 		<h4>New feature: full height in game player setting</h4>
 		<div style={{ textAlign: 'center' }}>
-			<img src="https://i.imgur.com/9eDIhIP.jpg" style={{ border: '1px solid grey', width: '820px' }} />
+			<img src="http://i.imgur.com/9eDIhIP.jpg" style={{ border: '1px solid grey', width: '820px' }} />
 		</div>
 		<div style={{ textAlign: 'center' }}>
 			<img src="/images/fullheightsetting.png" style={{ border: '1px solid grey' }} />
@@ -641,8 +641,10 @@ const Changelog = () => (
 		<p>Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.</p>
 		<h3>New feature: chat emotes!</h3>
 		<p>
-			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:
-			<img style={{ width: '30%', margin: '0 auto', display: 'block' }} src="/images/em.png" />
+			In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:<img
+				style={{ width: '30%', margin: '0 auto', display: 'block' }}
+				src="/images/em.png"
+			/>
 		</p>
 		<p>
 			Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our{' '}

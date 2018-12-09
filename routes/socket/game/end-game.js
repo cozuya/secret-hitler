@@ -26,20 +26,16 @@ const saveGame = game => {
 		date: new Date(),
 		chats: game.chats,
 		season: CURRENTSEASONNUMBER,
-		winningPlayers: game.private.seatedPlayers
-			.filter(player => player.wonGame)
-			.map(player => ({
-				userName: player.userName,
-				team: player.role.team,
-				role: player.role.cardName
-			})),
-		losingPlayers: game.private.seatedPlayers
-			.filter(player => !player.wonGame)
-			.map(player => ({
-				userName: player.userName,
-				team: player.role.team,
-				role: player.role.cardName
-			})),
+		winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => ({
+			userName: player.userName,
+			team: player.role.team,
+			role: player.role.cardName
+		})),
+		losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => ({
+			userName: player.userName,
+			team: player.role.team,
+			role: player.role.cardName
+		})),
 		winningTeam: game.gameState.isCompleted,
 		playerCount: game.general.playerCount,
 		rebalance6p: game.general.rebalance6p,
@@ -252,7 +248,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 							}
 
 							player.losses++;
-							player[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`] ? player[`lossesSeason${CURRENTSEASONNUMBER}`] + 1 : 1;
+							player[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`]
+								? player[`lossesSeason${CURRENTSEASONNUMBER}`] + 1
+								: 1;
 							player[`winsSeason${CURRENTSEASONNUMBER}`] = player[`winsSeason${CURRENTSEASONNUMBER}`] ? player[`winsSeason${CURRENTSEASONNUMBER}`] : 0;
 						}
 

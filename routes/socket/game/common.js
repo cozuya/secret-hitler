@@ -178,16 +178,13 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 
 	if (game.general.timedMode) {
 		game.gameState.timedModeEnabled = true;
-		game.private.timerId = setTimeout(
-			() => {
-				if (game.gameState.timedModeEnabled) {
-					const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
+		game.private.timerId = setTimeout(() => {
+			if (game.gameState.timedModeEnabled) {
+				const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
 
-					selectChancellor(null, { user: pendingPresidentPlayer.userName }, game, { chancellorIndex });
-				}
-			},
-			process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-		);
+				selectChancellor(null, { user: pendingPresidentPlayer.userName }, game, { chancellorIndex });
+			}
+		}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
 	}
 
 	game.gameState.clickActionInfo =
