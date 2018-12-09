@@ -1,6 +1,7 @@
 const https = require('https');
 const Account = require('../../models/account');
 const { newStaff } = require('./models');
+const { TRIALMODS } = require('./src/frontend-scripts/constants');
 
 const AEM_ALTS = (module.exports.AEM_ALTS = [
 	'bell',
@@ -25,6 +26,7 @@ module.exports.makeReport = (text, game, gameEnd) => {
 			.filter(account => account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin')
 			.map(account => account.username);
 		staffUserNames.push(...AEM_ALTS);
+		staffUserNames.push(...TRIALMODS);
 		const players = game.private.seatedPlayers.map(player => player.userName);
 		const isStaff = players.some(n => staffUserNames.includes(n) || newStaff.modUserNames.includes(n) || newStaff.editorUserNames.includes(n));
 

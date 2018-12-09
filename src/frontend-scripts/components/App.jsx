@@ -297,7 +297,7 @@ export class App extends React.Component {
 			dispatch(fetchReplay(hash.split('#/replay/')[1]));
 		} else if (hash === '#/changelog') {
 			dispatch(updateMidsection('changelog'));
-		} else if (hash === '#/moderation' && userInfo.staffRole) {
+		} else if ((hash === '#/moderation' && userInfo.staffRole) || (hash === '#/moderation' && TRIALMODS.includes(userInfo.userName))) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('moderation'));
 		} else if ((hash === '#/playerreports' && userInfo.staffRole) || (hash === '#/playerreports' && TRIALMODS.includes(userInfo.userName))) {
