@@ -1,7 +1,7 @@
 const https = require('https');
 const Account = require('../../models/account');
 const { newStaff } = require('./models');
-const { TRIALMODS } = require('./src/frontend-scripts/constants');
+const { TRIALMODS } = require('../../src/frontend-scripts/constants');
 
 const AEM_ALTS = (module.exports.AEM_ALTS = [
 	'bell',
