@@ -287,24 +287,272 @@
 						top: 182px;
 						left: 212px;
 					}
-
 					&.one {
 						top: 182px;
 						left: 276px;
 					}
-
 					&.two {
 						top: 182px;
 						left: 339px;
 					}
-
 					&.three {
 						top: 182px;
 						left: 403px;
 					}
+					@media screen and (max-width: 1094px) {
+						&.zero {
+							top: calc(169px + 0 * 0.2px);
+							left: calc(195px + 0 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 0 * 0.2px);
+							left: calc(255px + 0 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 0 * 0.2px);
+							left: calc(315px + 0 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 0 * 0.2px);
+							left: calc(375px + 0 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1095px) and (max-width: 1100px) {
+						&.zero {
+							top: calc(169px + 5 * 0.2px);
+							left: calc(195px + 5 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 5 * 0.2px);
+							left: calc(255px + 5 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 5 * 0.2px);
+							left: calc(315px + 5 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 5 * 0.2px);
+							left: calc(375px + 5 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1101px) and (max-width: 1106px) {
+						&.zero {
+							top: calc(169px + 10 * 0.2px);
+							left: calc(195px + 10 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 10 * 0.2px);
+							left: calc(255px + 10 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 10 * 0.2px);
+							left: calc(315px + 10 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 10 * 0.2px);
+							left: calc(375px + 10 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1107px) and (max-width: 1112px) {
+						&.zero {
+							top: calc(169px + 15 * 0.2px);
+							left: calc(195px + 15 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 15 * 0.2px);
+							left: calc(255px + 15 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 15 * 0.2px);
+							left: calc(315px + 15 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 15 * 0.2px);
+							left: calc(375px + 15 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1113px) and (max-width: 1118px) {
+						&.zero {
+							top: calc(169px + 20 * 0.2px);
+							left: calc(195px + 20 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 20 * 0.2px);
+							left: calc(255px + 20 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 20 * 0.2px);
+							left: calc(315px + 20 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 20 * 0.2px);
+							left: calc(375px + 20 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1119px) and (max-width: 1124px) {
+						&.zero {
+							top: calc(169px + 25 * 0.2px);
+							left: calc(195px + 25 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 25 * 0.2px);
+							left: calc(255px + 25 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 25 * 0.2px);
+							left: calc(315px + 25 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 25 * 0.2px);
+							left: calc(375px + 25 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1125px) and (max-width: 1130px) {
+						&.zero {
+							top: calc(169px + 30 * 0.2px);
+							left: calc(195px + 30 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 30 * 0.2px);
+							left: calc(255px + 30 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 30 * 0.2px);
+							left: calc(315px + 30 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 30 * 0.2px);
+							left: calc(375px + 30 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1131px) and (max-width: 1136px) {
+						&.zero {
+							top: calc(169px + 35 * 0.2px);
+							left: calc(195px + 35 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 35 * 0.2px);
+							left: calc(255px + 35 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 35 * 0.2px);
+							left: calc(315px + 35 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 35 * 0.2px);
+							left: calc(375px + 35 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1137px) and (max-width: 1142px) {
+						&.zero {
+							top: calc(169px + 40 * 0.2px);
+							left: calc(195px + 40 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 40 * 0.2px);
+							left: calc(255px + 40 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 40 * 0.2px);
+							left: calc(315px + 40 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 40 * 0.2px);
+							left: calc(375px + 40 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1143px) and (max-width: 1148px) {
+						&.zero {
+							top: calc(169px + 45 * 0.2px);
+							left: calc(195px + 45 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 45 * 0.2px);
+							left: calc(255px + 45 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 45 * 0.2px);
+							left: calc(315px + 45 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 45 * 0.2px);
+							left: calc(375px + 45 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1149px) and (max-width: 1154px) {
+						&.zero {
+							top: calc(169px + 50 * 0.2px);
+							left: calc(195px + 50 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 50 * 0.2px);
+							left: calc(255px + 50 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 50 * 0.2px);
+							left: calc(315px + 50 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 50 * 0.2px);
+							left: calc(375px + 50 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1155px) and (max-width: 1160px) {
+						&.zero {
+							top: calc(169px + 55 * 0.2px);
+							left: calc(195px + 55 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 55 * 0.2px);
+							left: calc(255px + 55 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 55 * 0.2px);
+							left: calc(315px + 55 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 55 * 0.2px);
+							left: calc(375px + 55 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1161px) and (max-width: 1166px) {
+						&.zero {
+							top: calc(169px + 60 * 0.2px);
+							left: calc(195px + 60 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 60 * 0.2px);
+							left: calc(255px + 60 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 60 * 0.2px);
+							left: calc(315px + 60 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 60 * 0.2px);
+							left: calc(375px + 60 * 0.2615px);
+						}
+					}
+					@media screen and (min-width: 1167px) and (max-width: 1172px) {
+						&.zero {
+							top: calc(169px + 65 * 0.2px);
+							left: calc(195px + 65 * 0.2615px);
+						}
+						&.one {
+							top: calc(169px + 65 * 0.2px);
+							left: calc(255px + 65 * 0.2615px);
+						}
+						&.two {
+							top: calc(169px + 65 * 0.2px);
+							left: calc(315px + 65 * 0.2615px);
+						}
+						&.three {
+							top: calc(169px + 65 * 0.2px);
+							left: calc(375px + 65 * 0.2615px);
+						}
+					}
 				}
 			}
-
 			.replay-overlay {
 				.legislation {
 					top: 20px;
