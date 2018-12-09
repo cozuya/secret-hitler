@@ -156,7 +156,7 @@
 			justify-content: space-between;
 			margin: 0;
 			font-size: 20px;
-			padding: 5px 5px 0 10px;
+			padding: 5px 5px 5px 10px;
 			color: white;
 			background: $secondary;
 			font-family: $headerfont;
@@ -171,14 +171,43 @@
 				margin: 0;
 			}
 		}
+		&_confirm {
+			&-container {
+				position: absolute;
+			}
+			&-header {
+				margin: 0;
+				font-size: 20px;
+				padding: 5px 10px 0 5px;
+				color: white;
+				background: $secondary;
+				font-family: $headerfont;
+			}
+			&-body {
+				background: #1b1b1b;
+				border: 2px solid $secondary;
+				text-align: center;
+				padding: 10px;
+			}
+			&-button {
+				background: $secondary;
+				border-radius: 5px;
+				border: none;
+				color: white;
+				padding: 4px;
+				margin: 10px 0 10px 0;
+				&:hover {
+					background: $tertiary;
+				}
+			}
+		}
 		textarea {
 			color: white;
 			width: 100%;
 			flex-grow: 1;
 			background: #1b1b1b;
+			border-color: 2px solid $secondary;
 			resize: none;
-			border-style: solid;
-			border-width: 0 1px 1px 1px;
 			&:focus {
 				outline: none;
 				border-color: $primary;
