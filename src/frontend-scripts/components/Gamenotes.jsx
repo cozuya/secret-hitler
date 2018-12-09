@@ -88,7 +88,7 @@ class Gamenotes extends React.Component {
 					width: `${this.state.width}px`
 				}}
 			>
-				{this.state.clearConfirmationShown ? (
+				{this.state.clearConfirmationShown && (
 					<div
 						className="notes-container_confirm-container"
 						style={{
@@ -125,8 +125,6 @@ class Gamenotes extends React.Component {
 							</button>
 						</div>
 					</div>
-				) : (
-					<React.Fragment />
 				)}
 				<div className="notes-header">
 					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
