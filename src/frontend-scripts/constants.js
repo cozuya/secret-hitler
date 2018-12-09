@@ -35,6 +35,7 @@ const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
 	'Skyrra',
 	'Spyro',
 	'straightleft',
+	'Vigasaurus',
 	'veggiemanz',
 	'voldemort',
 	'Wi1son'
