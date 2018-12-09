@@ -29,7 +29,7 @@ module.exports = () => {
 
 	app.get('/account', ensureAuthenticated, (req, res) => {
 		res.render('page-account', {
-			isLocal: Boolean(req.user.hash),
+			isLocal: req.user.isLocal,
 			username: req.user.username,
 			verified: req.user.verified,
 			email: req.user.verification ? req.user.verification.email : '',
@@ -98,6 +98,7 @@ module.exports = () => {
 		);
 		const save = {
 			username,
+			isLocal: true,
 			gameSettings: {
 				disablePopups: false,
 				enableTimestamps: false,
@@ -420,5 +421,115 @@ module.exports = () => {
 	app.post('/account/logout', ensureAuthenticated, (req, res) => {
 		req.logOut();
 		res.send();
+	});
+
+	app.get('/discord-login', passport.authenticate('discord'));
+
+	app.get('/discord/login-callback', (req, res, next) => {
+		passport.authenticate('discord', profile => {
+			// if user is signed in already, associate the discord account with their sh account
+			if (req.user) {
+				req.user.discordUsername = profile.username;
+				req.user.discordDiscriminator = profile.discriminator;
+				req.user.discordMfa_enabled = profile.mfa_enabled;
+				req.user.verified = true;
+				req.user.save(() => {
+					res.redirect('/account');
+				});
+			} else {
+				// see if their discord information matches an account, if so sign them in
+				Account.findOne({ discordUsername: profile.username, discordDiscriminator: profile.discriminator })
+					.then(account => {
+						if (account) {
+							req.logIn(account, () => res.redirect('/account'));
+						} else {
+							// see if there's an existing sh account with their discord name, if so have them select a new username, if not make an account.
+							Account.findOne({ username: profile.username })
+								.then(account => {
+									if (/88$/i.test(profile.username)) {
+										const new88 = new EightEightCounter({
+											date: new Date(),
+											username
+										});
+										new88.save(() => {
+											req.session.discordProfile = profile;
+											res.redirect('/discord-select-username');
+										});
+									} else if (
+										!/^[a-z0-9]+$/i.test(profile.username) ||
+										profile.username.length < 3 ||
+										profile.username.length > 12 ||
+										accountCreationDisabled.status
+									) {
+										req.session.discordProfile = profile;
+										res.redirect('/discord-select-username');
+									}
+
+									if (!account) {
+										Account.create(
+											{
+												username: profile.username,
+												gameSettings: {
+													soundStatus: 'Pack2'
+												},
+												verified: true,
+												wins: 0,
+												losses: 0,
+												created: new Date(),
+												touLastAgreed: TOU_CHANGES[0].changeVer,
+												signupIP: 'discord',
+												discordUsername: profile.username,
+												discordDiscriminator: profile.discriminator,
+												discordMfa_enabled: profile.mfa_enabled,
+												verification: {
+													email: profile.email
+												}
+											},
+											(err, acc) => {
+												if (err) {
+													return next();
+												}
+
+												req.logIn(acc, () => res.redirect('/account'));
+											}
+										);
+									} else {
+										req.session.discordProfile = profile;
+										res.redirect('/discord-select-username');
+									}
+								})
+								.catch(err => {
+									console.log(err, 'err in discord oauth');
+								});
+						}
+					})
+					.catch(err => {
+						console.log(err, 'err in discord oauth');
+					});
+			}
+		})(req, res, next);
+	});
+
+	app.get('/discord-select-username', (req, res, next) => {
+		if (!req.session.discordProfile) {
+			return next();
+		}
+
+		res.render('page-new-username');
+	});
+
+	app.post('/discord-select-username', (req, res, next) => {
+		const { username } = req.body;
+
+		if (!req.session.discordProfile || !username) {
+			return next();
+		}
+	});
+
+	app.get('/revoke-discord', ensureAuthenticated, (req, res) => {
+		req.user.discordUsername = req.user.discordDiscriminator = '';
+		req.user.save(() => {
+			res.redirect('/account');
+		});
 	});
 };

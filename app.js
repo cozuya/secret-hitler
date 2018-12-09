@@ -12,7 +12,6 @@ const Account = require('./models/account');
 const routesIndex = require('./routes/index');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
-const { TOU_CHANGES } = require('./src/frontend-scripts/constants.js');
 const store = new MongoDBStore({
 	uri: 'mongodb://localhost:27017/secret-hitler-app',
 	collection: 'sessions'
@@ -71,43 +70,7 @@ if (process.env.DISCORDCLIENTID) {
 				scope: ['identify', 'email']
 			},
 			(accessToken, refreshToken, profile, cb) => {
-				console.log(profile);
-				// Account.findOne({ username: profile.username })
-				Account.findOne({ username: 'discordtest16' })
-					.then(account => {
-						if (!account) {
-							Account.create(
-								{
-									// username: profile.username,
-									username: 'discordtest16',
-									gameSettings: {
-										soundStatus: 'Pack2'
-									},
-									verified: true,
-									wins: 0,
-									losses: 0,
-									created: new Date(),
-									touLastAgreed: TOU_CHANGES[0].changeVer,
-									signupIP: 'discord',
-									discordUsername: profile.username,
-									discordDiscriminator: profile.discriminator,
-									discordMfa_enabled: profile.mfa_enabled,
-									verification: {
-										email: profile.email
-									}
-								},
-								(err, account) => {
-									console.log(err, 'err in use');
-									return err ? cb(null, null, err) : cb(account, profile);
-								}
-							);
-						} else {
-							return cb();
-						}
-					})
-					.catch(err => {
-						console.log(err, 'err in discord oauth');
-					});
+				cb(profile);
 			}
 		)
 	);

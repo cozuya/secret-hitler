@@ -19,8 +19,11 @@ block content
 					= discordUsername
 					span #
 					= discordDiscriminator
+					if isLocal
+						a(href="/revoke-discord") - Click here to unlink your Discord account
 			else
-				span(style="color: bisque") None
+				span(style="color: bisque") None 
+					a(href="/discord-login", style="color: orange; text-decoration: underline") - Click here to link your Discord account
 		if email
 			if !verified
 				button#request-verification.ui.primary.button(style="display: block; margin: 5px auto 0;") Request a new verification email
@@ -32,8 +35,6 @@ block content
 		if !discordUsername
 			button#change-password.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your password
 
-		if discordUsername && isLocal
-			button#delete-discord.ui.primary.button(style="display: block; margin: 5px auto 0; background: teal") Unlink your discord account
 		button#delete-account.ui.primay.button(style="display: block; margin: 5px auto 0; background: red; color: white") Delete your account
 
 	section.passwordchange-modal.ui.modal.small.segment.column
