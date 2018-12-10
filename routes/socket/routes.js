@@ -122,7 +122,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				});
 			}
 
-			let isRestricted = false;
+			let isRestricted = true;
 
 			const checkRestriction = account => {
 				if (!account || !passport || !passport.user || !socket) return;
