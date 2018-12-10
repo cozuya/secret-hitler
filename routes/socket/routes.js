@@ -299,7 +299,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				})
 				.on('getModInfo', count => {
 					if (authenticated && (isAEM || isTrial)) {
-						sendModInfo(socket, count);
+						sendModInfo(socket, count, isTrial && !isAEM);
 					}
 				})
 				.on('subscribeModChat', uid => {
