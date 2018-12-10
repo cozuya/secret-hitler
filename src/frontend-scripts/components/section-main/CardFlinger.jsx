@@ -109,6 +109,8 @@ class CardFlinger extends React.Component {
 				);
 			} else if (phase === 'selectPartyMembershipInvestigate' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message investigate">You must investigate another players party membership.</div>;
+			} else if (phase === 'selectPartyMembershipInvestigateReverse' && currentPlayerStatus === 'isPresident') {
+				return <div className="help-message investigate">You must show another player your party membership.</div>;
 			} else if (phase === 'specialElection' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message special-election">Choose 1 player to become the next President.</div>;
 			} else if (phase === 'execution' && currentPlayerStatus === 'isPresident') {
