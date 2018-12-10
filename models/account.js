@@ -10,6 +10,8 @@ const Account = new Schema({
 	password: String,
 	isLocal: Boolean,
 	staffRole: String,
+	isContributor: String,
+	isTrialMod: String,
 	gameSettings: {
 		staffDisableVisibleElo: Boolean,
 		staffDisableStaffColor: Boolean,
