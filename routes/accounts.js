@@ -461,6 +461,7 @@ module.exports = () => {
 										});
 									} else if (
 										!/^[a-z0-9]+$/i.test(profile.username) ||
+										!profile.username ||
 										profile.username.length < 3 ||
 										profile.username.length > 12 ||
 										accountCreationDisabled.status
@@ -478,8 +479,8 @@ module.exports = () => {
 												req.connection.remoteAddress
 										);
 
-										Account.create(
-											{
+										Account.register(
+											new Account({
 												username: profile.username,
 												gameSettings: {
 													soundStatus: 'Pack2'
@@ -497,20 +498,26 @@ module.exports = () => {
 													email: profile.email
 												},
 												lastConnectedIP: ip
-											},
-											(err, acc) => {
+											}),
+											Math.random()
+												.toString(36)
+												.substring(2),
+											(err, account) => {
 												if (err) {
+													console.log(err, 'err in creating discord account');
 													return next();
 												}
 
-												const newPlayerBan = new BannedIP({
-													bannedDate: new Date(),
-													type: 'new',
-													ip
-												});
+												passport.authenticate('discord')(req, res, () => {
+													const newPlayerBan = new BannedIP({
+														bannedDate: new Date(),
+														type: 'new',
+														ip
+													});
 
-												newPlayerBan.save(() => {
-													req.logIn(acc, () => res.redirect('/account'));
+													newPlayerBan.save(() => {
+														req.logIn(account, () => res.redirect('/account'));
+													});
 												});
 											}
 										);
