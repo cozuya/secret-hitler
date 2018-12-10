@@ -665,7 +665,11 @@ class Gamechat extends React.Component {
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
-					<Scrollbars ref={c => (this.scrollbar = c)} onScroll={this.handleChatScrolled}>
+					<Scrollbars
+						ref={c => (this.scrollbar = c)}
+						onScroll={this.handleChatScrolled}
+						renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
+					>
 						<div className="ui list">{this.processChats()}</div>
 					</Scrollbars>
 				</section>

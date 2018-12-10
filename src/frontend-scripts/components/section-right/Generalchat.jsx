@@ -243,7 +243,11 @@ export default class Generalchat extends React.Component {
 					{this.state.discordEnabled ? (
 						<embed height="100%" width="100%" src="https://discord.gg/secrethitlerio" />
 					) : (
-						<Scrollbars ref={c => (this.scrollbar = c)} onScroll={this.handleChatScrolled}>
+						<Scrollbars
+							ref={c => (this.scrollbar = c)}
+							onScroll={this.handleChatScrolled}
+							renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
+						>
 							<div className="ui list genchat-container">{this.renderChats()}</div>
 						</Scrollbars>
 					)}

@@ -119,7 +119,7 @@ export class Main extends React.Component {
 				{midSection === 'game' || midSection === 'replay' ? (
 					RenderMidSection()
 				) : (
-					<Scrollbars className="scrollbar-container-main">
+					<Scrollbars className="scrollbar-container-main" renderThumbVertical={props => <div {...props} className="thumb-vertical" />}>
 						<div className="section-main-content-container">{RenderMidSection()}</div>
 					</Scrollbars>
 				)}

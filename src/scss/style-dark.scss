@@ -15,6 +15,12 @@
 @import 'game-text.scss';
 @import 'reports.scss';
 
+.thumb-vertical {
+	cursor: pointer;
+	border-radius: inherit;
+	background-color: grey !important;
+}
+
 @media screen and (min-width: 1920px) {
 	.body-container {
 		margin: auto;
