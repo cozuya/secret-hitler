@@ -126,6 +126,8 @@ module.exports.sendUserGameSettings = socket => {
 				const userListInfo = {
 					userName: passport.user,
 					staffRole: account.staffRole || '',
+					isContributor: account.isContributor || '',
+					isTrialMod: account.isTrialMod || '',
 					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 					wins: account.wins,
