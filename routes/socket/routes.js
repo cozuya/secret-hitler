@@ -38,7 +38,9 @@ const {
 	selectPartyMembershipInvestigate,
 	selectPolicies,
 	selectPlayerToExecute,
-	selectPartyMembershipInvestigateReverse
+	selectPartyMembershipInvestigateReverse,
+	selectOnePolicy,
+	selectBurnCard
 } = require('./game/policy-powers');
 const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
@@ -120,7 +122,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 				});
 			}
 
-			let isRestricted = true;
+			let isRestricted = false;
 
 			const checkRestriction = account => {
 				if (!account || !passport || !passport.user || !socket) return;
@@ -395,7 +397,15 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					if (isRestricted) return;
 					const game = findGame(data);
 					if (authenticated && ensureInGame(passport, game)) {
-						selectPolicies(passport, game);
+						if (game.private.lock.policyPeekAndDrop) selectOnePolicy(passport, game);
+						else selectPolicies(passport, game);
+					}
+				})
+				.on('selectedPresidentVoteOnBurn', data => {
+					if (isRestricted) return;
+					const game = findGame(data);
+					if (authenticated && ensureInGame(passport, game)) {
+						selectBurnCard(passport, game, data);
 					}
 				})
 				.on('selectedPlayerToExecute', data => {

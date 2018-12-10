@@ -115,6 +115,14 @@ const enactPolicy = (game, team) => {
 		game.private.lock.selectPolicies = false;
 	}
 
+	if (game.private.lock.selectOnePolicy) {
+		game.private.lock.selectOnePolicy = false;
+	}
+
+	if (game.private.lock.selectBurnCard) {
+		game.private.lock.selectBurnCard = false;
+	}
+
 	game.gameState.pendingChancellorIndex = null;
 
 	game.private.summary = game.private.summary.updateLog({

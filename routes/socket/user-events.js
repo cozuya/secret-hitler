@@ -1026,6 +1026,29 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 
 						return text;
 				}
+			case 'didSinglePolicyPeek':
+				if (data.claimState === 'liberal' || data.claimState === 'fascist') {
+					text = [
+						{
+							text: 'President '
+						},
+						{
+							text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
+							type: 'player'
+						},
+						{
+							text: ' claims to have peeked at a '
+						},
+						{
+							text: data.claimState,
+							type: data.claimState
+						},
+						{
+							text: ' policy.'
+						}
+					];
+					return text;
+				}
 			case 'didPolicyPeek':
 				text = [
 					{

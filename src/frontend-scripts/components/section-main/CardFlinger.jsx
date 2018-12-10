@@ -61,6 +61,13 @@ class CardFlinger extends React.Component {
 					uid: gameInfo.general.uid
 				});
 			}
+
+			if (phase === 'presidentVoteOnBurn' && gameInfo.cardFlingerState[0].action === 'active') {
+				socket.emit('selectedPresidentVoteOnBurn', {
+					vote: index === 1,
+					uid: gameInfo.general.uid
+				});
+			}
 		};
 		const { cardFlingerState } = this.props.gameInfo;
 		const positions = ['middle-far-left', 'middle-left', 'middle-center', 'middle-right', 'middle-far-right'];
@@ -122,6 +129,12 @@ class CardFlinger extends React.Component {
 				return (
 					<div className="help-message veto">
 						Would you like to <span>VETO</span> both of these policies?
+					</div>
+				);
+			} else if (phase === 'presidentVoteOnBurn' && currentPlayerStatus === 'isPresident') {
+				return (
+					<div className="help-message veto">
+						Would you like to <span>DISCARD</span> the top policy?
 					</div>
 				);
 			} else if (status === 'President to peek at policies.' && currentPlayerStatus === 'isPresident') {

@@ -26,28 +26,6 @@ module.exports.policyPeek = game => {
 };
 
 /**
- * @param {object} game - game to act on.
- */
-module.exports.policyPeekAndDrop = game => {
-	const { seatedPlayers } = game.private;
-	const { presidentIndex } = game.gameState;
-	const president = seatedPlayers[presidentIndex];
-
-	if (!game.private.lock.policyPeekAndDrop && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
-		game.private.lock.policyPeekAndDrop = true;
-
-		if (game.gameState.undrawnPolicyCount < 3) {
-			shufflePolicies(game);
-		}
-
-		game.general.status = 'President to peek at one policy.';
-		game.publicPlayersState[presidentIndex].isLoader = true;
-		president.playersState[presidentIndex].policyNotification = true;
-		sendInProgressGameUpdate(game, true);
-	}
-};
-
-/**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  */
@@ -208,6 +186,327 @@ module.exports.selectPolicies = (passport, game) => {
 				startElection(game);
 			},
 			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4500 : 7000
+		);
+	}
+};
+
+/**
+ * @param {object} game - game to act on.
+ */
+module.exports.policyPeekAndDrop = game => {
+	const { seatedPlayers } = game.private;
+	const { presidentIndex } = game.gameState;
+	const president = seatedPlayers[presidentIndex];
+
+	if (!game.private.lock.policyPeekAndDrop && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+		game.private.lock.policyPeekAndDrop = true;
+
+		if (game.gameState.undrawnPolicyCount < 3) {
+			shufflePolicies(game);
+		}
+
+		game.general.status = 'President to peek at one policy.';
+		game.publicPlayersState[presidentIndex].isLoader = true;
+		president.playersState[presidentIndex].policyNotification = true;
+		sendInProgressGameUpdate(game, true);
+	}
+};
+
+/**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
+ */
+module.exports.selectOnePolicy = (passport, game) => {
+	const { presidentIndex } = game.gameState;
+	const { experiencedMode } = game.general;
+	const { seatedPlayers } = game.private;
+	const president = seatedPlayers[presidentIndex];
+
+	if (!president || president.userName !== passport.user) {
+		return;
+	}
+
+	if (game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
+	if (!game.private.lock.selectOnePolicy && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+		game.private.lock.selectOnePolicy = true;
+		game.publicPlayersState[presidentIndex].isLoader = false;
+
+		if (game.private.policies.length < 3) {
+			shufflePolicies(game);
+		}
+
+		game.private.summary = game.private.summary.updateLog({
+			policyPeek: game.private.policies.slice(0, 1).reduce(
+				(peek, policy) => {
+					if (policy === 'fascist') {
+						return Object.assign({}, peek, { reds: peek.reds + 1 });
+					} else {
+						return Object.assign({}, peek, { blues: peek.blues + 1 });
+					}
+				},
+				{ reds: 0, blues: 0 }
+			)
+		});
+
+		const policy = game.private.policies[0];
+		president.cardFlingerState = [
+			{
+				position: 'middle-center',
+				action: 'active',
+				cardStatus: {
+					isFlipped: false,
+					cardFront: 'policy',
+					cardBack: `${policy}p`
+				}
+			}
+		];
+
+		game.gameState.audioCue = 'policyPeek';
+		president.playersState[presidentIndex].policyNotification = false;
+		sendInProgressGameUpdate(game, true);
+
+		setTimeout(
+			() => {
+				president.cardFlingerState[0].cardStatus.isFlipped = true;
+				sendInProgressGameUpdate(game, true);
+			},
+			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000
+		);
+
+		setTimeout(
+			() => {
+				president.cardFlingerState[0].cardStatus.isFlipped = false;
+				president.cardFlingerState[0].action = '';
+				sendInProgressGameUpdate(game, true);
+				game.gameState.audioCue = '';
+			},
+			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 3500 : 6000
+		);
+
+		setTimeout(
+			() => {
+				president.cardFlingerState = [];
+
+				const modOnlyChat = {
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{
+							text: 'President '
+						},
+						{
+							text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' peeks and sees '
+						},
+						{
+							text: game.private.policies[0] === 'liberal' ? 'B' : 'R',
+							type: game.private.policies[0]
+						},
+						{
+							text: '.'
+						}
+					]
+				};
+				game.private.hiddenInfoChat.push(modOnlyChat);
+				sendInProgressModChatUpdate(game, modOnlyChat);
+
+				if (!game.general.disableGamechat) {
+					president.gameChats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{ text: 'You peek at the top policy and see that it is a ' },
+							{
+								text: policy,
+								type: policy
+							},
+							{ text: ' policy.' }
+						]
+					});
+				}
+
+				sendInProgressGameUpdate(game);
+				game.trackState.electionTrackerCount = 0;
+				president.playersState[presidentIndex].claim = 'didSinglePolicyPeek';
+				setTimeout(
+					() => {
+						const chat = {
+							gameChat: true,
+							timestamp: new Date(),
+							chat: [
+								{
+									text:
+										'You must vote whether or not to discard this policy.  Select Ja to discard the peeked policy or select Nein to put it back on the deck.'
+								}
+							]
+						};
+
+						game.publicPlayersState[presidentIndex].isLoader = true;
+
+						president.cardFlingerState = [
+							{
+								position: 'middle-left',
+								notificationStatus: '',
+								action: 'active',
+								cardStatus: {
+									isFlipped: false,
+									cardFront: 'ballot',
+									cardBack: 'ja'
+								}
+							},
+							{
+								position: 'middle-right',
+								action: 'active',
+								notificationStatus: '',
+								cardStatus: {
+									isFlipped: false,
+									cardFront: 'ballot',
+									cardBack: 'nein'
+								}
+							}
+						];
+
+						if (!game.general.disableGamechat) {
+							president.gameChats.push(chat);
+						}
+
+						sendInProgressGameUpdate(game);
+
+						setTimeout(
+							() => {
+								president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = true;
+								president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus = 'notification';
+								game.gameState.phase = 'presidentVoteOnBurn';
+
+								if (game.general.timedMode) {
+									game.gameState.timedModeEnabled = true; // (passport, game, data)
+									game.private.timerId = setTimeout(
+										() => {
+											if (game.gameState.timedModeEnabled) {
+												game.gameState.timedModeEnabled = false;
+
+												selectBurnCard({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
+											}
+										},
+										process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
+									);
+								}
+
+								sendInProgressGameUpdate(game);
+							},
+							process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000
+						);
+					},
+					process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 2000
+				);
+			},
+			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4500 : 7000
+		);
+	}
+};
+
+/**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
+ * @param {object} data from socket emit
+ */
+module.exports.selectBurnCard = (passport, game, data) => {
+	if (game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
+	const { vote } = data;
+	const { experiencedMode } = game.general;
+	const { presidentIndex } = game.gameState;
+	const { seatedPlayers } = game.private;
+	const president = seatedPlayers[presidentIndex];
+	const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
+
+	if (!president || president.userName !== passport.user) {
+		return;
+	}
+
+	if (!game.private.lock.selectBurnCard && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+		game.private.lock.selectBurnCard = true;
+
+		game.private.summary = game.private.summary.updateLog({
+			presidentVeto: data.vote
+		});
+		game.publicPlayersState[presidentIndex].isLoader = false;
+		president.cardFlingerState[0].action = president.cardFlingerState[1].action = '';
+		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = false;
+
+		if (data.vote) {
+			president.cardFlingerState[0].notificationStatus = 'selected';
+			president.cardFlingerState[1].notificationStatus = '';
+		} else {
+			president.cardFlingerState[0].notificationStatus = '';
+			president.cardFlingerState[1].notificationStatus = 'selected';
+		}
+
+		publicPresident.cardStatus = {
+			cardDisplayed: true,
+			cardFront: 'ballot',
+			cardBack: {
+				cardName: data.vote ? 'ja' : 'nein'
+			}
+		};
+
+		sendInProgressGameUpdate(game);
+
+		setTimeout(
+			() => {
+				const chat = {
+					timestamp: new Date(),
+					gameChat: true,
+					chat: [
+						{ text: 'President ' },
+						{
+							text: game.general.blindMode
+								? `{${game.private.seatedPlayers.indexOf(president) + 1}}`
+								: `${passport.user} {${game.private.seatedPlayers.indexOf(president) + 1}}`,
+							type: 'player'
+						},
+						{
+							text: data.vote ? ' has chosen to discard the top card.' : ' has chosen to keep the top card.'
+						}
+					]
+				};
+
+				if (!game.general.disableGamechat) {
+					game.private.seatedPlayers.forEach(player => {
+						player.gameChats.push(chat);
+					});
+					game.private.unSeatedGameChats.push(chat);
+				}
+
+				publicPresident.cardStatus.isFlipped = true;
+
+				if (data.vote) {
+					game.private.policies.shift();
+					game.gameState.undrawnPolicyCount--;
+					if (game.gameState.undrawnPolicyCount < 3) {
+						shufflePolicies(game);
+					}
+				}
+				sendInProgressGameUpdate(game);
+
+				setTimeout(
+					() => {
+						startElection(game);
+					},
+					process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000
+				);
+			},
+			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000
 		);
 	}
 };
@@ -475,7 +774,7 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data) 
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
-	const playersTeam = game.private.seatedPlayers[playerIndex].role.team;
+	const playersTeam = game.private.seatedPlayers[presidentIndex].role.team;
 
 	if (playerIndex === presidentIndex) {
 		return;
@@ -526,7 +825,7 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data) 
 
 					if (!game.general.disableGamechat) {
 						seatedPlayers
-							.filter(player => player.userName !== president.userName)
+							.filter(player => player.userName !== president.userName && player.userName !== targetPlayer.userName)
 							.forEach(player => {
 								chat.chat = [
 									{ text: 'President ' },
@@ -547,15 +846,29 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data) 
 
 						game.private.unSeatedGameChats.push(chat);
 
+						president.gameChats.push({
+							timestamp: new Date(),
+							gameChat: true,
+							chat: [
+								{
+									text: 'You have shown your party membership card to '
+								},
+								{
+									text: game.general.blindMode ? `{${playerIndex + 1}}` : `${targetPlayer.userName} {${playerIndex + 1}}`,
+									type: 'player'
+								},
+								{ text: '.' }
+							]
+						});
 						targetPlayer.gameChats.push({
 							timestamp: new Date(),
 							gameChat: true,
 							chat: [
 								{
-									text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+									text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
 									type: 'player'
 								},
-								{ text: ' has shown you their party membershit, and you determine that they are on the ' },
+								{ text: ' has shown you their party membership, and you determine that they are on the ' },
 								{
 									text: playersTeam,
 									type: playersTeam
@@ -616,7 +929,7 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data) 
 				() => {
 					game.publicPlayersState[presidentIndex].cardStatus.cardDisplayed = false;
 					targetPlayer.playersState[presidentIndex].cardStatus.cardBack = {};
-					targetPlayer.playersState[presidentIndex].claim = 'didInvestigateLoyalty';
+					targetPlayer.playersState[playerIndex].claim = 'didInvestigateLoyalty';
 					sendInProgressGameUpdate(game, true);
 					startElection(game);
 				},
