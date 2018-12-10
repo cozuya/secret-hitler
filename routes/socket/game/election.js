@@ -10,7 +10,9 @@ const {
 	selectPolicies,
 	selectPlayerToExecute,
 	selectPartyMembershipInvestigate,
-	selectSpecialElection
+	selectSpecialElection,
+	showPlayerLoyalty,
+	policyPeekAndDrop
 } = require('./policy-powers');
 const { completeGame } = require('./end-game');
 const _ = require('lodash');
@@ -20,7 +22,9 @@ const powerMapping = {
 	investigate: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
 	deckpeek: [policyPeek, 'The president must examine the top 3 policies.'],
 	election: [specialElection, 'The president must select a player for a special election.'],
-	bullet: [executePlayer, 'The president must select a player for execution.']
+	bullet: [executePlayer, 'The president must select a player for execution.'],
+	reverseinv: [showPlayerLoyalty, 'The president must reveal their party membership to another player.'],
+	peekdrop: [policyPeekAndDrop, 'The president must examine the top policy, and may discard it.']
 };
 
 const presidentPowers = [
@@ -69,6 +73,10 @@ const enactPolicy = (game, team) => {
 
 	if (game.private.lock.policyPeek) {
 		game.private.lock.policyPeek = false;
+	}
+
+	if (game.private.lock.policyPeekAndDrop) {
+		game.private.lock.policyPeekAndDrop = false;
 	}
 
 	if (game.private.lock.selectPlayerToExecute) {

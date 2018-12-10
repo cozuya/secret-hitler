@@ -581,8 +581,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	if (data.customGameSettings && data.customGameSettings.enabled) {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
-		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet'];
+		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet', 'reverseinv', 'peekdrop'];
 		if (!data.customGameSettings.powers || data.customGameSettings.powers.length != 5) return;
+		console.log(data.customGameSettings.powers);
 		for (let a = 0; a < 5; a++) {
 			if (data.customGameSettings.powers[a] == '' || data.customGameSettings.powers[a] == 'null') data.customGameSettings.powers[a] = null;
 			else if (data.customGameSettings.powers[a] && !validPowers.includes(data.customGameSettings.powers[a])) return;

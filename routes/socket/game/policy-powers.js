@@ -26,6 +26,28 @@ module.exports.policyPeek = game => {
 };
 
 /**
+ * @param {object} game - game to act on.
+ */
+module.exports.policyPeekAndDrop = game => {
+	const { seatedPlayers } = game.private;
+	const { presidentIndex } = game.gameState;
+	const president = seatedPlayers[presidentIndex];
+
+	if (!game.private.lock.policyPeekAndDrop && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
+		game.private.lock.policyPeekAndDrop = true;
+
+		if (game.gameState.undrawnPolicyCount < 3) {
+			shufflePolicies(game);
+		}
+
+		game.general.status = 'President to peek at one policy.';
+		game.publicPlayersState[presidentIndex].isLoader = true;
+		president.playersState[presidentIndex].policyNotification = true;
+		sendInProgressGameUpdate(game, true);
+	}
+};
+
+/**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  */
