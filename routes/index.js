@@ -8,7 +8,6 @@ const accounts = require('./accounts');
 const version = require('../version');
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
-const { TRIALMODS } = require('../src/frontend-scripts/constants');
 
 /**
  * @param {object} req - express request object.
@@ -122,6 +121,8 @@ module.exports = () => {
 				const gameObj = {
 					game: true,
 					staffRole: account.staffRole || '',
+					isContributor: account.isContributor || '',
+					isTrialMod: account.isTrialMod || '',
 					verified: req.user.verified,
 					username,
 					gameSettings: account.gameSettings,
@@ -178,14 +179,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (TRIALMODS.includes(requestingUser)) {
-								try {
-									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
-								} catch (e) {
-									_profile.lastConnectedIP = 'something went wrong';
-									console.log(e);
-								}
-							} else if (!acc || !acc.staffRole || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
+							if (!acc || !acc.staffRole || !acc.isTrialMod || acc.staffRole.length === 0 || acc.isContributor) {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {
