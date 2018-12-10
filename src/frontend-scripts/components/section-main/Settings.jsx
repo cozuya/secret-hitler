@@ -534,7 +534,7 @@ class Settings extends React.Component {
 								{this.state.preview && (
 									<div className="preview-container">
 										<h5 className="ui header">Preview</h5>
-										<img src={this.state.preview} />;
+										<img src={this.state.preview} />
 										<button onClick={previewSaveClick} className="ui button">
 											Save
 										</button>
