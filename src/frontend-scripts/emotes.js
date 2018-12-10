@@ -37,11 +37,12 @@ export function processEmotes(input, isMod, allEmotes) {
 		} else if (validSiteURL.test(word)) {
 			const data = validSiteURL.exec(word);
 			const isGithub = data[1] == 'github.com/cozuya/secret-hitler';
+			const gameURL = data[2].startsWith('game/');
 			/* eslint-disable */
 			formatedMsg.push(
 				<a
 					key={index}
-					href={isGithub ? 'https://github.com/cozuya/secret-hitler/' + data[2] : data[2]}
+					href={isGithub ? 'https://github.com/cozuya/secret-hitler/' + data[2] : gameURL ? data[2].substring(5) : 'https://secrethitler.io/' + data[2]}
 					className="shio-link"
 					title={isGithub ? "link to sh.io's github page" : 'link to something inside of sh.io'}
 				>
