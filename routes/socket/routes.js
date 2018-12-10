@@ -33,7 +33,13 @@ const {
 } = require('./user-requests');
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
-const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
+const {
+	selectSpecialElection,
+	selectPartyMembershipInvestigate,
+	selectPolicies,
+	selectPlayerToExecute,
+	selectPartyMembershipInvestigateReverse
+} = require('./game/policy-powers');
 const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES, TRIALMODS } = require('../../src/frontend-scripts/constants.js');
@@ -376,6 +382,13 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					const game = findGame(data);
 					if (authenticated && ensureInGame(passport, game)) {
 						selectPartyMembershipInvestigate(passport, game, data);
+					}
+				})
+				.on('selectPartyMembershipInvestigateReverse', data => {
+					if (isRestricted) return;
+					const game = findGame(data);
+					if (authenticated && ensureInGame(passport, game)) {
+						selectPartyMembershipInvestigateReverse(passport, game, data);
 					}
 				})
 				.on('selectedPolicies', data => {

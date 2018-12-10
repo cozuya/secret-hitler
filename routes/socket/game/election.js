@@ -103,6 +103,14 @@ const enactPolicy = (game, team) => {
 		game.private.lock.investigateLoyalty = false;
 	}
 
+	if (game.private.lock.showPlayerLoyalty) {
+		game.private.lock.showPlayerLoyalty = false;
+	}
+
+	if (game.private.lock.selectPartyMembershipInvestigateReverse) {
+		game.private.lock.selectPartyMembershipInvestigateReverse = false;
+	}
+
 	if (game.private.lock.selectPolicies) {
 		game.private.lock.selectPolicies = false;
 	}
