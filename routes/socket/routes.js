@@ -36,7 +36,7 @@ const { selectChancellor } = require('./game/election-util');
 const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
 const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
-const { TOU_CHANGES } = require('../../src/frontend-scripts/constants.js');
+const { TOU_CHANGES, TRIALMODS } = require('../../src/frontend-scripts/constants.js');
 const { AEM_ALTS } = require('./report.js');
 const version = require('../../version');
 
@@ -105,10 +105,12 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			const { passport } = socket.handshake.session;
 			const authenticated = ensureAuthenticated(socket);
 
-			let isAEM = false;
+			let isAEM = false,
+				isTrial = false;
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'contributor') isAEM = true;
+					isTrial = TRIALMODS.contains(passport.user);
 				});
 			}
 
@@ -296,7 +298,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					}
 				})
 				.on('getModInfo', count => {
-					if (authenticated && isAEM) {
+					if (authenticated && (isAEM || isTrial)) {
 						sendModInfo(socket, count);
 					}
 				})
@@ -318,7 +320,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					}
 				})
 				.on('getUserReports', () => {
-					if (authenticated && isAEM) {
+					if (authenticated && (isAEM || isTrial)) {
 						sendUserReports(socket);
 					}
 				})
