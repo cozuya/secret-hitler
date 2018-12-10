@@ -890,9 +890,9 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 						if (passedNicer === 'RR') {
 							// tossed blue in VZ
 							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR during veto zone, and tossed the blue.`, game);
-						} else if (passedNicer === 'BR') {
+						} else if (passedNicer === 'BR' && track4blue) {
 							// tossed blue in VZ
-							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR during veto zone, and did not force.`, game);
+							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR during veto zone, and did not force 5th blue.`, game);
 						}
 					}
 				}

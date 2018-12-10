@@ -39,6 +39,7 @@ class Settings extends React.Component {
 			disableCrowns: '',
 			disableSeasonal: '',
 			disableElo: '',
+			disableAggregations: '',
 			soundStatus: '',
 			isPrivate: '',
 			failedNameChangeMessage: '',
@@ -66,6 +67,7 @@ class Settings extends React.Component {
 			disableConfetti: gameSettings.disableConfetti || '',
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
+			disableAggregations: gameSettings.disableAggregations || '',
 			isPrivate: gameSettings.isPrivate || '',
 			fullheight: gameSettings.fullheight || false,
 			soundSelected: gameSettings.soundStatus || 'Off',
@@ -416,9 +418,19 @@ class Settings extends React.Component {
 								<input type="checkbox" name="confetti" checked={this.state.disableConfetti} onChange={() => this.toggleGameSettings('disableConfetti')} />
 								<label />
 							</div>
-							<h4 className="ui header">Disable tournament crowns and seasonal awards</h4>
+							<h4 className="ui header">Disable seasonal awards</h4>
 							<div className="ui fitted toggle checkbox">
 								<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
+								<label />
+							</div>
+							<h4 className="ui header">Disable playerlist aggregations</h4>
+							<div className="ui fitted toggle checkbox">
+								<input
+									type="checkbox"
+									name="disableaggregations"
+									checked={this.state.disableAggregations}
+									onChange={() => this.toggleGameSettings('disableAggregations')}
+								/>
 								<label />
 							</div>
 							{window.staffRole && (
@@ -534,7 +546,7 @@ class Settings extends React.Component {
 								{this.state.preview && (
 									<div className="preview-container">
 										<h5 className="ui header">Preview</h5>
-										<img src={this.state.preview} />;
+										<img src={this.state.preview} />
 										<button onClick={previewSaveClick} className="ui button">
 											Save
 										</button>

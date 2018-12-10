@@ -8,6 +8,7 @@ const Account = new Schema({
 		unique: true
 	},
 	password: String,
+	isLocal: Boolean,
 	staffRole: String,
 	gameSettings: {
 		staffDisableVisibleElo: Boolean,
@@ -27,6 +28,7 @@ const Account = new Schema({
 		disableConfetti: Boolean,
 		disableCrowns: Boolean,
 		disableSeasonal: Boolean,
+		disableAggregations: Boolean,
 		soundStatus: String,
 		unbanTime: Date,
 		unTimeoutTime: Date,
@@ -99,7 +101,10 @@ const Account = new Schema({
 	isFixed: Boolean,
 	eloSeason: Number,
 	eloOverall: Number,
-	hashUid: String
+	hashUid: String,
+	discordUsername: String,
+	discordDiscriminator: String,
+	discordMfa_enabled: Boolean
 });
 
 Account.plugin(passportLocalMongoose);

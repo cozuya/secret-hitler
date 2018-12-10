@@ -75,6 +75,11 @@ export default () => {
 					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
 
 					submitErr(message);
+				},
+				500(xhr) {
+					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
+
+					submitErr(`Internal error: ${message}`);
 				}
 			}
 		});

@@ -1,0 +1,13 @@
+extends layout
+block content
+	h2.header(style="margin-top: 60px; color: #ddd") Creating a new account: there's something wrong with your discord username (most likely used on the site already, or too long or short), please select a new username.  If you are meaning to link your existing SH.io account with your discord account, log into that and then click the appropriate link in your account screen.
+	form.ui.form(style="width: 500px; margin: 0 auto")
+		.field
+			.ui.left.icon.input
+				i.lock.icon
+				input#new-username(placeholder="New username", spellcheck="false")
+		button.ui.primary.button.fluid.large#new-username-submit Submit
+		.ui.dimmer.inverted
+			.ui.text.loader Updating your username..
+		.ui.negative.hidden.message
+		.ui.hidden.message Successfully updated your username!

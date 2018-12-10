@@ -9,6 +9,31 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 1.0.0-beta5 released 12-9-2018</p>
+		</div>
+		<h3>New feature: Discord signin/signup integration</h3>
+		<p>You can now authentic your account through Discord. This works in the following ways:</p>
+		<ul>
+			<li>
+				New players can now sign up using Discord. This will attempt to make an sh.io account using their discord username, if that already exists or it
+				violates our username standards (length, bad words, etc) they will be prompted to enter a new username.
+			</li>
+			<li>
+				Existing players can associate their sh.io account with their Discord account. Do this in the <a href="/account">account</a> screen or just{' '}
+				<a href="/discord-login">click here.</a> You will need to be logged in.
+			</li>
+			<li>Existing players (players who have an account that is not solely through Discord) can also revoke their Discord association at any time.</li>
+			<li>Anyone using Discord automatically becomes verified without needing an email sent.</li>
+			<li>There's unfortunately nothing fun we can do with Discord integration right now other than authentication.</li>
+		</ul>
+		<h3>New feature: disable player list aggregation user setting</h3>
+		<div style={{ textAlign: 'center' }}>
+			<img src="/images/disable-agg.png" style={{ border: '1px solid blue' }} />
+		</div>
+		<p>If you prefer the old way of seeing the playerlist (upper right corner outside of games), you can now change that in your settings.</p>
+		<h3>ELO ranking adjustment: non-rainbow games now give more elo, and rainbow games give slightly less.</h3>
+		<p>Thanks to contributor Nth we have some more ELO changes upcoming in the future.</p>
+		<div className="ui header">
 			<p>Version 1.0.0-beta4 released 12-4-2018</p>
 		</div>
 		<h3>Some attempts to fix issues with server instability, few smaller things, thats about it.</h3>

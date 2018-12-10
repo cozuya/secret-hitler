@@ -19,6 +19,9 @@ const store = new MongoDBStore({
 
 app.setMaxListeners(0);
 io.setMaxListeners(0);
+// require('events').EventEmitter.defaultMaxListeners = 0;
+
+process.on('warning', e => console.warn(e.stack));
 
 store.on('error', err => {
 	console.log(err, 'store session error');
@@ -57,30 +60,21 @@ app.use(passport.session());
 
 passport.use(new LocalStrategy(Account.authenticate()));
 
-// if (process.env.DISCORDCLIENTID) {
-// passport.use(
-// 	new DiscordStrategy(
-// 		{
-// 			clientID: process.env.DISCORDCLIENTID,
-// 			clientSecret: process.env.DISCORDCLIENTSECRET,
-// 			callbackURL: '/discord/login-callback',
-// 			scope: ['identify', 'email']
-// 		},
-// 		(accessToken, refreshToken, profile, cb) => {
-// 			console.log(profile);
-// 			Account.create(
-// 				{
-// 					username: 'discordtest10'
-// 				},
-// 				(err, account) => {
-// 					console.log(err, 'err in use');
-// 					return err ? cb() : cb(err, account);
-// 				}
-// 			);
-// 		}
-// 	)
-// );
-// } else console.error('WARN: No discord client data in .env');
+if (process.env.DISCORDCLIENTID) {
+	passport.use(
+		new DiscordStrategy(
+			{
+				clientID: process.env.DISCORDCLIENTID,
+				clientSecret: process.env.DISCORDCLIENTSECRET,
+				callbackURL: '/discord/login-callback',
+				scope: ['identify', 'email']
+			},
+			(accessToken, refreshToken, profile, cb) => {
+				cb(profile);
+			}
+		)
+	);
+} else console.error('WARN: No discord client data in .env');
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());

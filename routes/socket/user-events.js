@@ -8,9 +8,10 @@ const {
 	limitNewPlayers,
 	currentSeasonNumber,
 	newStaff,
-	createNewBypass
+	createNewBypass,
+	testIP
 } = require('./models');
-const { sendGameList, sendGeneralChats, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
@@ -27,11 +28,11 @@ const _ = require('lodash');
 const { sendInProgressGameUpdate, sendPlayerChatUpdate, destroySession } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
-const version = require('../../version');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS, TRIALMODS } = require('../../src/frontend-scripts/constants');
 const { makeReport } = require('./report.js');
+const { expandAndSimplify } = require('./ip-obf');
 
 /**
  * @param {object} game - game to act on.
@@ -1833,7 +1834,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 
 			if (
 				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&
-				(!account.gameSettings.privateToggleTime || account.gameSettings.privateToggleTime < new Date().getTime() - 64800000)
+				(!account.gameSettings.privateToggleTime || account.gameSettings.privateToggleTime - 64800000 < new Date().getTime())
 			) {
 				account.gameSettings.privateToggleTime = new Date().getTime();
 				account.save(() => {
@@ -2596,8 +2597,9 @@ module.exports.handlePlayerReportDismiss = () => {
 
 /**
  * @param {object} socket - socket reference.
+ * @param {function} callback - success callback.
  */
-module.exports.checkUserStatus = socket => {
+module.exports.checkUserStatus = (socket, callback) => {
 	const { passport } = socket.handshake.session;
 
 	if (passport && Object.keys(passport).length) {
@@ -2633,7 +2635,7 @@ module.exports.checkUserStatus = socket => {
 				const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
 
 				socket.emit('manualDisconnection');
-				socket.disconnect();
+				socket.disconnect(true);
 
 				if (bannedUserlistIndex >= 0) {
 					userList.splice(bannedUserlistIndex, 1);
@@ -2641,42 +2643,24 @@ module.exports.checkUserStatus = socket => {
 
 				destroySession(username);
 			};
-			Account.findOne({ username: user }, function(err, account) {
-				if (account) {
-					BannedIP.find(
-						{
-							ip: account.lastConnectedIP,
-							type: 'tiny' || 'small' || 'big'
-						},
-						(err, ips) => {
-							let date;
-							let unbannedTime;
-							const ip = ips[ips.length - 1];
-
-							if (ip) {
-								date = new Date().getTime();
-								unbannedTime =
-									ip.type === 'small'
-										? ip.bannedDate.getTime() + 64800000
-										: ip.type === 'tiny'
-										? ip.bannedDate.getTime() + 60000
-										: ip.bannedDate.getTime() + 604800000;
-							}
-
-							if (ip && unbannedTime > date) logOutUser(user);
+			testIP(expandAndSimplify(socket.handshake.address), banType => {
+				if (banType && banType != 'new') logOutUser(user);
+				else {
+					Account.findOne({ username: user }, function(err, account) {
+						if (account) {
+							testIP(account.lastConnectedIP, banType => {
+								if (banType && banType != 'new') logOutUser(user);
+								else {
+									sendUserList();
+									callback();
+								}
+							});
 						}
-					);
+					});
 				}
 			});
-
-			sendUserList();
-		}
-	}
-
-	socket.emit('version', { current: version });
-
-	sendGeneralChats(socket);
-	sendGameList(socket);
+		} else callback();
+	} else callback();
 };
 
 module.exports.handleUserLeaveGame = handleUserLeaveGame;

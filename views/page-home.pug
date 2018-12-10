@@ -25,7 +25,21 @@ block content
 				.eight.wide.column.news
 					h2(style="color: #000").ui.header News
 					p Issues/bugs can be reported #[a(href="/about") here]. Or come to the discord development channel, or open a #[a(href="https://github.com/cozuya/secret-hitler/issues") github issue].
-					p Version 1.0.0-beta4 released 12-4-2018<
+					h3 New feature: Discord signin/signup integration
+					p You can now authentic your account through Discord. This works in the following ways:
+					ul
+						li New players can now sign up using Discord. This will attempt to make an sh.io account using their discord username, if that already exists or it violates our username standards (length, bad words, etc) they will be prompted to enter a new username.
+					li Existing players can associate their sh.io account with their Discord account. Do this in the #[a(href="/account") account] screen or just #[a(href="/discord-login") click here]. You will need to be logged in.
+					li Existing players (players who have an account that is not solely through Discord) can also revoke their Discord association at any time.
+					li Anyone using Discord automatically becomes verified without needing an email sent.
+					li There's unfortunately nothing fun we can do with Discord integration right now other than authentication.
+					h3 New feature: disable player list aggregation user setting
+					div(style="text-align: center")
+						img(src="/images/disable-agg.png",style="border: 1px solid grey; width: 200px")
+					p If you prefer the old way of seeing the playerlist (upper right corner outside of games), you can now change that in your settings.
+					h3 ELO ranking adjustment: non-rainbow games now give more elo, and rainbow games give slightly less.
+					p Thanks to contributor Nth we have some more ELO changes upcoming in the future.
+					p Version 1.0.0-beta4 released 12-4-2018
 					h3 Some attempts to fix issues with server instability, few smaller things, thats about it.
 					p Version 1.0.0-beta3 released 11-23-2018
 					h4 Fixed feature: adding email in the account page now doesn't always return "an account already has that verified email" message. Please use that button to become verified.

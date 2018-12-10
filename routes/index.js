@@ -55,17 +55,19 @@ module.exports = () => {
 
 	accounts();
 
-	Account.find({ staffRole: { $exists: true } }).then(accounts => {
-		const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
-		const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
-		const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+	Account.find({ staffRole: { $exists: true } })
+		.then(accounts => {
+			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
+			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
+			const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
 
-		socketRoutes(modUserNames, editorUserNames, adminUserNames);
-	});
+			socketRoutes(modUserNames, editorUserNames, adminUserNames);
+		})
+		.catch(err => {
+			console.log(err, 'err in finding staffroles');
+		});
 
 	app.get('/', (req, res) => {
-		// console.log(req.user, 'user');
-
 		renderPage(req, res, 'page-home', 'home');
 	});
 
@@ -131,7 +133,6 @@ module.exports = () => {
 				}
 
 				account.gameSettings.blacklist = [];
-
 				res.render('game', gameObj);
 			});
 		}
@@ -284,19 +285,6 @@ module.exports = () => {
 			console.log(err, 'upload cardback crash error');
 		}
 	});
-
-	// app.get('/discord-login', passport.authenticate('discord'));
-
-	// app.get('/discord/login-callback', (req, res, next) => {
-	// 	passport.authenticate('discord', (err, user) => {
-	// 		console.log(err, 'err');
-	// 		console.log(user, 'user');
-	// 		console.log(req.user, 'requser');
-	// 		req.logIn(user, e => {
-	// 			return res.redirect('/account');
-	// 		});
-	// 	})(req, res, next);
-	// });
 
 	app.get('*', (req, res) => {
 		renderPage(req, res, '404', '404');
