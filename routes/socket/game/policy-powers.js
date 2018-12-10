@@ -423,7 +423,6 @@ module.exports.selectBurnCard = (passport, game, data) => {
 		game.gameState.timedModeEnabled = game.private.timerId = null;
 	}
 
-	const { vote } = data;
 	const { experiencedMode } = game.general;
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
