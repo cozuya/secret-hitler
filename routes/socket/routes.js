@@ -33,7 +33,15 @@ const {
 } = require('./user-requests');
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
-const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
+const {
+	selectSpecialElection,
+	selectPartyMembershipInvestigate,
+	selectPolicies,
+	selectPlayerToExecute,
+	selectPartyMembershipInvestigateReverse,
+	selectOnePolicy,
+	selectBurnCard
+} = require('./game/policy-powers');
 const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES, TRIALMODS } = require('../../src/frontend-scripts/constants.js');
@@ -378,11 +386,26 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 						selectPartyMembershipInvestigate(passport, game, data);
 					}
 				})
+				.on('selectPartyMembershipInvestigateReverse', data => {
+					if (isRestricted) return;
+					const game = findGame(data);
+					if (authenticated && ensureInGame(passport, game)) {
+						selectPartyMembershipInvestigateReverse(passport, game, data);
+					}
+				})
 				.on('selectedPolicies', data => {
 					if (isRestricted) return;
 					const game = findGame(data);
 					if (authenticated && ensureInGame(passport, game)) {
-						selectPolicies(passport, game);
+						if (game.private.lock.policyPeekAndDrop) selectOnePolicy(passport, game);
+						else selectPolicies(passport, game);
+					}
+				})
+				.on('selectedPresidentVoteOnBurn', data => {
+					if (isRestricted) return;
+					const game = findGame(data);
+					if (authenticated && ensureInGame(passport, game)) {
+						selectBurnCard(passport, game, data);
 					}
 				})
 				.on('selectedPlayerToExecute', data => {

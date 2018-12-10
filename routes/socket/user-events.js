@@ -581,7 +581,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	if (data.customGameSettings && data.customGameSettings.enabled) {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
-		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet'];
+		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet', 'reverseinv', 'peekdrop'];
 		if (!data.customGameSettings.powers || data.customGameSettings.powers.length != 5) return;
 		for (let a = 0; a < 5; a++) {
 			if (data.customGameSettings.powers[a] == '' || data.customGameSettings.powers[a] == 'null') data.customGameSettings.powers[a] = null;
@@ -1025,6 +1025,29 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
+				}
+			case 'didSinglePolicyPeek':
+				if (data.claimState === 'liberal' || data.claimState === 'fascist') {
+					text = [
+						{
+							text: 'President '
+						},
+						{
+							text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
+							type: 'player'
+						},
+						{
+							text: ' claims to have peeked at a '
+						},
+						{
+							text: data.claimState,
+							type: data.claimState
+						},
+						{
+							text: ' policy.'
+						}
+					];
+					return text;
 				}
 			case 'didPolicyPeek':
 				text = [

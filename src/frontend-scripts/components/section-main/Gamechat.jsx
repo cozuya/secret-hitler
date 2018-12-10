@@ -781,6 +781,28 @@ class Gamechat extends React.Component {
 											</button>
 										</div>
 									);
+								case 'didSinglePolicyPeek':
+									return (
+										<div>
+											<p> As president, when I looked at the top card I saw a...</p>
+											<button
+												onClick={e => {
+													handleClaimButtonClick(e, 'fascist');
+												}}
+												className="ui button threefascist"
+											>
+												Fascist policy
+											</button>
+											<button
+												onClick={e => {
+													handleClaimButtonClick(e, 'liberal');
+												}}
+												className="ui button threeliberal"
+											>
+												Liberal policy
+											</button>
+										</div>
+									);
 								case 'didPolicyPeek':
 									return (
 										<div>
