@@ -7,7 +7,6 @@ const { accountCreationDisabled, verifyBypass, consumeBypass, testIP } = require
 const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
-const { expandAndSimplify } = require('./socket/ip-obf');
 const { TOU_CHANGES } = require('../src/frontend-scripts/constants.js');
 /**
  * @param {object} req - express request object.
@@ -94,9 +93,7 @@ module.exports = () => {
 				hasBypass = true;
 			}
 		}
-		const signupIP = expandAndSimplify(
-			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
-		);
+		const signupIP = req.expandedIP;
 		const save = {
 			username,
 			isLocal: true,
@@ -245,26 +242,17 @@ module.exports = () => {
 	app.post(
 		'/account/signin',
 		(req, res, next) => {
-			testIP(
-				expandAndSimplify(
-					req.headers['x-real-ip'] ||
-						req.headers['X-Real-IP'] ||
-						req.headers['X-Forwarded-For'] ||
-						req.headers['x-forwarded-for'] ||
-						req.connection.remoteAddress
-				),
-				banType => {
-					if (banType && banType != 'new') {
-						if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-						else if (banType == 'small' || banType == 'tiny') {
-							res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
-						} else {
-							console.log(`Unhandled IP ban type: ${banType}`);
-							res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
-						}
-					} else return next();
-				}
-			);
+			testIP(req.expandedIP, banType => {
+				if (banType && banType != 'new') {
+					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+					else if (banType == 'small' || banType == 'tiny') {
+						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+					} else {
+						console.log(`Unhandled IP ban type: ${banType}`);
+						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+					}
+				} else return next();
+			});
 		},
 		passport.authenticate('local'),
 		(req, res, next) => {
@@ -279,18 +267,7 @@ module.exports = () => {
 					return next();
 				}
 
-				let ip =
-					req.headers['x-real-ip'] ||
-					req.headers['X-Real-IP'] ||
-					req.headers['X-Forwarded-For'] ||
-					req.headers['x-forwarded-for'] ||
-					req.connection.remoteAddress;
-
-				try {
-					ip = expandAndSimplify(ip);
-				} catch (e) {
-					console.log(e);
-				}
+				let ip = req.expandedIP;
 
 				player.lastConnectedIP = ip;
 				player.save(() => {
@@ -476,13 +453,7 @@ module.exports = () => {
 									}
 
 									if (!account) {
-										const ip = expandAndSimplify(
-											req.headers['x-real-ip'] ||
-												req.headers['X-Real-IP'] ||
-												req.headers['X-Forwarded-For'] ||
-												req.headers['x-forwarded-for'] ||
-												req.connection.remoteAddress
-										);
+										const ip = req.expandedIP;
 
 										Account.register(
 											new Account({
@@ -567,9 +538,7 @@ module.exports = () => {
 			return;
 		}
 
-		const ip = expandAndSimplify(
-			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
-		);
+		const ip = req.expandedIP;
 
 		Account.create(
 			{
