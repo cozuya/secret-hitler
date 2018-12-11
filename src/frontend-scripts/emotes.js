@@ -11,7 +11,7 @@ export function renderEmotesButton(handleInsertEmote, allEmotes) {
 						<div key={index} data-tooltip={el[0]} data-inverted onClick={() => handleInsertEmote(el[0])}>
 							<img
 								src="../images/blank.png"
-								style={{ background: `url("../images/emotesheet.png") ${el[1][0] * 28}px ${el[1][1] * 28}px`, width: '28px', height: '28px' }}
+								style={{ background: `url("../images/emotesheet.png") -${el[1][0] * 28}px -${el[1][1] * 28}px`, width: '28px', height: '28px' }}
 							/>
 						</div>
 					))}
