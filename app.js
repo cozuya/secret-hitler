@@ -28,6 +28,20 @@ const burstLimit = 5; // Number of requests before throttling.
 const negativeLimit = -10; // Number of throttled requests before it stops being counted.
 const replenishRate = 2; // How many requests per second are added back.
 
+const errorPage = `
+<html>
+	<meta http-equiv="refresh" content="5">
+	<head>
+		<title>Too Many Requests</title>
+	</head>
+	<body>
+		Too many requests are being sent by your connection.
+		<br>
+		This page will auto-refresh in 5 seconds.
+	</body>
+</html>
+`;
+
 const rateLimitInfo = {};
 const incrementRateLimit = (IP, str) => {
 	const now = Date.now();
@@ -58,7 +72,7 @@ app.use(function(req, res, next) {
 	if (val < 0) {
 		res.status(429);
 		res.setHeader('Retry-After', negativeLimit / replenishRate);
-		res.end();
+		res.send(errorPage);
 	} else {
 		req.expandedIP = IP;
 		next();
