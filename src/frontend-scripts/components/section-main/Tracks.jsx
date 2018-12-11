@@ -331,6 +331,8 @@ class Tracks extends React.Component {
 						if (p == 'deckpeek') return 'Peek';
 						if (p == 'election') return 'Elect';
 						if (p == 'bullet') return 'Gun';
+						if (p == 'reverseinv') return 'ReverseInv';
+						if (p == 'peekdrop') return 'PeekDrop';
 
 						console.log(`Unknown power: ${p}`);
 						return null;

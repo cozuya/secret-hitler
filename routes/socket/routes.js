@@ -33,10 +33,18 @@ const {
 } = require('./user-requests');
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
-const { selectSpecialElection, selectPartyMembershipInvestigate, selectPolicies, selectPlayerToExecute } = require('./game/policy-powers');
+const {
+	selectSpecialElection,
+	selectPartyMembershipInvestigate,
+	selectPolicies,
+	selectPlayerToExecute,
+	selectPartyMembershipInvestigateReverse,
+	selectOnePolicy,
+	selectBurnCard
+} = require('./game/policy-powers');
 const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
-const { TOU_CHANGES } = require('../../src/frontend-scripts/constants.js');
+const { TOU_CHANGES, TRIALMODS } = require('../../src/frontend-scripts/constants.js');
 const { AEM_ALTS } = require('./report.js');
 const version = require('../../version');
 
@@ -105,10 +113,12 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			const { passport } = socket.handshake.session;
 			const authenticated = ensureAuthenticated(socket);
 
-			let isAEM = false;
+			let isAEM = false,
+				isTrial = false;
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'contributor') isAEM = true;
+					isTrial = TRIALMODS.includes(passport.user);
 				});
 			}
 
@@ -296,8 +306,8 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					}
 				})
 				.on('getModInfo', count => {
-					if (authenticated && isAEM) {
-						sendModInfo(socket, count);
+					if (authenticated && (isAEM || isTrial)) {
+						sendModInfo(socket, count, isTrial && !isAEM);
 					}
 				})
 				.on('subscribeModChat', uid => {
@@ -318,7 +328,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					}
 				})
 				.on('getUserReports', () => {
-					if (authenticated && isAEM) {
+					if (authenticated && (isAEM || isTrial)) {
 						sendUserReports(socket);
 					}
 				})
@@ -376,11 +386,26 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 						selectPartyMembershipInvestigate(passport, game, data);
 					}
 				})
+				.on('selectPartyMembershipInvestigateReverse', data => {
+					if (isRestricted) return;
+					const game = findGame(data);
+					if (authenticated && ensureInGame(passport, game)) {
+						selectPartyMembershipInvestigateReverse(passport, game, data);
+					}
+				})
 				.on('selectedPolicies', data => {
 					if (isRestricted) return;
 					const game = findGame(data);
 					if (authenticated && ensureInGame(passport, game)) {
-						selectPolicies(passport, game);
+						if (game.private.lock.policyPeekAndDrop) selectOnePolicy(passport, game);
+						else selectPolicies(passport, game);
+					}
+				})
+				.on('selectedPresidentVoteOnBurn', data => {
+					if (isRestricted) return;
+					const game = findGame(data);
+					if (authenticated && ensureInGame(passport, game)) {
+						selectBurnCard(passport, game, data);
 					}
 				})
 				.on('selectedPlayerToExecute', data => {
