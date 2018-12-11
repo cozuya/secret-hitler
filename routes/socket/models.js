@@ -49,11 +49,10 @@ sizeMap.forEach(size => {
 	if (space >= numEmotes && space < sheetSize[0] * sheetSize[1]) sheetSize = size;
 });
 
-const emoteSize = [28, 28]; // size of emote images
 let curCell = 0;
 const result = new PNG({
-	width: emoteSize[0] * sheetSize[0],
-	height: emoteSize[1] * sheetSize[1],
+	width: sheetSize[0] * 28,
+	height: sheetSize[1] * 28,
 	filter: -1
 });
 let numDone = 0;
@@ -67,7 +66,7 @@ emotes.forEach(emote => {
 	const loc = [thisCell % sheetSize[0], Math.floor(thisCell / sheetSize[0])];
 	const img = new PNG();
 	img.parse(fs.readFileSync(`public/images/emotes/${emote[1].name}`)).on('parsed', () => {
-		PNG.bitblt(img, result, 0, 0, emoteSize[0], emoteSize[1], loc[0] * emoteSize[0], loc[1] * emoteSize[1]);
+		PNG.bitblt(img, result, 0, 0, 28, 28, loc[0] * 28, loc[1] * 28);
 		incrementEmote();
 	});
 	emote[1] = loc;

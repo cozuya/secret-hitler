@@ -8,8 +8,11 @@ export function renderEmotesButton(handleInsertEmote, allEmotes) {
 			<Popup.Content>
 				<div className="emotes-popup-content">
 					{allEmotes.map((el, index) => (
-						<div key={index} data-tooltip={el} data-inverted onClick={() => handleInsertEmote(el)}>
-							<img src={`../images/emotes/${el}.png`} />
+						<div key={index} data-tooltip={el[0]} data-inverted onClick={() => handleInsertEmote(el[0])}>
+							<img
+								src="../images/blank.png"
+								style={{ background: `url("../images/emotesheet.png") ${el[1][0] * 28}px ${el[1][1] * 28}px`, width: '28px', height: '28px' }}
+							/>
 						</div>
 					))}
 				</div>
@@ -19,6 +22,8 @@ export function renderEmotesButton(handleInsertEmote, allEmotes) {
 }
 
 export function processEmotes(input, isMod, allEmotes) {
+	const mapping = {};
+	allEmotes.forEach(e => (mapping[e[0]] = e[1]));
 	if (typeof input !== 'string') {
 		return input;
 	}
@@ -28,10 +33,13 @@ export function processEmotes(input, isMod, allEmotes) {
 
 	message.forEach((word, index) => {
 		const validSiteURL = /^http[s]?:\/\/(secrethitler\.io|localhost:8080|github\.com\/cozuya\/secret-hitler)\/([a-zA-Z0-9#?=&\/\._]*)$/i;
-		if (allEmotes.includes(word)) {
+		if (mapping[word]) {
 			formatedMsg.push(
 				<span key={index} data-tooltip={word} data-inverted>
-					<img src={`/images/emotes/${word}.png`} />{' '}
+					<img
+						src="../images/blank.png"
+						style={{ background: `url("../images/emotesheet.png") -${mapping[word][0] * 28}px -${mapping[word][1] * 28}px`, width: '28px', height: '28px' }}
+					/>
 				</span>
 			);
 		} else if (validSiteURL.test(word)) {
