@@ -38,7 +38,12 @@ export function processEmotes(input, isMod, allEmotes) {
 				<span key={index} data-tooltip={word} data-inverted>
 					<img
 						src="../images/blank.png"
-						style={{ background: `url("../images/emotesheet.png") -${mapping[word][0] * 28}px -${mapping[word][1] * 28}px`, width: '28px', height: '28px' }}
+						style={{
+							background: `url("../images/emotesheet.png") -${mapping[word][0] * 28}px -${mapping[word][1] * 28}px`,
+							width: '28px',
+							height: '28px',
+							marginRight: '2px'
+						}}
 					/>
 				</span>
 			);
