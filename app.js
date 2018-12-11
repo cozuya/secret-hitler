@@ -23,22 +23,27 @@ const store = new MongoDBStore({
 // It also assigns req.expandedIP for anything that gets through, which can be used to get the IP in a simpler fashion.
 // For ordinary players, this should hopefully never be tripped. For malicious users, it should start to throttle them.
 // Note: The data cache is currently not cleared, there should be something running on a 1 minute timer clearing out old entries.
+
+const burstLimit = 5; // Number of requests before throttling.
+const negativeLimit = -10; // Number of throttled requests before it stops being counted.
+const replenishRate = 2; // How many requests per second are added back.
+
 const rateLimitInfo = {};
 const incrementRateLimit = (IP, str) => {
 	const now = Date.now();
-	if (!rateLimitInfo[IP]) rateLimitInfo[IP] = [5, now];
+	if (!rateLimitInfo[IP]) rateLimitInfo[IP] = [burstLimit, now];
 	const data = rateLimitInfo[IP];
 
 	const since = now - data[1];
 	data[1] = now;
 
 	// replenish buffer
-	data[0] += since / 500;
-	if (data[0] > 5) data[0] = 5;
+	data[0] += (since / 1000) * replenishRate;
+	if (data[0] > burstLimit) data[0] = burstLimit;
 
 	// apply penalty
 	data[0] -= str;
-	if (data[0] < -10) data[0] = -10;
+	if (data[0] < negativeLimit) data[0] = negativeLimit;
 
 	return data[0];
 };
@@ -47,12 +52,12 @@ app.use(function(req, res, next) {
 		req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
 	);
 	let str = 1; // default allowance - allow a burst of 5
-	if (req.originalUrl.startsWith('/images/custon-cardbacks/')) str = 0.05; // cardbacks - allow a burst of 100
+	if (req.originalUrl.startsWith('/images/emotes/') || req.originalUrl.startsWith('/images/custom-cardbacks/')) str = 0.05; // cardbacks and emotes - allow a burst of 100
 	if (req.originalUrl.startsWith('/public/images/') || req.originalUrl.startsWith('/images/')) str = 0.25; // tracks and such - allow a burst of 20
 	const val = incrementRateLimit(IP, str);
 	if (val < 0) {
 		res.status(429);
-		res.setHeader('Retry-After', 5);
+		res.setHeader('Retry-After', negativeLimit / replenishRate);
 		res.end();
 	} else {
 		req.expandedIP = IP;
