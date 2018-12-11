@@ -2677,7 +2677,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 								(account.isTimeout6Hour && new Date().getTime() - new Date(account.isTimeout6Hour).getTime() < 21600000)
 							) {
 								logOutUser(user);
-							} else
+							} else {
 								testIP(account.lastConnectedIP, banType => {
 									if (banType && banType != 'new') logOutUser(user);
 									else {
@@ -2685,6 +2685,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 										callback();
 									}
 								});
+							}
 						}
 					});
 				}
