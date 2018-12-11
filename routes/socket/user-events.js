@@ -2671,13 +2671,20 @@ module.exports.checkUserStatus = (socket, callback) => {
 				else {
 					Account.findOne({ username: user }, function(err, account) {
 						if (account) {
-							testIP(account.lastConnectedIP, banType => {
-								if (banType && banType != 'new') logOutUser(user);
-								else {
-									sendUserList();
-									callback();
-								}
-							});
+							if (
+								account.isBanned ||
+								(account.isTimeout && new Date().getTime() - new Date(account.isTimeout).getTime() < 64800000) ||
+								(account.isTimeout6Hour && new Date().getTime() - new Date(account.isTimeout6Hour).getTime() < 21600000)
+							) {
+								logOutUser(user);
+							} else
+								testIP(account.lastConnectedIP, banType => {
+									if (banType && banType != 'new') logOutUser(user);
+									else {
+										sendUserList();
+										callback();
+									}
+								});
 						}
 					});
 				}
