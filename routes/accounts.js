@@ -175,7 +175,7 @@ module.exports = () => {
 
 				Account.find(queryObj, (err, accounts) => {
 					if (err) {
-						console.err(err);
+						console.log(err);
 						res.status(500).json({ message: err.toString() });
 						return;
 					}
@@ -212,7 +212,7 @@ module.exports = () => {
 						} else {
 							Account.register(new Account(save), password, err => {
 								if (err) {
-									console.err(err);
+									console.log(err);
 									res.status(500).json({ message: err.toString() });
 									return;
 								}
