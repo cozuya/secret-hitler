@@ -324,10 +324,10 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	if (playerIndex > -1) {
 		if (game.publicPlayersState[playerIndex].isRemakeVoting) {
 			// Count leaving the game as rescinded remake vote.
-			const minimumRemakeVoteCount = (game.general.playerCount - game.customGameSettings.fascistCount);
+			const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
 			const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-			if (game.general.isRemaking && remakePlayerCount < minimumRemakeVoteCount) {
+			if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
 				game.general.isRemaking = false;
 				game.general.status = 'Game remaking has been cancelled.';
 				clearInterval(game.private.remakeTimer);
@@ -347,6 +347,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			});
 			game.chats.push(chat);
 			game.publicPlayersState[playerIndex].isRemakeVoting = false;
+			game.publicPlayersState[playerIndex].isRemaking = false;
 		}
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
@@ -1210,7 +1211,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 	/**
 	 * @return {number} minimum number of remake votes to remake a game
 	 */
-	const minimumRemakeVoteCount = (game.general.playerCount - game.customGameSettings.fascistCount);
+	const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
 	const chat = {
 		timestamp: new Date(),
 		gameChat: true,
