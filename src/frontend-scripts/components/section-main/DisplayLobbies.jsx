@@ -411,8 +411,7 @@ const DisplayLobbies = props => {
 						<div className="gamename-column">
 							{renderFlag()}
 							{game.name}
-							{userInfo.isTrialMod) && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
-							{userInfo.staffRole && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
+							{(userInfo.isTrialMod || userInfo.staffRole) && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
 						</div>
 						<div className="options-column experienced">{optionIcons()}</div>
 					</div>
