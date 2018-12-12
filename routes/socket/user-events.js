@@ -824,11 +824,11 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleAddNewClaim = (passport, game, data) => {
-	if (!game.private || !game.private.summary) {
+	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
+
+	if (!game.private || !game.private.summary || game.publicPlayersState[playerIndex].isDead || !game.publicPlayersState[playerIndex].claim) {
 		return;
 	}
-
-	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 	const { blindMode, replacementNames } = game.general;
 
 	const chat = (() => {
