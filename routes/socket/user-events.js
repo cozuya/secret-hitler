@@ -1231,9 +1231,6 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = publicPlayersState[playerIndex];
 
-	/**
-	 * @return {number} minimum number of remake votes to remake a game
-	 */
 	const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
 	const chat = {
 		timestamp: new Date(),
