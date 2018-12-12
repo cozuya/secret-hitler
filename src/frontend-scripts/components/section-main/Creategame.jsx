@@ -290,6 +290,12 @@ export default class Creategame extends React.Component {
 					<div className="item" data-value="bullet">
 						Bullet
 					</div>
+					<div className="item" data-value="reverseinv">
+						Show Loyalty
+					</div>
+					<div className="item" data-value="peekdrop">
+						Peek & Drop
+					</div>
 				</div>
 			</div>
 		);
@@ -644,6 +650,8 @@ export default class Creategame extends React.Component {
 			if (p == 'deckpeek') return 'Peek';
 			if (p == 'election') return 'Elect';
 			if (p == 'bullet') return 'Gun';
+			if (p == 'reverseinv') return 'ReverseInv';
+			if (p == 'peekdrop') return 'PeekDrop';
 			return null;
 		});
 		const numFas = customGameSettings.fascistCount;

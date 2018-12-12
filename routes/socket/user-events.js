@@ -567,7 +567,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	if (data.customGameSettings && data.customGameSettings.enabled) {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
 
-		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet'];
+		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet', 'reverseinv', 'peekdrop'];
 		if (!data.customGameSettings.powers || data.customGameSettings.powers.length != 5) return;
 		for (let a = 0; a < 5; a++) {
 			if (data.customGameSettings.powers[a] == '' || data.customGameSettings.powers[a] == 'null') data.customGameSettings.powers[a] = null;
@@ -1011,6 +1011,29 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
+				}
+			case 'didSinglePolicyPeek':
+				if (data.claimState === 'liberal' || data.claimState === 'fascist') {
+					text = [
+						{
+							text: 'President '
+						},
+						{
+							text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
+							type: 'player'
+						},
+						{
+							text: ' claims to have peeked at a '
+						},
+						{
+							text: data.claimState,
+							type: data.claimState
+						},
+						{
+							text: ' policy.'
+						}
+					];
+					return text;
 				}
 			case 'didPolicyPeek':
 				text = [
@@ -2621,13 +2644,21 @@ module.exports.checkUserStatus = (socket, callback) => {
 				else {
 					Account.findOne({ username: user }, function(err, account) {
 						if (account) {
-							testIP(account.lastConnectedIP, banType => {
-								if (banType && banType != 'new') logOutUser(user);
-								else {
-									sendUserList();
-									callback();
-								}
-							});
+							if (
+								account.isBanned ||
+								(account.isTimeout && new Date().getTime() - new Date(account.isTimeout).getTime() < 64800000) ||
+								(account.isTimeout6Hour && new Date().getTime() - new Date(account.isTimeout6Hour).getTime() < 21600000)
+							) {
+								logOutUser(user);
+							} else {
+								testIP(account.lastConnectedIP, banType => {
+									if (banType && banType != 'new') logOutUser(user);
+									else {
+										sendUserList();
+										callback();
+									}
+								});
+							}
 						}
 					});
 				}
