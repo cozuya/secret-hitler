@@ -136,7 +136,7 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const { userInfo } = this.props;
 
-		if ((Object.keys(userInfo).length && Boolean(userInfo.staffRole)) || (Object.keys(userInfo).length && Boolean(userInfo.isTrialMod))) {
+		if ((Object.keys(userInfo).length && Boolean(userInfo.staffRole)) || (Object.keys(userInfo).length && (userInfo.isTrialMod))) {
 			return (
 				<a href="#/moderation">
 					<i className="fire icon mod-button" />
@@ -148,7 +148,7 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 
-		if ((Object.keys(userInfo).length && Boolean(userInfo.staffRole)) || (Object.keys(userInfo).length && Boolean(userInfo.isTrialMod))) {
+		if ((Object.keys(userInfo).length && Boolean(userInfo.staffRole)) || (Object.keys(userInfo).length && (userInfo.isTrialMod))) {
 			let classes = 'comment icon report-button';
 
 			const reportClick = () => {
