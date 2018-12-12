@@ -32,7 +32,8 @@ export default class Moderation extends React.Component {
 			userSort: {
 				type: 'username',
 				direction: 'descending'
-			}
+			},
+			hideActions: false
 		};
 	}
 
@@ -43,7 +44,8 @@ export default class Moderation extends React.Component {
 		socket.on('modInfo', info => {
 			this.setState({
 				userList: info.userList,
-				log: info.modReports
+				log: info.modReports,
+				hideActions: info.hideActions || false
 			});
 
 			$(this.toggleIpbans).checkbox(info.ipbansNotEnforced.status ? 'set checked' : 'set unchecked');
@@ -840,7 +842,7 @@ export default class Moderation extends React.Component {
 	}
 
 	render() {
-		const { userSort } = this.state;
+		const { userSort, hideActions } = this.state;
 
 		const broadcastKeyup = e => {
 			this.setState({
@@ -870,9 +872,11 @@ export default class Moderation extends React.Component {
 					<i className="remove icon" />
 				</a>
 				<h2>Moderation</h2>
-				<a className="broadcast" href="#" onClick={this.broadcastClick}>
-					Broadcast
-				</a>
+				{!hideActions && (
+					<a className="broadcast" href="#" onClick={this.broadcastClick}>
+						Broadcast
+					</a>
+				)}
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
 					show/hide playerlist
 				</span>
@@ -927,11 +931,15 @@ export default class Moderation extends React.Component {
 								</thead>
 								<tbody>{this.renderUserlist()}</tbody>
 							</table>
-							<div className="ui horizontal divider">or</div>
-							{this.renderPlayerInput()}
-							<div className="ui horizontal divider">-</div>
-							{this.renderActionText()}
-							{this.renderButtons()}
+							{!hideActions && (
+								<span>
+									<div className="ui horizontal divider">or</div>
+									{this.renderPlayerInput()}
+									<div className="ui horizontal divider">-</div>
+									{!this.renderActionText()}
+									{this.renderButtons()}
+								</span>
+							)}
 						</div>
 					)}
 					<div className="modlog" style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}>

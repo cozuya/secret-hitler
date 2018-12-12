@@ -613,7 +613,7 @@ class Playerlist extends React.Component {
 						</span>
 					)}
 				</div>
-				<Scrollbars>
+				<Scrollbars renderThumbVertical={props => <div {...props} className="thumb-vertical" />}>
 					<div className="playerlist-body">
 						{this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableAggregations ? this.renderLegacyPlayerlist() : this.renderPlayerlist()}
 					</div>

@@ -44,8 +44,9 @@ const sendUserList = (module.exports.sendUserList = socket => {
 /**
  * @param {object} socket - user socket reference.
  * @param {number} count - depth of modinfo requested.
+ * @param {boolean} isTrial - true if the user is a trial mod.
  */
-module.exports.sendModInfo = (socket, count) => {
+module.exports.sendModInfo = (socket, count, isTrial) => {
 	const userNames = userList.map(user => user.userName);
 
 	const maskEmail = email => email.split('@')[1] || '';
@@ -93,7 +94,8 @@ module.exports.sendModInfo = (socket, count) => {
 						ipbansNotEnforced,
 						gameCreationDisabled,
 						limitNewPlayers,
-						userList: list
+						userList: list,
+						hideActions: isTrial || undefined
 					});
 				})
 				.catch(err => {

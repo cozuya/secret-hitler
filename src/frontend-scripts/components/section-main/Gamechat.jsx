@@ -665,7 +665,11 @@ class Gamechat extends React.Component {
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
-					<Scrollbars ref={c => (this.scrollbar = c)} onScroll={this.handleChatScrolled}>
+					<Scrollbars
+						ref={c => (this.scrollbar = c)}
+						onScroll={this.handleChatScrolled}
+						renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
+					>
 						<div className="ui list">{this.processChats()}</div>
 					</Scrollbars>
 				</section>
@@ -774,6 +778,28 @@ class Gamechat extends React.Component {
 												className="ui button threeliberal"
 											>
 												Liberal team
+											</button>
+										</div>
+									);
+								case 'didSinglePolicyPeek':
+									return (
+										<div>
+											<p> As president, when I looked at the top card I saw a...</p>
+											<button
+												onClick={e => {
+													handleClaimButtonClick(e, 'fascist');
+												}}
+												className="ui button threefascist"
+											>
+												Fascist policy
+											</button>
+											<button
+												onClick={e => {
+													handleClaimButtonClick(e, 'liberal');
+												}}
+												className="ui button threeliberal"
+											>
+												Liberal policy
 											</button>
 										</div>
 									);

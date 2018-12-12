@@ -54,7 +54,7 @@ module.exports.verifyRoutes = () => {
 			});
 	});
 
-	app.get('/reset-password/:username/:token', (req, res, next) => {
+	app.get('/password-reset/:username/:token', (req, res, next) => {
 		const { username, token } = req.params;
 
 		ResetPassword.findOne({ username, token, expirationDate: { $gte: now } })

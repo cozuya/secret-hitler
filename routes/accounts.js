@@ -81,7 +81,8 @@ module.exports = () => {
 	});
 
 	app.post('/account/signup', (req, res, next) => {
-		const { username, password, password2, email, isPrivate, bypassKey } = req.body;
+		const { username, password, password2, email, isPrivate } = req.body;
+		let { bypassKey } = req.body;
 		let hasBypass = false;
 		if (bypassKey) {
 			bypassKey = bypassKey.trim();
@@ -174,10 +175,12 @@ module.exports = () => {
 
 				Account.find(queryObj, (err, accounts) => {
 					if (err) {
-						return next(err);
+						console.log(err);
+						res.status(500).json({ message: err.toString() });
+						return;
 					}
 
-					if (accounts.length && process.env.NODE_ENV === 'production') {
+					if (accounts.length) {
 						const usernames = accounts.map(acc => acc.username.toLowerCase());
 
 						if (usernames.includes(username.toLowerCase())) {
@@ -185,7 +188,7 @@ module.exports = () => {
 						} else {
 							res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 						}
-						return next();
+						return;
 					}
 
 					testIP(signupIP, banType => {
@@ -209,7 +212,9 @@ module.exports = () => {
 						} else {
 							Account.register(new Account(save), password, err => {
 								if (err) {
-									return next();
+									console.log(err);
+									res.status(500).json({ message: err.toString() });
+									return;
 								}
 
 								if (hasBypass) consumeBypass(bypassKey, username, signupIP);
