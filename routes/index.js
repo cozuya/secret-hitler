@@ -179,7 +179,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (!acc || !acc.staffRole || !acc.isTrialMod || acc.staffRole.length === 0 || acc.isContributor) {
+							if (!acc || !acc.staffRole || !acc.isTrialMod || acc.staffRole.length === 0) {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {
