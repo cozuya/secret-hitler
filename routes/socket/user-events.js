@@ -2368,7 +2368,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.isContributor = '';
+									account.isContributor = false;
 									account.save(() => {
 										if (newStaff.modUserNames.includes(account.username)) {
 											newStaff.modUserNames.splice(indexOf(newStaff.modUserNames.find(name => account.username)), 1);
@@ -2391,7 +2391,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.isTrialMod = '';
+									account.isTrialMod = false;
 									account.save(() => {
 										if (newStaff.modUserNames.includes(account.username)) {
 											newStaff.modUserNames.splice(indexOf(newStaff.modUserNames.find(name => account.username)), 1);
