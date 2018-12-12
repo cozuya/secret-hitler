@@ -7,40 +7,6 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
-module.exports.TRIALMODS = ['moira', 'SilentPlayer', 'SilentSheep', 'casdude', 'Naizea', 'Joz', 'Leftwinger', 'hitler4real', 'hitler2real', 'Grim'];
-
-const CONTRIBUTORS = (module.exports.CONTRIBUTORS = [
-	'ArtiePendrag',
-	'Auengun',
-	'Aurune',
-	'banc',
-	'bot',
-	'conundrum',
-	'DFinn',
-	'goonbee',
-	'Hexicube',
-	'Idrissa',
-	'Invidia',
-	'jbasari',
-	'JerMej1s',
-	'JohnCena',
-	'jules',
-	'LoveOken',
-	'nth',
-	'OuchYouHitMe',
-	'PeeOnBus',
-	'Petey',
-	'Royal2000H',
-	'sethe',
-	'Skyrra',
-	'Spyro',
-	'straightleft',
-	'Vigasaurus',
-	'veggiemanz',
-	'voldemort',
-	'Wi1son'
-]);
-
 module.exports.CURRENTSEASONNUMBER = 4;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
@@ -76,7 +42,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			invidia: user.userName === 'Invidia',
 			thejuststopo: user.userName === 'TheJustStopO'
 		});
-	} else if (CONTRIBUTORS.includes(user.userName) && (!Boolean(user.staffRole && user.staffRole.length) || !user.staffDisableStaffColor)) {
+	} else if (Boolean(user.isContributor) && (!Boolean(user.staffRole && user.staffRole.length) || !user.staffDisableStaffColor)) {
 		return cn(defaultClass, 'contributor');
 	} else {
 		const w = isSeasonal ? user.winsSeason : user.wins;
