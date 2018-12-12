@@ -249,7 +249,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 					}
 				})
 				.on('playerReport', data => {
-					if (isRestricted || (data.comment && data.comment.length && data.comment.length > 140)) return;
+					if (isRestricted || !data || !data.comment || data.comment.length > 140) return;
 					if (authenticated) {
 						handlePlayerReport(passport, data);
 					}
