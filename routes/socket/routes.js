@@ -118,7 +118,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'contributor') isAEM = true;
-					isTrial = TRIALMODS.includes(passport.user);
+					if (account.isTrialMod && account.isTrialMod.length > 0) isTrial = true;
 				});
 			}
 
