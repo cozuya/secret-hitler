@@ -1,6 +1,7 @@
 const {
 	games,
 	userList,
+	userListEmitter,
 	generalChats,
 	accountCreationDisabled,
 	ipbansNotEnforced,
@@ -2295,10 +2296,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						.then(account => {
 							if (account) {
 								account.gameSettings.customCardback = '';
-
+								const user = userList.find(u => u.userName === data.userName);
+								if (user) {
+									user.customCardback = '';
+									userListEmitter.send = true;
+								}
 								account.save(() => {
 									if (io.sockets.sockets[affectedSocketId]) {
-										io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+										io.sockets.sockets[affectedSocketId].emit('gameSettings', account.gameSettings);
 									}
 								});
 							} else {
