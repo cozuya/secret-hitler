@@ -2437,7 +2437,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.isContributor = '';
+									account.isContributor = true;
 									account.save(() => {
 										newStaff.modUserNames.push(account.username);
 
@@ -2459,7 +2459,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.isTrialMod = '';
+									account.isTrialMod = true;
 									account.save(() => {
 										newStaff.modUserNames.push(account.username);
 
