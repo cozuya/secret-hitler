@@ -10,7 +10,9 @@ const {
 	selectPolicies,
 	selectPlayerToExecute,
 	selectPartyMembershipInvestigate,
-	selectSpecialElection
+	selectSpecialElection,
+	showPlayerLoyalty,
+	policyPeekAndDrop
 } = require('./policy-powers');
 const { completeGame } = require('./end-game');
 const _ = require('lodash');
@@ -20,7 +22,9 @@ const powerMapping = {
 	investigate: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
 	deckpeek: [policyPeek, 'The president must examine the top 3 policies.'],
 	election: [specialElection, 'The president must select a player for a special election.'],
-	bullet: [executePlayer, 'The president must select a player for execution.']
+	bullet: [executePlayer, 'The president must select a player for execution.'],
+	reverseinv: [showPlayerLoyalty, 'The president must reveal their party membership to another player.'],
+	peekdrop: [policyPeekAndDrop, 'The president must examine the top policy, and may discard it.']
 };
 
 const presidentPowers = [
@@ -71,6 +75,10 @@ const enactPolicy = (game, team) => {
 		game.private.lock.policyPeek = false;
 	}
 
+	if (game.private.lock.policyPeekAndDrop) {
+		game.private.lock.policyPeekAndDrop = false;
+	}
+
 	if (game.private.lock.selectPlayerToExecute) {
 		game.private.lock.selectPlayerToExecute = false;
 	}
@@ -95,8 +103,24 @@ const enactPolicy = (game, team) => {
 		game.private.lock.investigateLoyalty = false;
 	}
 
+	if (game.private.lock.showPlayerLoyalty) {
+		game.private.lock.showPlayerLoyalty = false;
+	}
+
+	if (game.private.lock.selectPartyMembershipInvestigateReverse) {
+		game.private.lock.selectPartyMembershipInvestigateReverse = false;
+	}
+
 	if (game.private.lock.selectPolicies) {
 		game.private.lock.selectPolicies = false;
+	}
+
+	if (game.private.lock.selectOnePolicy) {
+		game.private.lock.selectOnePolicy = false;
+	}
+
+	if (game.private.lock.selectBurnCard) {
+		game.private.lock.selectBurnCard = false;
 	}
 
 	game.gameState.pendingChancellorIndex = null;
@@ -890,9 +914,9 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 						if (passedNicer === 'RR') {
 							// tossed blue in VZ
 							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR during veto zone, and tossed the blue.`, game);
-						} else if (passedNicer === 'BR') {
+						} else if (passedNicer === 'BR' && track4blue) {
 							// tossed blue in VZ
-							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR during veto zone, and did not force.`, game);
+							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR during veto zone, and did not force 5th blue.`, game);
 						}
 					}
 				}

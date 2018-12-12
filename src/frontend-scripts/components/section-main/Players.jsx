@@ -99,6 +99,15 @@ class Players extends React.Component {
 			}
 		}
 
+		if (phase === 'selectPartyMembershipInvestigateReverse' && userInfo.userName) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+				socket.emit('selectPartyMembershipInvestigateReverse', {
+					playerIndex: index,
+					uid: gameInfo.general.uid
+				});
+			}
+		}
+
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedPlayerToExecute', {
