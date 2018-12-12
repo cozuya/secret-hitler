@@ -21,7 +21,8 @@ class ProfileWrapper extends React.Component {
 			bioStatus: 'displayed',
 			bioValue: '',
 			blacklistClicked: false,
-			blacklistShown: false
+			blacklistShown: false,
+			openTime: Date.now()
 		};
 
 		this.showBlacklist = this.showBlacklist.bind(this);
@@ -282,15 +283,14 @@ class ProfileWrapper extends React.Component {
 				gamesUntilRainbow = 50 - wins - losses;
 			}
 		}
+		console.log(profile);
 		return (
 			<div>
 				{profile.customCardback && (
 					<div
 						className={userClasses}
 						style={{
-							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${Math.random()
-								.toString(36)
-								.substring(2)})`
+							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${this.state.openTime})`
 						}}
 					/>
 				)}
@@ -332,6 +332,7 @@ class ProfileWrapper extends React.Component {
 	}
 
 	Loading() {
+		this.state.openTime = Date.now();
 		return (
 			<div className="ui active dimmer">
 				<div className="ui huge text loader">Loading</div>
