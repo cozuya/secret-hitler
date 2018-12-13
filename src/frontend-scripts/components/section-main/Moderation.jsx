@@ -590,10 +590,62 @@ export default class Moderation extends React.Component {
 							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
+						takeModAction('removeContributor');
+					}}
+				>
+					Remove contributor status and log them out
+				</button>
+				<button
+					style={{ background: 'grey' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('removeTrialMod');
+					}}
+				>
+					Remove trial mod status and log them out
+				</button>
+				<button
+					style={{ background: 'grey' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
 						takeModAction('removeStaffRole');
 					}}
 				>
 					Remove mod or editor status and log them out
+				</button>
+				<button
+					style={{ background: 'blueviolet' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToContributor');
+					}}
+				>
+					Promote player to contributor
+				</button>
+				<button
+					style={{ background: 'blueviolet' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToTrialMod');
+					}}
+				>
+					Promote player to trial mod
 				</button>
 				<button
 					style={{ background: 'blueviolet' }}
