@@ -2287,9 +2287,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					if (isSuperMod) {
 						Profile.findOne({ _id: data.userName })
 							.remove(() => {
-								if (io.sockets.sockets[affectedSocketId]) {
-									io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-								}
+								logOutUser(data.userName);
 							})
 							.catch(err => {
 								console.log(err);
@@ -2379,9 +2377,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
 										idx = newStaff.editorUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
-										if (io.sockets.sockets[affectedSocketId]) {
-											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-										}
+										logOutUser(account.username);
 									});
 								} else {
 									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
@@ -2400,10 +2396,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									account.staffRole = 'moderator';
 									account.save(() => {
 										newStaff.modUserNames.push(account.username);
-
-										if (io.sockets.sockets[affectedSocketId]) {
-											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-										}
+										logOutUser(account.username);
 									});
 								} else {
 									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
@@ -2423,10 +2416,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									account.staffRole = 'editor';
 									account.save(() => {
 										newStaff.editorUserNames.push(account.username);
-
-										if (io.sockets.sockets[affectedSocketId]) {
-											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-										}
+										logOutUser(account.username);
 									});
 								} else {
 									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
