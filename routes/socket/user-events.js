@@ -2375,8 +2375,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								if (account) {
 									account.isContributor = false;
 									account.save(() => {
-										const idx = newStaff.modUserNames.indexOf(account.username);
+										let idx = newStaff.modUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
+										idx = newStaff.editorUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
 										if (io.sockets.sockets[affectedSocketId]) {
 											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 										}
@@ -2397,9 +2399,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								if (account) {
 									account.isTrialMod = false;
 									account.save(() => {
-										if (newStaff.modUserNames.includes(account.username)) {
-											newStaff.modUserNames.splice(indexOf(newStaff.modUserNames.find(name => account.username)), 1);
-										}
+										let idx = newStaff.modUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
+										idx = newStaff.editorUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
 										if (io.sockets.sockets[affectedSocketId]) {
 											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 										}
@@ -2420,9 +2423,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								if (account) {
 									account.staffRole = '';
 									account.save(() => {
-										if (newStaff.modUserNames.includes(account.username)) {
-											newStaff.modUserNames.splice(indexOf(newStaff.modUserNames.find(name => account.username)), 1);
-										}
+										let idx = newStaff.modUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
+										idx = newStaff.editorUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
 										if (io.sockets.sockets[affectedSocketId]) {
 											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 										}
