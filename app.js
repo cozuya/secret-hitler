@@ -16,10 +16,14 @@ const store = new MongoDBStore({
 	uri: 'mongodb://localhost:27017/secret-hitler-app',
 	collection: 'sessions'
 });
-
-app.setMaxListeners(0);
-io.setMaxListeners(0);
-// require('events').EventEmitter.defaultMaxListeners = 0;
+const redis = require('redis').createClient();
+const RedisStore = require('connect-redis')(session);
+const prodStore = new RedisStore({
+	host: '127.0.0.1',
+	port: 6379,
+	client: redis,
+	ttl: 260
+});
 
 process.on('warning', e => console.warn(e.stack));
 
@@ -42,7 +46,7 @@ const sessionSettings = {
 	cookie: {
 		maxAge: 1000 * 60 * 60 * 24 * 28 // 4 weeks
 	},
-	store,
+	store: process.env.NODE_ENV === 'production' ? prodStore : store,
 	resave: true,
 	saveUninitialized: true
 };

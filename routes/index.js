@@ -8,6 +8,8 @@ const accounts = require('./accounts');
 const version = require('../version');
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
+const { TRIALMODS } = require('../src/frontend-scripts/constants');
+const { userList, userListEmitter } = require('./socket/models');
 
 /**
  * @param {object} req - express request object.
@@ -265,6 +267,12 @@ module.exports = () => {
 								.substring(2);
 							account.save(() => {
 								res.json({ message: 'Cardback successfully uploaded.' });
+								const user = userList.find(u => u.userName === username);
+								if (user) {
+									user.customCardback = extension;
+									user.customCardbackUid = account.gameSettings.customCardbackUid;
+									userListEmitter.send = true;
+								}
 								if (socketId && io.sockets.sockets[socketId]) {
 									io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
 								}
