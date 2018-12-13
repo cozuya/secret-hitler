@@ -2375,9 +2375,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								if (account) {
 									account.staffRole = '';
 									account.save(() => {
-										if (newStaff.modUserNames.includes(account.username)) {
-											newStaff.modUserNames.splice(indexOf(newStaff.modUserNames.find(name => account.username)), 1);
-										}
+										const idx = newStaff.modUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
 										if (io.sockets.sockets[affectedSocketId]) {
 											io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 										}
