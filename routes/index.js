@@ -8,7 +8,6 @@ const accounts = require('./accounts');
 const version = require('../version');
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
-const { TRIALMODS } = require('../src/frontend-scripts/constants');
 const { userList, userListEmitter } = require('./socket/models');
 
 /**
