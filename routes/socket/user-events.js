@@ -31,7 +31,7 @@ const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
-const { LEGALCHARACTERS, TRIALMODS } = require('../../src/frontend-scripts/constants');
+const { LEGALCHARACTERS, CONTRIBUTORS, TRIALMODS } = require('../../src/frontend-scripts/constants');
 const { makeReport } = require('./report.js');
 const { expandAndSimplify } = require('./ip-obf');
 
@@ -2366,6 +2366,50 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'disableLimitNewPlayers':
 					limitNewPlayers.status = false;
 					break;
+				case 'removeContributor':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = '';
+									account.save(() => {
+										let idx = newStaff.modUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
+										idx = newStaff.editorUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				case 'removeTrialMod':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = '';
+									account.save(() => {
+										let idx = newStaff.modUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
+										idx = newStaff.editorUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;	
 				case 'removeStaffRole':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
@@ -2388,6 +2432,44 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							});
 					}
 					break;
+				case 'promoteToContributor':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'moderator';
+									account.save(() => {
+										newStaff.modUserNames.push(account.username);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				case 'promoteToTrialMod':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'moderator';
+									account.save(() => {
+										newStaff.modUserNames.push(account.username);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;	
 				case 'promoteToMod':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
@@ -2407,7 +2489,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							});
 					}
 					break;
-
 				case 'promoteToEditor':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
