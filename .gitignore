@@ -41,3 +41,4 @@ coverage/*
 .idea/
 dump/
 scripts/out/*
+public/images/emotesheet.png

@@ -473,9 +473,7 @@ module.exports = () => {
 									) {
 										req.session.discordProfile = profile;
 										res.redirect('/discord-select-username');
-									}
-
-									if (!account) {
+									} else if (!account) {
 										const ip = expandAndSimplify(
 											req.headers['x-real-ip'] ||
 												req.headers['X-Real-IP'] ||

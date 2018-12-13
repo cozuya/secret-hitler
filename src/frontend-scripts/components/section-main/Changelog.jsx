@@ -9,6 +9,18 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 1.0.0-beta6 released 12-12-2018</p>
+		</div>
+		<h3>New feature: two new custom game policy powers!</h3>
+		<p>Thanks to contributor/mod Hexicube, you now set up 2 brand new policy powers:</p>
+		<ul>
+			<li>Show party: a reversed investigate, you pick a player and show them your party membership card.</li>
+			<li>Peek & Burn: the president look at the top card of the deck, and choose if they want to discard it.</li>
+		</ul>
+		<p>Awesome!</p>
+		<h3>New update: a change in our session software should hopefully resolve some of the lag issues we've had lately.</h3>
+		<p>Also, scrollbars should be grey and cardbacks should no longer flicker in profiles.</p>
+		<div className="ui header">
 			<p>Version 1.0.0-beta5 released 12-9-2018</p>
 		</div>
 		<h3>New feature: Discord signin/signup integration</h3>

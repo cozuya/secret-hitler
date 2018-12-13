@@ -361,7 +361,7 @@ export default class Moderation extends React.Component {
 						takeModAction('deleteCardback');
 					}}
 				>
-					Delete player cardback and log out
+					Delete player cardback
 				</button>
 				<button
 					style={{ width: '100%', background: 'palevioletred' }}
@@ -886,17 +886,17 @@ export default class Moderation extends React.Component {
 							<h3>Current player list</h3>
 							<div className="ui table">
 								<h4>Color chart:</h4>
-								<span class="istor">User is playing via the TOR network.</span>
+								<span className="istor">User is playing via the TOR network.</span>
 								<br />
-								<span class="isbannedbefore">User has been banned before.</span>
+								<span className="isbannedbefore">User has been banned before.</span>
 								<br />
-								<span class="istimedbefore">User has been timed before.</span>
+								<span className="istimedbefore">User has been timed before.</span>
 								<br />
-								<span class="multi">IP fully matches another IP.</span>
+								<span className="multi">IP fully matches another IP.</span>
 								<br />
-								<span class="multi2">IP mostly matches another IP.</span>
+								<span className="multi2">IP mostly matches another IP.</span>
 								<br />
-								<span class="emailunverified">Email is not yet verified.</span>
+								<span className="emailunverified">Email is not yet verified.</span>
 								<br />
 							</div>
 							<table className="ui celled table userlist">
@@ -904,7 +904,7 @@ export default class Moderation extends React.Component {
 									<tr>
 										<th />
 										<th
-											style={{ 'white-space': 'nowrap' }}
+											style={{ whiteSpace: 'nowrap' }}
 											onClick={() => {
 												clickSort('username');
 											}}
@@ -912,7 +912,7 @@ export default class Moderation extends React.Component {
 											Username {userSort.type === 'username' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 										</th>
 										<th
-											style={{ 'white-space': 'nowrap' }}
+											style={{ whiteSpace: 'nowrap' }}
 											onClick={() => {
 												clickSort('IP');
 											}}
@@ -920,7 +920,7 @@ export default class Moderation extends React.Component {
 											IP {userSort.type === 'IP' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 										</th>
 										<th
-											style={{ 'white-space': 'nowrap' }}
+											style={{ whiteSpace: 'nowrap' }}
 											onClick={() => {
 												clickSort('email');
 											}}
@@ -936,7 +936,7 @@ export default class Moderation extends React.Component {
 									<div className="ui horizontal divider">or</div>
 									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">-</div>
-									{!this.renderActionText()}
+									{this.renderActionText()}
 									{this.renderButtons()}
 								</span>
 							)}
