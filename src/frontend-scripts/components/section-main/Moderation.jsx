@@ -583,7 +583,7 @@ export default class Moderation extends React.Component {
 					Delete/reset player profile
 				</button>
 				<button
-					style={{ background: 'grey' }}
+					style={{ background: 'teal' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -603,26 +603,13 @@ export default class Moderation extends React.Component {
 							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
-						takeModAction('removeTrialMod');
-					}}
-				>
-					Remove trial mod status and log them out
-				</button>
-				<button
-					style={{ background: 'grey' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
 						takeModAction('removeStaffRole');
 					}}
 				>
-					Remove mod or editor status and log them out
+					Remove trial or mod or editor status and log them out
 				</button>
 				<button
-					style={{ background: 'blueviolet' }}
+					style={{ background: 'teal' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -635,14 +622,14 @@ export default class Moderation extends React.Component {
 					Promote player to contributor
 				</button>
 				<button
-					style={{ background: 'blueviolet' }}
+					style={{ background: 'blue' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
-						takeModAction('promoteToTrialMod');
+						takeModAction('promoteToTrial');
 					}}
 				>
 					Promote player to trial mod
@@ -744,7 +731,10 @@ export default class Moderation extends React.Component {
 			deleteBio: 'Delete Bio',
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
+			removeContributor: 'Remove Contributor Role',
 			removeStaffRole: 'Remove Staff Role',
+			promoteToContributor: 'Promote (Contributor)',
+			promoteToTrial: 'Promote (Trial Mod)',
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',
