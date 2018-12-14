@@ -88,7 +88,7 @@ const ensureInGame = (passport, game) => {
 	}
 };
 
-module.exports = (modUserNames, editorUserNames, adminUserNames, trialUserNames) => {
+module.exports = (modUserNames, editorUserNames, adminUserNames, trialUserNames, contribUserNames) => {
 	setInterval(gamesGarbageCollector, 100000);
 
 	io.on('connection', socket => {
@@ -118,7 +118,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, trialUserNames)
 			
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
-					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'trial') isAEM = true;
+					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'contrib' && account.staffRole !== 'trial') isAEM = true;
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trial') isTrial = true;
 				});
 			}
@@ -320,7 +320,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, trialUserNames)
 								const hasAEM = accounts.some(acc => {
 									return (
 										AEM_ALTS.includes(acc.username) ||
-										(acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'trial' && players.includes(acc.username))
+										(acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'contrib' && acc.staffRole !== 'trial' && players.includes(acc.username))
 									);
 								});
 								if (!hasAEM) handleSubscribeModChat(socket, passport, game);
