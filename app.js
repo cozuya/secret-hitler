@@ -11,25 +11,25 @@ const DiscordStrategy = require('passport-discord').Strategy;
 const Account = require('./models/account');
 const routesIndex = require('./routes/index');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
+const store = new MongoDBStore({
+	uri: 'mongodb://localhost:27017/secret-hitler-app',
+	collection: 'sessions'
+});
+const redis = require('redis').createClient();
+const RedisStore = require('connect-redis')(session);
+const prodStore = new RedisStore({
+	host: '127.0.0.1',
+	port: 6379,
+	client: redis,
+	ttl: 260
+});
 
-let store;
+process.on('warning', e => console.warn(e.stack));
 
-if (PROCESS.ENV.NODE_ENV === 'production') {
-	const MongoDBStore = require('connect-mongodb-session')(session);
-	store = new MongoDBStore({
-		uri: 'mongodb://localhost:27017/secret-hitler-app',
-		collection: 'sessions'
-	});
-} else {
-	const redis = require('redis').createClient();
-	const RedisStore = require('connect-redis')(session);
-	store = new RedisStore({
-		host: '127.0.0.1',
-		port: 6379,
-		client: redis,
-		ttl: 260
-	});
-}
+store.on('error', err => {
+	console.log(err, 'store session error');
+});
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'pug');
@@ -46,7 +46,7 @@ const sessionSettings = {
 	cookie: {
 		maxAge: 1000 * 60 * 60 * 24 * 28 // 4 weeks
 	},
-	store,
+	store: process.env.NODE_ENV === 'production' ? prodStore : store,
 	resave: true,
 	saveUninitialized: true
 };
@@ -78,9 +78,7 @@ if (process.env.DISCORDCLIENTID) {
 			}
 		)
 	);
-} else {
-	console.error('WARN: No discord client data in .env');
-}
+} else console.error('WARN: No discord client data in .env');
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
