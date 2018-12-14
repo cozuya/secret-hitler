@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import Main from './section-main/Main.jsx';
 import Gamenotes from './Gamenotes.jsx';
 import Playernotes from './Playernotes.jsx';
-import { TRIALMODS } from '../constants.js';
 import {
 	updateUser,
 	updateMidsection,
@@ -297,10 +296,10 @@ export class App extends React.Component {
 			dispatch(fetchReplay(hash.split('#/replay/')[1]));
 		} else if (hash === '#/changelog') {
 			dispatch(updateMidsection('changelog'));
-		} else if ((hash === '#/moderation' && userInfo.staffRole) || (hash === '#/moderation' && TRIALMODS.includes(userInfo.userName))) {
+		} else if (hash === '#/moderation' && userInfo.staffRole) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('moderation'));
-		} else if ((hash === '#/playerreports' && userInfo.staffRole) || (hash === '#/playerreports' && TRIALMODS.includes(userInfo.userName))) {
+		} else if (hash === '#/playerreports' && userInfo.staffRole) {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
 		} else if (hash === '#/settings' && isAuthed) {
