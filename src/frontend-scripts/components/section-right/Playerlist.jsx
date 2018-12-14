@@ -136,7 +136,7 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole)) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'contrib')) {
 			return (
 				<a href="#/moderation">
 					<i className="fire icon mod-button" />
@@ -148,7 +148,7 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole)) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'contrib')) {
 			let classes = 'comment icon report-button';
 
 			const reportClick = () => {
@@ -218,7 +218,7 @@ class Playerlist extends React.Component {
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
-			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'trial');
+			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'contrib' && userInfo.staffRole !== 'trial');
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			let aem = [...admins];
@@ -227,7 +227,7 @@ class Playerlist extends React.Component {
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
 			const nonStaff = visible.filter(user => !aem.includes(user));
-			const contributors = nonStaff.filter(user => user.isContributor).sort(this.alphabetical());
+			const contributors = nonStaff.filter(user => user.staffRole === 'contrib').sort(this.alphabetical());
 
 			const privateUser = nonStaff.filter(user => !contributors.includes(user) && user.isPrivate);
 			const experienced = elo
@@ -252,7 +252,7 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trial') || user.isContributor
+					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'contrib' && user.staffRole !== 'trial')
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -314,7 +314,7 @@ class Playerlist extends React.Component {
 										? 'Editor'
 										: user.staffRole === 'moderator'
 										? 'Moderator'
-										: user.isContributor
+										: user.staffRole === 'contrib'
 										? 'Contributor'
 										: null;
 
@@ -426,7 +426,7 @@ class Playerlist extends React.Component {
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
-			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'trial');
+			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'contrib' && userInfo.staffRole !== 'trial');
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			let aem = [...admins];
@@ -434,7 +434,7 @@ class Playerlist extends React.Component {
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
-			const contributors = visible.filter(user => !aem.includes(user) && user.isContributor).sort(this.alphabetical());
+			const contributors = visible.filter(user => !aem.includes(user) && user.staffRole === 'contrib').sort(this.alphabetical());
 			aem.push(...contributors);
 
 			const experienced = elo
@@ -455,7 +455,7 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trial') || user.isContributor
+					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'contrib' && user.staffRole !== 'trial')
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -516,7 +516,7 @@ class Playerlist extends React.Component {
 										? 'Editor'
 										: user.staffRole === 'moderator'
 										? 'Moderator'
-										: user.isContributor
+										: user.staffRole === 'contrib'
 										? 'Contributor'
 										: null;
 
