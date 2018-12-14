@@ -87,7 +87,8 @@ module.exports.gameCreationDisabled = { status: false };
 module.exports.limitNewPlayers = { status: false };
 module.exports.newStaff = {
 	modUserNames: [],
-	editorUserNames: []
+	editorUserNames: [],
+	trialUserNames: []
 };
 
 const staffList = [];
@@ -100,13 +101,14 @@ module.exports.getPowerFromRole = role => {
 	if (role === 'editor') return 2;
 	if (role === 'moderator') return 1;
 	if (role === 'altmod') return 0; // Report AEM delays will check for >= 0
-	if (role === 'contributor') return -1;
+	if (role === 'trial') return 0;
 	return -1;
 };
 
 module.exports.getPowerFromName = name => {
 	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
+	if (module.exports.newStaff.trialUserNames.includes(name)) return getPowerFromRole('trial');
 
 	const user = module.exports.userList.find(user => user.userName === name);
 	if (user) return getPowerFromRole(user.staffRole);
@@ -117,6 +119,7 @@ module.exports.getPowerFromName = name => {
 module.exports.getPowerFromUser = user => {
 	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
+	if (module.exports.newStaff.trialUserNames.includes(user.userName)) return getPowerFromRole('trial');
 	return getPowerFromRole(user.staffRole);
 };
 
