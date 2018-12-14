@@ -1810,13 +1810,13 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				if (
 					setting !== 'blacklist' ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole) ||
-					(setting === 'staffIncognito' && account.staffRole)
+					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'trial') ||
+					(setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'trial')
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (setting === 'staffIncognito' && account.staffRole) {
+				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'trial') {
 					if (data.staffIncognito) {
 						userList.splice(userList.findIndex(user => user.userName === passport.user), 1);
 					} else {
