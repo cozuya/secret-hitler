@@ -583,19 +583,6 @@ export default class Moderation extends React.Component {
 					Delete/reset player profile
 				</button>
 				<button
-					style={{ background: 'teal' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('removeContributor');
-					}}
-				>
-					Remove contributor status and log them out
-				</button>
-				<button
 					style={{ background: 'grey' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -606,7 +593,7 @@ export default class Moderation extends React.Component {
 						takeModAction('removeStaffRole');
 					}}
 				>
-					Remove trial or mod or editor status and log them out
+					Remove contributor/trial/mod/editor status and log them out
 				</button>
 				<button
 					style={{ background: 'teal' }}
@@ -731,7 +718,6 @@ export default class Moderation extends React.Component {
 			deleteBio: 'Delete Bio',
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
-			removeContributor: 'Remove Contributor Role',
 			removeStaffRole: 'Remove Staff Role',
 			promoteToContributor: 'Promote (Contributor)',
 			promoteToTrial: 'Promote (Trial Mod)',
