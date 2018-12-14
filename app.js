@@ -14,7 +14,7 @@ const session = require('express-session');
 
 let store;
 
-if (PROCESS.ENV.NODE_ENV === 'production') {
+if (process.env.NODE_ENV !== 'production') {
 	const MongoDBStore = require('connect-mongodb-session')(session);
 	store = new MongoDBStore({
 		uri: 'mongodb://localhost:27017/secret-hitler-app',
