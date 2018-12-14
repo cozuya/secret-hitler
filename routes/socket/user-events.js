@@ -1810,13 +1810,13 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				if (
 					setting !== 'blacklist' ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'trial') ||
-					(setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'trial')
+					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'contrib' && account.staffRole !== 'trial') ||
+					(setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contrib' && account.staffRole !== 'trial')
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'trial') {
+				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contrib' && account.staffRole !== 'trial') {
 					if (data.staffIncognito) {
 						userList.splice(userList.findIndex(user => user.userName === passport.user), 1);
 					} else {
@@ -2366,24 +2366,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'disableLimitNewPlayers':
 					limitNewPlayers.status = false;
 					break;
-				case 'removeContributor':
-					if (isSuperMod) {
-						Account.findOne({ username: data.userName })
-							.then(account => {
-								if (account) {
-									account.isContributor = false;
-									account.save(() => {
-										logOutUser(account.username);
-									});
-								} else {
-									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-								}
-							})
-							.catch(err => {
-								console.log(err);
-							});
-					}
-					break;
 				case 'removeStaffRole':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
@@ -2397,6 +2379,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
 										idx = newStaff.trialUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.trialUserNames.splice(idx, 1);
+										idx = newStaff.contribUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.contribUserNames.splice(idx, 1);
 										logOutUser(account.username);
 									});
 								} else {
@@ -2413,8 +2397,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.isContributor = true;
+									account.staffRole = 'contrib';
 									account.save(() => {
+										newStaff.contribUserNames.push(account.username);
 										logOutUser(account.username);
 									});
 								} else {
