@@ -271,7 +271,7 @@ export default class Moderation extends React.Component {
 				this.props.socket.emit('updateModAction', {
 					modName: this.props.userInfo.userName,
 					userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
-					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 					comment: this.state.actionTextValue,
 					action
 				});
