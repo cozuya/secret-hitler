@@ -44,7 +44,7 @@ const {
 } = require('./game/policy-powers');
 const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
-const { TOU_CHANGES, TRIALMODS } = require('../../src/frontend-scripts/constants.js');
+const { TOU_CHANGES } = require('../../src/frontend-scripts/constants.js');
 const { AEM_ALTS } = require('./report.js');
 const version = require('../../version');
 
@@ -88,7 +88,7 @@ const ensureInGame = (passport, game) => {
 	}
 };
 
-module.exports = (modUserNames, editorUserNames, adminUserNames) => {
+module.exports = (modUserNames, editorUserNames, adminUserNames, trialUserNames) => {
 	setInterval(gamesGarbageCollector, 100000);
 
 	io.on('connection', socket => {
@@ -113,12 +113,13 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 			const { passport } = socket.handshake.session;
 			const authenticated = ensureAuthenticated(socket);
 
-			let isAEM = false,
-				isTrial = false;
+			let isAEM = false;
+			let isTrial = false;
+			
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
-					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'contributor') isAEM = true;
-					isTrial = TRIALMODS.includes(passport.user);
+					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'trial') isAEM = true;
+					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trial') isTrial = true;
 				});
 			}
 
@@ -319,7 +320,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames) => {
 								const hasAEM = accounts.some(acc => {
 									return (
 										AEM_ALTS.includes(acc.username) ||
-										(acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'contributor' && players.includes(acc.username))
+										(acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'trial' && players.includes(acc.username))
 									);
 								});
 								if (!hasAEM) handleSubscribeModChat(socket, passport, game);
