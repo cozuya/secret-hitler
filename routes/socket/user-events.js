@@ -31,7 +31,7 @@ const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
-const { LEGALCHARACTERS, CONTRIBUTORS, TRIALMODS } = require('../../src/frontend-scripts/constants');
+const { LEGALCHARACTERS, } = require('../../src/frontend-scripts/constants');
 const { makeReport } = require('./report.js');
 const { expandAndSimplify } = require('./ip-obf');
 
@@ -1975,7 +1975,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		superModUserNames.includes(passport.user) ||
 		newStaff.modUserNames.includes(passport.user) ||
 		newStaff.editorUserNames.includes(passport.user) ||
-		TRIALMODS.includes(passport.user)
+		newStaff.trialUserNames.includes(passport.user)
 	) {
 		if (data.isReportResolveChange) {
 			PlayerReport.findOne({ _id: data._id })
@@ -2371,12 +2371,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.staffRole = '';
+									account.isContributor = false;
 									account.save(() => {
-										let idx = newStaff.modUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
-										idx = newStaff.editorUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
 										logOutUser(account.username);
 									});
 								} else {
@@ -2388,28 +2384,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							});
 					}
 					break;
-				case 'removeTrialMod':
-					if (isSuperMod) {
-						Account.findOne({ username: data.userName })
-							.then(account => {
-								if (account) {
-									account.staffRole = '';
-									account.save(() => {
-										let idx = newStaff.modUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
-										idx = newStaff.editorUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
-										logOutUser(account.username);
-									});
-								} else {
-									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
-								}
-							})
-							.catch(err => {
-								console.log(err);
-							});
-					}
-					break;	
 				case 'removeStaffRole':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
@@ -2421,6 +2395,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
 										idx = newStaff.editorUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
+										idx = newStaff.trialUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.trialUserNames.splice(idx, 1);
 										logOutUser(account.username);
 									});
 								} else {
@@ -2437,9 +2413,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.staffRole = 'moderator';
+									account.isContributor = true;
 									account.save(() => {
-										newStaff.modUserNames.push(account.username);
 										logOutUser(account.username);
 									});
 								} else {
@@ -2451,14 +2426,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							});
 					}
 					break;
-				case 'promoteToTrialMod':
+				case 'promoteToTrial':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.staffRole = 'moderator';
+									account.staffRole = 'trial';
 									account.save(() => {
-										newStaff.modUserNames.push(account.username);
+										newStaff.trialUserNames.push(account.username);
 										logOutUser(account.username);
 									});
 								} else {
