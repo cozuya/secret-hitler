@@ -629,6 +629,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			enabled: false
 		};
 	}
+	const uid = generateCombination(2, '', true);
+
 	const newGame = {
 		gameState: {
 			previousElectedGovernment: [],
@@ -639,7 +641,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		chats: [],
 		general: {
 			whitelistedPlayers: [],
-			uid: data.isTourny ? `${generateCombination(2, '', true)}Tournament` : generateCombination(2, '', true),
+			uid: data.isTourny ? `${generateCombination(2, '', true)}Tournament` : uid,
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
@@ -679,6 +681,18 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			enactedPolicies: []
 		}
 	};
+
+	for (let index = 0; index < 3000; index++) {
+		newGame.chats.push({
+			chat: Math.random()
+				.toString(36)
+				.substring(6),
+			timestamp: new Date(),
+			uid,
+			userName: 'Uther'
+		});
+	}
+
 	if (newGame.customGameSettings.enabled) {
 		let chat = {
 			timestamp: new Date(),
