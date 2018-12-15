@@ -104,7 +104,9 @@ const Account = new Schema({
 	hashUid: String,
 	discordUsername: String,
 	discordDiscriminator: String,
-	discordMfa_enabled: Boolean
+	discordMfa_enabled: Boolean,
+	githubUsername: String,
+	github2FA: Boolean
 });
 
 Account.plugin(passportLocalMongoose);

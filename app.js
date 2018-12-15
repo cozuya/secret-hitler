@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const compression = require('compression');
 const LocalStrategy = require('passport-local').Strategy;
 const DiscordStrategy = require('passport-discord').Strategy;
+const GithubStrategy = require('passport-github2').Strategy;
 const Account = require('./models/account');
 const routesIndex = require('./routes/index');
 const session = require('express-session');
@@ -78,8 +79,21 @@ if (process.env.DISCORDCLIENTID) {
 			}
 		)
 	);
+
+	passport.use(
+		new GithubStrategy(
+			{
+				clientID: process.env.GITHUBCLIENTID,
+				clientSecret: process.env.GITHUBCLIENTSECRET,
+				callbackURL: '/github/login-callback'
+			},
+			(accessToken, refreshToken, profile, cb) => {
+				cb(profile);
+			}
+		)
+	);
 } else {
-	console.error('WARN: No discord client data in .env');
+	console.error('WARN: No oauth client data in .env');
 }
 
 passport.serializeUser(Account.serializeUser());

@@ -510,7 +510,7 @@ $(document).ready(function() {
 		$loader.addClass('active');
 
 		$.ajax({
-			url: '/discord-select-username',
+			url: '/oauth-select-username',
 			method: 'POST',
 			contentType: 'application/json; charset=UTF-8',
 			data: data,

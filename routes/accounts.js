@@ -34,7 +34,8 @@ module.exports = () => {
 			verified: req.user.verified,
 			email: req.user.verification ? req.user.verification.email : '',
 			discordUsername: req.user.discordUsername,
-			discordDiscriminator: req.user.discordDiscriminator
+			discordDiscriminator: req.user.discordDiscriminator,
+			githubUsername: req.user.githubUsername
 		});
 	});
 
@@ -430,29 +431,39 @@ module.exports = () => {
 
 	app.get('/discord-login', passport.authenticate('discord'));
 
-	app.get('/discord/login-callback', (req, res, next) => {
-		passport.authenticate('discord', profile => {
+	app.get('/github-login', passport.authenticate('github', { scope: ['read:user', 'user:email'] }));
+
+	const oAuthAuthentication = (req, res, next, type) => {
+		passport.authenticate(type, profile => {
 			if (!profile) {
 				return next();
 			}
 
-			// if user is signed in already, associate the discord account with their sh account
 			if (req.user) {
-				req.user.discordUsername = profile.username;
-				req.user.discordDiscriminator = profile.discriminator;
-				req.user.discordMfa_enabled = profile.mfa_enabled;
+				if (type === 'discord') {
+					req.user.discordUsername = profile.username;
+					req.user.discordDiscriminator = profile.discriminator;
+					req.user.discordMfa_enabled = profile.mfa_enabled;
+				} else {
+					req.user.githubUsername = profile.username;
+					req.user.github2FA = profile.two_factor_authentication;
+				}
 				req.user.verified = true;
 				req.user.save(() => {
 					res.redirect('/account');
 				});
 			} else {
-				// see if their discord information matches an account, if so sign them in
-				Account.findOne({ discordUsername: profile.username, discordDiscriminator: profile.discriminator })
+				// see if their oauth information matches an account, if so sign them in
+				const queryObj =
+					type === 'discord' ? { discordUsername: profile.username, discordDiscriminator: profile.discriminator } : { githubUsername: profile.username };
+
+				Account.findOne(queryObj)
 					.then(account => {
 						if (account) {
 							req.logIn(account, () => res.redirect('/account'));
 						} else {
-							// see if there's an existing sh account with their discord name, if so have them select a new username, if not make an account.
+							// see if there's an existing sh account with their oauth name, if so have them select a new username, if not make an account.
+
 							Account.findOne({ username: profile.username })
 								.then(account => {
 									if (/88$/i.test(profile.username)) {
@@ -461,8 +472,8 @@ module.exports = () => {
 											username
 										});
 										new88.save(() => {
-											req.session.discordProfile = profile;
-											res.redirect('/discord-select-username');
+											req.session.oauthProfile = profile;
+											res.redirect('/oauth-select-username');
 										});
 									} else if (
 										!/^[a-z0-9]+$/i.test(profile.username) ||
@@ -471,8 +482,8 @@ module.exports = () => {
 										profile.username.length > 12 ||
 										accountCreationDisabled.status
 									) {
-										req.session.discordProfile = profile;
-										res.redirect('/discord-select-username');
+										req.session.oauthProfile = profile;
+										res.redirect('/oauth-select-username');
 									} else if (!account) {
 										const ip = expandAndSimplify(
 											req.headers['x-real-ip'] ||
@@ -482,36 +493,45 @@ module.exports = () => {
 												req.connection.remoteAddress
 										);
 
+										const accountObj = {
+											username: profile.username,
+											gameSettings: {
+												soundStatus: 'Pack2'
+											},
+											verified: true,
+											wins: 0,
+											losses: 0,
+											created: new Date(),
+											touLastAgreed: TOU_CHANGES[0].changeVer,
+											signupIP: ip,
+											verification: {
+												email: type === 'discord' ? profile.email : profile._json.email
+											},
+											lastConnectedIP: ip
+										};
+
+										if (type === 'discord') {
+											accountObj.discordDiscriminator = profile.discriminator;
+											accountObj.discordMfa_enabled = profile.mfa_enabled;
+											accountObj.discordUsername = profile.username;
+										} else {
+											accountObj.githubUsername = profile.username;
+											accountObj.github2FA = profile._json.two_factor_authentication;
+											accountObj.bio = profile._json.bio;
+										}
+
 										Account.register(
-											new Account({
-												username: profile.username,
-												gameSettings: {
-													soundStatus: 'Pack2'
-												},
-												verified: true,
-												wins: 0,
-												losses: 0,
-												created: new Date(),
-												touLastAgreed: TOU_CHANGES[0].changeVer,
-												signupIP: ip,
-												discordUsername: profile.username,
-												discordDiscriminator: profile.discriminator,
-												discordMfa_enabled: profile.mfa_enabled,
-												verification: {
-													email: profile.email
-												},
-												lastConnectedIP: ip
-											}),
+											new Account(accountObj),
 											Math.random()
 												.toString(36)
 												.substring(2),
 											(err, account) => {
 												if (err) {
-													console.log(err, 'err in creating discord account');
+													console.log(err, 'err in creating oauth account');
 													return next();
 												}
 
-												passport.authenticate('discord')(req, res, () => {
+												passport.authenticate(type)(req, res, () => {
 													const newPlayerBan = new BannedIP({
 														bannedDate: new Date(),
 														type: 'new',
@@ -525,36 +545,44 @@ module.exports = () => {
 											}
 										);
 									} else {
-										req.session.discordProfile = profile;
-										res.redirect('/discord-select-username');
+										req.session.oauthProfile = profile;
+										res.redirect('/oauth-select-username');
 									}
 								})
 								.catch(err => {
-									console.log(err, 'err in discord oauth');
+									console.log(err, 'err in oauth');
 								});
 						}
 					})
 					.catch(err => {
-						console.log(err, 'err in discord oauth');
+						console.log(err, 'err in oauth');
 					});
 			}
 		})(req, res, next);
+	};
+
+	app.get('/github/login-callback', (req, res, next) => {
+		oAuthAuthentication(req, res, next, 'github');
 	});
 
-	app.get('/discord-select-username', (req, res, next) => {
-		if (!req.session.discordProfile) {
+	app.get('/discord/login-callback', (req, res, next) => {
+		oAuthAuthentication(req, res, next, 'discord');
+	});
+
+	app.get('/oauth-select-username', (req, res, next) => {
+		if (!req.session.oauthProfile) {
 			return next();
 		}
 
 		res.render('page-new-username');
 	});
 
-	app.post('/discord-select-username', (req, res, next) => {
+	app.post('/oauth-select-username', (req, res, next) => {
 		const { username } = req.body;
-		const { discordProfile } = req.session;
+		const { oauthProfile } = req.session;
 
 		if (
-			!req.session.discordProfile ||
+			!req.session.oauthProfile ||
 			!username ||
 			!/^[a-z0-9]+$/i.test(username) ||
 			username.length < 3 ||
@@ -568,40 +596,56 @@ module.exports = () => {
 		const ip = expandAndSimplify(
 			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
 		);
-
-		Account.create(
-			{
-				username,
-				gameSettings: {
-					soundStatus: 'Pack2'
-				},
-				verified: true,
-				wins: 0,
-				losses: 0,
-				created: new Date(),
-				touLastAgreed: TOU_CHANGES[0].changeVer,
-				signupIP: ip,
-				discordUsername: discordProfile.username,
-				discordDiscriminator: discordProfile.discriminator,
-				discordMfa_enabled: discordProfile.mfa_enabled,
-				verification: {
-					email: discordProfile.email
-				},
-				lastConnectedIP: ip
+		const accountObj = {
+			username,
+			gameSettings: {
+				soundStatus: 'Pack2'
 			},
-			(err, acc) => {
-				if (err) {
-					return next();
-				}
+			verified: true,
+			wins: 0,
+			losses: 0,
+			created: new Date(),
+			touLastAgreed: TOU_CHANGES[0].changeVer,
+			signupIP: ip,
+			lastConnectedIP: ip
+		};
 
-				req.session.discordProfile = null;
-				req.logIn(acc, () => res.redirect('/account'));
+		if (oauthProfile.provider === 'github') {
+			accountObj.githubUsername = oauthProfile.username;
+			accountObj.github2FA = oauthProfile.two_factor_authentication;
+			accountObj.bio = oauthProfile.bio;
+			accountObj.verification = {
+				email: oauthProfile._json.email
+			};
+		} else {
+			accountObj.discordUsername = oauthProfile.username;
+			accountObj.discordDiscriminator = oauthProfile.discriminator;
+			accountObj.discordMfa_enabled = oauthProfile.mfa_enabled;
+			accountObj.verification = {
+				email: oauthProfile.email
+			};
+		}
+
+		Account.create(accountObj, (err, acc) => {
+			if (err) {
+				return next();
 			}
-		);
+
+			req.session.oauthProfile = null;
+			req.logIn(acc, () => res.redirect('/account'));
+		});
 	});
 
 	app.get('/revoke-discord', ensureAuthenticated, (req, res) => {
 		req.user.discordUsername = req.user.discordDiscriminator = '';
+		req.user.save(() => {
+			res.redirect('/account');
+		});
+	});
+
+	app.get('/revoke-github', ensureAuthenticated, (req, res) => {
+		req.user.githubUsername = '';
+		req.user.github2FA = false;
 		req.user.save(() => {
 			res.redirect('/account');
 		});
