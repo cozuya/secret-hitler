@@ -8,7 +8,6 @@ const accounts = require('./accounts');
 const version = require('../version');
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
-const { userList, userListEmitter } = require('./socket/models');
 const { userList, userListEmitter, games } = require('./socket/models');
 
 /**
