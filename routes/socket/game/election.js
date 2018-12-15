@@ -1494,8 +1494,8 @@ module.exports.selectVoting = (passport, game, data) => {
 				() => {
 					seatedPlayers.forEach(player => {
 						player.cardFlingerState = [];
-						sendInProgressGameUpdate(game, true);
 					});
+					sendInProgressGameUpdate(game, true);
 				},
 				experiencedMode ? 200 : 2000
 			);
