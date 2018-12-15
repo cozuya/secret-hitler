@@ -2329,6 +2329,15 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									user.customCardback = '';
 									userListEmitter.send = true;
 								}
+								Object.keys(games).forEach(uid => {
+									const game = games[uid];
+									const foundUser = game.publicPlayersState.find(user => user.userName === data.userName);
+									if (foundUser) {
+										foundUser.customCardback = '';
+										io.sockets.in(uid).emit('gameUpdate', secureGame(game));
+										sendGameList();
+									}
+								});
 								account.save(() => {
 									if (io.sockets.sockets[affectedSocketId]) {
 										io.sockets.sockets[affectedSocketId].emit('gameSettings', account.gameSettings);
