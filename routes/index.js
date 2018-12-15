@@ -9,6 +9,8 @@ const version = require('../version');
 const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
 const { userList, userListEmitter } = require('./socket/models');
+const { TRIALMODS } = require('../src/frontend-scripts/constants');
+const { userList, userListEmitter, games } = require('./socket/models');
 
 /**
  * @param {object} req - express request object.
@@ -272,6 +274,15 @@ module.exports = () => {
 									user.customCardbackUid = account.gameSettings.customCardbackUid;
 									userListEmitter.send = true;
 								}
+								Object.keys(games).forEach(uid => {
+									const game = games[uid];
+									const foundUser = game.publicPlayersState.find(user => user.userName === data.userName);
+									if (foundUser) {
+										foundUser.customCardback = '';
+										io.sockets.in(uid).emit('gameUpdate', secureGame(game));
+										sendGameList();
+									}
+								});
 								if (socketId && io.sockets.sockets[socketId]) {
 									io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
 								}
