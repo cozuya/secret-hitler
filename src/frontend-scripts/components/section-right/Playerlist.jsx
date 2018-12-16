@@ -64,16 +64,16 @@ class Playerlist extends React.Component {
 					? 'wins'
 					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-				? 'winsSeason'
-				: 'rainbowWinsSeason';
+					? 'winsSeason'
+					: 'rainbowWinsSeason';
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
 					? 'losses'
 					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-				? 'lossesSeason'
-				: 'rainbowLossesSeason';
+					? 'lossesSeason'
+					: 'rainbowLossesSeason';
 
 		return (a, b) => {
 			const awr = a[w] / a[l];
@@ -95,16 +95,16 @@ class Playerlist extends React.Component {
 					? 'wins'
 					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-				? 'winsSeason'
-				: 'rainbowWinsSeason';
+					? 'winsSeason'
+					: 'rainbowWinsSeason';
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
 					? 'losses'
 					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-				? 'lossesSeason'
-				: 'rainbowLossesSeason';
+					? 'lossesSeason'
+					: 'rainbowLossesSeason';
 
 		return (a, b) => {
 			const wl1 = a[w] + a[l];
@@ -204,16 +204,16 @@ class Playerlist extends React.Component {
 						? 'wins'
 						: 'rainbowWins'
 					: this.state.userListFilter === 'all'
-					? 'winsSeason'
-					: 'rainbowWinsSeason';
+						? 'winsSeason'
+						: 'rainbowWinsSeason';
 			const l =
 				gameSettings && gameSettings.disableSeasonal
 					? this.state.userListFilter === 'all'
 						? 'losses'
 						: 'rainbowLosses'
 					: this.state.userListFilter === 'all'
-					? 'lossesSeason'
-					: 'rainbowLossesSeason';
+						? 'lossesSeason'
+						: 'rainbowLossesSeason';
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
@@ -241,7 +241,7 @@ class Playerlist extends React.Component {
 			const inexperienced = nonStaff.filter(user => !contributors.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
 
 			const makeUser = (user, i) => {
-				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
+				const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
 				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
 				const disableIfUnclickable = f => {
 					if (this.props.isUserClickable) {
@@ -311,12 +311,12 @@ class Playerlist extends React.Component {
 									user.staffRole === 'admin'
 										? 'Admin'
 										: user.staffRole === 'editor'
-										? 'Editor'
-										: user.staffRole === 'moderator'
-										? 'Moderator'
-										: CONTRIBUTORS.includes(user.userName)
-										? 'Contributor'
-										: null;
+											? 'Editor'
+											: user.staffRole === 'moderator'
+												? 'Moderator'
+												: CONTRIBUTORS.includes(user.userName)
+													? 'Contributor'
+													: null;
 
 								if (userAdminRole) {
 									const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
@@ -412,16 +412,16 @@ class Playerlist extends React.Component {
 						? 'wins'
 						: 'rainbowWins'
 					: this.state.userListFilter === 'all'
-					? 'winsSeason'
-					: 'rainbowWinsSeason';
+						? 'winsSeason'
+						: 'rainbowWinsSeason';
 			const l =
 				gameSettings && gameSettings.disableSeasonal
 					? this.state.userListFilter === 'all'
 						? 'losses'
 						: 'rainbowLosses'
 					: this.state.userListFilter === 'all'
-					? 'lossesSeason'
-					: 'rainbowLossesSeason';
+						? 'lossesSeason'
+						: 'rainbowLossesSeason';
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
@@ -444,7 +444,7 @@ class Playerlist extends React.Component {
 			const inexperienced = visible.filter(user => !aem.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
 
 			return [...aem, ...experienced, ...inexperienced].map((user, i) => {
-				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
+				const percent = (user[w] / (user[w] + user[l]) * 100).toFixed(0);
 				const percentDisplay = user[w] + user[l] > 9 ? `${percent}%` : '';
 				const disableIfUnclickable = f => {
 					if (this.props.isUserClickable) {
@@ -513,12 +513,12 @@ class Playerlist extends React.Component {
 									user.staffRole === 'admin'
 										? 'Admin'
 										: user.staffRole === 'editor'
-										? 'Editor'
-										: user.staffRole === 'moderator'
-										? 'Moderator'
-										: CONTRIBUTORS.includes(user.userName)
-										? 'Contributor'
-										: null;
+											? 'Editor'
+											: user.staffRole === 'moderator'
+												? 'Moderator'
+												: CONTRIBUTORS.includes(user.userName)
+													? 'Contributor'
+													: null;
 
 								if (userAdminRole) {
 									const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
@@ -635,8 +635,4 @@ Playerlist.propTypes = {
 	socket: PropTypes.object
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-	mergeProps
-)(Playerlist);
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Playerlist);
