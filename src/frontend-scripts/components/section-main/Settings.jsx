@@ -225,14 +225,14 @@ class Settings extends React.Component {
 
 			if (rejectedFile.length) {
 				this.setState({
-					cardbackUploadStatus: 'The file you selected has a wrong extension.  Only png jpg and jpeg are allowed.'
+					cardbackUploadStatus: 'The file you selected has a wrong extension.  Only png, jpg/jpeg, gif, and tiff are allowed.'
 				});
 				return;
 			}
 
-			if (files[0].size > 40000) {
+			if (files[0].size > 100 * 1024) {
 				this.setState({
-					cardbackUploadStatus: 'The file you selected is too big.  A maximum of 40kb is allowed.'
+					cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.'
 				});
 				return;
 			}
@@ -539,7 +539,7 @@ class Settings extends React.Component {
 								</div>
 								<div className="upload">
 									<h5 className="ui header">New</h5>
-									<Dropzone accept="image/png, image/jpg, image/jpeg" onDrop={onDrop} multiple={false} className="dropzone">
+									<Dropzone accept="image/png, image/jpg, image/jpeg, image/gif, image/tiff" onDrop={onDrop} multiple={false} className="dropzone">
 										Click here or drag and drop a 70px by 95px image to upload
 									</Dropzone>
 								</div>
@@ -562,7 +562,7 @@ class Settings extends React.Component {
 											Image uploaded must be 70px by 95px, or it will not look right. Do not trust the previewer - it will crunch to fit the box, the game
 											itself won't do that.
 										</strong>{' '}
-										Rainbow players only. Can only upload an image once per 30 second. Only png, jpg, and jpeg are permitted. Must be below 40kb.
+										Rainbow players only. Can only upload an image once per 30 second. Only png, jpg, and jpeg are permitted. Must be below 100kb.
 									</p>
 									<p>
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>

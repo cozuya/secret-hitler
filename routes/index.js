@@ -6,10 +6,9 @@ const socketRoutes = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
-const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
 const { TRIALMODS } = require('../src/frontend-scripts/constants');
-const { userList, userListEmitter, games } = require('./socket/models');
+const { ProcessImage } = require('./image-processor');
 
 /**
  * @param {object} req - express request object.
@@ -242,13 +241,13 @@ module.exports = () => {
 			}
 
 			const { image } = req.body;
-			const extension = image.split(';base64')[0].split('/')[1];
+			if (image.length > 100 * 1024) {
+				res.json({ message: 'The file you selected is too big.  A maximum of 100kb is allowed.' });
+				return;
+			}
 			const raw = image.split(',')[1];
 			const username = req.session.passport.user;
 			const now = new Date();
-			const socketId = Object.keys(io.sockets.sockets).find(
-				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username
-			);
 
 			Account.findOne({ username })
 				.then(account => {
@@ -264,33 +263,8 @@ module.exports = () => {
 							message: 'You can only change your cardback once every 30 seconds.'
 						});
 					} else {
-						fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
-							account.gameSettings.customCardback = extension;
-							account.gameSettings.customCardbackSaveTime = now.toString();
-							account.gameSettings.customCardbackUid = Math.random()
-								.toString(36)
-								.substring(2);
-							account.save(() => {
-								res.json({ message: 'Cardback successfully uploaded.' });
-								const user = userList.find(u => u.userName === username);
-								if (user) {
-									user.customCardback = extension;
-									user.customCardbackUid = account.gameSettings.customCardbackUid;
-									userListEmitter.send = true;
-								}
-								Object.keys(games).forEach(uid => {
-									const game = games[uid];
-									const foundUser = game.publicPlayersState.find(user => user.userName === data.userName);
-									if (foundUser) {
-										foundUser.customCardback = '';
-										io.sockets.in(uid).emit('gameUpdate', secureGame(game));
-										sendGameList();
-									}
-								});
-								if (socketId && io.sockets.sockets[socketId]) {
-									io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
-								}
-							});
+						ProcessImage(username, raw, (resp, err) => {
+							res.json({ message: err || resp });
 						});
 					}
 				})
