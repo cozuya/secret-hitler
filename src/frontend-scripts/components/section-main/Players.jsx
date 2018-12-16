@@ -588,4 +588,7 @@ Players.propTypes = {
 	playerNotesActive: PropTypes.string
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Players);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Players);
