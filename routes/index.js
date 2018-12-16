@@ -7,7 +7,6 @@ const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
 const { obfIP } = require('./socket/ip-obf');
-const { TRIALMODS } = require('../src/frontend-scripts/constants');
 const { ProcessImage } = require('./image-processor');
 
 /**
@@ -60,8 +59,10 @@ module.exports = () => {
 			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
 			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
 			const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+			const trialUserNames = accounts.filter(account => account.staffRole === 'trial').map(account => account.username);
+			const contribUserNames = accounts.filter(account => account.staffRole === 'contrib').map(account => account.username);
 
-			socketRoutes(modUserNames, editorUserNames, adminUserNames);
+			socketRoutes(modUserNames, editorUserNames, adminUserNames, trialUserNames, contribUserNames);
 		})
 		.catch(err => {
 			console.log(err, 'err in finding staffroles');
@@ -178,14 +179,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (TRIALMODS.includes(requestingUser)) {
-								try {
-									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
-								} catch (e) {
-									_profile.lastConnectedIP = 'something went wrong';
-									console.log(e);
-								}
-							} else if (!acc || !acc.staffRole || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
+							if (!acc || !acc.staffRole || acc.staffRole === 'contrib') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {
