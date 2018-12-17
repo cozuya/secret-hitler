@@ -21,7 +21,7 @@ const Account = require('../models/account'); // temp
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
 // const rateGame = () => {
 Game.findOne({ uid: 'MelodicAfraidSwallow' }).then(game => {
