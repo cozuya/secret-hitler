@@ -1146,7 +1146,7 @@ export default class Creategame extends React.Component {
 							<div className="sixteen wide column">
 								<i className="big thumbs up icon" style={{ color: 'tan !important' }} />
 								<h4 className="ui header" style={{ color: 'tan' }}>
-									Verified - only email-verified players can play in this game.
+									Verified - only email-verified players, discord-verified players, OR github-verified players can play in this game.
 								</h4>
 								<div
 									className="ui fitted toggle checkbox"
