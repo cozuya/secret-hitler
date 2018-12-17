@@ -6,7 +6,7 @@ let count = 0;
 module.exports = async rate => {
 	try {
 		mongoose.Promise = global.Promise;
-		await mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+		await mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 		const cursor = await Game.find({}, { chats: 0 })
 			.limit(5000)
 			.cursor();
