@@ -9,6 +9,13 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 1.0.0-beta7 released 12-16-2018</p>
+		</div>
+		<h3>New feature: Github signin/signup integration</h3>
+		<p>Why not?! This will be the last one.. probably. I don't want your facebook/google/apple nonsense.</p>
+		<h3>Fix: much better long-game performance.</h3>
+		<p>For far too long, games that had many chats were having a lot of lag in the late games. That has been adjusted</p>?
+		<div className="ui header">
 			<p>Version 1.0.0-beta6 released 12-12-2018</p>
 		</div>
 		<h3>New feature: two new custom game policy powers!</h3>
