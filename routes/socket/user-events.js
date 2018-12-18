@@ -668,17 +668,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		}
 	};
 
-	// for (let index = 0; index < 3000; index++) {
-	// 	newGame.chats.push({
-	// 		chat: Math.random()
-	// 			.toString(36)
-	// 			.substring(6),
-	// 		timestamp: new Date(),
-	// 		uid,
-	// 		userName: 'Uther'
-	// 	});
-	// }
-
 	if (newGame.customGameSettings.enabled) {
 		let chat = {
 			timestamp: new Date(),

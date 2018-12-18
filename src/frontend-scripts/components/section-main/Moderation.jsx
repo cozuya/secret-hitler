@@ -593,7 +593,7 @@ export default class Moderation extends React.Component {
 						takeModAction('removeStaffRole');
 					}}
 				>
-					Remove player role and log them out
+					Remove staff/contributor role and log them out
 				</button>
 				<button
 					style={{ background: 'teal' }}

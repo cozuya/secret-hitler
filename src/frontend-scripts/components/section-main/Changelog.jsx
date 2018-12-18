@@ -9,12 +9,18 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
-			<p>Version 1.0.0-beta7 released 12-16-2018</p>
+			<p>Version 1.0.0-beta7 released 12-18-2018</p>
 		</div>
 		<h3>New feature: Github signin/signup integration</h3>
 		<p>Why not?! This will be the last one.. probably. I don't want your facebook/google/apple nonsense.</p>
 		<h3>Fix: much better long-game performance.</h3>
-		<p>For far too long, games that had many chats were having a lot of lag in the late games. That has been adjusted</p>?
+		<p>
+			For far too long, games that had many chats were having a lot of lag in the late games. You now only see a smaller selection of chats (last 250) - you can
+			toggle this in the game filters. Turning that off will cause your client to be slow, again.
+		</p>
+		<h3>New feature: fixes to remakes and now remakes will always go based off of fascist count instead of a fixed number. Thanks to contributor LoveOken.</h3>
+		<h3>New feature: the contributor and trial mod roles are now assignable by mods as opposed to being hard coded.</h3>
+		<h3>New feature: cardbacks should now be much more performant @Hexicube.</h3>
 		<div className="ui header">
 			<p>Version 1.0.0-beta6 released 12-12-2018</p>
 		</div>
