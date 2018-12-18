@@ -31,7 +31,7 @@ const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
-const { LEGALCHARACTERS, TRIALMODS } = require('../../src/frontend-scripts/constants');
+const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
 const { makeReport } = require('./report.js');
 const { expandAndSimplify } = require('./ip-obf');
 
@@ -1824,13 +1824,13 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				if (
 					setting !== 'blacklist' ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole) ||
-					(setting === 'staffIncognito' && account.staffRole)
+					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'trialmod') ||
+					(setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'trialmod')
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (setting === 'staffIncognito' && account.staffRole) {
+				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'trialmod') {
 					if (data.staffIncognito) {
 						userList.splice(userList.findIndex(user => user.userName === passport.user), 1);
 					} else {
@@ -1990,7 +1990,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		superModUserNames.includes(passport.user) ||
 		newStaff.modUserNames.includes(passport.user) ||
 		newStaff.editorUserNames.includes(passport.user) ||
-		TRIALMODS.includes(passport.user)
+		newStaff.trialmodUserNames.includes(passport.user)
 	) {
 		if (data.isReportResolveChange) {
 			PlayerReport.findOne({ _id: data._id })
@@ -2401,6 +2401,48 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
 										idx = newStaff.editorUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
+										idx = newStaff.trialmodUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.trialmodUserNames.splice(idx, 1);
+										idx = newStaff.contributorUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.contributorUserNames.splice(idx, 1);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				case 'promoteToContributor':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'contributor';
+									account.save(() => {
+										newStaff.contributorUserNames.push(account.username);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				case 'promoteToTrialMod':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'trialmod';
+									account.save(() => {
+										newStaff.trialmodUserNames.push(account.username);
 										logOutUser(account.username);
 									});
 								} else {
@@ -2431,7 +2473,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							});
 					}
 					break;
-
 				case 'promoteToEditor':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
