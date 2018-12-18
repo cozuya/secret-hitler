@@ -593,7 +593,7 @@ export default class Moderation extends React.Component {
 						takeModAction('removeStaffRole');
 					}}
 				>
-					Remove contributor/trial-mod/mod/editor status and log them out
+					Remove player role and log them out
 				</button>
 				<button
 					style={{ background: 'teal' }}
@@ -606,10 +606,10 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToContributor');
 					}}
 				>
-					Promote player to contributor
+					Promote player to Contributor
 				</button>
 				<button
-					style={{ background: 'blue' }}
+					style={{ background: 'purple' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -619,10 +619,10 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToTrialMod');
 					}}
 				>
-					Promote player to trial mod
+					Promote player to Trial Moderator
 				</button>
 				<button
-					style={{ background: 'blueviolet' }}
+					style={{ background: '#007fff' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -632,10 +632,10 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToMod');
 					}}
 				>
-					Promote player to mod
+					Promote player to Moderator
 				</button>
 				<button
-					style={{ background: 'violet' }}
+					style={{ background: '#05bba0' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -645,7 +645,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToEditor');
 					}}
 				>
-					Promote player to editor
+					Promote player to Editor
 				</button>
 				<button
 					style={{ background: 'black' }}
