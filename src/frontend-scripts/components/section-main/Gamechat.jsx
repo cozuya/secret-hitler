@@ -388,7 +388,7 @@ class Gamechat extends React.Component {
 			}
 		};
 
-		if (isReplay || !gameInfo.general.private || userInfo.isSeated || isStaff) {
+		if (gameInfo && gameInfo.chats && (isReplay || !gameInfo.general.private || userInfo.isSeated || isStaff)) {
 			let list = gameInfo.chats
 				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
 				.filter(
