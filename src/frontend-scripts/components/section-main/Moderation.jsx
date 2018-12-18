@@ -593,10 +593,36 @@ export default class Moderation extends React.Component {
 						takeModAction('removeStaffRole');
 					}}
 				>
-					Remove mod or editor status and log them out
+					Remove player role and log them out
 				</button>
 				<button
-					style={{ background: 'blueviolet' }}
+					style={{ background: 'teal' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToContributor');
+					}}
+				>
+					Promote player to Contributor
+				</button>
+				<button
+					style={{ background: 'purple' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToTrialMod');
+					}}
+				>
+					Promote player to Trial Moderator
+				</button>
+				<button
+					style={{ background: '#007fff' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -606,10 +632,10 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToMod');
 					}}
 				>
-					Promote player to mod
+					Promote player to Moderator
 				</button>
 				<button
-					style={{ background: 'violet' }}
+					style={{ background: '#05bba0' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -619,7 +645,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToEditor');
 					}}
 				>
-					Promote player to editor
+					Promote player to Editor
 				</button>
 				<button
 					style={{ background: 'black' }}
@@ -693,6 +719,8 @@ export default class Moderation extends React.Component {
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
 			removeStaffRole: 'Remove Staff Role',
+			promoteToContributor: 'Promote (Contributor)',
+			promoteToTrialMod: 'Promote (Trial Mod)',
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',
