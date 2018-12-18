@@ -63,7 +63,7 @@ const tenPlayerGameData = {
 };
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
 Game.find({})
 	.cursor()

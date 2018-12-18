@@ -132,7 +132,7 @@
 		"test:watch": "jest --watch",
 		"test:coverage": "jest --coverage",
 		"db": "mongod --dbpath data",
-		"db-docker": "docker run -it --rm -p 15726:15726 -v \"$(PWD)/data\":/data/db --name Secret-Hitler-Dev-MongoDB mongo:latest --port 15726",
+		"db-docker": "docker run -it --rm -p 27017:27017 -v \"$(PWD)/data\":/data/db --name Secret-Hitler-Dev-MongoDB mongo:latest --port 27017",
 		"build": "webpack --config webpack/webpack.config.prod --mode production",
 		"inspect": "nodemon --inspect=9137 bin/dev.js",
 		"server": "nodemon bin/dev.js",
