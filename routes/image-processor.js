@@ -36,7 +36,7 @@ module.exports.ProcessImage = (username, raw, callback) => {
 					}
 					Object.keys(games).forEach(uid => {
 						const game = games[uid];
-						const foundUser = game.publicPlayersState.find(user => user.userName === data.userName);
+						const foundUser = game.publicPlayersState.find(user => user.userName === username);
 						if (foundUser) {
 							foundUser.customCardback = '';
 							io.sockets.in(uid).emit('gameUpdate', secureGame(game));
