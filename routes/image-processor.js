@@ -5,6 +5,7 @@ const Account = require('../models/account');
 const fs = require('fs');
 const { userList, userListEmitter, games } = require('./socket/models');
 const { secureGame } = require('./socket/util');
+const { sendGameList } = require('./socket/user-requests');
 
 module.exports.ProcessImage = (username, raw, callback) => {
 	Jimp.read(Buffer.from(raw, 'base64'), (err, img) => {
