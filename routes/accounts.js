@@ -505,7 +505,7 @@ module.exports = () => {
 											touLastAgreed: TOU_CHANGES[0].changeVer,
 											signupIP: ip,
 											verification: {
-												email: type === 'discord' ? profile.email : profile._json.email
+												email: (type === 'discord' ? profile.email : profile._json.email) || ''
 											},
 											lastConnectedIP: ip
 										};
@@ -601,6 +601,9 @@ module.exports = () => {
 			gameSettings: {
 				soundStatus: 'Pack2'
 			},
+			verification: {
+				email: ''
+			},
 			verified: true,
 			wins: 0,
 			losses: 0,
@@ -615,14 +618,14 @@ module.exports = () => {
 			accountObj.github2FA = oauthProfile.two_factor_authentication;
 			accountObj.bio = oauthProfile.bio;
 			accountObj.verification = {
-				email: oauthProfile._json.email
+				email: oauthProfile._json.email || ''
 			};
 		} else {
 			accountObj.discordUsername = oauthProfile.username;
 			accountObj.discordDiscriminator = oauthProfile.discriminator;
 			accountObj.discordMfa_enabled = oauthProfile.mfa_enabled;
 			accountObj.verification = {
-				email: oauthProfile.email
+				email: oauthProfile.email || ''
 			};
 		}
 
