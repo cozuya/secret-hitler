@@ -319,7 +319,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, trialmodUserNam
 							const hasAlts = players.filter(p => AEM_ALTS.includes(p));
 							if (hasAlts.length) {
 								socket.emit('sendAlert', `AEM alts are present: ${JSON.stringify(hasAlts)}`);
-							} else
+							} else {
 								Account.find({ staffRole: { $exists: true } }).then(accounts => {
 									const staff = accounts
 										.filter(acc => {
@@ -331,6 +331,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, trialmodUserNam
 										socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(hasStaff)}`);
 									} else handleSubscribeModChat(socket, passport, game);
 								});
+							}
 						} else socket.emit('sendAlert', 'Game is missing.');
 					}
 				})
