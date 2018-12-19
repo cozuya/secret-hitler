@@ -398,10 +398,15 @@ class Gamechat extends React.Component {
 						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
 						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 				);
-			if (!showFullChat) list = gameInfo.chats.slice(-250);
+			if (!showFullChat) list = list.slice(-250);
 			return list.reduce((acc, chat, i) => {
 				const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-				const isMod = playerListPlayer && playerListPlayer.staffRole && playerListPlayer.staffRole !== '' && playerListPlayer.staffRole !== 'trialmod' && playerListPlayer.staffRole !== 'contributor';
+				const isMod =
+					playerListPlayer &&
+					playerListPlayer.staffRole &&
+					playerListPlayer.staffRole !== '' &&
+					playerListPlayer.staffRole !== 'trialmod' &&
+					playerListPlayer.staffRole !== 'contributor';
 				const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
 				const isSeated = seatedUserNames.includes(chat.userName);
 				const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
@@ -602,11 +607,14 @@ class Gamechat extends React.Component {
 				? `${hash.substr(0, hash.length - 1)}B`
 				: `${hash.substr(0, hash.length - 1)}A`;
 		};
-		const isStaff = Boolean(userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'contributor');
+		const isStaff = Boolean(
+			userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'contributor'
+		);
 		const hasNoAEM = players => {
 			if (!userList || !userList.list) return false;
 			return userList.list.every(user => {
-				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'contributor') return false;
+				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'contributor')
+					return false;
 				else return true;
 			});
 		};

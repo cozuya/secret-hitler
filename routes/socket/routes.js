@@ -115,7 +115,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, trialmodUserNam
 
 			let isAEM = false;
 			let isTrial = false;
-			
+
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'trialmod' && account.staffRole !== 'contributor') isAEM = true;
@@ -320,7 +320,11 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, trialmodUserNam
 								const hasAEM = accounts.some(acc => {
 									return (
 										AEM_ALTS.includes(acc.username) ||
-										(acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'trialmod' && acc.staffRole !== 'contributor' && players.includes(acc.username))
+										(acc.staffRole &&
+											acc.staffRole.length > 0 &&
+											acc.staffRole !== 'trialmod' &&
+											acc.staffRole !== 'contributor' &&
+											players.includes(acc.username))
 									);
 								});
 								if (!hasAEM) handleSubscribeModChat(socket, passport, game);
