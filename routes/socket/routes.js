@@ -316,20 +316,22 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, trialmodUserNam
 						const game = findGame({ uid });
 						if (game && game.private && game.private.seatedPlayers) {
 							const players = game.private.seatedPlayers.map(player => player.userName);
-							Account.find({ staffRole: { $exists: true } }).then(accounts => {
-								const hasAEM = accounts.some(acc => {
-									return (
-										AEM_ALTS.includes(acc.username) ||
-										(acc.staffRole &&
-											acc.staffRole.length > 0 &&
-											acc.staffRole !== 'trialmod' &&
-											acc.staffRole !== 'contributor' &&
-											players.includes(acc.username))
-									);
+							const hasAlts = players.filter(p => AEM_ALTS.includes(p));
+							if (hasAlts.length) {
+								socket.emit('sendAlert', `AEM alts are present: ${JSON.stringify(hasAlts)}`);
+							} else
+								Account.find({ staffRole: { $exists: true } }).then(accounts => {
+									const staff = accounts
+										.filter(acc => {
+											acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'trialmod' && acc.staffRole !== 'contributor';
+										})
+										.map(acc => acc.username);
+									const hasStaff = players.filter(p => staff.includes(p));
+									if (hasStaff.length) {
+										socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(hasStaff)}`);
+									} else handleSubscribeModChat(socket, passport, game);
 								});
-								if (!hasAEM) handleSubscribeModChat(socket, passport, game);
-							});
-						}
+						} else socket.emit('sendAlert', 'Game is missing.');
 					}
 				})
 				.on('getUserReports', () => {
