@@ -315,7 +315,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 						const game = findGame({ uid });
 						if (game && game.private && game.private.seatedPlayers) {
 							const players = game.private.seatedPlayers.map(player => player.userName);
-							if Account.find({ staffRole: { $exists: true } }).then(accounts => {
+							Account.find({ staffRole: { $exists: true } }).then(accounts => {
 								const alts = accounts
 									.filter(acc => {
 										acc.staffRole && acc.staffRole.length > 0 && acc.staffRole === 'altmod';
@@ -324,21 +324,20 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 								const hasAlts = players.filter(p => alts.includes(p));
 								if (hasAlts.length) {
 									socket.emit('sendAlert', `AEM alts are present: ${JSON.stringify(hasAlts)}`);
-								} else handleSubscribeModChat(socket, passport, game);
-							});
-							    
-							} else { Account.find({ staffRole: { $exists: true } }).then(accounts => {
-								const staff = accounts
-									.filter(acc => {
-										acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'altmod' && acc.staffRole !== 'trialmod' && acc.staffRole !== 'contributor';
-									})
-									.map(acc => acc.username);
-								const hasStaff = players.filter(p => staff.includes(p));
-								if (hasStaff.length) {
-									socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(hasStaff)}`);
-								} else handleSubscribeModChat(socket, passport, game);
-							});
-						}
+								} else {
+									Account.find({ staffRole: { $exists: true } }).then(accounts => {
+										const staff = accounts
+											.filter(acc => {
+												acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'altmod' && acc.staffRole !== 'trialmod' && acc.staffRole !== 'contributor';
+											})
+											.map(acc => acc.username);
+										const hasStaff = players.filter(p => staff.includes(p));
+										if (hasStaff.length) {
+											socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(hasStaff)}`);
+										} else handleSubscribeModChat(socket, passport, game);
+									});
+								}
+							}
 						} else socket.emit('sendAlert', 'Game is missing.');
 					}
 				})
