@@ -337,7 +337,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 										} else handleSubscribeModChat(socket, passport, game);
 									});
 								}
-							}
+							})
 						} else socket.emit('sendAlert', 'Game is missing.');
 					}
 				})
