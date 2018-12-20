@@ -88,6 +88,7 @@ module.exports.limitNewPlayers = { status: false };
 module.exports.newStaff = {
 	modUserNames: [],
 	editorUserNames: [],
+	altmodUserNames: [],
 	trialmodUserNames: [],
 	contributorUserNames: []
 };
@@ -110,6 +111,7 @@ module.exports.getPowerFromRole = role => {
 module.exports.getPowerFromName = name => {
 	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
+	if (module.exports.newStaff.altmodUserNames.includes(name)) return getPowerFromRole('altmod');
 	if (module.exports.newStaff.trialmodUserNames.includes(name)) return getPowerFromRole('trialmod');
 	if (module.exports.newStaff.contributorUserNames.includes(name)) return getPowerFromRole('contributor');
 
@@ -122,6 +124,7 @@ module.exports.getPowerFromName = name => {
 module.exports.getPowerFromUser = user => {
 	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
+	if (module.exports.newStaff.altmodUserNames.includes(user.userName)) return getPowerFromRole('altmod');
 	if (module.exports.newStaff.trialmodUserNames.includes(user.userName)) return getPowerFromRole('trialmod');
 	if (module.exports.newStaff.contributorUserNames.includes(user.userName)) return getPowerFromRole('contributor');
 	return getPowerFromRole(user.staffRole);
