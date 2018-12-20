@@ -336,7 +336,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 							});
 						}
 						} else socket.emit('sendAlert', 'Game is missing.');
-					}
+					} else
 				})
 				.on('getUserReports', () => {
 					if (authenticated && (isAEM || isTrial)) {
