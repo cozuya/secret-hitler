@@ -1783,13 +1783,13 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				if (
 					setting !== 'blacklist' ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'trialmod') ||
-					(setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'trialmod')
+					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') ||
+					(setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod')
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'trialmod') {
+				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') {
 					if (data.staffIncognito) {
 						userList.splice(userList.findIndex(user => user.userName === passport.user), 1);
 					} else {
@@ -2364,6 +2364,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										if (idx != -1) newStaff.trialmodUserNames.splice(idx, 1);
 										idx = newStaff.contributorUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.contributorUserNames.splice(idx, 1);
+										idx = newStaff.altmodUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.altmodUserNames.splice(idx, 1);
 										logOutUser(account.username);
 									});
 								} else {
@@ -2402,6 +2404,25 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									account.staffRole = 'trialmod';
 									account.save(() => {
 										newStaff.trialmodUserNames.push(account.username);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				case 'promoteToAltMod':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'altmod';
+									account.save(() => {
+										newStaff.altmodUserNames.push(account.username);
 										logOutUser(account.username);
 									});
 								} else {
