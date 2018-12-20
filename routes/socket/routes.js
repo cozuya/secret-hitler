@@ -315,7 +315,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 						const game = findGame({ uid });
 						if (game && game.private && game.private.seatedPlayers) {
 							const players = game.private.seatedPlayers.map(player => player.userName);
-							if { Account.find({ staffRole: { $exists: true } }).then(accounts => {
+							if Account.find({ staffRole: { $exists: true } }).then(accounts => {
 								const alts = accounts
 									.filter(acc => {
 										acc.staffRole && acc.staffRole.length > 0 && acc.staffRole === 'altmod';
