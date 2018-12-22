@@ -435,7 +435,7 @@ module.exports = () => {
 
 	const oAuthAuthentication = (req, res, next, type) => {
 		passport.authenticate(type, profile => {
-			if (!profile) {
+			if (!profile || !profile.username) {
 				return next();
 			}
 
@@ -466,7 +466,10 @@ module.exports = () => {
 
 							Account.findOne({ username: profile.username })
 								.then(account => {
-									if (/88$/i.test(profile.username)) {
+									if (account) {
+										req.session.oauthProfile = profile;
+										res.redirect('/oauth-select-username');
+									} else if (/88$/i.test(profile.username)) {
 										const new88 = new EightEightCounter({
 											date: new Date(),
 											username
@@ -484,7 +487,7 @@ module.exports = () => {
 									) {
 										req.session.oauthProfile = profile;
 										res.redirect('/oauth-select-username');
-									} else if (!account) {
+									} else {
 										const ip = expandAndSimplify(
 											req.headers['x-real-ip'] ||
 												req.headers['X-Real-IP'] ||
@@ -505,7 +508,7 @@ module.exports = () => {
 											touLastAgreed: TOU_CHANGES[0].changeVer,
 											signupIP: ip,
 											verification: {
-												email: (type === 'discord' ? profile.email : profile._json.email) || ''
+												email: type === 'discord' ? profile.email : profile._json.email
 											},
 											lastConnectedIP: ip
 										};
@@ -529,33 +532,30 @@ module.exports = () => {
 												if (err) {
 													console.log(err, 'err in creating oauth account');
 													return next();
+												} else {
+													passport.authenticate(type)(req, res, () => {
+														const newPlayerBan = new BannedIP({
+															bannedDate: new Date(),
+															type: 'new',
+															ip
+														});
+
+														newPlayerBan.save(() => {
+															req.logIn(account, () => res.redirect('/account'));
+														});
+													});
 												}
-
-												passport.authenticate(type)(req, res, () => {
-													const newPlayerBan = new BannedIP({
-														bannedDate: new Date(),
-														type: 'new',
-														ip
-													});
-
-													newPlayerBan.save(() => {
-														req.logIn(account, () => res.redirect('/account'));
-													});
-												});
 											}
 										);
-									} else {
-										req.session.oauthProfile = profile;
-										res.redirect('/oauth-select-username');
 									}
 								})
 								.catch(err => {
-									console.log(err, 'err in oauth');
+									console.log(err, 'err in oauth1');
 								});
 						}
 					})
 					.catch(err => {
-						console.log(err, 'err in oauth');
+						console.log(err, 'err in oauth2');
 					});
 			}
 		})(req, res, next);
