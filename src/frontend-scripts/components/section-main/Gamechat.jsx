@@ -185,7 +185,7 @@ class Gamechat extends React.Component {
 	}
 
 	handleChatFilterClick(e) {
-		this.setState({ chatFilter: $(e.currentTarget).text() });
+		this.setState({ chatFilter: e.currentTarget.getAttribute('data-filter') });
 	}
 
 	handleFullChatClick(e) {
@@ -634,38 +634,28 @@ class Gamechat extends React.Component {
 		return (
 			<section className="gamechat">
 				<section className="ui pointing menu">
-					<a className={this.state.chatFilter === 'All' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-						All
+					<span className="gamechat-filters-container">Filters:</span>
+					<a className={this.state.chatFilter === 'All' ? 'item active' : 'item'} onClick={this.handleChatFilterClick} data-filter="All">
+						<i className="large comments outline icon" title="No filter" />
 					</a>
-					<a className={this.state.chatFilter === 'Chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-						Chat
+					<a className={this.state.chatFilter === 'Chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick} data-filter="Chat">
+						<i className="large comment outline icon" title="Only player chats" />
 					</a>
-					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-						Game
+					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick} data-filter="Game">
+						<i className="large gamepad icon" title="Only game chats" />
 					</a>
 					{gameInfo.general && !gameInfo.general.disableObserver && (
-						<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-							No observer chat
+						<a
+							className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'}
+							onClick={this.handleChatFilterClick}
+							data-filter="No observer chat"
+						>
+							<i className="large low vision icon" title="No observer chat" />
 						</a>
 					)}
-					<a className={this.state.showFullChat ? 'item active' : 'item'} onClick={this.handleFullChatClick}>
-						Show entire history
+					<a className={this.state.showFullChat ? 'item active' : 'item'} onClick={this.handleFullChatClick} data-filter="Show entire history">
+						<i className="large bullhorn icon" title="Show entire chat history" />
 					</a>
-					{userInfo.userName && (
-						<i
-							title="Click here to pop out notes"
-							className={this.state.notesEnabled ? 'large window minus icon' : 'large edit icon'}
-							onClick={this.handleNoteClick}
-						/>
-					)}
-					{!isReplay && (
-						<i
-							title="Click here to lock or unlock scrolling of chat"
-							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
-							onClick={this.handleChatLockClick}
-						/>
-					)}
-					{/* {isStaff && gameInfo.gameState.isTracksFlipped && this.renderModEndGameButtons()} */}
 					{isStaff && this.renderModEndGameButtons()}
 
 					{gameInfo.general &&
@@ -676,6 +666,20 @@ class Gamechat extends React.Component {
 							</button>
 						)}
 					<div className="right menu">
+						{userInfo.userName && (
+							<i
+								title="Click here to pop out notes"
+								className={this.state.notesEnabled ? 'large window minus icon' : 'large edit icon'}
+								onClick={this.handleNoteClick}
+							/>
+						)}
+						{!isReplay && (
+							<i
+								title="Click here to lock or unlock scrolling of chat"
+								className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
+								onClick={this.handleChatLockClick}
+							/>
+						)}
 						<WhiteListButton />
 						<WatchReplayButton />
 						{!this.props.isReplay && <LeaveGameButton />}

@@ -40,6 +40,12 @@
 				padding: 4px 10px 4px 10px;
 			}
 
+			.gamechat-filters-container {
+				padding: 0 2px;
+				margin-top: 6px;
+				color: $secondary;
+			}
+
 			.pointing.menu {
 				.observer-chat {
 					opacity: 0.75;
@@ -50,9 +56,16 @@
 				width: 100% !important;
 				border-radius: 0;
 				.item {
-					padding: 7px 8px 6px;
+					padding: 0px 1px 6px 0px;
 					position: relative;
 					z-index: 101;
+					&:after {
+						left: 40%;
+					}
+
+					.bullhorn {
+						color: #529243 !important;
+					}
 				}
 				.icon {
 					margin-top: 4px;
