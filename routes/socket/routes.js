@@ -311,7 +311,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 					}
 				})
 				.on('subscribeModChat', uid => {
-					if (authenticated && isAEM) {
+					if (authenticated) {
 						const game = findGame({ uid });
 						if (game && game.private && game.private.seatedPlayers) {
 							const players = game.private.seatedPlayers.map(player => player.userName);
@@ -324,6 +324,18 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 								const hasAlts = players.filter(p => alts.includes(p));
 								if (hasAlts.length) {
 									socket.emit('sendAlert', `AEM alts are present: ${JSON.stringify(hasAlts)}`);
+								} else if {
+									Account.find({ staffRole: { $exists: true } }).then(accounts => {
+										const trials = accounts
+											.filter(acc => {
+												acc.staffRole && acc.staffRole.length > 0 && acc.staffRole === 'trialmod';
+											})
+											.map(acc => acc.username);
+										const hasTrials = players.filter(p => trials.includes(p));
+										if (hasTrials.length) {
+											socket.emit('sendAlert', `Trial moderators are present: ${JSON.stringify(hasStaff)}`);
+										} else handleSubscribeModChat(socket, passport, game);
+									});
 								} else {
 									Account.find({ staffRole: { $exists: true } }).then(accounts => {
 										const staff = accounts
