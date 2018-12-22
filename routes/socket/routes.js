@@ -333,7 +333,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 											.map(acc => acc.username);
 										const hasTrials = players.filter(p => trials.includes(p));
 										if (hasTrials.length) {
-											socket.emit('sendAlert', `Trial moderators are present: ${JSON.stringify(hasStaff)}`);
+											socket.emit('sendAlert', `Trial moderators are present: ${JSON.stringify(hasTrials)}`);
 										} else handleSubscribeModChat(socket, passport, game);
 									});
 								} else {
