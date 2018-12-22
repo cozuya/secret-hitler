@@ -324,7 +324,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 								const hasAlts = players.filter(p => alts.includes(p));
 								if (hasAlts.length) {
 									socket.emit('sendAlert', `AEM alts are present: ${JSON.stringify(hasAlts)}`);
-								} else if {
+								} else if (isTrial) {
 									Account.find({ staffRole: { $exists: true } }).then(accounts => {
 										const trials = accounts
 											.filter(acc => {
