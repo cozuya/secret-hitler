@@ -45,7 +45,6 @@ const {
 const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/constants.js');
-const { AEM_ALTS } = require('./report.js');
 const version = require('../../version');
 
 const gamesGarbageCollector = () => {
@@ -88,7 +87,7 @@ const ensureInGame = (passport, game) => {
 	}
 };
 
-module.exports = (modUserNames, editorUserNames, adminUserNames, trialmodUserNames, contributorUserNames) => {
+module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames) => {
 	setInterval(gamesGarbageCollector, 100000);
 
 	io.on('connection', socket => {
@@ -118,7 +117,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, trialmodUserNam
 
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
-					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'trialmod' && account.staffRole !== 'contributor') isAEM = true;
+					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'trialmod' && account.staffRole !== 'altmod' && account.staffRole !== 'contributor') isAEM = true;
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
 				});
 			}
@@ -312,26 +311,45 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, trialmodUserNam
 					}
 				})
 				.on('subscribeModChat', uid => {
-					if (authenticated && isAEM) {
+					if (authenticated) {
 						const game = findGame({ uid });
 						if (game && game.private && game.private.seatedPlayers) {
 							const players = game.private.seatedPlayers.map(player => player.userName);
-							const hasAlts = players.filter(p => AEM_ALTS.includes(p));
-							if (hasAlts.length) {
-								socket.emit('sendAlert', `AEM alts are present: ${JSON.stringify(hasAlts)}`);
-							} else {
-								Account.find({ staffRole: { $exists: true } }).then(accounts => {
-									const staff = accounts
-										.filter(acc => {
-											acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'trialmod' && acc.staffRole !== 'contributor';
-										})
-										.map(acc => acc.username);
-									const hasStaff = players.filter(p => staff.includes(p));
-									if (hasStaff.length) {
-										socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(hasStaff)}`);
-									} else handleSubscribeModChat(socket, passport, game);
-								});
-							}
+							Account.find({ staffRole: { $exists: true } }).then(accounts => {
+								const alts = accounts
+									.filter(acc => {
+										acc.staffRole && acc.staffRole.length > 0 && acc.staffRole === 'altmod';
+									})
+									.map(acc => acc.username);
+								const hasAlts = players.filter(p => alts.includes(p));
+								if (hasAlts.length) {
+									socket.emit('sendAlert', `AEM alts are present: ${JSON.stringify(hasAlts)}`);
+								} else if (isTrial) {
+									Account.find({ staffRole: { $exists: true } }).then(accounts => {
+										const trials = accounts
+											.filter(acc => {
+												acc.staffRole && acc.staffRole.length > 0 && acc.staffRole === 'trialmod';
+											})
+											.map(acc => acc.username);
+										const hasTrials = players.filter(p => trials.includes(p));
+										if (hasTrials.length) {
+											socket.emit('sendAlert', `Trial moderators are present: ${JSON.stringify(hasTrials)}`);
+										} else handleSubscribeModChat(socket, passport, game);
+									});
+								} else {
+									Account.find({ staffRole: { $exists: true } }).then(accounts => {
+										const staff = accounts
+											.filter(acc => {
+												acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'altmod' && acc.staffRole !== 'trialmod' && acc.staffRole !== 'contributor';
+											})
+											.map(acc => acc.username);
+										const hasStaff = players.filter(p => staff.includes(p));
+										if (hasStaff.length) {
+											socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(hasStaff)}`);
+										} else handleSubscribeModChat(socket, passport, game);
+									});
+								}
+							})
 						} else socket.emit('sendAlert', 'Game is missing.');
 					}
 				})

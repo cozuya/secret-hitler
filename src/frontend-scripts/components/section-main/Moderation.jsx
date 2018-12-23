@@ -593,7 +593,7 @@ export default class Moderation extends React.Component {
 						takeModAction('removeStaffRole');
 					}}
 				>
-					Remove staff/contributor role and log them out
+					Remove Staff/Contributor role and log them out
 				</button>
 				<button
 					style={{ background: 'teal' }}
@@ -620,6 +620,19 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Promote player to Trial Moderator
+				</button>
+				<button
+					style={{ background: 'violet' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToAltMod');
+					}}
+				>
+					Promote player to AEM Alternate Account
 				</button>
 				<button
 					style={{ background: '#007fff' }}
@@ -721,6 +734,7 @@ export default class Moderation extends React.Component {
 			removeStaffRole: 'Remove Staff Role',
 			promoteToContributor: 'Promote (Contributor)',
 			promoteToTrialMod: 'Promote (Trial Mod)',
+			promoteToAltMod: 'Promote (AEM Alt)',
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',

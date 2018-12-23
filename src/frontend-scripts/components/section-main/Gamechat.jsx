@@ -268,7 +268,7 @@ class Gamechat extends React.Component {
 				return player && (player.governmentStatus === 'isPresident' || player.governmentStatus === 'isChancellor');
 			}
 		})();
-		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'contributor');
+		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'contributor');
 		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
@@ -378,7 +378,7 @@ class Gamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
-		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'contributor');
+		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'contributor');
 
 		const renderPreviousSeasonAward = type => {
 			switch (type) {
@@ -406,6 +406,10 @@ class Gamechat extends React.Component {
 				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
 				.filter(
 					chat =>
+						(chatFilter !== 'Game' && chat.staffRole && chat.staffRole !== '' && chat.staffRole !== 'trialmod' && chat.staffRole !== 'altmod' && chat.staffRole !== 'contributor') ||
+						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
+						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
+						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
 						(showPlayerChat && !chat.gameChat && seatedUserNames.includes(chat.userName)) ||
 						(showGameChat && chat.gameChat) ||
 						(showObserverChat && !chat.gameChat && !seatedUserNames.includes(chat.userName)) ||
@@ -413,6 +417,7 @@ class Gamechat extends React.Component {
 							chat.staffRole &&
 							chat.staffRole !== '' &&
 							chat.staffRole !== 'trialmod' &&
+						 	chat.staffRole !== 'altmod' &&
 							chat.staffRole !== 'contributor')
 				);
 			if (!showFullChat) list = list.slice(-250);
@@ -423,6 +428,7 @@ class Gamechat extends React.Component {
 					playerListPlayer.staffRole &&
 					playerListPlayer.staffRole !== '' &&
 					playerListPlayer.staffRole !== 'trialmod' &&
+					playerListPlayer.staffRole !== 'altmod' &&
 					playerListPlayer.staffRole !== 'contributor';
 				const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
 				const isSeated = seatedUserNames.includes(chat.userName);
@@ -625,12 +631,12 @@ class Gamechat extends React.Component {
 				: `${hash.substr(0, hash.length - 1)}A`;
 		};
 		const isStaff = Boolean(
-			userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'contributor'
+			userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'contributor'
 		);
 		const hasNoAEM = players => {
 			if (!userList || !userList.list) return false;
 			return userList.list.every(user => {
-				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'contributor')
+				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod' && user.staffRole !== 'contributor')
 					return false;
 				else return true;
 			});
