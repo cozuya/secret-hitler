@@ -357,7 +357,7 @@ class Gamechat extends React.Component {
 	}
 
 	processChats() {
-		const { gameInfo, userInfo, userList, isReplay } = this.props;
+		const { gameInfo, userInfo, userList, isReplay, updateUser } = this.props;
 		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
@@ -549,8 +549,9 @@ class Gamechat extends React.Component {
 
 	render() {
 		const { socket, userInfo, gameInfo, isReplay, userList } = this.props;
+		const { playersToWhitelist, showPlayerChat, showGameChat, showObserverChat, showFullChat, notesEnabled, lock } = this.state;
+
 		const selectedWhitelistplayer = playerName => {
-			const { playersToWhitelist } = this.state;
 			const playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
 
 			playersToWhitelist[playerIndex].isSelected = !playersToWhitelist[playerIndex].isSelected;
@@ -558,8 +559,8 @@ class Gamechat extends React.Component {
 			this.setState(playersToWhitelist);
 		};
 		const submitWhitelist = () => {
-			const whitelistPlayers = this.state.playersToWhitelist.filter(player => player.isSelected).map(player => player.userName);
-			this.props.socket.emit('updateGameWhitelist', {
+			const whitelistPlayers = playersToWhitelist.filter(player => player.isSelected).map(player => player.userName);
+			socket.emit('updateGameWhitelist', {
 				uid: gameInfo.general.uid,
 				whitelistPlayers
 			});
@@ -617,7 +618,7 @@ class Gamechat extends React.Component {
 			const { isRound1TableThatFinished2nd } = gameInfo.general.tournyInfo;
 
 			userInfo.isSeated = false;
-			this.props.updateUser(userInfo);
+			updateUser(userInfo);
 			window.location.hash = isRound1TableThatFinished2nd
 				? `${hash.substr(0, hash.length - 1)}Final`
 				: tableUidLastLetter === 'A'
@@ -653,32 +654,32 @@ class Gamechat extends React.Component {
 				<section className="ui pointing menu">
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: '5px' }}>
 						<i
-							className={`large comment icon${this.state.showPlayerChat ? ' alternate' : ''}`}
-							title="Show player chat"
-							style={{ color: this.state.showPlayerChat ? 'limegreen' : 'indianred' }}
+							className={`large comment icon${showPlayerChat ? ' alternate' : ''}`}
+							title={showPlayerChat ? 'Hide player chats' : 'Show player chats'}
+							style={{ color: showPlayerChat ? '#4169e1' : 'indianred' }}
 						/>
 					</a>
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Game">
 						<i
-							className={`large circle icon${this.state.showGameChat ? ' info' : ''}`}
-							title="Show game chats"
-							style={{ color: this.state.showGameChat ? 'limegreen' : 'indianred' }}
+							className={`large circle icon${showGameChat ? ' info' : ''}`}
+							title={showGameChat ? 'Hide game chats' : 'Show game chats'}
+							style={{ color: showGameChat ? '#4169e1' : 'indianred' }}
 						/>
 					</a>
 					{gameInfo.general && !gameInfo.general.disableObserver && (
 						<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Spectator">
 							<i
-								className={`large eye icon${!this.state.showObserverChat ? ' slash' : ''}`}
-								title="Show observer chat"
-								style={{ color: this.state.showObserverChat ? 'limegreen' : 'indianred' }}
+								className={`large eye icon${!showObserverChat ? ' slash' : ''}`}
+								title={showObserverChat ? 'Hide observer chats' : 'Show observer chats'}
+								style={{ color: showObserverChat ? '#4169e1' : 'indianred' }}
 							/>
 						</a>
 					)}
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="History">
 						<i
-							className={`large file icon${this.state.showFullChat ? ' alternate' : ''}`}
-							title="Show entire history (might lag)"
-							style={{ color: this.state.showFullChat ? 'limegreen' : 'indianred' }}
+							className={`large file icon${showFullChat ? ' alternate' : ''}`}
+							title={showFullChat ? 'Truncate chats to 250 lines' : 'Show entire history (might lag in longer games)'}
+							style={{ color: showFullChat ? '#4169e1' : 'indianred' }}
 						/>
 					</a>
 					{isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && this.renderModEndGameButtons()}
@@ -692,22 +693,18 @@ class Gamechat extends React.Component {
 						)}
 					<div className="right menu">
 						{userInfo.userName && (
-							<i
-								title="Click here to pop out notes"
-								className={this.state.notesEnabled ? 'large window minus icon' : 'large edit icon'}
-								onClick={this.handleNoteClick}
-							/>
+							<i title="Click here to pop out notes" className={notesEnabled ? 'large window minus icon' : 'large edit icon'} onClick={this.handleNoteClick} />
 						)}
 						{!isReplay && (
 							<i
 								title="Click here to lock or unlock scrolling of chat"
-								className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
+								className={lock ? 'large lock icon' : 'large unlock alternate icon'}
 								onClick={this.handleChatLockClick}
 							/>
 						)}
 						<WhiteListButton />
 						<WatchReplayButton />
-						{!this.props.isReplay && <LeaveGameButton />}
+						{!isReplay && <LeaveGameButton />}
 					</div>
 				</section>
 				<section
