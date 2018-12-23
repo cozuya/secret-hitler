@@ -2041,7 +2041,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'modEndGame':
 					const gameToEnd = games[data.uid];
 
-					if (gameToEnd) {
+					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
 						gameToEnd.chats.push({
 							userName: data.modName,
 							chat: 'This game has been ended by a moderator, game deletes in 5 seconds.',

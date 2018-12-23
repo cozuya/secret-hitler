@@ -656,7 +656,7 @@ class Gamechat extends React.Component {
 					<a className={this.state.showFullChat ? 'item active' : 'item'} onClick={this.handleFullChatClick} data-filter="Show entire history">
 						<i className="large bullhorn icon" title="Show entire chat history" />
 					</a>
-					{isStaff && this.renderModEndGameButtons()}
+					{isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && this.renderModEndGameButtons()}
 
 					{gameInfo.general &&
 						gameInfo.general.tournyInfo &&
