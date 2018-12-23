@@ -59,10 +59,11 @@ module.exports = () => {
 			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
 			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
 			const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+			const altmodUserNames = accounts.filter(account => account.staffRole === 'altmod').map(account => account.username);
 			const trialmodUserNames = accounts.filter(account => account.staffRole === 'trialmod').map(account => account.username);
 			const contributorUserNames = accounts.filter(account => account.staffRole === 'contributor').map(account => account.username);
 
-			socketRoutes(modUserNames, editorUserNames, adminUserNames, trialmodUserNames, contributorUserNames);
+			socketRoutes(modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames);
 		})
 		.catch(err => {
 			console.log(err, 'err in finding staffroles');
@@ -179,7 +180,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (!acc || !acc.staffRole || acc.staffRole === 'contributor') {
+							if (!acc || !acc.staffRole || acc.staffRole === 'altmod' || acc.staffRole === 'contributor') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {

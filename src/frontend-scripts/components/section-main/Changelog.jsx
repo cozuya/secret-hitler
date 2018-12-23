@@ -9,6 +9,16 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 1.0.0-beta8 released 12-23-2018</p>
+		</div>
+		<h3>Github signin should be fixed. Maybe? ¯\_(ツ)_/¯</h3>
+		<h3>New feature: redone gamechat filters.</h3>
+		<p>
+			Filters should now be toggable instead of just pick one (radio buttons). This also fixes the bug where some players with small screen widths were having
+			the "leave game" button flowing into the playerlist.
+		</p>
+		<h3>Bugfix: gamechat filters should work even when you don't have "show all messages" on.</h3>
+		<div className="ui header">
 			<p>Version 1.0.0-beta7 released 12-18-2018</p>
 		</div>
 		<h3>New feature: Github signin/signup integration</h3>
