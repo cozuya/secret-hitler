@@ -21,7 +21,6 @@ class Gamechat extends React.Component {
 		super();
 
 		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
-		this.handleFullChatClick = this.handleFullChatClick.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChatLockClick = this.handleChatLockClick.bind(this);
 		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
@@ -34,12 +33,14 @@ class Gamechat extends React.Component {
 		this.handleSubscribeModChat = this.handleSubscribeModChat.bind(this);
 
 		this.state = {
-			chatFilter: 'All',
 			lock: false,
 			claim: '',
 			playersToWhitelist: [],
 			notesEnabled: false,
-			showFullChat: false
+			showFullChat: false,
+			showPlayerChat: true,
+			showGameChat: true,
+			showObserverChat: true
 		};
 	}
 
@@ -185,11 +186,23 @@ class Gamechat extends React.Component {
 	}
 
 	handleChatFilterClick(e) {
-		this.setState({ chatFilter: e.currentTarget.getAttribute('data-filter') });
-	}
-
-	handleFullChatClick(e) {
-		this.setState({ showFullChat: !this.state.showFullChat });
+		const filter = e.currentTarget.getAttribute('data-filter');
+		switch (filter) {
+			case 'Player':
+				this.setState({ showPlayerChat: !this.state.showPlayerChat });
+				break;
+			case 'Game':
+				this.setState({ showGameChat: !this.state.showGameChat });
+				break;
+			case 'Spectator':
+				this.setState({ showObserverChat: !this.state.showObserverChat });
+				break;
+			case 'History':
+				this.setState({ showFullChat: !this.state.showFullChat });
+				break;
+			default:
+				console.log(`Unknown filter: ${filter}`);
+		}
 	}
 
 	handleTimestamps(timestamp) {
@@ -348,7 +361,7 @@ class Gamechat extends React.Component {
 		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
-		const { chatFilter, showFullChat } = this.state;
+		const { showFullChat, showPlayerChat, showGameChat, showObserverChat } = this.state;
 		const compareChatStrings = (a, b) => {
 			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
 			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
@@ -397,6 +410,14 @@ class Gamechat extends React.Component {
 						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
 						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
 						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
+						(showPlayerChat && !chat.gameChat && seatedUserNames.includes(chat.userName)) ||
+						(showGameChat && chat.gameChat) ||
+						(showObserverChat && !chat.gameChat && !seatedUserNames.includes(chat.userName)) ||
+						(!seatedUserNames.includes(chat.userName) &&
+							chat.staffRole &&
+							chat.staffRole !== '' &&
+							chat.staffRole !== 'trialmod' &&             
+							chat.staffRole !== 'contributor')
 				);
 			if (!showFullChat) list = list.slice(-250);
 			return list.reduce((acc, chat, i) => {
@@ -635,27 +656,35 @@ class Gamechat extends React.Component {
 		return (
 			<section className="gamechat">
 				<section className="ui pointing menu">
-					<span className="gamechat-filters-container">Filters:</span>
-					<a className={this.state.chatFilter === 'All' ? 'item active' : 'item'} onClick={this.handleChatFilterClick} data-filter="All">
-						<i className="large comments outline icon" title="No filter" />
+					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: '5px' }}>
+						<i
+							className={`large comment icon${this.state.showPlayerChat ? ' alternate' : ''}`}
+							title="Show player chat"
+							style={{ color: this.state.showPlayerChat ? 'limegreen' : 'indianred' }}
+						/>
 					</a>
-					<a className={this.state.chatFilter === 'Chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick} data-filter="Chat">
-						<i className="large comment outline icon" title="Only player chats" />
-					</a>
-					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick} data-filter="Game">
-						<i className="large gamepad icon" title="Only game chats" />
+					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Game">
+						<i
+							className={`large circle icon${this.state.showGameChat ? ' info' : ''}`}
+							title="Show game chats"
+							style={{ color: this.state.showGameChat ? 'limegreen' : 'indianred' }}
+						/>
 					</a>
 					{gameInfo.general && !gameInfo.general.disableObserver && (
-						<a
-							className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'}
-							onClick={this.handleChatFilterClick}
-							data-filter="No observer chat"
-						>
-							<i className="large low vision icon" title="No observer chat" />
+						<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Spectator">
+							<i
+								className={`large eye icon${!this.state.showObserverChat ? ' slash' : ''}`}
+								title="Show observer chat"
+								style={{ color: this.state.showObserverChat ? 'limegreen' : 'indianred' }}
+							/>
 						</a>
 					)}
-					<a className={this.state.showFullChat ? 'item active' : 'item'} onClick={this.handleFullChatClick} data-filter="Show entire history">
-						<i className="large bullhorn icon" title="Show entire chat history" />
+					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="History">
+						<i
+							className={`large file icon${this.state.showFullChat ? ' alternate' : ''}`}
+							title="Show entire history (might lag)"
+							style={{ color: this.state.showFullChat ? 'limegreen' : 'indianred' }}
+						/>
 					</a>
 					{isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && this.renderModEndGameButtons()}
 
