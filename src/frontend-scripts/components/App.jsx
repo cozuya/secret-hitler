@@ -444,7 +444,9 @@ export class App extends React.Component {
 													return (
 														<div key={index}>
 															<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Version {change.changeVer}</h4>
-															<p style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{change.changeDesc}</p>
+															{change.changeDesc.split('\n').map(item => (
+																<p style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{item}</p>
+															))}
 														</div>
 													);
 												})}
