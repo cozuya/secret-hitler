@@ -272,6 +272,12 @@ module.exports = () => {
 			Account.findOne({
 				username: req.user.username
 			}).then(player => {
+				if (!player) {
+					res.status(403).json({
+						message: 'There is no account with that username.'
+					});
+					return next();
+				}
 				if (player.isBanned) {
 					res.status(403).json({
 						message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
