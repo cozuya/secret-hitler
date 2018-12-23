@@ -416,7 +416,8 @@ class Gamechat extends React.Component {
 						(!seatedUserNames.includes(chat.userName) &&
 							chat.staffRole &&
 							chat.staffRole !== '' &&
-							chat.staffRole !== 'trialmod' &&             
+							chat.staffRole !== 'trialmod' &&
+						 	chat.staffRole !== 'altmod' &&
 							chat.staffRole !== 'contributor')
 				);
 			if (!showFullChat) list = list.slice(-250);
