@@ -99,38 +99,35 @@
 		margin-right: 2px;
 	}
 	.season-award {
-		width: 12px;
-		height: 12px;
+		width: 16px;
+		height: 16px;
 		display: inline-block;
 		vertical-align: text-top;
-		margin-right: 2px;
-		background-size: contain !important;
+		margin: 1px;
 		cursor: initial;
 		&.gold {
-			background: url('/images/gold.png') no-repeat;
+			background: url('/images/season_badges.png') -32px -0px;
 		}
-
 		&.silver {
-			background: url('/images/silver.png') no-repeat;
+			background: url('/images/season_badges.png') -16px -0px;
 		}
-
 		&.bronze {
-			background: url('/images/bronze.png') no-repeat;
+			background: url('/images/season_badges.png') -0px -0px;
 		}
 		&.gold1 {
-			background: url('/images/gold1.png') no-repeat;
+			background: url('/images/season_badges.png') -48px -0px;
 		}
 		&.gold2 {
-			background: url('/images/gold2.png') no-repeat;
+			background: url('/images/season_badges.png') -48px -16px;
 		}
 		&.gold3 {
-			background: url('/images/gold3.png') no-repeat;
+			background: url('/images/season_badges.png') -32px -16px;
 		}
 		&.gold4 {
-			background: url('/images/gold4.png') no-repeat;
+			background: url('/images/season_badges.png') -16px -16px;
 		}
 		&.gold5 {
-			background: url('/images/gold5.png') no-repeat;
+			background: url('/images/season_badges.png') -0px -16px;
 		}
 	}
 	.notes-container {

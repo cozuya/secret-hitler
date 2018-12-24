@@ -308,10 +308,6 @@ class Playerlist extends React.Component {
 					<div key={i} className="user-container">
 						<div className="userlist-username">
 							{renderStatus()}
-							{/* {!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()} */}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
-								user.previousSeasonAward &&
-								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{(() => {
 								const userAdminRole =
 									user.staffRole === 'admin'
@@ -349,20 +345,24 @@ class Playerlist extends React.Component {
 								}
 							})()}
 						</div>
-						{user.staffRole !== 'admin' &&
-							Boolean(!user.staffDisableVisibleElo) &&
-							(() => {
-								return elo ? (
-									<div className="userlist-stats-container">
+						<div className="userlist-stats-container">
+							{/* {!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.tournyWins && renderCrowns()} */}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								user.previousSeasonAward &&
+								this.renderPreviousSeasonAward(user.previousSeasonAward)}
+							{user.staffRole !== 'admin' &&
+								Boolean(!user.staffDisableVisibleElo) &&
+								(() => {
+									return elo ? (
 										<span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
-									</div>
-								) : (
-									<div className="userlist-stats-container">
-										(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
-										<span className="userlist-stats"> {percentDisplay}</span>
-									</div>
-								);
-							})()}
+									) : (
+										<span>
+											(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
+											<span className="userlist-stats"> {percentDisplay}</span>
+										</span>
+									);
+								})()}
+						</div>
 					</div>
 				);
 			};
