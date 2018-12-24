@@ -123,8 +123,9 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 						account.staffRole !== 'trialmod' &&
 						account.staffRole !== 'altmod' &&
 						account.staffRole !== 'contributor'
-					)
+					) {
 						isAEM = true;
+					}
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
 				});
 			}
