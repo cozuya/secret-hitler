@@ -261,12 +261,25 @@ class Settings extends React.Component {
 				.then(data => {
 					this.setState({
 						cardbackUploadStatus: data.message,
-						isUploaded: data.message === 'You need to have played 50 games to upload a cardback.' ? '' : this.state.preview,
+						isUploaded: data.message === 'Image uploaded successfully.' ? this.state.preview : '',
 						preview: ''
 					});
 				})
 				.catch(err => {
-					console.log(err, 'err');
+					if (err.status == 413) {
+						this.setState({
+							cardbackUploadStatus: 'Image too large.',
+							isUploaded: '',
+							preview: ''
+						});
+					} else {
+						this.setState({
+							cardbackUploadStatus: 'An unknown error occurred, refer to the console and show a dev.',
+							isUploaded: '',
+							preview: ''
+						});
+						console.log(err, status, code, 'err');
+					}
 				});
 		};
 
