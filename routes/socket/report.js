@@ -9,12 +9,22 @@ module.exports.makeReport = (text, game, gameEnd) => {
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
 		const staffUserNames = accounts
 			.filter(
-				account => account.staffRole === 'altmod' || account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin' || account.staffRole === 'trialmod'
+				account =>
+					account.staffRole === 'altmod' ||
+					account.staffRole === 'moderator' ||
+					account.staffRole === 'editor' ||
+					account.staffRole === 'admin' ||
+					account.staffRole === 'trialmod'
 			)
 			.map(account => account.username);
 		const players = game.private.seatedPlayers.map(player => player.userName);
 		const isStaff = players.some(
-			n => staffUserNames.includes(n) || newStaff.altmodUserNames.includes(n) || newStaff.modUserNames.includes(n) || newStaff.editorUserNames.includes(n) || newStaff.trialmodUserNames.includes(n)
+			n =>
+				staffUserNames.includes(n) ||
+				newStaff.altmodUserNames.includes(n) ||
+				newStaff.modUserNames.includes(n) ||
+				newStaff.editorUserNames.includes(n) ||
+				newStaff.trialmodUserNames.includes(n)
 		);
 
 		if (!gameEnd && isStaff) {

@@ -218,7 +218,13 @@ class Playerlist extends React.Component {
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
-			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'contributor' && userInfo.staffRole !== 'trialmod');
+			const isStaff = Boolean(
+				Object.keys(userInfo).length &&
+					userInfo.staffRole &&
+					userInfo.staffRole !== 'altmod' &&
+					userInfo.staffRole !== 'contributor' &&
+					userInfo.staffRole !== 'trialmod'
+			);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			let aem = [...admins];
@@ -426,7 +432,13 @@ class Playerlist extends React.Component {
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
-			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'contributor' && userInfo.staffRole !== 'trialmod');
+			const isStaff = Boolean(
+				Object.keys(userInfo).length &&
+					userInfo.staffRole &&
+					userInfo.staffRole !== 'altmod' &&
+					userInfo.staffRole !== 'contributor' &&
+					userInfo.staffRole !== 'trialmod'
+			);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			let aem = [...admins];
