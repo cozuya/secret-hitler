@@ -17,7 +17,7 @@ html(lang="en")
 			if prodCacheBustToken
 				link(rel="stylesheet", type="text/css", href=`/styles/style-web.css?${prodCacheBustToken}`)
 			else
-				link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
+				link(rel="stylesheet", type="text/css", href="/styles/style-web.css?sadb")
 		link(href="//fonts.googleapis.com/css?family=Comfortaa|Cuprum:400i|Germania+One|Roboto+Slab", rel="stylesheet", type="text/css")
 		link(rel="author", href="humans.txt")
 		link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
@@ -218,6 +218,13 @@ html(lang="en")
 					.ui.text.loader Signing up..
 				.ui.negative.hidden.message
 		
+		style.
+			.ui.modal.transition {
+				left: 50%;
+				margin-top: 0px !important;
+				margin-left: -360px !important;
+			}
+
 		script.
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -230,5 +237,5 @@ html(lang="en")
 		script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")
 		script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
 		script(src="//cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js")
-		script(src="/scripts/site.js?2f23f23ffazzzz")
+		script(src="/scripts/site.js?2f23f23ffazzazz")
 	block footer
