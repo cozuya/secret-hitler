@@ -406,8 +406,9 @@ class Gamechat extends React.Component {
 				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
 				.filter(
 					chat =>
-						(showPlayerChat && !chat.gameChat && seatedUserNames.includes(chat.userName)) ||
-						(showGameChat && chat.gameChat) ||
+						chat.isBroadcast ||
+						(showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
+						(showGameChat && (chat.gameChat || chat.isClaim)) ||
 						(showObserverChat && !chat.gameChat && !seatedUserNames.includes(chat.userName)) ||
 						(!seatedUserNames.includes(chat.userName) &&
 							chat.staffRole &&

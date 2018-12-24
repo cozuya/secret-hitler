@@ -1783,13 +1783,27 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				if (
 					setting !== 'blacklist' ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') ||
-					(setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod')
+					(setting === 'staffDisableVisibleElo' &&
+						account.staffRole &&
+						account.staffRole !== 'contributor' &&
+						account.staffRole !== 'altmod' &&
+						account.staffRole !== 'trialmod') ||
+					(setting === 'staffIncognito' &&
+						account.staffRole &&
+						account.staffRole !== 'contributor' &&
+						account.staffRole !== 'altmod' &&
+						account.staffRole !== 'trialmod')
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'contributor' && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') {
+				if (
+					setting === 'staffIncognito' &&
+					account.staffRole &&
+					account.staffRole !== 'contributor' &&
+					account.staffRole !== 'altmod' &&
+					account.staffRole !== 'trialmod'
+				) {
 					if (data.staffIncognito) {
 						userList.splice(userList.findIndex(user => user.userName === passport.user), 1);
 					} else {
