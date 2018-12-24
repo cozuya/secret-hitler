@@ -278,7 +278,7 @@ class Settings extends React.Component {
 							isUploaded: '',
 							preview: ''
 						});
-						console.log(err, status, code, 'err');
+						console.log('Unknown cardback error', err);
 					}
 				});
 		};
