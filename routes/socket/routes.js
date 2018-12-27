@@ -121,8 +121,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 						account.staffRole &&
 						account.staffRole.length > 0 &&
 						account.staffRole !== 'trialmod' &&
-						account.staffRole !== 'altmod' &&
-						account.staffRole !== 'contributor'
+						account.staffRole !== 'altmod'
 					) {
 						isAEM = true;
 					}
@@ -351,8 +350,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 												acc.staffRole &&
 													acc.staffRole.length > 0 &&
 													acc.staffRole !== 'altmod' &&
-													acc.staffRole !== 'trialmod' &&
-													acc.staffRole !== 'contributor';
+													acc.staffRole !== 'trialmod';
 											})
 											.map(acc => acc.username);
 										const hasStaff = players.filter(p => staff.includes(p));
