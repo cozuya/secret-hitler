@@ -313,7 +313,7 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat && !isStaff) {
+			if (gameInfo.general.disableChat) {
 				return {
 					isDisabled: true,
 					placeholder: 'Chat disabled'
