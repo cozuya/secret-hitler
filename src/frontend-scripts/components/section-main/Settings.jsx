@@ -249,7 +249,13 @@ class Settings extends React.Component {
 							});
 							return;
 						}
-						this.setState({ preview: data, cardbackUploadStatus: null });
+						const targetRatio = 70 / 95;
+						const thisRatio = img.width / img.height;
+						const ratioData = targetRatio > thisRatio ? thisRatio / targetRatio : targetRatio / thisRatio;
+						this.setState({
+							preview: data,
+							cardbackUploadStatus: ratioData < 0.8 ? 'Image may be distorted. If this is a problem, manually create a 70x95px image.' : null
+						});
 					} catch (err) {
 						this.setState({
 							cardbackUploadStatus: 'The file you selected is not an image.'
@@ -304,7 +310,7 @@ class Settings extends React.Component {
 
 		const previewClearClick = e => {
 			e.preventDefault;
-			this.setState({ preview: '' });
+			this.setState({ preview: '', cardbackUploadStatus: null });
 		};
 
 		const handleSearchProfileChange = e => {
@@ -582,7 +588,7 @@ class Settings extends React.Component {
 										<button onClick={previewSaveClick} className="ui button">
 											Save
 										</button>
-										<a href="#" onClick={previewClearClick}>
+										<a href="#/settings" onClick={previewClearClick}>
 											Clear
 										</a>
 									</div>
