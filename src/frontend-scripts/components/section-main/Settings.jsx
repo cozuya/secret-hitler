@@ -234,9 +234,9 @@ class Settings extends React.Component {
 				this.setState({
 					cardbackUploadStatus: 'Resizing...'
 				});
-				const img = new Image();
-				img.onload = () => {
-					try {
+				try {
+					const img = new Image();
+					img.onload = () => {
 						const canvas = document.createElement('canvas');
 						canvas.width = 70;
 						canvas.height = 95;
@@ -256,14 +256,14 @@ class Settings extends React.Component {
 							preview: data,
 							cardbackUploadStatus: ratioData < 0.8 ? 'Image may be distorted. If this is a problem, manually create a 70x95px image.' : null
 						});
-					} catch (err) {
-						this.setState({
-							cardbackUploadStatus: 'The file you selected is not an image.'
-						});
-					}
-				};
+					};
 
-				img.src = reader.result;
+					img.src = reader.result;
+				} catch (err) {
+					this.setState({
+						cardbackUploadStatus: 'The file you selected is not an image.'
+					});
+				}
 			};
 
 			reader.readAsDataURL(files[0]);
