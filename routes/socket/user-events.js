@@ -1526,9 +1526,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 
 	const { publicPlayersState } = game;
 	const player = publicPlayersState.find(player => player.userName === passport.user);
-	if (game.general.private && !player && !game.general.whitelistedPlayers.includes(passport.user)) {
-		return;
-	}
 
 	const user = userList.find(u => passport.user === u.userName);
 
@@ -1545,6 +1542,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 				return;
 			}
 		} else {
+			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
+				return;
+			}
 			if (game.general.disableObserver || user.wins + user.losses < 2) {
 				return;
 			}
