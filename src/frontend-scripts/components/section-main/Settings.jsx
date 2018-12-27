@@ -384,7 +384,7 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							{window.staffRole && window.staffRole !== 'contributor' && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
 										Incognito (hide from userlist)
@@ -423,7 +423,7 @@ class Settings extends React.Component {
 								<label />
 							</div>
 
-							{window.staffRole && window.staffRole !== 'contributor' && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
 										Disable visible elo
@@ -471,7 +471,7 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							{window.staffRole && window.staffRole !== 'contributor' && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
 										Disable staff color (show elo color)
