@@ -24,15 +24,24 @@ block content
 			else
 				span(style="color: bisque") None 
 					a(href="/discord-login", style="color: orange; text-decoration: underline") - Click here to link your Discord account
+		h3.ui.centered.header(style="color: #e3f83d; margin: 0") Github integration: 
+			if githubUsername
+				span(style="color: royalblue")
+					= githubUsername
+					if isLocal
+						a(href="/revoke-github") - Click here to unlink your Github account
+			else
+				span(style="color: bisque") None 
+					a(href="/github-login", style="color: orange; text-decoration: underline") - Click here to link your Github account
 		if email
 			if !verified
 				button#request-verification.ui.primary.button(style="display: block; margin: 5px auto 0;") Request a new verification email
-			if !discordUsername
+			if !discordUsername && !githubUsername
 				button#change-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your email address
 		else
-			if !discordUsername
+			if !discordUsername && !githubUsername
 				button#add-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Add an email address and send verification email
-		if !discordUsername
+		if !discordUsername && !githubUsername
 			button#change-password.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your password
 
 		button#delete-account.ui.primay.button(style="display: block; margin: 5px auto 0; background: red; color: white") Delete your account

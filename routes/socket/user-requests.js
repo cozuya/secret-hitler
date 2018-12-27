@@ -49,9 +49,9 @@ const sendUserList = (module.exports.sendUserList = socket => {
 module.exports.sendModInfo = (socket, count, isTrial) => {
 	const userNames = userList.map(user => user.userName);
 
-	const maskEmail = email => email.split('@')[1] || '';
+	const maskEmail = email => (email && email.split('@')[1]) || '';
 
-	Account.find({ username: userNames, 'gameSettings.isPrivate': false })
+	Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
 		.then(users => {
 			ModAction.find()
 				.sort({ $natural: -1 })

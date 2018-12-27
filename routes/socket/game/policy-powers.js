@@ -518,6 +518,11 @@ module.exports.investigateLoyalty = game => {
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
 
+	president.playersState.forEach((player, i) => {
+		if (!seatedPlayers[i]) {
+			console.error(`PLAYERSTATE CONTAINS NULL!\n${JSON.stringify(president.playersState)}\n${JSON.stringify(game)}`);
+		}
+	});
 	const hasTarget =
 		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).length > 0;
 	if (!hasTarget) {

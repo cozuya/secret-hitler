@@ -75,6 +75,12 @@
 	}
 }
 
+.ui.modal.transition {
+	margin-top: 0px !important;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 #main {
 	height: 100%;
 	.greentext {
@@ -668,9 +674,6 @@
 		right: 52px;
 		top: 3px;
 		background: transparent;
-		.smile.icon {
-			color: white !important;
-		}
 	}
 	.genchat-container .chat-user + span,
 	#game-container .ui.menu .loggedin,

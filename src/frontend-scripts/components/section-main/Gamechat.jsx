@@ -33,11 +33,14 @@ class Gamechat extends React.Component {
 		this.handleSubscribeModChat = this.handleSubscribeModChat.bind(this);
 
 		this.state = {
-			chatFilter: 'All',
 			lock: false,
 			claim: '',
 			playersToWhitelist: [],
-			notesEnabled: false
+			notesEnabled: false,
+			showFullChat: false,
+			showPlayerChat: true,
+			showGameChat: true,
+			showObserverChat: true
 		};
 	}
 
@@ -183,7 +186,23 @@ class Gamechat extends React.Component {
 	}
 
 	handleChatFilterClick(e) {
-		this.setState({ chatFilter: $(e.currentTarget).text() });
+		const filter = e.currentTarget.getAttribute('data-filter');
+		switch (filter) {
+			case 'Player':
+				this.setState({ showPlayerChat: !this.state.showPlayerChat });
+				break;
+			case 'Game':
+				this.setState({ showGameChat: !this.state.showGameChat });
+				break;
+			case 'Spectator':
+				this.setState({ showObserverChat: !this.state.showObserverChat });
+				break;
+			case 'History':
+				this.setState({ showFullChat: !this.state.showFullChat });
+				break;
+			default:
+				console.log(`Unknown filter: ${filter}`);
+		}
 	}
 
 	handleTimestamps(timestamp) {
@@ -249,7 +268,13 @@ class Gamechat extends React.Component {
 				return player && (player.governmentStatus === 'isPresident' || player.governmentStatus === 'isChancellor');
 			}
 		})();
-		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length);
+		const isStaff = Boolean(
+			userInfo.staffRole &&
+				userInfo.staffRole.length &&
+				userInfo.staffRole !== 'trialmod' &&
+				userInfo.staffRole !== 'altmod' &&
+				userInfo.staffRole !== 'contributor'
+		);
 		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
@@ -288,7 +313,7 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat && !isStaff) {
+			if (gameInfo.general.disableChat) {
 				return {
 					isDisabled: true,
 					placeholder: 'Chat disabled'
@@ -338,11 +363,11 @@ class Gamechat extends React.Component {
 	}
 
 	processChats() {
-		const { gameInfo, userInfo, userList, isReplay } = this.props;
+		const { gameInfo, userInfo, userList, isReplay, updateUser } = this.props;
 		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
-		const { chatFilter } = this.state;
+		const { showFullChat, showPlayerChat, showGameChat, showObserverChat } = this.state;
 		const compareChatStrings = (a, b) => {
 			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
 			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
@@ -359,7 +384,13 @@ class Gamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
-		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length);
+		const isStaff = Boolean(
+			userInfo.staffRole &&
+				userInfo.staffRole.length &&
+				userInfo.staffRole !== 'trialmod' &&
+				userInfo.staffRole !== 'altmod' &&
+				userInfo.staffRole !== 'contributor'
+		);
 
 		const renderPreviousSeasonAward = type => {
 			switch (type) {
@@ -382,24 +413,38 @@ class Gamechat extends React.Component {
 			}
 		};
 
-		if (isReplay || !gameInfo.general.private || userInfo.isSeated || isStaff) {
-			return gameInfo.chats
+		if (gameInfo && gameInfo.chats && (isReplay || !gameInfo.general.private || userInfo.isSeated || isStaff)) {
+			let list = gameInfo.chats
 				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
 				.filter(
 					chat =>
-						(chatFilter !== 'Game' && chat.staffRole && chat.staffRole !== '' && chat.staffRole !== 'contributor') ||
-						(chatFilter === 'No observer chat' && (chat.gameChat || seatedUserNames.includes(chat.userName))) ||
-						((chat.gameChat || chat.isClaim) && (chatFilter === 'Game' || chatFilter === 'All')) ||
-						(!chat.gameChat && chatFilter !== 'Game' && chatFilter !== 'No observer chat')
-				)
-				.map((chat, i) => {
-					const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-					const isMod = playerListPlayer && playerListPlayer.staffRole && playerListPlayer.staffRole !== '' && playerListPlayer.staffRole !== 'contributor';
-					const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
-					const isSeated = seatedUserNames.includes(chat.userName);
-					const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
+						chat.isBroadcast ||
+						(showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
+						(showGameChat && (chat.gameChat || chat.isClaim)) ||
+						(showObserverChat && !chat.gameChat && !seatedUserNames.includes(chat.userName)) ||
+						(!seatedUserNames.includes(chat.userName) &&
+							chat.staffRole &&
+							chat.staffRole !== '' &&
+							chat.staffRole !== 'trialmod' &&
+							chat.staffRole !== 'altmod' &&
+							chat.staffRole !== 'contributor')
+				);
+			if (!showFullChat) list = list.slice(-250);
+			return list.reduce((acc, chat, i) => {
+				const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
+				const isMod =
+					playerListPlayer &&
+					playerListPlayer.staffRole &&
+					playerListPlayer.staffRole !== '' &&
+					playerListPlayer.staffRole !== 'trialmod' &&
+					playerListPlayer.staffRole !== 'altmod' &&
+					playerListPlayer.staffRole !== 'contributor';
+				const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
+				const isSeated = seatedUserNames.includes(chat.userName);
+				const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
 
-					return chat.gameChat ? (
+				acc.push(
+					chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'} key={i}>
 							{this.handleTimestamps(chat.timestamp)}
 							<span className="game-chat">
@@ -509,15 +554,19 @@ class Gamechat extends React.Component {
 							</span>
 							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
 						</div>
-					);
-				});
+					)
+				);
+
+				return acc;
+			}, []);
 		}
 	}
 
 	render() {
 		const { socket, userInfo, gameInfo, isReplay, userList } = this.props;
+		const { playersToWhitelist, showPlayerChat, showGameChat, showObserverChat, showFullChat, notesEnabled, lock } = this.state;
+
 		const selectedWhitelistplayer = playerName => {
-			const { playersToWhitelist } = this.state;
 			const playerIndex = playersToWhitelist.findIndex(player => player.userName === playerName);
 
 			playersToWhitelist[playerIndex].isSelected = !playersToWhitelist[playerIndex].isSelected;
@@ -525,8 +574,8 @@ class Gamechat extends React.Component {
 			this.setState(playersToWhitelist);
 		};
 		const submitWhitelist = () => {
-			const whitelistPlayers = this.state.playersToWhitelist.filter(player => player.isSelected).map(player => player.userName);
-			this.props.socket.emit('updateGameWhitelist', {
+			const whitelistPlayers = playersToWhitelist.filter(player => player.isSelected).map(player => player.userName);
+			socket.emit('updateGameWhitelist', {
 				uid: gameInfo.general.uid,
 				whitelistPlayers
 			});
@@ -584,18 +633,33 @@ class Gamechat extends React.Component {
 			const { isRound1TableThatFinished2nd } = gameInfo.general.tournyInfo;
 
 			userInfo.isSeated = false;
-			this.props.updateUser(userInfo);
+			updateUser(userInfo);
 			window.location.hash = isRound1TableThatFinished2nd
 				? `${hash.substr(0, hash.length - 1)}Final`
 				: tableUidLastLetter === 'A'
 				? `${hash.substr(0, hash.length - 1)}B`
 				: `${hash.substr(0, hash.length - 1)}A`;
 		};
-		const isStaff = Boolean(userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'contributor');
+		const isStaff = Boolean(
+			userInfo &&
+				userInfo.staffRole &&
+				userInfo.staffRole.length &&
+				userInfo.staffRole !== 'trialmod' &&
+				userInfo.staffRole !== 'altmod' &&
+				userInfo.staffRole !== 'contributor'
+		);
 		const hasNoAEM = players => {
 			if (!userList || !userList.list) return false;
 			return userList.list.every(user => {
-				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'contributor') return false;
+				if (
+					players.includes(user.userName) &&
+					user.staffRole &&
+					user.staffRole.length > 0 &&
+					user.staffRole !== 'trialmod' &&
+					user.staffRole !== 'altmod' &&
+					user.staffRole !== 'contributor'
+				)
+					return false;
 				else return true;
 			});
 		};
@@ -615,36 +679,37 @@ class Gamechat extends React.Component {
 		return (
 			<section className="gamechat">
 				<section className="ui pointing menu">
-					<a className={this.state.chatFilter === 'All' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-						All
+					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: '5px' }}>
+						<i
+							className={`large comment icon${showPlayerChat ? ' alternate' : ''}`}
+							title={showPlayerChat ? 'Hide player chats' : 'Show player chats'}
+							style={{ color: showPlayerChat ? '#4169e1' : 'indianred' }}
+						/>
 					</a>
-					<a className={this.state.chatFilter === 'Chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-						Chat
-					</a>
-					<a className={this.state.chatFilter === 'Game' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-						Game
+					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Game">
+						<i
+							className={`large circle icon${showGameChat ? ' info' : ''}`}
+							title={showGameChat ? 'Hide game chats' : 'Show game chats'}
+							style={{ color: showGameChat ? '#4169e1' : 'indianred' }}
+						/>
 					</a>
 					{gameInfo.general && !gameInfo.general.disableObserver && (
-						<a className={this.state.chatFilter === 'No observer chat' ? 'item active' : 'item'} onClick={this.handleChatFilterClick}>
-							No observer chat
+						<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Spectator">
+							<i
+								className={`large eye icon${!showObserverChat ? ' slash' : ''}`}
+								title={showObserverChat ? 'Hide observer chats' : 'Show observer chats'}
+								style={{ color: showObserverChat ? '#4169e1' : 'indianred' }}
+							/>
 						</a>
 					)}
-					{userInfo.userName && (
+					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="History">
 						<i
-							title="Click here to pop out notes"
-							className={this.state.notesEnabled ? 'large window minus icon' : 'large edit icon'}
-							onClick={this.handleNoteClick}
+							className={`large file icon${showFullChat ? ' alternate' : ''}`}
+							title={showFullChat ? 'Truncate chats to 250 lines' : 'Show entire history (might lag in longer games)'}
+							style={{ color: showFullChat ? '#4169e1' : 'indianred' }}
 						/>
-					)}
-					{!isReplay && (
-						<i
-							title="Click here to lock or unlock scrolling of chat"
-							className={this.state.lock ? 'large lock icon' : 'large unlock alternate icon'}
-							onClick={this.handleChatLockClick}
-						/>
-					)}
-					{/* {isStaff && gameInfo.gameState.isTracksFlipped && this.renderModEndGameButtons()} */}
-					{isStaff && this.renderModEndGameButtons()}
+					</a>
+					{isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && this.renderModEndGameButtons()}
 
 					{gameInfo.general &&
 						gameInfo.general.tournyInfo &&
@@ -654,9 +719,19 @@ class Gamechat extends React.Component {
 							</button>
 						)}
 					<div className="right menu">
+						{userInfo.userName && (
+							<i title="Click here to pop out notes" className={notesEnabled ? 'large window minus icon' : 'large edit icon'} onClick={this.handleNoteClick} />
+						)}
+						{!isReplay && (
+							<i
+								title="Click here to lock or unlock scrolling of chat"
+								className={lock ? 'large lock icon' : 'large unlock alternate icon'}
+								onClick={this.handleChatLockClick}
+							/>
+						)}
 						<WhiteListButton />
 						<WatchReplayButton />
-						{!this.props.isReplay && <LeaveGameButton />}
+						{!isReplay && <LeaveGameButton />}
 					</div>
 				</section>
 				<section
@@ -675,7 +750,7 @@ class Gamechat extends React.Component {
 				</section>
 				<section className={this.state.claim ? 'claim-container active' : 'claim-container'}>
 					{(() => {
-						if (this.state.claim) {
+						if (this.state.claim && !gameInfo.gameState.isCompleted) {
 							const handleClaimButtonClick = (e, claim) => {
 								const chat = {
 									userName: userInfo.userName,
@@ -882,7 +957,8 @@ class Gamechat extends React.Component {
 								gameInfo.playersState &&
 								gameInfo.playersState.length &&
 								userInfo.userName &&
-								gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim
+								gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim &&
+								!gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].isDead
 							) {
 								return (
 									<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>

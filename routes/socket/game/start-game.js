@@ -531,6 +531,7 @@ const beginGame = game => {
  * @param {object} game - game to act on.
  */
 module.exports = game => {
+	game.gameState.isTracksFlipped = true;
 	let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 5;
 
 	const countDown = setInterval(() => {
@@ -557,7 +558,6 @@ module.exports = game => {
 		player.gameChats = [];
 		player.wasInvestigated = false;
 	});
-	game.gameState.isTracksFlipped = true;
 	game.gameState.audioCue = '';
 	game.private.policies = [];
 };

@@ -417,3 +417,16 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		margin-bottom: 10px;
 	}
 }
+
+.counter {
+	position: absolute;
+	right: 20px;
+	padding: 0;
+	margin: 0;
+	font-size: 12pt;
+	user-select: none;
+}
+
+.error {
+	color: red;
+}

@@ -9,6 +9,41 @@ const Changelog = () => (
 			<h2>Changelog</h2>
 		</div>
 		<div className="ui header">
+			<p>Version 1.0.0-beta8 released 12-23-2018</p>
+		</div>
+		<h3>Github signin should be fixed. Maybe? ¯\_(ツ)_/¯</h3>
+		<h3>New feature: redone gamechat filters.</h3>
+		<p>
+			Filters should now be toggable instead of just pick one (radio buttons). This also fixes the bug where some players with small screen widths were having
+			the "leave game" button flowing into the playerlist.
+		</p>
+		<h3>Bugfix: gamechat filters should work even when you don't have "show all messages" on.</h3>
+		<div className="ui header">
+			<p>Version 1.0.0-beta7 released 12-18-2018</p>
+		</div>
+		<h3>New feature: Github signin/signup integration</h3>
+		<p>Why not?! This will be the last one.. probably. I don't want your facebook/google/apple nonsense.</p>
+		<h3>Fix: much better long-game performance.</h3>
+		<p>
+			For far too long, games that had many chats were having a lot of lag in the late games. You now only see a smaller selection of chats (last 250) - you can
+			toggle this in the game filters. Turning that off will cause your client to be slow, again.
+		</p>
+		<h3>New feature: fixes to remakes and now remakes will always go based off of fascist count instead of a fixed number. Thanks to contributor LoveOken.</h3>
+		<h3>New feature: the contributor and trial mod roles are now assignable by mods as opposed to being hard coded.</h3>
+		<h3>New feature: cardbacks should now be much more performant @Hexicube.</h3>
+		<div className="ui header">
+			<p>Version 1.0.0-beta6 released 12-12-2018</p>
+		</div>
+		<h3>New feature: two new custom game policy powers!</h3>
+		<p>Thanks to contributor/mod Hexicube, you now set up 2 brand new policy powers:</p>
+		<ul>
+			<li>Show party: a reversed investigate, you pick a player and show them your party membership card.</li>
+			<li>Peek & Burn: the president look at the top card of the deck, and choose if they want to discard it.</li>
+		</ul>
+		<p>Awesome!</p>
+		<h3>New update: a change in our session software should hopefully resolve some of the lag issues we've had lately.</h3>
+		<p>Also, scrollbars should be grey and cardbacks should no longer flicker in profiles.</p>
+		<div className="ui header">
 			<p>Version 1.0.0-beta5 released 12-9-2018</p>
 		</div>
 		<h3>New feature: Discord signin/signup integration</h3>

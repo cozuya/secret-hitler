@@ -6,9 +6,8 @@ const socketRoutes = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
-const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
-const { TRIALMODS } = require('../src/frontend-scripts/constants');
+const { ProcessImage } = require('./image-processor');
 
 /**
  * @param {object} req - express request object.
@@ -60,8 +59,11 @@ module.exports = () => {
 			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
 			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
 			const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+			const altmodUserNames = accounts.filter(account => account.staffRole === 'altmod').map(account => account.username);
+			const trialmodUserNames = accounts.filter(account => account.staffRole === 'trialmod').map(account => account.username);
+			const contributorUserNames = accounts.filter(account => account.staffRole === 'contributor').map(account => account.username);
 
-			socketRoutes(modUserNames, editorUserNames, adminUserNames);
+			socketRoutes(modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames);
 		})
 		.catch(err => {
 			console.log(err, 'err in finding staffroles');
@@ -178,14 +180,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (TRIALMODS.includes(requestingUser)) {
-								try {
-									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
-								} catch (e) {
-									_profile.lastConnectedIP = 'something went wrong';
-									console.log(e);
-								}
-							} else if (!acc || !acc.staffRole || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
+							if (!acc || !acc.staffRole || acc.staffRole === 'altmod' || acc.staffRole === 'contributor') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {
@@ -241,13 +236,9 @@ module.exports = () => {
 			}
 
 			const { image } = req.body;
-			const extension = image.split(';base64')[0].split('/')[1];
 			const raw = image.split(',')[1];
 			const username = req.session.passport.user;
 			const now = new Date();
-			const socketId = Object.keys(io.sockets.sockets).find(
-				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username
-			);
 
 			Account.findOne({ username })
 				.then(account => {
@@ -263,18 +254,8 @@ module.exports = () => {
 							message: 'You can only change your cardback once every 30 seconds.'
 						});
 					} else {
-						fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
-							account.gameSettings.customCardback = extension;
-							account.gameSettings.customCardbackSaveTime = now.toString();
-							account.gameSettings.customCardbackUid = Math.random()
-								.toString(36)
-								.substring(2);
-							account.save(() => {
-								res.json({ message: 'Cardback successfully uploaded.' });
-								if (socketId && io.sockets.sockets[socketId]) {
-									io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
-								}
-							});
+						ProcessImage(username, raw, (resp, err) => {
+							res.json({ message: err || resp });
 						});
 					}
 				})

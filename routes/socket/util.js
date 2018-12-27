@@ -1,5 +1,3 @@
-const Mongoclient = require('mongodb').MongoClient;
-
 /**
  * @param {object} game - game to act on.
  * @return {object} game
@@ -177,30 +175,33 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	return ratingUpdates;
 };
 
-let mongoClient;
-Mongoclient.connect(
-	'mongodb://localhost:27017',
-	{ useNewUrlParser: true },
-	(err, client) => {
-		mongoClient = client;
-	}
-);
-
 module.exports.destroySession = username => {
-	if (!mongoClient) {
-		console.log('WARN: No mongo connection, cannot destroy user session.');
-		return;
-	}
-	mongoClient
-		.db('secret-hitler-app')
-		.collection('sessions')
-		.findOneAndDelete({ 'session.passport.user': username }, err => {
-			if (err) {
-				try {
-					console.log(err, 'err in logoutuser');
-					console.log(err.value);
-					console.log(err.value.session);
-				} catch (error) {}
+	if (process.env.NODE_ENV !== 'production') {
+		const Mongoclient = require('mongodb').MongoClient;
+
+		let mongoClient;
+
+		Mongoclient.connect(
+			'mongodb://localhost:27017',
+			{ useNewUrlParser: true },
+			(err, client) => {
+				mongoClient = client;
 			}
-		});
+		);
+
+		if (!mongoClient) {
+			console.log('WARN: No mongo connection, cannot destroy user session.');
+			return;
+		}
+		mongoClient
+			.db('secret-hitler-app')
+			.collection('sessions')
+			.findOneAndDelete({ 'session.passport.user': username }, err => {
+				if (err) {
+					try {
+						console.log(err, 'err in logoutuser');
+					} catch (error) {}
+				}
+			});
+	}
 };

@@ -271,7 +271,7 @@ export default class Moderation extends React.Component {
 				this.props.socket.emit('updateModAction', {
 					modName: this.props.userInfo.userName,
 					userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
-					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 					comment: this.state.actionTextValue,
 					action
 				});
@@ -361,7 +361,7 @@ export default class Moderation extends React.Component {
 						takeModAction('deleteCardback');
 					}}
 				>
-					Delete player cardback and log out
+					Delete player cardback
 				</button>
 				<button
 					style={{ width: '100%', background: 'palevioletred' }}
@@ -593,20 +593,33 @@ export default class Moderation extends React.Component {
 						takeModAction('removeStaffRole');
 					}}
 				>
-					Remove mod or editor status and log them out
+					Remove Staff/Contributor role and log them out
 				</button>
 				<button
-					style={{ background: 'blueviolet' }}
+					style={{ background: 'teal' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
-						takeModAction('promoteToMod');
+						takeModAction('promoteToContributor');
 					}}
 				>
-					Promote player to mod
+					Promote player to Contributor
+				</button>
+				<button
+					style={{ background: 'purple' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToTrialMod');
+					}}
+				>
+					Promote player to Trial Moderator
 				</button>
 				<button
 					style={{ background: 'violet' }}
@@ -616,10 +629,36 @@ export default class Moderation extends React.Component {
 							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
+						takeModAction('promoteToAltMod');
+					}}
+				>
+					Promote player to AEM Alternate Account
+				</button>
+				<button
+					style={{ background: '#007fff' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToMod');
+					}}
+				>
+					Promote player to Moderator
+				</button>
+				<button
+					style={{ background: '#05bba0' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
 						takeModAction('promoteToEditor');
 					}}
 				>
-					Promote player to editor
+					Promote player to Editor
 				</button>
 				<button
 					style={{ background: 'black' }}
@@ -693,6 +732,9 @@ export default class Moderation extends React.Component {
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
 			removeStaffRole: 'Remove Staff Role',
+			promoteToContributor: 'Promote (Contributor)',
+			promoteToTrialMod: 'Promote (Trial Mod)',
+			promoteToAltMod: 'Promote (AEM Alt)',
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',
@@ -886,17 +928,17 @@ export default class Moderation extends React.Component {
 							<h3>Current player list</h3>
 							<div className="ui table">
 								<h4>Color chart:</h4>
-								<span class="istor">User is playing via the TOR network.</span>
+								<span className="istor">User is playing via the TOR network.</span>
 								<br />
-								<span class="isbannedbefore">User has been banned before.</span>
+								<span className="isbannedbefore">User has been banned before.</span>
 								<br />
-								<span class="istimedbefore">User has been timed before.</span>
+								<span className="istimedbefore">User has been timed before.</span>
 								<br />
-								<span class="multi">IP fully matches another IP.</span>
+								<span className="multi">IP fully matches another IP.</span>
 								<br />
-								<span class="multi2">IP mostly matches another IP.</span>
+								<span className="multi2">IP mostly matches another IP.</span>
 								<br />
-								<span class="emailunverified">Email is not yet verified.</span>
+								<span className="emailunverified">Email is not yet verified.</span>
 								<br />
 							</div>
 							<table className="ui celled table userlist">
@@ -904,7 +946,7 @@ export default class Moderation extends React.Component {
 									<tr>
 										<th />
 										<th
-											style={{ 'white-space': 'nowrap' }}
+											style={{ whiteSpace: 'nowrap' }}
 											onClick={() => {
 												clickSort('username');
 											}}
@@ -912,7 +954,7 @@ export default class Moderation extends React.Component {
 											Username {userSort.type === 'username' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 										</th>
 										<th
-											style={{ 'white-space': 'nowrap' }}
+											style={{ whiteSpace: 'nowrap' }}
 											onClick={() => {
 												clickSort('IP');
 											}}
@@ -920,7 +962,7 @@ export default class Moderation extends React.Component {
 											IP {userSort.type === 'IP' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 										</th>
 										<th
-											style={{ 'white-space': 'nowrap' }}
+											style={{ whiteSpace: 'nowrap' }}
 											onClick={() => {
 												clickSort('email');
 											}}
@@ -936,7 +978,7 @@ export default class Moderation extends React.Component {
 									<div className="ui horizontal divider">or</div>
 									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">-</div>
-									{!this.renderActionText()}
+									{this.renderActionText()}
 									{this.renderButtons()}
 								</span>
 							)}

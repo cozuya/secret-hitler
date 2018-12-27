@@ -17,7 +17,7 @@ html(lang="en")
 			if prodCacheBustToken
 				link(rel="stylesheet", type="text/css", href=`/styles/style-web.css?${prodCacheBustToken}`)
 			else
-				link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
+				link(rel="stylesheet", type="text/css", href="/styles/style-web.css?sadb")
 		link(href="//fonts.googleapis.com/css?family=Comfortaa|Cuprum:400i|Germania+One|Roboto+Slab", rel="stylesheet", type="text/css")
 		link(rel="author", href="humans.txt")
 		link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
@@ -119,6 +119,10 @@ html(lang="en")
 			a(href="/discord-login" style="margin: 10px 0; background: #7289da; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large.discord-signup-submit
 				span Sign in with
 				img(src="/images/discord-icon-2.png", style="margin-left: 5px; width: 140px; height: 50px")
+			a(href="/github-login" style="border: 1px solid #666; color: #000; margin: 10px 0; background: #fff; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large
+				span Sign in with
+				img(src="/images/GitHub-Mark-32px.png", style="margin-left: 5px;")
+				img(src="/images/GitHub_Logo.png", style="width: 120px;")
 			p(style="text-align: center") OR
 			form.ui.form(style="text-align: center;")
 				.field
@@ -164,10 +168,14 @@ html(lang="en")
 		section.signup-modal.ui.modal.small.segment.column
 			h2.header Sign up for an account
 			p.tou By playing here, you agree to follow the #[a(href="/tou", target="_blank") Terms of Use].
-			p.tou Players with less than 2 games played can not chat in general chat, chat as an observer, or make player reports.
-			a(href="/discord-login" style="margin: 10px 0; background: #7289da; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large.discord-signup-submit
+			p.tou(style="color: #888; font-size: 11px;") Players with less than 2 games played can not chat in general chat, chat as an observer, or make player reports.
+			a(href="/discord-login" style="margin: 10px 0; background: #7289da; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large
 				span Sign up with
 				img(src="/images/discord-icon-2.png", style="margin-left: 5px; width: 140px; height: 50px")
+			a(href="/github-login" style="border: 1px solid #666; color: #000; margin: 10px 0; background: #fff; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large
+				span Sign up with
+				img(src="/images/GitHub-Mark-32px.png", style="margin-left: 5px;")
+				img(src="/images/GitHub_Logo.png", style="width: 120px;")
 			p(style="text-align: center") OR
 			form.ui.form
 				.field
@@ -210,6 +218,13 @@ html(lang="en")
 					.ui.text.loader Signing up..
 				.ui.negative.hidden.message
 		
+		style.
+			.ui.modal.transition {
+				left: 50%;
+				margin-top: 0px !important;
+				margin-left: -360px !important;
+			}
+
 		script.
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -222,5 +237,5 @@ html(lang="en")
 		script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")
 		script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
 		script(src="//cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js")
-		script(src="/scripts/site.js?2f23f23ff")
+		script(src="/scripts/site.js?2f23f23ffazzazz")
 	block footer

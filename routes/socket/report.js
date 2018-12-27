@@ -1,21 +1,6 @@
 const https = require('https');
 const Account = require('../../models/account');
 const { newStaff } = require('./models');
-const { TRIALMODS } = require('../../src/frontend-scripts/constants');
-
-const AEM_ALTS = (module.exports.AEM_ALTS = [
-	'bell',
-	'BigbyWolf',
-	'Picangel',
-	'birdy',
-	'Grim',
-	'TermsOfUse',
-	'DownWithMeta',
-	'tesla',
-	'SheepManu',
-	'Manu1234',
-	'Scorcha'
-]);
 
 module.exports.makeReport = (text, game, gameEnd) => {
 	// Custom games are strictly casual and for fun, writing proper report logic to account for it would be a massive pain.
@@ -23,12 +8,24 @@ module.exports.makeReport = (text, game, gameEnd) => {
 
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
 		const staffUserNames = accounts
-			.filter(account => account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin')
+			.filter(
+				account =>
+					account.staffRole === 'altmod' ||
+					account.staffRole === 'moderator' ||
+					account.staffRole === 'editor' ||
+					account.staffRole === 'admin' ||
+					account.staffRole === 'trialmod'
+			)
 			.map(account => account.username);
-		staffUserNames.push(...AEM_ALTS);
-		staffUserNames.push(...TRIALMODS);
 		const players = game.private.seatedPlayers.map(player => player.userName);
-		const isStaff = players.some(n => staffUserNames.includes(n) || newStaff.modUserNames.includes(n) || newStaff.editorUserNames.includes(n));
+		const isStaff = players.some(
+			n =>
+				staffUserNames.includes(n) ||
+				newStaff.altmodUserNames.includes(n) ||
+				newStaff.modUserNames.includes(n) ||
+				newStaff.editorUserNames.includes(n) ||
+				newStaff.trialmodUserNames.includes(n)
+		);
 
 		if (!gameEnd && isStaff) {
 			if (!game.unsentReports) game.unsentReports = [];

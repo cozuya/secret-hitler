@@ -28,7 +28,8 @@ class Players extends React.Component {
 			reportedPlayer: '',
 			reportTextValue: '',
 			playerNotes: [],
-			playerNoteSeatEnabled: false
+			playerNoteSeatEnabled: false,
+			reportLength: 0
 		};
 	}
 
@@ -424,23 +425,27 @@ class Players extends React.Component {
 		}
 
 		const index = gameInfo.publicPlayersState.findIndex(player => player.userName === this.state.reportedPlayer);
-
-		this.props.socket.emit('playerReport', {
-			uid: gameInfo.general.uid,
-			userName: this.props.userInfo.userName || 'from replay',
-			gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
-			reportedPlayer: `${index ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
-			reason: $('input[name="reason"]').attr('value'),
-			comment: this.state.reportTextValue
-		});
-		$(this.reportModal).modal('hide');
+		if (this.state.reportLength <= 140) {
+			this.props.socket.emit('playerReport', {
+				uid: gameInfo.general.uid,
+				userName: this.props.userInfo.userName || 'from replay',
+				gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
+				reportedPlayer: `${index ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
+				reason: $('input[name="reason"]').attr('value'),
+				comment: this.state.reportTextValue
+			});
+			$(this.reportModal).modal('hide');
+			this.setState({
+				maxReportLengthExceeded: false
+			});
+		}
 	}
 
 	clickedTakeSeat() {
 		const { gameInfo, userInfo, onClickedTakeSeat, userList } = this.props;
 
 		if (userInfo.userName) {
-			if (gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
+			if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
 				$(this.blacklistModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
@@ -469,7 +474,10 @@ class Players extends React.Component {
 			this.setState({ passwordValue: `${e.target.value}` });
 		};
 		const handleReportTextChange = e => {
-			this.setState({ reportTextValue: `${e.target.value}` });
+			this.setState({
+				reportLength: Number(e.target.value.length),
+				reportTextValue: `${e.target.value}`
+			});
 		};
 		const isBlind = this.props.gameInfo.general.blindMode && !this.props.gameInfo.gameState.isCompleted;
 
@@ -538,7 +546,11 @@ class Players extends React.Component {
 							</div>
 						</div>
 						<textarea placeholder="Comment" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
-						<div onClick={this.handleReportSubmit} className={this.state.reportTextValue ? 'ui button primary' : 'ui button primary disabled'}>
+						<span className={this.state.reportLength > 140 ? 'counter error' : 'counter'}>{140 - this.state.reportLength}</span>
+						<div
+							onClick={this.handleReportSubmit}
+							className={this.state.reportTextValue && this.state.reportLength <= 140 ? 'ui button primary' : 'ui' + ' button primary disabled'}
+						>
 							Submit
 						</div>
 					</form>
