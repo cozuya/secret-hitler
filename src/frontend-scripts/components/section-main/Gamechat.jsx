@@ -272,8 +272,7 @@ class Gamechat extends React.Component {
 			userInfo.staffRole &&
 				userInfo.staffRole.length &&
 				userInfo.staffRole !== 'trialmod' &&
-				userInfo.staffRole !== 'altmod' &&
-				userInfo.staffRole !== 'contributor'
+				userInfo.staffRole !== 'altmod'
 		);
 		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
@@ -388,8 +387,7 @@ class Gamechat extends React.Component {
 			userInfo.staffRole &&
 				userInfo.staffRole.length &&
 				userInfo.staffRole !== 'trialmod' &&
-				userInfo.staffRole !== 'altmod' &&
-				userInfo.staffRole !== 'contributor'
+				userInfo.staffRole !== 'altmod'
 		);
 
 		const renderPreviousSeasonAward = type => {
@@ -426,8 +424,7 @@ class Gamechat extends React.Component {
 							chat.staffRole &&
 							chat.staffRole !== '' &&
 							chat.staffRole !== 'trialmod' &&
-							chat.staffRole !== 'altmod' &&
-							chat.staffRole !== 'contributor')
+							chat.staffRole !== 'altmod')
 				);
 			if (!showFullChat) list = list.slice(-250);
 			return list.reduce((acc, chat, i) => {
@@ -437,8 +434,7 @@ class Gamechat extends React.Component {
 					playerListPlayer.staffRole &&
 					playerListPlayer.staffRole !== '' &&
 					playerListPlayer.staffRole !== 'trialmod' &&
-					playerListPlayer.staffRole !== 'altmod' &&
-					playerListPlayer.staffRole !== 'contributor';
+					playerListPlayer.staffRole !== 'altmod';
 				const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
 				const isSeated = seatedUserNames.includes(chat.userName);
 				const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
@@ -645,8 +641,7 @@ class Gamechat extends React.Component {
 				userInfo.staffRole &&
 				userInfo.staffRole.length &&
 				userInfo.staffRole !== 'trialmod' &&
-				userInfo.staffRole !== 'altmod' &&
-				userInfo.staffRole !== 'contributor'
+				userInfo.staffRole !== 'altmod'
 		);
 		const hasNoAEM = players => {
 			if (!userList || !userList.list) return false;
@@ -656,8 +651,7 @@ class Gamechat extends React.Component {
 					user.staffRole &&
 					user.staffRole.length > 0 &&
 					user.staffRole !== 'trialmod' &&
-					user.staffRole !== 'altmod' &&
-					user.staffRole !== 'contributor'
+					user.staffRole !== 'altmod'
 				)
 					return false;
 				else return true;
