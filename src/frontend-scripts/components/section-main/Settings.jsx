@@ -225,20 +225,39 @@ class Settings extends React.Component {
 
 			if (rejectedFile.length) {
 				this.setState({
-					cardbackUploadStatus: 'The file you selected has a wrong extension.  Only png, jpg/jpeg, gif, and tiff are allowed.'
-				});
-				return;
-			}
-
-			if (files[0].size > 100 * 1024) {
-				this.setState({
-					cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.'
+					cardbackUploadStatus: 'The file you selected is not an image.'
 				});
 				return;
 			}
 
 			reader.onload = () => {
-				this.setState({ preview: reader.result });
+				this.setState({
+					cardbackUploadStatus: 'Resizing...'
+				});
+				const img = new Image();
+				img.onload = () => {
+					try {
+						const canvas = document.createElement('canvas');
+						canvas.width = 70;
+						canvas.height = 95;
+						const ctx = canvas.getContext('2d');
+						ctx.drawImage(img, 0, 0, 70, 95);
+						const data = canvas.toDataURL('image/png');
+						if (data.length > 100 * 1024) {
+							this.setState({
+								cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.'
+							});
+							return;
+						}
+						this.setState({ preview: data, cardbackUploadStatus: null });
+					} catch (err) {
+						this.setState({
+							cardbackUploadStatus: 'The file you selected is not an image.'
+						});
+					}
+				};
+
+				img.src = reader.result;
 			};
 
 			reader.readAsDataURL(files[0]);
@@ -552,8 +571,8 @@ class Settings extends React.Component {
 								</div>
 								<div className="upload">
 									<h5 className="ui header">New</h5>
-									<Dropzone accept="image/png, image/jpg, image/jpeg, image/gif, image/tiff" onDrop={onDrop} multiple={false} className="dropzone">
-										Click here or drag and drop a 70px by 95px image to upload
+									<Dropzone accept="image/*" onDrop={onDrop} multiple={false} className="dropzone">
+										Click here (or drag and drop) an image to upload
 									</Dropzone>
 								</div>
 								{this.state.preview && (
@@ -570,13 +589,7 @@ class Settings extends React.Component {
 								)}
 								<div className="ui basic modal cardbackinfo">
 									<div className="header">Cardback info and terms of use</div>
-									<p>
-										<strong>
-											Image uploaded must be 70px by 95px, or it will not look right. Do not trust the previewer - it will crunch to fit the box, the game
-											itself won't do that.
-										</strong>{' '}
-										Rainbow players only. Can only upload an image once per 30 second. Only png, jpg, and jpeg are permitted. Must be below 100kb.
-									</p>
+									<p>Rainbow players only. Can only upload an image once per 30 second.</p>
 									<p>
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
