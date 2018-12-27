@@ -442,7 +442,7 @@ const updateSeatedUser = (socket, passport, data) => {
 		const isPrivateSafe =
 			!game.general.private ||
 			(game.general.private && (data.password === game.private.privatePassword || game.general.whitelistedPlayers.includes(passport.user)));
-		const isBlacklistSafe = !game.general.gameCreatorBlacklist.includes(passport.user);
+		const isBlacklistSafe = !game.general.gameCreatorBlacklist || !game.general.gameCreatorBlacklist.includes(passport.user);
 		const isMeetingEloMinimum = !game.general.eloMinimum || game.general.eloMinimum <= account.eloSeason || game.general.eloMinimum <= account.eloOverall;
 
 		if (account.wins + account.losses < 3 && limitNewPlayers.status && !game.general.private) {
@@ -1235,7 +1235,8 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = publicPlayersState[playerIndex];
 
-	const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
+	const minimumRemakeVoteCount =
+		(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) || Math.floor(game.general.playerCount / 2) + 2;
 	const chat = {
 		timestamp: new Date(),
 		gameChat: true,
@@ -1399,14 +1400,22 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 			games[newGame.general.uid] = newGame;
 			sendGameList();
 
+			let creatorRemade = false;
 			remakePlayerSocketIDs.forEach((id, index) => {
 				if (io.sockets.sockets[id]) {
 					io.sockets.sockets[id].leave(game.general.uid);
 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-					updateSeatedUser(io.sockets.sockets[id], passport, { uid: newGame.general.uid });
-					// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
+					if (io.sockets.sockets[id].handshake && io.sockets.sockets[id].handshake.session && io.sockets.sockets[id].handshake.session.passport) {
+						updateSeatedUser(io.sockets.sockets[id], io.sockets.sockets[id].handshake.session.passport, { uid: newGame.general.uid });
+						// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
+						if (io.sockets.sockets[id].handshake.session.passport.user === newGame.general.gameCreatorName) creatorRemade = true;
+					}
 				}
 			});
+			if (creatorRemade && newGame.general.gameCreatorBlacklist != null) {
+				const creator = userList.find(user => user.userName === newGame.general.gameCreatorName);
+				if (creator) newGame.general.gameCreatorBlacklist = creator.blacklist;
+			} else newGame.general.gameCreatorBlacklist = null;
 			checkStartConditions(newGame);
 		}, 3000);
 	};
