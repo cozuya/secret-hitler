@@ -36,8 +36,8 @@ app.set('views', `${__dirname}/views`);
 app.set('view engine', 'pug');
 app.locals.pretty = true;
 app.use(compression());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '10kb' })); // limit can be lower since this should not have a lot of data per request (helps protect against json expansion attacks I guess)
+app.use(bodyParser.urlencoded({ extended: false, limit: '200kb' })); // limit needs to be decently high to account for cardback uploads
 app.use(favicon(`${__dirname}/public/favicon.ico`));
 app.use(cookieParser());
 app.use(express.static(`${__dirname}/public`, { maxAge: 86400000 * 28 }));

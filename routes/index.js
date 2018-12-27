@@ -236,10 +236,6 @@ module.exports = () => {
 			}
 
 			const { image } = req.body;
-			if (image.length > 100 * 1024) {
-				res.json({ message: 'The file you selected is too big.  A maximum of 100kb is allowed.' });
-				return;
-			}
 			const raw = image.split(',')[1];
 			const username = req.session.passport.user;
 			const now = new Date();

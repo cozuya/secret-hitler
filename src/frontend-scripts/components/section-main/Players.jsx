@@ -445,7 +445,7 @@ class Players extends React.Component {
 		const { gameInfo, userInfo, onClickedTakeSeat, userList } = this.props;
 
 		if (userInfo.userName) {
-			if (gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
+			if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
 				$(this.blacklistModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
