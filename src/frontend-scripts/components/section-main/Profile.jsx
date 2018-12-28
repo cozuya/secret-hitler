@@ -270,7 +270,7 @@ class ProfileWrapper extends React.Component {
 		let gamesUntilRainbow = null;
 		if (user) {
 			userClasses =
-				user[w] + user[l] > 49 || Boolean(user.staffRole)
+				user[w] + user[l] > 49 || Boolean(user.staffRole) || Boolean(user.isContributor)
 					? cn(
 							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
 							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
