@@ -244,7 +244,7 @@ class Playerlist extends React.Component {
 						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
 						.sort(this.winRate(this.alphabetical()));
 
-			const inexperienced = nonStaff.filter(user => !contributors.includes(user) && !experienced.includes(user)).sort(this.alphabetical());
+			const inexperienced = nonStaff.filter(user => !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate).sort(this.alphabetical());
 
 			const makeUser = (user, i) => {
 				const percent = ((user[w] / (user[w] + user[l])) * 100).toFixed(0);
