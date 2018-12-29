@@ -440,131 +440,147 @@ module.exports = () => {
 	app.get('/github-login', passport.authenticate('github', { scope: ['read:user', 'user:email'] }));
 
 	const oAuthAuthentication = (req, res, next, type) => {
-		passport.authenticate(type, profile => {
-			if (!profile || !profile.username) {
-				return next();
-			}
-
-			if (req.user) {
-				if (type === 'discord') {
-					req.user.discordUsername = profile.username;
-					req.user.discordDiscriminator = profile.discriminator;
-					req.user.discordMfa_enabled = profile.mfa_enabled;
-				} else {
-					req.user.githubUsername = profile.username;
-					req.user.github2FA = profile.two_factor_authentication;
-				}
-				req.user.verified = true;
-				req.user.save(() => {
-					res.redirect('/account');
-				});
-			} else {
-				// see if their oauth information matches an account, if so sign them in
-				const queryObj =
-					type === 'discord' ? { discordUsername: profile.username, discordDiscriminator: profile.discriminator } : { githubUsername: profile.username };
-
-				Account.findOne(queryObj)
-					.then(account => {
-						if (account) {
-							req.logIn(account, () => res.redirect('/account'));
-						} else {
-							// see if there's an existing sh account with their oauth name, if so have them select a new username, if not make an account.
-
-							Account.findOne({ username: profile.username })
-								.then(account => {
-									if (account) {
-										req.session.oauthProfile = profile;
-										res.redirect('/oauth-select-username');
-									} else if (/88$/i.test(profile.username)) {
-										const new88 = new EightEightCounter({
-											date: new Date(),
-											username
-										});
-										new88.save(() => {
-											req.session.oauthProfile = profile;
-											res.redirect('/oauth-select-username');
-										});
-									} else if (
-										!/^[a-z0-9]+$/i.test(profile.username) ||
-										!profile.username ||
-										profile.username.length < 3 ||
-										profile.username.length > 12 ||
-										accountCreationDisabled.status
-									) {
-										req.session.oauthProfile = profile;
-										res.redirect('/oauth-select-username');
-									} else {
-										const ip = expandAndSimplify(
-											req.headers['x-real-ip'] ||
-												req.headers['X-Real-IP'] ||
-												req.headers['X-Forwarded-For'] ||
-												req.headers['x-forwarded-for'] ||
-												req.connection.remoteAddress
-										);
-
-										const accountObj = {
-											username: profile.username,
-											gameSettings: {
-												soundStatus: 'Pack2'
-											},
-											verified: true,
-											wins: 0,
-											losses: 0,
-											created: new Date(),
-											touLastAgreed: TOU_CHANGES[0].changeVer,
-											signupIP: ip,
-											verification: {
-												email: type === 'discord' ? profile.email : profile._json.email
-											},
-											lastConnectedIP: ip
-										};
-
-										if (type === 'discord') {
-											accountObj.discordDiscriminator = profile.discriminator;
-											accountObj.discordMfa_enabled = profile.mfa_enabled;
-											accountObj.discordUsername = profile.username;
-										} else {
-											accountObj.githubUsername = profile.username;
-											accountObj.github2FA = profile._json.two_factor_authentication;
-											accountObj.bio = profile._json.bio;
-										}
-
-										Account.register(
-											new Account(accountObj),
-											Math.random()
-												.toString(36)
-												.substring(2),
-											(err, account) => {
-												if (err) {
-													console.log(err, 'err in creating oauth account');
-													return next();
-												} else {
-													passport.authenticate(type)(req, res, () => {
-														const newPlayerBan = new BannedIP({
-															bannedDate: new Date(),
-															type: 'new',
-															ip
-														});
-
-														newPlayerBan.save(() => {
-															req.logIn(account, () => res.redirect('/account'));
-														});
-													});
-												}
-											}
-										);
-									}
-								})
-								.catch(err => {
-									console.log(err, 'err in oauth1');
-								});
-						}
-					})
-					.catch(err => {
-						console.log(err, 'err in oauth2');
+		const ip = expandAndSimplify(
+			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
+		);
+		testIP(ip, banType => {
+			if (hasBypass && banType == 'new') banType = null;
+			if (banType) {
+				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+				else if (banType == 'small' || banType == 'tiny') {
+					res
+						.status(403)
+						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+				} else if (banType == 'new') {
+					res.status(403).json({
+						message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
 					});
+				} else {
+					console.log(`Unhandled IP ban type: ${banType}`);
+					res
+						.status(403)
+						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+				}
+			} else {
+				passport.authenticate(type, profile => {
+					if (!profile || !profile.username) {
+						return next();
+					}
+
+					if (req.user) {
+						if (type === 'discord') {
+							req.user.discordUsername = profile.username;
+							req.user.discordDiscriminator = profile.discriminator;
+							req.user.discordMfa_enabled = profile.mfa_enabled;
+						} else {
+							req.user.githubUsername = profile.username;
+							req.user.github2FA = profile.two_factor_authentication;
+						}
+						req.user.verified = true;
+						req.user.save(() => {
+							res.redirect('/account');
+						});
+					} else {
+						// see if their oauth information matches an account, if so sign them in
+						const queryObj =
+							type === 'discord' ? { discordUsername: profile.username, discordDiscriminator: profile.discriminator } : { githubUsername: profile.username };
+
+						Account.findOne(queryObj)
+							.then(account => {
+								if (account) {
+									req.logIn(account, () => res.redirect('/account'));
+								} else {
+									// see if there's an existing sh account with their oauth name, if so have them select a new username, if not make an account.
+
+									Account.findOne({ username: profile.username })
+										.then(account => {
+											if (account) {
+												req.session.oauthProfile = profile;
+												res.redirect('/oauth-select-username');
+											} else if (/88$/i.test(profile.username)) {
+												const new88 = new EightEightCounter({
+													date: new Date(),
+													username
+												});
+												new88.save(() => {
+													req.session.oauthProfile = profile;
+													res.redirect('/oauth-select-username');
+												});
+											} else if (
+												!/^[a-z0-9]+$/i.test(profile.username) ||
+												!profile.username ||
+												profile.username.length < 3 ||
+												profile.username.length > 12 ||
+												accountCreationDisabled.status
+											) {
+												req.session.oauthProfile = profile;
+												res.redirect('/oauth-select-username');
+											} else {
+												const accountObj = {
+													username: profile.username,
+													gameSettings: {
+														soundStatus: 'Pack2'
+													},
+													verified: true,
+													wins: 0,
+													losses: 0,
+													created: new Date(),
+													touLastAgreed: TOU_CHANGES[0].changeVer,
+													signupIP: ip,
+													verification: {
+														email: type === 'discord' ? profile.email : profile._json.email
+													},
+													lastConnectedIP: ip
+												};
+
+												if (type === 'discord') {
+													accountObj.discordDiscriminator = profile.discriminator;
+													accountObj.discordMfa_enabled = profile.mfa_enabled;
+													accountObj.discordUsername = profile.username;
+												} else {
+													accountObj.githubUsername = profile.username;
+													accountObj.github2FA = profile._json.two_factor_authentication;
+													accountObj.bio = profile._json.bio;
+												}
+
+												Account.register(
+													new Account(accountObj),
+													Math.random()
+														.toString(36)
+														.substring(2),
+													(err, account) => {
+														if (err) {
+															console.log(err, 'err in creating oauth account');
+															return next();
+														} else {
+															passport.authenticate(type)(req, res, () => {
+																const newPlayerBan = new BannedIP({
+																	bannedDate: new Date(),
+																	type: 'new',
+																	ip
+																});
+
+																newPlayerBan.save(() => {
+																	req.logIn(account, () => res.redirect('/account'));
+																});
+															});
+														}
+													}
+												);
+											}
+										})
+										.catch(err => {
+											console.log(err, 'err in oauth1');
+										});
+								}
+							})
+							.catch(err => {
+								console.log(err, 'err in oauth2');
+							});
+					}
+				})(req, res, next);
 			}
-		})(req, res, next);
+		});
 	};
 
 	app.get('/github/login-callback', (req, res, next) => {
