@@ -47,7 +47,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			invidia: user.userName === 'Invidia',
 			thejuststopo: user.userName === 'TheJustStopO'
 		});
-	} else if (Boolean(user.isContributor) && (!Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || !user.staffDisableStaffColor)) {
+	} else if ((user.isContributor) && (!(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || !user.staffDisableStaffColor)) {
 		   return cn(defaultClass, 'contributor');
 	} else {
 		const w = isSeasonal ? user.winsSeason : user.wins;
