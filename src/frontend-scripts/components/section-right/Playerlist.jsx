@@ -232,7 +232,7 @@ class Playerlist extends React.Component {
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
 			const nonStaff = visible.filter(user => !aem.includes(user));
-			const contributors = nonStaff.filter(user => user.isContributor === true).sort(this.alphabetical());
+			const contributors = nonStaff.filter(user => user.isContributor).sort(this.alphabetical());
 
 			const privateUser = nonStaff.filter(user => !contributors.includes(user) && user.isPrivate);
 			const experienced = elo
@@ -257,7 +257,7 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || Boolean(user.isContributor)
+					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -319,7 +319,7 @@ class Playerlist extends React.Component {
 										? 'Editor'
 										: user.staffRole === 'moderator'
 										? 'Moderator'
-										: user.isContributor === true
+										: user.isContributor
 										? 'Contributor'
 										: null;
 
@@ -444,7 +444,7 @@ class Playerlist extends React.Component {
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
 			aem.push(...moderators);
-			const contributors = visible.filter(user => !aem.includes(user) && user.isContributor === true).sort(this.alphabetical());
+			const contributors = visible.filter(user => !aem.includes(user) && user.isContributor).sort(this.alphabetical());
 			aem.push(...contributors);
 
 			const experienced = elo
@@ -465,7 +465,7 @@ class Playerlist extends React.Component {
 				};
 
 				const userClasses =
-					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || Boolean(user.isContributor)
+					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
 						? cn(
 								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
 								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
@@ -526,7 +526,7 @@ class Playerlist extends React.Component {
 										? 'Editor'
 										: user.staffRole === 'moderator'
 										? 'Moderator'
-										: user.isContributor === true
+										: user.isContributor
 										? 'Contributor'
 										: null;
 
