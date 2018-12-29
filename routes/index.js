@@ -54,14 +54,14 @@ module.exports = () => {
 
 	accounts();
 
-	Account.find({ staffRole: { $exists: true } } || { isContributor: true })
+	Account.find()
 		.then(accounts => {
 			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
 			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
 			const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
 			const altmodUserNames = accounts.filter(account => account.staffRole === 'altmod').map(account => account.username);
 			const trialmodUserNames = accounts.filter(account => account.staffRole === 'trialmod').map(account => account.username);
-			const contributorUserNames = accounts.filter(account => account.isContributor === true).map(account => account.username);
+			const contributorUserNames = accounts.filter(account => account.isContributor).map(account => account.username);
 
 			socketRoutes(modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames);
 		})
