@@ -593,7 +593,7 @@ export default class Moderation extends React.Component {
 						takeModAction('removeContributor');
 					}}
 				>
-					Remove Contributor Role and log them out
+					Remove Contributor Role
 				</button>
 				<button
 					style={{ background: 'grey' }}
@@ -606,7 +606,7 @@ export default class Moderation extends React.Component {
 						takeModAction('removeStaffRole');
 					}}
 				>
-					Remove Staff Role and log them out
+					Remove Staff Role
 				</button>
 				<button
 					style={{ background: 'teal' }}
@@ -632,7 +632,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToTrialMod');
 					}}
 				>
-					Promote player to Trial Moderator
+					Promote player to Trial Mod
 				</button>
 				<button
 					style={{ background: 'violet' }}
@@ -645,7 +645,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToAltMod');
 					}}
 				>
-					Promote player to AEM Alternate Account
+					Promote player to AEM Alt
 				</button>
 				<button
 					style={{ background: '#007fff' }}
@@ -658,7 +658,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToMod');
 					}}
 				>
-					Promote player to Moderator
+					Promote player to Mod
 				</button>
 				<button
 					style={{ background: '#05bba0' }}
