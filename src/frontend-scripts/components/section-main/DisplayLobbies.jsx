@@ -411,7 +411,7 @@ const DisplayLobbies = props => {
 						<div className="gamename-column">
 							{renderFlag()}
 							{game.name}
-							{userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'contributor' && (
+							{userInfo.staffRole && userInfo.staffRole !== 'altmod' && (
 								<span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>
 							)}
 						</div>

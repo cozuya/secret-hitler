@@ -1794,12 +1794,10 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					(setting === 'blacklist' && data[setting].length <= 30) ||
 					(setting === 'staffDisableVisibleElo' &&
 						account.staffRole &&
-						account.staffRole !== 'contributor' &&
 						account.staffRole !== 'altmod' &&
 						account.staffRole !== 'trialmod') ||
 					(setting === 'staffIncognito' &&
 						account.staffRole &&
-						account.staffRole !== 'contributor' &&
 						account.staffRole !== 'altmod' &&
 						account.staffRole !== 'trialmod')
 				) {
@@ -1809,7 +1807,6 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				if (
 					setting === 'staffIncognito' &&
 					account.staffRole &&
-					account.staffRole !== 'contributor' &&
 					account.staffRole !== 'altmod' &&
 					account.staffRole !== 'trialmod'
 				) {
@@ -1819,6 +1816,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						const userListInfo = {
 							userName: passport.user,
 							staffRole: account.staffRole || '',
+							isContributor: account.isContributor || false,
 							staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 							staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 							wins: account.wins,
@@ -2372,6 +2370,26 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'disableLimitNewPlayers':
 					limitNewPlayers.status = false;
 					break;
+				case 'removeContributor':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.isContributor = false;
+									account.save(() => {
+										let idx = newStaff.contributorUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.contributorUserNames.splice(idx, 1);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
 				case 'removeStaffRole':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
@@ -2385,8 +2403,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
 										idx = newStaff.trialmodUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.trialmodUserNames.splice(idx, 1);
-										idx = newStaff.contributorUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.contributorUserNames.splice(idx, 1);
 										idx = newStaff.altmodUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.altmodUserNames.splice(idx, 1);
 										logOutUser(account.username);
@@ -2405,7 +2421,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
-									account.staffRole = 'contributor';
+									account.isContributor = true;
 									account.save(() => {
 										newStaff.contributorUserNames.push(account.username);
 										logOutUser(account.username);
