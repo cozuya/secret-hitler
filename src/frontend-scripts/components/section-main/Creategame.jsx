@@ -38,7 +38,7 @@ export default class Creategame extends React.Component {
 			isVerifiedOnly: false,
 			timedSliderValue: [120],
 			customGameSliderValue: [7],
-			eloSliderValue: [1675],
+			eloSliderValue: [1600],
 			isEloLimited: false,
 			customGameSettings: {
 				enabled: false,
