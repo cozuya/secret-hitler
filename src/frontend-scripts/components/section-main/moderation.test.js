@@ -14,6 +14,7 @@ describe('Moderation', () => {
 			playerInputText: '',
 			resetServerCount: 0,
 			logCount: 1,
+			hideActions: false,
 			modLogToday: false,
 			nonSeasonalSetStats: false,
 			logSort: {
