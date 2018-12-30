@@ -117,12 +117,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
-					if (
-						account.staffRole &&
-						account.staffRole.length > 0 &&
-						account.staffRole !== 'trialmod' &&
-						account.staffRole !== 'altmod'
-					) {
+					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'trialmod' && account.staffRole !== 'altmod') {
 						isAEM = true;
 					}
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
@@ -347,10 +342,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 									Account.find({ staffRole: { $exists: true } }).then(accounts => {
 										const staff = accounts
 											.filter(acc => {
-												acc.staffRole &&
-													acc.staffRole.length > 0 &&
-													acc.staffRole !== 'altmod' &&
-													acc.staffRole !== 'trialmod';
+												acc.staffRole && acc.staffRole.length > 0 && acc.staffRole !== 'altmod' && acc.staffRole !== 'trialmod';
 											})
 											.map(acc => acc.username);
 										const hasStaff = players.filter(p => staff.includes(p));

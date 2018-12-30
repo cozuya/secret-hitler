@@ -104,7 +104,7 @@
 		"file-loader": "^1.1.11",
 		"html-loader": "^0.5.5",
 		"html-webpack-plugin": "^3.1.0",
-		"husky": "^0.14.3",
+		"husky": "^1.3.1",
 		"jest": "^23.6.0",
 		"jest-cli": "^23.6.0",
 		"moment": "^2.18.1",
@@ -137,9 +137,13 @@
 		"inspect": "nodemon --inspect=9137 bin/dev.js",
 		"server": "nodemon bin/dev.js",
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
-		"precommit": "yarn format && git add -A",
-		"prepush": "yarn lint",
 		"lint": "esw src/ scripts/ routes/ webpack/ models/ iso/"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "yarn lint && yarn format && yarn test --all && git add -A",
+			"pre-push": "yarn test --all"
+		}
 	},
 	"jest": {
 		"setupTestFrameworkScriptFile": "<rootDir>/__test__/test-setup.js",

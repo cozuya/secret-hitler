@@ -268,12 +268,7 @@ class Gamechat extends React.Component {
 				return player && (player.governmentStatus === 'isPresident' || player.governmentStatus === 'isChancellor');
 			}
 		})();
-		const isStaff = Boolean(
-			userInfo.staffRole &&
-				userInfo.staffRole.length &&
-				userInfo.staffRole !== 'trialmod' &&
-				userInfo.staffRole !== 'altmod'
-		);
+		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
 		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
@@ -383,12 +378,7 @@ class Gamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
-		const isStaff = Boolean(
-			userInfo.staffRole &&
-				userInfo.staffRole.length &&
-				userInfo.staffRole !== 'trialmod' &&
-				userInfo.staffRole !== 'altmod'
-		);
+		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
 
 		const renderPreviousSeasonAward = type => {
 			switch (type) {
@@ -637,22 +627,12 @@ class Gamechat extends React.Component {
 				: `${hash.substr(0, hash.length - 1)}A`;
 		};
 		const isStaff = Boolean(
-			userInfo &&
-				userInfo.staffRole &&
-				userInfo.staffRole.length &&
-				userInfo.staffRole !== 'trialmod' &&
-				userInfo.staffRole !== 'altmod'
+			userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod'
 		);
 		const hasNoAEM = players => {
 			if (!userList || !userList.list) return false;
 			return userList.list.every(user => {
-				if (
-					players.includes(user.userName) &&
-					user.staffRole &&
-					user.staffRole.length > 0 &&
-					user.staffRole !== 'trialmod' &&
-					user.staffRole !== 'altmod'
-				)
+				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod')
 					return false;
 				else return true;
 			});
