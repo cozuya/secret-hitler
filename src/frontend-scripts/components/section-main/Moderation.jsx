@@ -619,7 +619,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToContributor');
 					}}
 				>
-					Promote player to Contributor
+					Assign Contributor Role
 				</button>
 				<button
 					style={{ background: 'purple' }}
@@ -632,7 +632,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToTrialMod');
 					}}
 				>
-					Promote player to Trial Mod
+					Assign Staff Role - Trial Mod
 				</button>
 				<button
 					style={{ background: 'violet' }}
@@ -645,7 +645,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToAltMod');
 					}}
 				>
-					Promote player to AEM Alt
+					Assign Staff Role - AEM Alt
 				</button>
 				<button
 					style={{ background: '#007fff' }}
@@ -658,7 +658,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToMod');
 					}}
 				>
-					Promote player to Mod
+					Assign Staff Role - Mod
 				</button>
 				<button
 					style={{ background: '#05bba0' }}
@@ -671,7 +671,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToEditor');
 					}}
 				>
-					Promote player to Editor
+					Assign Staff Role - Editor
 				</button>
 				<button
 					style={{ background: 'black' }}
@@ -744,13 +744,13 @@ export default class Moderation extends React.Component {
 			deleteBio: 'Delete Bio',
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
-			removeContributor: 'Remove Contributor Role',
+			removeContributor: 'Remove Contributor',
 			removeStaffRole: 'Remove Staff Role',
-			promoteToContributor: 'Promote (Contributor)',
-			promoteToTrialMod: 'Promote (Trial Mod)',
-			promoteToAltMod: 'Promote (AEM Alt)',
-			promoteToMod: 'Promote (Mod)',
-			promoteToEditor: 'Promote (Editor)',
+			promoteToContributor: 'Assign (Contributor)',
+			promoteToTrialMod: 'Assign (Trial Mod)',
+			promoteToAltMod: 'Assign (AEM Alt)',
+			promoteToMod: 'Assign (Mod)',
+			promoteToEditor: 'Assign (Editor)',
 			makeBypass: 'Create Bypass Key',
 			bypassKeyUsed: 'Consume Bypass Key',
 			resetServer: 'Server Restart'
