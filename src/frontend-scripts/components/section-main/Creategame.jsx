@@ -565,7 +565,7 @@ export default class Creategame extends React.Component {
 	}
 
 	renderEloSlider() {
-		const origMarks = { 1675: '1675', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' };
+		const origMarks = { 1600: '1600', 1650: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' };
 		const { userInfo, userList } = this.props;
 		if (userInfo.gameSettings && userInfo.gameSettings.disableElo) return null;
 		let player = null;
@@ -581,13 +581,13 @@ export default class Creategame extends React.Component {
 				return obj;
 			}, {});
 
-		if ((isSeason && playerElo > 1675) || (playerEloNonseason && playerEloNonseason > 1675)) {
+		if ((isSeason && playerElo > 1600) || (playerEloNonseason && playerEloNonseason > 1600)) {
 			return (
 				<div className="sixteen wide column" style={{ marginTop: '-30px' }}>
 					{this.state.isEloLimited && (
 						<div>
 							<h4 className="ui header">Minimum elo to sit in this game</h4>
-							<Range onChange={this.eloSliderChange} min={1675} max={max} defaultValue={[1675]} value={this.state.eloSliderValue} marks={marks} />
+							<Range onChange={this.eloSliderChange} min={1600} max={max} defaultValue={[1600]} value={this.state.eloSliderValue} marks={marks} />
 						</div>
 					)}
 					<div className="four wide column elorow" style={{ margin: '-50 auto 0' }}>
