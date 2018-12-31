@@ -632,7 +632,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToAltMod');
 					}}
 				>
-					Assign to Staff Role - Alt Mod
+					Assign to Staff Role - AEM Alt
 				</button>
 				<button
 					style={{ background: 'purple' }}
