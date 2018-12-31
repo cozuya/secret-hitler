@@ -619,20 +619,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToContributor');
 					}}
 				>
-					Assign Contributor Role
-				</button>
-				<button
-					style={{ background: 'purple' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('promoteToTrialMod');
-					}}
-				>
-					Assign Staff Role - Trial Mod
+					Assign to Contributor Role
 				</button>
 				<button
 					style={{ background: 'violet' }}
@@ -645,7 +632,20 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToAltMod');
 					}}
 				>
-					Assign Staff Role - AEM Alt
+					Assign to Staff Role - Alt Mod
+				</button>
+				<button
+					style={{ background: 'purple' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToTrialMod');
+					}}
+				>
+					Promote to Staff Role - Trial Mod
 				</button>
 				<button
 					style={{ background: '#007fff' }}
@@ -658,7 +658,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToMod');
 					}}
 				>
-					Assign Staff Role - Mod
+					Promote to Staff Role - Mod
 				</button>
 				<button
 					style={{ background: '#05bba0' }}
@@ -671,7 +671,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToEditor');
 					}}
 				>
-					Assign Staff Role - Editor
+					Promote to Staff Role - Editor
 				</button>
 				<button
 					style={{ background: 'black' }}
@@ -744,13 +744,13 @@ export default class Moderation extends React.Component {
 			deleteBio: 'Delete Bio',
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
-			removeContributor: 'Remove Contributor',
+			removeContributor: 'Remove Contributor Role',
 			removeStaffRole: 'Remove Staff Role',
 			promoteToContributor: 'Assign (Contributor)',
-			promoteToTrialMod: 'Assign (Trial Mod)',
 			promoteToAltMod: 'Assign (AEM Alt)',
-			promoteToMod: 'Assign (Mod)',
-			promoteToEditor: 'Assign (Editor)',
+			promoteToTrialMod: 'Promote (Trial Mod)',
+			promoteToMod: 'Promote (Mod)',
+			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',
 			bypassKeyUsed: 'Consume Bypass Key',
 			resetServer: 'Server Restart'
