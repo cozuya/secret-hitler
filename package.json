@@ -141,7 +141,7 @@
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "yarn lint && yarn format && yarn test --all && git add -A",
+			"pre-commit": "yarn lint && yarn format && git add -A",
 			"pre-push": "yarn test --all"
 		}
 	},
