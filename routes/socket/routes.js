@@ -313,7 +313,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 					}
 				})
 				.on('subscribeModChat', uid => {
-					if (authenticated) {
+					if (authenticated && isAEM) {
 						const game = findGame({ uid });
 						if (game && game.private && game.private.seatedPlayers) {
 							const players = game.private.seatedPlayers.map(player => player.userName);
