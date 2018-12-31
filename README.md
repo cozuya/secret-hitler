@@ -54,6 +54,20 @@ You'll most likely need a browser extension such as Chrome's [openMultiLogin](ht
 yarn create-accounts
 ```
 
+**Assigning a local mod:**
+
+In order to better test all functions of the site in a local development environment it is useful to assign an admin account.
+This is done for you through the secret-hitler/scripts/assignLocalMod.js file courtesy of contributor Hexicube. 
+First, you need to (while running development mode) sign up as a new user and be sure the username is `testmod`.
+Next, after creating this account in the database you will need to open a second terminal concurrently as the first one runs `yarn dev`.
+The following command will assign the user `testmod` to the `admin` staffRole:
+
+```bash
+yarn assign-local-mod
+```
+
+Upon seeing the end result in the terminal of `Assigned.` you will know it worked. Just refresh your localhost:8080 page at this point and then you will have a local mod to test additional functions of the site in a development mode environment.
+
 ## Running in production mode
 
 I'll leave you to figure that out. SH.IO is currently a $20/month ubuntu linux box using nginx, lets encrypt, PM2, and hosted on Digitalocean.
