@@ -40,7 +40,7 @@ yarn
 
 ## Running in dev mode
 
-Start development:
+**Start development:**
 
 ```bash
 yarn dev
@@ -48,7 +48,7 @@ yarn dev
 
 Navigate to: http://localhost:8080
 
-You'll most likely need a browser extension such as Chrome's [openMultiLogin](https://chrome.google.com/webstore/detail/openmultilogin/lbofelamdnfmipbbgkebcpkapahbmcgm?hl=en) to have multiple sessions on the same browser. No, incognito will not work. When developing in Chrome, you'll want to check "disable cache" on the network tab - my webpack setup isn't great and it doesn't cache bust itself. Also it will be very helpful to make all of the "quickdefault" accounts with the default password, snipsnap, so that you can log in to an account in one click. There is a yarn script you may run once `server` or `dev` yarn scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
+You'll most likely need a browser extension such as Chrome's [SessionBox](https://chrome.google.com/webstore/detail/sessionbox-free-multi-log/megbklhjamjbcafknkgmokldgolkdfig?hl=en) to have multiple sessions on the same browser. No, incognito will not work. When developing in Chrome, you'll want to check "disable cache" on the network tab - my webpack setup isn't great and it doesn't cache bust itself. Also it will be very helpful to make all of the "quickdefault" accounts with the default password, `snipsnap`, so that you can log in to an account in one click. There is a yarn script you may run once `server` or `dev` yarn scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
 
 ```bash
 yarn create-accounts
@@ -57,7 +57,7 @@ yarn create-accounts
 **Assigning a local mod:**
 
 In order to better test all functions of the site in a local development environment it is useful to assign an admin account.
-This is done for you through the secret-hitler/scripts/assignLocalMod.js file courtesy of contributor Hexicube. 
+This is done for you through the `secret-hitler/scripts/assignLocalMod.js` file courtesy of contributor Hexicube. 
 First, you need to (while running development mode) sign up as a new user and be sure the username is `testmod`.
 Next, after creating this account in the database you will need to open a second terminal concurrently as the first one runs `yarn dev`.
 The following command will assign the user `testmod` to the `admin` staffRole:
@@ -66,7 +66,7 @@ The following command will assign the user `testmod` to the `admin` staffRole:
 yarn assign-local-mod
 ```
 
-Upon seeing the end result in the terminal of `Assigned.` you will know it worked. Just refresh your localhost:8080 page at this point and then you will have a local mod to test additional functions of the site in a development mode environment.
+Upon seeing the end result in the terminal of `Assigned.` you will know it worked. Just refresh your localhost:8080 page at this point and then you will have a local mod to test additional functions of the site with in a development mode environment.
 
 ## Running in production mode
 
