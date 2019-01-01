@@ -1787,6 +1787,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 	Account.findOne({ username: passport.user })
 		.then(account => {
 			const currentPrivate = account.gameSettings.isPrivate;
+			const userIdx = userList.findIndex(user => user.userName === passport.user);
 
 			for (const setting in data) {
 				if (
@@ -1800,7 +1801,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 
 				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') {
 					if (data.staffIncognito) {
-						userList.splice(userList.findIndex(user => user.userName === passport.user), 1);
+						if (userIdx != -1) userList.splice(userIdx, 1);
 					} else {
 						const userListInfo = {
 							userName: passport.user,
@@ -1830,6 +1831,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 						userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
 						userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
 						userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+						if (userIdx != -1) userList.splice(userIdx, 1);
 						userList.push(userListInfo);
 					}
 					sendUserList();
