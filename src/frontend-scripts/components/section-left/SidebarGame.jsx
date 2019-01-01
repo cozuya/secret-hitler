@@ -72,16 +72,16 @@ const SidebarGame = ({ game, socket }) => {
 							{game.rebalance6p && game.rebalance7p && game.rebalance9p
 								? 'R679'
 								: game.rebalance6p && game.rebalance7p
-								? 'R67'
-								: game.rebalance6p && game.rebalance9p
-								? 'R69'
-								: game.rebalance7p && game.rebalance9p
-								? 'R79'
-								: game.rebalance6p
-								? 'R6'
-								: game.rebalance7p
-								? 'R7'
-								: 'R9'}
+									? 'R67'
+									: game.rebalance6p && game.rebalance9p
+										? 'R69'
+										: game.rebalance7p && game.rebalance9p
+											? 'R79'
+											: game.rebalance6p
+												? 'R6'
+												: game.rebalance7p
+													? 'R7'
+													: 'R9'}
 						</div>
 					)}
 					<div

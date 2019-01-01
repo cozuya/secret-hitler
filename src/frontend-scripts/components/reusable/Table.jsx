@@ -14,9 +14,7 @@ const TBody = ({ rows }) => (
 
 			return (
 				<tr onClick={onClick} key={i}>
-					{cells.map((cell, i) => (
-						<td key={i}>{cell}</td>
-					))}
+					{cells.map((cell, i) => <td key={i}>{cell}</td>)}
 				</tr>
 			);
 		})}
@@ -32,11 +30,7 @@ const TBody = ({ rows }) => (
 const Table = ({ headers, rows, uiTable }) => (
 	<table className={`ui ${uiTable} table`}>
 		<thead>
-			<tr>
-				{headers.map(h => (
-					<th key={h}>{h}</th>
-				))}
-			</tr>
+			<tr>{headers.map(h => <th key={h}>{h}</th>)}</tr>
 		</thead>
 		<TBody rows={rows} />
 	</table>
