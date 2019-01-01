@@ -54,7 +54,7 @@ module.exports = () => {
 
 	accounts();
 
-	Account.find()
+	Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] })
 		.then(accounts => {
 			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
 			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);

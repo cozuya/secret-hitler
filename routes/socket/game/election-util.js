@@ -53,17 +53,15 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 		game.gameState.pendingChancellorIndex = chancellorIndex;
 		game.general.status = `Vote on election #${game.general.electionCount} now.`;
 
-		game.publicPlayersState
-			.filter(player => !player.isDead)
-			.forEach(player => {
-				player.isLoader = true;
-				player.cardStatus = {
-					cardDisplayed: true,
-					isFlipped: false,
-					cardFront: 'ballot',
-					cardBack: {}
-				};
-			});
+		game.publicPlayersState.filter(player => !player.isDead).forEach(player => {
+			player.isLoader = true;
+			player.cardStatus = {
+				cardDisplayed: true,
+				isFlipped: false,
+				cardFront: 'ballot',
+				cardBack: {}
+			};
+		});
 
 		sendInProgressGameUpdate(game, true);
 
@@ -118,85 +116,76 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 			];
 		});
 
-		setTimeout(
-			() => {
-				sendInProgressGameUpdate(game);
-			},
-			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000
-		);
+		setTimeout(() => {
+			sendInProgressGameUpdate(game);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000);
 
 		game.gameState.phase = 'voting';
 
-		setTimeout(
-			() => {
-				seatedPlayers.forEach(player => {
-					if (player.cardFlingerState && player.cardFlingerState.length) {
-						player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = true;
-						player.cardFlingerState[0].notificationStatus = player.cardFlingerState[1].notificationStatus = 'notification';
-						player.voteStatus = {
-							hasVoted: false
-						};
-					}
-				});
-
-				if (game.general.timedMode) {
-					game.gameState.timedModeEnabled = true;
-
-					game.private.timerId = setTimeout(
-						() => {
-							const neededPlayers = (() => {
-								switch (game.general.playerCount) {
-									case 5:
-										return 4;
-									case 6:
-										return 5;
-									case 7:
-										return 5;
-									case 8:
-										return 6;
-									case 9:
-										return 6;
-									case 10:
-										return 7;
-								}
-							})();
-							const activePlayerCount = game.publicPlayersState.filter(player => !player.leftGame || player.isDead).length;
-							if (activePlayerCount < neededPlayers) {
-								if (!game.general.disableGamechat) {
-									seatedPlayers.forEach(player => {
-										player.gameChats.push({
-											gameChat: true,
-											timestamp: new Date(),
-											chat: [
-												{
-													text: 'Not enough players are present, votes will not be auto-picked.'
-												}
-											]
-										});
-									});
-									sendInProgressGameUpdate(game);
-								}
-								return;
-							}
-
-							if (game.gameState.timedModeEnabled) {
-								const unvotedPlayerNames = game.private.seatedPlayers
-									.filter(player => !player.voteStatus.hasVoted && !player.isDead)
-									.map(player => player.userName);
-
-								game.gameState.timedModeEnabled = false;
-								const { selectVoting } = require('./election');
-								unvotedPlayerNames.forEach(userName => {
-									selectVoting({ user: userName }, game, { vote: Boolean(Math.random() > 0.5) });
-								});
-							}
-						},
-						process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
-					);
+		setTimeout(() => {
+			seatedPlayers.forEach(player => {
+				if (player.cardFlingerState && player.cardFlingerState.length) {
+					player.cardFlingerState[0].cardStatus.isFlipped = player.cardFlingerState[1].cardStatus.isFlipped = true;
+					player.cardFlingerState[0].notificationStatus = player.cardFlingerState[1].notificationStatus = 'notification';
+					player.voteStatus = {
+						hasVoted: false
+					};
 				}
-				sendInProgressGameUpdate(game);
-			},
-			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1500
-		);
+			});
+
+			if (game.general.timedMode) {
+				game.gameState.timedModeEnabled = true;
+
+				game.private.timerId = setTimeout(() => {
+					const neededPlayers = (() => {
+						switch (game.general.playerCount) {
+							case 5:
+								return 4;
+							case 6:
+								return 5;
+							case 7:
+								return 5;
+							case 8:
+								return 6;
+							case 9:
+								return 6;
+							case 10:
+								return 7;
+						}
+					})();
+					const activePlayerCount = game.publicPlayersState.filter(player => !player.leftGame || player.isDead).length;
+					if (activePlayerCount < neededPlayers) {
+						if (!game.general.disableGamechat) {
+							seatedPlayers.forEach(player => {
+								player.gameChats.push({
+									gameChat: true,
+									timestamp: new Date(),
+									chat: [
+										{
+											text: 'Not enough players are present, votes will not be auto-picked.'
+										}
+									]
+								});
+							});
+							sendInProgressGameUpdate(game);
+						}
+						return;
+					}
+
+					if (game.gameState.timedModeEnabled) {
+						const unvotedPlayerNames = game.private.seatedPlayers
+							.filter(player => !player.voteStatus.hasVoted && !player.isDead)
+							.map(player => player.userName);
+
+						game.gameState.timedModeEnabled = false;
+						const { selectVoting } = require('./election');
+						unvotedPlayerNames.forEach(userName => {
+							selectVoting({ user: userName }, game, { vote: Boolean(Math.random() > 0.5) });
+						});
+					}
+				}, process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000);
+			}
+			sendInProgressGameUpdate(game);
+		}, process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1500);
 	}
 };

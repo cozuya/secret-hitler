@@ -36,7 +36,7 @@ class ProfileWrapper extends React.Component {
 	}
 
 	successRate(trials, outcomes) {
-		return trials > 0 ? parseFloat(((outcomes / trials) * 100).toFixed(2)) + '%' : '---';
+		return trials > 0 ? parseFloat((outcomes / trials * 100).toFixed(2)) + '%' : '---';
 	}
 
 	successRow(name, trials, outcomes) {
@@ -228,7 +228,7 @@ class ProfileWrapper extends React.Component {
 						gameSettings.blacklist.push(name);
 					}
 				}
-				this.props.socket.emit('updateGameSettings', gameSettings);
+				this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
 			}
 		);
 	}
@@ -256,16 +256,16 @@ class ProfileWrapper extends React.Component {
 					? 'wins'
 					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-				? 'winsSeason'
-				: 'rainbowWinsSeason';
+					? 'winsSeason'
+					: 'rainbowWinsSeason';
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
 					? 'losses'
 					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-				? 'lossesSeason'
-				: 'rainbowLossesSeason';
+					? 'lossesSeason'
+					: 'rainbowLossesSeason';
 		let userClasses = 'profile-picture';
 		let gamesUntilRainbow = null;
 		if (user) {
@@ -385,7 +385,7 @@ class ProfileWrapper extends React.Component {
 										const { gameSettings } = this.props.userInfo;
 
 										gameSettings.blacklist.splice(gameSettings.blacklist.indexOf(playerName), 1);
-										this.props.socket.emit('updateGameSettings', gameSettings);
+										this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
 										setTimeout(() => {
 											this.forceUpdate();
 										}, 500);
@@ -414,7 +414,4 @@ ProfileWrapper.propTypes = {
 	socket: PropTypes.object
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(ProfileWrapper);
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileWrapper);

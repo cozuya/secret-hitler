@@ -1337,21 +1337,19 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = new Date().getTime();
-		newGame.publicPlayersState = game.publicPlayersState
-			.filter(player => player.isRemaking)
-			.map(player => ({
-				userName: player.userName,
-				customCardback: player.customCardback,
-				customCardbackUid: player.customCardbackUid,
-				connected: player.connected,
-				isRemakeVoting: false,
-				cardStatus: {
-					cardDisplayed: false,
-					isFlipped: false,
-					cardFront: 'secretrole',
-					cardBack: {}
-				}
-			}));
+		newGame.publicPlayersState = game.publicPlayersState.filter(player => player.isRemaking).map(player => ({
+			userName: player.userName,
+			customCardback: player.customCardback,
+			customCardbackUid: player.customCardbackUid,
+			connected: player.connected,
+			isRemakeVoting: false,
+			cardStatus: {
+				cardDisplayed: false,
+				isFlipped: false,
+				cardFront: 'secretrole',
+				cardBack: {}
+			}
+		}));
 		newGame.playersState = [];
 		newGame.cardFlingerState = [];
 		newGame.trackState = {
@@ -1661,14 +1659,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			console.log(e, 'caught exception in ping chat');
 		}
 	} else if (!pinged) {
-		const lastMessage = game.chats
-			.filter(chat => !chat.gameChat && typeof chat.chat === 'string' && chat.userName === user.userName)
-			.reduce(
-				(acc, cur) => {
-					return acc.timestamp > cur.timestamp ? acc : cur;
-				},
-				{ timestamp: new Date(0) }
-			);
+		const lastMessage = game.chats.filter(chat => !chat.gameChat && typeof chat.chat === 'string' && chat.userName === user.userName).reduce(
+			(acc, cur) => {
+				return acc.timestamp > cur.timestamp ? acc : cur;
+			},
+			{ timestamp: new Date(0) }
+		);
 
 		if (lastMessage.chat) {
 			let leniancy; // How much time (in seconds) must pass before allowing the message.
@@ -1732,14 +1728,12 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 	if (data.chat.length > 300 || !data.chat.length) return;
 
 	const curTime = new Date();
-	const lastMessage = generalChats.list
-		.filter(chat => chat.userName === user.userName)
-		.reduce(
-			(acc, cur) => {
-				return acc.time > cur.time ? acc : cur;
-			},
-			{ time: new Date(0) }
-		);
+	const lastMessage = generalChats.list.filter(chat => chat.userName === user.userName).reduce(
+		(acc, cur) => {
+			return acc.time > cur.time ? acc : cur;
+		},
+		{ time: new Date(0) }
+	);
 
 	if (lastMessage.chat) {
 		let leniancy; // How much time (in seconds) must pass before allowing the message.
@@ -2545,18 +2539,18 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const setType = /setRWins/.test(data.action.type)
 							? 'rainbowWins'
 							: /setRLosses/.test(data.action.type)
-							? 'rainbowLosses'
-							: /setWins/.test(data.action.type)
-							? 'wins'
-							: 'losses';
+								? 'rainbowLosses'
+								: /setWins/.test(data.action.type)
+									? 'wins'
+									: 'losses';
 						const number =
 							setType === 'wins'
 								? data.action.type.substr(7)
 								: setType === 'losses'
-								? data.action.type.substr(9)
-								: setType === 'rainbowWins'
-								? data.action.type.substr(8)
-								: data.action.type.substr(10);
+									? data.action.type.substr(9)
+									: setType === 'rainbowWins'
+										? data.action.type.substr(8)
+										: data.action.type.substr(10);
 						const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
 
 						if (!isNaN(parseInt(number, 10)) || isPlusOrMinus) {
