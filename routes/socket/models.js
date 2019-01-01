@@ -222,8 +222,8 @@ module.exports.formattedGameList = () => {
 		gameStatus: games[gameName].gameState.isCompleted
 			? games[gameName].gameState.isCompleted
 			: games[gameName].gameState.isTracksFlipped
-				? 'isStarted'
-				: 'notStarted',
+			? 'isStarted'
+			: 'notStarted',
 		seatedCount: games[gameName].publicPlayersState.length,
 		gameCreatorName: games[gameName].general.gameCreatorName,
 		minPlayersCount: games[gameName].general.minPlayersCount,

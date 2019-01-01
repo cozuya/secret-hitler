@@ -384,19 +384,17 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							{window.staffRole &&
-								window.staffRole !== 'altmod' &&
-								window.staffRole !== 'trialmod' && (
-									<React.Fragment>
-										<h4 className="ui header" style={{ color: '#05bba0' }}>
-											Incognito (hide from userlist)
-										</h4>
-										<div className="ui fitted toggle checkbox">
-											<input type="checkbox" checked={this.state.staffIncognito} onChange={() => this.toggleGameSettings('staffIncognito')} />
-											<label />
-										</div>
-									</React.Fragment>
-								)}
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Incognito (hide from userlist)
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input type="checkbox" checked={this.state.staffIncognito} onChange={() => this.toggleGameSettings('staffIncognito')} />
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Show right sidebar in games</h4>
@@ -425,24 +423,22 @@ class Settings extends React.Component {
 								<label />
 							</div>
 
-							{window.staffRole &&
-								window.staffRole !== 'altmod' &&
-								window.staffRole !== 'trialmod' && (
-									<React.Fragment>
-										<h4 className="ui header" style={{ color: '#05bba0' }}>
-											Disable visible elo
-										</h4>
-										<div className="ui fitted toggle checkbox">
-											<input
-												type="checkbox"
-												name="staffDisableVisibleElo"
-												checked={this.state.staffDisableVisibleElo}
-												onChange={() => this.toggleGameSettings('staffDisableVisibleElo')}
-											/>
-											<label />
-										</div>
-									</React.Fragment>
-								)}
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Disable visible elo
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="staffDisableVisibleElo"
+											checked={this.state.staffDisableVisibleElo}
+											onChange={() => this.toggleGameSettings('staffDisableVisibleElo')}
+										/>
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Disable player cardbacks</h4>
@@ -475,24 +471,22 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							{window.staffRole &&
-								window.staffRole !== 'altmod' &&
-								window.staffRole !== 'trialmod' && (
-									<React.Fragment>
-										<h4 className="ui header" style={{ color: '#05bba0' }}>
-											Disable staff color (show elo color)
-										</h4>
-										<div className="ui fitted toggle checkbox">
-											<input
-												type="checkbox"
-												name="staffDisableStaffColor"
-												checked={this.state.staffDisableStaffColor}
-												onChange={() => this.toggleGameSettings('staffDisableStaffColor')}
-											/>
-											<label />
-										</div>
-									</React.Fragment>
-								)}
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Disable staff color (show elo color)
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="staffDisableStaffColor"
+											checked={this.state.staffDisableStaffColor}
+											onChange={() => this.toggleGameSettings('staffDisableStaffColor')}
+										/>
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Disable player colors in chat</h4>

@@ -66,6 +66,17 @@ class Changelog extends React.Component {
 						It will be a (fresh IP) hidden role game with some similarities to the fascist hunting/electing game we all know and love but with some fun features
 						and mechanics that can only exist online. Stay tuned! -Chris
 					</p>
+					<p>This update also includes:</p>
+					<ul>
+						<li>Fixed player claims showing under player chat instead of game chat.</li>
+						<li>Broadcasts will now always show regardless of filters.</li>
+						<li>Fixed cardbacks sometimes failing to upload.</li>
+						<li>Game remaking no longer shows "1/NaN" before the game starts on non-custom games.</li>
+						<li>Fixed alts/trials showing as grey in user list.</li>
+						<li>Elo slider minimum is now 1600.</li>
+						<li>Cardbacks now support all image types, and all sizes.</li>
+						<li>Game remaking now updates the blacklist if the creator changed theirs.</li>
+					</ul>
 				</section>
 			</React.Fragment>
 		);
