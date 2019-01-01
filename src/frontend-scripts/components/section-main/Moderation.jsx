@@ -619,7 +619,7 @@ export default class Moderation extends React.Component {
 						takeModAction('promoteToContributor');
 					}}
 				>
-					Assign to Contributor Role
+					Promote to Contributor Role
 				</button>
 				<button
 					style={{ background: 'violet' }}
@@ -746,7 +746,7 @@ export default class Moderation extends React.Component {
 			deleteCardback: 'Delete Cardback',
 			removeContributor: 'Remove Contributor Role',
 			removeStaffRole: 'Remove Staff Role',
-			promoteToContributor: 'Assign (Contributor)',
+			promoteToContributor: 'Promote (Contributor)',
 			promoteToAltMod: 'Assign (AEM Alt)',
 			promoteToTrialMod: 'Promote (Trial Mod)',
 			promoteToMod: 'Promote (Mod)',
