@@ -320,9 +320,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 							Account.find({ staffRole: { $exists: true } }).then(accounts => {
 								const staff = accounts
 									.filter(acc => {
-										acc.staffRole &&
-										acc.staffRole.length > 0 &&
-										players.includes(acc.username);
+										acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username);
 									})
 									.map(acc => acc.username);
 								if (staff.length) {

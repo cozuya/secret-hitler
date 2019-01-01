@@ -34,6 +34,19 @@ class Changelog extends React.Component {
 					</div>
 					<h3>1.0.0 and season 5 begins!</h3>
 					<h4>The top 10 players of season 4 are:</h4>
+					<ul>
+						<li>benjamin172: 2110</li>
+						<li>minie: 2084</li>
+						<li>GoldenPanda: 2017</li>
+						<li>scum: 1961</li>
+						<li>Moranki: 1957</li>
+						<li>User: 1957</li>
+						<li>Gamethrower: 1935</li>
+						<li>mufasa: 1899</li>
+						<li>adam: 1882</li>
+						<li>Cucumber: 1879</li>
+					</ul>
+					<h3>Badges this season are thanks to player liberalist!</h3>
 					<p>
 						It took a while, but we're here - all major features I could think of and some I couldn't are in and mostly working. A long, long way from the first
 						stable(ish) release back in May 2017.
