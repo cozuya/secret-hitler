@@ -444,8 +444,7 @@ module.exports = () => {
 			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
 		);
 		testIP(ip, banType => {
-			if (hasBypass && banType == 'new') banType = null;
-			if (banType) {
+			if (banType && banType !== 'new') {
 				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 				else if (banType == 'small' || banType == 'tiny') {
 					res
@@ -490,6 +489,12 @@ module.exports = () => {
 								if (account) {
 									req.logIn(account, () => res.redirect('/account'));
 								} else {
+									if (banType === 'new') {
+										res
+											.status(403)
+											.json({ message: 'You can only make accounts once per day.  If you feel you need an exception to this rule, contact the moderators on our discord server.' });
+										return;
+									}
 									// see if there's an existing sh account with their oauth name, if so have them select a new username, if not make an account.
 
 									Account.findOne({ username: profile.username })
@@ -614,50 +619,78 @@ module.exports = () => {
 			res.status(401).send();
 			return;
 		}
-
 		const ip = expandAndSimplify(
 			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
 		);
-		const accountObj = {
-			username,
-			gameSettings: {
-				soundStatus: 'Pack2'
-			},
-			verification: {
-				email: ''
-			},
-			verified: true,
-			wins: 0,
-			losses: 0,
-			created: new Date(),
-			touLastAgreed: TOU_CHANGES[0].changeVer,
-			signupIP: ip,
-			lastConnectedIP: ip
-		};
+		testIP(ip, banType => {
+			if (banType) {
+				if (banType == 'new') {
+					res
+						.status(403)
+						.json({ message: 'You can only make accounts once per day. If you feel you need an exception to this rule, contact the moderators on our discord server.' });
+				}
+				else if (banType == 'nocache') {
+					res
+						.status(403)
+						.json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+				}
+				else if (banType == 'small' || banType == 'tiny') {
+					res
+						.status(403)
+						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+				} else if (banType == 'new') {
+					res.status(403).json({
+						message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
+					});
+				} else {
+					console.log(`Unhandled IP ban type: ${banType}`);
+					res
+						.status(403)
+						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+				}
+			} else {
+				const accountObj = {
+					username,
+					gameSettings: {
+						soundStatus: 'Pack2'
+					},
+					verification: {
+						email: ''
+					},
+					verified: true,
+					wins: 0,
+					losses: 0,
+					created: new Date(),
+					touLastAgreed: TOU_CHANGES[0].changeVer,
+					signupIP: ip,
+					lastConnectedIP: ip
+				};
 
-		if (oauthProfile.provider === 'github') {
-			accountObj.githubUsername = oauthProfile.username;
-			accountObj.github2FA = oauthProfile.two_factor_authentication;
-			accountObj.bio = oauthProfile.bio;
-			accountObj.verification = {
-				email: oauthProfile._json.email || ''
-			};
-		} else {
-			accountObj.discordUsername = oauthProfile.username;
-			accountObj.discordDiscriminator = oauthProfile.discriminator;
-			accountObj.discordMfa_enabled = oauthProfile.mfa_enabled;
-			accountObj.verification = {
-				email: oauthProfile.email || ''
-			};
-		}
+				if (oauthProfile.provider === 'github') {
+					accountObj.githubUsername = oauthProfile.username;
+					accountObj.github2FA = oauthProfile.two_factor_authentication;
+					accountObj.bio = oauthProfile.bio;
+					accountObj.verification = {
+						email: oauthProfile._json.email || ''
+					};
+				} else {
+					accountObj.discordUsername = oauthProfile.username;
+					accountObj.discordDiscriminator = oauthProfile.discriminator;
+					accountObj.discordMfa_enabled = oauthProfile.mfa_enabled;
+					accountObj.verification = {
+						email: oauthProfile.email || ''
+					};
+				}
 
-		Account.create(accountObj, (err, acc) => {
-			if (err) {
-				return next();
+				Account.create(accountObj, (err, acc) => {
+					if (err) {
+						return next();
+					}
+
+					req.session.oauthProfile = null;
+					req.logIn(acc, () => res.redirect('/account'));
+				});
 			}
-
-			req.session.oauthProfile = null;
-			req.logIn(acc, () => res.redirect('/account'));
 		});
 	});
 
