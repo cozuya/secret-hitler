@@ -309,7 +309,7 @@ class Settings extends React.Component {
 		};
 
 		const previewClearClick = e => {
-			e.preventDefault;
+			e.preventDefault();
 			this.setState({ preview: '', cardbackUploadStatus: null });
 		};
 
