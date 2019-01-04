@@ -166,8 +166,7 @@ export class GamesList extends React.Component {
 			else sortOrder = ['regular', 'rainbow', 'private'];
 
 			const diff = sortOrder.indexOf(aType) - sortOrder.indexOf(bType);
-			if (diff !== 0) return diff;
-			return compareGames(a, b);
+			return diff || compareGames(a, b);
 		};
 
 		if (gameList.length) {
@@ -191,8 +190,7 @@ export class GamesList extends React.Component {
 				.sort((a, b) => {
 					const statusSortOrder = ['notStarted', 'isStarted', 'fascist', 'liberal'];
 					const diff = Math.min(2, statusSortOrder.indexOf(b.gameStatus)) - Math.min(2, statusSortOrder.indexOf(a.gameStatus));
-					if (diff !== 0) return diff;
-					return sortTypeThenName(a, b);
+					return diff || sortTypeThenName(a, b);
 				})
 				.map((game, index) => (
 					<DisplayLobbies key={game.uid} game={game} socket={this.props.socket} userList={this.props.userList} userInfo={this.props.userInfo} />
