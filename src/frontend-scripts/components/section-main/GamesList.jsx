@@ -132,7 +132,43 @@ export class GamesList extends React.Component {
 	}
 
 	renderGameList() {
-		const { gameList } = this.props;
+		const { gameList, userInfo, userList } = this.props;
+
+		const compareGames = (a, b) => {
+			if (a.seatedCount !== b.seatedCount) return b.seatedCount - a.seatedCount;
+			const aName = a.name.toLowerCase();
+			const bName = b.name.toLowerCase();
+			if (aName === bName) {
+				return a.uid < b.uid ? 1 : -1;
+			} else {
+				return aName > bName ? 1 : -1;
+			}
+		};
+
+		const thisUser = userInfo.userName && userList.list && userList.list.find(u => u.userName == userInfo.userName);
+		const sortTypeThenName = (a, b) => {
+			const isRainbow = thisUser && !thisUser.isPrivate && (thisUser.wins + thisUser.losses >= 50);
+			const isPrivate = thisUser && thisUser.isPrivate;
+
+			let aType;
+			if (a.private) aType = 'private';
+			else if (a.rainbowgame) aType = 'rainbow';
+			else aType = 'regular';
+
+			let bType;
+			if (b.private) bType = 'private';
+			else if (b.rainbowgame) bType = 'rainbow';
+			else bType = 'regular';
+
+			let sortOrder;
+			if (isRainbow || !thisUser) sortOrder = ['rainbow', 'regular', 'private'];
+			else if (isPrivate) sortOrder = ['private', 'rainbow', 'regular'];
+			else sortOrder = ['regular', 'rainbow', 'private'];
+
+			const diff = sortOrder.indexOf(aType) - sortOrder.indexOf(bType);
+			if (diff !== 0) return diff;
+			return compareGames(a, b);
+		};
 
 		if (gameList.length) {
 			return gameList
@@ -153,52 +189,10 @@ export class GamesList extends React.Component {
 					);
 				})
 				.sort((a, b) => {
-					const aGameStatus = a.gameStatus;
-					const bGameStatus = b.gameStatus;
-					const aName = a.name.toLowerCase();
-					const bName = b.name.toLowerCase();
-
-					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
-						if (a.seatedCount === b.seatedCount) {
-							if (aName === bName) {
-								return a.uid < b.uid ? 1 : -1;
-							} else {
-								return aName > bName ? 1 : -1;
-							}
-						} else {
-							return b.seatedCount - a.seatedCount;
-						}
-					}
-
-					if (aGameStatus === 'notStarted' && bGameStatus !== 'notStarted') {
-						return -1;
-					}
-
-					if (aGameStatus !== 'notStated' && bGameStatus === 'notStarted') {
-						return 1;
-					}
-
-					if (aGameStatus === 'isStarted' && bGameStatus !== 'isStarted') {
-						return -1;
-					}
-
-					if (aGameStatus !== 'isStarted' && bGameStatus === 'isStarted') {
-						return 1;
-					}
-
-					if (aGameStatus === 'isStarted' && bGameStatus === 'isStarted') {
-						if (a.seatedCount === b.seatedCount) {
-							if (aName === bName) {
-								return a.uid < b.uid ? 1 : -1;
-							} else {
-								return aName > bName ? 1 : -1;
-							}
-						} else {
-							return b.seatedCount - a.seatedCount;
-						}
-					}
-
-					return aName === bName ? (a.uid < b.uid ? 1 : -1) : aName > bName ? 1 : -1;
+					const statusSortOrder = ['notStarted', 'isStarted', 'fascist', 'liberal'];
+					const diff = Math.min(2, statusSortOrder.indexOf(b.gameStatus)) - Math.min(2, statusSortOrder.indexOf(a.gameStatus));
+					if (diff !== 0) return diff;
+					return sortTypeThenName(a, b);
 				})
 				.map((game, index) => (
 					<DisplayLobbies key={game.uid} game={game} socket={this.props.socket} userList={this.props.userList} userInfo={this.props.userInfo} />
