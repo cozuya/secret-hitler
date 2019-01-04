@@ -58,9 +58,8 @@ yarn create-accounts
 
 In order to better test all functions of the site in a local development environment it is useful to assign an admin account.
 This is done for you through the `secret-hitler/scripts/assignLocalMod.js` file courtesy of contributor Hexicube. 
-First, you need to (while running development mode) sign up as a new user and be sure the username is `testmod`.
-Next, after creating this account in the database you will need to open a second terminal concurrently as the first one runs `yarn dev`.
-The following command will assign the user `testmod` to the `admin` staffRole:
+After running the `create-accounts` script you will have the helper accounts populated into the database.
+Running the next line below will then assign `Uther` to the `admin` staffRole to better test all site functions in testing.
 
 ```bash
 yarn assign-local-mod
