@@ -28,7 +28,7 @@ if (process.env.NODE_ENV !== 'production') {
 		host: '127.0.0.1',
 		port: 6379,
 		client: redis,
-		ttl: 260
+		ttl: 2 * 604800 // 2 weeks
 	});
 }
 

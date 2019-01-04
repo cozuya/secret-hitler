@@ -444,7 +444,8 @@ module.exports = () => {
 			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
 		);
 		testIP(ip, banType => {
-			if (banType && banType !== 'new') {
+			// if (hasBypass && banType == 'new') banType = null;
+			if (banType) {
 				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 				else if (banType == 'small' || banType == 'tiny') {
 					res
@@ -491,16 +492,16 @@ module.exports = () => {
 								} else {
 									// TODO: bypass option
 									if (banType === 'new') {
-										res
-											.status(403)
-											.json({ message: 'You can only make accounts once per day.  If you feel you need an exception to this rule, contact the moderators on our discord server.' });
+										res.status(403).json({
+											message:
+												'You can only make accounts once per day.  If you feel you need an exception to this rule, contact the moderators on our discord server.'
+										});
 									} else if (accountCreationDisabled.status) {
 										res.status(403).json({
 											message:
 												'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
 										});
-									}
-									else {
+									} else {
 										// see if there's an existing sh account with their oauth name, if so have them select a new username, if not make an account.
 
 										Account.findOne({ username: profile.username })
@@ -632,16 +633,12 @@ module.exports = () => {
 		testIP(ip, banType => {
 			if (banType) {
 				if (banType == 'new') {
-					res
-						.status(403)
-						.json({ message: 'You can only make accounts once per day. If you feel you need an exception to this rule, contact the moderators on our discord server.' });
-				}
-				else if (banType == 'nocache') {
-					res
-						.status(403)
-						.json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-				}
-				else if (banType == 'small' || banType == 'tiny') {
+					res.status(403).json({
+						message: 'You can only make accounts once per day. If you feel you need an exception to this rule, contact the moderators on our discord server.'
+					});
+				} else if (banType == 'nocache') {
+					res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+				} else if (banType == 'small' || banType == 'tiny') {
 					res
 						.status(403)
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
