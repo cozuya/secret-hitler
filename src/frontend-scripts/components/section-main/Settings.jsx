@@ -221,8 +221,6 @@ class Settings extends React.Component {
 		 * @param {array} rejectedFile - todo
 		 */
 		const onDrop = (files, rejectedFile) => {
-			const reader = new FileReader();
-
 			if (rejectedFile.length) {
 				this.setState({
 					cardbackUploadStatus: 'The file you selected is not an image.'
@@ -230,43 +228,39 @@ class Settings extends React.Component {
 				return;
 			}
 
-			reader.onload = () => {
-				this.setState({
-					cardbackUploadStatus: 'Resizing...'
-				});
-				try {
-					const img = new Image();
-					img.onload = () => {
-						const canvas = document.createElement('canvas');
-						canvas.width = 70;
-						canvas.height = 95;
-						const ctx = canvas.getContext('2d');
-						ctx.drawImage(img, 0, 0, 70, 95);
-						const data = canvas.toDataURL('image/png');
-						if (data.length > 100 * 1024) {
-							this.setState({
-								cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.'
-							});
-							return;
-						}
-						const targetRatio = 70 / 95;
-						const thisRatio = img.width / img.height;
-						const ratioData = targetRatio > thisRatio ? thisRatio / targetRatio : targetRatio / thisRatio;
+			this.setState({
+				cardbackUploadStatus: 'Resizing...'
+			});
+			try {
+				const img = new Image();
+				img.onload = () => {
+					const canvas = document.createElement('canvas');
+					canvas.width = 70;
+					canvas.height = 95;
+					const ctx = canvas.getContext('2d');
+					ctx.drawImage(img, 0, 0, 70, 95);
+					const data = canvas.toDataURL('image/png');
+					if (data.length > 100 * 1024) {
 						this.setState({
-							preview: data,
-							cardbackUploadStatus: ratioData < 0.8 ? 'Image may be distorted. If this is a problem, manually create a 70x95px image.' : null
+							cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.'
 						});
-					};
-
-					img.src = reader.result;
-				} catch (err) {
+						return;
+					}
+					const targetRatio = 70 / 95;
+					const thisRatio = img.width / img.height;
+					const ratioData = targetRatio > thisRatio ? thisRatio / targetRatio : targetRatio / thisRatio;
 					this.setState({
-						cardbackUploadStatus: 'The file you selected is not an image.'
+						preview: data,
+						cardbackUploadStatus: ratioData < 0.8 ? 'Image may be distorted. If this is a problem, manually create a 70x95px image.' : null
 					});
-				}
-			};
+				};
 
-			reader.readAsDataURL(files[0]);
+				img.src = URL.createObjectURL(files[0]);
+			} catch (err) {
+				this.setState({
+					cardbackUploadStatus: 'The file you selected is not an image.'
+				});
+			}
 		};
 
 		const displayCardbackInfoModal = () => {
