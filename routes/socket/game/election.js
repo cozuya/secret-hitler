@@ -381,7 +381,9 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 						timestamp: new Date(),
 						chat: [
 							{
-								text: `The President and Chancellor have voted to veto this election and the election tracker moves forward. (${game.trackState.electionTrackerCount}/3)`
+								text: `The President and Chancellor have voted to veto this election and the election tracker moves forward. (${
+									game.trackState.electionTrackerCount
+								}/3)`
 							}
 						]
 					};
@@ -1396,7 +1398,7 @@ module.exports.selectVoting = (passport, game, data) => {
 					if (!game.general.disableGamechat) {
 						chat.chat = [
 							{
-								text: `The election fails and the election tracker moves forward. (${game.trackState.electionTrackerCount+1}/3)`
+								text: `The election fails and the election tracker moves forward. (${game.trackState.electionTrackerCount + 1}/3)`
 							}
 						];
 

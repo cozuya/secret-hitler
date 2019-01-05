@@ -39,7 +39,12 @@ module.exports = {
 			},
 			{
 				test: /\.(js|jsx)$/,
-				use: ['babel-loader'],
+				use: {
+					loader: 'babel-loader',
+					query: {
+						presets: ['stage-2']
+					}
+				},
 				exclude: /node_modules/
 			},
 			{

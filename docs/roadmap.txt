@@ -71,7 +71,7 @@ elo system
 version 0.15:
 custom games
 
-version 1.0 (near future):
+version 1.0:
 account verification and password reset via automated emails
 discord ping mods from gamechat (large cooldown)
 retheme colors/remove teal
