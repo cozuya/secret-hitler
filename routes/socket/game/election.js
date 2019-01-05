@@ -375,19 +375,19 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 				sendInProgressGameUpdate(game);
 
 				if (data.vote) {
+					game.trackState.electionTrackerCount++;
 					const chat = {
 						gameChat: true,
 						timestamp: new Date(),
 						chat: [
 							{
-								text: 'The President and Chancellor have voted to veto this election and the election tracker moves forward.'
+								text: `The President and Chancellor have voted to veto this election and the election tracker moves forward. (${game.trackState.electionTrackerCount}/3)`
 							}
 						]
 					};
 
 					game.gameState.pendingChancellorIndex = null;
 					game.private.lock.selectChancellorPolicy = game.private.lock.selectPresidentVoteOnVeto = game.private.lock.selectChancellorVoteOnVeto = false;
-					game.trackState.electionTrackerCount++;
 
 					if (!game.general.disableGamechat) {
 						game.private.seatedPlayers.forEach(player => {
@@ -1396,7 +1396,7 @@ module.exports.selectVoting = (passport, game, data) => {
 					if (!game.general.disableGamechat) {
 						chat.chat = [
 							{
-								text: 'The election fails and the election tracker moves forward.'
+								text: `The election fails and the election tracker moves forward. (${game.trackState.electionTrackerCount+1}/3)`
 							}
 						];
 
