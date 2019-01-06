@@ -244,7 +244,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				.on('leaveGame', data => {
 					const game = findGame(data);
 
-					if (io.sockets.adapter.rooms[game.general.uid] && socket) {
+					if (game && io.sockets.adapter.rooms[game.general.uid] && socket) {
 						socket.leave(game.general.uid);
 					}
 
