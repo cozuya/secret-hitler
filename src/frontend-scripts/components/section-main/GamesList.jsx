@@ -189,7 +189,7 @@ export class GamesList extends React.Component {
 				})
 				.sort((a, b) => {
 					const statusSortOrder = ['notStarted', 'isStarted', 'fascist', 'liberal'];
-					const diff = Math.min(2, statusSortOrder.indexOf(b.gameStatus)) - Math.min(2, statusSortOrder.indexOf(a.gameStatus));
+					const diff = Math.min(2, statusSortOrder.indexOf(a.gameStatus)) - Math.min(2, statusSortOrder.indexOf(b.gameStatus));
 					return diff || sortTypeThenName(a, b);
 				})
 				.map((game, index) => (
