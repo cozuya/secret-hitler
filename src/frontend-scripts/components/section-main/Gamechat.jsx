@@ -44,7 +44,7 @@ class Gamechat extends React.Component {
 			showGameChat: true,
 			showObserverChat: true,
 			badWord: [null, null],
-			textLastChanged: Date.now(),
+			textLastChanged: 0,
 			textChangeTimer: -1
 		};
 	}

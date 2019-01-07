@@ -22,7 +22,7 @@ export default class Generalchat extends React.Component {
 			discordEnabled: false,
 			stickyEnabled: true,
 			badWord: [null, null],
-			textLastChanged: Date.now(),
+			textLastChanged: 0,
 			textChangeTimer: -1
 		};
 	}

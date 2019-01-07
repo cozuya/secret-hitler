@@ -7,7 +7,10 @@ describe('Generalchat', () => {
 		const initialState = {
 			lock: false,
 			discordEnabled: false,
-			stickyEnabled: true
+			stickyEnabled: true,
+			badWord: [null, null],
+			textLastChanged: 0,
+			textChangeTimer: -1
 		};
 
 		const component = shallow(<Generalchat />);
