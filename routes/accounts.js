@@ -444,17 +444,12 @@ module.exports = () => {
 			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
 		);
 		testIP(ip, banType => {
-			// if (hasBypass && banType == 'new') banType = null;
-			if (banType) {
+			if (banType && banType !== 'new') {
 				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 				else if (banType == 'small' || banType == 'tiny') {
 					res
 						.status(403)
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
-				} else if (banType == 'new') {
-					res.status(403).json({
-						message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
-					});
 				} else {
 					console.log(`Unhandled IP ban type: ${banType}`);
 					res
