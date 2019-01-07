@@ -1,5 +1,5 @@
 import React from 'react';
-import { PLAYERCOLORS } from '../../constants';
+import { PLAYERCOLORS, getBadWord } from '../../constants';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -9,7 +9,9 @@ export default class Generalchat extends React.Component {
 	constructor() {
 		super();
 		this.handleChatLockClick = this.handleChatLockClick.bind(this);
+		this.chatDisabled = this.chatDisabled.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleTyping = this.handleTyping.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleChatClearClick = this.handleChatClearClick.bind(this);
 		this.handleChatScrolled = this.handleChatScrolled.bind(this);
@@ -18,7 +20,10 @@ export default class Generalchat extends React.Component {
 		this.state = {
 			lock: false,
 			discordEnabled: false,
-			stickyEnabled: true
+			stickyEnabled: true,
+			badWord: [null, null],
+			textLastChanged: Date.now(),
+			textChangeTimer: -1
 		};
 	}
 
@@ -74,7 +79,37 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
+	handleTyping(e) {
+		console.log("TYPING");
+		e.preventDefault();
+
+		const text = this.chatInput.value;
+		const foundWord = getBadWord(text);
+		if (this.state.badWord[0] !== foundWord[0]) {
+			if (this.state.textChangeTimer !== -1) clearTimeout(this.state.textChangeTimer);
+			if (foundWord[0]) {
+				this.setState({
+					badWord: foundWord,
+					textLastChanged: Date.now(),
+					textChangeTimer: setTimeout(() => {
+						this.setState({textChangeTimer: -1});
+					}, 1100)
+				});
+			} else {
+				this.setState({
+					badWord: [null, null],
+					textChangeTimer: -1
+				});
+			}
+		}
+	};
+
+	chatDisabled() {
+		return this.state.badWord[0] && (Date.now() - this.state.textLastChanged < 1000);
+	}
+
 	handleSubmit(e) {
+		if (this.chatDisabled()) return;
 		const inputValue = this.chatInput.value;
 
 		if (inputValue && inputValue.length < 300) {
@@ -83,6 +118,11 @@ export default class Generalchat extends React.Component {
 			});
 
 			this.chatInput.value = '';
+			if (this.state.badWord[0]) {
+				this.setState({
+					badWord: [null, null]
+				});
+			}
 
 			this.chatInput.blur();
 			setTimeout(() => {
@@ -123,18 +163,28 @@ export default class Generalchat extends React.Component {
 
 		return this.state.discordEnabled ? null : (
 			<div className={userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
+				{this.state.badWord[0] && <span style={{
+					position: 'absolute',
+					top: '-22px', height: '40px',
+					backgroundColor: 'indianred',
+					padding: '7px',
+					borderRadius: '10px 10px 0px 0px',
+					border: '1px solid #8c8c8c'
+					}}>"{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.</span>}
 				<textarea
+					style={{zIndex: 1}}
 					disabled={!userInfo.userName || (userInfo.gameSettings && userInfo.gameSettings.isPrivate)}
 					className="chat-input-box"
 					placeholder="Send a message"
 					maxLength="300"
 					spellCheck="false"
 					onKeyDown={this.handleKeyPress}
+					onChange={this.handleTyping}
 					ref={c => (this.chatInput = c)}
 				/>
 				{userInfo.userName ? renderEmotesButton(this.handleInsertEmote, this.props.allEmotes) : null}
 				<div className="chat-button">
-					<button onClick={this.handleSubmit} className="ui primary button">
+					<button onClick={this.handleSubmit} className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>
 						Chat
 					</button>
 				</div>

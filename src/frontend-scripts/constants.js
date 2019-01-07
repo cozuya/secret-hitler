@@ -2,6 +2,10 @@ const cn = require('classnames');
 
 module.exports.TOU_CHANGES = [
 	{
+		changeVer: '1.2',
+		changeDesc: 'Terms of Use now states that explicitly forbidden words may result in action without reports.'
+	},
+	{
 		changeVer: '1.1',
 		changeDesc:
 			'Lying as liberal is allowed if you can prove it helps your team.\nFollowing players to comment on their games or talking about a no-chat game is now explicitly forbidden.\nMinor wording changes to forbidden language and card-backs.'
@@ -89,4 +93,44 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 				: cn(defaultClass, gradeObj)
 			: defaultClass;
 	}
+};
+
+module.exports.getBadWord = text => {
+	const badWords = {
+		cunt: [],
+		nigger: ['nigga', 'nibba'],
+		kike: [],
+		retard: ['libtard', 'retarded'],
+		faggot: [],
+		mongoloid: ['mong']
+	};
+	let foundWord = [null, null];
+
+	// This version will detect words with spaces in them, but may have false positives (such as "mongolia" for "mong").
+	const flatText = text.replace(/\s/ig, '');
+	Object.keys(badWords).forEach(key => {
+		if (flatText.includes(key)) {
+			foundWord = [key, key];
+		}
+		else {
+			badWords[key].forEach(word => {
+				if (flatText.includes(word)) {
+					foundWord = [key, word];
+				}
+			});
+		}
+	});
+
+	// This version only detects words if they are whole and have whitespace at either end.
+	/* Object.keys(badWords).forEach(key => {
+		if (new RegExp(`(^|\\s)${key}s?(\\s|$)`, 'i').test(text)) {
+			foundWord = [key, key];
+		}
+		else badWords[key].forEach(word => {
+			if (new RegExp(`(^|\\s)${word}s?(\\s|$)`, 'i').test(text)) {
+				foundWord = [key, word];
+			}
+		});
+	});*/
+	return foundWord;
 };
