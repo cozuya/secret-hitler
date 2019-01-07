@@ -80,7 +80,6 @@ export default class Generalchat extends React.Component {
 	}
 
 	handleTyping(e) {
-		console.log("TYPING");
 		e.preventDefault();
 
 		const text = this.chatInput.value;
