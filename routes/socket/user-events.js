@@ -530,28 +530,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	if (
-		data.customGameSettings &&
-		(data.customGameSettings.fascistCount < 1 ||
-			data.customGameSettings.fascistCount > 3 ||
-			data.customGameSettings.powers.length < 1 ||
-			data.customGameSettings.powers.length > 5 ||
-			data.customGameSettings.hitlerZone < 1 ||
-			data.customGameSettings.hitlerZone > 5 ||
-			data.customGameSettings.vetoZone < 1 ||
-			data.customGameSettings.vetoZone > 5 ||
-			data.customGameSettings.deckState.lib > 8 ||
-			data.customGameSettings.deckState.lib < 5 ||
-			data.customGameSettings.deckState.fas > 19 ||
-			data.customGameSettings.deckState.fas < 10 ||
-			data.customGameSettings.trackState.lib < 0 ||
-			data.customGameSettings.trackState.lib > 3 ||
-			data.customGameSettings.trackState.fas < 0 ||
-			data.customGameSettings.trackState.fas > 3)
-	) {
-		return;
-	}
-
 	const user = userList.find(obj => obj.userName === passport.user);
 	const currentTime = new Date();
 
@@ -608,11 +586,11 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 
 		// Ensure that there is never a fas majority at the start.
 		// Custom games should probably require a fixed player count, which will be in playerCounts[0] regardless.
-		if (!(data.customGameSettings.fascistCount >= 0) || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
+		if (!(data.customGameSettings.fascistCount >= 1) || data.customGameSettings.fascistCount + 1 > playerCounts[0] / 2) return;
 
 		// Ensure standard victory conditions can be met for both teams.
-		if (!(data.customGameSettings.deckState.lib >= 5)) return;
-		if (!(data.customGameSettings.deckState.fas >= 6)) return;
+		if (!(data.customGameSettings.deckState.lib >= 5) || data.customGameSettings.deckState.lib > 8) return;
+		if (!(data.customGameSettings.deckState.fas >= 6) || data.customGameSettings.deckState.fas > 19) return;
 
 		// Roundabout way of checking for null/undefined but not 0.
 		if (!(data.customGameSettings.trackState.lib >= 0) || data.customGameSettings.trackState.lib > 4) return;
