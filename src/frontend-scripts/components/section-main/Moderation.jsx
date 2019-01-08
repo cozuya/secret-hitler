@@ -470,7 +470,7 @@ export default class Moderation extends React.Component {
 				>
 					Restore IP - Remove any pre-existing IP ban.
 				</button>
-				<div className="ui horizontal divider">-</div>
+				<div className="ui horizontal divider">Editors/Admins Only</div>
 
 				<button
 					className={
@@ -546,8 +546,8 @@ export default class Moderation extends React.Component {
 				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button disabled ib'
-							: 'ui button ib'
+							? 'ui button ib'
+							: 'ui button disabled ib'
 					}
 					onClick={() => {
 						takeModAction('getIP');
