@@ -475,8 +475,8 @@ export default class Moderation extends React.Component {
 				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
 					}
 					onClick={() => {
 						takeModAction({
@@ -490,8 +490,8 @@ export default class Moderation extends React.Component {
 				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
 					}
 					onClick={() => {
 						takeModAction({
@@ -505,8 +505,8 @@ export default class Moderation extends React.Component {
 				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
 					}
 					onClick={() => {
 						takeModAction({
@@ -520,8 +520,8 @@ export default class Moderation extends React.Component {
 				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
 					}
 					onClick={() => {
 						takeModAction({
@@ -546,8 +546,8 @@ export default class Moderation extends React.Component {
 				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
+							? 'ui button disabled ib'
+							: 'ui button ib'
 					}
 					onClick={() => {
 						takeModAction('getIP');
