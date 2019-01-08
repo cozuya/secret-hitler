@@ -473,7 +473,11 @@ export default class Moderation extends React.Component {
 				<div className="ui horizontal divider">-</div>
 
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction({
 							type: `setWins${this.state.actionTextValue}`,
@@ -484,7 +488,11 @@ export default class Moderation extends React.Component {
 					Set wins
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction({
 							type: `setLosses${this.state.actionTextValue}`,
@@ -495,7 +503,11 @@ export default class Moderation extends React.Component {
 					Set losses
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction({
 							type: `setRWins${this.state.actionTextValue}`,
@@ -506,7 +518,11 @@ export default class Moderation extends React.Component {
 					Set R wins
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction({
 							type: `setRLosses${this.state.actionTextValue}`,
@@ -528,7 +544,11 @@ export default class Moderation extends React.Component {
 					</div>
 				</div>
 				<button
-					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction('getIP');
 					}}
@@ -562,7 +582,11 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					style={{ background: 'crimson' }}
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction('deleteUser');
 					}}
