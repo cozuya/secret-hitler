@@ -303,6 +303,7 @@ export default class Creategame extends React.Component {
 
 	sliderNumFas(val) {
 		const { customGameSettings } = this.state;
+
 		customGameSettings.fascistCount = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });

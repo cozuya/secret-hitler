@@ -107,12 +107,11 @@ module.exports.getBadWord = text => {
 	let foundWord = [null, null];
 
 	// This version will detect words with spaces in them, but may have false positives (such as "mongolia" for "mong").
-	const flatText = text.replace(/\s/ig, '');
+	const flatText = text.replace(/\s/gi, '');
 	Object.keys(badWords).forEach(key => {
 		if (flatText.includes(key)) {
 			foundWord = [key, key];
-		}
-		else {
+		} else {
 			badWords[key].forEach(word => {
 				if (flatText.includes(word)) {
 					foundWord = [key, word];

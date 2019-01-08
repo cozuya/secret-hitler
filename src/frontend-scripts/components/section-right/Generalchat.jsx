@@ -91,7 +91,7 @@ export default class Generalchat extends React.Component {
 					badWord: foundWord,
 					textLastChanged: Date.now(),
 					textChangeTimer: setTimeout(() => {
-						this.setState({textChangeTimer: -1});
+						this.setState({ textChangeTimer: -1 });
 					}, 1100)
 				});
 			} else {
@@ -101,10 +101,10 @@ export default class Generalchat extends React.Component {
 				});
 			}
 		}
-	};
+	}
 
 	chatDisabled() {
-		return this.state.badWord[0] && (Date.now() - this.state.textLastChanged < 1000);
+		return this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
 	}
 
 	handleSubmit(e) {
@@ -162,16 +162,23 @@ export default class Generalchat extends React.Component {
 
 		return this.state.discordEnabled ? null : (
 			<div className={userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
-				{this.state.badWord[0] && <span style={{
-					position: 'absolute',
-					top: '-22px', height: '40px',
-					backgroundColor: 'indianred',
-					padding: '7px',
-					borderRadius: '10px 10px 0px 0px',
-					border: '1px solid #8c8c8c'
-					}}>"{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.</span>}
+				{this.state.badWord[0] && (
+					<span
+						style={{
+							position: 'absolute',
+							top: '-22px',
+							height: '40px',
+							backgroundColor: 'indianred',
+							padding: '7px',
+							borderRadius: '10px 10px 0px 0px',
+							border: '1px solid #8c8c8c'
+						}}
+					>
+						"{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.
+					</span>
+				)}
 				<textarea
-					style={{zIndex: 1}}
+					style={{ zIndex: 1 }}
 					disabled={!userInfo.userName || (userInfo.gameSettings && userInfo.gameSettings.isPrivate)}
 					className="chat-input-box"
 					placeholder="Send a message"

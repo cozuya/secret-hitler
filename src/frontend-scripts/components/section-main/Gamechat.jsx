@@ -157,9 +157,10 @@ class Gamechat extends React.Component {
 
 		const { gameInfo } = this.props;
 		if (gameInfo && gameInfo.general && gameInfo.general.private) {
-			if (this.state.badWord[0]) this.setState({
-				badWord:[null, null]
-			});
+			if (this.state.badWord[0])
+				this.setState({
+					badWord: [null, null]
+				});
 			return;
 		}
 		const text = this.gameChatInput.value;
@@ -171,7 +172,7 @@ class Gamechat extends React.Component {
 					badWord: foundWord,
 					textLastChanged: Date.now(),
 					textChangeTimer: setTimeout(() => {
-						this.setState({textChangeTimer: -1});
+						this.setState({ textChangeTimer: -1 });
 					}, 1100)
 				});
 			} else {
@@ -181,10 +182,10 @@ class Gamechat extends React.Component {
 				});
 			}
 		}
-	};
+	}
 
 	chatDisabled() {
-		return this.state.badWord[0] && (Date.now() - this.state.textLastChanged < 1000);
+		return this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
 	}
 
 	handleSubmit(e) {
@@ -956,14 +957,22 @@ class Gamechat extends React.Component {
 							}
 						})()}
 						<div className={this.gameChatStatus().isDisabled ? 'ui action input disabled' : 'ui action input'}>
-							{this.state.badWord[0] && <span style={{
-								zIndex: '-1', position: 'absolute',
-								top: '-32px', height: '40px',
-								backgroundColor: 'indianred',
-								padding: '7px',
-								borderRadius: '10px 10px 0px 0px',
-								border: '1px solid #8c8c8c'
-								}}>The word "{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.</span>}
+							{this.state.badWord[0] && (
+								<span
+									style={{
+										zIndex: '-1',
+										position: 'absolute',
+										top: '-32px',
+										height: '40px',
+										backgroundColor: 'indianred',
+										padding: '7px',
+										borderRadius: '10px 10px 0px 0px',
+										border: '1px solid #8c8c8c'
+									}}
+								>
+									The word "{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.
+								</span>
+							)}
 							<input
 								onSubmit={this.handleSubmit}
 								onChange={this.handleTyping}

@@ -530,6 +530,28 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
+	if (
+		data.customGameSettings &&
+		(data.customGameSettings.fascistCount < 1 ||
+			data.customGameSettings.fascistCount > 3 ||
+			data.customGameSettings.powers.length < 1 ||
+			data.customGameSettings.powers.length > 5 ||
+			data.customGameSettings.hitlerZone < 1 ||
+			data.customGameSettings.hitlerZone > 5 ||
+			data.customGameSettings.vetoZone < 1 ||
+			data.customGameSettings.vetoZone > 5 ||
+			data.customGameSettings.deckState.lib > 8 ||
+			data.customGameSettings.deckState.lib < 5 ||
+			data.customGameSettings.deckState.fas > 19 ||
+			data.customGameSettings.deckState.fas < 10 ||
+			data.customGameSettings.trackState.lib < 0 ||
+			data.customGameSettings.trackState.lib > 3 ||
+			data.customGameSettings.trackState.fas < 0 ||
+			data.customGameSettings.trackState.fas > 3)
+	) {
+		return;
+	}
+
 	const user = userList.find(obj => obj.userName === passport.user);
 	const currentTime = new Date();
 
