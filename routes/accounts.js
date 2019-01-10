@@ -300,23 +300,13 @@ module.exports = () => {
 				} catch (e) {
 					console.log(e);
 				}
-
-				player.lastConnectedIP = ip;
-				player.save(() => {
-					res.send();
-				});
-
-				Profile.findOne({ _id: req.user.username })
-					.then(profile => {
-						if (profile) {
-							profile.lastConnectedIP = ip;
-							profile.save();
-						}
-					})
-					.catch(err => {
-						console.log(err, 'profile find err');
-					});
-
+				if (player.lastConnectedIP !== ip && player.twofac && player.twofac.active) {
+					if (!req.body.twofac || !checkCode(player.twofac.key, req.body.twofac)) {
+						req.logOut();
+						res.status(403).json({ message: 'Two-factor code required.' });
+						return next();
+					}
+				}
 				if (
 					(player.isTimeout && new Date().getTime() - new Date(player.isTimeout).getTime() < 64800000) ||
 					(player.isTimeout6Hour && new Date().getTime() - new Date(player.isTimeout6Hour).getTime() < 21600000)
@@ -324,10 +314,31 @@ module.exports = () => {
 					req.logOut();
 					res.send();
 				}
-				const email = player.verification.email;
-				if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
-					player.verified = false;
-					player.verification.email = '';
+				else {
+					if (player.lastConnectedIP !== ip) {
+						player.lastConnectedIP = ip;
+						player.save(() => {
+							res.send();
+						});
+
+						Profile.findOne({ _id: req.user.username })
+							.then(profile => {
+								if (profile) {
+									profile.lastConnectedIP = ip;
+									profile.save();
+								}
+							})
+							.catch(err => {
+								console.log(err, 'profile find err');
+							});
+					}
+					else res.send();
+
+					const email = player.verification.email;
+					if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
+						player.verified = false;
+						player.verification.email = '';
+					}
 				}
 			});
 		}

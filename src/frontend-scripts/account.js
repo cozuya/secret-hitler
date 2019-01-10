@@ -128,6 +128,7 @@ export default () => {
 		event.preventDefault();
 		const username = $('#signin-username').val();
 		const password = $('#signin-password').val();
+		const twofac = $('#signin-twofac').val();
 		const $loader = $(this).next();
 		const $message = $loader.next();
 		const submitErr = message => {
@@ -141,7 +142,7 @@ export default () => {
 			url: '/account/signin',
 			method: 'POST',
 			contentType: 'application/json; charset=UTF-8',
-			data: JSON.stringify({ username, password }),
+			data: JSON.stringify({ username, password, twofac }),
 			statusCode: {
 				200() {
 					if (window.location.pathname === '/observe/') {
