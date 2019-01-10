@@ -1,52 +1,27 @@
-const crypto = require('crypto');
+const twofac = require('../routes/twofac');
 
-// must be 16 long and Base32, randomly generated for any given user
+// must be 16 long and base32 (A-Z,2-7), will be randomly generated for any given user
+// note: implementation assumes uppercase
 const key = 'ORSXG5BSGM2DK5DF';
 
-function leftPad(str, len, pad) {
-	if (str.length >= len) return str;
-	return Array(len+1-str.length).join(pad) + str;
-}
+// returns codes for the key above
+console.log(twofac.getCodes(key));
 
-function base32to16(base32) {
-	let base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-	let bits = '';
-	let hex = '';
-	for (let i = 0; i < base32.length; i++) {
-		let val = base32chars.indexOf(base32.charAt(i).toUpperCase());
-		bits += leftPad(val.toString(2), 5, '0');
+// generate a random key
+twofac.genQR('testuser', (err, data) => {
+	if (err) console.log(err);
+	else {
+		// base32 key
+		console.log(data[0]);
+
+		// get codes for the key
+		const codes = twofac.getCodes(data[0]);
+		console.log(codes);
+
+		// should always return true
+		console.log(`Valid: ${twofac.checkCode(data[0], codes[2])}`);
+
+		// the QR code data url
+		console.log(data[1]);
 	}
-	for (let i = 0; i+4 <= bits.length; i+=4) {
-		hex = hex + parseInt(bits.substr(i, 4), 2).toString(16);
-	}
-	return hex;
-}
-
-const getTime = () => {
-	// 8 bytes time value in base16
-	return Math.floor(Date.now() / 30000.0);
-};
-
-const doHmac = (key, time) => {
-	// key must be 10 bytes
-	return crypto.createHmac('sha1', Buffer.from(key, 'hex')).update(Buffer.from(time, 'hex')).digest('hex');
-};
-
-const hmacToTotp = (hmac) => {
-	let off = parseInt(hmac.substring(hmac.length-1), 16);
-	let part = hmac.substring(off*2, off*2+8);
-	let code = (parseInt(part, 16) & parseInt('7fffffff', 16)) % 1000000;
-	return leftPad(`${code}`, 6, '0');
-};
-
-const getCodes = (key, before, after) => {
-	const keyHex = base32to16(key);
-	const t = getTime();
-	const keys = [];
-	for (let i = -before; i <= after; i++) {
-		keys[i+before] = hmacToTotp(doHmac(keyHex, leftPad((t+i).toString(16), 16, '0')));
-	}
-	return keys;
-};
-
-console.log(getCodes(key, 2, 1));
+});
