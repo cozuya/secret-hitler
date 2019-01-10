@@ -315,14 +315,6 @@ module.exports.createNewBypass = () => {
 	return key;
 };
 
-let banCache = null;
-setInterval(() => {
-	// Fetches the list of banned IPs every 5 seconds, to prevent hammering the DB on restarts as people log in.
-	BannedIP.find({}, (err, ips) => {
-		if (err) console.log(err);
-		else banCache = ips;
-	});
-}, 5000);
 // There's a mountain of "new" type bans.
 const unbanTime = new Date() - 64800000;
 BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) => {
@@ -340,22 +332,25 @@ const banLength = {
 };
 module.exports.testIP = (IP, callback) => {
 	if (!IP) callback('Bad IP!');
-	else if (!banCache || !banCache.filter) callback('nocache');
 	else {
-		const ips = banCache.filter(i => i.ip == IP);
-		let date;
-		let unbannedTime;
-		const ip = ips[ips.length - 1];
+		BannedIP.find({ ip: IP }, (err, ips) => {
+			if (err) callback(err);
+			else {
+				let date;
+				let unbannedTime;
+				const ip = ips.sort((a, b) => b.bannedDate - a.bannedDate)[0];
 
-		if (ip) {
-			date = new Date().getTime();
-			unbannedTime = ip.bannedDate.getTime() + (banLength[ip.type] || banLength.big);
-		}
+				if (ip) {
+					date = new Date().getTime();
+					unbannedTime = ip.bannedDate.getTime() + (banLength[ip.type] || banLength.big);
+				}
 
-		if (ip && unbannedTime > date && !module.exports.ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
-			callback(ip.type);
-		} else {
-			callback(null);
-		}
+				if (ip && unbannedTime > date && !module.exports.ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
+					callback(ip.type);
+				} else {
+					callback(null);
+				}
+			}
+		});
 	}
 };
