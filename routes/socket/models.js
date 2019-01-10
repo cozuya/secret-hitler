@@ -319,10 +319,6 @@ module.exports.createNewBypass = () => {
 const unbanTime = new Date() - 64800000;
 BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) => {
 	if (err) throw err;
-	BannedIP.find({}, (err, ips) => {
-		if (err) throw err;
-		banCache = ips;
-	});
 });
 const banLength = {
 	small: 18 * 60 * 60 * 1000, // 18 hours
@@ -332,6 +328,7 @@ const banLength = {
 };
 module.exports.testIP = (IP, callback) => {
 	if (!IP) callback('Bad IP!');
+	else if (module.exports.ipbansNotEnforced.status) callback(null);
 	else {
 		BannedIP.find({ ip: IP }, (err, ips) => {
 			if (err) callback(err);
@@ -345,8 +342,12 @@ module.exports.testIP = (IP, callback) => {
 					unbannedTime = ip.bannedDate.getTime() + (banLength[ip.type] || banLength.big);
 				}
 
-				if (ip && unbannedTime > date && !module.exports.ipbansNotEnforced.status && process.env.NODE_ENV === 'production') {
-					callback(ip.type);
+				if (ip && unbannedTime > date) {
+					if (process.env.NODE_ENV === 'production') callback(ip.type);
+					else {
+						console.log(`IP ban ignored: ${IP} = ${type}`);
+						callback(null);
+					}
 				} else {
 					callback(null);
 				}
