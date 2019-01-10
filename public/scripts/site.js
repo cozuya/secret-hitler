@@ -360,6 +360,101 @@ $(document).ready(function() {
 			.modal('show');
 	});
 
+	$('button#add-2fa').on('click', function(event) {
+		$.ajax({
+			url: '/account/add-2fa',
+			method: 'POST',
+			statusCode: {
+				200: function(data) {
+					console.log(data);
+					$('#add2fa-msg')
+						.addClass('hidden');
+					$('#2fakey')
+						.html(`Two-factor key: ${data.key.match(/.{4}/g).join(' ')}`);
+					$('#2faqr')
+						.attr("src", data.qr);
+					$('section.add2fa-modal')
+						.modal('setting', 'transition', 'horizontal flip')
+						.modal('show');
+				},
+				400: function() {
+					$('#add2fa-msg')
+						.removeClass('hidden')
+						.html('That request did not look right.');
+				},
+				401: function(data) {
+					$('#add2fa-msg')
+						.removeClass('hidden')
+						.html(data.message);
+				}
+			}
+		});
+	});
+
+	$('button#add2fa-submit').on('click', function(event) {
+		event.preventDefault();
+		$.ajax({
+			url: '/account/add-2fa-verify',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: JSON.stringify({ code: $('#add2fa-code').val() }),
+			statusCode: {
+				200: function(data) {
+					$('#add2fa-msg')
+						.removeClass('hidden')
+						.html(`Two-factor authentication enabled. Backup key: ${data.backupKey}<br>Write down this backup, it is used to remove two-factor auth.`);
+				},
+				400: function() {
+					$('#add2fa-msg')
+						.removeClass('hidden')
+						.html('That request did not look right.');
+				},
+				401: function(data) {
+					console.log(data.responseJSON);
+					console.log($('#add2fa-msg'));
+					$('#add2fa-msg')
+						.removeClass('hidden')
+						.html(data.responseJSON.message);
+				}
+			}
+		});
+	});
+
+	$('button#remove-2fa').on('click', function(event) {
+		$('section.rem2fa-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('show');
+	});
+
+	$('button#rem2fa-submit').on('click', function(event) {
+		event.preventDefault();
+		$.ajax({
+			url: '/account/remove-2fa',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: JSON.stringify({ backup: $('#rem2fa-code').val() }),
+			statusCode: {
+				200: function() {
+					$('#rem2fa-msg')
+						.removeClass('hidden')
+						.html(`Two-factor authentication disabled.`);
+				},
+				400: function() {
+					$('#rem2fa-msg')
+						.removeClass('hidden')
+						.html('That request did not look right.');
+				},
+				401: function(data) {
+					console.log(data.responseJSON);
+					console.log($('#add2fa-msg'));
+					$('#rem2fa-msg')
+						.removeClass('hidden')
+						.html(data.responseJSON.message);
+				}
+			}
+		});
+	});
+
 	$('button#change-email').on('click', function(event) {
 		$('section.emailchange-modal')
 			.modal('setting', 'transition', 'horizontal flip')

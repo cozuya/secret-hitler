@@ -43,7 +43,11 @@ block content
 				button#add-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Add an email address and send verification email
 		if !discordUsername && !githubUsername
 			button#change-password.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your password
-
+		if email && verified
+			if has2fa
+				button#remove-2fa.ui.primary.button(style="display: block; margin: 5px auto 0;") Remove two-factor authentication
+			else
+				button#add-2fa.ui.primary.button(style="display: block; margin: 5px auto 0;") Add two-factor authentication
 		button#delete-account.ui.primay.button(style="display: block; margin: 5px auto 0; background: red; color: white") Delete your account
 
 	section.passwordchange-modal.ui.modal.small.segment.column
@@ -62,6 +66,28 @@ block content
 				.ui.text.loader Changing your password..
 			.ui.negative.hidden.message
 			.ui.hidden.message Successfully changed your password!
+
+	section.add2fa-modal.ui.modal.small.segment.column
+		h2.header Add two-factor authentication
+		.ui.message#2fakey Two-factor key: ABCD DEFG HIJK LMNO
+		image(style="margin:auto;display:block;margin-bottom:10px;")#2faqr
+		form.ui.form
+			.field
+				.ui.left.icon.input
+					i.lock.icon
+					input#add2fa-code(placeholder="2fa code")
+			button.ui.primary.button.fluid.large#add2fa-submit Submit
+			.ui.hidden.message#add2fa-msg Two-factor active!
+
+	section.rem2fa-modal.ui.modal.small.segment.column
+		h2.header Remove two-factor authentication
+		form.ui.form
+			.field
+				.ui.left.icon.input
+					i.lock.icon
+					input#rem2fa-code(placeholder="2fa backup")
+			button.ui.primary.button.fluid.large#rem2fa-submit Submit
+			.ui.hidden.message#rem2fa-msg Two-factor removed!
 
 	//- section.emailchange-modal.ui.modal.small.segment.column
 	//- 	h2.header Change your email

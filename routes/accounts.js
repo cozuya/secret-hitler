@@ -9,6 +9,7 @@ const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
 const { expandAndSimplify } = require('./socket/ip-obf');
 const { TOU_CHANGES } = require('../src/frontend-scripts/constants.js');
+const { genQR, checkCode } = require('./twofac');
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.
@@ -35,7 +36,8 @@ module.exports = () => {
 			email: req.user.verification ? req.user.verification.email : '',
 			discordUsername: req.user.discordUsername,
 			discordDiscriminator: req.user.discordDiscriminator,
-			githubUsername: req.user.githubUsername
+			githubUsername: req.user.githubUsername,
+			has2fa: req.user.twofac && req.user.twofac.active
 		});
 	});
 
@@ -409,6 +411,72 @@ module.exports = () => {
 				}
 			});
 		}
+	});
+
+	app.post('/account/add-2fa', ensureAuthenticated, (req, res, next) => {
+		const { username } = req.user;
+		Account.findOne({ username }, (err, acc) => {
+			if (err) res.status(401).json({ message: `An error occurred: ${err}` });
+			else if (!acc.verified) res.status(401).json({ message: 'Two-factor authentication can only be enabled for verified accounts.' });
+			else if (acc.twofac && acc.twofac.active) res.status(401).json({ message: 'Two-factor authentication is already enabled.' });
+			else {
+				genQR(username, (err2, data) => {
+					if (err2) res.status(401).json({ message: `An error occurred: ${err2}` });
+					else {
+						acc.twofac = {
+							active: false,
+							key: data[0],
+							backup: ''
+						};
+						acc.save(() => {
+							res.status(200).json({ key: data[0], qr: data[1] });
+						});
+					}
+				});
+			}
+		});
+	});
+
+	app.post('/account/add-2fa-verify', ensureAuthenticated, (req, res, next) => {
+		const { username } = req.user;
+		const { code } = req.body;
+		Account.findOne({ username }, (err, acc) => {
+			if (err) res.status(401).json({ message: `An error occurred: ${err}` });
+			else if (!acc.verified) res.status(401).json({ message: 'Two-factor authentication can only be enabled for verified accounts.' });
+			else if (acc.twofac && acc.twofac.active) res.status(401).json({ message: 'Two-factor authentication is already enabled.' });
+			else if (!acc.twofac || !acc.twofac.key || !acc.twofac.key.length) res.status(401).json({ message: 'No two-factor key has been made yet.' });
+			else {
+				if (checkCode(acc.twofac.key, code)) {
+					acc.twofac.active = true;
+					acc.twofac.backup = `${Math.floor(Math.random()*10)}${Math.floor(Math.random()*10)}${Math.floor(Math.random()*10)}${Math.floor(Math.random()*10)}${Math.floor(Math.random()*10)}${Math.floor(Math.random()*10)}`;
+					acc.save(() => {
+						res.status(200).json({ backupKey: acc.twofac.backup });
+					});
+				}
+				else res.status(401).json({ message: 'That is not the correct code.' });
+			}
+		});
+	});
+
+	app.post('/account/remove-2fa', ensureAuthenticated, (req, res, next) => {
+		// this should really be possible without a full login, since that would need the 2fa code
+		const { username } = req.user;
+		const { backup } = req.body;
+		Account.findOne({ username }, (err, acc) => {
+			if (err) res.status(401).json({ message: `An error occurred: ${err}` });
+			else if (!acc.twofac && !acc.twofac.active) res.status(401).json({ message: 'Two-factor authentication is not enabled.' });
+			else if (acc.twofac.backup !== backup) res.status(401).json({ message: 'That is not the correct code.' });
+			else {
+				acc.twofac = {
+					active: false,
+					key: '',
+					backup: ''
+				};
+				acc.save(() => {
+					res.status(200).send();
+				});
+			}
+		});
 	});
 
 	app.post('/account/request-verification', ensureAuthenticated, (req, res, next) => {

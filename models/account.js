@@ -66,6 +66,11 @@ const Account = new Schema({
 	verification: {
 		email: String
 	},
+	twofac: {
+		active: Boolean,
+		key: String,
+		backup: String
+	},
 	signupIP: String,
 	lastConnectedIP: String,
 	verified: Boolean,

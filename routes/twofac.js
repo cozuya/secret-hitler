@@ -49,6 +49,7 @@ module.exports.genQR = (user, callback) => {
 
 // verify a code for a given base32 key
 module.exports.checkCode = (key, code) => {
+	if (code.length !== 6) return false;
 	const codeInt = parseInt(code);
 	if (isNaN(codeInt) || codeInt < 0 || codeInt > 999999) return false;
 	const codes = module.exports.getCodes(key);
