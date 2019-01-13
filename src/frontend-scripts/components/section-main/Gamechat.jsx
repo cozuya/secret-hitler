@@ -12,10 +12,10 @@ const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
 	toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus)),
 	updateUser: userInfo => dispatch(updateUser(userInfo)),
-	updateTyping: lastTypingTime => dispatch(updateTyping(lastTypingTime))
+	updateTyping: isTyping => dispatch(updateTyping(isTyping))
 });
 
-const mapStateToProps = ({ notesActive, lastTypingTime }) => ({ notesActive, lastTypingTime: typeof lastTypingTime === 'number' ? lastTypingTime : null });
+const mapStateToProps = ({ notesActive, isTyping }) => ({ notesActive, isTyping });
 
 class Gamechat extends React.Component {
 	constructor() {
@@ -156,7 +156,8 @@ class Gamechat extends React.Component {
 	handleTyping(e) {
 		e.preventDefault();
 
-		const { gameInfo, lastTypingTime, updateTyping } = this.props;
+		const { userInfo, gameInfo, updateTyping, isTyping, socket } = this.props;
+
 		if (gameInfo && gameInfo.general && gameInfo.general.private) {
 			if (this.state.badWord[0]) {
 				this.setState({
@@ -186,7 +187,19 @@ class Gamechat extends React.Component {
 		}
 		const now = new Date().getTime();
 
-		updateTyping(now);
+		if (userInfo.isSeated) {
+			updateTyping({
+				...isTyping,
+				[userInfo.userName]: now
+			});
+			if (now - isTyping[userInfo.userName] > 1000 || !isTyping[userInfo.userName]) {
+				socket.emit('updateTyping', {
+					userName: userInfo.userName,
+					lastTypingTime: now,
+					uid: gameInfo.general.uid
+				});
+			}
+		}
 	}
 
 	chatDisabled() {
@@ -1098,6 +1111,10 @@ class Gamechat extends React.Component {
 	}
 }
 
+Gamechat.defaultProps = {
+	isTyping: {}
+};
+
 Gamechat.propTypes = {
 	isReplay: PropTypes.bool,
 	clickedGameRole: PropTypes.object,
@@ -1109,7 +1126,8 @@ Gamechat.propTypes = {
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.array,
+	isTyping: PropTypes.object
 };
 
 export default connect(

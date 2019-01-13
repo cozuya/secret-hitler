@@ -13,9 +13,9 @@ const mapDispatchToProps = dispatch => ({
 	togglePlayerNotes: playerName => dispatch(togglePlayerNotes(playerName))
 });
 
-const mapStateToProps = ({ playerNotesActive, lastTypingTime }) => ({
+const mapStateToProps = ({ playerNotesActive, isTyping }) => ({
 	playerNotesActive,
-	lastTypingTime: typeof lastTypingTime === 'number' ? lastTypingTime : null
+	isTyping
 });
 
 class Players extends React.Component {
@@ -188,13 +188,12 @@ class Players extends React.Component {
 	}
 
 	renderTyping(player) {
-		const { lastTypingTime, userInfo } = this.props;
+		const { isTyping } = this.props;
 
-		if (userInfo.userName === player.userName && lastTypingTime) {
+		if (isTyping[player.userName] && new Date().getTime() - isTyping[player.userName] < 2000) {
 			return <img className="is-typing" src="../images/typing.gif" />;
 		}
-		console.log(player);
-		console.log(this.props);
+
 		return null;
 	}
 	renderPlayers() {
@@ -601,6 +600,10 @@ class Players extends React.Component {
 	}
 }
 
+Players.defaultProps = {
+	isTyping: {}
+};
+
 Players.propTypes = {
 	roles: PropTypes.array,
 	userInfo: PropTypes.object,
@@ -611,7 +614,8 @@ Players.propTypes = {
 	selectedGamerole: PropTypes.func,
 	isReplay: PropTypes.bool,
 	toggleNotes: PropTypes.func,
-	playerNotesActive: PropTypes.string
+	playerNotesActive: PropTypes.string,
+	isTyping: PropTypes.object
 };
 
 export default connect(

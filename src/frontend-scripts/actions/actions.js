@@ -1,9 +1,9 @@
 export const UPDATE_TYPING = 'UPDATE_TYPING';
 
-export function updateTyping(lastTypingTime) {
+export function updateTyping(isTyping) {
 	return {
 		type: UPDATE_TYPING,
-		lastTypingTime
+		isTyping
 	};
 }
 

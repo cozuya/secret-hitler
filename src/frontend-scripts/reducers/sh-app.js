@@ -11,10 +11,12 @@ import {
 	UPDATE_TYPING
 } from '../actions/actions.js';
 
-const lastTypingTime = (state = {}, action) => {
+const isTyping = (state = {}, action) => {
 	switch (action.type) {
 		case UPDATE_TYPING:
-			state = action.lastTypingTime;
+			state = {
+				...action.isTyping
+			};
 			break;
 	}
 	return state;
@@ -157,5 +159,5 @@ export default combineReducers({
 	version,
 	notesActive,
 	playerNotesActive,
-	lastTypingTime
+	isTyping
 });
