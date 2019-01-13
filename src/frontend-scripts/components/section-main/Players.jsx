@@ -36,17 +36,17 @@ class Players extends React.Component {
 		};
 	}
 
-	componentWillReceiveProps(nextProps) {
-		const { userName } = this.props;
-		const { publicPlayersState } = nextProps.gameInfo;
+	// componentWillReceiveProps(nextProps) {
+	// 	const { userName } = this.props;
+	// 	const { publicPlayersState } = nextProps.gameInfo;
 
-		if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
-			this.props.socket.emit('getPlayerNotes', {
-				userName,
-				seatedPlayers: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
-			});
-		}
-	}
+	// 	if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
+	// 		this.props.socket.emit('getPlayerNotes', {
+	// 			userName,
+	// 			seatedPlayers: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
+	// 		});
+	// 	}
+	// }
 
 	componentDidMount() {
 		const { socket, userInfo } = this.props;
@@ -191,11 +191,15 @@ class Players extends React.Component {
 		const { isTyping } = this.props;
 
 		if (isTyping[player.userName] && new Date().getTime() - isTyping[player.userName] < 2000) {
+			setTimeout(() => {
+				if (new Date().getTime() - this.props.isTyping[player.userName] >= 2000) {
+					this.forceUpdate();
+				}
+			}, 2000);
 			return <img className="is-typing" src="../images/typing.gif" />;
 		}
-
-		return null;
 	}
+
 	renderPlayers() {
 		const { gameInfo, userInfo } = this.props;
 		const { gameSettings } = userInfo;
