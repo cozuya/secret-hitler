@@ -396,6 +396,23 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	sendGameList();
 };
 
+module.exports.handleUpdateTyping = ({ userName, lastTypingTime, uid }) => {
+	const game = games[uid];
+
+	if (!game) {
+		return;
+	}
+
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+
+	roomSockets.forEach(socket => {
+		if (socket.handshake.session.passport && socket.handshake.session.passport.user !== userName) {
+			game.isTyping[userName] = lastTypingTime;
+			socket.emit('isTypingUpdate', game.isTyping);
+		}
+	});
+};
+
 /**
  * @param {object} socket - user socket reference.
  * @param {object} data - from socket emit.
@@ -618,6 +635,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	const uid = generateCombination(2, '', true);
 
 	const newGame = {
+		isTyping: {},
 		gameState: {
 			previousElectedGovernment: [],
 			undrawnPolicyCount: 17,

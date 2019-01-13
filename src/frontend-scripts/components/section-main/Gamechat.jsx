@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import { PLAYERCOLORS, getBadWord } from '../../constants';
-import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
+import { loadReplay, toggleNotes, updateUser, updateTyping } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
@@ -11,10 +11,11 @@ import { Scrollbars } from 'react-custom-scrollbars';
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
 	toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus)),
-	updateUser: userInfo => dispatch(updateUser(userInfo))
+	updateUser: userInfo => dispatch(updateUser(userInfo)),
+	updateTyping: isTyping => dispatch(updateTyping(isTyping))
 });
 
-const mapStateToProps = ({ notesActive }) => ({ notesActive });
+const mapStateToProps = ({ notesActive, isTyping }) => ({ notesActive, isTyping });
 
 class Gamechat extends React.Component {
 	constructor() {
@@ -155,13 +156,15 @@ class Gamechat extends React.Component {
 	handleTyping(e) {
 		e.preventDefault();
 
-		const { gameInfo } = this.props;
+		const { userInfo, gameInfo, updateTyping, isTyping, socket } = this.props;
+
 		if (gameInfo && gameInfo.general && gameInfo.general.private) {
-			if (this.state.badWord[0])
+			if (this.state.badWord[0]) {
 				this.setState({
 					badWord: [null, null]
 				});
-			return;
+				return;
+			}
 		}
 		const text = this.gameChatInput.value;
 		const foundWord = getBadWord(text);
@@ -179,6 +182,21 @@ class Gamechat extends React.Component {
 				this.setState({
 					badWord: [null, null],
 					textChangeTimer: -1
+				});
+			}
+		}
+		const now = new Date().getTime();
+
+		if (userInfo.isSeated) {
+			updateTyping({
+				...isTyping,
+				[userInfo.userName]: now
+			});
+			if (now - isTyping[userInfo.userName] > 1000 || !isTyping[userInfo.userName]) {
+				socket.emit('updateTyping', {
+					userName: userInfo.userName,
+					lastTypingTime: now,
+					uid: gameInfo.general.uid
 				});
 			}
 		}
@@ -404,7 +422,7 @@ class Gamechat extends React.Component {
 	}
 
 	processChats() {
-		const { gameInfo, userInfo, userList, isReplay, updateUser } = this.props;
+		const { gameInfo, userInfo, userList, isReplay } = this.props;
 		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
@@ -678,12 +696,12 @@ class Gamechat extends React.Component {
 		);
 		const hasNoAEM = players => {
 			if (!userList || !userList.list) return false;
-			return userList.list.every(user => {
-				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod')
-					return false;
-				else return true;
-			});
+			return userList.list.every(
+				user =>
+					!(players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod')
+			);
 		};
+
 		const sendModEndGame = winningTeamName => {
 			socket.emit('updateModAction', {
 				modName: userInfo.userName,
@@ -1093,6 +1111,10 @@ class Gamechat extends React.Component {
 	}
 }
 
+Gamechat.defaultProps = {
+	isTyping: {}
+};
+
 Gamechat.propTypes = {
 	isReplay: PropTypes.bool,
 	clickedGameRole: PropTypes.object,
@@ -1104,7 +1126,8 @@ Gamechat.propTypes = {
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.array,
+	isTyping: PropTypes.object
 };
 
 export default connect(
