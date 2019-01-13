@@ -430,3 +430,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 .error {
 	color: red;
 }
+
+.is-typing {
+	width: 20px;
+	position: absolute;
+	top: 5px;
+	left: 25px;
+}

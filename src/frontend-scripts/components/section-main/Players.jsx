@@ -13,7 +13,10 @@ const mapDispatchToProps = dispatch => ({
 	togglePlayerNotes: playerName => dispatch(togglePlayerNotes(playerName))
 });
 
-const mapStateToProps = ({ playerNotesActive }) => ({ playerNotesActive });
+const mapStateToProps = ({ playerNotesActive, lastTypingTime }) => ({
+	playerNotesActive,
+	lastTypingTime: typeof lastTypingTime === 'number' ? lastTypingTime : null
+});
 
 class Players extends React.Component {
 	constructor() {
@@ -184,6 +187,16 @@ class Players extends React.Component {
 		}
 	}
 
+	renderTyping(player) {
+		const { lastTypingTime, userInfo } = this.props;
+
+		if (userInfo.userName === player.userName && lastTypingTime) {
+			return <img className="is-typing" src="../images/typing.gif" />;
+		}
+		console.log(player);
+		console.log(this.props);
+		return null;
+	}
 	renderPlayers() {
 		const { gameInfo, userInfo } = this.props;
 		const { gameSettings } = userInfo;
@@ -318,6 +331,7 @@ class Players extends React.Component {
 				</div>
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
+				{this.renderTyping(player)}
 				{this.renderGovtToken(i)}
 				{/* {this.renderPlayerNotesIcon(i)} */}
 				<div

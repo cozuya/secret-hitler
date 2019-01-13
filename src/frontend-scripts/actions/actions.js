@@ -1,3 +1,12 @@
+export const UPDATE_TYPING = 'UPDATE_TYPING';
+
+export function updateTyping(lastTypingTime) {
+	return {
+		type: UPDATE_TYPING,
+		lastTypingTime
+	};
+}
+
 export const UPDATE_USER = 'UPDATE_USER';
 
 export function updateUser(user) {

@@ -7,8 +7,18 @@ import {
 	UPDATE_USERLIST,
 	UPDATE_GENERALCHATS,
 	TOGGLE_NOTES,
-	TOGGLE_PLAYER_NOTES
+	TOGGLE_PLAYER_NOTES,
+	UPDATE_TYPING
 } from '../actions/actions.js';
+
+const lastTypingTime = (state = {}, action) => {
+	switch (action.type) {
+		case UPDATE_TYPING:
+			state = action.lastTypingTime;
+			break;
+	}
+	return state;
+};
 
 const userInfo = (state = {}, action) => {
 	switch (action.type) {
@@ -146,5 +156,6 @@ export default combineReducers({
 	replay,
 	version,
 	notesActive,
-	playerNotesActive
+	playerNotesActive,
+	lastTypingTime
 });
