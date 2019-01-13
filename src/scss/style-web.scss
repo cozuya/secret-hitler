@@ -43,10 +43,11 @@ html {
 }
 
 #header-container {
-	height: 460px;
 	width: 100%;
 	margin: 55px auto 0;
-	background: no-repeat top center url('../images/banner-new.png') #141210;
+	background: no-repeat center center url('../images/banner-new.png') #F2654B;
+	background-size: contain;
+	padding-top: 46%;
 
 	.online-count {
 		padding: 5px;
@@ -68,6 +69,20 @@ html {
 
 	+ .ui.segment {
 		border: none;
+	}
+}
+
+@media only screen and (min-width: 1130px) {
+	#header-container {
+		height: 460px;
+		margin-left: -564px !important;
+		left: 50%;
+	}
+}
+
+@media only screen and (max-width: 617px) {
+	#header-container {
+		padding-top: 60%;
 	}
 }
 
@@ -287,12 +302,12 @@ span.emphasis {
 
 	h1,
 	h2 {
-		color: $primary !important;
+		color: $darkfascistteam !important;
 	}
 
 	h3,
 	h4 {
-		color: $secondary !important;
+		color: $fascistteam !important;
 	}
 }
 

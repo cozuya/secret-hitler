@@ -141,7 +141,9 @@
 		"inspect": "nodemon --inspect=9137 bin/dev.js",
 		"server": "nodemon bin/dev.js",
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
-		"lint": "esw src/ scripts/ routes/ webpack/ models/ iso/"
+		"lint": "esw src/ scripts/ routes/ webpack/ models/ iso/",
+		"build-css:web": "node-sass --include-path src/scss src/scss/style-web.scss public/styles/style-web.css",
+		"build-css:dark": "node-sass --include-path src/scss src/scss/style-dark.scss public/styles/style-dark.css"
 	},
 	"husky": {
 		"hooks": {
