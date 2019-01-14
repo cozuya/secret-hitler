@@ -491,6 +491,10 @@ export class App extends React.Component {
 	}
 }
 
+App.defaultProps = {
+	gameInfo: {}
+};
+
 App.propTypes = {
 	dispatch: PropTypes.func,
 	userInfo: PropTypes.object,
