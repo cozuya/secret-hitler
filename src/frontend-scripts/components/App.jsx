@@ -147,7 +147,7 @@ export class App extends React.Component {
 		});
 
 		socket.on('joinGameRedirect', uid => {
-			window.location.pathname = `table/${uid}`;
+			window.location.pathname = `/game/table/${uid}`;
 		});
 
 		socket.on('gameUpdate', (game, noChat) => {

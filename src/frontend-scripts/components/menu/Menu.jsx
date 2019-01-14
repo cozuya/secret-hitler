@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
 import $ from 'jquery';
 import classnames from 'classnames';
+import { Link } from 'react-router-dom';
 
 import { viewPatchNotes } from '../../actions/actions';
 
@@ -244,13 +245,13 @@ class Menu extends React.Component {
 									inverted
 									className="settings-popup"
 									trigger={
-										<a href="#/settings">
+										<Link to={'/game/settings'}>
 											<i
 												className={classnames('setting icon large', {
 													disabled: gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted
 												})}
 											/>
-										</a>
+										</Link>
 									}
 									content="Settings"
 								/>

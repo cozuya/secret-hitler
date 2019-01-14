@@ -250,7 +250,7 @@ app.use((req, res, next) => {
 		<meta content="Games: ${acc.wins + acc.losses}
 Overall Elo: ${acc.eloOverall.toFixed(0)}
 Seasonal Elo: ${acc.eloSeason.toFixed(0)}
-Win Rate: ${(acc.wins / (acc.wins + acc.losses) * 100).toFixed(0)}%" property="og:description">
+Win Rate: ${((acc.wins / (acc.wins + acc.losses)) * 100).toFixed(0)}%" property="og:description">
 		<meta content="${type}" property="og:site_name">
 		<meta content="/genimg/?prof=${acc.username}&time=${Date.now()}" property="og:image">
 	</head>
@@ -351,7 +351,10 @@ if (process.env.DISCORDCLIENTID) {
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
+mongoose.connect(
+	`mongodb://localhost:27017/secret-hitler-app`,
+	{ useNewUrlParser: true }
+);
 mongoose.set('useCreateIndex', true);
 mongoose.Promise = global.Promise;
 

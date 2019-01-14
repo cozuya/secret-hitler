@@ -106,14 +106,10 @@ module.exports = () => {
 	});
 
 	app.get('/game', ensureAuthenticated, (req, res) => {
-		res.redirect('/game/');
-	});
-
-	app.get('/game/', ensureAuthenticated, (req, res) => {
 		const { username } = req.user;
 
 		if (req.user.isBanned) {
-			res.redirect('/observe/');
+			res.redirect('/observe');
 		} else {
 			Account.findOne({ username }, (err, account) => {
 				if (err) {
@@ -142,10 +138,6 @@ module.exports = () => {
 	});
 
 	app.get('/observe', (req, res) => {
-		res.redirect('/observe/');
-	});
-
-	app.get('/observe/', (req, res) => {
 		if (req.user) {
 			req.session.destroy();
 			req.logout();

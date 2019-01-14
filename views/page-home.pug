@@ -1,14 +1,14 @@
 extends layout
 block content
 	if username
-		a(href="/game/") Game Lobby
+		a(href="/game") Game Lobby
 			#header-container.ui.segment
 				div.online-count
 					i.chrome.icon
 					| players online now
 
 	else
-		a(href="/observe/") Game Lobby
+		a(href="/observe") Game Lobby
 			#header-container.ui.segment
 				div.online-count
 					i.chrome.icon

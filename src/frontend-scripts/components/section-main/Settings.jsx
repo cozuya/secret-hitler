@@ -5,6 +5,7 @@ import Modal from 'semantic-ui-modal';
 import Checkbox from 'semantic-ui-checkbox';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 $.fn.checkbox = Checkbox;
 $.fn.modal = Modal;
@@ -51,7 +52,7 @@ class Settings extends React.Component {
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
 
 		this.setState({
@@ -321,9 +322,9 @@ class Settings extends React.Component {
 
 		return (
 			<section className="settings">
-				<a href="/game/#/">
+				<Link to={'/game'}>
 					<i className="remove icon" />
-				</a>
+				</Link>
 				<div className="ui header">
 					<div className="content">
 						Game settings
@@ -611,7 +612,8 @@ Settings.defaultProps = {
 
 Settings.propTypes = {
 	userInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	gameSettings: PropTypes.object
 };
 
 export default Settings;
