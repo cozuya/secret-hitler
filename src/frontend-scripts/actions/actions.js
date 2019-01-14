@@ -16,15 +16,6 @@ export function updateUser(user) {
 	};
 }
 
-export const UPDATE_MIDSECTION = 'UPDATE_MIDSECTION';
-
-export function updateMidsection(midSection) {
-	return {
-		type: UPDATE_MIDSECTION,
-		midSection
-	};
-}
-
 export const TOGGLE_NOTES = 'TOGGLE_NOTES';
 
 export function toggleNotes(notesShown) {

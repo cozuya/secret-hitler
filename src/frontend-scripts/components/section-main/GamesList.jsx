@@ -1,9 +1,11 @@
 import React from 'react'; // eslint-disable-line
-import DisplayLobbies from './DisplayLobbies.jsx';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'semantic-ui-react';
 import moment from 'moment';
 import { CURRENTSEASONNUMBER } from '../../constants';
+import { Link } from 'react-router-dom';
+
+import DisplayLobbies from './DisplayLobbies.jsx';
 
 export class GamesList extends React.Component {
 	constructor() {
@@ -223,9 +225,9 @@ export class GamesList extends React.Component {
 						const gameBeingCreated = this.props.midSection === 'createGame';
 
 						return userName && !gameBeingCreated ? (
-							<a className="fluid ui button primary create-game-button" href="#/creategame">
+							<Link className="fluid ui button primary create-game-button" to={'/game/creategame'}>
 								Create a new game
-							</a>
+							</Link>
 						) : (
 							<span className="disabled-create-game-button">
 								<button className="fluid ui button primary disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>

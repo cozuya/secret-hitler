@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import {
 	UPDATE_USER,
-	UPDATE_MIDSECTION,
 	UPDATE_GAMELIST,
 	UPDATE_GAMEINFO,
 	UPDATE_USERLIST,
@@ -26,15 +25,6 @@ const userInfo = (state = {}, action) => {
 	switch (action.type) {
 		case UPDATE_USER:
 			state = action.user;
-			break;
-	}
-	return state;
-};
-
-const midSection = (state = 'default', action) => {
-	switch (action.type) {
-		case UPDATE_MIDSECTION:
-			state = action.midSection;
 			break;
 	}
 	return state;
@@ -149,7 +139,6 @@ const replay = (state = { status: 'INITIAL' }, action) => {
 
 export default combineReducers({
 	userInfo,
-	midSection,
 	gameList,
 	gameInfo,
 	userList,

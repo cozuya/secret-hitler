@@ -4,6 +4,8 @@ import { Range } from 'rc-slider';
 import Checkbox from 'semantic-ui-checkbox';
 import blacklistedWords from '../../../../iso/blacklistwords';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+
 import { renderFlagDropdown } from '../utils.jsx';
 
 $.fn.checkbox = Checkbox;
@@ -12,7 +14,6 @@ export default class Creategame extends React.Component {
 	constructor() {
 		super();
 
-		this.createNewGame = this.createNewGame.bind(this);
 		this.sliderChange = this.sliderChange.bind(this);
 		this.customGameSliderChange = this.customGameSliderChange.bind(this);
 		this.eloSliderChange = this.eloSliderChange.bind(this);
@@ -373,12 +374,12 @@ export default class Creategame extends React.Component {
 		});
 	}
 
-	createNewGame() {
+	createNewGame = () => {
 		const $creategame = $('section.creategame');
 		const { userInfo } = this.props;
-		const { customGameSettings, customGameSliderValue } = this.state;
+		const { customGameSettings, customGameSliderValue, privateShowing, checkedSliderValues, sliderValues } = this.state;
 
-		if (userInfo.gameSettings.isPrivate && !this.state.privateShowing) {
+		if (userInfo.gameSettings.isPrivate && !privateShowing) {
 			return;
 		}
 
@@ -395,11 +396,11 @@ export default class Creategame extends React.Component {
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			window.alert('Sorry, this service is currently unavailable.');
 		} else {
-			const excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
+			const excludedPlayerCount = checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 			const data = {
 				gameName: $creategame.find('div.gamename input').val() || 'New Game',
 				flag: $creategame.find('div.flag input').val() || 'none',
-				minPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.sliderValues[0],
+				minPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : sliderValues[0],
 				excludedPlayerCount,
 				maxPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.isTourny ? undefined : this.state.sliderValues[1],
 				experiencedMode: this.state.experiencedmode,
@@ -443,7 +444,7 @@ export default class Creategame extends React.Component {
 
 			this.props.socket.emit('addNewGame', data);
 		}
-	}
+	};
 
 	renderPlayerSlider() {
 		const { isTourny, customGameSettings } = this.state;
@@ -557,7 +558,12 @@ export default class Creategame extends React.Component {
 	}
 
 	timedSliderChange(timedSliderValue) {
-		if (timedSliderValue < 30) this.state.casualgame = true;
+		if (timedSliderValue < 30) {
+			this.setState({
+				casualgame: true
+			});
+		}
+
 		this.setState({ timedSliderValue });
 	}
 
@@ -1028,9 +1034,9 @@ export default class Creategame extends React.Component {
 
 		return (
 			<section className="creategame">
-				<a href="#/">
+				<Link to="/game">
 					<i className="remove icon" />
-				</a>
+				</Link>
 				<div className="ui header">
 					<div className="content">Create a new game</div>
 				</div>

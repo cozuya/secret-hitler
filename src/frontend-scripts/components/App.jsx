@@ -5,7 +5,6 @@ import Gamenotes from './Gamenotes.jsx';
 import Playernotes from './Playernotes.jsx';
 import {
 	updateUser,
-	updateMidsection,
 	updateGameList,
 	updateGameInfo,
 	updateUserList,
@@ -63,39 +62,20 @@ class TopLevelErrorBoundry extends React.Component {
 }
 
 export class App extends React.Component {
-	constructor() {
-		super();
+	state = {
+		notesValue: '',
+		alertMsg: {
+			type: null,
+			data: null
+		},
+		allEmotes: []
+	};
 
-		this.handleSeatingUser = this.handleSeatingUser.bind(this);
-		this.handleLeaveGame = this.handleLeaveGame.bind(this);
-		this.makeQuickDefault = this.makeQuickDefault.bind(this);
-		this.changeNotesValue = this.changeNotesValue.bind(this);
-		this.changePlayerNotesValue = this.changePlayerNotesValue.bind(this);
-		this.touConfirmButton = this.touConfirmButton.bind(this);
-
-		this.state = {
-			notesValue: '',
-			alertMsg: {
-				type: null,
-				data: null
-			},
-			allEmotes: []
-		};
-
-		this.prevHash = '';
-		this.lastReconnectAttempt = new Date();
-	}
-
-	compononentDidUpdate() {
-		this.router();
-	}
+	lastReconnectAttempt = new Date();
 
 	componentDidMount() {
 		const { dispatch } = this.props;
 		const { classList } = document.getElementById('game-container');
-
-		window.addEventListener('hashchange', this.router.bind(this));
-		this.router.call(this); // uh..?
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1];
@@ -143,7 +123,7 @@ export class App extends React.Component {
 		});
 
 		socket.on('manualReplayRequest', uid => {
-			window.location.hash = uid ? `#/replay/${uid}` : /#/;
+			window.location.pathname = uid ? `/replay/${uid}` : '/';
 		});
 
 		socket.on('manualReload', () => {
@@ -167,11 +147,11 @@ export class App extends React.Component {
 		});
 
 		socket.on('joinGameRedirect', uid => {
-			dispatch(updateMidsection('game'));
-			window.location.hash = `#/table/${uid}`;
+			window.location.pathname = `table/${uid}`;
 		});
 
 		socket.on('gameUpdate', (game, noChat) => {
+			console.log(game);
 			if (noChat) {
 				const { gameInfo } = this.props;
 				game.chats = gameInfo.chats;
@@ -236,7 +216,7 @@ export class App extends React.Component {
 		});
 	}
 
-	touConfirmButton(e) {
+	touConfirmButton = e => {
 		e.preventDefault();
 		if (document.getElementById('touCheckBox').checked) {
 			socket.emit('confirmTOU');
@@ -247,7 +227,7 @@ export class App extends React.Component {
 				}
 			});
 		}
-	}
+	};
 
 	router() {
 		const { hash } = window.location;
@@ -283,7 +263,6 @@ export class App extends React.Component {
 					socket.emit('getGameInfo', gameInfo.general.uid);
 				} else {
 					// If they were already sitting at the table then just make sure they can see it and don't redirect away
-					dispatch(updateMidsection('game'));
 					window.location.hash = '#/table/' + gameInfo.general.uid;
 				}
 				// Prevent prevHash being incorrect after we are redirected
@@ -300,26 +279,19 @@ export class App extends React.Component {
 			updateStatus('replay', hash.split('#/replay/')[1]);
 			dispatch(fetchReplay(hash.split('#/replay/')[1]));
 		} else if (hash === '#/changelog') {
-			dispatch(updateMidsection('changelog'));
 		} else if (hash === '#/moderation' && userInfo.staffRole && userInfo.staffRole !== 'altmod') {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
-			dispatch(updateMidsection('moderation'));
 		} else if (hash === '#/playerreports' && userInfo.staffRole && userInfo.staffRole !== 'altmod') {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
-			dispatch(updateMidsection('reports'));
 		} else if (hash === '#/settings' && isAuthed) {
-			dispatch(updateMidsection('settings'));
 		} else if (hash === '#/creategame' && isAuthed) {
-			dispatch(updateMidsection('createGame'));
 		} else if (hash.substr(0, 8) === '#/table/') {
 			socket.emit('getGameInfo', hash.split('#/table/')[1]);
 		} else if (hash === '#/leaderboards') {
-			dispatch(updateMidsection('leaderboards'));
 		} else if (hash !== '#/') {
 			window.location.hash = '#/';
 		} else {
 			updateStatus('none');
-			dispatch(updateMidsection('default'));
 		}
 
 		this.prevHash = hash;
@@ -327,7 +299,7 @@ export class App extends React.Component {
 
 	// ***** begin dev helpers *****
 
-	makeQuickDefault() {
+	makeQuickDefault = () => {
 		const data = {
 			flag: 'none',
 			name: 'New Game',
@@ -346,12 +318,12 @@ export class App extends React.Component {
 			privatePassword: false
 		};
 
-		this.props.socket.emit('addNewGame', data);
-	}
+		socket.emit('addNewGame', data);
+	};
 
 	// ***** end dev helpers *****
 
-	handleSeatingUser(password) {
+	handleSeatingUser = password => {
 		const { gameInfo } = this.props;
 		const data = {
 			uid: gameInfo.general.uid,
@@ -359,9 +331,9 @@ export class App extends React.Component {
 		};
 
 		socket.emit('updateSeatedUser', data);
-	}
+	};
 
-	handleLeaveGame(manualLeaveGame) {
+	handleLeaveGame = manualLeaveGame => {
 		const { dispatch, userInfo, gameInfo } = this.props;
 
 		if (userInfo.isSeated) {
@@ -373,25 +345,26 @@ export class App extends React.Component {
 			userName: userInfo.userName,
 			uid: manualLeaveGame || gameInfo.general.uid
 		});
-	}
+	};
 
-	changeNotesValue(value) {
+	changeNotesValue = value => {
 		this.setState({
 			notesValue: value
 		});
-	}
+	};
 
-	changePlayerNotesValue(value) {
-		this.setState({
-			playerNotesValue: value
-		});
-	}
+	// changePlayerNotesValue = value => {
+	// 	this.setState({
+	// 		playerNotesValue: value
+	// 	});
+	// };
 
 	render() {
-		const { gameSettings } = this.props.userInfo;
+		const { notesActive, userInfo, gameInfo, userList, gameList, version, generalChats } = this.props;
+		const { gameSettings } = userInfo;
 		let classes = 'body-container';
 
-		if (this.props.midSection === 'game' || this.props.midSection === 'replay') {
+		if (Object.keys(gameInfo).length) {
 			classes += ' game';
 		}
 
@@ -411,7 +384,7 @@ export class App extends React.Component {
 							: '"Comfortaa", Lato, sans-serif'
 					}}
 				>
-					{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
+					{notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 
 					{this.props.playerNotesActive && (
 						<Playernotes
@@ -425,7 +398,7 @@ export class App extends React.Component {
 
 					<DevHelpers />
 
-					<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
+					<Menu userInfo={userInfo} gameInfo={gameInfo} />
 
 					{(() => {
 						if (this.state.alertMsg.type) {
@@ -449,8 +422,10 @@ export class App extends React.Component {
 													return (
 														<div key={index}>
 															<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Version {change.changeVer}</h4>
-															{change.changeDesc.split('\n').map(item => (
-																<p style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{item}</p>
+															{change.changeDesc.split('\n').map((item, index) => (
+																<p key={index} style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+																	{item}
+																</p>
 															))}
 														</div>
 													);
@@ -483,32 +458,27 @@ export class App extends React.Component {
 
 					<div className={classes}>
 						<Main
-							userInfo={this.props.userInfo}
-							midSection={this.props.midSection}
-							gameInfo={this.props.gameInfo}
+							userInfo={userInfo}
+							gameInfo={gameInfo}
 							onSeatingUser={this.handleSeatingUser}
 							quickDefault={this.makeQuickDefault}
 							onClickedTakeSeat={this.handleSeatingUser}
-							userList={this.props.userList}
+							userList={userList}
 							socket={socket}
-							version={this.props.version}
-							gameList={this.props.gameList}
+							version={version}
+							gameList={gameList}
 							allEmotes={this.state.allEmotes}
 						/>
 
 						{(() => {
-							if (
-								(this.props.midSection !== 'game' && this.props.midSection !== 'replay') ||
-								(this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.enableRightSidebarInGame)
-							) {
+							if (!Object.keys(gameInfo).length || (userInfo.gameSettings && userInfo.gameSettings.enableRightSidebarInGame)) {
 								return (
 									<RightSidebar
-										gameInfo={this.props.gameInfo}
-										userInfo={this.props.userInfo}
-										userList={this.props.userList}
-										generalChats={this.props.generalChats}
+										gameInfo={gameInfo}
+										userInfo={userInfo}
+										userList={userList}
+										generalChats={generalChats}
 										socket={socket}
-										midSection={this.props.midSection}
 										allEmotes={this.state.allEmotes}
 									/>
 								);
@@ -524,7 +494,6 @@ export class App extends React.Component {
 App.propTypes = {
 	dispatch: PropTypes.func,
 	userInfo: PropTypes.object,
-	midSection: PropTypes.string,
 	gameInfo: PropTypes.object,
 	gameList: PropTypes.array,
 	generalChats: PropTypes.object,

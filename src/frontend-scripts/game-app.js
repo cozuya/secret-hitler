@@ -12,6 +12,8 @@ import account from './account';
 import shapp from './reducers/sh-app';
 import polyfills from '../../iso/polyfills.js';
 import rootSaga from './sagas';
+import { Router, Route, Switch } from 'react-router-dom';
+import createBrowserHistory from 'history/createBrowserHistory';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const container = document.getElementById('game-container');
@@ -22,10 +24,16 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (container) {
 		const sagaMiddleware = createSagaMiddleware();
 		const store = createStore(shapp, applyMiddleware(sagaMiddleware));
+		const history = createBrowserHistory();
 		sagaMiddleware.run(rootSaga);
+
 		render(
 			<Provider store={store}>
-				<AppComponent />
+				<Router history={history}>
+					<Switch>
+						<Route path="/" render={routeProps => <AppComponent routeProps={routeProps} />} />
+					</Switch>
+				</Router>
 			</Provider>,
 			container
 		);
