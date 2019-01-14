@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS } from '../../constants';
-import { viewPatchNotes } from '../../actions/actions';
 import { Popup } from 'semantic-ui-react';
 import $ from 'jquery';
+import classnames from 'classnames';
+
+import { viewPatchNotes } from '../../actions/actions';
 
 const mapStateToProps = ({ version }) => ({ version });
 
@@ -14,19 +15,14 @@ const mapDispatchToProps = dispatch => ({
 		fetch('/viewPatchNotes', {
 			credentials: 'same-origin'
 		});
-		window.location.hash = '#/changelog';
+		window.location.pathname = '/game/changelog';
 	}
 });
 
 class Menu extends React.Component {
-	constructor() {
-		super();
-	}
-
 	componentDidMount() {
 		/*eslint-disable */
-		(function() {
-			'use strict';
+		(() => {
 			var TextEffect = {
 				init: function(options, elem) {
 					var _options = {};
@@ -191,15 +187,16 @@ class Menu extends React.Component {
 	}
 
 	render() {
-		let classes = 'ui menu nav-menu';
-
-		if (this.props.midSection === 'game') {
-			classes += ' game';
-		}
+		const { version, gameInfo, userInfo } = this.props;
+		const isGame = Boolean(Object.keys(gameInfo).length);
 
 		return (
 			<div className="menu-container" style={{ zIndex: 9999 }}>
-				<section className={classes}>
+				<section
+					className={classnames('ui menu nav-menu', {
+						game: isGame
+					})}
+				>
 					<a href="/" target="_blank">
 						SECRET HITLER.io
 					</a>
@@ -210,83 +207,66 @@ class Menu extends React.Component {
 							</a>{' '}
 							|{' '}
 							<a
-								className={
-									this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
-										? 'patch-alert'
-										: null
-								}
+								className={!isGame && version.lastSeen && version.current.number !== version.lastSeen ? 'patch-alert' : null}
 								onClick={this.props.readPatchNotes}
 							>
 								{' '}
-								{`v${this.props.version.current.number}`}{' '}
+								{`v${version.current.number}`}{' '}
 							</a>
 							|{' '}
-							<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
+							<a target="_blank" rel="noopener noreferrer" href="https://github.com/cozuya/secret-hitler/issues">
 								Feedback
 							</a>{' '}
 							|{' '}
-							<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
+							<a target="_blank" rel="noopener noreferrer" href="https://github.com/cozuya/secret-hitler/wiki">
 								Wiki
 							</a>{' '}
 							|{' '}
-							<a target="_blank" href="https://discord.gg/secrethitlerio">
+							<a target="_blank" rel="noopener noreferrer" href="https://discord.gg/secrethitlerio">
 								Discord
 							</a>
 						</span>
 					</div>
 					<div className="item right">
-						{(() => {
-							const { gameInfo, userInfo } = this.props;
-
-							/**
-							 * @return {string} classnames
-							 */
-							const iconClasses = () => {
-								let classes = 'setting icon large';
-
-								if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
-									classes += ' disabled';
-								}
-
-								return classes;
-							};
-
-							return !userInfo.userName ? (
-								<div className="ui buttons">
-									<div className="ui button" id="signin">
-										Log in
-									</div>
-									<div className="or" />
-									<div className="ui button" id="signup">
-										Sign up
-									</div>
+						{userInfo.userName ? (
+							<div>
+								<Popup
+									inverted
+									className="loggedin"
+									trigger={
+										<a href={`#/profile/${userInfo.userName}`}>
+											<span className="playername">{userInfo.userName}</span>
+										</a>
+									}
+									content="Profile"
+								/>
+								<Popup
+									inverted
+									className="settings-popup"
+									trigger={
+										<a href="#/settings">
+											<i
+												className={classnames('setting icon large', {
+													disabled: gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted
+												})}
+											/>
+										</a>
+									}
+									content="Settings"
+								/>
+							</div>
+						) : (
+							<div className="ui buttons">
+								<div className="ui button" id="signin">
+									Log in
 								</div>
-							) : (
-								<div>
-									<Popup
-										inverted
-										className="loggedin"
-										trigger={
-											<a href={`#/profile/${userInfo.userName}`}>
-												<span className="playername">{userInfo.userName}</span>
-											</a>
-										}
-										content="Profile"
-									/>
-									<Popup
-										inverted
-										className="settings-popup"
-										trigger={
-											<a href="#/settings">
-												<i className={iconClasses()} />
-											</a>
-										}
-										content="Settings"
-									/>
+								<div className="or" />
+								<div className="ui button" id="signup">
+									Sign up
 								</div>
-							);
-						})()}
-						{this.props.userInfo.userName && (
+							</div>
+						)}
+						{userInfo.userName && (
 							<div className="item right">
 								<a className="ui button" href="/observe">
 									Logout
@@ -303,7 +283,8 @@ class Menu extends React.Component {
 Menu.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	midSection: PropTypes.string
+	readPatchNotes: PropTypes.func,
+	version: PropTypes.object
 };
 
 export default connect(

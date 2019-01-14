@@ -1,9 +1,5 @@
-import React from 'react'; // eslint-disable-line no-unused-vars
+import React from 'react';
 
-/**
- * @param {object} rows - todo
- * @return {jsx}
- */
 const TBody = ({ rows }) => (
 	<tbody>
 		{rows.map((row, i) => {

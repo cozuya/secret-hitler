@@ -1,23 +1,9 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 const SidebarGame = ({ game, socket }) => {
-	const gameClasses = () => {
-		let classes = 'ui vertical segment';
-
-		if (game.gameStatus === 'isStarted') {
-			classes += ' inprogress';
-		} else if (game.gameStatus === 'fascist') {
-			classes += ' fascist';
-		} else if (game.gameStatus === 'liberal') {
-			classes += ' liberal';
-		} else {
-			classes += ' notstarted';
-		}
-
-		return classes;
-	};
 	const playersCount = () => {
 		const availableSeatCounts = new Array(game.maxPlayersCount)
 			.fill(true)
@@ -55,7 +41,12 @@ const SidebarGame = ({ game, socket }) => {
 			onClick={() => {
 				socket.emit('getGameInfo', game.uid);
 			}}
-			className={gameClasses()}
+			className={classnames('ui vertical segment', {
+				inprogress: game.gameStatus === 'isStarted',
+				fascist: game.gameStatus === 'fascist',
+				liberal: game.gameStatus === 'liberal',
+				notstarted: game.gameStatus === 'isStarted' && game.gameStatus === 'fascist' && game.gameStatus === 'liberal'
+			})}
 		>
 			{game.gameStatus === 'notStarted' ? (
 				<div>
