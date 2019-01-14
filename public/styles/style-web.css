@@ -70,6 +70,12 @@ p {
 span.emphasis {
   font-weight: 700; }
 
+#mobile-block {
+  display: none; }
+
+#window-block {
+  display: inline; }
+
 #top-menu {
   background: #000000;
   background: -moz-linear-gradient(left, #000000 0%, #100000 50%, #000000 100%);
@@ -95,6 +101,10 @@ span.emphasis {
 
 @media only screen and (max-width: 514px) {
   #top-menu > a {
+    display: none; }
+  #mobile-block {
+    display: inline; }
+  #window-block {
     display: none; } }
 
 .ui.grid.mainpage {
@@ -270,3 +280,9 @@ span.emphasis {
 
 ::-webkit-scrollbar-corner {
   background: transparent; }
+
+body.pushable > .pusher {
+  background-color: #201212; }
+
+body.pushable {
+  background: #201212 !important; }

@@ -39,72 +39,124 @@ html(lang="en")
 		meta(name="twitter:image" content="https://secrethitler.io/images/lizard.png")
 		title Secret Hitler.io
 	body
-		#main
-			if !game
-				nav.ui.secondary.pointing.top.fixed.inverted.menu#top-menu
-					.left.menu
-						if username
-							a.ui.button(href="/game/") Game Lobby
+		div.ui.left.vertical.inverted.menu.sidebar
+			if home
+				a.active.item Home
+			else
+				a.item(href="/") Home
+			if username
+				a.item(href="/game/") Game Lobby
+			else
+				a.item(href="/observe/") Game Lobby
+			if rules
+				a.active.item Rules
+			else
+				a.item(href="/rules") Rules
+
+			if howtoplay
+				a.active.item How to Play
+			else
+				a.item(href="/how-to-play") How to Play
+
+			if stats
+				a.active.item Stats
+			else
+				a.item(href="/stats") Stats
+
+			if polls
+				a.active.item Polls
+			else
+				a.item(href="/polls") Polls
+				
+			if discord
+				a.active.item Discord
+			else
+				a.item(href="https://discord.gg/secrethitlerio") Discord
+				
+			if github
+				a.active.item GitHub
+			else
+				a.item(href="https://github.com/cozuya/secret-hitler") GitHub
+
+			if tou
+				a.active.item Terms of Use
+			else
+				a.item(href="/tou") Terms of Use
+
+			if about
+				a.active.item About
+			else
+				a.item(href="/about") About
+
+		div.pusher
+			#body
+				if !game
+					nav.ui.secondary.pointing.top.fixed.inverted.menu#top-menu
+						.left.menu#window-block
+							if username
+								a.ui.button(href="/game/") Game Lobby
+							else
+								a.ui.button(href="/observe/") Game Lobby
+						.left.menu#mobile-block
+							a.ui.button#menupopout Menu
+						if home
+							a.active.item Home
 						else
-							a.ui.button(href="/observe/") Game Lobby
-					if home
-						a.active.item Home
-					else
-						a.item(href="/") Home
-					
-					if rules
-						a.active.item Rules
-					else
-						a.item(href="/rules") Rules
-
-					if howtoplay
-						a.active.item How to Play
-					else
-						a.item(href="/how-to-play") How to Play
-
-					if stats
-						a.active.item Stats
-					else
-						a.item(href="/stats") Stats
-
-					if polls
-						a.active.item Polls
-					else
-						a.item(href="/polls") Polls
+							a.item(href="/") Home
 						
-					if discord
-						a.active.item Discord
-					else
-						a.item(href="https://discord.gg/secrethitlerio") Discord
-						
-					if github
-						a.active.item GitHub
-					else
-						a.item(href="https://github.com/cozuya/secret-hitler") GitHub
+						if rules
+							a.active.item Rules
+						else
+							a.item(href="/rules") Rules
 
-					if tou
-						a.active.item Terms of Use
-					else
-						a.item(href="/tou") Terms of Use
+						if howtoplay
+							a.active.item How to Play
+						else
+							a.item(href="/how-to-play") How to Play
 
-					if about
-						a.active.item About
-					else
-						a.item(href="/about") About
+						if stats
+							a.active.item Stats
+						else
+							a.item(href="/stats") Stats
+
+						if polls
+							a.active.item Polls
+						else
+							a.item(href="/polls") Polls
+							
+						if discord
+							a.active.item Discord
+						else
+							a.item(href="https://discord.gg/secrethitlerio") Discord
+							
+						if github
+							a.active.item GitHub
+						else
+							a.item(href="https://github.com/cozuya/secret-hitler") GitHub
+
+						if tou
+							a.active.item Terms of Use
+						else
+							a.item(href="/tou") Terms of Use
+
+						if about
+							a.active.item About
+						else
+							a.item(href="/about") About
 
 
-					if username
-						div.item.right
-							a.right#logout(href="#", style="margin-right: 20px;") Logout
-							a.right(href="/account", style="color: #85d42a")
-								= username + '\'s account'
-					else
-						.right.menu
-							.ui.buttons
-								button.ui.button#signin Log In
-								.or
-								button.ui.button#signup Sign Up
-			block content
+						if username
+							div.item.right
+								a.right#logout(href="#", style="margin-right: 20px;") Logout
+								a.right(href="/account", style="color: #85d42a")
+									= username + '\'s account'
+						else
+							.right.menu
+								.ui.buttons
+									button.ui.button#signin Log In
+									.or
+									button.ui.button#signup Sign Up
+				block content
 		
 		section.add-email-modal.ui.modal.small.segment.column
 			h2.header Add an email address to your account and request a verification email
