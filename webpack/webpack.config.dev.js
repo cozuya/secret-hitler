@@ -1,22 +1,30 @@
 const path = require('path');
-// const Reload = require('webpack-livereload-plugin');
-// const CleanWebpackPlugin = require('clean-webpack-plugin');
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const extractSass = new ExtractTextPlugin({
+	filename: '../styles/style-main.css'
+});
 
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
-	plugins: [
-		// new Reload(),
-		// new CleanWebpackPlugin(['../public/scripts']),
-		// new HtmlWebpackPlugin({
-		// 	title: 'caching'
-		// })
-	],
 	output: {
-		filename: 'bundle.js',
+		filename: `bundle.js`,
 		path: path.resolve(__dirname, '../public/scripts')
 	},
-	devtool: 'inline-source-map',
+	plugins: [extractSass],
+	optimization: {
+		minimizer: [
+			new UglifyJSPlugin({
+				parallel: true,
+				uglifyOptions: {
+					mangle: false,
+					keep_classnames: true,
+					keep_fnames: true
+				}
+			})
+		]
+	},
+	devtool: 'cheap-module-source-map',
 	module: {
 		rules: [
 			{
@@ -39,33 +47,23 @@ module.exports = {
 			},
 			{
 				test: /\.(js|jsx)$/,
-				use: {
-					loader: 'babel-loader',
-					query: {
-						presets: ['stage-2']
-					}
-				},
+				use: ['babel-loader'],
 				exclude: /node_modules/
 			},
 			{
 				test: /\.scss$/,
-				use: [
-					{
-						loader: 'style-loader'
-					},
-					{
-						loader: 'css-loader',
-						options: {
-							sourceMap: true
+				use: extractSass.extract({
+					use: [
+						{
+							loader: 'css-loader',
+							options: { minimize: true }
+						},
+						{
+							loader: 'sass-loader'
 						}
-					},
-					{
-						loader: 'sass-loader',
-						options: {
-							sourceMap: true
-						}
-					}
-				]
+					],
+					fallback: 'style-loader'
+				})
 			}
 		]
 	}

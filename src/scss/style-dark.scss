@@ -69,11 +69,14 @@
 		max-width: 350px !important;
 	}
 }
+
 @media screen and (max-width: 1220px) {
 	.section-right {
 		width: 350px;
 	}
 }
+
+
 
 .ui.modal.transition {
 	margin-top: 0px !important;
@@ -243,6 +246,11 @@
 		.center-menu-links {
 			min-width: 350px;
 			margin: auto;
+		}
+		@media screen and (max-width: 950px) {
+			.center-menu-links {
+				display: none;
+			}
 		}
 		.button {
 			background: $secondary;
@@ -786,7 +794,7 @@
 body {
 	background-color: #1b1b1b;
 	min-height: 595px;
-	min-width: 1070px;
+	min-width: 540px;
 	overflow: auto;
 }
 
