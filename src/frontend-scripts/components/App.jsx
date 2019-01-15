@@ -147,11 +147,10 @@ export class App extends React.Component {
 		});
 
 		socket.on('joinGameRedirect', uid => {
-			window.location.pathname = `/game/table/${uid}`;
+			this.props.routeProps.history.push(`/game/table/${uid}`);
 		});
 
 		socket.on('gameUpdate', (game, noChat) => {
-			console.log(game);
 			if (noChat) {
 				const { gameInfo } = this.props;
 				game.chats = gameInfo.chats;
@@ -501,7 +500,8 @@ App.propTypes = {
 	gameInfo: PropTypes.object,
 	gameList: PropTypes.array,
 	generalChats: PropTypes.object,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	routeProps: PropTypes.object
 };
 
 export default connect(select)(App);

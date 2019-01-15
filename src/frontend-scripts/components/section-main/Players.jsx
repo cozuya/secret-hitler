@@ -196,7 +196,7 @@ class Players extends React.Component {
 					this.forceUpdate();
 				}
 			}, 2000);
-			return <img className="is-typing" src="../images/typing.gif" />;
+			return <img className="is-typing" src="../../images/typing.gif" />;
 		}
 	}
 
@@ -265,10 +265,10 @@ class Players extends React.Component {
 					!isBlind &&
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+								backgroundImage: `url(../../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
 						  }
 						: {
-								backgroundImage: `url(../images/default_cardback.png)`
+								backgroundImage: `url(../../images/default_cardback.png)`
 						  }
 				}
 				className={(() => {

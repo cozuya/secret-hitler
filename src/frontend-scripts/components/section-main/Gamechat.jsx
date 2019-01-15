@@ -21,19 +21,8 @@ class Gamechat extends React.Component {
 	constructor() {
 		super();
 
-		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
 		this.chatDisabled = this.chatDisabled.bind(this);
-		this.handleSubmit = this.handleSubmit.bind(this);
-		this.handleTyping = this.handleTyping.bind(this);
-		this.handleChatLockClick = this.handleChatLockClick.bind(this);
-		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
-		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
-		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
-		this.handleNoteClick = this.handleNoteClick.bind(this);
-		this.handleChatScrolled = this.handleChatScrolled.bind(this);
-		this.handleInsertEmote = this.handleInsertEmote.bind(this);
 		this.gameChatStatus = this.gameChatStatus.bind(this);
-		this.handleSubscribeModChat = this.handleSubscribeModChat.bind(this);
 
 		this.state = {
 			lock: false,
@@ -110,7 +99,7 @@ class Gamechat extends React.Component {
 		}
 	};
 
-	handleWhitelistPlayers() {
+	handleWhitelistPlayers = () => {
 		this.setState({
 			playersToWhitelist: this.props.userList.list
 				.filter(user => user.userName !== this.props.userInfo.userName)
@@ -118,14 +107,14 @@ class Gamechat extends React.Component {
 		});
 
 		$(this.whitelistModal).modal('show');
-	}
+	};
 
-	handleNoteClick() {
+	handleNoteClick = () => {
 		const { notesActive, toggleNotes } = this.props;
 
 		toggleNotes(!notesActive);
 		this.setState({ notesEnabled: !notesActive });
-	}
+	};
 
 	renderNotes() {
 		if (this.state.notesEnabled) {
@@ -141,7 +130,7 @@ class Gamechat extends React.Component {
 		}
 	}
 
-	handleClickedLeaveGame() {
+	handleClickedLeaveGame = () => {
 		const { userInfo, gameInfo } = this.props;
 
 		if (userInfo.isSeated && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
@@ -151,9 +140,9 @@ class Gamechat extends React.Component {
 		} else {
 			window.location.hash = '#/';
 		}
-	}
+	};
 
-	handleTyping(e) {
+	handleTyping = e => {
 		e.preventDefault();
 
 		const { userInfo, gameInfo, updateTyping, isTyping, socket } = this.props;
@@ -200,13 +189,13 @@ class Gamechat extends React.Component {
 				});
 			}
 		}
-	}
+	};
 
 	chatDisabled() {
 		return this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
 	}
 
-	handleSubmit(e) {
+	handleSubmit = e => {
 		e.preventDefault();
 		if (this.chatDisabled()) return;
 
@@ -235,14 +224,14 @@ class Gamechat extends React.Component {
 				}
 			}, 80);
 		}
-	}
+	};
 
-	handleSubscribeModChat() {
+	handleSubscribeModChat = () => {
 		if (confirm('Are you sure you want to subscribe to mod-only chat to see private information?')) {
 			const { gameInfo } = this.props;
 			this.props.socket.emit('subscribeModChat', gameInfo.general.uid);
 		}
-	}
+	};
 
 	scrollChats() {
 		if (!this.state.lock) {
@@ -250,7 +239,7 @@ class Gamechat extends React.Component {
 		}
 	}
 
-	handleChatFilterClick(e) {
+	handleChatFilterClick = e => {
 		const filter = e.currentTarget.getAttribute('data-filter');
 		switch (filter) {
 			case 'Player':
@@ -268,7 +257,7 @@ class Gamechat extends React.Component {
 			default:
 				console.log(`Unknown filter: ${filter}`);
 		}
-	}
+	};
 
 	handleTimestamps(timestamp) {
 		const { userInfo } = this.props;
@@ -282,27 +271,27 @@ class Gamechat extends React.Component {
 		}
 	}
 
-	handleChatLockClick() {
+	handleChatLockClick = () => {
 		if (this.state.lock) {
 			this.setState({ lock: false });
 		} else {
 			this.setState({ lock: true });
 		}
-	}
+	};
 
-	handleClickedClaimButton() {
+	handleClickedClaimButton = () => {
 		const { gameInfo, userInfo } = this.props;
 		const playerIndex = gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName);
 
 		this.setState({
 			claim: this.state.claim ? '' : gameInfo.playersState[playerIndex].claim
 		});
-	}
+	};
 
-	handleInsertEmote(emote) {
+	handleInsertEmote = emote => {
 		this.gameChatInput.value += ` ${emote}`;
 		this.gameChatInput.focus();
-	}
+	};
 
 	renderModEndGameButtons() {
 		const modalClick = () => {
