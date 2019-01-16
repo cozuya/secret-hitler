@@ -251,6 +251,9 @@
 			.center-menu-links {
 				display: none;
 			}
+			.right.menu {
+				display: none;
+			}
 		}
 		.button {
 			background: $secondary;
@@ -264,6 +267,40 @@
 			}
 		}
 	}
+	.menu-container-mobile {
+		display : none;
+		background-color: $primary;
+		a {
+			cursor: pointer;
+			font-weight: bold;
+			color: white;
+		}
+		a:hover {
+			color: #eee;
+		}
+		.center-menu-links {
+		}
+		.button {
+			background: $secondary;
+		}
+		.patch-alert {
+			animation: blinker 2s linear infinite;
+		}
+		@keyframes blinker {
+			50% {
+				opacity: 0.2;
+			}
+		}
+	}
+
+@media screen and (max-width: 950px) {
+	.menu-container-mobile {
+		display: flex;
+	}
+	.ui.buttons {
+		margin: auto;
+	}
+}
 	// Not used in new layout yet
 	.poll {
 		position: absolute;
@@ -794,7 +831,6 @@
 body {
 	background-color: #1b1b1b;
 	min-height: 595px;
-	min-width: 540px;
 	overflow: auto;
 }
 

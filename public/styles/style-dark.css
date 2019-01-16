@@ -3155,6 +3155,8 @@
       margin: auto; }
     @media screen and (max-width: 950px) {
       #main .menu-container .center-menu-links {
+        display: none; }
+      #main .menu-container .right.menu {
         display: none; } }
     #main .menu-container .button {
       background: #627cc8; }
@@ -3164,6 +3166,28 @@
 @keyframes blinker {
   50% {
     opacity: 0.2; } }
+  #main .menu-container-mobile {
+    display: none;
+    background-color: #4169e1; }
+    #main .menu-container-mobile a {
+      cursor: pointer;
+      font-weight: bold;
+      color: white; }
+    #main .menu-container-mobile a:hover {
+      color: #eee; }
+    #main .menu-container-mobile .button {
+      background: #627cc8; }
+    #main .menu-container-mobile .patch-alert {
+      animation: blinker 2s linear infinite; }
+
+@keyframes blinker {
+  50% {
+    opacity: 0.2; } }
+  @media screen and (max-width: 950px) {
+    #main .menu-container-mobile {
+      display: flex; }
+    #main .ui.buttons {
+      margin: auto; } }
   #main .poll {
     position: absolute;
     left: 600px;
@@ -3554,6 +3578,7 @@
 
 body {
   background-color: #1b1b1b;
+  min-height: 595px;
   overflow: auto; }
 
 .app-hidden {
