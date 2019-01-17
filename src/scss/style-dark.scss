@@ -673,6 +673,11 @@
 		display: flex;
 		margin-right: auto;
 	}
+	@media screen and (max-width: 950px) {
+		.section-right {
+			display: none;
+		}
+	}
 	// quick hack to get sidebar in-game working for now
 	.body-container.game {
 		.section-right {

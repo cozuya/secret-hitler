@@ -3459,6 +3459,9 @@
   #main .section-right {
     display: flex;
     margin-right: auto; }
+  @media screen and (max-width: 950px) {
+    #main .section-right {
+      display: none; } }
   #main .body-container.game .section-right {
     width: 250px;
     flex-direction: column !important;

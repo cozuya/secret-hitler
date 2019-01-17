@@ -390,7 +390,7 @@ class Menu extends React.Component {
 								</div>
 							)}
 						</div>
-						<button class="ui right menu floating primary button" id="chatsidebar">
+						<button className="ui right menu floating primary button" id="chatsidebar">
 							Chat
 						</button>
 					</section>
