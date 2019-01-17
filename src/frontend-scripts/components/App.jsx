@@ -418,8 +418,6 @@ export class App extends React.Component {
 						/>
 					)}
 
-					<DevHelpers />
-
 					<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
 
 					{(() => {
