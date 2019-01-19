@@ -24,12 +24,12 @@ export default class Creategame extends React.Component {
 			experiencedmode: true,
 			disablechat: false,
 			disablegamechat: false,
-			disableobserver: false,
+			disableobserver: true,
 			privateShowing: false,
 			containsBadWord: false,
 			rainbowgame: false,
 			checkedSliderValues: new Array(6).fill(true),
-			checkedRebalanceValues: new Array(3).fill(true),
+			checkedRebalanceValues: new Array(3).fill(false),
 			privateonlygame: false,
 			isTourny: false,
 			casualgame: false,
@@ -1128,6 +1128,21 @@ export default class Creategame extends React.Component {
 									})()}
 								</span>
 							)}
+							<span
+								title="May glitch out - use with caution"
+								style={{
+									color: 'red',
+									position: 'absolute',
+									left: '-130px',
+									top: '40px'
+								}}
+							>
+								<i className="warning icon" style={{ color: 'red' }} />
+								Caution: <br />
+								May glitch out
+								<br />
+								Use with caution
+							</span>
 							<i className="big hourglass half icon" />
 							<h4 className="ui header">
 								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
@@ -1248,7 +1263,7 @@ export default class Creategame extends React.Component {
 										this.disableobserver = c;
 									}}
 								>
-									<input type="checkbox" name="disableobserver" defaultChecked={false} />
+									<input type="checkbox" name="disableobserver" defaultChecked={true} />
 								</div>
 							</div>
 						)}
