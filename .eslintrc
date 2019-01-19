@@ -28,6 +28,7 @@
 		"react/jsx-uses-vars": "error",
 		"react/jsx-uses-react": "error",
 		"react/jsx-indent-props": "off",
+		"react/no-unescaped-entities": "off",
 		"object-curly-spacing": "off",
 		"array-bracket-spacing": "off",
 		"no-invalid-this": 0

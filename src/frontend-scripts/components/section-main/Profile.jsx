@@ -14,20 +14,13 @@ const mapDispatchToProps = dispatch => ({
 });
 
 class ProfileWrapper extends React.Component {
-	constructor() {
-		super();
-
-		this.state = {
-			bioStatus: 'displayed',
-			bioValue: '',
-			blacklistClicked: false,
-			blacklistShown: false,
-			openTime: Date.now()
-		};
-
-		this.showBlacklist = this.showBlacklist.bind(this);
-		this.blackListClick = this.blackListClick.bind(this);
-	}
+	state = {
+		bioStatus: 'displayed',
+		bioValue: '',
+		blacklistClicked: false,
+		blacklistShown: false,
+		openTime: Date.now()
+	};
 
 	formatDateString(dateString) {
 		const date = new Date(dateString);
@@ -208,7 +201,7 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
-	blackListClick(e) {
+	blackListClick = e => {
 		const { gameSettings } = this.props.userInfo;
 		const { profile } = this.props;
 		const name = profile._id;
@@ -231,7 +224,7 @@ class ProfileWrapper extends React.Component {
 				this.props.socket.emit('updateGameSettings', { blacklist: gameSettings.blacklist });
 			}
 		);
-	}
+	};
 
 	renderBlacklist() {
 		const { gameSettings } = this.props.userInfo;
@@ -243,9 +236,9 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
-	showBlacklist() {
+	showBlacklist = () => {
 		$(this.blacklistModal).modal('show');
-	}
+	};
 
 	Profile() {
 		const { gameSettings, profile, userInfo, userList } = this.props;

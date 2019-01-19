@@ -7,35 +7,28 @@ import Checkbox from 'semantic-ui-checkbox';
 $.fn.checkbox = Checkbox;
 
 export default class Moderation extends React.Component {
-	constructor() {
-		super();
-
-		this.togglePlayerList = this.togglePlayerList.bind(this);
-		this.broadcastClick = this.broadcastClick.bind(this);
-		this.handleBroadcastSubmit = this.handleBroadcastSubmit.bind(this);
-		this.state = {
-			selectedUser: '',
-			userList: [],
-			actionTextValue: '',
-			log: [],
-			playerListShown: true,
-			broadcastText: '',
-			playerInputText: '',
-			resetServerCount: 0,
-			logCount: 1,
-			modLogToday: false,
-			nonSeasonalSetStats: false,
-			logSort: {
-				type: 'date',
-				direction: 'descending'
-			},
-			userSort: {
-				type: 'username',
-				direction: 'descending'
-			},
-			hideActions: false
-		};
-	}
+	state = {
+		selectedUser: '',
+		userList: [],
+		actionTextValue: '',
+		log: [],
+		playerListShown: true,
+		broadcastText: '',
+		playerInputText: '',
+		resetServerCount: 0,
+		logCount: 1,
+		modLogToday: false,
+		nonSeasonalSetStats: false,
+		logSort: {
+			type: 'date',
+			direction: 'descending'
+		},
+		userSort: {
+			type: 'username',
+			direction: 'descending'
+		},
+		hideActions: false
+	};
 
 	componentDidMount() {
 		const self = this;
@@ -179,9 +172,9 @@ export default class Moderation extends React.Component {
 		this.props.socket.off('modInfo');
 	}
 
-	togglePlayerList() {
+	togglePlayerList = () => {
 		this.setState({ playerListShown: !this.state.playerListShown });
-	}
+	};
 
 	renderPlayerInput() {
 		const playerInputKeyup = e => {
@@ -875,13 +868,13 @@ export default class Moderation extends React.Component {
 		return <textarea placeholder="Comment" value={this.state.actionTextValue} onChange={handleTextChange} spellCheck="false" />;
 	}
 
-	broadcastClick(e) {
+	broadcastClick = e => {
 		e.preventDefault();
 
 		$(this.bModal).modal('show');
-	}
+	};
 
-	handleBroadcastSubmit(e) {
+	handleBroadcastSubmit = e => {
 		e.preventDefault();
 		$(this.bModal).modal('hide');
 
@@ -895,7 +888,7 @@ export default class Moderation extends React.Component {
 		this.setState({
 			broadcastText: ''
 		});
-	}
+	};
 
 	render() {
 		const { userSort, hideActions } = this.state;
