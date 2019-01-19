@@ -285,6 +285,7 @@ Menu.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	readPatchNotes: PropTypes.func,
+	midSection: PropTypes.string,
 	version: PropTypes.object
 };
 

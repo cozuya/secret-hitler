@@ -38,6 +38,8 @@ cd secret-hitler
 yarn
 ```
 
+If you're receiving an error like "Found incompatible module", try using `yarn --ignore-engines`
+
 ## Running in dev mode
 
 **Start development:**

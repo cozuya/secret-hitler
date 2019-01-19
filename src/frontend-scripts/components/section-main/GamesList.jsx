@@ -8,21 +8,16 @@ import { Link } from 'react-router-dom';
 import DisplayLobbies from './DisplayLobbies.jsx';
 
 export class GamesList extends React.Component {
-	constructor() {
-		super();
+	state = {
+		filtersVisible: false
+	};
 
-		this.toggleFilter = this.toggleFilter.bind(this);
-		this.state = {
-			filtersVisible: false
-		};
-	}
-
-	toggleFilter(value) {
+	toggleFilter = value => {
 		const { gameFilter, changeGameFilter } = this.props;
 
 		gameFilter[value] = !gameFilter[value];
 		changeGameFilter(gameFilter);
-	}
+	};
 
 	renderFilters() {
 		const { gameFilter } = this.props;

@@ -18,26 +18,19 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = ({ notesActive, isTyping }) => ({ notesActive, isTyping });
 
 class Gamechat extends React.Component {
-	constructor() {
-		super();
-
-		this.chatDisabled = this.chatDisabled.bind(this);
-		this.gameChatStatus = this.gameChatStatus.bind(this);
-
-		this.state = {
-			lock: false,
-			claim: '',
-			playersToWhitelist: [],
-			notesEnabled: false,
-			showFullChat: false,
-			showPlayerChat: true,
-			showGameChat: true,
-			showObserverChat: true,
-			badWord: [null, null],
-			textLastChanged: 0,
-			textChangeTimer: -1
-		};
-	}
+	state = {
+		lock: false,
+		claim: '',
+		playersToWhitelist: [],
+		notesEnabled: false,
+		showFullChat: false,
+		showPlayerChat: true,
+		showGameChat: true,
+		showObserverChat: true,
+		badWord: [null, null],
+		textLastChanged: 0,
+		textChangeTimer: -1
+	};
 
 	componentDidMount() {
 		this.scrollChats();
@@ -191,18 +184,27 @@ class Gamechat extends React.Component {
 		}
 	};
 
-	chatDisabled() {
+	chatDisabled = () => {
 		return this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
-	}
+	};
 
 	handleSubmit = e => {
+		const { updateTyping, isTyping, userInfo } = this.props;
+
 		e.preventDefault();
-		if (this.chatDisabled()) return;
+
+		if (this.chatDisabled()) {
+			return;
+		}
 
 		const currentValue = this.gameChatInput.value;
 		const { gameInfo } = this.props;
 
 		if (currentValue.length < 300 && currentValue && !$('.expando-container + div').hasClass('disabled')) {
+			updateTyping({
+				...isTyping,
+				[userInfo.userName]: null
+			});
 			const chat = {
 				chat: currentValue,
 				uid: gameInfo.general.uid
@@ -307,7 +309,7 @@ class Gamechat extends React.Component {
 		);
 	}
 
-	gameChatStatus() {
+	gameChatStatus = () => {
 		const { userInfo, gameInfo } = this.props;
 		const { gameState, publicPlayersState } = gameInfo;
 		const { gameSettings, userName, isSeated } = userInfo;
@@ -408,7 +410,7 @@ class Gamechat extends React.Component {
 			isDisabled: false,
 			placeholder: 'Send a message'
 		};
-	}
+	};
 
 	processChats() {
 		const { gameInfo, userInfo, userList, isReplay } = this.props;

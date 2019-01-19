@@ -11,49 +11,40 @@ import { renderFlagDropdown } from '../utils.jsx';
 $.fn.checkbox = Checkbox;
 
 export default class Creategame extends React.Component {
-	constructor() {
-		super();
-
-		this.sliderChange = this.sliderChange.bind(this);
-		this.customGameSliderChange = this.customGameSliderChange.bind(this);
-		this.eloSliderChange = this.eloSliderChange.bind(this);
-		this.timedSliderChange = this.timedSliderChange.bind(this);
-
-		this.state = {
-			gameName: '',
-			sliderValues: [5, 10],
-			experiencedmode: true,
-			disablechat: false,
-			disablegamechat: false,
-			disableobserver: false,
-			privateShowing: false,
-			containsBadWord: false,
-			rainbowgame: false,
-			checkedSliderValues: new Array(6).fill(true),
-			checkedRebalanceValues: new Array(3).fill(true),
-			privateonlygame: false,
-			isTourny: false,
-			casualgame: false,
-			blindMode: false,
-			timedMode: false,
-			isVerifiedOnly: false,
-			timedSliderValue: [120],
-			customGameSliderValue: [7],
-			eloSliderValue: [1600],
-			isEloLimited: false,
-			customGameSettings: {
-				enabled: false,
-				// Valid powers: investigate, deckpeek, election, bullet; null for no power
-				powers: [null, null, null, null, null], // last "power" is always a fas victory
-				hitlerZone: 3, // 1-5
-				vetoZone: 5, // 1-5, must be larger than fas track state
-				fascistCount: 1, // 1-3, does not include hit
-				hitKnowsFas: false,
-				deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-				trackState: { lib: 0, fas: 0 }
-			}
-		};
-	}
+	state = {
+		gameName: '',
+		sliderValues: [5, 10],
+		experiencedmode: true,
+		disablechat: false,
+		disablegamechat: false,
+		disableobserver: false,
+		privateShowing: false,
+		containsBadWord: false,
+		rainbowgame: false,
+		checkedSliderValues: new Array(6).fill(true),
+		checkedRebalanceValues: new Array(3).fill(true),
+		privateonlygame: false,
+		isTourny: false,
+		casualgame: false,
+		blindMode: false,
+		timedMode: false,
+		isVerifiedOnly: false,
+		timedSliderValue: [120],
+		customGameSliderValue: [7],
+		eloSliderValue: [1600],
+		isEloLimited: false,
+		customGameSettings: {
+			enabled: false,
+			// Valid powers: investigate, deckpeek, election, bullet; null for no power
+			powers: [null, null, null, null, null], // last "power" is always a fas victory
+			hitlerZone: 3, // 1-5
+			vetoZone: 5, // 1-5, must be larger than fas track state
+			fascistCount: 1, // 1-3, does not include hit
+			hitKnowsFas: false,
+			deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+			trackState: { lib: 0, fas: 0 }
+		}
+	};
 
 	componentDidUpdate(prevProps, prevState) {
 		const self = this;
@@ -302,57 +293,57 @@ export default class Creategame extends React.Component {
 		);
 	}
 
-	sliderNumFas(val) {
+	sliderNumFas = val => {
 		const { customGameSettings } = this.state;
 
 		customGameSettings.fascistCount = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	}
+	};
 
-	sliderHitlerZone(val) {
+	sliderHitlerZone = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.hitlerZone = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	}
+	};
 
-	sliderVetoZone(val) {
+	sliderVetoZone = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.vetoZone = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	}
+	};
 
-	sliderDeckLib(val) {
+	sliderDeckLib = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.lib = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	}
+	};
 
-	sliderDeckFas(val) {
+	sliderDeckFas = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.fas = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	}
+	};
 
-	sliderTrackLib(val) {
+	sliderTrackLib = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.lib = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	}
+	};
 
-	sliderTrackFas(val) {
+	sliderTrackFas = val => {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.fas = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	}
+	};
 
-	sliderChange(sliderValues) {
+	sliderChange = sliderValues => {
 		const { checkedSliderValues } = this.state;
 
 		this.setState({
@@ -366,13 +357,13 @@ export default class Creategame extends React.Component {
 						index + 5 === sliderValues[1]
 				)
 		});
-	}
+	};
 
-	customGameSliderChange(sliderValues) {
+	customGameSliderChange = sliderValues => {
 		this.setState({
 			customGameSliderValue: sliderValues
 		});
-	}
+	};
 
 	createNewGame = () => {
 		const $creategame = $('section.creategame');
@@ -557,7 +548,7 @@ export default class Creategame extends React.Component {
 		);
 	}
 
-	timedSliderChange(timedSliderValue) {
+	timedSliderChange = timedSliderValue => {
 		if (timedSliderValue < 30) {
 			this.setState({
 				casualgame: true
@@ -565,11 +556,11 @@ export default class Creategame extends React.Component {
 		}
 
 		this.setState({ timedSliderValue });
-	}
+	};
 
-	eloSliderChange(eloSliderValue) {
+	eloSliderChange = eloSliderValue => {
 		this.setState({ eloSliderValue });
-	}
+	};
 
 	renderEloSlider() {
 		const origMarks = { 1600: '1600', 1650: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' };
@@ -872,7 +863,7 @@ export default class Creategame extends React.Component {
 								min={1}
 								max={5}
 								defaultValue={[3]}
-								onChange={this.sliderHitlerZone.bind(this)}
+								onChange={this.sliderHitlerZone}
 								value={[this.state.customGameSettings.hitlerZone]}
 								marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
 							/>
@@ -886,7 +877,7 @@ export default class Creategame extends React.Component {
 								min={1}
 								max={5}
 								defaultValue={[5]}
-								onChange={this.sliderVetoZone.bind(this)}
+								onChange={this.sliderVetoZone}
 								value={[this.state.customGameSettings.vetoZone]}
 								marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
 							/>
@@ -903,7 +894,7 @@ export default class Creategame extends React.Component {
 									min={1}
 									max={3}
 									defaultValue={[2]}
-									onChange={this.sliderNumFas.bind(this)}
+									onChange={this.sliderNumFas}
 									value={[this.state.customGameSettings.fascistCount]}
 									marks={{ 1: '1', 2: '2', 3: '3' }}
 								/>
@@ -937,7 +928,7 @@ export default class Creategame extends React.Component {
 								min={5}
 								max={8}
 								defaultValue={[6]}
-								onChange={this.sliderDeckLib.bind(this)}
+								onChange={this.sliderDeckLib}
 								value={[this.state.customGameSettings.deckState.lib]}
 								marks={{ 5: '5', 6: '6', 7: '7', 8: '8' }}
 							/>
@@ -948,7 +939,7 @@ export default class Creategame extends React.Component {
 								min={10}
 								max={19}
 								defaultValue={[12]}
-								onChange={this.sliderDeckFas.bind(this)}
+								onChange={this.sliderDeckFas}
 								value={[this.state.customGameSettings.deckState.fas]}
 								marks={{ 10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16', 17: '', 18: '', 19: '19' }}
 							/>
@@ -961,7 +952,7 @@ export default class Creategame extends React.Component {
 								min={0}
 								max={2}
 								defaultValue={[0]}
-								onChange={this.sliderTrackLib.bind(this)}
+								onChange={this.sliderTrackLib}
 								value={[this.state.customGameSettings.trackState.lib]}
 								marks={{ 0: '0', 1: '1', 2: '2' }}
 							/>
@@ -972,7 +963,7 @@ export default class Creategame extends React.Component {
 								min={0}
 								max={2}
 								defaultValue={[0]}
-								onChange={this.sliderTrackFas.bind(this)}
+								onChange={this.sliderTrackFas}
 								value={[this.state.customGameSettings.trackState.fas]}
 								marks={{ 0: '0', 1: '1', 2: '2' }}
 							/>
