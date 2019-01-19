@@ -12,6 +12,7 @@ const GithubStrategy = require('passport-github2').Strategy;
 const Account = require('./models/account');
 const routesIndex = require('./routes/index');
 const session = require('express-session');
+const { expandAndSimplify } = require('./routes/socket/ip-obf');
 
 let store;
 
@@ -43,6 +44,13 @@ app.use((req, res, next) => {
 		console.error(`IP data: ${req.headers['x-real-ip']} | ${req.headers['X-Real-IP']} | ${req.headers['X-Forwarded-For']} | ${req.headers['x-forwarded-for']} | ${req.connection.remoteAddress}`);
 		res.status(500).send('An error occurred.');
 	}
+});
+
+app.use((req, res, next) => {
+	const IP = req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	if (IP.includes(',')) req.expandedIP = expandAndSimplify(IP.split(',')[0].trim());
+	else req.expandedIP = expandAndSimplify(IP.trim());
+	next();
 });
 
 app.set('views', `${__dirname}/views`);
