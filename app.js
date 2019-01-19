@@ -32,6 +32,19 @@ if (process.env.NODE_ENV !== 'production') {
 	});
 }
 
+// needs to be first
+app.use((req, res, next) => {
+	try {
+		decodeURIComponent(req.path);
+		next();
+	}
+	catch (e) {
+		console.error(`Malformed URI: ${req.path}`);
+		console.error(`IP data: ${req.headers['x-real-ip']} | ${req.headers['X-Real-IP']} | ${req.headers['X-Forwarded-For']} | ${req.headers['x-forwarded-for']} | ${req.connection.remoteAddress}`);
+		res.status(500).send('An error occurred.');
+	}
+});
+
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'pug');
 app.locals.pretty = true;
