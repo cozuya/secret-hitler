@@ -600,7 +600,7 @@ export default class Moderation extends React.Component {
 					Delete/reset player profile
 				</button>
 				<button
-					style={{ background: 'teal' }}
+					style={{ background: '#21bae0' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -611,6 +611,19 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Remove Contributor Role
+				</button>
+				<button
+					style={{ background: '#21bae0' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToContributor');
+					}}
+				>
+					Promote to Contributor Role
 				</button>
 				<button
 					style={{ background: 'grey' }}
@@ -624,19 +637,6 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Remove Staff Role
-				</button>
-				<button
-					style={{ background: 'teal' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('promoteToContributor');
-					}}
-				>
-					Promote to Contributor Role
 				</button>
 				<button
 					style={{ background: 'violet' }}
