@@ -14,6 +14,7 @@ const {
 } = require('./models');
 const { sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
+const { selectChancellor } = require('./game/election-util.js');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
@@ -1628,6 +1629,69 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 				}
 			];
 			selectVoting({ user: affectedPlayer.userName }, game, { vote });
+			sendPlayerChatUpdate(game, data);
+			return;
+		}
+	}
+
+	if (AEM) {
+		const aemPick = /forcepick (\d{1,2}) (1|2|3|4|5|6|7|8|9|10)/i.exec(chat);
+		if (aemPick) {
+			if (player) {
+				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
+			const chancellorPick = aemPick[2];
+			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+			const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
+			if (!affectedPlayer) {
+				socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+				return;
+			}
+			if (!affectedChancellor) {
+				socket.emit('sendAlert', `There is no seat ${chancellorPick}.`);
+				return;
+			}
+			if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+				socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+				return;
+			}
+			if (
+				game.publicPlayersState[chancellorPick - 1].isDead ||
+				chancellorPick - 1 === affectedPlayerNumber ||
+				chancellorPick - 1 === game.gameState.previousElectedGovernment[1] ||
+				(chancellorPick - 1 === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5)
+			) {
+				socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
+				return;
+			}
+			game.private.unSeatedGameChats = [
+				{
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has forced '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' to pick '
+						},
+						{
+							text: `${affectedChancellor.userName} {${chancellorPick}}`,
+							type: 'player'
+						},
+						{
+							text: ' as chancellor.'
+						}
+					]
+				}
+			];
+			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
 			sendPlayerChatUpdate(game, data);
 			return;
 		}
