@@ -3,22 +3,17 @@ import $ from 'jquery';
 import PropTypes from 'prop-types';
 
 class CardFlinger extends React.Component {
-	constructor() {
-		super();
+	state = {
+		isHovered: false,
+		hoveredClass: null
+	};
 
-		this.handleHover = this.handleHover.bind(this);
-		this.state = {
-			isHovered: false,
-			hoveredClass: null
-		};
-	}
-
-	handleHover(classes) {
+	handleHover = classes => {
 		this.setState({
 			isHovered: !this.state.isHovered,
 			hoveredClass: classes
 		});
-	}
+	};
 
 	render() {
 		const handleCardClick = e => {

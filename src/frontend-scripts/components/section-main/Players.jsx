@@ -19,22 +19,14 @@ const mapStateToProps = ({ playerNotesActive, isTyping }) => ({
 });
 
 class Players extends React.Component {
-	constructor() {
-		super();
-		this.clickedTakeSeat = this.clickedTakeSeat.bind(this);
-		this.handlePlayerClick = this.handlePlayerClick.bind(this);
-		this.handlePlayerDoubleClick = this.handlePlayerDoubleClick.bind(this);
-		this.handlePasswordSubmit = this.handlePasswordSubmit.bind(this);
-		this.handleReportSubmit = this.handleReportSubmit.bind(this);
-		this.state = {
-			passwordValue: '',
-			reportedPlayer: '',
-			reportTextValue: '',
-			playerNotes: [],
-			playerNoteSeatEnabled: false,
-			reportLength: 0
-		};
-	}
+	state = {
+		passwordValue: '',
+		reportedPlayer: '',
+		reportTextValue: '',
+		playerNotes: [],
+		playerNoteSeatEnabled: false,
+		reportLength: 0
+	};
 
 	// componentWillReceiveProps(nextProps) {
 	// 	const { userName } = this.props;
@@ -71,15 +63,15 @@ class Players extends React.Component {
 		this.props.socket.off('notesUpdate');
 	}
 
-	handlePlayerDoubleClick(userName) {
+	handlePlayerDoubleClick = userName => {
 		if ((!this.props.gameInfo.general.private && this.props.userInfo.userName && this.props.userInfo.userName !== userName) || this.props.isReplay) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
 		}
-	}
+	};
 
-	handlePlayerClick(e) {
+	handlePlayerClick = e => {
 		const { userInfo, gameInfo, socket } = this.props;
 		const { gameState } = gameInfo;
 		const { phase, clickActionInfo } = gameState;
@@ -129,7 +121,7 @@ class Players extends React.Component {
 				});
 			}
 		}
-	}
+	};
 
 	renderPreviousGovtToken(i) {
 		const { publicPlayersState } = this.props.gameInfo;
@@ -426,14 +418,14 @@ class Players extends React.Component {
 		}
 	}
 
-	handlePasswordSubmit(e) {
+	handlePasswordSubmit = e => {
 		e.preventDefault();
 
 		this.props.onClickedTakeSeat(this.state.passwordValue);
 		$(this.passwordModal).modal('hide');
-	}
+	};
 
-	handleReportSubmit(e) {
+	handleReportSubmit = e => {
 		const { gameInfo } = this.props;
 		e.preventDefault();
 
@@ -456,9 +448,9 @@ class Players extends React.Component {
 				maxReportLengthExceeded: false
 			});
 		}
-	}
+	};
 
-	clickedTakeSeat() {
+	clickedTakeSeat = () => {
 		const { gameInfo, userInfo, onClickedTakeSeat, userList } = this.props;
 
 		if (userInfo.userName) {
@@ -484,7 +476,7 @@ class Players extends React.Component {
 		} else {
 			$(this.signinModal).modal('show');
 		}
-	}
+	};
 
 	render() {
 		const handlePasswordInputChange = e => {
