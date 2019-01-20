@@ -1635,7 +1635,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	}
 
 	if (AEM) {
-		const aemPick = /forcepick (\d{1,2}) (1|2|3|4|5|6|7|8|9|10)/i.exec(chat);
+		const aemPick = /forcepick (\d{1,2}) (\d{1,2})/i.exec(chat);
 		if (aemPick) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
