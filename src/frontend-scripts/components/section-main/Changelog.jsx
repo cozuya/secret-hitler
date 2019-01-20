@@ -24,6 +24,15 @@ class Changelog extends React.Component {
 					<li>Cucumber: 1879</li>
 				</ul>
 				<div className="ui header">
+					<p>Version 1.0.2 released 1-20-2019</p>
+				</div>
+				<ul>
+					<li>Signin/signup with Discord/Github should be fixed.</li>
+					<li>You should no longer be logged out automatically as often.</li>
+					<li>Election tracker now says its status in the gamechat after fails.</li>
+					<li>Lobby and cosmetic improvements @Hexicube.</li>
+				</ul>
+				<div className="ui header">
 					<p>Version 1.0.1 released 1-5-2019</p>
 				</div>
 				<ul>

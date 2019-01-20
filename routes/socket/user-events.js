@@ -1631,8 +1631,75 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			sendPlayerChatUpdate(game, data);
 			return;
 		}
+
+<<<<<<< Updated upstream
+=======
+		const aemSkip = /forceskip (\d{1,2})/i.exec(chat);
+		if (aemSkip) {
+			if (player) {
+				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
+			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+			if (!affectedPlayer) {
+				socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+				return;
+			}
+			if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+				socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+				return;
+			}
+			let chancellor = -1;
+			let currentPlayers = [];
+			for (let i = 0; i < game.private.seatedPlayers.length; i++) {
+				currentPlayers[i] = !(
+					game.private.seatedPlayers[i].isDead ||
+					(i === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5) ||
+					i === game.gameState.previousElectedGovernment[1]
+				);
+			}
+			currentPlayers[affectedPlayerNumber] = false;
+			let counter = affectedPlayerNumber + 1;
+			while (chancellor === -1) {
+				if (counter >= currentPlayers.length) {
+					counter = 0;
+				}
+				if (currentPlayers[counter]) {
+					chancellor = counter;
+				}
+				counter++;
+			}
+			game.private.unSeatedGameChats = [
+				{
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has force skipped the government with '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' as president.'
+						}
+					]
+				}
+			];
+			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
+			setTimeout(() => {
+				for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
+					selectVoting({ user: p.userName }, game, { vote: false });
+				}
+			}, 1000);
+			sendPlayerChatUpdate(game, data);
+			return;
+		}
 	}
 
+>>>>>>> Stashed changes
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
 
 	if (
