@@ -244,20 +244,17 @@ module.exports = () => {
 	app.post(
 		'/account/signin',
 		(req, res, next) => {
-			testIP(
-				req.expandedIP,
-				banType => {
-					if (banType && banType != 'new') {
-						if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-						else if (banType == 'small' || banType == 'tiny') {
-							res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
-						} else {
-							console.log(`Unhandled IP ban type: ${banType}`);
-							res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
-						}
-					} else return next();
-				}
-			);
+			testIP(req.expandedIP, banType => {
+				if (banType && banType != 'new') {
+					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+					else if (banType == 'small' || banType == 'tiny') {
+						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+					} else {
+						console.log(`Unhandled IP ban type: ${banType}`);
+						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+					}
+				} else return next();
+			});
 		},
 		passport.authenticate('local'),
 		(req, res, next) => {
