@@ -567,7 +567,7 @@ export default class Creategame extends React.Component {
 		const isSeason = (userInfo.gameSettings && !userInfo.gameSettings.disableSeasonal) || false;
 		const playerElo = (player && Math.min(2000, player.eloSeason)) || 2000;
 		const playerEloNonseason = (player && Math.min(2000, player.eloOverall)) || 2000;
-		const max = Math.min(playerElo, playerEloNonseason);
+		const max = Math.max(playerElo, playerEloNonseason);
 		const marks = Object.keys(origMarks)
 			.filter(k => origMarks[k] <= max)
 			.reduce((obj, key) => {
