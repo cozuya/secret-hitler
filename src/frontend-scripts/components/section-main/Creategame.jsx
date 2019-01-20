@@ -8,6 +8,14 @@ import { renderFlagDropdown } from '../utils.jsx';
 
 $.fn.checkbox = Checkbox;
 
+let user, isRainbow;
+if (this.props.userList.list) {
+	user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
+}
+if (user) {
+	isRainbow = user.wins + user.losses > 49;
+}
+
 export default class Creategame extends React.Component {
 	state = {
 		gameName: '',
@@ -18,9 +26,9 @@ export default class Creategame extends React.Component {
 		disableobserver: false,
 		privateShowing: false,
 		containsBadWord: false,
-		rainbowgame: false,
+		rainbowgame: isRainbow ? true : false,
 		checkedSliderValues: new Array(6).fill(true),
-		checkedRebalanceValues: new Array(3).fill(true),
+		checkedRebalanceValues: [true, false, true],
 		privateonlygame: false,
 		isTourny: false,
 		casualgame: false,
@@ -1192,14 +1200,6 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 						{(() => {
-							let user, isRainbow;
-
-							if (this.props.userList.list) {
-								user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
-							}
-							if (user) {
-								isRainbow = user.wins + user.losses > 49;
-							}
 							if (isRainbow) {
 								return (
 									<div className="four wide column experiencedmode">
