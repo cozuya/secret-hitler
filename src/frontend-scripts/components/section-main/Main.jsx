@@ -49,7 +49,7 @@ export class Main extends React.Component {
 	render() {
 		let classes = 'section-main';
 
-		const { userList, userInfo, socket, gameInfo, allEmotes, gameList } = this.props;
+		const { userList, userInfo, socket, gameInfo, allEmotes, gameList, routeProps } = this.props;
 		const isGame = Boolean(Object.keys(gameInfo).length);
 		const changeGameFilter = gameFilter => {
 			this.setState(gameFilter);
@@ -92,6 +92,7 @@ export class Main extends React.Component {
 								userList={userList}
 								socket={socket}
 								allEmotes={this.props.allEmotes}
+								routeProps={routeProps}
 							/>
 						)}
 					/>
@@ -136,7 +137,8 @@ Main.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	gameList: PropTypes.array,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.array,
+	routeProps: PropTypes.object
 };
 
 export default withRouter(Main);

@@ -359,7 +359,7 @@ export class App extends React.Component {
 	// };
 
 	render() {
-		const { notesActive, userInfo, gameInfo, userList, gameList, version, generalChats } = this.props;
+		const { notesActive, userInfo, gameInfo, userList, gameList, version, generalChats, routeProps } = this.props;
 		const { gameSettings } = userInfo;
 		let classes = 'body-container';
 
@@ -467,6 +467,7 @@ export class App extends React.Component {
 							version={version}
 							gameList={gameList}
 							allEmotes={this.state.allEmotes}
+							routeProps={routeProps}
 						/>
 
 						{(() => {

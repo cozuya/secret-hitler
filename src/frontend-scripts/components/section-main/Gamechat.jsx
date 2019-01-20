@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
-import { PLAYERCOLORS, getBadWord } from '../../constants';
-import { loadReplay, toggleNotes, updateUser, updateTyping } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { renderEmotesButton, processEmotes } from '../../emotes';
 import { Scrollbars } from 'react-custom-scrollbars';
+
+import { renderEmotesButton, processEmotes } from '../../emotes';
+import { PLAYERCOLORS, getBadWord } from '../../constants';
+import { loadReplay, toggleNotes, updateUser, updateTyping } from '../../actions/actions';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
@@ -124,14 +125,14 @@ class Gamechat extends React.Component {
 	}
 
 	handleClickedLeaveGame = () => {
-		const { userInfo, gameInfo } = this.props;
+		const { userInfo, gameInfo, routeProps } = this.props;
 
 		if (userInfo.isSeated && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
 			$(this.leaveGameModal).modal('show');
 		} else if (userInfo.isSeated && !gameInfo.gameState.isStarted && gameInfo.general.isTourny) {
 			$(this.leaveTournyQueueModal).modal('show');
 		} else {
-			window.location.hash = '#/';
+			routeProps.history.push('/game');
 		}
 	};
 
@@ -1118,7 +1119,8 @@ Gamechat.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	allEmotes: PropTypes.array,
-	isTyping: PropTypes.object
+	isTyping: PropTypes.object,
+	routeProps: PropTypes.object
 };
 
 export default connect(

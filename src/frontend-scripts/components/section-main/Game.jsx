@@ -92,7 +92,7 @@ export default class Game extends React.Component {
 	}
 
 	render() {
-		const { userInfo, gameInfo } = this.props;
+		const { userInfo, gameInfo, routeProps } = this.props;
 
 		return (
 			<section className="game">
@@ -105,7 +105,14 @@ export default class Game extends React.Component {
 							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
 								{gameInfo.general && gameInfo.general.status}
 							</section>
-							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
+							<Gamechat
+								userList={this.props.userList}
+								gameInfo={gameInfo}
+								userInfo={userInfo}
+								socket={this.props.socket}
+								allEmotes={this.props.allEmotes}
+								routeProps={routeProps}
+							/>
 						</div>
 					</div>
 				</div>
@@ -165,5 +172,6 @@ Game.propTypes = {
 	expandoInfo: PropTypes.string,
 	dispatch: PropTypes.func,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.array,
+	routeProps: PropTypes.object
 };
