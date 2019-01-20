@@ -10,48 +10,40 @@ $.fn.checkbox = Checkbox;
 $.fn.modal = Modal;
 
 class Settings extends React.Component {
-	constructor() {
-		super();
-		this.sliderChange = this.sliderChange.bind(this);
-		this.sliderDrop = this.sliderDrop.bind(this);
-		this.profileSearchSubmit = this.profileSearchSubmit.bind(this);
-		this.toggleGameSettings = this.toggleGameSettings.bind(this);
-		this.handleSoundChange = this.handleSoundChange.bind(this);
-		this.state = {
-			namechangeValue: '',
-			sliderValues: [8, 24],
-			imageUid: Math.random()
-				.toString(36)
-				.substring(6),
-			preview: '',
-			cardbackUploadStatus: '',
-			isUploaded: false,
-			profileSearchValue: '',
-			fontChecked: 'comfortaa',
-			fontSize: '',
-			enableTimestamps: '',
-			disableHelpMessages: '',
-			disableHelpIcons: '',
-			enableRightSidebarInGame: '',
-			disablePlayerColorsInChat: '',
-			disablePlayerCardbacks: '',
-			disableConfetti: '',
-			disableCrowns: '',
-			disableSeasonal: '',
-			disableElo: '',
-			disableAggregations: '',
-			soundStatus: '',
-			isPrivate: '',
-			failedNameChangeMessage: '',
-			soundSelected: 'Pack 1',
-			staffDisableVisibleElo: '',
-			staffDisableStaffColor: '',
-			staffIncognito: '',
-			fullheight: false
-		};
-	}
+	state = {
+		namechangeValue: '',
+		sliderValues: [8, 24],
+		imageUid: Math.random()
+			.toString(36)
+			.substring(6),
+		preview: '',
+		cardbackUploadStatus: '',
+		isUploaded: false,
+		profileSearchValue: '',
+		fontChecked: 'comfortaa',
+		fontSize: '',
+		enableTimestamps: '',
+		disableHelpMessages: '',
+		disableHelpIcons: '',
+		enableRightSidebarInGame: '',
+		disablePlayerColorsInChat: '',
+		disablePlayerCardbacks: '',
+		disableConfetti: '',
+		disableCrowns: '',
+		disableSeasonal: '',
+		disableElo: '',
+		disableAggregations: '',
+		soundStatus: '',
+		isPrivate: '',
+		failedNameChangeMessage: '',
+		soundSelected: 'Pack 1',
+		staffDisableVisibleElo: '',
+		staffDisableStaffColor: '',
+		staffIncognito: '',
+		fullheight: false
+	};
 
-	componentWillMount() {
+	componentDidMount() {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
 
 		this.setState({
@@ -77,7 +69,7 @@ class Settings extends React.Component {
 		});
 	}
 
-	handleSoundChange(e) {
+	handleSoundChange = e => {
 		this.setState(
 			{
 				soundSelected: e.target.value
@@ -88,34 +80,34 @@ class Settings extends React.Component {
 				});
 			}
 		);
-	}
+	};
 
 	/**
 	 * @param {string} value - todo
 	 */
-	toggleGameSettings(value) {
+	toggleGameSettings = value => {
 		const obj = {};
 
 		obj[value] = !this.state[value];
 		this.props.socket.emit('updateGameSettings', obj);
 		this.setState(obj);
-	}
+	};
 
-	sliderChange(event) {
+	sliderChange = event => {
 		this.setState({ fontSize: event[0] });
-	}
+	};
 
-	sliderDrop(e) {
+	sliderDrop = e => {
 		this.props.socket.emit('updateGameSettings', {
 			fontSize: this.state.fontSize
 		});
-	}
+	};
 
-	profileSearchSubmit(e) {
+	profileSearchSubmit = e => {
 		e.preventDefault();
 
 		window.location.hash = `#/profile/${this.state.profileSearchValue}`;
-	}
+	};
 
 	renderFonts() {
 		const changeFontSubmit = fontName => {

@@ -27,26 +27,22 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
 };
 
 class Playerlist extends React.Component {
-	constructor() {
-		super();
-		this.clickInfoIcon = this.clickInfoIcon.bind(this);
-		this.state = {
-			userListFilter: 'all',
-			expandInfo: {
-				AEM: true,
-				cont: true,
-				exp: true,
-				inexp: false,
-				priv: false
-			}
-		};
-	}
+	state = {
+		userListFilter: 'all',
+		expandInfo: {
+			AEM: true,
+			cont: true,
+			exp: true,
+			inexp: false,
+			priv: false
+		}
+	};
 
-	clickInfoIcon() {
+	clickInfoIcon = () => {
 		$('.playerlistinfo')
 			.modal('setting', 'transition', 'scale')
 			.modal('show');
-	}
+	};
 
 	routeToGame(gameId) {
 		window.location = `#/table/${gameId}`;
