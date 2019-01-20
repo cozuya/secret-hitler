@@ -2559,12 +2559,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}
-					} else if (data.userName.substr(0, 13) === 'RESETGAMENAME') {
-						const game = games[data.userName.slice(13)];
-						if (game) {
-							games[game.general.uid].general.name = 'New Game';
-							sendGameList();
-						}
 					} else if (isSuperMod && data.action.type) {
 						const setType = /setRWins/.test(data.action.type)
 							? 'rainbowWins'

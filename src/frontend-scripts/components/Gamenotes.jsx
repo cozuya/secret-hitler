@@ -11,27 +11,36 @@ const mapDispatchToProps = dispatch => ({
 	};
 
 class Gamenotes extends React.Component {
-	state = {
-		top: 110,
-		left: 690,
-		width: 400,
-		height: 320,
-		isResizing: false,
-		clearConfirmationShown: false
-	};
+	constructor() {
+		super();
+		this.clearNotes = this.clearNotes.bind(this);
+		this.noteDragStart = this.noteDragStart.bind(this);
+		this.dismissNotes = this.dismissNotes.bind(this);
+		this.noteDrop = this.noteDrop.bind(this);
+		this.resizeDragStart = this.resizeDragStart.bind(this);
 
-	clearNotes = () => {
+		this.state = {
+			top: 110,
+			left: 690,
+			width: 400,
+			height: 320,
+			isResizing: false,
+			clearConfirmationShown: false
+		};
+	}
+
+	clearNotes() {
 		this.props.changeNotesValue('');
-	};
+	}
 
-	dismissNotes = () => {
+	dismissNotes() {
 		const { toggleNotes } = this.props;
 		toggleNotes(false);
-	};
+	}
 
-	resizeDragStart = () => {};
+	resizeDragStart() {}
 
-	noteDrop = e => {
+	noteDrop(e) {
 		e.preventDefault();
 		if (!this.state.isResizing) {
 			const offset = e.dataTransfer.getData('coordinates/text').split(',');
@@ -41,7 +50,7 @@ class Gamenotes extends React.Component {
 				left: e.clientX + parseInt(offset[0], 10)
 			});
 		}
-	};
+	}
 
 	componentDidMount() {
 		document.body.addEventListener('dragover', dragOverFn);
@@ -53,14 +62,14 @@ class Gamenotes extends React.Component {
 		document.body.removeEventListener('drop', this.noteDrop);
 	}
 
-	noteDragStart = e => {
+	noteDragStart(e) {
 		const style = window.getComputedStyle(e.target, null);
 
 		e.dataTransfer.setData(
 			'coordinates/text',
 			parseInt(style.getPropertyValue('left'), 10) - e.clientX + ',' + (parseInt(style.getPropertyValue('top'), 10) - e.clientY)
 		);
-	};
+	}
 
 	render() {
 		const notesChange = e => {
@@ -145,8 +154,7 @@ class Gamenotes extends React.Component {
 
 Gamenotes.propTypes = {
 	toggleNotes: PropTypes.func,
-	value: PropTypes.string,
-	changeNotesValue: PropTypes.func
+	value: PropTypes.string
 };
 
 export default connect(

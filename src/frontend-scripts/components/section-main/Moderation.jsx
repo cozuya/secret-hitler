@@ -7,28 +7,35 @@ import Checkbox from 'semantic-ui-checkbox';
 $.fn.checkbox = Checkbox;
 
 export default class Moderation extends React.Component {
-	state = {
-		selectedUser: '',
-		userList: [],
-		actionTextValue: '',
-		log: [],
-		playerListShown: true,
-		broadcastText: '',
-		playerInputText: '',
-		resetServerCount: 0,
-		logCount: 1,
-		modLogToday: false,
-		nonSeasonalSetStats: false,
-		logSort: {
-			type: 'date',
-			direction: 'descending'
-		},
-		userSort: {
-			type: 'username',
-			direction: 'descending'
-		},
-		hideActions: false
-	};
+	constructor() {
+		super();
+
+		this.togglePlayerList = this.togglePlayerList.bind(this);
+		this.broadcastClick = this.broadcastClick.bind(this);
+		this.handleBroadcastSubmit = this.handleBroadcastSubmit.bind(this);
+		this.state = {
+			selectedUser: '',
+			userList: [],
+			actionTextValue: '',
+			log: [],
+			playerListShown: true,
+			broadcastText: '',
+			playerInputText: '',
+			resetServerCount: 0,
+			logCount: 1,
+			modLogToday: false,
+			nonSeasonalSetStats: false,
+			logSort: {
+				type: 'date',
+				direction: 'descending'
+			},
+			userSort: {
+				type: 'username',
+				direction: 'descending'
+			},
+			hideActions: false
+		};
+	}
 
 	componentDidMount() {
 		const self = this;
@@ -172,9 +179,9 @@ export default class Moderation extends React.Component {
 		this.props.socket.off('modInfo');
 	}
 
-	togglePlayerList = () => {
+	togglePlayerList() {
 		this.setState({ playerListShown: !this.state.playerListShown });
-	};
+	}
 
 	renderPlayerInput() {
 		const playerInputKeyup = e => {
@@ -263,12 +270,7 @@ export default class Moderation extends React.Component {
 			} else {
 				this.props.socket.emit('updateModAction', {
 					modName: this.props.userInfo.userName,
-					userName:
-						action === 'deleteGame'
-							? `DELGAME${this.state.playerInputText}`
-							: action === 'resetGameName'
-							? `RESETGAMENAME${this.state.playerInputText}`
-							: this.state.playerInputText || this.state.selectedUser,
+					userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
 					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 					comment: this.state.actionTextValue,
 					action
@@ -380,15 +382,6 @@ export default class Moderation extends React.Component {
 					Delete game
 				</button>
 				<button
-					style={{ width: '100%', background: '#0ca51d' }}
-					className={playerInputText ? 'ui button' : 'ui button disabled'}
-					onClick={() => {
-						takeModAction('resetGameName');
-					}}
-				>
-					Reset game name
-				</button>
-				<button
 					style={{ width: '100%', background: 'darkorange' }}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
 					onClick={() => {
@@ -477,14 +470,10 @@ export default class Moderation extends React.Component {
 				>
 					Restore IP - Remove any pre-existing IP ban.
 				</button>
-				<div className="ui horizontal divider">Editors/Admins Only</div>
+				<div className="ui horizontal divider">-</div>
 
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button tier3'
-							: 'ui button disabled tier3'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
 						takeModAction({
 							type: `setWins${this.state.actionTextValue}`,
@@ -495,11 +484,7 @@ export default class Moderation extends React.Component {
 					Set wins
 				</button>
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button tier3'
-							: 'ui button disabled tier3'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
 						takeModAction({
 							type: `setLosses${this.state.actionTextValue}`,
@@ -510,11 +495,7 @@ export default class Moderation extends React.Component {
 					Set losses
 				</button>
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button tier3'
-							: 'ui button disabled tier3'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
 						takeModAction({
 							type: `setRWins${this.state.actionTextValue}`,
@@ -525,11 +506,7 @@ export default class Moderation extends React.Component {
 					Set R wins
 				</button>
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button tier3'
-							: 'ui button disabled tier3'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
 					onClick={() => {
 						takeModAction({
 							type: `setRLosses${this.state.actionTextValue}`,
@@ -551,11 +528,7 @@ export default class Moderation extends React.Component {
 					</div>
 				</div>
 				<button
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ib'
-							: 'ui button disabled ib'
-					}
+					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
 					onClick={() => {
 						takeModAction('getIP');
 					}}
@@ -589,11 +562,7 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					style={{ background: 'crimson' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
 					onClick={() => {
 						takeModAction('deleteUser');
 					}}
@@ -614,7 +583,7 @@ export default class Moderation extends React.Component {
 					Delete/reset player profile
 				</button>
 				<button
-					style={{ background: '#21bae0' }}
+					style={{ background: 'teal' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -625,19 +594,6 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Remove Contributor Role
-				</button>
-				<button
-					style={{ background: '#21bae0' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('promoteToContributor');
-					}}
-				>
-					Promote to Contributor Role
 				</button>
 				<button
 					style={{ background: 'grey' }}
@@ -651,6 +607,19 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Remove Staff Role
+				</button>
+				<button
+					style={{ background: 'teal' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToContributor');
+					}}
+				>
+					Promote to Contributor Role
 				</button>
 				<button
 					style={{ background: 'violet' }}
@@ -906,13 +875,13 @@ export default class Moderation extends React.Component {
 		return <textarea placeholder="Comment" value={this.state.actionTextValue} onChange={handleTextChange} spellCheck="false" />;
 	}
 
-	broadcastClick = e => {
+	broadcastClick(e) {
 		e.preventDefault();
 
 		$(this.bModal).modal('show');
-	};
+	}
 
-	handleBroadcastSubmit = e => {
+	handleBroadcastSubmit(e) {
 		e.preventDefault();
 		$(this.bModal).modal('hide');
 
@@ -926,7 +895,7 @@ export default class Moderation extends React.Component {
 		this.setState({
 			broadcastText: ''
 		});
-	};
+	}
 
 	render() {
 		const { userSort, hideActions } = this.state;

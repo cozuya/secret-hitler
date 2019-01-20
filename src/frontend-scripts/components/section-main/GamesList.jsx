@@ -6,16 +6,21 @@ import moment from 'moment';
 import { CURRENTSEASONNUMBER } from '../../constants';
 
 export class GamesList extends React.Component {
-	state = {
-		filtersVisible: false
-	};
+	constructor() {
+		super();
 
-	toggleFilter = value => {
+		this.toggleFilter = this.toggleFilter.bind(this);
+		this.state = {
+			filtersVisible: false
+		};
+	}
+
+	toggleFilter(value) {
 		const { gameFilter, changeGameFilter } = this.props;
 
 		gameFilter[value] = !gameFilter[value];
 		changeGameFilter(gameFilter);
-	};
+	}
 
 	renderFilters() {
 		const { gameFilter } = this.props;

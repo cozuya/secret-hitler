@@ -301,57 +301,57 @@ export default class Creategame extends React.Component {
 		);
 	}
 
-	sliderNumFas = val => {
+	sliderNumFas(val) {
 		const { customGameSettings } = this.state;
 
 		customGameSettings.fascistCount = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	};
+	}
 
-	sliderHitlerZone = val => {
+	sliderHitlerZone(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.hitlerZone = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	};
+	}
 
-	sliderVetoZone = val => {
+	sliderVetoZone(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.vetoZone = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	};
+	}
 
-	sliderDeckLib = val => {
+	sliderDeckLib(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.lib = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	};
+	}
 
-	sliderDeckFas = val => {
+	sliderDeckFas(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.deckState.fas = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	};
+	}
 
-	sliderTrackLib = val => {
+	sliderTrackLib(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.lib = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	};
+	}
 
-	sliderTrackFas = val => {
+	sliderTrackFas(val) {
 		const { customGameSettings } = this.state;
 		customGameSettings.trackState.fas = val[0];
 		customGameSettings.enabled = true;
 		this.setState({ casualgame: true, customGameSettings });
-	};
+	}
 
-	sliderChange = sliderValues => {
+	sliderChange(sliderValues) {
 		const { checkedSliderValues } = this.state;
 
 		this.setState({
@@ -365,15 +365,15 @@ export default class Creategame extends React.Component {
 						index + 5 === sliderValues[1]
 				)
 		});
-	};
+	}
 
-	customGameSliderChange = sliderValues => {
+	customGameSliderChange(sliderValues) {
 		this.setState({
 			customGameSliderValue: sliderValues
 		});
-	};
+	}
 
-	createNewGame = () => {
+	createNewGame() {
 		const $creategame = $('section.creategame');
 		const { userInfo } = this.props;
 		const { customGameSettings, customGameSliderValue } = this.state;
@@ -443,7 +443,7 @@ export default class Creategame extends React.Component {
 
 			this.props.socket.emit('addNewGame', data);
 		}
-	};
+	}
 
 	renderPlayerSlider() {
 		const { isTourny, customGameSettings } = this.state;
@@ -556,17 +556,14 @@ export default class Creategame extends React.Component {
 		);
 	}
 
-	timedSliderChange = timedSliderValue => {
-		if (timedSliderValue < 30) {
-			this.state.casualgame = true;
-		}
-
+	timedSliderChange(timedSliderValue) {
+		if (timedSliderValue < 30) this.state.casualgame = true;
 		this.setState({ timedSliderValue });
-	};
+	}
 
-	eloSliderChange = eloSliderValue => {
+	eloSliderChange(eloSliderValue) {
 		this.setState({ eloSliderValue });
-	};
+	}
 
 	renderEloSlider() {
 		const origMarks = { 1600: '1600', 1650: '', 1700: '1700', 1750: '', 1800: '1800', 1850: '', 1900: '1900', 1950: '', 2000: '2000' };
@@ -577,7 +574,7 @@ export default class Creategame extends React.Component {
 		const isSeason = (userInfo.gameSettings && !userInfo.gameSettings.disableSeasonal) || false;
 		const playerElo = (player && Math.min(2000, player.eloSeason)) || 2000;
 		const playerEloNonseason = (player && Math.min(2000, player.eloOverall)) || 2000;
-		const max = Math.max(playerElo, playerEloNonseason);
+		const max = Math.min(playerElo, playerEloNonseason);
 		const marks = Object.keys(origMarks)
 			.filter(k => origMarks[k] <= max)
 			.reduce((obj, key) => {
@@ -869,7 +866,7 @@ export default class Creategame extends React.Component {
 								min={1}
 								max={5}
 								defaultValue={[3]}
-								onChange={this.sliderHitlerZone}
+								onChange={this.sliderHitlerZone.bind(this)}
 								value={[this.state.customGameSettings.hitlerZone]}
 								marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
 							/>
@@ -883,7 +880,7 @@ export default class Creategame extends React.Component {
 								min={1}
 								max={5}
 								defaultValue={[5]}
-								onChange={this.sliderVetoZone}
+								onChange={this.sliderVetoZone.bind(this)}
 								value={[this.state.customGameSettings.vetoZone]}
 								marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
 							/>
@@ -900,7 +897,7 @@ export default class Creategame extends React.Component {
 									min={1}
 									max={3}
 									defaultValue={[2]}
-									onChange={this.sliderNumFas}
+									onChange={this.sliderNumFas.bind(this)}
 									value={[this.state.customGameSettings.fascistCount]}
 									marks={{ 1: '1', 2: '2', 3: '3' }}
 								/>
@@ -934,7 +931,7 @@ export default class Creategame extends React.Component {
 								min={5}
 								max={8}
 								defaultValue={[6]}
-								onChange={this.sliderDeckLib}
+								onChange={this.sliderDeckLib.bind(this)}
 								value={[this.state.customGameSettings.deckState.lib]}
 								marks={{ 5: '5', 6: '6', 7: '7', 8: '8' }}
 							/>
@@ -945,7 +942,7 @@ export default class Creategame extends React.Component {
 								min={10}
 								max={19}
 								defaultValue={[12]}
-								onChange={this.sliderDeckFas}
+								onChange={this.sliderDeckFas.bind(this)}
 								value={[this.state.customGameSettings.deckState.fas]}
 								marks={{ 10: '10', 11: '', 12: '', 13: '13', 14: '', 15: '', 16: '16', 17: '', 18: '', 19: '19' }}
 							/>
@@ -958,7 +955,7 @@ export default class Creategame extends React.Component {
 								min={0}
 								max={2}
 								defaultValue={[0]}
-								onChange={this.sliderTrackLib}
+								onChange={this.sliderTrackLib.bind(this)}
 								value={[this.state.customGameSettings.trackState.lib]}
 								marks={{ 0: '0', 1: '1', 2: '2' }}
 							/>
@@ -969,7 +966,7 @@ export default class Creategame extends React.Component {
 								min={0}
 								max={2}
 								defaultValue={[0]}
-								onChange={this.sliderTrackFas}
+								onChange={this.sliderTrackFas.bind(this)}
 								value={[this.state.customGameSettings.trackState.fas]}
 								marks={{ 0: '0', 1: '1', 2: '2' }}
 							/>

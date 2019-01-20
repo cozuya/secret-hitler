@@ -95,7 +95,9 @@ module.exports = () => {
 				hasBypass = true;
 			}
 		}
-		const signupIP = req.expandedIP;
+		const signupIP = expandAndSimplify(
+			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
+		);
 		const save = {
 			username,
 			isLocal: true,
@@ -245,7 +247,13 @@ module.exports = () => {
 		'/account/signin',
 		(req, res, next) => {
 			testIP(
-				req.expandedIP,
+				expandAndSimplify(
+					req.headers['x-real-ip'] ||
+						req.headers['X-Real-IP'] ||
+						req.headers['X-Forwarded-For'] ||
+						req.headers['x-forwarded-for'] ||
+						req.connection.remoteAddress
+				),
 				banType => {
 					if (banType && banType != 'new') {
 						if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
@@ -278,7 +286,12 @@ module.exports = () => {
 					return next();
 				}
 
-				let ip = req.expandedIP;
+				let ip =
+					req.headers['x-real-ip'] ||
+					req.headers['X-Real-IP'] ||
+					req.headers['X-Forwarded-For'] ||
+					req.headers['x-forwarded-for'] ||
+					req.connection.remoteAddress;
 
 				try {
 					ip = expandAndSimplify(ip);
@@ -427,7 +440,9 @@ module.exports = () => {
 	app.get('/github-login', passport.authenticate('github', { scope: ['read:user', 'user:email'] }));
 
 	const oAuthAuthentication = (req, res, next, type) => {
-		const ip = req.expandedIP;
+		const ip = expandAndSimplify(
+			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
+		);
 		testIP(ip, banType => {
 			if (banType && banType !== 'new') {
 				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
@@ -607,7 +622,9 @@ module.exports = () => {
 			res.status(401).send();
 			return;
 		}
-		const ip = req.expandedIP;
+		const ip = expandAndSimplify(
+			req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
+		);
 		testIP(ip, banType => {
 			if (banType) {
 				if (banType == 'new') {
