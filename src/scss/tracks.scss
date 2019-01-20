@@ -107,7 +107,8 @@
 			left: 403px;
 		}
 		.track-flipper {
-			height: 220px;
+			//height: 220px;
+			padding-top: 34%;
 			transition-duration: 1s;
 			transition-property: transform;
 			transform-style: preserve-3d;
@@ -122,7 +123,8 @@
 			position: absolute;
 			top: 0;
 			left: 0;
-			height: 220px;
+			//height: 220px;
+			padding-top: 34%;
 			width: 100%;
 		}
 		.top-track-front {

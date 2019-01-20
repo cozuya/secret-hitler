@@ -113,6 +113,12 @@ span.emphasis {
 	display: inline;
 }
 
+.ui.modal.transition {
+	margin-top: 0px !important;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 #top-menu {
 	background: #000000;
 	background: -moz-linear-gradient(left, #000000 0%, #100000 50%, #000000 100%);

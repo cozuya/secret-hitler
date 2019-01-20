@@ -14,5 +14,9 @@ export default () => {
 			animation: 'slide left',
 			displayType: 'flex'
 		});
+		$('.chat-container').transition({
+			animation: 'slide left',
+			displayType: 'block'
+		});
 	});
 };

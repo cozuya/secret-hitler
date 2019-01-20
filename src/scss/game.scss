@@ -4,14 +4,24 @@
 .game > .ui.grid {
 	margin: 0;
 	> .row:first-child {
-		height: 440px;
+		//height: 440px;
 		padding: 0;
 	}
 	.chat-container {
 		background: #f6f6f6;
 		padding: 0;
-		display: flex;
-		flex-direction: column;
+		display: block;
+		//flex-direction: column;
+		right: 0;
+		left: 650px;
+		z-index: 9999;
+		position: absolute;
+
+		@media screen and (max-width: 950px) {
+			left: 20%;
+			display: none;
+		}
+
 
 		.gamestatus {
 			font-size: 22px;

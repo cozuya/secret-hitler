@@ -76,8 +76,6 @@
 	}
 }
 
-
-
 .ui.modal.transition {
 	margin-top: 0px !important;
 	margin-left: auto;
@@ -365,7 +363,7 @@
 	.section-main.game {
 		width: 100%;
 		max-width: 100%;
-		min-width: 1050px !important;
+		//min-width: 1050px !important;
 	}
 
 	.browser-container {
@@ -837,6 +835,10 @@ body {
 	background-color: #1b1b1b;
 	min-height: 595px;
 	overflow: auto;
+	@media screen and (max-width: 950px) {
+		min-height: 660px;
+	}
+
 }
 
 .app-hidden {

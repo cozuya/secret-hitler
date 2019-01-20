@@ -147,8 +147,14 @@
   .game > .ui.grid .chat-container {
     background: #f6f6f6;
     padding: 0;
-    display: flex;
-    flex-direction: column; }
+    display: block;
+    right: 0;
+    left: 650px;
+    z-index: 9999;
+    position: absolute; }
+    @media screen and (max-width: 950px) {
+      .game > .ui.grid .chat-container {
+        left: 20%; } }
     .game > .ui.grid .chat-container .gamestatus {
       font-size: 22px;
       font-style: italic;
@@ -3235,8 +3241,7 @@
           font-size: 28px; }
   #main .section-main.game {
     width: 100%;
-    max-width: 100%;
-    min-width: 1050px !important; }
+    max-width: 100%; }
   #main .browser-container {
     transition: all 0.5s;
     position: relative; }
