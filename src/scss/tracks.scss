@@ -352,7 +352,7 @@
 	top: 130px;
 	left: -140px;
 	width: 120px;
-	height: 167px;
+	height: 40%; //167px
 	z-index: 2;
 	transition-property: left, top, width, height, transform;
 	transition-delay: 0.5s, 0.5s, 3s, 3s, 1s;
@@ -363,7 +363,7 @@
 .enactedpolicies-card {
 	background-size: contain;
 	background-repeat: no-repeat;
-	height: 167px;
+	height: 100%;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -387,57 +387,57 @@
 	background-image: url('../../public/images/cards/fascistp-l.png');
 }
 .enactedpolicies-card-container.middle {
-	left: 260px;
-	top: 130px;
+	left: 40%;
+	top: 30%;
 }
 .enactedpolicies-card-container.inplace {
-	width: 90px;
+	width: 13.85%;
 	background-size: contain;
-	height: 124px;
+	//height: 23.8%;
 }
 .enactedpolicies-card-container.liberal1 {
-	left: 95px;
-	top: 48px;
+	left: 14.15%; //95px
+	top: 21.82%;  //48px
 }
 .enactedpolicies-card-container.liberal2 {
-	left: 188px;
-	top: 48px;
+	left: 28.5%;
+	top: 21.82%;
 }
 .enactedpolicies-card-container.liberal3 {
-	left: 280px;
-	top: 48px;
+	left: 42.85%;
+	top: 21.82%;
 }
 .enactedpolicies-card-container.liberal4 {
-	left: 374px;
-	top: 48px;
+	left: 57.5%;
+	top: 21.82%;
 }
 .enactedpolicies-card-container.liberal5 {
-	left: 466px;
-	top: 48px;
+	left: 71.85%;
+	top: 21.82%;
 }
 .enactedpolicies-card-container.fascist1 {
-	left: 46px;
-	top: 268px;
+	left: 7.1%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist2 {
-	left: 140px;
-	top: 268px;
+	left: 21.5%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist3 {
-	left: 234px;
-	top: 268px;
+	left: 35.9%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist4 {
-	left: 326px;
-	top: 268px;
+	left: 50.3%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist5 {
-	left: 418px;
-	top: 268px;
+	left: 64.7%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist6 {
-	left: 510px;
-	top: 268px;
+	left: 79.1%;
+	top: 61%;
 }
 
 .flipped {
