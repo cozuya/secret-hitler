@@ -6,6 +6,8 @@ const extractSass = new ExtractTextPlugin({
 	disable: process.env.NODE_ENV === 'development'
 });
 
+process.env.NODE_ENV = 'production';
+
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
 	output: {

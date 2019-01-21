@@ -9,10 +9,7 @@
 		"hidden roles",
 		"secret hitler"
 	],
-	"repository": {
-		"url": "https://github.com/cozuya/secret-hitler.git",
-		"type": "git"
-	},
+	"repository": "https://github.com/cozuya/secret-hitler.git",
 	"author": "Chris Ozols <chris.v.ozols@gmail.com> (http://twolongos.com)",
 	"homepage": "https://secrethitler.io",
 	"bugs": "https://github.com/cozuya/secret-hitler/issues",
@@ -77,16 +74,13 @@
 		"yamljs": "^0.3.0"
 	},
 	"devDependencies": {
-		"babel-core": "^6.26.0",
+		"@babel/core": "^7.2.2",
+		"babel-core": "7.0.0-bridge.0",
 		"babel-eslint": "^10.0.1",
-		"babel-loader": "^7.1.4",
-		"babel-plugin-transform-class-properties": "^6.24.1",
-		"babel-plugin-transform-decorators-legacy": "^1.3.4",
-		"babel-polyfill": "^6.23.0",
-		"babel-preset-env": "^1.6.1",
-		"babel-preset-es2015": "^6.24.1",
-		"babel-preset-react": "^6.23.0",
-		"babel-preset-stage-2": "^6.24.1",
+		"babel-jest": "^23.6.0",
+		"babel-loader": "^8.0.5",
+		"babel-plugin-named-asset-import": "^0.3.0",
+		"babel-preset-react-app": "^7.0.0",
 		"body-parser": "^1.18.2",
 		"classnames": "^2.2.5",
 		"clean-webpack-plugin": "^0.1.19",

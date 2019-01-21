@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { fetchProfile, updateStatus } from '../../actions/actions';
+import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
 import { PLAYERCOLORS } from '../../constants';
 import $ from 'jquery';
@@ -16,7 +16,6 @@ const mapStateToProps = ({ midSection }) => ({ midSection });
 const mapDispatchToProps = dispatch => ({
 	fetchProfile: username => dispatch(fetchProfile(username)),
 	fetchReplay: gameId => {
-		updateStatus('replay', uid);
 		dispatch({ type: 'FETCH_REPLAY', gameId });
 	}
 });
