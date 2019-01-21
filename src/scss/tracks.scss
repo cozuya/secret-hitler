@@ -89,22 +89,22 @@
 
 		.electiontracker {
 			position: absolute;
-			width: 25px;
-			height: 25px;
+			width: 3.85%;
+			height: 5.68%;
 			background-color: #2f2fbe;
 			border-radius: 50%;
-			top: 182px;
-			left: 212px;
+			top: 41.36%;
+			left: 32.6%;
 			transition: all 2s;
 		}
 		.electiontracker.fail1 {
-			left: 276px;
+			left: 42.46%;
 		}
 		.electiontracker.fail2 {
-			left: 339px;
+			left: 52.15%;
 		}
 		.electiontracker.fail3 {
-			left: 403px;
+			left: 62%;
 		}
 		.track-flipper {
 			//height: 220px;
@@ -249,8 +249,8 @@
 	position: absolute;
 	top: 130px;
 	left: -140px;
-	width: 120px;
-	height: 164px;
+	width: 20%;
+	height: 40.5%;
 	z-index: 3;
 	transition-property: all;
 	transition-delay: 0.3s;
@@ -275,19 +275,19 @@
 	cursor: pointer;
 }
 .cardflinger-card-container.middle-far-left.active {
-	left: 75px;
+	left: 15%;
 }
 .cardflinger-card-container.middle-center.active {
-	left: 265px;
+	left: 45%;
 }
 .cardflinger-card-container.middle-far-right.active {
-	left: 455px;
+	left: 75%;
 }
 .cardflinger-card-container.middle-left.active {
-	left: 165px !important;
+	left: 30% !important;
 }
 .cardflinger-card-container.middle-right.active {
-	left: 365px !important;
+	left: 60% !important;
 }
 .cardflinger-card.ballot {
 	background-image: url('../../public/images/cards/ballot-l.png');
@@ -351,8 +351,8 @@
 	position: absolute;
 	top: 130px;
 	left: -140px;
-	width: 120px;
-	height: 40%; //167px
+	width: 13.85%;
+	height: 28.5%; //167px
 	z-index: 2;
 	transition-property: left, top, width, height, transform;
 	transition-delay: 0.5s, 0.5s, 3s, 3s, 1s;
@@ -450,8 +450,8 @@
 
 .cardflinger-card-container.notifier::after {
 	content: '';
-	width: 120px;
-	height: 167px;
+	width: 100%;
+	height: 100%;
 	top: 0;
 	left: 0;
 	position: absolute;
