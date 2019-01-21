@@ -38,16 +38,20 @@ app.use((req, res, next) => {
 	try {
 		decodeURIComponent(req.path);
 		next();
-	}
-	catch (e) {
+	} catch (e) {
 		console.error(`Malformed URI: ${req.path}`);
-		console.error(`IP data: ${req.headers['x-real-ip']} | ${req.headers['X-Real-IP']} | ${req.headers['X-Forwarded-For']} | ${req.headers['x-forwarded-for']} | ${req.connection.remoteAddress}`);
+		console.error(
+			`IP data: ${req.headers['x-real-ip']} | ${req.headers['X-Real-IP']} | ${req.headers['X-Forwarded-For']} | ${req.headers['x-forwarded-for']} | ${
+				req.connection.remoteAddress
+			}`
+		);
 		res.status(500).send('An error occurred.');
 	}
 });
 
 app.use((req, res, next) => {
-	const IP = req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	const IP =
+		req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 	if (IP.includes(',')) req.expandedIP = expandAndSimplify(IP.split(',')[0].trim());
 	else req.expandedIP = expandAndSimplify(IP.trim());
 	next();

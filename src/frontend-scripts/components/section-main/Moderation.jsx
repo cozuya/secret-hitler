@@ -263,7 +263,12 @@ export default class Moderation extends React.Component {
 			} else {
 				this.props.socket.emit('updateModAction', {
 					modName: this.props.userInfo.userName,
-					userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
+					userName:
+						action === 'deleteGame'
+							? `DELGAME${this.state.playerInputText}`
+							: action === 'resetGameName'
+							? `RESETGAMENAME${this.state.playerInputText}`
+							: this.state.playerInputText || this.state.selectedUser,
 					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 					comment: this.state.actionTextValue,
 					action
@@ -373,6 +378,15 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Delete game
+				</button>
+				<button
+					style={{ width: '100%', background: '#0ca51d' }}
+					className={playerInputText ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('resetGameName');
+					}}
+				>
+					Reset game name
 				</button>
 				<button
 					style={{ width: '100%', background: 'darkorange' }}
