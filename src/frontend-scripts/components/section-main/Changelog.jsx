@@ -10,6 +10,13 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
+				<div className="ui header">
+					<p>Version 1.0.2 released 1-20-2019</p>
+				</div>
+				<h4>New feature: display of whether or not a player is typing.</h4>
+				<p>Some new moderation features (mods can force votes on afks) courtesy of contributor Vigasaurus.</p>
+				<p>List of games should be like it was in 1.0.0 and lower.</p>
+				<p>Contributor color has been updated.</p>
 				<h4>The top 10 players of season 4 are:</h4>
 				<ul>
 					<li>benjamin172: 2110</li>
@@ -22,15 +29,6 @@ class Changelog extends React.Component {
 					<li>mufasa: 1899</li>
 					<li>adam: 1882</li>
 					<li>Cucumber: 1879</li>
-				</ul>
-				<div className="ui header">
-					<p>Version 1.0.2 released 1-20-2019</p>
-				</div>
-				<ul>
-					<li>Signin/signup with Discord/Github should be fixed.</li>
-					<li>You should no longer be logged out automatically as often.</li>
-					<li>Election tracker now says its status in the gamechat after fails.</li>
-					<li>Lobby and cosmetic improvements @Hexicube.</li>
 				</ul>
 				<div className="ui header">
 					<p>Version 1.0.1 released 1-5-2019</p>

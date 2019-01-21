@@ -469,6 +469,8 @@ module.exports = () => {
 								} else {
 									// TODO: bypass option
 									if (banType === 'new') {
+										console.log(account, 'oath err 472: account');
+										console.log(profile, 'oath err 473: profile');
 										res.status(403).json({
 											message:
 												'You can only make accounts once per day.  If you feel you need an exception to this rule, contact the moderators on our discord server.'
