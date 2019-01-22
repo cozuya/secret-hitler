@@ -8,7 +8,7 @@ const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
 const { expandAndSimplify } = require('./socket/ip-obf');
-const { TOU_CHANGES } = require('../src/frontend-scripts/constants.js');
+const { TOU_CHANGES } = require('../src/frontend-scripts/node-constants.js');
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.

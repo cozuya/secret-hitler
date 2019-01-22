@@ -32,7 +32,7 @@ const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
-const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
+const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants');
 const { makeReport } = require('./report.js');
 const { expandAndSimplify } = require('./ip-obf');
 

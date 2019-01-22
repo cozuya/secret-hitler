@@ -5,7 +5,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const labels = [];
 const data = {};
-const { CURRENTSEASONNUMBER } = require('../src/frontend-scripts/constants');
+const { CURRENTSEASONNUMBER } = require('../src/frontend-scripts/node-constants');
 
 const allPlayerGameData = {
 	fascistWinCount: 0,
