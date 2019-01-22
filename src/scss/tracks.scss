@@ -256,6 +256,8 @@
 	transition-delay: 0.3s;
 	transition-duration: 1s;
 	transform-style: preserve-3d;
+	max-height: 165px;
+	max-width: 120px;
 }
 .cardflinger-card {
 	background-size: contain;
@@ -397,23 +399,23 @@
 }
 .enactedpolicies-card-container.liberal1 {
 	left: 14.15%; //95px
-	top: 21.82%;  //48px
+	top: 10.91%;  //48px
 }
 .enactedpolicies-card-container.liberal2 {
 	left: 28.5%;
-	top: 21.82%;
+	top: 10.91%;
 }
 .enactedpolicies-card-container.liberal3 {
 	left: 42.85%;
-	top: 21.82%;
+	top: 10.91%;
 }
 .enactedpolicies-card-container.liberal4 {
 	left: 57.5%;
-	top: 21.82%;
+	top: 10.91%;
 }
 .enactedpolicies-card-container.liberal5 {
 	left: 71.85%;
-	top: 21.82%;
+	top: 10.91%;
 }
 .enactedpolicies-card-container.fascist1 {
 	left: 7.1%;
