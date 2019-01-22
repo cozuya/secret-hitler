@@ -1696,48 +1696,37 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			sendPlayerChatUpdate(game, data);
 			return;
 		}
-	}
 
-	if (AEM) {
-		const aemSkip = /forceskip (\d{1,2})/i.exec(chat);
-		if (aemSkip) {
+		const aemPick = /forcepick (\d{1,2}) (\d{1,2})/i.exec(chat);
+		if (aemPick) {
 			if (player) {
-				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
+				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
 				return;
 			}
-			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
+			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
+			const chancellorPick = aemPick[2];
 			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+			const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
 			if (!affectedPlayer) {
 				socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+				return;
+			}
+			if (!affectedChancellor) {
+				socket.emit('sendAlert', `There is no seat ${chancellorPick}.`);
 				return;
 			}
 			if (affectedPlayerNumber !== game.gameState.presidentIndex) {
 				socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
 				return;
 			}
-			let chancellor = -1;
-			let currentPlayers = [];
-			for (let i = 0; i < game.private.seatedPlayers.length; i++) {
-				if (game.private.seatedPlayers[i].isDead) {
-					currentPlayers[i] = false;
-				} else if (i === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5) {
-					currentPlayers[i] = false;
-				} else if (i === game.gameState.previousElectedGovernment[1]) {
-					currentPlayers[i] = false;
-				} else {
-					currentPlayers[i] = true;
-				}
-			}
-			currentPlayers[affectedPlayerNumber] = false;
-			let counter = affectedPlayerNumber + 1;
-			while (chancellor === -1) {
-				if (counter >= currentPlayers.length) {
-					counter = 0;
-				}
-				if (currentPlayers[counter]) {
-					chancellor = counter;
-				}
-				counter++;
+			if (
+				game.publicPlayersState[chancellorPick - 1].isDead ||
+				chancellorPick - 1 === affectedPlayerNumber ||
+				chancellorPick - 1 === game.gameState.previousElectedGovernment[1] ||
+				(chancellorPick - 1 === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5)
+			) {
+				socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
+				return;
 			}
 			game.private.unSeatedGameChats = [
 				{
@@ -1745,24 +1734,26 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 					timestamp: new Date(),
 					chat: [
 						{
-							text: 'An AEM member has force skipped the government with '
+							text: 'An AEM member has forced '
 						},
 						{
 							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
 							type: 'player'
 						},
 						{
-							text: ' as president.'
+							text: ' to pick '
+						},
+						{
+							text: `${affectedChancellor.userName} {${chancellorPick}}`,
+							type: 'player'
+						},
+						{
+							text: ' as chancellor.'
 						}
 					]
 				}
 			];
-			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
-			setTimeout(() => {
-				for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
-					selectVoting({ user: p.userName }, game, { vote: false });
-				}
-			}, 1000);
+			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
 			sendPlayerChatUpdate(game, data);
 			return;
 		}

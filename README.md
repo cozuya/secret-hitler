@@ -14,7 +14,7 @@ Current production/stable is found at [Secret Hitler IO](https://secrethitler.io
 ![Screenshot](https://i.imgur.com/y7ka1lG.png)
 
 Considering contributing to this project? Please read our brief guidelines found at
-[CONTRIBUTING](https://github.com/cozuya/secret-hitler/blob/master/CONTRIBUTING.md). Contributors get a cool teal playername color!
+[CONTRIBUTING](https://github.com/cozuya/secret-hitler/blob/master/CONTRIBUTING.md). Contributors get a cool special playername color!
 
 Front end: React, Redux, Sass, Semantic UI, jQuery, SocketIO.
 
