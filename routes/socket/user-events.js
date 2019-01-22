@@ -14,6 +14,7 @@ const {
 } = require('./models');
 const { sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
+const { selectChancellor } = require('./game/election-util.js');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
@@ -31,7 +32,7 @@ const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
-const { LEGALCHARACTERS } = require('../../src/frontend-scripts/constants');
+const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants');
 const { makeReport } = require('./report.js');
 const { expandAndSimplify } = require('./ip-obf');
 
@@ -396,6 +397,23 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	sendGameList();
 };
 
+module.exports.handleUpdateTyping = ({ userName, lastTypingTime, uid }) => {
+	const game = games[uid];
+
+	if (!game) {
+		return;
+	}
+
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+
+	roomSockets.forEach(socket => {
+		if (socket.handshake.session.passport && socket.handshake.session.passport.user !== userName) {
+			game.isTyping[userName] = lastTypingTime;
+			socket.emit('isTypingUpdate', game.isTyping);
+		}
+	});
+};
+
 /**
  * @param {object} socket - user socket reference.
  * @param {object} data - from socket emit.
@@ -618,6 +636,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	const uid = generateCombination(2, '', true);
 
 	const newGame = {
+		isTyping: {},
 		gameState: {
 			previousElectedGovernment: [],
 			undrawnPolicyCount: 17,
@@ -1613,6 +1632,131 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			sendPlayerChatUpdate(game, data);
 			return;
 		}
+
+		const aemSkip = /forceskip (\d{1,2})/i.exec(chat);
+		if (aemSkip) {
+			if (player) {
+				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
+			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+			if (!affectedPlayer) {
+				socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+				return;
+			}
+			if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+				socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+				return;
+			}
+			let chancellor = -1;
+			let currentPlayers = [];
+			for (let i = 0; i < game.private.seatedPlayers.length; i++) {
+				currentPlayers[i] = !(
+					game.private.seatedPlayers[i].isDead ||
+					(i === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5) ||
+					i === game.gameState.previousElectedGovernment[1]
+				);
+			}
+			currentPlayers[affectedPlayerNumber] = false;
+			let counter = affectedPlayerNumber + 1;
+			while (chancellor === -1) {
+				if (counter >= currentPlayers.length) {
+					counter = 0;
+				}
+				if (currentPlayers[counter]) {
+					chancellor = counter;
+				}
+				counter++;
+			}
+			game.private.unSeatedGameChats = [
+				{
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has force skipped the government with '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' as president.'
+						}
+					]
+				}
+			];
+			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
+			setTimeout(() => {
+				for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
+					selectVoting({ user: p.userName }, game, { vote: false });
+				}
+			}, 1000);
+			sendPlayerChatUpdate(game, data);
+			return;
+		}
+
+		const aemPick = /forcepick (\d{1,2}) (\d{1,2})/i.exec(chat);
+		if (aemPick) {
+			if (player) {
+				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
+			const chancellorPick = aemPick[2];
+			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+			const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
+			if (!affectedPlayer) {
+				socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+				return;
+			}
+			if (!affectedChancellor) {
+				socket.emit('sendAlert', `There is no seat ${chancellorPick}.`);
+				return;
+			}
+			if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+				socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+				return;
+			}
+			if (
+				game.publicPlayersState[chancellorPick - 1].isDead ||
+				chancellorPick - 1 === affectedPlayerNumber ||
+				chancellorPick - 1 === game.gameState.previousElectedGovernment[1] ||
+				(chancellorPick - 1 === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5)
+			) {
+				socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
+				return;
+			}
+			game.private.unSeatedGameChats = [
+				{
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has forced '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' to pick '
+						},
+						{
+							text: `${affectedChancellor.userName} {${chancellorPick}}`,
+							type: 'player'
+						},
+						{
+							text: ' as chancellor.'
+						}
+					]
+				}
+			];
+			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
+			sendPlayerChatUpdate(game, data);
+			return;
+		}
 	}
 
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
@@ -2539,6 +2683,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						if (game) {
 							delete games[game.general.uid];
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
+							sendGameList();
+						}
+					} else if (data.userName.substr(0, 13) === 'RESETGAMENAME') {
+						const game = games[data.userName.slice(13)];
+						if (game) {
+							games[game.general.uid].general.name = 'New Game';
 							sendGameList();
 						}
 					} else if (isSuperMod && data.action.type) {

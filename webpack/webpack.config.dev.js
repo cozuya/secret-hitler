@@ -5,6 +5,8 @@ const extractSass = new ExtractTextPlugin({
 	filename: '../styles/style-main.css'
 });
 
+process.env.NODE_ENV = 'development';
+
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
 	output: {
@@ -47,7 +49,12 @@ module.exports = {
 			},
 			{
 				test: /\.(js|jsx)$/,
-				use: ['babel-loader'],
+				use: {
+					loader: 'babel-loader',
+					query: {
+						presets: ['react-app']
+					}
+				},
 				exclude: /node_modules/
 			},
 			{

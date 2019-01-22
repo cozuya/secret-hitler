@@ -6,26 +6,14 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
 
 export default class Generalchat extends React.Component {
-	constructor() {
-		super();
-		this.handleChatLockClick = this.handleChatLockClick.bind(this);
-		this.chatDisabled = this.chatDisabled.bind(this);
-		this.handleSubmit = this.handleSubmit.bind(this);
-		this.handleTyping = this.handleTyping.bind(this);
-		this.handleInputChange = this.handleInputChange.bind(this);
-		this.handleChatClearClick = this.handleChatClearClick.bind(this);
-		this.handleChatScrolled = this.handleChatScrolled.bind(this);
-		this.handleInsertEmote = this.handleInsertEmote.bind(this);
-		this.handleKeyPress = this.handleKeyPress.bind(this);
-		this.state = {
-			lock: false,
-			discordEnabled: false,
-			stickyEnabled: true,
-			badWord: [null, null],
-			textLastChanged: 0,
-			textChangeTimer: -1
-		};
-	}
+	state = {
+		lock: false,
+		discordEnabled: false,
+		stickyEnabled: true,
+		badWord: [null, null],
+		textLastChanged: 0,
+		textChangeTimer: -1
+	};
 
 	componentDidMount() {
 		if (this.scrollbar) {
@@ -50,13 +38,13 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
-	handleChatClearClick() {
+	handleChatClearClick = () => {
 		this.setState({ inputValue: '' });
-	}
+	};
 
-	handleInputChange(e) {
+	handleInputChange = e => {
 		this.setState({ inputValue: `${e.target.value}` });
-	}
+	};
 
 	renderPreviousSeasonAward(type) {
 		switch (type) {
@@ -79,7 +67,7 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
-	handleTyping(e) {
+	handleTyping = e => {
 		e.preventDefault();
 
 		const text = this.chatInput.value;
@@ -101,13 +89,13 @@ export default class Generalchat extends React.Component {
 				});
 			}
 		}
-	}
+	};
 
-	chatDisabled() {
+	chatDisabled = () => {
 		return this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
-	}
+	};
 
-	handleSubmit(e) {
+	handleSubmit = e => {
 		if (this.chatDisabled()) return;
 		const inputValue = this.chatInput.value;
 
@@ -128,13 +116,13 @@ export default class Generalchat extends React.Component {
 				this.chatInput.focus();
 			}, 100);
 		}
-	}
+	};
 
-	handleChatLockClick() {
+	handleChatLockClick = () => {
 		this.setState({ lock: !this.state.lock });
-	}
+	};
 
-	handleChatScrolled() {
+	handleChatScrolled = () => {
 		const bar = this.scrollbar;
 
 		if (this.state.lock && bar.getValues().top > 0.96) {
@@ -143,19 +131,19 @@ export default class Generalchat extends React.Component {
 		} else if (!this.state.lock && bar.getValues().top <= 0.96) {
 			this.setState({ lock: true });
 		}
-	}
+	};
 
-	handleInsertEmote(emote) {
+	handleInsertEmote = emote => {
 		this.chatInput.value += ` ${emote}`;
 		this.chatInput.focus();
-	}
+	};
 
-	handleKeyPress(e) {
+	handleKeyPress = e => {
 		if (e.keyCode === 13 && e.shiftKey === false) {
 			e.preventDefault();
 			this.handleSubmit();
 		}
-	}
+	};
 
 	renderInput() {
 		const { userInfo } = this.props;

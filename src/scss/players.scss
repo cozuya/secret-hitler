@@ -76,7 +76,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	}
 
 	.player-container.contributor {
-		box-shadow: 0 0 5px 2px teal !important;
+		box-shadow: 0 0 5px 2px #21bae0 !important;
 	}
 
 	.player-container.admin {
@@ -434,4 +434,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 
 .error {
 	color: red;
+}
+.is-typing {
+	width: 20px;
+	position: absolute;
+	top: 17px;
+	left: 25px;
 }

@@ -1,6 +1,6 @@
 const cn = require('classnames');
 
-module.exports.TOU_CHANGES = [
+export const TOU_CHANGES = [
 	{
 		changeVer: '1.2',
 		changeDesc: 'Terms of Use now states that explicitly forbidden words may result in action without reports.'
@@ -16,7 +16,7 @@ module.exports.TOU_CHANGES = [
 	}
 ];
 
-module.exports.CURRENTSEASONNUMBER = 5;
+export const CURRENTSEASONNUMBER = 5;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -24,7 +24,7 @@ const LATIN_EXT_A = [...'ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚ�
 
 const ALLCHARS = [...ALPHANUMERIC, ...SYMBOLS, ...LATIN_EXT_A];
 
-module.exports.LEGALCHARACTERS = text => {
+export const LEGALCHARACTERS = text => {
 	const arr = [...text];
 	const pass = arr.every(c => ALLCHARS.includes(c));
 	return pass;
@@ -37,7 +37,7 @@ module.exports.LEGALCHARACTERS = text => {
  * @param {boolean} eloDisabled - true if elo is off
  * @return {string} list of classes for colors.
  */
-module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
+export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	if (Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') && !user.staffDisableStaffColor) {
 		return cn(defaultClass, {
 			admin: user.staffRole === 'admin',
@@ -95,7 +95,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	}
 };
 
-module.exports.getBadWord = text => {
+export const getBadWord = text => {
 	const badWords = {
 		cunt: [],
 		nigger: ['nigga', 'nibba'],

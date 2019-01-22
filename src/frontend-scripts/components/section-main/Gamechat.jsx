@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import { PLAYERCOLORS, getBadWord } from '../../constants';
-import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
+import { loadReplay, toggleNotes, updateUser, updateTyping } from '../../actions/actions';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { renderEmotesButton, processEmotes } from '../../emotes';
@@ -11,43 +11,26 @@ import { Scrollbars } from 'react-custom-scrollbars';
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
 	toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus)),
-	updateUser: userInfo => dispatch(updateUser(userInfo))
+	updateUser: userInfo => dispatch(updateUser(userInfo)),
+	updateTyping: isTyping => dispatch(updateTyping(isTyping))
 });
 
-const mapStateToProps = ({ notesActive }) => ({ notesActive });
+const mapStateToProps = ({ notesActive, isTyping }) => ({ notesActive, isTyping });
 
 class Gamechat extends React.Component {
-	constructor() {
-		super();
-
-		this.handleChatFilterClick = this.handleChatFilterClick.bind(this);
-		this.chatDisabled = this.chatDisabled.bind(this);
-		this.handleSubmit = this.handleSubmit.bind(this);
-		this.handleTyping = this.handleTyping.bind(this);
-		this.handleChatLockClick = this.handleChatLockClick.bind(this);
-		this.handleClickedLeaveGame = this.handleClickedLeaveGame.bind(this);
-		this.handleClickedClaimButton = this.handleClickedClaimButton.bind(this);
-		this.handleWhitelistPlayers = this.handleWhitelistPlayers.bind(this);
-		this.handleNoteClick = this.handleNoteClick.bind(this);
-		this.handleChatScrolled = this.handleChatScrolled.bind(this);
-		this.handleInsertEmote = this.handleInsertEmote.bind(this);
-		this.gameChatStatus = this.gameChatStatus.bind(this);
-		this.handleSubscribeModChat = this.handleSubscribeModChat.bind(this);
-
-		this.state = {
-			lock: false,
-			claim: '',
-			playersToWhitelist: [],
-			notesEnabled: false,
-			showFullChat: false,
-			showPlayerChat: true,
-			showGameChat: true,
-			showObserverChat: true,
-			badWord: [null, null],
-			textLastChanged: 0,
-			textChangeTimer: -1
-		};
-	}
+	state = {
+		lock: false,
+		claim: '',
+		playersToWhitelist: [],
+		notesEnabled: false,
+		showFullChat: false,
+		showPlayerChat: true,
+		showGameChat: true,
+		showObserverChat: true,
+		badWord: [null, null],
+		textLastChanged: 0,
+		textChangeTimer: -1
+	};
 
 	componentDidMount() {
 		this.scrollChats();
@@ -109,7 +92,7 @@ class Gamechat extends React.Component {
 		}
 	};
 
-	handleWhitelistPlayers() {
+	handleWhitelistPlayers = () => {
 		this.setState({
 			playersToWhitelist: this.props.userList.list
 				.filter(user => user.userName !== this.props.userInfo.userName)
@@ -117,14 +100,14 @@ class Gamechat extends React.Component {
 		});
 
 		$(this.whitelistModal).modal('show');
-	}
+	};
 
-	handleNoteClick() {
+	handleNoteClick = () => {
 		const { notesActive, toggleNotes } = this.props;
 
 		toggleNotes(!notesActive);
 		this.setState({ notesEnabled: !notesActive });
-	}
+	};
 
 	renderNotes() {
 		if (this.state.notesEnabled) {
@@ -140,7 +123,7 @@ class Gamechat extends React.Component {
 		}
 	}
 
-	handleClickedLeaveGame() {
+	handleClickedLeaveGame = () => {
 		const { userInfo, gameInfo } = this.props;
 
 		if (userInfo.isSeated && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
@@ -150,18 +133,20 @@ class Gamechat extends React.Component {
 		} else {
 			window.location.hash = '#/';
 		}
-	}
+	};
 
-	handleTyping(e) {
+	handleTyping = e => {
 		e.preventDefault();
 
-		const { gameInfo } = this.props;
+		const { userInfo, gameInfo, updateTyping, isTyping, socket } = this.props;
+
 		if (gameInfo && gameInfo.general && gameInfo.general.private) {
-			if (this.state.badWord[0])
+			if (this.state.badWord[0]) {
 				this.setState({
 					badWord: [null, null]
 				});
-			return;
+				return;
+			}
 		}
 		const text = this.gameChatInput.value;
 		const foundWord = getBadWord(text);
@@ -182,20 +167,42 @@ class Gamechat extends React.Component {
 				});
 			}
 		}
-	}
+		const now = new Date().getTime();
 
-	chatDisabled() {
+		if (userInfo.isSeated && (now - isTyping[userInfo.userName] > 1000 || !isTyping[userInfo.userName])) {
+			updateTyping({
+				...isTyping,
+				[userInfo.userName]: now
+			});
+			socket.emit('updateTyping', {
+				userName: userInfo.userName,
+				lastTypingTime: now,
+				uid: gameInfo.general.uid
+			});
+		}
+	};
+
+	chatDisabled = () => {
 		return this.state.badWord[0] && Date.now() - this.state.textLastChanged < 1000;
-	}
+	};
 
-	handleSubmit(e) {
+	handleSubmit = e => {
+		const { updateTyping, isTyping, userInfo } = this.props;
+
 		e.preventDefault();
-		if (this.chatDisabled()) return;
+
+		if (this.chatDisabled()) {
+			return;
+		}
 
 		const currentValue = this.gameChatInput.value;
 		const { gameInfo } = this.props;
 
 		if (currentValue.length < 300 && currentValue && !$('.expando-container + div').hasClass('disabled')) {
+			updateTyping({
+				...isTyping,
+				[userInfo.userName]: null
+			});
 			const chat = {
 				chat: currentValue,
 				uid: gameInfo.general.uid
@@ -217,14 +224,14 @@ class Gamechat extends React.Component {
 				}
 			}, 80);
 		}
-	}
+	};
 
-	handleSubscribeModChat() {
+	handleSubscribeModChat = () => {
 		if (confirm('Are you sure you want to subscribe to mod-only chat to see private information?')) {
 			const { gameInfo } = this.props;
 			this.props.socket.emit('subscribeModChat', gameInfo.general.uid);
 		}
-	}
+	};
 
 	scrollChats() {
 		if (!this.state.lock) {
@@ -232,7 +239,7 @@ class Gamechat extends React.Component {
 		}
 	}
 
-	handleChatFilterClick(e) {
+	handleChatFilterClick = e => {
 		const filter = e.currentTarget.getAttribute('data-filter');
 		switch (filter) {
 			case 'Player':
@@ -250,7 +257,7 @@ class Gamechat extends React.Component {
 			default:
 				console.log(`Unknown filter: ${filter}`);
 		}
-	}
+	};
 
 	handleTimestamps(timestamp) {
 		const { userInfo } = this.props;
@@ -264,27 +271,27 @@ class Gamechat extends React.Component {
 		}
 	}
 
-	handleChatLockClick() {
+	handleChatLockClick = () => {
 		if (this.state.lock) {
 			this.setState({ lock: false });
 		} else {
 			this.setState({ lock: true });
 		}
-	}
+	};
 
-	handleClickedClaimButton() {
+	handleClickedClaimButton = () => {
 		const { gameInfo, userInfo } = this.props;
 		const playerIndex = gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName);
 
 		this.setState({
 			claim: this.state.claim ? '' : gameInfo.playersState[playerIndex].claim
 		});
-	}
+	};
 
-	handleInsertEmote(emote) {
+	handleInsertEmote = emote => {
 		this.gameChatInput.value += ` ${emote}`;
 		this.gameChatInput.focus();
-	}
+	};
 
 	renderModEndGameButtons() {
 		const modalClick = () => {
@@ -300,7 +307,7 @@ class Gamechat extends React.Component {
 		);
 	}
 
-	gameChatStatus() {
+	gameChatStatus = () => {
 		const { userInfo, gameInfo } = this.props;
 		const { gameState, publicPlayersState } = gameInfo;
 		const { gameSettings, userName, isSeated } = userInfo;
@@ -401,10 +408,10 @@ class Gamechat extends React.Component {
 			isDisabled: false,
 			placeholder: 'Send a message'
 		};
-	}
+	};
 
 	processChats() {
-		const { gameInfo, userInfo, userList, isReplay, updateUser } = this.props;
+		const { gameInfo, userInfo, userList, isReplay } = this.props;
 		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
@@ -678,12 +685,12 @@ class Gamechat extends React.Component {
 		);
 		const hasNoAEM = players => {
 			if (!userList || !userList.list) return false;
-			return userList.list.every(user => {
-				if (players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod')
-					return false;
-				else return true;
-			});
+			return userList.list.every(
+				user =>
+					!(players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod')
+			);
 		};
+
 		const sendModEndGame = winningTeamName => {
 			socket.emit('updateModAction', {
 				modName: userInfo.userName,
@@ -1093,6 +1100,10 @@ class Gamechat extends React.Component {
 	}
 }
 
+Gamechat.defaultProps = {
+	isTyping: {}
+};
+
 Gamechat.propTypes = {
 	isReplay: PropTypes.bool,
 	clickedGameRole: PropTypes.object,
@@ -1104,7 +1115,8 @@ Gamechat.propTypes = {
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.array,
+	isTyping: PropTypes.object
 };
 
 export default connect(

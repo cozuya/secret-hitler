@@ -10,7 +10,7 @@ const animals = require('../../../utils/animals');
 const adjectives = require('../../../utils/adjectives');
 const _ = require('lodash');
 const { makeReport } = require('../report.js');
-const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/constants.js');
+const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-constants.js');
 
 /**
  * @param {object} game - game to act on.

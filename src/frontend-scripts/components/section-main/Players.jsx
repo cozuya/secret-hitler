@@ -13,37 +13,32 @@ const mapDispatchToProps = dispatch => ({
 	togglePlayerNotes: playerName => dispatch(togglePlayerNotes(playerName))
 });
 
-const mapStateToProps = ({ playerNotesActive }) => ({ playerNotesActive });
+const mapStateToProps = ({ playerNotesActive, isTyping }) => ({
+	playerNotesActive,
+	isTyping
+});
 
 class Players extends React.Component {
-	constructor() {
-		super();
-		this.clickedTakeSeat = this.clickedTakeSeat.bind(this);
-		this.handlePlayerClick = this.handlePlayerClick.bind(this);
-		this.handlePlayerDoubleClick = this.handlePlayerDoubleClick.bind(this);
-		this.handlePasswordSubmit = this.handlePasswordSubmit.bind(this);
-		this.handleReportSubmit = this.handleReportSubmit.bind(this);
-		this.state = {
-			passwordValue: '',
-			reportedPlayer: '',
-			reportTextValue: '',
-			playerNotes: [],
-			playerNoteSeatEnabled: false,
-			reportLength: 0
-		};
-	}
+	state = {
+		passwordValue: '',
+		reportedPlayer: '',
+		reportTextValue: '',
+		playerNotes: [],
+		playerNoteSeatEnabled: false,
+		reportLength: 0
+	};
 
-	componentWillReceiveProps(nextProps) {
-		const { userName } = this.props;
-		const { publicPlayersState } = nextProps.gameInfo;
+	// componentWillReceiveProps(nextProps) {
+	// 	const { userName } = this.props;
+	// 	const { publicPlayersState } = nextProps.gameInfo;
 
-		if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
-			this.props.socket.emit('getPlayerNotes', {
-				userName,
-				seatedPlayers: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
-			});
-		}
-	}
+	// 	if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
+	// 		this.props.socket.emit('getPlayerNotes', {
+	// 			userName,
+	// 			seatedPlayers: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
+	// 		});
+	// 	}
+	// }
 
 	componentDidMount() {
 		const { socket, userInfo } = this.props;
@@ -68,15 +63,15 @@ class Players extends React.Component {
 		this.props.socket.off('notesUpdate');
 	}
 
-	handlePlayerDoubleClick(userName) {
+	handlePlayerDoubleClick = userName => {
 		if ((!this.props.gameInfo.general.private && this.props.userInfo.userName && this.props.userInfo.userName !== userName) || this.props.isReplay) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
 		}
-	}
+	};
 
-	handlePlayerClick(e) {
+	handlePlayerClick = e => {
 		const { userInfo, gameInfo, socket } = this.props;
 		const { gameState } = gameInfo;
 		const { phase, clickActionInfo } = gameState;
@@ -126,7 +121,7 @@ class Players extends React.Component {
 				});
 			}
 		}
-	}
+	};
 
 	renderPreviousGovtToken(i) {
 		const { publicPlayersState } = this.props.gameInfo;
@@ -181,6 +176,19 @@ class Players extends React.Component {
 					}
 				/>
 			);
+		}
+	}
+
+	renderTyping(player) {
+		const { isTyping } = this.props;
+
+		if (isTyping[player.userName] && new Date().getTime() - isTyping[player.userName] < 2000) {
+			setTimeout(() => {
+				if (new Date().getTime() - this.props.isTyping[player.userName] >= 2000) {
+					this.forceUpdate();
+				}
+			}, 2000);
+			return <img className="is-typing" src="../images/typing.gif" />;
 		}
 	}
 
@@ -318,6 +326,7 @@ class Players extends React.Component {
 				</div>
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
+				{this.renderTyping(player)}
 				{this.renderGovtToken(i)}
 				{/* {this.renderPlayerNotesIcon(i)} */}
 				<div
@@ -409,14 +418,14 @@ class Players extends React.Component {
 		}
 	}
 
-	handlePasswordSubmit(e) {
+	handlePasswordSubmit = e => {
 		e.preventDefault();
 
 		this.props.onClickedTakeSeat(this.state.passwordValue);
 		$(this.passwordModal).modal('hide');
-	}
+	};
 
-	handleReportSubmit(e) {
+	handleReportSubmit = e => {
 		const { gameInfo } = this.props;
 		e.preventDefault();
 
@@ -439,9 +448,9 @@ class Players extends React.Component {
 				maxReportLengthExceeded: false
 			});
 		}
-	}
+	};
 
-	clickedTakeSeat() {
+	clickedTakeSeat = () => {
 		const { gameInfo, userInfo, onClickedTakeSeat, userList } = this.props;
 
 		if (userInfo.userName) {
@@ -467,7 +476,7 @@ class Players extends React.Component {
 		} else {
 			$(this.signinModal).modal('show');
 		}
-	}
+	};
 
 	render() {
 		const handlePasswordInputChange = e => {
@@ -587,6 +596,10 @@ class Players extends React.Component {
 	}
 }
 
+Players.defaultProps = {
+	isTyping: {}
+};
+
 Players.propTypes = {
 	roles: PropTypes.array,
 	userInfo: PropTypes.object,
@@ -597,7 +610,8 @@ Players.propTypes = {
 	selectedGamerole: PropTypes.func,
 	isReplay: PropTypes.bool,
 	toggleNotes: PropTypes.func,
-	playerNotesActive: PropTypes.string
+	playerNotesActive: PropTypes.string,
+	isTyping: PropTypes.object
 };
 
 export default connect(

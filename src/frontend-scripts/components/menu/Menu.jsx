@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS } from '../../constants';
 import { viewPatchNotes } from '../../actions/actions';
 import { Popup } from 'semantic-ui-react';
 import $ from 'jquery';
@@ -403,7 +402,8 @@ class Menu extends React.Component {
 Menu.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	midSection: PropTypes.string
+	midSection: PropTypes.string,
+	version: PropTypes.object
 };
 
 export default connect(

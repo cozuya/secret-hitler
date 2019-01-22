@@ -1,7 +1,7 @@
 const Summary = require('../../models/game-summary');
 const Account = require('../../models/account');
 const buildEnhancedGameSummary = require('../../models/game-summary/buildEnhancedGameSummary');
-const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
+const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 const mongoose = require('mongoose');
 
 const libAdjust = {

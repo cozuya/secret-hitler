@@ -1,4 +1,4 @@
-const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
+const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const BannedIP = require('../../models/bannedIP');
@@ -343,8 +343,9 @@ module.exports.testIP = (IP, callback) => {
 				}
 
 				if (ip && unbannedTime > date) {
-					if (process.env.NODE_ENV === 'production') callback(ip.type);
-					else {
+					if (process.env.NODE_ENV === 'production') {
+						callback(ip.type);
+					} else {
 						console.log(`IP ban ignored: ${IP} = ${ip.type}`);
 						callback(null);
 					}

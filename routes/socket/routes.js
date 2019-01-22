@@ -17,7 +17,8 @@ const {
 	handleUpdatedBio,
 	handleUpdatedRemakeGame,
 	handleUpdatedPlayerNote,
-	handleSubscribeModChat
+	handleSubscribeModChat,
+	handleUpdateTyping
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -44,7 +45,7 @@ const {
 } = require('./game/policy-powers');
 const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
-const { TOU_CHANGES } = require('../../src/frontend-scripts/constants.js');
+const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
 
 const gamesGarbageCollector = () => {
@@ -172,261 +173,264 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				socket.emit('emoteList', emoteList);
 			});
 
-			socket
-				// user-events
+			// user-events
+			socket.on('disconnect', () => {
+				handleSocketDisconnect(socket);
+			});
 
-				.on('disconnect', () => {
-					handleSocketDisconnect(socket);
-				})
-				.on('confirmTOU', () => {
-					if (authenticated && isRestricted) {
-						Account.findOne({ username: passport.user }).then(account => {
-							account.touLastAgreed = TOU_CHANGES[0].changeVer;
-							account.save();
-							isRestricted = checkRestriction(account);
+			socket.on('updateTyping', data => {
+				handleUpdateTyping(data);
+			});
+
+			socket.on('confirmTOU', () => {
+				if (authenticated && isRestricted) {
+					Account.findOne({ username: passport.user }).then(account => {
+						account.touLastAgreed = TOU_CHANGES[0].changeVer;
+						account.save();
+						isRestricted = checkRestriction(account);
+					});
+				}
+			});
+			socket.on('handleUpdatedPlayerNote', data => {
+				handleUpdatedPlayerNote(socket, data);
+			});
+			socket.on('updateModAction', data => {
+				if (authenticated && isAEM) {
+					handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));
+				}
+			});
+			socket.on('addNewClaim', data => {
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleAddNewClaim(passport, game, data);
+				}
+			});
+			socket.on('updateGameWhitelist', data => {
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleUpdateWhitelist(passport, game, data);
+				}
+			});
+			socket.on('updateTruncateGame', data => {
+				handleUpdatedTruncateGame(data);
+			});
+			socket.on('addNewGameChat', data => {
+				if (isRestricted) return;
+				if (authenticated) {
+					handleAddNewGameChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
+				}
+			});
+			socket.on('updateReportGame', data => {
+				try {
+					handleUpdatedReportGame(socket, data);
+				} catch (e) {
+					console.log(e, 'err in player report');
+				}
+			});
+			socket.on('addNewGame', data => {
+				if (isRestricted) return;
+				if (authenticated) {
+					handleAddNewGame(socket, passport, data);
+				}
+			});
+			socket.on('updateGameSettings', data => {
+				if (authenticated) {
+					handleUpdatedGameSettings(socket, passport, data);
+				}
+			});
+
+			socket.on('addNewGeneralChat', data => {
+				if (isRestricted) return;
+				if (authenticated) {
+					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
+				}
+			});
+			socket.on('leaveGame', data => {
+				const game = findGame(data);
+
+				if (game && io.sockets.adapter.rooms[game.general.uid] && socket) {
+					socket.leave(game.general.uid);
+				}
+
+				if (authenticated && game) {
+					handleUserLeaveGame(socket, game, data, passport);
+				}
+			});
+			socket.on('updateSeatedUser', data => {
+				if (isRestricted) return;
+				if (authenticated) {
+					updateSeatedUser(socket, passport, data);
+				}
+			});
+			socket.on('playerReport', data => {
+				if (isRestricted || !data || !data.comment || data.comment.length > 140) return;
+				if (authenticated) {
+					handlePlayerReport(passport, data);
+				}
+			});
+			socket.on('playerReportDismiss', () => {
+				if (authenticated && isAEM) {
+					handlePlayerReportDismiss();
+				}
+			});
+			socket.on('updateRemake', data => {
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleUpdatedRemakeGame(passport, game, data);
+				}
+			});
+			socket.on('updateBio', data => {
+				if (authenticated) {
+					handleUpdatedBio(socket, passport, data);
+				}
+			});
+			// user-requests
+
+			socket.on('getPlayerNotes', data => {
+				sendPlayerNotes(socket, data);
+			});
+			socket.on('getGameList', () => {
+				sendGameList(socket);
+			});
+			socket.on('getGameInfo', uid => {
+				sendGameInfo(socket, uid);
+			});
+			socket.on('getUserList', () => {
+				sendUserList(socket);
+			});
+			socket.on('getGeneralChats', () => {
+				sendGeneralChats(socket);
+			});
+			socket.on('getUserGameSettings', () => {
+				sendUserGameSettings(socket);
+			});
+			socket.on('selectedChancellorVoteOnVeto', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectChancellorVoteOnVeto(passport, game, data);
+				}
+			});
+			socket.on('getModInfo', count => {
+				if (authenticated && (isAEM || isTrial)) {
+					sendModInfo(socket, count, isTrial && !isAEM);
+				}
+			});
+			socket.on('subscribeModChat', uid => {
+				if (authenticated && isAEM) {
+					const game = findGame({ uid });
+					if (game && game.private && game.private.seatedPlayers) {
+						const players = game.private.seatedPlayers.map(player => player.userName);
+						Account.find({ staffRole: { $exists: true } }).then(accounts => {
+							const staff = accounts
+								.filter(acc => {
+									acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username);
+								})
+								.map(acc => acc.username);
+							if (staff.length) {
+								socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(staff)}`);
+								return;
+							}
+							handleSubscribeModChat(socket, passport, game);
 						});
-					}
-				})
-				.on('handleUpdatedPlayerNote', data => {
-					handleUpdatedPlayerNote(socket, data);
-				})
-				.on('updateModAction', data => {
-					if (authenticated && isAEM) {
-						handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));
-					}
-				})
-				.on('addNewClaim', data => {
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						handleAddNewClaim(passport, game, data);
-					}
-				})
-				.on('updateGameWhitelist', data => {
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						handleUpdateWhitelist(passport, game, data);
-					}
-				})
-				.on('updateTruncateGame', data => {
-					handleUpdatedTruncateGame(data);
-				})
-				.on('addNewGameChat', data => {
-					if (isRestricted) return;
-					if (authenticated) {
-						handleAddNewGameChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
-					}
-				})
-				.on('updateReportGame', data => {
-					try {
-						handleUpdatedReportGame(socket, data);
-					} catch (e) {
-						console.log(e, 'err in player report');
-					}
-				})
-				.on('addNewGame', data => {
-					if (isRestricted) return;
-					if (authenticated) {
-						handleAddNewGame(socket, passport, data);
-					}
-				})
-				.on('updateGameSettings', data => {
-					if (authenticated) {
-						handleUpdatedGameSettings(socket, passport, data);
-					}
-				})
+					} else socket.emit('sendAlert', 'Game is missing.');
+				}
+			});
+			socket.on('getUserReports', () => {
+				if (authenticated && (isAEM || isTrial)) {
+					sendUserReports(socket);
+				}
+			});
+			socket.on('updateUserStatus', (type, gameId) => {
+				const game = findGame({ uid: gameId });
+				if (authenticated && ensureInGame(passport, game)) {
+					updateUserStatus(passport, game);
+				}
+			});
+			socket.on('getReplayGameChats', uid => {
+				sendReplayGameChats(socket, uid);
+			});
+			// election
 
-				.on('addNewGeneralChat', data => {
-					if (isRestricted) return;
-					if (authenticated) {
-						handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
-					}
-				})
-				.on('leaveGame', data => {
-					const game = findGame(data);
-
-					if (game && io.sockets.adapter.rooms[game.general.uid] && socket) {
-						socket.leave(game.general.uid);
-					}
-
-					if (authenticated && game) {
-						handleUserLeaveGame(socket, game, data, passport);
-					}
-				})
-				.on('updateSeatedUser', data => {
-					if (isRestricted) return;
-					if (authenticated) {
-						updateSeatedUser(socket, passport, data);
-					}
-				})
-				.on('playerReport', data => {
-					if (isRestricted || !data || !data.comment || data.comment.length > 140) return;
-					if (authenticated) {
-						handlePlayerReport(passport, data);
-					}
-				})
-				.on('playerReportDismiss', () => {
-					if (authenticated && isAEM) {
-						handlePlayerReportDismiss();
-					}
-				})
-				.on('updateRemake', data => {
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						handleUpdatedRemakeGame(passport, game, data);
-					}
-				})
-				.on('updateBio', data => {
-					if (authenticated) {
-						handleUpdatedBio(socket, passport, data);
-					}
-				})
-				// user-requests
-
-				.on('getPlayerNotes', data => {
-					sendPlayerNotes(socket, data);
-				})
-				.on('getGameList', () => {
-					sendGameList(socket);
-				})
-				.on('getGameInfo', uid => {
-					sendGameInfo(socket, uid);
-				})
-				.on('getUserList', () => {
-					sendUserList(socket);
-				})
-				.on('getGeneralChats', () => {
-					sendGeneralChats(socket);
-				})
-				.on('getUserGameSettings', () => {
-					sendUserGameSettings(socket);
-				})
-				.on('selectedChancellorVoteOnVeto', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectChancellorVoteOnVeto(passport, game, data);
-					}
-				})
-				.on('getModInfo', count => {
-					if (authenticated && (isAEM || isTrial)) {
-						sendModInfo(socket, count, isTrial && !isAEM);
-					}
-				})
-				.on('subscribeModChat', uid => {
-					if (authenticated && isAEM) {
-						const game = findGame({ uid });
-						if (game && game.private && game.private.seatedPlayers) {
-							const players = game.private.seatedPlayers.map(player => player.userName);
-							Account.find({ staffRole: { $exists: true } }).then(accounts => {
-								const staff = accounts
-									.filter(acc => {
-										acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username);
-									})
-									.map(acc => acc.username);
-								if (staff.length) {
-									socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(staff)}`);
-									return;
-								}
-								handleSubscribeModChat(socket, passport, game);
-							});
-						} else socket.emit('sendAlert', 'Game is missing.');
-					}
-				})
-				.on('getUserReports', () => {
-					if (authenticated && (isAEM || isTrial)) {
-						sendUserReports(socket);
-					}
-				})
-				.on('updateUserStatus', (type, gameId) => {
-					const game = findGame({ uid: gameId });
-					if (authenticated && ensureInGame(passport, game)) {
-						updateUserStatus(passport, game);
-					}
-				})
-				.on('getReplayGameChats', uid => {
-					sendReplayGameChats(socket, uid);
-				})
-				// election
-
-				.on('presidentSelectedChancellor', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectChancellor(socket, passport, game, data);
-					}
-				})
-				.on('selectedVoting', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectVoting(passport, game, data);
-					}
-				})
-				.on('selectedPresidentPolicy', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectPresidentPolicy(passport, game, data);
-					}
-				})
-				.on('selectedChancellorPolicy', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectChancellorPolicy(passport, game, data);
-					}
-				})
-				.on('selectedPresidentVoteOnVeto', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectPresidentVoteOnVeto(passport, game, data);
-					}
-				})
-				// policy-powers
-				.on('selectPartyMembershipInvestigate', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectPartyMembershipInvestigate(passport, game, data);
-					}
-				})
-				.on('selectPartyMembershipInvestigateReverse', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectPartyMembershipInvestigateReverse(passport, game, data);
-					}
-				})
-				.on('selectedPolicies', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						if (game.private.lock.policyPeekAndDrop) selectOnePolicy(passport, game);
-						else selectPolicies(passport, game);
-					}
-				})
-				.on('selectedPresidentVoteOnBurn', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectBurnCard(passport, game, data);
-					}
-				})
-				.on('selectedPlayerToExecute', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectPlayerToExecute(passport, game, data);
-					}
-				})
-				.on('selectedSpecialElection', data => {
-					if (isRestricted) return;
-					const game = findGame(data);
-					if (authenticated && ensureInGame(passport, game)) {
-						selectSpecialElection(passport, game, data);
-					}
-				});
+			socket.on('presidentSelectedChancellor', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectChancellor(socket, passport, game, data);
+				}
+			});
+			socket.on('selectedVoting', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectVoting(passport, game, data);
+				}
+			});
+			socket.on('selectedPresidentPolicy', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPresidentPolicy(passport, game, data);
+				}
+			});
+			socket.on('selectedChancellorPolicy', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectChancellorPolicy(passport, game, data);
+				}
+			});
+			socket.on('selectedPresidentVoteOnVeto', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPresidentVoteOnVeto(passport, game, data);
+				}
+			});
+			// policy-powers
+			socket.on('selectPartyMembershipInvestigate', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPartyMembershipInvestigate(passport, game, data);
+				}
+			});
+			socket.on('selectPartyMembershipInvestigateReverse', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPartyMembershipInvestigateReverse(passport, game, data);
+				}
+			});
+			socket.on('selectedPolicies', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					if (game.private.lock.policyPeekAndDrop) selectOnePolicy(passport, game);
+					else selectPolicies(passport, game);
+				}
+			});
+			socket.on('selectedPresidentVoteOnBurn', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectBurnCard(passport, game, data);
+				}
+			});
+			socket.on('selectedPlayerToExecute', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectPlayerToExecute(passport, game, data);
+				}
+			});
+			socket.on('selectedSpecialElection', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					selectSpecialElection(passport, game, data);
+				}
+			});
 		});
 	});
 };

@@ -10,6 +10,13 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
+				<div className="ui header">
+					<p>Version 1.0.2 released 1-20-2019</p>
+				</div>
+				<h4>New feature: display of whether or not a player is typing.</h4>
+				<p>Some new moderation features (mods can force votes on afks) courtesy of contributor Vigasaurus.</p>
+				<p>List of games should be like it was in 1.0.0 and lower.</p>
+				<p>Contributor color has been updated.</p>
 				<h4>The top 10 players of season 4 are:</h4>
 				<ul>
 					<li>benjamin172: 2110</li>
