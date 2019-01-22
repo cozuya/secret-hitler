@@ -169,19 +169,17 @@ class Gamechat extends React.Component {
 		}
 		const now = new Date().getTime();
 
-		// if (userInfo.isSeated) {
-		// 	updateTyping({
-		// 		...isTyping,
-		// 		[userInfo.userName]: now
-		// 	});
-		// 	if (now - isTyping[userInfo.userName] > 1000 || !isTyping[userInfo.userName]) {
-		// 		socket.emit('updateTyping', {
-		// 			userName: userInfo.userName,
-		// 			lastTypingTime: now,
-		// 			uid: gameInfo.general.uid
-		// 		});
-		// 	}
-		// }
+		if (userInfo.isSeated && (now - isTyping[userInfo.userName] > 1000 || !isTyping[userInfo.userName])) {
+			updateTyping({
+				...isTyping,
+				[userInfo.userName]: now
+			});
+			socket.emit('updateTyping', {
+				userName: userInfo.userName,
+				lastTypingTime: now,
+				uid: gameInfo.general.uid
+			});
+		}
 	};
 
 	chatDisabled = () => {
