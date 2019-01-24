@@ -12,8 +12,7 @@ import {
 	updateGeneralChats,
 	updateVersion,
 	fetchProfile,
-	fetchReplay,
-	updateTyping
+	fetchReplay
 } from '../actions/actions.js';
 import socket from '../socket';
 import PropTypes from 'prop-types';
@@ -118,10 +117,6 @@ export class App extends React.Component {
 			// ** end devhelpers **
 			dispatch(updateUser(info));
 		}
-
-		socket.on('isTypingUpdate', isTyping => {
-			dispatch(updateTyping(isTyping));
-		});
 
 		socket.on('touChange', changeList => {
 			this.setState({
@@ -422,6 +417,8 @@ export class App extends React.Component {
 							userInfo={this.props.userInfo}
 						/>
 					)}
+
+					<DevHelpers />
 
 					<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
 

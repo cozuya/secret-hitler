@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { PLAYERCOLORS } from '../../constants';
 import { viewPatchNotes } from '../../actions/actions';
 import { Popup } from 'semantic-ui-react';
 import $ from 'jquery';
@@ -234,7 +235,7 @@ class Menu extends React.Component {
 								</a>
 							</span>
 						</div>
-						<div className="right menu">
+						<div className="item right menu">
 							{(() => {
 								const { gameInfo, userInfo } = this.props;
 
@@ -316,8 +317,12 @@ class Menu extends React.Component {
 									{`v${this.props.version.current.number}`}{' '}
 								</a>
 								|{' '}
-								<a target="_blank" href="https://github.com/cozuya/secret-hitler">
-									GitHub
+								<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
+									Feedback
+								</a>{' '}
+								|{' '}
+								<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
+									Wiki
 								</a>{' '}
 								|{' '}
 								<a target="_blank" href="https://discord.gg/secrethitlerio">
@@ -329,7 +334,7 @@ class Menu extends React.Component {
 				</div>
 				<div className="menu-container-mobile" style={{ zIndex: 9999 }}>
 					<section className={classes}>
-						<div className="left menu">
+						<div className="item left menu">
 							{(() => {
 								const { gameInfo, userInfo } = this.props;
 
@@ -389,9 +394,11 @@ class Menu extends React.Component {
 								</div>
 							)}
 						</div>
-						<button className="ui right menu floating primary button" id="chatsidebar">
-							Chat
-						</button>
+						<div className="item right menu">
+							<button className="ui button floating primary button" id="chatsidebar">
+								Chat
+							</button>
+						</div>
 					</section>
 				</div>
 			</div>
@@ -402,8 +409,7 @@ class Menu extends React.Component {
 Menu.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	midSection: PropTypes.string,
-	version: PropTypes.object
+	midSection: PropTypes.string
 };
 
 export default connect(
