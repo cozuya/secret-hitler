@@ -19,7 +19,7 @@ if (user) {
 export default class Creategame extends React.Component {
 	state = {
 		gameName: '',
-		sliderValues: [5, 10],
+		sliderValues: [7, 7],
 		experiencedmode: true,
 		disablechat: false,
 		disablegamechat: false,
@@ -1129,6 +1129,21 @@ export default class Creategame extends React.Component {
 									})()}
 								</span>
 							)}
+							<span
+								title="May glitch out - use with caution"
+								style={{
+									color: 'red',
+									position: 'absolute',
+									left: '-130px',
+									top: '40px'
+								}}
+							>
+								<i className="warning icon" style={{ color: 'red' }} />
+								Caution: <br />
+								May glitch out
+								<br />
+								Use with caution
+							</span>
 							<i className="big hourglass half icon" />
 							<h4 className="ui header">
 								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
