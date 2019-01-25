@@ -19,7 +19,7 @@ if (user) {
 export default class Creategame extends React.Component {
 	state = {
 		gameName: '',
-		sliderValues: [7, 7],
+		sliderValues: [5, 10],
 		experiencedmode: true,
 		disablechat: false,
 		disablegamechat: false,
@@ -27,7 +27,7 @@ export default class Creategame extends React.Component {
 		privateShowing: false,
 		containsBadWord: false,
 		rainbowgame: isRainbow ? true : false,
-		checkedSliderValues: new Array(6).fill(true),
+		checkedSliderValues: [false, false, true, false, false, false],
 		checkedRebalanceValues: [true, false, true],
 		privateonlygame: false,
 		isTourny: false,
