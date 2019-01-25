@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Tracks from './Tracks.jsx';
 import Gamechat from './Gamechat.jsx';
 import Players from './Players.jsx';
@@ -6,8 +7,19 @@ import Confetti from './Confetti.jsx';
 import Balloons from './Balloons.jsx';
 import PropTypes from 'prop-types';
 import playSound from '../reusable/playSound';
+import { IsTypingContext } from '../reusable/Context';
 
 export default class Game extends React.Component {
+	state = {
+		isTyping: {}
+	};
+
+	componentDidMount() {
+		this.props.socket.on('isTypingUpdate', isTyping => {
+			this.updateIsTyping(isTyping);
+		});
+	}
+
 	componentDidUpdate(prevProps) {
 		const { userInfo, gameInfo } = this.props;
 
@@ -17,68 +29,68 @@ export default class Game extends React.Component {
 				gameInfo.general.status === 'Tournament starts in 5 seconds.' &&
 				prevProps.gameInfo.general.status !== 'Tournament starts in 5 seconds.')
 		) {
-			playSound('alarm', 'Pack1', 2400);
+			playSound('alarm', 'pack1', 2400);
 		}
 
 		if ((userInfo.gameSettings && userInfo.gameSettings.soundStatus !== 'Off') || !userInfo.gameSettings) {
-			const pack = userInfo.gameSettings ? userInfo.gameSettings.soundStatus : 'Pack2';
+			const pack = userInfo.gameSettings ? userInfo.gameSettings.soundStatus : 'pack2';
 
 			if (gameInfo.general.status === 'Dealing roles..' && prevProps.gameInfo.general.status !== 'Dealing roles..') {
-				playSound('shuffle', 'Pack1', 3000);
+				playSound('shuffle', 'pack1', 3000);
 			}
 
 			if (
 				(gameInfo.gameState.audioCue === 'enactPolicyL' || gameInfo.gameState.audioCue === 'enactPolicyF') &&
 				(prevProps.gameInfo.gameState.audioCue !== 'enactPolicyL' || prevProps.gameInfo.gameState.audioCue !== 'enactPolicyF')
 			) {
-				playSound(pack === 'Pack1' ? 'enactpolicy' : gameInfo.gameState.audioCue === 'enactPolicyL' ? 'enactpolicyl' : 'enactpolicyf', pack, 4000);
+				playSound(pack === 'pack1' ? 'enactpolicy' : gameInfo.gameState.audioCue === 'enactPolicyL' ? 'enactpolicyl' : 'enactpolicyf', pack, 4000);
 			}
 
 			if (gameInfo.general.status === 'Waiting on presidential discard.' && prevProps.gameInfo.general.status !== 'Waiting on presidential discard.') {
-				playSound('presidentreceivespolicies', 'Pack1', 3000);
+				playSound('presidentreceivespolicies', 'pack1', 3000);
 			}
 
 			if (gameInfo.general.status === 'Waiting on chancellor enactment.' && prevProps.gameInfo.general.status !== 'Waiting on chancellor enactment.') {
-				playSound('chancellorreceivespolicies', 'Pack1', 2000);
+				playSound('chancellorreceivespolicies', 'pack1', 2000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'policyPeek' && prevProps.gameInfo.gameState.audioCue !== 'policyPeek') {
-				playSound('policypeek', 'Pack1', 3000);
+				playSound('policypeek', 'pack1', 3000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'selectedExecution' && prevProps.gameInfo.gameState.audioCue !== 'selectedExecution') {
-				playSound('playershot', pack, pack === 'Pack1' ? 11000 : 5000);
+				playSound('playershot', pack, pack === 'pack1' ? 11000 : 5000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'selectedInvestigate' && prevProps.gameInfo.gameState.audioCue !== 'selectedInvestigate') {
-				playSound(pack === 'Pack1' ? 'policyinvestigate' : 'policypeek', 'Pack1', pack === 'Pack1' ? 11000 : 3000);
+				playSound(pack === 'pack1' ? 'policyinvestigate' : 'policypeek', 'pack1', pack === 'pack1' ? 11000 : 3000);
 			}
 
 			if (
 				prevProps.gameInfo.general.status === 'President to select special election.' &&
 				gameInfo.general.status !== 'President to select special election.'
 			) {
-				playSound(pack === 'Pack1' ? 'policyspecialelection' : 'policypeek', 'Pack1', pack === 'Pack1' ? 9000 : 3000);
+				playSound(pack === 'pack1' ? 'policyspecialelection' : 'policypeek', 'pack1', pack === 'pack1' ? 9000 : 3000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'hitlerShot' && prevProps.gameInfo.gameState.audioCue !== 'hitlerShot') {
-				playSound(pack === 'Pack1' ? 'liberalswinhitlershot' : 'liberalswin', pack, pack === 'Pack1' ? 26000 : 8000);
+				playSound(pack === 'pack1' ? 'liberalswinhitlershot' : 'liberalswin', pack, pack === 'pack1' ? 26000 : 8000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'liberalsWin' && prevProps.gameInfo.gameState.audioCue !== 'liberalsWin') {
-				playSound('liberalswin', pack, pack === 'Pack1' ? 19000 : 8000);
+				playSound('liberalswin', pack, pack === 'pack1' ? 19000 : 8000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'fascistsWin' && prevProps.gameInfo.gameState.audioCue !== 'fascistsWin') {
-				playSound('fascistswin', pack, pack === 'Pack1' ? 19000 : 13000);
+				playSound('fascistswin', pack, pack === 'pack1' ? 19000 : 13000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'fascistsWinHitlerElected' && prevProps.gameInfo.gameState.audioCue !== 'fascistsWinHitlerElected') {
-				playSound('fascistswinhitlerelected', pack, pack === 'Pack1' ? 11000 : 13000);
+				playSound('fascistswinhitlerelected', pack, pack === 'pack1' ? 11000 : 13000);
 			}
 
 			if (gameInfo.gameState.audioCue === 'passedVeto' && prevProps.gameInfo.gameState.audioCue !== 'passedVeto') {
-				playSound(pack === 'Pack1' ? 'vetosucceeds' : 'policypeek', 'Pack1', pack === 'Pack1' ? 10000 : 3000);
+				playSound(pack === 'pack1' ? 'vetosucceeds' : 'policypeek', 'pack1', pack === 'pack1' ? 10000 : 3000);
 			}
 		}
 
@@ -91,59 +103,73 @@ export default class Game extends React.Component {
 		}
 	}
 
+	updateIsTyping = () => {
+		this.setState(prevState => {
+			return {
+				isTyping: {
+					...prevState.isTyping,
+					[this.props.userInfo.userName]: new Date().getTime()
+				}
+			};
+		});
+	};
+
 	render() {
 		const { userInfo, gameInfo } = this.props;
+		const { isTyping } = this.state;
 
 		return (
-			<section className="game">
-				<div className="ui grid">
-					<div className="row">
-						<div className="ten wide column tracks-container">
-							<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
-						</div>
-						<div className="six wide column chat-container game-chat">
-							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
-								{gameInfo.general && gameInfo.general.status}
-							</section>
-							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
+			<IsTypingContext.Provider value={{ isTyping, updateIsTyping: this.updateIsTyping }}>
+				<section className="game">
+					<div className="ui grid">
+						<div className="row">
+							<div className="ten wide column tracks-container">
+								<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
+							</div>
+							<div className="six wide column chat-container game-chat">
+								<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
+									{gameInfo.general && gameInfo.general.status}
+								</section>
+								<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
+							</div>
 						</div>
 					</div>
-				</div>
-				{(() => {
-					const balloons = Math.random() < 0.1;
+					{(() => {
+						const balloons = Math.random() < 0.1;
 
-					if (
-						userInfo.userName &&
-						userInfo.gameSettings &&
-						!userInfo.gameSettings.disableConfetti &&
-						gameInfo &&
-						gameInfo.publicPlayersState &&
-						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
-						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti
-					) {
-						return balloons ? <Balloons /> : <Confetti />;
-					}
-				})()}
-				<div
-					className={(() => {
-						let classes = 'row players-container';
-
-						if (userInfo.gameSettings && userInfo.gameSettings.disableRightSidebarInGame) {
-							classes += ' disabledrightsidebar';
+						if (
+							userInfo.userName &&
+							userInfo.gameSettings &&
+							!userInfo.gameSettings.disableConfetti &&
+							gameInfo &&
+							gameInfo.publicPlayersState &&
+							gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
+							gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti
+						) {
+							return balloons ? <Balloons /> : <Confetti />;
 						}
-
-						return classes;
 					})()}
-				>
-					<Players
-						onClickedTakeSeat={this.props.onClickedTakeSeat}
-						userList={this.props.userList}
-						userInfo={userInfo}
-						gameInfo={gameInfo}
-						socket={this.props.socket}
-					/>
-				</div>
-			</section>
+					<div
+						className={(() => {
+							let classes = 'row players-container';
+
+							if (userInfo.gameSettings && userInfo.gameSettings.disableRightSidebarInGame) {
+								classes += ' disabledrightsidebar';
+							}
+
+							return classes;
+						})()}
+					>
+						<Players
+							onClickedTakeSeat={this.props.onClickedTakeSeat}
+							userList={this.props.userList}
+							userInfo={userInfo}
+							gameInfo={gameInfo}
+							socket={this.props.socket}
+						/>
+					</div>
+				</section>
+			</IsTypingContext.Provider>
 		);
 	}
 }

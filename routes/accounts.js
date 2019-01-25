@@ -104,7 +104,7 @@ module.exports = () => {
 				enableTimestamps: false,
 				disableRightSidebarInGame: false,
 				enableDarkTheme: false,
-				soundStatus: 'Pack2',
+				soundStatus: 'pack2',
 				isPrivate
 			},
 			verification: {
@@ -510,7 +510,7 @@ module.exports = () => {
 													const accountObj = {
 														username: profile.username,
 														gameSettings: {
-															soundStatus: 'Pack2'
+															soundStatus: 'pack2'
 														},
 														verified: true,
 														wins: 0,
@@ -633,7 +633,7 @@ module.exports = () => {
 				const accountObj = {
 					username,
 					gameSettings: {
-						soundStatus: 'Pack2'
+						soundStatus: 'pack2'
 					},
 					verification: {
 						email: ''

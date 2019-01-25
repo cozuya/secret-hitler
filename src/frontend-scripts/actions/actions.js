@@ -1,12 +1,5 @@
 export const UPDATE_TYPING = 'UPDATE_TYPING';
 
-export function updateTyping(isTyping) {
-	return {
-		type: UPDATE_TYPING,
-		isTyping
-	};
-}
-
 export const UPDATE_USER = 'UPDATE_USER';
 
 export function updateUser(user) {
