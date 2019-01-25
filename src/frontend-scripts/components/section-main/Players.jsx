@@ -1,11 +1,13 @@
 import React from 'react';
 import $ from 'jquery';
-import Policies from './Policies.jsx';
 import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
-import PropTypes from 'prop-types';
+import { IsTypingContext } from '../reusable/Context';
 
 $.fn.dropdown = Dropdown;
 
@@ -13,9 +15,8 @@ const mapDispatchToProps = dispatch => ({
 	togglePlayerNotes: playerName => dispatch(togglePlayerNotes(playerName))
 });
 
-const mapStateToProps = ({ playerNotesActive, isTyping }) => ({
-	playerNotesActive,
-	isTyping
+const mapStateToProps = ({ playerNotesActive }) => ({
+	playerNotesActive
 });
 
 class Players extends React.Component {
@@ -614,7 +615,9 @@ Players.propTypes = {
 	isTyping: PropTypes.object
 };
 
+const PlayersContainer = props => <IsTypingContext.Consumer>{({ isTyping }) => <Players {...props} isTyping={isTyping} />}</IsTypingContext.Consumer>;
+
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(Players);
+)(PlayersContainer);

@@ -488,8 +488,8 @@ class Settings extends React.Component {
 							<h4 className="ui header">Sound effect status</h4>
 							<select onChange={this.handleSoundChange} value={this.state.soundSelected}>
 								<option>Off</option>
-								<option>Pack1</option>
-								<option>Pack2</option>
+								<option>pack1</option>
+								<option>pack2</option>
 							</select>
 							<h4 className="ui header">UI full height in games</h4>
 							<div className="ui fitted toggle checkbox">
