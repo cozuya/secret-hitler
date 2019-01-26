@@ -93,18 +93,13 @@ span.emphasis {
   #top-menu .ui.button {
     color: #fff; }
 
-@media only screen and (min-width: 1200px) {
+@media only screen and (min-width: 1128px) {
   #top-menu {
     width: 1128px;
     margin-left: -564px !important;
     left: 50%; } }
 
-@media only screen and (max-width: 617px) {
-  #top-menu > a {
-    padding-left: 2px;
-    padding-right: 2px; } }
-
-@media only screen and (max-width: 514px) {
+@media only screen and (max-width: 1104px) {
   #top-menu > a {
     display: none; }
   #mobile-block {

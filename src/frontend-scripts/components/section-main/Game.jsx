@@ -120,20 +120,20 @@ export default class Game extends React.Component {
 
 		return (
 			<IsTypingContext.Provider value={{ isTyping, updateIsTyping: this.updateIsTyping }}>
-       <section className="game">
-				<div className="ui grid">
-					<div className="row">
-						<div className="sixteen wide column tracks-container">
-							<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
-						</div>
-						<div className="chat-container game-chat transition">
-							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
-								{gameInfo.general && gameInfo.general.status}
-							</section>
-							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
+				<section className="game">
+					<div className="ui grid">
+						<div className="row">
+							<div className="sixteen wide column tracks-container">
+								<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
+							</div>
+							<div className="chat-container game-chat transition">
+								<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
+									{gameInfo.general && gameInfo.general.status}
+								</section>
+								<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
+							</div>
 						</div>
 					</div>
-				</div>
 					{(() => {
 						const balloons = Math.random() < 0.1;
 

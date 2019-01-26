@@ -3,7 +3,7 @@
 *.sublime-workspace
 node_modules
 dev/*
-.swp
+*.swp
 .sass-cache
 clientlibs
 apps
