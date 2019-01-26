@@ -717,6 +717,34 @@ export default class Moderation extends React.Component {
 				>
 					{this.state.resetServerCount ? 'Click again to reset server' : 'Reset server - click twice'}
 				</button>
+				<div className="ui horizontal divider">Admins Only</div>
+				
+				<button
+					style={{ background: 'red' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('removeAdminRole');
+					}}
+				>
+					Remove Admin Role
+				</button>
+				<button
+					style={{ background: 'red' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToAdmin');
+					}}
+				>
+					Promote to Admin Role
+				</button>
 			</div>
 		);
 	}
@@ -777,11 +805,13 @@ export default class Moderation extends React.Component {
 			deleteCardback: 'Delete Cardback',
 			removeContributor: 'Remove Contributor Role',
 			removeStaffRole: 'Remove Staff Role',
+			removeAdminRole: 'Remove Admin Role',
 			promoteToContributor: 'Promote (Contributor)',
-			promoteToAltMod: 'Assign (AEM Alt)',
-			promoteToTrialMod: 'Promote (Trial Mod)',
-			promoteToMod: 'Promote (Mod)',
-			promoteToEditor: 'Promote (Editor)',
+			promoteToAltMod: 'Assign Staff (AEM Alt)',
+			promoteToTrialMod: 'Promote Staff (Trial Mod)',
+			promoteToMod: 'Promote Staff (Mod)',
+			promoteToEditor: 'Promote Staff (Editor)',
+			promoteToAdmin: 'Promote (Admin)',
 			makeBypass: 'Create Bypass Key',
 			bypassKeyUsed: 'Consume Bypass Key',
 			resetServer: 'Server Restart'
