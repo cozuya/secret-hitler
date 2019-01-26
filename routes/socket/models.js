@@ -87,6 +87,7 @@ module.exports.gameCreationDisabled = { status: false };
 module.exports.limitNewPlayers = { status: false };
 module.exports.newStaff = {
 	modUserNames: [],
+	adminUserNames: [],
 	editorUserNames: [],
 	altmodUserNames: [],
 	trialmodUserNames: [],
@@ -110,6 +111,7 @@ module.exports.getPowerFromRole = role => {
 
 module.exports.getPowerFromName = name => {
 	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
+	if (module.exports.newStaff.adminUserNames.includes(name)) return getPowerFromRole('admin');
 	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
 	if (module.exports.newStaff.altmodUserNames.includes(name)) return getPowerFromRole('altmod');
 	if (module.exports.newStaff.trialmodUserNames.includes(name)) return getPowerFromRole('trialmod');
@@ -123,6 +125,7 @@ module.exports.getPowerFromName = name => {
 
 module.exports.getPowerFromUser = user => {
 	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
+	if (module.exports.newStaff.adminUserNames.includes(user.userName)) return getPowerFromRole('admin');
 	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
 	if (module.exports.newStaff.altmodUserNames.includes(user.userName)) return getPowerFromRole('altmod');
 	if (module.exports.newStaff.trialmodUserNames.includes(user.userName)) return getPowerFromRole('trialmod');
