@@ -1554,7 +1554,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 
 	data.userName = passport.user;
 
-	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user) || newStaff.adminUserNames.includes(passport.user);
 	if (!AEM) {
 		if (player) {
 			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
@@ -1828,7 +1828,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 				return 'moderator';
 			} else if (editorUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user)) {
 				return 'editor';
-			} else if (adminUserNames.includes(passport.user)) {
+			} else if (adminUserNames.includes(passport.user) || newStaff.adminUserNames.includes(passport.user)) {
 				return 'admin';
 			}
 		})();
@@ -1900,7 +1900,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 				return 'moderator';
 			} else if (editorUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user)) {
 				return 'editor';
-			} else if (adminUserNames.includes(passport.user)) {
+			} else if (adminUserNames.includes(passport.user) || newStaff.adminUserNames.includes(passport.user)) {
 				return 'admin';
 			}
 			return '';
@@ -2105,6 +2105,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		superModUserNames.includes(passport.user) ||
 		newStaff.modUserNames.includes(passport.user) ||
 		newStaff.editorUserNames.includes(passport.user) ||
+		newStaff.adminUserNames.includes(passport.user) ||
 		newStaff.trialmodUserNames.includes(passport.user)
 	) {
 		if (data.isReportResolveChange) {
@@ -2529,7 +2530,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
-								if (account) {
+								if (account && account.staffRole !== 'admin') {
 									account.staffRole = '';
 									account.save(() => {
 										let idx = newStaff.modUserNames.indexOf(account.username);
@@ -2542,6 +2543,30 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										if (idx != -1) newStaff.altmodUserNames.splice(idx, 1);
 										logOutUser(account.username);
 									});
+								} else if (account && account.staffRole === 'admin') {
+									socket.emit('sendAlert', `${data.userName} is an Admin.`);
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				case 'removeAdminRole':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account && account.staffRole === 'admin') {
+									account.staffRole = '';
+									account.save(() => {
+										let idx = newStaff.adminUserNames.indexOf(account.username);
+										if (idx != -1) newStaff.adminUserNames.splice(idx, 1);
+										logOutUser(account.username);
+									});
+								} else if (account && account.staffRole !== 'admin') {
+									socket.emit('sendAlert', `${data.userName} is not an Admin.`);
 								} else {
 									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 								}
@@ -2635,6 +2660,25 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									account.staffRole = 'editor';
 									account.save(() => {
 										newStaff.editorUserNames.push(account.username);
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				case 'promoteToAdmin':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'admin';
+									account.save(() => {
+										newStaff.adminUserNames.push(account.username);
 										logOutUser(account.username);
 									});
 								} else {
