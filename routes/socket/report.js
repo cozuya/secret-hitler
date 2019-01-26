@@ -21,6 +21,7 @@ module.exports.makeReport = (text, game, gameEnd) => {
 		const isStaff = players.some(
 			n =>
 				staffUserNames.includes(n) ||
+				newStaff.adminUserNames.includes(n) ||
 				newStaff.altmodUserNames.includes(n) ||
 				newStaff.modUserNames.includes(n) ||
 				newStaff.editorUserNames.includes(n) ||
