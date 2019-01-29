@@ -11,7 +11,7 @@ This codebase is a "lobby style" implementation of this game - anyone can make a
 
 Current production/stable is found at [Secret Hitler IO](https://secrethitler.io).
 
-![Screenshot](https://i.imgur.com/y7ka1lG.png)
+![Screenshot](https://cdn.discordapp.com/attachments/532418308977328139/538550232015962112/unknown.png)
 
 Considering contributing to this project? Please read our brief guidelines found at
 [CONTRIBUTING](https://github.com/cozuya/secret-hitler/blob/master/CONTRIBUTING.md). Contributors get a cool special playername color!
