@@ -107,7 +107,7 @@ export const getBadWord = text => {
 	let foundWord = [null, null];
 
 	// This version will detect words with spaces in them, but may have false positives (such as "mongolia" for "mong").
-	const flatText = text.replace(/\s/gi, '');
+	const flatText = text.toLowerCase().replace(/\s/gi, '');
 	Object.keys(badWords).forEach(key => {
 		if (flatText.includes(key)) {
 			foundWord = [key, key];
@@ -122,11 +122,11 @@ export const getBadWord = text => {
 
 	// This version only detects words if they are whole and have whitespace at either end.
 	/* Object.keys(badWords).forEach(key => {
-		if (new RegExp(`(^|\\s)${key}s?(\\s|$)`, 'i').test(text)) {
+		if (new RegExp(`(^|\\s)${key}s?(\\s|$)`, 'i').test(text.toLowerCase())) {
 			foundWord = [key, key];
 		}
 		else badWords[key].forEach(word => {
-			if (new RegExp(`(^|\\s)${word}s?(\\s|$)`, 'i').test(text)) {
+			if (new RegExp(`(^|\\s)${word}s?(\\s|$)`, 'i').test(text.toLowerCase())) {
 				foundWord = [key, word];
 			}
 		});

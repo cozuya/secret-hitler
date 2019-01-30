@@ -185,7 +185,7 @@ class Gamechat extends React.Component {
 	};
 
 	handleSubmit = e => {
-		const { updateTyping, isTyping, userInfo } = this.props;
+		const { updateIsTyping, isTyping, userInfo } = this.props;
 
 		e.preventDefault();
 
@@ -197,7 +197,7 @@ class Gamechat extends React.Component {
 		const { gameInfo } = this.props;
 
 		if (currentValue.length < 300 && currentValue && !$('.expando-container + div').hasClass('disabled')) {
-			updateTyping({
+			updateIsTyping({
 				...isTyping,
 				[userInfo.userName]: null
 			});

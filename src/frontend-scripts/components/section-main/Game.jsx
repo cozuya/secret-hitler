@@ -16,7 +16,9 @@ export default class Game extends React.Component {
 
 	componentDidMount() {
 		this.props.socket.on('isTypingUpdate', isTyping => {
-			this.updateIsTyping(isTyping);
+			this.setState({
+				isTyping
+			});
 		});
 	}
 
@@ -104,14 +106,12 @@ export default class Game extends React.Component {
 	}
 
 	updateIsTyping = () => {
-		this.setState(prevState => {
-			return {
-				isTyping: {
-					...prevState.isTyping,
-					[this.props.userInfo.userName]: new Date().getTime()
-				}
-			};
-		});
+		this.setState(prevState => ({
+			isTyping: {
+				...prevState.isTyping,
+				[this.props.userInfo.userName]: new Date().getTime()
+			}
+		}));
 	};
 
 	render() {
