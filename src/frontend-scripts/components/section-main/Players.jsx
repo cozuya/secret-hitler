@@ -183,7 +183,7 @@ class Players extends React.Component {
 	renderTyping(player) {
 		const { isTyping } = this.props;
 
-		if (isTyping[player.userName] && new Date().getTime() - isTyping[player.userName] < 2000) {
+		if (isTyping && isTyping[player.userName] && new Date().getTime() - isTyping[player.userName] < 2000) {
 			setTimeout(() => {
 				if (new Date().getTime() - this.props.isTyping[player.userName] >= 2000) {
 					this.forceUpdate();
@@ -615,7 +615,7 @@ Players.propTypes = {
 	isTyping: PropTypes.object
 };
 
-const PlayersContainer = props => <IsTypingContext.Consumer>{({ isTyping }) => <Players {...props} isTyping={isTyping} />}</IsTypingContext.Consumer>;
+const PlayersContainer = props => <IsTypingContext.Consumer>{p => <Players {...props} isTyping={p ? p.isTyping : null} />}</IsTypingContext.Consumer>;
 
 export default connect(
 	mapStateToProps,
