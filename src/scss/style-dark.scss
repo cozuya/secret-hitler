@@ -27,32 +27,19 @@
 		width: 1920px;
 	}
 }
-@media screen and (min-width: 1520px) {
-	.generalchat {
-		width: 350px;
-	}
+
+@media screen and (min-width: 1471px) {
 	.section-right {
 		min-width: 650px;
 	}
 	.section-right.game {
 		min-width: 250px;
 	}
-}
-
-@media screen and (min-width: 1471px) and (max-width: 1520px) {
-	// allows general chat to scale a little
-	.generalchat {
-		width: 300px;
-	}
-	.section-right {
-		width: 100%;
-	}
-}
-@media screen and (min-width: 1471px) {
 	.playerlist {
 		width: 300px;
 	}
 	.generalchat {
+		width: 350px;
 		border-right: 0 !important;
 	}
 }
@@ -60,6 +47,7 @@
 	.section-right {
 		flex-direction: column;
 		min-width: 350px;
+		z-index: 5;
 	}
 	.section-right.game {
 		min-width: 250px;
@@ -70,10 +58,14 @@
 	}
 }
 
-@media screen and (max-width: 1220px) {
+@media screen and (max-width: 600px) {
 	.section-right {
-		width: 350px;
+		min-width: 100%;
 	}
+	.playerlist {
+		max-width: 100% !important;
+	}
+
 }
 
 .ui.modal.transition {
