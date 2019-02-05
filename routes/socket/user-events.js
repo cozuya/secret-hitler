@@ -1584,7 +1584,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	data.timestamp = new Date();
 
 	if (AEM) {
-		const aemForce = /forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)/i.exec(chat);
+		const aemForce = /\/forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)/i.exec(chat);
 		if (aemForce) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a vote whilst playing.');
@@ -1633,7 +1633,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			return;
 		}
 
-		const aemSkip = /forceskip (\d{1,2})/i.exec(chat);
+		const aemSkip = /\/forceskip (\d{1,2})/i.exec(chat);
 		if (aemSkip) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
@@ -1697,7 +1697,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			return;
 		}
 
-		const aemPick = /forcepick (\d{1,2}) (\d{1,2})/i.exec(chat);
+		const aemPick = /\/forcepick (\d{1,2}) (\d{1,2})/i.exec(chat);
 		if (aemPick) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
