@@ -674,6 +674,7 @@
 			width: 250px;
 			flex-direction: column !important;
 			margin-right: 2px;
+			z-index: 1001;
 			.playerlist {
 				order: 0 !important;
 				max-width: 250px !important;
@@ -828,7 +829,7 @@ body {
 	min-height: 595px;
 	overflow: auto;
 	@media screen and (max-width: 950px) {
-		min-height: 660px;
+		min-height: 680px;
 	}
 
 }

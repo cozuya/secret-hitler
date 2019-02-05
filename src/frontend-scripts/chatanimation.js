@@ -16,7 +16,7 @@ export default () => {
 		});
 		$('.chat-container').transition({
 			animation: 'slide left',
-			displayType: 'block'
+			displayType: 'flex'
 		});
 	});
 };

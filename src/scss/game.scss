@@ -10,8 +10,9 @@
 	.chat-container {
 		background: #f6f6f6;
 		padding: 0;
-		display: block;
-		//flex-direction: column;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
 		right: 0;
 		left: 650px;
 		z-index: 1000;
@@ -20,6 +21,9 @@
 		@media screen and (max-width: 950px) {
 			left: 20%;
 			display: none;
+		}
+		@media screen and (max-width: 600px) {
+			left: 0%;
 		}
 
 
@@ -36,6 +40,10 @@
 		}
 
 		.gamechat {
+			flex-grow: 1;
+			display: flex;
+			flex-direction: column;
+
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
@@ -107,9 +115,7 @@
 				}
 			}
 			.chats {
-				display: flex;
-				flex-direction: column-reverse;
-				height: 336px;
+				flex-grow: 1;
 				position: relative;
 				background: #f9faff;
 				font-size: 18px;
