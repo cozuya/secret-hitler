@@ -11,7 +11,7 @@ $.fn.checkbox = Checkbox;
 export default class Creategame extends React.Component {
 	state = {
 		gameName: '',
-		sliderValues: [5, 10],
+		sliderValues: [7, 7],
 		experiencedmode: true,
 		disablechat: false,
 		disablegamechat: false,
@@ -567,7 +567,7 @@ export default class Creategame extends React.Component {
 		const isSeason = (userInfo.gameSettings && !userInfo.gameSettings.disableSeasonal) || false;
 		const playerElo = (player && Math.min(2000, player.eloSeason)) || 2000;
 		const playerEloNonseason = (player && Math.min(2000, player.eloOverall)) || 2000;
-		const max = Math.max(playerElo, playerEloNonseason);
+		const max = Math.min(playerElo, playerEloNonseason);
 		const marks = Object.keys(origMarks)
 			.filter(k => origMarks[k] <= max)
 			.reduce((obj, key) => {
@@ -1122,7 +1122,7 @@ export default class Creategame extends React.Component {
 								</span>
 							)}
 							<span
-								title="May glitch out - use with caution"
+								title="Timed mode may glitch out - use with caution"
 								style={{
 									color: 'red',
 									position: 'absolute',
