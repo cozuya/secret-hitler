@@ -11,7 +11,7 @@ $.fn.checkbox = Checkbox;
 export default class Creategame extends React.Component {
 	state = {
 		gameName: '',
-		sliderValues: [5, 10],
+		sliderValues: [7, 7],
 		experiencedmode: true,
 		disablechat: false,
 		disablegamechat: false,
@@ -1122,7 +1122,7 @@ export default class Creategame extends React.Component {
 								</span>
 							)}
 							<span
-								title="May glitch out - use with caution"
+								title="Timed mode may glitch out - use with caution"
 								style={{
 									color: 'red',
 									position: 'absolute',
