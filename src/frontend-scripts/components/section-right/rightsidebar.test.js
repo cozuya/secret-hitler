@@ -1,10 +1,10 @@
 import React from 'react'; // eslint-disable-line
 import { shallow } from 'enzyme';
-import Rightsidebar from './Rightsidebar';
+import RightSidebar from './Rightsidebar';
 
-describe('Rightsidebar', () => {
+describe('RightSidebar', () => {
 	it('should initialize correctly', () => {
-		const component = shallow(<Rightsidebar />);
+		const component = shallow(<RightSidebar />);
 
 		expect(component).toHaveLength(1);
 	});
