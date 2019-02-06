@@ -1,6 +1,6 @@
 import React from 'react'; // eslint-disable-line
 import { shallow } from 'enzyme';
-import CardFlinger from './Cardflinger';
+import CardFlinger from './CardFlinger';
 
 describe('CardFlinger', () => {
 	it('should initialize correctly', () => {

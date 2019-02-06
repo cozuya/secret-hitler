@@ -1,6 +1,6 @@
 import React from 'react'; // eslint-disable-line
 import { shallow } from 'enzyme';
-import LeftSidebar from './Leftsidebar';
+import LeftSidebar from './LeftSidebar';
 
 describe('LeftSidebar', () => {
 	it('should initialize correctly', () => {
