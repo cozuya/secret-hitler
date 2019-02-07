@@ -51,6 +51,12 @@ class Gamechat extends React.Component {
 			window.location.hash = '#/';
 			$(this.leaveTournyQueueModal).modal('hide');
 		});
+
+		this.props.socket.on('removeClaim', () => {
+			this.setState({
+				claim: ''
+			});
+		});
 	}
 
 	componentDidUpdate(prevProps, nextProps) {
@@ -280,7 +286,6 @@ class Gamechat extends React.Component {
 	handleClickedClaimButton = () => {
 		const { gameInfo, userInfo } = this.props;
 		const playerIndex = gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName);
-
 		this.setState({
 			claim: this.state.claim ? '' : gameInfo.playersState[playerIndex].claim
 		});
@@ -788,7 +793,6 @@ class Gamechat extends React.Component {
 								e.preventDefault();
 
 								this.props.socket.emit('addNewClaim', chat);
-								this.setState({ claim: '' });
 							};
 
 							switch (this.state.claim) {
@@ -798,7 +802,7 @@ class Gamechat extends React.Component {
 											<p> As president, I drew...</p>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'threefascist');
+													handleClaimButtonClick(e, 'rrr');
 												}}
 												className="ui button threefascist"
 											>
@@ -806,7 +810,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'twofascistoneliberal');
+													handleClaimButtonClick(e, 'rrb');
 												}}
 												className="ui button twofascistoneliberal"
 											>
@@ -814,7 +818,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'twoliberalonefascist');
+													handleClaimButtonClick(e, 'rbb');
 												}}
 												className="ui button twoliberalonefascist"
 											>
@@ -822,7 +826,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'threeliberal');
+													handleClaimButtonClick(e, 'bbb');
 												}}
 												className="ui button threeliberal"
 											>
@@ -836,7 +840,7 @@ class Gamechat extends React.Component {
 											<p> As chancellor, I received...</p>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'twofascist');
+													handleClaimButtonClick(e, 'rr');
 												}}
 												className="ui button threefascist"
 											>
@@ -844,7 +848,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'onefascistoneliberal');
+													handleClaimButtonClick(e, 'rb');
 												}}
 												className="ui button onefascistoneliberal"
 											>
@@ -852,7 +856,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'twoliberal');
+													handleClaimButtonClick(e, 'bb');
 												}}
 												className="ui button threeliberal"
 											>
@@ -910,7 +914,7 @@ class Gamechat extends React.Component {
 											<p> As president, I peeked and saw... </p>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'threefascist');
+													handleClaimButtonClick(e, 'rrr');
 												}}
 												className="ui button threefascist"
 											>
@@ -918,7 +922,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'twofascistoneliberal');
+													handleClaimButtonClick(e, 'rrb');
 												}}
 												className="ui button twofascistoneliberal"
 											>
@@ -926,7 +930,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'twoliberalonefascist');
+													handleClaimButtonClick(e, 'rbb');
 												}}
 												className="ui button twoliberalonefascist"
 											>
@@ -934,7 +938,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'threeliberal');
+													handleClaimButtonClick(e, 'bbb');
 												}}
 												className="ui button threeliberal"
 											>
