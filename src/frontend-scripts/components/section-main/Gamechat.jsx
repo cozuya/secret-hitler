@@ -982,6 +982,21 @@ class Gamechat extends React.Component {
 									The word "{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.
 								</span>
 							)}
+							{(() => {
+								if (
+									gameInfo.playersState &&
+									gameInfo.playersState.length &&
+									userInfo.userName &&
+									gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim &&
+									!gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].isDead
+								) {
+									return (
+										<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
+											<span style={{padding: '5px'}}>Claim</span>
+										</div>
+									);
+								}
+							})()}
 							<input
 								onSubmit={this.handleSubmit}
 								onChange={this.handleTyping}
@@ -999,21 +1014,6 @@ class Gamechat extends React.Component {
 								Chat
 							</button>
 						</div>
-						{(() => {
-							if (
-								gameInfo.playersState &&
-								gameInfo.playersState.length &&
-								userInfo.userName &&
-								gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim &&
-								!gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].isDead
-							) {
-								return (
-									<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
-										Claim
-									</div>
-								);
-							}
-						})()}
 					</form>
 				)}
 				<div
