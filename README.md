@@ -71,7 +71,7 @@ Upon seeing the end result in the terminal of `Assigned.` you will know it worke
 
 ## Running in production mode
 
-I'll leave you to figure that out. SH.IO is currently a $20/month ubuntu linux box using nginx, lets encrypt, PM2, and hosted on Digitalocean.
+Don't.  Respect the maintainer and contributors who have given their time for free to make SH.io as good as it is.  Running this codebase outside of SH.io may have unintended consequences.
 
 ## Statistics
 
