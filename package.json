@@ -48,9 +48,9 @@
 		"prop-types": "^15.5.10",
 		"pug": "^2.0.3",
 		"rc-slider": "^8.4.0",
-		"react": "^16.6.3",
+		"react": "16.8.1",
 		"react-custom-scrollbars": "^4.2.1",
-		"react-dom": "^16.6.3",
+		"react-dom": "16.8.1",
 		"react-dropzone": "^4.2.8",
 		"react-linkify": "^0.2.2",
 		"react-redux": "^5.0.6",
@@ -86,6 +86,7 @@
 		"clean-webpack-plugin": "^0.1.19",
 		"crypto": "^1.0.1",
 		"css-loader": "^0.28.11",
+		"dotenv-webpack": "^1.7.0",
 		"enzyme": "^3.3.0",
 		"enzyme-adapter-react-16": "^1.1.1",
 		"enzyme-redux": "^0.2.1",
@@ -139,7 +140,7 @@
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "yarn lint && yarn format && git add -A",
+			"pre-commit": "git add -A",
 			"pre-push": "yarn test --all"
 		}
 	},

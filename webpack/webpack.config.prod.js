@@ -5,6 +5,7 @@ const extractSass = new ExtractTextPlugin({
 	filename: '../styles/style-main.css',
 	disable: process.env.NODE_ENV === 'development'
 });
+const Dotenv = require('dotenv-webpack');
 
 process.env.NODE_ENV = 'production';
 
@@ -14,7 +15,12 @@ module.exports = {
 		filename: `bundle.js`,
 		path: path.resolve(__dirname, '../public/scripts')
 	},
-	plugins: [extractSass],
+	plugins: [
+		extractSass,
+		new Dotenv({
+			path: path.resolve(__dirname, '..', '.env')
+		})
+	],
 	optimization: {
 		minimizer: [
 			new UglifyJSPlugin({
