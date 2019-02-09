@@ -1114,7 +1114,10 @@ Gamechat.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	allEmotes: PropTypes.array,
-	updateIsTyping: PropTypes.func
+	updateIsTyping: PropTypes.func,
+	notesActive: PropTypes.bool,
+	toggleNotes: PropTypes.func,
+	isTyping: PropTypes.bool
 };
 
 const GamechatContainer = props => (
