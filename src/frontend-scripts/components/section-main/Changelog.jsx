@@ -11,12 +11,25 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.0.3 released 2-10-2019</p>
+				</div>
+				<h4>New feature: display of whether or not a player is typing -Coz</h4>
+				<h4>New feature: claim directly from the chat - simply type what you want to claim -Vigasaurus</h4>
+				<h4>Site is now more responsive on smaller screens (mobile devices) -RPYoshi</h4>
+				<ul>
+					<li>Moderators can now peek at currently locked in votes on a government -Vigasaurus</li>
+					<li>Game Creation defaults now reflect results of strawpoll conducted previously -Buncha</li>
+					<li>Minor bug fixes and internal changes -Vigasaurus, Spyro</li>
+
+				</ul>
+				<div className="ui header">
 					<p>Version 1.0.2 released 1-20-2019</p>
 				</div>
-				<h4>New feature: display of whether or not a player is typing.</h4>
-				<p>Some new moderation features (mods can force votes on afks) courtesy of contributor Vigasaurus.</p>
-				<p>List of games should be like it was in 1.0.0 and lower.</p>
-				<p>Contributor color has been updated.</p>
+				<ul>
+					<li>Some new moderation features (mods can force votes on afks) courtesy of contributor Vigasaurus.</li>
+					<li>List of games should be like it was in 1.0.0 and lower.</li>
+					<li>Contributor color has been updated.</li>
+				</ul>
 				<h4>The top 10 players of season 4 are:</h4>
 				<ul>
 					<li>benjamin172: 2110</li>
