@@ -310,6 +310,15 @@ class Gamechat extends React.Component {
 		);
 	}
 
+	isPlayerInGame(players, username) {
+		players.map( player => {
+			if (player.userName === username) {
+				return true;
+			}
+		});
+		return false;
+	}
+
 	gameChatStatus = () => {
 		const { userInfo, gameInfo } = this.props;
 		const { gameState, publicPlayersState } = gameInfo;
@@ -694,6 +703,16 @@ class Gamechat extends React.Component {
 			);
 		};
 
+		const modGetCurrentVotes = () => {
+			socket.emit('updateModAction', {
+				modName: userInfo.userName,
+				userName: userInfo.userName,
+				comment: `Peek votes for ${gameInfo.general.uid}`,
+				uid: gameInfo.general.uid,
+				action: 'modPeekVotes'
+			});
+		};
+
 		const sendModEndGame = winningTeamName => {
 			socket.emit('updateModAction', {
 				modName: userInfo.userName,
@@ -740,8 +759,14 @@ class Gamechat extends React.Component {
 							style={{ color: showFullChat ? '#4169e1' : 'indianred' }}
 						/>
 					</a>
-					{isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && this.renderModEndGameButtons()}
-
+					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && this.renderModEndGameButtons()}
+					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
+						<div>
+							<div className="ui button primary" onClick={() => modGetCurrentVotes()} style={{ width: '60px' }}>
+								Peek Votes
+							</div>
+						</div>
+					)}
 					{gameInfo.general &&
 						gameInfo.general.tournyInfo &&
 						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
