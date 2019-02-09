@@ -44,7 +44,6 @@ const {
 const animals = require("../../utils/animals");
 const adjectives = require("../../utils/adjectives");
 const { generateCombination } = require("gfycat-style-urls");
-console.log(generateCombination, 'g');
 const { obfIP } = require("./ip-obf");
 const bar = 'hitler'
 const {
