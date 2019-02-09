@@ -27,7 +27,6 @@ npm-debug.log.*
 npm-debug.log
 yarn-error.log
 .vscode/
-yarn.lock
 package-lock.json
 public/images/Thumbs.db
 public/images/custom-cardbacks
@@ -44,4 +43,3 @@ coverage/*
 dump/
 scripts/out/*
 public/images/emotesheet.png
-

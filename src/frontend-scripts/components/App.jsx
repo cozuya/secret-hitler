@@ -418,7 +418,7 @@ export class App extends React.Component {
 						/>
 					)}
 
-					<DevHelpers />
+					{process.env.NODE_ENV !== 'production' && <DevHelpers />}
 
 					<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
 
