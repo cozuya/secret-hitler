@@ -836,6 +836,9 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
+	if (!/^wasPresident|wasChancellor|didSinglePolicyPeek|didPolicyPeek|didInvestigateLoyalty$/.exec(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim)) {
+		return;
+	}
 	if (!game.private || !game.private.summary || game.publicPlayersState[playerIndex].isDead) {
 		return;
 	}
@@ -1399,7 +1402,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 
 	data.userName = passport.user;
-
 	if (/^[RB]{2,3}$/i.exec(chat)) {
 		if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident') {
 			const claimData = {
@@ -1428,6 +1430,33 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
 				uid: data.uid
 			};
+			addNewClaim(socket, passport, game, claimData);
+			return;
+		}
+	}
+	if (/^(b|blue|l|lib|liberal|r|f|red|fas|fasc|fascist)$/i.exec(chat)) {
+		if (0 <= playerIndex <= 9 && (
+				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
+				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty'
+				)
+		)
+		{
+			let claimData;
+			if (/^(r|red|fas|f|fasc|fascist)$/i.exec(chat)) {
+				claimData = {
+					userName: user.userName,
+					claimState: 'fascist',
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+			} else if (/^(b|blue|l|lib|liberal)$/i.exec(chat)) {
+				claimData = {
+					userName: user.userName,
+					claimState: 'liberal',
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+			}
 			addNewClaim(socket, passport, game, claimData);
 			return;
 		}
