@@ -24,126 +24,51 @@ class Menu extends React.Component {
 	}
 
 	componentDidMount() {
-		var _0x4a42 = [
-			'color',
-			'reset',
-			'jumbleColor',
-			'reverse',
-			'span.text-effect',
-			'visibility',
-			'visible',
-			'animate',
-			'completionSpeed',
-			'index',
-			'effectSpeed',
-			'textEffect',
-			'each',
-			'create',
-			'init',
-			'section.nav-menu\x20>\x20a',
-			'text',
-			'NODE_ENV',
-			'production',
-			'location',
-			'hostname',
-			'secrethitler.io',
-			'FUCK\x20YOU',
-			'SECRET\x20HITLER.io',
-			'#7f7f7f',
-			'$elem',
-			'oldText',
-			'html',
-			'string',
-			'effect',
-			'options',
-			'extend',
-			'textArray',
-			'substr',
-			'</span>',
-			'append',
-			'fade',
-			'jumble',
-			'dropdown',
-			'floor',
-			'random',
-			'length',
-			'offset',
-			'left',
-			'width',
-			'visibility:\x20hidden;\x20position:\x20relative;\x20left:\x20',
-			'run',
-			'top',
-			'height',
-			'setup',
-			'position:\x20relative;\x20bottom:\x20',
-			'px;',
-			'bottom',
-			'opacity',
-			'css',
-			'jumbleInterval',
-			'runJumble',
-			'children'
-		];
-		(function(_0x1c0628, _0x2c23e5) {
-			var _0x150212 = function(_0x566d8d) {
-				while (--_0x566d8d) {
-					_0x1c0628['push'](_0x1c0628['shift']());
-				}
-			};
-			_0x150212(++_0x2c23e5);
-		})(_0x4a42, 0x8d);
-		var _0x289a = function(_0x5afb24, _0x12cf69) {
-			_0x5afb24 = _0x5afb24 - 0x0;
-			var _0x1c6a57 = _0x4a42[_0x5afb24];
-			return _0x1c6a57;
-		};
+		/*eslint-disable */
 		(function() {
 			'use strict';
-			var _0xe44b6 = {
-				init: function(_0x14083b, _0x27b0b9) {
-					var _0x14a2f8 = {};
-					this[_0x289a('0x0')] = $(_0x27b0b9);
-					this[_0x289a('0x1')] = this[_0x289a('0x0')][_0x289a('0x2')]();
-					if (typeof _0x14083b === _0x289a('0x3')) {
-						_0x14a2f8[_0x289a('0x4')] = _0x14083b;
+			var TextEffect = {
+				init: function(options, elem) {
+					var _options = {};
+					this.$elem = $(elem);
+					this.oldText = this.$elem.html();
+					if (typeof options === 'string') {
+						_options.effect = options;
 					} else {
-						_0x14a2f8 = _0x14083b;
+						_options = options;
 					}
-					this[_0x289a('0x5')] = $[_0x289a('0x6')]({}, $['fn']['textEffect'][_0x289a('0x5')], _0x14a2f8);
-					this[this[_0x289a('0x5')][_0x289a('0x4')]]();
+					this.options = $.extend({}, $.fn.textEffect.options, _options);
+					this[this.options.effect]();
 				},
-				setup: function(_0x4ce57c) {
-					this[_0x289a('0x7')] = [];
-					this[_0x289a('0x0')][_0x289a('0x2')]('');
-					for (var _0x32ceeb = 0x0; _0x32ceeb < this[_0x289a('0x1')]['length']; _0x32ceeb++) {
-						this[_0x289a('0x7')][_0x32ceeb] =
-							'<span\x20class=\x27text-effect\x27\x20style=\x27' + _0x4ce57c + '\x27>' + this[_0x289a('0x1')][_0x289a('0x8')](_0x32ceeb, 0x1) + _0x289a('0x9');
-						this[_0x289a('0x0')][_0x289a('0xa')](this[_0x289a('0x7')][_0x32ceeb]);
+				setup: function(effectOption) {
+					this.textArray = [];
+					this.$elem.html('');
+					for (var i = 0; i < this.oldText.length; i++) {
+						this.textArray[i] = "<span class='text-effect' style='" + effectOption + "'>" + this.oldText.substr(i, 1) + '</span>';
+						this.$elem.append(this.textArray[i]);
 					}
 				},
 				random: function() {
-					var _0x1e3126 = [_0x289a('0xb'), _0x289a('0xc'), 'slide', _0x289a('0xd')];
-					this[_0x1e3126[Math[_0x289a('0xe')](Math[_0x289a('0xf')]() * _0x1e3126[_0x289a('0x10')])]]();
+					var effects = ['fade', 'jumble', 'slide', 'dropdown'];
+					this[effects[Math.floor(Math.random() * effects.length)]]();
 				},
 				slide: function() {
-					var _0x25f2f3 = this[_0x289a('0x0')][_0x289a('0x11')]()[_0x289a('0x12')] + this[_0x289a('0x0')][_0x289a('0x13')]();
-					this['setup'](_0x289a('0x14') + _0x25f2f3 + 'px;');
-					this[_0x289a('0x15')](_0x289a('0x12'), 0x0);
+					var startPosition = this.$elem.offset().left + this.$elem.width();
+					this.setup('visibility: hidden; position: relative; left: ' + startPosition + 'px;');
+					this.run('left', 0);
 				},
 				dropdown: function() {
-					var _0x4bfe04 = this[_0x289a('0x0')][_0x289a('0x11')]()[_0x289a('0x16')] + this[_0x289a('0x0')][_0x289a('0x17')]() * 1.1;
-					this[_0x289a('0x18')](_0x289a('0x19') + _0x4bfe04 + _0x289a('0x1a'));
-					this[_0x289a('0x15')](_0x289a('0x1b'), 0x0);
+					var offscreen = this.$elem.offset().top + this.$elem.height() * 1.1; // little extra padding
+					this.setup('position: relative; bottom: ' + offscreen + 'px;');
+					this.run('bottom', 0);
 				},
 				fade: function() {
-					this['setup'](
-						this[_0x289a('0x0')][0x0]['style'][_0x289a('0x1c')] !== undefined ? 'opacity:\x200;' : 'filter:\x20alpha(opacity=0);\x20display:\x20inline-block;'
-					);
-					this[_0x289a('0x15')](_0x289a('0x1c'), this[_0x289a('0x0')][_0x289a('0x1d')](_0x289a('0x1c')));
+					this.setup(this.$elem[0].style.opacity !== undefined ? 'opacity: 0;' : 'filter: alpha(opacity=0); display: inline-block;');
+					this.run('opacity', this.$elem.css('opacity'));
 				},
 				jumble: function() {
-					var _0x3b7044 = this;
-					var _0x122ffa = [
+					var self = this;
+					var letterArray = [
 						'a',
 						'b',
 						'c',
@@ -181,92 +106,88 @@ class Menu extends React.Component {
 						'8',
 						'9'
 					];
-					var _0xd625b0 = 0x0;
-					this[_0x289a('0x18')]();
-					var _0x478803 = setInterval(function() {
-						if (_0x3b7044['jumbleInterval']) {
-							clearInterval(_0x3b7044[_0x289a('0x1e')]);
+					var i = 0;
+					this.setup();
+					var jumbleEffectInterval = setInterval(function() {
+						if (self.jumbleInterval) {
+							clearInterval(self.jumbleInterval);
 						}
-						_0x3b7044[_0x289a('0x1f')](_0x122ffa, _0xd625b0);
-						_0x3b7044[_0x289a('0x0')]
-							[_0x289a('0x20')]('span.text-effect')
-							['eq'](_0xd625b0)
-							[_0x289a('0x2')](_0x3b7044[_0x289a('0x1')]['substr'](_0xd625b0, 0x1))
-							[_0x289a('0x1d')](_0x289a('0x21'), _0x3b7044[_0x289a('0x0')][_0x289a('0x1d')](_0x289a('0x21')));
-						if (_0xd625b0 === _0x3b7044[_0x289a('0x1')][_0x289a('0x10')] - 0x1) {
-							clearInterval(_0x478803);
-							_0x3b7044[_0x289a('0x22')]();
+						self.runJumble(letterArray, i);
+						self.$elem
+							.children('span.text-effect')
+							.eq(i)
+							.html(self.oldText.substr(i, 1))
+							.css('color', self.$elem.css('color'));
+						if (i === self.oldText.length - 1) {
+							clearInterval(jumbleEffectInterval);
+							self.reset();
 						} else {
-							_0xd625b0++;
+							i++;
 						}
-					}, _0x3b7044['options']['effectSpeed']);
+					}, self.options.effectSpeed);
 				},
-				runJumble: function(_0x3d1d85, _0x3a0409) {
-					var _0x1ac450 = this;
-					this[_0x289a('0x1e')] = setInterval(function() {
-						for (var _0x37995a = _0x1ac450[_0x289a('0x7')][_0x289a('0x10')] - 0x1; _0x37995a > _0x3a0409; _0x37995a--) {
-							if (_0x1ac450[_0x289a('0x1')][_0x289a('0x8')](_0x37995a, 0x1) !== '\x20') {
-								_0x1ac450[_0x289a('0x0')]
-									['children']('span.text-effect')
-									['eq'](_0x37995a)
-									[_0x289a('0x2')](_0x3d1d85[Math[_0x289a('0xe')](Math[_0x289a('0xf')]() * (_0x3d1d85[_0x289a('0x10')] - 0x1))])
-									[_0x289a('0x1d')]('color', _0x1ac450[_0x289a('0x5')][_0x289a('0x23')]);
+				runJumble: function(letterArray, jumbleLength) {
+					var self = this;
+					this.jumbleInterval = setInterval(function() {
+						for (var i = self.textArray.length - 1; i > jumbleLength; i--) {
+							if (self.oldText.substr(i, 1) !== ' ') {
+								self.$elem
+									.children('span.text-effect')
+									.eq(i)
+									.html(letterArray[Math.floor(Math.random() * (letterArray.length - 1))])
+									.css('color', self.options.jumbleColor);
 							} else {
-								_0x1ac450[_0x289a('0x0')]
-									['children']('span.text-effect')
-									['eq'](_0x37995a)
-									[_0x289a('0x2')]('\x20');
+								self.$elem
+									.children('span.text-effect')
+									.eq(i)
+									.html(' ');
 							}
 						}
-					}, 0x46);
+					}, 70);
 				},
-				run: function(_0x51c1ef, _0x2c758e) {
-					var _0x40c7c7 = this;
-					var _0x52da83 = {};
-					var _0x439d16 = this[_0x289a('0x5')][_0x289a('0x24')] ? this['textArray']['length'] - 0x1 : 0x0;
-					var _0x71949 = _0x40c7c7['$elem'][_0x289a('0x20')](_0x289a('0x25'));
-					_0x52da83[_0x51c1ef] = _0x2c758e;
-					var _0x43a010 = setInterval(function() {
-						_0x71949['eq'](_0x439d16)
-							[_0x289a('0x1d')](_0x289a('0x26'), _0x289a('0x27'))
-							[_0x289a('0x28')](_0x52da83, _0x40c7c7['options'][_0x289a('0x29')] / _0x40c7c7[_0x289a('0x7')][_0x289a('0x10')], function() {
-								if (
-									($(this)[_0x289a('0x2a')]() === _0x40c7c7['textArray'][_0x289a('0x10')] - 0x1 && !_0x40c7c7[_0x289a('0x5')][_0x289a('0x24')]) ||
-									(_0x40c7c7[_0x289a('0x5')][_0x289a('0x24')] && $(this)[_0x289a('0x2a')]() === 0x0)
-								) {
-									clearInterval(_0x43a010);
-									_0x40c7c7[_0x289a('0x22')]();
+				run: function(effect, oldEffect) {
+					var self = this;
+					var obj = {};
+					var i = this.options.reverse ? this.textArray.length - 1 : 0;
+					var $spans = self.$elem.children('span.text-effect');
+					obj[effect] = oldEffect;
+					var effectInterval = setInterval(function() {
+						$spans
+							.eq(i)
+							.css('visibility', 'visible')
+							.animate(obj, self.options.completionSpeed / self.textArray.length, function() {
+								if (($(this).index() === self.textArray.length - 1 && !self.options.reverse) || (self.options.reverse && $(this).index() === 0)) {
+									clearInterval(effectInterval);
+									self.reset();
 								}
 							});
-						if (_0x40c7c7['options'][_0x289a('0x24')]) {
-							_0x439d16--;
+						if (self.options.reverse) {
+							i--;
 						} else {
-							_0x439d16++;
+							i++;
 						}
-					}, _0x40c7c7[_0x289a('0x5')][_0x289a('0x2b')]);
+					}, self.options.effectSpeed);
 				},
 				reset: function() {
-					this['$elem'][_0x289a('0x2')](this['oldText']);
+					this.$elem.html(this.oldText);
 				}
 			};
-			$['fn'][_0x289a('0x2c')] = function(_0x5b2468) {
-				return this[_0x289a('0x2d')](function() {
-					var _0x362551 = Object[_0x289a('0x2e')](_0xe44b6);
-					_0x362551[_0x289a('0x2f')](_0x5b2468, this);
+			$.fn.textEffect = function(options) {
+				return this.each(function() {
+					var texteffect = Object.create(TextEffect);
+					texteffect.init(options, this);
 				});
 			};
 		})();
-		$(_0x289a('0x30'))
-			[_0x289a('0x31')](
-				process['env'][_0x289a('0x32')] === _0x289a('0x33') && window[_0x289a('0x34')][_0x289a('0x35')] !== _0x289a('0x36') ? _0x289a('0x37') : _0x289a('0x38')
-			)
-			[_0x289a('0x2c')]({
-				effect: 'random',
-				effectSpeed: 0x96,
-				completionSpeed: Math[_0x289a('0xe')](Math[_0x289a('0xf')]() * 0x2710),
-				jumbleColor: _0x289a('0x39'),
-				reverse: ![]
-			});
+		/* eslint-enable */
+
+		$('section.nav-menu > a').textEffect({
+			effect: 'random',
+			effectSpeed: 150,
+			completionSpeed: Math.floor(Math.random() * 10000),
+			jumbleColor: '#7f7f7f',
+			reverse: false
+		});
 	}
 
 	render() {
@@ -280,7 +201,9 @@ class Menu extends React.Component {
 			<div>
 				<div className="menu-container" style={{ zIndex: 9999 }}>
 					<section className={classes}>
-						<a href="/" target="_blank" />
+						<a href="/" target="_blank">
+							SECRET HITLER.io
+						</a>
 						<div className="center-menu-links">
 							<span>
 								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
@@ -299,16 +222,16 @@ class Menu extends React.Component {
 									{`v${this.props.version.current.number}`}{' '}
 								</a>
 								|{' '}
-								<a target="_blank" rel="noopener noreferrer" href="https://github.com/cozuya/secret-hitler/issues">
-								Feedback
-							</a>{' '}
-							|{' '}
-							<a target="_blank" rel="noopener noreferrer" href="https://github.com/cozuya/secret-hitler/wiki">
-								Wiki
-							</a>{' '}
-							|{' '}
-							<a target="_blank" rel="noopener noreferrer" href="https://discord.gg/secrethitlerio">
-								Discord
+								<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
+									Feedback
+								</a>{' '}
+								|{' '}
+								<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
+									Wiki
+								</a>{' '}
+								|{' '}
+								<a target="_blank" href="https://discord.gg/secrethitlerio">
+									Discord
 								</a>
 							</span>
 						</div>
