@@ -828,21 +828,24 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 };
 
 /**
+ * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-module.exports.handleAddNewClaim = (passport, game, data) => {
+module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
+	if (!/^wasPresident|wasChancellor|didSinglePolicyPeek|didPolicyPeek|didInvestigateLoyalty$/.exec(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim)) {
+		return;
+	}
 	if (!game.private || !game.private.summary || game.publicPlayersState[playerIndex].isDead) {
 		return;
 	}
 	const { blindMode, replacementNames } = game.general;
 
 	const chat = (() => {
-		let text;
-
+		let text, claimString, redCount, blueCount, cardList;
 		switch (data.claim) {
 			case 'wasPresident':
 				text = [
@@ -854,105 +857,44 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						type: 'player'
 					}
 				];
-				switch (data.claimState) {
-					case 'threefascist':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								presidentClaim: { reds: 3, blues: 0 }
-							},
-							{ presidentId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims '
-							},
-							{
-								text: 'RRR',
-								type: 'fascist'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
-					case 'twofascistoneliberal':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								presidentClaim: { reds: 2, blues: 1 }
-							},
-							{ presidentId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims '
-							},
-							{
-								text: 'RR',
-								type: 'fascist'
-							},
-							{
-								text: 'B',
-								type: 'liberal'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
-					case 'twoliberalonefascist':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								presidentClaim: { reds: 1, blues: 2 }
-							},
-							{ presidentId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims '
-							},
-							{
-								text: 'R',
-								type: 'fascist'
-							},
-							{
-								text: 'BB',
-								type: 'liberal'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
-					case 'threeliberal':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								presidentClaim: { reds: 0, blues: 3 }
-							},
-							{ presidentId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims '
-							},
-							{
-								text: 'BBB',
-								type: 'liberal'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
+				claimString = data.claimState;
+				redCount = 0;
+				blueCount = 0;
+				cardList = [];
+				for (let char of claimString) {
+					if (char.toUpperCase() === 'R') {
+						redCount++;
+						cardList.push({
+							text: 'R',
+							type: 'fascist'
+						});
+					} else if (char.toUpperCase() === 'B') {
+						blueCount++;
+						cardList.push({
+							text: 'B',
+							type: 'liberal'
+						});
+					}
 				}
+				game.private.summary = game.private.summary.updateLog(
+					{
+						presidentClaim: { reds: redCount, blues: blueCount }
+					},
+					{ presidentId: playerIndex }
+				);
 
+				text.push(
+					{
+						text: 'claims '
+					},
+					cardList[0],
+					cardList[1],
+					cardList[2],
+					{
+						text: '.'
+					}
+				);
+				return text;
 			case 'wasChancellor':
 				text = [
 					{
@@ -963,78 +905,43 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						type: 'player'
 					}
 				];
-				switch (data.claimState) {
-					case 'twofascist':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								chancellorClaim: { reds: 2, blues: 0 }
-							},
-							{ chancellorId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims '
-							},
-							{
-								text: 'RR',
-								type: 'fascist'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
-					case 'onefascistoneliberal':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								chancellorClaim: { reds: 1, blues: 1 }
-							},
-							{ chancellorId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims '
-							},
-							{
-								text: 'R',
-								type: 'fascist'
-							},
-							{
-								text: 'B',
-								type: 'liberal'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
-					case 'twoliberal':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								chancellorClaim: { reds: 0, blues: 2 }
-							},
-							{ chancellorId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims '
-							},
-							{
-								text: 'BB',
-								type: 'liberal'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
+				claimString = data.claimState;
+				redCount = 0;
+				blueCount = 0;
+				cardList = [];
+				for (let char of claimString) {
+					if (char.toUpperCase() === 'R') {
+						redCount++;
+						cardList.push({
+							text: 'R',
+							type: 'fascist'
+						});
+					} else if (char.toUpperCase() === 'B') {
+						blueCount++;
+						cardList.push({
+							text: 'B',
+							type: 'liberal'
+						});
+					}
 				}
+				game.private.summary = game.private.summary.updateLog(
+					{
+						presidentClaim: { reds: redCount, blues: blueCount }
+					},
+					{ presidentId: playerIndex }
+				);
+
+				text.push(
+					{
+						text: 'claims '
+					},
+					cardList[0],
+					cardList[1],
+					{
+						text: '.'
+					}
+				);
+				return text;
 			case 'didSinglePolicyPeek':
 				if (data.claimState === 'liberal' || data.claimState === 'fascist') {
 					text = [
@@ -1058,6 +965,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 					];
 					return text;
 				}
+				break;
 			case 'didPolicyPeek':
 				text = [
 					{
@@ -1068,104 +976,44 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						type: 'player'
 					}
 				];
-				switch (data.claimState) {
-					case 'threefascist':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 3, blues: 0 }
-							},
-							{ presidentId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims to have peeked at '
-							},
-							{
-								text: 'RRR',
-								type: 'fascist'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
-					case 'twofascistoneliberal':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 2, blues: 1 }
-							},
-							{ presidentId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims to have peeked at '
-							},
-							{
-								text: 'RR',
-								type: 'fascist'
-							},
-							{
-								text: 'B',
-								type: 'liberal'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
-					case 'twoliberalonefascist':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 1, blues: 2 }
-							},
-							{ presidentId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims to have peeked at '
-							},
-							{
-								text: 'R',
-								type: 'fascist'
-							},
-							{
-								text: 'BB',
-								type: 'liberal'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
-					case 'threeliberal':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 0, blues: 3 }
-							},
-							{ presidentId: playerIndex }
-						);
-
-						text.push(
-							{
-								text: 'claims to have peeked at '
-							},
-							{
-								text: 'BBB',
-								type: 'liberal'
-							},
-							{
-								text: '.'
-							}
-						);
-
-						return text;
+				claimString = data.claimState;
+				redCount = 0;
+				blueCount = 0;
+				cardList = [];
+				for (let char of claimString) {
+					if (char.toUpperCase() === 'R') {
+						redCount++;
+						cardList.push({
+							text: 'R',
+							type: 'fascist'
+						});
+					} else if (char.toUpperCase() === 'B') {
+						blueCount++;
+						cardList.push({
+							text: 'B',
+							type: 'liberal'
+						});
+					}
 				}
+				game.private.summary = game.private.summary.updateLog(
+					{
+						presidentClaim: { reds: redCount, blues: blueCount }
+					},
+					{ presidentId: playerIndex }
+				);
+
+				text.push(
+					{
+						text: 'claims to have peeked at '
+					},
+					cardList[0],
+					cardList[1],
+					cardList[2],
+					{
+						text: '.'
+					}
+				);
+				return text;
 			case 'didInvestigateLoyalty':
 				text = [
 					{
@@ -1233,9 +1081,9 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 			claim: data.claim,
 			claimState: data.claimState
 		};
-
 		game.chats.push(claimChat);
-		sendInProgressGameUpdate(game);
+		socket.emit('removeClaim');
+		sendInProgressGameUpdate(game, false);
 	}
 };
 
@@ -1528,16 +1376,18 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
+ * @param {object} game - target game.
  * @param {array} modUserNames - list of mods
  * @param {array} editorUserNames - list of editors
  * @param {array} adminUserNames - list of admins
+ * @param {function} addNewClaim - links to handleAddNewClaim()
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
 	// Authentication Assured in routes.js
-	const game = games[data.uid];
 	if (!game || !game.general || game.general.disableChat || !data.chat) return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
+	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (chat.length > 300 || !chat.length) {
 		return;
@@ -1545,7 +1395,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 
 	const { publicPlayersState } = game;
 	const player = publicPlayersState.find(player => player.userName === passport.user);
-
 	const user = userList.find(u => passport.user === u.userName);
 
 	if (!user || game.general.disableChat) {
@@ -1553,6 +1402,65 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	}
 
 	data.userName = passport.user;
+	if (/^[RB]{2,3}$/i.exec(chat)) {
+		if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident') {
+			const claimData = {
+				userName: user.userName,
+				claimState: chat,
+				claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+				uid: data.uid
+			};
+			addNewClaim(socket, passport, game, claimData);
+			return;
+		}
+		if (chat.length === 2 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasChancellor') {
+			const claimData = {
+				userName: user.userName,
+				claimState: chat,
+				claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+				uid: data.uid
+			};
+			addNewClaim(socket, passport, game, claimData);
+			return;
+		}
+		if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didPolicyPeek') {
+			const claimData = {
+				userName: user.userName,
+				claimState: chat,
+				claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+				uid: data.uid
+			};
+			addNewClaim(socket, passport, game, claimData);
+			return;
+		}
+	}
+	if (/^(b|blue|l|lib|liberal|r|f|red|fas|fasc|fascist)$/i.exec(chat)) {
+		if (0 <= playerIndex <= 9 && (
+				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
+				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty'
+				)
+		)
+		{
+			let claimData;
+			if (/^(r|red|fas|f|fasc|fascist)$/i.exec(chat)) {
+				claimData = {
+					userName: user.userName,
+					claimState: 'fascist',
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+			} else if (/^(b|blue|l|lib|liberal)$/i.exec(chat)) {
+				claimData = {
+					userName: user.userName,
+					claimState: 'liberal',
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+			}
+			addNewClaim(socket, passport, game, claimData);
+			return;
+		}
+	}
 
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 	if (!AEM) {
@@ -1570,6 +1478,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		}
 	}
 
+
 	const { gameState } = game;
 
 	if (
@@ -1584,7 +1493,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	data.timestamp = new Date();
 
 	if (AEM) {
-		const aemForce = /forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)/i.exec(chat);
+		const aemForce = /^\/forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)$/i.exec(chat);
 		if (aemForce) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a vote whilst playing.');
@@ -1592,112 +1501,122 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			}
 			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
 			const voteString = aemForce[2].toLowerCase();
-			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
-			if (!affectedPlayer) {
-				socket.emit('sendAlert', `There is no seat {${affectedPlayerNumber + 1}}.`);
-				return;
-			}
-			if (affectedPlayer.voteStatus.hasVoted) {
-				socket.emit('sendAlert', `${affectedPlayer.userName} {${affectedPlayerNumber + 1}} has already voted.`);
-				return;
-			}
-			let vote = false;
-			if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
-			game.private.unSeatedGameChats = [
-				{
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has forced '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' to vote '
-						},
-						{
-							text: `${vote ? 'ja' : 'nein'}`,
-							type: 'player'
-						},
-						{
-							text: '.'
-						}
-					]
+			if(game && game.private && game.private.seatedPlayers){
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat {${affectedPlayerNumber + 1}}.`);
+					return;
 				}
-			];
-			selectVoting({ user: affectedPlayer.userName }, game, { vote });
-			sendPlayerChatUpdate(game, data);
+				if (affectedPlayer && affectedPlayer.voteStatus && affectedPlayer.voteStatus.hasVoted) {
+					socket.emit('sendAlert', `${affectedPlayer.userName} {${affectedPlayerNumber + 1}} has already voted.`);
+					return;
+				}
+				let vote = false;
+				if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
+				game.private.unSeatedGameChats = [
+					{
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'An AEM member has forced '
+							},
+							{
+								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' to vote '
+							},
+							{
+								text: `${vote ? 'ja' : 'nein'}`,
+								type: 'player'
+							},
+							{
+								text: '.'
+							}
+						]
+					}
+				];
+				selectVoting({ user: affectedPlayer.userName }, game, { vote });
+				sendPlayerChatUpdate(game, data);
+			}
+			else {
+				socket.emit('sendAlert', 'The game has not started yet.')
+			}
 			return;
 		}
 
-		const aemSkip = /forceskip (\d{1,2})/i.exec(chat);
+		const aemSkip = /^\/forceskip (\d{1,2})$/i.exec(chat);
 		if (aemSkip) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
 				return;
 			}
 			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
-			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
-			if (!affectedPlayer) {
-				socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
-				return;
-			}
-			if (affectedPlayerNumber !== game.gameState.presidentIndex) {
-				socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
-				return;
-			}
-			let chancellor = -1;
-			let currentPlayers = [];
-			for (let i = 0; i < game.private.seatedPlayers.length; i++) {
-				currentPlayers[i] = !(
-					game.private.seatedPlayers[i].isDead ||
-					(i === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5) ||
-					i === game.gameState.previousElectedGovernment[1]
-				);
-			}
-			currentPlayers[affectedPlayerNumber] = false;
-			let counter = affectedPlayerNumber + 1;
-			while (chancellor === -1) {
-				if (counter >= currentPlayers.length) {
-					counter = 0;
+			if (game && game.private && game.private.seatedPlayers){
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+					return;
 				}
-				if (currentPlayers[counter]) {
-					chancellor = counter;
+				if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+					socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+					return;
 				}
-				counter++;
+				let chancellor = -1;
+				let currentPlayers = [];
+				for (let i = 0; i < game.private.seatedPlayers.length; i++) {
+					currentPlayers[i] = !(
+						game.private.seatedPlayers[i].isDead ||
+						(i === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5) ||
+						i === game.gameState.previousElectedGovernment[1]
+					);
+				}
+				currentPlayers[affectedPlayerNumber] = false;
+				let counter = affectedPlayerNumber + 1;
+				while (chancellor === -1) {
+					if (counter >= currentPlayers.length) {
+						counter = 0;
+					}
+					if (currentPlayers[counter]) {
+						chancellor = counter;
+					}
+					counter++;
+				}
+				game.private.unSeatedGameChats = [
+					{
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'An AEM member has force skipped the government with '
+							},
+							{
+								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' as president.'
+							}
+						]
+					}
+				];
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
+				setTimeout(() => {
+					for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
+						selectVoting({ user: p.userName }, game, { vote: false });
+					}
+				}, 1000);
+				sendPlayerChatUpdate(game, data);
 			}
-			game.private.unSeatedGameChats = [
-				{
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has force skipped the government with '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' as president.'
-						}
-					]
-				}
-			];
-			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
-			setTimeout(() => {
-				for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
-					selectVoting({ user: p.userName }, game, { vote: false });
-				}
-			}, 1000);
-			sendPlayerChatUpdate(game, data);
+			else {
+				socket.emit('sendAlert', 'The game has not started yet.')
+			}
 			return;
 		}
 
-		const aemPick = /forcepick (\d{1,2}) (\d{1,2})/i.exec(chat);
+		const aemPick = /^\/forcepick (\d{1,2}) (\d{1,2})$/i.exec(chat);
 		if (aemPick) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
@@ -1705,56 +1624,61 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			}
 			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
 			const chancellorPick = aemPick[2];
-			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
-			const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
-			if (!affectedPlayer) {
-				socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
-				return;
-			}
-			if (!affectedChancellor) {
-				socket.emit('sendAlert', `There is no seat ${chancellorPick}.`);
-				return;
-			}
-			if (affectedPlayerNumber !== game.gameState.presidentIndex) {
-				socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
-				return;
-			}
-			if (
-				game.publicPlayersState[chancellorPick - 1].isDead ||
-				chancellorPick - 1 === affectedPlayerNumber ||
-				chancellorPick - 1 === game.gameState.previousElectedGovernment[1] ||
-				(chancellorPick - 1 === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5)
-			) {
-				socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
-				return;
-			}
-			game.private.unSeatedGameChats = [
-				{
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has forced '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' to pick '
-						},
-						{
-							text: `${affectedChancellor.userName} {${chancellorPick}}`,
-							type: 'player'
-						},
-						{
-							text: ' as chancellor.'
-						}
-					]
+			if (game && game.private && game.private.seatedPlayers){
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+					return;
 				}
-			];
-			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
-			sendPlayerChatUpdate(game, data);
+				if (!affectedChancellor) {
+					socket.emit('sendAlert', `There is no seat ${chancellorPick}.`);
+					return;
+				}
+				if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+					socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+					return;
+				}
+				if (
+					game.publicPlayersState[chancellorPick - 1].isDead ||
+					chancellorPick - 1 === affectedPlayerNumber ||
+					chancellorPick - 1 === game.gameState.previousElectedGovernment[1] ||
+					(chancellorPick - 1 === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5)
+				) {
+					socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
+					return;
+				}
+				game.private.unSeatedGameChats = [
+					{
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'An AEM member has forced '
+							},
+							{
+								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' to pick '
+							},
+							{
+								text: `${affectedChancellor.userName} {${chancellorPick}}`,
+								type: 'player'
+							},
+							{
+								text: ' as chancellor.'
+							}
+						]
+					}
+				];
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
+				sendPlayerChatUpdate(game, data);
+			}
+			else {
+				socket.emit('sendAlert', 'The game has not started yet.')
+			}
 			return;
 		}
 	}
@@ -2193,6 +2117,31 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					BannedIP.remove({ ip: data.ip }, (err, res) => {
 						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 					});
+					break;
+				case 'modPeekVotes':
+					const gameToPeek = games[data.uid];
+					let output = '';
+					if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
+						const playersToCheckVotes = gameToPeek.private.seatedPlayers;
+						playersToCheckVotes.map(player => {
+							output += 'Seat ' + (playersToCheckVotes.indexOf(player)+1) + ' - ';
+							if (player && player.role && player.role.cardName) {
+								if (player.role.cardName === 'hitler') {
+									output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + '   - ';
+								}
+								else {
+									output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + ' - ';
+								}
+							}
+							else {
+								output += 'Roles not Dealt - ';
+							}
+							output += player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' +
+								' Voted';
+							output += '\n';
+						});
+					}
+					socket.emit('sendAlert', output);
 					break;
 				case 'modEndGame':
 					const gameToEnd = games[data.uid];

@@ -489,6 +489,7 @@ module.exports.selectBurnCard = (passport, game, data) => {
 
 				publicPresident.cardStatus.isFlipped = true;
 
+				president.cardFlingerState = [];
 				if (data.vote) {
 					game.private.policies.shift();
 					game.gameState.undrawnPolicyCount--;
