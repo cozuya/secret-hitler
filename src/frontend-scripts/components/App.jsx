@@ -132,6 +132,11 @@ export class App extends React.Component {
 				allEmotes: list
 			});
 		});
+		
+		socket.on('fetchFingerprint', () => {
+			// const { simpleFingerprint } = require('../fingerprint');
+			// socket.emit('fingerprintData', simpleFingerprint());
+		});
 
 		socket.on('manualDisconnection', () => {
 			window.location.pathname = '/observe';
