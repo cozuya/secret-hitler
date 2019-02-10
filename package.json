@@ -105,8 +105,8 @@
 		"html-loader": "^0.5.5",
 		"html-webpack-plugin": "^3.1.0",
 		"husky": "^1.3.1",
-		"jest": "^23.6.0",
-		"jest-cli": "^23.6.0",
+		"jest": "^24.1.0",
+		"jest-cli": "^24.1.0",
 		"moment": "^2.18.1",
 		"node-notifier": "^5.1.2",
 		"node-sass": "^4.9.4",
@@ -146,7 +146,9 @@
 		}
 	},
 	"jest": {
-		"setupTestFrameworkScriptFile": "<rootDir>/__test__/test-setup.js",
+		"setupFilesAfterEnv": [
+			"<rootDir>/__test__/test-setup.js"
+		],
 		"moduleNameMapper": {
 			"\\.(css|scss)$": "<rootDir>/__test__/mocks/styleMock.js"
 		}
