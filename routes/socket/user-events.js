@@ -8,7 +8,7 @@ const {
 	gameCreationDisabled,
 	limitNewPlayers,
 	currentSeasonNumber,
-	newStaff,
+	staffList,
 	createNewBypass,
 	testIP
 } = require('./models');
@@ -1970,6 +1970,9 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
  */
 module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
 	// Authentication Assured in routes.js
+	
+	const myPower = getPowerFromName(passport.user);
+	if (myPower <= 0) return; // Should never happen, just a defensive check.
 
 	if (data.userName) {
 		data.userName = data.userName.trim();
@@ -2018,63 +2021,56 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 		return;
 	}
 
-	const isSuperMod = superModUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+	const otherPower = data.userName ? getPowerFromName(data.userName) : -1;
 
 	const affectedSocketId = Object.keys(io.sockets.sockets).find(
 		socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === data.userName
 	);
 
-	if (
-		modUserNames.includes(passport.user) ||
-		superModUserNames.includes(passport.user) ||
-		newStaff.modUserNames.includes(passport.user) ||
-		newStaff.editorUserNames.includes(passport.user) ||
-		newStaff.trialmodUserNames.includes(passport.user)
-	) {
-		if (data.isReportResolveChange) {
-			PlayerReport.findOne({ _id: data._id })
-				.then(report => {
-					if (report) {
-						report.isActive = !report.isActive;
-						report.save(() => {
-							sendUserReports(socket);
-						});
-					}
-				})
-				.catch(err => {
-					console.log(err, 'err in finding player report');
-				});
-		} else {
-			const modaction = new ModAction({
-				date: new Date(),
-				modUserName: passport.user,
-				userActedOn: data.userName,
-				modNotes: data.comment,
-				ip: data.ip,
-				actionTaken: typeof data.action === 'string' ? data.action : data.action.type
+	if (data.isReportResolveChange) {
+		PlayerReport.findOne({ _id: data._id })
+			.then(report => {
+				if (report) {
+					report.isActive = !report.isActive;
+					report.save(() => {
+						sendUserReports(socket);
+					});
+				}
+			})
+			.catch(err => {
+				console.log(err, 'err in finding player report');
 			});
-			/**
-			 * @param {string} username - name of user.
-			 */
-			const logOutUser = username => {
-				const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
+	} else {
+		const modaction = new ModAction({
+			date: new Date(),
+			modUserName: passport.user,
+			userActedOn: data.userName,
+			modNotes: data.comment,
+			ip: data.ip,
+			actionTaken: typeof data.action === 'string' ? data.action : data.action.type
+		});
+		/**
+		* @param {string} username - name of user.
+		*/
+		const logOutUser = username => {
+			const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
 
-				if (io.sockets.sockets[affectedSocketId]) {
-					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-					io.sockets.sockets[affectedSocketId].disconnect();
-				}
+			if (io.sockets.sockets[affectedSocketId]) {
+				io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+				io.sockets.sockets[affectedSocketId].disconnect();
+			}
 
-				if (bannedUserlistIndex >= 0) {
-					userList.splice(bannedUserlistIndex, 1);
-				}
+			if (bannedUserlistIndex >= 0) {
+				userList.splice(bannedUserlistIndex, 1);
+			}
 
-				destroySession(username);
-			};
+			destroySession(username);
+		};
 
-			/**
-			 * @param {string} username - name of user.
-			 */
-			const banAccount = username => {
+		/**
+		* @param {string} username - name of user.
+		*/
+		const banAccount = username => {
 				Account.findOne({ username })
 					.then(account => {
 						if (account) {
@@ -2177,7 +2173,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					socket.emit('sendAlert', `Created bypass key: ${key}`);
 					break;
 				case 'getIP':
-					if (isSuperMod) {
+					if (myPower >= 2) {
 						socket.emit('sendAlert', `Requested IP: ${data.ip}`);
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can request a raw IP.');
@@ -2185,7 +2181,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 					break;
 				case 'deleteUser':
-					if (isSuperMod) {
+					if (myPower >= 2) {
 						Account.findOne({ username: data.userName }).remove(() => {
 							if (io.sockets.sockets[affectedSocketId]) {
 								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
@@ -2264,7 +2260,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
 							if (users && users.length > 0) {
 								users.forEach(user => {
-									if (isSuperMod) {
+									if (myPower >= 2) {
 										banAccount(user.username);
 									} else {
 										logOutUser(user.username);
@@ -2363,7 +2359,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					io.sockets.emit('generalChats', generalChats);
 					break;
 				case 'deleteProfile':
-					if (isSuperMod) {
+					if (myPower >= 2) {
 						Profile.findOne({ _id: data.userName })
 							.remove(() => {
 								logOutUser(data.userName);
@@ -2377,13 +2373,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 					break;
 				case 'ipbanlarge':
-					const ipbanl = new BannedIP({
-						bannedDate: new Date(),
-						type: 'big',
-						ip: data.ip
-					});
-
-					if (isSuperMod) {
+					if (myPower >= 2) {
+						const ipbanl = new BannedIP({
+							bannedDate: new Date(),
+							type: 'big',
+							ip: data.ip
+						});
 						ipbanl.save(() => {
 							Account.find({ lastConnectedIP: data.ip }, function(err, users) {
 								if (users && users.length > 0) {
@@ -2455,14 +2450,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					limitNewPlayers.status = false;
 					break;
 				case 'removeContributor':
-					if (isSuperMod) {
+					if (myPower >= 2 && myPower >= otherPower) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
 									account.isContributor = false;
 									account.save(() => {
-										let idx = newStaff.contributorUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.contributorUserNames.splice(idx, 1);
+										staffList[account.username] = null;
 										logOutUser(account.username);
 									});
 								} else {
@@ -2475,20 +2469,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 					break;
 				case 'removeStaffRole':
-					if (isSuperMod) {
+					if (myPower >= 2 && myPower >= otherPower) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
 									account.staffRole = '';
 									account.save(() => {
-										let idx = newStaff.modUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.modUserNames.splice(idx, 1);
-										idx = newStaff.editorUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.editorUserNames.splice(idx, 1);
-										idx = newStaff.trialmodUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.trialmodUserNames.splice(idx, 1);
-										idx = newStaff.altmodUserNames.indexOf(account.username);
-										if (idx != -1) newStaff.altmodUserNames.splice(idx, 1);
+										staffList[account.username] = null;
 										logOutUser(account.username);
 									});
 								} else {
@@ -2501,13 +2488,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 					break;
 				case 'promoteToContributor':
-					if (isSuperMod) {
+					if (myPower >= 2) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
 									account.isContributor = true;
 									account.save(() => {
-										newStaff.contributorUserNames.push(account.username);
+										staffList[account.username] = 'contributor';
 										logOutUser(account.username);
 									});
 								} else {
@@ -2520,13 +2507,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 					break;
 				case 'promoteToTrialMod':
-					if (isSuperMod) {
+					if (myPower >= 2) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
 									account.staffRole = 'trialmod';
 									account.save(() => {
-										newStaff.trialmodUserNames.push(account.username);
+										staffList[account.username] = 'trialmod';
 										logOutUser(account.username);
 									});
 								} else {
@@ -2539,13 +2526,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 					break;
 				case 'promoteToAltMod':
-					if (isSuperMod) {
+					if (myPower >= 2) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
 									account.staffRole = 'altmod';
 									account.save(() => {
-										newStaff.altmodUserNames.push(account.username);
+										staffList[account.username] = 'altmod';
 										logOutUser(account.username);
 									});
 								} else {
@@ -2558,13 +2545,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 					break;
 				case 'promoteToMod':
-					if (isSuperMod) {
+					if (myPower >= 2) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
 									account.staffRole = 'moderator';
 									account.save(() => {
-										newStaff.modUserNames.push(account.username);
+										staffList[account.username] = 'moderator';
 										logOutUser(account.username);
 									});
 								} else {
@@ -2577,13 +2564,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 					break;
 				case 'promoteToEditor':
-					if (isSuperMod) {
+					if (myPower >= 2) {
 						Account.findOne({ username: data.userName })
 							.then(account => {
 								if (account) {
 									account.staffRole = 'editor';
 									account.save(() => {
-										newStaff.editorUserNames.push(account.username);
+										staffList[account.username] = 'editor';
 										logOutUser(account.username);
 									});
 								} else {
@@ -2596,7 +2583,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 					break;
 				case 'resetServer':
-					if (isSuperMod) {
+					if (myPower >= 2) {
 						console.log('server crashing manually via mod action');
 						const crashReport = JSON.stringify({
 							content: `${process.env.DISCORDADMINPING} the site was just reset manually by an admin or editor.`
@@ -2640,7 +2627,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							games[game.general.uid].general.name = 'New Game';
 							sendGameList();
 						}
-					} else if (isSuperMod && data.action.type) {
+					} else if (myPower >= 2 && data.action.type) {
 						const setType = /setRWins/.test(data.action.type)
 							? 'rainbowWins'
 							: /setRLosses/.test(data.action.type)
@@ -2688,7 +2675,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			}
 			modaction.save();
 		}
-	}
 };
 
 /**
