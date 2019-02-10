@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"license": "CC-BY-NC-SA-4.0",
 	"keywords": [
 		"boardgame",
@@ -48,9 +48,9 @@
 		"prop-types": "^15.5.10",
 		"pug": "^2.0.3",
 		"rc-slider": "^8.4.0",
-		"react": "^16.6.3",
+		"react": "16.8.1",
 		"react-custom-scrollbars": "^4.2.1",
-		"react-dom": "^16.6.3",
+		"react-dom": "16.8.1",
 		"react-dropzone": "^4.2.8",
 		"react-linkify": "^0.2.2",
 		"react-redux": "^5.0.6",
@@ -84,8 +84,10 @@
 		"body-parser": "^1.18.2",
 		"classnames": "^2.2.5",
 		"clean-webpack-plugin": "^0.1.19",
+		"cross-env": "^5.2.0",
 		"crypto": "^1.0.1",
 		"css-loader": "^0.28.11",
+		"dotenv-webpack": "^1.7.0",
 		"enzyme": "^3.3.0",
 		"enzyme-adapter-react-16": "^1.1.1",
 		"enzyme-redux": "^0.2.1",
@@ -132,14 +134,14 @@
 		"db": "mongod --dbpath data",
 		"db-docker": "docker run -it --rm -p 27017:27017 -v \"$(PWD)/data\":/data/db --name Secret-Hitler-Dev-MongoDB mongo:latest --port 27017",
 		"build": "webpack --config webpack/webpack.config.prod --mode production",
-		"inspect": "nodemon --inspect=9137 bin/dev.js",
-		"server": "nodemon bin/dev.js",
+		"inspect": "cross-env NODE_ENV=development nodemon --inspect=9137 bin/dev.js",
+		"server": "cross-env NODE_ENV=development nodemon bin/dev.js",
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
 		"lint": "esw src/ scripts/ routes/ webpack/ models/ iso/"
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "yarn lint && yarn format && git add -A",
+			"pre-commit": "git add -A",
 			"pre-push": "yarn test --all"
 		}
 	},

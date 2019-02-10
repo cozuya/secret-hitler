@@ -11,7 +11,7 @@ $.fn.checkbox = Checkbox;
 export default class Creategame extends React.Component {
 	state = {
 		gameName: '',
-		sliderValues: [5, 10],
+		sliderValues: [7, 7],
 		experiencedmode: true,
 		disablechat: false,
 		disablegamechat: false,
@@ -19,8 +19,8 @@ export default class Creategame extends React.Component {
 		privateShowing: false,
 		containsBadWord: false,
 		rainbowgame: false,
-		checkedSliderValues: new Array(6).fill(true),
-		checkedRebalanceValues: new Array(3).fill(true),
+		checkedSliderValues: [false, false, true, false, false, false],
+		checkedRebalanceValues: [true, false, true],
 		privateonlygame: false,
 		isTourny: false,
 		casualgame: false,
@@ -565,9 +565,9 @@ export default class Creategame extends React.Component {
 		let player = null;
 		if (userList.list) player = userList.list.find(p => p.userName === userInfo.userName);
 		const isSeason = (userInfo.gameSettings && !userInfo.gameSettings.disableSeasonal) || false;
-		const playerElo = (player && Math.min(2000, player.eloSeason)) || 2000;
-		const playerEloNonseason = (player && Math.min(2000, player.eloOverall)) || 2000;
-		const max = Math.min(playerElo, playerEloNonseason);
+		const playerElo = (player && Math.min(2000, player.eloSeason)) || 1600;
+		const playerEloNonseason = (player && Math.min(2000, player.eloOverall)) || 1600;
+		const max = Math.max(playerElo, playerEloNonseason);
 		const marks = Object.keys(origMarks)
 			.filter(k => origMarks[k] <= max)
 			.reduce((obj, key) => {
@@ -1121,6 +1121,21 @@ export default class Creategame extends React.Component {
 									})()}
 								</span>
 							)}
+							<span
+								title="Timed mode may glitch out - use with caution"
+								style={{
+									color: 'red',
+									position: 'absolute',
+									left: '-130px',
+									top: '40px'
+								}}
+							>
+								<i className="warning icon" style={{ color: 'red' }} />
+								Caution: <br />
+								May glitch out
+								<br />
+								Use with caution
+							</span>
 							<i className="big hourglass half icon" />
 							<h4 className="ui header">
 								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
@@ -1211,7 +1226,7 @@ export default class Creategame extends React.Component {
 												this.rainbowgame = c;
 											}}
 										>
-											<input type="checkbox" name="rainbowgame" defaultChecked={false} />
+											<input type="checkbox" name="rainbowgame" defaultChecked={true} />
 										</div>
 									</div>
 								);
