@@ -84,6 +84,7 @@
 		"body-parser": "^1.18.2",
 		"classnames": "^2.2.5",
 		"clean-webpack-plugin": "^0.1.19",
+		"concurrently": "^4.1.0",
 		"cross-env": "^5.2.0",
 		"crypto": "^1.0.1",
 		"css-loader": "^0.28.11",
@@ -122,7 +123,7 @@
 	},
 	"scripts": {
 		"format": "prettier --write \"**/*.js\" && prettier --write \"**/*.jsx\"",
-		"dev": "npm-run-all --parallel db inspect start",
+		"dev": "concurrently --names \"MONGO,SERVER,WEBPACK\" -c \"bgYellowBright.black,bgCyanBright.black,bgMagentaBright.whiteBright\"  \"yarn:db\" --handle-input \"yarn:inspect\" \"yarn:start\"",
 		"dev-no-server": "npm-run-all --parallel db start",
 		"dev-packed": "npm-run-all --parallel db inspect build",
 		"dev-docker": "npm-run-all --parallel db-docker server start",
@@ -141,7 +142,6 @@
 	},
 	"husky": {
 		"hooks": {
-			"pre-commit": "git add -A",
 			"pre-push": "yarn test --all"
 		}
 	},
