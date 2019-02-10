@@ -43,8 +43,7 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
-const { games, emoteList } = require('./models');
-const Account = require('../../models/account');
+const { games, emoteList, getRoleFromName } = require('./models');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
 
@@ -113,17 +112,8 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			const { passport } = socket.handshake.session;
 			const authenticated = ensureAuthenticated(socket);
 
-			let isAEM = false;
-			let isTrial = false;
-
-			if (authenticated && passport && passport.user) {
-				Account.findOne({ username: passport.user }).then(account => {
-					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'trialmod' && account.staffRole !== 'altmod') {
-						isAEM = true;
-					}
-					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
-				});
-			}
+			const isAEM = authenticated && getRoleFromName(passport.user) > 0;
+			const isTrial = authenticated && getRoleFromName(passport.user) = 0;
 
 			let isRestricted = true;
 
@@ -165,12 +155,24 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 			socket.conn.on('upgrade', () => {
 				sendUserList(socket);
+				// if (authenticated) socket.emit('fetchFingerprint');
 				if (passport && passport.user && authenticated) {
 					Account.findOne({ username: passport.user }).then(account => {
 						isRestricted = checkRestriction(account);
 					});
 				}
 				socket.emit('emoteList', emoteList);
+			});
+			
+			// fingerprint stuff
+			socket.on('fingerprintData', data => {
+				/*
+				const fs = require('fs');
+				fs.writeFile(`./userdata/${passport.user}.json`, JSON.stringify(data, null, 2), function(err) {
+					if (err) console.log(err);
+					else console.log(`Fingerprint data for ${passport.user} stored.`);
+				});
+				*/
 			});
 
 			// user-events
@@ -321,19 +323,8 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				if (authenticated && isAEM) {
 					const game = findGame({ uid });
 					if (game && game.private && game.private.seatedPlayers) {
-						const players = game.private.seatedPlayers.map(player => player.userName);
-						Account.find({ staffRole: { $exists: true } }).then(accounts => {
-							const staff = accounts
-								.filter(acc => {
-									acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username);
-								})
-								.map(acc => acc.username);
-							if (staff.length) {
-								socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(staff)}`);
-								return;
-							}
-							handleSubscribeModChat(socket, passport, game);
-						});
+						const hasAEM = game.private.seatedPlayers.map(player => getPowerFromName(player.userName) >= 0);
+						if (!hasAEM) handleSubscribeModChat(socket, passport, game);
 					} else socket.emit('sendAlert', 'Game is missing.');
 				}
 			});
