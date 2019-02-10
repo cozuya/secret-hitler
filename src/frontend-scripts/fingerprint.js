@@ -1,3 +1,4 @@
+const canvas = document.createElement('canvas');
 const getTouchSupport = () => {
 	let maxTouchPoints = 0;
 	let touchEvent = false;
@@ -16,26 +17,24 @@ const getTouchSupport = () => {
 const getWebglVendorAndRenderer = () => {
 	/* This a subset of the WebGL fingerprint with a lot of entropy, while being reasonably browser-independent */
 	try {
-		let canvas = document.createElement('canvas');
 		let gl = null;
 		try {
 			gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 		} catch (e) {}
 		if (!gl) return null;
 		let extensionDebugRendererInfo = gl.getExtension('WEBGL_debug_renderer_info');
-		return gl.getParameter(extensionDebugRendererInfo.UNMASKED_VENDOR_WEBGL) + '~' + gl.getParameter(extensionDebugRendererInfo.UNMASKED_RENDERER_WEBGL);
+		return [gl.getParameter(extensionDebugRendererInfo.UNMASKED_VENDOR_WEBGL), gl.getParameter(extensionDebugRendererInfo.UNMASKED_RENDERER_WEBGL)];
 	} catch (e) {
 		return null;
 	}
 };
-
 module.exports.simpleFingerprint = () => {
-	let keys = [];
-	keys.push({ key: 'user_agent', value: navigator.userAgent });
-	keys.push({ key: 'language', value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage || '' });
-	keys.push({ key: 'device_memory', value: navigator.deviceMemory || -1 });
-	keys.push({ key: 'pixel_ratio', value: window.devicePixelRatio || '' });
-	keys.push({ key: 'hardware_concurrency', value: navigator.hardwareConcurrency || 'unknown' });
+	let keys = {};
+	keys.user_agent = navigator.userAgent;
+	keys.language = navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage || ''; // System language.
+	keys.device_memory = navigator.deviceMemory || -1; // Amount of memory available to the browser, not always total memory.
+	keys.pixel_ratio = window.devicePixelRatio || ''; // Typically 1, but might vary.
+	keys.hardware_concurrency = navigator.hardwareConcurrency || 'unknown'; // Number of physical cores, possibly includes hyper-threading.
 
 	let res = [];
 	if (window.screen.availWidth && window.screen.availHeight) {
@@ -46,11 +45,11 @@ module.exports.simpleFingerprint = () => {
 	} else {
 		res = window.screen.height > window.screen.width ? [window.screen.height, window.screen.width] : [window.screen.width, window.screen.height];
 	}
-	keys.push({ key: 'resolution', value: res[0] + 'x' + res[1] + '@' + (window.screen.colorDepth || -1) });
+	keys.resolution = [res[0], res[1], window.screen.colorDepth || -1];
 
-	keys.push({ key: 'timezone_offset', value: new Date().getTimezoneOffset() });
-	keys.push({ key: 'navigator_platform', value: navigator.platform || 'unknown' });
-	keys.push({ key: 'webgl_vendor', value: getWebglVendorAndRenderer() });
-	keys.push({ key: 'touch_support', value: getTouchSupport() });
+	keys.timezone_offset = new Date().getTimezoneOffset(); // Appears to be number of minutes to add to get to GMT+0 time. GMT+1 is -60, for instance.
+	keys.navigator_platform = navigator.platform || 'unknown'; // Operating system simple ID.
+	keys.webgl_vendor = getWebglVendorAndRenderer(); // Basic GPU info.
+	keys.touch_support = getTouchSupport(); // Touch-screen info.
 	return keys;
 };
