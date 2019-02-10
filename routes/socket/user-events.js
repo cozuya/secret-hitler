@@ -836,7 +836,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
-	if (!/^wasPresident|wasChancellor|didSinglePolicyPeek|didPolicyPeek|didInvestigateLoyalty$/.exec(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim)) {
+	if (!/^wasPresident|^wasChancellor|^didSinglePolicyPeek|^didPolicyPeek|^didInvestigateLoyalty$/.exec(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim)) {
 		return;
 	}
 	if (!game.private || !game.private.summary || game.publicPlayersState[playerIndex].isDead) {
@@ -1434,7 +1434,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			return;
 		}
 	}
-	if (/^(b|blue|l|lib|liberal|r|f|red|fas|fasc|fascist)$/i.exec(chat)) {
+	if (/^(b|^blue|^l|^lib|^liberal|^r|^f|^red|^fas|^fasc|^fascist)$/i.exec(chat)) {
 		if (0 <= playerIndex <= 9 && (
 				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
 				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty'
@@ -1442,14 +1442,14 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		)
 		{
 			let claimData;
-			if (/^(r|red|fas|f|fasc|fascist)$/i.exec(chat)) {
+			if (/^(r|^red|^fas|^f|^fasc|^fascist)$/i.exec(chat)) {
 				claimData = {
 					userName: user.userName,
 					claimState: 'fascist',
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
 					uid: data.uid
 				};
-			} else if (/^(b|blue|l|lib|liberal)$/i.exec(chat)) {
+			} else if (/^(b|^blue|^l|^lib|^liberal)$/i.exec(chat)) {
 				claimData = {
 					userName: user.userName,
 					claimState: 'liberal',
