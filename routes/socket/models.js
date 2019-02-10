@@ -85,18 +85,27 @@ module.exports.accountCreationDisabled = { status: false };
 module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
 module.exports.limitNewPlayers = { status: false };
-module.exports.newStaff = {
-	modUserNames: [],
-	editorUserNames: [],
-	altmodUserNames: [],
-	trialmodUserNames: [],
-	contributorUserNames: []
-};
 
 const staffList = [];
-Account.find({ staffRole: { $exists: true } }).then(accounts => {
+Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] }).then(accounts => {
 	accounts.forEach(user => (staffList[user.username] = user.staffRole));
 });
+
+module.exports.staffList = staffList;
+
+module.exports.getPrefixFromRole = (role, modView) => {
+	// Shown almost everywhere
+	if (role === 'admin') return '{A}';
+	if (role === 'editor') return '{E}';
+	if (role === 'moderator') return '{M}';
+	if (!modView) return null;
+
+	// Shown in user list in mod view
+	if (role === 'altmod') return '{M*}';
+	if (role === 'trialmod') return '{T*}';
+	if (role === 'contributor') return '{C*}';
+	return null;
+};
 
 module.exports.getPowerFromRole = role => {
 	if (role === 'admin') return 3;
@@ -108,26 +117,15 @@ module.exports.getPowerFromRole = role => {
 	return -1;
 };
 
-module.exports.getPowerFromName = name => {
-	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
-	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
-	if (module.exports.newStaff.altmodUserNames.includes(name)) return getPowerFromRole('altmod');
-	if (module.exports.newStaff.trialmodUserNames.includes(name)) return getPowerFromRole('trialmod');
-	if (module.exports.newStaff.contributorUserNames.includes(name)) return getPowerFromRole('contributor');
-
+module.exports.getRoleFromName = name => {
 	const user = module.exports.userList.find(user => user.userName === name);
-	if (user) return getPowerFromRole(user.staffRole);
-	else if (staffList[name]) return getPowerFromRole(staffList[name]);
-	else return -1;
+	if (user) return user.staffRole;
+	else return staffList[name];
 };
 
-module.exports.getPowerFromUser = user => {
-	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
-	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
-	if (module.exports.newStaff.altmodUserNames.includes(user.userName)) return getPowerFromRole('altmod');
-	if (module.exports.newStaff.trialmodUserNames.includes(user.userName)) return getPowerFromRole('trialmod');
-	if (module.exports.newStaff.contributorUserNames.includes(user.userName)) return getPowerFromRole('contributor');
-	return getPowerFromRole(user.staffRole);
+// Convenience function.
+module.exports.getPowerFromName = name => {
+	return getPowerFromRole(getRoleFromName(name));
 };
 
 // set of profiles, no duplicate usernames
