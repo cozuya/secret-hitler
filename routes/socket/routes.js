@@ -113,7 +113,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			const authenticated = ensureAuthenticated(socket);
 
 			const isAEM = authenticated && getRoleFromName(passport.user) > 0;
-			const isTrial = authenticated && getRoleFromName(passport.user) = 0;
+			const isTrial = authenticated && getRoleFromName(passport.user) == 0;
 
 			let isRestricted = true;
 
