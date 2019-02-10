@@ -104,7 +104,6 @@
 		"file-loader": "^1.1.11",
 		"html-loader": "^0.5.5",
 		"html-webpack-plugin": "^3.1.0",
-		"husky": "^1.3.1",
 		"jest": "^24.1.0",
 		"jest-cli": "^24.1.0",
 		"moment": "^2.18.1",
@@ -139,11 +138,6 @@
 		"server": "cross-env NODE_ENV=development nodemon bin/dev.js",
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
 		"lint": "esw src/ scripts/ routes/ webpack/ models/ iso/"
-	},
-	"husky": {
-		"hooks": {
-			"pre-push": "yarn test --all"
-		}
 	},
 	"jest": {
 		"setupFilesAfterEnv": [
