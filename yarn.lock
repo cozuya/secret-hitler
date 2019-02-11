@@ -4483,7 +4483,7 @@ gettemporaryfilepath@^1.0.0:
   resolved "https://registry.yarnpkg.com/gettemporaryfilepath/-/gettemporaryfilepath-1.0.0.tgz#2354791f0f5cdbbc881ab8bd79d478c166a12305"
 
 "gfycat-style-urls@git://github.com/cozuya/gfycat-style-urls.git":
-  version "1.0.4"
+  version "1.0.5"
   resolved "git://github.com/cozuya/gfycat-style-urls.git#4371adb7544dccf20ad2c2945ed62fc8249026a7"
 
 glob-base@^0.3.0:
