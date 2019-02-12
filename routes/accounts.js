@@ -8,7 +8,7 @@ const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
 const { expandAndSimplify } = require('./socket/ip-obf');
-const { TOU_CHANGES } = require('../src/frontend-scripts/node-constants.js');
+const { TOU_CHANGES, PERMABANNEDIPFRAGMENTS } = require('../src/frontend-scripts/node-constants.js');
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.
@@ -119,6 +119,8 @@ module.exports = () => {
 			signupIP
 		};
 
+		const startsWithPermaBannedIP = PERMABANNEDIPFRAGMENTS.some(fragment => new RegExp(`^${fragment}`).test(signupIP));
+
 		if (!/^[a-z0-9]+$/i.test(username)) {
 			res.status(401).json({ message: 'Your username can only be alphanumeric.' });
 		} else if (username.length < 3) {
@@ -141,7 +143,7 @@ module.exports = () => {
 					message: 'Usernames that end with 88 are not allowed.'
 				});
 			});
-		} else if (accountCreationDisabled.status && !hasBypass) {
+		} else if ((accountCreationDisabled.status && !hasBypass) || startsWithPermaBannedIP) {
 			res.status(403).json({
 				message:
 					'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
