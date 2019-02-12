@@ -84,6 +84,7 @@
 		"body-parser": "^1.18.2",
 		"classnames": "^2.2.5",
 		"clean-webpack-plugin": "^0.1.19",
+		"concurrently": "^4.1.0",
 		"cross-env": "^5.2.0",
 		"crypto": "^1.0.1",
 		"css-loader": "^0.28.11",
@@ -103,9 +104,8 @@
 		"file-loader": "^1.1.11",
 		"html-loader": "^0.5.5",
 		"html-webpack-plugin": "^3.1.0",
-		"husky": "^1.3.1",
-		"jest": "^23.6.0",
-		"jest-cli": "^23.6.0",
+		"jest": "^24.1.0",
+		"jest-cli": "^24.1.0",
 		"moment": "^2.18.1",
 		"node-notifier": "^5.1.2",
 		"node-sass": "^4.9.4",
@@ -122,7 +122,7 @@
 	},
 	"scripts": {
 		"format": "prettier --write \"**/*.js\" && prettier --write \"**/*.jsx\"",
-		"dev": "npm-run-all --parallel db inspect start",
+		"dev": "concurrently --names \"MONGO,SERVER,WEBPACK\" -c \"bgYellowBright.black,bgCyanBright.black,bgMagentaBright.whiteBright\"  \"yarn:db\" --handle-input \"yarn:inspect\" \"yarn:start\"",
 		"dev-no-server": "npm-run-all --parallel db start",
 		"dev-packed": "npm-run-all --parallel db inspect build",
 		"dev-docker": "npm-run-all --parallel db-docker server start",
@@ -139,19 +139,17 @@
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
 		"lint": "esw src/ scripts/ routes/ webpack/ models/ iso/"
 	},
-	"husky": {
-		"hooks": {
-			"pre-commit": "git add -A",
-			"pre-push": "yarn test --all"
-		}
-	},
 	"jest": {
-		"setupTestFrameworkScriptFile": "<rootDir>/__test__/test-setup.js",
+		"setupFilesAfterEnv": [
+			"<rootDir>/__test__/test-setup.js"
+		],
 		"moduleNameMapper": {
 			"\\.(css|scss)$": "<rootDir>/__test__/mocks/styleMock.js"
 		}
 	},
 	"resolutions": {
-		"**/event-stream": "^4.0.1"
+		"**/event-stream": "^4.0.1",
+		"tunnel-agent": "^0.6.0",
+		"braces": "^2.3.1"
 	}
 }
