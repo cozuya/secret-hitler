@@ -144,6 +144,9 @@ module.exports = () => {
 				});
 			});
 		} else if ((accountCreationDisabled.status && !hasBypass) || startsWithPermaBannedIP) {
+			if (startsWithPermaBannedIP) {
+				console.log("Attempt to make an account while perma'd");
+			}
 			res.status(403).json({
 				message:
 					'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
