@@ -836,7 +836,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
-	if (!/^wasPresident|wasChancellor|didSinglePolicyPeek|didPolicyPeek|didInvestigateLoyalty$/.exec(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim)) {
+	if (!/^(wasPresident|wasChancellor|didSinglePolicyPeek|didPolicyPeek|didInvestigateLoyalty)$/.exec(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim)) {
 		return;
 	}
 	if (!game.private || !game.private.summary || game.publicPlayersState[playerIndex].isDead) {
