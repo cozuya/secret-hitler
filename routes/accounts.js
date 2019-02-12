@@ -145,7 +145,7 @@ module.exports = () => {
 			});
 		} else if ((accountCreationDisabled.status && !hasBypass) || startsWithPermaBannedIP) {
 			if (startsWithPermaBannedIP) {
-				console.log("Attempt to make an account while perma'd");
+				console.log("Attempt to make an account while perma'd"); // eslint-disable-line
 			}
 			res.status(403).json({
 				message:

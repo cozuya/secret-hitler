@@ -836,7 +836,11 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
-	if (!/^wasPresident|wasChancellor|didSinglePolicyPeek|didPolicyPeek|didInvestigateLoyalty$/.exec(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim)) {
+	if (
+		!/^wasPresident|wasChancellor|didSinglePolicyPeek|didPolicyPeek|didInvestigateLoyalty$/.exec(
+			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim
+		)
+	) {
 		return;
 	}
 	if (!game.private || !game.private.summary || game.publicPlayersState[playerIndex].isDead) {
@@ -1435,12 +1439,11 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 	}
 	if (/^(b|blue|l|lib|liberal|r|f|red|fas|fasc|fascist)$/i.exec(chat)) {
-		if (0 <= playerIndex <= 9 && (
-				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
-				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty'
-				)
-		)
-		{
+		if (
+			0 <= playerIndex <= 9 &&
+			(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
+				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty')
+		) {
 			let claimData;
 			if (/^(r|red|fas|f|fasc|fascist)$/i.exec(chat)) {
 				claimData = {
@@ -1478,7 +1481,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 	}
 
-
 	const { gameState } = game;
 
 	if (
@@ -1501,7 +1503,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			}
 			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
 			const voteString = aemForce[2].toLowerCase();
-			if(game && game.private && game.private.seatedPlayers){
+			if (game && game.private && game.private.seatedPlayers) {
 				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
 				if (!affectedPlayer) {
 					socket.emit('sendAlert', `There is no seat {${affectedPlayerNumber + 1}}.`);
@@ -1540,9 +1542,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				];
 				selectVoting({ user: affectedPlayer.userName }, game, { vote });
 				sendPlayerChatUpdate(game, data);
-			}
-			else {
-				socket.emit('sendAlert', 'The game has not started yet.')
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
 			}
 			return;
 		}
@@ -1554,7 +1555,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				return;
 			}
 			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
-			if (game && game.private && game.private.seatedPlayers){
+			if (game && game.private && game.private.seatedPlayers) {
 				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
 				if (!affectedPlayer) {
 					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
@@ -1609,9 +1610,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					}
 				}, 1000);
 				sendPlayerChatUpdate(game, data);
-			}
-			else {
-				socket.emit('sendAlert', 'The game has not started yet.')
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
 			}
 			return;
 		}
@@ -1624,7 +1624,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			}
 			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
 			const chancellorPick = aemPick[2];
-			if (game && game.private && game.private.seatedPlayers){
+			if (game && game.private && game.private.seatedPlayers) {
 				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
 				const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
 				if (!affectedPlayer) {
@@ -1675,9 +1675,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				];
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
 				sendPlayerChatUpdate(game, data);
-			}
-			else {
-				socket.emit('sendAlert', 'The game has not started yet.')
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
 			}
 			return;
 		}
@@ -2124,20 +2123,17 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
 						const playersToCheckVotes = gameToPeek.private.seatedPlayers;
 						playersToCheckVotes.map(player => {
-							output += 'Seat ' + (playersToCheckVotes.indexOf(player)+1) + ' - ';
+							output += 'Seat ' + (playersToCheckVotes.indexOf(player) + 1) + ' - ';
 							if (player && player.role && player.role.cardName) {
 								if (player.role.cardName === 'hitler') {
 									output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + '   - ';
-								}
-								else {
+								} else {
 									output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + ' - ';
 								}
-							}
-							else {
+							} else {
 								output += 'Roles not Dealt - ';
 							}
-							output += player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' +
-								' Voted';
+							output += player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted';
 							output += '\n';
 						});
 					}
