@@ -1,6 +1,11 @@
 # secret-hitler
 
-[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![Build Status](https://api.travis-ci.com/cozuya/secret-hitler.svg?branch=master)](https://travis-ci.com/cozuya/secret-hitler/)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-orange.svg?style=flat)](https://github.com/cozuya/secret-hitler/issues)
+[![Known Vulnerabilities](https://snyk.io/test/github/cozuya/secret-hitler/badge.svg?targetFile=package.json)](https://snyk.io/test/github/cozuya/secret-hitler?targetFile=package.json)
+[![Dependencies](https://david-dm.org/cozuya/secret-hitler.svg)](https://david-dm.org/cozuya/secret-hitler)
+[![Dev Dependencies](https://david-dm.org/cozuya/secret-hitler/dev-status.svg)](https://david-dm.org/cozuya/secret-hitler?type=dev)
+[![Styled with Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists.
 Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late.
