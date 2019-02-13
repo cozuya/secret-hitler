@@ -982,8 +982,9 @@ export default class Creategame extends React.Component {
 			else if (this.state.isEloLimited) {
 				const playerElo = player.eloSeason;
 				const playerEloNonseason = player.eloOverall;
-				if (this.state.eloSliderValue[0] > playerEloNonseason) errs.push(`Elo slider set too high, your overall elo is ${playerEloNonseason}.`);
-				else if (this.state.eloSliderValue[0] > playerElo) errs.push(`Elo slider set too high, your seasonal elo is ${playerElo}.`);
+				if ((playerElo < this.state.eloSliderValue[0]) and (playerEloNonseason < this.state.eloSliderValue[0])) {
+					errs.push(`Elo slider set too high, your maximum is ${Math.max(playerElo, playerEloNonseason)}.`);
+				}
 			}
 		}
 		if (this.state.customGameSettings.enabled) {
