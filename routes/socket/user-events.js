@@ -1410,7 +1410,13 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	data.userName = passport.user;
 
 	if (/^[RB]{2,3}$/i.exec(chat)) {
-		if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident') {
+		if (
+			chat.length === 3 &&
+			0 <= playerIndex <= 9 &&
+			game.private.seatedPlayers &&
+			game.private.seatedPlayers[playerIndex] &&
+			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident'
+		) {
 			const claimData = {
 				userName: user.userName,
 				claimState: chat,
@@ -1420,7 +1426,13 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			addNewClaim(socket, passport, game, claimData);
 			return;
 		}
-		if (chat.length === 2 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasChancellor') {
+		if (
+			chat.length === 2 &&
+			0 <= playerIndex <= 9 &&
+			game.private.seatedPlayers &&
+			game.private.seatedPlayers[playerIndex] &&
+			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasChancellor'
+		) {
 			const claimData = {
 				userName: user.userName,
 				claimState: chat,
@@ -1430,7 +1442,13 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			addNewClaim(socket, passport, game, claimData);
 			return;
 		}
-		if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didPolicyPeek') {
+		if (
+			chat.length === 3 &&
+			0 <= playerIndex <= 9 &&
+			game.private.seatedPlayers &&
+			game.private.seatedPlayers[playerIndex] &&
+			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didPolicyPeek'
+		) {
 			const claimData = {
 				userName: user.userName,
 				claimState: chat,
