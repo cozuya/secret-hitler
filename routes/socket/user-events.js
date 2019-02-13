@@ -1408,7 +1408,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 
 	data.userName = passport.user;
-	
+
 	if (/^[RB]{2,3}$/i.exec(chat)) {
 		if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident') {
 			const claimData = {
@@ -2686,6 +2686,30 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								});
 						}
 					}
+			}
+
+			const modAction = JSON.stringify({
+				content: `Date: *${new Date()}*\nStaff member: **${data.modName}**\nAction: **${data.action}**\nUser: **${data.userName}**\nComment: **${
+					data.comment
+				}**.`
+			});
+
+			const modOptions = {
+				hostname: 'discordapp.com',
+				path: process.env.DISCORDMODLOGURL,
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Content-Length': Buffer.byteLength(modAction)
+				}
+			};
+
+			if (process.env.NODE_ENV === 'production') {
+				try {
+					const modReq = https.request(modOptions);
+
+					modReq.end(modAction);
+				} catch (error) {}
 			}
 			modaction.save();
 		}
