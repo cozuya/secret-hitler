@@ -41,6 +41,7 @@ const Account = new Schema({
 		tournyWins: Array,
 		hasChangedName: Boolean,
 		previousSeasonAward: String,
+		specialTournamentStatus: String,
 		disableElo: Boolean,
 		fullheight: Boolean,
 		gameFilters: {

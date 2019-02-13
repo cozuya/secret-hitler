@@ -478,6 +478,7 @@ const updateSeatedUser = (socket, passport, data) => {
 				isPrivate: account.gameSettings.isPrivate,
 				tournyWins: account.gameSettings.tournyWins,
 				previousSeasonAward: account.gameSettings.previousSeasonAward,
+				specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 				staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 				staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
 				cardStatus: {
@@ -766,6 +767,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 				customCardback: user.customCardback,
 				customCardbackUid: user.customCardbackUid,
 				previousSeasonAward: user.previousSeasonAward,
+				specialTournamentStatus: user.specialTournamentStatus,
 				tournyWins: user.tournyWins,
 				connected: true,
 				isPrivate: user.isPrivate,
@@ -1406,6 +1408,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 
 	data.userName = passport.user;
+	
 	if (/^[RB]{2,3}$/i.exec(chat)) {
 		if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident') {
 			const claimData = {
@@ -1720,6 +1723,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					}
 				],
 				previousSeasonAward: user.previousSeasonAward,
+				specialTournamentStatus: user.specialTournamentStatus,
 				uid: data.uid,
 				inProgress: game.gameState.isStarted
 			});
@@ -1886,6 +1890,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 							customCardback: account.gameSettings.customCardback,
 							customCardbackUid: account.gameSettings.customCardbackUid,
 							previousSeasonAward: account.gameSettings.previousSeasonAward,
+							specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 							eloOverall: account.eloOverall,
 							eloSeason: account.eloSeason,
 							status: {
