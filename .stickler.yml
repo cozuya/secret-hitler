@@ -1,0 +1,6 @@
+linters:
+  eslint:
+    config: './eslintrc'
+files:
+  ignore:
+    - './node_modules'
