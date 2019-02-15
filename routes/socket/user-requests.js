@@ -149,7 +149,6 @@ module.exports.sendUserGameSettings = socket => {
 						gameId: null
 					}
 				};
-				
 
 				userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
 				userListInfo[`lossesSeason${CURRENTSEASONNUMBER}`] = account[`lossesSeason${CURRENTSEASONNUMBER}`];
