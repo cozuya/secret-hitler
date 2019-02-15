@@ -122,7 +122,7 @@
 	},
 	"scripts": {
 		"format": "prettier --write \"**/*.js\" && prettier --write \"**/*.jsx\"",
-		"dev": "concurrently --names \"MONGO,SERVER,WEBPACK\" -c \"bgYellowBright.black,bgCyanBright.black,bgMagentaBright.whiteBright\"  \"yarn:db\" --handle-input \"yarn:inspect\" \"yarn:start\"",
+		"dev": "concurrently --names \"SERVER,MONGO,WEBPACK\" -c \"bgCyanBright.black,bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:db\" \"yarn:start\"",
 		"dev-no-server": "npm-run-all --parallel db start",
 		"dev-packed": "npm-run-all --parallel db inspect build",
 		"dev-docker": "npm-run-all --parallel db-docker server start",
