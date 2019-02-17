@@ -98,7 +98,12 @@ export class App extends React.Component {
 
 		if (classList.length) {
 			const username = classList[0].split('username-')[1];
-			const info = { userName: username, verified: window.verified, staffRole: window.staffRole };
+			const info = {
+				userName: username,
+				verified: window.verified,
+				staffRole: window.staffRole,
+				hasNotDismissedSignupModal: window.hasNotDismissedSignupModal
+			};
 
 			socket.emit('getUserGameSettings');
 

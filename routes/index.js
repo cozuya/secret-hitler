@@ -126,6 +126,7 @@ module.exports = () => {
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
 					verified: req.user.verified,
+					hasNotDismissedSignupModal: account.hasNotDismissedSignupModal,
 					username,
 					gameSettings: account.gameSettings,
 					blacklist

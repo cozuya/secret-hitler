@@ -33,6 +33,7 @@ export class Main extends React.Component {
 	}
 
 	componentDidMount() {
+		const { userInfo } = this.props;
 		const { Notification } = window;
 
 		if ('Notification' in window && Notification.permission === 'default') {
@@ -41,6 +42,9 @@ export class Main extends React.Component {
 					new Notification('Players may now "ping" you.');
 				}
 			});
+		}
+
+		if (userInfo.hasNotDismissedSignupModal) {
 		}
 	}
 

@@ -11,6 +11,7 @@ const Account = new Schema({
 	isLocal: Boolean,
 	staffRole: String,
 	isContributor: Boolean,
+	hasNotDismissedSignupModal: Boolean,
 	gameSettings: {
 		staffDisableVisibleElo: Boolean,
 		staffDisableStaffColor: Boolean,

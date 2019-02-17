@@ -65,7 +65,7 @@
 		"semantic-ui-modal": "^2.2.9",
 		"semantic-ui-popup": "^2.2.9",
 		"semantic-ui-progress": "^2.2.9",
-		"semantic-ui-react": "^0.77.1",
+		"semantic-ui-react": "^0.85.0",
 		"semantic-ui-transition": "^2.2.9",
 		"semantic-ui-visibility": "^2.2.9",
 		"serve-favicon": "^2.4.2",
