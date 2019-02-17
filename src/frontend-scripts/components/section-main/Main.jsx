@@ -1,4 +1,9 @@
 import React from 'react'; // eslint-disable-line
+import PropTypes from 'prop-types';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { Modal, Header, Button, Icon } from 'semantic-ui-react';
+
+import GamesList from './GamesList.jsx';
 import Creategame from './Creategame.jsx';
 import Settings from './Settings.jsx';
 import Game from './Game.jsx';
@@ -8,13 +13,10 @@ import Changelog from './Changelog.jsx';
 import Moderation from './Moderation.jsx';
 import Reports from './Reports.jsx';
 import Leaderboards from './Leaderboards.jsx';
-import PropTypes from 'prop-types';
-import GamesList from './GamesList.jsx';
-import { Scrollbars } from 'react-custom-scrollbars';
 
 export class Main extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 
 		this.state = {
 			gameFilter: {
@@ -28,13 +30,15 @@ export class Main extends React.Component {
 				standard: false,
 				customgame: false,
 				casualgame: false
-			}
+			},
+			showNewPlayerModal: Boolean(window.hasNotDismissedSignupModal),
+			newPlayerModalPageIndex: 0
 		};
 	}
 
 	componentDidMount() {
-		const { userInfo } = this.props;
-		const { Notification } = window;
+		const { Notification, hasNotDismissedSignupModal } = window;
+		const { socket } = this.props;
 
 		if ('Notification' in window && Notification.permission === 'default') {
 			Notification.requestPermission(permission => {
@@ -44,12 +48,58 @@ export class Main extends React.Component {
 			});
 		}
 
-		if (userInfo.hasNotDismissedSignupModal) {
+		if (hasNotDismissedSignupModal) {
+			socket.emit('hasSeenNewPlayerModal');
 		}
 	}
 
 	static getDerivedStateFromProps(props) {
 		return props.userInfo.gameSettings ? { gameFilter: props.userInfo.gameSettings.gameFilters } : null;
+	}
+
+	handleDismissSignupModal = () => {
+		this.setState({
+			showNewPlayerModal: false
+		});
+	};
+
+	handleChangeModalPageIndex = newPlayerModalPageIndex => {
+		this.setState({
+			newPlayerModalPageIndex
+		});
+	};
+
+	renderNewPlayerModal() {
+		const { showNewPlayerModal, newPlayerModalPageIndex } = this.state;
+
+		return (
+			<Modal open={showNewPlayerModal} onClose={this.handleDismissSignupModal} closeOnEscape={false} closeOnDimmerClick={false}>
+				<Header content="Welcome to SH.io" />
+				<Modal.Content>
+					<h4>Please take a minute to read through this brief walkthrough before you start playing.</h4>
+				</Modal.Content>
+				<Modal.Actions>
+					<Button onClick={this.handleDismissSignupModal} inverted>
+						<Icon name="checkmark" /> Skip and dismiss forever
+					</Button>
+					<Button
+						onClick={() => {
+							this.handleChangeModalPageIndex(newPlayerModalPageIndex - 1);
+						}}
+					>
+						<Icon name="angle left" /> Previous
+					</Button>
+					<Button
+						onClick={() => {
+							this.handleChangeModalPageIndex(newPlayerModalPageIndex + 1);
+						}}
+					>
+						Next
+						<Icon name="angle right" />
+					</Button>
+				</Modal.Actions>
+			</Modal>
+		);
 	}
 
 	render() {
@@ -120,6 +170,7 @@ export class Main extends React.Component {
 
 		return (
 			<section className={classes}>
+				{this.state.showNewPlayerModal && this.renderNewPlayerModal()}
 				{midSection === 'game' || midSection === 'replay' ? (
 					RenderMidSection()
 				) : (
@@ -139,7 +190,10 @@ Main.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	gameList: PropTypes.array,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.array,
+	onClickedTakeSeat: PropTypes.func,
+	onSeatingUser: PropTypes.func,
+	onLeaveGame: PropTypes.func
 };
 
 export default Main;
