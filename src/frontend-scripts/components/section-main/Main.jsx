@@ -29,7 +29,9 @@ export class Main extends React.Component {
 				rainbow: false,
 				standard: false,
 				customgame: false,
-				casualgame: false
+				casualgame: false,
+				newPlayerModalPageIndex: 0,
+				showNewPlayerModal: false
 			},
 			showNewPlayerModal: Boolean(window.hasNotDismissedSignupModal),
 			newPlayerModalPageIndex: 0
