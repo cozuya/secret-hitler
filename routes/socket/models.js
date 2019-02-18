@@ -184,6 +184,7 @@ module.exports.formattedUserList = () => {
 		rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
 		rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
 		previousSeasonAward: user.previousSeasonAward,
+		specialTournamentStatus: user.specialTournamentStatus,
 		timeLastGameCreated: user.timeLastGameCreated,
 		staffRole: prune(user.staffRole),
 		isContributor: prune(user.isContributor)

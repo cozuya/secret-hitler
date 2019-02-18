@@ -233,6 +233,9 @@ class Players extends React.Component {
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.previousSeasonAward &&
 						prependSeasonAward()}
+						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
+						player.specialTournamentStatus && <span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />}
 					{str}
 				</span>
 			);

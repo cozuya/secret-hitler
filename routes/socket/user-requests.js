@@ -141,6 +141,7 @@ module.exports.sendUserGameSettings = socket => {
 					customCardback: account.gameSettings.customCardback,
 					customCardbackUid: account.gameSettings.customCardbackUid,
 					previousSeasonAward: account.gameSettings.previousSeasonAward,
+					specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 					eloOverall: account.eloOverall,
 					eloSeason: account.eloSeason,
 					status: {

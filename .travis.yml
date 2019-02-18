@@ -1,10 +1,11 @@
 language: node_js
 node_js:
-  - "stable"
+  - 'stable'
 cache:
   directories:
-  - node_modules
+    - node_modules
 install:
   - yarn
 script:
   - yarn test
+  - yarn lint

@@ -11,6 +11,7 @@ const Account = new Schema({
 	isLocal: Boolean,
 	staffRole: String,
 	isContributor: Boolean,
+	hasNotDismissedSignupModal: Boolean,
 	gameSettings: {
 		staffDisableVisibleElo: Boolean,
 		staffDisableStaffColor: Boolean,
@@ -41,6 +42,7 @@ const Account = new Schema({
 		tournyWins: Array,
 		hasChangedName: Boolean,
 		previousSeasonAward: String,
+		specialTournamentStatus: String,
 		disableElo: Boolean,
 		fullheight: Boolean,
 		gameFilters: {

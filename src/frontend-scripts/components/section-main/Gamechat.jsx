@@ -564,6 +564,9 @@ class Gamechat extends React.Component {
 								chat.previousSeasonAward &&
 								!isBlind &&
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								chat.specialTournamentStatus &&
+								!isBlind && <span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />}
 							<span
 								className={
 									!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
@@ -1146,7 +1149,6 @@ Gamechat.propTypes = {
 	updateIsTyping: PropTypes.func,
 	notesActive: PropTypes.bool,
 	toggleNotes: PropTypes.func,
-	isTyping: PropTypes.bool
 };
 
 const GamechatContainer = props => (

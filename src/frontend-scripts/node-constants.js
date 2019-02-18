@@ -133,3 +133,5 @@ module.exports.getBadWord = text => {
 	});*/
 	return foundWord;
 };
+
+module.exports.PERMABANNEDIPFRAGMENTS = ['174.219', '24.52'];

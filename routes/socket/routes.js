@@ -18,7 +18,8 @@ const {
 	handleUpdatedRemakeGame,
 	handleUpdatedPlayerNote,
 	handleSubscribeModChat,
-	handleUpdateTyping
+	handleUpdateTyping,
+	handleHasSeenNewPlayerModal
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -176,6 +177,12 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			// user-events
 			socket.on('disconnect', () => {
 				handleSocketDisconnect(socket);
+			});
+
+			socket.on('hasSeenNewPlayerModal', () => {
+				if (authenticated) {
+					handleHasSeenNewPlayerModal(socket);
+				}
 			});
 
 			socket.on('updateTyping', data => {

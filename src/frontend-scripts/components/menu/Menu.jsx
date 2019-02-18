@@ -239,6 +239,7 @@ class Menu extends React.Component {
 							{(() => {
 								const { gameInfo, userInfo } = this.props;
 
+
 								/**
 								 * @return {string} classnames
 								 */
