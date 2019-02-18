@@ -407,7 +407,7 @@ module.exports.handleUpdateTyping = ({ userName, lastTypingTime, uid }) => {
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
 
 	roomSockets.forEach(socket => {
-		if (socket.handshake.session.passport && socket.handshake.session.passport.user !== userName) {
+		if (socket && socket.handshake.session.passport && socket.handshake.session.passport.user !== userName) {
 			game.isTyping[userName] = lastTypingTime;
 			socket.emit('isTypingUpdate', game.isTyping);
 		}
