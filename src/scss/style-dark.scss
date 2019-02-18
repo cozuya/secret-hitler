@@ -27,32 +27,19 @@
 		width: 1920px;
 	}
 }
-@media screen and (min-width: 1520px) {
-	.generalchat {
-		width: 350px;
-	}
+
+@media screen and (min-width: 1471px) {
 	.section-right {
 		min-width: 650px;
 	}
 	.section-right.game {
 		min-width: 250px;
 	}
-}
-
-@media screen and (min-width: 1471px) and (max-width: 1520px) {
-	// allows general chat to scale a little
-	.generalchat {
-		width: 300px;
-	}
-	.section-right {
-		width: 100%;
-	}
-}
-@media screen and (min-width: 1471px) {
 	.playerlist {
 		width: 300px;
 	}
 	.generalchat {
+		width: 350px;
 		border-right: 0 !important;
 	}
 }
@@ -60,6 +47,7 @@
 	.section-right {
 		flex-direction: column;
 		min-width: 350px;
+		z-index: 5;
 	}
 	.section-right.game {
 		min-width: 250px;
@@ -69,10 +57,15 @@
 		max-width: 350px !important;
 	}
 }
-@media screen and (max-width: 1220px) {
+
+@media screen and (max-width: 600px) {
 	.section-right {
-		width: 350px;
+		min-width: 100%;
 	}
+	.playerlist {
+		max-width: 100% !important;
+	}
+
 }
 
 .ui.modal.transition {
@@ -245,6 +238,14 @@
 			min-width: 350px;
 			margin: auto;
 		}
+		@media screen and (max-width: 950px) {
+			.center-menu-links {
+				display: none;
+			}
+			.right.menu {
+				display: none;
+			}
+		}
 		.button {
 			background: $secondary;
 		}
@@ -257,6 +258,40 @@
 			}
 		}
 	}
+	.menu-container-mobile {
+		display : none;
+		background-color: $primary;
+		a {
+			cursor: pointer;
+			font-weight: bold;
+			color: white;
+		}
+		a:hover {
+			color: #eee;
+		}
+		.center-menu-links {
+		}
+		.button {
+			background: $secondary;
+		}
+		.patch-alert {
+			animation: blinker 2s linear infinite;
+		}
+		@keyframes blinker {
+			50% {
+				opacity: 0.2;
+			}
+		}
+	}
+
+@media screen and (max-width: 950px) {
+	.menu-container-mobile {
+		display: flex;
+	}
+	.ui.buttons {
+		margin: auto;
+	}
+}
 	// Not used in new layout yet
 	.poll {
 		position: absolute;
@@ -321,7 +356,7 @@
 	.section-main.game {
 		width: 100%;
 		max-width: 100%;
-		min-width: 1050px !important;
+		//min-width: 1050px !important;
 	}
 
 	.browser-container {
@@ -629,12 +664,18 @@
 		display: flex;
 		margin-right: auto;
 	}
+	@media screen and (max-width: 950px) {
+		.section-right {
+			display: none;
+		}
+	}
 	// quick hack to get sidebar in-game working for now
 	.body-container.game {
 		.section-right {
 			width: 250px;
 			flex-direction: column !important;
 			margin-right: 2px;
+			z-index: 1001;
 			.playerlist {
 				order: 0 !important;
 				max-width: 250px !important;
@@ -787,8 +828,11 @@
 body {
 	background-color: #1b1b1b;
 	min-height: 595px;
-	min-width: 1070px;
 	overflow: auto;
+	@media screen and (max-width: 950px) {
+		min-height: 680px;
+	}
+
 }
 
 .app-hidden {

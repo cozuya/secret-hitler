@@ -4,7 +4,7 @@ import Generalchat from './Generalchat.jsx';
 import PropTypes from 'prop-types';
 
 const RightSidebar = props => {
-	let classes = 'section-right';
+	let classes = 'ui section-right transition';
 	if (props.midSection === 'game') {
 		classes += ' game';
 	}
