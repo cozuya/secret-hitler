@@ -2144,6 +2144,15 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const gameToPeek = games[data.uid];
 					let output = '';
 					if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
+						for (player of gameToPeek.private.seatedPlayers) {
+							if (data.userName === player.userName) {
+								socket.emit('sendAlert', 'You cannot peek votes whilst playing.');
+								return;
+							}
+						}
+					}
+
+					if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
 						const playersToCheckVotes = gameToPeek.private.seatedPlayers;
 						playersToCheckVotes.map(player => {
 							output += 'Seat ' + (playersToCheckVotes.indexOf(player) + 1) + ' - ';
