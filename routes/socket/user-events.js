@@ -1408,84 +1408,84 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 
 	data.userName = passport.user;
-
-	if (/^[RB]{2,3}$/i.exec(chat)) {
-		if (
-			chat.length === 3 &&
-			0 <= playerIndex <= 9 &&
-			game.private.seatedPlayers &&
-			game.private.seatedPlayers[playerIndex] &&
-			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident'
-		) {
-			const claimData = {
-				userName: user.userName,
-				claimState: chat,
-				claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
-				uid: data.uid
-			};
-			addNewClaim(socket, passport, game, claimData);
-			return;
-		}
-		if (
-			chat.length === 2 &&
-			0 <= playerIndex <= 9 &&
-			game.private.seatedPlayers &&
-			game.private.seatedPlayers[playerIndex] &&
-			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasChancellor'
-		) {
-			const claimData = {
-				userName: user.userName,
-				claimState: chat,
-				claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
-				uid: data.uid
-			};
-			addNewClaim(socket, passport, game, claimData);
-			return;
-		}
-		if (
-			chat.length === 3 &&
-			0 <= playerIndex <= 9 &&
-			game.private.seatedPlayers &&
-			game.private.seatedPlayers[playerIndex] &&
-			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didPolicyPeek'
-		) {
-			const claimData = {
-				userName: user.userName,
-				claimState: chat,
-				claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
-				uid: data.uid
-			};
-			addNewClaim(socket, passport, game, claimData);
-			return;
-		}
-	}
-	if (/^(b|blue|l|lib|liberal|r|f|red|fas|fasc|fascist)$/i.exec(chat)) {
-		if (
-			0 <= playerIndex <= 9 &&
-			(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
-				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty')
-		) {
-			let claimData;
-			if (/^(r|red|fas|f|fasc|fascist)$/i.exec(chat)) {
-				claimData = {
+	if (game && game.private && game.private.seatedPlayers) {
+		if (/^[RB]{2,3}$/i.exec(chat)) {
+			if (
+				chat.length === 3 &&
+				0 <= playerIndex <= 9 &&
+				game.private.seatedPlayers &&
+				game.private.seatedPlayers[playerIndex] &&
+				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident'
+			) {
+				const claimData = {
 					userName: user.userName,
-					claimState: 'fascist',
+					claimState: chat,
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
 					uid: data.uid
 				};
-			} else if (/^(b|blue|l|lib|liberal)$/i.exec(chat)) {
-				claimData = {
-					userName: user.userName,
-					claimState: 'liberal',
-					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
-					uid: data.uid
-				};
+				addNewClaim(socket, passport, game, claimData);
+				return;
 			}
-			addNewClaim(socket, passport, game, claimData);
-			return;
+			if (
+				chat.length === 2 &&
+				0 <= playerIndex <= 9 &&
+				game.private.seatedPlayers &&
+				game.private.seatedPlayers[playerIndex] &&
+				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasChancellor'
+			) {
+				const claimData = {
+					userName: user.userName,
+					claimState: chat,
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+				addNewClaim(socket, passport, game, claimData);
+				return;
+			}
+			if (
+				chat.length === 3 &&
+				0 <= playerIndex <= 9 &&
+				game.private.seatedPlayers &&
+				game.private.seatedPlayers[playerIndex] &&
+				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didPolicyPeek'
+			) {
+				const claimData = {
+					userName: user.userName,
+					claimState: chat,
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+				addNewClaim(socket, passport, game, claimData);
+				return;
+			}
+		}
+		if (/^(b|blue|l|lib|liberal|r|f|red|fas|fasc|fascist)$/i.exec(chat)) {
+			if (
+				0 <= playerIndex <= 9 &&
+				(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
+					game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty')
+			) {
+				let claimData;
+				if (/^(r|red|fas|f|fasc|fascist)$/i.exec(chat)) {
+					claimData = {
+						userName: user.userName,
+						claimState: 'fascist',
+						claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+						uid: data.uid
+					};
+				} else if (/^(b|blue|l|lib|liberal)$/i.exec(chat)) {
+					claimData = {
+						userName: user.userName,
+						claimState: 'liberal',
+						claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+						uid: data.uid
+					};
+				}
+				addNewClaim(socket, passport, game, claimData);
+				return;
+			}
 		}
 	}
-
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 	if (!AEM) {
 		if (player) {
@@ -2143,6 +2143,15 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'modPeekVotes':
 					const gameToPeek = games[data.uid];
 					let output = '';
+					if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
+						for (player of gameToPeek.private.seatedPlayers) {
+							if (data.userName === player.userName) {
+								socket.emit('sendAlert', 'You cannot peek votes whilst playing.');
+								return;
+							}
+						}
+					}
+
 					if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
 						const playersToCheckVotes = gameToPeek.private.seatedPlayers;
 						playersToCheckVotes.map(player => {
@@ -2829,6 +2838,19 @@ module.exports.handlePlayerReportDismiss = () => {
 			account.save();
 		});
 	});
+};
+
+module.exports.handleHasSeenNewPlayerModal = socket => {
+	const { passport } = socket.handshake.session;
+
+	if (passport && Object.keys(passport).length) {
+		const { user } = passport;
+		Account.findOne({ username: user }).then(account => {
+			account.hasNotDismissedSignupModal = false;
+
+			account.save();
+		});
+	}
 };
 
 /**
