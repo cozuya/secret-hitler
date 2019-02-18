@@ -2,16 +2,17 @@ const path = require('path');
 // const Reload = require('webpack-livereload-plugin');
 // const CleanWebpackPlugin = require('clean-webpack-plugin');
 // const HtmlWebpackPlugin = require('html-webpack-plugin');
-const Dotenv = require('dotenv-webpack');
 
 process.env.NODE_ENV = 'development';
 
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
 	plugins: [
-		new Dotenv({
-			path: path.resolve(__dirname, '..', '.env')
-		})
+		// new Reload(),
+		// new CleanWebpackPlugin(['../public/scripts']),
+		// new HtmlWebpackPlugin({
+		// 	title: 'caching'
+		// })
 	],
 	output: {
 		filename: 'bundle.js',

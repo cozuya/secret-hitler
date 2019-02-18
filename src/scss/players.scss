@@ -41,11 +41,13 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 
 .players-container .players {
 	background: #000;
-	height: 115px;
+	//height: 115px;
 	overflow: hidden;
+	display: flex;
 	margin-top: 5px;
 	> .label {
 		width: 50px;
+		height: 65px;
 		margin: 28px 0 0 10px;
 		font-size: 16px;
 		padding: 6px;
@@ -120,15 +122,16 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 
 	.player-container {
 		user-select: none;
-		width: 70px;
+		max-width: 70px;
+		min-width: 25px;
 		height: 95px;
-		float: left;
-		margin: 18px 5px 0;
+		margin: 18px 0.5% 0;
 		border-radius: 4px;
 		background-image: url('../../public/images/tweed.png');
 		background-repeat: no-repeat;
-		background-size: 70px 95px;
+		background-size: cover;
 		position: relative;
+		flex: 1;
 
 		.playernote {
 			font-size: 18px;
@@ -189,7 +192,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			background-image: url('../../public/images/chancellor-token.png');
 		}
 		.card-container {
-			width: 70px;
+			width: 100%;
 			height: 95px;
 			top: 100px;
 			left: 0;
@@ -200,7 +203,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			-webkit-backface-visibility: hidden; // thanks osx safari
 			backface-visibility: hidden;
 			.card {
-				background-size: contain;
+				background-size: cover;
 				background-repeat: no-repeat;
 				position: absolute;
 				top: 0;
@@ -308,7 +311,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	}
 	.notifier::after {
 		content: '';
-		width: 70px;
+		width: 100%;
 		height: 95px;
 		top: 0;
 		left: 0;
@@ -336,11 +339,13 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .players-container .policies-container {
-	width: 164px;
+	max-width: 164px;
+	min-width: 36px;
 	height: 115px;
-	float: right;
+	margin-left: auto;
+	flex: 1;
 	> div {
-		width: 82px;
+		width: 50%;
 		height: inherit;
 		display: inline-block;
 		position: relative;
@@ -356,7 +361,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		left: 0;
 	}
 	.policy-card {
-		width: 70px;
+		width: 100%;
 		height: 95px;
 		background: url('../../public/images/cards/policy.png') no-repeat;
 		position: absolute;
@@ -376,7 +381,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	}
 	.notifier::after {
 		content: '';
-		width: 82px;
+		width: 100%;
 		height: 115px;
 		top: 0;
 		left: 0;
@@ -431,7 +436,6 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 .error {
 	color: red;
 }
-
 .is-typing {
 	width: 20px;
 	position: absolute;

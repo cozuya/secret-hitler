@@ -13,6 +13,12 @@ $(document).ready(function() {
 		});
 	}
 
+	$('body').on('click', '#menupopout', function(event) {
+		event.preventDefault();
+
+		$('.ui.sidebar').sidebar('toggle');
+	});
+
 	$('body').on('click', '#signup', function(event) {
 		event.preventDefault();
 

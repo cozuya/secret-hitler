@@ -14,6 +14,7 @@ block content
 			var gameSettings = #{gameSettings}
 			var verified = #{verified}
 			var staffRole = '#{staffRole}'
+			var hasNotDismissedSignupModal = #{hasNotDismissedSignupModal}
 			gameSettings.blacklist = !{JSON.stringify(blacklist).replace(/<\//g, '<\\/')}
 			
 	else

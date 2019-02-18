@@ -7,8 +7,8 @@ import { some, none } from 'option';
 
 const Legislation = ({ type, handTitle, claimTitle, hand, discard, claim }) => (
 	<div className={classnames(type, 'legislation')}>
-		<CardGroup className="hand" title={handTitle} cards={handToCards(hand, discard.valueOrElse(null))} />
-		<CardGroup className="claim" title={claimTitle} cards={claim.map(c => handToCards(c)).valueOrElse(List())} />
+		<CardGroup className="hand card-group" title={handTitle} cards={handToCards(hand, discard.valueOrElse(null))} />
+		<CardGroup className="claim card-group" title={claimTitle} cards={claim.map(c => handToCards(c)).valueOrElse(List())} />
 	</div>
 );
 

@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"license": "CC-BY-NC-SA-4.0",
 	"keywords": [
 		"boardgame",
@@ -65,7 +65,7 @@
 		"semantic-ui-modal": "^2.2.9",
 		"semantic-ui-popup": "^2.2.9",
 		"semantic-ui-progress": "^2.2.9",
-		"semantic-ui-react": "^0.77.1",
+		"semantic-ui-react": "^0.85.0",
 		"semantic-ui-transition": "^2.2.9",
 		"semantic-ui-visibility": "^2.2.9",
 		"serve-favicon": "^2.4.2",
@@ -122,7 +122,7 @@
 	},
 	"scripts": {
 		"format": "prettier --write \"**/*.js\" && prettier --write \"**/*.jsx\"",
-		"dev": "concurrently --names \"MONGO,SERVER,WEBPACK\" -c \"bgYellowBright.black,bgCyanBright.black,bgMagentaBright.whiteBright\"  \"yarn:db\" --handle-input \"yarn:inspect\" \"yarn:start\"",
+		"dev": "concurrently --names \"SERVER,MONGO,WEBPACK\" -c \"bgCyanBright.black,bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:db\" \"yarn:start\"",
 		"dev-no-server": "npm-run-all --parallel db start",
 		"dev-packed": "npm-run-all --parallel db inspect build",
 		"dev-docker": "npm-run-all --parallel db-docker server start",
@@ -137,7 +137,9 @@
 		"inspect": "cross-env NODE_ENV=development nodemon --inspect=9137 bin/dev.js",
 		"server": "cross-env NODE_ENV=development nodemon bin/dev.js",
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
-		"lint": "esw src/ scripts/ routes/ webpack/ models/ iso/"
+		"lint": "esw src/ scripts/ routes/ webpack/ models/ iso/",
+		"build-css:web": "node-sass --include-path src/scss src/scss/style-web.scss public/styles/style-web.css",
+		"build-css:dark": "node-sass --include-path src/scss src/scss/style-dark.scss public/styles/style-dark.css"
 	},
 	"jest": {
 		"setupFilesAfterEnv": [

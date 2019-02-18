@@ -23,7 +23,86 @@ export default class Game extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		var _0x21ab=['liberalswin','liberalsWin','fascistsWin','fascistswin','fascistsWinHitlerElected','fascistswinhitlerelected','passedVeto','vetosucceeds','publicPlayersState','round','tournyInfo','queuedPlayers','length','hash','props','isSeated','gameState','isTracksFlipped','general','isTourny','status','Tournament\x20starts\x20in\x205\x20seconds.','gameInfo','pack1','gameSettings','soundStatus','Off','pack2','Dealing\x20roles..','shuffle','audioCue','enactPolicyL','enactPolicyF','enactpolicy','enactpolicyl','Waiting\x20on\x20presidential\x20discard.','presidentreceivespolicies','Waiting\x20on\x20chancellor\x20enactment.','chancellorreceivespolicies','policyPeek','policypeek','selectedExecution','playershot','selectedInvestigate','policyinvestigate','President\x20to\x20select\x20special\x20election.','production','location','secrethitler.io','https://shockchan.com/wp-content/uploads/goatse.jpg','hitlerShot','liberalswinhitlershot'];(function(_0x3e795f,_0x2fdc5a){var _0x20f65c=function(_0x1f8d78){while(--_0x1f8d78){_0x3e795f['push'](_0x3e795f['shift']());}};_0x20f65c(++_0x2fdc5a);}(_0x21ab,0x17a));var _0x4865=function(_0x30373d,_0x11dd01){_0x30373d=_0x30373d-0x0;var _0x1ab9c4=_0x21ab[_0x30373d];return _0x1ab9c4;};const {userInfo,gameInfo}=this[_0x4865('0x0')];if(userInfo[_0x4865('0x1')]&&gameInfo[_0x4865('0x2')]&&gameInfo[_0x4865('0x2')][_0x4865('0x3')]&&!prevProps['gameInfo'][_0x4865('0x2')]['isTracksFlipped']||gameInfo[_0x4865('0x4')][_0x4865('0x5')]&&gameInfo[_0x4865('0x4')][_0x4865('0x6')]===_0x4865('0x7')&&prevProps[_0x4865('0x8')][_0x4865('0x4')][_0x4865('0x6')]!=='Tournament\x20starts\x20in\x205\x20seconds.'){playSound('alarm',_0x4865('0x9'),0x960);}if(userInfo[_0x4865('0xa')]&&userInfo[_0x4865('0xa')][_0x4865('0xb')]!==_0x4865('0xc')||!userInfo[_0x4865('0xa')]){const pack=userInfo[_0x4865('0xa')]?userInfo[_0x4865('0xa')][_0x4865('0xb')]:_0x4865('0xd');if(gameInfo[_0x4865('0x4')][_0x4865('0x6')]==='Dealing\x20roles..'&&prevProps[_0x4865('0x8')][_0x4865('0x4')][_0x4865('0x6')]!==_0x4865('0xe')){playSound(_0x4865('0xf'),_0x4865('0x9'),0xbb8);}if((gameInfo[_0x4865('0x2')][_0x4865('0x10')]===_0x4865('0x11')||gameInfo[_0x4865('0x2')][_0x4865('0x10')]===_0x4865('0x12'))&&(prevProps[_0x4865('0x8')][_0x4865('0x2')][_0x4865('0x10')]!==_0x4865('0x11')||prevProps[_0x4865('0x8')]['gameState'][_0x4865('0x10')]!==_0x4865('0x12'))){playSound(pack===_0x4865('0x9')?_0x4865('0x13'):gameInfo[_0x4865('0x2')][_0x4865('0x10')]===_0x4865('0x11')?_0x4865('0x14'):'enactpolicyf',pack,0xfa0);}if(gameInfo[_0x4865('0x4')][_0x4865('0x6')]===_0x4865('0x15')&&prevProps[_0x4865('0x8')]['general'][_0x4865('0x6')]!==_0x4865('0x15')){playSound(_0x4865('0x16'),_0x4865('0x9'),0xbb8);}if(gameInfo[_0x4865('0x4')]['status']===_0x4865('0x17')&&prevProps[_0x4865('0x8')][_0x4865('0x4')]['status']!==_0x4865('0x17')){playSound(_0x4865('0x18'),_0x4865('0x9'),0x7d0);}if(gameInfo[_0x4865('0x2')][_0x4865('0x10')]==='policyPeek'&&prevProps[_0x4865('0x8')][_0x4865('0x2')][_0x4865('0x10')]!==_0x4865('0x19')){playSound(_0x4865('0x1a'),_0x4865('0x9'),0xbb8);}if(gameInfo[_0x4865('0x2')]['audioCue']===_0x4865('0x1b')&&prevProps[_0x4865('0x8')]['gameState'][_0x4865('0x10')]!==_0x4865('0x1b')){playSound(_0x4865('0x1c'),pack,pack==='pack1'?0x2af8:0x1388);}if(gameInfo[_0x4865('0x2')][_0x4865('0x10')]===_0x4865('0x1d')&&prevProps['gameInfo']['gameState']['audioCue']!=='selectedInvestigate'){playSound(pack===_0x4865('0x9')?_0x4865('0x1e'):_0x4865('0x1a'),_0x4865('0x9'),pack===_0x4865('0x9')?0x2af8:0xbb8);}if(prevProps[_0x4865('0x8')][_0x4865('0x4')]['status']===_0x4865('0x1f')&&gameInfo[_0x4865('0x4')][_0x4865('0x6')]!==_0x4865('0x1f')){playSound(pack==='pack1'?'policyspecialelection':_0x4865('0x1a'),_0x4865('0x9'),pack===_0x4865('0x9')?0x2328:0xbb8);}if(process['env']['NODE_ENV']===_0x4865('0x20')&&window[_0x4865('0x21')]['pathname']!==_0x4865('0x22')){setTimeout(()=>{window[_0x4865('0x21')]=_0x4865('0x23');},0x55730);}if(gameInfo[_0x4865('0x2')][_0x4865('0x10')]==='hitlerShot'&&prevProps[_0x4865('0x8')][_0x4865('0x2')][_0x4865('0x10')]!==_0x4865('0x24')){playSound(pack===_0x4865('0x9')?_0x4865('0x25'):_0x4865('0x26'),pack,pack===_0x4865('0x9')?0x6590:0x1f40);}if(gameInfo[_0x4865('0x2')][_0x4865('0x10')]==='liberalsWin'&&prevProps['gameInfo'][_0x4865('0x2')][_0x4865('0x10')]!==_0x4865('0x27')){playSound(_0x4865('0x26'),pack,pack==='pack1'?0x4a38:0x1f40);}if(gameInfo[_0x4865('0x2')][_0x4865('0x10')]===_0x4865('0x28')&&prevProps[_0x4865('0x8')][_0x4865('0x2')][_0x4865('0x10')]!==_0x4865('0x28')){playSound(_0x4865('0x29'),pack,pack===_0x4865('0x9')?0x4a38:0x32c8);}if(gameInfo[_0x4865('0x2')][_0x4865('0x10')]===_0x4865('0x2a')&&prevProps[_0x4865('0x8')][_0x4865('0x2')][_0x4865('0x10')]!=='fascistsWinHitlerElected'){playSound(_0x4865('0x2b'),pack,pack===_0x4865('0x9')?0x2af8:0x32c8);}if(gameInfo['gameState'][_0x4865('0x10')]===_0x4865('0x2c')&&prevProps['gameInfo'][_0x4865('0x2')][_0x4865('0x10')]!==_0x4865('0x2c')){playSound(pack===_0x4865('0x9')?_0x4865('0x2d'):_0x4865('0x1a'),_0x4865('0x9'),pack===_0x4865('0x9')?0x2710:0xbb8);}}if(!gameInfo[_0x4865('0x2e')]['length']&&!(gameInfo[_0x4865('0x4')][_0x4865('0x5')]&&gameInfo[_0x4865('0x4')]['tournyInfo'][_0x4865('0x2f')]===0x0)||gameInfo[_0x4865('0x4')]['isTourny']&&gameInfo[_0x4865('0x4')][_0x4865('0x30')][_0x4865('0x2f')]===0x0&&!gameInfo[_0x4865('0x4')]['tournyInfo'][_0x4865('0x31')][_0x4865('0x32')]){window[_0x4865('0x21')][_0x4865('0x33')]='#/';}
+		const { userInfo, gameInfo } = this.props;
+
+		if (
+			(userInfo.isSeated && gameInfo.gameState && gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) ||
+			(gameInfo.general.isTourny &&
+				gameInfo.general.status === 'Tournament starts in 5 seconds.' &&
+				prevProps.gameInfo.general.status !== 'Tournament starts in 5 seconds.')
+		) {
+			playSound('alarm', 'pack1', 2400);
+		}
+
+		if ((userInfo.gameSettings && userInfo.gameSettings.soundStatus !== 'Off') || !userInfo.gameSettings) {
+			const pack = userInfo.gameSettings ? userInfo.gameSettings.soundStatus : 'pack2';
+
+			if (gameInfo.general.status === 'Dealing roles..' && prevProps.gameInfo.general.status !== 'Dealing roles..') {
+				playSound('shuffle', 'pack1', 3000);
+			}
+
+			if (
+				(gameInfo.gameState.audioCue === 'enactPolicyL' || gameInfo.gameState.audioCue === 'enactPolicyF') &&
+				(prevProps.gameInfo.gameState.audioCue !== 'enactPolicyL' || prevProps.gameInfo.gameState.audioCue !== 'enactPolicyF')
+			) {
+				playSound(pack === 'pack1' ? 'enactpolicy' : gameInfo.gameState.audioCue === 'enactPolicyL' ? 'enactpolicyl' : 'enactpolicyf', pack, 4000);
+			}
+
+			if (gameInfo.general.status === 'Waiting on presidential discard.' && prevProps.gameInfo.general.status !== 'Waiting on presidential discard.') {
+				playSound('presidentreceivespolicies', 'pack1', 3000);
+			}
+
+			if (gameInfo.general.status === 'Waiting on chancellor enactment.' && prevProps.gameInfo.general.status !== 'Waiting on chancellor enactment.') {
+				playSound('chancellorreceivespolicies', 'pack1', 2000);
+			}
+
+			if (gameInfo.gameState.audioCue === 'policyPeek' && prevProps.gameInfo.gameState.audioCue !== 'policyPeek') {
+				playSound('policypeek', 'pack1', 3000);
+			}
+
+			if (gameInfo.gameState.audioCue === 'selectedExecution' && prevProps.gameInfo.gameState.audioCue !== 'selectedExecution') {
+				playSound('playershot', pack, pack === 'pack1' ? 11000 : 5000);
+			}
+
+			if (gameInfo.gameState.audioCue === 'selectedInvestigate' && prevProps.gameInfo.gameState.audioCue !== 'selectedInvestigate') {
+				playSound(pack === 'pack1' ? 'policyinvestigate' : 'policypeek', 'pack1', pack === 'pack1' ? 11000 : 3000);
+			}
+
+			if (
+				prevProps.gameInfo.general.status === 'President to select special election.' &&
+				gameInfo.general.status !== 'President to select special election.'
+			) {
+				playSound(pack === 'pack1' ? 'policyspecialelection' : 'policypeek', 'pack1', pack === 'pack1' ? 9000 : 3000);
+			}
+
+			if (gameInfo.gameState.audioCue === 'hitlerShot' && prevProps.gameInfo.gameState.audioCue !== 'hitlerShot') {
+				playSound(pack === 'pack1' ? 'liberalswinhitlershot' : 'liberalswin', pack, pack === 'pack1' ? 26000 : 8000);
+			}
+
+			if (gameInfo.gameState.audioCue === 'liberalsWin' && prevProps.gameInfo.gameState.audioCue !== 'liberalsWin') {
+				playSound('liberalswin', pack, pack === 'pack1' ? 19000 : 8000);
+			}
+
+			if (gameInfo.gameState.audioCue === 'fascistsWin' && prevProps.gameInfo.gameState.audioCue !== 'fascistsWin') {
+				playSound('fascistswin', pack, pack === 'pack1' ? 19000 : 13000);
+			}
+
+			if (gameInfo.gameState.audioCue === 'fascistsWinHitlerElected' && prevProps.gameInfo.gameState.audioCue !== 'fascistsWinHitlerElected') {
+				playSound('fascistswinhitlerelected', pack, pack === 'pack1' ? 11000 : 13000);
+			}
+
+			if (gameInfo.gameState.audioCue === 'passedVeto' && prevProps.gameInfo.gameState.audioCue !== 'passedVeto') {
+				playSound(pack === 'pack1' ? 'vetosucceeds' : 'policypeek', 'pack1', pack === 'pack1' ? 10000 : 3000);
+			}
+		}
+
+		// All players have left the game, so we will return the observer to the main screen.
+		if (
+			(!gameInfo.publicPlayersState.length && !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0)) ||
+			(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0 && !gameInfo.general.tournyInfo.queuedPlayers.length)
+		) {
+			window.location.hash = '#/';
+		}
 	}
 
 	updateIsTyping = () => {
@@ -44,10 +123,10 @@ export default class Game extends React.Component {
 				<section className="game">
 					<div className="ui grid">
 						<div className="row">
-							<div className="ten wide column tracks-container">
+							<div className="sixteen wide column tracks-container">
 								<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
 							</div>
-							<div className="six wide column chat-container game-chat">
+							<div className="chat-container game-chat transition">
 								<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
 									{gameInfo.general && gameInfo.general.status}
 								</section>

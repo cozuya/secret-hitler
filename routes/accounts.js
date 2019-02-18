@@ -99,6 +99,7 @@ module.exports = () => {
 		const save = {
 			username,
 			isLocal: true,
+			hasNotDismissedSignupModal: true,
 			gameSettings: {
 				disablePopups: false,
 				enableTimestamps: false,
@@ -523,6 +524,7 @@ module.exports = () => {
 														created: new Date(),
 														touLastAgreed: TOU_CHANGES[0].changeVer,
 														signupIP: ip,
+														hasNotDismissedSignupModal: true,
 														verification: {
 															email: type === 'discord' ? profile.email : profile._json.email
 														},
