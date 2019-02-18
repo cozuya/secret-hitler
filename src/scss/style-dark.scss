@@ -1198,6 +1198,37 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	}
 }
 
+#newplayer-modal {
+	.header {
+		font-size: 24px !important;
+		color: $primary !important;
+		font-style: italic;
+	}
+
+	.content {
+		* {
+			color: #444;
+			font-size: 16px;
+		}
+
+		a {
+			text-decoration: underline;
+			color: $dteal;
+		}
+	}
+
+	.actions {
+		display: flex;
+		justify-content: space-between;
+
+		.inverted {
+			color: #333;
+			box-shadow: 0 0 0 2px #333 inset !important;
+			background: #ddd;
+		}
+	}
+}
+
 // ::-webkit-scrollbar {
 // 	width: 3px;
 // 	height: 3px;

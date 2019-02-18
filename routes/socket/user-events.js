@@ -2831,6 +2831,19 @@ module.exports.handlePlayerReportDismiss = () => {
 	});
 };
 
+module.exports.handleHasSeenNewPlayerModal = socket => {
+	const { passport } = socket.handshake.session;
+
+	if (passport && Object.keys(passport).length) {
+		const { user } = passport;
+		Account.findOne({ username: user }).then(account => {
+			account.hasNotDismissedSignupModal = false;
+
+			account.save();
+		});
+	}
+};
+
 /**
  * @param {object} socket - socket reference.
  * @param {function} callback - success callback.

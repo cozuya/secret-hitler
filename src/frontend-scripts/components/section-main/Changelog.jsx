@@ -11,10 +11,12 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 1.1.0 released 2-12-2019</p>
+					<p>Version 1.1.1 released 2-17-2019</p>
 				</div>
 				<h4>New feature: display of whether or not a player is typing v3 -coz</h4>
 				<p>Hopefully this one like, works, without horribly lagging out the client. We'll see!</p>
+				<h4>New feature: informational popup for new accounts.</h4>
+				<p>This will attempt to explain how the site works somewhat and provide useful links to our how to play, terms of use, about, and wiki pages. -coz</p>
 				<h4>New feature: claim directly from the chat without clicking the "claim" button - simply type what you want to claim i.e. RRB -Vigasaurus</h4>
 				<ul>
 					<li>Moderators can now peek at currently locked in votes on a government -Vigasaurus</li>
