@@ -13,6 +13,8 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<p>Version 1.1.1 released 2-17-2019</p>
 				</div>
+				<h4>New feature: much better mobile/small screen width user experience -RPYoshi</h4>
+				<p>May not be entirely bug free -_- we'll see.</p>
 				<h4>New feature: display of whether or not a player is typing v3 -coz</h4>
 				<p>Hopefully this one like, works, without horribly lagging out the client. We'll see!</p>
 				<h4>New feature: informational popup for new accounts.</h4>
