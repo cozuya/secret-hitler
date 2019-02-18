@@ -50,24 +50,168 @@
 	.exit {
 		position: absolute;
 		right: 0px;
-		z-index: 5;
+		z-index: 110;
 	}
 
 	.displaychats {
 		position: absolute;
 		right: 140px;
-		z-index: 5;
+		z-index: 110;
 	}
 
 	.ui.grid > .column {
 		padding: 0;
 	}
 
+	.right-side{
+		width: 45%;
+	
+		@media screen and (max-width: 1182px)
+		{
+			width: 100%;
+		}
+		
+		.replay-controls {
+			padding: 20px 30px 10px 30px;
+			background-color: black;
+
+			h1 {
+				color: #c36563;
+				font-size: 26px;
+				font-family: $headerfont;
+			}
+
+			p {
+				font-family: $headerfont;
+				color: #eee;
+				font-size: 20px;
+			}
+
+			& > * {
+				&:not(:last-child) {
+					margin-bottom: 15px;
+				}
+
+				h1 {
+					margin-bottom: 5px;
+				}
+			}
+
+			.turn-nav {
+				min-height: 80px;
+
+				.slider {
+					margin-left: 10px;
+					width: 98%;
+					margin-bottom: 25px;
+				}
+			}
+
+			.phase-nav {
+				@media screen and (max-width: 1182px)
+				{
+					display: none;
+				}
+				user-select: none;
+
+				.steps {
+					margin-top: 0;
+					cursor: pointer;
+
+					.filled.step:after {
+						background-color: #b3b3ff;
+					}
+
+					.title {
+						color: black;
+						font-size: 20px;
+						font-family: inherit;
+					}
+					.description {
+						font-size: 15px;
+						font-family: inherit;
+						white-space: nowrap;
+					}
+				}
+
+				.overlay-container {
+					margin-top: -82px;
+					width: 100%;
+					height: 68px;
+
+					.overlay {
+						height: 100%;
+						background-color: blue;
+						opacity: 0.3;
+						pointer-events: none;
+
+						&.candidacy {
+							width: 11.11%;
+						}
+						&.nomination {
+							width: 22.22%;
+						}
+						&.election {
+							width: 33.33%;
+						}
+						&.presidentLegislation {
+							width: 44.44%;
+						}
+						&.chancellorLegislation {
+							width: 55.55%;
+						}
+						&.topDeck {
+							width: 50%;
+						}
+						&.veto {
+							width: 66.66%;
+						}
+						&.policyEnaction {
+							width: 66.66%;
+						}
+						&.investigation,
+						&.execution {
+							width: 100%;
+						}
+					}
+				}
+			}
+
+			.description-container {
+				@media screen and (max-width: 1182px)
+				{
+					display: none;
+				}
+				.content {
+					border: 2px solid #c36563;
+					padding: 10px 20px;
+					white-space: nowrap;
+					overflow: auto;
+					font-family: inherit;
+				}
+			}
+
+			.playback {
+				button.ui.button {
+					background-color: white;
+				}
+			}
+		}
+	}
+
 	.left-side {
+		background-color: #52393b;
+		max-width: 650px;
+		padding: 0 !important;
+		overflow: hidden !important;
+		position: relative;
+
 		.card-group {
-			margin-bottom: 30px;
+			height: 50%;
 
 			> h1 {
+				height: 27px;
+				white-space: nowrap;
 				color: white;
 				font-size: 26px;
 				font-family: $headerfont;
@@ -75,22 +219,25 @@
 			}
 
 			.card {
-				margin-right: 15px;
+				height: 65% !important;
+				width: 30% !important;
+				margin-right: 3%;
 			}
 		}
 
 		.card {
-			width: 90px;
-			height: 124px;
+			height: 100%;
 			background-size: contain;
 			display: inline-block;
 			box-shadow: 0 0 4px 3px #969696;
 
 			&.fascist {
+				width: 16%;
 				background-image: url('../../public/images/cards/fascistp-l.png');
 			}
 
 			&.liberal {
+				width: 19.2%;
 				background-image: url('../../public/images/cards/liberalp-l.png');
 			}
 
@@ -115,12 +262,13 @@
 
 			.enacted {
 				position: absolute;
+				height: 29.3%;
 			}
 
 			.election-tracker {
 				position: absolute;
-				width: 25px;
-				height: 25px;
+				width: 3.85%;
+				height: 5.68%;
 				background-color: #2f2fbe;
 				border-radius: 50%;
 			}
@@ -144,124 +292,6 @@
 		}
 	}
 
-	.replay-controls {
-		height: 100%;
-		padding: 20px 30px 0px 30px;
-		background-color: black;
-
-		h1 {
-			color: #c36563;
-			font-size: 26px;
-			font-family: $headerfont;
-		}
-
-		p {
-			font-family: $headerfont;
-			color: #eee;
-			font-size: 20px;
-		}
-
-		& > * {
-			&:not(:last-child) {
-				margin-bottom: 15px;
-			}
-
-			h1 {
-				margin-bottom: 5px;
-			}
-		}
-
-		.turn-nav {
-			min-height: 80px;
-
-			.slider {
-				margin-left: 10px;
-				width: 98%;
-				margin-bottom: 25px;
-			}
-		}
-
-		.phase-nav {
-			user-select: none;
-
-			.steps {
-				margin-top: 0;
-				cursor: pointer;
-
-				.filled.step:after {
-					background-color: #b3b3ff;
-				}
-
-				.title {
-					color: black;
-					font-size: 20px;
-					font-family: inherit;
-				}
-				.description {
-					font-size: 15px;
-					font-family: inherit;
-				}
-			}
-
-			.overlay-container {
-				margin-top: -82px;
-				width: 100%;
-				height: 68px;
-
-				.overlay {
-					height: 100%;
-					background-color: blue;
-					opacity: 0.3;
-					pointer-events: none;
-
-					&.candidacy {
-						width: 11.11%;
-					}
-					&.nomination {
-						width: 22.22%;
-					}
-					&.election {
-						width: 33.33%;
-					}
-					&.presidentLegislation {
-						width: 44.44%;
-					}
-					&.chancellorLegislation {
-						width: 55.55%;
-					}
-					&.topDeck {
-						width: 50%;
-					}
-					&.veto {
-						width: 66.66%;
-					}
-					&.policyEnaction {
-						width: 66.66%;
-					}
-					&.investigation,
-					&.execution {
-						width: 100%;
-					}
-				}
-			}
-		}
-
-		.description-container {
-			.content {
-				border: 2px solid #c36563;
-				padding: 10px 20px;
-				white-space: nowrap;
-				overflow: auto;
-				font-family: inherit;
-			}
-		}
-
-		.playback {
-			button.ui.button {
-				background-color: white;
-			}
-		}
-	}
 
 	.big {
 		.left-side {
@@ -272,291 +302,41 @@
 					}
 
 					&.fascist-policies {
-						top: 264px;
-						left: 43px;
+						width: 87%;
+						top: 60%;
+						left: 7%;
 					}
 
 					&.liberal-policies {
-						top: 44px;
-						left: 89px;
+						width: 73%;
+						top: 10%;
+						left: 14.15%;
 					}
 				}
 
 				.election-tracker {
+					top: 41.36%;
+
 					&.zero {
-						top: 182px;
-						left: 212px;
+						left: 32.6%;
 					}
 					&.one {
-						top: 182px;
-						left: 276px;
+						left: 42.46%;
 					}
 					&.two {
-						top: 182px;
-						left: 339px;
+						left: 52.15%;
 					}
 					&.three {
-						top: 182px;
-						left: 403px;
-					}
-					@media screen and (max-width: 1094px) {
-						&.zero {
-							top: calc(169px + 0 * 0.2px);
-							left: calc(195px + 0 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 0 * 0.2px);
-							left: calc(255px + 0 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 0 * 0.2px);
-							left: calc(315px + 0 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 0 * 0.2px);
-							left: calc(375px + 0 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1095px) and (max-width: 1100px) {
-						&.zero {
-							top: calc(169px + 5 * 0.2px);
-							left: calc(195px + 5 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 5 * 0.2px);
-							left: calc(255px + 5 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 5 * 0.2px);
-							left: calc(315px + 5 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 5 * 0.2px);
-							left: calc(375px + 5 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1101px) and (max-width: 1106px) {
-						&.zero {
-							top: calc(169px + 10 * 0.2px);
-							left: calc(195px + 10 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 10 * 0.2px);
-							left: calc(255px + 10 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 10 * 0.2px);
-							left: calc(315px + 10 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 10 * 0.2px);
-							left: calc(375px + 10 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1107px) and (max-width: 1112px) {
-						&.zero {
-							top: calc(169px + 15 * 0.2px);
-							left: calc(195px + 15 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 15 * 0.2px);
-							left: calc(255px + 15 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 15 * 0.2px);
-							left: calc(315px + 15 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 15 * 0.2px);
-							left: calc(375px + 15 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1113px) and (max-width: 1118px) {
-						&.zero {
-							top: calc(169px + 20 * 0.2px);
-							left: calc(195px + 20 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 20 * 0.2px);
-							left: calc(255px + 20 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 20 * 0.2px);
-							left: calc(315px + 20 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 20 * 0.2px);
-							left: calc(375px + 20 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1119px) and (max-width: 1124px) {
-						&.zero {
-							top: calc(169px + 25 * 0.2px);
-							left: calc(195px + 25 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 25 * 0.2px);
-							left: calc(255px + 25 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 25 * 0.2px);
-							left: calc(315px + 25 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 25 * 0.2px);
-							left: calc(375px + 25 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1125px) and (max-width: 1130px) {
-						&.zero {
-							top: calc(169px + 30 * 0.2px);
-							left: calc(195px + 30 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 30 * 0.2px);
-							left: calc(255px + 30 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 30 * 0.2px);
-							left: calc(315px + 30 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 30 * 0.2px);
-							left: calc(375px + 30 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1131px) and (max-width: 1136px) {
-						&.zero {
-							top: calc(169px + 35 * 0.2px);
-							left: calc(195px + 35 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 35 * 0.2px);
-							left: calc(255px + 35 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 35 * 0.2px);
-							left: calc(315px + 35 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 35 * 0.2px);
-							left: calc(375px + 35 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1137px) and (max-width: 1142px) {
-						&.zero {
-							top: calc(169px + 40 * 0.2px);
-							left: calc(195px + 40 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 40 * 0.2px);
-							left: calc(255px + 40 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 40 * 0.2px);
-							left: calc(315px + 40 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 40 * 0.2px);
-							left: calc(375px + 40 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1143px) and (max-width: 1148px) {
-						&.zero {
-							top: calc(169px + 45 * 0.2px);
-							left: calc(195px + 45 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 45 * 0.2px);
-							left: calc(255px + 45 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 45 * 0.2px);
-							left: calc(315px + 45 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 45 * 0.2px);
-							left: calc(375px + 45 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1149px) and (max-width: 1154px) {
-						&.zero {
-							top: calc(169px + 50 * 0.2px);
-							left: calc(195px + 50 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 50 * 0.2px);
-							left: calc(255px + 50 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 50 * 0.2px);
-							left: calc(315px + 50 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 50 * 0.2px);
-							left: calc(375px + 50 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1155px) and (max-width: 1160px) {
-						&.zero {
-							top: calc(169px + 55 * 0.2px);
-							left: calc(195px + 55 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 55 * 0.2px);
-							left: calc(255px + 55 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 55 * 0.2px);
-							left: calc(315px + 55 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 55 * 0.2px);
-							left: calc(375px + 55 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1161px) and (max-width: 1166px) {
-						&.zero {
-							top: calc(169px + 60 * 0.2px);
-							left: calc(195px + 60 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 60 * 0.2px);
-							left: calc(255px + 60 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 60 * 0.2px);
-							left: calc(315px + 60 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 60 * 0.2px);
-							left: calc(375px + 60 * 0.2615px);
-						}
-					}
-					@media screen and (min-width: 1167px) and (max-width: 1172px) {
-						&.zero {
-							top: calc(169px + 65 * 0.2px);
-							left: calc(195px + 65 * 0.2615px);
-						}
-						&.one {
-							top: calc(169px + 65 * 0.2px);
-							left: calc(255px + 65 * 0.2615px);
-						}
-						&.two {
-							top: calc(169px + 65 * 0.2px);
-							left: calc(315px + 65 * 0.2615px);
-						}
-						&.three {
-							top: calc(169px + 65 * 0.2px);
-							left: calc(375px + 65 * 0.2615px);
-						}
+						left: 62%;
 					}
 				}
 			}
 			.replay-overlay {
 				.legislation {
 					top: 20px;
-					left: 180px;
+					left: 27.69%;
+					height: 95%;
+					width: 52%;
 				}
 			}
 		}

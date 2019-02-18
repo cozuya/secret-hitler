@@ -12,11 +12,13 @@ import account from './account';
 import shapp from './reducers/sh-app';
 import polyfills from '../../iso/polyfills.js';
 import rootSaga from './sagas';
+import chatanimation from './chatanimation';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const container = document.getElementById('game-container');
 
 	account();
+	chatanimation();
 	polyfills();
 
 	if (container) {

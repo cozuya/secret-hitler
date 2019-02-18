@@ -8,14 +8,14 @@ html(lang="en")
 		meta(name="description", content="Play now!")
 
 		link(rel="stylesheet", type="text/css", href="/styles/Semantic-UI-CSS-master/semantic.min.css")
+		meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 
 		if game
 			if prodCacheBustToken
 				link(rel="stylesheet", type="text/css", href=`/styles/style-main.css?${prodCacheBustToken}`)
 			else
-				link(rel="stylesheet", type="text/css", href="/styles/style-dark.css")
+				link(rel="stylesheet", type="text/css", href="/styles/style-main.css")
 		else
-			meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 			if prodCacheBustToken
 				link(rel="stylesheet", type="text/css", href=`/styles/style-web.css?${prodCacheBustToken}`)
 			else

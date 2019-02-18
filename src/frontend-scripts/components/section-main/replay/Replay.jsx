@@ -164,25 +164,27 @@ const Replay = ({ replay, isSmall, to, replayChats, allEmotes }) => {
 	return (
 		<section className={classnames({ small: false /*isSmall*/, big: true /*!isSmall*/ }, 'game')}>
 			<div className="ui grid">
-				<div className="left-side nine wide column">
-					<ReplayOverlay key="replayoverlay" snapshot={snapshot} />
-					<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
-					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
-				</div>
-				<div className="right-side seven wide column">
-					{replayChats.length ? (
-						<Gamechat
-							isReplay={true}
-							userInfo={{}}
-							userList={{}}
-							gameInfo={{
-								chats: replayChats
-							}}
-							allEmotes={allEmotes}
-						/>
-					) : (
-						<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
-					)}
+				<div className="row">
+					<div className="left-side sixteen wide column">
+						<ReplayOverlay key="replayoverlay" snapshot={snapshot} />
+						<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
+						<Tracks gameInfo={gameInfo} userInfo={userInfo} />
+					</div>
+					<div className="right-side">
+						{replayChats.length ? (
+							<Gamechat
+								isReplay={true}
+								userInfo={{}}
+								userList={{}}
+								gameInfo={{
+									chats: replayChats
+								}}
+								allEmotes={allEmotes}
+							/>
+						) : (
+							<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
+						)}
+					</div>
 				</div>
 			</div>
 			<div className="row players-container">
