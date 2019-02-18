@@ -148,15 +148,16 @@ export class Main extends React.Component {
 											click on your name in the upper right corner.
 										</p>
 										<h5>How do you get a medal (seasonal reward)?</h5>
-										<p>Be a top performing player by ELO at the end of a season. Seasons last for 3 months.</p>
+										<p>Be a top performing player by ELO at the end of a season. Seasons last for 3 months and start at the first of the year.</p>
 										<h5>Is my information secure?</h5>
 										<p>
 											As per our{' '}
 											<a href="/about" target="_blank" rel="noopener noreferrer">
 												Privacy Policy
 											</a>{' '}
-											your password is securely encrypted and your email address will never be used for anything other than password resets and verification. I
-											strongly recommend you verify your account. Accounts that were created by signing up/in with discord or github are automatically verified.
+											your password is securely encrypted per industry standards and your email address will never be used for anything other than password
+											resets and verification. Verifying your account is strongly recommended. Accounts that were created by signing up/in with discord or
+											github are automatically verified.
 										</p>
 									</React.Fragment>
 								);
