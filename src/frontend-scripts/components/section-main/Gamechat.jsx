@@ -51,12 +51,6 @@ class Gamechat extends React.Component {
 			window.location.hash = '#/';
 			$(this.leaveTournyQueueModal).modal('hide');
 		});
-
-		this.props.socket.on('removeClaim', () => {
-			this.setState({
-				claim: ''
-			});
-		});
 	}
 
 	componentDidUpdate(prevProps, nextProps) {
@@ -311,7 +305,7 @@ class Gamechat extends React.Component {
 	}
 
 	isPlayerInGame(players, username) {
-		players.map( player => {
+		players.map(player => {
 			if (player.userName === username) {
 				return true;
 			}
@@ -564,9 +558,9 @@ class Gamechat extends React.Component {
 								chat.previousSeasonAward &&
 								!isBlind &&
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
-								chat.specialTournamentStatus &&
-								!isBlind && <span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.specialTournamentStatus && !isBlind && (
+								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+							)}
 							<span
 								className={
 									!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
@@ -762,7 +756,12 @@ class Gamechat extends React.Component {
 							style={{ color: showFullChat ? '#4169e1' : 'indianred' }}
 						/>
 					</a>
-					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && this.renderModEndGameButtons()}
+					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) &&
+						isStaff &&
+						gameInfo &&
+						gameInfo.gameState &&
+						gameInfo.gameState.isStarted &&
+						this.renderModEndGameButtons()}
 					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
 						<div>
 							<div className="ui button primary" onClick={() => modGetCurrentVotes()} style={{ width: '60px' }}>
@@ -821,6 +820,7 @@ class Gamechat extends React.Component {
 								e.preventDefault();
 
 								this.props.socket.emit('addNewClaim', chat);
+								this.setState({ claim: '' });
 							};
 
 							switch (this.state.claim) {
@@ -830,7 +830,7 @@ class Gamechat extends React.Component {
 											<p> As president, I drew...</p>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'rrr');
+													handleClaimButtonClick(e, 'threefascist');
 												}}
 												className="ui button threefascist"
 											>
@@ -838,7 +838,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'rrb');
+													handleClaimButtonClick(e, 'twofascistoneliberal');
 												}}
 												className="ui button twofascistoneliberal"
 											>
@@ -846,7 +846,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'rbb');
+													handleClaimButtonClick(e, 'twoliberalonefascist');
 												}}
 												className="ui button twoliberalonefascist"
 											>
@@ -854,7 +854,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'bbb');
+													handleClaimButtonClick(e, 'threeliberal');
 												}}
 												className="ui button threeliberal"
 											>
@@ -868,7 +868,7 @@ class Gamechat extends React.Component {
 											<p> As chancellor, I received...</p>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'rr');
+													handleClaimButtonClick(e, 'twofascist');
 												}}
 												className="ui button threefascist"
 											>
@@ -876,7 +876,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'rb');
+													handleClaimButtonClick(e, 'onefascistoneliberal');
 												}}
 												className="ui button onefascistoneliberal"
 											>
@@ -884,7 +884,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'bb');
+													handleClaimButtonClick(e, 'twoliberal');
 												}}
 												className="ui button threeliberal"
 											>
@@ -942,7 +942,7 @@ class Gamechat extends React.Component {
 											<p> As president, I peeked and saw... </p>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'rrr');
+													handleClaimButtonClick(e, 'threefascist');
 												}}
 												className="ui button threefascist"
 											>
@@ -950,7 +950,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'rrb');
+													handleClaimButtonClick(e, 'twofascistoneliberal');
 												}}
 												className="ui button twofascistoneliberal"
 											>
@@ -958,7 +958,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'rbb');
+													handleClaimButtonClick(e, 'twoliberalonefascist');
 												}}
 												className="ui button twoliberalonefascist"
 											>
@@ -966,7 +966,7 @@ class Gamechat extends React.Component {
 											</button>
 											<button
 												onClick={e => {
-													handleClaimButtonClick(e, 'bbb');
+													handleClaimButtonClick(e, 'threeliberal');
 												}}
 												className="ui button threeliberal"
 											>
@@ -1010,21 +1010,6 @@ class Gamechat extends React.Component {
 									The word "{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.
 								</span>
 							)}
-							{(() => {
-								if (
-									gameInfo.playersState &&
-									gameInfo.playersState.length &&
-									userInfo.userName &&
-									gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim &&
-									!gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].isDead
-								) {
-									return (
-										<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
-											<span style={{padding: '5px'}}>Claim</span>
-										</div>
-									);
-								}
-							})()}
 							<input
 								onSubmit={this.handleSubmit}
 								onChange={this.handleTyping}
@@ -1042,6 +1027,21 @@ class Gamechat extends React.Component {
 								Chat
 							</button>
 						</div>
+						{(() => {
+							if (
+								gameInfo.playersState &&
+								gameInfo.playersState.length &&
+								userInfo.userName &&
+								gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].claim &&
+								!gameInfo.playersState[gameInfo.publicPlayersState.findIndex(player => player.userName === userInfo.userName)].isDead
+							) {
+								return (
+									<div className="claim-button" title="Click here to make a claim in chat" onClick={this.handleClickedClaimButton}>
+										Claim
+									</div>
+								);
+							}
+						})()}
 					</form>
 				)}
 				<div
@@ -1148,7 +1148,7 @@ Gamechat.propTypes = {
 	allEmotes: PropTypes.array,
 	updateIsTyping: PropTypes.func,
 	notesActive: PropTypes.bool,
-	toggleNotes: PropTypes.func,
+	toggleNotes: PropTypes.func
 };
 
 const GamechatContainer = props => (
