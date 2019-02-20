@@ -9,40 +9,52 @@ import { renderFlagDropdown } from '../utils.jsx';
 $.fn.checkbox = Checkbox;
 
 export default class Creategame extends React.Component {
-	state = {
-		gameName: '',
-		sliderValues: [7, 7],
-		experiencedmode: true,
-		disablechat: false,
-		disablegamechat: false,
-		disableobserver: false,
-		privateShowing: false,
-		containsBadWord: false,
-		rainbowgame: false,
-		checkedSliderValues: [false, false, true, false, false, false],
-		checkedRebalanceValues: [true, false, true],
-		privateonlygame: false,
-		isTourny: false,
-		casualgame: false,
-		blindMode: false,
-		timedMode: false,
-		isVerifiedOnly: false,
-		timedSliderValue: [120],
-		customGameSliderValue: [7],
-		eloSliderValue: [1600],
-		isEloLimited: false,
-		customGameSettings: {
-			enabled: false,
-			// Valid powers: investigate, deckpeek, election, bullet; null for no power
-			powers: [null, null, null, null, null], // last "power" is always a fas victory
-			hitlerZone: 3, // 1-5
-			vetoZone: 5, // 1-5, must be larger than fas track state
-			fascistCount: 1, // 1-3, does not include hit
-			hitKnowsFas: false,
-			deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
-			trackState: { lib: 0, fas: 0 }
+	constructor(props) {
+		super(props);
+
+		let user, isRainbow;
+		if (this.props.userList.list) {
+			user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 		}
-	};
+		if (user) {
+			isRainbow = user.wins + user.losses > 49;
+		}
+
+		this.state = {
+			gameName: '',
+			sliderValues: [7, 7],
+			experiencedmode: true,
+			disablechat: false,
+			disablegamechat: false,
+			disableobserver: false,
+			privateShowing: false,
+			containsBadWord: false,
+			rainbowgame: isRainbow,
+			checkedSliderValues: [false, false, true, false, false, false],
+			checkedRebalanceValues: [true, false, true],
+			privateonlygame: false,
+			isTourny: false,
+			casualgame: false,
+			blindMode: false,
+			timedMode: false,
+			isVerifiedOnly: false,
+			timedSliderValue: [120],
+			customGameSliderValue: [7],
+			eloSliderValue: [1600],
+			isEloLimited: false,
+			customGameSettings: {
+				enabled: false,
+				// Valid powers: investigate, deckpeek, election, bullet; null for no power
+				powers: [null, null, null, null, null], // last "power" is always a fas victory
+				hitlerZone: 3, // 1-5
+				vetoZone: 5, // 1-5, must be larger than fas track state
+				fascistCount: 1, // 1-3, does not include hit
+				hitKnowsFas: false,
+				deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+				trackState: { lib: 0, fas: 0 }
+			}
+		};
+	}
 
 	componentDidUpdate(prevProps, prevState) {
 		const self = this;
@@ -982,7 +994,7 @@ export default class Creategame extends React.Component {
 			else if (this.state.isEloLimited) {
 				const playerElo = player.eloSeason;
 				const playerEloNonseason = player.eloOverall;
-				if ((playerElo < this.state.eloSliderValue[0]) && (playerEloNonseason < this.state.eloSliderValue[0])) {
+				if (playerElo < this.state.eloSliderValue[0] && playerEloNonseason < this.state.eloSliderValue[0]) {
 					errs.push(`Elo slider set too high, your maximum is ${Math.max(playerElo, playerEloNonseason)}.`);
 				}
 			}
