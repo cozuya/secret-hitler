@@ -21,7 +21,7 @@ class Settings extends React.Component {
 		isUploaded: false,
 		profileSearchValue: '',
 		fontChecked: 'comfortaa',
-		fontSize: '',
+		fontSize: null,
 		enableTimestamps: '',
 		disableHelpMessages: '',
 		disableHelpIcons: '',
@@ -33,6 +33,7 @@ class Settings extends React.Component {
 		disableSeasonal: '',
 		disableElo: '',
 		disableAggregations: '',
+		disableTyping: '',
 		soundStatus: '',
 		isPrivate: '',
 		failedNameChangeMessage: '',
@@ -60,6 +61,7 @@ class Settings extends React.Component {
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
 			disableAggregations: gameSettings.disableAggregations || '',
+			disableTyping: gameSettings.disableTyping || '',
 			isPrivate: gameSettings.isPrivate || '',
 			fullheight: gameSettings.fullheight || false,
 			soundSelected: gameSettings.soundStatus || 'Off',
@@ -159,7 +161,7 @@ class Settings extends React.Component {
 								fontSize: this.state.fontSize
 							}}
 						>
-							The quick brown fascist jumped over the lazy liberal.
+							The quick brown fascist jumped over the lazy liberal. (lato)
 						</label>
 					</div>
 				</div>
@@ -406,6 +408,11 @@ class Settings extends React.Component {
 							<h4 className="ui header">Disable elo system</h4>
 							<div className="ui fitted toggle checkbox">
 								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
+								<label />
+							</div>
+							<h4 className="ui header">Disable "is currently typing" display</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="disableTyping" checked={this.state.disableTyping} onChange={() => this.toggleGameSettings('disableTyping')} />
 								<label />
 							</div>
 

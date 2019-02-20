@@ -15,11 +15,15 @@ export default class Game extends React.Component {
 	};
 
 	componentDidMount() {
-		this.props.socket.on('isTypingUpdate', isTyping => {
-			this.setState({
-				isTyping
+		const { userInfo } = this.props;
+
+		if (userInfo.userName && !userInfo.gameSettings.disableTyping) {
+			this.props.socket.on('isTypingUpdate', isTyping => {
+				this.setState({
+					isTyping
+				});
 			});
-		});
+		}
 	}
 
 	componentDidUpdate(prevProps) {
@@ -106,12 +110,14 @@ export default class Game extends React.Component {
 	}
 
 	updateIsTyping = () => {
-		this.setState(prevState => ({
-			isTyping: {
-				...prevState.isTyping,
-				[this.props.userInfo.userName]: new Date().getTime()
-			}
-		}));
+		if (userInfo.userName && !userInfo.gameSettings.disableTyping) {
+			this.setState(prevState => ({
+				isTyping: {
+					...prevState.isTyping,
+					[this.props.userInfo.userName]: new Date().getTime()
+				}
+			}));
+		}
 	};
 
 	render() {

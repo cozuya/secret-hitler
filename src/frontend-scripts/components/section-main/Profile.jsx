@@ -276,7 +276,7 @@ class ProfileWrapper extends React.Component {
 				gamesUntilRainbow = 50 - wins - losses;
 			}
 		}
-		console.log(profile);
+
 		return (
 			<div>
 				{profile.customCardback && (
