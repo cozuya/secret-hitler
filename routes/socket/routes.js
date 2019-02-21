@@ -222,7 +222,6 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				handleUpdatedTruncateGame(data);
 			});
 			socket.on('addNewGameChat', data => {
-				const game = findGame(data);
 				if (isRestricted) return;
 				if (authenticated) {
 					handleAddNewGameChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
