@@ -63,14 +63,13 @@
 		padding: 0;
 	}
 
-	.right-side{
-		width: 45%;
-	
-		@media screen and (max-width: 1182px)
-		{
+	.right-side {
+		width: calc(100vw - 650px - 250px - 20px);
+
+		@media screen and (max-width: 1182px) {
 			width: 100%;
 		}
-		
+
 		.replay-controls {
 			padding: 20px 30px 10px 30px;
 			background-color: black;
@@ -108,8 +107,7 @@
 			}
 
 			.phase-nav {
-				@media screen and (max-width: 1182px)
-				{
+				@media screen and (max-width: 1182px) {
 					display: none;
 				}
 				user-select: none;
@@ -178,10 +176,6 @@
 			}
 
 			.description-container {
-				@media screen and (max-width: 1182px)
-				{
-					display: none;
-				}
 				.content {
 					border: 2px solid #c36563;
 					padding: 10px 20px;
@@ -291,7 +285,6 @@
 			}
 		}
 	}
-
 
 	.big {
 		.left-side {
