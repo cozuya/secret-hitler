@@ -305,12 +305,14 @@ class Gamechat extends React.Component {
 	}
 
 	isPlayerInGame(players, username) {
-		players.map(player => {
-			if (player.userName === username) {
-				return true;
-			}
-		});
-		return false;
+		if (!this.props.isReplay) {
+			players.map(player => {
+				if (player.userName === username) {
+					return true;
+				}
+			});
+			return false;
+		}
 	}
 
 	gameChatStatus = () => {
