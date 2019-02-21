@@ -30,9 +30,7 @@ export class Main extends React.Component {
 				standard: false,
 				customgame: false,
 				casualgame: false
-			},
-			showNewPlayerModal: Boolean(window.hasNotDismissedSignupModal),
-			newPlayerModalPageIndex: 0
+			}
 		};
 	}
 
