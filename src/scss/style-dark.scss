@@ -30,13 +30,13 @@
 
 @media screen and (min-width: 1471px) {
 	.section-right {
-		min-width: 350px;
+		min-width: 650px;
 	}
 	.section-right.game {
 		min-width: 250px;
 	}
 	.playerlist {
-		width: 300px;
+		width: 250px;
 	}
 	.generalchat {
 		width: 350px;
@@ -310,6 +310,9 @@
 	.body-container {
 		display: flex;
 		height: 100vh;
+		@media screen and (max-width: 900px) {
+			overflow: auto;
+		}
 		//margin: auto;
 		overflow: hidden;
 	}
