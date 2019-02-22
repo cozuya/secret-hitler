@@ -11,21 +11,21 @@ export default () => {
 		event.preventDefault();
 
 		if (window.location.href.indexOf('#/replay/') !== -1) {
-			console.log('Opening Playerlist');
+			// console.log('Opening Playerlist');
 			$('#playerlist').transition({
 				animation: 'slide left',
 				displayType: 'flex'
 			});
 			$('#playerlist').css({ position: 'relative', right: '55%' });
 		} else if (window.location.href.indexOf('#/table/') === -1) {
-			console.log('Opening Playerlist');
+			// console.log('Opening Playerlist');
 			$('#playerlist').transition({
 				animation: 'slide left',
 				displayType: 'flex'
 			});
 			$('#playerlist').css({ position: '', right: '' });
 		} else {
-			console.log('Opening Chat');
+			// console.log('Opening Chat');
 			$('.chat-container').transition({
 				animation: 'slide left',
 				displayType: 'flex'
