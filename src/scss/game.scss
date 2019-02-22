@@ -54,7 +54,7 @@
 				display: flex;
 				position: relative;
 				z-index: 100;
-				padding: 4px 10px 4px 10px;
+				padding: 4px 2px 4px 2px;
 			}
 
 			.gamechat-filters-container {
@@ -240,7 +240,7 @@
 				.claim-button {
 					color: #fbbd08;
 					font-style: italic;
-					padding: 12px 9px 8px 5px;
+					padding: 11px 10px 11px 7px;
 					font-size: 16px;
 					font-weight: 700;
 					z-index: 102;
@@ -250,7 +250,7 @@
 						content: '';
 						display: table;
 						animation: fadeIn 0.6s infinite alternate;
-						top: 2px;
+						top: 0;
 						left: 0;
 						position: absolute;
 						width: 100%;
