@@ -833,10 +833,10 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 /**
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
- * @param {object} game - target game.
- * @param {object} data - from socket emit.
+ * @param {object} data - from socket emit
  */
-module.exports.handleAddNewClaim = (socket, passport, game, data) => {
+module.exports.handleAddNewClaim = (socket, passport, data) => {
+	const game = games[data.uid];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (
@@ -1669,14 +1669,15 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
- * @param {object} game - target game
  * @param {array} modUserNames - list of mods
  * @param {array} editorUserNames - list of editors
  * @param {array} adminUserNames - list of admins
  * @param {function} addNewClaim - links to handleAddNewClaim
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
+module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
 	// Authentication Assured in routes.js
+	const game = games[data.uid];
+
 	if (!game || !game.general || game.general.disableChat || !data.chat) return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
@@ -1713,7 +1714,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				.reverse()
 				.join('');
 
-			// console.log(chat, ' - ', formattedChat, ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
+			console.log(chat, ' - ', formattedChat, ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
 
 			if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident') {
 				const claimData = {
@@ -1750,7 +1751,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 
 		if (/^(b|blue|l|lib|liberal)$/i.exec(chat)) {
-			// console.log(chat, ' - ', 'liberal', ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
+			console.log(chat, ' - ', 'liberal', ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
 			if (
 				0 <= playerIndex <= 9 &&
 				(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
@@ -1768,7 +1769,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 
 		if (/^(r|red|fas|f|fasc|fascist)$/i.exec(chat)) {
-			// console.log(chat, ' - ', 'fascist', ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
+			console.log(chat, ' - ', 'fascist', ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
 			if (
 				0 <= playerIndex <= 9 &&
 				(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
