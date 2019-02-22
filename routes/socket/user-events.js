@@ -833,10 +833,10 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 /**
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
- * @param {object} data - from socket emit
+ * @param {object} game - target game.
+ * @param {object} data - from socket emit.
  */
-module.exports.handleAddNewClaim = (socket, passport, data) => {
-	const game = games[data.uid];
+module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (
@@ -1669,15 +1669,14 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
+ * @param {object} game - target game
  * @param {array} modUserNames - list of mods
  * @param {array} editorUserNames - list of editors
  * @param {array} adminUserNames - list of admins
  * @param {function} addNewClaim - links to handleAddNewClaim
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
+module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
 	// Authentication Assured in routes.js
-	const game = games[data.uid];
-
 	if (!game || !game.general || game.general.disableChat || !data.chat) return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
