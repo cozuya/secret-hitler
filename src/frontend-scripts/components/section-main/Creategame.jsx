@@ -559,11 +559,7 @@ export default class Creategame extends React.Component {
 	}
 
 	timedSliderChange = timedSliderValue => {
-		if (timedSliderValue < 30) {
-			this.state.casualgame = true;
-		}
-
-		this.setState({ timedSliderValue });
+		this.setState(prevState => ({ timedSliderValue, casualgame: timedSliderValue < 30 ? true : prevState.timedSliderValue }));
 	};
 
 	eloSliderChange = eloSliderValue => {
@@ -620,11 +616,11 @@ export default class Creategame extends React.Component {
 		const rowWidth = Math.ceil((numLib + numFas) / 3);
 		const data = _.range(0, numLib)
 			.map((val, i) => {
-				return <div key={`L${i}`} className="deckcard" style={{ backgroundImage: "url('../images/cards/liberalp-l.png')" }} />;
+				return <div key={`L${i}`} className="deckcard" style={{ backgroundImage: "url('../images/cards/liberalp-l.png')" }} />; // eslint-disable-line
 			})
 			.concat(
 				_.range(0, numFas).map((val, i) => {
-					return <div key={`F${i}`} className="deckcard" style={{ backgroundImage: "url('../images/cards/fascistp-l.png')" }} />;
+					return <div key={`F${i}`} className="deckcard" style={{ backgroundImage: "url('../images/cards/fascistp-l.png')" }} />; // eslint-disable-line
 				})
 			);
 		const thirds = [];
@@ -679,7 +675,7 @@ export default class Creategame extends React.Component {
 					height: '220px',
 					width: '650px',
 					margin: 'auto',
-					backgroundImage: "url('../images/customtracks/fasTrack.png')"
+					backgroundImage: "url('../images/customtracks/fasTrack.png')" // eslint-disable-line
 				}}
 			>
 				<span
@@ -829,7 +825,7 @@ export default class Creategame extends React.Component {
 				<div
 					key={i}
 					className="rolecard"
-					style={{ backgroundImage: hitKnowsFas ? `url('../images/cards/fascist${val}.png')` : "url('../images/cards/secretrole.png')" }}
+					style={{ backgroundImage: hitKnowsFas ? `url('../images/cards/fascist${val}.png')` : "url('../images/cards/secretrole.png')" }} // eslint-disable-line
 				/>
 			));
 		};
@@ -839,7 +835,7 @@ export default class Creategame extends React.Component {
 				<div
 					key={i}
 					className="rolecard"
-					style={{ backgroundImage: hitKnowsFas ? `url('../images/cards/liberal${val % 6}.png')` : "url('../images/cards/secretrole.png')" }}
+					style={{ backgroundImage: hitKnowsFas ? `url('../images/cards/liberal${val % 6}.png')` : "url('../images/cards/secretrole.png')" }} // eslint-disable-line
 				/>
 			));
 		};
@@ -922,7 +918,7 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row">
 						<div style={{ display: 'flex', width: '100%', marginBottom: '6px' }}>
-							<div className="rolecard" style={{ backgroundImage: "url('../images/cards/hitler0.png')" }} />
+							<div className="rolecard" style={{ backgroundImage: "url('../images/cards/hitler0.png')" }} /> {/* eslint-disable-line */}
 							{renderFas()}
 						</div>
 						<div style={{ display: 'flex', width: '100%' }}>{renderLib()}</div>
