@@ -11,18 +11,23 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 1.1.1 released 2-17-2019</p>
+					<p>Version 1.1.1 released 2-25-2019</p>
 				</div>
 				<h4>New feature: much better mobile/small screen width user experience -RPYoshi</h4>
 				<p>May not be entirely bug free -_- we'll see.</p>
 				<h4>New feature: display of whether or not a player is typing v3 -coz</h4>
 				<p>Hopefully this one like, works, without horribly lagging out the client. We'll see!</p>
-				<h4>New feature: informational popup for new accounts.</h4>
-				<p>This will attempt to explain how the site works somewhat and provide useful links to our how to play, terms of use, about, and wiki pages. -coz</p>
-				<h4>New feature: claim directly from the chat without clicking the "claim" button - simply type what you want to claim i.e. RRB -Vigasaurus</h4>
+				<h4>New feature: informational popup for new accounts -coz</h4>
+				<p>This will attempt to explain how the site works somewhat and provide useful links to our how to play, terms of use, about, and wiki pages.</p>
+				<h4>New feature: claim directly from the chat without clicking the "claim" button - simply type what you want to claim -Vigasaurus</h4>
+				<p>Hopefully won't break everything this time</p>
+				<h4>Adds 12 New Emotes -Vigasaurus</h4>
+				<p>Special thanks to everyone on SH.io discord server who suggested emotes</p>
 				<ul>
 					<li>Moderators can now peek at currently locked in votes on a government -Vigasaurus</li>
 					<li>Game Creation defaults now reflect results of strawpoll conducted previously -Buncha</li>
+					<li>Game creation defualts should apply correctly -Vigasaurus</li>
+					<li>Updated banned word list to be more exhaustive -Vigasaurus</li>
 					<li>Minor bug fixes and internal changes -Vigasaurus, Spyro</li>
 				</ul>
 				<div className="ui header">

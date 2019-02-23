@@ -30,7 +30,9 @@ export class Main extends React.Component {
 				standard: false,
 				customgame: false,
 				casualgame: false
-			}
+			},
+			showNewPlayerModal: Boolean(window.hasNotDismissedSignupModal),
+			newPlayerModalPageIndex: 0
 		};
 	}
 
@@ -77,7 +79,7 @@ export class Main extends React.Component {
 				case 3:
 					return 'FAQ';
 				case 4:
-					return "That's it!";
+					return "That's it!"; //eslint-disable-line
 			}
 		})();
 

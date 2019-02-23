@@ -29,14 +29,11 @@
 }
 
 @media screen and (min-width: 1471px) {
-	.section-right {
-		min-width: 650px;
-	}
 	.section-right.game {
 		min-width: 250px;
 	}
 	.playerlist {
-		width: 300px;
+		width: 250px;
 	}
 	.generalchat {
 		width: 350px;
@@ -46,7 +43,7 @@
 @media screen and (max-width: 1470px) {
 	.section-right {
 		flex-direction: column;
-		min-width: 350px;
+		min-width: 250px;
 		z-index: 5;
 	}
 	.section-right.game {
@@ -65,7 +62,6 @@
 	.playerlist {
 		max-width: 100% !important;
 	}
-
 }
 
 .ui.modal.transition {
@@ -259,7 +255,7 @@
 		}
 	}
 	.menu-container-mobile {
-		display : none;
+		display: none;
 		background-color: $primary;
 		a {
 			cursor: pointer;
@@ -284,14 +280,14 @@
 		}
 	}
 
-@media screen and (max-width: 950px) {
-	.menu-container-mobile {
-		display: flex;
+	@media screen and (max-width: 950px) {
+		.menu-container-mobile {
+			display: flex;
+		}
+		.ui.buttons {
+			margin: auto;
+		}
 	}
-	.ui.buttons {
-		margin: auto;
-	}
-}
 	// Not used in new layout yet
 	.poll {
 		position: absolute;
@@ -310,7 +306,10 @@
 
 	.body-container {
 		display: flex;
-		height: 100%;
+		height: 100vh;
+		@media screen and (max-width: 1079px) {
+			overflow: auto;
+		}
 		//margin: auto;
 		overflow: hidden;
 	}
@@ -832,7 +831,6 @@ body {
 	@media screen and (max-width: 950px) {
 		min-height: 680px;
 	}
-
 }
 
 .app-hidden {
