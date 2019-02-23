@@ -701,12 +701,9 @@ class Gamechat extends React.Component {
 		};
 
 		const modGetCurrentVotes = () => {
-			socket.emit('updateModAction', {
+			socket.emit('modPeekVotes', {
 				modName: userInfo.userName,
-				userName: userInfo.userName,
-				comment: `Peek votes for ${gameInfo.general.uid}`,
-				uid: gameInfo.general.uid,
-				action: 'modPeekVotes'
+				uid: gameInfo.general.uid
 			});
 		};
 
