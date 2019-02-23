@@ -18,6 +18,7 @@ const {
 	handleUpdatedRemakeGame,
 	handleUpdatedPlayerNote,
 	handleSubscribeModChat,
+	handleModPeekVotes,
 	handleUpdateTyping,
 	handleHasSeenNewPlayerModal
 } = require('./user-events');
@@ -342,6 +343,17 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 							handleSubscribeModChat(socket, passport, game);
 						});
 					} else socket.emit('sendAlert', 'Game is missing.');
+				}
+			});
+			socket.on('modPeekVotes', data => {
+				const uid = data.uid;
+				if (authenticated && isAEM) {
+					const game = findGame({ uid });
+					if (game && game.private && game.private.seatedPlayers) {
+						handleModPeekVotes(socket, passport, game, data.modName);
+					}
+				} else {
+					socket.emit('sendAlert', 'Game is missing.');
 				}
 			});
 			socket.on('getUserReports', () => {

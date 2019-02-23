@@ -2272,6 +2272,61 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 /**
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
+ * @param {object} game - game reference.
+ * @param {string} modUserName - requesting Moderator's username
+ */
+module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
+	const gameToPeek = game;
+	let output = '';
+
+	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
+		for (player of gameToPeek.private.seatedPlayers) {
+			if (modUserName === player.userName) {
+				socket.emit('sendAlert', 'You cannot peek votes whilst playing.');
+				return;
+			}
+		}
+	}
+
+	if (!game.private.votesPeeked || game.private.votesPeeked.indexOf(modUserName) === -1) {
+		const modaction = new ModAction({
+			date: new Date(),
+			modUserName: passport.user,
+			userActedOn: game.general.uid,
+			modNotes: '',
+			actionTaken: 'Peek Votes'
+		});
+		modaction.save();
+		if (!game.private.votesPeeked) {
+			game.private.votesPeeked = [modUserName];
+		} else {
+			game.private.votesPeeked.push(modUserName);
+		}
+	}
+
+	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
+		const playersToCheckVotes = gameToPeek.private.seatedPlayers;
+		playersToCheckVotes.map(player => {
+			output += 'Seat ' + (playersToCheckVotes.indexOf(player) + 1) + ' - ';
+			if (player && player.role && player.role.cardName) {
+				if (player.role.cardName === 'hitler') {
+					output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + '   - ';
+				} else {
+					output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + ' - ';
+				}
+			} else {
+				output += 'Roles not Dealt - ';
+			}
+			output += player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted';
+			output += '\n';
+		});
+	}
+	socket.emit('sendAlert', output);
+};
+
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  * @param {boolean} skipCheck - true if there was an account lookup to find the IP
  * @param {array} modUserNames - list of usernames that are mods
@@ -2426,37 +2481,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					BannedIP.remove({ ip: data.ip }, (err, res) => {
 						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
 					});
-					break;
-				case 'modPeekVotes':
-					const gameToPeek = games[data.uid];
-					let output = '';
-					if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
-						for (player of gameToPeek.private.seatedPlayers) {
-							if (data.userName === player.userName) {
-								socket.emit('sendAlert', 'You cannot peek votes whilst playing.');
-								return;
-							}
-						}
-					}
-
-					if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
-						const playersToCheckVotes = gameToPeek.private.seatedPlayers;
-						playersToCheckVotes.map(player => {
-							output += 'Seat ' + (playersToCheckVotes.indexOf(player) + 1) + ' - ';
-							if (player && player.role && player.role.cardName) {
-								if (player.role.cardName === 'hitler') {
-									output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + '   - ';
-								} else {
-									output += player.role.cardName.substring(0, 1).toUpperCase() + player.role.cardName.substring(1) + ' - ';
-								}
-							} else {
-								output += 'Roles not Dealt - ';
-							}
-							output += player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted';
-							output += '\n';
-						});
-					}
-					socket.emit('sendAlert', output);
 					break;
 				case 'modEndGame':
 					const gameToEnd = games[data.uid];
