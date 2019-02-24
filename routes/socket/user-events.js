@@ -3075,6 +3075,35 @@ module.exports.handlePlayerReport = (passport, data) => {
 		comment: data.comment,
 		isActive: true
 	});
+
+	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|bther)$/.exec(playerReport.reason)) {
+		return;
+	}
+
+	switch (playerReport.reason) {
+		case 'afk/leaving game':
+			playerReport.reason = 'AFK/Leaving Game';
+			break;
+		case 'abusive chat':
+			playerReport.reason = 'Abusive Chat';
+			break;
+		case 'cheating':
+			playerReport.reason = 'Cheating';
+			break;
+		case 'gamethrowing':
+			playerReport.reason = 'Gamethrowing';
+			break;
+		case 'stalling':
+			playerReport.reason = 'Stalling';
+			break;
+		case 'botting':
+			playerReport.reason = 'botting';
+			break;
+		case 'other':
+			playerReport.reason = 'Other';
+			break;
+	}
+
 	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3');
 	const body = JSON.stringify({
 		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${data.reportedPlayer}\nReason: ${
