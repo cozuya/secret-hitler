@@ -98,11 +98,13 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 export const getBadWord = text => {
 	const badWords = {
 		cunt: [],
-		nigger: ['nigga', 'nibba'],
+		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug'],
 		kike: [],
-		retard: ['libtard', 'retarded'],
-		faggot: [],
-		mongoloid: ['mong']
+		retard: ['libtard', 'retarded', 'conservatard', 'ameritard'],
+		faggot: ['f4g', 'fag', 'fagget', 'feggit', 'f3ggit', 'f4gg0t', 'f4ggot', 'fagg0t'],
+		mongoloid: ['mong'],
+		cunt: ['kunt'],
+		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
 	let foundWord = [null, null];
 
