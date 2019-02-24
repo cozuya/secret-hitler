@@ -18,6 +18,7 @@ const {
 	handleUpdatedRemakeGame,
 	handleUpdatedPlayerNote,
 	handleSubscribeModChat,
+	handleModPeekVotes,
 	handleUpdateTyping,
 	handleHasSeenNewPlayerModal
 } = require('./user-events');
@@ -209,7 +210,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			socket.on('addNewClaim', data => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					handleAddNewClaim(passport, game, data);
+					handleAddNewClaim(socket, passport, game, data);
 				}
 			});
 			socket.on('updateGameWhitelist', data => {
@@ -222,9 +223,10 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				handleUpdatedTruncateGame(data);
 			});
 			socket.on('addNewGameChat', data => {
+				const game = findGame(data);
 				if (isRestricted) return;
 				if (authenticated) {
-					handleAddNewGameChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
+					handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
 				}
 			});
 			socket.on('updateReportGame', data => {
@@ -341,6 +343,17 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 							handleSubscribeModChat(socket, passport, game);
 						});
 					} else socket.emit('sendAlert', 'Game is missing.');
+				}
+			});
+			socket.on('modPeekVotes', data => {
+				const uid = data.uid;
+				if (authenticated && isAEM) {
+					const game = findGame({ uid });
+					if (game && game.private && game.private.seatedPlayers) {
+						handleModPeekVotes(socket, passport, game, data.modName);
+					}
+				} else {
+					socket.emit('sendAlert', 'Game is missing.');
 				}
 			});
 			socket.on('getUserReports', () => {
