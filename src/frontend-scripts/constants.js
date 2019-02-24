@@ -99,9 +99,10 @@ export const getBadWord = text => {
 	const badWords = {
 		cunt: [],
 		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug'],
-		kike: [],
-		retard: ['libtard', 'retarded', 'conservatard', 'ameritard'],
+		kike: ['k1ke', 'kik3', 'k1k3'],
+		retard: ['libtard', 'retarded', 'conservatard', 'ameritard', 'libt4rd', 'ret4rded', 'conserv4t4rd', 'conservat4rd', 'conserv4tard', 'amer1tard'],
 		faggot: ['f4g', 'fag', 'fagget', 'feggit', 'f3ggit', 'f4gg0t', 'f4ggot', 'fagg0t'],
+		niggerfaggot: [],
 		mongoloid: ['mong'],
 		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
