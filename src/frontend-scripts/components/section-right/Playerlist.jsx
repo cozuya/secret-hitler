@@ -339,8 +339,9 @@ class Playerlist extends React.Component {
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
-								{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
-								user.specialTournamentStatus && <span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
+								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+							)}
 							{user.staffRole !== 'admin' &&
 								Boolean(!user.staffDisableVisibleElo) &&
 								(() => {
@@ -505,8 +506,9 @@ class Playerlist extends React.Component {
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
-								{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
-								user.specialTournamentStatus && <span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
+								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+							)}
 							{(() => {
 								const userAdminRole =
 									user.staffRole === 'admin'
