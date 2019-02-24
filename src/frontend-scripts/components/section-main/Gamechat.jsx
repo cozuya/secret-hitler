@@ -655,7 +655,7 @@ class Gamechat extends React.Component {
 		const WatchReplayButton = () => {
 			const { summary } = gameInfo;
 
-			if (summary) {
+			if (summary && gameInfo.gameState.isCompleted) {
 				const onClick = () => {
 					window.location.hash = `#/replay/${gameInfo.general.uid}`;
 				};
