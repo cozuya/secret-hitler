@@ -527,25 +527,27 @@ class Gamechat extends React.Component {
 						<div className="item claim-item" key={i}>
 							{this.handleTimestamps(chat.timestamp)}
 							<span className="claim-chat">
-								{chatContents.map((chatSegment, index) => {
-									if (chatSegment.type) {
-										let classes;
+								{chatContents &&
+									chatContents.length &&
+									chatContents.map((chatSegment, index) => {
+										if (chatSegment.type) {
+											let classes;
 
-										if (chatSegment.type === 'player') {
-											classes = 'chat-player';
-										} else {
-											classes = `chat-role--${chatSegment.type}`;
+											if (chatSegment.type === 'player') {
+												classes = 'chat-player';
+											} else {
+												classes = `chat-role--${chatSegment.type}`;
+											}
+
+											return (
+												<span key={index} className={classes}>
+													{chatSegment.text}
+												</span>
+											);
 										}
 
-										return (
-											<span key={index} className={classes}>
-												{chatSegment.text}
-											</span>
-										);
-									}
-
-									return chatSegment.text;
-								})}
+										return chatSegment.text;
+									})}
 							</span>
 						</div>
 					) : chat.isBroadcast ? (
