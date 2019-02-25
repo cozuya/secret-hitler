@@ -527,25 +527,27 @@ class Gamechat extends React.Component {
 						<div className="item claim-item" key={i}>
 							{this.handleTimestamps(chat.timestamp)}
 							<span className="claim-chat">
-								{chatContents.map((chatSegment, index) => {
-									if (chatSegment.type) {
-										let classes;
+								{chatContents &&
+									chatContents.length &&
+									chatContents.map((chatSegment, index) => {
+										if (chatSegment.type) {
+											let classes;
 
-										if (chatSegment.type === 'player') {
-											classes = 'chat-player';
-										} else {
-											classes = `chat-role--${chatSegment.type}`;
+											if (chatSegment.type === 'player') {
+												classes = 'chat-player';
+											} else {
+												classes = `chat-role--${chatSegment.type}`;
+											}
+
+											return (
+												<span key={index} className={classes}>
+													{chatSegment.text}
+												</span>
+											);
 										}
 
-										return (
-											<span key={index} className={classes}>
-												{chatSegment.text}
-											</span>
-										);
-									}
-
-									return chatSegment.text;
-								})}
+										return chatSegment.text;
+									})}
 							</span>
 						</div>
 					) : chat.isBroadcast ? (
@@ -652,10 +654,28 @@ class Gamechat extends React.Component {
 				return null;
 			}
 		};
+		const FollowRemakeButton = () => {
+			if (!isReplay && gameInfo.general.isRemade) {
+				const onClick = () => {
+					window.location.href = `#/table/${gameInfo.general.uid}Remake`;
+					window.location.reload();
+				};
+
+				return (
+					<MenuButton>
+						<div className="ui primary button" onClick={onClick}>
+							Go To
+							<br />
+							Remake
+						</div>
+					</MenuButton>
+				);
+			} else return null;
+		};
 		const WatchReplayButton = () => {
 			const { summary } = gameInfo;
 
-			if (summary) {
+			if (summary && gameInfo.gameState.isCompleted) {
 				const onClick = () => {
 					window.location.hash = `#/replay/${gameInfo.general.uid}`;
 				};
@@ -793,6 +813,7 @@ class Gamechat extends React.Component {
 							/>
 						)}
 						<WhiteListButton />
+						<FollowRemakeButton />
 						<WatchReplayButton />
 						{!isReplay && <LeaveGameButton />}
 					</div>
@@ -1016,7 +1037,7 @@ class Gamechat extends React.Component {
 							)}
 							<input
 								onSubmit={this.handleSubmit}
-								onChange={this.handleTyping}
+								/* onChange={this.handleTyping} */
 								maxLength="300"
 								autoComplete="off"
 								spellCheck="false"
