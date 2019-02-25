@@ -210,7 +210,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			socket.on('addNewClaim', data => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					handleAddNewClaim(socket, passport, game, data);
+					handleAddNewClaim(passport, game, data);
 				}
 			});
 			socket.on('updateGameWhitelist', data => {
@@ -223,10 +223,9 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				handleUpdatedTruncateGame(data);
 			});
 			socket.on('addNewGameChat', data => {
-				const game = findGame(data);
 				if (isRestricted) return;
 				if (authenticated) {
-					handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
+					handleAddNewGameChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
 				}
 			});
 			socket.on('updateReportGame', data => {
