@@ -552,9 +552,12 @@ class Players extends React.Component {
 							<i className="dropdown icon" />
 							<div className="default text">Reason</div>
 							<div className="menu">
-								<div className="item">AFK/leaving game</div>
+								<div className="item">AFK/Leaving game</div>
 								<div className="item">Abusive chat</div>
 								<div className="item">Cheating</div>
+								<div className="item">Gamethrowing</div>
+								<div className="item">Stalling</div>
+								<div className="item">Botting</div>
 								<div className="item">Other</div>
 							</div>
 						</div>
