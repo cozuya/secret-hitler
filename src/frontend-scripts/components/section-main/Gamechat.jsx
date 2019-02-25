@@ -655,7 +655,7 @@ class Gamechat extends React.Component {
 			}
 		};
 		const FollowRemakeButton = () => {
-			if (gameInfo.general.isRemade) {
+			if (!isReplay && gameInfo.general.isRemade) {
 				const onClick = () => {
 					window.location.href = `#/table/${gameInfo.general.uid}Remake`;
 					window.location.reload();
