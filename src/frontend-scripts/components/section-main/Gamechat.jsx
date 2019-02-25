@@ -1035,7 +1035,7 @@ class Gamechat extends React.Component {
 							)}
 							<input
 								onSubmit={this.handleSubmit}
-								onChange={this.handleTyping}
+								/* onChange={this.handleTyping} */
 								maxLength="300"
 								autoComplete="off"
 								spellCheck="false"
