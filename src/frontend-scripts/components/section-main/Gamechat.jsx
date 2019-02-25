@@ -144,7 +144,6 @@ class Gamechat extends React.Component {
 
 	handleTyping = e => {
 		e.preventDefault();
-
 		const { userInfo, gameInfo, /* updateIsTyping, isTyping,*/ socket } = this.props;
 
 		if (gameInfo && gameInfo.general && gameInfo.general.private) {
@@ -1037,7 +1036,7 @@ class Gamechat extends React.Component {
 							)}
 							<input
 								onSubmit={this.handleSubmit}
-								/* onChange={this.handleTyping} */
+								onChange={this.handleTyping}
 								maxLength="300"
 								autoComplete="off"
 								spellCheck="false"
