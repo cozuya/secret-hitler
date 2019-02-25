@@ -3076,7 +3076,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 		isActive: true
 	});
 
-	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|bther)$/.exec(playerReport.reason)) {
+	if (!/^(afk\/leaving game|abusive chat|cheating|gamethrowing|stalling|botting|other)$/.exec(playerReport.reason)) {
 		return;
 	}
 
