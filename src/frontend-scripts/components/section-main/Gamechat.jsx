@@ -652,10 +652,28 @@ class Gamechat extends React.Component {
 				return null;
 			}
 		};
+		const FollowRemakeButton = () => {
+			if (gameInfo.general.isRemade) {
+				const onClick = () => {
+					window.location.href = `#/table/${gameInfo.general.uid}Remake`;
+					window.location.reload();
+				};
+
+				return (
+					<MenuButton>
+						<div className="ui primary button" onClick={onClick}>
+							Go To
+							<br />
+							Remake
+						</div>
+					</MenuButton>
+				);
+			} else return null;
+		};
 		const WatchReplayButton = () => {
 			const { summary } = gameInfo;
 
-			if (summary) {
+			if (summary && gameInfo.gameState.isCompleted) {
 				const onClick = () => {
 					window.location.hash = `#/replay/${gameInfo.general.uid}`;
 				};
@@ -793,6 +811,7 @@ class Gamechat extends React.Component {
 							/>
 						)}
 						<WhiteListButton />
+						<FollowRemakeButton />
 						<WatchReplayButton />
 						{!isReplay && <LeaveGameButton />}
 					</div>
