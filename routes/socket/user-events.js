@@ -831,12 +831,27 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 };
 
 /**
+ * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data - from socket emit.
  */
-module.exports.handleAddNewClaim = (passport, game, data) => {
+module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
+
+	if (
+		game &&
+		game.private &&
+		game.private.seatedPlayers &&
+		game.private.seatedPlayers[playerIndex] &&
+		game.private.seatedPlayers[playerIndex].playersState &&
+		game.private.seatedPlayers[playerIndex].playersState[playerIndex] &&
+		!/^(wasPresident|wasChancellor|didSinglePolicyPeek|didPolicyPeek|didInvestigateLoyalty)$/.exec(
+			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim
+		)
+	) {
+		return;
+	}
 
 	if (!game.private || !game.private.summary || game.publicPlayersState[playerIndex].isDead) {
 		return;
@@ -858,7 +873,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 					}
 				];
 				switch (data.claimState) {
-					case 'threefascist':
+					case 'rrr':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								presidentClaim: { reds: 3, blues: 0 }
@@ -880,7 +895,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
-					case 'twofascistoneliberal':
+					case 'rrb':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								presidentClaim: { reds: 2, blues: 1 }
@@ -906,7 +921,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
-					case 'twoliberalonefascist':
+					case 'rbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								presidentClaim: { reds: 1, blues: 2 }
@@ -932,7 +947,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
-					case 'threeliberal':
+					case 'bbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								presidentClaim: { reds: 0, blues: 3 }
@@ -967,7 +982,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 					}
 				];
 				switch (data.claimState) {
-					case 'twofascist':
+					case 'rr':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								chancellorClaim: { reds: 2, blues: 0 }
@@ -989,7 +1004,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
-					case 'onefascistoneliberal':
+					case 'rb':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								chancellorClaim: { reds: 1, blues: 1 }
@@ -1015,7 +1030,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
-					case 'twoliberal':
+					case 'bb':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								chancellorClaim: { reds: 0, blues: 2 }
@@ -1072,7 +1087,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 					}
 				];
 				switch (data.claimState) {
-					case 'threefascist':
+					case 'rrr':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								policyPeekClaim: { reds: 3, blues: 0 }
@@ -1094,7 +1109,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
-					case 'twofascistoneliberal':
+					case 'rbr':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								policyPeekClaim: { reds: 2, blues: 1 }
@@ -1107,7 +1122,73 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 								text: 'claims to have peeked at '
 							},
 							{
-								text: 'RR',
+								text: 'R',
+								type: 'fascist'
+							},
+							{
+								text: 'B',
+								type: 'liberal'
+							},
+							{
+								text: 'R',
+								type: 'fascist'
+							},
+							{
+								text: '.'
+							}
+						);
+
+						return text;
+					case 'brr':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								policyPeekClaim: { reds: 2, blues: 1 }
+							},
+							{ presidentId: playerIndex }
+						);
+
+						text.push(
+							{
+								text: 'claims to have peeked at '
+							},
+							{
+								text: 'B',
+								type: 'liberal'
+							},
+							{
+								text: 'R',
+								type: 'fascist'
+							},
+
+							{
+								text: 'R',
+								type: 'fascist'
+							},
+							{
+								text: '.'
+							}
+						);
+
+						return text;
+					case 'rrb':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								policyPeekClaim: { reds: 2, blues: 1 }
+							},
+							{ presidentId: playerIndex }
+						);
+
+						text.push(
+							{
+								text: 'claims to have peeked at '
+							},
+							{
+								text: 'R',
+								type: 'fascist'
+							},
+
+							{
+								text: 'R',
 								type: 'fascist'
 							},
 							{
@@ -1120,7 +1201,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
-					case 'twoliberalonefascist':
+					case 'rbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								policyPeekClaim: { reds: 1, blues: 2 }
@@ -1146,7 +1227,63 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 						);
 
 						return text;
-					case 'threeliberal':
+					case 'bbr':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								policyPeekClaim: { reds: 1, blues: 2 }
+							},
+							{ presidentId: playerIndex }
+						);
+
+						text.push(
+							{
+								text: 'claims to have peeked at '
+							},
+							{
+								text: 'BB',
+								type: 'liberal'
+							},
+							{
+								text: 'R',
+								type: 'fascist'
+							},
+							{
+								text: '.'
+							}
+						);
+
+						return text;
+					case 'brb':
+						game.private.summary = game.private.summary.updateLog(
+							{
+								policyPeekClaim: { reds: 1, blues: 2 }
+							},
+							{ presidentId: playerIndex }
+						);
+
+						text.push(
+							{
+								text: 'claims to have peeked at '
+							},
+							{
+								text: 'B',
+								type: 'liberal'
+							},
+							{
+								text: 'R',
+								type: 'fascist'
+							},
+							{
+								text: 'B',
+								type: 'liberal'
+							},
+							{
+								text: '.'
+							}
+						);
+
+						return text;
+					case 'bbb':
 						game.private.summary = game.private.summary.updateLog(
 							{
 								policyPeekClaim: { reds: 0, blues: 3 }
@@ -1238,6 +1375,7 @@ module.exports.handleAddNewClaim = (passport, game, data) => {
 		};
 
 		game.chats.push(claimChat);
+		socket.emit('removeClaim');
 		sendInProgressGameUpdate(game);
 	}
 };
@@ -1531,16 +1669,18 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
+ * @param {object} game - target game
  * @param {array} modUserNames - list of mods
  * @param {array} editorUserNames - list of editors
  * @param {array} adminUserNames - list of admins
+ * @param {function} addNewClaim - links to handleAddNewClaim
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
 	// Authentication Assured in routes.js
-	const game = games[data.uid];
 	if (!game || !game.general || game.general.disableChat || !data.chat) return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
+	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (chat.length > 300 || !chat.length) {
 		return;
@@ -1551,11 +1691,100 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 
 	const user = userList.find(u => passport.user === u.userName);
 
-	if (!user || game.general.disableChat) {
+	if (!user || !user.userName || game.general.disableChat) {
 		return;
 	}
 
 	data.userName = passport.user;
+
+	if (
+		game &&
+		game.private &&
+		game.private.seatedPlayers &&
+		game.private.seatedPlayers[playerIndex] &&
+		game.private.seatedPlayers[playerIndex].playersState &&
+		game.private.seatedPlayers[playerIndex].playersState[playerIndex] &&
+		game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim
+	) {
+		if (/^[RB]{2,3}$/i.exec(chat)) {
+			const formattedChat = chat
+				.split('')
+				.sort()
+				.reverse()
+				.join('');
+
+			// console.log(chat, ' - ', formattedChat, ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
+
+			if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident') {
+				const claimData = {
+					userName: user.userName,
+					claimState: formattedChat,
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+				addNewClaim(socket, passport, game, claimData);
+				return;
+			}
+
+			if (chat.length === 2 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasChancellor') {
+				const claimData = {
+					userName: user.userName,
+					claimState: formattedChat,
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+				addNewClaim(socket, passport, game, claimData);
+				return;
+			}
+
+			if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didPolicyPeek') {
+				const claimData = {
+					userName: user.userName,
+					claimState: chat,
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+				addNewClaim(socket, passport, game, claimData);
+				return;
+			}
+		}
+
+		if (/^(b|blue|l|lib|liberal)$/i.exec(chat)) {
+			// console.log(chat, ' - ', 'liberal', ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
+			if (
+				0 <= playerIndex <= 9 &&
+				(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
+					game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty')
+			) {
+				const claimData = {
+					userName: user.userName,
+					claimState: 'liberal',
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+				addNewClaim(socket, passport, game, claimData);
+				return;
+			}
+		}
+
+		if (/^(r|red|fas|f|fasc|fascist)$/i.exec(chat)) {
+			// console.log(chat, ' - ', 'fascist', ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
+			if (
+				0 <= playerIndex <= 9 &&
+				(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
+					game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty')
+			) {
+				const claimData = {
+					userName: user.userName,
+					claimState: 'fascist',
+					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
+					uid: data.uid
+				};
+				addNewClaim(socket, passport, game, claimData);
+				return;
+			}
+		}
+	}
 
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 	if (!AEM) {
