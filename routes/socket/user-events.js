@@ -1711,6 +1711,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	) {
 		if (/^[RB]{2,3}$/i.exec(chat)) {
 			const formattedChat = chat
+				.toLowerCase()
 				.split('')
 				.sort()
 				.reverse()
