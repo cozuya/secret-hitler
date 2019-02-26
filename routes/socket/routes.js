@@ -51,7 +51,7 @@ const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
 
 const gamesGarbageCollector = () => {
-	const currentTime = new Date().getTime();
+	const currentTime = Date.now();
 	const toRemoveGameNames = Object.keys(games).filter(
 		gameName =>
 			(games[gameName].general.timeStarted && games[gameName].general.timeStarted + 4200000 < currentTime) ||

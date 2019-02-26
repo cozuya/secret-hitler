@@ -7,24 +7,24 @@ import Confetti from './Confetti.jsx';
 import Balloons from './Balloons.jsx';
 import PropTypes from 'prop-types';
 import playSound from '../reusable/playSound';
-// import { IsTypingContext } from '../reusable/Context';
+import { IsTypingContext } from '../reusable/Context';
 
 export default class Game extends React.Component {
 	state = {
 		isTyping: {}
 	};
 
-	// componentDidMount() {
-	// const { userInfo } = this.props;
+	componentDidMount() {
+		const { userInfo } = this.props;
 
-	// if (userInfo.userName && !userInfo.gameSettings.disableTyping) {
-	// 	this.props.socket.on('isTypingUpdate', isTyping => {
-	// 		this.setState({
-	// 			isTyping
-	// 		});
-	// 	});
-	// }
-	// }
+		if (userInfo.userName && !userInfo.gameSettings.disableTyping) {
+			this.props.socket.on('isTypingUpdate', isTyping => {
+				this.setState({
+					isTyping
+				});
+			});
+		}
+	}
 
 	componentDidUpdate(prevProps) {
 		const { userInfo, gameInfo } = this.props;
@@ -109,24 +109,25 @@ export default class Game extends React.Component {
 		}
 	}
 
-	// updateIsTyping = () => {
-	// 	if (userInfo.userName && !userInfo.gameSettings.disableTyping) {
-	// 		this.setState(prevState => ({
-	// 			isTyping: {
-	// 				...prevState.isTyping,
-	// 				[this.props.userInfo.userName]: new Date().getTime()
-	// 			}
-	// 		}));
-	// 	}
-	// };
+	updateIsTyping = () => {
+		const { userInfo } = this.props;
+
+		if (userInfo.userName && !userInfo.gameSettings.disableTyping) {
+			this.setState(prevState => ({
+				isTyping: {
+					...prevState.isTyping,
+					[this.props.userInfo.userName]: Date.now()
+				}
+			}));
+		}
+	};
 
 	render() {
 		const { userInfo, gameInfo } = this.props;
-		// const { isTyping } = this.state;
+		const { isTyping } = this.state;
 
 		return (
-			<React.Fragment>
-				{/* <IsTypingContext.Provider value={{ isTyping, updateIsTyping: this.updateIsTyping }}> */}
+			<IsTypingContext.Provider value={{ isTyping, updateIsTyping: this.updateIsTyping }}>
 				<section className="game">
 					<div className="ui grid">
 						<div className="row">
@@ -176,8 +177,7 @@ export default class Game extends React.Component {
 						/>
 					</div>
 				</section>
-				{/* </IsTypingContext.Provider> */}
-			</React.Fragment>
+			</IsTypingContext.Provider>
 		);
 	}
 }

@@ -339,7 +339,7 @@ module.exports.testIP = (IP, callback) => {
 				const ip = ips.sort((a, b) => b.bannedDate - a.bannedDate)[0];
 
 				if (ip) {
-					date = new Date().getTime();
+					date = Date.now();
 					unbannedTime = ip.bannedDate.getTime() + (banLength[ip.type] || banLength.big);
 				}
 

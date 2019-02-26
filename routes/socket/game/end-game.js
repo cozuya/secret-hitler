@@ -217,7 +217,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						winner = true;
 
 						if (isTournamentFinalGame && !game.general.casualGame) {
-							player.gameSettings.tournyWins.push(new Date().getTime());
+							player.gameSettings.tournyWins.push(Date.now());
 							const playerSocketId = Object.keys(io.sockets.sockets).find(
 								socketId =>
 									io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === player.username
@@ -267,7 +267,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 									: 0;
 
 								if (isTournamentFinalGame && !game.general.casualGame) {
-									userEntry.tournyWins.push(new Date().getTime());
+									userEntry.tournyWins.push(Date.now());
 								}
 							} else {
 								if (isRainbow) {

@@ -11,7 +11,7 @@ const Account = require('../../../models/account.js');
 const beginGame = game => {
 	const { experiencedMode } = game.general;
 
-	game.general.timeStarted = new Date().getTime();
+	game.general.timeStarted = Date.now();
 	game.general.type = Math.floor((game.publicPlayersState.length - 5) / 2);
 
 	const { customGameSettings } = game;

@@ -1358,7 +1358,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		newGame.summarySaved = false;
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
-		newGame.timeCreated = new Date().getTime();
+		newGame.timeCreated = Date.now();
 		newGame.publicPlayersState = game.publicPlayersState
 			.filter(player => player.isRemaking)
 			.map(player => ({
@@ -1587,7 +1587,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 	data.timestamp = new Date();
 
 	if (AEM) {
-		const aemForce = /forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)/i.exec(chat);
+		const aemForce = /^\/forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)$/i.exec(chat);
 		if (aemForce) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a vote whilst playing.');
@@ -1595,112 +1595,120 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			}
 			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
 			const voteString = aemForce[2].toLowerCase();
-			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
-			if (!affectedPlayer) {
-				socket.emit('sendAlert', `There is no seat {${affectedPlayerNumber + 1}}.`);
-				return;
-			}
-			if (affectedPlayer.voteStatus.hasVoted) {
-				socket.emit('sendAlert', `${affectedPlayer.userName} {${affectedPlayerNumber + 1}} has already voted.`);
-				return;
-			}
-			let vote = false;
-			if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
-			game.private.unSeatedGameChats = [
-				{
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has forced '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' to vote '
-						},
-						{
-							text: `${vote ? 'ja' : 'nein'}`,
-							type: 'player'
-						},
-						{
-							text: '.'
-						}
-					]
+			if (game && game.private && game.private.seatedPlayers) {
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat {${affectedPlayerNumber + 1}}.`);
+					return;
 				}
-			];
-			selectVoting({ user: affectedPlayer.userName }, game, { vote });
-			sendPlayerChatUpdate(game, data);
+				if (affectedPlayer.voteStatus.hasVoted) {
+					socket.emit('sendAlert', `${affectedPlayer.userName} {${affectedPlayerNumber + 1}} has already voted.`);
+					return;
+				}
+				let vote = false;
+				if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
+				game.private.unSeatedGameChats = [
+					{
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'An AEM member has forced '
+							},
+							{
+								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' to vote '
+							},
+							{
+								text: `${vote ? 'ja' : 'nein'}`,
+								type: 'player'
+							},
+							{
+								text: '.'
+							}
+						]
+					}
+				];
+				selectVoting({ user: affectedPlayer.userName }, game, { vote });
+				sendPlayerChatUpdate(game, data);
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+			}
 			return;
 		}
 
-		const aemSkip = /forceskip (\d{1,2})/i.exec(chat);
+		const aemSkip = /^\/forceskip (\d{1,2})$/i.exec(chat);
 		if (aemSkip) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
 				return;
 			}
 			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
-			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
-			if (!affectedPlayer) {
-				socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
-				return;
-			}
-			if (affectedPlayerNumber !== game.gameState.presidentIndex) {
-				socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
-				return;
-			}
-			let chancellor = -1;
-			let currentPlayers = [];
-			for (let i = 0; i < game.private.seatedPlayers.length; i++) {
-				currentPlayers[i] = !(
-					game.private.seatedPlayers[i].isDead ||
-					(i === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5) ||
-					i === game.gameState.previousElectedGovernment[1]
-				);
-			}
-			currentPlayers[affectedPlayerNumber] = false;
-			let counter = affectedPlayerNumber + 1;
-			while (chancellor === -1) {
-				if (counter >= currentPlayers.length) {
-					counter = 0;
+			if (game && game.private && game.private.seatedPlayers) {
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+					return;
 				}
-				if (currentPlayers[counter]) {
-					chancellor = counter;
+				if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+					socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+					return;
 				}
-				counter++;
+				let chancellor = -1;
+				let currentPlayers = [];
+				for (let i = 0; i < game.private.seatedPlayers.length; i++) {
+					currentPlayers[i] = !(
+						game.private.seatedPlayers[i].isDead ||
+						(i === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5) ||
+						i === game.gameState.previousElectedGovernment[1]
+					);
+				}
+				currentPlayers[affectedPlayerNumber] = false;
+				let counter = affectedPlayerNumber + 1;
+				while (chancellor === -1) {
+					if (counter >= currentPlayers.length) {
+						counter = 0;
+					}
+					if (currentPlayers[counter]) {
+						chancellor = counter;
+					}
+					counter++;
+				}
+				game.private.unSeatedGameChats = [
+					{
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'An AEM member has force skipped the government with '
+							},
+							{
+								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' as president.'
+							}
+						]
+					}
+				];
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
+				setTimeout(() => {
+					for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
+						selectVoting({ user: p.userName }, game, { vote: false });
+					}
+				}, 1000);
+				sendPlayerChatUpdate(game, data);
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
 			}
-			game.private.unSeatedGameChats = [
-				{
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has force skipped the government with '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' as president.'
-						}
-					]
-				}
-			];
-			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
-			setTimeout(() => {
-				for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
-					selectVoting({ user: p.userName }, game, { vote: false });
-				}
-			}, 1000);
-			sendPlayerChatUpdate(game, data);
 			return;
 		}
 
-		const aemPick = /forcepick (\d{1,2}) (\d{1,2})/i.exec(chat);
+		const aemPick = /^\/forcepick (\d{1,2}) (\d{1,2})$/i.exec(chat);
 		if (aemPick) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
@@ -1708,56 +1716,60 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 			}
 			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
 			const chancellorPick = aemPick[2];
-			const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
-			const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
-			if (!affectedPlayer) {
-				socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
-				return;
-			}
-			if (!affectedChancellor) {
-				socket.emit('sendAlert', `There is no seat ${chancellorPick}.`);
-				return;
-			}
-			if (affectedPlayerNumber !== game.gameState.presidentIndex) {
-				socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
-				return;
-			}
-			if (
-				game.publicPlayersState[chancellorPick - 1].isDead ||
-				chancellorPick - 1 === affectedPlayerNumber ||
-				chancellorPick - 1 === game.gameState.previousElectedGovernment[1] ||
-				(chancellorPick - 1 === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5)
-			) {
-				socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
-				return;
-			}
-			game.private.unSeatedGameChats = [
-				{
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has forced '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' to pick '
-						},
-						{
-							text: `${affectedChancellor.userName} {${chancellorPick}}`,
-							type: 'player'
-						},
-						{
-							text: ' as chancellor.'
-						}
-					]
+			if (game && game.private && game.private.seatedPlayers) {
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+					return;
 				}
-			];
-			selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
-			sendPlayerChatUpdate(game, data);
+				if (!affectedChancellor) {
+					socket.emit('sendAlert', `There is no seat ${chancellorPick}.`);
+					return;
+				}
+				if (affectedPlayerNumber !== game.gameState.presidentIndex) {
+					socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
+					return;
+				}
+				if (
+					game.publicPlayersState[chancellorPick - 1].isDead ||
+					chancellorPick - 1 === affectedPlayerNumber ||
+					chancellorPick - 1 === game.gameState.previousElectedGovernment[1] ||
+					(chancellorPick - 1 === game.gameState.previousElectedGovernment[0] && game.general.livingPlayerCount > 5)
+				) {
+					socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
+					return;
+				}
+				game.private.unSeatedGameChats = [
+					{
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'An AEM member has forced '
+							},
+							{
+								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' to pick '
+							},
+							{
+								text: `${affectedChancellor.userName} {${chancellorPick}}`,
+								type: 'player'
+							},
+							{
+								text: ' as chancellor.'
+							}
+						]
+					}
+				];
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
+				sendPlayerChatUpdate(game, data);
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+			}
 			return;
 		}
 	}
@@ -1769,7 +1781,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		player &&
 		game.gameState.isStarted &&
 		parseInt(pinged[1]) <= game.publicPlayersState.length &&
-		(!player.pingTime || new Date().getTime() - player.pingTime > 180000)
+		(!player.pingTime || Date.now() - player.pingTime > 180000)
 	) {
 		try {
 			const affectedPlayerNumber = parseInt(pinged[1]) - 1;
@@ -1779,7 +1791,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 					io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
 			);
 
-			player.pingTime = new Date().getTime();
+			player.pingTime = Date.now();
 			if (!io.sockets.sockets[affectedSocketId]) {
 				return;
 			}
@@ -1991,9 +2003,9 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 
 			if (
 				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&
-				(!account.gameSettings.privateToggleTime || account.gameSettings.privateToggleTime < new Date().getTime() - 64800000)
+				(!account.gameSettings.privateToggleTime || account.gameSettings.privateToggleTime < Date.now() - 64800000)
 			) {
-				account.gameSettings.privateToggleTime = new Date().getTime();
+				account.gameSettings.privateToggleTime = Date.now();
 				account.save(() => {
 					socket.emit('manualDisconnection');
 				});
@@ -2088,7 +2100,7 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 			} else {
 				output += 'Roles not Dealt - ';
 			}
-			output += player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted';
+			output += player.isDead ? 'Dead' : player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted';
 			output += '\n';
 		});
 	}
@@ -2455,7 +2467,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								const { isPrivate } = account.gameSettings;
 
 								account.gameSettings.isPrivate = !isPrivate;
-								account.gameSettings.privateToggleTime = new Date().getTime();
+								account.gameSettings.privateToggleTime = Date.now();
 								account.save(() => {
 									logOutUser(data.userName);
 								});
@@ -3019,8 +3031,8 @@ module.exports.checkUserStatus = (socket, callback) => {
 						if (account) {
 							if (
 								account.isBanned ||
-								(account.isTimeout && new Date().getTime() - new Date(account.isTimeout).getTime() < 64800000) ||
-								(account.isTimeout6Hour && new Date().getTime() - new Date(account.isTimeout6Hour).getTime() < 21600000)
+								(account.isTimeout && Date.now() - new Date(account.isTimeout).getTime() < 64800000) ||
+								(account.isTimeout6Hour && Date.now() - new Date(account.isTimeout6Hour).getTime() < 21600000)
 							) {
 								logOutUser(user);
 							} else {

@@ -306,8 +306,8 @@ module.exports = () => {
 					});
 
 				if (
-					(player.isTimeout && new Date().getTime() - new Date(player.isTimeout).getTime() < 64800000) ||
-					(player.isTimeout6Hour && new Date().getTime() - new Date(player.isTimeout6Hour).getTime() < 21600000)
+					(player.isTimeout && Date.now() - new Date(player.isTimeout).getTime() < 64800000) ||
+					(player.isTimeout6Hour && Date.now() - new Date(player.isTimeout6Hour).getTime() < 21600000)
 				) {
 					req.logOut();
 					res.send();
