@@ -813,7 +813,8 @@ class Gamechat extends React.Component {
 				</section>
 				<section
 					style={{
-						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px'
+						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px',
+						height: '100%'
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
