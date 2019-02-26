@@ -1349,8 +1349,6 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 								text: 'team.'
 							}
 						);
-
-						console.log(text);
 						return text;
 				}
 		}
@@ -1374,10 +1372,13 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 			claim: data.claim,
 			claimState: data.claimState
 		};
-
-		game.chats.push(claimChat);
-		socket.emit('removeClaim');
-		sendInProgressGameUpdate(game);
+		if (claimChat && claimChat.chat) {
+			game.chats.push(claimChat);
+			socket.emit('removeClaim');
+			sendInProgressGameUpdate(game);
+			return true;
+		}
+		return false;
 	}
 };
 
@@ -1723,8 +1724,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
 					uid: data.uid
 				};
-				addNewClaim(socket, passport, game, claimData);
-				return;
+				if (addNewClaim(socket, passport, game, claimData)) return;
 			}
 
 			if (chat.length === 2 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasChancellor') {
@@ -1734,8 +1734,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
 					uid: data.uid
 				};
-				addNewClaim(socket, passport, game, claimData);
-				return;
+				if (addNewClaim(socket, passport, game, claimData)) return;
 			}
 
 			if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didPolicyPeek') {
@@ -1745,8 +1744,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
 					uid: data.uid
 				};
-				addNewClaim(socket, passport, game, claimData);
-				return;
+				if (addNewClaim(socket, passport, game, claimData)) return;
 			}
 		}
 
@@ -1763,8 +1761,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
 					uid: data.uid
 				};
-				addNewClaim(socket, passport, game, claimData);
-				return;
+				if (addNewClaim(socket, passport, game, claimData)) return;
 			}
 		}
 
@@ -1781,8 +1778,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
 					uid: data.uid
 				};
-				addNewClaim(socket, passport, game, claimData);
-				return;
+				if (addNewClaim(socket, passport, game, claimData)) return;
 			}
 		}
 	}
