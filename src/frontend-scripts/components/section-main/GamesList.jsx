@@ -204,7 +204,7 @@ export class GamesList extends React.Component {
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
 					<h5 title="A season is an optional new tier of wins and losses that is reset after 3 months.">
-						{new Date().getTime() < new Date('4-1-2019').getTime()
+						{Date.now() < new Date('4-1-2019').getTime()
 							? `Season ends ${moment(new Date('4-1-2019')).fromNow()}`
 							: `Welcome to season ${CURRENTSEASONNUMBER + 1}`}
 						.

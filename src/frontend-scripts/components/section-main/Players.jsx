@@ -183,9 +183,9 @@ class Players extends React.Component {
 	renderTyping(player) {
 		const { isTyping } = this.props;
 
-		if (isTyping && isTyping[player.userName] && new Date().getTime() - isTyping[player.userName] < 2000) {
+		if (isTyping && isTyping[player.userName] && Date.now() - isTyping[player.userName] < 2000) {
 			setTimeout(() => {
-				if (new Date().getTime() - this.props.isTyping[player.userName] >= 2000) {
+				if (Date.now() - this.props.isTyping[player.userName] >= 2000) {
 					this.forceUpdate();
 				}
 			}, 2000);
@@ -198,7 +198,7 @@ class Players extends React.Component {
 		const { gameSettings } = userInfo;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
-		const time = new Date().getTime();
+		const time = Date.now();
 		const renderPlayerName = (player, i) => {
 			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
 			const prependSeasonAward = () => {

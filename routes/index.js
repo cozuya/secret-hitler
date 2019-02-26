@@ -240,7 +240,6 @@ module.exports = () => {
 			const { image } = req.body;
 			const raw = image.split(',')[1];
 			const username = req.session.passport.user;
-			const now = new Date();
 
 			Account.findOne({ username })
 				.then(account => {
@@ -250,7 +249,7 @@ module.exports = () => {
 						});
 					} else if (
 						new Date(account.gameSettings.customCardbackSaveTime) &&
-						now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000
+						Date.now() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000
 					) {
 						res.json({
 							message: 'You can only change your cardback once every 30 seconds.'

@@ -1358,7 +1358,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		newGame.summarySaved = false;
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
-		newGame.timeCreated = new Date().getTime();
+		newGame.timeCreated = Date.now();
 		newGame.publicPlayersState = game.publicPlayersState
 			.filter(player => player.isRemaking)
 			.map(player => ({
@@ -1769,7 +1769,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 		player &&
 		game.gameState.isStarted &&
 		parseInt(pinged[1]) <= game.publicPlayersState.length &&
-		(!player.pingTime || new Date().getTime() - player.pingTime > 180000)
+		(!player.pingTime || Date.now() - player.pingTime > 180000)
 	) {
 		try {
 			const affectedPlayerNumber = parseInt(pinged[1]) - 1;
@@ -1779,7 +1779,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, modUserNames, edi
 					io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
 			);
 
-			player.pingTime = new Date().getTime();
+			player.pingTime = Date.now();
 			if (!io.sockets.sockets[affectedSocketId]) {
 				return;
 			}
@@ -1991,9 +1991,9 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 
 			if (
 				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&
-				(!account.gameSettings.privateToggleTime || account.gameSettings.privateToggleTime < new Date().getTime() - 64800000)
+				(!account.gameSettings.privateToggleTime || account.gameSettings.privateToggleTime < Date.now() - 64800000)
 			) {
-				account.gameSettings.privateToggleTime = new Date().getTime();
+				account.gameSettings.privateToggleTime = Date.now();
 				account.save(() => {
 					socket.emit('manualDisconnection');
 				});
@@ -2455,7 +2455,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								const { isPrivate } = account.gameSettings;
 
 								account.gameSettings.isPrivate = !isPrivate;
-								account.gameSettings.privateToggleTime = new Date().getTime();
+								account.gameSettings.privateToggleTime = Date.now();
 								account.save(() => {
 									logOutUser(data.userName);
 								});
@@ -3019,8 +3019,8 @@ module.exports.checkUserStatus = (socket, callback) => {
 						if (account) {
 							if (
 								account.isBanned ||
-								(account.isTimeout && new Date().getTime() - new Date(account.isTimeout).getTime() < 64800000) ||
-								(account.isTimeout6Hour && new Date().getTime() - new Date(account.isTimeout6Hour).getTime() < 21600000)
+								(account.isTimeout && Date.now() - new Date(account.isTimeout).getTime() < 64800000) ||
+								(account.isTimeout6Hour && Date.now() - new Date(account.isTimeout6Hour).getTime() < 21600000)
 							) {
 								logOutUser(user);
 							} else {
