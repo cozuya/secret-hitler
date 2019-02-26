@@ -51,12 +51,13 @@ class Gamechat extends React.Component {
 			window.location.hash = '#/';
 			$(this.leaveTournyQueueModal).modal('hide');
 		});
-
-		this.props.socket.on('removeClaim', () => {
-			this.setState({
-				claim: ''
+		if (!this.props.isReplay) {
+			this.props.socket.on('removeClaim', () => {
+				this.setState({
+					claim: ''
+				});
 			});
-		});
+		}
 	}
 
 	componentDidUpdate(prevProps, nextProps) {
