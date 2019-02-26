@@ -835,6 +835,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data - from socket emit.
+ * @return {bool} - Success of adding claim
  */
 module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
