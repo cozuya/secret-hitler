@@ -742,7 +742,7 @@ class Gamechat extends React.Component {
 		};
 
 		return (
-			<section className="gamechat" style={{ height: '100%' }}>
+			<section className="gamechat">
 				<section className="ui pointing menu">
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: '5px' }}>
 						<i
@@ -813,8 +813,7 @@ class Gamechat extends React.Component {
 				</section>
 				<section
 					style={{
-						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px',
-						height: '100%'
+						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px'
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
