@@ -1360,10 +1360,6 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 		game.private.seatedPlayers[playerIndex] &&
 		game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== ''
 	) {
-		if (game.private.seatedPlayers[playerIndex]) {
-			game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
-		}
-
 		const claimChat = {
 			chat: chat,
 			isClaim: true,
@@ -1374,6 +1370,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 			claimState: data.claimState
 		};
 		if (claimChat && claimChat.chat) {
+			if (game.private.seatedPlayers[playerIndex]) game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
 			game.chats.push(claimChat);
 			socket.emit('removeClaim');
 			sendInProgressGameUpdate(game);
