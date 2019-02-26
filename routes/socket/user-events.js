@@ -2100,7 +2100,7 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 			} else {
 				output += 'Roles not Dealt - ';
 			}
-			output += player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted';
+			output += player.isDead ? 'Dead' : player.voteStatus && player.voteStatus.hasVoted ? (player.voteStatus.didVoteYes ? 'Ja' : 'Nein') : 'Not' + ' Voted';
 			output += '\n';
 		});
 	}
