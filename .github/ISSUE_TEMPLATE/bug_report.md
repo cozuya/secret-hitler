@@ -10,21 +10,16 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is. 
 
-What does this issue relate to? Please put an X next to the relevant choices.
-* Gameplay
-* User Interface and Graphis
-* Game Modes
-* Accessibility
-* Other: Please describe
-
-How much effort do you think this issue will take (estimate) Please put an X next to the relevant choices.
-* Very Simple
-* Reasonable Effort
-* A lot of work
-* Only for group efforts
+What does this issue relate to? Please put an X in the [ ] for the relevant choice.
+ - [ ] Gameplay
+ - [ ] User Interface
+ - [ ] Game Modes
+ - [ ] Mod Tools
+ - [ ] Replays
+ - [ ] Something Else: Please describe
 
 **To Reproduce**
-Steps to reproduce the behavior if any:
+Steps to reproduce the behavior if any (basically necessary):
 
 **Additional context**
-Add any other context about the problem here (Screenshots etc.).
+Add any other context about the problem here (Screenshots Preferred).
