@@ -17,7 +17,7 @@ export default class Game extends React.Component {
 	componentDidMount() {
 		const { userInfo } = this.props;
 
-		if (userInfo.userName && !userInfo.gameSettings.disableTyping) {
+		if (userInfo && userInfo.userName && userInfo.gameSettings && !userInfo.gameSettings.disableTyping) {
 			this.props.socket.on('isTypingUpdate', isTyping => {
 				this.setState({
 					isTyping
