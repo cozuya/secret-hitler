@@ -11,6 +11,11 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.1.3 released 2-26-2019</p>
+				</div>
+				<h4>Fixed issue: problems people were having while typing in chat in mobile view.</h4>
+				<h4>Returning fixed feature: claim from chat i.e. type "rrb" to make a claim without clicking on the "claim" button.</h4>
+				<div className="ui header">
 					<p>Version 1.1.2 released 2-24-2019</p>
 				</div>
 				<h4>New feature: much better mobile/small screen width user experience -RPYoshi</h4>
