@@ -101,7 +101,7 @@ export const getBadWord = text => {
 		kike: [],
 		retard: ['libtard', 'retarded', 'conservatard', 'ameritard', 'rarted', 'r4rted', 'rart3d', 'r4rt3d'],
 		kike: ['k1ke', 'kik3', 'k1k3'],
-		retard: ['autistic', 'autist', 'libtard', 'retarded', 'conservatard', 'ameritard', 'libt4rd', 'ret4rded', 'conserv4t4rd', 'conservat4rd', 'conserv4tard', 'amer1tard'],
+		retard: ['autist', 'libtard', 'retarded', 'conservatard', 'ameritard', 'libt4rd', 'ret4rded', 'conserv4t4rd', 'conservat4rd', 'conserv4tard', 'amer1tard'],
 		faggot: ['f4g', 'fag', 'fagget', 'feggit', 'f3ggit', 'f4gg0t', 'f4ggot', 'fagg0t'],
 		niggerfaggot: [],
 		mongoloid: ['mong'],
