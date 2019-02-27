@@ -8,14 +8,23 @@ assignees: ''
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of what the bug is. 
+
+What does this issue relate to? Please put an X next to the relevant choices.
+* Gameplay
+* User Interface and Graphis
+* Game Modes
+* Accessibility
+* Other: Please describe
+
+How much effort do you think this issue will take (estimate) Please put an X next to the relevant choices.
+* Very Simple
+* Reasonable Effort
+* A lot of work
+* Only for group efforts
 
 **To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+Steps to reproduce the behavior if any:
 
 **Additional context**
-Add any other context about the problem here.
+Add any other context about the problem here (Screenshots etc.).
