@@ -132,7 +132,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			const checkRestriction = account => {
 				if (!account || !passport || !passport.user || !socket) return;
 				const parseVer = ver => {
-					let vals = ver.split('.');
+					const vals = ver.split('.');
 					vals.forEach((v, i) => (vals[i] = parseInt(v)));
 					return vals;
 				};
@@ -146,8 +146,8 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				};
 
 				if (account.touLastAgreed && account.touLastAgreed.length) {
-					let changesSince = [];
-					let myVer = parseVer(account.touLastAgreed);
+					const changesSince = [];
+					const myVer = parseVer(account.touLastAgreed);
 					TOU_CHANGES.forEach(change => {
 						if (!firstVerNew(myVer, parseVer(change.changeVer))) changesSince.push(change);
 					});

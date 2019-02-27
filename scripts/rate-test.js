@@ -31,7 +31,7 @@ const rateEloGame = (size, libElo, fasElo, libWin) => {
 	console.log('RLoss: ' + (p * loseFactor * 4).toFixed(1));
 };
 
-let stdin = process.openStdin();
+const stdin = process.openStdin();
 
 const parseBoolean = val => {
 	if (val.toLowerCase() === 'true') return true;

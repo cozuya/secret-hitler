@@ -114,7 +114,7 @@ span.emphasis {
 }
 
 .ui.modal.transition {
-	margin-top: 0px !important;
+	margin-top: 0 !important;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -195,7 +195,7 @@ span.emphasis {
 }
 
 .ui.container.rules-container {
-	margin: 50px 0 0 0;
+	margin: 50px 0 0;
 	padding: 10px 0;
 	background: #030000;
 	color: #ccc;
@@ -242,7 +242,7 @@ span.emphasis {
 }
 
 .ui.container.howtoplay-container {
-	margin: 50px 0 0 0;
+	margin: 50px 0 0;
 	padding: 10px 0;
 	background: #030000;
 	color: #eee;
@@ -250,8 +250,8 @@ span.emphasis {
 	img {
 		max-width: 90%;
 		display: block;
-		box-shadow: 0px 3px 4px 1px #333;
-		margin: 0 auto 10px auto;
+		box-shadow: 0 3px 4px 1px #333;
+		margin: 0 auto 10px;
 	}
 
 	h1 {
@@ -289,7 +289,7 @@ span.emphasis {
 }
 
 .about-container {
-	margin: 50px 0 0 0;
+	margin: 50px 0 0;
 	padding: 10px 0;
 	background: #030000;
 	color: #eee;
@@ -307,7 +307,7 @@ span.emphasis {
 }
 
 .player-profiles-container {
-	margin: 50px 0 0 0;
+	margin: 50px 0 0;
 	padding: 30px 0;
 	background: #030000;
 	color: #eee;
@@ -367,13 +367,13 @@ span.emphasis {
 	height: 3px;
 }
 ::-webkit-scrollbar-button {
-	width: 0px;
-	height: 0px;
+	width: 0;
+	height: 0;
 }
 ::-webkit-scrollbar-thumb {
 	background: #717171;
-	border: 0px none #ffffff;
-	border-radius: 0px;
+	border: 0 none #ffffff;
+	border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
 	background: #191919;
@@ -383,8 +383,8 @@ span.emphasis {
 }
 ::-webkit-scrollbar-track {
 	background: #bfbfbf;
-	border: 0px none #ffffff;
-	border-radius: 0px;
+	border: 0 none #ffffff;
+	border-radius: 0;
 }
 ::-webkit-scrollbar-track:hover {
 	background: #666666;

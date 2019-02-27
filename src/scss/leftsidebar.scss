@@ -89,32 +89,32 @@
 			margin: 0 3px;
 		}
 		.liberal-box {
-			box-shadow: 0px 0px 1px 2px #608cb3;
+			box-shadow: 0 0 1px 2px #608cb3;
 		}
 		.liberal-box.filled {
 			background-color: #608cb3;
 		}
 		.fascist-box {
-			box-shadow: 0px 0px 1px 2px #c36563;
+			box-shadow: 0 0 1px 2px #c36563;
 		}
 		.fascist-box.filled {
 			background-color: #c36563;
 		}
 	}
 	.vertical.segment.inprogress {
-		box-shadow: 0px 0px 27px -3px #fbbd08 inset;
+		box-shadow: 0 0 27px -3px #fbbd08 inset;
 		.lower-row {
 			color: #fbbd08;
 		}
 	}
 	.vertical.segment.liberal {
-		box-shadow: 0px 0px 27px -3px #608cb3 inset;
+		box-shadow: 0 0 27px -3px #608cb3 inset;
 		.lower-row {
 			color: #608cb3;
 		}
 	}
 	.vertical.segment.fascist {
-		box-shadow: 0px 0px 27px -3px #c36563 inset;
+		box-shadow: 0 0 27px -3px #c36563 inset;
 		.lower-row {
 			color: #c36563;
 		}

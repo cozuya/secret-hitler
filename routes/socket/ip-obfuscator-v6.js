@@ -7,8 +7,8 @@ for (let a = 0; a < 16 * 16 * 16 * 16; a++) avail[a] = convertToHex(a);
 // Taken from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 const shuffleArray = array => {
 	for (let i = array.length - 1; i > 0; i--) {
-		let j = Math.floor(Math.random() * (i + 1));
-		let temp = array[i];
+		const j = Math.floor(Math.random() * (i + 1));
+		const temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
 	}

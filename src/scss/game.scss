@@ -31,7 +31,7 @@
 			font-style: italic;
 			color: $primary;
 			background: #1b1b1b;
-			padding: 7px 0px 3px 2px;
+			padding: 7px 0 3px 2px;
 
 			&.tourny {
 				color: $tourny;
@@ -54,7 +54,7 @@
 				display: flex;
 				position: relative;
 				z-index: 100;
-				padding: 4px 2px 4px 2px;
+				padding: 4px 2px;
 			}
 
 			.gamechat-filters-container {
@@ -73,7 +73,7 @@
 				width: 100% !important;
 				border-radius: 0;
 				.item {
-					padding: 0px 1px 6px 0px;
+					padding: 0 1px 6px 0;
 					position: relative;
 					z-index: 101;
 					&:after {
@@ -89,7 +89,7 @@
 					cursor: pointer;
 				}
 				.button {
-					padding: 2px 0px;
+					padding: 2px 0;
 					font-size: 12px;
 					width: 52.5px;
 					font-size: 11px;
@@ -297,7 +297,7 @@
 				.input {
 					flex-grow: 1;
 					button {
-						padding: 0px 10px;
+						padding: 0 10px;
 						background: $primary;
 						&:hover {
 							background: $tertiary;

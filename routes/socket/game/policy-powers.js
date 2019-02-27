@@ -527,7 +527,7 @@ module.exports.investigateLoyalty = game => {
 	const hasTarget =
 		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).length > 0;
 	if (!hasTarget) {
-		let t = new Date();
+		const t = new Date();
 		t.setMilliseconds(t.getMilliseconds + 1);
 		const chat = {
 			timestamp: t,

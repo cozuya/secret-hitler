@@ -38,7 +38,7 @@ $(document).ready(function() {
 	$('#passwordresetchange-submit').on('click', function(event) {
 		event.preventDefault();
 
-		var pass1 = $('#passwordchange-password').val(),
+		let pass1 = $('#passwordchange-password').val(),
 			pass2 = $('#passwordchange-confirmpassword').val(),
 			username = window.location.pathname.split('/')[2],
 			tok = window.location.pathname.split('/')[3],
@@ -77,7 +77,7 @@ $(document).ready(function() {
 
 	$('button.email-submit').on('click', function(event) {
 		event.preventDefault();
-		var email = $('#add-email-input').val(),
+		let email = $('#add-email-input').val(),
 			$loader = $(this).next(),
 			$message = $loader.next(),
 			submitErr = function(message) {
@@ -102,13 +102,13 @@ $(document).ready(function() {
 					submitErr('Sorry, that request did not look right.');
 				},
 				401: function(xhr) {
-					var message =
+					const message =
 						typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : 'Only non-disposible email addresses can be added for verification purposes.';
 
 					submitErr(message);
 				},
 				403: function(xhr) {
-					var message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
+					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
 
 					submitErr(message);
 				},
@@ -123,7 +123,7 @@ $(document).ready(function() {
 
 	$('button.signup-submit').on('click', function(event) {
 		event.preventDefault();
-		var username = $('#signup-username').val(),
+		let username = $('#signup-username').val(),
 			password = $('#signup-password1').val(),
 			password2 = $('#signup-password2').val(),
 			email = $('#signup-email').val(),
@@ -166,7 +166,7 @@ $(document).ready(function() {
 					submitErr('Sorry, that request did not look right.');
 				},
 				401: function(xhr) {
-					var message =
+					const message =
 						typeof xhr.responseJSON !== 'undefined'
 							? xhr.responseJSON.message
 							: 'Sorry, that username already exists and you did not provide the correct password.';
@@ -174,7 +174,7 @@ $(document).ready(function() {
 					submitErr(message);
 				},
 				403: function(xhr) {
-					var message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
+					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
 
 					submitErr(message);
 				}
@@ -223,7 +223,7 @@ $(document).ready(function() {
 
 	$('button.signin-submit').on('click', function(event) {
 		event.preventDefault();
-		var username = $('#signin-username').val(),
+		let username = $('#signin-username').val(),
 			password = $('#signin-password').val(),
 			$loader = $(this).next(),
 			$message = $(this)
@@ -273,7 +273,7 @@ $(document).ready(function() {
 	$('button#password-reset-submit').on('click', function(event) {
 		event.preventDefault();
 
-		var email = $('#password-reset-email').val(),
+		let email = $('#password-reset-email').val(),
 			$loader = $(this).next(),
 			$message = $(this)
 				.next()
@@ -312,7 +312,7 @@ $(document).ready(function() {
 	$('button#emailadd-submit').on('click', function(event) {
 		event.preventDefault();
 
-		var username = $('#emailadd-account-name').val(),
+		let username = $('#emailadd-account-name').val(),
 			email = $('#emailadd-email').val(),
 			$loader = $(this).next(),
 			$message = $(this)
@@ -393,7 +393,7 @@ $(document).ready(function() {
 	$('button#passwordchange-submit').on('click', function(event) {
 		event.preventDefault();
 
-		var newPassword = $('#passwordchange-password').val(),
+		let newPassword = $('#passwordchange-password').val(),
 			newPasswordConfirm = $('#passwordchange-confirmpassword').val(),
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
@@ -432,7 +432,7 @@ $(document).ready(function() {
 	$('button#emailchange-submit').on('click', function(event) {
 		event.preventDefault();
 
-		var newEmail = $('#emailchange-input').val(),
+		let newEmail = $('#emailchange-input').val(),
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
 			data = JSON.stringify({
@@ -469,7 +469,7 @@ $(document).ready(function() {
 	$('button#deleteaccount-submit').on('click', function(event) {
 		event.preventDefault();
 
-		var password = $('#deleteaccount-password').val(),
+		let password = $('#deleteaccount-password').val(),
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
 			$successMessage = $errMessage.next(),
@@ -507,7 +507,7 @@ $(document).ready(function() {
 	$('button#new-username-submit').on('click', function(event) {
 		event.preventDefault();
 
-		var username = $('#new-username').val(),
+		let username = $('#new-username').val(),
 			$loader = $(this).next(),
 			$errMessage = $loader.next(),
 			$successMessage = $errMessage.next(),

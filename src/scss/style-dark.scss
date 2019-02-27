@@ -65,7 +65,7 @@
 }
 
 .ui.modal.transition {
-	margin-top: 0px !important;
+	margin-top: 0 !important;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -96,16 +96,16 @@
 		margin: 1px;
 		cursor: initial;
 		&.gold {
-			background: url('/images/season_badges.png') -32px -0px;
+			background: url('/images/season_badges.png') -32px 0;
 		}
 		&.silver {
-			background: url('/images/season_badges.png') -16px -0px;
+			background: url('/images/season_badges.png') -16px 0;
 		}
 		&.bronze {
-			background: url('/images/season_badges.png') -0px -0px;
+			background: url('/images/season_badges.png') 0 0;
 		}
 		&.gold1 {
-			background: url('/images/season_badges.png') -48px -0px;
+			background: url('/images/season_badges.png') -48px 0;
 		}
 		&.gold2 {
 			background: url('/images/season_badges.png') -48px -16px;
@@ -117,7 +117,7 @@
 			background: url('/images/season_badges.png') -16px -16px;
 		}
 		&.gold5 {
-			background: url('/images/season_badges.png') -0px -16px;
+			background: url('/images/season_badges.png') 0 -16px;
 		}
 	}
 	.notes-container {
@@ -194,7 +194,7 @@
 				border: none;
 				color: white;
 				padding: 4px;
-				margin: 10px 0 10px 0;
+				margin: 10px 0;
 				&:hover {
 					background: $tertiary;
 				}
@@ -325,7 +325,7 @@
 		}
 		.section-main-content-container {
 			width: 870px;
-			margin: 0 auto 0 auto;
+			margin: 0 auto;
 			transform: translate3d(0, 0, 0);
 
 			.browser-header {
@@ -442,20 +442,20 @@
 		}
 	}
 	.browser-header {
-		margin: 5px auto 5px auto;
+		margin: 5px auto;
 		width: 400px;
-		padding: 10px 0 10px 0;
+		padding: 10px 0;
 	}
 	.browser-body {
-		margin: 0 20px 0 20px;
+		margin: 0 20px;
 		line-height: normal;
 	}
 	.browser-row {
 		margin-bottom: 30px;
-		box-shadow: 0px 0px 6px 3px #fbbd08;
+		box-shadow: 0 0 6px 3px #fbbd08;
 	}
 	.browser-row.inprogress {
-		box-shadow: 0px 0px 6px 3px #608cb3;
+		box-shadow: 0 0 6px 3px #608cb3;
 	}
 	.browser-row.fascist {
 		box-shadow: 0 0 6px 3px darkgray;
@@ -513,7 +513,7 @@
 				font-size: 50px;
 			}
 			.liberal-count {
-				padding: 10px 0 8px 0;
+				padding: 10px 0 8px;
 			}
 			.box {
 				display: inline-block;
@@ -522,14 +522,14 @@
 				margin: 0 3px;
 			}
 			.liberal-box {
-				box-shadow: 0px 0px 1px 2px #5b9cc4;
+				box-shadow: 0 0 1px 2px #5b9cc4;
 				background-color: #1b1b1b;
 			}
 			.liberal-box.filled {
 				background-color: #5b9cc4;
 			}
 			.fascist-box {
-				box-shadow: 0px 0px 1px 2px #c36563;
+				box-shadow: 0 0 1px 2px #c36563;
 				background-color: #1b1b1b;
 			}
 			.fascist-box.filled {
@@ -600,7 +600,7 @@
 	}
 	.game-main-bottom-row {
 		display: flex;
-		padding: 8px 5px 8px 5px;
+		padding: 8px 5px;
 		background-color: #302f2f;
 	}
 	.player-icons-column {
@@ -868,7 +868,7 @@ div {
 		font-family: 'germania one', germania, sans-serif;
 		font-size: 38px;
 		text-shadow: 1px 1px 2px black;
-		padding: 10px 0 0 0;
+		padding: 10px 0 0;
 		display: inline-block;
 		letter-spacing: 2px;
 		&.hover {

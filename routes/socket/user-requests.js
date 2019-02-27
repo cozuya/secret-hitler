@@ -23,7 +23,7 @@ const version = require('../../version');
 const { obfIP } = require('./ip-obf');
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 
-let torIps = [];
+const torIps = [];
 
 module.exports.torIps = torIps;
 

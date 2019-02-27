@@ -1,4 +1,4 @@
-//Taken from https://gist.github.com/ijmacdowell/8325491#file-adjectives-js
+// Taken from https://gist.github.com/ijmacdowell/8325491#file-adjectives-js
 module.exports = [
 	'aback',
 	'abaft',

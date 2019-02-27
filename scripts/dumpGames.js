@@ -77,9 +77,9 @@ GameSummary.find({
 		// sensical name (e.g. untarring will result in the files
 		// "2017-01-01/gameFoo", "2017-01-01/gameBar").
 		fs.mkdtemp(path.join(os.tmpdir(), 'game-summaries-'), (err, tmpFolder) => {
-			let folder = path.join(tmpFolder, dumpDateFrom);
+			const folder = path.join(tmpFolder, dumpDateFrom);
 			fs.mkdir(folder, err => {
-				for (let summary of summaries) {
+				for (const summary of summaries) {
 					debugger;
 					fs.writeFileSync(path.join(folder, summary._id), JSON.stringify(summary));
 				}

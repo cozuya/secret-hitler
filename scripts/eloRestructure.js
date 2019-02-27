@@ -1,21 +1,21 @@
 const fs = require('fs');
 
-let obj = JSON.parse(fs.readFileSync('./out/data.json', 'utf8'));
-let newObj = {};
+const obj = JSON.parse(fs.readFileSync('./out/data.json', 'utf8'));
+const newObj = {};
 
 Object.keys(obj).forEach(key => {
-	let newKey = obj[key][1].toFixed(2);
+	const newKey = obj[key][1].toFixed(2);
 	if (newObj[newKey]) newObj[newKey] = [...newObj[newKey], key];
 	else newObj[newKey] = [key];
 });
 
-let sortedList = [];
+const sortedList = [];
 
 Object.keys(newObj)
 	.sort()
 	.reverse()
 	.forEach(key => {
-		let list = newObj[key];
+		const list = newObj[key];
 		list.forEach(user => {
 			sortedList.push([user, key]);
 		});

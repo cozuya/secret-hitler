@@ -10,19 +10,19 @@ const getTouchSupport = () => {
 		document.createEvent('TouchEvent');
 		touchEvent = true;
 	} catch (_) {}
-	let touchStart = 'ontouchstart' in window;
+	const touchStart = 'ontouchstart' in window;
 	return [maxTouchPoints, touchEvent, touchStart];
 };
 const getWebglVendorAndRenderer = () => {
 	/* This a subset of the WebGL fingerprint with a lot of entropy, while being reasonably browser-independent */
 	try {
-		let canvas = document.createElement('canvas');
+		const canvas = document.createElement('canvas');
 		let gl = null;
 		try {
 			gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 		} catch (e) {}
 		if (!gl) return null;
-		let extensionDebugRendererInfo = gl.getExtension('WEBGL_debug_renderer_info');
+		const extensionDebugRendererInfo = gl.getExtension('WEBGL_debug_renderer_info');
 		return gl.getParameter(extensionDebugRendererInfo.UNMASKED_VENDOR_WEBGL) + '~' + gl.getParameter(extensionDebugRendererInfo.UNMASKED_RENDERER_WEBGL);
 	} catch (e) {
 		return null;
@@ -30,7 +30,7 @@ const getWebglVendorAndRenderer = () => {
 };
 
 module.exports.simpleFingerprint = () => {
-	let keys = [];
+	const keys = [];
 	keys.push({ key: 'user_agent', value: navigator.userAgent });
 	keys.push({ key: 'language', value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage || '' });
 	keys.push({ key: 'device_memory', value: navigator.deviceMemory || -1 });

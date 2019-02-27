@@ -83,7 +83,7 @@
 		.playerlist-body {
 			overflow-y: auto;
 			overflow-x: hidden;
-			padding: 0 10px 0 10px;
+			padding: 0 10px;
 			.fav {
 				background: url('../../public/favicon-16x16.png') no-repeat;
 				width: 16px;
@@ -160,7 +160,7 @@
 		.generalchat-header {
 			min-height: 32px;
 			border-bottom: 1px solid #262626;
-			padding: 5px 0px 3px;
+			padding: 5px 0 3px;
 			h3 {
 				float: left;
 				margin: 0;
@@ -175,7 +175,7 @@
 			margin: 0;
 			display: flex;
 			flex-direction: column;
-			padding: 10px 10px 5px 10px;
+			padding: 10px 10px 5px;
 			background: #181818;
 			.chat-button {
 				margin-top: 5px;
@@ -326,7 +326,7 @@
 .emotes-popup-content {
 	// add padding area for tooltips around popup
 	margin: -30px -20px 0 -20px;
-	padding: 32px 22px 2px 22px;
+	padding: 32px 22px 2px;
 	display: flex;
 	flex-wrap: wrap;
 	background: transparent;
@@ -335,7 +335,7 @@
 	resize: none;
 	justify-content: center;
 	div {
-		margin: 0 2px 0 2px;
+		margin: 0 2px;
 		&:active {
 			img {
 				opacity: 0.5;

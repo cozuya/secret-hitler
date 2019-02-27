@@ -41,7 +41,7 @@
 	/* please don't change 'position' */
 	opacity: 0;
 	transition: background-color 0.2s linear, opacity 0.2s linear;
-	bottom: 0px;
+	bottom: 0;
 	/* there must be 'bottom' for ps__scrollbar-x-rail */
 	height: 15px;
 }
@@ -122,5 +122,3 @@
 	position: relative;
 	height: 100%;
 }
-
-/*# sourceMappingURL=styles.css.map*/

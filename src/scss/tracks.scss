@@ -174,8 +174,8 @@
 		.custom-fastrack-powerslot {
 			width: 90px;
 			height: 120px;
-			left: 0px;
-			top: 0px;
+			left: 0;
+			top: 0;
 			position: absolute;
 		}
 		.custom-fastrack-vetozone {
@@ -201,7 +201,7 @@
 	left: 0;
 	font-size: 20px;
 	z-index: 3;
-	text-shadow: 0px 0px 7px #000000, 0px 0px 7px #000000, 0px 0px 7px #000000;
+	text-shadow: 0 0 7px #000000, 0 0 7px #000000, 0 0 7px #000000;
 	.secondary-message {
 		font-size: 15px;
 		margin-top: 5px;
@@ -361,7 +361,7 @@
 	transition-delay: 0.5s, 0.5s, 3s, 3s, 1s;
 	transition-duration: 2s, 2s, 3s, 3s, 1s;
 	transform-style: preserve-3d;
-	box-shadow: 0px 0px 4px 3px #969696;
+	box-shadow: 0 0 4px 3px #969696;
 }
 .enactedpolicies-card {
 	background-size: contain;
@@ -482,7 +482,7 @@
 }
 
 .cardflinger-card-container.active {
-	box-shadow: 0px 0px 4px 3px #969696;
+	box-shadow: 0 0 4px 3px #969696;
 }
 
 .experienced .tracks-container {

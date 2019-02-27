@@ -571,7 +571,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	let excludes = [];
+	const excludes = [];
 	for (a = playerCounts[0]; a <= playerCounts[playerCounts.length - 1]; a++) {
 		if (!playerCounts.includes(a)) excludes.push(a);
 	}
@@ -1883,7 +1883,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					return;
 				}
 				let chancellor = -1;
-				let currentPlayers = [];
+				const currentPlayers = [];
 				for (let i = 0; i < game.private.seatedPlayers.length; i++) {
 					currentPlayers[i] = !(
 						game.private.seatedPlayers[i].isDead ||
@@ -1922,7 +1922,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				];
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
 				setTimeout(() => {
-					for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
+					for (const p of game.private.seatedPlayers.filter(player => !player.isDead)) {
 						selectVoting({ user: p.userName }, game, { vote: false });
 					}
 				}, 1000);
@@ -2808,7 +2808,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								if (account) {
 									account.isContributor = false;
 									account.save(() => {
-										let idx = newStaff.contributorUserNames.indexOf(account.username);
+										const idx = newStaff.contributorUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.contributorUserNames.splice(idx, 1);
 										logOutUser(account.username);
 									});
