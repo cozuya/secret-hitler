@@ -73,11 +73,6 @@ class ReplayGamechat extends React.Component {
 		}
 	}
 
-	handleInsertEmote = emote => {
-		this.gameChatInput.value += ` ${emote}`;
-		this.gameChatInput.focus();
-	};
-
 	processChats() {
 		const { gameInfo, userInfo, userList } = this.props;
 		const { gameSettings } = userInfo;
@@ -100,7 +95,6 @@ class ReplayGamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
-		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
 
 		const renderPreviousSeasonAward = type => {
 			switch (type) {
@@ -253,23 +247,7 @@ class ReplayGamechat extends React.Component {
 
 	render() {
 		const { userInfo, gameInfo } = this.props;
-		const { showPlayerChat, showGameChat, showObserverChat, showFullChat, notesEnabled, lock } = this.state;
-
-		const routeToOtherTournyTable = e => {
-			e.preventDefault();
-			const { uid } = gameInfo.general;
-			const tableUidLastLetter = uid.charAt(gameInfo.general.uid.length - 1);
-			const { hash } = window.location;
-			const { isRound1TableThatFinished2nd } = gameInfo.general.tournyInfo;
-
-			userInfo.isSeated = false;
-			updateUser(userInfo);
-			window.location.hash = isRound1TableThatFinished2nd
-				? `${hash.substr(0, hash.length - 1)}Final`
-				: tableUidLastLetter === 'A'
-				? `${hash.substr(0, hash.length - 1)}B`
-				: `${hash.substr(0, hash.length - 1)}A`;
-		};
+		const { showPlayerChat, showGameChat, showObserverChat, showFullChat } = this.state;
 
 		return (
 			<section className="gamechat">
@@ -304,23 +282,10 @@ class ReplayGamechat extends React.Component {
 							style={{ color: showFullChat ? '#4169e1' : 'indianred' }}
 						/>
 					</a>
-					{gameInfo.general &&
-						gameInfo.general.tournyInfo &&
-						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
-							<button className="ui primary button tourny-button" onClick={routeToOtherTournyTable}>
-								Observe {gameInfo.general.tournyInfo.isRound1TableThatFinished2nd ? 'final' : 'other'} tournament table
-							</button>
-						)}
-					<div className="right menu">
-						{userInfo.userName && (
-							<i title="Click here to pop out notes" className={notesEnabled ? 'large window minus icon' : 'large edit icon'} onClick={this.handleNoteClick} />
-						)}
-					</div>
 				</section>
 				<section
 					style={{
-						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px',
-						height: '100%'
+						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px'
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
