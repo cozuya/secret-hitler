@@ -174,16 +174,14 @@ class Gamechat extends React.Component {
 				});
 			}
 		}
-		// const now = Date.now();
 
-		// if (userInfo.isSeated && (now - isTyping[userInfo.userName] > 1000 || !isTyping[userInfo.userName])) {
-		// 	updateIsTyping();
-		// 	socket.emit('updateTyping', {
-		// 		userName: userInfo.userName,
-		// 		lastTypingTime: now,
-		// 		uid: gameInfo.general.uid
-		// 	});
-		// }
+		if (userInfo.isSeated && (Date.now() - isTyping[userInfo.userName] > 1000 || !isTyping[userInfo.userName])) {
+			updateIsTyping();
+			socket.emit('updateTyping', {
+				userName: userInfo.userName,
+				uid: gameInfo.general.uid
+			});
+		}
 	};
 
 	chatDisabled = () => {
@@ -191,7 +189,7 @@ class Gamechat extends React.Component {
 	};
 
 	handleSubmit = e => {
-		const { updateIsTyping, isTyping, userInfo } = this.props;
+		const { updateIsTyping, gameInfo, userInfo } = this.props;
 
 		e.preventDefault();
 
@@ -200,13 +198,12 @@ class Gamechat extends React.Component {
 		}
 
 		const currentValue = this.gameChatInput.value;
-		const { gameInfo } = this.props;
 
 		if (currentValue.length < 300 && currentValue && !$('.expando-container + div').hasClass('disabled')) {
-			updateIsTyping({
-				...isTyping,
-				[userInfo.userName]: null
-			});
+			if (userInfo.gameSettings && !userInfo.gameSettings.disableTyping) {
+				updateIsTyping(true);
+			}
+
 			const chat = {
 				chat: currentValue,
 				uid: gameInfo.general.uid
@@ -1174,7 +1171,8 @@ Gamechat.propTypes = {
 	allEmotes: PropTypes.array,
 	updateIsTyping: PropTypes.func,
 	notesActive: PropTypes.bool,
-	toggleNotes: PropTypes.func
+	toggleNotes: PropTypes.func,
+	isTyping: PropTypes.object
 };
 
 const GamechatContainer = props => (

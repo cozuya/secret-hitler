@@ -397,7 +397,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	sendGameList();
 };
 
-module.exports.handleUpdateTyping = ({ userName, lastTypingTime, uid }) => {
+module.exports.handleUpdateTyping = ({ userName, uid }) => {
 	const game = games[uid];
 	const room = io.sockets.adapter.rooms[uid];
 
@@ -405,12 +405,15 @@ module.exports.handleUpdateTyping = ({ userName, lastTypingTime, uid }) => {
 		return;
 	}
 
+	const time = Date.now();
 	const roomSockets = Object.keys(room.sockets).map(sockedId => io.sockets.connected[sockedId]);
 
 	roomSockets.forEach(socket => {
 		if (socket && socket.handshake.session.passport && socket.handshake.session.passport.user !== userName) {
-			game.isTyping[userName] = lastTypingTime;
-			socket.emit('isTypingUpdate', game.isTyping);
+			socket.emit('isTypingUpdate', {
+				userName,
+				time
+			});
 		}
 	});
 };

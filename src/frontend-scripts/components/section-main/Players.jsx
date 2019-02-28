@@ -183,9 +183,9 @@ class Players extends React.Component {
 	renderTyping(player) {
 		const { isTyping } = this.props;
 
-		if (isTyping && isTyping[player.userName] && Date.now() - isTyping[player.userName] < 2000) {
+		if (isTyping[player.userName] && Date.now() - isTyping[player.userName] < 2000) {
 			setTimeout(() => {
-				if (Date.now() - this.props.isTyping[player.userName] >= 2000) {
+				if (Date.now() - isTyping[player.userName] >= 2000) {
 					this.forceUpdate();
 				}
 			}, 2000);
@@ -618,7 +618,8 @@ Players.propTypes = {
 	isReplay: PropTypes.bool,
 	toggleNotes: PropTypes.func,
 	playerNotesActive: PropTypes.string,
-	isTyping: PropTypes.object
+	isTyping: PropTypes.object,
+	onClickedTakeSeat: PropTypes.func
 };
 
 const PlayersContainer = props => <IsTypingContext.Consumer>{p => <Players {...props} isTyping={p ? p.isTyping : null} />}</IsTypingContext.Consumer>;
