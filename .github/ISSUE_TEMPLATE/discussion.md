@@ -1,7 +1,7 @@
 ---
 name: 💬 Discussion
 about: If you just want to start a discussion use me!
-title: "[DISC]"
+title: ""
 labels: 'discussion'
 assignees: ''
 
