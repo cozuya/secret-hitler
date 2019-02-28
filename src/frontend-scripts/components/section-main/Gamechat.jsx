@@ -680,6 +680,12 @@ class Gamechat extends React.Component {
 					window.location.hash = `#/replay/${gameInfo.general.uid}`;
 				};
 
+				window.removeEventListener('beforeunload', e => {
+					e.preventDefault();
+					e.returnValue = '';
+					return;
+				});
+
 				return (
 					<MenuButton>
 						<div className="ui primary button" onClick={onClick}>

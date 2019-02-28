@@ -107,6 +107,28 @@ export default class Game extends React.Component {
 		) {
 			window.location.hash = '#/';
 		}
+
+		if (gameInfo.gameState.isStarted && userInfo.isSeated && !gameInfo.gameState.isCompleted) {
+			window.addEventListener('beforeunload', e => {
+				e.preventDefault();
+				e.returnValue = '';
+				return;
+			});
+		} else {
+			window.removeEventListener('beforeunload', e => {
+				e.preventDefault();
+				e.returnValue = '';
+				return;
+			});
+		}
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('beforeunload', e => {
+			e.preventDefault();
+			e.returnValue = '';
+			return;
+		});
 	}
 
 	updateIsTyping = () => {
