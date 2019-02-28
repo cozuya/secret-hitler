@@ -8,3 +8,6 @@ assignees: ''
 ---
 
 Feel free to add anything you want here:
+
+---
+sh.io discussion template
