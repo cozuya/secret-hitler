@@ -1,23 +1,21 @@
 import React from 'react';
-import $ from 'jquery';
+import Switch from 'react-switch';
+import Select from 'react-select';
 import { Range } from 'rc-slider';
-import Checkbox from 'semantic-ui-checkbox';
 import blacklistedWords from '../../../../iso/blacklistwords';
 import PropTypes from 'prop-types';
-import { renderFlagDropdown } from '../utils.jsx';
-
-$.fn.checkbox = Checkbox;
 
 export default class Creategame extends React.Component {
 	constructor(props) {
 		super(props);
 
-		let user, isRainbow;
+		this.user;
+		this.isRainbow;
 		if (this.props.userList.list) {
-			user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
+			this.user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 		}
-		if (user) {
-			isRainbow = user.wins + user.losses > 49;
+		if (this.user) {
+			this.isRainbow = this.user.wins + this.user.losses > 49;
 		}
 
 		this.state = {
@@ -28,8 +26,9 @@ export default class Creategame extends React.Component {
 			disablegamechat: false,
 			disableobserver: false,
 			privateShowing: false,
+			password: '',
 			containsBadWord: false,
-			rainbowgame: isRainbow,
+			rainbowgame: this.isRainbow,
 			checkedSliderValues: [false, false, true, false, false, false],
 			checkedRebalanceValues: [true, false, true],
 			privateonlygame: false,
@@ -56,251 +55,666 @@ export default class Creategame extends React.Component {
 		};
 	}
 
-	componentDidUpdate(prevProps, prevState) {
-		const self = this;
-		const { customGameSettings } = this.state;
+	renderFlagDropdown() {
+		const options = [
+			{ value: 'none', label: 'None' },
+			{ value: 'us', label: 'United States' },
+			{ value: 'ca', label: 'Canada' },
+			{ value: 'de', label: 'Germany' },
+			{ value: 'gb', label: 'United Kingdom' },
+			{ value: 'au', label: 'Australia' },
+			{ value: 'af', label: 'Afghanistan' },
+			{ value: 'ax', label: 'Aland Islands' },
+			{ value: 'al', label: 'Albania' },
+			{ value: 'dz', label: 'Algeria' },
+			{ value: 'as', label: 'American Samoa' },
+			{ value: 'ad', label: 'Andorra' },
+			{ value: 'ao', label: 'Angola' },
+			{ value: 'ai', label: 'Anguilla' },
+			{ value: 'ag', label: 'Antigua' },
+			{ value: 'ar', label: 'Argentina' },
+			{ value: 'am', label: 'Armenia' },
+			{ value: 'aw', label: 'Aruba' },
+			{ value: 'at', label: 'Austria' },
+			{ value: 'az', label: 'Azerbaijan' },
+			{ value: 'bs', label: 'Bahamas' },
+			{ value: 'bh', label: 'Bahrain' },
+			{ value: 'bd', label: 'Bangladesh' },
+			{ value: 'bb', label: 'Barbados' },
+			{ value: 'by', label: 'Belarus' },
+			{ value: 'be', label: 'Belgium' },
+			{ value: 'bz', label: 'Belize' },
+			{ value: 'bj', label: 'Benin' },
+			{ value: 'bm', label: 'Bermuda' },
+			{ value: 'bt', label: 'Bhutan' },
+			{ value: 'bo', label: 'Bolivia' },
+			{ value: 'ba', label: 'Bosnia' },
+			{ value: 'bw', label: 'Botswana' },
+			{ value: 'bv', label: 'Bouvet Island' },
+			{ value: 'br', label: 'Brazil' },
+			{ value: 'vg', label: 'British Virgin Islands' },
+			{ value: 'bn', label: 'Brunei' },
+			{ value: 'bg', label: 'Bulgaria' },
+			{ value: 'bf', label: 'Burkina Faso' },
+			{ value: 'mm', label: 'Burma' },
+			{ value: 'bi', label: 'Burundi' },
+			{ value: 'tc', label: 'Caicos Islands' },
+			{ value: 'kh', label: 'Cambodia' },
+			{ value: 'cm', label: 'Cameroon' },
+			{ value: 'cn', label: 'China' },
+			{ value: 'cv', label: 'Cape Verde' },
+			{ value: 'ky', label: 'Cayman Islands' },
+			{ value: 'cf', label: 'Central African Republic' },
+			{ value: 'td', label: 'Chad' },
+			{ value: 'cl', label: 'Chile' },
+			{ value: 'cx', label: 'Christmas Island' },
+			{ value: 'cc', label: 'Cocos Islands' },
+			{ value: 'co', label: 'Colombia' },
+			{ value: 'km', label: 'Comoros' },
+			{ value: 'cg', label: 'Congo Brazzaville' },
+			{ value: 'cd', label: 'Congo' },
+			{ value: 'ck', label: 'Cook Islands' },
+			{ value: 'cr', label: 'Costa Rica' },
+			{ value: 'ci', label: 'Cote Divoire' },
+			{ value: 'hr', label: 'Croatia' },
+			{ value: 'cu', label: 'Cuba' },
+			{ value: 'cy', label: 'Cyprus' },
+			{ value: 'cz', label: 'Czech Republic' },
+			{ value: 'dk', label: 'Denmark' },
+			{ value: 'dj', label: 'Djibouti' },
+			{ value: 'dm', label: 'Dominica' },
+			{ value: 'do', label: 'Dominican Republic' },
+			{ value: 'ec', label: 'Ecuador' },
+			{ value: 'eg', label: 'Egypt' },
+			{ value: 'sv', label: 'El Salvador' },
+			{ value: 'gq', label: 'Equatorial Guinea' },
+			{ value: 'er', label: 'Eritrea' },
+			{ value: 'ee', label: 'Estonia' },
+			{ value: 'et', label: 'Ethiopia' },
+			{ value: 'eu', label: 'European Union' },
+			{ value: 'fk', label: 'Falkland Islands' },
+			{ value: 'fo', label: 'Faroe Islands' },
+			{ value: 'fj', label: 'Fiji' },
+			{ value: 'fi', label: 'Finland' },
+			{ value: 'fr', label: 'France' },
+			{ value: 'gf', label: 'French Guiana' },
+			{ value: 'pf', label: 'French Polynesia' },
+			{ value: 'tf', label: 'French Territories' },
+			{ value: 'ga', label: 'Gabon' },
+			{ value: 'gm', label: 'Gambia' },
+			{ value: 'ge', label: 'Georgia' },
+			{ value: 'gh', label: 'Ghana' },
+			{ value: 'gi', label: 'Gibraltar' },
+			{ value: 'gr', label: 'Greece' },
+			{ value: 'gl', label: 'Greenland' },
+			{ value: 'gd', label: 'Grenada' },
+			{ value: 'gp', label: 'Guadeloupe' },
+			{ value: 'gu', label: 'Guam' },
+			{ value: 'gt', label: 'Guatemala' },
+			{ value: 'gw', label: 'Guinea-Bissau' },
+			{ value: 'gn', label: 'Guinea' },
+			{ value: 'gy', label: 'Guyana' },
+			{ value: 'ht', label: 'Haiti' },
+			{ value: 'hm', label: 'Heard Island' },
+			{ value: 'hn', label: 'Honduras' },
+			{ value: 'hk', label: 'Hong Kong' },
+			{ value: 'hu', label: 'Hungary' },
+			{ value: 'is', label: 'Iceland' },
+			{ value: 'in', label: 'India' },
+			{ value: 'io', label: 'Indian Ocean Territory' },
+			{ value: 'id', label: 'Indonesia' },
+			{ value: 'ir', label: 'Iran' },
+			{ value: 'iq', label: 'Iraq' },
+			{ value: 'ie', label: 'Ireland' },
+			{ value: 'il', label: 'Israel' },
+			{ value: 'it', label: 'Italy' },
+			{ value: 'jm', label: 'Jamaica' },
+			{ value: 'jp', label: 'Japan' },
+			{ value: 'jo', label: 'Jordan' },
+			{ value: 'kz', label: 'Kazakhstan' },
+			{ value: 'ke', label: 'Kenya' },
+			{ value: 'ki', label: 'Kiribati' },
+			{ value: 'kw', label: 'Kuwait' },
+			{ value: 'kg', label: 'Kyrgyzstan' },
+			{ value: 'la', label: 'Laos' },
+			{ value: 'lv', label: 'Latvia' },
+			{ value: 'lb', label: 'Lebanon' },
+			{ value: 'ls', label: 'Lesotho' },
+			{ value: 'lr', label: 'Liberia' },
+			{ value: 'ly', label: 'Libya' },
+			{ value: 'li', label: 'Liechtenstein' },
+			{ value: 'lt', label: 'Lithuania' },
+			{ value: 'lu', label: 'Luxembourg' },
+			{ value: 'mo', label: 'Macau' },
+			{ value: 'mk', label: 'Macedonia' },
+			{ value: 'mg', label: 'Madagascar' },
+			{ value: 'mw', label: 'Malawi' },
+			{ value: 'my', label: 'Malaysia' },
+			{ value: 'mv', label: 'Maldives' },
+			{ value: 'ml', label: 'Mali' },
+			{ value: 'mt', label: 'Malta' },
+			{ value: 'mh', label: 'Marshall Islands' },
+			{ value: 'mq', label: 'Martinique' },
+			{ value: 'mr', label: 'Mauritania' },
+			{ value: 'mu', label: 'Mauritius' },
+			{ value: 'yt', label: 'Mayotte' },
+			{ value: 'mx', label: 'Mexico' },
+			{ value: 'fm', label: 'Micronesia' },
+			{ value: 'md', label: 'Moldova' },
+			{ value: 'mc', label: 'Monaco' },
+			{ value: 'mn', label: 'Mongolia' },
+			{ value: 'me', label: 'Montenegro' },
+			{ value: 'ms', label: 'Montserrat' },
+			{ value: 'ma', label: 'Morocco' },
+			{ value: 'mz', label: 'Mozambique' },
+			{ value: 'na', label: 'Namibia' },
+			{ value: 'nr', label: 'Nauru' },
+			{ value: 'np', label: 'Nepal' },
+			{ value: 'an', label: 'Netherlands Antilles' },
+			{ value: 'nl', label: 'Netherlands' },
+			{ value: 'nc', label: 'New Caledonia' },
+			{ value: 'pg', label: 'New Guinea' },
+			{ value: 'nz', label: 'New Zealand' },
+			{ value: 'ni', label: 'Nicaragua' },
+			{ value: 'ne', label: 'Niger' },
+			{ value: 'ng', label: 'Nigeria' },
+			{ value: 'nu', label: 'Niue' },
+			{ value: 'nf', label: 'Norfolk Island' },
+			{ value: 'kp', label: 'North Korea' },
+			{ value: 'mp', label: 'Northern Mariana Islands' },
+			{ value: 'no', label: 'Norway' },
+			{ value: 'om', label: 'Oman' },
+			{ value: 'pk', label: 'Pakistan' },
+			{ value: 'pw', label: 'Palau' },
+			{ value: 'ps', label: 'Palestine' },
+			{ value: 'pa', label: 'Panama' },
+			{ value: 'py', label: 'Paraguay' },
+			{ value: 'pe', label: 'Peru' },
+			{ value: 'ph', label: 'Philippines' },
+			{ value: 'pn', label: 'Pitcairn Islands' },
+			{ value: 'pl', label: 'Poland' },
+			{ value: 'pt', label: 'Portugal' },
+			{ value: 'pr', label: 'Puerto Rico' },
+			{ value: 'qa', label: 'Qatar' },
+			{ value: 're', label: 'Reunion' },
+			{ value: 'ro', label: 'Romania' },
+			{ value: 'ru', label: 'Russia' },
+			{ value: 'rw', label: 'Rwanda' },
+			{ value: 'sh', label: 'Saint Helena' },
+			{ value: 'kn', label: 'Saint Kitts and Nevis' },
+			{ value: 'lc', label: 'Saint Lucia' },
+			{ value: 'pm', label: 'Saint Pierre' },
+			{ value: 'vc', label: 'Saint Vincent' },
+			{ value: 'ws', label: 'Samoa' },
+			{ value: 'sm', label: 'San Marino' },
+			{ value: 'gs', label: 'Sandwich Islands' },
+			{ value: 'st', label: 'Sao Tome' },
+			{ value: 'sa', label: 'Saudi Arabia' },
+			{ value: 'gb sct', label: 'Scotland' },
+			{ value: 'sn', label: 'Senegal' },
+			{ value: 'cs', label: 'Serbia' },
+			{ value: 'rs', label: 'Serbia' },
+			{ value: 'sc', label: 'Seychelles' },
+			{ value: 'sl', label: 'Sierra Leone' },
+			{ value: 'sg', label: 'Singapore' },
+			{ value: 'sk', label: 'Slovakia' },
+			{ value: 'si', label: 'Slovenia' },
+			{ value: 'sb', label: 'Solomon Islands' },
+			{ value: 'so', label: 'Somalia' },
+			{ value: 'za', label: 'South Africa' },
+			{ value: 'kr', label: 'South Korea' },
+			{ value: 'es', label: 'Spain' },
+			{ value: 'lk', label: 'Sri Lanka' },
+			{ value: 'sd', label: 'Sudan' },
+			{ value: 'sr', label: 'Suriname' },
+			{ value: 'sj', label: 'Svalbard' },
+			{ value: 'sz', label: 'Swaziland' },
+			{ value: 'se', label: 'Sweden' },
+			{ value: 'ch', label: 'Switzerland' },
+			{ value: 'sy', label: 'Syria' },
+			{ value: 'tw', label: 'Taiwan' },
+			{ value: 'tj', label: 'Tajikistan' },
+			{ value: 'tz', label: 'Tanzania' },
+			{ value: 'th', label: 'Thailand' },
+			{ value: 'tl', label: 'Timorleste' },
+			{ value: 'tg', label: 'Togo' },
+			{ value: 'tk', label: 'Tokelau' },
+			{ value: 'to', label: 'Tonga' },
+			{ value: 'tt', label: 'Trinidad' },
+			{ value: 'tn', label: 'Tunisia' },
+			{ value: 'tr', label: 'Turkey' },
+			{ value: 'tm', label: 'Turkmenistan' },
+			{ value: 'tv', label: 'Tuvalu' },
+			{ value: 'ug', label: 'Uganda' },
+			{ value: 'ua', label: 'Ukraine' },
+			{ value: 'ae', label: 'United Arab Emirates' },
+			{ value: 'uy', label: 'Uruguay' },
+			{ value: 'um', label: 'Us Minor Islands' },
+			{ value: 'vi', label: 'Us Virgin Islands' },
+			{ value: 'uz', label: 'Uzbekistan' },
+			{ value: 'vu', label: 'Vanuatu' },
+			{ value: 'va', label: 'Vatican City' },
+			{ value: 've', label: 'Venezuela' },
+			{ value: 'vn', label: 'Vietnam' },
+			{ value: 'gb wls', label: 'Wales' },
+			{ value: 'wf', label: 'Wallis and Futuna' },
+			{ value: 'eh', label: 'Western Sahara' },
+			{ value: 'ye', label: 'Yemen' },
+			{ value: 'zm', label: 'Zambia' },
+			{ value: 'zw', label: 'Zimbabwe' }
+		];
 
-		if (customGameSettings.enabled) {
-			$(this.hitseesfas).checkbox({
-				onChecked() {
-					self.state.customGameSettings.hitKnowsFas = true;
-					self.state.customGameSettings.enabled = true;
-					self.setState({ casualgame: true });
-				},
-				onUnchecked() {
-					self.state.customGameSettings.hitKnowsFas = false;
-					self.state.customGameSettings.enabled = true;
-					self.setState({ casualgame: true });
+		const style = {
+			option: (styles, state) => ({
+				...styles,
+				backgroundColor: state.isSelected ? 'rgba(127, 65, 225, 0.75)' : state.isFocused ? 'rgba(98, 124, 200, 0.1)' : null,
+				color: 'black',
+				padding: '5px',
+				fontWeight: state.isSelected ? 'bold' : null
+			})
+		};
+
+		const findValue = val => {
+			for (let value of options) {
+				if (val === value.value) {
+					return value;
 				}
-			});
-
-			$(this.power1).dropdown({
-				onChange(val) {
-					self.state.customGameSettings.powers[0] = val;
-					self.state.customGameSettings.enabled = true;
-					self.setState({ casualgame: true });
-				}
-			});
-
-			$(this.power2).dropdown({
-				onChange(val) {
-					self.state.customGameSettings.powers[1] = val;
-					self.state.customGameSettings.enabled = true;
-					self.setState({ casualgame: true });
-				}
-			});
-
-			$(this.power3).dropdown({
-				onChange(val) {
-					self.state.customGameSettings.powers[2] = val;
-					self.state.customGameSettings.enabled = true;
-					self.setState({ casualgame: true });
-				}
-			});
-
-			$(this.power4).dropdown({
-				onChange(val) {
-					self.state.customGameSettings.powers[3] = val;
-					self.state.customGameSettings.enabled = true;
-					self.setState({ casualgame: true });
-				}
-			});
-
-			$(this.power5).dropdown({
-				onChange(val) {
-					self.state.customGameSettings.powers[4] = val;
-					self.state.customGameSettings.enabled = true;
-					self.setState({ casualgame: true });
-				}
-			});
-		}
-	}
-
-	componentDidMount() {
-		const self = this;
-
-		if (this._select) {
-			$(this._select).dropdown();
-		}
-
-		$(this.verified).checkbox({
-			onChecked() {
-				self.setState({ isVerifiedOnly: true });
-			},
-			onUnchecked() {
-				self.setState({ isVerifiedOnly: false });
 			}
-		});
+		};
 
-		$(this.experiencedmode).checkbox({
-			onChecked() {
-				self.setState({ experiencedmode: true });
-			},
-			onUnchecked() {
-				self.setState({ experiencedmode: false });
-			}
-		});
-
-		$(this.disablechat).checkbox({
-			onChecked() {
-				self.setState({ disablechat: true });
-			},
-			onUnchecked() {
-				self.setState({ disablechat: false });
-			}
-		});
-
-		$(this.elolimited).checkbox({
-			onChecked() {
-				self.setState({ isEloLimited: true });
-			},
-			onUnchecked() {
-				self.setState({ isEloLimited: false });
-			}
-		});
-
-		$(this.disablegamechat).checkbox({
-			onChecked() {
-				self.setState({ disablegamechat: true });
-			},
-			onUnchecked() {
-				self.setState({ disablegamechat: false });
-			}
-		});
-
-		$(this.privategame).checkbox({
-			onChecked() {
-				self.setState({ privateShowing: true });
-			},
-			onUnchecked() {
-				self.setState({ privateShowing: false });
-			}
-		});
-
-		$(this.rainbowgame).checkbox({
-			onChecked() {
-				self.setState({ rainbowgame: true });
-			},
-			onUnchecked() {
-				self.setState({ rainbowgame: false });
-			}
-		});
-
-		$(this.tournyconfirm).checkbox({
-			onChecked() {
-				self.setState({ isTourny: true, sliderValues: [8] });
-			},
-			onUnchecked() {
-				self.setState({ isTourny: false, sliderValues: [5, 10] });
-			}
-		});
-
-		$(this.blindmode).checkbox({
-			onChecked() {
-				self.setState({ blindMode: true });
-			},
-			onUnchecked() {
-				self.setState({ blindMode: false });
-			}
-		});
-
-		$(this.rebalance69p).checkbox({
-			onChecked() {
-				self.setState({ rebalance69p: true });
-			},
-			onUnchecked() {
-				self.setState({ rebalance69p: false });
-			}
-		});
-
-		$(this.privateonlygame).checkbox({
-			onChecked() {
-				self.setState({ privateonlygame: true });
-			},
-			onUnchecked() {
-				self.setState({ privateonlygame: false });
-			}
-		});
-
-		$(this.disableobserver).checkbox({
-			onChecked() {
-				self.setState({ disableobserver: true });
-			},
-			onUnchecked() {
-				self.setState({ disableobserver: false });
-			}
-		});
-
-		$(this.casualgame).checkbox({
-			onChecked() {
-				self.setState({ casualgame: true });
-			},
-			onUnchecked() {
-				if ((self.state.timedMode && self.state.timedSliderValue[0] < 30) || self.state.customGameSettings.enabled) self.setState({ casualgame: true });
-				else self.setState({ casualgame: false });
-			}
-		});
-
-		$(this.timed).checkbox({
-			onChecked() {
-				self.setState({ timedMode: true });
-			},
-			onUnchecked() {
-				self.setState({ timedMode: false });
-			}
-		});
-
-		$(this.customgame).checkbox({
-			onChecked() {
-				self.state.customGameSettings.enabled = true;
-				self.setState({ casualgame: true });
-			},
-			onUnchecked() {
-				self.state.customGameSettings.enabled = false;
-				self.setState({});
-			}
-		});
+		return (
+			<Select
+				defaultValue={options[0]}
+				options={options}
+				styles={style}
+				value={findValue(this.state.flag)}
+				onChange={(inputValue, action) => this.setState({ flag: inputValue.value })}
+				menuPlacement={'auto'}
+				isSearchable={true}
+				menuShouldScrollIntoView={true}
+			/>
+		);
 	}
 
 	powerPicker(slot) {
-		const name = () => {
-			if (slot == 0) return 'First Power';
-			if (slot == 1) return 'Second Power';
-			if (slot == 2) return 'Third Power';
-			if (slot == 3) return 'Fourth Power';
-			return 'Fifth Power';
+		const options = [
+			{ value: 'null', label: 'No Power' },
+			{ value: 'investigate', label: 'Investigate' },
+			{ value: 'deckpeek', label: 'Deck Peek' },
+			{ value: 'election', label: 'Special Election' },
+			{ value: 'bullet', label: 'Bullet' },
+			{ value: 'reverseinv', label: 'Show Loyalty' },
+			{ value: 'peekdrop', label: 'Peek & Drop' }
+		];
+
+		const style = {
+			option: (styles, state) => ({
+				...styles,
+				backgroundColor: state.isSelected ? 'rgba(127, 65, 225, 0.75)' : state.isFocused ? 'rgba(98, 124, 200, 0.1)' : null,
+				color: 'black',
+				padding: '5px',
+				fontWeight: state.isSelected ? 'bold' : null
+			})
 		};
+
+		const findValue = val => {
+			for (let value of options) {
+				if (val === value.value) {
+					return value;
+				}
+			}
+		};
+
 		return (
-			<div ref={select => (this[`power${slot + 1}`] = select)} className={`ui search selection dropdown power${slot + 1}val`} style={{ minWidth: '11em' }}>
-				<h4 className="ui header">{name()}</h4>
-				<input type="hidden" name={`power${slot + 1}val`} />
-				<i className="dropdown icon" />
-				<div className="default text">No Power</div>
-				<div className="menu">
-					<div className="item" data-value="null">
-						No Power
-					</div>
-					<div className="item" data-value="investigate">
-						Investigate
-					</div>
-					<div className="item" data-value="deckpeek">
-						Deck Peek
-					</div>
-					<div className="item" data-value="election">
-						Special Election
-					</div>
-					<div className="item" data-value="bullet">
-						Bullet
-					</div>
-					<div className="item" data-value="reverseinv">
-						Show Loyalty
-					</div>
-					<div className="item" data-value="peekdrop">
-						Peek & Drop
-					</div>
-				</div>
-			</div>
+			<Select
+				defaultValue={options[0]}
+				options={options}
+				styles={style}
+				value={findValue(this.state.customGameSettings.powers[slot])}
+				onChange={(inputValue, action) => {
+					let newPowerList = this.state.customGameSettings.powers;
+					newPowerList[slot] = inputValue.value;
+					this.setState({ customGameSettings: Object.assign(this.state.customGameSettings, { powers: newPowerList }) });
+				}}
+				defaultMenuIsOpen={true}
+				menuPlacement={'top'}
+				menuShouldScrollIntoView={true}
+			/>
 		);
+	}
+
+	presetSelector(preset) {
+		switch (preset) {
+			case 'Meoww':
+				this.setState({
+					gameName: 'Meoww',
+					sliderValues: [5, 5],
+					experiencedmode: true,
+					disablechat: false,
+					disablegamechat: false,
+					disableobserver: false,
+					privateShowing: false,
+					containsBadWord: false,
+					rainbowgame: true,
+					checkedSliderValues: [true, false, false, false, false, false],
+					checkedRebalanceValues: [false, false, false],
+					privateonlygame: false,
+					isTourny: false,
+					casualgame: false,
+					blindMode: false,
+					timedMode: false,
+					isVerifiedOnly: false,
+					timedSliderValue: [120],
+					customGameSliderValue: [7],
+					eloSliderValue: [1700],
+					isEloLimited: true,
+					customGameSettings: {
+						enabled: false,
+						// Valid powers: investigate, deckpeek, election, bullet; null for no power
+						powers: [null, null, null, null, null], // last "power" is always a fas victory
+						hitlerZone: 3, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 1, // 1-3, does not include hit
+						hitKnowsFas: false,
+						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+						trackState: { lib: 0, fas: 0 }
+					}
+				});
+				break;
+			case 'High ELO':
+				this.setState({
+					gameName: 'High ELO',
+					sliderValues: [7, 7],
+					experiencedmode: true,
+					disablechat: false,
+					disablegamechat: false,
+					disableobserver: false,
+					privateShowing: false,
+					containsBadWord: false,
+					rainbowgame: true,
+					checkedSliderValues: [false, false, true, false, false, false],
+					checkedRebalanceValues: [false, false, false],
+					privateonlygame: false,
+					isTourny: false,
+					casualgame: false,
+					blindMode: false,
+					timedMode: false,
+					isVerifiedOnly: false,
+					timedSliderValue: [120],
+					customGameSliderValue: [7],
+					eloSliderValue: [1700],
+					isEloLimited: true,
+					customGameSettings: {
+						enabled: false,
+						// Valid powers: investigate, deckpeek, election, bullet; null for no power
+						powers: [null, null, null, null, null], // last "power" is always a fas victory
+						hitlerZone: 3, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 1, // 1-3, does not include hit
+						hitKnowsFas: false,
+						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+						trackState: { lib: 0, fas: 0 }
+					}
+				});
+				break;
+			case 'Gun Game':
+				this.setState({
+					gameName: 'Gun Game',
+					sliderValues: [7, 7],
+					experiencedmode: true,
+					disablechat: false,
+					disablegamechat: false,
+					disableobserver: false,
+					privateShowing: false,
+					containsBadWord: false,
+					rainbowgame: true,
+					checkedSliderValues: [false, false, true, false, false, false],
+					checkedRebalanceValues: [false, false, false],
+					privateonlygame: false,
+					isTourny: false,
+					casualgame: true,
+					blindMode: false,
+					timedMode: false,
+					isVerifiedOnly: false,
+					timedSliderValue: [120],
+					customGameSliderValue: [7],
+					eloSliderValue: [1600],
+					isEloLimited: false,
+					customGameSettings: {
+						enabled: true,
+						// Valid powers: investigate, deckpeek, election, bullet; null for no power
+						powers: ['bullet', 'bullet', 'bullet', 'bullet', 'bullet'], // last "power" is always a fas victory
+						hitlerZone: 4, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 1, // 1-3, does not include hit
+						hitKnowsFas: false,
+						deckState: { lib: 6, fas: 13 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+						trackState: { lib: 0, fas: 0 }
+					}
+				});
+				break;
+			case '2R1H':
+				this.setState({
+					gameName: '2 Rooms 1 Hitler',
+					sliderValues: [7, 7],
+					experiencedmode: true,
+					disablechat: true,
+					disablegamechat: false,
+					disableobserver: false,
+					privateShowing: true,
+					password: 'rsar',
+					containsBadWord: false,
+					rainbowgame: true,
+					checkedSliderValues: [false, false, true, false, false, false],
+					checkedRebalanceValues: [false, false, false],
+					privateonlygame: false,
+					isTourny: false,
+					casualgame: false,
+					blindMode: false,
+					timedMode: false,
+					isVerifiedOnly: false,
+					timedSliderValue: [120],
+					customGameSliderValue: [7],
+					eloSliderValue: [1600],
+					isEloLimited: false,
+					customGameSettings: {
+						enabled: false,
+						// Valid powers: investigate, deckpeek, election, bullet; null for no power
+						powers: [null, null, null, null, null], // last "power" is always a fas victory
+						hitlerZone: 3, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 1, // 1-3, does not include hit
+						hitKnowsFas: false,
+						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+						trackState: { lib: 0, fas: 0 }
+					}
+				});
+				break;
+			case 'Silent Game':
+				this.setState({
+					gameName: 'Silent Game',
+					sliderValues: [7, 7],
+					experiencedmode: true,
+					disablechat: true,
+					disablegamechat: false,
+					disableobserver: true,
+					privateShowing: false,
+					password: '',
+					containsBadWord: false,
+					rainbowgame: true,
+					checkedSliderValues: [false, false, true, false, false, false],
+					checkedRebalanceValues: [false, false, false],
+					privateonlygame: false,
+					isTourny: false,
+					casualgame: true,
+					blindMode: false,
+					timedMode: false,
+					isVerifiedOnly: false,
+					timedSliderValue: [120],
+					customGameSliderValue: [7],
+					eloSliderValue: [1600],
+					isEloLimited: false,
+					customGameSettings: {
+						enabled: false,
+						// Valid powers: investigate, deckpeek, election, bullet; null for no power
+						powers: [null, null, null, null, null], // last "power" is always a fas victory
+						hitlerZone: 3, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 1, // 1-3, does not include hit
+						hitKnowsFas: false,
+						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+						trackState: { lib: 0, fas: 0 }
+					}
+				});
+				break;
+			case 'Voice - ELO':
+				this.setState({
+					gameName: 'Voice Chat Only',
+					sliderValues: [7, 7],
+					experiencedmode: true,
+					disablechat: false,
+					disablegamechat: false,
+					disableobserver: false,
+					privateShowing: false,
+					password: '',
+					containsBadWord: false,
+					rainbowgame: true,
+					checkedSliderValues: [false, false, true, false, false, false],
+					checkedRebalanceValues: [false, false, false],
+					privateonlygame: false,
+					isTourny: false,
+					casualgame: false,
+					blindMode: false,
+					timedMode: false,
+					isVerifiedOnly: false,
+					timedSliderValue: [120],
+					customGameSliderValue: [7],
+					eloSliderValue: [1600],
+					isEloLimited: false,
+					customGameSettings: {
+						enabled: false,
+						// Valid powers: investigate, deckpeek, election, bullet; null for no power
+						powers: [null, null, null, null, null], // last "power" is always a fas victory
+						hitlerZone: 3, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 1, // 1-3, does not include hit
+						hitKnowsFas: false,
+						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+						trackState: { lib: 0, fas: 0 }
+					}
+				});
+				break;
+			case 'Inv Game':
+				this.setState({
+					gameName: 'Investigation Game',
+					sliderValues: [7, 7],
+					experiencedmode: true,
+					disablechat: false,
+					disablegamechat: false,
+					disableobserver: false,
+					privateShowing: false,
+					password: '',
+					containsBadWord: false,
+					rainbowgame: true,
+					checkedSliderValues: [false, false, true, false, false, false],
+					checkedRebalanceValues: [false, false, false],
+					privateonlygame: false,
+					isTourny: false,
+					casualgame: true,
+					blindMode: false,
+					timedMode: false,
+					isVerifiedOnly: false,
+					timedSliderValue: [120],
+					customGameSliderValue: [7],
+					eloSliderValue: [1600],
+					isEloLimited: false,
+					customGameSettings: {
+						enabled: true,
+						// Valid powers: investigate, deckpeek, election, bullet; null for no power
+						powers: ['investigate', 'reverseinv', 'investigate', 'reverseinv', 'investigate'], // last "power" is always a fas victory
+						hitlerZone: 3, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 1, // 1-3, does not include hit
+						hitKnowsFas: false,
+						deckState: { lib: 6, fas: 15 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+						trackState: { lib: 0, fas: 0 }
+					}
+				});
+				break;
+			case 'Dev Game':
+				this.setState({
+					gameName: 'TESTING',
+					sliderValues: [5, 5],
+					experiencedmode: true,
+					disablechat: false,
+					disablegamechat: false,
+					disableobserver: false,
+					privateShowing: false,
+					password: '',
+					containsBadWord: false,
+					rainbowgame: true,
+					checkedSliderValues: [true, false, false, false, false, false],
+					checkedRebalanceValues: [false, false, false],
+					privateonlygame: false,
+					isTourny: false,
+					casualgame: true,
+					blindMode: false,
+					timedMode: false,
+					isVerifiedOnly: false,
+					timedSliderValue: [120],
+					customGameSliderValue: [5],
+					eloSliderValue: [1600],
+					isEloLimited: false,
+					customGameSettings: {
+						enabled: true,
+						// Valid powers: investigate, deckpeek, election, bullet; null for no power
+						powers: ['investigate', 'deckpeek', 'bullet', 'peekdrop', 'election'], // last "power" is always a fas victory
+						hitlerZone: 1, // 1-5
+						vetoZone: 1, // 1-5, must be larger than fas track state
+						fascistCount: 1, // 1-3, does not include hit
+						hitKnowsFas: true,
+						deckState: { lib: 6, fas: 19 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+						trackState: { lib: 0, fas: 0 }
+					}
+				});
+				break;
+			case 'Reset':
+				this.setState({
+					gameName: '',
+					sliderValues: [7, 7],
+					experiencedmode: true,
+					disablechat: false,
+					disablegamechat: false,
+					disableobserver: false,
+					privateShowing: false,
+					password: '',
+					containsBadWord: false,
+					rainbowgame: this.isRainbow,
+					checkedSliderValues: [false, false, true, false, false, false],
+					checkedRebalanceValues: [true, false, true],
+					privateonlygame: false,
+					isTourny: false,
+					casualgame: false,
+					blindMode: false,
+					timedMode: false,
+					isVerifiedOnly: false,
+					timedSliderValue: [120],
+					customGameSliderValue: [7],
+					eloSliderValue: [1600],
+					isEloLimited: false,
+					customGameSettings: {
+						enabled: false,
+						// Valid powers: investigate, deckpeek, election, bullet; null for no power
+						powers: [null, null, null, null, null], // last "power" is always a fas victory
+						hitlerZone: 3, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 1, // 1-3, does not include hit
+						hitKnowsFas: false,
+						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
+						trackState: { lib: 0, fas: 0 }
+					}
+				});
+		}
 	}
 
 	sliderNumFas = val => {
@@ -376,7 +790,6 @@ export default class Creategame extends React.Component {
 	};
 
 	createNewGame = () => {
-		const $creategame = $('section.creategame');
 		const { userInfo } = this.props;
 		const { customGameSettings, customGameSliderValue } = this.state;
 
@@ -384,23 +797,15 @@ export default class Creategame extends React.Component {
 			return;
 		}
 
-		let containsBadWord = false;
-
-		blacklistedWords.forEach(word => {
-			if (new RegExp(word, 'i').test($creategame.find('div.gamename input').val())) {
-				containsBadWord = true;
-			}
-		});
-
-		if (containsBadWord) {
-			this.setState({ containsBadWord: true });
+		if (this.state.containsBadWord) {
+			return;
 		} else if (userInfo.gameSettings && userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 			window.alert('Sorry, this service is currently unavailable.');
 		} else {
 			const excludedPlayerCount = this.state.checkedSliderValues.map((el, index) => (el ? null : index + 5)).filter(el => el);
 			const data = {
-				gameName: $creategame.find('div.gamename input').val() || 'New Game',
-				flag: $creategame.find('div.flag input').val() || 'none',
+				gameName: this.state.gameName || 'New Game',
+				flag: this.state.flag || 'none',
 				minPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.sliderValues[0],
 				excludedPlayerCount,
 				maxPlayersCount: customGameSettings.enabled ? customGameSliderValue[0] : this.state.isTourny ? undefined : this.state.sliderValues[1],
@@ -418,7 +823,7 @@ export default class Creategame extends React.Component {
 				rebalance7p: this.state.checkedRebalanceValues[1],
 				rebalance9p2f: this.state.checkedRebalanceValues[2],
 				eloSliderValue: this.state.isEloLimited ? this.state.eloSliderValue[0] : null,
-				privatePassword: this.state.privateShowing ? $(this.privategamepassword).val() : false,
+				privatePassword: this.state.privateShowing ? this.state.password : false,
 				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
 			};
 
@@ -595,14 +1000,19 @@ export default class Creategame extends React.Component {
 					<div className="four wide column elorow" style={{ margin: '-50 auto 0' }}>
 						<i className="big arrows alternate horizontal icon" />
 						<h4 className="ui header">Elo limited game</h4>
-						<div
-							className="ui fitted toggle checkbox"
-							ref={c => {
-								this.elolimited = c;
+						<Switch
+							onChange={checked => {
+								this.setState({ isEloLimited: checked });
 							}}
-						>
-							<input type="checkbox" name="elolimited" defaultChecked={false} />
-						</div>
+							checked={this.state.isEloLimited}
+							onColor="#627cc8"
+							offColor="#444444"
+							uncheckedIcon={false}
+							checkedIcon={false}
+							height={21}
+							width={48}
+							handleDiameter={21}
+						/>
 					</div>
 				</div>
 			);
@@ -906,14 +1316,19 @@ export default class Creategame extends React.Component {
 						</div>
 						<div className="eight wide column">
 							<h4 className="ui header">Hitler sees fascists</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.hitseesfas = c;
+							<Switch
+								onChange={checked => {
+									this.setState({ customGameSettings: Object.assign(this.state.customGameSettings, { hitKnowsFas: checked }) });
 								}}
-							>
-								<input type="checkbox" name="hitseesfas" defaultChecked={false} />
-							</div>
+								checked={this.state.customGameSettings.hitKnowsFas}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 					</div>
 					<div className="row">
@@ -979,6 +1394,45 @@ export default class Creategame extends React.Component {
 		);
 	}
 
+	renderPresetSelector() {
+		return (
+			<div className="sixteen wide column">
+				<h4 className="ui header" style={{ color: '#dd2f23', margin: '0' }}>
+					Presets:
+				</h4>
+				<br />
+				<button className="preset" onClick={() => this.presetSelector('High ELO')}>
+					High ELO
+				</button>
+				<button className="preset" onClick={() => this.presetSelector('Gun Game')}>
+					Gun Game
+				</button>
+				<button className="preset" onClick={() => this.presetSelector('2R1H')}>
+					2R1H
+				</button>
+				<button className="preset" onClick={() => this.presetSelector('Voice - ELO')}>
+					Voice - ELO
+				</button>
+				<button className="preset" onClick={() => this.presetSelector('Meoww')}>
+					Meoww
+				</button>
+				<br />
+				<button className="preset" onClick={() => this.presetSelector('Silent Game')}>
+					Silent Game
+				</button>
+				<button className="preset" onClick={() => this.presetSelector('Inv Game')}>
+					Inv Game
+				</button>
+				<button className="preset" onClick={() => this.presetSelector('Dev Game')}>
+					Dev Game
+				</button>
+				<button className="preset default" onClick={() => this.presetSelector('Reset')}>
+					Reset
+				</button>
+			</div>
+		);
+	}
+
 	getErrors() {
 		const errs = [];
 
@@ -1002,6 +1456,9 @@ export default class Creategame extends React.Component {
 			if (this.state.customGameSettings.vetoZone <= this.state.customGameSettings.trackState.fas) {
 				errs.push('Veto Zone cannot be active when the game starts.');
 			}
+		}
+		if (this.state.containsBadWord) {
+			errs.push("This game's name contains a forbidden word or fragment."); // eslint-disable-line
 		}
 		if (errs.length) return errs;
 		return null;
@@ -1042,12 +1499,11 @@ export default class Creategame extends React.Component {
 					</div>
 				</div>
 				<div className="ui grid">
+					{this.renderErrors()}
 					<div className="row">
 						<div className="four wide column">
 							<h4 className="ui header">Flag:</h4>
-							<div ref={select => (this._select = select)} className="ui search selection dropdown flag">
-								{renderFlagDropdown()}
-							</div>
+							{this.renderFlagDropdown()}
 						</div>
 						<div className="five wide column gamename">
 							<h4 className="ui header">Game name:</h4>
@@ -1059,21 +1515,41 @@ export default class Creategame extends React.Component {
 										const { LEGALCHARACTERS } = require('../../constants');
 										if (!LEGALCHARACTERS(e.key)) e.preventDefault();
 									}}
+									value={this.state.gameName}
+									onChange={e => {
+										let badWord = false;
+										blacklistedWords.forEach(word => {
+											if (new RegExp(word, 'i').test(e.target.value)) {
+												badWord = true;
+											}
+										});
+										this.setState({
+											gameName: `${e.target.value}`,
+											containsBadWord: badWord
+										});
+									}}
 								/>
 							</div>
 							{this.state.containsBadWord && <p className="contains-bad-word">This game name has a banned word or word fragment.</p>}
 						</div>
 						<div className="three wide column privategame">
-							<h4 className="ui header">Private game</h4>
+							<h4 className="ui header" style={{ marginBottom: '15px' }}>
+								Private game
+							</h4>
 							<i className="big yellow lock icon" />
-							<div
-								className="ui fitted toggle checkbox private"
-								ref={c => {
-									this.privategame = c;
+							<Switch
+								onChange={checked => {
+									this.setState({ privateShowing: checked });
 								}}
-							>
-								<input type="checkbox" name="privategame" defaultChecked={false} />
-							</div>
+								checked={this.state.privateShowing}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 						{this.state.privateShowing && (
 							<div className="four wide column ui input">
@@ -1082,16 +1558,15 @@ export default class Creategame extends React.Component {
 									maxLength="20"
 									placeholder="Password"
 									autoFocus
-									ref={c => {
-										this.privategamepassword = c;
-									}}
+									value={this.state.password}
+									onChange={e => this.setState({ password: e.target.value })}
 								/>
 							</div>
 						)}
 					</div>
+					{this.renderPresetSelector()}
 					<div className="row slider">{this.renderPlayerSlider()}</div>
 					<div className="row rebalance">{!this.state.customGameSettings.enabled && this.renderRebalanceCheckboxes()}</div>
-
 					{/* <div className="row tourny-row">
 						<div className="sixteen wide column tourny-container">
 							<h4 className="ui header">Tournament mode</h4>
@@ -1149,14 +1624,19 @@ export default class Creategame extends React.Component {
 							<h4 className="ui header">
 								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
 							</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.timed = c;
+							<Switch
+								onChange={checked => {
+									this.setState({ timedMode: checked });
 								}}
-							>
-								<input type="checkbox" name="timedmode" defaultChecked={false} />
-							</div>
+								checked={this.state.timedMode}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 					</div>
 					{this.props.userInfo.verified && (
@@ -1166,14 +1646,19 @@ export default class Creategame extends React.Component {
 								<h4 className="ui header" style={{ color: 'tan' }}>
 									Verified - only verified players can play in this game.
 								</h4>
-								<div
-									className="ui fitted toggle checkbox"
-									ref={c => {
-										this.verified = c;
+								<Switch
+									onChange={checked => {
+										this.setState({ isVerifiedOnly: checked });
 									}}
-								>
-									<input type="checkbox" name="verified" defaultChecked={false} />
-								</div>
+									checked={this.state.isVerifiedOnly}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
 							</div>
 						</div>
 					)}
@@ -1182,61 +1667,73 @@ export default class Creategame extends React.Component {
 						<div className="four wide column disablechat">
 							<i className="big unmute icon" />
 							<h4 className="ui header">Disable player chat - use this for voice-only games</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.disablechat = c;
+							<Switch
+								onChange={checked => {
+									this.setState({ disablechat: checked });
 								}}
-							>
-								<input type="checkbox" name="disablechat" defaultChecked={false} />
-							</div>
+								checked={this.state.disablechat}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 						<div className="four wide column disablegamechat">
 							<i className="big game icon" />
 							<h4 className="ui header">Disable game chats - you're on your own to remember what happened over the course of the game</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.disablegamechat = c;
+							<Switch
+								onChange={checked => {
+									this.setState({ disablegameChat: checked });
 								}}
-							>
-								<input type="checkbox" name="disablegamechat" defaultChecked={false} />
-							</div>
+								checked={this.state.disablegameChat}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 						<div className="four wide column experiencedmode">
 							<i className="big fast forward icon" />
 							<h4 className="ui header">Speed mode - most animations and pauses greatly reduced and fewer gamechats</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.experiencedmode = c;
+							<Switch
+								onChange={checked => {
+									this.setState({ experiencedmode: checked });
 								}}
-							>
-								<input type="checkbox" name="experiencedmode" defaultChecked={true} />
-							</div>
+								checked={this.state.experiencedmode}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 						{(() => {
-							let user, isRainbow;
-
-							if (this.props.userList.list) {
-								user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
-							}
-							if (user) {
-								isRainbow = user.wins + user.losses > 49;
-							}
-							if (isRainbow) {
+							if (this.isRainbow) {
 								return (
 									<div className="four wide column experiencedmode">
 										<img src="../images/rainbow.png" />
 										<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
-										<div
-											className="ui fitted toggle checkbox"
-											ref={c => {
-												this.rainbowgame = c;
+										<Switch
+											onChange={checked => {
+												this.setState({ rainbowgame: checked });
 											}}
-										>
-											<input type="checkbox" name="rainbowgame" defaultChecked={true} />
-										</div>
+											checked={this.state.rainbowgame}
+											onColor="#627cc8"
+											offColor="#444444"
+											uncheckedIcon={false}
+											checkedIcon={false}
+											height={21}
+											width={48}
+											handleDiameter={21}
+										/>
 									</div>
 								);
 							}
@@ -1246,52 +1743,72 @@ export default class Creategame extends React.Component {
 						<div className="four wide column">
 							<i className="big hide icon" />
 							<h4 className="ui header">Blind mode - player's names are replaced with random animal names, anonymizing them.</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.blindmode = c;
+							<Switch
+								onChange={checked => {
+									this.setState({ blindMode: checked });
 								}}
-							>
-								<input type="checkbox" name="blindmode" defaultChecked={false} />
-							</div>
+								checked={this.state.blindMode}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 						{!this.state.isTourny && (
 							<div className="four wide column">
 								<i className="big talk icon" />
 								<h4 className="ui header">Disable observer chat</h4>
-								<div
-									className="ui fitted toggle checkbox"
-									ref={c => {
-										this.disableobserver = c;
+								<Switch
+									onChange={checked => {
+										this.setState({ disableobserver: checked });
 									}}
-								>
-									<input type="checkbox" name="disableobserver" defaultChecked={false} />
-								</div>
+									checked={this.state.disableobserver}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
 							</div>
 						)}
 						<div className="four wide column">
 							<i className="big handshake icon" />
 							<h4 className="ui header">Casual game - this game will not count towards your wins and losses</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.casualgame = c;
+							<Switch
+								onChange={checked => {
+									this.setState({ casualgame: checked });
 								}}
-							>
-								<input type="checkbox" name="casualgame" defaultChecked={this.state.casualgame} />
-							</div>
+								checked={this.state.casualgame}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 						{this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.isPrivate && (
 							<div className="four wide column privateonlygame">
 								<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
-								<div
-									className="ui fitted toggle checkbox"
-									ref={c => {
-										this.privateonlygame = c;
+								<Switch
+									onChange={checked => {
+										this.setState({ privateonlyGame: checked });
 									}}
-								>
-									<input type="checkbox" name="privateonlygame" defaultChecked={false} />
-								</div>
+									checked={this.state.privateonlyGame}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
 							</div>
 						)}
 					</div>
@@ -1299,14 +1816,22 @@ export default class Creategame extends React.Component {
 						<div className="sixteen wide column">
 							<i className="big setting icon" />
 							<h4 className="ui header">Custom Game - Use a custom fascist track.</h4>
-							<div
-								className="ui fitted toggle checkbox"
-								ref={c => {
-									this.customgame = c;
+							<Switch
+								onChange={checked => {
+									this.setState({
+										customGameSettings: Object.assign(this.state.customGameSettings, { enabled: checked }),
+										casualGame: checked
+									});
 								}}
-							>
-								<input type="checkbox" name="customgame" defaultChecked={false} />
-							</div>
+								checked={this.state.customGameSettings.enabled}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
 						</div>
 					</div>
 					{this.state.customGameSettings.enabled && this.renderCustomGames()}
