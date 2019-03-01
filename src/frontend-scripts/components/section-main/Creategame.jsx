@@ -9,13 +9,13 @@ export default class Creategame extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.user;
-		this.isRainbow;
+		let isRainbow = false;
+		let user;
 		if (this.props.userList.list) {
-			this.user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
+			user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
 		}
-		if (this.user) {
-			this.isRainbow = this.user.wins + this.user.losses > 49;
+		if (user) {
+			isRainbow = user.wins + user.losses > 49;
 		}
 
 		this.state = {
@@ -28,7 +28,7 @@ export default class Creategame extends React.Component {
 			privateShowing: false,
 			password: '',
 			containsBadWord: false,
-			rainbowgame: this.isRainbow,
+			rainbowgame: isRainbow,
 			checkedSliderValues: [false, false, true, false, false, false],
 			checkedRebalanceValues: [true, false, true],
 			privateonlygame: false,
@@ -384,6 +384,15 @@ export default class Creategame extends React.Component {
 	}
 
 	presetSelector(preset) {
+		let isRainbow = false;
+		let user;
+		if (this.props.userList.list) {
+			user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
+		}
+		if (user) {
+			isRainbow = user.wins + user.losses > 49;
+		}
+
 		switch (preset) {
 			case 'Meoww':
 				this.setState({
@@ -689,7 +698,7 @@ export default class Creategame extends React.Component {
 					privateShowing: false,
 					password: '',
 					containsBadWord: false,
-					rainbowgame: this.isRainbow,
+					rainbowgame: isRainbow,
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [true, false, true],
 					privateonlygame: false,
@@ -1717,7 +1726,15 @@ export default class Creategame extends React.Component {
 							/>
 						</div>
 						{(() => {
-							if (this.isRainbow) {
+							let isRainbow = false;
+							let user;
+							if (this.props.userList.list) {
+								user = this.props.userList.list.find(user => user.userName === this.props.userInfo.userName);
+							}
+							if (user) {
+								isRainbow = user.wins + user.losses > 49;
+							}
+							if (isRainbow) {
 								return (
 									<div className="four wide column experiencedmode">
 										<img src="../images/rainbow.png" />
