@@ -377,8 +377,7 @@ export default class Creategame extends React.Component {
 					this.setState({ customGameSettings: Object.assign(this.state.customGameSettings, { powers: newPowerList }) });
 				}}
 				defaultMenuIsOpen={true}
-				menuPlacement={'top'}
-				menuShouldScrollIntoView={true}
+				menuPlacement={'auto'}
 			/>
 		);
 	}
