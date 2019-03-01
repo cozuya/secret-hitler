@@ -8,7 +8,7 @@ import { Map, List } from 'immutable';
 import { some, none, fromNullable } from 'option';
 import Tracks from '../Tracks.jsx';
 import Players from '../Players.jsx';
-import Gamechat from '../Gamechat.jsx';
+import ReplayGamechat from './ReplayGamechat.jsx';
 import ReplayOverlay from './ReplayOverlay.jsx';
 import ReplayControls from './ReplayControls.jsx';
 import TrackPieces from './TrackPieces.jsx';
@@ -172,8 +172,7 @@ const Replay = ({ replay, isSmall, to, replayChats, allEmotes }) => {
 					</div>
 					<div className="right-side">
 						{replayChats.length ? (
-							<Gamechat
-								isReplay={true}
+							<ReplayGamechat
 								userInfo={{}}
 								userList={{}}
 								gameInfo={{
