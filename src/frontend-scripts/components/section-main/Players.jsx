@@ -26,7 +26,7 @@ class Players extends React.Component {
 		reportTextValue: '',
 		playerNotes: [],
 		playerNoteSeatEnabled: false,
-		reportLength: 0
+    reportLength: 0
 	};
 
 	// componentWillReceiveProps(nextProps) {
@@ -474,8 +474,8 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-      } else if (user && user.wins + user.losses < 49) {
-        $(this.plebwarnModal).modal('show');
+      } else if (user && user.wins + user.losses <= 49) {
+        $(this.notRainbowModalShown).modal('show');
       } else {
 				onClickedTakeSeat();
 			}
@@ -542,11 +542,13 @@ class Players extends React.Component {
         <div
           className="ui basic small modal"
           ref={c => {
-            this.plebwarnModal = c;
+            this.notRainbowModalShown = c;
           }}
         >
           <div className="ui header">You do not meet the required amount of games (50) to play in this game.</div>
         </div>
+
+
         
 				<div
 					className="ui basic small modal reportmodal"
