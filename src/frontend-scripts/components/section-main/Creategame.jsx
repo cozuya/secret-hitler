@@ -1799,7 +1799,14 @@ export default class Creategame extends React.Component {
 							<h4 className="ui header">Casual game - this game will not count towards your wins and losses</h4>
 							<Switch
 								onChange={checked => {
-									this.setState({ casualgame: checked });
+									if (!checked) {
+										this.setState({
+											casualgame: checked,
+											customGameSettings: Object.assign(this.state.customGameSettings, { enabled: false })
+										});
+									} else {
+										this.setState({ casualgame: checked });
+									}
 								}}
 								checked={this.state.casualgame}
 								onColor="#627cc8"
@@ -1838,7 +1845,7 @@ export default class Creategame extends React.Component {
 								onChange={checked => {
 									this.setState({
 										customGameSettings: Object.assign(this.state.customGameSettings, { enabled: checked }),
-										casualGame: checked
+										casualgame: checked
 									});
 								}}
 								checked={this.state.customGameSettings.enabled}
