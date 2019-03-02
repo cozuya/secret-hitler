@@ -406,7 +406,7 @@ class Players extends React.Component {
 			!gameInfo.gameState.isTracksFlipped &&
 			gameInfo.publicPlayersState.length < 10 &&
 			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
-			(!gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
+			(gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
 			(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private)) &&
 			(!gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
 		) {
@@ -474,7 +474,9 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-			} else {
+      } else if (user && user.wins + user.losses < 49) {
+        $(this.plebwarnModal).modal('show');
+      } else {
 				onClickedTakeSeat();
 			}
 		} else {
@@ -537,6 +539,15 @@ class Players extends React.Component {
 					<div className="ui header">You do not meet the elo minimum to play in this game.</div>
 				</div>
 
+        <div
+          className="ui basic small modal"
+          ref={c => {
+            this.plebwarnModal = c;
+          }}
+        >
+          <div className="ui header">You do not meet the required amount of games (50) to play in this game.</div>
+        </div>
+        
 				<div
 					className="ui basic small modal reportmodal"
 					ref={c => {
