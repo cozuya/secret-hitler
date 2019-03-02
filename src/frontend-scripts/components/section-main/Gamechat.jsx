@@ -368,17 +368,10 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat) {
+			if (gameInfo.general.disableChat && !isStaff) {
 				return {
 					isDisabled: true,
 					placeholder: 'Chat disabled'
-				};
-			}
-
-			if (gameInfo.general.disableChat && isStaff) {
-				return {
-					isDisabled: false,
-					placeholder: 'Send a staff message'
 				};
 			}
 		} else {
@@ -389,7 +382,7 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if ((gameInfo.general.disableObserver || gameInfo.general.private) && isStaff) {
+			if ((gameInfo.general.disableObserver || gameInfo.general.private || gameInfo.general.disableChat) && isStaff) {
 				return {
 					isDisabled: false,
 					placeholder: 'Send a staff message'
