@@ -564,12 +564,36 @@ class Gamechat extends React.Component {
 										: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 								}
 							>
-								{isSeated
-									? isBlind
-										? `${
-												gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-										  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-										: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+								{isSeated ? (
+									''
+								) : chat.staffRole === 'moderator' ? (
+									<span data-tooltip="Moderator" data-inverted>
+										<span className="observer-chat">(Observer) </span>
+										<span className="moderator-name">(M) </span>
+									</span>
+								) : chat.staffRole === 'editor' ? (
+									<span data-tooltip="Editor" data-inverted>
+										<span className="observer-chat">(Observer) </span>
+										<span className="editor-name">(E) </span>
+									</span>
+								) : chat.staffRole === 'admin' ? (
+									<span data-tooltip="Admin" data-inverted>
+										<span className="observer-chat">(Observer) </span>
+										<span className="admin-name">(A) </span>
+									</span>
+								) : (
+									<span className="observer-chat">(Observer) </span>
+								)}
+								{gameInfo.gameState.isTracksFlipped
+									? isSeated
+										? isBlind
+											? `${
+													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
+											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+										: chat.userName
+									: isBlind
+									? '?'
 									: chat.userName}
 								{': '}
 							</span>
