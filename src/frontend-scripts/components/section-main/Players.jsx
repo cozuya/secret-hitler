@@ -26,7 +26,7 @@ class Players extends React.Component {
 		reportTextValue: '',
 		playerNotes: [],
 		playerNoteSeatEnabled: false,
-    reportLength: 0
+		reportLength: 0
 	};
 
 	// componentWillReceiveProps(nextProps) {
@@ -456,8 +456,8 @@ class Players extends React.Component {
 
 	clickedTakeSeat = () => {
 		const { gameInfo, userInfo, onClickedTakeSeat, userList } = this.props;
-    		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
-    
+		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
+
 		if (userInfo.userName) {
 			if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
 				$(this.blacklistModal).modal('show');
@@ -475,9 +475,9 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-      } else if (user && user.wins + user.losses <= 49) {
-        $(this.notRainbowModalShown).modal('show');
-      } else {
+			} else if (user && user.wins + user.losses <= 49) {
+				$(this.notRainbowModalShown).modal('show');
+			} else {
 				onClickedTakeSeat();
 			}
 		} else {
@@ -540,17 +540,15 @@ class Players extends React.Component {
 					<div className="ui header">You do not meet the elo minimum to play in this game.</div>
 				</div>
 
-        <div
-          className="ui basic small modal"
-          ref={c => {
-            this.notRainbowModalShown = c;
-          }}
-        >
-          <div className="ui header">You do not meet the required amount of games (50) to play in this game.</div>
-        </div>
+				<div
+					className="ui basic small modal"
+					ref={c => {
+						this.notRainbowModalShown = c;
+					}}
+				>
+					<div className="ui header">You do not meet the required amount of games (50) to play in this game.</div>
+				</div>
 
-
-        
 				<div
 					className="ui basic small modal reportmodal"
 					ref={c => {
