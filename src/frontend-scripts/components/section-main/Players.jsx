@@ -475,7 +475,7 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-			} else if ((user && user.wins + user.losses <= 49) || !user) {
+			} else if ((user && user.wins + user.losses <= 49) || !user.wins) {
 				$(this.notRainbowModalShown).modal('show');
 			} else {
 				onClickedTakeSeat();
