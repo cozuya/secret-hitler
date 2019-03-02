@@ -603,7 +603,6 @@ class Gamechat extends React.Component {
 						</div>
 					)
 				);
-				console.log(acc);
 				return acc;
 			}, []);
 		}
