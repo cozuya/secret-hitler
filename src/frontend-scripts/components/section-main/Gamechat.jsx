@@ -560,7 +560,9 @@ class Gamechat extends React.Component {
 							<span
 								className={
 									!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
-										? 'chat-user'
+										? isMod && (!isBlind || !isSeated)
+											? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+											: 'chat-user'
 										: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 								}
 							>
@@ -592,7 +594,7 @@ class Gamechat extends React.Component {
 											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 										: chat.userName
-									: isBlind
+									: isBlind && isSeated
 									? '?'
 									: chat.userName}
 								{': '}
@@ -601,7 +603,7 @@ class Gamechat extends React.Component {
 						</div>
 					)
 				);
-
+				console.log(acc);
 				return acc;
 			}, []);
 		}
