@@ -2077,7 +2077,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				return 'admin';
 			}
 		})();
-		console.log(data);
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
