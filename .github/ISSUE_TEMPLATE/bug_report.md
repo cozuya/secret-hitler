@@ -10,13 +10,13 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is. 
 
-What does this issue relate to? Please put an X in the [ ] for the relevant choice.
- - [] Gameplay
- - [] User Interface
- - [] Game Modes
- - [] Mod Tools
- - [] Replays
- - [] Something Else: Please describe
+What does this issue relate to? Please put an X in the [ ] (i.e. make `[ ]` into `[X]`) for the relevant choice.
+ - [ ] Gameplay
+ - [ ] User Interface
+ - [ ] Game Modes
+ - [ ] Mod Tools
+ - [ ] Replays
+ - [ ] Something Else: Please describe
 
 **To Reproduce**
 Steps to reproduce the behavior if any (basically necessary):
