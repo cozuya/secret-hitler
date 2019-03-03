@@ -1108,7 +1108,7 @@ class Gamechat extends React.Component {
 										<input
 											type="checkbox"
 											id={uid}
-											defaultChecked={true}
+											defaultChecked={false}
 											onChange={() => {
 												selectedWhitelistplayer(player.userName);
 											}}
