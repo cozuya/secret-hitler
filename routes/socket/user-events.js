@@ -1397,18 +1397,35 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 	const { publicPlayersState } = game;
 	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = publicPlayersState[playerIndex];
-
+	let chat;
 	const minimumRemakeVoteCount =
 		(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) || Math.floor(game.general.playerCount / 2) + 2;
-	const chat = {
-		timestamp: new Date(),
-		gameChat: true,
-		chat: [
-			{
-				text: 'A player'
-			}
-		]
-	};
+	if (game && game.general && game.general.private) {
+		chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'Player '
+				},
+				{
+					text: `${passport.user} {${playerIndex + 1}} `,
+					type: 'player'
+				}
+			]
+		};
+	} else {
+		chat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'A player'
+				}
+			]
+		};
+	}
+
 	const makeNewGame = () => {
 		if (gameCreationDisabled.status) {
 			game.chats.push({
