@@ -1,152 +1,164 @@
 doctype html
 html(lang="en")
-	head
-		meta(charset="utf-8")
-		meta(http-equiv="X-UA-Compatible", content="IE=edge")
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
 
-		meta(name="theme-color", content="#aaa")
-		meta(name="description", content="Play now!")
+    meta(name="theme-color", content="#aaa")
+    meta(name="description", content="Play now!")
 
-		link(rel="stylesheet", type="text/css", href="/styles/Semantic-UI-CSS-master/semantic.min.css")
-		meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    link(rel="stylesheet", type="text/css", href="/styles/Semantic-UI-CSS-master/semantic.min.css")
+    meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 
-		if game
-			if prodCacheBustToken
-				link(rel="stylesheet", type="text/css", href=`/styles/style-main.css?${prodCacheBustToken}`)
-			else
-				link(rel="stylesheet", type="text/css", href="/styles/style-main.css")
-		else
-			if prodCacheBustToken
-				link(rel="stylesheet", type="text/css", href=`/styles/style-web.css?${prodCacheBustToken}`)
-			else
-				link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
-		link(href="//fonts.googleapis.com/css?family=Comfortaa|Cuprum:400i|Germania+One|Roboto+Slab", rel="stylesheet", type="text/css")
-		link(rel="author", href="humans.txt")
-		link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
-		link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
-		link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
-		link(rel="mask-icon", href="/safari-pinned-tab.svg", color="#aaa")
-		link(rel="manifest", href="/manifest.json")
-		meta(itemprop="name" content="Secret Hitler.io")
-		meta(itemprop="description" content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
-		meta(property="og:url" content="https://secrethitler.io")
-		meta(property="og:type" content="website")
-		meta(property="og:title" content="Secret Hitler.io")
-		meta(property="og:description" content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
-		meta(name="twitter:card" content="summary_large_image")
-		meta(name="twitter:title" content="Secret Hitler.io")
-		meta(name="twitter:description" content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
-		title Secret Hitler.io
-	body
-		#main
-			block content
+    if game
+      if prodCacheBustToken
+        link(rel="stylesheet", type="text/css", href=`/styles/style-main.css?${prodCacheBustToken}`)
+      else
+        link(rel="stylesheet", type="text/css", href="/styles/style-main.css")
+    else
+      if prodCacheBustToken
+        link(rel="stylesheet", type="text/css", href=`/styles/style-web.css?${prodCacheBustToken}`)
+      else
+        link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
+    link(href="//fonts.googleapis.com/css?family=Comfortaa|Cuprum:400i|Germania+One|Roboto+Slab", rel="stylesheet", type="text/css")
+    link(rel="author", href="humans.txt")
+    link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
+    link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
+    link(rel="mask-icon", href="/safari-pinned-tab.svg", color="#aaa")
+    link(rel="manifest", href="/manifest.json")
+    meta(itemprop="name" content="Secret Hitler.io")
+    meta(itemprop="description" content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
+    meta(property="og:url" content="https://secrethitler.io")
+    meta(property="og:type" content="website")
+    meta(property="og:title" content="Secret Hitler.io")
+    meta(property="og:description" content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
+    meta(name="twitter:card" content="summary_large_image")
+    meta(name="twitter:title" content="Secret Hitler.io")
+    meta(name="twitter:description" content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
+    title Secret Hitler.io
+  body
+    #main
+      block content
 
-		section.signin-modal.ui.modal.small.segment.column
-			h2.header Sign in to your account
-			p.tou By playing here, you agree to follow the #[a(href="/tou", target="_blank") Terms of Use].
-			a(href="/discord-login" style="margin: 10px 0; background: #7289da; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large.discord-signup-submit
-				span Sign in with
-				img(src="/images/discord-icon-2.png", style="margin-left: 5px; width: 140px; height: 50px")
-			a(href="/github-login" style="padding: 2px; border: 1px solid #666; color: #000; margin: 10px 0; background: #fff; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large
-				span Sign in with
-				img(src="/images/GitHub-Mark-32px.png", style="margin-left: 5px;")
-				img(src="/images/GitHub_Logo.png", style="width: 110px;")
-			p(style="text-align: center; color: black") OR
-			form.ui.form(style="text-align: center;")
-				.field
-					.ui.left.icon.input
-						i.user.icon
-						input#signin-username(placeholder="Username", spellcheck="false")
-				.field
-					.ui.left.icon.input
-						i.lock.icon
-						input#signin-password(placeholder="Password", type="password")
-				button.ui.primary.button.fluid.large.signin-submit Submit
-				.ui.dimmer.inverted
-					.ui.text.loader Signing in..
-				.ui.negative.hidden.message
-				a#reset-password(style="cursor: pointer;") Forget your password?
+    section.signin-modal.ui.modal.small.segment.column
+      h2.header Sign in to your account
+      p.tou By playing here, you agree to follow the #[a(href="/tou", target="_blank") Terms of Use].
+      a(href="/discord-login" style="margin: 10px 0; background: #7289da; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large.discord-signup-submit
+        span Sign in with
+        img(src="/images/discord-icon-2.png", style="margin-left: 5px; width: 140px; height: 50px")
+      a(href="/github-login" style="padding: 2px; border: 1px solid #666; color: #000; margin: 10px 0; background: #fff; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large
+        span Sign in with
+        img(src="/images/GitHub-Mark-32px.png", style="margin-left: 5px;")
+        img(src="/images/GitHub_Logo.png", style="width: 110px;")
+      p(style="text-align: center; color: black") OR
+      form.ui.form(style="text-align: center;")
+        .field
+          .ui.left.icon.input
+            i.user.icon
+            input#signin-username(placeholder="Username", spellcheck="false")
+        .field
+          .ui.left.icon.input
+            i.lock.icon
+            input#signin-password(placeholder="Password", type="password")
+        button.ui.primary.button.fluid.large.signin-submit Submit
+        .ui.dimmer.inverted
+          .ui.text.loader Signing in..
+        .ui.negative.hidden.message
+        a#reset-password(style="cursor: pointer;") Forget your password?
 
-		section.password-reset-modal.ui.modal.small.segment.column
-			h2.header Request a password reset
-			form.ui.form
-				.field
-					.ui.left.icon.input
-						i.user.icon
-						input#password-reset-email(placeholder="Verified email address", spellcheck="false")
-				button.ui.primary.button.fluid.large#password-reset-submit Submit
-				.ui.dimmer.inverted
-					.ui.text.loader Checking your account..
-				.ui.negative.hidden.message
-				.ui.info.hidden.message
+    section.password-reset-modal.ui.modal.small.segment.column
+      h2.header Request a password reset
+      form.ui.form
+        .field
+          .ui.left.icon.input
+            i.user.icon
+            input#password-reset-email(placeholder="Verified email address", spellcheck="false")
+        button.ui.primary.button.fluid.large#password-reset-submit Submit
+        .ui.dimmer.inverted
+          .ui.text.loader Checking your account..
+        .ui.negative.hidden.message
+        .ui.info.hidden.message
 
-		section.signup-modal.ui.modal.small.segment.column
-			h2.header Sign up for an account
-			p.tou By playing here, you agree to follow the #[a(href="/tou", target="_blank") Terms of Use].
-			p.tou Players with less than 2 games played can not chat in general chat, chat as an observer, or make player reports.
-			a(href="/discord-login" style="margin: 10px 0; background: #7289da; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large.discord-signup-submit
-				span Sign up with
-				img(src="/images/discord-icon-2.png", style="margin-left: 5px; width: 140px; height: 50px")
-			a(href="/github-login" style="padding: 2px; border: 1px solid #666; color: #000; margin: 10px 0; background: #fff; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large
-				span Sign up with
-				img(src="/images/GitHub-Mark-32px.png", style="margin-left: 5px;")
-				img(src="/images/GitHub_Logo.png", style="width: 110px;")
-			p(style="text-align: center; color: black") OR
-			form.ui.form
-				.field
-					.ui.left.icon.input
-						i.user.icon
-						input#signup-username(placeholder="Username", spellcheck="false")
-					.ui.info.message.hidden
-				.field
-					.ui.left.icon.input
-						i.lock.icon
-						input#signup-password1(placeholder="Password", type="password", maxlength="255")
-					.ui.info.message.hidden
-				.field
-					.ui.left.icon.input
-						i.lock.icon
-						input#signup-password2(placeholder="Repeat password", type="password", maxlength="255")
-					.ui.info.message.hidden
-				.field
-					.ui.left.icon.input
-						i.key.icon
-						input#signup-bypass(placeholder="Restriction bypass key (optional)", spellcheck="false")
-					.ui.info.message.hidden
-				.field
-					h4.header(style="color: darkred") EMAIL OPTIONAL
-					.ui.left.icon.input
-						i.envelope.outline.icon
-						input#signup-email(placeholder="Email", maxlength="255", spellcheck="false")
-				.field
-					label
-						input#private-player(type="checkbox", style="margin-right: 5px")
-						span(style="color: #aaa") READ CAREFULLY BEFORE CHECKING: Private game player only option - your name will not be visible in the sidebar, you can't chat in general chat, 
-							b(style="color: #666") you can't play in public games.
-				.field
-					label
-						input#tou-agree(type="checkbox", style="margin-right: 5px")
-						span(style="color: #a77") I have read and agree to the #[a(href="/tou", target="_blank") Terms of Use].
-				button.ui.primary.button.fluid.large.signup-submit Submit
-				.ui.dimmer.inverted
-					.ui.text.loader Signing up..
-				.ui.negative.hidden.message
-		
-		script.
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    section.signup-modal.ui.modal.small.segment.column
+      h2.header Sign up for an account
+      p.tou By playing here, you agree to follow the #[a(href="/tou", target="_blank") Terms of Use].
+      p.tou Players with less than 2 games played can not chat in general chat, chat as an observer, or make player reports.
+      a(href="/discord-login" style="margin: 10px 0; background: #7289da; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large.discord-signup-submit
+        span Sign up with
+        img(src="/images/discord-icon-2.png", style="margin-left: 5px; width: 140px; height: 50px")
+      a(href="/github-login" style="padding: 2px; border: 1px solid #666; color: #000; margin: 10px 0; background: #fff; padding: 0; display: flex; flex-direction: row; align-items: center; justify-content: center;").button.ui.secondary.button.fluid.large
+        span Sign up with
+        img(src="/images/GitHub-Mark-32px.png", style="margin-left: 5px;")
+        img(src="/images/GitHub_Logo.png", style="width: 110px;")
+      p(style="text-align: center; color: black") OR
+      form.ui.form
+        .field
+          .ui.left.icon.input
+            i.user.icon
+            input#signup-username(placeholder="Username", spellcheck="false")
+          .ui.info.message.hidden
+        .field
+          .ui.left.icon.input
+            i.lock.icon
+            input#signup-password1(placeholder="Password", type="password", maxlength="255")
+          .ui.info.message.hidden
+        .field
+          .ui.left.icon.input
+            i.lock.icon
+            input#signup-password2(placeholder="Repeat password", type="password", maxlength="255")
+          .ui.info.message.hidden
+        .field
+          .ui.left.icon.input
+            i.key.icon
+            input#signup-bypass(placeholder="Restriction bypass key (optional)", spellcheck="false")
+          .ui.info.message.hidden
+        .field
+          h4.header(style="color: darkred") EMAIL OPTIONAL
+          .ui.left.icon.input
+            i.envelope.outline.icon
+            input#signup-email(placeholder="Email", maxlength="255", spellcheck="false")
+        .field
+          label
+            input#private-player(type="checkbox", style="margin-right: 5px", name="privateWarning")
+            span(style="color: #aaa") READ CAREFULLY BEFORE CHECKING: Private game player only option - your name will not be visible in the sidebar, you can't chat in general chat, 
+            b(style="color: #555") you can't play in public games.
+        .field
+          label
+            input#tou-agree(type="checkbox", style="margin-right: 5px")
+            span(style="color: #a77") I have read and agree to the #[a(href="/tou", target="_blank") Terms of Use].
+        button.ui.primary.button.fluid.large.signup-submit Submit
+        .ui.dimmer.inverted
+          .ui.text.loader Signing up..
+        .ui.negative.hidden.message
 
-			ga('create', 'UA-105770066-1', 'auto');
-			ga('send', 'pageview');
-		if game
-			if prodCacheBustToken
-				script(src=`/scripts/bundle.js?${prodCacheBustToken}`)
-			else
-				script(src=`/scripts/bundle.js`)
-		else
-			script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
-			script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
-			script(src="/scripts/site.js?abcdef")
-		block footer
+
+    script.
+      var privateWarning = document.querySelector("input[name=privateWarning]");
+
+      privateWarning.addEventListener(  'change', function() {
+        if (this.checked) {
+          window.alert('You have selected to only play private games. This means you cannot play public games. Click OK to continue with this action.');
+        }
+      });
+
+
+
+
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-105770066-1', 'auto');
+      ga('send', 'pageview');
+    if game
+      if prodCacheBustToken
+        script(src=`/scripts/bundle.js?${prodCacheBustToken}`)
+      else
+        script(src=`/scripts/bundle.js`)
+    else
+      script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js")
+      script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
+      script(src="/scripts/site.js?abcdef")
+    block footer
