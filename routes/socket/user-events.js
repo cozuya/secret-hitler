@@ -1680,7 +1680,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
  */
 module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
 	// Authentication Assured in routes.js
-	if (!game || !game.general || game.general.disableChat || !data.chat) return;
+	if (!game || !game.general || !data.chat) return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
@@ -1694,9 +1694,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 	const user = userList.find(u => passport.user === u.userName);
 
-	if (!user || !user.userName || game.general.disableChat) {
+	if (!user || !user.userName) {
 		return;
 	}
+	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+
+	if (!AEM && game.general.disableChat) return;
 
 	data.userName = passport.user;
 
@@ -1785,7 +1788,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 	}
 
-	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 	if (!AEM) {
 		if (player) {
 			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
