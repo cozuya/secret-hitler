@@ -291,7 +291,13 @@ html(lang="en")
 
       privateWarning.addEventListener(  'change', function() {
         if (this.checked) {
-          window.alert('You have selected to only play private games. This means you cannot play public games. Click OK to continue with this action.');
+          var confirmPrompt = prompt("Are you sure you want to only be able to play private games? If so enter type OK and click OK. If not click cancel.", "");
+        
+          if (confirmPrompt == "ok" || confirmPrompt == "OK" || confirmPrompt == "Ok" || confirmPrompt == "oK") {
+            document.getElementById("private-player").checked = true;
+          } else {
+          document.getElementById("private-player").checked = false;
+          }
         }
       });
 
