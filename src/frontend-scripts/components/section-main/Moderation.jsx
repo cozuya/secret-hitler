@@ -3,6 +3,7 @@ import moment from 'moment';
 import $ from 'jquery';
 import PropTypes from 'prop-types';
 import Checkbox from 'semantic-ui-checkbox';
+import { Form, Header, Button, Modal } from 'semantic-ui-react';
 
 $.fn.checkbox = Checkbox;
 
@@ -27,7 +28,9 @@ export default class Moderation extends React.Component {
 			type: 'username',
 			direction: 'descending'
 		},
-		hideActions: false
+		hideActions: false,
+		filterModalVisibility: false,
+		filterValue: ''
 	};
 
 	componentDidMount() {
@@ -883,8 +886,10 @@ export default class Moderation extends React.Component {
 									<td style={{ whiteSpace: 'nowrap' }}>{report.userActedOn}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.ip}</td>
 									<td style={{ Width: '200px', minWidth: '200px' }}>
-										{report.modNotes.split('\n').map(v => (
-											<p style={{ margin: '0px' }}>{v}</p>
+										{report.modNotes.split('\n').map((v, index) => (
+											<p key={index} style={{ margin: '0px' }}>
+												{v}
+											</p>
 										))}
 									</td>
 								</tr>
@@ -1035,6 +1040,57 @@ export default class Moderation extends React.Component {
 							<a href="#" onClick={toggleModLogToday} style={{ textDecoration: 'underline', fontSize: '12px' }}>
 								{this.state.modLogToday ? 'Show all' : 'Show today only'}
 							</a>
+							<Button
+								onClick={() => {
+									this.setState({ filterModalVisibility: true });
+								}}
+								primary
+								style={{ padding: '5px', marginLeft: '5px' }}
+							>
+								Filter
+							</Button>
+							<Modal
+								open={this.state.filterModalVisibility}
+								size="small"
+								onClose={() => {
+									this.setState({ filterModalVisibility: false });
+								}}
+								style={{ padding: '5px' }}
+								onSubmit={() => {
+									this.setState({
+										filterModalVisibility: false
+									});
+									// do stuff
+								}}
+							>
+								<Header content="Filter mod actions" />
+								<Form>
+									<Form.Field>
+										<label>Filter by username, IP address, or start of IP address</label>
+										<input
+											value={this.state.filterValue}
+											onChange={e => {
+												this.setState({
+													filterValue: e.target.value
+												});
+											}}
+										/>
+									</Form.Field>
+									<Button secondary type="submit">
+										Submit
+									</Button>
+									<Button
+										onClick={() => {
+											this.setState({
+												filterModalVisibility: false
+											});
+											// do stuff
+										}}
+									>
+										Clear filter
+									</Button>
+								</Form>
+							</Modal>
 						</h3>
 						{this.renderModLog()}
 					</div>
