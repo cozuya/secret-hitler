@@ -106,6 +106,42 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
+
+  currentGame() {
+
+    if (gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) {
+      $(this.inCurrentGame).modal('show');
+    } else {
+      $(this.notInCurrentGame).modal('show');
+    }
+
+    function currentGameFnctn () {
+        window.location.hash = `/${game._id}`;
+      }
+    
+    return (
+      <React.Fragment>
+        <div
+        ref={c => {
+          this.inCurrentGame = c;
+        }}
+        >
+          <button onClick={this.currentGameFnctn}>Click to go the the player's current game.</button>
+        </div>
+
+        <div
+          className="ui basic small modal"
+          ref={c => {
+            this.notInCurrentGame = c;
+          }}
+          >
+          <div className="ui header">This player is not currently in a game.</div>
+        </div>
+      </React.Fragment>
+    );
+  }
+
+
 	RecentGames() {
 		const { recentGames } = this.props.profile;
 		const rows = recentGames.map(game => ({
