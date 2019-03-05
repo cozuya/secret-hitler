@@ -24,7 +24,9 @@ describe('Moderation', () => {
 			userSort: {
 				direction: 'descending',
 				type: 'username'
-			}
+			},
+			filterModalVisibility: false,
+			filterValue: ''
 		};
 
 		const component = shallow(<Moderation socket={{ on: jest.fn(), emit: jest.fn() }} />);
