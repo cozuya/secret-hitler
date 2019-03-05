@@ -12,7 +12,7 @@ const {
 	createNewBypass,
 	testIP
 } = require('./models');
-const { sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
 const { selectChancellor } = require('./game/election-util.js');
 const Account = require('../../models/account');
@@ -2438,6 +2438,27 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				.catch(err => {
 					console.log(err, 'err in finding player report');
 				});
+		} else if (data.action === 'getFilteredData') {
+			let queryObj;
+
+			if (data.comment && (data.comment.split('.').length > 1 || data.comment.split(':').length > 1)) {
+				queryObj = {
+					ip: new RegExp(`^${obfIP(data.comment.substring(1))}`)
+				};
+			} else {
+				queryObj = {
+					userActedOn: data.comment
+				};
+			}
+			const userNames = userList.map(user => user.userName);
+
+			Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
+				.then(users => {
+					getModInfo(users, socket, queryObj);
+				})
+				.catch(err => {
+					console.log(err, 'err in sending mod info');
+				});
 		} else {
 			const modaction = new ModAction({
 				date: new Date(),
@@ -2547,6 +2568,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'getIP':
 					if (isSuperMod) {
+						console.log(data, 'd');
 						socket.emit('sendAlert', `Requested IP: ${data.ip}`);
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can request a raw IP.');

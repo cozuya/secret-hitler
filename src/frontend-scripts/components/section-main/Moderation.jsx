@@ -972,6 +972,7 @@ export default class Moderation extends React.Component {
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
 					show/hide playerlist
 				</span>
+
 				<div>
 					{this.state.playerListShown && (
 						<div className="modplayerlist">
@@ -1042,7 +1043,7 @@ export default class Moderation extends React.Component {
 							</a>
 							<Button
 								onClick={() => {
-									this.setState({ filterModalVisibility: true });
+									this.setState({ filterModalVisibility: true, filterValue: '' });
 								}}
 								primary
 								style={{ padding: '5px', marginLeft: '5px' }}
@@ -1060,7 +1061,18 @@ export default class Moderation extends React.Component {
 									this.setState({
 										filterModalVisibility: false
 									});
-									// do stuff
+
+									if (!this.state.filterValue) {
+										this.props.socket.emit('getModInfo', 1);
+									} else {
+										this.props.socket.emit('updateModAction', {
+											modName: this.props.userInfo.userName,
+											userName: '',
+											ip: '',
+											comment: this.state.filterValue,
+											action: 'getFilteredData'
+										});
+									}
 								}}
 							>
 								<Header content="Filter mod actions" />
@@ -1068,6 +1080,7 @@ export default class Moderation extends React.Component {
 									<Form.Field>
 										<label>Filter by username, IP address, or start of IP address</label>
 										<input
+											autoFocus
 											value={this.state.filterValue}
 											onChange={e => {
 												this.setState({
@@ -1082,9 +1095,10 @@ export default class Moderation extends React.Component {
 									<Button
 										onClick={() => {
 											this.setState({
-												filterModalVisibility: false
+												filterModalVisibility: false,
+												filterValue: ''
 											});
-											// do stuff
+											this.props.socket.emit('getModInfo', 1);
 										}}
 									>
 										Clear filter

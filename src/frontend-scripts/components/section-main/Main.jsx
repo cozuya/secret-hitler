@@ -11,6 +11,7 @@ import Profile from './Profile.jsx';
 import Replay from './replay/Replay.jsx';
 import Changelog from './Changelog.jsx';
 import Moderation from './Moderation.jsx';
+import Signups from './Signups.jsx';
 import Reports from './Reports.jsx';
 import Leaderboards from './Leaderboards.jsx';
 
@@ -243,6 +244,8 @@ export class Main extends React.Component {
 					break;
 				case 'moderation':
 					return <Moderation userInfo={userInfo} socket={socket} userList={userList} />;
+				case 'signups':
+					return <Signups socket={socket} />;
 				case 'settings':
 					return <Settings userInfo={userInfo} socket={socket} />;
 				case 'profile':

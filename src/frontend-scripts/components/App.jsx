@@ -304,6 +304,9 @@ export class App extends React.Component {
 		} else if (hash === '#/moderation' && userInfo.staffRole && userInfo.staffRole !== 'altmod') {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('moderation'));
+		} else if (hash === '#/signups' && userInfo.staffRole && userInfo.staffRole !== 'altmod') {
+			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
+			dispatch(updateMidsection('signups'));
 		} else if (hash === '#/playerreports' && userInfo.staffRole && userInfo.staffRole !== 'altmod') {
 			// doesn't work on direct link, would need to adapt is authed as userinfo username isn't defined when this fires.
 			dispatch(updateMidsection('reports'));
