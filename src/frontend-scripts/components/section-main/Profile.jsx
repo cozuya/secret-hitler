@@ -19,7 +19,8 @@ class ProfileWrapper extends React.Component {
 		bioValue: '',
 		blacklistClicked: false,
 		blacklistShown: false,
-		openTime: Date.now()
+    openTime: Date.now(),
+    currentGameShow: false
 	};
 
 	formatDateString(dateString) {
@@ -106,41 +107,58 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
+  //TODO: de-jQuery this currentGame stuff
+	currentGame() {
 
-  currentGame() {
-
-    if (gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) {
-      $(this.inCurrentGame).modal('show');
-    } else {
-      $(this.notInCurrentGame).modal('show');
+		if (gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) {
+      //$(this.inCurrentGame).modal('show');
+      this.setState({ currentGameShow: true });
+		} else {
+      //$(this.notInCurrentGame).modal('show');
+      this.setState({ currentGameShow: false });
+    }
+    
+    function currentGameFnctn() {
+			window.location.hash = `/${game._id}`;
     }
 
-    function currentGameFnctn () {
-        window.location.hash = `/${game._id}`;
-      }
-    
-    return (
-      <React.Fragment>
-        <div
-        ref={c => {
-          this.inCurrentGame = c;
-        }}
-        >
-          <button onClick={this.currentGameFnctn}>Click to go the the player's current game.</button>
+    if (this.state.inCurrentGame == true) {
+      return(
+        <div>
+          <button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
+          Current Game
+          </button>
+        </div>);
+    } else if (this.state.inCurrentGame == false) {
+      return(
+        <div>
+				  <button className="ui primary button currentGame-button">This player is not currently in a game.</button>
         </div>
+      );
+    }
 
-        <div
-          className="ui basic small modal"
-          ref={c => {
-            this.notInCurrentGame = c;
-          }}
-          >
-          <div className="ui header">This player is not currently in a game.</div>
-        </div>
-      </React.Fragment>
-    );
-  }
+		/*return (
+			<React.Fragment>
+				<div
+					ref={c => {
+						this.inCurrentGame = c;
+					}}
+				>
+					<button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
+						Current Game
+					</button>
+				</div>
 
+				<div
+					ref={c => {
+						this.notInCurrentGame = c;
+					}}
+				>
+					<button className="ui primary button currentGame-button">This player is not currently in a game.</button>
+				</div>
+			</React.Fragment>
+		);*/
+	}
 
 	RecentGames() {
 		const { recentGames } = this.props.profile;
