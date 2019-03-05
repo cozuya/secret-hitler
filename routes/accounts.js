@@ -483,6 +483,7 @@ module.exports = () => {
 								if (account) {
 									req.logIn(account, () => res.redirect('/account'));
 								} else {
+									const startsWithPermaBannedIP = PERMABANNEDIPFRAGMENTS.some(fragment => new RegExp(`^${fragment}`).test(ip));
 									// TODO: bypass option
 									if (banType === 'new') {
 										console.log(account, 'oath err 472: account');
@@ -491,7 +492,7 @@ module.exports = () => {
 											message:
 												'You can only make accounts once per day.  If you feel you need an exception to this rule, contact the moderators on our discord server.'
 										});
-									} else if (accountCreationDisabled.status) {
+									} else if (accountCreationDisabled.status || startsWithPermaBannedIP) {
 										res.status(403).json({
 											message:
 												'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
