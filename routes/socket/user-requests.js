@@ -41,6 +41,60 @@ const sendUserList = (module.exports.sendUserList = socket => {
 	}
 });
 
+const getModInfo = (users, socket, queryObj, count = 1, isTrial) => {
+	const maskEmail = email => (email && email.split('@')[1]) || '';
+
+	ModAction.find(queryObj)
+		.sort({ $natural: -1 })
+		.limit(500 * count)
+		.then(actions => {
+			const list = users.map(user => ({
+				isRainbow: user.wins + user.losses > 49,
+				userName: user.username,
+				isTor: torIps && torIps.includes(user.lastConnectedIP || user.signupIP),
+				ip: user.lastConnectedIP || user.signupIP,
+				email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`
+			}));
+			list.forEach(user => {
+				if (user.ip && user.ip != '') {
+					try {
+						user.ip = '-' + obfIP(user.ip);
+					} catch (e) {
+						user.ip = 'ERROR';
+						console.log(e);
+					}
+				}
+			});
+			actions.forEach(action => {
+				if (action.ip && action.ip != '') {
+					if (action.ip.startsWith('-')) {
+						action.ip = 'ERROR'; // There are some bugged IPs in the list right now, need to suppress it.
+					} else {
+						try {
+							action.ip = '-' + obfIP(action.ip);
+						} catch (e) {
+							action.ip = 'ERROR';
+							console.log(e);
+						}
+					}
+				}
+			});
+			socket.emit('modInfo', {
+				modReports: actions,
+				accountCreationDisabled,
+				ipbansNotEnforced,
+				gameCreationDisabled,
+				limitNewPlayers,
+				userList: list,
+				hideActions: isTrial || undefined
+			});
+		})
+		.catch(err => {
+			console.log(err, 'err in finding mod actions');
+		});
+};
+
+module.exports.getModInfo = getModInfo;
 /**
  * @param {object} socket - user socket reference.
  * @param {number} count - depth of modinfo requested.
@@ -49,58 +103,9 @@ const sendUserList = (module.exports.sendUserList = socket => {
 module.exports.sendModInfo = (socket, count, isTrial) => {
 	const userNames = userList.map(user => user.userName);
 
-	const maskEmail = email => (email && email.split('@')[1]) || '';
-
 	Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
 		.then(users => {
-			ModAction.find()
-				.sort({ $natural: -1 })
-				.limit(500 * count)
-				.then(actions => {
-					const list = users.map(user => ({
-						isRainbow: user.wins + user.losses > 49,
-						userName: user.username,
-						isTor: torIps && torIps.includes(user.lastConnectedIP || user.signupIP),
-						ip: user.lastConnectedIP || user.signupIP,
-						email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`
-					}));
-					list.forEach(user => {
-						if (user.ip && user.ip != '') {
-							try {
-								user.ip = '-' + obfIP(user.ip);
-							} catch (e) {
-								user.ip = 'ERROR';
-								console.log(e);
-							}
-						}
-					});
-					actions.forEach(action => {
-						if (action.ip && action.ip != '') {
-							if (action.ip.startsWith('-')) {
-								action.ip = 'ERROR'; // There are some bugged IPs in the list right now, need to suppress it.
-							} else {
-								try {
-									action.ip = '-' + obfIP(action.ip);
-								} catch (e) {
-									action.ip = 'ERROR';
-									console.log(e);
-								}
-							}
-						}
-					});
-					socket.emit('modInfo', {
-						modReports: actions,
-						accountCreationDisabled,
-						ipbansNotEnforced,
-						gameCreationDisabled,
-						limitNewPlayers,
-						userList: list,
-						hideActions: isTrial || undefined
-					});
-				})
-				.catch(err => {
-					console.log(err, 'err in finding mod actions');
-				});
+			getModInfo(users, socket, {}, count, isTrial);
 		})
 		.catch(err => {
 			console.log(err, 'err in sending mod info');
