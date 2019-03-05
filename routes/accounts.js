@@ -2,6 +2,7 @@ const passport = require('passport');
 const Account = require('../models/account');
 const Profile = require('../models/profile/index');
 const BannedIP = require('../models/bannedIP');
+const Signups = require('../models/signups');
 const EightEightCounter = require('../models/eightEightCounter');
 const { accountCreationDisabled, verifyBypass, consumeBypass, testIP } = require('./socket/models');
 const { verifyRoutes, setVerify } = require('./verification');
@@ -235,7 +236,16 @@ module.exports = () => {
 										ip: signupIP
 									});
 
-									newPlayerBan.save(() => {
+									newPlayerBan.save();
+
+									const newSignup = new Signups({
+										date: new Date(),
+										userName: username,
+										type: 'local',
+										email
+									});
+
+									newSignup.save(() => {
 										res.send();
 									});
 								});

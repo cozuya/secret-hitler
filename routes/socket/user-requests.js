@@ -3,6 +3,7 @@ const ModAction = require('../../models/modAction');
 const PlayerReport = require('../../models/playerReport');
 const PlayerNote = require('../../models/playerNote');
 const Game = require('../../models/game');
+const Signups = require('../../models/signups');
 
 const {
 	games,
@@ -95,6 +96,19 @@ const getModInfo = (users, socket, queryObj, count = 1, isTrial) => {
 };
 
 module.exports.getModInfo = getModInfo;
+
+module.exports.sendSignups = socket => {
+	Signups.find()
+		.sort({ $natural: -1 })
+		.limit(500)
+		.then(signups => {
+			console.log(signups, 's');
+			socket.emit('signupsInfo', signups);
+		})
+		.catch(err => {
+			console.log(err, 'err in finding signups');
+		});
+};
 /**
  * @param {object} socket - user socket reference.
  * @param {number} count - depth of modinfo requested.

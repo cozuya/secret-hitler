@@ -972,6 +972,7 @@ export default class Moderation extends React.Component {
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
 					show/hide playerlist
 				</span>
+
 				<div>
 					{this.state.playerListShown && (
 						<div className="modplayerlist">
