@@ -115,15 +115,11 @@ class ProfileWrapper extends React.Component {
 
 		return (
       <React.Fragment>
-          <div
-            ref={button => {
-                this.profile = button;
-              }}
-          >
+          <div>
               {gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) && 
-                  <button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
+                  (<button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
                       Current Game
-                  </button>
+                  </button>)
               }
           </div>
       </React.Fragment>
