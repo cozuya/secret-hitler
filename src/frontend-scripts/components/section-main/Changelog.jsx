@@ -11,6 +11,19 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.3.0 released 3-5-2019</p>
+				</div>
+				<h4>Fixed issue: Chats in replays work again.</h4>
+				<h4>Returning feature: typing indicator (again). This has been overhauled and should work better.</h4>
+				<h4>New player setting: disable typing indicator. If you feel this is adveresly affecting your browser, turn this off in your settings.</h4>
+				<h4>New feature: Creategame overhaul.</h4>
+				<p>Thanks to Vigasaurus the create game page has been redone with many new looks and feels including some fun templates.</p>
+				<h4>
+					New feature: enhanced information for grey players - they will be alerted when they try to sit in rainbow games, and alerted when they click private
+					games only mode. Thanks to contributor samf.
+				</h4>
+				<h3>Many smaller fixes and UI updates!</h3>
+				<div className="ui header">
 					<p>Version 1.1.3 released 2-26-2019</p>
 				</div>
 				<h4>Fixed issue: problems people were having while typing in chat in mobile view.</h4>
