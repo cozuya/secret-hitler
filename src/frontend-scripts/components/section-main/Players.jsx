@@ -183,7 +183,7 @@ class Players extends React.Component {
 	renderTyping(player) {
 		const { isTyping } = this.props;
 
-		if (isTyping[player.userName] && Date.now() - isTyping[player.userName] < 2000) {
+		if (isTyping && (isTyping[player.userName] && Date.now() - isTyping[player.userName] < 2000)) {
 			setTimeout(() => {
 				if (Date.now() - isTyping[player.userName] >= 2000) {
 					this.forceUpdate();
