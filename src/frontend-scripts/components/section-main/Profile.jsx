@@ -106,7 +106,7 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
-  //TODO: de-jQuery this currentGame stuff
+ // FIXME: This button doesn't show up... I'll fix this later. I need to fix my grey profile stuff....
 	currentGame() {
 
     function currentGameFnctn() {
