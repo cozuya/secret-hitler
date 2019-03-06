@@ -183,7 +183,7 @@ class Players extends React.Component {
 	renderTyping(player) {
 		const { isTyping } = this.props;
 
-		if (isTyping[player.userName] && Date.now() - isTyping[player.userName] < 2000) {
+		if (isTyping && (isTyping[player.userName] && Date.now() - isTyping[player.userName] < 2000)) {
 			setTimeout(() => {
 				if (Date.now() - isTyping[player.userName] >= 2000) {
 					this.forceUpdate();
@@ -406,7 +406,6 @@ class Players extends React.Component {
 			!gameInfo.gameState.isTracksFlipped &&
 			gameInfo.publicPlayersState.length < 10 &&
 			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
-			(gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
 			(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private)) &&
 			(!gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
 		) {
@@ -475,7 +474,7 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-			} else if ((user && user.wins + user.losses <= 49) || !user.wins) {
+			} else if ((user && user.wins + user.losses <= 49) || !user) {
 				$(this.notRainbowModalShown).modal('show');
 			} else {
 				onClickedTakeSeat();
