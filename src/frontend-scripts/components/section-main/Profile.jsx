@@ -19,8 +19,7 @@ class ProfileWrapper extends React.Component {
 		bioValue: '',
 		blacklistClicked: false,
 		blacklistShown: false,
-    openTime: Date.now(),
-    currentGameShow: false
+    openTime: Date.now()
 	};
 
 	formatDateString(dateString) {
@@ -110,54 +109,25 @@ class ProfileWrapper extends React.Component {
   //TODO: de-jQuery this currentGame stuff
 	currentGame() {
 
-		if (gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) {
-      //$(this.inCurrentGame).modal('show');
-      this.setState({ currentGameShow: true });
-		} else {
-      //$(this.notInCurrentGame).modal('show');
-      this.setState({ currentGameShow: false });
-    }
-    
     function currentGameFnctn() {
 			window.location.hash = `/${game._id}`;
     }
 
-    if (this.state.inCurrentGame == true) {
-      return(
-        <div>
-          <button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
-          Current Game
-          </button>
-        </div>);
-    } else if (this.state.inCurrentGame == false) {
-      return(
-        <div>
-				  <button className="ui primary button currentGame-button">This player is not currently in a game.</button>
-        </div>
-      );
-    }
-
-		/*return (
-			<React.Fragment>
-				<div
-					ref={c => {
-						this.inCurrentGame = c;
-					}}
-				>
-					<button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
-						Current Game
-					</button>
-				</div>
-
-				<div
-					ref={c => {
-						this.notInCurrentGame = c;
-					}}
-				>
-					<button className="ui primary button currentGame-button">This player is not currently in a game.</button>
-				</div>
-			</React.Fragment>
-		);*/
+		return (
+      <React.Fragment>
+          <div
+            ref={button => {
+                this.profile = button;
+              }}
+          >
+              {gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) && 
+                  <button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
+                      Current Game
+                  </button>
+              }
+          </div>
+      </React.Fragment>
+    );
 	}
 
 	RecentGames() {
