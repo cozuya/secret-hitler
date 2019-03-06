@@ -23,7 +23,7 @@ export default class Creategame extends React.Component {
 			sliderValues: [7, 7],
 			experiencedmode: true,
 			disablechat: false,
-			disablegamechat: false,
+			disablegameChat: false,
 			disableobserver: false,
 			privateShowing: false,
 			password: '',
