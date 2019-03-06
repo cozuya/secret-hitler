@@ -54,6 +54,8 @@
 		"react-dropzone": "^4.2.8",
 		"react-linkify": "^0.2.2",
 		"react-redux": "^5.0.6",
+		"react-select": "^2.4.1",
+		"react-switch": "^4.1.0",
 		"redis": "^2.8.0",
 		"redux": "^3.7.2",
 		"redux-devtools": "^3.4.0",
