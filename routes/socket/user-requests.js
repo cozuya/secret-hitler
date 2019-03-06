@@ -102,7 +102,6 @@ module.exports.sendSignups = socket => {
 		.sort({ $natural: -1 })
 		.limit(500)
 		.then(signups => {
-			console.log(signups, 's');
 			socket.emit('signupsInfo', signups);
 		})
 		.catch(err => {
