@@ -24,6 +24,27 @@ class Tracks extends React.Component {
 				new Notification(data);
 			});
 		}
+
+		this.props.socket.on('updateRemakeStatus', status => {
+			this.setState(
+				{
+					remakeStatus: status,
+					remakeStatusDisabled: true
+				},
+				() => {
+					setTimeout(
+						() => {
+							if (this._ismounted) {
+								this.setState({
+									remakeStatusDisabled: false
+								});
+							}
+						},
+						this.state.remakeStatus ? 10000 : 2000
+					);
+				}
+			);
+		});
 	}
 
 	componentWillUnmount() {
@@ -286,29 +307,10 @@ class Tracks extends React.Component {
 
 		const updateRemake = () => {
 			if (!this.state.remakeStatusDisabled) {
-				this.setState(
-					{
-						remakeStatus: !this.state.remakeStatus,
-						remakeStatusDisabled: true
-					},
-					() => {
-						this.props.socket.emit('updateRemake', {
-							remakeStatus: this.state.remakeStatus,
-							uid: gameInfo.general.uid
-						});
-					}
-				);
-
-				setTimeout(
-					() => {
-						if (this._ismounted) {
-							this.setState({
-								remakeStatusDisabled: false
-							});
-						}
-					},
-					this.state.remakeStatus ? 10000 : 2000
-				);
+				this.props.socket.emit('updateRemake', {
+					remakeStatus: !this.state.remakeStatus,
+					uid: gameInfo.general.uid
+				});
 			}
 		};
 

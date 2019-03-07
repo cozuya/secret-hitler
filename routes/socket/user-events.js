@@ -1684,8 +1684,8 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
 	}
+	socket.emit('updateRemakeStatus', player.isRemakeVoting);
 	game.chats.push(chat);
-
 	sendInProgressGameUpdate(game);
 };
 
