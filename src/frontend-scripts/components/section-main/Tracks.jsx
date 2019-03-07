@@ -40,7 +40,7 @@ class Tracks extends React.Component {
 								});
 							}
 						},
-						this.state.remakeStatus ? 10000 : 2000
+						this.state.remakeStatus ? 2000 : 5000
 					);
 				}
 			);
