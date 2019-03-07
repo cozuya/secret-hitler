@@ -395,7 +395,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					selectChancellor(socket, passport, game, data, socket);
+					selectChancellor(socket, passport, game, data);
 				}
 			});
 			socket.on('selectedVoting', data => {
