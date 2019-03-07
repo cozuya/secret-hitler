@@ -192,7 +192,7 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 								game.gameState.timedModeEnabled = false;
 								const { selectVoting } = require('./election');
 								unvotedPlayerNames.forEach(userName => {
-									selectVoting({ user: userName }, game, { vote: Boolean(Math.random() > 0.5) });
+									selectVoting({ user: userName }, game, { vote: Boolean(Math.random() > 0.5) }, socket);
 								});
 							}
 						},

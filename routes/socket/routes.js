@@ -293,7 +293,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			socket.on('updateRemake', data => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					handleUpdatedRemakeGame(passport, game, data);
+					handleUpdatedRemakeGame(passport, game, data, socket);
 				}
 			});
 			socket.on('updateBio', data => {

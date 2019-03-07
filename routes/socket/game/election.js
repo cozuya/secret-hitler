@@ -54,14 +54,11 @@ const presidentPowers = [
 /**
  * @param {object} game - game to act on.
  * @param {string} team - name of team that is enacting policy.
+ * @param {object} socket - socket
  */
-const enactPolicy = (game, team) => {
+const enactPolicy = (game, team, socket) => {
 	const index = game.trackState.enactedPolicies.length;
 	const { experiencedMode } = game.general;
-
-	if (game.gameState.isGameFrozen) {
-		return;
-	}
 
 	if (game.private.lock.selectChancellor) {
 		game.private.lock.selectChancellor = false;
@@ -262,19 +259,19 @@ const enactPolicy = (game, team) => {
 
 								switch (powerToEnact[1]) {
 									case 'The president must examine the top 3 policies.':
-										selectPolicies({ user: president.userName }, game);
+										selectPolicies({ user: president.userName }, game, socket);
 										break;
 									case 'The president must select a player for execution.':
 										if (president.role.cardName === 'fascist') {
 											list = list.filter(player => player.role.cardName !== 'hitler');
 										}
-										selectPlayerToExecute({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) });
+										selectPlayerToExecute({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) }, socket);
 										break;
 									case 'The president must investigate the party membership of another player.':
-										selectPartyMembershipInvestigate({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) });
+										selectPartyMembershipInvestigate({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) }, socket);
 										break;
 									case 'The president must select a player for a special election.':
-										selectSpecialElection({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) });
+										selectSpecialElection({ user: president.userName }, game, { playerIndex: seatedPlayers.indexOf(_.shuffle(list)[0]) }, socket);
 										break;
 								}
 							}
@@ -299,8 +296,9 @@ const enactPolicy = (game, team) => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data - socket emit
+ * @param {object} socket - socket
  */
-const selectPresidentVoteOnVeto = (passport, game, data) => {
+const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 	const { experiencedMode } = game.general;
 	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
@@ -308,6 +306,7 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 	const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
 
 	if (game.gameState.isGameFrozen) {
+		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		return;
 	}
 
@@ -416,7 +415,7 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 									shufflePolicies(game);
 								}
 
-								enactPolicy(game, game.private.policies.shift());
+								enactPolicy(game, game.private.policies.shift(), socket);
 								game.gameState.undrawnPolicyCount--;
 								if (game.gameState.undrawnPolicyCount < 3) {
 									shufflePolicies(game);
@@ -436,7 +435,7 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 							publicPresident.cardStatus.cardDisplayed = false;
 							publicChancellor.cardStatus.cardDisplayed = false;
 							president.cardFlingerState = [];
-							enactPolicy(game, game.private.currentElectionPolicies[0]);
+							enactPolicy(game, game.private.currentElectionPolicies[0], socket);
 							setTimeout(() => {
 								publicChancellor.cardStatus.isFlipped = publicPresident.cardStatus.isFlipped = false;
 							}, 1000);
@@ -456,8 +455,9 @@ module.exports.selectPresidentVoteOnVeto = selectPresidentVoteOnVeto;
  * @param {object} passport - passport auth.
  * @param {object} game - target game.
  * @param {object} data - socket emit
+ * @param {object} socket - socket
  */
-const selectChancellorVoteOnVeto = (passport, game, data) => {
+const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 	const { experiencedMode } = game.general;
 	const president = game.private.seatedPlayers[game.gameState.presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
@@ -465,6 +465,7 @@ const selectChancellorVoteOnVeto = (passport, game, data) => {
 	const publicChancellor = game.publicPlayersState[chancellorIndex];
 
 	if (game.gameState.isGameFrozen) {
+		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		return;
 	}
 
@@ -592,7 +593,7 @@ const selectChancellorVoteOnVeto = (passport, game, data) => {
 									() => {
 										if (game.gameState.timedModeEnabled) {
 											game.gameState.timedModeEnabled = false;
-											selectPresidentVoteOnVeto({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
+											selectPresidentVoteOnVeto({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) }, vote);
 										}
 									},
 									process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -612,7 +613,7 @@ const selectChancellorVoteOnVeto = (passport, game, data) => {
 							setTimeout(() => {
 								publicChancellor.cardStatus.isFlipped = false;
 							}, 1000);
-							enactPolicy(game, game.private.currentElectionPolicies[0]);
+							enactPolicy(game, game.private.currentElectionPolicies[0], socket);
 						},
 						process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000
 					);
@@ -639,8 +640,9 @@ const handToLog = hand =>
  * @param {object} game - target game.
  * @param {object} data - socket emit
  * @param {boolean} wasTimer - came from timer
+ * @param {object} socket - socket
  */
-const selectChancellorPolicy = (passport, game, data, wasTimer) => {
+const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 	const { experiencedMode } = game.general;
 	const presidentIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isPresident');
 	const president = game.private.seatedPlayers[presidentIndex];
@@ -649,6 +651,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 	const enactedPolicy = game.private.currentChancellorOptions[data.selection === 3 ? 1 : 0];
 
 	if (game.gameState.isGameFrozen) {
+		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		return;
 	}
 
@@ -796,7 +799,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 										if (game.gameState.timedModeEnabled) {
 											game.gameState.timedModeEnabled = false;
 
-											selectChancellorVoteOnVeto({ user: chancellor.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
+											selectChancellorVoteOnVeto({ user: chancellor.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) }, socket);
 										}
 									},
 									process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -817,7 +820,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 			setTimeout(
 				() => {
 					chancellor.cardFlingerState = [];
-					enactPolicy(game, enactedPolicy);
+					enactPolicy(game, enactedPolicy, socket);
 				},
 				experiencedMode ? 200 : 2000
 			);
@@ -842,8 +845,9 @@ module.exports.selectChancellorPolicy = selectChancellorPolicy;
  * @param {object} game - target game.
  * @param {object} data - socket emit
  * @param {boolean} wasTimer - came from timer
+ * @param {object} socket - socket
  */
-const selectPresidentPolicy = (passport, game, data, wasTimer) => {
+const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 	const { presidentIndex } = game.gameState;
 	const president = game.private.seatedPlayers[presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
@@ -851,6 +855,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
 	if (game.gameState.isGameFrozen) {
+		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		return;
 	}
 
@@ -1064,7 +1069,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 							if (game.gameState.timedModeEnabled) {
 								const isRightPolicy = Boolean(Math.floor(Math.random() * 2));
 
-								selectChancellorPolicy({ user: chancellor.userName }, game, { selection: isRightPolicy ? 3 : 1 }, true);
+								selectChancellorPolicy({ user: chancellor.userName }, game, { selection: isRightPolicy ? 3 : 1 }, true, socket);
 							}
 						},
 						process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -1084,18 +1089,20 @@ module.exports.selectPresidentPolicy = selectPresidentPolicy;
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data from socket emit
+ * @param {object} socket - socket
  */
-module.exports.selectVoting = (passport, game, data) => {
+module.exports.selectVoting = (passport, game, data, socket) => {
 	const { seatedPlayers } = game.private;
 	const { experiencedMode } = game.general;
 	const player = seatedPlayers.find(player => player.userName === passport.user);
 	const playerIndex = seatedPlayers.findIndex(play => play.userName === passport.user);
 
 	if (game.gameState.isGameFrozen) {
+		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		return;
 	}
 
-	const passedElection = () => {
+	const passedElection = socket => {
 		const { gameState } = game;
 		const { presidentIndex } = gameState;
 		const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
@@ -1230,7 +1237,7 @@ module.exports.selectVoting = (passport, game, data) => {
 						() => {
 							if (game.gameState.timedModeEnabled) {
 								game.gameState.timedModeEnabled = false;
-								selectPresidentPolicy({ user: seatedPlayers[presidentIndex].userName }, game, { selection: Math.floor(Math.random() * 3) }, true);
+								selectPresidentPolicy({ user: seatedPlayers[presidentIndex].userName }, game, { selection: Math.floor(Math.random() * 3) }, true, socket);
 							}
 						},
 						process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
@@ -1272,7 +1279,7 @@ module.exports.selectVoting = (passport, game, data) => {
 			game.gameState.undrawnPolicyCount--;
 			setTimeout(
 				() => {
-					enactPolicy(game, game.private.policies.shift());
+					enactPolicy(game, game.private.policies.shift(), socket);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000
 			);
@@ -1302,7 +1309,7 @@ module.exports.selectVoting = (passport, game, data) => {
 			);
 		}
 	};
-	const flipBallotCards = () => {
+	const flipBallotCards = socket => {
 		if (!seatedPlayers[0]) {
 			return;
 		}
@@ -1417,7 +1424,7 @@ module.exports.selectVoting = (passport, game, data) => {
 							process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 2000 : 4000
 						);
 					} else {
-						passedElection();
+						passedElection(socket);
 					}
 				} else {
 					if (!game.general.disableGamechat) {
@@ -1532,7 +1539,7 @@ module.exports.selectVoting = (passport, game, data) => {
 						clearTimeout(game.private.timerId);
 						game.gameState.timedModeEnabled = game.private.timerId = null;
 					}
-					flipBallotCards();
+					flipBallotCards(socket);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 2500 : 3000
 			);

@@ -1387,13 +1387,15 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data - from socket emit.
+ * @param {object} socket - socket
  */
-module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
+module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 	if (game.general.isRemade) {
 		return; // Games can only be remade once.
 	}
 
 	if (game.gameState.isGameFrozen) {
+		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		return;
 	}
 
