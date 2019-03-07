@@ -37,11 +37,6 @@ module.exports.selectPolicies = (passport, game, socket) => {
 	const president = seatedPlayers[presidentIndex];
 
 	if (game.gameState.isGameFrozen) {
-		try {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
-		} catch (error) {
-			console.error(error);
-		}
 		return;
 	}
 
@@ -236,7 +231,6 @@ module.exports.selectOnePolicy = (passport, game) => {
 		try {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		} catch (error) {
-			console.error(error);
 		}
 		return;
 	}
@@ -447,7 +441,6 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 		try {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		} catch (error) {
-			console.error(error);
 		}
 		return;
 	}
@@ -617,7 +610,6 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 		try {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		} catch (error) {
-			console.error(error);
 		}
 		return;
 	}
@@ -818,7 +810,6 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 		try {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		} catch (error) {
-			console.error(error);
 		}
 		return;
 	}
@@ -1040,7 +1031,6 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 		try {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		} catch (error) {
-			console.error(error);
 		}
 		return;
 	}
@@ -1135,7 +1125,6 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 		try {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		} catch (error) {
-			console.error(error);
 		}
 		return;
 	}

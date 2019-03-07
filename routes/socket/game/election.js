@@ -309,7 +309,6 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 		try {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		} catch (error) {
-			console.error(error);
 		}
 		return;
 	}
@@ -472,7 +471,6 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 		try {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		} catch (error) {
-			console.error(error);
 		}
 		return;
 	}
@@ -659,11 +657,6 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 	const enactedPolicy = game.private.currentChancellorOptions[data.selection === 3 ? 1 : 0];
 
 	if (game.gameState.isGameFrozen) {
-		try {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
-		} catch (error) {
-			console.error(error);
-		}
 		return;
 	}
 
@@ -867,11 +860,6 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
 	if (game.gameState.isGameFrozen) {
-		try {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
-		} catch (error) {
-			console.error(error);
-		}
 		return;
 	}
 
@@ -1106,19 +1094,16 @@ module.exports.selectPresidentPolicy = selectPresidentPolicy;
  * @param {object} game - target game.
  * @param {object} data from socket emit
  * @param {object} socket - socket
+ * @param {bool} force - if action was forced
  */
-module.exports.selectVoting = (passport, game, data, socket) => {
+module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 	const { seatedPlayers } = game.private;
 	const { experiencedMode } = game.general;
 	const player = seatedPlayers.find(player => player.userName === passport.user);
 	const playerIndex = seatedPlayers.findIndex(play => play.userName === passport.user);
 
-	if (game.gameState.isGameFrozen) {
-		try {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
-		} catch (error) {
-			console.error(error);
-		}
+	if (game.gameState.isGameFrozen && !force) {
+		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		return;
 	}
 
