@@ -2315,7 +2315,7 @@ module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
 	if (gameToFreeze && gameToFreeze.private && gameToFreeze.private.seatedPlayers) {
 		for (player of gameToFreeze.private.seatedPlayers) {
 			if (modUserName === player.userName) {
-				socket.emit('sendAlert', 'You cannot peek votes whilst playing.');
+				socket.emit('sendAlert', 'You cannot freeze the game whilst playing.');
 				return;
 			}
 		}
@@ -2339,22 +2339,11 @@ module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
 
 	game.gameState.isGameFrozen = !game.gameState.isGameFrozen;
 
-	game.private.unSeatedGameChats.push({
-		gameChat: true,
-		timestamp: new Date(),
-		chat: [
-			{
-				text: 'AEM member '
-			},
-			{
-				text: modUserName,
-				type: 'player'
-			},
-			{
-				text: `has ${game.gameState.isGameFrozen ? 'frozen' : 'unfrozen'} the game.`
-			}
-		],
-		isBroadcast: true
+	gameToFreeze.chats.push({
+		userName: `(AEM) ${modUserName}`,
+		chat: `has ${game.gameState.isGameFrozen ? 'frozen' : 'unfrozen'} the game. ${game.gameState.isGameFrozen ? 'All actions are prevented.' : ''}`,
+		isBroadcast: true,
+		timestamp: new Date()
 	});
 
 	sendInProgressGameUpdate(game);
