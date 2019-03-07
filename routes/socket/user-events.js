@@ -1398,7 +1398,6 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		try {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		} catch (error) {
-			console.error(error);
 		}
 		return;
 	}
@@ -1889,7 +1888,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						]
 					}
 				];
-				selectVoting({ user: affectedPlayer.userName }, game, { vote });
+				selectVoting({ user: affectedPlayer.userName }, game, { vote }, true);
 				sendPlayerChatUpdate(game, data);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
@@ -1952,10 +1951,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						]
 					}
 				];
-				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor }, true);
 				setTimeout(() => {
 					for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
-						selectVoting({ user: p.userName }, game, { vote: false });
+						selectVoting({ user: p.userName }, game, { vote: false }, true);
 					}
 				}, 1000);
 				sendPlayerChatUpdate(game, data);
@@ -2022,7 +2021,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						]
 					}
 				];
-				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 }, true);
 				sendPlayerChatUpdate(game, data);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
