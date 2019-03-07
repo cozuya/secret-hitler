@@ -116,14 +116,6 @@ export default class Game extends React.Component {
 		}
 	}
 
-	componentWillUnmount() {
-		window.removeEventListener('beforeunload', e => {
-			e.preventDefault();
-			e.returnValue = '';
-			return;
-		});
-	}
-
 	updateIsTyping = isClear => {
 		const { userInfo } = this.props;
 
