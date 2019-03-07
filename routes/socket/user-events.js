@@ -1863,7 +1863,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				}
 				let vote = false;
 				if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
-				game.private.unSeatedGameChats = [
+				game.private.unSeatedGameChats.push(
 					{
 						gameChat: true,
 						timestamp: new Date(),
@@ -1887,7 +1887,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							}
 						]
 					}
-				];
+				);
 				selectVoting({ user: affectedPlayer.userName }, game, { vote }, true);
 				sendPlayerChatUpdate(game, data);
 			} else {
@@ -1933,7 +1933,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					}
 					counter++;
 				}
-				game.private.unSeatedGameChats = [
+				game.private.unSeatedGameChats.push(
 					{
 						gameChat: true,
 						timestamp: new Date(),
@@ -1950,7 +1950,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							}
 						]
 					}
-				];
+				);
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor }, true);
 				setTimeout(() => {
 					for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
@@ -1996,7 +1996,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
 					return;
 				}
-				game.private.unSeatedGameChats = [
+				game.private.unSeatedGameChats.push(
 					{
 						gameChat: true,
 						timestamp: new Date(),
@@ -2020,7 +2020,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							}
 						]
 					}
-				];
+				);
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 }, true);
 				sendPlayerChatUpdate(game, data);
 			} else {
