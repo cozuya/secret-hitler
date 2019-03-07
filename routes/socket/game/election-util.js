@@ -12,6 +12,7 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 	}
 
 	if (game.gameState.isGameFrozen) {
+		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
 		return;
 	}
 
