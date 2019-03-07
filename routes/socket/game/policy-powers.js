@@ -1099,7 +1099,7 @@ module.exports.executePlayer = game => {
  * @param {object} data from socket emit
  * @param {object} socket - socket
  */
-module.exports.selectPlayerToExecute = (passport, game, data, socket, socket) => {
+module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
