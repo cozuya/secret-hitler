@@ -19,6 +19,7 @@ const {
 	handleUpdatedPlayerNote,
 	handleSubscribeModChat,
 	handleModPeekVotes,
+	handleGameFreeze,
 	handleUpdateTyping,
 	handleHasSeenNewPlayerModal
 } = require('./user-events');
@@ -358,6 +359,17 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 					const game = findGame({ uid });
 					if (game && game.private && game.private.seatedPlayers) {
 						handleModPeekVotes(socket, passport, game, data.modName);
+					}
+				} else {
+					socket.emit('sendAlert', 'Game is missing.');
+				}
+			});
+			socket.on('modFreezeGame', data => {
+				const uid = data.uid;
+				if (authenticated && isAEM) {
+					const game = findGame({ uid });
+					if (game && game.private && game.private.seatedPlayers) {
+						handleGameFreeze(socket, passport, game, data.modName);
 					}
 				} else {
 					socket.emit('sendAlert', 'Game is missing.');

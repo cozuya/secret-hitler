@@ -728,6 +728,13 @@ class Gamechat extends React.Component {
 			});
 		};
 
+		const modFreezeGame = () => {
+			socket.emit('modFreezeGame', {
+				modName: userInfo.userName,
+				uid: gameInfo.general.uid
+			});
+		};
+
 		const sendModEndGame = winningTeamName => {
 			socket.emit('updateModAction', {
 				modName: userInfo.userName,
@@ -784,6 +791,13 @@ class Gamechat extends React.Component {
 						<div>
 							<div className="ui button primary" onClick={() => modGetCurrentVotes()} style={{ width: '60px' }}>
 								Peek Votes
+							</div>
+						</div>
+					)}
+					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
+						<div>
+							<div className="ui button primary" onClick={() => modFreezeGame()} style={{ width: '60px' }}>
+								Freeze/Unfreeze
 							</div>
 						</div>
 					)}

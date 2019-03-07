@@ -1393,6 +1393,10 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 		return; // Games can only be remade once.
 	}
 
+	if (game.gameState.isGameFrozen) {
+		return;
+	}
+
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
 	const { publicPlayersState } = game;
 	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
@@ -2296,6 +2300,63 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 	});
 	game.private.hiddenInfoChat.push(modOnlyChat);
 	game.private.hiddenInfoSubscriptions.push(passport.user);
+	sendInProgressGameUpdate(game);
+};
+
+/**
+ * @param {object} socket - socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} game - game reference.
+ * @param {string} modUserName - freezing Moderator's username
+ */
+module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
+	const gameToFreeze = game;
+
+	if (gameToFreeze && gameToFreeze.private && gameToFreeze.private.seatedPlayers) {
+		for (player of gameToFreeze.private.seatedPlayers) {
+			if (modUserName === player.userName) {
+				socket.emit('sendAlert', 'You cannot peek votes whilst playing.');
+				return;
+			}
+		}
+	}
+
+	if (!game.private.gameFrozen || game.private.gameFrozen.indexOf(modUserName) === -1) {
+		const modaction = new ModAction({
+			date: new Date(),
+			modUserName: passport.user,
+			userActedOn: game.general.uid,
+			modNotes: '',
+			actionTaken: 'Game Freeze/Unfreeze'
+		});
+		modaction.save();
+		if (!game.private.gameFrozen) {
+			game.private.gameFrozen = [modUserName];
+		} else {
+			game.private.gameFrozen.push(modUserName);
+		}
+	}
+
+	game.gameState.isGameFrozen = !game.gameState.isGameFrozen;
+
+	game.private.unSeatedGameChats.push({
+		gameChat: true,
+		timestamp: new Date(),
+		chat: [
+			{
+				text: 'AEM member '
+			},
+			{
+				text: modUserName,
+				type: 'player'
+			},
+			{
+				text: `has ${game.gameState.isGameFrozen ? 'frozen' : 'unfrozen'} the game.`
+			}
+		],
+		isBroadcast: true
+	});
+
 	sendInProgressGameUpdate(game);
 };
 

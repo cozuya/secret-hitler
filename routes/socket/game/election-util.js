@@ -11,6 +11,10 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 		return;
 	}
 
+	if (game.gameState.isGameFrozen) {
+		return;
+	}
+
 	const { chancellorIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;

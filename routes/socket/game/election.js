@@ -59,6 +59,10 @@ const enactPolicy = (game, team) => {
 	const index = game.trackState.enactedPolicies.length;
 	const { experiencedMode } = game.general;
 
+	if (game.gameState.isGameFrozen) {
+		return;
+	}
+
 	if (game.private.lock.selectChancellor) {
 		game.private.lock.selectChancellor = false;
 	}
@@ -303,6 +307,10 @@ const selectPresidentVoteOnVeto = (passport, game, data) => {
 	const publicChancellor = game.publicPlayersState[chancellorIndex];
 	const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
 
+	if (game.gameState.isGameFrozen) {
+		return;
+	}
+
 	if (!president || president.userName !== passport.user) {
 		return;
 	}
@@ -455,6 +463,10 @@ const selectChancellorVoteOnVeto = (passport, game, data) => {
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 	const chancellor = game.private.seatedPlayers.find(player => player.userName === game.private._chancellorPlayerName);
 	const publicChancellor = game.publicPlayersState[chancellorIndex];
+
+	if (game.gameState.isGameFrozen) {
+		return;
+	}
 
 	if (!publicChancellor || !publicChancellor.userName || passport.user !== publicChancellor.userName) {
 		return;
@@ -635,6 +647,10 @@ const selectChancellorPolicy = (passport, game, data, wasTimer) => {
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
 	const enactedPolicy = game.private.currentChancellorOptions[data.selection === 3 ? 1 : 0];
+
+	if (game.gameState.isGameFrozen) {
+		return;
+	}
 
 	if (!chancellor || chancellor.userName !== passport.user) {
 		return;
@@ -833,6 +849,10 @@ const selectPresidentPolicy = (passport, game, data, wasTimer) => {
 	const chancellorIndex = game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor');
 	const chancellor = game.private.seatedPlayers[chancellorIndex];
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
+
+	if (game.gameState.isGameFrozen) {
+		return;
+	}
 
 	if (!president || president.userName !== passport.user || nonDiscardedPolicies.length !== 2) {
 		return;
@@ -1070,6 +1090,11 @@ module.exports.selectVoting = (passport, game, data) => {
 	const { experiencedMode } = game.general;
 	const player = seatedPlayers.find(player => player.userName === passport.user);
 	const playerIndex = seatedPlayers.findIndex(play => play.userName === passport.user);
+
+	if (game.gameState.isGameFrozen) {
+		return;
+	}
+
 	const passedElection = () => {
 		const { gameState } = game;
 		const { presidentIndex } = gameState;
