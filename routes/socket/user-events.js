@@ -2439,6 +2439,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					console.log(err, 'err in finding player report');
 				});
 		} else if (data.action === 'getFilteredData') {
+			return;
 			let queryObj;
 
 			if (data.comment && (data.comment.split('.').length > 1 || data.comment.split(':').length > 1)) {

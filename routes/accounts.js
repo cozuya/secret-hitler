@@ -8,7 +8,7 @@ const { accountCreationDisabled, verifyBypass, consumeBypass, testIP } = require
 const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
-const { expandAndSimplify } = require('./socket/ip-obf');
+const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
 const { TOU_CHANGES, PERMABANNEDIPFRAGMENTS } = require('../src/frontend-scripts/node-constants.js');
 /**
  * @param {object} req - express request object.
@@ -238,16 +238,19 @@ module.exports = () => {
 
 									newPlayerBan.save();
 
-									const newSignup = new Signups({
-										date: new Date(),
-										userName: username,
-										type: 'local',
-										email
-									});
+									if (!isPrivate) {
+										const newSignup = new Signups({
+											date: new Date(),
+											userName: username,
+											type: 'local',
+											ip: obfIP(signupIP),
+											email: Boolean(email)
+										});
 
-									newSignup.save(() => {
-										res.send();
-									});
+										newSignup.save(() => {
+											res.send();
+										});
+									}
 								});
 							});
 						}
@@ -551,6 +554,18 @@ module.exports = () => {
 														accountObj.github2FA = profile._json.two_factor_authentication;
 														accountObj.bio = profile._json.bio;
 													}
+
+													const newSignup = new Signups({
+														date: new Date(),
+														userName: profile.username,
+														type,
+														ip: obfIP(signupIP),
+														email: Boolean(profile.email || profile._json.email)
+													});
+
+													newSignup.save(() => {
+														res.send();
+													});
 
 													Account.register(
 														new Account(accountObj),
