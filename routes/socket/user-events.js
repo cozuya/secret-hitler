@@ -1888,7 +1888,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						]
 					}
 				);
-				selectVoting({ user: affectedPlayer.userName }, game, { vote }, true);
+				selectVoting({ user: affectedPlayer.userName }, game, { vote }, null, true);
 				sendPlayerChatUpdate(game, data);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
@@ -1954,7 +1954,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor }, true);
 				setTimeout(() => {
 					for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
-						selectVoting({ user: p.userName }, game, { vote: false }, true);
+						selectVoting({ user: p.userName }, game, { vote: false }, null, true);
 					}
 				}, 1000);
 				sendPlayerChatUpdate(game, data);
