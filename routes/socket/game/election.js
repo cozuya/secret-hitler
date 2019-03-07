@@ -306,7 +306,11 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 	const publicPresident = game.publicPlayersState[game.gameState.presidentIndex];
 
 	if (game.gameState.isGameFrozen) {
-		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		try {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		} catch (error) {
+			console.error(error);
+		}
 		return;
 	}
 
@@ -465,7 +469,11 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 	const publicChancellor = game.publicPlayersState[chancellorIndex];
 
 	if (game.gameState.isGameFrozen) {
-		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		try {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		} catch (error) {
+			console.error(error);
+		}
 		return;
 	}
 
@@ -651,7 +659,11 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 	const enactedPolicy = game.private.currentChancellorOptions[data.selection === 3 ? 1 : 0];
 
 	if (game.gameState.isGameFrozen) {
-		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		try {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		} catch (error) {
+			console.error(error);
+		}
 		return;
 	}
 
@@ -855,7 +867,11 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 	const nonDiscardedPolicies = _.range(0, 3).filter(num => num !== data.selection);
 
 	if (game.gameState.isGameFrozen) {
-		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		try {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		} catch (error) {
+			console.error(error);
+		}
 		return;
 	}
 
@@ -1098,7 +1114,11 @@ module.exports.selectVoting = (passport, game, data, socket) => {
 	const playerIndex = seatedPlayers.findIndex(play => play.userName === passport.user);
 
 	if (game.gameState.isGameFrozen) {
-		socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		try {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		} catch (error) {
+			console.error(error);
+		}
 		return;
 	}
 
