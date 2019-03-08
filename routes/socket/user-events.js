@@ -2342,7 +2342,14 @@ module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
 		}
 	}
 
-	game.gameState.isGameFrozen = !game.gameState.isGameFrozen;
+	const now = new Date();
+	if (game.gameState.isGameFrozen) {
+		if (now - game.gameState.isGameFrozen >= 4000) {
+			game.gameState.isGameFrozen = false;
+		}
+	} else {
+		game.gameState.isGameFrozen = now;
+	}
 
 	gameToFreeze.chats.push({
 		userName: `(AEM) ${modUserName}`,
