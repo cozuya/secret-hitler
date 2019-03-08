@@ -409,14 +409,14 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					selectPresidentPolicy(passport, game, data, socket);
+					selectPresidentPolicy(passport, game, data, false, socket);
 				}
 			});
 			socket.on('selectedChancellorPolicy', data => {
 				if (isRestricted) return;
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
-					selectChancellorPolicy(passport, game, data, socket);
+					selectChancellorPolicy(passport, game, data, false, socket);
 				}
 			});
 			socket.on('selectedPresidentVoteOnVeto', data => {
