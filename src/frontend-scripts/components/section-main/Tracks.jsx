@@ -25,26 +25,28 @@ class Tracks extends React.Component {
 			});
 		}
 
-		this.props.socket.on('updateRemakeStatus', status => {
-			this.setState(
-				{
-					remakeStatus: status,
-					remakeStatusDisabled: true
-				},
-				() => {
-					setTimeout(
-						() => {
-							if (this._ismounted) {
-								this.setState({
-									remakeStatusDisabled: false
-								});
-							}
-						},
-						this.state.remakeStatus ? 2000 : 5000
-					);
-				}
-			);
-		});
+		if (this.props.socket) {
+			this.props.socket.on('updateRemakeStatus', status => {
+				this.setState(
+					{
+						remakeStatus: status,
+						remakeStatusDisabled: true
+					},
+					() => {
+						setTimeout(
+							() => {
+								if (this._ismounted) {
+									this.setState({
+										remakeStatusDisabled: false
+									});
+								}
+							},
+							this.state.remakeStatus ? 2000 : 5000
+						);
+					}
+				);
+			});
+		}
 	}
 
 	componentWillUnmount() {
