@@ -408,7 +408,7 @@ class Players extends React.Component {
 			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
 			(gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
 			(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private)) &&
-			(!gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
+			(gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
 		) {
 			return gameInfo.general.isTourny ? (
 				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
@@ -477,6 +477,8 @@ class Players extends React.Component {
 				}
       } else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49)) {
         $(this.notRainbowModal).modal('show');
+      } else if (gameInfo.general.privateOnly && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
+        $(this.privatePlayerInPublicGameModal).modal('show');
       } else {
 				onClickedTakeSeat();
 			}
@@ -549,6 +551,14 @@ class Players extends React.Component {
           <div className="ui header">You do not meet the required amount of games (50) to play in this game.</div>
         </div>
 
+        <div 
+          className="ui basic small modal"
+          ref={c => {
+            this.privatePlayerInPublicGameModal = c;
+          }}
+        >
+          <div className="ui header">This game is for public players only. You are currently set to private games only.</div>
+        </div>
 				<div
 					className="ui basic small modal reportmodal"
 					ref={c => {
