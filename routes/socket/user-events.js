@@ -2339,6 +2339,10 @@ module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
 	if (game.gameState.isGameFrozen) {
 		if (now - game.gameState.isGameFrozen >= 4000) {
 			game.gameState.isGameFrozen = false;
+		} else {
+			// Figured this would get annoying - can add it back if mods want.
+			// socket.emit('sendAlert', `You cannot do this yet, please wait ${Math.ceil((now - game.gameState.isGameFrozen) / 1000)} seconds`);
+			return;
 		}
 	} else {
 		game.gameState.isGameFrozen = now;
