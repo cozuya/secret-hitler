@@ -1862,31 +1862,29 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				}
 				let vote = false;
 				if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
-				game.private.unSeatedGameChats.push(
-					{
-						gameChat: true,
-						timestamp: new Date(),
-						chat: [
-							{
-								text: 'An AEM member has forced '
-							},
-							{
-								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-								type: 'player'
-							},
-							{
-								text: ' to vote '
-							},
-							{
-								text: `${vote ? 'ja' : 'nein'}`,
-								type: 'player'
-							},
-							{
-								text: '.'
-							}
-						]
-					}
-				);
+				game.private.unSeatedGameChats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has forced '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' to vote '
+						},
+						{
+							text: `${vote ? 'ja' : 'nein'}`,
+							type: 'player'
+						},
+						{
+							text: '.'
+						}
+					]
+				});
 				selectVoting({ user: affectedPlayer.userName }, game, { vote }, null, true);
 				sendPlayerChatUpdate(game, data);
 			} else {
