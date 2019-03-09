@@ -474,7 +474,9 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-			} else {
+			} else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
+        $(this.privatePlayerInPublicGameModal).modal('show');
+      } else {
 				onClickedTakeSeat();
 			}
 		} else {
@@ -527,6 +529,15 @@ class Players extends React.Component {
 						This game is for email-verified only accounts. Have your account become verified by adding an email address in your <a href="/account">settings.</a>
 					</div>
 				</div>
+
+        <div
+          className="ui basic small modal"
+          ref={c=> {
+            this.privatePlayerInPublicGameModal = c;
+          }}
+        >
+          <div className="ui header">This game is for public players only. You are currently set to private only.</div>
+        </div>
 
 				<div
 					className="ui basic small modal"
