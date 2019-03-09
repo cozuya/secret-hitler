@@ -1565,7 +1565,7 @@ export default class Creategame extends React.Component {
 									className="password-input"
 									maxLength="20"
 									placeholder="Password"
-									type="password"
+									type="text"
 									autoFocus
 									value={this.state.password}
 									onChange={e => this.setState({ password: e.target.value })}
