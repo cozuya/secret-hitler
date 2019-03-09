@@ -1993,31 +1993,29 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
 					return;
 				}
-				game.private.unSeatedGameChats.push(
-					{
-						gameChat: true,
-						timestamp: new Date(),
-						chat: [
-							{
-								text: 'An AEM member has forced '
-							},
-							{
-								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-								type: 'player'
-							},
-							{
-								text: ' to pick '
-							},
-							{
-								text: `${affectedChancellor.userName} {${chancellorPick}}`,
-								type: 'player'
-							},
-							{
-								text: ' as chancellor.'
-							}
-						]
-					}
-				);
+				game.private.unSeatedGameChats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has forced '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' to pick '
+						},
+						{
+							text: `${affectedChancellor.userName} {${chancellorPick}}`,
+							type: 'player'
+						},
+						{
+							text: ' as chancellor.'
+						}
+					]
+				});
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 }, true);
 				sendPlayerChatUpdate(game, data);
 			} else {
