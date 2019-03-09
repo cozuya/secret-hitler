@@ -1930,24 +1930,22 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					}
 					counter++;
 				}
-				game.private.unSeatedGameChats.push(
-					{
-						gameChat: true,
-						timestamp: new Date(),
-						chat: [
-							{
-								text: 'An AEM member has force skipped the government with '
-							},
-							{
-								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-								type: 'player'
-							},
-							{
-								text: ' as president.'
-							}
-						]
-					}
-				);
+				game.private.unSeatedGameChats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has force skipped the government with '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: ' as president.'
+						}
+					]
+				});
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor }, true);
 				setTimeout(() => {
 					for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
