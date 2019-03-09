@@ -474,7 +474,7 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-			} else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
+			} else if (!gameInfo.general.privateOnly && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
         $(this.privatePlayerInPublicGameModal).modal('show');
       } else {
 				onClickedTakeSeat();
