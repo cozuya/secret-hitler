@@ -97,16 +97,15 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 
 export const getBadWord = text => {
 	const badWords = {
-		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
-		kike: [],
+		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga', 'niglet'],
 		retard: ['libtard', 'retarded', 'conservatard', 'ameritard', 'rarted', 'r4rted', 'rart3d', 'r4rt3d'],
 		kike: ['k1ke', 'kik3', 'k1k3'],
-		retard: ['autist', 'libtard', 'retarded', 'conservatard', 'ameritard', 'libt4rd', 'ret4rded', 'conserv4t4rd', 'conservat4rd', 'conserv4tard', 'amer1tard'],
+		retard: ['autist', 'tard', 't4rd'],
 		faggot: ['f4g', 'fag', 'fagget', 'feggit', 'f3ggit', 'f4gg0t', 'f4ggot', 'fagg0t'],
-		niggerfaggot: [],
+		niggerfaggot: ['nigger', 'faggot'],
 		mongoloid: ['mong'],
-		cunt: ['kunt'],
-		'Nazi Terms': ['1488', '卍', 'swastika']
+		cunt: ['kunt', 'cunt'],
+		'Nazi Terms': ['卍', 'swastika']
 	};
 	let foundWord = [null, null];
 
