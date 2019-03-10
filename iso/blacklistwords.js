@@ -37,8 +37,8 @@ module.exports = [
 	'kik3',
 	'k1k3',
 	'autist',
-	'tard'
-	't4rd'
+	'tard',
+	't4rd',
 	'f4g',
 	'fag',
 	'fagget',
@@ -50,6 +50,6 @@ module.exports = [
 	'mong',
 	'kunt',
 	'卍',
-	'swastika'
+	'swastika',
 	'niglet'
 ];
