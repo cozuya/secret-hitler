@@ -169,7 +169,7 @@ class Playerlist extends React.Component {
 	renderSignupsButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod')) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'trialmod')) {
 			let classes = 'sign-in icon';
 
 			return (
