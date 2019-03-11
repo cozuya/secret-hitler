@@ -655,9 +655,9 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 	const enactedPolicy = game.private.currentChancellorOptions[data.selection === 3 ? 1 : 0];
 
 	if (game.gameState.isGameFrozen) {
-		try {
+		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
-		} catch (error) {}
+		}
 		return;
 	}
 

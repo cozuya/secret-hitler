@@ -605,9 +605,8 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 	}
 
 	if (game.gameState.isGameFrozen) {
-		try {
+		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
-		} catch (error) {
 		}
 		return;
 	}
