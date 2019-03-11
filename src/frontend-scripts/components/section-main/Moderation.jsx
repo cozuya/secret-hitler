@@ -11,9 +11,10 @@ export default class Moderation extends React.Component {
 	state = {
 		selectedUser: '',
 		userList: [],
+		gameList: [],
 		actionTextValue: '',
 		log: [],
-		playerListShown: true,
+		playerListState: 0,
 		broadcastText: '',
 		playerInputText: '',
 		resetServerCount: 0,
@@ -25,6 +26,10 @@ export default class Moderation extends React.Component {
 			direction: 'descending'
 		},
 		userSort: {
+			type: 'username',
+			direction: 'descending'
+		},
+		gameSort: {
 			type: 'username',
 			direction: 'descending'
 		},
@@ -40,6 +45,7 @@ export default class Moderation extends React.Component {
 		socket.on('modInfo', info => {
 			this.setState({
 				userList: info.userList,
+				gameList: info.gameList,
 				log: info.modReports,
 				hideActions: info.hideActions || false
 			});
@@ -176,7 +182,19 @@ export default class Moderation extends React.Component {
 	}
 
 	togglePlayerList = () => {
-		this.setState({ playerListShown: !this.state.playerListShown });
+		if (this.state.playerListState < 2) {
+			this.setState({
+				playerListState: this.state.playerListState + 1,
+				selectedUser: '',
+				playerInputText: ''
+			});
+		} else {
+			this.setState({
+				playerListState: 0,
+				selectedUser: '',
+				playerInputText: ''
+			});
+		}
 	};
 
 	renderPlayerInput() {
@@ -970,11 +988,11 @@ export default class Moderation extends React.Component {
 					</a>
 				)}
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
-					show/hide playerlist
+					Toggle Player/Game List
 				</span>
 
 				<div>
-					{this.state.playerListShown && (
+					{this.state.playerListState === 0 && (
 						<div className="modplayerlist">
 							<h3>Current player list</h3>
 							<div className="ui table">
