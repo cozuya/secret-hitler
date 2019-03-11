@@ -1053,6 +1053,60 @@ export default class Moderation extends React.Component {
 							)}
 						</div>
 					)}
+					{this.state.playerListState === 1 && (
+						<div className="modplayerlist">
+							<h3>Current Game List</h3>
+							<div className="ui table">
+								<h4>Color chart:</h4>
+								<span className="casual">This game is casual</span>
+								<br />
+								<span className="private">This game is private</span>
+								<br />
+								<span className="custom">This game is custom</span>
+							</div>
+
+							<table className="ui celled table userlist">
+								<thead>
+									<tr>
+										<th />
+										<th
+											style={{ whiteSpace: 'nowrap' }}
+											onClick={() => {
+												clickSort('gamename');
+											}}
+										>
+											Game Name {userSort.type === 'gamename' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+										<th
+											style={{ whiteSpace: 'nowrap' }}
+											onClick={() => {
+												clickSort('uid');
+											}}
+										>
+											UID {userSort.type === 'uid' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+										<th
+											style={{ whiteSpace: 'nowrap' }}
+											onClick={() => {
+												clickSort('electionnum');
+											}}
+										>
+											Election #{' '}
+											{userSort.type === 'electionnum' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+									</tr>
+								</thead>
+								<tbody>{this.renderGameList()}</tbody>
+							</table>
+							{!hideActions && (
+								<span>
+									<div className="ui horizontal divider">-</div>
+									{this.renderActionText()}
+									{this.renderGameButtons()}
+								</span>
+							)}
+						</div>
+					)}
 					<div className="modlog" style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}>
 						<h3>
 							Moderation log{' '}
