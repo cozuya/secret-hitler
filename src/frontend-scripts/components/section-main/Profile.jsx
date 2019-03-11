@@ -106,22 +106,22 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
- // FIXME: This button doesn't show up... I'll fix this later. I need to fix my grey profile stuff....
+ // TODO: CSS stuff :/
 	currentGame() {
 
     function currentGameFnctn() {
-			window.location.hash = `/${game._id}`;
+			window.location = `#/table/${gameId}`;
     }
 
 		return (
       <React.Fragment>
-          <div>
-              {gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) && 
-                  (<button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
-                      Current Game
-                  </button>)
-              }
-          </div>
+        <div>
+            {gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) && 
+                (<button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
+                    Current Game
+                </button>)
+            }
+        </div>
       </React.Fragment>
     );
 	}
