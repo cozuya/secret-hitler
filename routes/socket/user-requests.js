@@ -123,16 +123,17 @@ module.exports.sendSignups = socket => {
 		});
 };
 /**
+ * @param {array} games - list of all games
  * @param {object} socket - user socket reference.
  * @param {number} count - depth of modinfo requested.
  * @param {boolean} isTrial - true if the user is a trial mod.
  */
-module.exports.sendModInfo = (socket, count, isTrial) => {
+module.exports.sendModInfo = (games, socket, count, isTrial) => {
 	const userNames = userList.map(user => user.userName);
 
 	Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
 		.then(users => {
-			getModInfo(users, socket, {}, count, isTrial);
+			getModInfo(games, users, socket, {}, count, isTrial);
 		})
 		.catch(err => {
 			console.log(err, 'err in sending mod info');
