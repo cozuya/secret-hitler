@@ -282,6 +282,96 @@ export default class Moderation extends React.Component {
 			));
 	}
 
+	renderGameList() {
+		const gameRadioChange = game => {
+			this.setState({ playerInputText: game.uid });
+		};
+		const { gameList, gameSort } = this.state;
+		const getGameType = game => {
+			if (game.custom) return 'custom';
+			if (game.casual) return 'casual';
+			if (game.private) return 'private';
+			return '';
+		};
+		return gameList
+			.sort((a, b) =>
+				(() => {
+					const getAmt = (a, b) => {
+						if (gameSort.type === 'uid' && a.uid != b.uid) return a.uid > b.uid ? 1 : -1;
+						if (gameSort.type === 'electionNum' && a.electionNum != b.electionNum) return a.electionNum > b.electionNum ? 1 : -1;
+						return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+					};
+					return getAmt(a, b) * (gameSort.direction === 'descending' ? 1 : -1);
+				})()
+			)
+			.map((game, index) => (
+				<tr key={index}>
+					<td>
+						<input
+							type="radio"
+							name="games"
+							onChange={() => {
+								gameRadioChange(game);
+							}}
+							checked={this.state.playerInputText === game.uid}
+						/>
+					</td>
+					<td className={getGameType(game)}>{game.name}</td>
+					<td>
+						<a href={`/game/#/table/${game.uid}`}>{game.uid}</a>
+					</td>
+					<td>{game.electionNum}</td>
+				</tr>
+			));
+	}
+
+	renderGameButtons() {
+		const takeModAction = action => {
+			this.props.socket.emit('updateModAction', {
+				modName: this.props.userInfo.userName,
+				userName:
+					action === 'deleteGame'
+						? `DELGAME${this.state.playerInputText}`
+						: action === 'resetGameName'
+						? `RESETGAMENAME${this.state.playerInputText}`
+						: this.state.playerInputText || this.state.selectedUser,
+				ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+				comment: this.state.actionTextValue,
+				action
+			});
+			this.setState({
+				selectedUser: '',
+				actionTextValue: '',
+				playerInputText: ''
+			});
+		};
+
+		const { playerInputText } = this.state;
+
+		return (
+			<div className="button-container">
+				<button
+					style={{ width: '100%', background: '#0ca51d' }}
+					className={playerInputText ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('resetGameName');
+					}}
+				>
+					Reset game name
+				</button>
+				<button
+					style={{ width: '100%', background: 'indianred' }}
+					className={playerInputText ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('deleteGame');
+					}}
+				>
+					Delete game
+				</button>
+			</div>
+		);
+	}
+
 	renderButtons() {
 		const takeModAction = action => {
 			if (action === 'resetServer' && !this.state.resetServerCount) {
