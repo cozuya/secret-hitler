@@ -268,9 +268,14 @@ export default class Moderation extends React.Component {
 							onChange={() => {
 								radioChange(user.userName);
 							}}
+							checked={this.state.selectedUser === user.userName}
 						/>
 					</td>
-					<td className={getUserType(user)}>{user.userName}</td>
+					<td>
+						<a className={getUserType(user)} href={`/game/#/profile/${user.userName}`}>
+							{user.userName}
+						</a>
+					</td>
 					<td className={getIPType(user)}>{user.ip}</td>
 					<td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
 				</tr>
