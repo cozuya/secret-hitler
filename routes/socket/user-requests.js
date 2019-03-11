@@ -42,7 +42,7 @@ const sendUserList = (module.exports.sendUserList = socket => {
 	}
 });
 
-const getModInfo = (users, socket, queryObj, count = 1, isTrial) => {
+const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 	const maskEmail = email => (email && email.split('@')[1]) || '';
 
 	ModAction.find(queryObj)
@@ -80,6 +80,19 @@ const getModInfo = (users, socket, queryObj, count = 1, isTrial) => {
 					}
 				}
 			});
+			const gList = [];
+			if (games) {
+				Object.values(games).forEach(game => {
+					gList.push({
+						name: game.general.name,
+						uid: game.general.uid,
+						electionNum: game.general.electionCount,
+						casual: game.general.casualGame,
+						private: game.general.private,
+						custom: game.customGameSettings.enabled
+					});
+				});
+			}
 			socket.emit('modInfo', {
 				modReports: actions,
 				accountCreationDisabled,
@@ -87,6 +100,7 @@ const getModInfo = (users, socket, queryObj, count = 1, isTrial) => {
 				gameCreationDisabled,
 				limitNewPlayers,
 				userList: list,
+				gameList: gList,
 				hideActions: isTrial || undefined
 			});
 		})

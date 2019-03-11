@@ -329,7 +329,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			});
 			socket.on('getModInfo', count => {
 				if (authenticated && (isAEM || isTrial)) {
-					sendModInfo(socket, count, isTrial && !isAEM);
+					sendModInfo(games, socket, count, isTrial && !isAEM);
 				}
 			});
 			socket.on('subscribeModChat', uid => {
