@@ -477,6 +477,8 @@ class Players extends React.Component {
 				}
       } else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49)) {
         $(this.notRainbowModal).modal('show');
+      } else if (!gameInfo.general.privateOnly && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
+        $(this.privatePlayerInPublicGameModal).modal('show');
       } else {
 				onClickedTakeSeat();
 			}
@@ -549,6 +551,15 @@ class Players extends React.Component {
           <div className="ui header">You do not meet the required amount of games (50) to play in this game.</div>
         </div>
       
+        <div
+          className="ui basic small modal"
+          ref={c => {
+            this.privatePlayerInPublicGameModal = c;
+          }}
+        >
+          <div>Your account can only play private games. This is a public game. You can change this in your settings.</div>
+        </div>
+
 				<div
 					className="ui basic small modal reportmodal"
 					ref={c => {
