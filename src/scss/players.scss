@@ -1,446 +1,476 @@
 $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (1900 0.9 1 0.6) (2000 0.8 1 0.4);
+	
 
-@function lerp($low, $high, $elo) {
-	$scale: nth($high, 1) - nth($low, 1);
-	@if $scale <= 0 {
-		@return hsl(nth($low, 2) * 360, nth($low, 3) * 100, nth($low, 4) * 100);
+	@function lerp($low, $high, $elo) {
+		$scale: nth($high, 1) - nth($low, 1);
+		@if $scale <= 0 {
+			@return hsl(nth($low, 2) * 360, nth($low, 3) * 100, nth($low, 4) * 100);
+		}
+		$lerp: ($elo - nth($low, 1)) / $scale;
+		@if $lerp < 0 {
+			$lerp: 0;
+		}
+		@if $lerp > 1 {
+			$lerp: 1;
+		}
+		@return hsl(
+			((nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp)) * 360,
+			((nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp)) * 100,
+			((nth($low, 4) * (1-$lerp)) + (nth($high, 4) * $lerp)) * 100
+		);
 	}
-	$lerp: ($elo - nth($low, 1)) / $scale;
-	@if $lerp < 0 {
-		$lerp: 0;
-	}
-	@if $lerp > 1 {
-		$lerp: 1;
-	}
-	@return hsl(
-		((nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp)) * 360,
-		((nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp)) * 100,
-		((nth($low, 4) * (1-$lerp)) + (nth($high, 4) * $lerp)) * 100
-	);
-}
+	
 
-@function calcEloCol($elo) {
-	$low: nth($eloValues, 1);
-	$high: nth($eloValues, -1);
-	@for $i from 1 through length($eloValues) {
-		$val: nth($eloValues, $i);
-		$val2: nth($val, 1);
-		@if $val2 > nth($low, 1) {
-			@if $val2 <= $elo {
-				$low: $val;
+	@function calcEloCol($elo) {
+		$low: nth($eloValues, 1);
+		$high: nth($eloValues, -1);
+		@for $i from 1 through length($eloValues) {
+			$val: nth($eloValues, $i);
+			$val2: nth($val, 1);
+			@if $val2 > nth($low, 1) {
+				@if $val2 <= $elo {
+					$low: $val;
+				}
+			}
+			@if $val2 < nth($high, 1) {
+				@if $val2 >= $elo {
+					$high: $val;
+				}
 			}
 		}
-		@if $val2 < nth($high, 1) {
-			@if $val2 >= $elo {
-				$high: $val;
-			}
-		}
+		@return lerp($low, $high, $elo);
 	}
-	@return lerp($low, $high, $elo);
-}
+	
 
-.players-container .players {
-	background: #000;
-	//height: 115px;
-	overflow: hidden;
-	display: flex;
-	margin-top: 5px;
-	> .label {
-		width: 50px;
-		height: 65px;
-		margin: 28px 0 0 10px;
-		font-size: 16px;
-		padding: 6px;
-		text-align: center;
-		cursor: pointer;
-		&.tourny {
-			width: 130px;
-			margin: 32px 0 0 10px;
-			padding: 15px;
-			background: $tourny;
-		}
-	}
-	@for $i from 0 through 100 {
-		.player-container.elo#{$i} {
-			box-shadow: 0 0 5px 2px calcEloCol($i * 5+1500) !important;
-		}
-	}
-	@for $i from 1 through 5 {
-		.player-container.experienced#{$i} {
-			box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
-		}
-	}
-	@for $i from 1 through 10 {
-		.player-container.onfire#{$i} {
-			box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
-		}
-	}
-
-	.player-container.contributor {
-		box-shadow: 0 0 5px 2px #21bae0 !important;
-	}
-
-	.player-container.admin {
-		box-shadow: 0 0 5px 2px red !important;
-	}
-
-	.player-container.editorcolor {
-		box-shadow: 0 0 5px 2px #05bba0 !important;
-	}
-
-	.player-container.moderatorcolor {
-		box-shadow: 0 0 5px 2px #007fff !important;
-	}
-
-	.player-container.cbell {
-		box-shadow: 0 0 5px 2px #ff1a75 !important;
-	}
-
-	.player-container.jdudle3 {
-		box-shadow: 0 0 5px 2px #fbbc13 !important;
-	}
-
-	.player-container.thejuststopo {
-		box-shadow: 0 0 5px 2px #dc143c !important;
-	}
-
-	.player-container.max {
-		box-shadow: 0 0 5px 2px #b7ae0b !important;
-	}
-
-	.player-container.dfinn {
-		box-shadow: 0 0 5px 2px #00ffd8 !important;
-	}
-
-	.player-container.invidia {
-		box-shadow: 0 0 5px 2px #ec7d04 !important;
-	}
-
-	.player-container.faaiz {
-		box-shadow: 0 0 5px 2px #c7c1ff !important;
-	}
-
-	.player-container {
-		user-select: none;
-		max-width: 70px;
-		min-width: 25px;
-		height: 95px;
-		margin: 18px 0.5% 0;
-		border-radius: 4px;
-		background-image: url('../../public/images/tweed.png');
-		background-repeat: no-repeat;
-		background-size: cover;
-		position: relative;
-		flex: 1;
-
-		.playernote {
-			font-size: 18px;
-			color: $primary !important;
-			position: absolute;
-			top: 2px;
-			right: -4px;
-			cursor: pointer;
-			z-index: 100;
-
-			&.has-note {
-				color: orange !important;
-			}
-		}
-
-		.player-number {
-			cursor: pointer;
-			overflow: hidden;
-			white-space: nowrap;
-			margin-top: -20px;
-			font-family: $headerfont;
-			color: #ddd;
+	.players-container .players {
+		background: #000;
+		//height: 115px;
+		overflow: hidden;
+		display: flex;
+		margin-top: 5px;
+		> .label {
+			width: 50px;
+			height: 65px;
+			margin: 28px 0 0 12px;
+			font-size: 16px;
+			padding: 6px;
 			text-align: center;
-			font-size: 13px;
-			&.blacklisted {
-				color: $blacklist !important;
-				opacity: 0.8;
-			}
-			&:hover {
-				color: yellow;
-			}
-		}
-		.player-number.seated-user {
-			color: #16ab39;
-		}
-		.government-token {
-			width: 100%;
-			height: 23px;
-			top: 72px;
+			cursor: pointer;
 			position: absolute;
-			z-index: 1;
+			bottom: 125px; 
+              cursor: pointer;
+			&.tourny {
+				width: 130px;
+				margin: 32px 0 0 10px;
+				padding: 15px;
+				background: $tourny;
+			}
 		}
-		.previous-government-token {
-			top: 0;
-			opacity: 0.2;
+		@for $i from 0 through 100 {
+			.player-container.elo#{$i} {
+				box-shadow: 0 0 5px 2px calcEloCol($i * 5+1500) !important;
+			}
 		}
-		.government-token.isPendingPresident,
-		.government-token.isPendingChancellor {
-			animation: fadeIn 1.5s infinite alternate;
+		@for $i from 1 through 5 {
+			.player-container.experienced#{$i} {
+				box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
+			}
 		}
-		.government-token.isPendingPresident,
-		.government-token.isPresident,
-		.government-token.wasPresident {
-			background-image: url('../../public/images/president-token.png');
+		@for $i from 1 through 10 {
+			.player-container.onfire#{$i} {
+				box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
+			}
 		}
-		.government-token.isPendingChancellor,
-		.government-token.isChancellor,
-		.government-token.wasChancellor {
-			background-image: url('../../public/images/chancellor-token.png');
+	
+
+		.player-container.contributor {
+			box-shadow: 0 0 5px 2px #21bae0 !important;
 		}
-		.card-container {
-			width: 100%;
+	
+
+		.player-container.admin {
+			box-shadow: 0 0 5px 2px red !important;
+		}
+	
+
+		.player-container.editorcolor {
+			box-shadow: 0 0 5px 2px #05bba0 !important;
+		}
+	
+
+		.player-container.moderatorcolor {
+			box-shadow: 0 0 5px 2px #007fff !important;
+		}
+	
+
+		.player-container.cbell {
+			box-shadow: 0 0 5px 2px #ff1a75 !important;
+		}
+	
+
+		.player-container.jdudle3 {
+			box-shadow: 0 0 5px 2px #fbbc13 !important;
+		}
+	
+
+		.player-container.thejuststopo {
+			box-shadow: 0 0 5px 2px #dc143c !important;
+		}
+	
+
+		.player-container.max {
+			box-shadow: 0 0 5px 2px #b7ae0b !important;
+		}
+	
+
+		.player-container.dfinn {
+			box-shadow: 0 0 5px 2px #00ffd8 !important;
+		}
+	
+
+		.player-container.invidia {
+			box-shadow: 0 0 5px 2px #ec7d04 !important;
+		}
+	
+
+		.player-container.faaiz {
+			box-shadow: 0 0 5px 2px #c7c1ff !important;
+		}
+	
+
+		.player-container {
+			user-select: none;
+			max-width: 70px;
+			min-width: 25px;
 			height: 95px;
-			top: 100px;
-			left: 0;
-			transition-duration: 1s;
-			transition-property: transform, top;
-			transform-style: preserve-3d;
-			position: relative;
-			-webkit-backface-visibility: hidden; // thanks osx safari
-			backface-visibility: hidden;
-			.card {
-				background-size: cover;
-				background-repeat: no-repeat;
+			margin: 18px 0.5% 0;
+			border-radius: 4px;
+			background-image: url('../../public/images/tweed.png');
+			background-repeat: no-repeat;
+			background-size: cover;
+			position: relative;			flex: 1;
+	
+
+			.playernote {
+				font-size: 18px;
+				color: $primary !important;
 				position: absolute;
-				top: 0;
-				left: 0;
-				height: 95px;
+				top: 2px;
+				right: -4px;
+				cursor: pointer;
+				z-index: 100;
+	
+
+				&.has-note {
+					color: orange !important;
+				}
+			}
+	
+
+			.player-number {
+				cursor: pointer;
+				overflow: hidden;
+				white-space: nowrap;
+				margin-top: -20px;
+				font-family: $headerfont;
+				color: #ddd;
+				text-align: center;
+				font-size: 13px;
+				&.blacklisted {
+					color: $blacklist !important;
+					opacity: 0.8;
+				}
+				&:hover {
+					color: yellow;
+				}
+			}
+			.player-number.seated-user {
+				color: #16ab39;
+			}
+			.government-token {
 				width: 100%;
+				height: 23px;
+				top: 72px;
+				position: absolute;
+				z-index: 1;
 			}
-			.card.secretrole {
-				background-image: url('../../public/images/cards/secretrole.png');
+			.previous-government-token {
+				top: 0;
+				opacity: 0.2;
 			}
-			.card.liberal0 {
-				background-image: url('../../public/images/cards/liberal0.png');
+			.government-token.isPendingPresident,
+			.government-token.isPendingChancellor {
+				animation: fadeIn 1.5s infinite alternate;
 			}
-			.card.liberal1 {
-				background-image: url('../../public/images/cards/liberal1.png');
+			.government-token.isPendingPresident,
+			.government-token.isPresident,
+			.government-token.wasPresident {
+				background-image: url('../../public/images/president-token.png');
 			}
-			.card.liberal2 {
-				background-image: url('../../public/images/cards/liberal2.png');
+			.government-token.isPendingChancellor,
+			.government-token.isChancellor,
+			.government-token.wasChancellor {
+				background-image: url('../../public/images/chancellor-token.png');
 			}
-			.card.liberal3 {
-				background-image: url('../../public/images/cards/liberal3.png');
-			}
-			.card.liberal4 {
-				background-image: url('../../public/images/cards/liberal4.png');
-			}
-			.card.liberal5 {
-				background-image: url('../../public/images/cards/liberal5.png');
-			}
-			.card.fascist0 {
-				background-image: url('../../public/images/cards/fascist0.png');
-			}
-			.card.fascist1 {
-				background-image: url('../../public/images/cards/fascist1.png');
-			}
-			.card.fascist2 {
-				background-image: url('../../public/images/cards/fascist2.png');
-			}
-			.card.fascist3 {
-				background-image: url('../../public/images/cards/fascist3.png');
-			}
-			.card.fascist4 {
-				background-image: url('../../public/images/cards/fascist4.png');
-			}
-			.card.fascist5 {
-				background-image: url('../../public/images/cards/fascist5.png');
-			}
-			.card.hitler0 {
-				background-image: url('../../public/images/cards/hitler0.png');
-			}
-			.card.hitler1 {
-				background-image: url('../../public/images/cards/hitler1.png');
-			}
-			.card.ballot {
-				background-image: url('../../public/images/cards/ballot.png');
-			}
-			.card.ja {
-				background-image: url('../../public/images/cards/ja.png');
-			}
-			.card.nein {
-				background-image: url('../../public/images/cards/nein.png');
-			}
-			.card.partymembership {
-				background-image: url('../../public/images/cards/partymembership.png');
-			}
-			.card.membership-liberal {
-				background-image: url('../../public/images/cards/membership-liberal.png');
-			}
-			.card.membership-fascist {
-				background-image: url('../../public/images/cards/membership-fascist.png');
-			}
-			.card-back {
+			.card-container {
+				width: 100%;
+				height: 95px;
+				top: 100px;
+				left: 0;
+				transition-duration: 1s;
+				transition-property: transform, top;
+				transform-style: preserve-3d;
+				position: relative;
 				-webkit-backface-visibility: hidden; // thanks osx safari
 				backface-visibility: hidden;
+				.card {
+					background-size: cover;
+					background-repeat: no-repeat;
+					position: absolute;
+					top: 0;
+					left: 0;
+					height: 95px;
+					width: 100%;
+				}
+				.card.secretrole {
+					background-image: url('../../public/images/cards/secretrole.png');
+				}
+				.card.liberal0 {
+					background-image: url('../../public/images/cards/liberal0.png');
+				}
+				.card.liberal1 {
+					background-image: url('../../public/images/cards/liberal1.png');
+				}
+				.card.liberal2 {
+					background-image: url('../../public/images/cards/liberal2.png');
+				}
+				.card.liberal3 {
+					background-image: url('../../public/images/cards/liberal3.png');
+				}
+				.card.liberal4 {
+					background-image: url('../../public/images/cards/liberal4.png');
+				}
+				.card.liberal5 {
+					background-image: url('../../public/images/cards/liberal5.png');
+				}
+				.card.fascist0 {
+					background-image: url('../../public/images/cards/fascist0.png');
+				}
+				.card.fascist1 {
+					background-image: url('../../public/images/cards/fascist1.png');
+				}
+				.card.fascist2 {
+					background-image: url('../../public/images/cards/fascist2.png');
+				}
+				.card.fascist3 {
+					background-image: url('../../public/images/cards/fascist3.png');
+				}
+				.card.fascist4 {
+					background-image: url('../../public/images/cards/fascist4.png');
+				}
+				.card.fascist5 {
+					background-image: url('../../public/images/cards/fascist5.png');
+				}
+				.card.hitler0 {
+					background-image: url('../../public/images/cards/hitler0.png');
+				}
+				.card.hitler1 {
+					background-image: url('../../public/images/cards/hitler1.png');
+				}
+				.card.ballot {
+					background-image: url('../../public/images/cards/ballot.png');
+				}
+				.card.ja {
+					background-image: url('../../public/images/cards/ja.png');
+				}
+				.card.nein {
+					background-image: url('../../public/images/cards/nein.png');
+				}
+				.card.partymembership {
+					background-image: url('../../public/images/cards/partymembership.png');
+				}
+				.card.membership-liberal {
+					background-image: url('../../public/images/cards/membership-liberal.png');
+				}
+				.card.membership-fascist {
+					background-image: url('../../public/images/cards/membership-fascist.png');
+				}
+				.card-back {
+					-webkit-backface-visibility: hidden; // thanks osx safari
+					backface-visibility: hidden;
+					transform: rotateY(180deg);
+				}
+			}
+			.card-container.showing {
+				// prevents 1px gap showing below card
+				top: 1px;
+			}
+			.card-container.flipped {
 				transform: rotateY(180deg);
 			}
+			.player-number.leftgame {
+				opacity: 0.3;
+			}
+			.player-number.disconnected {
+				opacity: 0.6;
+			}
+			.player-name.liberal,
+			.player-number.liberal {
+				color: #608cb3;
+			}
+			.player-name.fascist,
+			.player-number.fascist {
+				color: #c36563;
+				
+			}
+			.player-name.hitler,
+			.player-number.hitler {
+				color: #be0804;
+			}
 		}
-		.card-container.showing {
-			// prevents 1px gap showing below card
-			top: 1px;
+		.player-container.isDead {
+			background-image: url('../../public/images/deadplayer.png') !important;
 		}
-		.card-container.flipped {
-			transform: rotateY(180deg);
+		.notifier::after {
+			content: '';
+			width: 100%;
+			height: 95px;
+			top: 0;
+			left: 0;
+			position: absolute;
+			animation: fadeIn 0.6s infinite alternate;
+			cursor: pointer;
 		}
-		.player-number.leftgame {
-			opacity: 0.3;
+		.player-container.fascist::after {
+			box-shadow: 0 0 4px 4px #c36563;
 		}
-		.player-number.disconnected {
-			opacity: 0.6;
+		.player-container.hitler::after,
+		.player-container.danger::after {
+			box-shadow: 0 0 4px 4px #be0804;
 		}
-		.player-name.liberal,
-		.player-number.liberal {
-			color: #608cb3;
+		.player-container.liberal::after {
+			box-shadow: 0 0 4px 4px #608cb3;
 		}
-		.player-name.fascist,
-		.player-number.fascist {
-			color: #c36563;
-			
+		.player-container.notification::after {
+			box-shadow: 0 0 4px 4px #fbbd08;
 		}
-		.player-name.hitler,
-		.player-number.hitler {
-			color: #be0804;
+		.player-container.success::after {
+			box-shadow: 0 0 4px 4px #2185d0 inset;
+			cursor: auto;
 		}
 	}
-	.player-container.isDead {
-		background-image: url('../../public/images/deadplayer.png') !important;
-	}
-	.notifier::after {
-		content: '';
-		width: 100%;
-		height: 95px;
-		top: 0;
-		left: 0;
-		position: absolute;
-		animation: fadeIn 0.6s infinite alternate;
-		cursor: pointer;
-	}
-	.player-container.fascist::after {
-		box-shadow: 0 0 4px 4px #c36563;
-	}
-	.player-container.hitler::after,
-	.player-container.danger::after {
-		box-shadow: 0 0 4px 4px #be0804;
-	}
-	.player-container.liberal::after {
-		box-shadow: 0 0 4px 4px #608cb3;
-	}
-	.player-container.notification::after {
-		box-shadow: 0 0 4px 4px #fbbd08;
-	}
-	.player-container.success::after {
-		box-shadow: 0 0 4px 4px #2185d0 inset;
-		cursor: auto;
-	}
-}
+	
 
-.players-container .policies-container {
-	max-width: 164px;
-	min-width: 36px;
-	height: 115px;
-	margin-left: auto;
-	flex: 1;
-	> div {
-		width: 50%;
-		height: inherit;
-		display: inline-block;
-		position: relative;
-	}
-	.card-count {
-		position: absolute;
-		z-index: 1;
-		background: #333;
-		color: #eee;
-		width: 18px;
-		text-align: center;
-		top: 0;
-		left: 0;
-	}
-	.policy-card {
-		width: 100%;
-		height: 95px;
-		background: url('../../public/images/cards/policy.png') no-repeat;
-		position: absolute;
-		top: 5px;
-		left: 6px;
-		transition: 1s all;
-		box-shadow: 0px 0px 1px 0px #d7d7d7;
-	}
-	.policy-card.offscreen {
-		top: 120px;
-	}
-	.draw {
-		background: url('../../public/images/cards/draw.png') no-repeat;
-	}
-	.discard {
-		background: url('../../public/images/cards/discard.png') no-repeat;
-	}
-	.notifier::after {
-		content: '';
-		width: 100%;
+	.players-container .policies-container {
+		max-width: 164px;
+		min-width: 36px;
 		height: 115px;
-		top: 0;
-		left: 0;
+		margin-left: auto;
+		flex: 1;
+		> div {
+			width: 50%;
+			height: inherit;
+			display: inline-block;
+			position: relative;
+		}
+		.card-count {
+			position: absolute;
+			z-index: 1;
+			background: #333;
+			color: #eee;
+			width: 18px;
+			text-align: center;
+			top: 0;
+			left: 0;
+		}
+		.policy-card {
+			width: 100%;
+			height: 95px;
+			background: url('../../public/images/cards/policy.png') no-repeat;
+			position: absolute;
+			top: 5px;
+			left: 6px;
+			transition: 1s all;
+			box-shadow: 0px 0px 1px 0px #d7d7d7;
+		}
+		.policy-card.offscreen {
+			top: 120px;
+		}
+		.draw {
+			background: url('../../public/images/cards/draw.png') no-repeat;
+		}
+		.discard {
+			background: url('../../public/images/cards/discard.png') no-repeat;
+		}
+		.notifier::after {
+			content: '';
+			width: 100%;
+			height: 115px;
+			top: 0;
+			left: 0;
+			position: absolute;
+			animation: fadeIn 0.6s infinite alternate;
+			cursor: pointer;
+			box-shadow: 0 0 4px 8px #fbbd08 inset;
+		}
+	}
+	
+
+	.players-container.disabledrightsidebar .players > div > .roles {
+		margin: 9px 0px 9px 36px;
+	}
+	
+
+	.experienced .players-container .players {
+		.card-container {
+			transition-duration: 0.2s;
+		}
+	}
+	
+
+	.experienced .players-container .policies-container .policy-card {
+		transition: 0.2s all;
+	}
+	
+
+	.reportmodal {
+		background-color: #111 !important;
+		padding: 20px;
+	
+
+		.dropdown {
+			width: 100%;
+			margin-bottom: 10px;
+		}
+	
+
+		textarea {
+			color: #000;
+			display: block;
+			width: 100%;
+			height: 60px;
+			margin-bottom: 10px;
+		}
+	}
+	
+
+	.counter {
 		position: absolute;
-		animation: fadeIn 0.6s infinite alternate;
-		cursor: pointer;
-		box-shadow: 0 0 4px 8px #fbbd08 inset;
+		right: 20px;
+		padding: 0;
+		margin: 0;
+		font-size: 12pt;
+		user-select: none;
 	}
-}
+	
 
-.players-container.disabledrightsidebar .players > div > .roles {
-	margin: 9px 0px 9px 36px;
-}
-
-.experienced .players-container .players {
-	.card-container {
-		transition-duration: 0.2s;
+	.error {
+		color: red;
 	}
-}
-
-.experienced .players-container .policies-container .policy-card {
-	transition: 0.2s all;
-}
-
-.reportmodal {
-	background-color: #111 !important;
-	padding: 20px;
-
-	.dropdown {
-		width: 100%;
-		margin-bottom: 10px;
+	.is-typing {
+		width: 20px;
+		position: absolute;
+		top: 17px;
+		left: 25px;
 	}
 
-	textarea {
-		color: #000;
-		display: block;
-		width: 100%;
-		height: 60px;
-		margin-bottom: 10px;
-	}
-}
-
-.counter {
-	position: absolute;
-	right: 20px;
-	padding: 0;
-	margin: 0;
-	font-size: 12pt;
-	user-select: none;
-}
-
-.error {
-	color: red;
-}
-.is-typing {
-	width: 20px;
-	position: absolute;
-	top: 17px;
-	left: 25px;
-}
