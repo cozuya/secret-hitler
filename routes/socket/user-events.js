@@ -3029,6 +3029,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					} else if (data.userName.substr(0, 13) === 'RESETGAMENAME') {
 						const game = games[data.userName.slice(13)];
 						if (game) {
+							modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
 							games[game.general.uid].general.name = 'New Game';
 							sendGameList();
 						}
