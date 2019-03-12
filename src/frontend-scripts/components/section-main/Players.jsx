@@ -239,18 +239,14 @@ class Players extends React.Component {
 					{str}
 				</span>
 			);
-
 			if (player.isPrivate && !userInfo.staffRole && !userInfo.isSeated) {
 				return prependCrowns('Anonymous');
 			}
-
 			if (gameState.isTracksFlipped) {
 				return prependCrowns(`${i + 1}. ${userName}`);
 			}
-
 			return prependCrowns(userName);
 		};
-
 		return publicPlayersState.map((player, i) => (
 			<div
 				key={i}
@@ -411,11 +407,11 @@ class Players extends React.Component {
 			(!gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
 		) {
 			return gameInfo.general.isTourny ? (
-				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
+				<div className="ui pointing below label tourny" onClick={this.clickedTakeSeat}>
 					Queue for tournament
 				</div>
 			) : (
-				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
+				<div className="ui pointing below label" onClick={this.clickedTakeSeat}>
 					Take a seat
 				</div>
 			);
