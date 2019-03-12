@@ -169,7 +169,7 @@ class Playerlist extends React.Component {
 	renderSignupsButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod')) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'trialmod')) {
 			let classes = 'sign-in icon';
 
 			return (
@@ -283,19 +283,22 @@ class Playerlist extends React.Component {
 							{ fav: status.type === 'playing' },
 							{ rainbow: status.type === 'rainbow' },
 							{ record: status.type === 'replay' },
+							{ private: status.type === 'private' },
 							'icon'
 						);
 						const title = {
 							playing: 'This player is playing in a standard game.',
 							observing: 'This player is observing a game.',
 							rainbow: 'This player is playing in a experienced-player-only game.',
-							replay: 'This player is watching a replay.'
+							replay: 'This player is watching a replay.',
+							private: 'This player is playing in a private game.'
 						};
 						const onClick = {
 							playing: this.routeToGame,
 							observing: this.routeToGame,
 							rainbow: this.routeToGame,
-							replay: this.props.fetchReplay
+							replay: this.props.fetchReplay,
+							private: this.routeToGame
 						};
 
 						return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
@@ -489,19 +492,22 @@ class Playerlist extends React.Component {
 							{ fav: status.type === 'playing' },
 							{ rainbow: status.type === 'rainbow' },
 							{ record: status.type === 'replay' },
+							{ private: status.type === 'private' },
 							'icon'
 						);
 						const title = {
 							playing: 'This player is playing in a standard game.',
 							observing: 'This player is observing a game.',
 							rainbow: 'This player is playing in a experienced-player-only game.',
-							replay: 'This player is watching a replay.'
+							replay: 'This player is watching a replay.',
+							private: 'This player is playing in a private game.'
 						};
 						const onClick = {
 							playing: this.routeToGame,
 							observing: this.routeToGame,
 							rainbow: this.routeToGame,
-							replay: this.props.fetchReplay
+							replay: this.props.fetchReplay,
+							private: this.routeToGame
 						};
 
 						return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
