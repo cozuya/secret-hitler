@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import $ from 'jquery';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import Checkbox from 'semantic-ui-checkbox';
 import { Form, Header, Button, Modal } from 'semantic-ui-react';
 
@@ -30,7 +31,8 @@ export default class Moderation extends React.Component {
 		},
 		hideActions: false,
 		filterModalVisibility: false,
-		filterValue: ''
+		filterValue: '',
+		showGameIcons: false
 	};
 
 	componentDidMount() {
@@ -1021,6 +1023,16 @@ export default class Moderation extends React.Component {
 						Broadcast
 					</a>
 				)}
+				<span
+					className="gameIcons"
+					onClick={() =>
+						this.setState({
+							showGameIcons: !this.state.showGameIcons
+						})
+					}
+				>
+					Show/Hide Game Icons
+				</span>
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
 					show/hide playerlist
 				</span>
