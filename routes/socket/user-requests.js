@@ -44,12 +44,12 @@ const sendUserList = (module.exports.sendUserList = socket => {
 
 const getModInfo = (users, socket, queryObj, count = 1, isTrial) => {
 	const maskEmail = email => (email && email.split('@')[1]) || '';
-
 	ModAction.find(queryObj)
 		.sort({ $natural: -1 })
 		.limit(500 * count)
 		.then(actions => {
 			const list = users.map(user => ({
+				status: userList.find(userListUser => user.username === userListUser.userName).status,
 				isRainbow: user.wins + user.losses > 49,
 				userName: user.username,
 				isTor: torIps && torIps.includes(user.lastConnectedIP || user.signupIP),
@@ -258,7 +258,6 @@ module.exports.sendGeneralChats = socket => {
  */
 const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
 	const user = userList.find(user => user.userName === passport.user);
-
 	if (user) {
 		user.status = {
 			type: override ? override : game ? (game.general.private ? 'private' : game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
