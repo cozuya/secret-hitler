@@ -191,6 +191,14 @@ export default class Moderation extends React.Component {
 		);
 	}
 
+	routeToGame(gameId) {
+		window.location = `#/table/${gameId}`;
+	}
+
+	fetchReplay(gameId) {
+		window.location = `#/replay/${gameId}`;
+	}
+
 	renderUserlist() {
 		const radioChange = userName => {
 			this.setState({ selectedUser: userName });
@@ -293,7 +301,10 @@ export default class Moderation extends React.Component {
 							}}
 						/>
 					</td>
-					<td className={getUserType(user)}>{user.userName}</td>
+					<td className={getUserType(user)}>
+						{this.state.showGameIcons && renderStatus(user)}
+						{user.userName}
+					</td>
 					<td className={getIPType(user)}>{user.ip}</td>
 					<td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
 				</tr>
