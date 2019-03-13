@@ -557,7 +557,7 @@ class Players extends React.Component {
             this.privatePlayerInPublicGameModal = c;
           }}
         >
-          <div>Your account can only play private games. This is a public game. You can change this in your settings.</div>
+          <div>Your account can only play in private games. This is a public game. You can change this in your <a href="/account">settings.</a></div>
         </div>
 
 				<div
