@@ -515,7 +515,7 @@ const updateSeatedUser = (socket, passport, data) => {
 					]
 				});
 			} else {
-				publicPlayersState.push(player);
+				publicPlayersState.unshift(player);
 			}
 
 			socket.emit('updateSeatForUser', true);
