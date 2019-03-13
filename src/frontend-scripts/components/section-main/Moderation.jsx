@@ -203,6 +203,47 @@ export default class Moderation extends React.Component {
 			const idx = ip.lastIndexOf('.');
 			return [ip.substring(0, idx - 1), ip.substring(idx + 1)];
 		};
+		const renderStatus = user => {
+			const status = user.status;
+			console.log(user);
+			if (!status || status.type === 'none') {
+				return <i className={'status unclickable icon'} />;
+			} else {
+				const iconClasses = classnames(
+					'status',
+					{ clickable: true },
+					{ search: status.type === 'observing' },
+					{ favIcon: status.type === 'playing' },
+					{ rainbowIcon: status.type === 'rainbow' },
+					{ record: status.type === 'replay' },
+					{ privateIcon: status.type === 'private' },
+					'icon'
+				);
+				const title = {
+					playing: 'This player is playing in a standard game.',
+					observing: 'This player is observing a game.',
+					rainbow: 'This player is playing in a experienced-player-only game.',
+					replay: 'This player is watching a replay.',
+					private: 'This player is playing in a private game.'
+				};
+				const onClick = {
+					playing: this.routeToGame,
+					observing: this.routeToGame,
+					rainbow: this.routeToGame,
+					replay: this.props.fetchReplay,
+					private: this.routeToGame
+				};
+
+				return (
+					<i
+						title={title[status.type]}
+						style={{ width: '1.3em', height: '1.3em' }}
+						className={iconClasses}
+						onClick={onClick[status.type].bind(this, status.gameId)}
+					/>
+				);
+			}
+		};
 		const IPdata = {};
 		ips.forEach(ip => {
 			const data = splitIP(ip);
