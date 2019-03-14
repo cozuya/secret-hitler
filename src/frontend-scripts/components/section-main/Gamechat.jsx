@@ -368,7 +368,7 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat && !isStaff) {
+			if (gameInfo.general.disableChat) {
 				return {
 					isDisabled: true,
 					placeholder: 'Chat disabled'
@@ -666,12 +666,6 @@ class Gamechat extends React.Component {
 				const onClick = () => {
 					window.location.hash = `#/replay/${gameInfo.general.uid}`;
 				};
-
-				window.removeEventListener('beforeunload', e => {
-					e.preventDefault();
-					e.returnValue = '';
-					return;
-				});
 
 				return (
 					<MenuButton>

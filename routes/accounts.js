@@ -2,12 +2,13 @@ const passport = require('passport');
 const Account = require('../models/account');
 const Profile = require('../models/profile/index');
 const BannedIP = require('../models/bannedIP');
+const Signups = require('../models/signups');
 const EightEightCounter = require('../models/eightEightCounter');
 const { accountCreationDisabled, verifyBypass, consumeBypass, testIP } = require('./socket/models');
 const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
-const { expandAndSimplify } = require('./socket/ip-obf');
+const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
 const { TOU_CHANGES, PERMABANNEDIPFRAGMENTS } = require('../src/frontend-scripts/node-constants.js');
 /**
  * @param {object} req - express request object.
@@ -235,9 +236,21 @@ module.exports = () => {
 										ip: signupIP
 									});
 
-									newPlayerBan.save(() => {
-										res.send();
-									});
+									newPlayerBan.save();
+
+									if (!isPrivate) {
+										const newSignup = new Signups({
+											date: new Date(),
+											userName: username,
+											type: 'local',
+											ip: obfIP(signupIP),
+											email: Boolean(email)
+										});
+
+										newSignup.save(() => {
+											res.send();
+										});
+									}
 								});
 							});
 						}
@@ -473,6 +486,7 @@ module.exports = () => {
 								if (account) {
 									req.logIn(account, () => res.redirect('/account'));
 								} else {
+									const startsWithPermaBannedIP = PERMABANNEDIPFRAGMENTS.some(fragment => new RegExp(`^${fragment}`).test(ip));
 									// TODO: bypass option
 									if (banType === 'new') {
 										console.log(account, 'oath err 472: account');
@@ -481,7 +495,7 @@ module.exports = () => {
 											message:
 												'You can only make accounts once per day.  If you feel you need an exception to this rule, contact the moderators on our discord server.'
 										});
-									} else if (accountCreationDisabled.status) {
+									} else if (accountCreationDisabled.status || startsWithPermaBannedIP) {
 										res.status(403).json({
 											message:
 												'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
@@ -540,6 +554,18 @@ module.exports = () => {
 														accountObj.github2FA = profile._json.two_factor_authentication;
 														accountObj.bio = profile._json.bio;
 													}
+
+													const newSignup = new Signups({
+														date: new Date(),
+														userName: profile.username,
+														type,
+														ip: obfIP(signupIP),
+														email: Boolean(profile.email || profile._json.email)
+													});
+
+													newSignup.save(() => {
+														res.send();
+													});
 
 													Account.register(
 														new Account(accountObj),

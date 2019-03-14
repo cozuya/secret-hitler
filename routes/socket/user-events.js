@@ -12,7 +12,7 @@ const {
 	createNewBypass,
 	testIP
 } = require('./models');
-const { sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
 const { selectChancellor } = require('./game/election-util.js');
 const Account = require('../../models/account');
@@ -666,7 +666,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			disableObserver: data.disableObserver && !data.isTourny,
 			// isTourny: data.isTourny, // temp
 			isTourny: false,
-			disableGamechat: data.disablegamechat,
+			disableGamechat: data.disableGamechat,
 			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
@@ -2438,6 +2438,28 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				.catch(err => {
 					console.log(err, 'err in finding player report');
 				});
+		} else if (data.action === 'getFilteredData') {
+			return;
+			let queryObj;
+
+			if (data.comment && (data.comment.split('.').length > 1 || data.comment.split(':').length > 1)) {
+				queryObj = {
+					ip: new RegExp(`^${obfIP(data.comment.substring(1))}`)
+				};
+			} else {
+				queryObj = {
+					userActedOn: data.comment
+				};
+			}
+			const userNames = userList.map(user => user.userName);
+
+			Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
+				.then(users => {
+					getModInfo(users, socket, queryObj);
+				})
+				.catch(err => {
+					console.log(err, 'err in sending mod info');
+				});
 		} else {
 			const modaction = new ModAction({
 				date: new Date(),
@@ -2547,6 +2569,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'getIP':
 					if (isSuperMod) {
+						console.log(data, 'd');
 						socket.emit('sendAlert', `Requested IP: ${data.ip}`);
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can request a raw IP.');
@@ -3006,6 +3029,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					} else if (data.userName.substr(0, 13) === 'RESETGAMENAME') {
 						const game = games[data.userName.slice(13)];
 						if (game) {
+							modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
 							games[game.general.uid].general.name = 'New Game';
 							sendGameList();
 						}

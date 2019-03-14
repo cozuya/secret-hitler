@@ -166,6 +166,20 @@ class Playerlist extends React.Component {
 		}
 	}
 
+	renderSignupsButton() {
+		const { userInfo } = this.props;
+
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'trialmod')) {
+			let classes = 'sign-in icon';
+
+			return (
+				<a href="#/signups">
+					<i className={classes} style={{ color: 'teal', fontSize: '20px' }} />
+				</a>
+			);
+		}
+	}
+
 	renderPreviousSeasonAward(type) {
 		switch (type) {
 			case 'bronze':
@@ -269,19 +283,22 @@ class Playerlist extends React.Component {
 							{ fav: status.type === 'playing' },
 							{ rainbow: status.type === 'rainbow' },
 							{ record: status.type === 'replay' },
+							{ private: status.type === 'private' },
 							'icon'
 						);
 						const title = {
 							playing: 'This player is playing in a standard game.',
 							observing: 'This player is observing a game.',
 							rainbow: 'This player is playing in a experienced-player-only game.',
-							replay: 'This player is watching a replay.'
+							replay: 'This player is watching a replay.',
+							private: 'This player is playing in a private game.'
 						};
 						const onClick = {
 							playing: this.routeToGame,
 							observing: this.routeToGame,
 							rainbow: this.routeToGame,
-							replay: this.props.fetchReplay
+							replay: this.props.fetchReplay,
+							private: this.routeToGame
 						};
 
 						return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
@@ -475,19 +492,22 @@ class Playerlist extends React.Component {
 							{ fav: status.type === 'playing' },
 							{ rainbow: status.type === 'rainbow' },
 							{ record: status.type === 'replay' },
+							{ private: status.type === 'private' },
 							'icon'
 						);
 						const title = {
 							playing: 'This player is playing in a standard game.',
 							observing: 'This player is observing a game.',
 							rainbow: 'This player is playing in a experienced-player-only game.',
-							replay: 'This player is watching a replay.'
+							replay: 'This player is watching a replay.',
+							private: 'This player is playing in a private game.'
 						};
 						const onClick = {
 							playing: this.routeToGame,
 							observing: this.routeToGame,
 							rainbow: this.routeToGame,
-							replay: this.props.fetchReplay
+							replay: this.props.fetchReplay,
+							private: this.routeToGame
 						};
 
 						return <i title={title[status.type]} className={iconClasses} onClick={disableIfUnclickable(onClick[status.type]).bind(this, status.gameId)} />;
@@ -569,16 +589,21 @@ class Playerlist extends React.Component {
 	}
 
 	render() {
+		const { userInfo } = this.props;
+
 		return (
 			<section className="playerlist">
 				<div className="playerlist-header">
 					<span className="header-name-container">
 						<h3 className="ui header">Lobby</h3>
-						<i className="info circle icon" onClick={this.clickInfoIcon} title="Click to get information about player colors" />
+						{!(Boolean(Object.keys(userInfo).length) && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod')) && (
+							<i className="info circle icon" onClick={this.clickInfoIcon} title="Click to get information about player colors" />
+						)}
 					</span>
 					{this.renderFilterIcons()}
 					{this.renderModerationButton()}
 					{this.renderPlayerReportButton()}
+					{this.renderSignupsButton()}
 					<div className="ui basic modal playerlistinfo">
 						<div className="header">Lobby and player color info:</div>
 						<p>
