@@ -261,7 +261,7 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
 
 	if (user) {
 		user.status = {
-			type: override ? override : game ? (game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
+			type: override ? override : game ? (game.general.private ? 'private' : game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
 			gameId: game ? game.general.uid : false
 		};
 		sendUserList();
