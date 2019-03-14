@@ -405,10 +405,7 @@ class Players extends React.Component {
 			userInfo.userName &&
 			!gameInfo.gameState.isTracksFlipped &&
 			gameInfo.publicPlayersState.length < 10 &&
-			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
-			(gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
-			(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private)) &&
-			(gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
+			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName))	
 		) {
 			return gameInfo.general.isTourny ? (
 				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
