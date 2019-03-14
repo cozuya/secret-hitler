@@ -106,7 +106,7 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
- // TODO: CSS stuff :/
+
 	currentGame() {
 
     function currentGameFnctn(gameId) {
