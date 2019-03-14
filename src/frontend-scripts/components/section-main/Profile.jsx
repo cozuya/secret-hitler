@@ -106,24 +106,25 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
+  currentGameFnctn(gameId) {
+    window.location = `#/table/${gameId}`;
+  }
 
 	currentGame() {
 
-    function currentGameFnctn(gameId) {
-			window.location = `#/table/${gameId}`;
-    }
-
-		return (
-      <React.Fragment>
-        <div>
-            {gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) && 
-                (<button className="ui primary button currentgame-button" onClick={this.currentGameFnctn}>
-                    Current Game
-                </button>)
-            }
-        </div>
-      </React.Fragment>
-    );
+    if (userInfo.username || gameInfo.publicPlayersState.find(player => player.username === userInfo.userName)) {
+      return (
+        <React.Fragment>
+          <div>
+            <button className="ui primary button currentgame-button" onClick={this.currentGameFnctn}>
+              Current Game
+            </button>
+          </div>
+        </React.Fragment>
+      );
+    } else {
+      return (null);
+    } 
 	}
 
 	RecentGames() {
