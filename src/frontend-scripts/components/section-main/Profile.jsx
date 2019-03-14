@@ -109,7 +109,7 @@ class ProfileWrapper extends React.Component {
  // TODO: CSS stuff :/
 	currentGame() {
 
-    function currentGameFnctn() {
+    function currentGameFnctn(gameId) {
 			window.location = `#/table/${gameId}`;
     }
 
@@ -117,7 +117,7 @@ class ProfileWrapper extends React.Component {
       <React.Fragment>
         <div>
             {gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) && 
-                (<button className="ui primary button currentGame-button" onClick={this.currentGameFnctn}>
+                (<button className="ui primary button currentgame-button" onClick={this.currentGameFnctn}>
                     Current Game
                 </button>)
             }
