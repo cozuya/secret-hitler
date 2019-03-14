@@ -112,7 +112,16 @@ class ProfileWrapper extends React.Component {
 
 	currentGame() {
 
-    if (userInfo.username || gameInfo.publicPlayersState.find(player => player.username === userInfo.userName)) {
+    return (
+    (userInfo.username || gameInfo.publicPlayersState.find(player => player.username === userInfo.userName)) && 
+    <React.Fragment>
+          <div>
+            <button className="ui primary button currentgame-button" onClick={this.currentGameFnctn}>
+              Current Game
+            </button>
+          </div>
+        </React.Fragment>
+        );
       return (
         <React.Fragment>
           <div>
