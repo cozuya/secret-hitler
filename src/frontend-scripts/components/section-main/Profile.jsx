@@ -19,7 +19,7 @@ class ProfileWrapper extends React.Component {
 		bioValue: '',
 		blacklistClicked: false,
 		blacklistShown: false,
-    openTime: Date.now()
+		openTime: Date.now()
 	};
 
 	formatDateString(dateString) {
