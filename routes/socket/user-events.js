@@ -2027,6 +2027,60 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			}
 			return;
 		}
+
+		const aemPing = /^\/forceping (\d{1,2})$/i.exec(chat);
+		if (aemPing) {
+			if (player) {
+				socket.emit('sendAlert', 'You cannot force a ping whilst playing.');
+				return;
+			}
+			const affectedPlayerNumber = parseInt(aemPing[1]) - 1;
+			if (game && game.private && game.private.seatedPlayers) {
+				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+				if (!affectedPlayer) {
+					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
+					return;
+				}
+
+				game.chats.push({
+					gameChat: true,
+					timestamp: new Date(),
+					chat: [
+						{
+							text: 'An AEM member has force pinged '
+						},
+						{
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							type: 'player'
+						},
+						{
+							text: '.'
+						}
+					]
+				});
+
+				try {
+					const affectedSocketId = Object.keys(io.sockets.sockets).find(
+						socketId =>
+							io.sockets.sockets[socketId].handshake.session.passport &&
+							io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
+					);
+					if (!io.sockets.sockets[affectedSocketId]) {
+						socket.emit('sendAlert', 'Unable to send ping.');
+						return;
+					}
+					io.sockets.sockets[affectedSocketId].emit('pingPlayer', 'Secret Hitler IO: A moderator has pinged you. Get back to your game!');
+				} catch (e) {
+					console.log(e, 'caught exception in ping chat');
+				}
+				sendPlayerChatUpdate(game, data);
+				sendInProgressGameUpdate(game, false);
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+				return;
+			}
+			return;
+		}
 	}
 
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
