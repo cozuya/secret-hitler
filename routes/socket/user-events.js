@@ -2069,7 +2069,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						socket.emit('sendAlert', 'Unable to send ping.');
 						return;
 					}
-					io.sockets.sockets[affectedSocketId].emit('pingPlayer', 'Secret Hitler IO: A moderator has pinged you. Get back to your game!');
+					io.sockets.sockets[affectedSocketId].emit('pingPlayer', 'Secret Hitler IO: A moderator has pinged you.');
 				} catch (e) {
 					console.log(e, 'caught exception in ping chat');
 				}
