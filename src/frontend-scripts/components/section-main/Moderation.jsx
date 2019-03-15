@@ -1035,6 +1035,7 @@ export default class Moderation extends React.Component {
 				>
 					Show/Hide Game Icons
 				</span>
+
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
 					show/hide playerlist
 				</span>
