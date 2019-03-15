@@ -272,9 +272,7 @@ export default class Moderation extends React.Component {
 						/>
 					</td>
 					<td>
-						<a className={getUserType(user)} href={`/game/#/profile/${user.userName}`}>
 							{user.userName}
-						</a>
 					</td>
 					<td className={getIPType(user)}>{user.ip}</td>
 					<td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
