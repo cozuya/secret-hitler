@@ -1862,7 +1862,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				}
 				let vote = false;
 				if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
-				game.private.unSeatedGameChats.push({
+
+				game.chats.push({
 					gameChat: true,
 					timestamp: new Date(),
 					chat: [
@@ -1887,6 +1888,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				});
 				selectVoting({ user: affectedPlayer.userName }, game, { vote }, null, true);
 				sendPlayerChatUpdate(game, data);
+				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
 			}
@@ -1930,7 +1932,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					}
 					counter++;
 				}
-				game.private.unSeatedGameChats.push({
+
+				game.chats.push({
 					gameChat: true,
 					timestamp: new Date(),
 					chat: [
@@ -1953,6 +1956,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					}
 				}, 1000);
 				sendPlayerChatUpdate(game, data);
+				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
 			}
@@ -1991,7 +1995,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
 					return;
 				}
-				game.private.unSeatedGameChats.push({
+
+				game.chats.push({
 					gameChat: true,
 					timestamp: new Date(),
 					chat: [
@@ -2016,6 +2021,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				});
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 }, true);
 				sendPlayerChatUpdate(game, data);
+				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
 			}
