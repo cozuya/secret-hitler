@@ -405,7 +405,7 @@ class Players extends React.Component {
 			userInfo.userName &&
 			!gameInfo.gameState.isTracksFlipped &&
 			gameInfo.publicPlayersState.length < 10 &&
-			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName))	
+			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName))
 		) {
 			return gameInfo.general.isTourny ? (
 				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
@@ -554,7 +554,7 @@ class Players extends React.Component {
             this.privatePlayerInPublicGameModal = c;
           }}
         >
-          <div>Your account can only play in private games. This is a public game. You can change this in your <a href="/game/#/settings">settings.</a></div>
+          <div className="ui header">Your account can only play in private games. This is a public game. You can change this in your <a href="/game/#/settings">settings.</a></div>
         </div>
 
 				<div
