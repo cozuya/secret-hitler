@@ -12,9 +12,10 @@ export default class Moderation extends React.Component {
 	state = {
 		selectedUser: '',
 		userList: [],
+		gameList: [],
 		actionTextValue: '',
 		log: [],
-		playerListShown: true,
+		playerListState: 0,
 		broadcastText: '',
 		playerInputText: '',
 		resetServerCount: 0,
@@ -26,6 +27,10 @@ export default class Moderation extends React.Component {
 			direction: 'descending'
 		},
 		userSort: {
+			type: 'username',
+			direction: 'descending'
+		},
+		gameSort: {
 			type: 'username',
 			direction: 'descending'
 		},
@@ -42,6 +47,7 @@ export default class Moderation extends React.Component {
 		socket.on('modInfo', info => {
 			this.setState({
 				userList: info.userList,
+				gameList: info.gameList,
 				log: info.modReports,
 				hideActions: info.hideActions || false
 			});
@@ -178,7 +184,19 @@ export default class Moderation extends React.Component {
 	}
 
 	togglePlayerList = () => {
-		this.setState({ playerListShown: !this.state.playerListShown });
+		if (this.state.playerListState < 2) {
+			this.setState({
+				playerListState: this.state.playerListState + 1,
+				selectedUser: '',
+				playerInputText: ''
+			});
+		} else {
+			this.setState({
+				playerListState: 0,
+				selectedUser: '',
+				playerInputText: ''
+			});
+		}
 	};
 
 	renderPlayerInput() {
@@ -301,6 +319,7 @@ export default class Moderation extends React.Component {
 							onChange={() => {
 								radioChange(user.userName);
 							}}
+							checked={this.state.selectedUser === user.userName}
 						/>
 					</td>
 					<td className={getUserType(user)}>
@@ -313,6 +332,96 @@ export default class Moderation extends React.Component {
 					<td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
 				</tr>
 			));
+	}
+
+	renderGameList() {
+		const gameRadioChange = game => {
+			this.setState({ playerInputText: game.uid });
+		};
+		const { gameList, gameSort } = this.state;
+		const getGameType = game => {
+			if (game.custom) return 'custom';
+			if (game.casual) return 'casual';
+			if (game.private) return 'private';
+			return '';
+		};
+		return gameList
+			.sort((a, b) =>
+				(() => {
+					const getAmt = (a, b) => {
+						if (gameSort.type === 'uid' && a.uid != b.uid) return a.uid > b.uid ? 1 : -1;
+						if (gameSort.type === 'electionNum' && a.electionNum != b.electionNum) return a.electionNum > b.electionNum ? 1 : -1;
+						return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+					};
+					return getAmt(a, b) * (gameSort.direction === 'descending' ? 1 : -1);
+				})()
+			)
+			.map((game, index) => (
+				<tr key={index}>
+					<td>
+						<input
+							type="radio"
+							name="games"
+							onChange={() => {
+								gameRadioChange(game);
+							}}
+							checked={this.state.playerInputText === game.uid}
+						/>
+					</td>
+					<td className={getGameType(game)}>{game.name}</td>
+					<td>
+						<a href={`/game/#/table/${game.uid}`}>{game.uid}</a>
+					</td>
+					<td>{game.electionNum}</td>
+				</tr>
+			));
+	}
+
+	renderGameButtons() {
+		const takeModAction = action => {
+			this.props.socket.emit('updateModAction', {
+				modName: this.props.userInfo.userName,
+				userName:
+					action === 'deleteGame'
+						? `DELGAME${this.state.playerInputText}`
+						: action === 'resetGameName'
+						? `RESETGAMENAME${this.state.playerInputText}`
+						: this.state.playerInputText || this.state.selectedUser,
+				ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+				comment: this.state.actionTextValue,
+				action
+			});
+			this.setState({
+				selectedUser: '',
+				actionTextValue: '',
+				playerInputText: ''
+			});
+		};
+
+		const { playerInputText } = this.state;
+
+		return (
+			<div className="button-container">
+				<button
+					style={{ width: '100%', background: '#0ca51d' }}
+					className={playerInputText ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('resetGameName');
+					}}
+				>
+					Reset game name
+				</button>
+				<button
+					style={{ width: '100%', background: 'indianred' }}
+					className={playerInputText ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('deleteGame');
+					}}
+				>
+					Delete game
+				</button>
+			</div>
+		);
 	}
 
 	renderButtons() {
@@ -1035,13 +1144,16 @@ export default class Moderation extends React.Component {
 				>
 					Show/Hide Game Icons
 				</span>
-
+				<span className="refreshModlog" onClick={() => this.props.socket.emit('getModInfo', 1)}>
+					Refresh
+					<i className="icon repeat" id="modlogRefresh" />
+				</span>
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
-					show/hide playerlist
+					Toggle Player/Game List
 				</span>
 
 				<div>
-					{this.state.playerListShown && (
+					{this.state.playerListState === 0 && (
 						<div className="modplayerlist">
 							<h3>Current player list</h3>
 							<div className="ui table">
@@ -1098,6 +1210,60 @@ export default class Moderation extends React.Component {
 									<div className="ui horizontal divider">-</div>
 									{this.renderActionText()}
 									{this.renderButtons()}
+								</span>
+							)}
+						</div>
+					)}
+					{this.state.playerListState === 1 && (
+						<div className="modplayerlist">
+							<h3>Current Game List</h3>
+							<div className="ui table">
+								<h4>Color chart:</h4>
+								<span className="casual">This game is casual</span>
+								<br />
+								<span className="private">This game is private</span>
+								<br />
+								<span className="custom">This game is custom</span>
+							</div>
+
+							<table className="ui celled table userlist">
+								<thead>
+									<tr>
+										<th />
+										<th
+											style={{ whiteSpace: 'nowrap' }}
+											onClick={() => {
+												clickSort('gamename');
+											}}
+										>
+											Game Name {userSort.type === 'gamename' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+										<th
+											style={{ whiteSpace: 'nowrap' }}
+											onClick={() => {
+												clickSort('uid');
+											}}
+										>
+											UID {userSort.type === 'uid' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+										<th
+											style={{ whiteSpace: 'nowrap' }}
+											onClick={() => {
+												clickSort('electionnum');
+											}}
+										>
+											Election #{' '}
+											{userSort.type === 'electionnum' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+									</tr>
+								</thead>
+								<tbody>{this.renderGameList()}</tbody>
+							</table>
+							{!hideActions && (
+								<span>
+									<div className="ui horizontal divider">-</div>
+									{this.renderActionText()}
+									{this.renderGameButtons()}
 								</span>
 							)}
 						</div>

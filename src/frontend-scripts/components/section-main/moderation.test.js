@@ -7,14 +7,14 @@ describe('Moderation', () => {
 		const initialState = {
 			selectedUser: '',
 			userList: [],
+			gameList: [],
 			actionTextValue: '',
 			log: [],
-			playerListShown: true,
+			playerListState: 0,
 			broadcastText: '',
 			playerInputText: '',
 			resetServerCount: 0,
 			logCount: 1,
-			hideActions: false,
 			modLogToday: false,
 			nonSeasonalSetStats: false,
 			logSort: {
@@ -22,9 +22,14 @@ describe('Moderation', () => {
 				direction: 'descending'
 			},
 			userSort: {
-				direction: 'descending',
-				type: 'username'
+				type: 'username',
+				direction: 'descending'
 			},
+			gameSort: {
+				type: 'username',
+				direction: 'descending'
+			},
+			hideActions: false,
 			filterModalVisibility: false,
 			filterValue: '',
 			showGameIcons: false

@@ -116,6 +116,7 @@
 		cursor: pointer;
 		position: absolute;
 		left: 5%;
+		color: lightblue;
 		top: 10px;
 		text-decoration: underline;
 	}
@@ -171,4 +172,19 @@
 
 .toggle-containers {
 	text-align: center;
+}
+.private {
+	// This game is private
+	color: red;
+	font-weight: bold;
+}
+.casual {
+	// This game is casual
+	color: darkorange;
+	font-weight: bold;
+}
+.custom {
+	// This game is custom
+	color: blue;
+	font-weight: bold;
 }
