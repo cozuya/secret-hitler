@@ -405,10 +405,7 @@ class Players extends React.Component {
 			userInfo.userName &&
 			!gameInfo.gameState.isTracksFlipped &&
 			gameInfo.publicPlayersState.length < 10 &&
-			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
-			(!gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
-			(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private)) &&
-			(!gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
+			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName))
 		) {
 			return gameInfo.general.isTourny ? (
 				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
@@ -456,6 +453,7 @@ class Players extends React.Component {
 
 	clickedTakeSeat = () => {
 		const { gameInfo, userInfo, onClickedTakeSeat, userList } = this.props;
+    const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
 
 		if (userInfo.userName) {
 			if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
@@ -474,7 +472,11 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-			} else {
+      } else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49)) {
+        $(this.notRainbowModal).modal('show');
+      } else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
+        $(this.privatePlayerInPublicGameModal).modal('show');
+      } else {
 				onClickedTakeSeat();
 			}
 		} else {
@@ -536,6 +538,24 @@ class Players extends React.Component {
 				>
 					<div className="ui header">You do not meet the elo minimum to play in this game.</div>
 				</div>
+
+        <div
+          className="ui basic small modal"
+          ref={c => {
+            this.notRainbowModal = c;
+          }}
+        >
+          <div className="ui header">You do not meet the required amount of games (50) to play in this game.</div>
+        </div>
+      
+        <div
+          className="ui basic small modal"
+          ref={c => {
+            this.privatePlayerInPublicGameModal = c;
+          }}
+        >
+          <div className="ui header">Your account can only play in private games. This is a public game. You can change this in your <a href="/game/#/settings">settings.</a></div>
+        </div>
 
 				<div
 					className="ui basic small modal reportmodal"
