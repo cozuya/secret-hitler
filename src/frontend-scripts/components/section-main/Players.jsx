@@ -472,7 +472,7 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-      } else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49)) {
+      } else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49) || !user || !user.wins || !user.losses) {
         $(this.notRainbowModal).modal('show');
       } else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
         $(this.privatePlayerInPublicGameModal).modal('show');
