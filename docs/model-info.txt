@@ -3,6 +3,7 @@ gameState
 	isCompleted bool
 	isVetoEnabled bool
 	isTracksFlipped bool
+	isGameFrozen bool
 	pendingChancellorIndex number 
 	timedModeEnabled bool
 	phase string ?
@@ -103,6 +104,8 @@ private
 	unSeatedGameChats array
 		chat string
 		timestamp time
+	votesPeeked
+	gameFrozen
 	seatedPlayers array 5-10
 		userName string
 		connected bool
