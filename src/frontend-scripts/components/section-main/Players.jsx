@@ -415,7 +415,7 @@ class Players extends React.Component {
 					Queue for tournament
 				</div>
 			) : (
-				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
+				<div className="ui right pointing label" onClick={this.clickedTakeSeat}>
 					Take a seat
 				</div>
 			);
@@ -496,8 +496,8 @@ class Players extends React.Component {
 
 		return (
 			<section className="players">
-				{this.renderPlayers()}
 				{this.renderTakeSeat()}
+				{this.renderPlayers()}
 
 				<div
 					className="ui basic small modal signinnag"

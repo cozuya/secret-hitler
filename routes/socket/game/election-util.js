@@ -5,9 +5,17 @@ const { sendInProgressGameUpdate } = require('../util');
  * @param {object} passport - socket authentication.
  * @param {object} game - verifyed target game.
  * @param {object} data - from socket emit.
+ * @param {bool} force - whether or not this action was forced.
  */
-module.exports.selectChancellor = (socket, passport, game, data) => {
+module.exports.selectChancellor = (socket, passport, game, data, force = false) => {
 	if ((game.general.isTourny && game.general.tournyInfo.isCancelled) || data.chancellorIndex >= game.general.playerCount || data.chancellorIndex < 0) {
+		return;
+	}
+
+	if (game.gameState.isGameFrozen && !force) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
 		return;
 	}
 
@@ -187,7 +195,7 @@ module.exports.selectChancellor = (socket, passport, game, data) => {
 								game.gameState.timedModeEnabled = false;
 								const { selectVoting } = require('./election');
 								unvotedPlayerNames.forEach(userName => {
-									selectVoting({ user: userName }, game, { vote: Boolean(Math.random() > 0.5) });
+									selectVoting({ user: userName }, game, { vote: Boolean(Math.random() > 0.5) }, socket);
 								});
 							}
 						},
