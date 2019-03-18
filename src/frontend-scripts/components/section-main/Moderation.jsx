@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import $ from 'jquery';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import Checkbox from 'semantic-ui-checkbox';
 import { Form, Header, Button, Modal } from 'semantic-ui-react';
 
@@ -35,7 +36,8 @@ export default class Moderation extends React.Component {
 		},
 		hideActions: false,
 		filterModalVisibility: false,
-		filterValue: ''
+		filterValue: '',
+		showGameIcons: false
 	};
 
 	componentDidMount() {
@@ -209,6 +211,14 @@ export default class Moderation extends React.Component {
 		);
 	}
 
+	routeToGame(gameId) {
+		window.location = `#/table/${gameId}`;
+	}
+
+	fetchReplay(gameId) {
+		window.location = `#/replay/${gameId}`;
+	}
+
 	renderUserlist() {
 		const radioChange = userName => {
 			this.setState({ selectedUser: userName });
@@ -220,6 +230,47 @@ export default class Moderation extends React.Component {
 		const splitIP = ip => {
 			const idx = ip.lastIndexOf('.');
 			return [ip.substring(0, idx - 1), ip.substring(idx + 1)];
+		};
+		const renderStatus = user => {
+			const status = user.status;
+			console.log(user);
+			if (!status || status.type === 'none') {
+				return <i className={'status unclickable icon'} />;
+			} else {
+				const iconClasses = classnames(
+					'status',
+					{ clickable: true },
+					{ search: status.type === 'observing' },
+					{ favIcon: status.type === 'playing' },
+					{ rainbowIcon: status.type === 'rainbow' },
+					{ record: status.type === 'replay' },
+					{ privateIcon: status.type === 'private' },
+					'icon'
+				);
+				const title = {
+					playing: 'This player is playing in a standard game.',
+					observing: 'This player is observing a game.',
+					rainbow: 'This player is playing in a experienced-player-only game.',
+					replay: 'This player is watching a replay.',
+					private: 'This player is playing in a private game.'
+				};
+				const onClick = {
+					playing: this.routeToGame,
+					observing: this.routeToGame,
+					rainbow: this.routeToGame,
+					replay: this.props.fetchReplay,
+					private: this.routeToGame
+				};
+
+				return (
+					<i
+						title={title[status.type]}
+						style={{ width: '1.3em', height: '1.3em' }}
+						className={iconClasses}
+						onClick={onClick[status.type].bind(this, status.gameId)}
+					/>
+				);
+			}
 		};
 		const IPdata = {};
 		ips.forEach(ip => {
@@ -271,8 +322,11 @@ export default class Moderation extends React.Component {
 							checked={this.state.selectedUser === user.userName}
 						/>
 					</td>
-					<td>
+					<td className={getUserType(user)}>
+						{this.state.showGameIcons && renderStatus(user)}
+						<a className={getUserType(user)} href={`/game/#/profile/${user.userName}`}>
 							{user.userName}
+						</a>
 					</td>
 					<td className={getIPType(user)}>{user.ip}</td>
 					<td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
@@ -1080,6 +1134,16 @@ export default class Moderation extends React.Component {
 						Broadcast
 					</a>
 				)}
+				<span
+					className="gameIcons"
+					onClick={() =>
+						this.setState({
+							showGameIcons: !this.state.showGameIcons
+						})
+					}
+				>
+					Show/Hide Game Icons
+				</span>
 				<span className="refreshModlog" onClick={() => this.props.socket.emit('getModInfo', 1)}>
 					Refresh
 					<i className="icon repeat" id="modlogRefresh" />
