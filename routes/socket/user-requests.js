@@ -42,7 +42,7 @@ const sendUserList = (module.exports.sendUserList = socket => {
 	}
 });
 
-const getModInfo = (users, socket, queryObj, count = 1, isTrial) => {
+const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 	const maskEmail = email => (email && email.split('@')[1]) || '';
 
 	ModAction.find(queryObj)
@@ -80,6 +80,19 @@ const getModInfo = (users, socket, queryObj, count = 1, isTrial) => {
 					}
 				}
 			});
+			const gList = [];
+			if (games) {
+				Object.values(games).forEach(game => {
+					gList.push({
+						name: game.general.name,
+						uid: game.general.uid,
+						electionNum: game.general.electionCount,
+						casual: game.general.casualGame,
+						private: game.general.private,
+						custom: game.customGameSettings.enabled
+					});
+				});
+			}
 			socket.emit('modInfo', {
 				modReports: actions,
 				accountCreationDisabled,
@@ -87,6 +100,7 @@ const getModInfo = (users, socket, queryObj, count = 1, isTrial) => {
 				gameCreationDisabled,
 				limitNewPlayers,
 				userList: list,
+				gameList: gList,
 				hideActions: isTrial || undefined
 			});
 		})
@@ -109,16 +123,17 @@ module.exports.sendSignups = socket => {
 		});
 };
 /**
+ * @param {array} games - list of all games
  * @param {object} socket - user socket reference.
  * @param {number} count - depth of modinfo requested.
  * @param {boolean} isTrial - true if the user is a trial mod.
  */
-module.exports.sendModInfo = (socket, count, isTrial) => {
+module.exports.sendModInfo = (games, socket, count, isTrial) => {
 	const userNames = userList.map(user => user.userName);
 
 	Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
 		.then(users => {
-			getModInfo(users, socket, {}, count, isTrial);
+			getModInfo(games, users, socket, {}, count, isTrial);
 		})
 		.catch(err => {
 			console.log(err, 'err in sending mod info');
