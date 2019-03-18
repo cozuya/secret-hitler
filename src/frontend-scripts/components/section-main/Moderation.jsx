@@ -1080,6 +1080,10 @@ export default class Moderation extends React.Component {
 						Broadcast
 					</a>
 				)}
+				<span className="refreshModlog" onClick={() => this.props.socket.emit('getModInfo', 1)}>
+					Refresh
+					<i className="icon repeat" id="modlogRefresh" />
+				</span>
 				<span onClick={this.togglePlayerList} className="player-list-toggle">
 					Toggle Player/Game List
 				</span>
