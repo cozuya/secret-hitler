@@ -566,7 +566,7 @@ export default class Moderation extends React.Component {
 					Set general chat sticky
 				</button>
 				<button
-					style={{ width: '100%', background: 'aquamarine' }}
+					style={{ width: '100%', background: 'skyblue' }}
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
 						takeModAction('deleteBio');
