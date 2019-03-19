@@ -2541,7 +2541,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					userList.splice(bannedUserlistIndex, 1);
 				}
 
-				destroySession(username);
+				// destroySession(username);
 			};
 
 			/**
