@@ -252,11 +252,18 @@ const handleSocketDisconnect = socket => {
 				const { gameState, publicPlayersState } = game;
 				const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-				if (
-					(!gameState.isStarted && publicPlayersState.length === 1) ||
-					(gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
-				) {
-					delete games[gameName];
+				if (!gameState.isStarted && publicPlayersState.length === 1) {
+					console.log('Single player left, setting moddeletedelay');
+					if (!games[game.general.uid].general.modDeleteDelay) {
+						games[game.general.uid].general.modDeleteDelay = new Date();
+					}
+					// delete games[game.general.uid];
+				}
+				if (gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1) {
+					console.log('Completed + Everyone left, setting moddeletedelay');
+					if (!games[game.general.uid].general.modDeleteDelay) {
+						games[game.general.uid].general.modDeleteDelay = new Date();
+					}
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 					publicPlayersState.splice(playerIndex, 1);
 					checkStartConditions(game);
@@ -266,7 +273,10 @@ const handleSocketDisconnect = socket => {
 					publicPlayersState[playerIndex].leftGame = true;
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-						delete games[game.general.uid];
+						console.log('Incomplete + Everyone left, setting moddeletedelay');
+						if (!games[game.general.uid].general.modDeleteDelay) {
+							games[game.general.uid].general.modDeleteDelay = new Date();
+						}
 					}
 				}
 			});
@@ -355,7 +365,10 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			delete games[game.general.uid];
+			console.log('Everyone Left, setting moddeletedelay');
+					if (!games[game.general.uid].general.modDeleteDelay) {
+						games[game.general.uid].general.modDeleteDelay = new Date();
+					}
 		}
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
@@ -385,7 +398,10 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				game.summarySaved = true;
 			}
 		}
-		delete games[game.general.uid];
+		console.log('Game Completed, setting moddeletedelay');
+					if (!games[game.general.uid].general.modDeleteDelay) {
+						games[game.general.uid].general.modDeleteDelay = new Date();
+					}
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
@@ -515,11 +531,17 @@ const updateSeatedUser = (socket, passport, data) => {
 					]
 				});
 			} else {
-				publicPlayersState.unshift(player);
+				publicPlayersState.push(player);
 			}
 
 			socket.emit('updateSeatForUser', true);
 			checkStartConditions(game);
+			const gameToSend = {
+				gameState: game.gameState,
+				general: game.general,
+				publicPlayersState: game.publicPlayersState
+			};
+			socket.emit('receiveUserGameInfo', gameToSend);
 			updateUserStatus(passport, game);
 			io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 			sendGameList();
@@ -1387,18 +1409,10 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data - from socket emit.
- * @param {object} socket - socket
  */
-module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
+module.exports.handleUpdatedRemakeGame = (passport, game, data) => {
 	if (game.general.isRemade) {
 		return; // Games can only be remade once.
-	}
-
-	if (game.gameState.isGameFrozen) {
-		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
-		}
-		return;
 	}
 
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
@@ -1580,7 +1594,10 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			});
 
 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-				delete games[game.general.uid];
+				console.log('Game Remade + All Removed, setting moddeletedelay');
+					if (!games[game.general.uid].general.modDeleteDelay) {
+						games[game.general.uid].general.modDeleteDelay = new Date();
+					}
 			} else {
 				sendInProgressGameUpdate(game);
 			}
@@ -1667,6 +1684,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 						cancellTourny(game.general.uid);
 					} else {
 						makeNewGame();
+						socket.emit('receiveUserGameInfo', null);
 					}
 				}
 				sendInProgressGameUpdate(game);
@@ -1688,8 +1706,8 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
 	}
-	socket.emit('updateRemakeStatus', player.isRemakeVoting);
 	game.chats.push(chat);
+
 	sendInProgressGameUpdate(game);
 };
 
@@ -1862,33 +1880,33 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				}
 				let vote = false;
 				if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
-
-				game.chats.push({
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has forced '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' to vote '
-						},
-						{
-							text: `${vote ? 'ja' : 'nein'}`,
-							type: 'player'
-						},
-						{
-							text: '.'
-						}
-					]
-				});
-				selectVoting({ user: affectedPlayer.userName }, game, { vote }, null, true);
+				game.private.unSeatedGameChats = [
+					{
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'An AEM member has forced '
+							},
+							{
+								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' to vote '
+							},
+							{
+								text: `${vote ? 'ja' : 'nein'}`,
+								type: 'player'
+							},
+							{
+								text: '.'
+							}
+						]
+					}
+				];
+				selectVoting({ user: affectedPlayer.userName }, game, { vote });
 				sendPlayerChatUpdate(game, data);
-				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
 			}
@@ -1932,31 +1950,31 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					}
 					counter++;
 				}
-
-				game.chats.push({
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has force skipped the government with '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' as president.'
-						}
-					]
-				});
-				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor }, true);
+				game.private.unSeatedGameChats = [
+					{
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'An AEM member has force skipped the government with '
+							},
+							{
+								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' as president.'
+							}
+						]
+					}
+				];
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor });
 				setTimeout(() => {
 					for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
-						selectVoting({ user: p.userName }, game, { vote: false }, null, true);
+						selectVoting({ user: p.userName }, game, { vote: false });
 					}
 				}, 1000);
 				sendPlayerChatUpdate(game, data);
-				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
 			}
@@ -1995,89 +2013,35 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					socket.emit('sendAlert', `The player in seat ${chancellorPick} is not a valid chancellor. (Dead or TL)`);
 					return;
 				}
-
-				game.chats.push({
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has forced '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: ' to pick '
-						},
-						{
-							text: `${affectedChancellor.userName} {${chancellorPick}}`,
-							type: 'player'
-						},
-						{
-							text: ' as chancellor.'
-						}
-					]
-				});
-				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 }, true);
-				sendPlayerChatUpdate(game, data);
-				sendInProgressGameUpdate(game, false);
-			} else {
-				socket.emit('sendAlert', 'The game has not started yet.');
-			}
-			return;
-		}
-
-		const aemPing = /^\/forceping (\d{1,2})$/i.exec(chat);
-		if (aemPing) {
-			if (player) {
-				socket.emit('sendAlert', 'You cannot force a ping whilst playing.');
-				return;
-			}
-			const affectedPlayerNumber = parseInt(aemPing[1]) - 1;
-			if (game && game.private && game.private.seatedPlayers) {
-				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
-				if (!affectedPlayer) {
-					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
-					return;
-				}
-
-				game.chats.push({
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has force pinged '
-						},
-						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player'
-						},
-						{
-							text: '.'
-						}
-					]
-				});
-
-				try {
-					const affectedSocketId = Object.keys(io.sockets.sockets).find(
-						socketId =>
-							io.sockets.sockets[socketId].handshake.session.passport &&
-							io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
-					);
-					if (!io.sockets.sockets[affectedSocketId]) {
-						socket.emit('sendAlert', 'Unable to send ping.');
-						return;
+				game.private.unSeatedGameChats = [
+					{
+						gameChat: true,
+						timestamp: new Date(),
+						chat: [
+							{
+								text: 'An AEM member has forced '
+							},
+							{
+								text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+								type: 'player'
+							},
+							{
+								text: ' to pick '
+							},
+							{
+								text: `${affectedChancellor.userName} {${chancellorPick}}`,
+								type: 'player'
+							},
+							{
+								text: ' as chancellor.'
+							}
+						]
 					}
-					io.sockets.sockets[affectedSocketId].emit('pingPlayer', 'Secret Hitler IO: A moderator has pinged you.');
-				} catch (e) {
-					console.log(e, 'caught exception in ping chat');
-				}
+				];
+				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 });
 				sendPlayerChatUpdate(game, data);
-				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
-				return;
 			}
 			return;
 		}
@@ -2194,6 +2158,37 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
 module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	const user = userList.find(u => u.userName === passport.user);
 	if (!user || user.isPrivate) return;
+	if (Object.values(games).length > 0) {
+		const game = Object.values(games).find(game => game.publicPlayersState.find(u => u.userName === user.userName));
+		if (game) {
+			socket.emit('receiveUserGameInfo', {
+				gameState: game.gameState,
+				general: game.general,
+				publicPlayersState: game.publicPlayersState
+			});
+		} else {
+			socket.emit('receiveUserGameInfo', null);
+		}
+
+		const { publicPlayersState } = game;
+		const isDead = () => {
+			if (user.userName && publicPlayersState.length && publicPlayersState.find(player => user.userName === player.userName)) {
+				return publicPlayersState.find(player => user.userName === player.userName).isDead;
+			}
+		};
+		const disableChat = game.general.disableChat;
+		const isCompleted = game.gameState.isCompleted;
+		const isStarted = game.gameState.isStarted;
+		console.log(user.userName, 'Chat: ', disableChat, 'isCompleted: ', isCompleted, 'isStarted: ', isStarted, 'isDead: ', isDead());
+		if (user.staffRole === '') {
+			if (isDead() && !isCompleted) {
+				return;
+			}
+			if (disableChat && !isCompleted && isStarted) {
+				return;
+			}
+		}
+	}
 
 	if (!data.chat) return;
 	data.chat = data.chat.trim();
@@ -2358,63 +2353,6 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 	});
 	game.private.hiddenInfoChat.push(modOnlyChat);
 	game.private.hiddenInfoSubscriptions.push(passport.user);
-	sendInProgressGameUpdate(game);
-};
-
-/**
- * @param {object} socket - socket reference.
- * @param {object} passport - socket authentication.
- * @param {object} game - game reference.
- * @param {string} modUserName - freezing Moderator's username
- */
-module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
-	const gameToFreeze = game;
-
-	if (gameToFreeze && gameToFreeze.private && gameToFreeze.private.seatedPlayers) {
-		for (player of gameToFreeze.private.seatedPlayers) {
-			if (modUserName === player.userName) {
-				socket.emit('sendAlert', 'You cannot freeze the game whilst playing.');
-				return;
-			}
-		}
-	}
-
-	if (!game.private.gameFrozen || game.private.gameFrozen.indexOf(modUserName) === -1) {
-		const modaction = new ModAction({
-			date: new Date(),
-			modUserName: passport.user,
-			userActedOn: game.general.uid,
-			modNotes: '',
-			actionTaken: 'Game Freeze/Unfreeze'
-		});
-		modaction.save();
-		if (!game.private.gameFrozen) {
-			game.private.gameFrozen = [modUserName];
-		} else {
-			game.private.gameFrozen.push(modUserName);
-		}
-	}
-
-	const now = new Date();
-	if (game.gameState.isGameFrozen) {
-		if (now - game.gameState.isGameFrozen >= 4000) {
-			game.gameState.isGameFrozen = false;
-		} else {
-			// Figured this would get annoying - can add it back if mods want.
-			// socket.emit('sendAlert', `You cannot do this yet, please wait ${Math.ceil((now - game.gameState.isGameFrozen) / 1000)} seconds`);
-			return;
-		}
-	} else {
-		game.gameState.isGameFrozen = now;
-	}
-
-	gameToFreeze.chats.push({
-		userName: `(AEM) ${modUserName}`,
-		chat: `has ${game.gameState.isGameFrozen ? 'frozen' : 'unfrozen'} the game. ${game.gameState.isGameFrozen ? 'All actions are prevented.' : ''}`,
-		isBroadcast: true,
-		timestamp: new Date()
-	});
-
 	sendInProgressGameUpdate(game);
 };
 
@@ -2666,6 +2604,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						completeGame(gameToEnd, data.winningTeamName);
 						setTimeout(() => {
 							gameToEnd.publicPlayersState.forEach(player => (player.leftGame = true));
+							// Mod End Game should not have Mod Delete Delay
 							delete games[gameToEnd.general.uid];
 							sendGameList();
 						}, 5000);
@@ -2704,6 +2643,26 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						});
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can delete users.');
+						return;
+					}
+					break;
+					case 'renameUser':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName }).then(account => {
+							if (io.sockets.sockets[affectedSocketId]) {
+								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+							}
+							if (account) {
+								account.username = data.comment;
+							}
+							else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+							logOutUser(username);
+							account.save();
+						});
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can rename users.');
 						return;
 					}
 					break;
@@ -3141,6 +3100,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const game = games[data.userName.slice(7)];
 
 						if (game) {
+							// Manual Delete Should not set Mod Delete Delay
 							delete games[game.general.uid];
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();

@@ -769,6 +769,19 @@ export default class Moderation extends React.Component {
 					Delete user
 				</button>
 				<button
+					style={{ background: '#f78d59' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('renameUser');
+					}}
+				>
+					Rename user
+				</button>
+				<button
 					style={{ background: 'darkblue' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
