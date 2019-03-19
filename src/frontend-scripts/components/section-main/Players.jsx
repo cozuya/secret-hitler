@@ -456,14 +456,16 @@ class Players extends React.Component {
     const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
 
 		if (userInfo.userName) {
-			if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
+			if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
+				window.alert('Sorry, this service is currently unavailable.');
+			} else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
+				$(this.privatePlayerInPublicGameModal).modal('show');
+			} else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49) || !user || !user.wins || !user.losses) {
+				$(this.notRainbowModal).modal('show');
+			} else if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
 				$(this.blacklistModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
-			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
-				window.alert('Sorry, this service is currently unavailable.');
-			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
-				$(this.passwordModal).modal('show');
 			} else if (gameInfo.general.eloMinimum) {
 				const user = userList.list.find(user => user.userName === userInfo.userName);
 
@@ -472,11 +474,9 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
-      } else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49) || !user || !user.wins || !user.losses) {
-        $(this.notRainbowModal).modal('show');
-      } else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
-        $(this.privatePlayerInPublicGameModal).modal('show');
-      } else {
+			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
+				$(this.passwordModal).modal('show');
+			} else {
 				onClickedTakeSeat();
 			}
 		} else {
@@ -545,9 +545,9 @@ class Players extends React.Component {
             this.notRainbowModal = c;
           }}
         >
-          <div className="ui header">You do not meet the required amount of games (50) to play in this game.</div>
+          <div className="ui header">You do not meet the required amount of games played (50) to play in this game.</div>
         </div>
-      
+
         <div
           className="ui basic small modal"
           ref={c => {
