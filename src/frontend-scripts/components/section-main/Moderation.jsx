@@ -566,13 +566,22 @@ export default class Moderation extends React.Component {
 					Set general chat sticky
 				</button>
 				<button
-					style={{ width: '100%', background: 'aquamarine' }}
+					style={{ width: '100%', background: 'skyblue' }}
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
 						takeModAction('deleteBio');
 					}}
 				>
 					Delete/clear player bio
+				</button>
+				<button
+					style={{ width: '100%', background: '#e05543' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('logoutUser');
+					}}
+				>
+					Logout User
 				</button>
 				<button
 					style={{ width: '100%', background: 'royalblue' }}
@@ -767,6 +776,19 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Delete user
+				</button>
+				<button
+					style={{ background: '#f78d59' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('renameUser');
+					}}
+				>
+					Rename user
 				</button>
 				<button
 					style={{ background: 'darkblue' }}

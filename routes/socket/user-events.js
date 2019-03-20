@@ -27,7 +27,7 @@ const { secureGame } = require('./util.js');
 // const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
-const { sendInProgressGameUpdate, sendPlayerChatUpdate, destroySession } = require('./util.js');
+const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const animals = require('../../utils/animals');
 const adjectives = require('../../utils/adjectives');
 const { generateCombination } = require('gfycat-style-urls');
@@ -2603,7 +2603,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					userList.splice(bannedUserlistIndex, 1);
 				}
 
-				destroySession(username);
+				// destroySession(username);
 			};
 
 			/**
@@ -2707,6 +2707,36 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						return;
 					}
 					break;
+				case 'renameUser':
+					if (isSuperMod) {
+						let success = false;
+						Account.findOne({ username: data.comment }).then(account => {
+							if (account) {
+								socket.emit('sendAlert', `User ${data.comment} already exists`);
+							} else {
+								Account.findOne({ username: data.userName }).then(account => {
+									if (io.sockets.sockets[affectedSocketId]) {
+										io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+									}
+									if (account) {
+										account.username = data.comment;
+										account.save();
+										success = true;
+										logOutUser(data.username);
+									} else {
+										socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+									}
+									if (!success) {
+										return;
+									}
+								});
+							}
+						});
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can rename users.');
+						return;
+					}
+					break;
 				case 'ban':
 					banAccount(data.userName);
 					break;
@@ -2717,6 +2747,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							account.save();
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
+					break;
+				case 'logoutUser':
+					logOutUser(data.username);
 					break;
 				case 'setSticky':
 					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
@@ -3148,7 +3181,11 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					} else if (data.userName.substr(0, 13) === 'RESETGAMENAME') {
 						const game = games[data.userName.slice(13)];
 						if (game) {
-							modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
+							if (modaction.modNotes.length > 0) {
+								modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
+							} else {
+								modaction.modNotes = `Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
+							}
 							games[game.general.uid].general.name = 'New Game';
 							sendGameList();
 						}
@@ -3412,7 +3449,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 					userList.splice(bannedUserlistIndex, 1);
 				}
 
-				destroySession(username);
+				// destroySession(username);
 			};
 			testIP(expandAndSimplify(socket.handshake.address), banType => {
 				if (banType && banType != 'new') logOutUser(user);
