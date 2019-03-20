@@ -2748,6 +2748,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 					});
 					break;
+				case 'logoutUser':
+					logOutUser(data.username);
+					break;
 				case 'setSticky':
 					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
 					io.sockets.emit('generalChats', generalChats);

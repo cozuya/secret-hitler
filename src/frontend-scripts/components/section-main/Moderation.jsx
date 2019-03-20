@@ -575,6 +575,15 @@ export default class Moderation extends React.Component {
 					Delete/clear player bio
 				</button>
 				<button
+					style={{ width: '100%', background: '#e05543' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('logoutUser');
+					}}
+				>
+					Logout User
+				</button>
+				<button
 					style={{ width: '100%', background: 'royalblue' }}
 					className={'ui button'}
 					onClick={() => {
