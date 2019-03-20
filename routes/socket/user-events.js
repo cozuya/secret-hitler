@@ -2603,7 +2603,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					userList.splice(bannedUserlistIndex, 1);
 				}
 
-				destroySession(username);
+				// destroySession(username);
 			};
 
 			/**
@@ -3449,7 +3449,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 					userList.splice(bannedUserlistIndex, 1);
 				}
 
-				destroySession(username);
+				// destroySession(username);
 			};
 			testIP(expandAndSimplify(socket.handshake.address), banType => {
 				if (banType && banType != 'new') logOutUser(user);
