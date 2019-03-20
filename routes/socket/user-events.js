@@ -2707,6 +2707,36 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						return;
 					}
 					break;
+				case 'renameUser':
+					if (isSuperMod) {
+						let success = false;
+						Account.findOne({ username: data.comment }).then(account => {
+							if (account) {
+								socket.emit('sendAlert', `User ${data.comment} already exists`);
+							} else {
+								Account.findOne({ username: data.userName }).then(account => {
+									if (io.sockets.sockets[affectedSocketId]) {
+										io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
+									}
+									if (account) {
+										account.username = data.comment;
+										account.save();
+										success = true;
+										logOutUser(data.username);
+									} else {
+										socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+									}
+									if (!success) {
+										return;
+									}
+								});
+							}
+						});
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can rename users.');
+						return;
+					}
+					break;
 				case 'ban':
 					banAccount(data.userName);
 					break;
