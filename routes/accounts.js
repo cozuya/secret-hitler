@@ -118,7 +118,8 @@ module.exports = () => {
 			losses: 0,
 			created: new Date(),
 			touLastAgreed: TOU_CHANGES[0].changeVer,
-			signupIP
+			signupIP,
+			lastConnectedIP: signupIP
 		};
 
 		const startsWithPermaBannedIP = PERMABANNEDIPFRAGMENTS.some(fragment => new RegExp(`^${fragment}`).test(signupIP));
