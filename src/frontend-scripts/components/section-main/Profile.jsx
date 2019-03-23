@@ -14,13 +14,20 @@ const mapDispatchToProps = dispatch => ({
 });
 
 class ProfileWrapper extends React.Component {
-	state = {
-		bioStatus: 'displayed',
-		bioValue: '',
-		blacklistClicked: false,
-		blacklistShown: false,
-		openTime: Date.now()
-	};
+	constructor(props) {
+		super(props);
+		this.state = {
+			bioStatus: 'displayed',
+			bioValue: '',
+			blacklistClicked: false,
+			blacklistShown: false,
+			openTime: Date.now()
+		};
+	}
+	
+	componentDidMount() {
+		this.state.bioValue = this.props.profile.bio;
+  	}
 
 	formatDateString(dateString) {
 		const date = new Date(dateString);
