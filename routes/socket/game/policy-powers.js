@@ -1326,7 +1326,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 										type: 'liberal'
 									},
 									{
-										text: ' remains, top-decking to the end...'
+										text: ' remain, top-decking to the end...'
 									}
 								]
 							};
