@@ -125,7 +125,9 @@ export default class Generalchat extends React.Component {
 	};
 
 	handleInsertEmote = emote => {
-		this.chatInput.value += ` ${emote}`;
+		this.setState({
+			chatValue: this.state.chatValue + ' ' + emote
+		});
 		this.chatInput.focus();
 	};
 
