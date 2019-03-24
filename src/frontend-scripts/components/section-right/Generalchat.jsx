@@ -12,7 +12,8 @@ export default class Generalchat extends React.Component {
 		stickyEnabled: true,
 		badWord: [null, null],
 		textLastChanged: 0,
-		textChangeTimer: -1
+		textChangeTimer: -1,
+		chatValue: ''
 	};
 
 	componentDidMount() {
@@ -38,14 +39,6 @@ export default class Generalchat extends React.Component {
 		}
 	}
 
-	handleChatClearClick = () => {
-		this.setState({ inputValue: '' });
-	};
-
-	handleInputChange = e => {
-		this.setState({ inputValue: `${e.target.value}` });
-	};
-
 	renderPreviousSeasonAward(type) {
 		switch (type) {
 			case 'bronze':
@@ -70,8 +63,12 @@ export default class Generalchat extends React.Component {
 	handleTyping = e => {
 		e.preventDefault();
 
-		const text = this.chatInput.value;
-		const foundWord = getBadWord(text);
+		this.setState({
+			chatValue: e.target.value
+		});
+		const chatValue = e.target.value;
+
+		const foundWord = getBadWord(chatValue);
 		if (this.state.badWord[0] !== foundWord[0]) {
 			if (this.state.textChangeTimer !== -1) clearTimeout(this.state.textChangeTimer);
 			if (foundWord[0]) {
@@ -80,7 +77,7 @@ export default class Generalchat extends React.Component {
 					textLastChanged: Date.now(),
 					textChangeTimer: setTimeout(() => {
 						this.setState({ textChangeTimer: -1 });
-					}, 1100)
+					}, 2000)
 				});
 			} else {
 				this.setState({
@@ -97,24 +94,16 @@ export default class Generalchat extends React.Component {
 
 	handleSubmit = e => {
 		if (this.chatDisabled()) return;
-		const inputValue = this.chatInput.value;
 
 		if (inputValue && inputValue.length < 300) {
 			this.props.socket.emit('addNewGeneralChat', {
-				chat: inputValue
+				chat: chatValue
 			});
 
-			this.chatInput.value = '';
-			if (this.state.badWord[0]) {
-				this.setState({
-					badWord: [null, null]
-				});
-			}
-
-			this.chatInput.blur();
-			setTimeout(() => {
-				this.chatInput.focus();
-			}, 100);
+			this.setState({
+				chatValue: '',
+				badWord: [null, null]
+			});
 		}
 	};
 
@@ -170,7 +159,7 @@ export default class Generalchat extends React.Component {
 					disabled={!userInfo.userName || (userInfo.gameSettings && userInfo.gameSettings.isPrivate)}
 					className="chat-input-box"
 					placeholder="Send a message"
-					maxLength="300"
+					value={this.state.chatValue}
 					spellCheck="false"
 					onKeyDown={this.handleKeyPress}
 					onChange={this.handleTyping}
