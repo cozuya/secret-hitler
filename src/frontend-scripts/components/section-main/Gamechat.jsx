@@ -202,7 +202,7 @@ class Gamechat extends React.Component {
 
 		const { chatValue } = this.state;
 
-		if (currentValue.length < 300 && currentValue && !$('.expando-container + div').hasClass('disabled')) {
+		if (chatValue.length <= 300 && chatValue && !$('.expando-container + div').hasClass('disabled')) {
 			if (userInfo.gameSettings && !userInfo.gameSettings.disableTyping) {
 				updateIsTyping(true);
 			}
@@ -287,6 +287,10 @@ class Gamechat extends React.Component {
 	};
 
 	handleInsertEmote = emote => {
+		this.setState({
+			chatValue: this.state.chatValue + ' ' + emote
+		});
+		this.chatInput.focus();
 	};
 
 	renderModEndGameButtons() {
@@ -1030,6 +1034,22 @@ class Gamechat extends React.Component {
 								}}
 							>
 								The word "{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.
+							</span>
+						)}
+						{this.state.chatValue.length > 300 && !this.state.badWord[0] && (
+							<span
+								style={{
+									zIndex: '-1',
+									position: 'absolute',
+									top: '-32px',
+									height: '40px',
+									backgroundColor: 'indianred',
+									padding: '7px',
+									borderRadius: '10px 10px 0px 0px',
+									border: '1px solid #8c8c8c'
+								}}
+							>
+								{`This message is too long ${300 - this.state.chatValue.length}`}
 							</span>
 						)}
 						<input
