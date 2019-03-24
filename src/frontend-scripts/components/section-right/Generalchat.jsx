@@ -95,7 +95,9 @@ export default class Generalchat extends React.Component {
 	handleSubmit = e => {
 		if (this.chatDisabled()) return;
 
-		if (inputValue && inputValue.length < 300) {
+		const { chatValue } = this.state;
+
+		if (chatValue && chatValue.length <= 300) {
 			this.props.socket.emit('addNewGeneralChat', {
 				chat: chatValue
 			});
@@ -152,6 +154,21 @@ export default class Generalchat extends React.Component {
 						}}
 					>
 						"{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.
+					</span>
+				)}
+				{this.state.chatValue.length > 300 && !this.state.badWord[0] && (
+					<span
+						style={{
+							position: 'absolute',
+							top: '-22px',
+							height: '40px',
+							backgroundColor: 'indianred',
+							padding: '7px',
+							borderRadius: '10px 10px 0px 0px',
+							border: '1px solid #8c8c8c'
+						}}
+					>
+						{`This message is too long ${300 - this.state.chatValue.length}`}
 					</span>
 				)}
 				<textarea
