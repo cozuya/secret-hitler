@@ -14,13 +14,15 @@ const mapDispatchToProps = dispatch => ({
 });
 
 class ProfileWrapper extends React.Component {
-	state = {
-		bioStatus: 'displayed',
-		bioValue: '',
-		blacklistClicked: false,
-		blacklistShown: false,
-		openTime: Date.now()
-	};
+	constructor(props) {
+		super(props);
+		this.state = {
+			bioStatus: 'displayed',
+			blacklistClicked: false,
+			blacklistShown: false,
+			openTime: Date.now()
+		};
+	}
 
 	formatDateString(dateString) {
 		const date = new Date(dateString);
@@ -190,7 +192,7 @@ class ProfileWrapper extends React.Component {
 									maxLength="500"
 									autoFocus
 									spellCheck="false"
-									value={this.state.bioValue}
+									value={this.state.bioValue || profile.bio}
 									onChange={bioChange}
 									onKeyDown={bioKeyDown}
 								/>
@@ -404,7 +406,8 @@ ProfileWrapper.defaultProps = {
 ProfileWrapper.propTypes = {
 	userInfo: PropTypes.object,
 	userList: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	profile: PropTypes.object
 };
 
 export default connect(
