@@ -26,7 +26,10 @@ class ProfileWrapper extends React.Component {
 	}
 	
 	componentDidMount() {
-		this.state.bioValue = this.props.profile.bio;
+		const { profile } = this.props;
+		this.setState({
+			bioValue: profile.bio
+		});
   	}
 
 	formatDateString(dateString) {
