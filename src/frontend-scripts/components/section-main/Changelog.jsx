@@ -14,8 +14,9 @@ class Changelog extends React.Component {
 					<p>Version 1.3.1 released 4-1-2019</p>
 				</div>
 				<h3>Season 6 begins!</h3>
-				<h4>Many (like 7) Moderation Improvements</h4>
-				<h4>Returning feature: Grey and Private-Only players are alerted when they try to join games that they can't</h4>
+				<h4>Many Moderation Improvements -Vigasaurus</h4>
+				<h4>Silent Game Features now work as intended -Vigasaurus</h4>
+				<h4>Returning feature: Grey and Private-Only players are alerted when they try to join games that they can't -samf</h4>
 				<h4>Many smaller fixes and minor UI changes!</h4>
 				<div className="ui header">
 					<p>Version 1.3.0 released 3-5-2019</p>
