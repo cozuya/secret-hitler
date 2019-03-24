@@ -76,7 +76,7 @@ module.exports = () => {
 	app.get('/rules', (req, res) => {
 		renderPage(req, res, 'page-rules', 'rules');
 	});
-	
+
 	app.get('/changelog', (req, res) => {
 		renderPage(req, res, 'page-changelog', 'changelog');
 	});
