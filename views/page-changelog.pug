@@ -1,557 +1,556 @@
 extends layout
 block content
-	.ui.container.howtoplay-container
-		h1.ui.centered.header Secret Hitler.IO Changelog
-		h4 The top 10 players of season 4 are:
-		ul
-			li benjamin172: 2110
-			li minie: 2084
-			li GoldenPanda: 2017
-			li scum: 1961
-			li Moranki: 1957
-			li User: 1957
-			li Gamethrower: 1935
-			li mufasa: 1899
-			li adam: 1882
-			li Cucumber: 1879
-		p Version 1.3.0 released 3-5-2019
-		h4 Fixed issue: Chats in replays work again.
-		h4 Returning feature: typing indicator (again). This has been overhauled and should work better.
-		h4 New player setting: disable typing indicator. If you feel this is adveresly affecting your browser, turn this off in your settings.
-		h4 New feature: Creategame overhaul.
-		p Thanks to Vigasaurus the create game page has been redone with many new looks and feels including some fun templates.
-		h4 New feature: enhanced information for grey players - they will be alerted when they try to sit in rainbow games, and alerted when they click private games only mode. Thanks to contributor samf.
-		h3 Many smaller fixes and UI updates!
-		p Version 1.1.3 released 2-26-2019
-		h4 Fixed issue: problems people were having while typing in chat in mobile view.
-		h4 Returning fixed feature: claim from chat i.e. type "rrb" to make a claim without clicking on the "claim" button.
-		p Version 1.1.2 released 2-24-2019
-		h4 New feature: much better mobile/small screen width user experience -RPYoshi
-		p May not be entirely bug free -_- we'll see.
-		h4 New feature: informational popup for new accounts -coz
-		p This will attempt to explain how the site works somewhat and provide useful links to our how to play, terms of use, about, and wiki pages.
-		h4 New feature: claim directly from the chat without clicking the "claim" button - simply type what you want to claim i.e. "rrb" -Vigasaurus
-		p Hopefully won't break everything this time
-		h4 Adds 12 New Emotes -Vigasaurus
-		p Special thanks to everyone on SH.io discord server who suggested emotes
-		ul
-			li Moderators can now peek at currently locked in votes on a government -Vigasaurus
-			li Game Creation defaults now reflect results of strawpoll conducted previously -Buncha
-			li Game creation defualts should apply correctly -Vigasaurus
-			li Updated banned word list to be more exhaustive -Vigasaurus
-			li Minor bug fixes and internal changes -Vigasaurus, Spyro
-		p Version 1.0.2 released 1-20-2019
-		ul
-			li Some new moderation features (mods can force votes on afks) courtesy of contributor Vigasaurus.
-			li List of games should be like it was in 1.0.0 and lower.
-			li Contributor color has been updated.
-			li Version 1.0.1 released 1-5-2019
-		ul
-			li Signin/signup with Discord/Github should be fixed.
-			li You should no longer be logged out automatically as often.
-			li Election tracker now says its status in the gamechat after fails.
-			li Lobby and cosmetic improvements @Hexicube.
-		p Version 1.0.0 released 1-1-2019
-		h3 1.0.0 and season 5 begins!
-		h3 Badges this season are thanks to player liberalist!
-		p It took a while, but we're here - all major features I could think of and some I couldn't are in and mostly working. A long, long way from the first stable(ish) release back in May 2017.
-		p I want to thank our moderation team first and foremost. The site would not be in the same shape without them. There was a time that feature wasn't even in and it was just a nightmare. Obviously its a combination of both the theme and the nature of a mostly anonymous internet, but they've done an amazing job keeping this place playable in public games and fun for everyone!
-		p I also want to call out contributor/mod Hexicube for spending so much working on various parts of the app over the last ~year. Many moderation tools and features like custom games would not exist without him.
-		p Please note that 1.0 does not mean I am no longer supporting the application and site. Work will continue to make the site even better, but not personally at the pace I have been. My next game is in progress and I expect to get to a playable pre-alpha state some time in the next few months. It will be a (fresh IP) hidden role game with some similarities to the fascist hunting/electing game we all know and love but with some fun features and mechanics that can only exist online. Stay tuned! -Chris
-		p This update also includes:
-		ul
-			li Fixed player claims showing under player chat instead of game chat.
-			li Broadcasts will now always show regardless of filters.
-			li Fixed cardbacks sometimes failing to upload.
-			li Game remaking no longer shows "1/NaN" before the game starts on non-custom games.
-			li Fixed alts/trials showing as grey in user list.
-			li Elo slider minimum is now 1600.
-			li Cardbacks now support all image types, and all sizes.
-			li Game remaking now updates the blacklist if the creator changed theirs.
-		p Version 1.0.0-beta8 released 12-23-2018
-		h3 Github signin should be fixed. Maybe? ¯\_(ツ)_/¯
-		h3 New feature: redone gamechat filters.
-		p Filters should now be toggable instead of just pick one (radio buttons). This also fixes the bug where some players with small screen widths were having the "leave game" button flowing into the playerlist.
-		h3 Bugfix: gamechat filters should work even when you don't have "show all messages" on.
-		p Version 1.0.0-beta7 released 12-18-2018
-		h3 New feature: Github signin/signup integration
-		p Why not?! This will be the last one.. probably. I don't want your facebook/google/apple nonsense.
-		h3 Fix: much better long-game performance.
-		p For far too long, games that had many chats were having a lot of lag in the late games. You now only see a smaller selection of chats (last 250) - you can toggle this in the game filters. Turning that off will cause your client to be slow, again.
-		h3 New feature: fixes to remakes and now remakes will always go based off of fascist count instead of a fixed number.  Thanks to contributor LoveOken.
-		h3 New feature: the contributor and trial mod roles are now assignable by mods as opposed to being hard coded.
-		h3 New feature: cardbacks should now be much more performant @Hexicube.
-		p Version 1.0.0-beta6 released 12-12-2018
-		h3 New feature: two new custom game policy powers!
-		p Thanks to contributor/mod Hexicube, you now set up 2 brand new policy powers:
-		ul
-			li Show party: a reversed investigate, you pick a player and show them your party membership card.
-			li Peek and Burn: the president look at the top card of the deck, and choose if they want to discard it.
-		p Awesome!
-		h3 New update: a change in our session software should hopefully resolve some of the lag issues we've had lately.
-		p Also, scrollbars should be grey and cardbacks should no longer flicker in profiles.
-		h3 New feature: Discord signin/signup integration
-		p You can now authentic your account through Discord. This works in the following ways:
-		ul
-			li New players can now sign up using Discord. This will attempt to make an sh.io account using their discord username, if that already exists or it violates our username standards (length, bad words, etc) they will be prompted to enter a new username.
-		li Existing players can associate their sh.io account with their Discord account. Do this in the #[a(href="/account") account] screen or just #[a(href="/discord-login") click here]. You will need to be logged in.
-		li Existing players (players who have an account that is not solely through Discord) can also revoke their Discord association at any time.
-		li Anyone using Discord automatically becomes verified without needing an email sent.
-		li There's unfortunately nothing fun we can do with Discord integration right now other than authentication.
-		h3 New feature: disable player list aggregation user setting
-		div(style="text-align: center")
-			img(src="/images/disable-agg.png",style="border: 1px solid grey; width: 200px")
-		p If you prefer the old way of seeing the playerlist (upper right corner outside of games), you can now change that in your settings.
-		h3 ELO ranking adjustment: non-rainbow games now give more elo, and rainbow games give slightly less.
-		p Thanks to contributor Nth we have some more ELO changes upcoming in the future.
-		p Version 1.0.0-beta4 released 12-4-2018
-		h3 Some attempts to fix issues with server instability, few smaller things, thats about it.
-		p Version 1.0.0-beta3 released 11-23-2018
-		h4 Fixed feature: adding email in the account page now doesn't always return "an account already has that verified email" message. Please use that button to become verified.
-		h4 New feature: like a real application, sessions (aka how a website knows you're logged in) will now persist beyond crashes, reboots, and updates. In other words you			won't have to log in so much.
-		h5 Links in discord to the game will no longer have giant lizard images.
-		h5 Contributors are back to teal color.
-		p Version 1.0.0-beta1 released 11-19-2018
-		h3 Version 1.0! Almost.. need to make sure everything works right first.
-		h4 New feature: recolored UI. Color idea thanks to contributor/mod Hexicube.
-		h4 New/fixed feature: email verification and password resets.
-		p Like a real application, you can now have an email get sent to your non-disposible email address to make your account verified (again). This time it shouldn't go to spam every time..
-		p Our email terms of use:
-		ul
-			li Email addresses are used for ONLY the following actions: verifying your account, and reseting your password.
-			li In no circumstances will your email address be used for anything other than the above including any sort of mass "email blast".
-			li Only administrators have access to see your email address.
-			li Your email address will never leave the site/will never be given away or sold.
-		h4 Returning feature: verified-only games in the create game page.
-		p Verified players can once again make games that only other verified players can sit in in the create game panel.
-		h3 I strongly recommend you verify your account.
-		p Version 0.15.0 released 10-21-2018
-		h4 New feature: custom games!
-		p Create a fully customised game to play the game how you want to!
-		div(style="text-align: center")
-			a(href="https://i.imgur.com/sv6nq9C.png", target="_blank")
-				img(src="https://i.imgur.com/sv6nq9C.png",style="border: 1px solid grey; width: 100%")
-		ul
-			li Custom Games are always casual, and have a fixed player count as opposed to the selectable range of players.
-			li It plays 5 to 10 as usual and must have a liberal majority.
-			li Choose if hitler knows his fascists, when hitler zone starts, when veto is enabled, and what policy cards are in the game.
-			li There's a new game filter for custom games (filter icon next to the "create a new game" button on the lobby).
-			li All of this feature thanks to contributor Hexicube!
-		h4 New feature: game filters now save/persist when toggled.
-		p Other items:
-		ul
-			li User reports should finally be fixed.
-			li Dragging the game notes window to bad places should no longer open a new tab.
-			li Lack of rainbow color for seasonal elo/WL has been fixed.
-			li Game chat messages should no longer use an extra line.
-			li Added extra notches to the minimum elo and timed game sliders.
-			li Deck shuffles are now shown in game chat.
-			li Browser crashes now show an error page instead of a blank screen.
-			li BigNose emote is back.
-		p Version 0.14.14 released 10-16-2018
-		h4 New feature: new players must agree to the terms of use.
-		p I want to again stress that if you don't agree with the rules of the site (cliffs: don't be an asshole), play elsewhere.
-		p Bugfix: full height player setting now auto-scrolls chat correctly, making it actually usable, thanks to a contributor.  Check it out again if you have a large monitor.
-		p Cleanup: emotes have had a review and some of them altered, updated, and removed.
-		p Version 0.14.13 released 9-29-2018
-		h4 Welcome to season 4!
-		p The top 10 players of season 3 are:
-		ul
-			li Fusilli - 2138
-			li SheepManu - 2127
-			li HomoSapien - 2068
-			li Samsung - 2035
-			li benjamin172 - 2031
-			li harvyyy - 2025
-			li imbapingu - 2014
-			li Manu1234 - 1991
-			li Jasmine - 1989
-			li NotIconic - 1917
-		p New this season: the top 5 players of last season now have special badges thanks to mod benjamin172. Unfortunately not a lot to report lately, I've been incredibly busy and haven't had the time. We do have 2 new emotes! LibFrown and FasFrown credit to new contributor PeeOnBus. Also, speed mode is now enabled by default when entering create game credit by contributor LordVader. Thanks for playing!
-		p Version 0.14.11 released 8-6-2018
-		h4 250,000 games played! Wow!
-		h4 New feature: full height in game player setting
-		div(style="text-align: center")
-			img(src="https://i.imgur.com/9eDIhIP.jpg",style="border: 1px solid grey; width: 100%")
-		div(style="text-align: center;")
-			img(src="/images/fullheightsetting.png",style="border: 1px solid grey; width: 100%")
-		p There's a new setting for players when enabled, the UI will take up the full height of your monitor while in game, greatly extending the chatbox (see below). This will only be apparent for (on 100% browser zoom) players with larger monitors, laptops and smaller will not see any change.
-		h4 New feature: moderator manual conclusion of games.
-		p In a ranked game where someone afks/rage quits at the very end when they're about to lose? Contact a moderator and they can end the game for the team that was about to win, assigning you precious elo points. About time!
-		h4 Other stuff:
-		ul
-			li New emotes! Sheeped, Shepherd, and ThumbsDown. Thanks to contributor JohnCena.
-			li Private/anonymous player names can no longer be seen by hovering on them..
-			li You don't need >1675 seasonal elo to make an elo limited game, overall now works as well.
-			li Contributor color is back.
-			li iOS safari users should be able to use their profile again.
-			li Next major feature planned is <b>custom games</b>, where the game creator can do things like set different policy powers and when hitler zone starts. There's some new polls available, please take a look.
-		p Version 0.14.10 released 7-23-2018
-		ul
-			li You can delete people from your blacklist again.
-			li Elo minimum games now lets a player who has either seasonal or overall elo above it play in that game. You still need to have seasons on though (will get to that later).
-			li Some performance optimizations have been put in, hopefully making things more stable.
-		p Version 0.14.9 released 7-15-2018
-		h3 New feature: elo limiter has gone in.
-		p Minimum you can set this to is 1675, we'll keep an eye on it.
-		h3 Blacklist overhaul (again)
-		p Several players are using the blacklist feature in an unintended way, causing some grief for everyone. All blacklists have been deleted, and there now is a (working this time..) limit of 10 players that can be on your blacklist at once.
-		h3 Timed mode may have its long standing bug fixed thanks to contributor/mod Hexicube.
-		h3 Some changes have been made in the back end that should make some performance increases/less lag and crashes. I hope.
-		p Version 0.14.8 released 7-1-2018
-		h3 Welcome to season 3!
-		p All seasonal elo has been reset to 1600 and all seasonal winrates are 0-0. Season 2 badges have been applied to the top ~75 players of season 2 by elo.
-		h3 New feature: elo slider/limiter (not quite working, will be in this week)
-		p Players above 1700 elo will now see a new slider while creating a game - use this to limit what players can play in the new game you are creating. Players who are under or over the threshold will not be able to sit.
-		p This feature will be watched for feedback - I don't want to lock players out of games, but I also think its nice to be able to play with high elo players exclusively if you want. This feature only applies to seasonal elo right now.
-		h3 The terms of use on the about page have been somewhat adjusted.  I want to make it clear that abuse by anyone is not allowed.  If someone makes a mistake that costs you a game, do not scream at them, do not call them "retards" or "cunts".  If so you will eat a ban.  Its a free web game with zero stakes, chill and hunt/elect some fascists.
-		p Version 0.14.7 released 6-17-2018
-		p Verification emails should be fixed.
-		p New leaderboard component now has a working link on the lobby.
-		p Due to popular demand, verified only games are now default off instead of on.
-		p Version 0.14.6 released 6-12-2018
-		h3 New feature: seasonal leaderboards
-		p Click the big words on the lobby to see who's top elo for the season, and also who's went up the most in the last 24 hours.
-		h3 Attempt to fix "verification email goes to spam/sometimes rejected" issue has gone in.
-		h3 Also moderators can now manually set accounts to verified, if you are getting no where with the emails, contact a mod, thanks.
-		p Version 0.14.5 released 6-7-2018
-		h3 New feature: email verified accounts
-		p Your #[a(href="/account") account] can now have a new verified status by adding an email, and clicking a link when you receive an email from the site. New players can now (optionally) add their email while signing up. Only non-disposible email providers can be used, and its possible that the site's email will wind up in your spam folder so check there before requesting a new email.
-		p I want to make it very clear that I do not want or will use your email addresses for any reason other than to have it possible to be verified. The terms of use has the following added:
-		ul
-			li Email addresses are used for ONLY the following actions: verifying your account, and reseting your password.
-			li In no circumstances will your email address be used for anything other than the above including any sort of mass "email blast".
-			li Only administrators have access to see your email address.
-			li Your email address will never leave the site/will never be given away or sold.
-		p In addition, you can also change your email address and request a new verification email.  Password reset coming soon.
-		h3 New game mode: verified accounts only
-		p Verified accounts will now optionally be able to make a game where only other verified accounts can sit in.
-		p Version 0.14.3 released 6-1-2018
-		h3 New feature: sound pack #2!
-		p Thanks to contributor straightleft, a new pack of sounds has been implemented, more tonal/synth like - some from pack 1 (shuffling) are still in pack 2. As this is a different type of setting change, if you want to use sound pack #1 or turn your sound off, you'll have to go to your settings screen now.
-		h3 Many bug fixes thanks to contributor Hexicube.
-		h3 New feature: enhanced account actions.
-		p Like a real app, I am implementing some things that should have been done some time ago. In this update, only the delete account action is new, and should work as expected. Soon I will be rolling out email-verified accounts. Don't worry, these will be optional.
-		p Our terms of use has been updated...
-		p Version 0.14.2 released 5-22-2018
-		h3 New feature: sound effects!
-		p Thanks to contributor Idrissa, most common sounds have a sound effect associated with them. Fun! You can disable these in player settings. This setting does not effect the starting "bong" sound.
-		p Also some bug fix attempts.
-		p Version 0.14.0 released 5-20-2018
-		h3 New feature: elo system
-		p An elo system has come to sh.io. What is it/where is your winrate/why did your color change? See below.
-		p Effectively an elo system is a point-based representation of your weighted skill based off of your teammates and your opponent's elo. The easiest way to think of it is that, when you win a game, your elo will go up more if you are playing against high rated players (their collective average) than low rated players. This is adjusted for the "normal" winrate of your team and the game size.
-		p Player colors for elo mode have been redone - check the information icon on the player list. There is some drastic changes: based off percents, most players will be green. Some will be orange, and a small percent will be purple. Contributor color has been reassigned to teal.
-		p Elo changes will be communicated when a game ends. Remember that all elo is based on the average of your and your opponent's team elo.
-		p This feature can be disabled in your player settings screen.
-		h3 Redone blacklists
-		p All blacklists have been wiped, and a limit of 20 players that can be blacklisted has been applied. This will fail silently if you try to go over that. Blacklists are intended to be a way to avoid players you personally don't like playing with, not to be wielded as a weapon against players you can't control. Some players have blacklists in the hundreds and thats not what the feature was meant for - if there's a player breaking the rules, report them.
-		p Version 0.13.5 released 4-29-2018
-		h3 New feature: seasonal stats page.
-		p Check out the link in the normal stats page to toggle between current season and overall stats.
-		h3 Other bugfixes to various issues.
-		p Version 0.13.4 released 4-28-2018
-		h3 Tournaments temporarily disabled, see below.
-		h3 Security update
-		p It was brought to my attention that there's some issues with security around certain actions. This update has addressed these issues. Its important to note that these were game related issues, not account: your password is secure and not visible by anyone including me, and important info like who is each role and what the policy deck looks like, is and always was secure.
-		h4 Other items
-		ul
-			li A bug with the new blacklist modal and deleting entries has been fixed.
-			li There's some new helpful messages when you try to take actions like chat without 2 games played or chat while dead.
-			li The cooldown for remaking games has been changed to 2 seconds if remake is on, and 10 seconds if remake is off.
-			li Several fixes to issues with remaking games have occured.
-			li Some fixes to issues with player colors have been implemented.
-			li Welcome new moderators littlebird and Hexicube!
-		h2 Huge callouts to contributors Hexicube and Nth for a ton of this work!
-		h3 We don't talk about version 0.13.3
-		p Version 0.13.3 released 4-25-2018
-		h3 Tournaments temporarily disabled, see below.
-		h3 Security update
-		p It was brought to my attention that there's some issues with security around certain actions. This update has addressed these issues. Its important to note that these were game related issues, not account: your password is secure and not visible by anyone including me. And by game related issues I mean it was possible for people to take actions they should not be able to take, but important info like who is each role and what the policy deck looks like, is and always was secure.
-		ul 
-			li The cooldown for remaking games has been changed to 2 seconds if remake is on, and 10 seconds if remake is off.
-		p Version 0.13.2 released 4-22-2018<
-		h3 New feature: expanded timed mode (turbo mode)
-		p Want to play a super fast game (or tournament)? The timed mode slider has been changed from 30 second increments to 1 second increments, and the minimum time is now 2 seconds (due to animations, can't be 1 second)! Important note: as the game clearly wasn't meant to be played this way, timed mode games under 30 seconds are forced to be casual games. Have fun! The display in creategame page has been updated slightly.
-		h3 Bug fix: attempted fix to issue with timed mode some times auto choosing chancellor erroneously.  If this is still happening please update on discord or github - I don't have exact reproduction steps and am kind of shooting in the dark here.
-		p Other issues
-		ul
-			li Previous "timed mode" idea credit to player HREmperor who gets orange contributor color. Contribute to this open source product to get it also! 140+ open issues on github! -_-
-			li In your profile you can now view everyone on your blacklist, and remove them from it as well by clicking the remove icon.
-			li There's a new timed mode game filter (funnel icon next to create game button), disable this if you don't want to see timed mode games.
-			li Remake messages in chat no longer say what player has voted to remake it.
-			li The "cooldown" of the remake button being able to be vote for against remake has been moved from 2 seconds to 10 seconds.
-			li To avoid libs abandoning "lost" games, the remake threshold for 6p games is now 5, up from 4.
-			li The whole remake system that was semi-bugged and needed to be rescinded and then revoted in order to get started on remaking may have been fixed? Somehow? I swear I didn't do anything but it seems to be working as intended now. Please update if not.
-			li The stats page works again for 9p rebalanced, which apparently did almost nothing.
-			li The one time name change feature has been removed, didn't work right and it turned out it wasn't a great idea to begin with.
-			li Replays now show the casual game icon when available.
-			li Casual game tournaments no longer award crowns.
-			li New emotes: CantBeBothered and Salty, thanks to contributor LordVader.
-		p Version 0.13.1 released 4-3-2018
-		h3 New game mode: Timed mode
-		p In a timed mode game, a timer on all actions appears in the lower right part of the fascist board, after which the next action is chosen at random.
-		div(style="text-align: center")
-			img(src="/images/timed-mode-example.png", style="border: 1px solid grey")
-		p Example: in a 5 minute timed mode game, if someone does not make a required action in 5 minutes such as voting on an election, their nein or ja vote is chosen for them at random by the server. Note that in order to save stress on the server, this countdown is held client-side and will only be visible to	players/observers if they are present in the game when each timer starts (but still goes on in the background on the server, of course). This mode will	likely favor fascists! Feedback requested.
-		p Complicated magical changes were made in the back end in order to enable this functionality and it may be subject to.. not being perfect. Please report any problems you see. Hopefully problems != crashes.
-		h3 Bug fix: game now once again works on iOS devices.
-		h3 Bug fix: blind mode players cannot reveal their names by pinging other players..
-		p Version 0.13.0 released 4-1-2018
-		h3 Season 2 has begun
-		p Seasonal awards have been implemented: the top 60 players with more than 150 wins in season 1 have been separated into 3 tiers, and receive special award flair on the lines of gold/silver/bronze.
-		p This flair can be disabled via the disable tournament crowns setting which has been renamed to disable tournament crowns and seasonal awards.
-		h3 Congratulations to the top players of season 1 (more than 150 wins):
-		ul(style="color: 'orange';")
-			li maki2 66% wr
-			li karamia 65% wr
-			li TheDaniMan 64% wr
-			li NotIconic 63% wr
-			li TheJustStop0 62% wr
-			li qwefjz 61% wr
-			li BunchOfAnima 60% wr
-			li Zeek 60% wr
-		h3 New feature: player notifications (pings)
-		p When you enter the site for the first time, you will receive a notification that looks like this:
-		div(style="text-align: center")
-			img(src="/images/notification-permission.png", style="border: 1px solid grey; width: 80%")
-		small Obviously not localhost..
-		p If you enable this feature, other seated players may now send you (and you may as well) a "wake up" notification. If someone types in "Ping5", the player in seat 5, if notifications are enabled, will see a screen like this (on their operating system, not their browser):
-		div(style="text-align: center")
-			img(src="/images/notification.png", style="border: 1px solid grey; width: 100%")
-		p Players may use the ping feature only once every 3 minutes, and only in games you're seated in that have been started. This feature is only to be used for players who appear AFK - do not abuse this feature. Reminder: if you wind up finding these irritating, you can revoke permission for them in your browser settings.
-		h3 New feature: one time name change.
-		p Dislike your old name, but want to keep your stats and profile? Hit the big new big red button on your settings page to change your name. This only works once per account so choose wisely.
-		h3 Other items
-		ul
-			li New emotes courtesy of contributor LordVader! ThinkFace, PIZZA, ExpressionlessFace, PopCorn, RedHeart. They are in the popup menu as well of course.
-			li Tournaments now make the usual "bong" noise when they start.
-			li The "rules" page has been updated thanks to a contributor. The big change is a description of common terms used on the site.
-			li Players can now submit up to 3 moderator reports per game, up from 1.
-			li A bug where people with blacklists over 100 will have an error preventing them from adding new blacklists has been fixed.
-			li The planned "timed game mode" and "player notes" feature didn't quite get wrapped up prior to today's update, look for those soon.
-		p Version 0.12.5 released 2-20-2018
-		h3 Bug fix: replays are back!
-		p Thanks to a contribution a long standing bug in replays has been fixed and should work for all recent games.
-		h3 New feature: 3 new emojis - ThumbsUp, CNH, and Shrug. Check them out.
-		h3 New feature: casual game mode setting.
-		p Select this to play a game where the results do not affect the player's wins or losses.
-		h3 Other items:
-		ul
-			li Thanks to a contribution, tournament crowns are no longer visible in blind mode.
-			li Please welcome new moderators safi, Wilmeister, and MrEth3real.
-			li Stats for rebalanced (-2 fascist policy) 9 player games might be working tomorrow.. (data collection occurs at 4am)
-			li There's a new poll on the polls page re: length of seasons.
-		p Version 0.12.4 released 2-3-2018
-		h3 New feature: rebalanced 9p games (again).
-		p Now, they start with 2 less fascist policies in the deck. The stats page should be updated.
-		h3 New feature: games being remade will now show player roles briefly  (thanks to Z3r0-K0ol on github.).
-		h3 Other items:
-		ul
-			li The site should look a bit better at smaller screen widths outside of games.
-			li The discord widget in general chat now works again.
-			li "Show chats" button in replays works again.
-			li The how to play page on the website has been updated with new content.
-			li Many "behind the scenes" moderation tools have been implemented.
-			li Please welcome new editor Invidia.
-		p Version 0.12.3 released 1-6-2018
-		h3 New feature: rerebalanced 9p games.
-		p Due to 9p, even rebalanced, being way too easy for fascists, the newly rebalanced 9p games will have a "phantom" liberal policy already enacted at the start of the game, in addition to one less fascist policy. There will still be 6 liberal policies in the deck to start.
-		ul
-			li The broken UI on the playerlist has been fixed.
-			li Sorting of grey players on the playerlist had a bug which caused it to be really broken - now fixed.
-			li The chat lock scroll issue has been fixed.
-		p Version 0.12.2 released 1-6-2018</p>
-		h3 New feature: gamechat shows remaining policies (in order) at end of game.
-		div(style="text-align: center")
-			img(src="/images/remainingpolicies.png", style="width: 80%; border: 1px solid grey;")
-		h3 New feature: blind mode now works in tournaments.
-		h3 Other items:
-		ul
-			li Previous update with players with less than 5 games played being unable to chat in general chat or observer mode has been reduced to be just 1 game played.
-			li More fixes to replay issues.
-			li Blind mode now shows the player's alias when claiming.
-			li An internal UI change has taken place, will hopefully resolve some issues with general chat bouncing around for some users and iOS problems as well.
-		p Version 0.12.1 released 1-3-2018
-		ul
-			li Players with less than 5 completed games can no longer chat in general chat, chat as an observer, or make player reports.
-			li Thanks to a contributor, rebalanced games now show up correctly on the status bar while in a game.
-			li Blind mode no longer shows tournament crowns..
-			li Please welcome new mods RavenCaps and JerMej1s.
-		p Version 0.12.0 released 12-31-2017
-		h3 New feature: seasonal mode!
-		h4 Important note: your stats are not gone. Read below before panicking.
-		p Like many other esport games, seasonal mode has come to sh.io. What this means as that there are now two tiers of player records, seasonal (which starts today) and overall. At the beginning of a season, the seasonal tier is wiped of wins and losses, and should last about 3 months (some tweaking may occur).
-		p When you play a game from now on, its result is added to your overall record and your current seasonal record. Seasonal mode is opt-out, and affects you only - go to your player settings screen to disable it, and your and other player's overall records and name colors will be shown to you instead, just like before this patch. Note: players who have achieved rainbow status do not have to play 50 games to play rainbow games in new seasons, and will still have cardbacks enabled. Yes I realize this somewhat paradoxically will make rainbow games non rainbow so to speak at least for some time. Your profile	will not be affected, for now.
-		p Some fun rewards/leaderboards/stats for doing well in seasons are planned for the near future.
-		h3 Tournament mode re-re-re-enabled.. we'll see if this one takes..
-		h3 New feature: rainbow games now count towards standard winrate.
-		p This has been requested a lot lately, we'll see how this goes/how people like it for season 1. The poll on this was split, lets give this a shot.
-		h3 Other items:
-		ul
-			li Thanks to a pull request, the fascist/lib card icons are now randomized correctly i.e. liberal with pencil mustache/snake in a suit fascist can now appear in any game, not just 9/10p games.
-			li Thanks to the same PR, claims now are filtered into the "game" internal chat filter.
-			li Thanks to a PR, replays have been worked on and fixed! If you see more issues, please alert us. In addition the role cards are no longer all the same at the end of replays.
-			li The above work was done by contributor STOshka/AlexSTO. Awesome!
-			li In blind mode games, hovering on a player's name no longer shows you who they are..
-			li You can now report players in blind mode. Reminder: blind mode is not an excuse to break site rules.
-			li In a consensus vote on elections (everyone votes the same), the ja/nein cards are visible for a much shorter period of time, getting on with it.
-			li A bug that prevented players from remaking a game more than once has been fixed.
-			li The weird selection bug on elections ja/nein has been fixed, was hotfixed about a week ago but you had to have cleared your cache.
-			li Say goodbye for now to Santa Hitler.
-		p Version 0.11.2 released 12-24-2017
-		h3 Tournament mode re-re-enabled..
-		ul
-			li Thanks to a PR, the fascist/lib card icons are now randomized correctly i.e. liberal with pencil mustache can now appear in any game, not just 10p games.
-			li Thanks to the same PR, claims now are filtered into the "game" internal chat filter.
-		p Version 0.11.1 released 12-22-2017
-		h3 Tournament mode re-enabled.. we'll see how I messed it up this time.
-		h4 A bug that allowed presidents/chancellors to chat during election period by tabbing to the input bar has been fixed.
-		h4 New chat enhancements! See below.
-		ul
-			li Words surrounded by * (single asterick) are italic.
-			li Words surrounded by ** (double asterick) are bold.
-			li Words surrounded by __ (double underscore) are underlined.
-			li Words surrounded by ~~ (double tilde/grave) are strikethroughed.
-		h4 **Puts on professional chatroom application developer hat: please note that this only works on __words__, i.e. text that is separated by spaces, not multiple words. If you want that, you'll (for now..) need to surround each word with the above. Also, you can only have one of these effects per word.**
-		h3 The "unchangable election vote" thing is a bug, not a feature, I'll fix that soon.
-		p Version 0.11.0 released 12-21-2017
-		h3 New feature: tournament mode!
-		p When making a game, you now have the option to instead make a new tournament lobby.
-		div(style="text-align: center")
-			img(src="/images/tournament-creategame-slider.png", style="width: 80%")
-		p The tournament feature will start 2 tables of a game when 14, 16, or 18 people have signed up. When the 2nd game completes, a final table is created with the winners of both games. Please make sure you have the time set aside to play 2 full games before joining a tournament queue. If you're good. ;)
-		p Winners of the final table receive a new crown icon next to their name that lasts for 3 hours, and are sorted to top of the player list under mods. Yes, you can accumulate multiple crowns. Get 3+ and you'll be above mods and editors! But not admins :)
-		p In tournament round one tables, the remake button has turned into a "cancel tournament" button, please use this if there is an afk and both tables will be stopped. Its not an ideal solution but its what we can do.
-		p This feature is a big change, and there's likely going to be issues with it, as my professional QA department is my cat. Other than disable observer chat, you can use all other normal game settings for tournament mode with one caveat - in the unlikely event that you play a 6p final table, it will always be rebalanced.
-		h3 New player setting: disable tournament crowns
-		p Duh.
-		h3 Other items
-		ul
-			li Thanks to contributor Rex1234, you can now access your profile directly by clicking on your name next to the settings cog.
-			li Hovering over a player's name in game now shows their name in the "report" description text (in case they have lots of crowns).
-		h3 Next up: any issues with tournaments, and most likely, a 3rd and 4th tier of playerlist sort for tournaments and rainbow tournaments.  After that, probably seasons as its a small change and optional and extends the life of the game.
-		p Version 0.10.0 released 11-13-2017
-		h3 New feature: UI overhaul thanks to contributor Wi1son
-		p Huge changes!  Also updates to some of the more irritating front-end issues like blank screens/bouncing back and forth.  Please report any issues you see.
-		h3 New feature: see chats in replays.
-		p There's a new button on replays to toggle between the replay tools and the chats in that game.
-		h3 New feature: rebalanced 7p games.
-		p 7p games have the optional rebalance treatment now - same as 9p, a fascist policy has been removed to start the game.
-		h3 Up next: blind mode and tournament mode!
-		p Version 0.9.2 "dim3" released 11-5-2017
-		h3 New feature: discord integration in general chat.
-		p Click the new discord icon (while logged in) to replace the site's general chat with our discord channel's general chat.
-		h3 New feature: disable confetti user setting.
-		p For those of you that hate fun.
-		h3 New feature: moderator sticky notes on general chat.
-		p Dismiss in usual way, will be used to impart useful information that is less temporary than broadcasts.
-		h3 New feature: reverted private games visibility.
-		p Having them totally hidden was probably too difficult to find for some players that didn't have the URL. So now everyone can see private games again, but only those who are seated (and mods) can see gamechats. A decent compromise I think.
-		h3 Other issues:
-		ul
-			li Clicking on a player's name in general chat takes you to their profile page.
-			li The remake button's gamechat now tells you how many votes you need to remake a game.
-			li A fix to moderation timeout ability is in.
-			li Players can only make one player report per game. I'm lazy and there's no failure state for this, so just keep it in mind: more than one attempt per game will not go through to mods.
-		p Version 0.9.0 "dim" released 10-29-2017
-		h3 New feature: player bios
-		div(style="text-align: center")
-			img(style="width: 80%; border: 1px solid grey; padding: 10px; margin: 5px 0;",src="/images/bio.png")
-		p Visit your profile page to write something brief about yourself that others can see. Links are allowed, but SEO unfriendly (google "nofollow noreferrer noopener"). Obviously still subject to the site terms of use..
-		h3 New feature: optional rebalancing for 6 and 9 player games.
-		p There's a new create game option (default: on) that, when a 6 or 9p game has begun, a facist and liberal policy have already been enacted, respectively. You'll get it. While these are being recorded correctly, there are no stats/graphs for this yet - next minor update.
-		h3 New feature: URL routing
-		p What this means is the URL of your browser now accurately shows the state of the application. The big takeaway is games, replays, and profiles are now all deep linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you would expect as well. If you link a game that no longer exists, you will instead be routed to the replay. This required a large change to the front end and may not be perfect, please update if so. Also using gfycat style naming convention for game IDs!
-		h3 New feature: actual private games
-		p Private games have been changed - they no longer show up on the list of games on the left sidebar, and are only accessible through the new URL linking mechanism. In addition, private games no longer count towards a player's win and loss rate. Note: moderators can still see private games. I realize that it may be somewhat difficult to play additional private games - next minor patch will have a remake game feature which will help with that.
-		h3 Other issues:
-		ul
-			li Overall UI has been tweaked color wise mostly. If you've been playing here at all in the past year (yikes), you'd know I am not at all a designer, but I can at least attempt to make things more fluid and contiguous. If you ARE a designer (and want to work for free..), let me know.
-			li Links in general chat to sh.io itself, or to this site's github repository, are now clickable. Other links are still not.
-			li Hovering on a chat in general chat will show a timestamp of when it was said.
-			li The whitelist feature now correctly has a scroll bar.
-			li Players who have left a game in progress now look slightly different than players who are disconnected.
-			li If you have a custom width or font, the application no longer "flashes" when you load the page.
-			li A fix to players being able to make accounts with the same name but different capitalization has been implemented.
-			li The stats page is finally working right - it updates once per day, and the undefined/NaN stuff is gone.
-			li There is a now a slight UI difference between players who have left a game, and players who are disconnected.
-			li All dependencies updated including moving to the latest version of React (16). What this means is hopefully some better front-end performance.
-		h3 Up next: the remake game functionality will be finished up and rolled out in 0.9.1. Also new stats graphs for the rebalanced game feature.
-		p Version 0.8.0 "citehtseawen" released 9-23-2017
-		h3 New feature: UI overhaul
-		p Thanks to contributor andy013, most of the cards and images in game have been upgraded and colorized. Neat!
-		p Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.
-		h3 New feature: chat emotes!
-		p In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:
-		div(style="text-align: center")
-			img(src="images/em.png", style="width: 70%")
-		p Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our #[a(href="https://github.com/cozuya/secret-hitler/wiki/Emotes",target="_blank") 				emote reference].
-		p Thanks goes out to contributor andy013!
-		h3 New feature: election voting rework (changable votes)
-		p Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the selected one again to bring back the loader and prevent vote tallying or just b) select the other option to switch your vote. Votes are tallied as usual when all players have selected their vote.
-		h3 New feature: 2nd tier of player moderators (editors) and many new helpful moderation tools implemented.
-		p Editors will have an (E) next to their name, and mysterious expanded mod powers! Like assign roles to players, and reveal all roles to themselves. Just kidding. Editors and mods can now do helpful things like temporarily turn off account creation in case of troll attack and disable ip bans so that a group from one location can get around the 1 account per day limit.
-		h3 New feature: wiki page
-		p Check out our #[a(target="_blank", href="https://github.com/cozuya/secret-hitler/wiki") wiki page] kindly set up by editor DFinn. Useful and topical information will be kept there, keep an eye on it if you are interested in the future of this site.
-		h4 Other issues
-		ul
-			li Home page and about us page text has been updated and the webform deprecated. If you have feedback/issues, a new email address has been set up in the about page and we are always available via discord and the player report feature.
-			li Gamenotes clear button now works.
-			li Thanks to contributor jonnybest, hovering on a game on the list in the left sidebar now shows you who is seated in that game.
-			li A bug in "blind mode" (no gamechat) was causing fascists to get credit for winning the game when Hitler was shot, this mode was previously disabled via hotfix, now that bug has been fixed and that mode has been re-enabled.
-			li Private games "P" icon in the upper left corner of a gamelist was disappearing after the game started - thanks to contributor jonnybest, this has been fixed.
-			li Players can now search/type in other players to look at their profile just like clicking on them. The player settings page (gear icon) has this new input field.
-			li The footer bar in the default view has been updated to include our wiki.
-			li No new polls this release.
-		p Version 0.7.0 "black" released 8-7-2017
-		h3 New feature: player uploaded custom cardbacks!
-		p In the settings view (cog icon in upper right), players now have the option to upload a new cardback that will be shown in-game.  The details are:
-		ul
-		li
-			strong Image uploaded must be 70px by 95px, or it will not look right.  Do not trust the previewer - it will crunch to fit the box, the game itself won't do that.
-		li Rainbow players only.
-		li For today only, you can upload an image every 30 seconds.  After today, you can only upload an image once per 18 hours.  Be careful before hitting save.
-		li Only png, jpg, and jpeg are permitted.  Must be below 40kb.
-		li
-			strong No NSFW images, nazi anything, or images from the site itself to be tricky.
-			span The terms of service page has been updated.
-		h3 New feature: better support for large width monitors.
-		p The application is no longer fixed width, and will stretch to fit the entire screen.  Chat boxes will take up the remaining space.  I recommend turning "show right sidebar in game" on.
-		h3 New feature: enhanced moderator actions
-		p Mods can now delete users, set wins and losses, and delete cardbacks.  Also they can now type in player names to affect offline players.  Lets hope they're not fascists.
-		p Other stuff:
-		ul
-			li The "chat a blank line" bug was fixed.
-			li Observer count was removed as it never worked right anyways.
-			li Moderators can chat in observer chat in private games.
-		p Version 0.6.0 "noise" released 6-12-2017
-		h3 New feature: Player profiles
-		p Click on a player in the lobby/player list to get detailed information about games they've played. You can access your own stats that way, or through the game settings screen ("gear" icon in upper right corner).
-		div(style="text-align: center")
-			img(src="images/profile.png", style="width: 100%")
-		p A big change to the back end, and will allow for some more interesting features (like game replays) and analysis in the future.
-		p This is an epoch event, meaning that only games from here on out will be seen in your profile.
-		h3 New feature: notification for patch notes.
-		p As you've probably seen, the lizard image in the middle will glow until you click it, showing this changelog.
-		p Both features courtesy of contributor jbasrai.
-		h4 Please welcome new moderators jazz and Max.
-		p Version 0.5.0 "glow" released 6-10-2017
-		h3 New feature: Player moderation
-		p Some players have volunteered to be moderators.  They are empowered to have the ability to ban non-rainbow players for griefing and trolling, and to check for cheating. Hopefully this (and some more advanced powers from admins) will be a permanent solution to problems that may come up.  Moderators will have a red (M) next to their names.
-		h4 Other updates
-		ul
-			li A fix to the rainbow game icon on the gamelist only being there for games that haven't started yet.
-			li A fix (finally) to dead players being able to chat by leaving the game and coming back.
-			li A 3 second delay has been implemented between the inactment of a policy by the chancellor, and the ability for the government to make a claim (for non-experienced games only).  This should change game play a lot I think..
-			li Various tooltips have been added to some items and will continue to be addded in the future.
-			li A fix to rainbow losses also adding to normal losses, but not the other way around.  I'll see if there's a way to credit those.
-			li Contribution by player sethe: a fix to the (relatively rare) problem of the election tracker not working right with vetos and neins.
-		p Up next: player profiles.  This is just about ready to go and will be released within the next 2 days.
-		p Version 0.4.0 "chestnut" released 6-5-2017
-		h3 New feature: Rainbow games.
-		p While creating a game, players with more than 50 completed games ("rainbow players") will now be able to create games that only other rainbow players can be seated in. These games have a special symbol in the sidebar.
-		div(style="text-align: center")
-			img(src="images/gamelist-rainbow.png", style="width: 100%")
-		p In the lobby, a new icon appears showing what game style you are filter and sorting the userlist by.  Click it to switch between "regular" and "rainbow".  Effectively, rainbow players get to "start over" in an optional hard mode with a 0-0 score.
-		p For rainbow games, your wins and losses are in a different tier, that does not affect your regular game winrate or player color.  "Rainbow rewards" may come in at some point.
+	h1.ui.centered.header Secret Hitler.IO Changelog
+	h4 The top 10 players of season 4 are:
+	ul
+		li benjamin172: 2110
+		li minie: 2084
+		li GoldenPanda: 2017
+		li scum: 1961
+		li Moranki: 1957
+		li User: 1957
+		li Gamethrower: 1935
+		li mufasa: 1899
+		li adam: 1882
+		li Cucumber: 1879
+	p Version 1.3.0 released 3-5-2019
+	h4 Fixed issue: Chats in replays work again.
+	h4 Returning feature: typing indicator (again). This has been overhauled and should work better.
+	h4 New player setting: disable typing indicator. If you feel this is adveresly affecting your browser, turn this off in your settings.
+	h4 New feature: Creategame overhaul.
+	p Thanks to Vigasaurus the create game page has been redone with many new looks and feels including some fun templates.
+	h4 New feature: enhanced information for grey players - they will be alerted when they try to sit in rainbow games, and alerted when they click private games only mode. Thanks to contributor samf.
+	h3 Many smaller fixes and UI updates!
+	p Version 1.1.3 released 2-26-2019
+	h4 Fixed issue: problems people were having while typing in chat in mobile view.
+	h4 Returning fixed feature: claim from chat i.e. type "rrb" to make a claim without clicking on the "claim" button.
+	p Version 1.1.2 released 2-24-2019
+	h4 New feature: much better mobile/small screen width user experience -RPYoshi
+	p May not be entirely bug free -_- we'll see.
+	h4 New feature: informational popup for new accounts -coz
+	p This will attempt to explain how the site works somewhat and provide useful links to our how to play, terms of use, about, and wiki pages.
+	h4 New feature: claim directly from the chat without clicking the "claim" button - simply type what you want to claim i.e. "rrb" -Vigasaurus
+	p Hopefully won't break everything this time
+	h4 Adds 12 New Emotes -Vigasaurus
+	p Special thanks to everyone on SH.io discord server who suggested emotes
+	ul
+		li Moderators can now peek at currently locked in votes on a government -Vigasaurus
+		li Game Creation defaults now reflect results of strawpoll conducted previously -Buncha
+		li Game creation defualts should apply correctly -Vigasaurus
+		li Updated banned word list to be more exhaustive -Vigasaurus
+		li Minor bug fixes and internal changes -Vigasaurus, Spyro
+	p Version 1.0.2 released 1-20-2019
+	ul
+		li Some new moderation features (mods can force votes on afks) courtesy of contributor Vigasaurus.
+		li List of games should be like it was in 1.0.0 and lower.
+		li Contributor color has been updated.
+		li Version 1.0.1 released 1-5-2019
+	ul
+		li Signin/signup with Discord/Github should be fixed.
+		li You should no longer be logged out automatically as often.
+		li Election tracker now says its status in the gamechat after fails.
+		li Lobby and cosmetic improvements @Hexicube.
+	p Version 1.0.0 released 1-1-2019
+	h3 1.0.0 and season 5 begins!
+	h3 Badges this season are thanks to player liberalist!
+	p It took a while, but we're here - all major features I could think of and some I couldn't are in and mostly working. A long, long way from the first stable(ish) release back in May 2017.
+	p I want to thank our moderation team first and foremost. The site would not be in the same shape without them. There was a time that feature wasn't even in and it was just a nightmare. Obviously its a combination of both the theme and the nature of a mostly anonymous internet, but they've done an amazing job keeping this place playable in public games and fun for everyone!
+	p I also want to call out contributor/mod Hexicube for spending so much working on various parts of the app over the last ~year. Many moderation tools and features like custom games would not exist without him.
+	p Please note that 1.0 does not mean I am no longer supporting the application and site. Work will continue to make the site even better, but not personally at the pace I have been. My next game is in progress and I expect to get to a playable pre-alpha state some time in the next few months. It will be a (fresh IP) hidden role game with some similarities to the fascist hunting/electing game we all know and love but with some fun features and mechanics that can only exist online. Stay tuned! -Chris
+	p This update also includes:
+	ul
+		li Fixed player claims showing under player chat instead of game chat.
+		li Broadcasts will now always show regardless of filters.
+		li Fixed cardbacks sometimes failing to upload.
+		li Game remaking no longer shows "1/NaN" before the game starts on non-custom games.
+		li Fixed alts/trials showing as grey in user list.
+		li Elo slider minimum is now 1600.
+		li Cardbacks now support all image types, and all sizes.
+		li Game remaking now updates the blacklist if the creator changed theirs.
+	p Version 1.0.0-beta8 released 12-23-2018
+	h3 Github signin should be fixed. Maybe? ¯\_(ツ)_/¯
+	h3 New feature: redone gamechat filters.
+	p Filters should now be toggable instead of just pick one (radio buttons). This also fixes the bug where some players with small screen widths were having the "leave game" button flowing into the playerlist.
+	h3 Bugfix: gamechat filters should work even when you don't have "show all messages" on.
+	p Version 1.0.0-beta7 released 12-18-2018
+	h3 New feature: Github signin/signup integration
+	p Why not?! This will be the last one.. probably. I don't want your facebook/google/apple nonsense.
+	h3 Fix: much better long-game performance.
+	p For far too long, games that had many chats were having a lot of lag in the late games. You now only see a smaller selection of chats (last 250) - you can toggle this in the game filters. Turning that off will cause your client to be slow, again.
+	h3 New feature: fixes to remakes and now remakes will always go based off of fascist count instead of a fixed number.  Thanks to contributor LoveOken.
+	h3 New feature: the contributor and trial mod roles are now assignable by mods as opposed to being hard coded.
+	h3 New feature: cardbacks should now be much more performant @Hexicube.
+	p Version 1.0.0-beta6 released 12-12-2018
+	h3 New feature: two new custom game policy powers!
+	p Thanks to contributor/mod Hexicube, you now set up 2 brand new policy powers:
+	ul
+		li Show party: a reversed investigate, you pick a player and show them your party membership card.
+		li Peek and Burn: the president look at the top card of the deck, and choose if they want to discard it.
+	p Awesome!
+	h3 New update: a change in our session software should hopefully resolve some of the lag issues we've had lately.
+	p Also, scrollbars should be grey and cardbacks should no longer flicker in profiles.
+	h3 New feature: Discord signin/signup integration
+	p You can now authentic your account through Discord. This works in the following ways:
+	ul
+		li New players can now sign up using Discord. This will attempt to make an sh.io account using their discord username, if that already exists or it violates our username standards (length, bad words, etc) they will be prompted to enter a new username.
+	li Existing players can associate their sh.io account with their Discord account. Do this in the #[a(href="/account") account] screen or just #[a(href="/discord-login") click here]. You will need to be logged in.
+	li Existing players (players who have an account that is not solely through Discord) can also revoke their Discord association at any time.
+	li Anyone using Discord automatically becomes verified without needing an email sent.
+	li There's unfortunately nothing fun we can do with Discord integration right now other than authentication.
+	h3 New feature: disable player list aggregation user setting
+	div(style="text-align: center")
+		img(src="/images/disable-agg.png",style="border: 1px solid grey; width: 200px")
+	p If you prefer the old way of seeing the playerlist (upper right corner outside of games), you can now change that in your settings.
+	h3 ELO ranking adjustment: non-rainbow games now give more elo, and rainbow games give slightly less.
+	p Thanks to contributor Nth we have some more ELO changes upcoming in the future.
+	p Version 1.0.0-beta4 released 12-4-2018
+	h3 Some attempts to fix issues with server instability, few smaller things, thats about it.
+	p Version 1.0.0-beta3 released 11-23-2018
+	h4 Fixed feature: adding email in the account page now doesn't always return "an account already has that verified email" message. Please use that button to become verified.
+	h4 New feature: like a real application, sessions (aka how a website knows you're logged in) will now persist beyond crashes, reboots, and updates. In other words you			won't have to log in so much.
+	h5 Links in discord to the game will no longer have giant lizard images.
+	h5 Contributors are back to teal color.
+	p Version 1.0.0-beta1 released 11-19-2018
+	h3 Version 1.0! Almost.. need to make sure everything works right first.
+	h4 New feature: recolored UI. Color idea thanks to contributor/mod Hexicube.
+	h4 New/fixed feature: email verification and password resets.
+	p Like a real application, you can now have an email get sent to your non-disposible email address to make your account verified (again). This time it shouldn't go to spam every time..
+	p Our email terms of use:
+	ul
+		li Email addresses are used for ONLY the following actions: verifying your account, and reseting your password.
+		li In no circumstances will your email address be used for anything other than the above including any sort of mass "email blast".
+		li Only administrators have access to see your email address.
+		li Your email address will never leave the site/will never be given away or sold.
+	h4 Returning feature: verified-only games in the create game page.
+	p Verified players can once again make games that only other verified players can sit in in the create game panel.
+	h3 I strongly recommend you verify your account.
+	p Version 0.15.0 released 10-21-2018
+	h4 New feature: custom games!
+	p Create a fully customised game to play the game how you want to!
+	div(style="text-align: center")
+		a(href="https://i.imgur.com/sv6nq9C.png", target="_blank")
+			img(src="https://i.imgur.com/sv6nq9C.png",style="border: 1px solid grey; width: 100%")
+	ul
+		li Custom Games are always casual, and have a fixed player count as opposed to the selectable range of players.
+		li It plays 5 to 10 as usual and must have a liberal majority.
+		li Choose if hitler knows his fascists, when hitler zone starts, when veto is enabled, and what policy cards are in the game.
+		li There's a new game filter for custom games (filter icon next to the "create a new game" button on the lobby).
+		li All of this feature thanks to contributor Hexicube!
+	h4 New feature: game filters now save/persist when toggled.
+	p Other items:
+	ul
+		li User reports should finally be fixed.
+		li Dragging the game notes window to bad places should no longer open a new tab.
+		li Lack of rainbow color for seasonal elo/WL has been fixed.
+		li Game chat messages should no longer use an extra line.
+		li Added extra notches to the minimum elo and timed game sliders.
+		li Deck shuffles are now shown in game chat.
+		li Browser crashes now show an error page instead of a blank screen.
+		li BigNose emote is back.
+	p Version 0.14.14 released 10-16-2018
+	h4 New feature: new players must agree to the terms of use.
+	p I want to again stress that if you don't agree with the rules of the site (cliffs: don't be an asshole), play elsewhere.
+	p Bugfix: full height player setting now auto-scrolls chat correctly, making it actually usable, thanks to a contributor.  Check it out again if you have a large monitor.
+	p Cleanup: emotes have had a review and some of them altered, updated, and removed.
+	p Version 0.14.13 released 9-29-2018
+	h4 Welcome to season 4!
+	p The top 10 players of season 3 are:
+	ul
+		li Fusilli - 2138
+		li SheepManu - 2127
+		li HomoSapien - 2068
+		li Samsung - 2035
+		li benjamin172 - 2031
+		li harvyyy - 2025
+		li imbapingu - 2014
+		li Manu1234 - 1991
+		li Jasmine - 1989
+		li NotIconic - 1917
+	p New this season: the top 5 players of last season now have special badges thanks to mod benjamin172. Unfortunately not a lot to report lately, I've been incredibly busy and haven't had the time. We do have 2 new emotes! LibFrown and FasFrown credit to new contributor PeeOnBus. Also, speed mode is now enabled by default when entering create game credit by contributor LordVader. Thanks for playing!
+	p Version 0.14.11 released 8-6-2018
+	h4 250,000 games played! Wow!
+	h4 New feature: full height in game player setting
+	div(style="text-align: center")
+		img(src="https://i.imgur.com/9eDIhIP.jpg",style="border: 1px solid grey; width: 100%")
+	div(style="text-align: center;")
+		img(src="/images/fullheightsetting.png",style="border: 1px solid grey; width: 100%")
+	p There's a new setting for players when enabled, the UI will take up the full height of your monitor while in game, greatly extending the chatbox (see below). This will only be apparent for (on 100% browser zoom) players with larger monitors, laptops and smaller will not see any change.
+	h4 New feature: moderator manual conclusion of games.
+	p In a ranked game where someone afks/rage quits at the very end when they're about to lose? Contact a moderator and they can end the game for the team that was about to win, assigning you precious elo points. About time!
+	h4 Other stuff:
+	ul
+		li New emotes! Sheeped, Shepherd, and ThumbsDown. Thanks to contributor JohnCena.
+		li Private/anonymous player names can no longer be seen by hovering on them..
+		li You don't need >1675 seasonal elo to make an elo limited game, overall now works as well.
+		li Contributor color is back.
+		li iOS safari users should be able to use their profile again.
+		li Next major feature planned is <b>custom games</b>, where the game creator can do things like set different policy powers and when hitler zone starts. There's some new polls available, please take a look.
+	p Version 0.14.10 released 7-23-2018
+	ul
+		li You can delete people from your blacklist again.
+		li Elo minimum games now lets a player who has either seasonal or overall elo above it play in that game. You still need to have seasons on though (will get to that later).
+		li Some performance optimizations have been put in, hopefully making things more stable.
+	p Version 0.14.9 released 7-15-2018
+	h3 New feature: elo limiter has gone in.
+	p Minimum you can set this to is 1675, we'll keep an eye on it.
+	h3 Blacklist overhaul (again)
+	p Several players are using the blacklist feature in an unintended way, causing some grief for everyone. All blacklists have been deleted, and there now is a (working this time..) limit of 10 players that can be on your blacklist at once.
+	h3 Timed mode may have its long standing bug fixed thanks to contributor/mod Hexicube.
+	h3 Some changes have been made in the back end that should make some performance increases/less lag and crashes. I hope.
+	p Version 0.14.8 released 7-1-2018
+	h3 Welcome to season 3!
+	p All seasonal elo has been reset to 1600 and all seasonal winrates are 0-0. Season 2 badges have been applied to the top ~75 players of season 2 by elo.
+	h3 New feature: elo slider/limiter (not quite working, will be in this week)
+	p Players above 1700 elo will now see a new slider while creating a game - use this to limit what players can play in the new game you are creating. Players who are under or over the threshold will not be able to sit.
+	p This feature will be watched for feedback - I don't want to lock players out of games, but I also think its nice to be able to play with high elo players exclusively if you want. This feature only applies to seasonal elo right now.
+	h3 The terms of use on the about page have been somewhat adjusted.  I want to make it clear that abuse by anyone is not allowed.  If someone makes a mistake that costs you a game, do not scream at them, do not call them "retards" or "cunts".  If so you will eat a ban.  Its a free web game with zero stakes, chill and hunt/elect some fascists.
+	p Version 0.14.7 released 6-17-2018
+	p Verification emails should be fixed.
+	p New leaderboard component now has a working link on the lobby.
+	p Due to popular demand, verified only games are now default off instead of on.
+	p Version 0.14.6 released 6-12-2018
+	h3 New feature: seasonal leaderboards
+	p Click the big words on the lobby to see who's top elo for the season, and also who's went up the most in the last 24 hours.
+	h3 Attempt to fix "verification email goes to spam/sometimes rejected" issue has gone in.
+	h3 Also moderators can now manually set accounts to verified, if you are getting no where with the emails, contact a mod, thanks.
+	p Version 0.14.5 released 6-7-2018
+	h3 New feature: email verified accounts
+	p Your #[a(href="/account") account] can now have a new verified status by adding an email, and clicking a link when you receive an email from the site. New players can now (optionally) add their email while signing up. Only non-disposible email providers can be used, and its possible that the site's email will wind up in your spam folder so check there before requesting a new email.
+	p I want to make it very clear that I do not want or will use your email addresses for any reason other than to have it possible to be verified. The terms of use has the following added:
+	ul
+		li Email addresses are used for ONLY the following actions: verifying your account, and reseting your password.
+		li In no circumstances will your email address be used for anything other than the above including any sort of mass "email blast".
+		li Only administrators have access to see your email address.
+		li Your email address will never leave the site/will never be given away or sold.
+	p In addition, you can also change your email address and request a new verification email.  Password reset coming soon.
+	h3 New game mode: verified accounts only
+	p Verified accounts will now optionally be able to make a game where only other verified accounts can sit in.
+	p Version 0.14.3 released 6-1-2018
+	h3 New feature: sound pack #2!
+	p Thanks to contributor straightleft, a new pack of sounds has been implemented, more tonal/synth like - some from pack 1 (shuffling) are still in pack 2. As this is a different type of setting change, if you want to use sound pack #1 or turn your sound off, you'll have to go to your settings screen now.
+	h3 Many bug fixes thanks to contributor Hexicube.
+	h3 New feature: enhanced account actions.
+	p Like a real app, I am implementing some things that should have been done some time ago. In this update, only the delete account action is new, and should work as expected. Soon I will be rolling out email-verified accounts. Don't worry, these will be optional.
+	p Our terms of use has been updated...
+	p Version 0.14.2 released 5-22-2018
+	h3 New feature: sound effects!
+	p Thanks to contributor Idrissa, most common sounds have a sound effect associated with them. Fun! You can disable these in player settings. This setting does not effect the starting "bong" sound.
+	p Also some bug fix attempts.
+	p Version 0.14.0 released 5-20-2018
+	h3 New feature: elo system
+	p An elo system has come to sh.io. What is it/where is your winrate/why did your color change? See below.
+	p Effectively an elo system is a point-based representation of your weighted skill based off of your teammates and your opponent's elo. The easiest way to think of it is that, when you win a game, your elo will go up more if you are playing against high rated players (their collective average) than low rated players. This is adjusted for the "normal" winrate of your team and the game size.
+	p Player colors for elo mode have been redone - check the information icon on the player list. There is some drastic changes: based off percents, most players will be green. Some will be orange, and a small percent will be purple. Contributor color has been reassigned to teal.
+	p Elo changes will be communicated when a game ends. Remember that all elo is based on the average of your and your opponent's team elo.
+	p This feature can be disabled in your player settings screen.
+	h3 Redone blacklists
+	p All blacklists have been wiped, and a limit of 20 players that can be blacklisted has been applied. This will fail silently if you try to go over that. Blacklists are intended to be a way to avoid players you personally don't like playing with, not to be wielded as a weapon against players you can't control. Some players have blacklists in the hundreds and thats not what the feature was meant for - if there's a player breaking the rules, report them.
+	p Version 0.13.5 released 4-29-2018
+	h3 New feature: seasonal stats page.
+	p Check out the link in the normal stats page to toggle between current season and overall stats.
+	h3 Other bugfixes to various issues.
+	p Version 0.13.4 released 4-28-2018
+	h3 Tournaments temporarily disabled, see below.
+	h3 Security update
+	p It was brought to my attention that there's some issues with security around certain actions. This update has addressed these issues. Its important to note that these were game related issues, not account: your password is secure and not visible by anyone including me, and important info like who is each role and what the policy deck looks like, is and always was secure.
+	h4 Other items
+	ul
+		li A bug with the new blacklist modal and deleting entries has been fixed.
+		li There's some new helpful messages when you try to take actions like chat without 2 games played or chat while dead.
+		li The cooldown for remaking games has been changed to 2 seconds if remake is on, and 10 seconds if remake is off.
+		li Several fixes to issues with remaking games have occured.
+		li Some fixes to issues with player colors have been implemented.
+		li Welcome new moderators littlebird and Hexicube!
+	h2 Huge callouts to contributors Hexicube and Nth for a ton of this work!
+	h3 We don't talk about version 0.13.3
+	p Version 0.13.3 released 4-25-2018
+	h3 Tournaments temporarily disabled, see below.
+	h3 Security update
+	p It was brought to my attention that there's some issues with security around certain actions. This update has addressed these issues. Its important to note that these were game related issues, not account: your password is secure and not visible by anyone including me. And by game related issues I mean it was possible for people to take actions they should not be able to take, but important info like who is each role and what the policy deck looks like, is and always was secure.
+	ul 
+		li The cooldown for remaking games has been changed to 2 seconds if remake is on, and 10 seconds if remake is off.
+	p Version 0.13.2 released 4-22-2018<
+	h3 New feature: expanded timed mode (turbo mode)
+	p Want to play a super fast game (or tournament)? The timed mode slider has been changed from 30 second increments to 1 second increments, and the minimum time is now 2 seconds (due to animations, can't be 1 second)! Important note: as the game clearly wasn't meant to be played this way, timed mode games under 30 seconds are forced to be casual games. Have fun! The display in creategame page has been updated slightly.
+	h3 Bug fix: attempted fix to issue with timed mode some times auto choosing chancellor erroneously.  If this is still happening please update on discord or github - I don't have exact reproduction steps and am kind of shooting in the dark here.
+	p Other issues
+	ul
+		li Previous "timed mode" idea credit to player HREmperor who gets orange contributor color. Contribute to this open source product to get it also! 140+ open issues on github! -_-
+		li In your profile you can now view everyone on your blacklist, and remove them from it as well by clicking the remove icon.
+		li There's a new timed mode game filter (funnel icon next to create game button), disable this if you don't want to see timed mode games.
+		li Remake messages in chat no longer say what player has voted to remake it.
+		li The "cooldown" of the remake button being able to be vote for against remake has been moved from 2 seconds to 10 seconds.
+		li To avoid libs abandoning "lost" games, the remake threshold for 6p games is now 5, up from 4.
+		li The whole remake system that was semi-bugged and needed to be rescinded and then revoted in order to get started on remaking may have been fixed? Somehow? I swear I didn't do anything but it seems to be working as intended now. Please update if not.
+		li The stats page works again for 9p rebalanced, which apparently did almost nothing.
+		li The one time name change feature has been removed, didn't work right and it turned out it wasn't a great idea to begin with.
+		li Replays now show the casual game icon when available.
+		li Casual game tournaments no longer award crowns.
+		li New emotes: CantBeBothered and Salty, thanks to contributor LordVader.
+	p Version 0.13.1 released 4-3-2018
+	h3 New game mode: Timed mode
+	p In a timed mode game, a timer on all actions appears in the lower right part of the fascist board, after which the next action is chosen at random.
+	div(style="text-align: center")
+		img(src="/images/timed-mode-example.png", style="border: 1px solid grey")
+	p Example: in a 5 minute timed mode game, if someone does not make a required action in 5 minutes such as voting on an election, their nein or ja vote is chosen for them at random by the server. Note that in order to save stress on the server, this countdown is held client-side and will only be visible to	players/observers if they are present in the game when each timer starts (but still goes on in the background on the server, of course). This mode will	likely favor fascists! Feedback requested.
+	p Complicated magical changes were made in the back end in order to enable this functionality and it may be subject to.. not being perfect. Please report any problems you see. Hopefully problems != crashes.
+	h3 Bug fix: game now once again works on iOS devices.
+	h3 Bug fix: blind mode players cannot reveal their names by pinging other players..
+	p Version 0.13.0 released 4-1-2018
+	h3 Season 2 has begun
+	p Seasonal awards have been implemented: the top 60 players with more than 150 wins in season 1 have been separated into 3 tiers, and receive special award flair on the lines of gold/silver/bronze.
+	p This flair can be disabled via the disable tournament crowns setting which has been renamed to disable tournament crowns and seasonal awards.
+	h3 Congratulations to the top players of season 1 (more than 150 wins):
+	ul(style="color: 'orange';")
+		li maki2 66% wr
+		li karamia 65% wr
+		li TheDaniMan 64% wr
+		li NotIconic 63% wr
+		li TheJustStop0 62% wr
+		li qwefjz 61% wr
+		li BunchOfAnima 60% wr
+		li Zeek 60% wr
+	h3 New feature: player notifications (pings)
+	p When you enter the site for the first time, you will receive a notification that looks like this:
+	div(style="text-align: center")
+		img(src="/images/notification-permission.png", style="border: 1px solid grey; width: 80%")
+	small Obviously not localhost..
+	p If you enable this feature, other seated players may now send you (and you may as well) a "wake up" notification. If someone types in "Ping5", the player in seat 5, if notifications are enabled, will see a screen like this (on their operating system, not their browser):
+	div(style="text-align: center")
+		img(src="/images/notification.png", style="border: 1px solid grey; width: 100%")
+	p Players may use the ping feature only once every 3 minutes, and only in games you're seated in that have been started. This feature is only to be used for players who appear AFK - do not abuse this feature. Reminder: if you wind up finding these irritating, you can revoke permission for them in your browser settings.
+	h3 New feature: one time name change.
+	p Dislike your old name, but want to keep your stats and profile? Hit the big new big red button on your settings page to change your name. This only works once per account so choose wisely.
+	h3 Other items
+	ul
+		li New emotes courtesy of contributor LordVader! ThinkFace, PIZZA, ExpressionlessFace, PopCorn, RedHeart. They are in the popup menu as well of course.
+		li Tournaments now make the usual "bong" noise when they start.
+		li The "rules" page has been updated thanks to a contributor. The big change is a description of common terms used on the site.
+		li Players can now submit up to 3 moderator reports per game, up from 1.
+		li A bug where people with blacklists over 100 will have an error preventing them from adding new blacklists has been fixed.
+		li The planned "timed game mode" and "player notes" feature didn't quite get wrapped up prior to today's update, look for those soon.
+	p Version 0.12.5 released 2-20-2018
+	h3 Bug fix: replays are back!
+	p Thanks to a contribution a long standing bug in replays has been fixed and should work for all recent games.
+	h3 New feature: 3 new emojis - ThumbsUp, CNH, and Shrug. Check them out.
+	h3 New feature: casual game mode setting.
+	p Select this to play a game where the results do not affect the player's wins or losses.
+	h3 Other items:
+	ul
+		li Thanks to a contribution, tournament crowns are no longer visible in blind mode.
+		li Please welcome new moderators safi, Wilmeister, and MrEth3real.
+		li Stats for rebalanced (-2 fascist policy) 9 player games might be working tomorrow.. (data collection occurs at 4am)
+		li There's a new poll on the polls page re: length of seasons.
+	p Version 0.12.4 released 2-3-2018
+	h3 New feature: rebalanced 9p games (again).
+	p Now, they start with 2 less fascist policies in the deck. The stats page should be updated.
+	h3 New feature: games being remade will now show player roles briefly  (thanks to Z3r0-K0ol on github.).
+	h3 Other items:
+	ul
+		li The site should look a bit better at smaller screen widths outside of games.
+		li The discord widget in general chat now works again.
+		li "Show chats" button in replays works again.
+		li The how to play page on the website has been updated with new content.
+		li Many "behind the scenes" moderation tools have been implemented.
+		li Please welcome new editor Invidia.
+	p Version 0.12.3 released 1-6-2018
+	h3 New feature: rerebalanced 9p games.
+	p Due to 9p, even rebalanced, being way too easy for fascists, the newly rebalanced 9p games will have a "phantom" liberal policy already enacted at the start of the game, in addition to one less fascist policy. There will still be 6 liberal policies in the deck to start.
+	ul
+		li The broken UI on the playerlist has been fixed.
+		li Sorting of grey players on the playerlist had a bug which caused it to be really broken - now fixed.
+		li The chat lock scroll issue has been fixed.
+	p Version 0.12.2 released 1-6-2018</p>
+	h3 New feature: gamechat shows remaining policies (in order) at end of game.
+	div(style="text-align: center")
+		img(src="/images/remainingpolicies.png", style="width: 80%; border: 1px solid grey;")
+	h3 New feature: blind mode now works in tournaments.
+	h3 Other items:
+	ul
+		li Previous update with players with less than 5 games played being unable to chat in general chat or observer mode has been reduced to be just 1 game played.
+		li More fixes to replay issues.
+		li Blind mode now shows the player's alias when claiming.
+		li An internal UI change has taken place, will hopefully resolve some issues with general chat bouncing around for some users and iOS problems as well.
+	p Version 0.12.1 released 1-3-2018
+	ul
+		li Players with less than 5 completed games can no longer chat in general chat, chat as an observer, or make player reports.
+		li Thanks to a contributor, rebalanced games now show up correctly on the status bar while in a game.
+		li Blind mode no longer shows tournament crowns..
+		li Please welcome new mods RavenCaps and JerMej1s.
+	p Version 0.12.0 released 12-31-2017
+	h3 New feature: seasonal mode!
+	h4 Important note: your stats are not gone. Read below before panicking.
+	p Like many other esport games, seasonal mode has come to sh.io. What this means as that there are now two tiers of player records, seasonal (which starts today) and overall. At the beginning of a season, the seasonal tier is wiped of wins and losses, and should last about 3 months (some tweaking may occur).
+	p When you play a game from now on, its result is added to your overall record and your current seasonal record. Seasonal mode is opt-out, and affects you only - go to your player settings screen to disable it, and your and other player's overall records and name colors will be shown to you instead, just like before this patch. Note: players who have achieved rainbow status do not have to play 50 games to play rainbow games in new seasons, and will still have cardbacks enabled. Yes I realize this somewhat paradoxically will make rainbow games non rainbow so to speak at least for some time. Your profile	will not be affected, for now.
+	p Some fun rewards/leaderboards/stats for doing well in seasons are planned for the near future.
+	h3 Tournament mode re-re-re-enabled.. we'll see if this one takes..
+	h3 New feature: rainbow games now count towards standard winrate.
+	p This has been requested a lot lately, we'll see how this goes/how people like it for season 1. The poll on this was split, lets give this a shot.
+	h3 Other items:
+	ul
+		li Thanks to a pull request, the fascist/lib card icons are now randomized correctly i.e. liberal with pencil mustache/snake in a suit fascist can now appear in any game, not just 9/10p games.
+		li Thanks to the same PR, claims now are filtered into the "game" internal chat filter.
+		li Thanks to a PR, replays have been worked on and fixed! If you see more issues, please alert us. In addition the role cards are no longer all the same at the end of replays.
+		li The above work was done by contributor STOshka/AlexSTO. Awesome!
+		li In blind mode games, hovering on a player's name no longer shows you who they are..
+		li You can now report players in blind mode. Reminder: blind mode is not an excuse to break site rules.
+		li In a consensus vote on elections (everyone votes the same), the ja/nein cards are visible for a much shorter period of time, getting on with it.
+		li A bug that prevented players from remaking a game more than once has been fixed.
+		li The weird selection bug on elections ja/nein has been fixed, was hotfixed about a week ago but you had to have cleared your cache.
+		li Say goodbye for now to Santa Hitler.
+	p Version 0.11.2 released 12-24-2017
+	h3 Tournament mode re-re-enabled..
+	ul
+		li Thanks to a PR, the fascist/lib card icons are now randomized correctly i.e. liberal with pencil mustache can now appear in any game, not just 10p games.
+		li Thanks to the same PR, claims now are filtered into the "game" internal chat filter.
+	p Version 0.11.1 released 12-22-2017
+	h3 Tournament mode re-enabled.. we'll see how I messed it up this time.
+	h4 A bug that allowed presidents/chancellors to chat during election period by tabbing to the input bar has been fixed.
+	h4 New chat enhancements! See below.
+	ul
+		li Words surrounded by * (single asterick) are italic.
+		li Words surrounded by ** (double asterick) are bold.
+		li Words surrounded by __ (double underscore) are underlined.
+		li Words surrounded by ~~ (double tilde/grave) are strikethroughed.
+	h4 **Puts on professional chatroom application developer hat: please note that this only works on __words__, i.e. text that is separated by spaces, not multiple words. If you want that, you'll (for now..) need to surround each word with the above. Also, you can only have one of these effects per word.**
+	h3 The "unchangable election vote" thing is a bug, not a feature, I'll fix that soon.
+	p Version 0.11.0 released 12-21-2017
+	h3 New feature: tournament mode!
+	p When making a game, you now have the option to instead make a new tournament lobby.
+	div(style="text-align: center")
+		img(src="/images/tournament-creategame-slider.png", style="width: 80%")
+	p The tournament feature will start 2 tables of a game when 14, 16, or 18 people have signed up. When the 2nd game completes, a final table is created with the winners of both games. Please make sure you have the time set aside to play 2 full games before joining a tournament queue. If you're good. ;)
+	p Winners of the final table receive a new crown icon next to their name that lasts for 3 hours, and are sorted to top of the player list under mods. Yes, you can accumulate multiple crowns. Get 3+ and you'll be above mods and editors! But not admins :)
+	p In tournament round one tables, the remake button has turned into a "cancel tournament" button, please use this if there is an afk and both tables will be stopped. Its not an ideal solution but its what we can do.
+	p This feature is a big change, and there's likely going to be issues with it, as my professional QA department is my cat. Other than disable observer chat, you can use all other normal game settings for tournament mode with one caveat - in the unlikely event that you play a 6p final table, it will always be rebalanced.
+	h3 New player setting: disable tournament crowns
+	p Duh.
+	h3 Other items
+	ul
+		li Thanks to contributor Rex1234, you can now access your profile directly by clicking on your name next to the settings cog.
+		li Hovering over a player's name in game now shows their name in the "report" description text (in case they have lots of crowns).
+	h3 Next up: any issues with tournaments, and most likely, a 3rd and 4th tier of playerlist sort for tournaments and rainbow tournaments.  After that, probably seasons as its a small change and optional and extends the life of the game.
+	p Version 0.10.0 released 11-13-2017
+	h3 New feature: UI overhaul thanks to contributor Wi1son
+	p Huge changes!  Also updates to some of the more irritating front-end issues like blank screens/bouncing back and forth.  Please report any issues you see.
+	h3 New feature: see chats in replays.
+	p There's a new button on replays to toggle between the replay tools and the chats in that game.
+	h3 New feature: rebalanced 7p games.
+	p 7p games have the optional rebalance treatment now - same as 9p, a fascist policy has been removed to start the game.
+	h3 Up next: blind mode and tournament mode!
+	p Version 0.9.2 "dim3" released 11-5-2017
+	h3 New feature: discord integration in general chat.
+	p Click the new discord icon (while logged in) to replace the site's general chat with our discord channel's general chat.
+	h3 New feature: disable confetti user setting.
+	p For those of you that hate fun.
+	h3 New feature: moderator sticky notes on general chat.
+	p Dismiss in usual way, will be used to impart useful information that is less temporary than broadcasts.
+	h3 New feature: reverted private games visibility.
+	p Having them totally hidden was probably too difficult to find for some players that didn't have the URL. So now everyone can see private games again, but only those who are seated (and mods) can see gamechats. A decent compromise I think.
+	h3 Other issues:
+	ul
+		li Clicking on a player's name in general chat takes you to their profile page.
+		li The remake button's gamechat now tells you how many votes you need to remake a game.
+		li A fix to moderation timeout ability is in.
+		li Players can only make one player report per game. I'm lazy and there's no failure state for this, so just keep it in mind: more than one attempt per game will not go through to mods.
+	p Version 0.9.0 "dim" released 10-29-2017
+	h3 New feature: player bios
+	div(style="text-align: center")
+		img(style="width: 80%; border: 1px solid grey; padding: 10px; margin: 5px 0;",src="/images/bio.png")
+	p Visit your profile page to write something brief about yourself that others can see. Links are allowed, but SEO unfriendly (google "nofollow noreferrer noopener"). Obviously still subject to the site terms of use..
+	h3 New feature: optional rebalancing for 6 and 9 player games.
+	p There's a new create game option (default: on) that, when a 6 or 9p game has begun, a facist and liberal policy have already been enacted, respectively. You'll get it. While these are being recorded correctly, there are no stats/graphs for this yet - next minor update.
+	h3 New feature: URL routing
+	p What this means is the URL of your browser now accurately shows the state of the application. The big takeaway is games, replays, and profiles are now all deep linkable! Make a private game and want your friends to join? Just send them the link. The browser back and forward buttons now work in the way you would expect as well. If you link a game that no longer exists, you will instead be routed to the replay. This required a large change to the front end and may not be perfect, please update if so. Also using gfycat style naming convention for game IDs!
+	h3 New feature: actual private games
+	p Private games have been changed - they no longer show up on the list of games on the left sidebar, and are only accessible through the new URL linking mechanism. In addition, private games no longer count towards a player's win and loss rate. Note: moderators can still see private games. I realize that it may be somewhat difficult to play additional private games - next minor patch will have a remake game feature which will help with that.
+	h3 Other issues:
+	ul
+		li Overall UI has been tweaked color wise mostly. If you've been playing here at all in the past year (yikes), you'd know I am not at all a designer, but I can at least attempt to make things more fluid and contiguous. If you ARE a designer (and want to work for free..), let me know.
+		li Links in general chat to sh.io itself, or to this site's github repository, are now clickable. Other links are still not.
+		li Hovering on a chat in general chat will show a timestamp of when it was said.
+		li The whitelist feature now correctly has a scroll bar.
+		li Players who have left a game in progress now look slightly different than players who are disconnected.
+		li If you have a custom width or font, the application no longer "flashes" when you load the page.
+		li A fix to players being able to make accounts with the same name but different capitalization has been implemented.
+		li The stats page is finally working right - it updates once per day, and the undefined/NaN stuff is gone.
+		li There is a now a slight UI difference between players who have left a game, and players who are disconnected.
+		li All dependencies updated including moving to the latest version of React (16). What this means is hopefully some better front-end performance.
+	h3 Up next: the remake game functionality will be finished up and rolled out in 0.9.1. Also new stats graphs for the rebalanced game feature.
+	p Version 0.8.0 "citehtseawen" released 9-23-2017
+	h3 New feature: UI overhaul
+	p Thanks to contributor andy013, most of the cards and images in game have been upgraded and colorized. Neat!
+	p Also fonts redone, many other UI tweaks in. Let us know what you think. Change is good people.
+	h3 New feature: chat emotes!
+	p In twitch.tv style, players can chat small word fragments which will turn into icons inside of chat, such as:
+	div(style="text-align: center")
+		img(src="images/em.png", style="width: 70%")
+	p Typically a clickable popup will be available and selectable.. I didn't get to that - next patch. For now, please check out our #[a(href="https://github.com/cozuya/secret-hitler/wiki/Emotes",target="_blank") 				emote reference].
+	p Thanks goes out to contributor andy013!
+	h3 New feature: election voting rework (changable votes)
+	p Previously, a vote on a government was immediate and permanent. Now, clicking on ja or nein will remove your loader gif, but you can either a) click the selected one again to bring back the loader and prevent vote tallying or just b) select the other option to switch your vote. Votes are tallied as usual when all players have selected their vote.
+	h3 New feature: 2nd tier of player moderators (editors) and many new helpful moderation tools implemented.
+	p Editors will have an (E) next to their name, and mysterious expanded mod powers! Like assign roles to players, and reveal all roles to themselves. Just kidding. Editors and mods can now do helpful things like temporarily turn off account creation in case of troll attack and disable ip bans so that a group from one location can get around the 1 account per day limit.
+	h3 New feature: wiki page
+	p Check out our #[a(target="_blank", href="https://github.com/cozuya/secret-hitler/wiki") wiki page] kindly set up by editor DFinn. Useful and topical information will be kept there, keep an eye on it if you are interested in the future of this site.
+	h4 Other issues
+	ul
+		li Home page and about us page text has been updated and the webform deprecated. If you have feedback/issues, a new email address has been set up in the about page and we are always available via discord and the player report feature.
+		li Gamenotes clear button now works.
+		li Thanks to contributor jonnybest, hovering on a game on the list in the left sidebar now shows you who is seated in that game.
+		li A bug in "blind mode" (no gamechat) was causing fascists to get credit for winning the game when Hitler was shot, this mode was previously disabled via hotfix, now that bug has been fixed and that mode has been re-enabled.
+		li Private games "P" icon in the upper left corner of a gamelist was disappearing after the game started - thanks to contributor jonnybest, this has been fixed.
+		li Players can now search/type in other players to look at their profile just like clicking on them. The player settings page (gear icon) has this new input field.
+		li The footer bar in the default view has been updated to include our wiki.
+		li No new polls this release.
+	p Version 0.7.0 "black" released 8-7-2017
+	h3 New feature: player uploaded custom cardbacks!
+	p In the settings view (cog icon in upper right), players now have the option to upload a new cardback that will be shown in-game.  The details are:
+	ul
+	li
+		strong Image uploaded must be 70px by 95px, or it will not look right.  Do not trust the previewer - it will crunch to fit the box, the game itself won't do that.
+	li Rainbow players only.
+	li For today only, you can upload an image every 30 seconds.  After today, you can only upload an image once per 18 hours.  Be careful before hitting save.
+	li Only png, jpg, and jpeg are permitted.  Must be below 40kb.
+	li
+		strong No NSFW images, nazi anything, or images from the site itself to be tricky.
+		span The terms of service page has been updated.
+	h3 New feature: better support for large width monitors.
+	p The application is no longer fixed width, and will stretch to fit the entire screen.  Chat boxes will take up the remaining space.  I recommend turning "show right sidebar in game" on.
+	h3 New feature: enhanced moderator actions
+	p Mods can now delete users, set wins and losses, and delete cardbacks.  Also they can now type in player names to affect offline players.  Lets hope they're not fascists.
+	p Other stuff:
+	ul
+		li The "chat a blank line" bug was fixed.
+		li Observer count was removed as it never worked right anyways.
+		li Moderators can chat in observer chat in private games.
+	p Version 0.6.0 "noise" released 6-12-2017
+	h3 New feature: Player profiles
+	p Click on a player in the lobby/player list to get detailed information about games they've played. You can access your own stats that way, or through the game settings screen ("gear" icon in upper right corner).
+	div(style="text-align: center")
+		img(src="images/profile.png", style="width: 100%")
+	p A big change to the back end, and will allow for some more interesting features (like game replays) and analysis in the future.
+	p This is an epoch event, meaning that only games from here on out will be seen in your profile.
+	h3 New feature: notification for patch notes.
+	p As you've probably seen, the lizard image in the middle will glow until you click it, showing this changelog.
+	p Both features courtesy of contributor jbasrai.
+	h4 Please welcome new moderators jazz and Max.
+	p Version 0.5.0 "glow" released 6-10-2017
+	h3 New feature: Player moderation
+	p Some players have volunteered to be moderators.  They are empowered to have the ability to ban non-rainbow players for griefing and trolling, and to check for cheating. Hopefully this (and some more advanced powers from admins) will be a permanent solution to problems that may come up.  Moderators will have a red (M) next to their names.
+	h4 Other updates
+	ul
+		li A fix to the rainbow game icon on the gamelist only being there for games that haven't started yet.
+		li A fix (finally) to dead players being able to chat by leaving the game and coming back.
+		li A 3 second delay has been implemented between the inactment of a policy by the chancellor, and the ability for the government to make a claim (for non-experienced games only).  This should change game play a lot I think..
+		li Various tooltips have been added to some items and will continue to be addded in the future.
+		li A fix to rainbow losses also adding to normal losses, but not the other way around.  I'll see if there's a way to credit those.
+		li Contribution by player sethe: a fix to the (relatively rare) problem of the election tracker not working right with vetos and neins.
+	p Up next: player profiles.  This is just about ready to go and will be released within the next 2 days.
+	p Version 0.4.0 "chestnut" released 6-5-2017
+	h3 New feature: Rainbow games.
+	p While creating a game, players with more than 50 completed games ("rainbow players") will now be able to create games that only other rainbow players can be seated in. These games have a special symbol in the sidebar.
+	div(style="text-align: center")
+		img(src="images/gamelist-rainbow.png", style="width: 100%")
+	p In the lobby, a new icon appears showing what game style you are filter and sorting the userlist by.  Click it to switch between "regular" and "rainbow".  Effectively, rainbow players get to "start over" in an optional hard mode with a 0-0 score.
+	p For rainbow games, your wins and losses are in a different tier, that does not affect your regular game winrate or player color.  "Rainbow rewards" may come in at some point.
