@@ -18,19 +18,11 @@ class ProfileWrapper extends React.Component {
 		super(props);
 		this.state = {
 			bioStatus: 'displayed',
-			bioValue: '',
 			blacklistClicked: false,
 			blacklistShown: false,
 			openTime: Date.now()
 		};
 	}
-	
-	componentDidMount() {
-		const { profile } = this.props;
-		this.setState({
-			bioValue: profile.bio
-		});
-  	}
 
 	formatDateString(dateString) {
 		const date = new Date(dateString);
@@ -200,7 +192,7 @@ class ProfileWrapper extends React.Component {
 									maxLength="500"
 									autoFocus
 									spellCheck="false"
-									value={this.state.bioValue}
+									value={this.state.bioValue || profile.bio}
 									onChange={bioChange}
 									onKeyDown={bioKeyDown}
 								/>
@@ -414,7 +406,8 @@ ProfileWrapper.defaultProps = {
 ProfileWrapper.propTypes = {
 	userInfo: PropTypes.object,
 	userList: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	profile: PropTypes.object
 };
 
 export default connect(
