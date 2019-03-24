@@ -1724,7 +1724,15 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
-	if (!AEM && game.general.disableChat) return;
+	// if (!AEM && game.general.disableChat) return;
+	if (!(AEM && playerIndex === -1)) {
+		if (game.general.disableChat && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) {
+			return;
+		}
+		if (game.general.disableObserver && playerIndex === -1) {
+			return;
+		}
+	}
 
 	data.userName = passport.user;
 
