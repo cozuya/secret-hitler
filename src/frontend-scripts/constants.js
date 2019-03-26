@@ -53,7 +53,7 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		});
 	} else if (
 		user.isContributor &&
-		(!(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || !user.staffDisableStaffColor)
+		(!(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || user.staffDisableStaffColor)
 	) {
 		return cn(defaultClass, 'contributor');
 	} else {
