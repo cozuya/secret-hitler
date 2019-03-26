@@ -368,7 +368,7 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat) {
+			if (gameInfo.general.disableChat && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
 				return {
 					isDisabled: true,
 					placeholder: 'Chat disabled'
@@ -791,7 +791,9 @@ class Gamechat extends React.Component {
 					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
 						<div>
 							<div className="ui button primary" onClick={() => modFreezeGame()} style={{ width: '60px' }}>
-								Freeze/<br/>Unfreeze
+								Freeze/
+								<br />
+								Unfreeze
 							</div>
 						</div>
 					)}
