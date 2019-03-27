@@ -187,8 +187,7 @@ export default class Moderation extends React.Component {
 		if (this.state.playerListState < 2) {
 			this.setState({
 				playerListState: this.state.playerListState + 1,
-				selectedUser: '',
-				playerInputText: ''
+				selectedUser: ''
 			});
 		} else {
 			this.setState({
@@ -1007,7 +1006,7 @@ export default class Moderation extends React.Component {
 								Action {logSort.type === 'actionTaken' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
 							<th
-								style={{ whiteSpace: 'nowrap' }}
+								style={{ whiteSpace: 'normal' }}
 								onClick={() => {
 									clickSort('userActedOn');
 								}}
@@ -1070,7 +1069,7 @@ export default class Moderation extends React.Component {
 									<td style={{ whiteSpace: 'nowrap' }}>{report.modUserName}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
 									<td style={{ width: '120px', minWidth: '120px' }}>{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}</td>
-									<td style={{ whiteSpace: 'nowrap' }}>{report.userActedOn}</td>
+									<td style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px', minWidth: '120px' }}>{report.userActedOn}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.ip}</td>
 									<td style={{ Width: '200px', minWidth: '200px' }}>
 										{report.modNotes.split('\n').map((v, index) => (
@@ -1150,7 +1149,7 @@ export default class Moderation extends React.Component {
 				<a href="#/">
 					<i className="remove icon" />
 				</a>
-				<h2>Moderation</h2>
+				<h2 style={{ userSelect: 'none', WebkitUserSelect: 'none', MsUserSelect: 'none' }}>Moderation</h2>
 				{!hideActions && (
 					<a className="broadcast" href="#" onClick={this.broadcastClick}>
 						Broadcast
@@ -1193,6 +1192,13 @@ export default class Moderation extends React.Component {
 								<span className="emailunverified">Email is not yet verified.</span>
 								<br />
 							</div>
+							{!hideActions && (
+								<span>
+									<div className="ui horizontal divider">-</div>
+									{this.renderPlayerInput()}
+									<div className="ui horizontal divider">or</div>
+								</span>
+							)}
 							<table className="ui celled table userlist">
 								<thead>
 									<tr>
@@ -1227,8 +1233,6 @@ export default class Moderation extends React.Component {
 							</table>
 							{!hideActions && (
 								<span>
-									<div className="ui horizontal divider">or</div>
-									{this.renderPlayerInput()}
 									<div className="ui horizontal divider">-</div>
 									{this.renderActionText()}
 									{this.renderButtons()}
@@ -1247,7 +1251,13 @@ export default class Moderation extends React.Component {
 								<br />
 								<span className="custom">This game is custom</span>
 							</div>
-
+							{!hideActions && (
+								<span>
+									<div className="ui horizontal divider">-</div>
+									{this.renderPlayerInput()}
+									<div className="ui horizontal divider">or</div>
+								</span>
+							)}
 							<table className="ui celled table userlist">
 								<thead>
 									<tr>

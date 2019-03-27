@@ -20,6 +20,9 @@
 	.player-list-toggle {
 		position: absolute;
 		color: lightblue;
+		user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
 		text-decoration: underline;
 		right: 80px;
 		top: 10px;
@@ -117,6 +120,9 @@
 		position: absolute;
 		left: 5%;
 		color: lightblue;
+		user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
 		top: 10px;
 		text-decoration: underline;
 	}
