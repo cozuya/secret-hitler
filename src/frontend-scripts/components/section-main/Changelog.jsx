@@ -11,7 +11,7 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 1.4.0 released 4-1-2019</p>
+					<p>Version 1.4.0 released 3-27-2019</p>
 				</div>
 				<h4>Many Moderation Improvements -Vigasaurus</h4>
 				<h4>Silent Game Features now work as intended -Vigasaurus</h4>
