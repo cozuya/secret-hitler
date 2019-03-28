@@ -321,7 +321,7 @@ export default class Moderation extends React.Component {
 							checked={this.state.selectedUser === user.userName}
 						/>
 					</td>
-					<td className={getUserType(user)}>
+					<td className={getUserType(user)} style={{display: 'flex'}}>
 						{this.state.showGameIcons && renderStatus(user)}
 						<a className={getUserType(user)} href={`/game/#/profile/${user.userName}`}>
 							{user.userName}
