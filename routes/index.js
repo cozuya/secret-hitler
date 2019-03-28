@@ -170,7 +170,7 @@ module.exports = () => {
 	app.get('/profile', (req, res) => {
 		const username = req.query.username;
 		const requestingUser = req.query.requestingUser;
-		if (req && req.user && (requestingUser !== req.user.username)) {
+		if (req && req.user && requestingUser && req.user.username && (requestingUser !== req.user.username)) {
 			res.status(401).send('You are not who you say you are. Please login again.');
 			return;
 		}
