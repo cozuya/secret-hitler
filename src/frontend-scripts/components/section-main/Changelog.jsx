@@ -13,6 +13,10 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<p>Version 1.4.0 released 3-27-2019</p>
 				</div>
+				<h4>
+					New players have the "typing indicator" setting disabled by default - reminder, if you are experiencing laggy gameplay, turn this off yourself in the
+					player settings. -coz
+				</h4>
 				<h4>Many Moderation Improvements -Vigasaurus</h4>
 				<h4>Silent Game Features now work as intended -Vigasaurus</h4>
 				<h4>Many smaller fixes and minor UI changes!</h4>
