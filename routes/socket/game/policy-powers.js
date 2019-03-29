@@ -1007,8 +1007,67 @@ module.exports.specialElection = game => {
 		];
 		sendInProgressGameUpdate(game, true);
 	}
-};
+	
+	    if (!game.general.disableGamechat) {
+        	seatedPlayers
+            	.filter(player => player.userName !== president.userName)
+            	.forEach(player => {
+                chat.chat = [
+                    { text: 'President ' },
+                    {
+                        text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
+                        type: 'player'
+                    },
+                    { text: ' has special-elected ' },
+                    {
+                        text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+                        type: 'player'
+                    },
+                    { text: '.' }
+                ];
 
+		    player.gameChats.push(chat);
+		});
+	
+			game.private.unSeatedGameChats.push(chat);
+
+			president.gameChats.push({
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+				{ text: 'You special-elect' },
+				{
+					text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+					type: 'player'
+				}
+			]
+		    });	
+		};
+
+	const modOnlyChat = {
+	    timestamp: new Date(),
+	    gameChat: true,
+	    chat: [
+		{
+		    text: 'President '
+		},
+		{
+		    text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+		    type: 'player'
+		},
+		    { text: ' has special-elected ' },
+		    {
+			text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+			type: 'player'
+		    },
+		    { text: '.' }
+	    ]
+	};
+
+    game.private.hiddenInfoChat.push(modOnlyChat);
+    sendInProgressModChatUpdate(game, modOnlyChat);
+    sendInProgressGameUpdate(game);
+    game.private.unSeatedGameChats.push(chat);
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
