@@ -1126,7 +1126,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 		return;
 	}
 
-	if (!(isAprilFools && (game.general.casualGame || game.general.private))) {
+	if (!(isAprilFools && game.customGameSettings.enabled)) {
 		// Make sure the target is valid
 		if (playerIndex === presidentIndex || selectedPlayer.isDead || (selectedPlayer.role.cardName === 'hitler' && president.role.cardName === 'fascist')) {
 			return;
