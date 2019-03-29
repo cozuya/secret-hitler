@@ -2055,7 +2055,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					timestamp: new Date(),
 					chat: [
 						{
-							text: 'An AEM member has force pinged '
+							text: 'An AEM member has pinged '
 						},
 						{
 							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
