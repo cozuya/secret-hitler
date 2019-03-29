@@ -404,7 +404,7 @@ class Players extends React.Component {
 			!userInfo.isSeated &&
 			userInfo.userName &&
 			!gameInfo.gameState.isTracksFlipped &&
-			gameInfo.publicPlayersState.length < 10 &&
+			gameInfo.publicPlayersState.length < gameInfo.general.maxPlayersCount &&
 			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
 			(!gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
 			(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private)) &&
