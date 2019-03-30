@@ -711,6 +711,7 @@
 		position: absolute;
 		right: 52px;
 		top: 3px;
+		z-index: 10;
 		background: transparent;
 	}
 	.genchat-container .chat-user + span,
@@ -1268,6 +1269,61 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			box-shadow: 0 0 0 2px #333 inset !important;
 			background: #ddd;
 		}
+	}
+}
+
+.status.icon {
+	margin-left: 5px;
+	cursor: pointer;
+}
+.favIcon {
+	background: url('../../public/favicon-16x16.png') no-repeat;
+	width: 16px;
+	height: 16px;
+	vertical-align: text-bottom;
+}
+.rainbowIcon {
+	background: url('../../public/images/rainbow.png') no-repeat;
+	width: 16px;
+	height: 16px;
+	vertical-align: text-bottom;
+}
+.privateIcon {
+	background: url('../../public/images/private.png') no-repeat;
+	width: 16px;
+	height: 16px;
+	vertical-align: text-bottom;
+}
+.gameIcons {
+	position: absolute;
+	left: 17%;
+	color: lightblue;
+	user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	cursor: pointer;
+	top: 10px;
+	text-decoration: underline;
+}
+
+.refreshModlog {
+	position: absolute;
+	right: 32%;
+	color: lightblue;
+	user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	cursor: pointer;
+	top: 10px;
+	text-decoration: underline;
+}
+
+#modlogRefresh {
+	color: lightblue !important;
+	text-decoration: none;
+	margin-left: 4px;
+	&:hover {
+		color: lightblue !important;
 	}
 }
 

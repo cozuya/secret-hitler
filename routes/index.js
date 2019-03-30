@@ -77,6 +77,10 @@ module.exports = () => {
 		renderPage(req, res, 'page-rules', 'rules');
 	});
 
+	app.get('/changelog', (req, res) => {
+		renderPage(req, res, 'page-changelog', 'changelog');
+	});
+
 	app.get('/how-to-play', (req, res) => {
 		renderPage(req, res, 'page-howtoplay', 'howtoplay');
 	});
@@ -166,7 +170,10 @@ module.exports = () => {
 	app.get('/profile', (req, res) => {
 		const username = req.query.username;
 		const requestingUser = req.query.requestingUser;
-
+		if (req && req.user && requestingUser && requestingUser !== 'undefined' && req.user.username && requestingUser !== req.user.username) {
+			res.status(401).send('You are not who you say you are. Please login again.');
+			return;
+		}
 		getProfile(username).then(profile => {
 			if (!profile) {
 				res.status(404).send('Profile not found');

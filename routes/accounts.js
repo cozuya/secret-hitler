@@ -102,11 +102,8 @@ module.exports = () => {
 			isLocal: true,
 			hasNotDismissedSignupModal: true,
 			gameSettings: {
-				disablePopups: false,
-				enableTimestamps: false,
-				disableRightSidebarInGame: false,
-				enableDarkTheme: false,
 				soundStatus: 'pack2',
+				disableTyping: true,
 				isPrivate
 			},
 			verification: {
@@ -118,7 +115,8 @@ module.exports = () => {
 			losses: 0,
 			created: new Date(),
 			touLastAgreed: TOU_CHANGES[0].changeVer,
-			signupIP
+			signupIP,
+			lastConnectedIP: signupIP
 		};
 
 		const startsWithPermaBannedIP = PERMABANNEDIPFRAGMENTS.some(fragment => new RegExp(`^${fragment}`).test(signupIP));
@@ -530,7 +528,8 @@ module.exports = () => {
 													const accountObj = {
 														username: profile.username,
 														gameSettings: {
-															soundStatus: 'pack2'
+															soundStatus: 'pack2',
+															disableTyping: true
 														},
 														verified: true,
 														wins: 0,
@@ -666,7 +665,8 @@ module.exports = () => {
 				const accountObj = {
 					username,
 					gameSettings: {
-						soundStatus: 'pack2'
+						soundStatus: 'pack2',
+						disableTyping: true
 					},
 					verification: {
 						email: ''

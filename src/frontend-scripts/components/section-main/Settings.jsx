@@ -410,7 +410,9 @@ class Settings extends React.Component {
 								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
 								<label />
 							</div>
-							<h4 className="ui header">Disable "is currently typing" display</h4>
+							<h4 className="ui header" title="This feature may cause performance issues while enabled on those with lower-end computers">
+								Disable "is currently typing" indicator <i className="info circle icon" style={{ color: 'orange' }} />
+							</h4>
 							<div className="ui fitted toggle checkbox">
 								<input type="checkbox" name="disableTyping" checked={this.state.disableTyping} onChange={() => this.toggleGameSettings('disableTyping')} />
 								<label />

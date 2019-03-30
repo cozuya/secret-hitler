@@ -30,7 +30,8 @@ class Gamechat extends React.Component {
 		showObserverChat: true,
 		badWord: [null, null],
 		textLastChanged: 0,
-		textChangeTimer: -1
+		textChangeTimer: -1,
+		chatValue: ''
 	};
 
 	componentDidMount() {
@@ -144,6 +145,10 @@ class Gamechat extends React.Component {
 	handleTyping = e => {
 		e.preventDefault();
 		const { userInfo, gameInfo, updateIsTyping, isTyping, socket } = this.props;
+		this.setState({
+			chatValue: e.target.value
+		});
+		const chatValue = e.target.value;
 
 		if (gameInfo && gameInfo.general && gameInfo.general.private) {
 			if (this.state.badWord[0]) {
@@ -153,8 +158,8 @@ class Gamechat extends React.Component {
 				return;
 			}
 		}
-		const text = this.gameChatInput.value;
-		const foundWord = getBadWord(text);
+
+		const foundWord = getBadWord(chatValue);
 		if (this.state.badWord[0] !== foundWord[0]) {
 			if (this.state.textChangeTimer !== -1) clearTimeout(this.state.textChangeTimer);
 			if (foundWord[0]) {
@@ -163,7 +168,7 @@ class Gamechat extends React.Component {
 					textLastChanged: Date.now(),
 					textChangeTimer: setTimeout(() => {
 						this.setState({ textChangeTimer: -1 });
-					}, 1100)
+					}, 2000)
 				});
 			} else {
 				this.setState({
@@ -195,33 +200,28 @@ class Gamechat extends React.Component {
 			return;
 		}
 
-		const currentValue = this.gameChatInput.value;
+		const { chatValue } = this.state;
 
-		if (currentValue.length < 300 && currentValue && !$('.expando-container + div').hasClass('disabled')) {
+		if (chatValue.length <= 300 && chatValue && !$('.expando-container + div').hasClass('disabled')) {
 			if (userInfo.gameSettings && !userInfo.gameSettings.disableTyping) {
 				updateIsTyping(true);
 			}
 
 			const chat = {
-				chat: currentValue,
+				chat: chatValue,
 				uid: gameInfo.general.uid
 			};
 
 			this.props.socket.emit('addNewGameChat', chat);
 
-			this.gameChatInput.value = '';
-			if (this.state.badWord[0]) {
-				this.setState({
-					badWord: [null, null]
-				});
-			}
+			this.setState({
+				chatValue: '',
+				badWord: [null, null]
+			});
 
-			this.gameChatInput.blur();
-			setTimeout(() => {
-				if (this.gameChatInput) {
-					this.gameChatInput.focus();
-				}
-			}, 80);
+			if (this.gameChatInput) {
+				this.gameChatInput.focus();
+			}
 		}
 	};
 
@@ -287,8 +287,10 @@ class Gamechat extends React.Component {
 	};
 
 	handleInsertEmote = emote => {
-		this.gameChatInput.value += ` ${emote}`;
-		this.gameChatInput.focus();
+		this.setState({
+			chatValue: this.state.chatValue + ' ' + emote
+		});
+		this.chatInput.focus();
 	};
 
 	renderModEndGameButtons() {
@@ -368,7 +370,7 @@ class Gamechat extends React.Component {
 				};
 			}
 
-			if (gameInfo.general.disableChat) {
+			if (gameInfo.general.disableChat && gameInfo.gameState && !gameInfo.gameState.isCompleted && gameInfo.gameState.isStarted) {
 				return {
 					isDisabled: true,
 					placeholder: 'Chat disabled'
@@ -722,6 +724,13 @@ class Gamechat extends React.Component {
 			});
 		};
 
+		const modFreezeGame = () => {
+			socket.emit('modFreezeGame', {
+				modName: userInfo.userName,
+				uid: gameInfo.general.uid
+			});
+		};
+
 		const sendModEndGame = winningTeamName => {
 			socket.emit('updateModAction', {
 				modName: userInfo.userName,
@@ -778,6 +787,15 @@ class Gamechat extends React.Component {
 						<div>
 							<div className="ui button primary" onClick={() => modGetCurrentVotes()} style={{ width: '60px' }}>
 								Peek Votes
+							</div>
+						</div>
+					)}
+					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
+						<div>
+							<div className="ui button primary" onClick={() => modFreezeGame()} style={{ width: '60px' }}>
+								Freeze/
+								<br />
+								Unfreeze
 							</div>
 						</div>
 					)}
@@ -1020,17 +1038,32 @@ class Gamechat extends React.Component {
 								The word "{this.state.badWord[1]}"{this.state.badWord[0] !== this.state.badWord[1] ? ` (${this.state.badWord[0]})` : ''} is forbidden.
 							</span>
 						)}
+						{this.state.chatValue.length > 300 && !this.state.badWord[0] && (
+							<span
+								style={{
+									zIndex: '-1',
+									position: 'absolute',
+									top: '-32px',
+									height: '40px',
+									backgroundColor: 'indianred',
+									padding: '7px',
+									borderRadius: '10px 10px 0px 0px',
+									border: '1px solid #8c8c8c'
+								}}
+							>
+								{`This message is too long ${300 - this.state.chatValue.length}`}
+							</span>
+						)}
 						<input
+							value={this.state.chatValue}
 							onSubmit={this.handleSubmit}
 							onChange={this.handleTyping}
-							maxLength="300"
+							type="text"
 							autoComplete="off"
 							spellCheck="false"
 							placeholder={this.gameChatStatus().placeholder}
 							id="gameChatInput"
-							ref={c => {
-								this.gameChatInput = c;
-							}}
+							ref={c => (this.chatInput = c)}
 						/>
 						{this.gameChatStatus().isDisabled ? null : renderEmotesButton(this.handleInsertEmote, this.props.allEmotes)}
 						<button type="submit" className={`ui primary button ${this.chatDisabled() ? 'disabled' : ''}`}>

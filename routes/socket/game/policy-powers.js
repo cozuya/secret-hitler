@@ -28,12 +28,17 @@ module.exports.policyPeek = game => {
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
+ * @param {object} socket - socket
  */
-module.exports.selectPolicies = (passport, game) => {
+module.exports.selectPolicies = (passport, game, socket) => {
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
+
+	if (game.gameState.isGameFrozen) {
+		return;
+	}
 
 	if (!president || president.userName !== passport.user) {
 		return;
@@ -221,6 +226,13 @@ module.exports.selectOnePolicy = (passport, game) => {
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
+
+	if (game.gameState.isGameFrozen) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
 
 	if (!president || president.userName !== passport.user) {
 		return;
@@ -416,11 +428,19 @@ module.exports.selectOnePolicy = (passport, game) => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data from socket emit
+ * @param {object} socket - socket
  */
-module.exports.selectBurnCard = (passport, game, data) => {
+module.exports.selectBurnCard = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
+	if (game.gameState.isGameFrozen) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
 	}
 
 	const { experiencedMode } = game.general;
@@ -576,11 +596,19 @@ module.exports.investigateLoyalty = game => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data from socket emit
+ * @param {object} socket - socket
  */
-module.exports.selectPartyMembershipInvestigate = (passport, game, data) => {
+module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
+	if (game.gameState.isGameFrozen) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
 	}
 
 	const { playerIndex } = data;
@@ -767,11 +795,19 @@ module.exports.showPlayerLoyalty = game => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data from socket emit
+ * @param {object} socket - socket
  */
-module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data) => {
+module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.gameState.timedModeEnabled = game.private.timerId = null;
+	}
+
+	if (game.gameState.isGameFrozen) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
 	}
 
 	const { playerIndex } = data;
@@ -977,12 +1013,20 @@ module.exports.specialElection = game => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data from socket emit
+ * @param {object} socket - socket
  */
-module.exports.selectSpecialElection = (passport, game, data) => {
+module.exports.selectSpecialElection = (passport, game, data, socket) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const president = game.private.seatedPlayers[presidentIndex];
 	if (!president || president.userName !== passport.user) {
+		return;
+	}
+
+	if (game.gameState.isGameFrozen) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
 		return;
 	}
 
@@ -1062,14 +1106,22 @@ module.exports.executePlayer = game => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  * @param {object} data from socket emit
+ * @param {object} socket - socket
  */
-module.exports.selectPlayerToExecute = (passport, game, data) => {
+module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
 	const selectedPlayer = seatedPlayers[playerIndex];
 	const publicSelectedPlayer = game.publicPlayersState[playerIndex];
 	const president = seatedPlayers[presidentIndex];
+
+	if (game.gameState.isGameFrozen) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
 
 	// Make sure the target is valid
 	if (playerIndex === presidentIndex || selectedPlayer.isDead || (selectedPlayer.role.cardName === 'hitler' && president.role.cardName === 'fascist')) {
@@ -1274,7 +1326,7 @@ module.exports.selectPlayerToExecute = (passport, game, data) => {
 										type: 'liberal'
 									},
 									{
-										text: ' remains, top-decking to the end...'
+										text: ' remain, top-decking to the end...'
 									}
 								]
 							};
