@@ -460,7 +460,7 @@ class Players extends React.Component {
 				window.alert('Sorry, this service is currently unavailable.');
 			} else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
-			} else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49) || gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses)) {
+			} else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49) || (gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))) {
 				$(this.notRainbowModal).modal('show');
 			} else if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
 				$(this.blacklistModal).modal('show');
