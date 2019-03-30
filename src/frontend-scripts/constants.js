@@ -121,7 +121,7 @@ export const randomizeELO = user => {
 	}
 
 	elo += Math.round(1450 + 300 * nameVal);
-	season += Math.round(1550 + 200 * nameVal);
+	season = 1600;
 
 	return Object.assign(newUser, {
 		eloOverall: elo,
