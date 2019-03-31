@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
-import { PLAYERCOLORS, getBadWord } from '../../constants';
+import { PLAYERCOLORS, randomizeELO, getBadWord } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import { IsTypingContext } from '../reusable/Context';
 
