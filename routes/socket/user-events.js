@@ -1820,19 +1820,17 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			}
 		}
 	}
-
+	
+	if (player && ((player.isDead && !game.gameState.isCompleted) || player.leftGame)) {
+		return;
+	}
+	
 	if (!AEM) {
-		if (player) {
-			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
-				return;
-			}
-		} else {
-			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
-				return;
-			}
-			if (game.general.disableObserver || user.wins + user.losses < 2) {
-				return;
-			}
+		if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
+			return;
+		}
+		if (user.wins + user.losses < 2) {
+			return;
 		}
 	}
 
