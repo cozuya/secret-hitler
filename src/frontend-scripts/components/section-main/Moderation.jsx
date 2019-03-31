@@ -321,7 +321,7 @@ export default class Moderation extends React.Component {
 							checked={this.state.selectedUser === user.userName}
 						/>
 					</td>
-					<td className={getUserType(user)} style={{display: 'flex'}}>
+					<td className={getUserType(user)} style={{ display: 'flex' }}>
 						{this.state.showGameIcons && renderStatus(user)}
 						<a className={getUserType(user)} href={`/game/#/profile/${user.userName}`}>
 							{user.userName}
@@ -762,6 +762,32 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Ban and IP ban for 1 week
+				</button>
+				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					style={{ background: 'magenta' }}
+					onClick={() => {
+						takeModAction('fragbanSmall');
+					}}
+				>
+					Ban IP fragment (xxx.xxx or xxx.xxx.xxx) for 18 hours
+				</button>
+				<button
+					style={{ background: 'darkmagenta' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('fragbanLarge');
+					}}
+				>
+					Ban IP fragment (xxx.xxx or xxx.xxx.xxx) for 1 week
 				</button>
 				<button
 					style={{ background: 'crimson' }}

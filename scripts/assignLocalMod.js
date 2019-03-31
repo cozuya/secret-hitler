@@ -7,5 +7,6 @@ mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 Account.findOne({ username: 'Uther' }).then(acc => {
 	acc.staffRole = 'admin';
 	acc.save();
-	console.log('Assigned.');
+	console.log('user Uther assigned to admin staff role.');
+	mongoose.connection.close();
 });
