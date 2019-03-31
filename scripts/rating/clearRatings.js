@@ -12,7 +12,6 @@ async function clearRatings() {
 			.eachAsync(account => {
 				count++;
 				account.eloSeason = 1600;
-				account.eloOverall = 1600;
 				account.save();
 
 				if (!(count % 100)) {
