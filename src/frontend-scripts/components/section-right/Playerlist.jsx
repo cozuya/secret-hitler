@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../../actions/actions';
 import cn from 'classnames';
-import { PLAYERCOLORS, randomizeELO } from '../../constants';
+import { PLAYERCOLORS } from '../../constants';
 import $ from 'jquery';
 import Modal from 'semantic-ui-modal';
 import classnames from 'classnames';
@@ -204,14 +204,6 @@ class Playerlist extends React.Component {
 	renderPlayerlist() {
 		if (Object.keys(this.props.userList).length) {
 			const { list } = this.props.userList;
-			let updatedList = [];
-			const now = new Date();
-			const isAprilFools = now.getDate() === 1 && now.getMonth() === 3 && now.getFullYear() === 2019;
-			if (isAprilFools) {
-				list.forEach(u => {
-					updatedList.push(randomizeELO(u));
-				});
-			}
 			const { userInfo } = this.props;
 			const { expandInfo } = this.state;
 			const { gameSettings } = userInfo;
@@ -236,8 +228,7 @@ class Playerlist extends React.Component {
 				window.location.hash = `#/profile/${userName}`;
 			};
 			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
-			const listToUse = isAprilFools ? updatedList : list;
-			const visible = listToUse.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
+			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
 			let aem = [...admins];
 			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());

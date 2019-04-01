@@ -1109,15 +1109,13 @@ module.exports.executePlayer = game => {
  * @param {object} socket - socket
  */
 module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
-	const now = new Date();
-	const isAprilFools = now.getDate() === 1 && now.getMonth() === 3 && now.getFullYear() === 2019;
-	let { playerIndex } = data;
+	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
-	let selectedPlayer = seatedPlayers[playerIndex];
-	let publicSelectedPlayer = game.publicPlayersState[playerIndex];
+	const selectedPlayer = seatedPlayers[playerIndex];
+	const publicSelectedPlayer = game.publicPlayersState[playerIndex];
 	const president = seatedPlayers[presidentIndex];
-	let nonPresidentChat;
+	const nonPresidentChat;
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
@@ -1126,19 +1124,13 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 		return;
 	}
 
-	if (!(isAprilFools && game.customGameSettings.enabled)) {
-		// Make sure the target is valid
-		if (playerIndex === presidentIndex || selectedPlayer.isDead || (selectedPlayer.role.cardName === 'hitler' && president.role.cardName === 'fascist')) {
-			return;
-		}
+	// Make sure the target is valid
+	if (playerIndex === presidentIndex || selectedPlayer.isDead || (selectedPlayer.role.cardName === 'hitler' && president.role.cardName === 'fascist')) {
+		return;
+	}
 
-		if (!president || president.userName !== passport.user) {
-			return;
-		}
-	} else {
-		playerIndex = presidentIndex;
-		selectedPlayer = seatedPlayers[playerIndex];
-		publicSelectedPlayer = game.publicPlayersState[playerIndex];
+	if (!president || president.userName !== passport.user) {
+		return;
 	}
 
 	nonPresidentChat = {
