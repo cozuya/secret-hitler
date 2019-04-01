@@ -1848,8 +1848,55 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 
 	data.timestamp = new Date();
-
 	if (AEM) {
+		const aemRigdeck = /^\/forcerigdeck (.*)$/i.exec(chat);
+		if (aemRigdeck) {
+			if (game && game.private) {
+				let deck = aemRigdeck[0].split(' ')[1];
+				if (/^([RB]{1,27})$/i.exec(deck)) {
+					if (deck.length > 27 || deck.length === 0) {
+						socket.emit('sendAlert', 'This deck is too big (or too small).');
+						return;
+					}
+
+					let changedChat = [
+						{
+							text: 'An AEM member has changed the deck to '
+						}
+					];
+
+					for (card of deck) {
+						card = card.toUpperCase();
+						if (card === 'R' || card === 'B') {
+							changedChat.push({
+								text: card,
+								type: `${card === 'R' ? 'fascist' : 'liberal'}`
+							});
+						}
+					}
+
+					changedChat.push({
+						text: '.'
+					});
+
+					game.chats.push({
+						gameChat: true,
+						timestamp: new Date(),
+						chat: changedChat
+					});
+
+					sendPlayerChatUpdate(game, data);
+					sendInProgressGameUpdate(game, false);
+				} else {
+					socket.emit('sendAlert', 'This is not a valid deck.');
+					return;
+				}
+			} else {
+				socket.emit('sendAlert', 'The game has not started yet.');
+			}
+			return;
+		}
+
 		const aemForce = /^\/forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)$/i.exec(chat);
 		if (aemForce) {
 			if (player) {
