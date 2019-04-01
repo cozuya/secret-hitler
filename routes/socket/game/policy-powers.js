@@ -1115,7 +1115,6 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	const selectedPlayer = seatedPlayers[playerIndex];
 	const publicSelectedPlayer = game.publicPlayersState[playerIndex];
 	const president = seatedPlayers[presidentIndex];
-	const nonPresidentChat;
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
@@ -1133,7 +1132,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 		return;
 	}
 
-	nonPresidentChat = {
+	const nonPresidentChat = {
 		gameChat: true,
 		timestamp: new Date(),
 		chat: [
