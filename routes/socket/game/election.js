@@ -597,7 +597,7 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 									() => {
 										if (game.gameState.timedModeEnabled) {
 											game.gameState.timedModeEnabled = false;
-											selectPresidentVoteOnVeto({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) }, vote);
+											selectPresidentVoteOnVeto({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) }, socket);
 										}
 									},
 									process.env.DEVTIMEDDELAY ? process.env.DEVTIMEDDELAY : game.general.timedMode * 1000
