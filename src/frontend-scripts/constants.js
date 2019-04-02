@@ -104,6 +104,7 @@ export const getBadWord = text => {
 		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t'],
 		mongoloid: ['mong'],
 		cunt: ['kunt'],
+		monkey: ['m0nk3y','m0nkey','monk3y','ape'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
 	let foundWord = [null, null];
