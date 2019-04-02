@@ -51,6 +51,9 @@
 	text-align: center;
 	cursor: pointer;
 	color: #999;
+	user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
 }
 .rc-slider-mark-text-active {
 	color: #666;

@@ -786,7 +786,7 @@ class Gamechat extends React.Component {
 					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
 						<div>
 							<div className="ui button primary" onClick={() => modGetCurrentVotes()} style={{ width: '60px' }}>
-								Peek Votes
+								Peek<br/>Votes
 							</div>
 						</div>
 					)}
