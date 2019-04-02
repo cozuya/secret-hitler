@@ -792,6 +792,7 @@ export default class Creategame extends React.Component {
 	};
 
 	customGameSliderChange = sliderValues => {
+		this.sliderChange(sliderValues);
 		this.setState({
 			customGameSliderValue: sliderValues
 		});
