@@ -96,7 +96,8 @@ module.exports = () => {
 				hasBypass = true;
 			}
 		}
-		const signupIP = req.expandedIP;
+		// const signupIP = req.expandedIP;
+		const signupIP = '127.0.0.1';
 		const save = {
 			username,
 			isLocal: true,
@@ -172,54 +173,18 @@ module.exports = () => {
 				// 	$or: new RegExp(`^127.0/i, type: 'fragbanSmall', bannedDate: {$lte: new Date(new Date().getTime() + 64800000)}})
 
 				BannedIP.find({
-					$or: [
-						{
-							type: 'fragbanSmall',
-							ip: {
-								$or: [
-									new RegExp(
-										`^${ip
-											.split('.')
-											.slice(0, 2)
-											.join('.')}`
-									),
-									new RegExp(
-										`^${ip
-											.split('.')
-											.slice(0, 3)
-											.join('.')}`
-									)
-								]
-							},
-							bannedDate: {
-								$lte: new Date(new Date().getTime() + 64800000)
-							}
-						},
-						{
-							type: 'fragbanLarge',
-							ip: {
-								$or: [
-									new RegExp(
-										`^${ip
-											.split('.')
-											.slice(0, 2)
-											.join('.')}`
-									),
-									new RegExp(
-										`^${ip
-											.split('.')
-											.slice(0, 3)
-											.join('.')}`
-									)
-								]
-							},
-							bannedDate: {
-								$lte: new Date(new Date().getTime() + 21600000)
-							}
-						}
-					]
+					type: 'fragbanSmall',
+					ip: new RegExp(
+						`^${signupIP
+							.split('.')
+							.slice(0, 2)
+							.join('.')}`
+					),
+					bannedDate: {
+						$lte: new Date(new Date().getTime() + 64800000)
+					}
 				}).then(bans => {
-					if (!bans) {
+					if (!bans.length) {
 						const queryObj = email
 							? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
 							: { username: new RegExp(`\\b${username}\\b`, 'i') };
@@ -247,22 +212,18 @@ module.exports = () => {
 								if (banType) {
 									if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 									else if (banType == 'small' || banType == 'tiny') {
-										res
-											.status(403)
-											.json({
-												message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
-											});
+										res.status(403).json({
+											message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
+										});
 									} else if (banType == 'new') {
 										res.status(403).json({
 											message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
 										});
 									} else {
 										console.log(`Unhandled IP ban type: ${banType}`);
-										res
-											.status(403)
-											.json({
-												message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
-											});
+										res.status(403).json({
+											message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
+										});
 									}
 								} else {
 									Account.register(new Account(save), password, err => {
@@ -306,7 +267,10 @@ module.exports = () => {
 							});
 						});
 					} else {
-						// todo
+						res.status(401).json({
+							message:
+								'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
+						});
 					}
 				});
 			}

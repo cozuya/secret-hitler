@@ -2831,7 +2831,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const fragbans = new BannedIP({
 						bannedDate: new Date(),
 						type: 'fragbanSmall',
-						ip: data.ip
+						ip: data.userName
 					});
 
 					fragbans.save();
@@ -2841,7 +2841,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const fragbanl = new BannedIP({
 						bannedDate: new Date(),
 						type: 'fragbanSmall',
-						ip: data.ip
+						ip: data.userName
 					});
 
 					fragbanl.save();
