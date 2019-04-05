@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
-import { PLAYERCOLORS, randomizeELO, getBadWord } from '../../constants';
+import { PLAYERCOLORS, getBadWord } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
 import { IsTypingContext } from '../reusable/Context';
 
@@ -786,7 +786,7 @@ class Gamechat extends React.Component {
 					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
 						<div>
 							<div className="ui button primary" onClick={() => modGetCurrentVotes()} style={{ width: '60px' }}>
-								Peek Votes
+								Peek<br/>Votes
 							</div>
 						</div>
 					)}

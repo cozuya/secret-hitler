@@ -792,6 +792,7 @@ export default class Creategame extends React.Component {
 	};
 
 	customGameSliderChange = sliderValues => {
+		this.sliderChange(sliderValues);
 		this.setState({
 			customGameSliderValue: sliderValues
 		});
@@ -988,7 +989,7 @@ export default class Creategame extends React.Component {
 		const isSeason = (userInfo.gameSettings && !userInfo.gameSettings.disableSeasonal) || false;
 		const playerElo = (player && player.eloSeason && Math.min(2000, player.eloSeason)) || 1600;
 		const playerEloNonseason = (player && player.eloOverall && Math.min(2000, player.eloOverall)) || 1600;
-		const max = Math.max(playerElo, playerEloNonseason);
+		const max = Math.min(playerElo, playerEloNonseason);
 		const marks = Object.keys(origMarks)
 			.filter(k => origMarks[k] <= max)
 			.reduce((obj, key) => {
@@ -1003,6 +1004,16 @@ export default class Creategame extends React.Component {
 						<div>
 							<h4 className="ui header">Minimum elo to sit in this game</h4>
 							<Range onChange={this.eloSliderChange} min={1600} max={max} defaultValue={[1600]} value={this.state.eloSliderValue} marks={marks} />
+
+							<input
+								value={this.state.eloSliderValue[0]}
+								onChange={e => {
+									if (!isNaN(e.target.value)) {
+										this.setState({ eloSliderValue: [e.target.value] });
+									}
+								}}
+								style={{ background: `${this.state.eloSliderValue[0] < 1600 || this.state.eloSliderValue[0] > max ? '#f66' : 'white'}`, marginTop: '30px' }}
+							/>
 						</div>
 					)}
 					<div className="four wide column elorow" style={{ margin: '-50 auto 0' }}>
@@ -1450,10 +1461,11 @@ export default class Creategame extends React.Component {
 			const player = userList.list.find(p => p.userName === userInfo.userName);
 			if (!player) errs.push('Not logged in, please refresh.');
 			else if (this.state.isEloLimited) {
-				const playerElo = player.eloSeason;
-				const playerEloNonseason = player.eloOverall;
-				if (playerElo < this.state.eloSliderValue[0] && playerEloNonseason < this.state.eloSliderValue[0]) {
-					errs.push(`Elo slider set too high, your maximum is ${Math.max(playerElo, playerEloNonseason)}.`);
+				const playerElo = (player && player.eloSeason && Math.min(2000, player.eloSeason)) || 1600;
+				const playerEloNonseason = (player && player.eloOverall && Math.min(2000, player.eloOverall)) || 1600;
+				const max = Math.min(playerElo, playerEloNonseason);
+				if (this.state.eloSliderValue[0] < 1600 || this.state.eloSliderValue[0] > max) {
+					errs.push(`ELO slider value is invalid, your maximum is ${max}.`);
 				}
 			}
 		}
@@ -1468,6 +1480,7 @@ export default class Creategame extends React.Component {
 		if (this.state.containsBadWord) {
 			errs.push("This game's name contains a forbidden word or fragment."); // eslint-disable-line
 		}
+
 		if (errs.length) return errs;
 		return null;
 	}
