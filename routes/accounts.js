@@ -96,8 +96,7 @@ module.exports = () => {
 				hasBypass = true;
 			}
 		}
-		// const signupIP = req.expandedIP;
-		const signupIP = '127.0.0.1';
+		const signupIP = req.expandedIP;
 		const save = {
 			username,
 			isLocal: true,
@@ -169,22 +168,29 @@ module.exports = () => {
 					message: 'Your username contains a naughty word or part of a naughty word.'
 				});
 			} else {
-				// BannedIP.find({ip: {
-				// 	$or: new RegExp(`^127.0/i, type: 'fragbanSmall', bannedDate: {$lte: new Date(new Date().getTime() + 64800000)}})
-
 				BannedIP.find({
-					type: 'fragbanSmall',
-					ip: new RegExp(
-						`^${signupIP
-							.split('.')
-							.slice(0, 2)
-							.join('.')}`
-					),
-					bannedDate: {
-						$lte: new Date(new Date().getTime() + 64800000)
-					}
+					type: ['fragbanSmall', 'fragbanLarge'],
+					ip: [
+						new RegExp(
+							`^${signupIP
+								.split('.')
+								.slice(0, 2)
+								.join('.')}`
+						),
+						new RegExp(
+							`^${signupIP
+								.split('.')
+								.slice(0, 3)
+								.join('.')}`
+						)
+					]
 				}).then(bans => {
-					if (!bans.length) {
+					if (bans.some(ban => new Date() < ban.bannedDate)) {
+						res.status(401).json({
+							message:
+								'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
+						});
+					} else {
 						const queryObj = email
 							? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
 							: { username: new RegExp(`\\b${username}\\b`, 'i') };
@@ -265,11 +271,6 @@ module.exports = () => {
 									});
 								}
 							});
-						});
-					} else {
-						res.status(401).json({
-							message:
-								'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
 						});
 					}
 				});
