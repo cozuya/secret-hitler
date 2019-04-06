@@ -2499,7 +2499,7 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 		modaction.save();
 		game.private.votesPeeked = true;
 	}
-	
+
 
 	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
 		const playersToCheckVotes = gameToPeek.private.seatedPlayers;
