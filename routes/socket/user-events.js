@@ -2434,20 +2434,16 @@ module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
 		}
 	}
 
-	if (!game.private.gameFrozen || game.private.gameFrozen.indexOf(modUserName) === -1) {
+	if (!game.private.gameFrozen) {
 		const modaction = new ModAction({
 			date: new Date(),
 			modUserName: passport.user,
 			userActedOn: game.general.uid,
 			modNotes: '',
-			actionTaken: 'Game Freeze/Unfreeze'
+			actionTaken: 'Game Freeze'
 		});
 		modaction.save();
-		if (!game.private.gameFrozen) {
-			game.private.gameFrozen = [modUserName];
-		} else {
-			game.private.gameFrozen.push(modUserName);
-		}
+		game.private.gameFrozen = true;
 	}
 
 	const now = new Date();
@@ -2492,7 +2488,7 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 		}
 	}
 
-	if (!game.private.votesPeeked || game.private.votesPeeked.indexOf(modUserName) === -1) {
+	if (!game.private.votesPeeked) {
 		const modaction = new ModAction({
 			date: new Date(),
 			modUserName: passport.user,
@@ -2501,12 +2497,9 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 			actionTaken: 'Peek Votes'
 		});
 		modaction.save();
-		if (!game.private.votesPeeked) {
-			game.private.votesPeeked = [modUserName];
-		} else {
-			game.private.votesPeeked.push(modUserName);
-		}
+		game.private.votesPeeked = true;
 	}
+	
 
 	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
 		const playersToCheckVotes = gameToPeek.private.seatedPlayers;
