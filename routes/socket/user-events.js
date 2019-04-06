@@ -2866,6 +2866,27 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						});
 					});
 					break;
+
+				case 'fragbanSmall':
+					const fragbans = new BannedIP({
+						bannedDate: new Date(Date.now() + 64800000),
+						type: 'fragbanSmall',
+						ip: data.userName
+					});
+
+					fragbans.save();
+
+					break;
+				case 'fragbanLarge':
+					const fragbanl = new BannedIP({
+						bannedDate: new Date(Date.now() + 604800000),
+						type: 'fragbanLarge',
+						ip: data.userName
+					});
+
+					fragbanl.save();
+
+					break;
 				case 'timeOut':
 					const timeout = new BannedIP({
 						bannedDate: new Date(),

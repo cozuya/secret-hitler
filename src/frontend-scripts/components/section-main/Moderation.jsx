@@ -321,7 +321,7 @@ export default class Moderation extends React.Component {
 							checked={this.state.selectedUser === user.userName}
 						/>
 					</td>
-					<td className={getUserType(user)} style={{display: 'flex'}}>
+					<td className={getUserType(user)} style={{ display: 'flex' }}>
 						{this.state.showGameIcons && renderStatus(user)}
 						<a className={getUserType(user)} href={`/game/#/profile/${user.userName}`}>
 							{user.userName}
@@ -424,20 +424,22 @@ export default class Moderation extends React.Component {
 	}
 
 	renderButtons() {
+		const { socket, userInfo } = this.props;
+		const { playerInputText, selectedUser, userList, actionTextValue } = this.state;
 		const takeModAction = action => {
 			if (action === 'resetServer' && !this.state.resetServerCount) {
 				this.setState({ resetServerCount: 1 });
 			} else {
-				this.props.socket.emit('updateModAction', {
-					modName: this.props.userInfo.userName,
+				socket.emit('updateModAction', {
+					modName: userInfo.userName,
 					userName:
 						action === 'deleteGame'
-							? `DELGAME${this.state.playerInputText}`
+							? `DELGAME${playerInputText}`
 							: action === 'resetGameName'
-							? `RESETGAMENAME${this.state.playerInputText}`
-							: this.state.playerInputText || this.state.selectedUser,
-					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
-					comment: this.state.actionTextValue,
+							? `RESETGAMENAME${playerInputText}`
+							: playerInputText || selectedUser,
+					ip: playerInputText ? '' : selectedUser ? userList.find(user => user.userName === selectedUser).ip : '',
+					comment: actionTextValue,
 					action
 				});
 				this.setState({
@@ -447,8 +449,6 @@ export default class Moderation extends React.Component {
 				});
 			}
 		};
-		const { selectedUser, actionTextValue, playerInputText } = this.state;
-		const { userInfo } = this.props;
 
 		return (
 			<div className="button-container">
@@ -764,6 +764,32 @@ export default class Moderation extends React.Component {
 					Ban and IP ban for 1 week
 				</button>
 				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					style={{ background: 'magenta' }}
+					onClick={() => {
+						takeModAction('fragbanSmall');
+					}}
+				>
+					Ban IP fragment (xxx.xxx or xxx.xxx.xxx) for 18 hours
+				</button>
+				<button
+					style={{ background: 'darkmagenta' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('fragbanLarge');
+					}}
+				>
+					Ban IP fragment (xxx.xxx or xxx.xxx.xxx) for 1 week
+				</button>
+				<button
 					style={{ background: 'crimson' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -911,7 +937,7 @@ export default class Moderation extends React.Component {
 	}
 
 	renderModLog() {
-		const { logSort } = this.state;
+		const { logSort, logCount } = this.state;
 		const clickSort = type => {
 			this.setState({
 				logSort: {
@@ -928,7 +954,7 @@ export default class Moderation extends React.Component {
 					logCount: this.state.logCount + 1
 				},
 				() => {
-					this.props.socket.emit('getModInfo', this.state.logCount);
+					this.props.socket.emit('getModInfo', logCount);
 				}
 			);
 		};

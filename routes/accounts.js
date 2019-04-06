@@ -9,7 +9,7 @@ const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
 const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
-const { TOU_CHANGES, PERMABANNEDIPFRAGMENTS } = require('../src/frontend-scripts/node-constants.js');
+const { TOU_CHANGES } = require('../src/frontend-scripts/node-constants.js');
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.
@@ -119,8 +119,6 @@ module.exports = () => {
 			lastConnectedIP: signupIP
 		};
 
-		const startsWithPermaBannedIP = PERMABANNEDIPFRAGMENTS.some(fragment => new RegExp(`^${fragment}`).test(signupIP));
-
 		if (!/^[a-z0-9]+$/i.test(username)) {
 			res.status(401).json({ message: 'Your username can only be alphanumeric.' });
 		} else if (username.length < 3) {
@@ -143,10 +141,7 @@ module.exports = () => {
 					message: 'Usernames that end with 88 are not allowed.'
 				});
 			});
-		} else if ((accountCreationDisabled.status && !hasBypass) || startsWithPermaBannedIP) {
-			if (startsWithPermaBannedIP) {
-				console.log("Attempt to make an account while perma'd"); // eslint-disable-line
-			}
+		} else if (accountCreationDisabled.status && !hasBypass) {
 			res.status(403).json({
 				message:
 					'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
@@ -173,86 +168,111 @@ module.exports = () => {
 					message: 'Your username contains a naughty word or part of a naughty word.'
 				});
 			} else {
-				const queryObj = email
-					? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
-					: { username: new RegExp(`\\b${username}\\b`, 'i') };
+				BannedIP.find({
+					type: ['fragbanSmall', 'fragbanLarge'],
+					ip: [
+						new RegExp(
+							`^${signupIP
+								.split('.')
+								.slice(0, 2)
+								.join('.')}`
+						),
+						new RegExp(
+							`^${signupIP
+								.split('.')
+								.slice(0, 3)
+								.join('.')}`
+						)
+					]
+				}).then(bans => {
+					if (bans.some(ban => new Date() < ban.bannedDate)) {
+						res.status(401).json({
+							message:
+								'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
+						});
+					} else {
+						const queryObj = email
+							? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
+							: { username: new RegExp(`\\b${username}\\b`, 'i') };
 
-				Account.find(queryObj, (err, accounts) => {
-					if (err) {
-						console.log(err);
-						res.status(500).json({ message: err.toString() });
-						return;
-					}
-
-					if (accounts.length) {
-						const usernames = accounts.map(acc => acc.username.toLowerCase());
-
-						if (usernames.includes(username.toLowerCase())) {
-							res.status(401).json({ message: 'That account already exists.' });
-						} else {
-							res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
-						}
-						return;
-					}
-
-					testIP(signupIP, banType => {
-						if (hasBypass && banType == 'new') banType = null;
-						if (banType) {
-							if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-							else if (banType == 'small' || banType == 'tiny') {
-								res
-									.status(403)
-									.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
-							} else if (banType == 'new') {
-								res.status(403).json({
-									message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
-								});
-							} else {
-								console.log(`Unhandled IP ban type: ${banType}`);
-								res
-									.status(403)
-									.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+						Account.find(queryObj, (err, accounts) => {
+							if (err) {
+								console.log(err);
+								res.status(500).json({ message: err.toString() });
+								return;
 							}
-						} else {
-							Account.register(new Account(save), password, err => {
-								if (err) {
-									console.log(err);
-									res.status(500).json({ message: err.toString() });
-									return;
+
+							if (accounts.length) {
+								const usernames = accounts.map(acc => acc.username.toLowerCase());
+
+								if (usernames.includes(username.toLowerCase())) {
+									res.status(401).json({ message: 'That account already exists.' });
+								} else {
+									res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 								}
+								return;
+							}
 
-								if (hasBypass) consumeBypass(bypassKey, username, signupIP);
-
-								if (email) {
-									setVerify({ username, email });
-								}
-
-								passport.authenticate('local')(req, res, () => {
-									const newPlayerBan = new BannedIP({
-										bannedDate: new Date(),
-										type: 'new',
-										ip: signupIP
-									});
-
-									newPlayerBan.save();
-
-									if (!isPrivate) {
-										const newSignup = new Signups({
-											date: new Date(),
-											userName: username,
-											type: 'local',
-											ip: obfIP(signupIP),
-											email: Boolean(email)
+							testIP(signupIP, banType => {
+								if (hasBypass && banType == 'new') banType = null;
+								if (banType) {
+									if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+									else if (banType == 'small' || banType == 'tiny') {
+										res.status(403).json({
+											message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
 										});
-
-										newSignup.save(() => {
-											res.send();
+									} else if (banType == 'new') {
+										res.status(403).json({
+											message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
+										});
+									} else {
+										console.log(`Unhandled IP ban type: ${banType}`);
+										res.status(403).json({
+											message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
 										});
 									}
-								});
+								} else {
+									Account.register(new Account(save), password, err => {
+										if (err) {
+											console.log(err);
+											res.status(500).json({ message: err.toString() });
+											return;
+										}
+
+										if (hasBypass) consumeBypass(bypassKey, username, signupIP);
+
+										if (email) {
+											setVerify({ username, email });
+										}
+
+										passport.authenticate('local')(req, res, () => {
+											const newPlayerBan = new BannedIP({
+												bannedDate: new Date(),
+												type: 'new',
+												ip: signupIP
+											});
+
+											newPlayerBan.save();
+
+											if (!isPrivate) {
+												const newSignup = new Signups({
+													date: new Date(),
+													userName: username,
+													type: 'local',
+													ip: obfIP(signupIP),
+													email: Boolean(email)
+												});
+
+												newSignup.save(() => {
+													res.send();
+												});
+											}
+										});
+									});
+								}
 							});
-						}
-					});
+						});
+					}
 				});
 			}
 		}
@@ -484,7 +504,6 @@ module.exports = () => {
 								if (account) {
 									req.logIn(account, () => res.redirect('/account'));
 								} else {
-									const startsWithPermaBannedIP = PERMABANNEDIPFRAGMENTS.some(fragment => new RegExp(`^${fragment}`).test(ip));
 									// TODO: bypass option
 									if (banType === 'new') {
 										console.log(account, 'oath err 472: account');
@@ -493,7 +512,7 @@ module.exports = () => {
 											message:
 												'You can only make accounts once per day.  If you feel you need an exception to this rule, contact the moderators on our discord server.'
 										});
-									} else if (accountCreationDisabled.status || startsWithPermaBannedIP) {
+									} else if (accountCreationDisabled.status) {
 										res.status(403).json({
 											message:
 												'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
