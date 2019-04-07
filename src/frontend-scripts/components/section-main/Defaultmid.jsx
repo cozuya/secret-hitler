@@ -18,6 +18,11 @@ const mapDispatchToProps = dispatch => ({
 
 const PatchAlert = ({ isActive, onClick }) => (isActive ? <div className="patch-alert" onClick={onClick} /> : null);
 
+PatchAlert.propTypes = {
+	isActive: PropTypes.bool,
+	onClick: PropTypes.func
+};
+
 const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 	<section className="defaultmid">
 		<div className="poll">
@@ -31,15 +36,15 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 			<span>{`sh.io version ${version.current.number} "${version.current.color}" released ${version.current.date} | `}</span>
 			<span>
 				<a onClick={readPatchNotes}> changelog </a>|{' '}
-				<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
+				<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
 					open issues and upcoming features
 				</a>{' '}
 				|{' '}
-				<a target="_blank" style={{ color: 'lightgreen' }} href="https://github.com/cozuya/secret-hitler/wiki">
+				<a rel="noopener noreferrer" target="_blank" style={{ color: 'lightgreen' }} href="https://github.com/cozuya/secret-hitler/wiki">
 					wiki page
 				</a>{' '}
 				|{' '}
-				<a target="_blank" style={{ fontWeight: 'bold', color: '#fff' }} href="https://discord.gg/FXDxP2m">
+				<a rel="noopener noreferrer" target="_blank" style={{ fontWeight: 'bold', color: '#fff' }} href="https://discord.gg/FXDxP2m">
 					discord server
 				</a>
 			</span>
@@ -114,7 +119,10 @@ const Defaultmid = ({ version, readPatchNotes, quickDefault, userInfo }) => (
 );
 
 Defaultmid.propTypes = {
-	quickDefault: PropTypes.func
+	quickDefault: PropTypes.func,
+	version: PropTypes.object,
+	readPatchNotes: PropTypes.func,
+	userInfo: PropTypes.object
 };
 export default connect(
 	mapStateToProps,

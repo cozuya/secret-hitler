@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Main from './section-main/Main.jsx';
 import Gamenotes from './Gamenotes.jsx';
-import Playernotes from './Playernotes.jsx';
 import {
 	updateUser,
 	updateMidsection,
@@ -60,6 +59,10 @@ class TopLevelErrorBoundry extends React.Component {
 		);
 	}
 }
+
+TopLevelErrorBoundry.propTypes = {
+	children: PropTypes.object
+};
 
 export class App extends React.Component {
 	constructor() {
@@ -416,16 +419,6 @@ export class App extends React.Component {
 				>
 					{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
 
-					{this.props.playerNotesActive && (
-						<Playernotes
-							socket={socket}
-							userName={this.props.playerNotesActive}
-							value={this.state.playerNotesValue}
-							changePlayerNotesValue={this.changePlayerNotesValue}
-							userInfo={this.props.userInfo}
-						/>
-					)}
-
 					{process.env.NODE_ENV !== 'production' && <DevHelpers />}
 
 					<Menu userInfo={this.props.userInfo} gameInfo={this.props.gameInfo} midSection={this.props.midSection} />
@@ -452,8 +445,10 @@ export class App extends React.Component {
 													return (
 														<div key={index}>
 															<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Version {change.changeVer}</h4>
-															{change.changeDesc.split('\n').map(item => (
-																<p style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{item}</p>
+															{change.changeDesc.split('\n').map((item, index) => (
+																<p key={index} style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+																	{item}
+																</p>
 															))}
 														</div>
 													);
@@ -531,7 +526,10 @@ App.propTypes = {
 	gameInfo: PropTypes.object,
 	gameList: PropTypes.array,
 	generalChats: PropTypes.object,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	version: PropTypes.object,
+	socket: PropTypes.object,
+	notesActive: PropTypes.bool
 };
 
 export default connect(select)(App);

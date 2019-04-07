@@ -30,7 +30,6 @@ export const LEGALCHARACTERS = text => {
 	return pass;
 };
 
-
 /**
  * @param {object} user - user from userlist.
  * @param {boolean} isSeasonal - whether or not to display seasonal colors.

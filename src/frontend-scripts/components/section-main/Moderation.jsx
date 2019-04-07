@@ -232,7 +232,6 @@ export default class Moderation extends React.Component {
 		};
 		const renderStatus = user => {
 			const status = user.status;
-			console.log(user);
 			if (!status || status.type === 'none') {
 				return <i className={'status unclickable icon'} />;
 			} else {
@@ -1435,5 +1434,6 @@ export default class Moderation extends React.Component {
 
 Moderation.propTypes = {
 	userInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	fetchReplay: PropTypes.func
 };

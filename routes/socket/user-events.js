@@ -2500,7 +2500,6 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 		game.private.votesPeeked = true;
 	}
 
-
 	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
 		const playersToCheckVotes = gameToPeek.private.seatedPlayers;
 		playersToCheckVotes.map(player => {

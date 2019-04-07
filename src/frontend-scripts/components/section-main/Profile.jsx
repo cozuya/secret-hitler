@@ -327,7 +327,10 @@ class ProfileWrapper extends React.Component {
 	}
 
 	Loading() {
-		this.state.openTime = Date.now();
+		this.setState({
+			openTime: Date.now()
+		});
+
 		return (
 			<div className="ui active dimmer">
 				<div className="ui huge text loader">Loading</div>
@@ -407,7 +410,10 @@ ProfileWrapper.propTypes = {
 	userInfo: PropTypes.object,
 	userList: PropTypes.object,
 	socket: PropTypes.object,
-	profile: PropTypes.object
+	profile: PropTypes.object,
+	updateActiveStats: PropTypes.func,
+	gameSettings: PropTypes.object,
+	isUserClickable: PropTypes.bool
 };
 
 export default connect(

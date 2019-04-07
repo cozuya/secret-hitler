@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS } from '../../constants';
 import { viewPatchNotes } from '../../actions/actions';
 import { Popup } from 'semantic-ui-react';
 import $ from 'jquery';
@@ -222,15 +221,15 @@ class Menu extends React.Component {
 									{`v${this.props.version.current.number}`}{' '}
 								</a>
 								|{' '}
-								<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
+								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
 									Feedback
 								</a>{' '}
 								|{' '}
-								<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
+								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
 									Wiki
 								</a>{' '}
 								|{' '}
-								<a target="_blank" href="https://discord.gg/secrethitlerio">
+								<a rel="noopener noreferrer" target="_blank" href="https://discord.gg/secrethitlerio">
 									Discord
 								</a>
 							</span>
@@ -317,15 +316,15 @@ class Menu extends React.Component {
 									{`v${this.props.version.current.number}`}{' '}
 								</a>
 								|{' '}
-								<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
+								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
 									Feedback
 								</a>{' '}
 								|{' '}
-								<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
+								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
 									Wiki
 								</a>{' '}
 								|{' '}
-								<a target="_blank" href="https://discord.gg/secrethitlerio">
+								<a rel="noopener noreferrer" target="_blank" href="https://discord.gg/secrethitlerio">
 									Discord
 								</a>
 							</span>
@@ -409,7 +408,9 @@ class Menu extends React.Component {
 Menu.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	midSection: PropTypes.string
+	midSection: PropTypes.string,
+	version: PropTypes.object,
+	readPatchNotes: PropTypes.func
 };
 
 export default connect(

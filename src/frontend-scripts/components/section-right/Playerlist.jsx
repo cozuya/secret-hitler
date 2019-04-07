@@ -377,8 +377,10 @@ class Playerlist extends React.Component {
 			};
 
 			const toggleGroup = cat => {
-				this.state.expandInfo[cat] = !this.state.expandInfo[cat];
-				this.setState({});
+				const { expandInfo } = this.state;
+
+				expandInfo[cat] = !expandInfo[cat];
+				this.setState({ expandInfo });
 			};
 			return (
 				<div>
@@ -658,7 +660,9 @@ Playerlist.defaultProps = {
 Playerlist.propTypes = {
 	userInfo: PropTypes.object,
 	userList: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	isUserClickable: PropTypes.bool,
+	fetchReplay: PropTypes.func
 };
 
 export default connect(

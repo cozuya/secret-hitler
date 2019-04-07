@@ -270,13 +270,6 @@ class Players extends React.Component {
 				className={(() => {
 					let classes = 'player-container';
 					let user = this.props.userList.list ? this.props.userList.list.find(play => play.userName === player.userName) : null;
-					let w;
-					let l;
-
-					if (user) {
-						w = !(gameSettings && gameSettings.disableSeasonal) ? user.winsSeason : user.wins;
-						l = !(gameSettings && gameSettings.disableSeasonal) ? user.lossesSeason : user.losses;
-					}
 
 					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
@@ -619,7 +612,8 @@ Players.propTypes = {
 	toggleNotes: PropTypes.func,
 	playerNotesActive: PropTypes.string,
 	isTyping: PropTypes.object,
-	onClickedTakeSeat: PropTypes.func
+	onClickedTakeSeat: PropTypes.func,
+	togglePlayerNotes: PropTypes.func
 };
 
 const PlayersContainer = props => <IsTypingContext.Consumer>{p => <Players {...props} isTyping={p ? p.isTyping : null} />}</IsTypingContext.Consumer>;

@@ -612,7 +612,8 @@ Settings.defaultProps = {
 
 Settings.propTypes = {
 	userInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	gameSettings: PropTypes.object
 };
 
 export default Settings;
