@@ -24,6 +24,7 @@ const saveGame = game => {
 		uid: game.general.uid,
 		date: new Date(),
 		chats: game.chats,
+		isVerifiedOnly: game.general.isVerifiedOnly,
 		season: CURRENTSEASONNUMBER,
 		winningPlayers: game.private.seatedPlayers
 			.filter(player => player.wonGame)

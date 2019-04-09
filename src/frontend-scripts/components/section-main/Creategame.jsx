@@ -36,7 +36,7 @@ export default class Creategame extends React.Component {
 			casualgame: false,
 			blindMode: false,
 			timedMode: false,
-			isVerifiedOnly: false,
+			isVerifiedOnly: props.userInfo.verified,
 			timedSliderValue: [120],
 			customGameSliderValue: [7],
 			eloSliderValue: [1600],
@@ -1661,7 +1661,7 @@ export default class Creategame extends React.Component {
 							/>
 						</div>
 					</div>
-					{this.props.userInfo.verified && (
+					{this.props.userInfo.verified && !this.state.privateonlygame && (
 						<div className="row verified-row">
 							<div className="sixteen wide column">
 								<i className="big thumbs up icon" style={{ color: 'tan !important' }} />
@@ -1835,7 +1835,7 @@ export default class Creategame extends React.Component {
 								<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
 								<Switch
 									onChange={checked => {
-										this.setState({ privateonlyGame: checked });
+										this.setState({ privateonlyGame: checked, isVerifiedOnly: false });
 									}}
 									checked={this.state.privateonlyGame}
 									onColor="#627cc8"

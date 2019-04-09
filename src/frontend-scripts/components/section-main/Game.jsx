@@ -133,6 +133,7 @@ export default class Game extends React.Component {
 		const { userInfo, gameInfo } = this.props;
 		const { isTyping } = this.state;
 
+		console.log(gameInfo);
 		return (
 			<IsTypingContext.Provider value={{ isTyping, updateIsTyping: this.updateIsTyping }}>
 				<section className="game">

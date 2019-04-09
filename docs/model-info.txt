@@ -20,6 +20,7 @@ chats array
 	isBroadcast bool
 	timestamp time
 general
+	isVerifiedOnly bool
 	blindMode bool
 	name string
 	isRemade bool, so that people can't click remake after its remade
