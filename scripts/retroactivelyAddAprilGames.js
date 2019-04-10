@@ -13,32 +13,34 @@ Game.find({
 })
 	.cursor()
 	.eachAsync(game => {
-		let winnerUsernames = [],
-			loserUsernames = [];
-		game.winningPlayers.forEach(player => winnerUsernames.push(player.userName));
-		game.losingPlayers.forEach(player => loserUsernames.push(player.userName));
+		if (!game.casualGame) {
+			let winnerUsernames = [],
+				loserUsernames = [];
+			game.winningPlayers.forEach(player => winnerUsernames.push(player.userName));
+			game.losingPlayers.forEach(player => loserUsernames.push(player.userName));
 
-		winnerUsernames.forEach(username => {
-			Account.findOne({ username: username })
-				.cursor()
-				.eachAsync(user => {
-					console.log(username, 'win', user.winsSeason6, user.winsSeason6 ? user.winsSeason6 + 1 : 1);
-					user.winsSeason6 = user.winsSeason6 ? user.winsSeason6 + 1 : 1;
-					user.save();
-				});
-		});
+			winnerUsernames.forEach(username => {
+				Account.findOne({ username: username })
+					.cursor()
+					.eachAsync(user => {
+						console.log(username, 'win', user.winsSeason6, user.winsSeason6 ? user.winsSeason6 + 1 : 1);
+						user.winsSeason6 = user.winsSeason6 ? user.winsSeason6 + 1 : 1;
+						user.save();
+					});
+			});
 
-		loserUsernames.forEach(username => {
-			Account.findOne({ username: username })
-				.cursor()
-				.eachAsync(user => {
-					console.log(username, 'loss', user.lossesSeason6, user.lossesSeason6 ? user.lossesSeason6 + 1 : 1);
-					user.lossesSeason6 = user.lossesSeason6 ? user.lossesSeason6 + 1 : 1;
-					user.save();
-				});
-		});
-		count++;
-		if (count % 100 === 0) {
-			console.log(count + ' games processed.');
+			loserUsernames.forEach(username => {
+				Account.findOne({ username: username })
+					.cursor()
+					.eachAsync(user => {
+						console.log(username, 'loss', user.lossesSeason6, user.lossesSeason6 ? user.lossesSeason6 + 1 : 1);
+						user.lossesSeason6 = user.lossesSeason6 ? user.lossesSeason6 + 1 : 1;
+						user.save();
+					});
+			});
+			count++;
+			if (count % 100 === 0) {
+				console.log(count + ' games processed.');
+			}
 		}
 	});
