@@ -726,6 +726,19 @@ export default class Moderation extends React.Component {
 					</div>
 				</div>
 				<button
+					style={{ background: 'lime', color: 'black' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('rainbowUser');
+					}}
+				>
+					Rainbow user
+				</button>
+				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ib'
@@ -990,6 +1003,8 @@ export default class Moderation extends React.Component {
 			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
 			removeContributor: 'Remove Contributor Role',
+			resetGameName: 'Reset Game Name',
+			rainbowUser: 'Grant Rainbow',
 			removeStaffRole: 'Remove Staff Role',
 			promoteToContributor: 'Promote (Contributor)',
 			promoteToAltMod: 'Assign (AEM Alt)',

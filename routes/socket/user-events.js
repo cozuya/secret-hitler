@@ -2742,6 +2742,24 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						return;
 					}
 					break;
+				case 'rainbowUser':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.losses = account.losses >= 50 ? account.losses : 50;
+									account.wins = account.wins >= 1 ? account.wins : 1;
+									account.save();
+								} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							})
+							.catch(err => {
+								console.log(err, 'rainbow user error');
+							});
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can rainbow a user.');
+						return;
+					}
+					break;
 				case 'deleteUser':
 					if (isSuperMod) {
 						Account.findOne({ username: data.userName }).remove(() => {
