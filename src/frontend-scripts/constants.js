@@ -95,29 +95,58 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	}
 };
 
+/* POSSIBLE IMPROVEMENTS TO BE MADE HERE (this was done very quickly):
+ * separate exceptions into blacklisted word categories:
+ const exceptions ={
+ 	faggot: ['f a game','if 4 g'],
+ 	mongoloid: ['among', 'mongolia', 'mongodb']
+ }
+ * filter for exceptions first rather than last to save a few ms on long strings.
+ * for more advanced context detection, creating Maps of (exception => offset) where offset determines how far behind the word to start. (good for use in case of 'among' and others)
+ */
 export const getBadWord = text => {
-	const badWords = {
+	const badWords = { //list of all blacklisted words and their variations.
 		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
 		kike: ['k1ke', 'kik3', 'k1k3'],
-		retard: ['autist', 'libtard', 'retard', 'tard'],
-		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t'],
-		mongoloid: ['mong'],
+		retard: ['autist', 'libtard', 'retard', 'tard','t4rd'],
+		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t', 'f4g'],
+		mongoloid: ['mong', 'm0ng'],
 		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
-	let foundWord = [null, null];
-
+	const exceptions = ['f a game', /*this detects both for "of a game", and "if a game"*/ 'among', 'mongodb', 'mongolia', 'if 4 g']; //this list for all exceptions to bypass swear filter
+	let foundWord = [null, null]; //future found bad word, in format of: [blacklisted word, variation]
 	// This version will detect words with spaces in them, but may have false positives (such as "mongolia" for "mong").
-	const flatText = text.toLowerCase().replace(/\s/gi, '');
+	let flatText = ""; //the future spaceless text.
+	let spacesIndex = []; //the indexes of where the spaces would be in the spaceless text. for context in exceptions.
+	for (var i = 0; i < text.length; i++) {
+		if (" " === text[i]) {
+			spacesIndex.push(flatText.length - 1); //add space to list
+		} else {
+			flatText += text[i]; //add char to text otherwise
+		}
+	}
 	Object.keys(badWords).forEach(key => {
-		if (flatText.includes(key)) {
+		if (flatText.includes(key)) { //true if spaceless text contains blacklisted word.
 			foundWord = [key, key];
 		} else {
 			badWords[key].forEach(word => {
-				if (flatText.includes(word)) {
+				if (flatText.includes(word)) { //true if spaceless text contains variation of blacklisted word.
 					foundWord = [key, word];
 				}
 			});
+		}
+		//this should detect exceptions in the filter and rule out false positives based on the list of exceptions.
+
+		let wIndex = flatText.indexOf(foundWord[1]); //the location of the blacklisted word found in flatText.
+		for (let i = 0; i < exceptions.length; i++) { //passes through all exceptions
+
+			if (text.toLowerCase().substr( //spacing weird to add notations and clarify what this long if statement does.
+				wIndex + Math.max(0, spacesIndex.filter(index => index <= wIndex).length - 1), //substrings text to find the index where the bad word would be found by determining the number of missing spaces -1 (for 'among'). Math.max to prevent a possible IndexOutOfBounds exception.
+				exceptions[i].length + 1) //sets the length of the substring to be 1 longer than the exception string length to counteract the -1 for 'among'.
+				.indexOf(exceptions[i]) > -1) { //if the exception is found within the substring,
+				foundWord = [null, null]; //prevent the bad word from being detected.
+			}
 		}
 	});
 
