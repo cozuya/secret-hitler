@@ -1018,7 +1018,13 @@ module.exports.specialElection = game => {
 module.exports.selectSpecialElection = (passport, game, data, socket) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
+	let gameChat = {
+		timestamp: new Date(),
+		gameChat: true,
+		chat: []
+	};
 	const president = game.private.seatedPlayers[presidentIndex];
+	const seatedPlayers = game.private.seatedPlayers;
 	if (!president || president.userName !== passport.user) {
 		return;
 	}
@@ -1051,6 +1057,67 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 		game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
 			player.notificationStatus = '';
 		});
+
+		if (!game.general.disableGamechat) {
+			seatedPlayers
+				.filter(player => player.userName !== president.userName)
+				.forEach(player => {
+					gameChat.chat = [
+						{ text: 'President ' },
+						{
+							text: game.general.blindMode ? `{${presidentIndex + 1}}` : `${president.userName} {${presidentIndex + 1}}`,
+							type: 'player'
+						},
+						{ text: ' has chosen to special elect ' },
+						{
+							text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+							type: 'player'
+						},
+						{ text: ' as president.' }
+					];
+
+					player.gameChats.push(gameChat);
+				});
+
+			game.private.unSeatedGameChats.push(gameChat);
+
+			president.gameChats.push({
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{ text: 'You choose to special-elect ' },
+					{
+						text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+						type: 'player'
+					},
+					{ text: ' as president.' }
+				]
+			});
+		}
+
+		const modOnlyChat = {
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{
+					text: 'President '
+				},
+				{
+					text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
+					type: 'player'
+				},
+				{ text: ' has special-elected ' },
+				{
+					text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
+					type: 'player'
+				},
+				{ text: '.' }
+			]
+		};
+
+		game.private.hiddenInfoChat.push(modOnlyChat);
+		sendInProgressModChatUpdate(game, modOnlyChat);
+		sendInProgressGameUpdate(game);
 
 		startElection(game, data.playerIndex);
 	}
