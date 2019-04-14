@@ -1,11 +1,13 @@
 import React from 'react';
 import $ from 'jquery';
-import Policies from './Policies.jsx';
 import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
-import { togglePlayerNotes } from '../../actions/actions';
-import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
 import PropTypes from 'prop-types';
+
+import Policies from './Policies.jsx';
+import { togglePlayerNotes } from '../../actions/actions';
+import { PLAYERCOLORS } from '../../constants';
+import { IsTypingContext } from '../reusable/Context';
 
 $.fn.dropdown = Dropdown;
 
@@ -13,36 +15,31 @@ const mapDispatchToProps = dispatch => ({
 	togglePlayerNotes: playerName => dispatch(togglePlayerNotes(playerName))
 });
 
-const mapStateToProps = ({ playerNotesActive }) => ({ playerNotesActive });
+const mapStateToProps = ({ playerNotesActive }) => ({
+	playerNotesActive
+});
 
 class Players extends React.Component {
-	constructor() {
-		super();
-		this.clickedTakeSeat = this.clickedTakeSeat.bind(this);
-		this.handlePlayerClick = this.handlePlayerClick.bind(this);
-		this.handlePlayerDoubleClick = this.handlePlayerDoubleClick.bind(this);
-		this.handlePasswordSubmit = this.handlePasswordSubmit.bind(this);
-		this.handleReportSubmit = this.handleReportSubmit.bind(this);
-		this.state = {
-			passwordValue: '',
-			reportedPlayer: '',
-			reportTextValue: '',
-			playerNotes: [],
-			playerNoteSeatEnabled: false
-		};
-	}
+	state = {
+		passwordValue: '',
+		reportedPlayer: '',
+		reportTextValue: '',
+		playerNotes: [],
+		playerNoteSeatEnabled: false,
+		reportLength: 0
+	};
 
-	componentWillReceiveProps(nextProps) {
-		const { userName } = this.props;
-		const { publicPlayersState } = nextProps.gameInfo;
+	// componentWillReceiveProps(nextProps) {
+	// 	const { userName } = this.props;
+	// 	const { publicPlayersState } = nextProps.gameInfo;
 
-		if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
-			this.props.socket.emit('getPlayerNotes', {
-				userName,
-				seatedPlayers: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
-			});
-		}
-	}
+	// 	if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
+	// 		this.props.socket.emit('getPlayerNotes', {
+	// 			userName,
+	// 			seatedPlayers: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
+	// 		});
+	// 	}
+	// }
 
 	componentDidMount() {
 		const { socket, userInfo } = this.props;
@@ -67,15 +64,15 @@ class Players extends React.Component {
 		this.props.socket.off('notesUpdate');
 	}
 
-	handlePlayerDoubleClick(userName) {
+	handlePlayerDoubleClick = userName => {
 		if ((!this.props.gameInfo.general.private && this.props.userInfo.userName && this.props.userInfo.userName !== userName) || this.props.isReplay) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
 		}
-	}
+	};
 
-	handlePlayerClick(e) {
+	handlePlayerClick = e => {
 		const { userInfo, gameInfo, socket } = this.props;
 		const { gameState } = gameInfo;
 		const { phase, clickActionInfo } = gameState;
@@ -99,6 +96,15 @@ class Players extends React.Component {
 			}
 		}
 
+		if (phase === 'selectPartyMembershipInvestigateReverse' && userInfo.userName) {
+			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
+				socket.emit('selectPartyMembershipInvestigateReverse', {
+					playerIndex: index,
+					uid: gameInfo.general.uid
+				});
+			}
+		}
+
 		if (phase === 'execution' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedPlayerToExecute', {
@@ -116,7 +122,7 @@ class Players extends React.Component {
 				});
 			}
 		}
-	}
+	};
 
 	renderPreviousGovtToken(i) {
 		const { publicPlayersState } = this.props.gameInfo;
@@ -174,22 +180,45 @@ class Players extends React.Component {
 		}
 	}
 
+	renderTyping(player) {
+		const { isTyping } = this.props;
+
+		if (isTyping && isTyping[player.userName] && Date.now() - isTyping[player.userName] < 2000) {
+			setTimeout(() => {
+				if (Date.now() - isTyping[player.userName] >= 2000) {
+					this.forceUpdate();
+				}
+			}, 2000);
+			return <img className="is-typing" src="../images/typing.gif" />;
+		}
+	}
+
 	renderPlayers() {
 		const { gameInfo, userInfo } = this.props;
 		const { gameSettings } = userInfo;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
-		const time = new Date().getTime();
+		const time = Date.now();
 		const renderPlayerName = (player, i) => {
 			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
 			const prependSeasonAward = () => {
 				switch (player.previousSeasonAward) {
 					case 'bronze':
-						return <span title="This player was in the 3rd tier of winrate in the previous season" className="season-award bronze" />;
+						return <span title="This player was in the 3rd tier of ranks in the previous season" className="season-award bronze" />;
 					case 'silver':
-						return <span title="This player was in the 2nd tier of winrate in the previous season" className="season-award silver" />;
+						return <span title="This player was in the 2nd tier of ranks in the previous season" className="season-award silver" />;
 					case 'gold':
-						return <span title="This player was in the top tier of winrate in the previous season" className="season-award gold" />;
+						return <span title="This player was in the top tier of ranks in the previous season" className="season-award gold" />;
+					case 'gold1':
+						return <span title="This player was the top player of the previous season" className="season-award gold1" />;
+					case 'gold2':
+						return <span title="This player was 2nd highest player of the previous season" className="season-award gold2" />;
+					case 'gold3':
+						return <span title="This player was 3rd highest player of the previous season" className="season-award gold3" />;
+					case 'gold4':
+						return <span title="This player was 4th highest player of the previous season" className="season-award gold4" />;
+					case 'gold5':
+						return <span title="This player was 5th highest player of the previous season" className="season-award gold5" />;
 				}
 			};
 
@@ -204,6 +233,9 @@ class Players extends React.Component {
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.previousSeasonAward &&
 						prependSeasonAward()}
+					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
+						player.specialTournamentStatus && <span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />}
 					{str}
 				</span>
 			);
@@ -238,13 +270,6 @@ class Players extends React.Component {
 				className={(() => {
 					let classes = 'player-container';
 					let user = this.props.userList.list ? this.props.userList.list.find(play => play.userName === player.userName) : null;
-					let w;
-					let l;
-
-					if (user) {
-						w = !(gameSettings && gameSettings.disableSeasonal) ? user[`winsSeason${CURRENTSEASONNUMBER}`] : user.wins;
-						l = !(gameSettings && gameSettings.disableSeasonal) ? user[`lossesSeason${CURRENTSEASONNUMBER}`] : user.losses;
-					}
 
 					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
@@ -298,6 +323,7 @@ class Players extends React.Component {
 				</div>
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
+				{this.renderTyping(player)}
 				{this.renderGovtToken(i)}
 				{/* {this.renderPlayerNotesIcon(i)} */}
 				<div
@@ -371,32 +397,29 @@ class Players extends React.Component {
 			!userInfo.isSeated &&
 			userInfo.userName &&
 			!gameInfo.gameState.isTracksFlipped &&
-			gameInfo.publicPlayersState.length < 10 &&
-			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)) &&
-			(!gameInfo.general.rainbowgame || (user && user.wins + user.losses > 49)) &&
-			(userInfo.gameSettings && (!userInfo.gameSettings.isPrivate || gameInfo.general.private)) &&
-			(!gameInfo.general.privateOnly || (userInfo.gameSettings && userInfo.gameSettings.isPrivate))
+			gameInfo.publicPlayersState.length < gameInfo.general.maxPlayersCount &&
+			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName))
 		) {
 			return gameInfo.general.isTourny ? (
 				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
 					Queue for tournament
 				</div>
 			) : (
-				<div className="ui left pointing label" onClick={this.clickedTakeSeat}>
+				<div className="ui right pointing label" onClick={this.clickedTakeSeat}>
 					Take a seat
 				</div>
 			);
 		}
 	}
 
-	handlePasswordSubmit(e) {
+	handlePasswordSubmit = e => {
 		e.preventDefault();
 
 		this.props.onClickedTakeSeat(this.state.passwordValue);
 		$(this.passwordModal).modal('hide');
-	}
+	};
 
-	handleReportSubmit(e) {
+	handleReportSubmit = e => {
 		const { gameInfo } = this.props;
 		e.preventDefault();
 
@@ -405,30 +428,37 @@ class Players extends React.Component {
 		}
 
 		const index = gameInfo.publicPlayersState.findIndex(player => player.userName === this.state.reportedPlayer);
+		if (this.state.reportLength <= 140) {
+			this.props.socket.emit('playerReport', {
+				uid: gameInfo.general.uid,
+				userName: this.props.userInfo.userName || 'from replay',
+				gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
+				reportedPlayer: `${index ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
+				reason: $('input[name="reason"]').attr('value'),
+				comment: this.state.reportTextValue
+			});
+			$(this.reportModal).modal('hide');
+			this.setState({
+				maxReportLengthExceeded: false
+			});
+		}
+	};
 
-		this.props.socket.emit('playerReport', {
-			uid: gameInfo.general.uid,
-			userName: this.props.userInfo.userName || 'from replay',
-			gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
-			reportedPlayer: `${index ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
-			reason: $('input[name="reason"]').attr('value'),
-			comment: this.state.reportTextValue
-		});
-		$(this.reportModal).modal('hide');
-	}
-
-	clickedTakeSeat() {
+	clickedTakeSeat = () => {
 		const { gameInfo, userInfo, onClickedTakeSeat, userList } = this.props;
+		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null; 
 
 		if (userInfo.userName) {
-			if (gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
+			if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
+				window.alert('Sorry, this service is currently unavailable.');
+			} else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
+				$(this.privatePlayerInPublicGameModal).modal('show');
+			} else if (gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49) || (gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))) {
+				$(this.notRainbowModal).modal('show');
+			} else if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
 				$(this.blacklistModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
-			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
-				window.alert('Sorry, this service is currently unavailable.');
-			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
-				$(this.passwordModal).modal('show');
 			} else if (gameInfo.general.eloMinimum) {
 				const user = userList.list.find(user => user.userName === userInfo.userName);
 
@@ -437,27 +467,32 @@ class Players extends React.Component {
 				} else {
 					$(this.elominimumModal).modal('show');
 				}
+			} else if (gameInfo.general.private && !gameInfo.general.whitelistedPlayers.includes(userInfo.userName)) {
+				$(this.passwordModal).modal('show');
 			} else {
 				onClickedTakeSeat();
 			}
 		} else {
 			$(this.signinModal).modal('show');
 		}
-	}
+	};
 
 	render() {
 		const handlePasswordInputChange = e => {
 			this.setState({ passwordValue: `${e.target.value}` });
 		};
 		const handleReportTextChange = e => {
-			this.setState({ reportTextValue: `${e.target.value}` });
+			this.setState({
+				reportLength: Number(e.target.value.length),
+				reportTextValue: `${e.target.value}`
+			});
 		};
 		const isBlind = this.props.gameInfo.general.blindMode && !this.props.gameInfo.gameState.isCompleted;
 
 		return (
 			<section className="players">
-				{this.renderPlayers()}
 				{this.renderTakeSeat()}
+				{this.renderPlayers()}
 
 				<div
 					className="ui basic small modal signinnag"
@@ -498,6 +533,24 @@ class Players extends React.Component {
 				</div>
 
 				<div
+          			className="ui basic small modal"
+          			ref={c => {
+            			this.notRainbowModal = c;
+         			}}
+        		>
+	         		<div className="ui header">You do not meet the required amount of games played (50) to play in this game.</div>
+        		</div>
+
+       			<div
+        			className="ui basic small modal"
+        			ref={c => {
+            			this.privatePlayerInPublicGameModal = c;
+          			}}
+        		>
+        			<div className="ui header">Your account can only play in private games. This is a public game. You can change this in your <a href="/game/#/settings">settings.</a></div>
+        		</div>
+
+				<div
 					className="ui basic small modal reportmodal"
 					ref={c => {
 						this.reportModal = c;
@@ -512,14 +565,21 @@ class Players extends React.Component {
 							<i className="dropdown icon" />
 							<div className="default text">Reason</div>
 							<div className="menu">
-								<div className="item">AFK/leaving game</div>
+								<div className="item">AFK/Leaving game</div>
 								<div className="item">Abusive chat</div>
 								<div className="item">Cheating</div>
+								<div className="item">Gamethrowing</div>
+								<div className="item">Stalling</div>
+								<div className="item">Botting</div>
 								<div className="item">Other</div>
 							</div>
 						</div>
 						<textarea placeholder="Comment" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
-						<div onClick={this.handleReportSubmit} className={this.state.reportTextValue ? 'ui button primary' : 'ui button primary disabled'}>
+						<span className={this.state.reportLength > 140 ? 'counter error' : 'counter'}>{140 - this.state.reportLength}</span>
+						<div
+							onClick={this.handleReportSubmit}
+							className={this.state.reportTextValue && this.state.reportLength <= 140 ? 'ui button primary' : 'ui' + ' button primary disabled'}
+						>
 							Submit
 						</div>
 					</form>
@@ -556,6 +616,10 @@ class Players extends React.Component {
 	}
 }
 
+Players.defaultProps = {
+	isTyping: {}
+};
+
 Players.propTypes = {
 	roles: PropTypes.array,
 	userInfo: PropTypes.object,
@@ -566,7 +630,15 @@ Players.propTypes = {
 	selectedGamerole: PropTypes.func,
 	isReplay: PropTypes.bool,
 	toggleNotes: PropTypes.func,
-	playerNotesActive: PropTypes.string
+	playerNotesActive: PropTypes.string,
+	isTyping: PropTypes.object,
+	onClickedTakeSeat: PropTypes.func,
+	togglePlayerNotes: PropTypes.func
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Players);
+const PlayersContainer = props => <IsTypingContext.Consumer>{p => <Players {...props} isTyping={p ? p.isTyping : null} />}</IsTypingContext.Consumer>;
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(PlayersContainer);

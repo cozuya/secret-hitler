@@ -5,7 +5,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const labels = [];
 const data = {};
-const { CURRENTSEASONNUMBER } = require('../src/frontend-scripts/constants');
+const { CURRENTSEASONNUMBER } = require('../src/frontend-scripts/node-constants');
 
 const allPlayerGameData = {
 	fascistWinCount: 0,
@@ -63,7 +63,7 @@ const tenPlayerGameData = {
 };
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
 Game.find({})
 	.cursor()

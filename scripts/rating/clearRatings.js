@@ -6,13 +6,12 @@ let count = 0;
 async function clearRatings() {
 	try {
 		mongoose.Promise = global.Promise;
-		await mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+		await mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 		await Account.find()
 			.cursor()
 			.eachAsync(account => {
 				count++;
 				account.eloSeason = 1600;
-				account.eloOverall = 1600;
 				account.save();
 
 				if (!(count % 100)) {

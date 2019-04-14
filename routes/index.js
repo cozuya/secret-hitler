@@ -6,8 +6,8 @@ const socketRoutes = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
-const fs = require('fs');
 const { obfIP } = require('./socket/ip-obf');
+const { ProcessImage } = require('./image-processor');
 
 /**
  * @param {object} req - express request object.
@@ -22,6 +22,12 @@ const ensureAuthenticated = (req, res, next) => {
 
 	res.redirect('/observe');
 };
+
+const prodCacheBustToken = `${Math.random()
+	.toString(36)
+	.substring(2)}${Math.random()
+	.toString(36)
+	.substring(2)}`;
 
 module.exports = () => {
 	/**
@@ -39,18 +45,29 @@ module.exports = () => {
 			renderObj.username = req.user.username;
 		}
 
+		if (process.env.NODE_ENV === 'production') {
+			renderObj.prodCacheBustToken = prodCacheBustToken;
+		}
+
 		res.render(pageName, renderObj);
 	};
 
 	accounts();
 
-	Account.find({ staffRole: { $exists: true } }).then(accounts => {
-		const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
-		const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
-		const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+	Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] })
+		.then(accounts => {
+			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
+			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
+			const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+			const altmodUserNames = accounts.filter(account => account.staffRole === 'altmod').map(account => account.username);
+			const trialmodUserNames = accounts.filter(account => account.staffRole === 'trialmod').map(account => account.username);
+			const contributorUserNames = accounts.filter(account => account.isContributor).map(account => account.username);
 
-		socketRoutes(modUserNames, editorUserNames, adminUserNames);
-	});
+			socketRoutes(modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames);
+		})
+		.catch(err => {
+			console.log(err, 'err in finding staffroles');
+		});
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
@@ -58,6 +75,10 @@ module.exports = () => {
 
 	app.get('/rules', (req, res) => {
 		renderPage(req, res, 'page-rules', 'rules');
+	});
+
+	app.get('/changelog', (req, res) => {
+		renderPage(req, res, 'page-changelog', 'changelog');
 	});
 
 	app.get('/how-to-play', (req, res) => {
@@ -74,6 +95,10 @@ module.exports = () => {
 
 	app.get('/about', (req, res) => {
 		renderPage(req, res, 'page-about', 'about');
+	});
+
+	app.get('/tou', (req, res) => {
+		renderPage(req, res, 'page-tou', 'tou');
 	});
 
 	app.get('/polls', (req, res) => {
@@ -95,18 +120,28 @@ module.exports = () => {
 			res.redirect('/observe/');
 		} else {
 			Account.findOne({ username }, (err, account) => {
+				if (err) {
+					console.log(err);
+					return;
+				}
 				const { blacklist } = account.gameSettings;
-
-				account.gameSettings.blacklist = [];
-
-				res.render('game', {
+				const gameObj = {
 					game: true,
 					staffRole: account.staffRole || '',
+					isContributor: account.isContributor || false,
 					verified: req.user.verified,
+					hasNotDismissedSignupModal: account.hasNotDismissedSignupModal,
 					username,
 					gameSettings: account.gameSettings,
 					blacklist
-				});
+				};
+
+				if (process.env.NODE_ENV === 'production') {
+					gameObj.prodCacheBustToken = prodCacheBustToken;
+				}
+
+				account.gameSettings.blacklist = [];
+				res.render('game', gameObj);
 			});
 		}
 	});
@@ -120,13 +155,25 @@ module.exports = () => {
 			req.session.destroy();
 			req.logout();
 		}
-		res.render('game', { game: true });
+
+		const gameObj = {
+			game: true
+		};
+
+		if (process.env.NODE_ENV === 'production') {
+			gameObj.prodCacheBustToken = prodCacheBustToken;
+		}
+
+		res.render('game', gameObj);
 	});
 
 	app.get('/profile', (req, res) => {
 		const username = req.query.username;
 		const requestingUser = req.query.requestingUser;
-
+		if (req && req.user && requestingUser && requestingUser !== 'undefined' && req.user.username && requestingUser !== req.user.username) {
+			res.status(401).send('You are not who you say you are. Please login again.');
+			return;
+		}
 		getProfile(username).then(profile => {
 			if (!profile) {
 				res.status(404).send('Profile not found');
@@ -142,7 +189,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (!acc || !acc.staffRole || acc.staffRole.length === 0 || acc.staffRole === 'contributor') {
+							if (!acc || !acc.staffRole || acc.staffRole === 'altmod') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {
@@ -198,45 +245,31 @@ module.exports = () => {
 			}
 
 			const { image } = req.body;
-			const extension = image.split(';base64')[0].split('/')[1];
 			const raw = image.split(',')[1];
 			const username = req.session.passport.user;
-			const now = new Date();
-			const socketId = Object.keys(io.sockets.sockets).find(
-				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === username
-			);
 
-			Account.findOne({ username }, (err, account) => {
-				if (account.wins + account.losses < 50) {
-					res.json({
-						message: 'You need to have played 50 games to upload a cardback.'
-					});
-					// } else if (account.gameSettings.customCardbackSaveTime && (now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 64800000)) {
-				} else if (
-					new Date(account.gameSettings.customCardbackSaveTime) &&
-					now.getTime() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000
-				) {
-					res.json({
-						message: 'You can only change your cardback once every 30 seconds.'
-					});
-				} else {
-					fs.writeFile(`public/images/custom-cardbacks/${req.session.passport.user}.${extension}`, raw, 'base64', () => {
-						account.gameSettings.customCardback = extension;
-						account.gameSettings.customCardbackSaveTime = now.toString();
-						account.gameSettings.customCardbackUid = Math.random()
-							.toString(36)
-							.substring(2);
-						account.save(() => {
-							res.json({ message: 'Cardback successfully uploaded.' });
-							if (socketId && io.sockets.sockets[socketId]) {
-								io.sockets.sockets[socketId].emit('gameSettings', account.gameSettings);
-							}
+			Account.findOne({ username })
+				.then(account => {
+					if (account.wins + account.losses < 50) {
+						res.json({
+							message: 'You need to have played 50 games to upload a cardback.'
 						});
-					});
-				}
-			}).catch(err => {
-				console.log(err, 'account err in cardbacks');
-			});
+					} else if (
+						new Date(account.gameSettings.customCardbackSaveTime) &&
+						Date.now() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000
+					) {
+						res.json({
+							message: 'You can only change your cardback once every 30 seconds.'
+						});
+					} else {
+						ProcessImage(username, raw, (resp, err) => {
+							res.json({ message: err || resp });
+						});
+					}
+				})
+				.catch(err => {
+					console.log(err, 'account err in cardbacks');
+				});
 		} catch (error) {
 			console.log(err, 'upload cardback crash error');
 		}

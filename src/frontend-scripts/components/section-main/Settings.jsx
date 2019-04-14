@@ -10,46 +10,41 @@ $.fn.checkbox = Checkbox;
 $.fn.modal = Modal;
 
 class Settings extends React.Component {
-	constructor() {
-		super();
-		this.sliderChange = this.sliderChange.bind(this);
-		this.sliderDrop = this.sliderDrop.bind(this);
-		this.profileSearchSubmit = this.profileSearchSubmit.bind(this);
-		this.toggleGameSettings = this.toggleGameSettings.bind(this);
-		this.handleSoundChange = this.handleSoundChange.bind(this);
-		this.state = {
-			namechangeValue: '',
-			sliderValues: [8, 24],
-			imageUid: Math.random()
-				.toString(36)
-				.substring(6),
-			preview: '',
-			cardbackUploadStatus: '',
-			isUploaded: false,
-			profileSearchValue: '',
-			fontChecked: 'comfortaa',
-			fontSize: '',
-			enableTimestamps: '',
-			disableHelpMessages: '',
-			disableHelpIcons: '',
-			enableRightSidebarInGame: '',
-			disablePlayerColorsInChat: '',
-			disablePlayerCardbacks: '',
-			disableConfetti: '',
-			disableCrowns: '',
-			disableSeasonal: '',
-			disableElo: '',
-			soundStatus: '',
-			isPrivate: '',
-			failedNameChangeMessage: '',
-			soundSelected: 'Pack 1',
-			staffDisableVisibleElo: '',
-			staffDisableStaffColor: '',
-			fullheight: false
-		};
-	}
+	state = {
+		namechangeValue: '',
+		sliderValues: [8, 24],
+		imageUid: Math.random()
+			.toString(36)
+			.substring(6),
+		preview: '',
+		cardbackUploadStatus: '',
+		isUploaded: false,
+		profileSearchValue: '',
+		fontChecked: 'comfortaa',
+		fontSize: null,
+		enableTimestamps: '',
+		disableHelpMessages: '',
+		disableHelpIcons: '',
+		enableRightSidebarInGame: '',
+		disablePlayerColorsInChat: '',
+		disablePlayerCardbacks: '',
+		disableConfetti: '',
+		disableCrowns: '',
+		disableSeasonal: '',
+		disableElo: '',
+		disableAggregations: '',
+		disableTyping: '',
+		soundStatus: '',
+		isPrivate: '',
+		failedNameChangeMessage: '',
+		soundSelected: 'Pack 1',
+		staffDisableVisibleElo: '',
+		staffDisableStaffColor: '',
+		staffIncognito: '',
+		fullheight: false
+	};
 
-	componentWillMount() {
+	componentDidMount() {
 		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
 
 		this.setState({
@@ -65,15 +60,18 @@ class Settings extends React.Component {
 			disableConfetti: gameSettings.disableConfetti || '',
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
+			disableAggregations: gameSettings.disableAggregations || '',
+			disableTyping: gameSettings.disableTyping || '',
 			isPrivate: gameSettings.isPrivate || '',
 			fullheight: gameSettings.fullheight || false,
 			soundSelected: gameSettings.soundStatus || 'Off',
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
-			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false
+			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
+			staffIncognito: gameSettings.staffIncognito || false
 		});
 	}
 
-	handleSoundChange(e) {
+	handleSoundChange = e => {
 		this.setState(
 			{
 				soundSelected: e.target.value
@@ -84,34 +82,34 @@ class Settings extends React.Component {
 				});
 			}
 		);
-	}
+	};
 
 	/**
 	 * @param {string} value - todo
 	 */
-	toggleGameSettings(value) {
+	toggleGameSettings = value => {
 		const obj = {};
 
 		obj[value] = !this.state[value];
 		this.props.socket.emit('updateGameSettings', obj);
 		this.setState(obj);
-	}
+	};
 
-	sliderChange(event) {
+	sliderChange = event => {
 		this.setState({ fontSize: event[0] });
-	}
+	};
 
-	sliderDrop(e) {
+	sliderDrop = e => {
 		this.props.socket.emit('updateGameSettings', {
 			fontSize: this.state.fontSize
 		});
-	}
+	};
 
-	profileSearchSubmit(e) {
+	profileSearchSubmit = e => {
 		e.preventDefault();
 
 		window.location.hash = `#/profile/${this.state.profileSearchValue}`;
-	}
+	};
 
 	renderFonts() {
 		const changeFontSubmit = fontName => {
@@ -163,7 +161,7 @@ class Settings extends React.Component {
 								fontSize: this.state.fontSize
 							}}
 						>
-							The quick brown fascist jumped over the lazy liberal.
+							The quick brown fascist jumped over the lazy liberal. (lato)
 						</label>
 					</div>
 				</div>
@@ -217,27 +215,46 @@ class Settings extends React.Component {
 		 * @param {array} rejectedFile - todo
 		 */
 		const onDrop = (files, rejectedFile) => {
-			const reader = new FileReader();
-
 			if (rejectedFile.length) {
 				this.setState({
-					cardbackUploadStatus: 'The file you selected has a wrong extension.  Only png jpg and jpeg are allowed.'
+					cardbackUploadStatus: 'The file you selected is not an image.'
 				});
 				return;
 			}
 
-			if (files[0].size > 40000) {
+			this.setState({
+				cardbackUploadStatus: 'Resizing...'
+			});
+			try {
+				const img = new Image();
+				img.onload = () => {
+					const canvas = document.createElement('canvas');
+					canvas.width = 70;
+					canvas.height = 95;
+					const ctx = canvas.getContext('2d');
+					ctx.drawImage(img, 0, 0, 70, 95);
+					const data = canvas.toDataURL('image/png');
+					if (data.length > 100 * 1024) {
+						this.setState({
+							cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.'
+						});
+						return;
+					}
+					const targetRatio = 70 / 95;
+					const thisRatio = img.width / img.height;
+					const ratioData = targetRatio > thisRatio ? thisRatio / targetRatio : targetRatio / thisRatio;
+					this.setState({
+						preview: data,
+						cardbackUploadStatus: ratioData < 0.8 ? 'Image may be distorted. If this is a problem, manually create a 70x95px image.' : null
+					});
+				};
+
+				img.src = URL.createObjectURL(files[0]);
+			} catch (err) {
 				this.setState({
-					cardbackUploadStatus: 'The file you selected is too big.  A maximum of 40kb is allowed.'
+					cardbackUploadStatus: 'The file you selected is not an image.'
 				});
-				return;
 			}
-
-			reader.onload = () => {
-				this.setState({ preview: reader.result });
-			};
-
-			reader.readAsDataURL(files[0]);
 		};
 
 		const displayCardbackInfoModal = () => {
@@ -257,18 +274,31 @@ class Settings extends React.Component {
 				.then(data => {
 					this.setState({
 						cardbackUploadStatus: data.message,
-						isUploaded: data.message === 'You need to have played 50 games to upload a cardback.' ? '' : this.state.preview,
+						isUploaded: data.message === 'Image uploaded successfully.' ? this.state.preview : '',
 						preview: ''
 					});
 				})
 				.catch(err => {
-					console.log(err, 'err');
+					if (err.status == 413) {
+						this.setState({
+							cardbackUploadStatus: 'Image too large.',
+							isUploaded: '',
+							preview: ''
+						});
+					} else {
+						this.setState({
+							cardbackUploadStatus: 'An unknown error occurred, refer to the console and show a dev.',
+							isUploaded: '',
+							preview: ''
+						});
+						console.log('Unknown cardback error', err);
+					}
 				});
 		};
 
 		const previewClearClick = e => {
-			e.preventDefault;
-			this.setState({ preview: '' });
+			e.preventDefault();
+			this.setState({ preview: '', cardbackUploadStatus: null });
 		};
 
 		const handleSearchProfileChange = e => {
@@ -342,6 +372,17 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#05bba0' }}>
+										Incognito (hide from userlist)
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input type="checkbox" checked={this.state.staffIncognito} onChange={() => this.toggleGameSettings('staffIncognito')} />
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Show right sidebar in games</h4>
@@ -369,8 +410,15 @@ class Settings extends React.Component {
 								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
 								<label />
 							</div>
+							<h4 className="ui header" title="This feature may cause performance issues while enabled on those with lower-end computers">
+								Disable "is currently typing" indicator <i className="info circle icon" style={{ color: 'orange' }} />
+							</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="disableTyping" checked={this.state.disableTyping} onChange={() => this.toggleGameSettings('disableTyping')} />
+								<label />
+							</div>
 
-							{window.staffRole && (
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
 										Disable visible elo
@@ -403,12 +451,22 @@ class Settings extends React.Component {
 								<input type="checkbox" name="confetti" checked={this.state.disableConfetti} onChange={() => this.toggleGameSettings('disableConfetti')} />
 								<label />
 							</div>
-							<h4 className="ui header">Disable tournament crowns and seasonal awards</h4>
+							<h4 className="ui header">Disable seasonal awards</h4>
 							<div className="ui fitted toggle checkbox">
 								<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
 								<label />
 							</div>
-							{window.staffRole && (
+							<h4 className="ui header">Disable playerlist aggregations</h4>
+							<div className="ui fitted toggle checkbox">
+								<input
+									type="checkbox"
+									name="disableaggregations"
+									checked={this.state.disableAggregations}
+									onChange={() => this.toggleGameSettings('disableAggregations')}
+								/>
+								<label />
+							</div>
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
 										Disable staff color (show elo color)
@@ -439,8 +497,8 @@ class Settings extends React.Component {
 							<h4 className="ui header">Sound effect status</h4>
 							<select onChange={this.handleSoundChange} value={this.state.soundSelected}>
 								<option>Off</option>
-								<option>Pack1</option>
-								<option>Pack2</option>
+								<option>pack1</option>
+								<option>pack2</option>
 							</select>
 							<h4 className="ui header">UI full height in games</h4>
 							<div className="ui fitted toggle checkbox">
@@ -484,7 +542,8 @@ class Settings extends React.Component {
 						<div className="ui grid">
 							<div className="row centered cardback-header-container">
 								<h4 className="ui header">
-									Cardback<i className="info circle icon" title="Click to get information about user uploaded cardbacks" onClick={displayCardbackInfoModal} />
+									Cardback
+									<i className="info circle icon" title="Click to get information about user uploaded cardbacks" onClick={displayCardbackInfoModal} />
 								</h4>
 							</div>
 							<div className="row cardbacks-container">
@@ -501,7 +560,7 @@ class Settings extends React.Component {
 													className="current-cardback"
 													style={{
 														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
-															this.state.imageUid
+															gameSettings.customCardbackUid
 														}) no-repeat`
 													}}
 												/>
@@ -513,31 +572,25 @@ class Settings extends React.Component {
 								</div>
 								<div className="upload">
 									<h5 className="ui header">New</h5>
-									<Dropzone accept="image/png, image/jpg, image/jpeg" onDrop={onDrop} multiple={false} className="dropzone">
-										Click here or drag and drop a 70px by 95px image to upload
+									<Dropzone accept="image/*" onDrop={onDrop} multiple={false} className="dropzone">
+										Click here (or drag and drop) an image to upload
 									</Dropzone>
 								</div>
 								{this.state.preview && (
 									<div className="preview-container">
 										<h5 className="ui header">Preview</h5>
-										<img src={this.state.preview} />;
+										<img src={this.state.preview} />
 										<button onClick={previewSaveClick} className="ui button">
 											Save
 										</button>
-										<a href="#" onClick={previewClearClick}>
+										<a href="#/settings" onClick={previewClearClick}>
 											Clear
 										</a>
 									</div>
 								)}
 								<div className="ui basic modal cardbackinfo">
 									<div className="header">Cardback info and terms of use</div>
-									<p>
-										<strong>
-											Image uploaded must be 70px by 95px, or it will not look right. Do not trust the previewer - it will crunch to fit the box, the game
-											itself won't do that.
-										</strong>{' '}
-										Rainbow players only. Can only upload an image once per 30 second. Only png, jpg, and jpeg are permitted. Must be below 40kb.
-									</p>
+									<p>Rainbow players only. Can only upload an image once per 30 second.</p>
 									<p>
 										<strong>No NSFW images, nazi anything, or images from the site itself to be tricky.</strong>
 									</p>
@@ -559,7 +612,8 @@ Settings.defaultProps = {
 
 Settings.propTypes = {
 	userInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	gameSettings: PropTypes.object
 };
 
 export default Settings;

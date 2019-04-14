@@ -3,7 +3,7 @@
 *.sublime-workspace
 node_modules
 dev/*
-.swp
+*.swp
 .sass-cache
 clientlibs
 apps
@@ -22,11 +22,11 @@ data/*
 data/mongod.lock
 misc/*
 public/scripts/bundle.js
+public/scripts/bundle.js.map
 npm-debug.log.*
 npm-debug.log
 yarn-error.log
 .vscode/
-yarn.lock
 package-lock.json
 public/images/Thumbs.db
 public/images/custom-cardbacks
@@ -35,8 +35,11 @@ public/styles/style-dark.css
 public/styles/style-light.css
 public/styles/style-web.css
 public/styles/style-main.css
+public/styles/style-main.css.map
 public/leaderboardData.json
+public/public/*
 coverage/*
 .idea/
 dump/
 scripts/out/*
+public/images/emotesheet.png

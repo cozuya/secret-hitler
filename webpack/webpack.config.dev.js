@@ -3,6 +3,8 @@ const path = require('path');
 // const CleanWebpackPlugin = require('clean-webpack-plugin');
 // const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+process.env.NODE_ENV = 'development';
+
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
 	plugins: [
@@ -39,7 +41,12 @@ module.exports = {
 			},
 			{
 				test: /\.(js|jsx)$/,
-				use: ['babel-loader'],
+				use: {
+					loader: 'babel-loader',
+					query: {
+						presets: ['react-app']
+					}
+				},
 				exclude: /node_modules/
 			},
 			{

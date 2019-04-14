@@ -1,4 +1,4 @@
-/* eslint-disable no-invalid-this */
+/* eslint-disable */
 'use strict';
 
 import $ from 'jquery';
@@ -25,6 +25,7 @@ export default () => {
 		const password = $('#signup-password1').val();
 		const password2 = $('#signup-password2').val();
 		const email = $('#signup-email').val();
+		const bypassKey = $('#signup-bypass').val();
 		const $loader = $(this).next();
 		const $message = $loader.next();
 		const isPrivate = $('#private-player').is(':checked');
@@ -34,6 +35,10 @@ export default () => {
 		};
 
 		$loader.addClass('active');
+		if (!$('#tou-agree').is(':checked')) {
+			submitErr('You must agree to the Terms of Use.');
+			return;
+		}
 
 		$.ajax({
 			url: '/account/signup',
@@ -44,7 +49,8 @@ export default () => {
 				password,
 				password2,
 				email,
-				isPrivate
+				isPrivate,
+				bypassKey
 			}),
 			statusCode: {
 				200() {
@@ -69,6 +75,11 @@ export default () => {
 					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
 
 					submitErr(message);
+				},
+				500(xhr) {
+					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
+
+					submitErr(`Internal error: ${message}`);
 				}
 			}
 		});
@@ -95,6 +106,14 @@ export default () => {
 			.parent()
 			.next()
 			.text('6-255 characters.')
+			.slideDown();
+	});
+
+	$('body').on('focus', '#signup-bypass', function() {
+		$(this)
+			.parent()
+			.next()
+			.text('Only fill this in if instructed to do so.')
 			.slideDown();
 	});
 
@@ -241,6 +260,56 @@ export default () => {
 		// 		}
 		// 	}
 		// });
+	});
+
+	$('a#reset-password').on('click', function(event) {
+		event.preventDefault();
+		$('.signin-modal')
+			.modal('setting', 'transition', 'horizontal flip')
+			.modal('hide', function() {
+				$('.password-reset-modal')
+					.modal('setting', 'transition', 'horizontal flip')
+					.modal('show');
+			});
+	});
+
+	$('button#password-reset-submit').on('click', function(event) {
+		event.preventDefault();
+
+		var email = $('#password-reset-email').val(),
+			$loader = $(this).next(),
+			$message = $(this)
+				.next()
+				.next(),
+			submitErr = function(message) {
+				$loader.removeClass('active');
+				$message.text(message).removeClass('hidden');
+			};
+
+		$loader.addClass('active');
+
+		$.ajax({
+			url: '/account/reset-password',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: JSON.stringify({ email: email }),
+			statusCode: {
+				200: function() {
+					$message.addClass('hidden');
+					$loader.removeClass('active');
+					$('#password-reset-submit').hide();
+					$('.password-reset-modal .ui.info.hidden.message')
+						.removeClass('hidden')
+						.html("We've sent you a password reset email, please check your email for a link to reset your password.");
+				},
+				400: function() {
+					submitErr('Sorry, that request did not look right.');
+				},
+				404: function() {
+					submitErr("Sorry, we don't have an account associated with that verified email address.");
+				}
+			}
+		});
 	});
 
 	// dev: autologin crap remove later

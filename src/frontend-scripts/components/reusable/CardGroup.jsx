@@ -11,7 +11,7 @@ const CardGroup = ({ title, cards, className }) => {
 	const renderedTitle = title ? <h1>{title}</h1> : null;
 
 	return (
-		<div className={classnames(className, 'card-group')}>
+		<div className={classnames(className)}>
 			{renderedTitle}
 			{cards}
 		</div>

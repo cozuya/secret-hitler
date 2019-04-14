@@ -20,6 +20,9 @@
 	.player-list-toggle {
 		position: absolute;
 		color: lightblue;
+		user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
 		text-decoration: underline;
 		right: 80px;
 		top: 10px;
@@ -116,6 +119,10 @@
 		cursor: pointer;
 		position: absolute;
 		left: 5%;
+		color: lightblue;
+		user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
 		top: 10px;
 		text-decoration: underline;
 	}
@@ -171,4 +178,19 @@
 
 .toggle-containers {
 	text-align: center;
+}
+.private {
+	// This game is private
+	color: red;
+	font-weight: bold;
+}
+.casual {
+	// This game is casual
+	color: darkorange;
+	font-weight: bold;
+}
+.custom {
+	// This game is custom
+	color: blue;
+	font-weight: bold;
 }

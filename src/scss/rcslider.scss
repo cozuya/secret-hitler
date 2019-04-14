@@ -17,7 +17,7 @@
 	left: 0;
 	height: 4px;
 	border-radius: 6px;
-	background-color: #3d75b9;
+	background-color: $secondary;
 }
 .rc-slider-handle {
 	position: absolute;
@@ -51,6 +51,9 @@
 	text-align: center;
 	cursor: pointer;
 	color: #999;
+	user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
 }
 .rc-slider-mark-text-active {
 	color: #666;

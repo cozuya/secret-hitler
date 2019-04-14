@@ -9,7 +9,12 @@ describe('App', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
 			notesValue: '',
-			playerNotesValue: ''
+			alertMsg: {
+				data: null,
+				type: null
+			},
+			allEmotes: [],
+			notesValue: ''
 		};
 		const component = shallow(<App userInfo={{ gameSettings: {} }} />);
 

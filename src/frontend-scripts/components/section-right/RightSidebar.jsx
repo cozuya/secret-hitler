@@ -4,15 +4,22 @@ import Generalchat from './Generalchat.jsx';
 import PropTypes from 'prop-types';
 
 const RightSidebar = props => {
-	let classes = 'section-right';
+	let classes = 'ui section-right transition';
 	if (props.midSection === 'game') {
 		classes += ' game';
 	}
 
 	return (
-		<section className={classes}>
+		<section className={classes} id={'playerlist'}>
 			<Playerlist userInfo={props.userInfo} userList={props.userList} socket={props.socket} />
-			<Generalchat gameInfo={props.gameInfo} socket={props.socket} generalChats={props.generalChats} userInfo={props.userInfo} userList={props.userList} />
+			<Generalchat
+				gameInfo={props.gameInfo}
+				socket={props.socket}
+				generalChats={props.generalChats}
+				userInfo={props.userInfo}
+				userList={props.userList}
+				allEmotes={props.allEmotes}
+			/>
 		</section>
 	);
 };
@@ -23,7 +30,8 @@ RightSidebar.propTypes = {
 	socket: PropTypes.object,
 	generalChats: PropTypes.object,
 	userList: PropTypes.object,
-	midSection: PropTypes.string
+	midSection: PropTypes.string,
+	allEmotes: PropTypes.array
 };
 
 export default RightSidebar;

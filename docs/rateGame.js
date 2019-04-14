@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { CURRENTSEASONNUMBER } = require('../src/frontend-scripts/constants');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
 const libWinAdjust = {
 	5: -19.253,
@@ -63,10 +63,10 @@ Game.findOne({}, { chats: 0 })
 				const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
 				const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
 
-				const winningPlayerAdjustment = k * p / winningPlayerNames.length;
-				const losingPlayerAdjustment = -k * p / losingPlayerNames.length;
-				const winningPlayerAdjustmentSeason = k * pSeason / winningPlayerNames.length;
-				const losingPlayerAdjustmentSeason = -k * pSeason / losingPlayerNames.length;
+				const winningPlayerAdjustment = (k * p) / winningPlayerNames.length;
+				const losingPlayerAdjustment = (-k * p) / losingPlayerNames.length;
+				const winningPlayerAdjustmentSeason = (k * pSeason) / winningPlayerNames.length;
+				const losingPlayerAdjustmentSeason = (-k * pSeason) / losingPlayerNames.length;
 
 				accounts.forEach(account => {
 					account.eloOverall = winningPlayerNames.includes(account.username)

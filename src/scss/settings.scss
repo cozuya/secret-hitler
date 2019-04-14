@@ -48,14 +48,14 @@
 	.font-container {
 		input:active ~ label,
 		input:focus ~ label {
-			color: $darkfascistteam;
+			color: $secondary;
 		}
 		label {
-			color: teal;
+			color: $primary;
 			line-height: 1.3;
 
 			&:hover {
-				color: $darkfascistteam;
+				color: $secondary;
 				cursor: pointer;
 			}
 

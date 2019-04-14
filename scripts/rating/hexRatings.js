@@ -1,6 +1,6 @@
 const AllGames = require('./allGames');
 const Account = require('../../models/account');
-const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
+const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 
 const libAdjust = {
 	5: -19.253,

@@ -5,6 +5,9 @@ const extractSass = new ExtractTextPlugin({
 	filename: '../styles/style-main.css',
 	disable: process.env.NODE_ENV === 'development'
 });
+const Dotenv = require('dotenv-webpack');
+
+process.env.NODE_ENV = 'production';
 
 module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
@@ -12,7 +15,25 @@ module.exports = {
 		filename: `bundle.js`,
 		path: path.resolve(__dirname, '../public/scripts')
 	},
-	plugins: [new UglifyJSPlugin()],
+	plugins: [
+		extractSass,
+		new Dotenv({
+			path: path.resolve(__dirname, '..', '.env')
+		})
+	],
+	optimization: {
+		minimizer: [
+			new UglifyJSPlugin({
+				parallel: true,
+				uglifyOptions: {
+					mangle: false,
+					keep_classnames: true,
+					keep_fnames: true
+				}
+			})
+		]
+	},
+	devtool: 'cheap-module-source-map',
 	module: {
 		rules: [
 			{
@@ -54,6 +75,5 @@ module.exports = {
 				})
 			}
 		]
-	},
-	plugins: [extractSass]
+	}
 };

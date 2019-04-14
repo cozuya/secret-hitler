@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS } from '../../constants';
 import { viewPatchNotes } from '../../actions/actions';
 import { Popup } from 'semantic-ui-react';
 import $ from 'jquery';
@@ -198,107 +197,209 @@ class Menu extends React.Component {
 		}
 
 		return (
-			<div className="menu-container">
-				<section className={classes}>
-					<a href="/" target="_blank">
-						SECRET HITLER.io
-					</a>
-					<div className="center-menu-links">
-						<span>
-							<a style={{ textDecoration: 'underline' }} target="_blank" href="/about#TOU">
-								Site Rules
-							</a>{' '}
-							|{' '}
-							<a
-								className={
-									this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
-										? 'patch-alert'
-										: null
-								}
-								onClick={this.props.readPatchNotes}
-							>
-								{' '}
-								{`v${this.props.version.current.number}`}{' '}
-							</a>
-							|{' '}
-							<a target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
-								Feedback
-							</a>{' '}
-							|{' '}
-							<a target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
-								Wiki
-							</a>{' '}
-							|{' '}
-							<a target="_blank" href="https://discord.gg/secrethitlerio">
-								Discord
-							</a>{' '}
-							|{' '}
-							<a target="_blank" href="/polls" style={{ color: 'yellow' }}>
-								New Polls 8/6
-							</a>
-						</span>
-					</div>
-					<div className="item right">
-						{(() => {
-							const { gameInfo, userInfo } = this.props;
-
-							/**
-							 * @return {string} classnames
-							 */
-							const iconClasses = () => {
-								let classes = 'setting icon large';
-
-								if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
-									classes += ' disabled';
-								}
-
-								return classes;
-							};
-
-							return !userInfo.userName ? (
-								<div className="ui buttons">
-									<div className="ui button" id="signin">
-										Log in
-									</div>
-									<div className="or" />
-									<div className="ui button" id="signup">
-										Sign up
-									</div>
-								</div>
-							) : (
-								<div>
-									<Popup
-										inverted
-										className="loggedin"
-										trigger={
-											<a href={`#/profile/${userInfo.userName}`}>
-												<span className="playername">{userInfo.userName}</span>
-											</a>
-										}
-										content="Profile"
-									/>
-									<Popup
-										inverted
-										className="settings-popup"
-										trigger={
-											<a href="#/settings">
-												<i className={iconClasses()} />
-											</a>
-										}
-										content="Settings"
-									/>
-								</div>
-							);
-						})()}
-						{this.props.userInfo.userName && (
-							<div className="item right">
-								<a className="ui button" href="/observe">
-									Logout
+			<div>
+				<div className="menu-container" style={{ zIndex: 9999 }}>
+					<section className={classes}>
+						<a href="/" target="_blank">
+							SECRET HITLER.io
+						</a>
+						<div className="center-menu-links">
+							<span>
+								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
+									Site Rules
+								</a>{' '}
+								|{' '}
+								<a
+									className={
+										this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
+											? 'patch-alert'
+											: null
+									}
+									onClick={this.props.readPatchNotes}
+								>
+									{' '}
+									{`v${this.props.version.current.number}`}{' '}
 								</a>
-							</div>
-						)}
-					</div>
-				</section>
+								|{' '}
+								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
+									Feedback
+								</a>{' '}
+								|{' '}
+								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
+									Wiki
+								</a>{' '}
+								|{' '}
+								<a rel="noopener noreferrer" target="_blank" href="https://discord.gg/secrethitlerio">
+									Discord
+								</a>
+							</span>
+						</div>
+						<div className="item right menu">
+							{(() => {
+								const { gameInfo, userInfo } = this.props;
+
+								/**
+								 * @return {string} classnames
+								 */
+								const iconClasses = () => {
+									let classes = 'setting icon large';
+
+									if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
+										classes += ' disabled';
+									}
+
+									return classes;
+								};
+
+								return !userInfo.userName ? (
+									<div className="ui buttons">
+										<div className="ui button" id="signin">
+											Log in
+										</div>
+										<div className="or" />
+										<div className="ui button" id="signup">
+											Sign up
+										</div>
+									</div>
+								) : (
+									<div>
+										<Popup
+											inverted
+											className="loggedin"
+											trigger={
+												<a href={`#/profile/${userInfo.userName}`}>
+													<span className="playername">{userInfo.userName}</span>
+												</a>
+											}
+											content="Profile"
+										/>
+										<Popup
+											inverted
+											className="settings-popup"
+											trigger={
+												<a href="#/settings">
+													<i className={iconClasses()} />
+												</a>
+											}
+											content="Settings"
+										/>
+									</div>
+								);
+							})()}
+							{this.props.userInfo.userName && (
+								<div className="item right">
+									<a className="ui button" href="/observe">
+										Logout
+									</a>
+								</div>
+							)}
+						</div>
+					</section>
+				</div>
+				<div className="menu-container-mobile" style={{ zIndex: 9999 }}>
+					<section className="nav-menu">
+						<div className="center-menu-links">
+							<span>
+								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
+									Site Rules
+								</a>{' '}
+								|{' '}
+								<a
+									className={
+										this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
+											? 'patch-alert'
+											: null
+									}
+									onClick={this.props.readPatchNotes}
+								>
+									{' '}
+									{`v${this.props.version.current.number}`}{' '}
+								</a>
+								|{' '}
+								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/issues">
+									Feedback
+								</a>{' '}
+								|{' '}
+								<a rel="noopener noreferrer" target="_blank" href="https://github.com/cozuya/secret-hitler/wiki">
+									Wiki
+								</a>{' '}
+								|{' '}
+								<a rel="noopener noreferrer" target="_blank" href="https://discord.gg/secrethitlerio">
+									Discord
+								</a>
+							</span>
+						</div>
+					</section>
+				</div>
+				<div className="menu-container-mobile" style={{ zIndex: 9999 }}>
+					<section className={classes}>
+						<div className="item left menu">
+							{(() => {
+								const { gameInfo, userInfo } = this.props;
+
+								/**
+								 * @return {string} classnames
+								 */
+								const iconClasses = () => {
+									let classes = 'setting icon large';
+
+									if (gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted) {
+										classes += ' disabled';
+									}
+
+									return classes;
+								};
+
+								return !userInfo.userName ? (
+									<div className="ui buttons">
+										<div className="ui button" id="signin">
+											Log in
+										</div>
+										<div className="or" />
+										<div className="ui button" id="signup">
+											Sign up
+										</div>
+									</div>
+								) : (
+									<div>
+										<Popup
+											inverted
+											className="loggedin"
+											trigger={
+												<a href={`#/profile/${userInfo.userName}`}>
+													<span className="playername">{userInfo.userName}</span>
+												</a>
+											}
+											content="Profile"
+										/>
+										<Popup
+											inverted
+											className="settings-popup"
+											trigger={
+												<a href="#/settings">
+													<i className={iconClasses()} />
+												</a>
+											}
+											content="Settings"
+										/>
+									</div>
+								);
+							})()}
+							{this.props.userInfo.userName && (
+								<div className="item right">
+									<a className="ui button" href="/observe">
+										Logout
+									</a>
+								</div>
+							)}
+						</div>
+						<div className="item right menu">
+							<button className="ui button floating primary button" id="chatsidebar">
+								Chat
+							</button>
+						</div>
+					</section>
+				</div>
 			</div>
 		);
 	}
@@ -307,7 +408,12 @@ class Menu extends React.Component {
 Menu.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	midSection: PropTypes.string
+	midSection: PropTypes.string,
+	version: PropTypes.object,
+	readPatchNotes: PropTypes.func
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Menu);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Menu);

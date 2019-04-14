@@ -17,6 +17,8 @@ const Game = new Schema({
 	isTournyFirstRound: Boolean,
 	isTournySecondRound: Boolean,
 	casualGame: Boolean,
+	customGame: Boolean,
+	isVerifiedOnly: Boolean,
 	chats: Array
 });
 

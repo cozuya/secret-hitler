@@ -19,7 +19,7 @@ const combineInProgressChats = (game, userName) =>
  * @param {boolean} noChats - remove chats for client to handle.
  */
 module.exports.sendInProgressGameUpdate = (game, noChats) => {
-	if (!io.sockets.adapter.rooms[game.general.uid]) {
+	if (!game || !io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
 
@@ -140,8 +140,8 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		9: -70.679,
 		10: -31.539
 	};
-	const rk = 12;
-	const nk = 3;
+	const rk = 9;
+	const nk = 4;
 	// Players
 	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
 	// Accounts
@@ -173,4 +173,31 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		ratingUpdates[account.username] = { change, changeSeason };
 	});
 	return ratingUpdates;
+};
+
+module.exports.destroySession = username => {
+	if (process.env.NODE_ENV !== 'production') {
+		const Mongoclient = require('mongodb').MongoClient;
+
+		let mongoClient;
+
+		Mongoclient.connect('mongodb://localhost:27017', { useNewUrlParser: true }, (err, client) => {
+			mongoClient = client;
+		});
+
+		if (!mongoClient) {
+			console.log('WARN: No mongo connection, cannot destroy user session.');
+			return;
+		}
+		mongoClient
+			.db('secret-hitler-app')
+			.collection('sessions')
+			.findOneAndDelete({ 'session.passport.user': username }, err => {
+				if (err) {
+					try {
+						console.log(err, 'err in logoutuser');
+					} catch (error) {}
+				}
+			});
+	}
 };

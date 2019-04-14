@@ -2,39 +2,43 @@ import React from 'react';
 import moment from 'moment';
 import $ from 'jquery';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import Checkbox from 'semantic-ui-checkbox';
+import { Form, Header, Button, Modal } from 'semantic-ui-react';
 
 $.fn.checkbox = Checkbox;
 
 export default class Moderation extends React.Component {
-	constructor() {
-		super();
-
-		this.togglePlayerList = this.togglePlayerList.bind(this);
-		this.broadcastClick = this.broadcastClick.bind(this);
-		this.handleBroadcastSubmit = this.handleBroadcastSubmit.bind(this);
-		this.state = {
-			selectedUser: '',
-			userList: [],
-			actionTextValue: '',
-			log: [],
-			playerListShown: true,
-			broadcastText: '',
-			playerInputText: '',
-			resetServerCount: 0,
-			logCount: 1,
-			modLogToday: false,
-			nonSeasonalSetStats: false,
-			logSort: {
-				type: 'date',
-				direction: 'descending'
-			},
-			userSort: {
-				type: 'username',
-				direction: 'descending'
-			}
-		};
-	}
+	state = {
+		selectedUser: '',
+		userList: [],
+		gameList: [],
+		actionTextValue: '',
+		log: [],
+		playerListState: 0,
+		broadcastText: '',
+		playerInputText: '',
+		resetServerCount: 0,
+		logCount: 1,
+		modLogToday: false,
+		nonSeasonalSetStats: false,
+		logSort: {
+			type: 'date',
+			direction: 'descending'
+		},
+		userSort: {
+			type: 'username',
+			direction: 'descending'
+		},
+		gameSort: {
+			type: 'username',
+			direction: 'descending'
+		},
+		hideActions: false,
+		filterModalVisibility: false,
+		filterValue: '',
+		showGameIcons: false
+	};
 
 	componentDidMount() {
 		const self = this;
@@ -43,16 +47,15 @@ export default class Moderation extends React.Component {
 		socket.on('modInfo', info => {
 			this.setState({
 				userList: info.userList,
-				log: info.modReports
+				gameList: info.gameList,
+				log: info.modReports,
+				hideActions: info.hideActions || false
 			});
 
 			$(this.toggleIpbans).checkbox(info.ipbansNotEnforced.status ? 'set checked' : 'set unchecked');
 			$(this.toggleGameCreation).checkbox(info.gameCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
-		});
-
-		socket.on('sendAlert', ip => {
-			window.alert(ip);
+			$(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? 'set checked' : 'set unchecked');
 		});
 
 		socket.emit('getModInfo', 1);
@@ -141,6 +144,27 @@ export default class Moderation extends React.Component {
 			}
 		});
 
+		$(this.toggleLimitNewPlayers).checkbox({
+			onChecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Enabled limiting new players',
+					action: 'enableLimitNewPlayers'
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Disabled limiting new players',
+					action: 'disableLimitNewPlayers'
+				});
+			}
+		});
+
 		$(this.toggleSeasonalSetstats).checkbox({
 			onChecked() {
 				self.setState({
@@ -159,9 +183,20 @@ export default class Moderation extends React.Component {
 		this.props.socket.off('modInfo');
 	}
 
-	togglePlayerList() {
-		this.setState({ playerListShown: !this.state.playerListShown });
-	}
+	togglePlayerList = () => {
+		if (this.state.playerListState < 2) {
+			this.setState({
+				playerListState: this.state.playerListState + 1,
+				selectedUser: ''
+			});
+		} else {
+			this.setState({
+				playerListState: 0,
+				selectedUser: '',
+				playerInputText: ''
+			});
+		}
+	};
 
 	renderPlayerInput() {
 		const playerInputKeyup = e => {
@@ -175,6 +210,14 @@ export default class Moderation extends React.Component {
 		);
 	}
 
+	routeToGame(gameId) {
+		window.location = `#/table/${gameId}`;
+	}
+
+	fetchReplay(gameId) {
+		window.location = `#/replay/${gameId}`;
+	}
+
 	renderUserlist() {
 		const radioChange = userName => {
 			this.setState({ selectedUser: userName });
@@ -186,6 +229,46 @@ export default class Moderation extends React.Component {
 		const splitIP = ip => {
 			const idx = ip.lastIndexOf('.');
 			return [ip.substring(0, idx - 1), ip.substring(idx + 1)];
+		};
+		const renderStatus = user => {
+			const status = user.status;
+			if (!status || status.type === 'none') {
+				return <i className={'status unclickable icon'} />;
+			} else {
+				const iconClasses = classnames(
+					'status',
+					{ clickable: true },
+					{ search: status.type === 'observing' },
+					{ favIcon: status.type === 'playing' },
+					{ rainbowIcon: status.type === 'rainbow' },
+					{ record: status.type === 'replay' },
+					{ privateIcon: status.type === 'private' },
+					'icon'
+				);
+				const title = {
+					playing: 'This player is playing in a standard game.',
+					observing: 'This player is observing a game.',
+					rainbow: 'This player is playing in a experienced-player-only game.',
+					replay: 'This player is watching a replay.',
+					private: 'This player is playing in a private game.'
+				};
+				const onClick = {
+					playing: this.routeToGame,
+					observing: this.routeToGame,
+					rainbow: this.routeToGame,
+					replay: this.props.fetchReplay,
+					private: this.routeToGame
+				};
+
+				return (
+					<i
+						title={title[status.type]}
+						style={{ width: '1.3em', height: '1.3em' }}
+						className={iconClasses}
+						onClick={onClick[status.type].bind(this, status.gameId)}
+					/>
+				);
+			}
 		};
 		const IPdata = {};
 		ips.forEach(ip => {
@@ -234,25 +317,128 @@ export default class Moderation extends React.Component {
 							onChange={() => {
 								radioChange(user.userName);
 							}}
+							checked={this.state.selectedUser === user.userName}
 						/>
 					</td>
-					<td className={getUserType(user)}>{user.userName}</td>
+					<td className={getUserType(user)} style={{ display: 'flex' }}>
+						{this.state.showGameIcons && renderStatus(user)}
+						<a className={getUserType(user)} href={`/game/#/profile/${user.userName}`}>
+							{user.userName}
+						</a>
+					</td>
 					<td className={getIPType(user)}>{user.ip}</td>
 					<td className={checkEmail(user.email)}>{user.email.substring(1)}</td>
 				</tr>
 			));
 	}
 
+	renderGameList() {
+		const gameRadioChange = game => {
+			this.setState({ playerInputText: game.uid });
+		};
+		const { gameList, gameSort } = this.state;
+		const getGameType = game => {
+			if (game.custom) return 'custom';
+			if (game.casual) return 'casual';
+			if (game.private) return 'private';
+			return '';
+		};
+		return gameList
+			.sort((a, b) =>
+				(() => {
+					const getAmt = (a, b) => {
+						if (gameSort.type === 'uid' && a.uid != b.uid) return a.uid > b.uid ? 1 : -1;
+						if (gameSort.type === 'electionNum' && a.electionNum != b.electionNum) return a.electionNum > b.electionNum ? 1 : -1;
+						return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+					};
+					return getAmt(a, b) * (gameSort.direction === 'descending' ? 1 : -1);
+				})()
+			)
+			.map((game, index) => (
+				<tr key={index}>
+					<td>
+						<input
+							type="radio"
+							name="games"
+							onChange={() => {
+								gameRadioChange(game);
+							}}
+							checked={this.state.playerInputText === game.uid}
+						/>
+					</td>
+					<td className={getGameType(game)}>{game.name}</td>
+					<td>
+						<a href={`/game/#/table/${game.uid}`}>{game.uid}</a>
+					</td>
+					<td>{game.electionNum}</td>
+				</tr>
+			));
+	}
+
+	renderGameButtons() {
+		const takeModAction = action => {
+			this.props.socket.emit('updateModAction', {
+				modName: this.props.userInfo.userName,
+				userName:
+					action === 'deleteGame'
+						? `DELGAME${this.state.playerInputText}`
+						: action === 'resetGameName'
+						? `RESETGAMENAME${this.state.playerInputText}`
+						: this.state.playerInputText || this.state.selectedUser,
+				ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+				comment: this.state.actionTextValue,
+				action
+			});
+			this.setState({
+				selectedUser: '',
+				actionTextValue: '',
+				playerInputText: ''
+			});
+		};
+
+		const { playerInputText } = this.state;
+
+		return (
+			<div className="button-container">
+				<button
+					style={{ width: '100%', background: '#0ca51d' }}
+					className={playerInputText ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('resetGameName');
+					}}
+				>
+					Reset game name
+				</button>
+				<button
+					style={{ width: '100%', background: 'indianred' }}
+					className={playerInputText ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('deleteGame');
+					}}
+				>
+					Delete game
+				</button>
+			</div>
+		);
+	}
+
 	renderButtons() {
+		const { socket, userInfo } = this.props;
+		const { playerInputText, selectedUser, userList, actionTextValue } = this.state;
 		const takeModAction = action => {
 			if (action === 'resetServer' && !this.state.resetServerCount) {
 				this.setState({ resetServerCount: 1 });
 			} else {
-				this.props.socket.emit('updateModAction', {
-					modName: this.props.userInfo.userName,
-					userName: action === 'deleteGame' ? `DELGAME${this.state.playerInputText}` : this.state.playerInputText || this.state.selectedUser,
-					ip: this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
-					comment: this.state.actionTextValue,
+				socket.emit('updateModAction', {
+					modName: userInfo.userName,
+					userName:
+						action === 'deleteGame'
+							? `DELGAME${playerInputText}`
+							: action === 'resetGameName'
+							? `RESETGAMENAME${playerInputText}`
+							: playerInputText || selectedUser,
+					ip: playerInputText ? '' : selectedUser ? userList.find(user => user.userName === selectedUser).ip : '',
+					comment: actionTextValue,
 					action
 				});
 				this.setState({
@@ -262,8 +448,6 @@ export default class Moderation extends React.Component {
 				});
 			}
 		};
-		const { selectedUser, actionTextValue, playerInputText } = this.state;
-		const { userInfo } = this.props;
 
 		return (
 			<div className="button-container">
@@ -341,7 +525,7 @@ export default class Moderation extends React.Component {
 						takeModAction('deleteCardback');
 					}}
 				>
-					Delete player cardback and log out
+					Delete player cardback
 				</button>
 				<button
 					style={{ width: '100%', background: 'palevioletred' }}
@@ -362,6 +546,15 @@ export default class Moderation extends React.Component {
 					Delete game
 				</button>
 				<button
+					style={{ width: '100%', background: '#0ca51d' }}
+					className={playerInputText ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('resetGameName');
+					}}
+				>
+					Reset game name
+				</button>
+				<button
 					style={{ width: '100%', background: 'darkorange' }}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
 					onClick={() => {
@@ -371,13 +564,31 @@ export default class Moderation extends React.Component {
 					Set general chat sticky
 				</button>
 				<button
-					style={{ width: '100%', background: 'aquamarine' }}
+					style={{ width: '100%', background: 'skyblue' }}
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
 						takeModAction('deleteBio');
 					}}
 				>
 					Delete/clear player bio
+				</button>
+				<button
+					style={{ width: '100%', background: '#e05543' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('logoutUser');
+					}}
+				>
+					Logout User
+				</button>
+				<button
+					style={{ width: '100%', background: 'royalblue' }}
+					className={'ui button'}
+					onClick={() => {
+						takeModAction('makeBypass');
+					}}
+				>
+					Create login bypass key
 				</button>
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable account creation</h4>
@@ -412,6 +623,17 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="ipbans" />
 					</div>
 				</div>
+				<div className="toggle-containers">
+					<h4 className="ui header">Limit new player actions</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleLimitNewPlayers = c;
+						}}
+					>
+						<input type="checkbox" name="ipbans" />
+					</div>
+				</div>
 				<br />
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -430,10 +652,14 @@ export default class Moderation extends React.Component {
 				>
 					Restore IP - Remove any pre-existing IP ban.
 				</button>
-				<div className="ui horizontal divider">-</div>
+				<div className="ui horizontal divider">Editors/Admins Only</div>
 
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
 					onClick={() => {
 						takeModAction({
 							type: `setWins${this.state.actionTextValue}`,
@@ -444,7 +670,11 @@ export default class Moderation extends React.Component {
 					Set wins
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
 					onClick={() => {
 						takeModAction({
 							type: `setLosses${this.state.actionTextValue}`,
@@ -455,7 +685,11 @@ export default class Moderation extends React.Component {
 					Set losses
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
 					onClick={() => {
 						takeModAction({
 							type: `setRWins${this.state.actionTextValue}`,
@@ -466,7 +700,11 @@ export default class Moderation extends React.Component {
 					Set R wins
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button tier3' : 'ui button disabled tier3'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button tier3'
+							: 'ui button disabled tier3'
+					}
 					onClick={() => {
 						takeModAction({
 							type: `setRLosses${this.state.actionTextValue}`,
@@ -488,7 +726,24 @@ export default class Moderation extends React.Component {
 					</div>
 				</div>
 				<button
-					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
+					style={{ background: 'lime', color: 'black' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('rainbowUser');
+					}}
+				>
+					Rainbow user
+				</button>
+				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ib'
+							: 'ui button disabled ib'
+					}
 					onClick={() => {
 						takeModAction('getIP');
 					}}
@@ -521,13 +776,56 @@ export default class Moderation extends React.Component {
 					Ban and IP ban for 1 week
 				</button>
 				<button
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					style={{ background: 'magenta' }}
+					onClick={() => {
+						takeModAction('fragbanSmall');
+					}}
+				>
+					Ban IP fragment (xxx.xxx or xxx.xxx.xxx) for 18 hours
+				</button>
+				<button
+					style={{ background: 'darkmagenta' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('fragbanLarge');
+					}}
+				>
+					Ban IP fragment (xxx.xxx or xxx.xxx.xxx) for 1 week
+				</button>
+				<button
 					style={{ background: 'crimson' }}
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction('deleteUser');
 					}}
 				>
 					Delete user
+				</button>
+				<button
+					style={{ background: '#f78d59' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('renameUser');
+					}}
+				>
+					Rename user
 				</button>
 				<button
 					style={{ background: 'darkblue' }}
@@ -543,6 +841,32 @@ export default class Moderation extends React.Component {
 					Delete/reset player profile
 				</button>
 				<button
+					style={{ background: '#21bae0' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('removeContributor');
+					}}
+				>
+					Remove Contributor Role
+				</button>
+				<button
+					style={{ background: '#21bae0' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToContributor');
+					}}
+				>
+					Promote to Contributor Role
+				</button>
+				<button
 					style={{ background: 'grey' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -553,20 +877,7 @@ export default class Moderation extends React.Component {
 						takeModAction('removeStaffRole');
 					}}
 				>
-					Remove mod or editor status and log them out
-				</button>
-				<button
-					style={{ background: 'blueviolet' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('promoteToMod');
-					}}
-				>
-					Promote player to mod
+					Remove Staff Role
 				</button>
 				<button
 					style={{ background: 'violet' }}
@@ -576,10 +887,49 @@ export default class Moderation extends React.Component {
 							: 'ui button disabled ipban-button'
 					}
 					onClick={() => {
+						takeModAction('promoteToAltMod');
+					}}
+				>
+					Assign to Staff Role - AEM Alt
+				</button>
+				<button
+					style={{ background: 'purple' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToTrialMod');
+					}}
+				>
+					Promote to Staff Role - Trial Mod
+				</button>
+				<button
+					style={{ background: '#007fff' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToMod');
+					}}
+				>
+					Promote to Staff Role - Mod
+				</button>
+				<button
+					style={{ background: '#05bba0' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
 						takeModAction('promoteToEditor');
 					}}
 				>
-					Promote player to editor
+					Promote to Staff Role - Editor
 				</button>
 				<button
 					style={{ background: 'black' }}
@@ -599,7 +949,7 @@ export default class Moderation extends React.Component {
 	}
 
 	renderModLog() {
-		const { logSort } = this.state;
+		const { logSort, logCount } = this.state;
 		const clickSort = type => {
 			this.setState({
 				logSort: {
@@ -616,7 +966,7 @@ export default class Moderation extends React.Component {
 					logCount: this.state.logCount + 1
 				},
 				() => {
-					this.props.socket.emit('getModInfo', this.state.logCount);
+					this.props.socket.emit('getModInfo', logCount);
 				}
 			);
 		};
@@ -638,6 +988,7 @@ export default class Moderation extends React.Component {
 			timeOut4: 'Timeout 6 hours',
 			clearTimeout: 'Clear Timeout',
 			clearTimeoutIP: 'Clear IP Ban',
+			modEndGame: 'End Game',
 			deleteGame: 'Delete Game',
 			enableIpBans: 'Enable IP Bans',
 			disableIpBans: 'Disable IP Bans',
@@ -649,10 +1000,20 @@ export default class Moderation extends React.Component {
 			clearGenchat: 'Clear General Chat',
 			deleteUser: 'Delete User',
 			deleteBio: 'Delete Bio',
+			deleteProfile: 'Delete Profile',
 			deleteCardback: 'Delete Cardback',
+			removeContributor: 'Remove Contributor Role',
+			resetGameName: 'Reset Game Name',
+			rainbowUser: 'Grant Rainbow',
 			removeStaffRole: 'Remove Staff Role',
+			promoteToContributor: 'Promote (Contributor)',
+			promoteToAltMod: 'Assign (AEM Alt)',
+			promoteToTrialMod: 'Promote (Trial Mod)',
 			promoteToMod: 'Promote (Mod)',
-			promoteToEditor: 'Promote (Editor)'
+			promoteToEditor: 'Promote (Editor)',
+			makeBypass: 'Create Bypass Key',
+			bypassKeyUsed: 'Consume Bypass Key',
+			resetServer: 'Server Restart'
 		};
 
 		return (
@@ -685,7 +1046,7 @@ export default class Moderation extends React.Component {
 								Action {logSort.type === 'actionTaken' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 							</th>
 							<th
-								style={{ whiteSpace: 'nowrap' }}
+								style={{ whiteSpace: 'normal' }}
 								onClick={() => {
 									clickSort('userActedOn');
 								}}
@@ -748,9 +1109,15 @@ export default class Moderation extends React.Component {
 									<td style={{ whiteSpace: 'nowrap' }}>{report.modUserName}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
 									<td style={{ width: '120px', minWidth: '120px' }}>{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}</td>
-									<td style={{ whiteSpace: 'nowrap' }}>{report.userActedOn}</td>
+									<td style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px', minWidth: '120px' }}>{report.userActedOn}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.ip}</td>
-									<td style={{ Width: '200px', minWidth: '200px' }}>{report.modNotes.replace('\n', '<br>')}</td>
+									<td style={{ Width: '200px', minWidth: '200px' }}>
+										{report.modNotes.split('\n').map((v, index) => (
+											<p key={index} style={{ margin: '0px' }}>
+												{v}
+											</p>
+										))}
+									</td>
 								</tr>
 							))}
 					</tbody>
@@ -770,13 +1137,13 @@ export default class Moderation extends React.Component {
 		return <textarea placeholder="Comment" value={this.state.actionTextValue} onChange={handleTextChange} spellCheck="false" />;
 	}
 
-	broadcastClick(e) {
+	broadcastClick = e => {
 		e.preventDefault();
 
 		$(this.bModal).modal('show');
-	}
+	};
 
-	handleBroadcastSubmit(e) {
+	handleBroadcastSubmit = e => {
 		e.preventDefault();
 		$(this.bModal).modal('hide');
 
@@ -790,10 +1157,10 @@ export default class Moderation extends React.Component {
 		this.setState({
 			broadcastText: ''
 		});
-	}
+	};
 
 	render() {
-		const { userSort } = this.state;
+		const { userSort, hideActions } = this.state;
 
 		const broadcastKeyup = e => {
 			this.setState({
@@ -822,38 +1189,62 @@ export default class Moderation extends React.Component {
 				<a href="#/">
 					<i className="remove icon" />
 				</a>
-				<h2>Moderation</h2>
-				<a className="broadcast" href="#" onClick={this.broadcastClick}>
-					Broadcast
-				</a>
-				<span onClick={this.togglePlayerList} className="player-list-toggle">
-					show/hide playerlist
+				<h2 style={{ userSelect: 'none', WebkitUserSelect: 'none', MsUserSelect: 'none' }}>Moderation</h2>
+				{!hideActions && (
+					<a className="broadcast" href="#" onClick={this.broadcastClick}>
+						Broadcast
+					</a>
+				)}
+				<span
+					className="gameIcons"
+					onClick={() =>
+						this.setState({
+							showGameIcons: !this.state.showGameIcons
+						})
+					}
+				>
+					Show/Hide Game Icons
 				</span>
+				<span className="refreshModlog" onClick={() => this.props.socket.emit('getModInfo', 1)}>
+					Refresh
+					<i className="icon repeat" id="modlogRefresh" />
+				</span>
+				<span onClick={this.togglePlayerList} className="player-list-toggle">
+					Toggle Player/Game List
+				</span>
+
 				<div>
-					{this.state.playerListShown && (
+					{this.state.playerListState === 0 && (
 						<div className="modplayerlist">
 							<h3>Current player list</h3>
 							<div className="ui table">
-								<h4>Colour chart:</h4>
-								<span class="istor">User is playing via the TOR network.</span>
+								<h4>Color chart:</h4>
+								<span className="istor">User is playing via the TOR network.</span>
 								<br />
-								<span class="isbannedbefore">User has been banned before.</span>
+								<span className="isbannedbefore">User has been banned before.</span>
 								<br />
-								<span class="istimedbefore">User has been timed before.</span>
+								<span className="istimedbefore">User has been timed before.</span>
 								<br />
-								<span class="multi">IP fully matches another IP.</span>
+								<span className="multi">IP fully matches another IP.</span>
 								<br />
-								<span class="multi2">IP mostly matches another IP.</span>
+								<span className="multi2">IP mostly matches another IP.</span>
 								<br />
-								<span class="emailunverified">Email is not yet verified.</span>
+								<span className="emailunverified">Email is not yet verified.</span>
 								<br />
 							</div>
+							{!hideActions && (
+								<span>
+									<div className="ui horizontal divider">-</div>
+									{this.renderPlayerInput()}
+									<div className="ui horizontal divider">or</div>
+								</span>
+							)}
 							<table className="ui celled table userlist">
 								<thead>
 									<tr>
 										<th />
 										<th
-											style={{ 'white-space': 'nowrap' }}
+											style={{ whiteSpace: 'nowrap' }}
 											onClick={() => {
 												clickSort('username');
 											}}
@@ -861,7 +1252,7 @@ export default class Moderation extends React.Component {
 											Username {userSort.type === 'username' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 										</th>
 										<th
-											style={{ 'white-space': 'nowrap' }}
+											style={{ whiteSpace: 'nowrap' }}
 											onClick={() => {
 												clickSort('IP');
 											}}
@@ -869,7 +1260,7 @@ export default class Moderation extends React.Component {
 											IP {userSort.type === 'IP' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
 										</th>
 										<th
-											style={{ 'white-space': 'nowrap' }}
+											style={{ whiteSpace: 'nowrap' }}
 											onClick={() => {
 												clickSort('email');
 											}}
@@ -880,11 +1271,73 @@ export default class Moderation extends React.Component {
 								</thead>
 								<tbody>{this.renderUserlist()}</tbody>
 							</table>
-							<div className="ui horizontal divider">or</div>
-							{this.renderPlayerInput()}
-							<div className="ui horizontal divider">-</div>
-							{this.renderActionText()}
-							{this.renderButtons()}
+							{!hideActions && (
+								<span>
+									<div className="ui horizontal divider">-</div>
+									{this.renderActionText()}
+									{this.renderButtons()}
+								</span>
+							)}
+						</div>
+					)}
+					{this.state.playerListState === 1 && (
+						<div className="modplayerlist">
+							<h3>Current Game List</h3>
+							<div className="ui table">
+								<h4>Color chart:</h4>
+								<span className="casual">This game is casual</span>
+								<br />
+								<span className="private">This game is private</span>
+								<br />
+								<span className="custom">This game is custom</span>
+							</div>
+							{!hideActions && (
+								<span>
+									<div className="ui horizontal divider">-</div>
+									{this.renderPlayerInput()}
+									<div className="ui horizontal divider">or</div>
+								</span>
+							)}
+							<table className="ui celled table userlist">
+								<thead>
+									<tr>
+										<th />
+										<th
+											style={{ whiteSpace: 'nowrap' }}
+											onClick={() => {
+												clickSort('gamename');
+											}}
+										>
+											Game Name {userSort.type === 'gamename' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+										<th
+											style={{ whiteSpace: 'nowrap' }}
+											onClick={() => {
+												clickSort('uid');
+											}}
+										>
+											UID {userSort.type === 'uid' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+										<th
+											style={{ whiteSpace: 'nowrap' }}
+											onClick={() => {
+												clickSort('electionnum');
+											}}
+										>
+											Election #{' '}
+											{userSort.type === 'electionnum' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+										</th>
+									</tr>
+								</thead>
+								<tbody>{this.renderGameList()}</tbody>
+							</table>
+							{!hideActions && (
+								<span>
+									<div className="ui horizontal divider">-</div>
+									{this.renderActionText()}
+									{this.renderGameButtons()}
+								</span>
+							)}
 						</div>
 					)}
 					<div className="modlog" style={{ maxWidth: this.state.playerListShown ? '60%' : '100%' }}>
@@ -893,6 +1346,70 @@ export default class Moderation extends React.Component {
 							<a href="#" onClick={toggleModLogToday} style={{ textDecoration: 'underline', fontSize: '12px' }}>
 								{this.state.modLogToday ? 'Show all' : 'Show today only'}
 							</a>
+							<Button
+								onClick={() => {
+									this.setState({ filterModalVisibility: true, filterValue: '' });
+								}}
+								primary
+								style={{ padding: '5px', marginLeft: '5px' }}
+							>
+								Filter
+							</Button>
+							<Modal
+								open={this.state.filterModalVisibility}
+								size="small"
+								onClose={() => {
+									this.setState({ filterModalVisibility: false });
+								}}
+								style={{ padding: '5px' }}
+								onSubmit={() => {
+									this.setState({
+										filterModalVisibility: false
+									});
+
+									if (!this.state.filterValue) {
+										this.props.socket.emit('getModInfo', 1);
+									} else {
+										this.props.socket.emit('updateModAction', {
+											modName: this.props.userInfo.userName,
+											userName: '',
+											ip: '',
+											comment: this.state.filterValue,
+											action: 'getFilteredData'
+										});
+									}
+								}}
+							>
+								<Header content="Filter mod actions" />
+								<Form>
+									<Form.Field>
+										<label>Filter by username, IP address, or start of IP address</label>
+										<input
+											autoFocus
+											value={this.state.filterValue}
+											onChange={e => {
+												this.setState({
+													filterValue: e.target.value
+												});
+											}}
+										/>
+									</Form.Field>
+									<Button secondary type="submit">
+										Submit
+									</Button>
+									<Button
+										onClick={() => {
+											this.setState({
+												filterModalVisibility: false,
+												filterValue: ''
+											});
+											this.props.socket.emit('getModInfo', 1);
+										}}
+									>
+										Clear filter
+									</Button>
+								</Form>
+							</Modal>
 						</h3>
 						{this.renderModLog()}
 					</div>
@@ -932,5 +1449,6 @@ export default class Moderation extends React.Component {
 
 Moderation.propTypes = {
 	userInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
+	fetchReplay: PropTypes.func
 };

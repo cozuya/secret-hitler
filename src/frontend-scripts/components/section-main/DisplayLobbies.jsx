@@ -1,7 +1,7 @@
 import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { PLAYERCOLORS, CURRENTSEASONNUMBER } from '../../constants';
+import { PLAYERCOLORS } from '../../constants';
 
 const DisplayLobbies = props => {
 	const { game, userInfo, userList } = props;
@@ -81,13 +81,18 @@ const DisplayLobbies = props => {
 		let isVerifiedOnlyTooltip;
 		let eloMinimum;
 		let eloMinimumTooltip;
+		let customgameactive;
+		let customgameactiveTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
 			casualGameTooltip = 'Casual game - results do not count for wins or losses';
 		}
 
-		if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
+		if (game.isCustomGame) {
+			customgameactive = <i className="setting icon" />;
+			customgameactiveTooltip = 'Custom Game';
+		} else if (game.rebalance6p || game.rebalance7p || game.rebalance9p) {
 			// ugly but lazy
 			if (game.rebalance6p && game.rebalance7p && game.rebalance9p) {
 				rebalance = <div> R679 </div>;
@@ -180,6 +185,11 @@ const DisplayLobbies = props => {
 
 		return (
 			<div className="options-icons-container">
+				{game.isCustomGame && (
+					<span className="customgame" data-tooltip={customgameactiveTooltip} data-inverted="">
+						{customgameactive}
+					</span>
+				)}
 				{casualGame && (
 					<span data-tooltip={casualGameTooltip} data-inverted="">
 						{casualGame}
@@ -262,10 +272,12 @@ const DisplayLobbies = props => {
 			if (userStats) {
 				players[index].wins = userStats.wins;
 				players[index].losses = userStats.losses;
-				players[index][`winsSeason${CURRENTSEASONNUMBER}`] = userStats[`winsSeason${CURRENTSEASONNUMBER}`];
-				players[index][`lossesSeason${CURRENTSEASONNUMBER}`] = userStats[`lossesSeason${CURRENTSEASONNUMBER}`];
+				players[index].winsSeason = userStats.winsSeason;
+				players[index].lossesSeason = userStats.lossesSeason;
 				players[index].eloOverall = userStats.eloOverall;
 				players[index].eloSeason = userStats.eloSeason;
+				players[index].staffRole = userStats.staffRole;
+				players[index].isContributor = userStats.isContributor;
 			}
 		});
 
@@ -401,7 +413,7 @@ const DisplayLobbies = props => {
 						<div className="gamename-column">
 							{renderFlag()}
 							{game.name}
-							{userInfo.staffRole && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
+							{userInfo.staffRole && userInfo.staffRole !== 'altmod' && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
 						</div>
 						<div className="options-column experienced">{optionIcons()}</div>
 					</div>

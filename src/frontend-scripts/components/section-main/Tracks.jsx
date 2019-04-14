@@ -24,6 +24,29 @@ class Tracks extends React.Component {
 				new Notification(data);
 			});
 		}
+
+		if (this.props.socket) {
+			this.props.socket.on('updateRemakeStatus', status => {
+				this.setState(
+					{
+						remakeStatus: status,
+						remakeStatusDisabled: true
+					},
+					() => {
+						setTimeout(
+							() => {
+								if (this._ismounted) {
+									this.setState({
+										remakeStatusDisabled: false
+									});
+								}
+							},
+							this.state.remakeStatus ? 2000 : 5000
+						);
+					}
+				);
+			});
+		}
 	}
 
 	componentWillUnmount() {
@@ -109,21 +132,25 @@ class Tracks extends React.Component {
 		let isVerifiedOnlyTooltip;
 		let eloMinimum;
 		let eloMinimumTooltip;
+		let customgameactive;
+		const customgameactiveTooltip = 'Custom Game';
 
-		{
+		if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
+			customgameactive = <i className="setting icon" />;
+		} else {
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
 				? ((rebalance69p = <div> R679 </div>), (rebalance69pTooltip = 'Rebalanced 6, 7, & 9 player games'))
 				: game.rebalance6p && game.rebalance7p
-					? ((rebalance69p = <div> R67 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 7 player games'))
-					: game.rebalance6p && game.rebalance9p
-						? ((rebalance69p = <div> R69 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 9 player games'))
-						: game.rebalance7p && game.rebalance9p
-							? ((rebalance69p = <div> R79 </div>), (rebalance69pTooltip = 'Rebalanced 7 & 9 player games'))
-							: game.rebalance6p
-								? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
-								: game.rebalance7p
-									? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
-									: ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'));
+				? ((rebalance69p = <div> R67 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 7 player games'))
+				: game.rebalance6p && game.rebalance9p
+				? ((rebalance69p = <div> R69 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 9 player games'))
+				: game.rebalance7p && game.rebalance9p
+				? ((rebalance69p = <div> R79 </div>), (rebalance69pTooltip = 'Rebalanced 7 & 9 player games'))
+				: game.rebalance6p
+				? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
+				: game.rebalance7p
+				? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
+				: ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'));
 		}
 
 		if (game.disableChat) {
@@ -194,59 +221,64 @@ class Tracks extends React.Component {
 
 		return (
 			<div className="options-icons-container">
+				{gameInfo.customGameSettings && gameInfo.customGameSettings.enabled && (
+					<span className="customgame">
+						<Popup style={{ zIndex: 999999 }} inverted trigger={customgameactive} content={customgameactiveTooltip} />
+					</span>
+				)}
 				{rebalance69p && (
 					<span className="rebalanced">
-						<Popup inverted trigger={rebalance69p} content={rebalance69pTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={rebalance69p} content={rebalance69pTooltip} />
 					</span>
 				)}
 				{disableChat && (
 					<span>
-						<Popup inverted trigger={disableChat} content={disableChatTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={disableChat} content={disableChatTooltip} />
 					</span>
 				)}
 				{disableGamechat && (
 					<span>
-						<Popup inverted trigger={disableGamechat} content={disableGamechatTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={disableGamechat} content={disableGamechatTooltip} />
 					</span>
 				)}
 				{experiencedMode && (
 					<span>
-						<Popup inverted trigger={experiencedMode} content={experiancedModeTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={experiencedMode} content={experiancedModeTooltip} />
 					</span>
 				)}
 				{privateOnly && (
 					<span>
-						<Popup inverted trigger={privateOnly} content={privateOnlyTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={privateOnly} content={privateOnlyTooltip} />
 					</span>
 				)}
 				{priv && (
 					<span>
-						<Popup inverted trigger={priv} content={privTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={priv} content={privTooltip} />
 					</span>
 				)}
 				{rainbowgame && (
 					<span>
-						<Popup inverted trigger={rainbowgame} content={rainbowgameTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={rainbowgame} content={rainbowgameTooltip} />
 					</span>
 				)}
 				{casualgame && (
 					<span>
-						<Popup inverted trigger={casualgame} content={casualgameTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={casualgame} content={casualgameTooltip} />
 					</span>
 				)}
 				{timedMode && (
 					<span>
-						<Popup inverted trigger={timedMode} content={timedModeTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={timedMode} content={timedModeTooltip} />
 					</span>
 				)}
 				{isVerifiedOnly && (
 					<span>
-						<Popup inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={isVerifiedOnly} content={isVerifiedOnlyTooltip} />
 					</span>
 				)}
 				{eloMinimum && (
 					<span>
-						<Popup inverted trigger={eloMinimum} content={eloMinimumTooltip} />
+						<Popup style={{ zIndex: 999999 }} inverted trigger={eloMinimum} content={eloMinimumTooltip} />
 					</span>
 				)}
 			</div>
@@ -277,26 +309,232 @@ class Tracks extends React.Component {
 
 		const updateRemake = () => {
 			if (!this.state.remakeStatusDisabled) {
-				this.setState(
-					{
-						remakeStatus: !this.state.remakeStatus,
-						remakeStatusDisabled: true
-					},
-					() => {
-						this.props.socket.emit('updateRemake', {
-							remakeStatus: this.state.remakeStatus,
-							uid: gameInfo.general.uid
-						});
-					}
-				);
+				this.props.socket.emit('updateRemake', {
+					remakeStatus: !this.state.remakeStatus,
+					uid: gameInfo.general.uid
+				});
+			}
+		};
 
-				setTimeout(() => {
-					if (this._ismounted) {
-						this.setState({
-							remakeStatusDisabled: false
-						});
+		const renderFasTrack = () => {
+			if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
+				const offX = -8;
+				const offY = -8;
+
+				let powers = [];
+				let numFas = 0;
+				let hzStart = 3;
+				let vzPoint = 5;
+				let hitKnowsFas = false;
+
+				if (gameInfo.customGameSettings.powers) {
+					// Only need to detect one property, either they're all there or none are.
+					powers = gameInfo.customGameSettings.powers.map(p => {
+						if (p == null) return 'None';
+						if (p == 'investigate') return 'Inv';
+						if (p == 'deckpeek') return 'Peek';
+						if (p == 'election') return 'Elect';
+						if (p == 'bullet') return 'Gun';
+						if (p == 'reverseinv') return 'ReverseInv';
+						if (p == 'peekdrop') return 'PeekDrop';
+
+						console.log(`Unknown power: ${p}`);
+						return null;
+					});
+					numFas = gameInfo.customGameSettings.fascistCount;
+					hzStart = gameInfo.customGameSettings.hitlerZone;
+					vzPoint = gameInfo.customGameSettings.vetoZone;
+					hitKnowsFas = gameInfo.customGameSettings.hitKnowsFas;
+				} else {
+					// Should only happen before a game starts, but as a precaution typical settings are used.
+					if (gameInfo.general.playerCount < 7) {
+						powers = ['None', 'None', 'Peek', 'Gun', 'Gun'];
+						numFas = 1;
+						hitKnowsFas = true;
+					} else if (gameInfo.general.playerCount < 9) {
+						powers = ['None', 'Inv', 'Elect', 'Gun', 'Gun'];
+						numFas = 2;
+					} else {
+						powers = ['Inv', 'Inv', 'Elect', 'Gun', 'Gun'];
+						numFas = 3;
 					}
-				}, this.state.remakeStatus ? 10000 : 2000);
+				}
+
+				const getHZ = pos => {
+					if (pos < hzStart) return 'Off';
+					if (pos > hzStart) return 'On';
+					return 'Start';
+				};
+
+				return (
+					<div className="track bottom-track-back custom-fastrack-base">
+						<span
+							style={{
+								width: '92px',
+								height: '120px',
+								left: `${offX + 137}px`,
+								top: `${offY + 58}px`,
+								position: 'absolute',
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(1)}.png)`
+							}}
+						/>
+						<span
+							style={{
+								width: '92px',
+								height: '120px',
+								left: `${offX + 229}px`,
+								top: `${offY + 58}px`,
+								position: 'absolute',
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(2)}.png)`
+							}}
+						/>
+						<span
+							style={{
+								width: '92px',
+								height: '120px',
+								left: `${offX + 321}px`,
+								top: `${offY + 58}px`,
+								position: 'absolute',
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(3)}.png)`
+							}}
+						/>
+						<span
+							style={{
+								width: '92px',
+								height: '120px',
+								left: `${offX + 413}px`,
+								top: `${offY + 58}px`,
+								position: 'absolute',
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(4)}.png)`
+							}}
+						/>
+						<span
+							style={{
+								width: '92px',
+								height: '120px',
+								left: `${offX + 505}px`,
+								top: `${offY + 58}px`,
+								position: 'absolute',
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(5)}.png)`
+							}}
+						/>
+
+						<span
+							className="custom-fastrack-powerslot"
+							style={{
+								left: `${offX + 58}px`,
+								top: `${offY + 58}px`,
+								backgroundImage: `url(../images/customtracks/fasPower${powers[0]}${hzStart <= 0 ? 'Light' : ''}.png)`
+							}}
+						>
+							{vzPoint == 1 && (
+								<span className={'custom-fastrack-powerslot ' + (hzStart <= 0 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+							)}
+						</span>
+						<span
+							className="custom-fastrack-powerslot"
+							style={{
+								left: `${offX + 150}px`,
+								top: `${offY + 58}px`,
+								backgroundImage: `url(../images/customtracks/fasPower${powers[1]}${hzStart <= 1 ? 'Light' : ''}.png)`
+							}}
+						>
+							{vzPoint == 2 && (
+								<span className={'custom-fastrack-powerslot ' + (hzStart <= 1 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+							)}
+						</span>
+						<span
+							className="custom-fastrack-powerslot"
+							style={{
+								left: `${offX + 242}px`,
+								top: `${offY + 58}px`,
+								backgroundImage: `url(../images/customtracks/fasPower${powers[2]}${hzStart <= 2 ? 'Light' : ''}.png)`
+							}}
+						>
+							{vzPoint == 3 && (
+								<span className={'custom-fastrack-powerslot ' + (hzStart <= 2 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+							)}
+						</span>
+						<span
+							className="custom-fastrack-powerslot"
+							style={{
+								left: `${offX + 334}px`,
+								top: `${offY + 58}px`,
+								backgroundImage: `url(../images/customtracks/fasPower${powers[3]}${hzStart <= 3 ? 'Light' : ''}.png)`
+							}}
+						>
+							{vzPoint == 4 && (
+								<span className={'custom-fastrack-powerslot ' + (hzStart <= 3 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+							)}
+						</span>
+						<span
+							className="custom-fastrack-powerslot"
+							style={{
+								left: `${offX + 426}px`,
+								top: `${offY + 58}px`,
+								backgroundImage: `url(../images/customtracks/fasPower${powers[4]}${hzStart <= 4 ? 'Light' : ''}.png)`
+							}}
+						>
+							{vzPoint == 5 && (
+								<span className={'custom-fastrack-powerslot ' + (hzStart <= 4 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+							)}
+						</span>
+						<span
+							className="custom-fastrack-powerslot"
+							style={{ left: `${offX + 518}px`, top: `${offY + 58}px`, backgroundImage: 'url(../images/customtracks/fasPowerEndGame.png)' }}
+						/>
+
+						<span
+							style={{
+								width: '268px',
+								height: '15px',
+								left: `${offX + 336}px`,
+								top: `${offY + 60}px`,
+								position: 'absolute',
+								backgroundImage: 'url(../images/customtracks/fasTrackHZText.png)'
+							}}
+						/>
+
+						<span
+							style={{
+								width: '227px',
+								height: '11px',
+								left: `${offX + 220}px`,
+								top: `${offY + 186}px`,
+								position: 'absolute',
+								backgroundImage: `url(../images/customtracks/fasTrack${numFas}fas.png)`
+							}}
+						/>
+						<span
+							style={{
+								width: '227px',
+								height: '11px',
+								left: `${offX + 220}px`,
+								top: `${offY + 196}px`,
+								position: 'absolute',
+								backgroundImage: `url(../images/customtracks/fasTrack${numFas > 1 ? 'Multi' : 'Single'}${hitKnowsFas ? 'Known' : 'Unknown'}.png)`
+							}}
+						/>
+					</div>
+				);
+			} else {
+				return (
+					<div
+						className={(() => {
+							let classes = 'track bottom-track-back';
+
+							if (gameInfo.general.playerCount < 7) {
+								classes += ' track0';
+							} else if (gameInfo.general.playerCount < 9) {
+								classes += ' track1';
+							} else {
+								classes += ' track2';
+							}
+
+							return classes;
+						})()}
+					/>
+				);
 			}
 		};
 
@@ -363,7 +601,7 @@ class Tracks extends React.Component {
 						className={(() => {
 							let classes = 'track-flipper track-flipper-bottom';
 
-							if (gameInfo.gameState.isTracksFlipped) {
+							if (gameInfo.gameState.isTracksFlipped || (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled)) {
 								classes += ' flipped';
 							}
 
@@ -371,21 +609,7 @@ class Tracks extends React.Component {
 						})()}
 					>
 						<div className="track bottom-track-front" />
-						<div
-							className={(() => {
-								let classes = 'track bottom-track-back';
-
-								if (gameInfo.general.playerCount < 7) {
-									classes += ' track0';
-								} else if (gameInfo.general.playerCount < 9) {
-									classes += ' track1';
-								} else {
-									classes += ' track2';
-								}
-
-								return classes;
-							})()}
-						/>
+						{renderFasTrack()}
 					</div>
 					{renderElectionTracker()}
 				</section>

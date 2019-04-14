@@ -4,7 +4,7 @@ import SidebarGame from './SidebarGame';
 
 describe('SidebarGame', () => {
 	it('should initialize correctly', () => {
-		const component = shallow(<SidebarGame />);
+		const component = shallow(<SidebarGame game={{ userNames: [] }} socket={{}} />);
 
 		expect(component).toHaveLength(1);
 	});

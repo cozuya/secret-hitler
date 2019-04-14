@@ -3,22 +3,17 @@ import $ from 'jquery';
 import PropTypes from 'prop-types';
 
 class CardFlinger extends React.Component {
-	constructor() {
-		super();
+	state = {
+		isHovered: false,
+		hoveredClass: null
+	};
 
-		this.handleHover = this.handleHover.bind(this);
-		this.state = {
-			isHovered: false,
-			hoveredClass: null
-		};
-	}
-
-	handleHover(classes) {
+	handleHover = classes => {
 		this.setState({
 			isHovered: !this.state.isHovered,
 			hoveredClass: classes
 		});
-	}
+	};
 
 	render() {
 		const handleCardClick = e => {
@@ -57,6 +52,13 @@ class CardFlinger extends React.Component {
 
 			if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedPresidentVoteOnVeto', {
+					vote: index === 1,
+					uid: gameInfo.general.uid
+				});
+			}
+
+			if (phase === 'presidentVoteOnBurn' && gameInfo.cardFlingerState[0].action === 'active') {
+				socket.emit('selectedPresidentVoteOnBurn', {
 					vote: index === 1,
 					uid: gameInfo.general.uid
 				});
@@ -109,6 +111,8 @@ class CardFlinger extends React.Component {
 				);
 			} else if (phase === 'selectPartyMembershipInvestigate' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message investigate">You must investigate another players party membership.</div>;
+			} else if (phase === 'selectPartyMembershipInvestigateReverse' && currentPlayerStatus === 'isPresident') {
+				return <div className="help-message investigate">You must show another player your party membership.</div>;
 			} else if (phase === 'specialElection' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message special-election">Choose 1 player to become the next President.</div>;
 			} else if (phase === 'execution' && currentPlayerStatus === 'isPresident') {
@@ -120,6 +124,12 @@ class CardFlinger extends React.Component {
 				return (
 					<div className="help-message veto">
 						Would you like to <span>VETO</span> both of these policies?
+					</div>
+				);
+			} else if (phase === 'presidentVoteOnBurn' && currentPlayerStatus === 'isPresident') {
+				return (
+					<div className="help-message veto">
+						Would you like to <span>DISCARD</span> the top policy?
 					</div>
 				);
 			} else if (status === 'President to peek at policies.' && currentPlayerStatus === 'isPresident') {

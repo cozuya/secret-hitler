@@ -1,11 +1,10 @@
 #game-container {
 	margin: 0 auto;
 }
-
 .game > .ui.grid {
 	margin: 0;
 	> .row:first-child {
-		height: 440px;
+		//height: 440px;
 		padding: 0;
 	}
 	.chat-container {
@@ -13,11 +12,24 @@
 		padding: 0;
 		display: flex;
 		flex-direction: column;
+		height: 100%;
+		right: 0;
+		left: 650px;
+		z-index: 1000;
+		position: absolute;
+
+		@media screen and (max-width: 950px) {
+			left: 20%;
+			display: none;
+		}
+		@media screen and (max-width: 600px) {
+			left: 0%;
+		}
 
 		.gamestatus {
 			font-size: 22px;
 			font-style: italic;
-			color: teal;
+			color: $primary;
 			background: #1b1b1b;
 			padding: 7px 0px 3px 2px;
 
@@ -27,6 +39,10 @@
 		}
 
 		.gamechat {
+			flex-grow: 1;
+			display: flex;
+			flex-direction: column;
+			height: 100%;
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
@@ -38,7 +54,13 @@
 				display: flex;
 				position: relative;
 				z-index: 100;
-				padding: 4px 10px 4px 10px;
+				padding: 4px 2px 4px 2px;
+			}
+
+			.gamechat-filters-container {
+				padding: 0 2px;
+				margin-top: 6px;
+				color: $secondary;
 			}
 
 			.pointing.menu {
@@ -51,9 +73,16 @@
 				width: 100% !important;
 				border-radius: 0;
 				.item {
-					padding: 7px 8px 6px;
+					padding: 0px 1px 6px 0px;
 					position: relative;
 					z-index: 101;
+					&:after {
+						left: 40%;
+					}
+
+					.bullhorn {
+						color: #529243 !important;
+					}
 				}
 				.icon {
 					margin-top: 4px;
@@ -62,12 +91,12 @@
 				.button {
 					padding: 2px 0px;
 					font-size: 12px;
-					width: 42px;
+					width: 52.5px;
 					font-size: 11px;
-					background: #fbbd08 !important;
+					background: $secondary !important;
 					color: black !important;
 					&:hover {
-						background: $darkfascistteam !important;
+						background: $tertiary !important;
 					}
 				}
 
@@ -85,9 +114,7 @@
 				}
 			}
 			.chats {
-				display: flex;
-				flex-direction: column-reverse;
-				height: 336px;
+				flex-grow: 1;
 				position: relative;
 				background: #f9faff;
 				font-size: 18px;
@@ -170,7 +197,7 @@
 				position: absolute;
 				top: 80px;
 				left: 0;
-				width: 630px;
+				width: 100%;
 				opacity: 0;
 				transition: opacity 1s;
 				p {
@@ -211,10 +238,10 @@
 			}
 			.inputbar {
 				.claim-button {
-					float: left;
-					color: #fff;
-					padding: 8px 3px 8px 3px;
-					font-size: 20px;
+					color: #fbbd08;
+					font-style: italic;
+					padding: 11px 10px 11px 7px;
+					font-size: 16px;
 					font-weight: 700;
 					z-index: 102;
 					cursor: pointer;
@@ -226,9 +253,10 @@
 						top: 0;
 						left: 0;
 						position: absolute;
-						width: 20px;
-						height: 35px;
-						box-shadow: 0 0 3px 5px #fbbd08;
+						width: 100%;
+						height: 100%;
+						box-shadow: inset 0 0 5px 5px #fbbd08;
+						border-radius: 5px;
 					}
 				}
 				.expando-container {
@@ -247,7 +275,7 @@
 						border: 1px solid #bbb;
 						> div:hover {
 							font-weight: bold;
-							color: $lteal;
+							color: $primary;
 						}
 						div:first-child {
 							width: 75px;
@@ -270,9 +298,9 @@
 					flex-grow: 1;
 					button {
 						padding: 0px 10px;
-						background: teal;
+						background: $primary;
 						&:hover {
-							background: #e44023;
+							background: $tertiary;
 						}
 					}
 				}

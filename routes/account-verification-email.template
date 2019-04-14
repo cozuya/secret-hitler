@@ -3,7 +3,7 @@
 <head>
 <meta name="viewport" content="width=device-width">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Secret Hitler account verification</title>
+<title>SH.io account verification</title>
 <style>
 /* -------------------------------------
     GLOBAL
@@ -162,7 +162,7 @@ ol li {
       <table>
         <tr>
           <td>
-            <h2>Secret Hitler</h2>
+            <h3>SH.io</h3>
             <p>Hello <%= username %>, an account has been created with this email address - click below to verify your account. You will need to be logged in for verification.</p>
             <table class="btn-primary" cellpadding="0" cellspacing="0" border="0">
               <tr>
@@ -193,7 +193,7 @@ ol li {
       <div class="content">
         <table>
           <tr>
-            <td align="center">
+            <td>
               <ul>
 								<li>Email addresses are used for ONLY the following actions: verifying your account, and reseting your password.</li>
 								<li>In no circumstances will your email address be used for anything other than the above including any sort of mass "email blast".</li>

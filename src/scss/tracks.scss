@@ -1,5 +1,6 @@
-.ten.wide.column.tracks-container {
-	height: 440px;
+.sixteen.wide.column.tracks-container {
+	height: 68vw;
+	max-height: 440px;
 }
 .tracks-container {
 	background-color: #52393b;
@@ -13,7 +14,7 @@
 		left: 10px;
 		z-index: 105;
 		color: #ddd;
-		background: #5b9cc4;
+		background: $secondary;
 		font-size: 16px;
 		padding: 4px;
 		opacity: 1;
@@ -55,24 +56,18 @@
 			color: #db2828 !important;
 		}
 	}
-	.player-count,
-	.gameuid {
+	.player-count {
 		// gameuid not used since routing update displays it in url
 		position: absolute;
 		top: 10px;
-		left: 555px;
+		right: 10px;
 		z-index: 105;
 		color: #ddd;
-		background: #5b9cc4;
+		background: $secondary;
 		font-size: 16px;
 		padding: 4px;
 		opacity: 1;
 		border: 2px solid lightblue;
-	}
-	.gameuid {
-		width: 280px;
-		left: 270px;
-		top: 2px;
 	}
 	.option-icons {
 		position: absolute;
@@ -80,7 +75,7 @@
 		right: 95px;
 		left: auto;
 		top: 10px;
-		background: #5b9cc4;
+		background: $secondary;
 		border: 2px solid lightblue;
 		padding: 4px;
 		height: 31px;
@@ -95,25 +90,26 @@
 
 		.electiontracker {
 			position: absolute;
-			width: 25px;
-			height: 25px;
+			width: 3.85%;
+			height: 5.68%;
 			background-color: #2f2fbe;
 			border-radius: 50%;
-			top: 182px;
-			left: 212px;
+			top: 41.36%;
+			left: 32.6%;
 			transition: all 2s;
 		}
 		.electiontracker.fail1 {
-			left: 276px;
+			left: 42.46%;
 		}
 		.electiontracker.fail2 {
-			left: 339px;
+			left: 52.15%;
 		}
 		.electiontracker.fail3 {
-			left: 403px;
+			left: 62%;
 		}
 		.track-flipper {
-			height: 220px;
+			//height: 220px;
+			padding-top: 34%;
 			transition-duration: 1s;
 			transition-property: transform;
 			transform-style: preserve-3d;
@@ -128,7 +124,8 @@
 			position: absolute;
 			top: 0;
 			left: 0;
-			height: 220px;
+			//height: 220px;
+			padding-top: 34%;
 			width: 100%;
 		}
 		.top-track-front {
@@ -170,12 +167,29 @@
 			font-size: 30px;
 			cursor: pointer;
 		}
+		// custom image stuff
+		.custom-fastrack-base {
+			background-image: url('../../public/images/customtracks/fasTrack.png');
+		}
+		.custom-fastrack-powerslot {
+			width: 90px;
+			height: 120px;
+			left: 0px;
+			top: 0px;
+			position: absolute;
+		}
+		.custom-fastrack-vetozone {
+			background-image: url('../../public/images/customtracks/vetoZone.png');
+		}
+		.custom-fastrack-vetozone-light {
+			background-image: url('../../public/images/customtracks/vetoZoneLight.png');
+		}
 	}
 }
 
 .tracks.blurred,
 .enactedpolicies-container.blurred {
-	filter: blur(5px) saturate(60%);
+	//filter: blur(5px) saturate(60%);
 	opacity: 0.3;
 }
 .help-message {
@@ -236,13 +250,15 @@
 	position: absolute;
 	top: 130px;
 	left: -140px;
-	width: 120px;
-	height: 164px;
+	width: 20%;
+	height: 40.5%;
 	z-index: 3;
 	transition-property: all;
 	transition-delay: 0.3s;
 	transition-duration: 1s;
 	transform-style: preserve-3d;
+	max-height: 165px;
+	max-width: 120px;
 }
 .cardflinger-card {
 	background-size: contain;
@@ -262,19 +278,19 @@
 	cursor: pointer;
 }
 .cardflinger-card-container.middle-far-left.active {
-	left: 75px;
+	left: 15%;
 }
 .cardflinger-card-container.middle-center.active {
-	left: 265px;
+	left: 45%;
 }
 .cardflinger-card-container.middle-far-right.active {
-	left: 455px;
+	left: 75%;
 }
 .cardflinger-card-container.middle-left.active {
-	left: 165px !important;
+	left: 30% !important;
 }
 .cardflinger-card-container.middle-right.active {
-	left: 365px !important;
+	left: 60% !important;
 }
 .cardflinger-card.ballot {
 	background-image: url('../../public/images/cards/ballot-l.png');
@@ -338,8 +354,8 @@
 	position: absolute;
 	top: 130px;
 	left: -140px;
-	width: 120px;
-	height: 167px;
+	width: 13.85%;
+	height: 28.5%; //167px
 	z-index: 2;
 	transition-property: left, top, width, height, transform;
 	transition-delay: 0.5s, 0.5s, 3s, 3s, 1s;
@@ -350,7 +366,7 @@
 .enactedpolicies-card {
 	background-size: contain;
 	background-repeat: no-repeat;
-	height: 167px;
+	height: 100%;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -374,57 +390,57 @@
 	background-image: url('../../public/images/cards/fascistp-l.png');
 }
 .enactedpolicies-card-container.middle {
-	left: 260px;
-	top: 130px;
+	left: 40%;
+	top: 30%;
 }
 .enactedpolicies-card-container.inplace {
-	width: 90px;
+	width: 13.85%;
 	background-size: contain;
-	height: 124px;
+	//height: 23.8%;
 }
 .enactedpolicies-card-container.liberal1 {
-	left: 95px;
-	top: 48px;
+	left: 14.15%; //95px
+	top: 10.91%;  //48px
 }
 .enactedpolicies-card-container.liberal2 {
-	left: 188px;
-	top: 48px;
+	left: 28.5%;
+	top: 10.91%;
 }
 .enactedpolicies-card-container.liberal3 {
-	left: 280px;
-	top: 48px;
+	left: 42.85%;
+	top: 10.91%;
 }
 .enactedpolicies-card-container.liberal4 {
-	left: 374px;
-	top: 48px;
+	left: 57.5%;
+	top: 10.91%;
 }
 .enactedpolicies-card-container.liberal5 {
-	left: 466px;
-	top: 48px;
+	left: 71.85%;
+	top: 10.91%;
 }
 .enactedpolicies-card-container.fascist1 {
-	left: 46px;
-	top: 268px;
+	left: 7.1%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist2 {
-	left: 140px;
-	top: 268px;
+	left: 21.5%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist3 {
-	left: 234px;
-	top: 268px;
+	left: 35.9%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist4 {
-	left: 326px;
-	top: 268px;
+	left: 50.3%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist5 {
-	left: 418px;
-	top: 268px;
+	left: 64.7%;
+	top: 61%;
 }
 .enactedpolicies-card-container.fascist6 {
-	left: 510px;
-	top: 268px;
+	left: 79.1%;
+	top: 61%;
 }
 
 .flipped {
@@ -437,8 +453,8 @@
 
 .cardflinger-card-container.notifier::after {
 	content: '';
-	width: 120px;
-	height: 167px;
+	width: 100%;
+	height: 100%;
 	top: 0;
 	left: 0;
 	position: absolute;

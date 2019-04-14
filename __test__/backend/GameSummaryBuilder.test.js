@@ -20,7 +20,6 @@ describe('GameSummaryBuilder', () => {
 
 		expect(gsb._id).toBeDefined();
 		expect(gsb.date).toBeDefined();
-		expect(gsb.players).toHaveLength(5);
 		expect(gsb.logs.size).toBe(0);
 	});
 

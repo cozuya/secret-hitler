@@ -2,16 +2,30 @@ const https = require('https');
 const Account = require('../../models/account');
 const { newStaff } = require('./models');
 
-const AEM_ALTS = ['bell', 'BigbyWolf', 'Picangel', 'birdy', 'Grim', 'TermsOfUse', 'DownWithMeta'];
-
 module.exports.makeReport = (text, game, gameEnd) => {
+	// Custom games are strictly casual and for fun, writing proper report logic to account for it would be a massive pain.
+	if (!game || game.customGameSettings.enabled) return;
+
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
 		const staffUserNames = accounts
-			.filter(account => account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin')
+			.filter(
+				account =>
+					account.staffRole === 'altmod' ||
+					account.staffRole === 'moderator' ||
+					account.staffRole === 'editor' ||
+					account.staffRole === 'admin' ||
+					account.staffRole === 'trialmod'
+			)
 			.map(account => account.username);
-		staffUserNames.push(...AEM_ALTS);
 		const players = game.private.seatedPlayers.map(player => player.userName);
-		const isStaff = players.some(n => staffUserNames.includes(n) || newStaff.modUserNames.includes(n) || newStaff.editorUserNames.includes(n));
+		const isStaff = players.some(
+			n =>
+				staffUserNames.includes(n) ||
+				newStaff.altmodUserNames.includes(n) ||
+				newStaff.modUserNames.includes(n) ||
+				newStaff.editorUserNames.includes(n) ||
+				newStaff.trialmodUserNames.includes(n)
+		);
 
 		if (!gameEnd && isStaff) {
 			if (!game.unsentReports) game.unsentReports = [];
@@ -20,7 +34,7 @@ module.exports.makeReport = (text, game, gameEnd) => {
 		}
 
 		const report = JSON.stringify({
-			content: `${process.env.DISCORDMODPING} ${text}\nhttps://secrethitler.io/game/#/table/${game.general.uid}`
+			content: `${process.env.DISCORDMODPING} ${text}\n<https://secrethitler.io/game/#/table/${game.general.uid}>`
 		});
 		const options = {
 			hostname: 'discordapp.com',

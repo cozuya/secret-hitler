@@ -1,5 +1,5 @@
 /*!
- * # Semantic UI 2.2.12 - Shape
+ * # Semantic UI 2.4.1 - Shape
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -8,730 +8,914 @@
  *
  */
 
-(function($, window, document, undefined) {
-	'use strict';
+;(function ($, window, document, undefined) {
 
-	window = typeof window != 'undefined' && window.Math == Math ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
+'use strict';
 
-	$.fn.shape = function(parameters) {
-		var $allModules = $(this),
-			$body = $('body'),
-			time = new Date().getTime(),
-			performance = [],
-			query = arguments[0],
-			methodInvoked = typeof query == 'string',
-			queryArguments = [].slice.call(arguments, 1),
-			requestAnimationFrame =
-				window.requestAnimationFrame ||
-				window.mozRequestAnimationFrame ||
-				window.webkitRequestAnimationFrame ||
-				window.msRequestAnimationFrame ||
-				function(callback) {
-					setTimeout(callback, 0);
-				},
-			returnedValue;
+window = (typeof window != 'undefined' && window.Math == Math)
+  ? window
+  : (typeof self != 'undefined' && self.Math == Math)
+    ? self
+    : Function('return this')()
+;
 
-		$allModules.each(function() {
-			var moduleSelector = $allModules.selector || '',
-				settings = $.isPlainObject(parameters) ? $.extend(true, {}, $.fn.shape.settings, parameters) : $.extend({}, $.fn.shape.settings),
-				// internal aliases
-				namespace = settings.namespace,
-				selector = settings.selector,
-				error = settings.error,
-				className = settings.className,
-				// define namespaces for modules
-				eventNamespace = '.' + namespace,
-				moduleNamespace = 'module-' + namespace,
-				// selector cache
-				$module = $(this),
-				$sides = $module.find(selector.sides),
-				$side = $module.find(selector.side),
-				// private variables
-				nextIndex = false,
-				$activeSide,
-				$nextSide,
-				// standard module
-				element = this,
-				instance = $module.data(moduleNamespace),
-				module;
+$.fn.shape = function(parameters) {
+  var
+    $allModules     = $(this),
+    $body           = $('body'),
 
-			module = {
-				initialize: function() {
-					module.verbose('Initializing module for', element);
-					module.set.defaultSide();
-					module.instantiate();
-				},
+    time            = new Date().getTime(),
+    performance     = [],
 
-				instantiate: function() {
-					module.verbose('Storing instance of module', module);
-					instance = module;
-					$module.data(moduleNamespace, instance);
-				},
+    query           = arguments[0],
+    methodInvoked   = (typeof query == 'string'),
+    queryArguments  = [].slice.call(arguments, 1),
 
-				destroy: function() {
-					module.verbose('Destroying previous module for', element);
-					$module.removeData(moduleNamespace).off(eventNamespace);
-				},
+    requestAnimationFrame = window.requestAnimationFrame
+      || window.mozRequestAnimationFrame
+      || window.webkitRequestAnimationFrame
+      || window.msRequestAnimationFrame
+      || function(callback) { setTimeout(callback, 0); },
 
-				refresh: function() {
-					module.verbose('Refreshing selector cache for', element);
-					$module = $(element);
-					$sides = $(this).find(selector.shape);
-					$side = $(this).find(selector.side);
-				},
+    returnedValue
+  ;
 
-				repaint: function() {
-					module.verbose('Forcing repaint event');
-					var shape = $sides[0] || document.createElement('div'),
-						fakeAssignment = shape.offsetWidth;
-				},
+  $allModules
+    .each(function() {
+      var
+        moduleSelector = $allModules.selector || '',
+        settings       = ( $.isPlainObject(parameters) )
+          ? $.extend(true, {}, $.fn.shape.settings, parameters)
+          : $.extend({}, $.fn.shape.settings),
 
-				animate: function(propertyObject, callback) {
-					module.verbose('Animating box with properties', propertyObject);
-					callback =
-						callback ||
-						function(event) {
-							module.verbose('Executing animation callback');
-							if (event !== undefined) {
-								event.stopPropagation();
-							}
-							module.reset();
-							module.set.active();
-						};
-					settings.beforeChange.call($nextSide[0]);
-					if (module.get.transitionEvent()) {
-						module.verbose('Starting CSS animation');
-						$module.addClass(className.animating);
-						$sides.css(propertyObject).one(module.get.transitionEvent(), callback);
-						module.set.duration(settings.duration);
-						requestAnimationFrame(function() {
-							$module.addClass(className.animating);
-							$activeSide.addClass(className.hidden);
-						});
-					} else {
-						callback();
-					}
-				},
+        // internal aliases
+        namespace     = settings.namespace,
+        selector      = settings.selector,
+        error         = settings.error,
+        className     = settings.className,
 
-				queue: function(method) {
-					module.debug('Queueing animation of', method);
-					$sides.one(module.get.transitionEvent(), function() {
-						module.debug('Executing queued animation');
-						setTimeout(function() {
-							$module.shape(method);
-						}, 0);
-					});
-				},
+        // define namespaces for modules
+        eventNamespace  = '.' + namespace,
+        moduleNamespace = 'module-' + namespace,
 
-				reset: function() {
-					module.verbose('Animating states reset');
-					$module
-						.removeClass(className.animating)
-						.attr('style', '')
-						.removeAttr('style');
-					// removeAttr style does not consistently work in safari
-					$sides.attr('style', '').removeAttr('style');
-					$side
-						.attr('style', '')
-						.removeAttr('style')
-						.removeClass(className.hidden);
-					$nextSide
-						.removeClass(className.animating)
-						.attr('style', '')
-						.removeAttr('style');
-				},
+        // selector cache
+        $module       = $(this),
+        $sides        = $module.find(selector.sides),
+        $side         = $module.find(selector.side),
 
-				is: {
-					complete: function() {
-						return $side.filter('.' + className.active)[0] == $nextSide[0];
-					},
-					animating: function() {
-						return $module.hasClass(className.animating);
-					}
-				},
+        // private variables
+        nextIndex = false,
+        $activeSide,
+        $nextSide,
 
-				set: {
-					defaultSide: function() {
-						$activeSide = $module.find('.' + settings.className.active);
-						$nextSide = $activeSide.next(selector.side).length > 0 ? $activeSide.next(selector.side) : $module.find(selector.side).first();
-						nextIndex = false;
-						module.verbose('Active side set to', $activeSide);
-						module.verbose('Next side set to', $nextSide);
-					},
+        // standard module
+        element       = this,
+        instance      = $module.data(moduleNamespace),
+        module
+      ;
 
-					duration: function(duration) {
-						duration = duration || settings.duration;
-						duration = typeof duration == 'number' ? duration + 'ms' : duration;
-						module.verbose('Setting animation duration', duration);
-						if (settings.duration || settings.duration === 0) {
-							$sides.add($side).css({
-								'-webkit-transition-duration': duration,
-								'-moz-transition-duration': duration,
-								'-ms-transition-duration': duration,
-								'-o-transition-duration': duration,
-								'transition-duration': duration
-							});
-						}
-					},
+      module = {
 
-					currentStageSize: function() {
-						var $activeSide = $module.find('.' + settings.className.active),
-							width = $activeSide.outerWidth(true),
-							height = $activeSide.outerHeight(true);
-						$module.css({
-							width: width,
-							height: height
-						});
-					},
+        initialize: function() {
+          module.verbose('Initializing module for', element);
+          module.set.defaultSide();
+          module.instantiate();
+        },
 
-					stageSize: function() {
-						var $clone = $module.clone().addClass(className.loading),
-							$activeSide = $clone.find('.' + settings.className.active),
-							$nextSide = nextIndex
-								? $clone.find(selector.side).eq(nextIndex)
-								: $activeSide.next(selector.side).length > 0
-									? $activeSide.next(selector.side)
-									: $clone.find(selector.side).first(),
-							newWidth = settings.width == 'next' ? $nextSide.outerWidth(true) : settings.width == 'initial' ? $module.width() : settings.width,
-							newHeight = settings.height == 'next' ? $nextSide.outerHeight(true) : settings.height == 'initial' ? $module.height() : settings.height;
-						$activeSide.removeClass(className.active);
-						$nextSide.addClass(className.active);
-						$clone.insertAfter($module);
-						$clone.remove();
-						if (settings.width != 'auto') {
-							$module.css('width', newWidth + settings.jitter);
-							module.verbose('Specifying width during animation', newWidth);
-						}
-						if (settings.height != 'auto') {
-							$module.css('height', newHeight + settings.jitter);
-							module.verbose('Specifying height during animation', newHeight);
-						}
-					},
+        instantiate: function() {
+          module.verbose('Storing instance of module', module);
+          instance = module;
+          $module
+            .data(moduleNamespace, instance)
+          ;
+        },
 
-					nextSide: function(selector) {
-						nextIndex = selector;
-						$nextSide = $side.filter(selector);
-						nextIndex = $side.index($nextSide);
-						if ($nextSide.length === 0) {
-							module.set.defaultSide();
-							module.error(error.side);
-						}
-						module.verbose('Next side manually set to', $nextSide);
-					},
+        destroy: function() {
+          module.verbose('Destroying previous module for', element);
+          $module
+            .removeData(moduleNamespace)
+            .off(eventNamespace)
+          ;
+        },
 
-					active: function() {
-						module.verbose('Setting new side to active', $nextSide);
-						$side.removeClass(className.active);
-						$nextSide.addClass(className.active);
-						settings.onChange.call($nextSide[0]);
-						module.set.defaultSide();
-					}
-				},
+        refresh: function() {
+          module.verbose('Refreshing selector cache for', element);
+          $module = $(element);
+          $sides  = $(this).find(selector.shape);
+          $side   = $(this).find(selector.side);
+        },
 
-				flip: {
-					up: function() {
-						if (module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
-							module.debug('Side already visible', $nextSide);
-							return;
-						}
-						if (!module.is.animating()) {
-							module.debug('Flipping up', $nextSide);
-							var transform = module.get.transform.up();
-							module.set.stageSize();
-							module.stage.above();
-							module.animate(transform);
-						} else {
-							module.queue('flip up');
-						}
-					},
+        repaint: function() {
+          module.verbose('Forcing repaint event');
+          var
+            shape          = $sides[0] || document.createElement('div'),
+            fakeAssignment = shape.offsetWidth
+          ;
+        },
 
-					down: function() {
-						if (module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
-							module.debug('Side already visible', $nextSide);
-							return;
-						}
-						if (!module.is.animating()) {
-							module.debug('Flipping down', $nextSide);
-							var transform = module.get.transform.down();
-							module.set.stageSize();
-							module.stage.below();
-							module.animate(transform);
-						} else {
-							module.queue('flip down');
-						}
-					},
+        animate: function(propertyObject, callback) {
+          module.verbose('Animating box with properties', propertyObject);
+          callback = callback || function(event) {
+            module.verbose('Executing animation callback');
+            if(event !== undefined) {
+              event.stopPropagation();
+            }
+            module.reset();
+            module.set.active();
+          };
+          settings.beforeChange.call($nextSide[0]);
+          if(module.get.transitionEvent()) {
+            module.verbose('Starting CSS animation');
+            $module
+              .addClass(className.animating)
+            ;
+            $sides
+              .css(propertyObject)
+              .one(module.get.transitionEvent(), callback)
+            ;
+            module.set.duration(settings.duration);
+            requestAnimationFrame(function() {
+              $module
+                .addClass(className.animating)
+              ;
+              $activeSide
+                .addClass(className.hidden)
+              ;
+            });
+          }
+          else {
+            callback();
+          }
+        },
 
-					left: function() {
-						if (module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
-							module.debug('Side already visible', $nextSide);
-							return;
-						}
-						if (!module.is.animating()) {
-							module.debug('Flipping left', $nextSide);
-							var transform = module.get.transform.left();
-							module.set.stageSize();
-							module.stage.left();
-							module.animate(transform);
-						} else {
-							module.queue('flip left');
-						}
-					},
+        queue: function(method) {
+          module.debug('Queueing animation of', method);
+          $sides
+            .one(module.get.transitionEvent(), function() {
+              module.debug('Executing queued animation');
+              setTimeout(function(){
+                $module.shape(method);
+              }, 0);
+            })
+          ;
+        },
 
-					right: function() {
-						if (module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
-							module.debug('Side already visible', $nextSide);
-							return;
-						}
-						if (!module.is.animating()) {
-							module.debug('Flipping right', $nextSide);
-							var transform = module.get.transform.right();
-							module.set.stageSize();
-							module.stage.right();
-							module.animate(transform);
-						} else {
-							module.queue('flip right');
-						}
-					},
+        reset: function() {
+          module.verbose('Animating states reset');
+          $module
+            .removeClass(className.animating)
+            .attr('style', '')
+            .removeAttr('style')
+          ;
+          // removeAttr style does not consistently work in safari
+          $sides
+            .attr('style', '')
+            .removeAttr('style')
+          ;
+          $side
+            .attr('style', '')
+            .removeAttr('style')
+            .removeClass(className.hidden)
+          ;
+          $nextSide
+            .removeClass(className.animating)
+            .attr('style', '')
+            .removeAttr('style')
+          ;
+        },
 
-					over: function() {
-						if (module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
-							module.debug('Side already visible', $nextSide);
-							return;
-						}
-						if (!module.is.animating()) {
-							module.debug('Flipping over', $nextSide);
-							module.set.stageSize();
-							module.stage.behind();
-							module.animate(module.get.transform.over());
-						} else {
-							module.queue('flip over');
-						}
-					},
+        is: {
+          complete: function() {
+            return ($side.filter('.' + className.active)[0] == $nextSide[0]);
+          },
+          animating: function() {
+            return $module.hasClass(className.animating);
+          }
+        },
 
-					back: function() {
-						if (module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
-							module.debug('Side already visible', $nextSide);
-							return;
-						}
-						if (!module.is.animating()) {
-							module.debug('Flipping back', $nextSide);
-							module.set.stageSize();
-							module.stage.behind();
-							module.animate(module.get.transform.back());
-						} else {
-							module.queue('flip back');
-						}
-					}
-				},
+        set: {
 
-				get: {
-					transform: {
-						up: function() {
-							var translate = {
-								y: -(($activeSide.outerHeight(true) - $nextSide.outerHeight(true)) / 2),
-								z: -($activeSide.outerHeight(true) / 2)
-							};
-							return {
-								transform: 'translateY(' + translate.y + 'px) translateZ(' + translate.z + 'px) rotateX(-90deg)'
-							};
-						},
+          defaultSide: function() {
+            $activeSide = $module.find('.' + settings.className.active);
+            $nextSide   = ( $activeSide.next(selector.side).length > 0 )
+              ? $activeSide.next(selector.side)
+              : $module.find(selector.side).first()
+            ;
+            nextIndex = false;
+            module.verbose('Active side set to', $activeSide);
+            module.verbose('Next side set to', $nextSide);
+          },
 
-						down: function() {
-							var translate = {
-								y: -(($activeSide.outerHeight(true) - $nextSide.outerHeight(true)) / 2),
-								z: -($activeSide.outerHeight(true) / 2)
-							};
-							return {
-								transform: 'translateY(' + translate.y + 'px) translateZ(' + translate.z + 'px) rotateX(90deg)'
-							};
-						},
+          duration: function(duration) {
+            duration = duration || settings.duration;
+            duration = (typeof duration == 'number')
+              ? duration + 'ms'
+              : duration
+            ;
+            module.verbose('Setting animation duration', duration);
+            if(settings.duration || settings.duration === 0) {
+              $sides.add($side)
+                .css({
+                  '-webkit-transition-duration': duration,
+                  '-moz-transition-duration': duration,
+                  '-ms-transition-duration': duration,
+                  '-o-transition-duration': duration,
+                  'transition-duration': duration
+                })
+              ;
+            }
+          },
 
-						left: function() {
-							var translate = {
-								x: -(($activeSide.outerWidth(true) - $nextSide.outerWidth(true)) / 2),
-								z: -($activeSide.outerWidth(true) / 2)
-							};
-							return {
-								transform: 'translateX(' + translate.x + 'px) translateZ(' + translate.z + 'px) rotateY(90deg)'
-							};
-						},
+          currentStageSize: function() {
+            var
+              $activeSide = $module.find('.' + settings.className.active),
+              width       = $activeSide.outerWidth(true),
+              height      = $activeSide.outerHeight(true)
+            ;
+            $module
+              .css({
+                width: width,
+                height: height
+              })
+            ;
+          },
 
-						right: function() {
-							var translate = {
-								x: -(($activeSide.outerWidth(true) - $nextSide.outerWidth(true)) / 2),
-								z: -($activeSide.outerWidth(true) / 2)
-							};
-							return {
-								transform: 'translateX(' + translate.x + 'px) translateZ(' + translate.z + 'px) rotateY(-90deg)'
-							};
-						},
+          stageSize: function() {
+            var
+              $clone      = $module.clone().addClass(className.loading),
+              $activeSide = $clone.find('.' + settings.className.active),
+              $nextSide   = (nextIndex)
+                ? $clone.find(selector.side).eq(nextIndex)
+                : ( $activeSide.next(selector.side).length > 0 )
+                  ? $activeSide.next(selector.side)
+                  : $clone.find(selector.side).first(),
+              newWidth    = (settings.width == 'next')
+                ? $nextSide.outerWidth(true)
+                : (settings.width == 'initial')
+                  ? $module.width()
+                  : settings.width,
+              newHeight    = (settings.height == 'next')
+                ? $nextSide.outerHeight(true)
+                : (settings.height == 'initial')
+                  ? $module.height()
+                  : settings.height
+            ;
+            $activeSide.removeClass(className.active);
+            $nextSide.addClass(className.active);
+            $clone.insertAfter($module);
+            $clone.remove();
+            if(settings.width != 'auto') {
+              $module.css('width', newWidth + settings.jitter);
+              module.verbose('Specifying width during animation', newWidth);
+            }
+            if(settings.height != 'auto') {
+              $module.css('height', newHeight + settings.jitter);
+              module.verbose('Specifying height during animation', newHeight);
+            }
+          },
 
-						over: function() {
-							var translate = {
-								x: -(($activeSide.outerWidth(true) - $nextSide.outerWidth(true)) / 2)
-							};
-							return {
-								transform: 'translateX(' + translate.x + 'px) rotateY(180deg)'
-							};
-						},
+          nextSide: function(selector) {
+            nextIndex = selector;
+            $nextSide = $side.filter(selector);
+            nextIndex = $side.index($nextSide);
+            if($nextSide.length === 0) {
+              module.set.defaultSide();
+              module.error(error.side);
+            }
+            module.verbose('Next side manually set to', $nextSide);
+          },
 
-						back: function() {
-							var translate = {
-								x: -(($activeSide.outerWidth(true) - $nextSide.outerWidth(true)) / 2)
-							};
-							return {
-								transform: 'translateX(' + translate.x + 'px) rotateY(-180deg)'
-							};
-						}
-					},
+          active: function() {
+            module.verbose('Setting new side to active', $nextSide);
+            $side
+              .removeClass(className.active)
+            ;
+            $nextSide
+              .addClass(className.active)
+            ;
+            settings.onChange.call($nextSide[0]);
+            module.set.defaultSide();
+          }
+        },
 
-					transitionEvent: function() {
-						var element = document.createElement('element'),
-							transitions = {
-								transition: 'transitionend',
-								OTransition: 'oTransitionEnd',
-								MozTransition: 'transitionend',
-								WebkitTransition: 'webkitTransitionEnd'
-							},
-							transition;
-						for (transition in transitions) {
-							if (element.style[transition] !== undefined) {
-								return transitions[transition];
-							}
-						}
-					},
+        flip: {
 
-					nextSide: function() {
-						return $activeSide.next(selector.side).length > 0 ? $activeSide.next(selector.side) : $module.find(selector.side).first();
-					}
-				},
+          up: function() {
+            if(module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
+              module.debug('Side already visible', $nextSide);
+              return;
+            }
+            if( !module.is.animating()) {
+              module.debug('Flipping up', $nextSide);
+              var
+                transform = module.get.transform.up()
+              ;
+              module.set.stageSize();
+              module.stage.above();
+              module.animate(transform);
+            }
+            else {
+              module.queue('flip up');
+            }
+          },
 
-				stage: {
-					above: function() {
-						var box = {
-							origin: ($activeSide.outerHeight(true) - $nextSide.outerHeight(true)) / 2,
-							depth: {
-								active: $nextSide.outerHeight(true) / 2,
-								next: $activeSide.outerHeight(true) / 2
-							}
-						};
-						module.verbose('Setting the initial animation position as above', $nextSide, box);
-						$sides.css({
-							transform: 'translateZ(-' + box.depth.active + 'px)'
-						});
-						$activeSide.css({
-							transform: 'rotateY(0deg) translateZ(' + box.depth.active + 'px)'
-						});
-						$nextSide.addClass(className.animating).css({
-							top: box.origin + 'px',
-							transform: 'rotateX(90deg) translateZ(' + box.depth.next + 'px)'
-						});
-					},
+          down: function() {
+            if(module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
+              module.debug('Side already visible', $nextSide);
+              return;
+            }
+            if( !module.is.animating()) {
+              module.debug('Flipping down', $nextSide);
+              var
+                transform = module.get.transform.down()
+              ;
+              module.set.stageSize();
+              module.stage.below();
+              module.animate(transform);
+            }
+            else {
+              module.queue('flip down');
+            }
+          },
 
-					below: function() {
-						var box = {
-							origin: ($activeSide.outerHeight(true) - $nextSide.outerHeight(true)) / 2,
-							depth: {
-								active: $nextSide.outerHeight(true) / 2,
-								next: $activeSide.outerHeight(true) / 2
-							}
-						};
-						module.verbose('Setting the initial animation position as below', $nextSide, box);
-						$sides.css({
-							transform: 'translateZ(-' + box.depth.active + 'px)'
-						});
-						$activeSide.css({
-							transform: 'rotateY(0deg) translateZ(' + box.depth.active + 'px)'
-						});
-						$nextSide.addClass(className.animating).css({
-							top: box.origin + 'px',
-							transform: 'rotateX(-90deg) translateZ(' + box.depth.next + 'px)'
-						});
-					},
+          left: function() {
+            if(module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
+              module.debug('Side already visible', $nextSide);
+              return;
+            }
+            if( !module.is.animating()) {
+              module.debug('Flipping left', $nextSide);
+              var
+                transform = module.get.transform.left()
+              ;
+              module.set.stageSize();
+              module.stage.left();
+              module.animate(transform);
+            }
+            else {
+              module.queue('flip left');
+            }
+          },
 
-					left: function() {
-						var height = {
-								active: $activeSide.outerWidth(true),
-								next: $nextSide.outerWidth(true)
-							},
-							box = {
-								origin: (height.active - height.next) / 2,
-								depth: {
-									active: height.next / 2,
-									next: height.active / 2
-								}
-							};
-						module.verbose('Setting the initial animation position as left', $nextSide, box);
-						$sides.css({
-							transform: 'translateZ(-' + box.depth.active + 'px)'
-						});
-						$activeSide.css({
-							transform: 'rotateY(0deg) translateZ(' + box.depth.active + 'px)'
-						});
-						$nextSide.addClass(className.animating).css({
-							left: box.origin + 'px',
-							transform: 'rotateY(-90deg) translateZ(' + box.depth.next + 'px)'
-						});
-					},
+          right: function() {
+            if(module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
+              module.debug('Side already visible', $nextSide);
+              return;
+            }
+            if( !module.is.animating()) {
+              module.debug('Flipping right', $nextSide);
+              var
+                transform = module.get.transform.right()
+              ;
+              module.set.stageSize();
+              module.stage.right();
+              module.animate(transform);
+            }
+            else {
+              module.queue('flip right');
+            }
+          },
 
-					right: function() {
-						var height = {
-								active: $activeSide.outerWidth(true),
-								next: $nextSide.outerWidth(true)
-							},
-							box = {
-								origin: (height.active - height.next) / 2,
-								depth: {
-									active: height.next / 2,
-									next: height.active / 2
-								}
-							};
-						module.verbose('Setting the initial animation position as left', $nextSide, box);
-						$sides.css({
-							transform: 'translateZ(-' + box.depth.active + 'px)'
-						});
-						$activeSide.css({
-							transform: 'rotateY(0deg) translateZ(' + box.depth.active + 'px)'
-						});
-						$nextSide.addClass(className.animating).css({
-							left: box.origin + 'px',
-							transform: 'rotateY(90deg) translateZ(' + box.depth.next + 'px)'
-						});
-					},
+          over: function() {
+            if(module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
+              module.debug('Side already visible', $nextSide);
+              return;
+            }
+            if( !module.is.animating()) {
+              module.debug('Flipping over', $nextSide);
+              module.set.stageSize();
+              module.stage.behind();
+              module.animate(module.get.transform.over() );
+            }
+            else {
+              module.queue('flip over');
+            }
+          },
 
-					behind: function() {
-						var height = {
-								active: $activeSide.outerWidth(true),
-								next: $nextSide.outerWidth(true)
-							},
-							box = {
-								origin: (height.active - height.next) / 2,
-								depth: {
-									active: height.next / 2,
-									next: height.active / 2
-								}
-							};
-						module.verbose('Setting the initial animation position as behind', $nextSide, box);
-						$activeSide.css({
-							transform: 'rotateY(0deg)'
-						});
-						$nextSide.addClass(className.animating).css({
-							left: box.origin + 'px',
-							transform: 'rotateY(-180deg)'
-						});
-					}
-				},
-				setting: function(name, value) {
-					module.debug('Changing setting', name, value);
-					if ($.isPlainObject(name)) {
-						$.extend(true, settings, name);
-					} else if (value !== undefined) {
-						if ($.isPlainObject(settings[name])) {
-							$.extend(true, settings[name], value);
-						} else {
-							settings[name] = value;
-						}
-					} else {
-						return settings[name];
-					}
-				},
-				internal: function(name, value) {
-					if ($.isPlainObject(name)) {
-						$.extend(true, module, name);
-					} else if (value !== undefined) {
-						module[name] = value;
-					} else {
-						return module[name];
-					}
-				},
-				debug: function() {
-					if (!settings.silent && settings.debug) {
-						if (settings.performance) {
-							module.performance.log(arguments);
-						} else {
-							module.debug = Function.prototype.bind.call(console.info, console, settings.name + ':');
-							module.debug.apply(console, arguments);
-						}
-					}
-				},
-				verbose: function() {
-					if (!settings.silent && settings.verbose && settings.debug) {
-						if (settings.performance) {
-							module.performance.log(arguments);
-						} else {
-							module.verbose = Function.prototype.bind.call(console.info, console, settings.name + ':');
-							module.verbose.apply(console, arguments);
-						}
-					}
-				},
-				error: function() {
-					if (!settings.silent) {
-						module.error = Function.prototype.bind.call(console.error, console, settings.name + ':');
-						module.error.apply(console, arguments);
-					}
-				},
-				performance: {
-					log: function(message) {
-						var currentTime, executionTime, previousTime;
-						if (settings.performance) {
-							currentTime = new Date().getTime();
-							previousTime = time || currentTime;
-							executionTime = currentTime - previousTime;
-							time = currentTime;
-							performance.push({
-								Name: message[0],
-								Arguments: [].slice.call(message, 1) || '',
-								Element: element,
-								'Execution Time': executionTime
-							});
-						}
-						clearTimeout(module.performance.timer);
-						module.performance.timer = setTimeout(module.performance.display, 500);
-					},
-					display: function() {
-						var title = settings.name + ':',
-							totalTime = 0;
-						time = false;
-						clearTimeout(module.performance.timer);
-						$.each(performance, function(index, data) {
-							totalTime += data['Execution Time'];
-						});
-						title += ' ' + totalTime + 'ms';
-						if (moduleSelector) {
-							title += " '" + moduleSelector + "'";
-						}
-						if ($allModules.length > 1) {
-							title += ' ' + '(' + $allModules.length + ')';
-						}
-						if ((console.group !== undefined || console.table !== undefined) && performance.length > 0) {
-							console.groupCollapsed(title);
-							if (console.table) {
-								console.table(performance);
-							} else {
-								$.each(performance, function(index, data) {
-									console.log(data['Name'] + ': ' + data['Execution Time'] + 'ms');
-								});
-							}
-							console.groupEnd();
-						}
-						performance = [];
-					}
-				},
-				invoke: function(query, passedArguments, context) {
-					var object = instance,
-						maxDepth,
-						found,
-						response;
-					passedArguments = passedArguments || queryArguments;
-					context = element || context;
-					if (typeof query == 'string' && object !== undefined) {
-						query = query.split(/[\. ]/);
-						maxDepth = query.length - 1;
-						$.each(query, function(depth, value) {
-							var camelCaseValue = depth != maxDepth ? value + query[depth + 1].charAt(0).toUpperCase() + query[depth + 1].slice(1) : query;
-							if ($.isPlainObject(object[camelCaseValue]) && depth != maxDepth) {
-								object = object[camelCaseValue];
-							} else if (object[camelCaseValue] !== undefined) {
-								found = object[camelCaseValue];
-								return false;
-							} else if ($.isPlainObject(object[value]) && depth != maxDepth) {
-								object = object[value];
-							} else if (object[value] !== undefined) {
-								found = object[value];
-								return false;
-							} else {
-								return false;
-							}
-						});
-					}
-					if ($.isFunction(found)) {
-						response = found.apply(context, passedArguments);
-					} else if (found !== undefined) {
-						response = found;
-					}
-					if ($.isArray(returnedValue)) {
-						returnedValue.push(response);
-					} else if (returnedValue !== undefined) {
-						returnedValue = [returnedValue, response];
-					} else if (response !== undefined) {
-						returnedValue = response;
-					}
-					return found;
-				}
-			};
+          back: function() {
+            if(module.is.complete() && !module.is.animating() && !settings.allowRepeats) {
+              module.debug('Side already visible', $nextSide);
+              return;
+            }
+            if( !module.is.animating()) {
+              module.debug('Flipping back', $nextSide);
+              module.set.stageSize();
+              module.stage.behind();
+              module.animate(module.get.transform.back() );
+            }
+            else {
+              module.queue('flip back');
+            }
+          }
 
-			if (methodInvoked) {
-				if (instance === undefined) {
-					module.initialize();
-				}
-				module.invoke(query);
-			} else {
-				if (instance !== undefined) {
-					instance.invoke('destroy');
-				}
-				module.initialize();
-			}
-		});
+        },
 
-		return returnedValue !== undefined ? returnedValue : this;
-	};
+        get: {
 
-	$.fn.shape.settings = {
-		// module info
-		name: 'Shape',
+          transform: {
+            up: function() {
+              var
+                translate = {
+                  y: -(($activeSide.outerHeight(true) - $nextSide.outerHeight(true)) / 2),
+                  z: -($activeSide.outerHeight(true) / 2)
+                }
+              ;
+              return {
+                transform: 'translateY(' + translate.y + 'px) translateZ('+ translate.z + 'px) rotateX(-90deg)'
+              };
+            },
 
-		// hide all debug content
-		silent: false,
+            down: function() {
+              var
+                translate = {
+                  y: -(($activeSide.outerHeight(true) - $nextSide.outerHeight(true)) / 2),
+                  z: -($activeSide.outerHeight(true) / 2)
+                }
+              ;
+              return {
+                transform: 'translateY(' + translate.y + 'px) translateZ('+ translate.z + 'px) rotateX(90deg)'
+              };
+            },
 
-		// debug content outputted to console
-		debug: false,
+            left: function() {
+              var
+                translate = {
+                  x : -(($activeSide.outerWidth(true) - $nextSide.outerWidth(true)) / 2),
+                  z : -($activeSide.outerWidth(true) / 2)
+                }
+              ;
+              return {
+                transform: 'translateX(' + translate.x + 'px) translateZ(' + translate.z + 'px) rotateY(90deg)'
+              };
+            },
 
-		// verbose debug output
-		verbose: false,
+            right: function() {
+              var
+                translate = {
+                  x : -(($activeSide.outerWidth(true) - $nextSide.outerWidth(true)) / 2),
+                  z : -($activeSide.outerWidth(true) / 2)
+                }
+              ;
+              return {
+                transform: 'translateX(' + translate.x + 'px) translateZ(' + translate.z + 'px) rotateY(-90deg)'
+              };
+            },
 
-		// fudge factor in pixels when swapping from 2d to 3d (can be useful to correct rounding errors)
-		jitter: 0,
+            over: function() {
+              var
+                translate = {
+                  x : -(($activeSide.outerWidth(true) - $nextSide.outerWidth(true)) / 2)
+                }
+              ;
+              return {
+                transform: 'translateX(' + translate.x + 'px) rotateY(180deg)'
+              };
+            },
 
-		// performance data output
-		performance: true,
+            back: function() {
+              var
+                translate = {
+                  x : -(($activeSide.outerWidth(true) - $nextSide.outerWidth(true)) / 2)
+                }
+              ;
+              return {
+                transform: 'translateX(' + translate.x + 'px) rotateY(-180deg)'
+              };
+            }
+          },
 
-		// event namespace
-		namespace: 'shape',
+          transitionEvent: function() {
+            var
+              element     = document.createElement('element'),
+              transitions = {
+                'transition'       :'transitionend',
+                'OTransition'      :'oTransitionEnd',
+                'MozTransition'    :'transitionend',
+                'WebkitTransition' :'webkitTransitionEnd'
+              },
+              transition
+            ;
+            for(transition in transitions){
+              if( element.style[transition] !== undefined ){
+                return transitions[transition];
+              }
+            }
+          },
 
-		// width during animation, can be set to 'auto', initial', 'next' or pixel amount
-		width: 'initial',
+          nextSide: function() {
+            return ( $activeSide.next(selector.side).length > 0 )
+              ? $activeSide.next(selector.side)
+              : $module.find(selector.side).first()
+            ;
+          }
 
-		// height during animation, can be set to 'auto', 'initial', 'next' or pixel amount
-		height: 'initial',
+        },
 
-		// callback occurs on side change
-		beforeChange: function() {},
-		onChange: function() {},
+        stage: {
 
-		// allow animation to same side
-		allowRepeats: false,
+          above: function() {
+            var
+              box = {
+                origin : (($activeSide.outerHeight(true) - $nextSide.outerHeight(true)) / 2),
+                depth  : {
+                  active : ($nextSide.outerHeight(true) / 2),
+                  next   : ($activeSide.outerHeight(true) / 2)
+                }
+              }
+            ;
+            module.verbose('Setting the initial animation position as above', $nextSide, box);
+            $sides
+              .css({
+                'transform' : 'translateZ(-' + box.depth.active + 'px)'
+              })
+            ;
+            $activeSide
+              .css({
+                'transform' : 'rotateY(0deg) translateZ(' + box.depth.active + 'px)'
+              })
+            ;
+            $nextSide
+              .addClass(className.animating)
+              .css({
+                'top'       : box.origin + 'px',
+                'transform' : 'rotateX(90deg) translateZ(' + box.depth.next + 'px)'
+              })
+            ;
+          },
 
-		// animation duration
-		duration: false,
+          below: function() {
+            var
+              box = {
+                origin : (($activeSide.outerHeight(true) - $nextSide.outerHeight(true)) / 2),
+                depth  : {
+                  active : ($nextSide.outerHeight(true) / 2),
+                  next   : ($activeSide.outerHeight(true) / 2)
+                }
+              }
+            ;
+            module.verbose('Setting the initial animation position as below', $nextSide, box);
+            $sides
+              .css({
+                'transform' : 'translateZ(-' + box.depth.active + 'px)'
+              })
+            ;
+            $activeSide
+              .css({
+                'transform' : 'rotateY(0deg) translateZ(' + box.depth.active + 'px)'
+              })
+            ;
+            $nextSide
+              .addClass(className.animating)
+              .css({
+                'top'       : box.origin + 'px',
+                'transform' : 'rotateX(-90deg) translateZ(' + box.depth.next + 'px)'
+              })
+            ;
+          },
 
-		// possible errors
-		error: {
-			side: 'You tried to switch to a side that does not exist.',
-			method: 'The method you called is not defined'
-		},
+          left: function() {
+            var
+              height = {
+                active : $activeSide.outerWidth(true),
+                next   : $nextSide.outerWidth(true)
+              },
+              box = {
+                origin : ( ( height.active - height.next ) / 2),
+                depth  : {
+                  active : (height.next / 2),
+                  next   : (height.active / 2)
+                }
+              }
+            ;
+            module.verbose('Setting the initial animation position as left', $nextSide, box);
+            $sides
+              .css({
+                'transform' : 'translateZ(-' + box.depth.active + 'px)'
+              })
+            ;
+            $activeSide
+              .css({
+                'transform' : 'rotateY(0deg) translateZ(' + box.depth.active + 'px)'
+              })
+            ;
+            $nextSide
+              .addClass(className.animating)
+              .css({
+                'left'      : box.origin + 'px',
+                'transform' : 'rotateY(-90deg) translateZ(' + box.depth.next + 'px)'
+              })
+            ;
+          },
 
-		// classnames used
-		className: {
-			animating: 'animating',
-			hidden: 'hidden',
-			loading: 'loading',
-			active: 'active'
-		},
+          right: function() {
+            var
+              height = {
+                active : $activeSide.outerWidth(true),
+                next   : $nextSide.outerWidth(true)
+              },
+              box = {
+                origin : ( ( height.active - height.next ) / 2),
+                depth  : {
+                  active : (height.next / 2),
+                  next   : (height.active / 2)
+                }
+              }
+            ;
+            module.verbose('Setting the initial animation position as left', $nextSide, box);
+            $sides
+              .css({
+                'transform' : 'translateZ(-' + box.depth.active + 'px)'
+              })
+            ;
+            $activeSide
+              .css({
+                'transform' : 'rotateY(0deg) translateZ(' + box.depth.active + 'px)'
+              })
+            ;
+            $nextSide
+              .addClass(className.animating)
+              .css({
+                'left'      : box.origin + 'px',
+                'transform' : 'rotateY(90deg) translateZ(' + box.depth.next + 'px)'
+              })
+            ;
+          },
 
-		// selectors used
-		selector: {
-			sides: '.sides',
-			side: '.side'
-		}
-	};
-})(jQuery, window, document);
+          behind: function() {
+            var
+              height = {
+                active : $activeSide.outerWidth(true),
+                next   : $nextSide.outerWidth(true)
+              },
+              box = {
+                origin : ( ( height.active - height.next ) / 2),
+                depth  : {
+                  active : (height.next / 2),
+                  next   : (height.active / 2)
+                }
+              }
+            ;
+            module.verbose('Setting the initial animation position as behind', $nextSide, box);
+            $activeSide
+              .css({
+                'transform' : 'rotateY(0deg)'
+              })
+            ;
+            $nextSide
+              .addClass(className.animating)
+              .css({
+                'left'      : box.origin + 'px',
+                'transform' : 'rotateY(-180deg)'
+              })
+            ;
+          }
+        },
+        setting: function(name, value) {
+          module.debug('Changing setting', name, value);
+          if( $.isPlainObject(name) ) {
+            $.extend(true, settings, name);
+          }
+          else if(value !== undefined) {
+            if($.isPlainObject(settings[name])) {
+              $.extend(true, settings[name], value);
+            }
+            else {
+              settings[name] = value;
+            }
+          }
+          else {
+            return settings[name];
+          }
+        },
+        internal: function(name, value) {
+          if( $.isPlainObject(name) ) {
+            $.extend(true, module, name);
+          }
+          else if(value !== undefined) {
+            module[name] = value;
+          }
+          else {
+            return module[name];
+          }
+        },
+        debug: function() {
+          if(!settings.silent && settings.debug) {
+            if(settings.performance) {
+              module.performance.log(arguments);
+            }
+            else {
+              module.debug = Function.prototype.bind.call(console.info, console, settings.name + ':');
+              module.debug.apply(console, arguments);
+            }
+          }
+        },
+        verbose: function() {
+          if(!settings.silent && settings.verbose && settings.debug) {
+            if(settings.performance) {
+              module.performance.log(arguments);
+            }
+            else {
+              module.verbose = Function.prototype.bind.call(console.info, console, settings.name + ':');
+              module.verbose.apply(console, arguments);
+            }
+          }
+        },
+        error: function() {
+          if(!settings.silent) {
+            module.error = Function.prototype.bind.call(console.error, console, settings.name + ':');
+            module.error.apply(console, arguments);
+          }
+        },
+        performance: {
+          log: function(message) {
+            var
+              currentTime,
+              executionTime,
+              previousTime
+            ;
+            if(settings.performance) {
+              currentTime   = new Date().getTime();
+              previousTime  = time || currentTime;
+              executionTime = currentTime - previousTime;
+              time          = currentTime;
+              performance.push({
+                'Name'           : message[0],
+                'Arguments'      : [].slice.call(message, 1) || '',
+                'Element'        : element,
+                'Execution Time' : executionTime
+              });
+            }
+            clearTimeout(module.performance.timer);
+            module.performance.timer = setTimeout(module.performance.display, 500);
+          },
+          display: function() {
+            var
+              title = settings.name + ':',
+              totalTime = 0
+            ;
+            time = false;
+            clearTimeout(module.performance.timer);
+            $.each(performance, function(index, data) {
+              totalTime += data['Execution Time'];
+            });
+            title += ' ' + totalTime + 'ms';
+            if(moduleSelector) {
+              title += ' \'' + moduleSelector + '\'';
+            }
+            if($allModules.length > 1) {
+              title += ' ' + '(' + $allModules.length + ')';
+            }
+            if( (console.group !== undefined || console.table !== undefined) && performance.length > 0) {
+              console.groupCollapsed(title);
+              if(console.table) {
+                console.table(performance);
+              }
+              else {
+                $.each(performance, function(index, data) {
+                  console.log(data['Name'] + ': ' + data['Execution Time']+'ms');
+                });
+              }
+              console.groupEnd();
+            }
+            performance = [];
+          }
+        },
+        invoke: function(query, passedArguments, context) {
+          var
+            object = instance,
+            maxDepth,
+            found,
+            response
+          ;
+          passedArguments = passedArguments || queryArguments;
+          context         = element         || context;
+          if(typeof query == 'string' && object !== undefined) {
+            query    = query.split(/[\. ]/);
+            maxDepth = query.length - 1;
+            $.each(query, function(depth, value) {
+              var camelCaseValue = (depth != maxDepth)
+                ? value + query[depth + 1].charAt(0).toUpperCase() + query[depth + 1].slice(1)
+                : query
+              ;
+              if( $.isPlainObject( object[camelCaseValue] ) && (depth != maxDepth) ) {
+                object = object[camelCaseValue];
+              }
+              else if( object[camelCaseValue] !== undefined ) {
+                found = object[camelCaseValue];
+                return false;
+              }
+              else if( $.isPlainObject( object[value] ) && (depth != maxDepth) ) {
+                object = object[value];
+              }
+              else if( object[value] !== undefined ) {
+                found = object[value];
+                return false;
+              }
+              else {
+                return false;
+              }
+            });
+          }
+          if ( $.isFunction( found ) ) {
+            response = found.apply(context, passedArguments);
+          }
+          else if(found !== undefined) {
+            response = found;
+          }
+          if($.isArray(returnedValue)) {
+            returnedValue.push(response);
+          }
+          else if(returnedValue !== undefined) {
+            returnedValue = [returnedValue, response];
+          }
+          else if(response !== undefined) {
+            returnedValue = response;
+          }
+          return found;
+        }
+      };
+
+      if(methodInvoked) {
+        if(instance === undefined) {
+          module.initialize();
+        }
+        module.invoke(query);
+      }
+      else {
+        if(instance !== undefined) {
+          instance.invoke('destroy');
+        }
+        module.initialize();
+      }
+    })
+  ;
+
+  return (returnedValue !== undefined)
+    ? returnedValue
+    : this
+  ;
+};
+
+$.fn.shape.settings = {
+
+  // module info
+  name : 'Shape',
+
+  // hide all debug content
+  silent     : false,
+
+  // debug content outputted to console
+  debug      : false,
+
+  // verbose debug output
+  verbose    : false,
+
+  // fudge factor in pixels when swapping from 2d to 3d (can be useful to correct rounding errors)
+  jitter     : 0,
+
+  // performance data output
+  performance: true,
+
+  // event namespace
+  namespace  : 'shape',
+
+  // width during animation, can be set to 'auto', initial', 'next' or pixel amount
+  width: 'initial',
+
+  // height during animation, can be set to 'auto', 'initial', 'next' or pixel amount
+  height: 'initial',
+
+  // callback occurs on side change
+  beforeChange : function() {},
+  onChange     : function() {},
+
+  // allow animation to same side
+  allowRepeats: false,
+
+  // animation duration
+  duration   : false,
+
+  // possible errors
+  error: {
+    side   : 'You tried to switch to a side that does not exist.',
+    method : 'The method you called is not defined'
+  },
+
+  // classnames used
+  className   : {
+    animating : 'animating',
+    hidden    : 'hidden',
+    loading   : 'loading',
+    active    : 'active'
+  },
+
+  // selectors used
+  selector    : {
+    sides : '.sides',
+    side  : '.side'
+  }
+
+};
+
+
+})( jQuery, window, document );
