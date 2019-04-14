@@ -1,5 +1,6 @@
 {
-	"extends": ["google"],
+	"parser": "babel-eslint",
+	"extends": ["google", "plugin:react/recommended"],
 	"rules": {
 		"linebreak-style": "off",
 		"eol-last": "off",
@@ -25,9 +26,12 @@
 		"arrow-parens": "off",
 		"react/jsx-indent": "off",
 		"react/jsx-uses-vars": "error",
+		"react/jsx-uses-react": "error",
 		"react/jsx-indent-props": "off",
+		"react/no-unescaped-entities": "off",
 		"object-curly-spacing": "off",
-		"array-bracket-spacing": "off"
+		"array-bracket-spacing": "off",
+		"no-invalid-this": 0
 	},
 	"globals": {
 		"io": true,
@@ -40,7 +44,7 @@
 	},
 	"parserOptions": {
 		"sourceType": "module",
-		"ecmaVersion": 8,
+		"ecmaVersion": 2018,
 		"ecmaFeatures": {
 			"jsx": true,
 			"modules": true

@@ -7,9 +7,10 @@ describe('Moderation', () => {
 		const initialState = {
 			selectedUser: '',
 			userList: [],
+			gameList: [],
 			actionTextValue: '',
 			log: [],
-			playerListShown: true,
+			playerListState: 0,
 			broadcastText: '',
 			playerInputText: '',
 			resetServerCount: 0,
@@ -19,7 +20,19 @@ describe('Moderation', () => {
 			logSort: {
 				type: 'date',
 				direction: 'descending'
-			}
+			},
+			userSort: {
+				type: 'username',
+				direction: 'descending'
+			},
+			gameSort: {
+				type: 'username',
+				direction: 'descending'
+			},
+			hideActions: false,
+			filterModalVisibility: false,
+			filterValue: '',
+			showGameIcons: false
 		};
 
 		const component = shallow(<Moderation socket={{ on: jest.fn(), emit: jest.fn() }} />);

@@ -49,7 +49,7 @@ db.once('open', function() {
 	getMoreData(0);
 });
 
-mongoose.connect('mongodb://localhost:32001/secret-hitler-app', (err, db) => {
+mongoose.connect('mongodb://localhost:32000/secret-hitler-app', (err, db) => {
 	if (err) console.error(err);
 	else console.log('Connect ok!');
 });

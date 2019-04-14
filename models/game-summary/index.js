@@ -77,7 +77,23 @@ const gameSummary = new Schema({
 			specialElection: Number,
 			execution: Number
 		}
-	]
+	],
+	customGameSettings: {
+		enabled: Boolean,
+		powers: Array, // [power x5, string or null]
+		hitlerZone: Number,
+		vetoZone: Number,
+		fascistCount: Number,
+		hitKnowsFas: Boolean,
+		deckState: {
+			lib: Number,
+			fas: Number
+		},
+		trackState: {
+			lib: Number,
+			fas: Number
+		}
+	}
 });
 
 module.exports = mongoose.model('GameSummary', gameSummary);

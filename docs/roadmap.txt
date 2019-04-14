@@ -65,19 +65,19 @@ version 0.13:
 timed mode
 player notifications
 
-version 1.0 (future):
-reenable tournaments
-	https://github.com/cozuya/secret-hitler/issues/829
-player notes
-	https://github.com/cozuya/secret-hitler/issues/205
-fix to front end crash when people are moved to final tournament table
-	https://github.com/cozuya/secret-hitler/issues/779
+version 0.14:
 elo system
-	https://github.com/cozuya/secret-hitler/issues/741
-	https://github.com/cozuya/secret-hitler/issues/632
-IP related bans do not work when a player is typed/pasted into the box (only works if they are online and you click their name on the list)
-	https://github.com/cozuya/secret-hitler/issues/671
-HighLight Your Number In The Game Chat 
-	https://github.com/cozuya/secret-hitler/issues/689
-Rebalanced 9p doesn't display correctly ingame, on profile, shows all 17 cards on replays, and all replays show as 9PR instead of whatever they are.
-	https://github.com/cozuya/secret-hitler/issues/711
+
+version 0.15:
+custom games
+
+version 1.0:
+account verification and password reset via automated emails
+discord ping mods from gamechat (large cooldown)
+retheme colors/remove teal
+update vetoing for custom games
+passing unit tests
+
+
+farther future:
+migrate database off of the DO box to a 3rd party cloud provider

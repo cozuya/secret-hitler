@@ -32,6 +32,45 @@ function profileDelta(username, game) {
 	const shots = game.shotsOf(username).value();
 	const accurateShots = shots.filter(id => game.loyaltyOf(id).value() === 'fascist');
 
+	if (game.casualGame) {
+		return {
+			stats: {
+				matches: {
+					allMatches: {
+						events: 0,
+						successes: 0
+					},
+					liberal: {
+						events: 0,
+						successes: 0
+					},
+					fascist: {
+						events: 0,
+						successes: 0
+					}
+				},
+				actions: {
+					voteAccuracy: {
+						events: 0,
+						successes: 0
+					},
+					shotAccuracy: {
+						events: 0,
+						successes: 0
+					}
+				}
+			},
+			recentGames: {
+				_id: id,
+				loyalty,
+				playerSize,
+				isWinner,
+				isRebalanced,
+				date
+			}
+		};
+	}
+
 	return {
 		stats: {
 			matches: {

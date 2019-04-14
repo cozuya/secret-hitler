@@ -1,3 +1,5 @@
+export const UPDATE_TYPING = 'UPDATE_TYPING';
+
 export const UPDATE_USER = 'UPDATE_USER';
 
 export function updateUser(user) {

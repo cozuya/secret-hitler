@@ -13,6 +13,12 @@ $(document).ready(function() {
 		});
 	}
 
+	$('body').on('click', '#menupopout', function(event) {
+		event.preventDefault();
+
+		$('.ui.sidebar').sidebar('toggle');
+	});
+
 	$('body').on('click', '#signup', function(event) {
 		event.preventDefault();
 
@@ -27,6 +33,46 @@ $(document).ready(function() {
 		$('section.add-email-modal')
 			.modal('setting', 'transition', 'horizontal flip')
 			.modal('show');
+	});
+
+	$('#passwordresetchange-submit').on('click', function(event) {
+		event.preventDefault();
+
+		var pass1 = $('#passwordchange-password').val(),
+			pass2 = $('#passwordchange-confirmpassword').val(),
+			username = window.location.pathname.split('/')[2],
+			tok = window.location.pathname.split('/')[3],
+			$loader = $(this).next(),
+			$message = $loader.next(),
+			submitErr = function(message) {
+				$loader.removeClass('active');
+				$message.text(message).removeClass('hidden');
+			};
+
+		$loader.addClass('active');
+
+		$.ajax({
+			url: '/password-reset',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: JSON.stringify({
+				username: username,
+				password: pass1,
+				password2: pass2,
+				tok: tok
+			}),
+			statusCode: {
+				200: function() {
+					window.location = '/';
+				},
+				400: function() {
+					submitErr('Sorry, that request did not look right.');
+				},
+				401: function() {
+					submitErr('Sorry, that was not authorized.');
+				}
+			}
+		});
 	});
 
 	$('button.email-submit').on('click', function(event) {
@@ -65,6 +111,11 @@ $(document).ready(function() {
 					var message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
 
 					submitErr(message);
+				},
+				500(xhr) {
+					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
+
+					submitErr(`Internal error: ${message}`);
 				}
 			}
 		});
@@ -79,6 +130,7 @@ $(document).ready(function() {
 			$loader = $(this).next(),
 			$message = $loader.next(),
 			isPrivate = $('#private-player').is(':checked'),
+			bypassKey = $('#signup-bypass').val(),
 			submitErr = function(message) {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
@@ -99,7 +151,8 @@ $(document).ready(function() {
 				password: password,
 				password2: password2,
 				email: email,
-				isPrivate: isPrivate
+				isPrivate: isPrivate,
+				bypass: bypassKey
 			}),
 			statusCode: {
 				200: function() {
@@ -153,6 +206,14 @@ $(document).ready(function() {
 			.slideDown();
 	});
 
+	$('body').on('focus', '#signup-bypass', function() {
+		$(this)
+			.parent()
+			.next()
+			.text('Only fill this in if instructed to do so.')
+			.slideDown();
+	});
+
 	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function() {
 		$(this)
 			.parent()
@@ -200,7 +261,6 @@ $(document).ready(function() {
 
 	$('a#reset-password').on('click', function(event) {
 		event.preventDefault();
-
 		$('.signin-modal')
 			.modal('setting', 'transition', 'horizontal flip')
 			.modal('hide', function() {
@@ -234,14 +294,15 @@ $(document).ready(function() {
 				200: function() {
 					$message.addClass('hidden');
 					$loader.removeClass('active');
+					$('#password-reset-submit').hide();
 					$('.password-reset-modal .ui.info.hidden.message')
 						.removeClass('hidden')
-						.html("We've sent you a password reset email, please check your email to a link to reset your password.");
+						.html("We've sent you a password reset email, please check your email for a link to reset your password.");
 				},
 				400: function() {
 					submitErr('Sorry, that request did not look right.');
 				},
-				401: function() {
+				404: function() {
 					submitErr("Sorry, we don't have an account associated with that verified email address.");
 				}
 			}
@@ -435,6 +496,44 @@ $(document).ready(function() {
 				401: function() {
 					$loader.removeClass('active');
 					$errMessage.text('Your password did not match.').removeClass('hidden');
+					if (!$successMessage.hasClass('hidden')) {
+						$successMessage.addClass('hidden');
+					}
+				}
+			}
+		});
+	});
+
+	$('button#new-username-submit').on('click', function(event) {
+		event.preventDefault();
+
+		var username = $('#new-username').val(),
+			$loader = $(this).next(),
+			$errMessage = $loader.next(),
+			$successMessage = $errMessage.next(),
+			data = JSON.stringify({ username: username });
+
+		$loader.addClass('active');
+
+		$.ajax({
+			url: '/oauth-select-username',
+			method: 'POST',
+			contentType: 'application/json; charset=UTF-8',
+			data: data,
+			statusCode: {
+				200: function() {
+					$loader.removeClass('active');
+					$successMessage.removeClass('hidden');
+					setTimeout(function() {
+						window.location = '/account';
+					}, 1000);
+					if (!$errMessage.hasClass('hidden')) {
+						$errMessage.addClass('hidden');
+					}
+				},
+				401: function() {
+					$loader.removeClass('active');
+					$errMessage.text('Your username is in use or did not meet our requirements.').removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}

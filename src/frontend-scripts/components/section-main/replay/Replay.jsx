@@ -8,11 +8,12 @@ import { Map, List } from 'immutable';
 import { some, none, fromNullable } from 'option';
 import Tracks from '../Tracks.jsx';
 import Players from '../Players.jsx';
-import Gamechat from '../Gamechat.jsx';
+import ReplayGamechat from './ReplayGamechat.jsx';
 import ReplayOverlay from './ReplayOverlay.jsx';
 import ReplayControls from './ReplayControls.jsx';
 import TrackPieces from './TrackPieces.jsx';
 import socket from '../../../socket';
+import PropTypes from 'prop-types';
 
 const mapStateToProps = ({ replay, userInfo }) => ({
 	replay,
@@ -145,11 +146,15 @@ const buildPlayback = (replay, to) => {
 	};
 };
 
-const Replay = ({ replay, isSmall, to, replayChats }) => {
+const Replay = ({ replay, isSmall, to, replayChats, allEmotes }) => {
 	const { ticks, position, game } = replay;
 	const snapshot = ticks.get(position);
 	const playback = buildPlayback(replay, to);
 	const gameInfo = toGameInfo(snapshot);
+	gameInfo.customGameSettings = game.summary.customGameSettings;
+	if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
+		if (gameInfo.customGameSettings.powers._tail) gameInfo.customGameSettings.powers = gameInfo.customGameSettings.powers._tail.array;
+	}
 	const userInfo = { username: '' };
 	const { phase } = snapshot;
 	const description = toDescription(snapshot, game);
@@ -157,26 +162,28 @@ const Replay = ({ replay, isSmall, to, replayChats }) => {
 	gameInfo.general.uid = game.id;
 
 	return (
-		<section className={classnames({ small: isSmall, big: !isSmall }, 'game')}>
+		<section className={classnames({ small: false /*isSmall*/, big: true /*!isSmall*/ }, 'game')}>
 			<div className="ui grid">
-				<div className="left-side eight wide column">
-					<ReplayOverlay key="replayoverlay" snapshot={snapshot} />
-					<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
-					<Tracks gameInfo={gameInfo} userInfo={userInfo} />
-				</div>
-				<div className="right-side eight wide column">
-					{replayChats.length ? (
-						<Gamechat
-							isReplay={true}
-							userInfo={{}}
-							userList={{}}
-							gameInfo={{
-								chats: replayChats
-							}}
-						/>
-					) : (
-						<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
-					)}
+				<div className="row">
+					<div className="left-side sixteen wide column">
+						<ReplayOverlay key="replayoverlay" snapshot={snapshot} />
+						<TrackPieces key="trackpieces" phase={snapshot.phase} track={snapshot.track} electionTracker={snapshot.electionTracker} />
+						<Tracks gameInfo={gameInfo} userInfo={userInfo} />
+					</div>
+					<div className="right-side">
+						{replayChats.length ? (
+							<ReplayGamechat
+								userInfo={{}}
+								userList={{}}
+								gameInfo={{
+									chats: replayChats
+								}}
+								allEmotes={allEmotes}
+							/>
+						) : (
+							<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
+						)}
+					</div>
 				</div>
 			</div>
 			<div className="row players-container">
@@ -245,6 +252,7 @@ class ReplayWrapper extends React.Component {
 							isSmall={this.props.isSmall}
 							to={this.props.to}
 							replayChats={this.state.chatsShown && this.state.replayChats.length ? this.state.replayChats : []}
+							allEmotes={this.props.allEmotes}
 						/>
 					);
 			}
@@ -265,4 +273,11 @@ class ReplayWrapper extends React.Component {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReplayWrapper);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(ReplayWrapper);
+
+Replay.propTypes = {
+	allEmotes: PropTypes.array
+};

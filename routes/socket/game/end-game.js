@@ -10,7 +10,7 @@ const animals = require('../../../utils/animals');
 const adjectives = require('../../../utils/adjectives');
 const _ = require('lodash');
 const { makeReport } = require('../report.js');
-const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/constants.js');
+const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-constants.js');
 
 /**
  * @param {object} game - game to act on.
@@ -24,23 +24,29 @@ const saveGame = game => {
 		uid: game.general.uid,
 		date: new Date(),
 		chats: game.chats,
+		isVerifiedOnly: game.general.isVerifiedOnly,
 		season: CURRENTSEASONNUMBER,
-		winningPlayers: game.private.seatedPlayers.filter(player => player.wonGame).map(player => ({
-			userName: player.userName,
-			team: player.role.team,
-			role: player.role.cardName
-		})),
-		losingPlayers: game.private.seatedPlayers.filter(player => !player.wonGame).map(player => ({
-			userName: player.userName,
-			team: player.role.team,
-			role: player.role.cardName
-		})),
+		winningPlayers: game.private.seatedPlayers
+			.filter(player => player.wonGame)
+			.map(player => ({
+				userName: player.userName,
+				team: player.role.team,
+				role: player.role.cardName
+			})),
+		losingPlayers: game.private.seatedPlayers
+			.filter(player => !player.wonGame)
+			.map(player => ({
+				userName: player.userName,
+				team: player.role.team,
+				role: player.role.cardName
+			})),
 		winningTeam: game.gameState.isCompleted,
 		playerCount: game.general.playerCount,
 		rebalance6p: game.general.rebalance6p,
 		rebalance7p: game.general.rebalance7p,
 		rebalance9p2f: game.general.rebalance9p2f,
 		casualGame: game.general.casualGame,
+		customGame: game.customGameSettings.enabled,
 		isRainbow: game.general.rainbowgame,
 		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
 		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2
@@ -212,7 +218,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 						winner = true;
 
 						if (isTournamentFinalGame && !game.general.casualGame) {
-							player.gameSettings.tournyWins.push(new Date().getTime());
+							player.gameSettings.tournyWins.push(Date.now());
 							const playerSocketId = Object.keys(io.sockets.sockets).find(
 								socketId =>
 									io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === player.username
@@ -262,7 +268,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 									: 0;
 
 								if (isTournamentFinalGame && !game.general.casualGame) {
-									userEntry.tournyWins.push(new Date().getTime());
+									userEntry.tournyWins.push(Date.now());
 								}
 							} else {
 								if (isRainbow) {

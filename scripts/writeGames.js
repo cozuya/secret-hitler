@@ -5,7 +5,7 @@ const Game = require('../models/game-summary/index');
 const Account = require('../models/account');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
 String.prototype.hashCode = function() {
 	var hash = 0,

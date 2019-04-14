@@ -1,7 +1,7 @@
 const Summary = require('../../models/game-summary');
 const Account = require('../../models/account');
 const buildEnhancedGameSummary = require('../../models/game-summary/buildEnhancedGameSummary');
-const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/constants');
+const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 const mongoose = require('mongoose');
 
 const libAdjust = {
@@ -127,7 +127,7 @@ async function rate(summary) {
 async function allSummaries(rate) {
 	try {
 		mongoose.Promise = global.Promise;
-		await mongoose.connect(`mongodb://localhost:15726/secret-hitler-app`);
+		await mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 		const cursor = await Summary.find().cursor();
 		for (let summary = await cursor.next(); summary != null; summary = await cursor.next()) {
 			// Ignore casual games

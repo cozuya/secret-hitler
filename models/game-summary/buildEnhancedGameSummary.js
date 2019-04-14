@@ -40,8 +40,8 @@ function buildEnhancedGameSummary(_summary) {
 					})
 					.toList()
 			: isIndexed(value)
-				? value.toList()
-				: value.toObject();
+			? value.toList()
+			: value.toObject();
 	});
 
 	// String

@@ -8,10 +8,14 @@ const Account = new Schema({
 		unique: true
 	},
 	password: String,
+	isLocal: Boolean,
 	staffRole: String,
+	isContributor: Boolean,
+	hasNotDismissedSignupModal: Boolean,
 	gameSettings: {
 		staffDisableVisibleElo: Boolean,
 		staffDisableStaffColor: Boolean,
+		staffIncognito: Boolean,
 		isRainbow: Boolean,
 		newReport: Boolean,
 		customCardback: String,
@@ -26,6 +30,8 @@ const Account = new Schema({
 		disableConfetti: Boolean,
 		disableCrowns: Boolean,
 		disableSeasonal: Boolean,
+		disableAggregations: Boolean,
+		disableTyping: Boolean,
 		soundStatus: String,
 		unbanTime: Date,
 		unTimeoutTime: Date,
@@ -37,8 +43,21 @@ const Account = new Schema({
 		tournyWins: Array,
 		hasChangedName: Boolean,
 		previousSeasonAward: String,
+		specialTournamentStatus: String,
 		disableElo: Boolean,
 		fullheight: Boolean,
+		gameFilters: {
+			pub: Boolean,
+			priv: Boolean,
+			unstarted: Boolean,
+			inprogress: Boolean,
+			completed: Boolean,
+			customgame: Boolean,
+			casualgame: Boolean,
+			timedMode: Boolean,
+			standard: Boolean,
+			rainbow: Boolean
+		},
 		gameNotes: {
 			top: Number,
 			left: Number,
@@ -48,11 +67,7 @@ const Account = new Schema({
 		playerNotes: Array
 	},
 	verification: {
-		email: String,
-		verificationToken: String,
-		verificationTokenExpiration: Date,
-		passwordResetToken: String,
-		passwordResetTokenExpiration: Date
+		email: String
 	},
 	signupIP: String,
 	lastConnectedIP: String,
@@ -82,6 +97,14 @@ const Account = new Schema({
 	lossesSeason4: Number,
 	rainbowWinsSeason4: Number,
 	rainbowLossesSeason4: Number,
+	winsSeason5: Number,
+	lossesSeason5: Number,
+	rainbowWinsSeason5: Number,
+	rainbowLossesSeason5: Number,
+	winsSeason6: Number,
+	lossesSeason6: Number,
+	rainbowWinsSeason6: Number,
+	rainbowLossesSeason6: Number,
 	previousDayElo: Number,
 	created: Date,
 	isOnFire: Boolean,
@@ -90,7 +113,12 @@ const Account = new Schema({
 	isFixed: Boolean,
 	eloSeason: Number,
 	eloOverall: Number,
-	hashUid: String
+	hashUid: String,
+	discordUsername: String,
+	discordDiscriminator: String,
+	discordMfa_enabled: Boolean,
+	githubUsername: String,
+	github2FA: Boolean
 });
 
 Account.plugin(passportLocalMongoose);

@@ -3,6 +3,7 @@ gameState
 	isCompleted bool
 	isVetoEnabled bool
 	isTracksFlipped bool
+	isGameFrozen bool
 	pendingChancellorIndex number 
 	timedModeEnabled bool
 	phase string ?
@@ -19,6 +20,7 @@ chats array
 	isBroadcast bool
 	timestamp time
 general
+	isVerifiedOnly bool
 	blindMode bool
 	name string
 	isRemade bool, so that people can't click remake after its remade
@@ -57,6 +59,7 @@ general
 		queuedPlayers array of objects
 		isCancelled bool
 		isRound1TableThatFinished2nd bool
+isTyping object hashmap of seated player names
 seatedPlayers array 5-10
 	obj
 		connected bool
@@ -102,6 +105,8 @@ private
 	unSeatedGameChats array
 		chat string
 		timestamp time
+	votesPeeked
+	gameFrozen
 	seatedPlayers array 5-10
 		userName string
 		connected bool

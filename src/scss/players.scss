@@ -1,23 +1,17 @@
-$eloValues: (1500 0.3 1.0 0.3)
-			(1600 0.3 1.0 0.5)
-			(1849 0.0 1.0 0.7)
-			(1850 1.0 1.0 0.7)
-			(1900 0.9 1.0 0.6)
-			(2000 0.8 1.0 0.4);
-
+$eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (1900 0.9 1 0.6) (2000 0.8 1 0.4);
 
 @function lerp($low, $high, $elo) {
 	$scale: nth($high, 1) - nth($low, 1);
 	@if $scale <= 0 {
-		@return hsl(
-			nth($low, 2) * 360,
-			nth($low, 3) * 100,
-			nth($low, 4) * 100
-		);
+		@return hsl(nth($low, 2) * 360, nth($low, 3) * 100, nth($low, 4) * 100);
 	}
-	$lerp:  ($elo - nth($low, 1)) / $scale;
-	@if $lerp < 0 { $lerp: 0; }
-	@if $lerp > 1 { $lerp: 1; }
+	$lerp: ($elo - nth($low, 1)) / $scale;
+	@if $lerp < 0 {
+		$lerp: 0;
+	}
+	@if $lerp > 1 {
+		$lerp: 1;
+	}
 	@return hsl(
 		((nth($low, 2) * (1-$lerp)) + (nth($high, 2) * $lerp)) * 360,
 		((nth($low, 3) * (1-$lerp)) + (nth($high, 3) * $lerp)) * 100,
@@ -26,7 +20,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 }
 
 @function calcEloCol($elo) {
-	$low:  nth($eloValues, 1);
+	$low: nth($eloValues, 1);
 	$high: nth($eloValues, -1);
 	@for $i from 1 through length($eloValues) {
 		$val: nth($eloValues, $i);
@@ -47,11 +41,14 @@ $eloValues: (1500 0.3 1.0 0.3)
 
 .players-container .players {
 	background: #000;
-	height: 115px;
+	//height: 115px;
 	overflow: hidden;
+	display: flex;
+	margin-top: 5px;
 	> .label {
 		width: 50px;
-		margin: 28px 0 0 10px;
+		height: 65px;
+		margin: 28px 10px 0 10px;
 		font-size: 16px;
 		padding: 6px;
 		text-align: center;
@@ -65,22 +62,22 @@ $eloValues: (1500 0.3 1.0 0.3)
 	}
 	@for $i from 0 through 100 {
 		.player-container.elo#{$i} {
-			box-shadow: 0 0 5px 2px calcEloCol($i*5+1500) !important;
+			box-shadow: 0 0 5px 2px calcEloCol($i * 5+1500) !important;
 		}
 	}
 	@for $i from 1 through 5 {
 		.player-container.experienced#{$i} {
-			box-shadow: 0 0 5px 2px rgb(0,  (175 - ($i * 20)), 0) !important;
+			box-shadow: 0 0 5px 2px rgb(0, (175 - ($i * 20)), 0) !important;
 		}
 	}
 	@for $i from 1 through 10 {
 		.player-container.onfire#{$i} {
-			box-shadow: 0 0 5px 2px rgb(183,  (10 - $i) * 15, 167) !important;
+			box-shadow: 0 0 5px 2px rgb(183, (10 - $i) * 15, 167) !important;
 		}
 	}
 
 	.player-container.contributor {
-		box-shadow: 0 0 5px 2px teal !important;
+		box-shadow: 0 0 5px 2px #21bae0 !important;
 	}
 
 	.player-container.admin {
@@ -125,19 +122,20 @@ $eloValues: (1500 0.3 1.0 0.3)
 
 	.player-container {
 		user-select: none;
-		width: 70px;
+		max-width: 70px;
+		min-width: 25px;
 		height: 95px;
-		float: left;
-		margin: 18px 5px 0;
+		margin: 18px 0.5% 0;
 		border-radius: 4px;
 		background-image: url('../../public/images/tweed.png');
 		background-repeat: no-repeat;
-		background-size: 70px 95px;
+		background-size: cover;
 		position: relative;
+		flex: 1;
 
 		.playernote {
 			font-size: 18px;
-			color: teal !important;
+			color: $primary !important;
 			position: absolute;
 			top: 2px;
 			right: -4px;
@@ -160,6 +158,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 			font-size: 13px;
 			&.blacklisted {
 				color: $blacklist !important;
+				opacity: 0.8;
 			}
 			&:hover {
 				color: yellow;
@@ -194,7 +193,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 			background-image: url('../../public/images/chancellor-token.png');
 		}
 		.card-container {
-			width: 70px;
+			width: 100%;
 			height: 95px;
 			top: 100px;
 			left: 0;
@@ -205,7 +204,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 			-webkit-backface-visibility: hidden; // thanks osx safari
 			backface-visibility: hidden;
 			.card {
-				background-size: contain;
+				background-size: cover;
 				background-repeat: no-repeat;
 				position: absolute;
 				top: 0;
@@ -302,6 +301,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 		.player-name.fascist,
 		.player-number.fascist {
 			color: #c36563;
+			
 		}
 		.player-name.hitler,
 		.player-number.hitler {
@@ -313,7 +313,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 	}
 	.notifier::after {
 		content: '';
-		width: 70px;
+		width: 100%;
 		height: 95px;
 		top: 0;
 		left: 0;
@@ -341,11 +341,13 @@ $eloValues: (1500 0.3 1.0 0.3)
 }
 
 .players-container .policies-container {
-	width: 164px;
+	max-width: 164px;
+	min-width: 36px;
 	height: 115px;
-	float: right;
+	margin-left: auto;
+	flex: 1;
 	> div {
-		width: 82px;
+		width: 50%;
 		height: inherit;
 		display: inline-block;
 		position: relative;
@@ -361,7 +363,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 		left: 0;
 	}
 	.policy-card {
-		width: 70px;
+		width: 100%;
 		height: 95px;
 		background: url('../../public/images/cards/policy.png') no-repeat;
 		position: absolute;
@@ -381,7 +383,7 @@ $eloValues: (1500 0.3 1.0 0.3)
 	}
 	.notifier::after {
 		content: '';
-		width: 82px;
+		width: 100%;
 		height: 115px;
 		top: 0;
 		left: 0;
@@ -422,4 +424,23 @@ $eloValues: (1500 0.3 1.0 0.3)
 		height: 60px;
 		margin-bottom: 10px;
 	}
+}
+
+.counter {
+	position: absolute;
+	right: 20px;
+	padding: 0;
+	margin: 0;
+	font-size: 12pt;
+	user-select: none;
+}
+
+.error {
+	color: red;
+}
+.is-typing {
+	width: 20px;
+	position: absolute;
+	top: 17px;
+	left: 25px;
 }

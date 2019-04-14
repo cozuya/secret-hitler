@@ -6,100 +6,117 @@ import moment from 'moment';
 import { CURRENTSEASONNUMBER } from '../../constants';
 
 export class GamesList extends React.Component {
-	constructor() {
-		super();
+	state = {
+		filtersVisible: false
+	};
 
-		this.toggleFilter = this.toggleFilter.bind(this);
-		this.state = {
-			filtersVisible: false
-		};
-	}
-
-	toggleFilter(value) {
-		const { gameFilter } = this.props;
+	toggleFilter = value => {
+		const { gameFilter, changeGameFilter } = this.props;
 
 		gameFilter[value] = !gameFilter[value];
-		this.props.changeGameFilter(gameFilter);
-	}
+		changeGameFilter(gameFilter);
+	};
 
 	renderFilters() {
+		const { gameFilter } = this.props;
+
 		return (
 			<div className="browser-filters ui grid">
-				<div className="three wide column">
+				<div className="one wide column">
 					<h4 className="ui header">Public</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.pub}
+						checked={!gameFilter.pub}
 						onChange={() => {
 							this.toggleFilter('pub');
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
 					<h4 className="ui header">Private</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.priv}
+						checked={!gameFilter.priv}
 						onChange={() => {
 							this.toggleFilter('priv');
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
 					<h4 className="ui header">Unstarted</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.unstarted}
+						checked={!gameFilter.unstarted}
 						onChange={() => {
 							this.toggleFilter('unstarted');
 						}}
 					/>
 				</div>
-				<div className="three wide column">
-					<h4 className="ui header">In progress</h4>
+				<div className="one wide column">
+					<h4 className="ui header">Progress</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.inprogress}
+						checked={!gameFilter.inprogress}
 						onChange={() => {
 							this.toggleFilter('inprogress');
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
 					<h4 className="ui header">Completed</h4>
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.completed}
+						checked={!gameFilter.completed}
 						onChange={() => {
 							this.toggleFilter('completed');
 						}}
 					/>
 				</div>
-				<div className="three wide column">
+				<div className="one wide column">
+					<i title="Filter by casual games" className="handshake icon" />
+					<Checkbox
+						toggle
+						checked={!gameFilter.casualgame}
+						onChange={() => {
+							this.toggleFilter('casualgame');
+						}}
+					/>
+				</div>
+				<div className="one wide column">
+					<i title="Filter by custom games" className="setting icon" />
+					<Checkbox
+						toggle
+						checked={!gameFilter.customgame}
+						onChange={() => {
+							this.toggleFilter('customgame');
+						}}
+					/>
+				</div>
+				<div className="one wide column">
 					<i title="Filter by timed mode games" className="hourglass half icon" />
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.timedMode}
+						checked={!gameFilter.timedMode}
 						onChange={() => {
 							this.toggleFilter('timedMode');
 						}}
 					/>
 				</div>
-				<div className="three wide column iconcolumn">
+				<div className="one wide column iconcolumn">
 					<i title="Filter by standard games" className="standard-icon" />
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.standard}
+						checked={!gameFilter.standard}
 						onChange={() => {
 							this.toggleFilter('standard');
 						}}
 					/>
 				</div>
-				<div className="three wide column iconcolumn">
+				<div className="one wide column iconcolumn">
 					<i title="Filter by experienced-player-only games" className="rainbow-icon" />
 					<Checkbox
 						toggle
-						checked={this.props.gameFilter.rainbow}
+						checked={!gameFilter.rainbow}
 						onChange={() => {
 							this.toggleFilter('rainbow');
 						}}
@@ -110,71 +127,65 @@ export class GamesList extends React.Component {
 	}
 
 	renderGameList() {
-		const { gameList } = this.props;
+		const { gameList, userInfo, userList } = this.props;
+
+		const compareGames = (a, b) => {
+			if (a.seatedCount !== b.seatedCount) return b.seatedCount - a.seatedCount;
+			const aName = a.name.toLowerCase();
+			const bName = b.name.toLowerCase();
+			if (aName === bName) {
+				return a.uid < b.uid ? 1 : -1;
+			} else {
+				return aName > bName ? 1 : -1;
+			}
+		};
+
+		const thisUser = userInfo.userName && userList.list && userList.list.find(u => u.userName == userInfo.userName);
+		const sortTypeThenName = (a, b) => {
+			const isRainbow = thisUser && !thisUser.isPrivate && thisUser.wins + thisUser.losses >= 50;
+			const isPrivate = thisUser && thisUser.isPrivate;
+
+			let aType;
+			if (a.private) aType = 'private';
+			else if (a.rainbowgame) aType = 'rainbow';
+			else aType = 'regular';
+
+			let bType;
+			if (b.private) bType = 'private';
+			else if (b.rainbowgame) bType = 'rainbow';
+			else bType = 'regular';
+
+			let sortOrder;
+			if (isRainbow || !thisUser) sortOrder = ['rainbow', 'regular', 'private'];
+			else if (isPrivate) sortOrder = ['private', 'rainbow', 'regular'];
+			else sortOrder = ['regular', 'rainbow', 'private'];
+
+			const diff = sortOrder.indexOf(aType) - sortOrder.indexOf(bType);
+			return diff || compareGames(a, b);
+		};
 
 		if (gameList.length) {
 			return gameList
 				.filter(game => {
-					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard } = this.props.gameFilter;
+					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard, customgame, casualgame } = this.props.gameFilter;
 
 					return !(
-						(game.private && !priv) ||
-						(!game.private && !pub) ||
-						(game.rainbowgame && !rainbow) ||
-						(!game.rainbowgame && !standard) ||
-						(game.timedMode && !timedMode) ||
-						(game.gameStatus === 'notStarted' && !unstarted) ||
-						(game.gameStatus === 'isStarted' && !inprogress) ||
-						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && !completed)
+						(game.private && priv) ||
+						(!game.private && pub) ||
+						(game.rainbowgame && rainbow) ||
+						(!game.rainbowgame && standard) ||
+						(game.timedMode && timedMode) ||
+						(game.gameStatus === 'notStarted' && unstarted) ||
+						(game.gameStatus === 'isStarted' && inprogress) ||
+						((game.gameStatus === 'fascist' || game.gameStatus === 'liberal') && completed) ||
+						(game.isCustomGame && customgame) ||
+						(game.casualGame && casualgame)
 					);
 				})
 				.sort((a, b) => {
-					const aGameStatus = a.gameStatus;
-					const bGameStatus = b.gameStatus;
-					const aName = a.name.toLowerCase();
-					const bName = b.name.toLowerCase();
-
-					if (aGameStatus === 'notStarted' && bGameStatus === 'notStarted') {
-						if (a.seatedCount === b.seatedCount) {
-							if (aName === bName) {
-								return a.uid < b.uid ? 1 : -1;
-							} else {
-								return aName > bName ? 1 : -1;
-							}
-						} else {
-							return b.seatedCount - a.seatedCount;
-						}
-					}
-
-					if (aGameStatus === 'notStarted' && bGameStatus !== 'notStarted') {
-						return -1;
-					}
-
-					if (aGameStatus !== 'notStated' && bGameStatus === 'notStarted') {
-						return 1;
-					}
-
-					if (aGameStatus === 'isStarted' && bGameStatus !== 'isStarted') {
-						return -1;
-					}
-
-					if (aGameStatus !== 'isStarted' && bGameStatus === 'isStarted') {
-						return 1;
-					}
-
-					if (aGameStatus === 'isStarted' && bGameStatus === 'isStarted') {
-						if (a.seatedCount === b.seatedCount) {
-							if (aName === bName) {
-								return a.uid < b.uid ? 1 : -1;
-							} else {
-								return aName > bName ? 1 : -1;
-							}
-						} else {
-							return b.seatedCount - a.seatedCount;
-						}
-					}
-
-					return aName === bName ? (a.uid < b.uid ? 1 : -1) : aName > bName ? 1 : -1;
+					const statusSortOrder = ['notStarted', 'isStarted', 'fascist', 'liberal'];
+					const diff = Math.min(2, statusSortOrder.indexOf(a.gameStatus)) - Math.min(2, statusSortOrder.indexOf(b.gameStatus));
+					return diff || sortTypeThenName(a, b);
 				})
 				.map((game, index) => (
 					<DisplayLobbies key={game.uid} game={game} socket={this.props.socket} userList={this.props.userList} userInfo={this.props.userInfo} />
@@ -192,12 +203,10 @@ export class GamesList extends React.Component {
 		return (
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
-					<h5 title="A season is an optional new tier of wins and losses that is reset after 3 months.">
-						{new Date().getTime() < new Date('1-1-2019').getTime()
-							? `Season ends ${moment(new Date('1-1-2019')).fromNow()}`
-							: `Welcome to season ${CURRENTSEASONNUMBER + 1}`}.
+					<h5 title="A season is an optional new tier of elo that is reset every 3 months.">
+						{Date.now() < new Date('7-1-2019').getTime() ? `Season ends ${moment(new Date('7-1-2019')).fromNow()}` : `Welcome to season ${CURRENTSEASONNUMBER}`}
+						.
 					</h5>
-					{/* <h5 title="A season is an optional new tier of wins and losses that is reset after a certain amount of time">Welcome to season 2</h5> */}
 				</a>
 				<h3>Game filters</h3>
 				{this.renderFilters()}

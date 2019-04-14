@@ -4,20 +4,11 @@ import PropTypes from 'prop-types';
 import { processEmotes } from '../../emotes';
 
 export default class Generalchat extends React.Component {
-	constructor() {
-		super();
-
-		this.handleChatLockClick = this.handleChatLockClick.bind(this);
-		this.handleSubmit = this.handleSubmit.bind(this);
-		this.handleInputChange = this.handleInputChange.bind(this);
-		this.handleChatClearClick = this.handleChatClearClick.bind(this);
-		this.handleChatScrolled = this.handleChatScrolled.bind(this);
-		this.state = {
-			lock: false,
-			inputValue: '',
-			disabled: false
-		};
-	}
+	state = {
+		lock: false,
+		inputValue: '',
+		disabled: false
+	};
 
 	componentDidMount() {
 		this.scrollChats();
@@ -27,15 +18,15 @@ export default class Generalchat extends React.Component {
 		this.scrollChats();
 	}
 
-	handleChatClearClick() {
+	handleChatClearClick = () => {
 		this.setState({ inputValue: '' });
-	}
+	};
 
-	handleInputChange(e) {
+	handleInputChange = e => {
 		this.setState({ inputValue: `${e.target.value}` });
-	}
+	};
 
-	handleSubmit(e) {
+	handleSubmit = e => {
 		const { inputValue } = this.state;
 
 		e.preventDefault();
@@ -57,7 +48,7 @@ export default class Generalchat extends React.Component {
 				this.input.focus();
 			}, 300);
 		}
-	}
+	};
 
 	scrollChats() {
 		if (!this.state.lock) {
@@ -95,17 +86,17 @@ export default class Generalchat extends React.Component {
 						})()}
 						{chat.userName && ':'}{' '}
 					</span>
-					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat)}</span>
+					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat, this.props.allEmotes)}</span>
 				</div>
 			);
 		});
 	}
 
-	handleChatLockClick() {
+	handleChatLockClick = () => {
 		this.setState({ lock: !this.state.lock });
-	}
+	};
 
-	handleChatScrolled(e) {
+	handleChatScrolled = e => {
 		const el = e.currentTarget;
 
 		if (el.scrollTop === el.scrollHeight - el.offsetHeight && this.state.lock) {
@@ -117,7 +108,7 @@ export default class Generalchat extends React.Component {
 				lock: true
 			});
 		}
-	}
+	};
 
 	render() {
 		return (
@@ -164,5 +155,6 @@ Generalchat.propTypes = {
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
 	generalChats: PropTypes.object,
-	userList: PropTypes.object
+	userList: PropTypes.object,
+	allEmotes: PropTypes.object
 };

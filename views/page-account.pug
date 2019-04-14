@@ -4,23 +4,45 @@ block content
 		h1.ui.centered.header My account
 		h3.ui.centered.header(style="color: #e36248; margin: 0") Account verification status: 
 			if verified
-				span.verified-yes(style="color: teal") Verified
+				span.verified-yes(style="color: royalblue") Verified
 			else
 				span.verified-no(style="color: bisque") Not verified
 		h3.ui.centered.header(style="color: #e36248; margin: 0") Email address: 
 			if email
-				span.current-email(style="color: teal")
+				span.current-email(style="color: royalblue")
 					= email
 			else
 				span(style="color: bisque") None
+		h3.ui.centered.header(style="color: #e3f83d; margin: 0") Discord integration: 
+			if discordUsername
+				span(style="color: royalblue")
+					= discordUsername
+					span #
+					= discordDiscriminator
+					if isLocal
+						a(href="/revoke-discord") - Click here to unlink your Discord account
+			else
+				span(style="color: bisque") None 
+					a(href="/discord-login", style="color: orange; text-decoration: underline") - Click here to link your Discord account
+		h3.ui.centered.header(style="color: #e3f83d; margin: 0") Github integration: 
+			if githubUsername
+				span(style="color: royalblue")
+					= githubUsername
+					if isLocal
+						a(href="/revoke-github") - Click here to unlink your Github account
+			else
+				span(style="color: bisque") None 
+					a(href="/github-login", style="color: orange; text-decoration: underline") - Click here to link your Github account
 		if email
 			if !verified
 				button#request-verification.ui.primary.button(style="display: block; margin: 5px auto 0;") Request a new verification email
-			button#change-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your email address
+			if !discordUsername && !githubUsername
+				button#change-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your email address
 		else
-			button#add-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Add an email address and send verification email
-
-		button#change-password.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your password
+			if !discordUsername && !githubUsername
+				button#add-email.ui.primary.button(style="display: block; margin: 5px auto 0;") Add an email address and send verification email
+		if !discordUsername && !githubUsername
+			button#change-password.ui.primary.button(style="display: block; margin: 5px auto 0;") Change your password
 
 		button#delete-account.ui.primay.button(style="display: block; margin: 5px auto 0; background: red; color: white") Delete your account
 
@@ -66,7 +88,7 @@ block content
 			.field
 				.ui.left.icon.input
 					i.lock.icon
-					input#emailadd-email(placeholder="Email address - gmail users, check spam")
+					input#emailadd-email(placeholder="Email")
 			button.ui.primary.button.fluid.large#emailadd-submit Submit
 			.ui.dimmer.inverted
 				.ui.text.loader Adding your email and sending a verification email..

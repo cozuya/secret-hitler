@@ -5,15 +5,14 @@ import {
 	accountCreationDisabled,
 	ipbansNotEnforced,
 	gameCreationDisabled,
-	currentSeasonNumber,
 	profiles,
 	formattedUserList,
 	userListEmitter
 } from '../../../../routes/socket/models';
 
 describe('models', () => {
-	it('has a games array', () => {
-		expect(Array.isArray(games)).toBe(true);
+	it('has a games object', () => {
+		expect(!Array.isArray(games) && typeof games === 'object').toBe(true);
 	});
 
 	it('has a userList array', () => {
@@ -34,10 +33,6 @@ describe('models', () => {
 
 	it('has a gameCreationDisabled object', () => {
 		expect(typeof gameCreationDisabled).toBe('object');
-	});
-
-	it('has a currentSeasonNumber number', () => {
-		expect(typeof currentSeasonNumber).toBe('number');
 	});
 
 	it('has a profiles object', () => {
