@@ -95,41 +95,62 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 	}
 };
 
-module.exports.getBadWord = text => {
+/* POSSIBLE IMPROVEMENTS TO BE MADE HERE (this was done very quickly):
+ * separate exceptions into blacklisted word categories:
+ const exceptions ={
+ 	faggot: ['f a game','if 4 g'],
+ 	mongoloid: ['among', 'mongolia', 'mongodb']
+ }
+ * filter for exceptions first rather than last to save a few ms on long strings.
+ * for more advanced context detection, creating Maps of (exception => offset) where offset determines how far behind the word to start. (good for use in case of 'among' and others)
+ */
+export const getBadWord = text => {
 	const badWords = {
-		cunt: [],
-		nigger: ['nigga', 'nibba'],
-		kike: [],
-		retard: ['libtard', 'retarded'],
-		faggot: [],
-		mongoloid: ['mong']
+		// List of all blacklisted words and their variations.
+		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
+		kike: ['k1ke', 'kik3', 'k1k3'],
+		retard: ['autist', 'libtard', 'retard', 'tard', 't4rd'],
+		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t', 'f4g'],
+		mongoloid: ['mong', 'm0ng'],
+		cunt: ['kunt'],
+		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
-	let foundWord = [null, null];
-
+	// This list for all exceptions to bypass swear filter
+	const exceptions = ['if a g', 'among', 'mongolia', 'if 4 g'];
+	let foundWord = [null, null]; // Future found bad word, in format of: [blacklisted word, variation]
 	// This version will detect words with spaces in them, but may have false positives (such as "mongolia" for "mong").
-	const flatText = text.replace(/\s/gi, '');
+	let flatText = text.replace(/ /g, '');
 	Object.keys(badWords).forEach(key => {
 		if (flatText.includes(key)) {
 			foundWord = [key, key];
 		} else {
 			badWords[key].forEach(word => {
 				if (flatText.includes(word)) {
+					// True if spaceless text contains variation of blacklisted word.
 					foundWord = [key, word];
 				}
 			});
+		}
+		// This should detect exceptions in the filter and rule out false positives based on the list of exceptions.
+		for (let i = 0; i < exceptions.length; i++) {
+			if (text.indexOf(exceptions[i]) > -1) {
+				// If the exception is found within the substring,
+				foundWord = [null, null]; // Prevent the bad word from being detected.
+			}
 		}
 	});
 
 	// This version only detects words if they are whole and have whitespace at either end.
 	/* Object.keys(badWords).forEach(key => {
-		if (new RegExp(`(^|\\s)${key}s?(\\s|$)`, 'i').test(text)) {
+		if (new RegExp(`(^|\\s)${key}s?(\\s|$)`, 'i').test(text.toLowerCase())) {
 			foundWord = [key, key];
 		}
 		else badWords[key].forEach(word => {
-			if (new RegExp(`(^|\\s)${word}s?(\\s|$)`, 'i').test(text)) {
+			if (new RegExp(`(^|\\s)${word}s?(\\s|$)`, 'i').test(text.toLowerCase())) {
 				foundWord = [key, word];
 			}
 		});
 	});*/
 	return foundWord;
 };
+
