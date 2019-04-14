@@ -11,7 +11,7 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 1.4.1 released 4-1-2019</p>
+					<p>Version 1.4.2 released 4-1-2019</p>
 				</div>
 				<h4>The top 10 players of season 5 are:</h4>
 				<ul>
@@ -75,19 +75,6 @@ class Changelog extends React.Component {
 					<li>Some new moderation features (mods can force votes on afks) courtesy of contributor Vigasaurus.</li>
 					<li>List of games should be like it was in 1.0.0 and lower.</li>
 					<li>Contributor color has been updated.</li>
-				</ul>
-				<h4>The top 10 players of season 4 are:</h4>
-				<ul>
-					<li>benjamin172: 2110</li>
-					<li>minie: 2084</li>
-					<li>GoldenPanda: 2017</li>
-					<li>scum: 1961</li>
-					<li>Moranki: 1957</li>
-					<li>User: 1957</li>
-					<li>Gamethrower: 1935</li>
-					<li>mufasa: 1899</li>
-					<li>adam: 1882</li>
-					<li>Cucumber: 1879</li>
 				</ul>
 				<div className="ui header">
 					<p>Version 1.0.1 released 1-5-2019</p>
