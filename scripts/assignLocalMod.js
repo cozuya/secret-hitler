@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
 const Account = require('../models/account');
-
+let successfulAdmins = [];
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
-Account.findOne({ username: 'Uther' }).then(acc => {
-	acc.staffRole = 'admin';
-	acc.save();
-	console.log('user Uther assigned to admin staff role.');
-	mongoose.connection.close();
-});
+Account.find({ username: { $in: ['Uther', 'admin'] } })
+	.cursor()
+	.eachAsync(acc => {
+		acc.staffRole = 'admin';
+		acc.save();
+		successfulAdmins.push(acc.username);
+	})
+	.then(() => {
+		console.log('Users', successfulAdmins, 'were assigned the admin role.');
+		mongoose.connection.close();
+	});
