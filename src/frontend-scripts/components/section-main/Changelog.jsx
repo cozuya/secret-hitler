@@ -11,6 +11,14 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.4.3 released 4-14-2019</p>
+				</div>
+				<h4>Games are now for verified players only by default -coz</h4>
+				<p>Verify your email (or connect to Discord) to ensure you are able to join these games</p>
+				<h4>ELO Slider can now have a value typed into it, and correctly alerts you to the highest you can set it -Vigasaurus</h4>
+				<p>The take a seat button now has more detailed error messages, if you're unable to sit in a game</p>
+				<p>Multiple Moderation Improvements</p>
+				<div className="ui header">
 					<p>Version 1.4.2 released 4-1-2019</p>
 				</div>
 				<h4>The top 10 players of season 5 are:</h4>

@@ -104,7 +104,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
  * filter for exceptions first rather than last to save a few ms on long strings.
  * for more advanced context detection, creating Maps of (exception => offset) where offset determines how far behind the word to start. (good for use in case of 'among' and others)
  */
-export const getBadWord = text => {
+module.exports.getBadWord = text => {
 	const badWords = {
 		// List of all blacklisted words and their variations.
 		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
@@ -153,4 +153,3 @@ export const getBadWord = text => {
 	});*/
 	return foundWord;
 };
-
