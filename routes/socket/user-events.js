@@ -2794,6 +2794,17 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									if (!success) {
 										return;
 									}
+									success = false;
+									Profile.findOne({ _id: data.userName }).then(profile => {
+										let newProfile = JSON.parse(JSON.stringify(profile));
+										newProfile._id = data.comment;
+										const renamedProfile = new Profile(newProfile);
+										renamedProfile.save();
+										Profile.remove({ _id: data.userName }, () => {
+											success = true;
+											console.log('Profile of user', data.userName, 'deleted, by request of', modaction.modUserName);
+										});
+									});
 								});
 							}
 						});
