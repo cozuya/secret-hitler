@@ -116,10 +116,20 @@ export const getBadWord = text => {
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
 	// This list for all exceptions to bypass swear filter
-	const exceptions = ['if a g', 'among', 'mongolia', 'if 4 g'];
+	const exceptions = ['if a g', 'among', 'mongolia', 'if 4 g','of a g','of 4 g'];
 	let foundWord = [null, null]; // Future found bad word, in format of: [blacklisted word, variation]
 	// This version will detect words with spaces in them, but may have false positives (such as "mongolia" for "mong").
-	let flatText = text.replace(/ /g, '');
+	let flatText = ""; //the future spaceless text.
+	let spacesIndex = []; //the indexes of where the spaces would be in the spaceless text. for context in exceptions.
+	
+	//This method of sorting is what allows comparison between the found word and the actual context on a per-example basis.
+	for (var i = 0; i < text.length; i++) {
+		if (" " === text[i]) {
+			spacesIndex.push(flatText.length - 1); //add space to list
+		} else {
+			flatText += text[i]; //add char to text otherwise
+		}
+	}
 	Object.keys(badWords).forEach(key => {
 		if (flatText.includes(key)) {
 			foundWord = [key, key];
@@ -131,13 +141,26 @@ export const getBadWord = text => {
 				}
 			});
 		}
-		// This should detect exceptions in the filter and rule out false positives based on the list of exceptions.
+		
+		//this should detect exceptions in the filter and rule out false positives based on the list of exceptions.
+		//this version checks only the word in question by finding the index of the found word within only the context of the one detected word.
+		let wIndex = flatText.indexOf(foundWord[1]); //the location of the blacklisted word found in flatText.
+		for (let i = 0; i < exceptions.length; i++) { //passes through all exceptions
+
+			if (text.toLowerCase().substr( //spacing weird to add notations and clarify what this long if statement does.
+				wIndex + Math.max(0, spacesIndex.filter(index => index <= wIndex).length - 1), //substrings text to find the index where the bad word would be found by determining the number of missing spaces -1 (for 'among')
+				exceptions[i].length + 1) //sets the length of the substring to be 1 longer than the exception string length to counteract the -1 for 'among'.
+				.indexOf(exceptions[i]) > -1) { //if the exception is found within the substring,
+				foundWord = [null, null]; //prevent the bad word from being detected.
+			}
+		}
+		/*this version checks the whole sentence if there's an exception ANYWHERE...
 		for (let i = 0; i < exceptions.length; i++) {
 			if (text.indexOf(exceptions[i]) > -1) {
 				// If the exception is found within the substring,
 				foundWord = [null, null]; // Prevent the bad word from being detected.
 			}
-		}
+		}*/
 	});
 
 	// This version only detects words if they are whole and have whitespace at either end.
