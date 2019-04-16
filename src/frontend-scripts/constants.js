@@ -96,7 +96,8 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 };
 
 export const getBadWord = text => {
-	const badWords = { //list of all blacklisted words and their variations.
+	const badWords = {
+		// list of all blacklisted words and their variations.
 		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
 		kike: ['k1ke', 'kik3', 'k1k3'],
 		retard: ['autist', 'libtard', 'retard', 'tard'],
@@ -105,33 +106,31 @@ export const getBadWord = text => {
 		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
-	const exceptions = ['if a g', 'among', 'mongodb', 'mongolia', 'if 4 g', 'of a g', 'of 4 g']; //this list for all exceptions to bypass swear filter
-	let foundWord = [null, null]; //future found bad word, in format of: [blacklisted word, variation]
+	const exceptions = ['if a g', 'among', 'mongodb', 'mongolia', 'if 4 g', 'of a g', 'of 4 g']; // this list for all exceptions to bypass swear filter
+	let foundWord = [null, null]; // future found bad word, in format of: [blacklisted word, variation]
 
-	//let ec = 0; //for future use in auto reporting
-	let exceptedText = "" + text;
-	for (exception of exceptions) {
+	// let ec = 0; //for future use in auto reporting
+	let exceptedText = '' + text;
+	for (let exception of exceptions) {
 		while (exceptedText.toLowerCase().includes(exception)) {
 			exceptedText = exceptedText.replace(exception, '');
-			//ec++;
+			// ec++;
 		}
 	}
 
 	const flatText = exceptedText.replace(/\W/gi, '');
-
 	Object.keys(badWords).forEach(key => {
-		if (flatText.includes(key)) { //true if spaceless text contains blacklisted word.
+		if (flatText.includes(key)) {
+			// true if spaceless text contains blacklisted word.
 			foundWord = [key, key];
 		} else {
 			badWords[key].forEach(word => {
-				if (flatText.includes(word)) { //true if spaceless text contains variation of blacklisted word.
+				if (flatText.includes(word)) {
+					// true if spaceless text contains variation of blacklisted word.
 					foundWord = [key, word];
 				}
 			});
 		}
-		//this should detect exceptions in the filter and rule out false positives based on the list of exceptions.
-
-
 	});
 
 	// This version only detects words if they are whole and have whitespace at either end.
