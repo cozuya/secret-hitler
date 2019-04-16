@@ -119,6 +119,8 @@ export getBadWord = text => {
 
 	const flatText = exceptedText.replace(/\W/gi, '');
 
+	//this should detect exceptions in the filter and rule out false positives based on the list of exceptions.
+	
 	Object.keys(badWords).forEach(key => {
 		if (flatText.includes(key)) { //true if spaceless text contains blacklisted word.
 			foundWord = [key, key];
@@ -129,7 +131,6 @@ export getBadWord = text => {
 				}
 			});
 		}
-		//this should detect exceptions in the filter and rule out false positives based on the list of exceptions.
 
 
 	});
