@@ -104,6 +104,7 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
  * filter for exceptions first rather than last to save a few ms on long strings.
  * for more advanced context detection, creating Maps of (exception => offset) where offset determines how far behind the word to start. (good for use in case of 'among' and others)
  */
+
 export getBadWord = text => {
 	const badWords = { //list of all blacklisted words and their variations.
 		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
@@ -121,7 +122,7 @@ export getBadWord = text => {
 	let spacesIndex = []; //the indexes of where the spaces would be in the spaceless text. for context in exceptions.
 	for (var i = 0; i < text.length; i++) {
 		if (" " === text[i]) {
-			spacesIndex.push(flatText.length - 1); //add space to list
+		  spacesIndex.push(flatText.length - 1); //add space to list
 		} else {
 			flatText += text[i]; //add char to text otherwise
 		}
