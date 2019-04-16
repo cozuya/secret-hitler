@@ -2896,24 +2896,34 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 
 				case 'fragbanSmall':
-					const fragbans = new BannedIP({
-						bannedDate: new Date(Date.now() + 64800000),
-						type: 'fragbanSmall',
-						ip: data.userName
-					});
-
-					fragbans.save();
-
+					if (isSuperMod) {
+						const fragbans = new BannedIP({
+							bannedDate: new Date(Date.now() + 64800000),
+							type: 'fragbanSmall',
+							ip: data.userName
+						});
+						modaction.ip = modaction.userActedOn;
+						modaction.userActedOn = 'RAW IP FRAGMENT';
+						fragbans.save();
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can perform large IP bans.');
+						return;
+					}
 					break;
 				case 'fragbanLarge':
-					const fragbanl = new BannedIP({
-						bannedDate: new Date(Date.now() + 604800000),
-						type: 'fragbanLarge',
-						ip: data.userName
-					});
-
-					fragbanl.save();
-
+					if (isSuperMod) {
+						const fragbanl = new BannedIP({
+							bannedDate: new Date(Date.now() + 604800000),
+							type: 'fragbanLarge',
+							ip: data.userName
+						});
+						modaction.ip = modaction.userActedOn;
+						modaction.userActedOn = 'RAW IP FRAGMENT';
+						fragbanl.save();
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can perform fragment IP bans.');
+						return;
+					}
 					break;
 				case 'timeOut':
 					const timeout = new BannedIP({

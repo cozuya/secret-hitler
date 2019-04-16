@@ -32,3 +32,12 @@ module.exports.obfIP = ip => {
 	const data = ip.split('.').map(val => Number(val));
 	return obfBlock(data[0], 1) + '.' + obfBlock(data[1], 2) + '.' + obfBlock(data[2], 3) + '.' + obfBlock(data[3], 4);
 };
+
+module.exports.obfFragment = ip => {
+	const data = ip.split('.').map(val => Number(val));
+	let obf = obfBlock(data[0], 1) + '.' + obfBlock(data[1], 2);
+	if (data.length > 2) {
+		obf += '.' + obfBlock(data[2], 3);
+	}
+	return obf;
+};
