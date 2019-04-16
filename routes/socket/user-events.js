@@ -3344,9 +3344,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			}
 
 			const modAction = JSON.stringify({
-				content: `Date: *${new Date()}*\nStaff member: **${data.modName}**\nAction: **${data.action}**\nUser: **${data.userName}**\nComment: **${
-					modaction.modNotes
-				}**.`
+				content: `Date: *${new Date()}*\nStaff member: **${modaction.modUserName}**\nAction: **${modaction.actionTaken}**\nUser: **${
+					modaction.userActedOn
+				}**\nComment: **${modaction.modNotes}**.`
 			});
 
 			const modOptions = {
