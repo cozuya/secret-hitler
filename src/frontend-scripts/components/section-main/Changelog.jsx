@@ -11,13 +11,18 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 1.4.3 released 4-14-2019</p>
+					<p>Version 1.5.0 released 4-15-2019</p>
 				</div>
-				<h4>Games are now for verified players only by default -coz</h4>
-				<p>Verify your email (or connect to Discord) to ensure you are able to join these games</p>
-				<h4>ELO Slider can now have a value typed into it, and correctly alerts you to the highest you can set it -Vigasaurus</h4>
-				<p>The take a seat button now has more detailed error messages, if you're unable to sit in a game</p>
-				<p>Multiple Moderation Improvements</p>
+				<h4>
+					Creating a public elo game now defaults to only verified accounts being able to sit in the game (if the game creator is verified). Verified accounts
+					are those who have successfully confirmed their non disposable email address, or are using sign in with Github or Discord. This will solve various
+					moderation problems. If everyone hates this, I will consider reverting this change. Please read our email terms of use (cliffs: will never email you
+					other than initial verification and password resets, your email will never leave the site). -coz
+				</h4>
+				<p>Verify your email (or connect to Discord/Github) to ensure you are able to join these games.</p>
+				<h4>ELO Slider can now have a value typed into it, and correctly alerts you to the highest you can set it. -Vigasaurus</h4>
+				<p>The take a seat button now has more detailed error messages, if you're unable to sit in a game.</p>
+				<p>Multiple moderation improvements.</p>
 				<div className="ui header">
 					<p>Version 1.4.2 released 4-1-2019</p>
 				</div>
