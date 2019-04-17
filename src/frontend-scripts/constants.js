@@ -110,7 +110,7 @@ export const getBadWord = text => {
 	let foundWord = [null, null]; // Future found bad word, in format of: [blacklisted word, variation]
 
 	// let ec = 0; //for future use in auto reporting
-	let exceptedText = "" + text;
+	let exceptedText = text;
 	for(let exception of exceptions){
 		while(exceptedText.search(exception) > -1){
 			exceptedText = exceptedText.replace(exception, '');
