@@ -168,7 +168,7 @@ class Gamechat extends React.Component {
 					textLastChanged: Date.now(),
 					textChangeTimer: setTimeout(() => {
 						this.setState({ textChangeTimer: -1 });
-					}, 2000)
+					}, 1000)
 				});
 			} else {
 				this.setState({

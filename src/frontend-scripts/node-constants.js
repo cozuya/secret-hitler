@@ -97,7 +97,7 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 
 module.exports.getBadWord = text => {
 	const badWords = {
-		// list of all blacklisted words and their variations.
+		// List of all blacklisted words and their variations.
 		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
 		kike: ['k1ke', 'kik3', 'k1k3'],
 		retard: ['autist', 'libtard', 'retard', 'tard'],
@@ -106,27 +106,27 @@ module.exports.getBadWord = text => {
 		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
-	const exceptions = ['if a g', 'among', 'mongodb', 'mongolia', 'if 4 g', 'of a g', 'of 4 g']; // this list for all exceptions to bypass swear filter
-	let foundWord = [null, null]; // future found bad word, in format of: [blacklisted word, variation]
+	const exceptions = [/(i|o)f (a|4) g/gi, /underclaim on gov/gi, /big ga(e|m|y)/gi, /among/gi, /mongodb/gi, /mongolia/gi]; // This list for all exceptions to bypass swear filter
+	let foundWord = [null, null]; // Future found bad word, in format of: [blacklisted word, variation]
 
 	// let ec = 0; //for future use in auto reporting
-	let exceptedText = '' + text;
-	for (let exception of exceptions) {
-		while (exceptedText.toLowerCase().includes(exception)) {
+	let exceptedText = text;
+	for(let exception of exceptions){
+		while(exceptedText.search(exception) > -1){
 			exceptedText = exceptedText.replace(exception, '');
 			// ec++;
 		}
 	}
 
-	const flatText = exceptedText.replace(/\W/gi, '');
+	const flatText = exceptedText.replace(/\W/gi, '').toLowerCase();
 	Object.keys(badWords).forEach(key => {
 		if (flatText.includes(key)) {
-			// true if spaceless text contains blacklisted word.
+			// True if spaceless text contains blacklisted word.
 			foundWord = [key, key];
 		} else {
 			badWords[key].forEach(word => {
 				if (flatText.includes(word)) {
-					// true if spaceless text contains variation of blacklisted word.
+					// True if spaceless text contains variation of blacklisted word.
 					foundWord = [key, word];
 				}
 			});
