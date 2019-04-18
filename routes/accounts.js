@@ -185,7 +185,7 @@ module.exports = () => {
 						)
 					]
 				}).then(bans => {
-					if (bans.some(ban => new Date() < ban.bannedDate)) {
+					if (bans.some(ban => new Date() < ban.bannedDate) && !hasBypass) {
 						res.status(401).json({
 							message:
 								'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on Discord.'
