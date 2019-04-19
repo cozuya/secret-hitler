@@ -55,7 +55,7 @@ export function processEmotes(input, isMod, allEmotes) {
 			formatedMsg.push(
 				<a
 					key={index}
-					href={isGithub ? 'https://github.com/cozuya/secret-hitler/' + data[2] : gameURL ? data[2].substring(5) : 'https://secrethitler.io/' + data[2]}
+					href={isGithub ? 'https://github.com/cozuya/secret-hitler/' + data[2] : gameURL ? data[2].substring(5) : '/' + data[2]}
 					className="shio-link"
 					title={isGithub ? "link to sh.io's github page" : 'link to something inside of sh.io'}
 				>
@@ -88,7 +88,11 @@ export function processEmotes(input, isMod, allEmotes) {
 		}
 	});
 	if (isMod) {
-		return <Linkify properties={{ target: '_blank', title: 'External Link', style: { color: 'inherit', textDecoration: 'underline' } }}>{formatedMsg}</Linkify>;
+		return (
+			<Linkify properties={{ target: '_blank', rel: 'noopener noreferrer', title: 'External Link', style: { color: 'inherit', textDecoration: 'underline' } }}>
+				{formatedMsg}
+			</Linkify>
+		);
 	}
 	return formatedMsg;
 }

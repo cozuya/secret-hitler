@@ -142,7 +142,7 @@ export class App extends React.Component {
 		});
 
 		socket.on('manualDisconnection', () => {
-			window.location.pathname = '/observe';
+			window.location.pathname = '/logout';
 		});
 
 		socket.on('manualReplayRequest', uid => {
