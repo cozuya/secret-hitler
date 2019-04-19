@@ -3421,10 +3421,10 @@ module.exports.handlePlayerReport = (passport, data) => {
 			break;
 	}
 
-	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3');
+	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '/@');
 	const body = JSON.stringify({
 		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${data.reportedPlayer}\nReason: ${
-			data.reason
+			playerReport.reason
 		}\nComment: ${httpEscapedComment}`
 	});
 
