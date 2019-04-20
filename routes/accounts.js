@@ -147,8 +147,18 @@ module.exports = torIps => {
 					'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
 			});
 		} else if (torIps.includes(signupIP)) {
-			res.status(403).json({
-				message: 'Use of TOR is not allowed on this site.'
+			const newSignup = new Signups({
+				date: new Date(),
+				userName: username,
+				type: 'TOR signup attempt',
+				ip: 'TOR',
+				email: Boolean(email)
+			});
+
+			newSignup.save(() => {
+				res.status(403).json({
+					message: 'Use of TOR is not allowed on this site.'
+				});
 			});
 		} else {
 			let doesContainBadWord = false;
@@ -317,6 +327,16 @@ module.exports = torIps => {
 				}
 
 				if (torIps.includes(req.expandedIP)) {
+					const newSignup = new Signups({
+						date: new Date(),
+						userName: username,
+						type: 'TOR signup attempt',
+						ip: 'TOR',
+						email: ''
+					});
+
+					newSignup.save();
+
 					res.status(403).json({
 						message: 'Use of TOR is not allowed on this site.'
 					});

@@ -3378,7 +3378,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 module.exports.handlePlayerReport = (passport, data) => {
 	const user = userList.find(u => u.userName === passport.user);
 
-	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2)) {
+	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2) && process.env.NODE_ENV === 'production') {
 		return;
 	}
 
@@ -3430,7 +3430,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 
 	const options = {
 		hostname: 'discordapp.com',
-		path: process.env.DISCORDURL,
+		path: process.env.DISCORDREPORTURL,
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
