@@ -25,6 +25,22 @@ const ensureAuthenticated = (req, res, next) => {
 
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
+const renderPage = (req, res, pageName, varName) => {
+	const renderObj = {};
+
+	renderObj[varName] = true;
+
+	if (req.user) {
+		renderObj.username = req.user.username;
+	}
+
+	if (process.env.NODE_ENV === 'production') {
+		renderObj.prodCacheBustToken = prodCacheBustToken;
+	}
+
+	res.render(pageName, renderObj);
+};
+
 module.exports = torIps => {
 	verifyRoutes();
 
