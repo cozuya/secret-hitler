@@ -11,7 +11,20 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 1.4.1 released 4-1-2019</p>
+					<p>Version 1.5.0 released 4-15-2019</p>
+				</div>
+				<h4>
+					Creating a public elo game now defaults to only verified accounts being able to sit in the game (if the game creator is verified). Verified accounts
+					are those who have successfully confirmed their non disposable email address, or are using sign in with Github or Discord. This will solve various
+					moderation problems. If everyone hates this, I will consider reverting this change. Please read our email terms of use (cliffs: will never email you
+					other than initial verification and password resets, your email will never leave the site). -coz
+				</h4>
+				<p>Verify your email (or connect to Discord/Github) to ensure you are able to join these games.</p>
+				<h4>ELO Slider can now have a value typed into it, and correctly alerts you to the highest you can set it. -Vigasaurus</h4>
+				<p>The take a seat button now has more detailed error messages, if you're unable to sit in a game.</p>
+				<p>Multiple moderation improvements.</p>
+				<div className="ui header">
+					<p>Version 1.4.2 released 4-1-2019</p>
 				</div>
 				<h4>The top 10 players of season 5 are:</h4>
 				<ul>
@@ -75,19 +88,6 @@ class Changelog extends React.Component {
 					<li>Some new moderation features (mods can force votes on afks) courtesy of contributor Vigasaurus.</li>
 					<li>List of games should be like it was in 1.0.0 and lower.</li>
 					<li>Contributor color has been updated.</li>
-				</ul>
-				<h4>The top 10 players of season 4 are:</h4>
-				<ul>
-					<li>benjamin172: 2110</li>
-					<li>minie: 2084</li>
-					<li>GoldenPanda: 2017</li>
-					<li>scum: 1961</li>
-					<li>Moranki: 1957</li>
-					<li>User: 1957</li>
-					<li>Gamethrower: 1935</li>
-					<li>mufasa: 1899</li>
-					<li>adam: 1882</li>
-					<li>Cucumber: 1879</li>
 				</ul>
 				<div className="ui header">
 					<p>Version 1.0.1 released 1-5-2019</p>

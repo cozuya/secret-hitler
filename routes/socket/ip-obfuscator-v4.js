@@ -11,24 +11,19 @@ const createObfuscationData = () => {
 	return block;
 };
 
-const block1 = createObfuscationData();
-const block2 = createObfuscationData();
-const block3 = createObfuscationData();
-const block4 = createObfuscationData();
+const blocks = [createObfuscationData(), createObfuscationData(), createObfuscationData(), createObfuscationData()];
 
 const obfBlock = (number, blockID) => {
-	let block;
-	if (blockID === 1) block = block1;
-	else if (blockID === 2) block = block2;
-	else if (blockID === 3) block = block3;
-	else block = block4;
-
-	if (block[number] === undefined) throw new Error(`Invalid IP: ${blockID} ${number}`);
-	return block[number];
+	if (!blocks[blockID] || blocks[blockID][number] === undefined) throw new Error(`Invalid IP: ${blockID} ${number}`);
+	return blocks[blockID][number];
 };
+
 module.exports.obfBlock = obfBlock; // For testing purposes, should not be used in production.
 
 module.exports.obfIP = ip => {
-	const data = ip.split('.').map(val => Number(val));
-	return obfBlock(data[0], 1) + '.' + obfBlock(data[1], 2) + '.' + obfBlock(data[2], 3) + '.' + obfBlock(data[3], 4);
+	return ip
+		.split('.')
+		.map(Number)
+		.map(obfBlock)
+		.join('.');
 };

@@ -327,10 +327,6 @@ class ProfileWrapper extends React.Component {
 	}
 
 	Loading() {
-		this.setState({
-			openTime: Date.now()
-		});
-
 		return (
 			<div className="ui active dimmer">
 				<div className="ui huge text loader">Loading</div>

@@ -22,7 +22,7 @@ const ensureAuthenticated = (req, res, next) => {
 		return next();
 	}
 
-	res.redirect('/observe');
+	res.redirect('/observe/');
 };
 
 const prodCacheBustToken = `${Math.random()
@@ -135,7 +135,7 @@ module.exports = () => {
 		const { username } = req.user;
 
 		if (req.user.isBanned) {
-			res.redirect('/observe/');
+			res.redirect('/logout');
 		} else {
 			Account.findOne({ username }, (err, account) => {
 				if (err) {
@@ -168,10 +168,18 @@ module.exports = () => {
 		res.redirect('/observe/');
 	});
 
-	app.get('/observe/', (req, res) => {
+	app.get('/logout', (req, res) => {
 		if (req.user) {
 			req.session.destroy();
 			req.logout();
+		}
+		res.redirect('/observe/');
+	});
+
+	app.get('/observe/', (req, res) => {
+		if (req.user) {
+			res.redirect('/game/');
+			return;
 		}
 
 		const gameObj = {

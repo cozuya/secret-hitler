@@ -97,24 +97,36 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 
 export const getBadWord = text => {
 	const badWords = {
+		// List of all blacklisted words and their variations.
 		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
 		kike: ['k1ke', 'kik3', 'k1k3'],
 		retard: ['autist', 'libtard', 'retard', 'tard'],
-		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t'],
-		mongoloid: ['mong'],
+		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t', 'f4g'],
+		mongoloid: ['mong', 'm0ng'],
 		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
-	let foundWord = [null, null];
+	const exceptions = [/(i|o)f (a|4) g/gi, /underclaim on gov/gi, /big ga(e|m|y)/gi, /among/gi, /mongodb/gi, /mongolia/gi]; // This list for all exceptions to bypass swear filter
+	let foundWord = [null, null]; // Future found bad word, in format of: [blacklisted word, variation]
 
-	// This version will detect words with spaces in them, but may have false positives (such as "mongolia" for "mong").
-	const flatText = text.toLowerCase().replace(/\s/gi, '');
+	// let ec = 0; //for future use in auto reporting
+	let exceptedText = text;
+	for(let exception of exceptions){
+		while(exceptedText.search(exception) > -1){
+			exceptedText = exceptedText.replace(exception, '');
+			// ec++;
+		}
+	}
+
+	const flatText = exceptedText.replace(/\W/gi, '').toLowerCase();
 	Object.keys(badWords).forEach(key => {
 		if (flatText.includes(key)) {
+			// True if spaceless text contains blacklisted word.
 			foundWord = [key, key];
 		} else {
 			badWords[key].forEach(word => {
 				if (flatText.includes(word)) {
+					// True if spaceless text contains variation of blacklisted word.
 					foundWord = [key, word];
 				}
 			});

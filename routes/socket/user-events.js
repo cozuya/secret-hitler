@@ -2794,6 +2794,17 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									if (!success) {
 										return;
 									}
+									success = false;
+									Profile.findOne({ _id: data.userName }).then(profile => {
+										let newProfile = JSON.parse(JSON.stringify(profile));
+										newProfile._id = data.comment;
+										const renamedProfile = new Profile(newProfile);
+										renamedProfile.save();
+										Profile.remove({ _id: data.userName }, () => {
+											success = true;
+											console.log('Profile of user', data.userName, 'deleted, by request of', modaction.modUserName);
+										});
+									});
 								});
 							}
 						});
@@ -2885,24 +2896,34 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 
 				case 'fragbanSmall':
-					const fragbans = new BannedIP({
-						bannedDate: new Date(Date.now() + 64800000),
-						type: 'fragbanSmall',
-						ip: data.userName
-					});
-
-					fragbans.save();
-
+					if (isSuperMod) {
+						const fragbans = new BannedIP({
+							bannedDate: new Date(Date.now() + 64800000),
+							type: 'fragbanSmall',
+							ip: data.userName
+						});
+						modaction.ip = modaction.userActedOn;
+						modaction.userActedOn = 'RAW IP FRAGMENT';
+						fragbans.save();
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can perform large IP bans.');
+						return;
+					}
 					break;
 				case 'fragbanLarge':
-					const fragbanl = new BannedIP({
-						bannedDate: new Date(Date.now() + 604800000),
-						type: 'fragbanLarge',
-						ip: data.userName
-					});
-
-					fragbanl.save();
-
+					if (isSuperMod) {
+						const fragbanl = new BannedIP({
+							bannedDate: new Date(Date.now() + 604800000),
+							type: 'fragbanLarge',
+							ip: data.userName
+						});
+						modaction.ip = modaction.userActedOn;
+						modaction.userActedOn = 'RAW IP FRAGMENT';
+						fragbanl.save();
+					} else {
+						socket.emit('sendAlert', 'Only editors and admins can perform fragment IP bans.');
+						return;
+					}
 					break;
 				case 'timeOut':
 					const timeout = new BannedIP({
@@ -3323,9 +3344,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			}
 
 			const modAction = JSON.stringify({
-				content: `Date: *${new Date()}*\nStaff member: **${data.modName}**\nAction: **${data.action}**\nUser: **${data.userName}**\nComment: **${
-					modaction.modNotes
-				}**.`
+				content: `Date: *${new Date()}*\nStaff member: **${modaction.modUserName}**\nAction: **${modaction.actionTaken}**\nUser: **${
+					modaction.userActedOn
+				}**\nComment: **${modaction.modNotes}**.`
 			});
 
 			const modOptions = {
@@ -3400,10 +3421,10 @@ module.exports.handlePlayerReport = (passport, data) => {
 			break;
 	}
 
-	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3');
+	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '/@');
 	const body = JSON.stringify({
 		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${data.reportedPlayer}\nReason: ${
-			data.reason
+			playerReport.reason
 		}\nComment: ${httpEscapedComment}`
 	});
 

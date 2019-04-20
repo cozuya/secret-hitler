@@ -200,9 +200,7 @@ class Menu extends React.Component {
 			<div>
 				<div className="menu-container" style={{ zIndex: 9999 }}>
 					<section className={classes}>
-						<a href="/" target="_blank">
-							SECRET HITLER.io
-						</a>
+						<a href="/">SECRET HITLER.io</a>
 						<div className="center-menu-links">
 							<span>
 								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
@@ -288,7 +286,7 @@ class Menu extends React.Component {
 							})()}
 							{this.props.userInfo.userName && (
 								<div className="item right">
-									<a className="ui button" href="/observe">
+									<a className="ui button" href="/logout">
 										Logout
 									</a>
 								</div>
@@ -387,7 +385,7 @@ class Menu extends React.Component {
 							})()}
 							{this.props.userInfo.userName && (
 								<div className="item right">
-									<a className="ui button" href="/observe">
+									<a className="ui button" href="/logout">
 										Logout
 									</a>
 								</div>
