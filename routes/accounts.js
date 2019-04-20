@@ -773,4 +773,8 @@ module.exports = torIps => {
 			res.redirect('/account');
 		});
 	});
+
+	app.get('*', (req, res) => {
+		renderPage(req, res, '404', '404');
+	});
 };
