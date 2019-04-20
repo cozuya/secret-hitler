@@ -3421,7 +3421,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 			break;
 	}
 
-	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '/@');
+	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '`@`');
 	const body = JSON.stringify({
 		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${data.reportedPlayer}\nReason: ${
 			playerReport.reason
@@ -3430,7 +3430,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 
 	const options = {
 		hostname: 'discordapp.com',
-		path: process.env.DISCORDREPORTURL,
+		path: process.env.DISCORDURL,
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
