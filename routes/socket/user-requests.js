@@ -24,10 +24,6 @@ const version = require('../../version');
 const { obfIP } = require('./ip-obf');
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 
-let torIps = [];
-
-module.exports.torIps = torIps;
-
 /**
  * @param {object} socket - user socket reference.
  */
@@ -52,7 +48,6 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 				status: userList.find(userListUser => user.username === userListUser.userName).status,
 				isRainbow: user.wins + user.losses > 49,
 				userName: user.username,
-				isTor: torIps && torIps.includes(user.lastConnectedIP || user.signupIP),
 				ip: user.lastConnectedIP || user.signupIP,
 				email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`
 			}));

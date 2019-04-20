@@ -8,6 +8,8 @@ const accounts = require('./accounts');
 const version = require('../version');
 const { obfIP } = require('./socket/ip-obf');
 const { ProcessImage } = require('./image-processor');
+const savedTorIps = require('../utils/savedtorips');
+const https = require('https');
 
 /**
  * @param {object} req - express request object.
@@ -52,7 +54,23 @@ module.exports = () => {
 		res.render(pageName, renderObj);
 	};
 
-	accounts();
+	try {
+		https.get('https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1', res => {
+			let data = '';
+
+			res.on('data', chunk => {
+				data += chunk;
+			});
+
+			res.on('end', () => {
+				const torIps = data.split('\n');
+
+				accounts(torIps);
+			});
+		});
+	} catch (error) {
+		accounts(savedTorIps);
+	}
 
 	Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] })
 		.then(accounts => {

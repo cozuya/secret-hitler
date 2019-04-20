@@ -25,7 +25,7 @@ const ensureAuthenticated = (req, res, next) => {
 
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
-module.exports = () => {
+module.exports = torIps => {
 	verifyRoutes();
 
 	app.get('/account', ensureAuthenticated, (req, res) => {
@@ -145,6 +145,10 @@ module.exports = () => {
 			res.status(403).json({
 				message:
 					'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
+			});
+		} else if (torIps.includes(signupIP)) {
+			res.status(403).json({
+				message: 'Use of TOR is not allowed on this site.'
 			});
 		} else {
 			let doesContainBadWord = false;
@@ -309,6 +313,14 @@ module.exports = () => {
 						message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
 						// TODO: include the reason moderators provided for the account ban, if it exists
 					});
+					return next();
+				}
+
+				if (torIps.includes(req.expandedIP)) {
+					res.status(403).json({
+						message: 'Use of TOR is not allowed on this site.'
+					});
+
 					return next();
 				}
 
