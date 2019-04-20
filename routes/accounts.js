@@ -175,13 +175,13 @@ module.exports = () => {
 							`^${signupIP
 								.split('.')
 								.slice(0, 2)
-								.join('.')}`
+								.join('.')}$`
 						),
 						new RegExp(
 							`^${signupIP
 								.split('.')
 								.slice(0, 3)
-								.join('.')}`
+								.join('.')}$`
 						)
 					]
 				}).then(bans => {
