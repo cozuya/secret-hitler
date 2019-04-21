@@ -10,6 +10,8 @@ const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
 const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
 const { TOU_CHANGES } = require('../src/frontend-scripts/node-constants.js');
+const prodCacheBustToken = require('./prodCacheBustToken');
+
 /**
  * @param {object} req - express request object.
  * @param {object} res - express response object.

@@ -10,6 +10,7 @@ const { obfIP } = require('./socket/ip-obf');
 const { ProcessImage } = require('./image-processor');
 const savedTorIps = require('../utils/savedtorips');
 const https = require('https');
+const prodCacheBustToken = require('./prodCacheBustToken');
 
 /**
  * @param {object} req - express request object.
@@ -24,12 +25,6 @@ const ensureAuthenticated = (req, res, next) => {
 
 	res.redirect('/observe/');
 };
-
-const prodCacheBustToken = `${Math.random()
-	.toString(36)
-	.substring(2)}${Math.random()
-	.toString(36)
-	.substring(2)}`;
 
 module.exports = () => {
 	/**
