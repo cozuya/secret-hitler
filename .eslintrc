@@ -29,6 +29,8 @@
 		"react/jsx-uses-react": "error",
 		"react/jsx-indent-props": "off",
 		"react/no-unescaped-entities": "off",
+		"react/prop-types": "off",
+		"react/no-deprecated": "off",
 		"object-curly-spacing": "off",
 		"array-bracket-spacing": "off",
 		"no-invalid-this": 0

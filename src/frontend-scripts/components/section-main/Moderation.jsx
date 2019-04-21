@@ -1219,7 +1219,7 @@ export default class Moderation extends React.Component {
 							<h3>Current player list</h3>
 							<div className="ui table">
 								<h4>Color chart:</h4>
-								
+
 								<span className="isbannedbefore">User has been banned before.</span>
 								<br />
 								<span className="istimedbefore">User has been timed before.</span>
