@@ -5,7 +5,8 @@ const Signups = new Schema({
 	userName: String,
 	ip: String,
 	type: String,
-	email: String
+	email: String,
+	unobfuscatedIP: String
 });
 
 module.exports = mongoose.model('Signups', Signups);
