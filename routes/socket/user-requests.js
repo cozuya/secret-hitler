@@ -119,7 +119,19 @@ module.exports.sendSignups = socket => {
 };
 
 module.exports.sendAllSignups = socket => {
-	Signups.find()
+	Signups.find({ type: { $nin: ['local', 'private'] } })
+		.sort({ $natural: -1 })
+		.limit(500)
+		.then(signups => {
+			socket.emit('signupsInfo', signups);
+		})
+		.catch(err => {
+			console.log(err, 'err in finding signups');
+		});
+};
+
+module.exports.sendPrivateSignups = socket => {
+	Signups.find({ type: 'private' })
 		.sort({ $natural: -1 })
 		.limit(500)
 		.then(signups => {

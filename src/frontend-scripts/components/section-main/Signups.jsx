@@ -67,7 +67,7 @@ const Signups = ({ socket }) => {
 			</a>
 			<span
 				onClick={() => {
-					signupType = signupType === 'getSignups' ? 'getAllSignups' : 'getSignups';
+					signupType = signupType === 'getSignups' ? 'getAllSignups' : signupType === 'getAllSignups' ? 'getPrivateSignups' : 'getSignups';
 					socket.emit(signupType);
 					return;
 				}}
@@ -83,7 +83,7 @@ const Signups = ({ socket }) => {
 					cursor: 'pointer'
 				}}
 			>
-				Show/Hide Failed Attempts
+				Toggle Signup Type
 			</span>
 			{renderSignupsLog()}
 		</section>
