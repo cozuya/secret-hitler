@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
+let signupType = 'getSignups';
+
 const Signups = ({ socket }) => {
 	const [signuplog, updateSignuplog] = useState([]);
-
 	useEffect(() => {
 		socket.emit('getSignups');
 
 		const timerId = setInterval(() => {
-			socket.emit('getSignups');
+			socket.emit(signupType);
 		}, 10000);
 
 		socket.on('signupsInfo', info => {
@@ -55,8 +56,35 @@ const Signups = ({ socket }) => {
 	return (
 		<section>
 			<a href="#/">
-				<i className="remove icon" />
+				<i
+					className="remove icon"
+					style={{
+						position: 'absolute',
+						top: '10px',
+						right: '10px'
+					}}
+				/>
 			</a>
+			<span
+				onClick={() => {
+					signupType = signupType === 'getSignups' ? 'getAllSignups' : 'getSignups';
+					socket.emit(signupType);
+					return;
+				}}
+				style={{
+					position: 'absolute',
+					color: 'lightblue',
+					userSelect: 'none',
+					WebkitUserSelect: 'none',
+					MsUserSelect: 'none',
+					textDecoration: 'underline',
+					left: '0',
+					top: '10px',
+					cursor: 'pointer'
+				}}
+			>
+				Show/Hide Failed Attempts
+			</span>
 			{renderSignupsLog()}
 		</section>
 	);

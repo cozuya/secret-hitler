@@ -107,6 +107,18 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 module.exports.getModInfo = getModInfo;
 
 module.exports.sendSignups = socket => {
+	Signups.find({ type: 'local' })
+		.sort({ $natural: -1 })
+		.limit(500)
+		.then(signups => {
+			socket.emit('signupsInfo', signups);
+		})
+		.catch(err => {
+			console.log(err, 'err in finding signups');
+		});
+};
+
+module.exports.sendAllSignups = socket => {
 	Signups.find()
 		.sort({ $natural: -1 })
 		.limit(500)
@@ -117,6 +129,7 @@ module.exports.sendSignups = socket => {
 			console.log(err, 'err in finding signups');
 		});
 };
+
 /**
  * @param {array} games - list of all games
  * @param {object} socket - user socket reference.
