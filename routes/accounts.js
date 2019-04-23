@@ -115,7 +115,7 @@ module.exports = torIps => {
 				hasBypass = true;
 			}
 		}
-		const signupIP = '1.1.1.1'; // req.expandedIP;
+		const signupIP = req.expandedIP;
 		const save = {
 			username,
 			isLocal: true,
@@ -175,14 +175,15 @@ module.exports = torIps => {
 							'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
 					});
 				} else if (torIps.includes(signupIP)) {
-					const newSignup = new Signups({
+					const torSignup = new Signups({
 						date: new Date(),
 						userName: username,
-						type: 'TOR signup attempt',
-						ip: 'TOR',
-						email: Boolean(email)
+						type: 'Failed - TOR',
+						ip: obfIP(signupIP),
+						email: Boolean(email),
+						unobfuscatedIP: signupIP
 					});
-					newSignup.save(() => {
+					torSignup.save(() => {
 						res.status(403).json({
 							message: 'Use of TOR is not allowed on this site.'
 						});
@@ -191,8 +192,8 @@ module.exports = torIps => {
 					const vpnSignup = new Signups({
 						date: new Date(),
 						userName: username,
-						type: 'VPN signup attempt',
-						ip: 'VPN',
+						type: 'Failed - VPN',
+						ip: obfIP(signupIP),
 						email: Boolean(email),
 						unobfuscatedIP: signupIP
 					});
@@ -239,9 +240,19 @@ module.exports = torIps => {
 							]
 						}).then(bans => {
 							if (bans.some(ban => new Date() < ban.bannedDate) && !hasBypass) {
-								res.status(401).json({
-									message:
-										'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on Discord.'
+								const fragSignup = new Signups({
+									date: new Date(),
+									userName: username,
+									type: 'Failed - FragBanned',
+									ip: obfIP(signupIP),
+									email: Boolean(email),
+									unobfuscatedIP: signupIP
+								});
+								fragSignup.save(() => {
+									res.status(401).json({
+										message:
+											'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on Discord.'
+									});
 								});
 							} else {
 								const queryObj = email
