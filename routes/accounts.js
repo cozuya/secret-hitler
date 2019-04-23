@@ -170,9 +170,19 @@ module.exports = torIps => {
 						});
 					});
 				} else if (accountCreationDisabled.status && !hasBypass) {
-					res.status(403).json({
-						message:
-							'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
+					const creationDisabledSignup = new Signups({
+						date: new Date(),
+						userName: username,
+						type: 'Failed - ACD',
+						ip: obfIP(signupIP),
+						email: Boolean(email),
+						unobfuscatedIP: signupIP
+					});
+					creationDisabledSignup.save(() => {
+						res.status(403).json({
+							message:
+								'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
+						});
 					});
 				} else if (torIps.includes(signupIP)) {
 					const torSignup = new Signups({
