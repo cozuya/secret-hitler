@@ -3,6 +3,7 @@ const Account = require('../models/account');
 const Profile = require('../models/profile/index');
 const BannedIP = require('../models/bannedIP');
 const Signups = require('../models/signups');
+const https = require('https');
 const EightEightCounter = require('../models/eightEightCounter');
 const { accountCreationDisabled, verifyBypass, consumeBypass, testIP } = require('./socket/models');
 const { verifyRoutes, setVerify } = require('./verification');
@@ -114,7 +115,7 @@ module.exports = torIps => {
 				hasBypass = true;
 			}
 		}
-		const signupIP = req.expandedIP;
+		const signupIP = '127.0.0.1'; // req.expandedIP;
 		const save = {
 			username,
 			isLocal: true,
@@ -137,177 +138,171 @@ module.exports = torIps => {
 			lastConnectedIP: signupIP
 		};
 
-		if (!/^[a-z0-9]+$/i.test(username)) {
-			res.status(401).json({ message: 'Your username can only be alphanumeric.' });
-		} else if (username.length < 3) {
-			res.status(401).json({ message: 'Your username is too short.' });
-		} else if (username.length > 12) {
-			res.status(401).json({ message: 'Your username is too long.' });
-		} else if (password.length < 6) {
-			res.status(401).json({ message: 'Your password is too short.' });
-		} else if (password.length > 255) {
-			res.status(401).json({ message: 'Your password is too long.' });
-		} else if (password !== password2) {
-			res.status(401).json({ message: 'Your passwords did not match.' });
-		} else if (/88$/i.test(username)) {
-			const new88 = new EightEightCounter({
-				date: new Date(),
-				username
-			});
-			new88.save(() => {
-				res.status(401).json({
-					message: 'Usernames that end with 88 are not allowed.'
-				});
-			});
-		} else if (accountCreationDisabled.status && !hasBypass) {
-			res.status(403).json({
-				message:
-					'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
-			});
-		} else if (torIps.includes(signupIP)) {
-			const newSignup = new Signups({
-				date: new Date(),
-				userName: username,
-				type: 'TOR signup attempt',
-				ip: 'TOR',
-				email: Boolean(email)
-			});
+		https.get(`https://check.getipintel.net/check.php?ip=127.0.0.1&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f`, res => {
+			let score = 0;
+			res.on('data', score => (score = parseInt(score.toString('utf8'))));
 
-			newSignup.save(() => {
-				res.status(403).json({
-					message: 'Use of TOR is not allowed on this site.'
-				});
-			});
-		} else {
-			let doesContainBadWord = false;
-
-			blacklistedWords.forEach(word => {
-				if (new RegExp(word, 'i').test(username)) {
-					doesContainBadWord = true;
-				}
-			});
-
-			if (email && !emailRegex.test(email)) {
-				res.status(401).json({
-					message: `That doesn't look like a valid email address.`
-				});
-			} else if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
-				res.status(401).json({
-					message: 'Only non-disposible email providers are allowed to create verified accounts.'
-				});
-			} else if (doesContainBadWord) {
-				res.status(401).json({
-					message: 'Your username contains a naughty word or part of a naughty word.'
-				});
-			} else {
-				BannedIP.find({
-					type: ['fragbanSmall', 'fragbanLarge'],
-					ip: [
-						new RegExp(
-							`^${signupIP
-								.split('.')
-								.slice(0, 2)
-								.join('.')}$`
-						),
-						new RegExp(
-							`^${signupIP
-								.split('.')
-								.slice(0, 3)
-								.join('.')}$`
-						)
-					]
-				}).then(bans => {
-					if (bans.some(ban => new Date() < ban.bannedDate) && !hasBypass) {
+			res.on('end', () => {
+				if (!/^[a-z0-9]+$/i.test(username)) {
+					res.status(401).json({ message: 'Your username can only be alphanumeric.' });
+				} else if (username.length < 3) {
+					res.status(401).json({ message: 'Your username is too short.' });
+				} else if (username.length > 12) {
+					res.status(401).json({ message: 'Your username is too long.' });
+				} else if (password.length < 6) {
+					res.status(401).json({ message: 'Your password is too short.' });
+				} else if (password.length > 255) {
+					res.status(401).json({ message: 'Your password is too long.' });
+				} else if (password !== password2) {
+					res.status(401).json({ message: 'Your passwords did not match.' });
+				} else if (/88$/i.test(username)) {
+					const new88 = new EightEightCounter({
+						date: new Date(),
+						username
+					});
+					new88.save(() => {
 						res.status(401).json({
-							message:
-								'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on Discord.'
+							message: 'Usernames that end with 88 are not allowed.'
+						});
+					});
+				} else if (accountCreationDisabled.status && !hasBypass) {
+					res.status(403).json({
+						message:
+							'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
+					});
+				} else if (torIps.includes(signupIP)) {
+					const newSignup = new Signups({
+						date: new Date(),
+						userName: username,
+						type: 'TOR signup attempt',
+						ip: 'TOR',
+						email: Boolean(email)
+					});
+					newSignup.save(() => {
+						res.status(403).json({
+							message: 'Use of TOR is not allowed on this site.'
+						});
+					});
+				} else {
+					let doesContainBadWord = false;
+					blacklistedWords.forEach(word => {
+						if (new RegExp(word, 'i').test(username)) {
+							doesContainBadWord = true;
+						}
+					});
+					if (email && !emailRegex.test(email)) {
+						res.status(401).json({
+							message: `That doesn't look like a valid email address.`
+						});
+					} else if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
+						res.status(401).json({
+							message: 'Only non-disposible email providers are allowed to create verified accounts.'
+						});
+					} else if (doesContainBadWord) {
+						res.status(401).json({
+							message: 'Your username contains a naughty word or part of a naughty word.'
 						});
 					} else {
-						const queryObj = email
-							? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
-							: { username: new RegExp(`\\b${username}\\b`, 'i') };
-
-						Account.find(queryObj, (err, accounts) => {
-							if (err) {
-								console.log(err);
-								res.status(500).json({ message: err.toString() });
-								return;
-							}
-
-							if (accounts.length) {
-								const usernames = accounts.map(acc => acc.username.toLowerCase());
-
-								if (usernames.includes(username.toLowerCase())) {
-									res.status(401).json({ message: 'That account already exists.' });
-								} else {
-									res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
-								}
-								return;
-							}
-
-							testIP(signupIP, banType => {
-								if (hasBypass && banType == 'new') banType = null;
-								if (banType) {
-									if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-									else if (banType == 'small' || banType == 'tiny') {
-										res.status(403).json({
-											message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
-										});
-									} else if (banType == 'new') {
-										res.status(403).json({
-											message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
-										});
-									} else {
-										console.log(`Unhandled IP ban type: ${banType}`);
-										res.status(403).json({
-											message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
-										});
+						BannedIP.find({
+							type: ['fragbanSmall', 'fragbanLarge'],
+							ip: [
+								new RegExp(
+									`^${signupIP
+										.split('.')
+										.slice(0, 2)
+										.join('.')}$`
+								),
+								new RegExp(
+									`^${signupIP
+										.split('.')
+										.slice(0, 3)
+										.join('.')}$`
+								)
+							]
+						}).then(bans => {
+							if (bans.some(ban => new Date() < ban.bannedDate) && !hasBypass) {
+								res.status(401).json({
+									message:
+										'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on Discord.'
+								});
+							} else {
+								const queryObj = email
+									? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
+									: { username: new RegExp(`\\b${username}\\b`, 'i') };
+								Account.find(queryObj, (err, accounts) => {
+									if (err) {
+										console.log(err);
+										res.status(500).json({ message: err.toString() });
+										return;
 									}
-								} else {
-									Account.register(new Account(save), password, err => {
-										if (err) {
-											console.log(err);
-											res.status(500).json({ message: err.toString() });
-											return;
+									if (accounts.length) {
+										const usernames = accounts.map(acc => acc.username.toLowerCase());
+										if (usernames.includes(username.toLowerCase())) {
+											res.status(401).json({ message: 'That account already exists.' });
+										} else {
+											res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 										}
-
-										if (hasBypass) consumeBypass(bypassKey, username, signupIP);
-
-										if (email) {
-											setVerify({ username, email });
-										}
-
-										passport.authenticate('local')(req, res, () => {
-											const newPlayerBan = new BannedIP({
-												bannedDate: new Date(),
-												type: 'new',
-												ip: signupIP
-											});
-
-											newPlayerBan.save();
-
-											if (!isPrivate) {
-												const newSignup = new Signups({
-													date: new Date(),
-													userName: username,
-													type: 'local',
-													ip: obfIP(signupIP),
-													email: Boolean(email)
+										return;
+									}
+									testIP(signupIP, banType => {
+										if (hasBypass && banType == 'new') banType = null;
+										if (banType) {
+											if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
+											else if (banType == 'small' || banType == 'tiny') {
+												res.status(403).json({
+													message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
 												});
-
-												newSignup.save(() => {
-													res.send();
+											} else if (banType == 'new') {
+												res.status(403).json({
+													message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
+												});
+											} else {
+												console.log(`Unhandled IP ban type: ${banType}`);
+												res.status(403).json({
+													message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
 												});
 											}
-										});
+										} else {
+											Account.register(new Account(save), password, err => {
+												if (err) {
+													console.log(err);
+													res.status(500).json({ message: err.toString() });
+													return;
+												}
+												if (hasBypass) consumeBypass(bypassKey, username, signupIP);
+												if (email) {
+													setVerify({ username, email });
+												}
+												passport.authenticate('local')(req, res, () => {
+													const newPlayerBan = new BannedIP({
+														bannedDate: new Date(),
+														type: 'new',
+														ip: signupIP
+													});
+													newPlayerBan.save();
+													if (!isPrivate) {
+														const newSignup = new Signups({
+															date: new Date(),
+															userName: username,
+															type: 'local',
+															ip: obfIP(signupIP),
+															email: Boolean(email)
+														});
+														newSignup.save(() => {
+															res.send();
+														});
+													}
+												});
+											});
+										}
 									});
-								}
-							});
+								});
+							}
 						});
 					}
-				});
-			}
-		}
+				}
+			});
+		});
 	});
 
 	app.post(
