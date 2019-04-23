@@ -273,7 +273,7 @@ module.exports = torIps => {
 				hasBypass = true;
 			}
 		}
-		const signupIP = '1.1.1.1'; // req.expandedIP;
+		const signupIP = req.expandedIP;
 		const save = {
 			username,
 			isLocal: true,
