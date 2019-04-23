@@ -347,9 +347,8 @@ module.exports = torIps => {
 				});
 			});
 		} else {
-			console.log(VPNCache);
 			if (VPNCache[signupIP]) {
-				console.log('Running from cache:', signupIP, VPNCache[signupIP]);
+				// console.log('Running from cache:', signupIP, VPNCache[signupIP]);
 				continueSignup(res, username, email, signupIP, save, hasBypass, VPNCache[signupIP]);
 			} else {
 				try {
@@ -361,7 +360,7 @@ module.exports = torIps => {
 
 						vpnRes.on('end', () => {
 							VPNCache[signupIP] = vpnScore;
-							console.log('Running from new data:', signupIP, VPNCache[signupIP]);
+							// console.log('Running from new data:', signupIP, VPNCache[signupIP]);
 							continueSignup(res, username, email, signupIP, save, hasBypass, vpnScore);
 						});
 					});
