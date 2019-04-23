@@ -44,14 +44,27 @@ const renderPage = (req, res, pageName, varName) => {
 	res.render(pageName, renderObj);
 };
 
-const continueSignup = (res, username, email, signupIP, save, hasBypass, vpnScore) => {
+const continueSignup = (req, res, username, password, email, signupIP, save, hasBypass, bypassKey, vpnScore) => {
+	console.log(hasBypass);
 	let doesContainBadWord = false;
 	blacklistedWords.forEach(word => {
 		if (new RegExp(word, 'i').test(username)) {
 			doesContainBadWord = true;
 		}
 	});
-	if (vpnScore > 0.95 && !hasBypass) {
+	if (email && !emailRegex.test(email)) {
+		res.status(401).json({
+			message: `That doesn't look like a valid email address.`
+		});
+	} else if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
+		res.status(401).json({
+			message: 'Only non-disposible email providers are allowed to create verified accounts.'
+		});
+	} else if (doesContainBadWord) {
+		res.status(401).json({
+			message: 'Your username contains a naughty word or part of a naughty word.'
+		});
+	} else if (vpnScore > 0.95 && !hasBypass) {
 		const vpnSignup = new Signups({
 			date: new Date(),
 			userName: username,
@@ -64,18 +77,6 @@ const continueSignup = (res, username, email, signupIP, save, hasBypass, vpnScor
 			res.status(403).json({
 				message: 'Use of a VPN is currently not allowed on this site. Contact the moderators on Discord for an exception.'
 			});
-		});
-	} else if (email && !emailRegex.test(email)) {
-		res.status(401).json({
-			message: `That doesn't look like a valid email address.`
-		});
-	} else if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1]) && process.env.NODE_ENV === 'production') {
-		res.status(401).json({
-			message: 'Only non-disposible email providers are allowed to create verified accounts.'
-		});
-	} else if (doesContainBadWord) {
-		res.status(401).json({
-			message: 'Your username contains a naughty word or part of a naughty word.'
 		});
 	} else {
 		BannedIP.find({
@@ -165,7 +166,7 @@ const continueSignup = (res, username, email, signupIP, save, hasBypass, vpnScor
 										ip: signupIP
 									});
 									newPlayerBan.save();
-									if (!isPrivate) {
+									if (!save.gameSettings.isPrivate) {
 										const newSignup = new Signups({
 											date: new Date(),
 											userName: username,
@@ -349,7 +350,7 @@ module.exports = torIps => {
 		} else {
 			if (VPNCache[signupIP]) {
 				// console.log('Running from cache:', signupIP, VPNCache[signupIP]);
-				continueSignup(res, username, email, signupIP, save, hasBypass, VPNCache[signupIP]);
+				continueSignup(req, res, username, password, email, signupIP, save, hasBypass, bypassKey, VPNCache[signupIP]);
 			} else {
 				try {
 					https.get(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`, vpnRes => {
@@ -361,7 +362,7 @@ module.exports = torIps => {
 						vpnRes.on('end', () => {
 							VPNCache[signupIP] = vpnScore;
 							// console.log('Running from new data:', signupIP, VPNCache[signupIP]);
-							continueSignup(res, username, email, signupIP, save, hasBypass, vpnScore);
+							continueSignup(req, res, username, password, email, signupIP, save, hasBypass, bypassKey, vpnScore);
 						});
 					});
 				} catch (error) {
