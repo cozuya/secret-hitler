@@ -372,15 +372,16 @@ module.exports = torIps => {
 				}
 
 				if (torIps.includes(req.expandedIP)) {
-					const newSignup = new Signups({
+					const torSignup = new Signups({
 						date: new Date(),
 						userName: username,
-						type: 'TOR signup attempt',
-						ip: 'TOR',
-						email: ''
+						type: 'Failed Login - TOR',
+						ip: obfIP(req.expandedIP),
+						email: '',
+						unobfuscatedIP: req.expandedIP
 					});
 
-					newSignup.save();
+					torSignup.save();
 
 					res.status(403).json({
 						message: 'Use of TOR is not allowed on this site.'
