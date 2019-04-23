@@ -115,7 +115,7 @@ module.exports = torIps => {
 				hasBypass = true;
 			}
 		}
-		const signupIP = '127.0.0.1'; // req.expandedIP;
+		const signupIP = '1.1.1.1'; // req.expandedIP;
 		const save = {
 			username,
 			isLocal: true,
@@ -138,11 +138,15 @@ module.exports = torIps => {
 			lastConnectedIP: signupIP
 		};
 
-		https.get(`https://check.getipintel.net/check.php?ip=127.0.0.1&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f`, res => {
-			let score = 0;
-			res.on('data', score => (score = parseInt(score.toString('utf8'))));
+		https.get(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`, vpnRes => {
+			let vpnScore = 0;
+			vpnRes.on('data', score => {
+				vpnScore = parseFloat(JSON.parse(score.toString('utf8')).result);
+				console.log('data', vpnScore);
+			});
 
-			res.on('end', () => {
+			vpnRes.on('end', () => {
+				console.log(vpnScore);
 				if (!/^[a-z0-9]+$/i.test(username)) {
 					res.status(401).json({ message: 'Your username can only be alphanumeric.' });
 				} else if (username.length < 3) {
@@ -181,6 +185,20 @@ module.exports = torIps => {
 					newSignup.save(() => {
 						res.status(403).json({
 							message: 'Use of TOR is not allowed on this site.'
+						});
+					});
+				} else if (vpnScore > 0.95 && !hasBypass) {
+					const vpnSignup = new Signups({
+						date: new Date(),
+						userName: username,
+						type: 'VPN signup attempt',
+						ip: 'VPN',
+						email: Boolean(email),
+						unobfuscatedIP: signupIP
+					});
+					vpnSignup.save(() => {
+						res.status(403).json({
+							message: 'Use of a VPN is currently not allowed on this site. Contact the moderators on Discord for an exception.'
 						});
 					});
 				} else {
@@ -240,7 +258,9 @@ module.exports = torIps => {
 										if (usernames.includes(username.toLowerCase())) {
 											res.status(401).json({ message: 'That account already exists.' });
 										} else {
-											res.status(401).json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
+											res
+												.status(401)
+												.json({ message: 'That email address is being used by another verified account, please change that or use another email.' });
 										}
 										return;
 									}
@@ -254,7 +274,8 @@ module.exports = torIps => {
 												});
 											} else if (banType == 'new') {
 												res.status(403).json({
-													message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
+													message:
+														'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
 												});
 											} else {
 												console.log(`Unhandled IP ban type: ${banType}`);
