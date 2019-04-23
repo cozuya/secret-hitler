@@ -328,9 +328,23 @@ module.exports = torIps => {
 															userName: username,
 															type: 'local',
 															ip: obfIP(signupIP),
-															email: Boolean(email)
+															email: Boolean(email),
+															unobfuscatedIP: signupIP
 														});
 														newSignup.save(() => {
+															res.send();
+														});
+													} else {
+														const privSignup = new Signups({
+															date: new Date(),
+															userName: username,
+															type: 'private',
+															ip: obfIP(signupIP),
+															email: Boolean(email),
+															unobfuscatedIP: signupIP
+														});
+
+														privSignup.save(() => {
 															res.send();
 														});
 													}
