@@ -142,11 +142,9 @@ module.exports = torIps => {
 			let vpnScore = 0;
 			vpnRes.on('data', score => {
 				vpnScore = parseFloat(JSON.parse(score.toString('utf8')).result);
-				console.log('data', vpnScore);
 			});
 
 			vpnRes.on('end', () => {
-				console.log(vpnScore);
 				if (!/^[a-z0-9]+$/i.test(username)) {
 					res.status(401).json({ message: 'Your username can only be alphanumeric.' });
 				} else if (username.length < 3) {
