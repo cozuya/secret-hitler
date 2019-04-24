@@ -69,7 +69,6 @@ const Signups = ({ socket }) => {
 				onClick={() => {
 					signupType = signupType === 'getSignups' ? 'getAllSignups' : signupType === 'getAllSignups' ? 'getPrivateSignups' : 'getSignups';
 					socket.emit(signupType);
-					return;
 				}}
 				style={{
 					position: 'absolute',
