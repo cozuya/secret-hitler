@@ -44,15 +44,9 @@ const renderPage = (req, res, pageName, varName) => {
 	res.render(pageName, renderObj);
 };
 
-	console.log(hasBypass);
-	let doesContainBadWord = false;
-	blacklistedWords.forEach(word => {
-		if (new RegExp(word, 'i').test(username)) {
-			doesContainBadWord = true;
-		}
-	});
 const continueSignup = config => {
 	const { req, res, username, password, email, signupIP, save, hasBypass, bypassKey, vpnScore } = config;
+	let doesContainBadWord = blacklistedWords.some(word => new RegExp(word, 'i').test(username));
 	if (email && !emailRegex.test(email)) {
 		res.status(401).json({
 			message: `That doesn't look like a valid email address.`
