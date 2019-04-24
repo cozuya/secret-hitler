@@ -345,7 +345,6 @@ module.exports = torIps => {
 		} else {
 			const continueSignupConfig = { req, res, username, password, email, signupIP, save, hasBypass, bypassKey };
 			if (VPNCache[signupIP]) {
-				// console.log('Running from cache:', signupIP, VPNCache[signupIP]);
 				continueSignupConfig.vpnScore = VPNCache[signupIP];
 				continueSignup(contineSignupConfig);
 			} else {
@@ -357,7 +356,6 @@ module.exports = torIps => {
 						});
 
 						vpnRes.on('end', () => {
-							// console.log('Running from new data:', signupIP, VPNCache[signupIP]);
 							continueSignupConfig.vpnScore = VPNCache[signupIP] = vpnScore;
 							continueSignup(continueSignupConfig);
 						});
