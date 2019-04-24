@@ -44,7 +44,6 @@ const renderPage = (req, res, pageName, varName) => {
 	res.render(pageName, renderObj);
 };
 
-const continueSignup = (req, res, username, password, email, signupIP, save, hasBypass, bypassKey, vpnScore) => {
 	console.log(hasBypass);
 	let doesContainBadWord = false;
 	blacklistedWords.forEach(word => {
@@ -52,6 +51,8 @@ const continueSignup = (req, res, username, password, email, signupIP, save, has
 			doesContainBadWord = true;
 		}
 	});
+const continueSignup = config => {
+	const { req, res, username, password, email, signupIP, save, hasBypass, bypassKey, vpnScore } = config;
 	if (email && !emailRegex.test(email)) {
 		res.status(401).json({
 			message: `That doesn't look like a valid email address.`
@@ -348,9 +349,11 @@ module.exports = torIps => {
 				});
 			});
 		} else {
+			const continueSignupConfig = { req, res, username, password, email, signupIP, save, hasBypass, bypassKey };
 			if (VPNCache[signupIP]) {
 				// console.log('Running from cache:', signupIP, VPNCache[signupIP]);
-				continueSignup(req, res, username, password, email, signupIP, save, hasBypass, bypassKey, VPNCache[signupIP]);
+				continueSignupConfig.vpnScore = VPNCache[signupIP];
+				continueSignup(contineSignupConfig);
 			} else {
 				try {
 					https.get(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`, vpnRes => {
@@ -360,9 +363,9 @@ module.exports = torIps => {
 						});
 
 						vpnRes.on('end', () => {
-							VPNCache[signupIP] = vpnScore;
 							// console.log('Running from new data:', signupIP, VPNCache[signupIP]);
-							continueSignup(req, res, username, password, email, signupIP, save, hasBypass, bypassKey, vpnScore);
+							continueSignupConfig.vpnScore = VPNCache[signupIP] = vpnScore;
+							continueSignup(continueSignupConfig);
 						});
 					});
 				} catch (error) {
