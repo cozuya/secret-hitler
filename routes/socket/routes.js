@@ -34,6 +34,8 @@ const {
 	sendUserList,
 	sendReplayGameChats,
 	sendSignups,
+	sendAllSignups,
+	sendPrivateSignups,
 	updateUserStatus
 } = require('./user-requests');
 const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
@@ -191,6 +193,18 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			socket.on('getSignups', () => {
 				if (authenticated && isAEM) {
 					sendSignups(socket);
+				}
+			});
+
+			socket.on('getAllSignups', () => {
+				if (authenticated && isAEM) {
+					sendAllSignups(socket);
+				}
+			});
+
+			socket.on('getPrivateSignups', () => {
+				if (authenticated && isAEM) {
+					sendPrivateSignups(socket);
 				}
 			});
 
