@@ -59,7 +59,7 @@ const continueSignup = config => {
 		res.status(401).json({
 			message: 'Your username contains a naughty word or part of a naughty word.'
 		});
-	} else if (vpnScore > 0.95 && !hasBypass) {
+	} else if (vpnScore >= 0.95 && !hasBypass) {
 		const vpnSignup = new Signups({
 			date: new Date(),
 			userName: username,
