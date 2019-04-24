@@ -2273,7 +2273,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
 	}
 
-	if (user.wins > 0 || user.losses > 0) {
+	if (user.wins + user.losses >= 10) {
 		const getStaffRole = () => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
