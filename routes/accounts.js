@@ -346,7 +346,7 @@ module.exports = torIps => {
 			const continueSignupConfig = { req, res, username, password, email, signupIP, save, hasBypass, bypassKey };
 			if (VPNCache[signupIP]) {
 				continueSignupConfig.vpnScore = VPNCache[signupIP];
-				continueSignup(contineSignupConfig);
+				continueSignup(continueSignupConfig);
 			} else {
 				try {
 					https.get(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`, vpnRes => {
