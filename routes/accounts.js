@@ -686,8 +686,8 @@ module.exports = torIps => {
 														date: new Date(),
 														userName: profile.username,
 														type,
-														ip: obfIP(signupIP),
-														email: Boolean(profile.email || profile._json.email)
+														ip: obfIP(ip),
+														email: 'discord'
 													});
 
 													newSignup.save(() => {
