@@ -256,7 +256,8 @@ module.exports = torIps => {
 
 	app.post('/account/signup', (req, res, next) => {
 		const { username, password, password2, email, isPrivate } = req.body;
-		let { bypassKey } = req.body;
+		let { bypassKey, bypass } = req.body;
+		bypassKey = bypass || bypassKey;
 		let hasBypass = false;
 		if (bypassKey) {
 			bypassKey = bypassKey.trim();
