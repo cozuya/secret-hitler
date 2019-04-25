@@ -7,7 +7,7 @@ let signupType = 'getSignups';
 const Signups = ({ socket }) => {
 	const [signuplog, updateSignuplog] = useState([]);
 	useEffect(() => {
-		socket.emit('getSignups');
+		socket.emit(signupType);
 
 		const timerId = setInterval(() => {
 			socket.emit(signupType);
