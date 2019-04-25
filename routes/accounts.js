@@ -405,8 +405,8 @@ module.exports = torIps => {
 				if (torIps.includes(req.expandedIP)) {
 					const torSignup = new Signups({
 						date: new Date(),
-						userName: username,
-						type: 'Failed Login - TOR',
+						userName: req.user.username,
+						type: 'Failed Login - TOR Signin',
 						ip: obfIP(req.expandedIP),
 						email: '',
 						unobfuscatedIP: req.expandedIP
