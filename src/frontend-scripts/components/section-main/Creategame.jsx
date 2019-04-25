@@ -36,7 +36,7 @@ export default class Creategame extends React.Component {
 			casualgame: false,
 			blindMode: false,
 			timedMode: false,
-			isVerifiedOnly: props.userInfo.verified,
+			isVerifiedOnly: props.userInfo.verified && !isRainbow,
 			timedSliderValue: [120],
 			customGameSliderValue: [7],
 			eloSliderValue: [1600],
@@ -411,7 +411,7 @@ export default class Creategame extends React.Component {
 					casualgame: false,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: true,
+					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1700],
@@ -447,7 +447,7 @@ export default class Creategame extends React.Component {
 					casualgame: false,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: true,
+					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1700],
@@ -483,7 +483,7 @@ export default class Creategame extends React.Component {
 					casualgame: true,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: true,
+					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
@@ -520,7 +520,7 @@ export default class Creategame extends React.Component {
 					casualgame: false,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: true,
+					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
@@ -557,7 +557,7 @@ export default class Creategame extends React.Component {
 					casualgame: true,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: true,
+					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
@@ -594,7 +594,7 @@ export default class Creategame extends React.Component {
 					casualgame: false,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: true,
+					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
@@ -631,7 +631,7 @@ export default class Creategame extends React.Component {
 					casualgame: true,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: true,
+					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
@@ -668,7 +668,7 @@ export default class Creategame extends React.Component {
 					casualgame: true,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: true,
+					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [5],
 					eloSliderValue: [1600],
@@ -705,7 +705,7 @@ export default class Creategame extends React.Component {
 					casualgame: false,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: true,
+					isVerifiedOnly: !isRainbow,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
@@ -1753,7 +1753,10 @@ export default class Creategame extends React.Component {
 										<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
 										<Switch
 											onChange={checked => {
-												this.setState({ rainbowgame: checked });
+												this.setState({
+													rainbowgame: checked,
+													isVerifiedOnly: !checked
+												});
 											}}
 											checked={this.state.rainbowgame}
 											onColor="#627cc8"
