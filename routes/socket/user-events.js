@@ -1830,7 +1830,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
 				return;
 			}
-			if (game.general.disableObserver || user.wins + user.losses < 2) {
+			if (game.general.disableObserver || user.wins + user.losses < 11) {
 				return;
 			}
 		}
