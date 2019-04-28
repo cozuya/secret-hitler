@@ -3414,7 +3414,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 			playerReport.reason = 'Stalling';
 			break;
 		case 'botting':
-			playerReport.reason = 'botting';
+			playerReport.reason = 'Botting';
 			break;
 		case 'other':
 			playerReport.reason = 'Other';
@@ -3422,8 +3422,13 @@ module.exports.handlePlayerReport = (passport, data) => {
 	}
 
 	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '`@`');
+	const blindModeAnonymizedPlayer = games[data.uid].general.blindMode
+		? games[data.uid].gameState.isStarted
+			? `${data.reportedPlayer.split(' ')[0]} Anonymous`
+			: 'Anonymous'
+		: data.reportedPlayer;
 	const body = JSON.stringify({
-		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${data.reportedPlayer}\nReason: ${
+		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${
 			playerReport.reason
 		}\nComment: ${httpEscapedComment}`
 	});

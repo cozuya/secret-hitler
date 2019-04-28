@@ -426,7 +426,7 @@ class Players extends React.Component {
 			return;
 		}
 
-		const index = gameInfo.publicPlayersState.findIndex(player => player.userName === this.state.reportedPlayer);
+		const index = gameInfo.gameState.isStarted && gameInfo.publicPlayersState.findIndex(player => player.userName === this.state.reportedPlayer);
 		if (this.state.reportLength <= 140) {
 			this.props.socket.emit('playerReport', {
 				uid: gameInfo.general.uid,
