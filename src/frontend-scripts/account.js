@@ -80,6 +80,16 @@ export default () => {
 					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
 
 					submitErr(`Internal error: ${message}`);
+				},
+				501(xhr) {
+					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
+
+					submitErr(`Internal error: ${message}`);
+				},
+				503(xhr) {
+					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
+
+					submitErr(`Internal error: ${message}`);
 				}
 			}
 		});
