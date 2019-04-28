@@ -362,6 +362,7 @@ module.exports = torIps => {
 						});
 					});
 				} catch (error) {
+					res.status(503).json({ message: 'There was an error processing your request. Please try again later.' });
 					console.log('Error in Get IP Intel', error);
 				}
 			}
