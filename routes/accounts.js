@@ -38,7 +38,7 @@ const renderPage = (req, res, pageName, varName) => {
 	}
 
 	if (process.env.NODE_ENV === 'production') {
-		renderObj.prodCacheBustToken = prodCacheBustToken;
+		renderObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
 	}
 
 	res.render(pageName, renderObj);
