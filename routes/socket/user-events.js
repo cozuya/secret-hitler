@@ -2996,7 +2996,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								const { isPrivate } = account.gameSettings;
 
 								account.gameSettings.isPrivate = !isPrivate;
-								account.gameSettings.privateToggleTime = Date.now();
+								account.gameSettings.privateToggleTime = !isPrivate ? new Date('2099-01-01 00:00:00.000') : Date.now();
 								account.save(() => {
 									logOutUser(data.userName);
 								});
