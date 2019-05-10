@@ -109,7 +109,6 @@ const checkIP = config => {
 
 const continueSignup = config => {
 	const { req, res, username, password, email, signupIP, save, hasBypass, vpnScore, bypassKey, isOAuth, type, profile } = config;
-	console.log('Continuing Signup..');
 	BannedIP.find({
 		type: ['fragbanSmall', 'fragbanLarge'],
 		ip: [
@@ -211,7 +210,7 @@ const continueSignup = config => {
 							userName: username,
 							type,
 							ip: obfIP(signupIP),
-							email: profile.username,
+							email: `${profile.username}#${profile.discriminator}`,
 							unobfuscatedIP: signupIP
 						});
 
@@ -234,9 +233,8 @@ const continueSignup = config => {
 											signupIP
 										});
 
-										newPlayerBan.save();
+										newPlayerBan.save(() => req.login(account, () => res.redirect('/account')));
 									});
-									res.redirect('/account');
 								}
 							}
 						);
@@ -692,7 +690,7 @@ module.exports = torIpsParam => {
 						Account.findOne(queryObj)
 							.then(account => {
 								if (account) {
-									req.logIn(account, () => res.redirect('/account'));
+									req.login(account, () => res.redirect('/account'));
 								} else {
 									// TODO: bypass option
 									if (banType === 'new') {
