@@ -537,6 +537,13 @@ $(document).ready(function() {
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}
+				},
+				403(xhr) {
+					$loader.removeClass('active');
+					$errMessage.text(xhr.responseJSON.message).removeClass('hidden');
+					if (!$successMessage.hasClass('hidden')) {
+						$successMessage.addClass('hidden');
+					}
 				}
 			}
 		});

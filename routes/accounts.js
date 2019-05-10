@@ -26,6 +26,7 @@ const ensureAuthenticated = (req, res, next) => {
 	res.redirect('/');
 };
 const VPNCache = {};
+let torIps;
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 const renderPage = (req, res, pageName, varName) => {
@@ -44,9 +45,71 @@ const renderPage = (req, res, pageName, varName) => {
 	res.render(pageName, renderObj);
 };
 
-const continueSignup = config => {
-	const { req, res, username, password, email, signupIP, save, hasBypass, bypassKey, vpnScore } = config;
+const checkIP = config => {
+	const { res, username, email, signupIP, hasBypass, next } = config;
+	if (accountCreationDisabled.status && !hasBypass) {
+		const creationDisabledSignup = new Signups({
+			date: new Date(),
+			userName: username,
+			type: 'Failed - ACD',
+			ip: obfIP(signupIP),
+			email: Boolean(email),
+			unobfuscatedIP: signupIP
+		});
+		creationDisabledSignup.save(() => {
+			res.status(403).json({
+				message:
+					'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
+			});
+		});
+	} else if (torIps.includes(signupIP)) {
+		const torSignup = new Signups({
+			date: new Date(),
+			userName: username,
+			type: 'Failed - TOR',
+			ip: obfIP(signupIP),
+			email: config.isOAuth ? `${config.type} ${config.profile.username}#${config.profile.discriminator}` : Boolean(email),
+			unobfuscatedIP: signupIP
+		});
+		torSignup.save(() => {
+			res.status(403).json({
+				message: 'Use of TOR is not allowed on this site.'
+			});
+		});
+	} else if (VPNCache[signupIP]) {
+		vpnScore = VPNCache[signupIP];
+		next(config);
+	} else {
+		try {
+			https.get(
+				`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${'whatever@gmail.com' /* process.env.GETIPINTELAPIEMAIL*/}&flags=f&format=json`,
+				vpnRes => {
+					let vpnScore = 0;
+					vpnRes.on('data', score => {
+						vpnScore = parseFloat(JSON.parse(score.toString('utf8')).result);
+					});
 
+					vpnRes.on('end', () => {
+						if (vpnScore < 0) {
+							res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
+							console.log('Error in Get IP Intel, score given: ', vpnScore);
+							return;
+						}
+						config.vpnScore = VPNCache[signupIP] = vpnScore;
+						next(config);
+					});
+				}
+			);
+		} catch (error) {
+			res.status(503).json({ message: 'There was an error processing your request. Please try again later.' });
+			console.log('Error in Get IP Intel', error);
+		}
+	}
+};
+
+const continueSignup = config => {
+	const { req, res, username, password, email, signupIP, save, hasBypass, vpnScore, bypassKey, isOAuth, type, profile } = config;
+	console.log('Continuing Signup..');
 	BannedIP.find({
 		type: ['fragbanSmall', 'fragbanLarge'],
 		ip: [
@@ -70,7 +133,7 @@ const continueSignup = config => {
 				userName: username,
 				type: 'Failed - FragBanned',
 				ip: obfIP(signupIP),
-				email: Boolean(email),
+				email: isOAuth ? `${type} ${profile.username}#${profile.discriminator}` : Boolean(email),
 				unobfuscatedIP: signupIP
 			});
 			fragSignup.save(() => {
@@ -104,7 +167,7 @@ const continueSignup = config => {
 						userName: username,
 						type: 'Failed - VPN',
 						ip: obfIP(signupIP),
-						email: Boolean(email),
+						email: isOAuth ? `${type} ${profile.username}#${profile.discriminator}` : Boolean(email),
 						unobfuscatedIP: signupIP
 					});
 					vpnSignup.save(() => {
@@ -113,59 +176,126 @@ const continueSignup = config => {
 						});
 					});
 				} else {
-					Account.register(new Account(save), password, err => {
-						if (err) {
-							console.log(err);
-							res.status(500).json({ message: err.toString() });
-							return;
-						}
-						if (hasBypass) consumeBypass(bypassKey, username, signupIP);
-						if (email) {
-							setVerify({ username, email });
-						}
-						passport.authenticate('local')(req, res, () => {
-							const newPlayerBan = new BannedIP({
-								bannedDate: new Date(),
-								type: 'new',
-								ip: signupIP
-							});
-							newPlayerBan.save();
-							if (!save.gameSettings.isPrivate) {
-								const newSignup = new Signups({
-									date: new Date(),
-									userName: username,
-									type: 'local',
-									ip: obfIP(signupIP),
-									email: Boolean(email),
-									unobfuscatedIP: signupIP
-								});
-								newSignup.save(() => {
-									res.send();
-								});
-							} else {
-								const privSignup = new Signups({
-									date: new Date(),
-									userName: username,
-									type: 'private',
-									ip: obfIP(signupIP),
-									email: Boolean(email),
-									unobfuscatedIP: signupIP
-								});
+					if (isOAuth) {
+						const accountObj = {
+							username: username,
+							gameSettings: {
+								soundStatus: 'pack2',
+								disableTyping: true
+							},
+							verified: true,
+							wins: 0,
+							losses: 0,
+							created: new Date(),
+							touLastAgreed: TOU_CHANGES[0].changeVer,
+							signupIP: signupIP,
+							hasNotDismissedSignupModal: true,
+							verification: {
+								email: type === 'discord' ? profile.email : profile._json.email
+							},
+							lastConnectedIP: signupIP
+						};
 
-								privSignup.save(() => {
-									res.send();
-								});
-							}
+						if (type === 'discord') {
+							accountObj.discordDiscriminator = profile.discriminator;
+							accountObj.discordMfa_enabled = profile.mfa_enabled;
+							accountObj.discordUsername = profile.username;
+						} else {
+							accountObj.githubUsername = profile.username;
+							accountObj.github2FA = profile._json.two_factor_authentication;
+							accountObj.bio = profile._json.bio;
+						}
+
+						const oauthSignup = new Signups({
+							date: new Date(),
+							userName: username,
+							type,
+							ip: obfIP(signupIP),
+							email: profile.username,
+							unobfuscatedIP: signupIP
 						});
-					});
+
+						oauthSignup.save();
+
+						Account.register(
+							new Account(accountObj),
+							Math.random()
+								.toString(36)
+								.substring(2),
+							(err, account) => {
+								if (err) {
+									console.log(err, 'err in creating oauth account');
+									return next();
+								} else {
+									passport.authenticate(type)(req, res, () => {
+										const newPlayerBan = new BannedIP({
+											bannedDate: new Date(),
+											type: 'new',
+											signupIP
+										});
+
+										newPlayerBan.save();
+									});
+									res.redirect('/account');
+								}
+							}
+						);
+					} else {
+						Account.register(new Account(save), password, err => {
+							if (err) {
+								console.log(err);
+								res.status(500).json({ message: err.toString() });
+								return;
+							}
+							if (hasBypass) consumeBypass(bypassKey, username, signupIP);
+							if (email) {
+								setVerify({ username, email });
+							}
+							passport.authenticate('local')(req, res, () => {
+								const newPlayerBan = new BannedIP({
+									bannedDate: new Date(),
+									type: 'new',
+									ip: signupIP
+								});
+								newPlayerBan.save();
+								if (!save.gameSettings.isPrivate) {
+									const newSignup = new Signups({
+										date: new Date(),
+										userName: username,
+										type: 'local',
+										ip: obfIP(signupIP),
+										email: Boolean(email),
+										unobfuscatedIP: signupIP
+									});
+									newSignup.save(() => {
+										res.send();
+									});
+								} else {
+									const privSignup = new Signups({
+										date: new Date(),
+										userName: username,
+										type: 'private',
+										ip: obfIP(signupIP),
+										email: Boolean(email),
+										unobfuscatedIP: signupIP
+									});
+
+									privSignup.save(() => {
+										res.send();
+									});
+								}
+							});
+						});
+					}
 				}
 			});
 		}
 	});
 };
 
-module.exports = torIps => {
+module.exports = torIpsParam => {
 	verifyRoutes();
+	torIps = torIpsParam;
 
 	app.get('/account', ensureAuthenticated, (req, res) => {
 		res.render('page-account', {
@@ -294,6 +424,7 @@ module.exports = torIps => {
 				});
 			});
 		} else {
+			const continueSignupConfig = { req, res, username, password, email, signupIP, save, hasBypass, bypassKey, next: continueSignup };
 			const queryObj = email
 				? { $or: [{ username: new RegExp(`\\b${username}\\b`, 'i') }, { 'verification.email': email }] }
 				: { username: new RegExp(`\\b${username}\\b`, 'i') };
@@ -313,61 +444,7 @@ module.exports = torIps => {
 					}
 				}
 
-				const continueSignupConfig = { req, res, username, password, email, signupIP, save, hasBypass, bypassKey };
-				if (accountCreationDisabled.status && !hasBypass) {
-					const creationDisabledSignup = new Signups({
-						date: new Date(),
-						userName: username,
-						type: 'Failed - ACD',
-						ip: obfIP(signupIP),
-						email: Boolean(email),
-						unobfuscatedIP: signupIP
-					});
-					creationDisabledSignup.save(() => {
-						res.status(403).json({
-							message:
-								'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
-						});
-					});
-				} else if (torIps.includes(signupIP)) {
-					const torSignup = new Signups({
-						date: new Date(),
-						userName: username,
-						type: 'Failed - TOR',
-						ip: obfIP(signupIP),
-						email: Boolean(email),
-						unobfuscatedIP: signupIP
-					});
-					torSignup.save(() => {
-						res.status(403).json({
-							message: 'Use of TOR is not allowed on this site.'
-						});
-					});
-				} else if (VPNCache[signupIP]) {
-					continueSignupConfig.vpnScore = VPNCache[signupIP];
-					continueSignup(continueSignupConfig);
-				} else {
-					try {
-						https.get(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`, vpnRes => {
-							let vpnScore = 0;
-							vpnRes.on('data', score => {
-								vpnScore = parseFloat(JSON.parse(score.toString('utf8')).result);
-							});
-
-							vpnRes.on('end', () => {
-								if (vpnScore < 0) {
-									res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
-									console.log('Error in Get IP Intel, score given: ', vpnScore);
-								}
-								continueSignupConfig.vpnScore = VPNCache[signupIP] = vpnScore;
-								continueSignup(continueSignupConfig);
-							});
-						});
-					} catch (error) {
-						res.status(503).json({ message: 'There was an error processing your request. Please try again later.' });
-						console.log('Error in Get IP Intel', error);
-					}
-				}
+				checkIP(continueSignupConfig);
 			});
 		}
 	});
@@ -410,7 +487,7 @@ module.exports = torIps => {
 					const torSignup = new Signups({
 						date: new Date(),
 						userName: req.user.username,
-						type: 'Failed Login - TOR Signin',
+						type: 'Failed Login - TOR',
 						ip: obfIP(req.expandedIP),
 						email: '',
 						unobfuscatedIP: req.expandedIP
@@ -574,7 +651,7 @@ module.exports = torIps => {
 	app.get('/github-login', passport.authenticate('github', { scope: ['read:user', 'user:email'] }));
 
 	const oAuthAuthentication = (req, res, next, type) => {
-		const ip = req.expandedIP;
+		const ip = '1.1.1.1'; // req.expandedIP;
 		testIP(ip, banType => {
 			if (banType && banType !== 'new') {
 				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
@@ -635,6 +712,7 @@ module.exports = torIps => {
 
 										Account.findOne({ username: profile.username })
 											.then(account => {
+												req.session.oauthType = type;
 												if (account) {
 													req.session.oauthProfile = profile;
 													res.redirect('/oauth-select-username');
@@ -657,71 +735,18 @@ module.exports = torIps => {
 													req.session.oauthProfile = profile;
 													res.redirect('/oauth-select-username');
 												} else {
-													const accountObj = {
+													const continueSignupConfig = {
+														req,
+														res,
 														username: profile.username,
-														gameSettings: {
-															soundStatus: 'pack2',
-															disableTyping: true
-														},
-														verified: true,
-														wins: 0,
-														losses: 0,
-														created: new Date(),
-														touLastAgreed: TOU_CHANGES[0].changeVer,
+														email: type === 'discord' ? profile.email : profile._json.email,
 														signupIP: ip,
-														hasNotDismissedSignupModal: true,
-														verification: {
-															email: type === 'discord' ? profile.email : profile._json.email
-														},
-														lastConnectedIP: ip
-													};
-
-													if (type === 'discord') {
-														accountObj.discordDiscriminator = profile.discriminator;
-														accountObj.discordMfa_enabled = profile.mfa_enabled;
-														accountObj.discordUsername = profile.username;
-													} else {
-														accountObj.githubUsername = profile.username;
-														accountObj.github2FA = profile._json.two_factor_authentication;
-														accountObj.bio = profile._json.bio;
-													}
-
-													const newSignup = new Signups({
-														date: new Date(),
-														userName: profile.username,
+														next: continueSignup,
+														isOAuth: true,
 														type,
-														ip: obfIP(ip),
-														email: 'discord'
-													});
-
-													newSignup.save(() => {
-														res.send();
-													});
-
-													Account.register(
-														new Account(accountObj),
-														Math.random()
-															.toString(36)
-															.substring(2),
-														(err, account) => {
-															if (err) {
-																console.log(err, 'err in creating oauth account');
-																return next();
-															} else {
-																passport.authenticate(type)(req, res, () => {
-																	const newPlayerBan = new BannedIP({
-																		bannedDate: new Date(),
-																		type: 'new',
-																		ip
-																	});
-
-																	newPlayerBan.save(() => {
-																		req.logIn(account, () => res.redirect('/account'));
-																	});
-																});
-															}
-														}
-													);
+														profile
+													};
+													checkIP(continueSignupConfig);
 												}
 											})
 											.catch(err => {
@@ -757,7 +782,7 @@ module.exports = torIps => {
 
 	app.post('/oauth-select-username', (req, res, next) => {
 		const { username } = req.body;
-		const { oauthProfile } = req.session;
+		const { oauthProfile, oauthType } = req.session;
 
 		if (
 			!req.session.oauthProfile ||
@@ -794,48 +819,18 @@ module.exports = torIps => {
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
 				}
 			} else {
-				const accountObj = {
+				const continueSignupConfig = {
+					req,
+					res,
 					username,
-					gameSettings: {
-						soundStatus: 'pack2',
-						disableTyping: true
-					},
-					verification: {
-						email: ''
-					},
-					verified: true,
-					wins: 0,
-					losses: 0,
-					created: new Date(),
-					touLastAgreed: TOU_CHANGES[0].changeVer,
+					email: oauthType === 'discord' ? oauthProfile.email : oauthProfile._json.email,
 					signupIP: ip,
-					lastConnectedIP: ip
+					next: continueSignup,
+					isOAuth: true,
+					type: oauthType,
+					profile: oauthProfile
 				};
-
-				if (oauthProfile.provider === 'github') {
-					accountObj.githubUsername = oauthProfile.username;
-					accountObj.github2FA = oauthProfile.two_factor_authentication;
-					accountObj.bio = oauthProfile.bio;
-					accountObj.verification = {
-						email: oauthProfile._json.email || ''
-					};
-				} else {
-					accountObj.discordUsername = oauthProfile.username;
-					accountObj.discordDiscriminator = oauthProfile.discriminator;
-					accountObj.discordMfa_enabled = oauthProfile.mfa_enabled;
-					accountObj.verification = {
-						email: oauthProfile.email || ''
-					};
-				}
-
-				Account.create(accountObj, (err, acc) => {
-					if (err) {
-						return next();
-					}
-
-					req.session.oauthProfile = null;
-					req.logIn(acc, () => res.redirect('/account'));
-				});
+				checkIP(continueSignupConfig);
 			}
 		});
 	});

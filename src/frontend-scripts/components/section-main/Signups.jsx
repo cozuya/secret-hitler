@@ -26,7 +26,9 @@ const Signups = ({ socket }) => {
 	const renderSignupsLog = () => {
 		return (
 			<div>
-				<h2 style={{ textAlign: 'center' }}>Signups</h2>
+				<h2 style={{ textAlign: 'center' }}>
+					{signupType === 'getSignups' ? 'Successful Signups' : signupType === 'getAllSignups' ? 'Failed Signups' : 'Private Signups'}
+				</h2>
 				<table className="ui celled table" style={{ background: 'gainsboro' }}>
 					<thead>
 						<tr>
