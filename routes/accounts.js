@@ -82,7 +82,7 @@ const checkIP = config => {
 	} else {
 		try {
 			https.get(
-				`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${'whatever@gmail.com' /* process.env.GETIPINTELAPIEMAIL*/}&flags=f&format=json`,
+				`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`,
 				vpnRes => {
 					let vpnScore = 0;
 					vpnRes.on('data', score => {
