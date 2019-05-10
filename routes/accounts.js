@@ -651,7 +651,7 @@ module.exports = torIpsParam => {
 	app.get('/github-login', passport.authenticate('github', { scope: ['read:user', 'user:email'] }));
 
 	const oAuthAuthentication = (req, res, next, type) => {
-		const ip = '1.1.1.1'; // req.expandedIP;
+		const ip = req.expandedIP;
 		testIP(ip, banType => {
 			if (banType && banType !== 'new') {
 				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
