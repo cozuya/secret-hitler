@@ -107,7 +107,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 module.exports.getModInfo = getModInfo;
 
 module.exports.sendSignups = socket => {
-	Signups.find({ type: 'local' })
+	Signups.find({ type: { $in: ['local', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
 		.then(signups => {
@@ -119,7 +119,7 @@ module.exports.sendSignups = socket => {
 };
 
 module.exports.sendAllSignups = socket => {
-	Signups.find({ type: { $nin: ['local', 'private'] } })
+	Signups.find({ type: { $nin: ['local', 'private', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
 		.then(signups => {
