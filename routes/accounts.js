@@ -224,7 +224,7 @@ const continueSignup = config => {
 							(err, account) => {
 								if (err) {
 									console.log(err, 'err in creating oauth account');
-									return next();
+									return;
 								} else {
 									passport.authenticate(type)(req, res, () => {
 										const newPlayerBan = new BannedIP({
