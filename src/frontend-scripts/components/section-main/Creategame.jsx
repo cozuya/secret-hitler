@@ -41,6 +41,7 @@ export default class Creategame extends React.Component {
 			customGameSliderValue: [7],
 			eloSliderValue: [1600],
 			isEloLimited: false,
+			flappyMode: false,
 			customGameSettings: {
 				enabled: false,
 				// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -826,6 +827,7 @@ export default class Creategame extends React.Component {
 				disableGamechat: this.state.disablegameChat,
 				rainbowgame: this.state.rainbowgame,
 				blindMode: this.state.blindMode,
+				flappyMode: this.state.flappyMode,
 				timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : false,
 				casualGame: this.state.casualgame,
 				rebalance6p: this.state.checkedRebalanceValues[0],
@@ -1602,6 +1604,32 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					</div> */}
+					<div className="row flappy">
+						<div className="sixteen wide column">
+							<i className="big plane icon" style={{ color: 'orange' }} />
+							<h4 className="ui header" style={{ color: 'orange' }}>
+								<i
+									className="info circle icon"
+									style={{ color: 'red', cursor: 'help' }}
+									title="If active, when players on the last policy, instead roles are revealed and a 1 on 1 game of Flappy Hitler commences with control of the 'flappy' passed between team members at intervals."
+								/>
+								Resolve sudden death games with Flappy Hitler
+							</h4>
+							<Switch
+								onChange={checked => {
+									this.setState({ flappyMode: checked });
+								}}
+								checked={this.state.flappyMode}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
+						</div>
+					</div>
 					{this.state.timedMode && (
 						<div className="row timedmode-slider">
 							<div className="sixteen wide column">
@@ -1616,6 +1644,7 @@ export default class Creategame extends React.Component {
 							</div>
 						</div>
 					)}
+
 					<div className="row timedmode-check">
 						<div className="sixteen wide column">
 							{this.state.timedMode && (
