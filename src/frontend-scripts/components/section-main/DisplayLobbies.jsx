@@ -83,6 +83,8 @@ const DisplayLobbies = props => {
 		let eloMinimumTooltip;
 		let customgameactive;
 		let customgameactiveTooltip;
+		let flappyMode;
+		let flappyModeTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
@@ -183,6 +185,11 @@ const DisplayLobbies = props => {
 			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
 		}
 
+		if (game.flappyMode) {
+			casualGame = <i className="plane icon" />;
+			casualGameTooltip = 'Flappy Mode - sudden death games are resolved with a game of Flappy Hitler';
+		}
+
 		return (
 			<div className="options-icons-container">
 				{game.isCustomGame && (
@@ -248,6 +255,11 @@ const DisplayLobbies = props => {
 				{isVerifiedOnly && (
 					<span data-tooltip={isVerifiedOnlyTooltip} data-inverted="">
 						{isVerifiedOnly}
+					</span>
+				)}
+				{flappyMode && (
+					<span data-tooltip={flappyModeTooltip} data-inverted="">
+						{flappyMode}
 					</span>
 				)}
 			</div>

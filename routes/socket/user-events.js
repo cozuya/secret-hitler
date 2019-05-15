@@ -670,6 +670,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
+			flappyMode: data.flappyMode,
 			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 && !data.casualGame ? true : data.casualGame,
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,

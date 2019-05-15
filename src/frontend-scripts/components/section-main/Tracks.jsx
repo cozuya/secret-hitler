@@ -133,6 +133,8 @@ class Tracks extends React.Component {
 		let eloMinimum;
 		let eloMinimumTooltip;
 		let customgameactive;
+		let flappyMode;
+		let flappyModeTooltip;
 		const customgameactiveTooltip = 'Custom Game';
 
 		if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
@@ -219,6 +221,11 @@ class Tracks extends React.Component {
 			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
 		}
 
+		if (game.flappyMode) {
+			flappyMode = <i className="plane icon" />;
+			flappyModeTooltip = 'Flappy Mode - sudden death games are resolved with a game of Flappy Hitler';
+		}
+
 		return (
 			<div className="options-icons-container">
 				{gameInfo.customGameSettings && gameInfo.customGameSettings.enabled && (
@@ -279,6 +286,11 @@ class Tracks extends React.Component {
 				{eloMinimum && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={eloMinimum} content={eloMinimumTooltip} />
+					</span>
+				)}
+				{flappyMode && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={flappyMode} content={flappyModeTooltip} />
 					</span>
 				)}
 			</div>
