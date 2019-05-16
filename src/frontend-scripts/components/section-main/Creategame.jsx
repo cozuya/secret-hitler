@@ -1611,9 +1611,9 @@ export default class Creategame extends React.Component {
 								<i
 									className="info circle icon"
 									style={{ color: 'red', cursor: 'help' }}
-									title="If active, when players on the last policy, instead roles are revealed and a 1 on 1 game of Flappy Hitler commences with control of the 'flappy' passed between team members at intervals."
+									title="If active, when players are on the last policy, roles are revealed and a 1 on 1 game of Flappy Hitler commences with control of the 'flappy' passed between team members at intervals."
 								/>
-								Resolve sudden death games with Flappy Hitler
+								COMING SOON: Resolve sudden death games with Flappy Hitler
 							</h4>
 							<Switch
 								onChange={checked => {
