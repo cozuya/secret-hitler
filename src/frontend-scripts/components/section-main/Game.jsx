@@ -5,6 +5,7 @@ import Gamechat from './Gamechat.jsx';
 import Players from './Players.jsx';
 import Confetti from './Confetti.jsx';
 import Balloons from './Balloons.jsx';
+import Flappy from './Flappy.jsx';
 import PropTypes from 'prop-types';
 import playSound from '../reusable/playSound';
 import { IsTypingContext } from '../reusable/Context';
@@ -132,6 +133,7 @@ export default class Game extends React.Component {
 	render() {
 		const { userInfo, gameInfo } = this.props;
 		const { isTyping } = this.state;
+		// const isFlappy = true;
 
 		return (
 			<IsTypingContext.Provider value={{ isTyping, updateIsTyping: this.updateIsTyping }}>
@@ -139,7 +141,7 @@ export default class Game extends React.Component {
 					<div className="ui grid">
 						<div className="row">
 							<div className="sixteen wide column tracks-container">
-								<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
+								{isFlappy ? <Flappy /> : <Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />}
 							</div>
 							<div className="chat-container game-chat transition">
 								<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
