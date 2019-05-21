@@ -334,10 +334,16 @@ module.exports = torIpsParam => {
 	});
 
 	app.post('/account/delete-account', passport.authenticate('local'), (req, res) => {
-		Account.deleteOne({ username: req.user.username }).then(() => {
-			Profile.deleteOne({ _id: req.user.username }).then(() => {
-				res.send();
-			});
+		Account.findOne({ username: req.user.username }).then((acc) => {
+			if (acc.isBanned || acc.isTimeout && Date.now() < new Date(acc.isTimeout)) {
+				res.status(403).json({ message: 'You cannot delete a banned account. ' });
+			} else {
+				Account.deleteOne({ username: req.user.username }).then(() => {
+					Profile.deleteOne({ _id: req.user.username }).then(() => {
+						res.send();
+					});
+				});
+			}
 		});
 	});
 
