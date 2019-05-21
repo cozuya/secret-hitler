@@ -144,14 +144,16 @@ const continueSignup = config => {
 				});
 			});
 		} else {
-			testIP(signupIP, banType => {
+			testIP(signupIP, (banType, unbanTime) => {
 				if (hasBypass && banType == 'new') banType = null;
 				if (banType && !hasBypass) {
 					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-					else if (banType === 'small' || banType === 'tiny' || banType === 'big') {
+					else if (banType === 'small' || banType === 'big') {
 						res.status(403).json({
 							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
 						});
+					} else if (banType === 'tiny') {
+						res.status(403).json({ message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(unbanTime)}` });
 					} else if (banType == 'new') {
 						res.status(403).json({
 							message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
@@ -458,14 +460,18 @@ module.exports = torIpsParam => {
 	app.post(
 		'/account/signin',
 		(req, res, next) => {
-			testIP(req.expandedIP, banType => {
+			testIP(req.expandedIP, (banType, unbanTime) => {
 				if (banType && banType != 'new') {
 					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-					else if (banType === 'small' || banType === 'tiny' || banType === 'big') {
-						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+					else if (banType === 'small' || banType === 'big') {
+						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
+					} else if (banType === 'tiny') {
+						res.status(403).json({
+							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(unbanTime)}`
+						});
 					} else {
 						console.log(`Unhandled IP ban type: ${banType}`);
-						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
 					}
 				} else return next();
 			});
@@ -660,13 +666,17 @@ module.exports = torIpsParam => {
 
 	const oAuthAuthentication = (req, res, next, type) => {
 		const ip = req.expandedIP;
-		testIP(ip, banType => {
+		testIP(ip, (banType, unbanTime) => {
 			if (banType && banType !== 'new') {
 				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-				else if (banType === 'small' || banType === 'tiny' || banType === 'big') {
+				else if (banType === 'small' || banType === 'big') {
 					res
 						.status(403)
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+				} else if (banType === 'tiny') {
+					res.status(403).json({
+						message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(unbanTime)}`
+					});
 				} else {
 					console.log(`Unhandled IP ban type: ${banType}`);
 					res
@@ -796,19 +806,25 @@ module.exports = torIpsParam => {
 			return;
 		}
 		const ip = req.expandedIP;
-		testIP(ip, banType => {
+		testIP(ip, (banType, unbanTime) => {
 			if (banType) {
-				if (banType == 'new') {
+				if (banType === 'new') {
 					res.status(403).json({
 						message: 'You can only make accounts once per day. If you feel you need an exception to this rule, contact the moderators on our discord server.'
 					});
-				} else if (banType == 'nocache') {
+				} else if (banType === 'nocache') {
 					res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-				} else if (banType == 'small' || banType == 'tiny') {
+				} else if (banType === 'small' || banType === 'big') {
 					res
 						.status(403)
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
-				} else if (banType == 'new') {
+				} else if (banType === 'tiny') {
+					res
+						.status(403)
+						.json({
+							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(unbanTime)}`
+						});
+				} else if (banType === 'new') {
 					res.status(403).json({
 						message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
 					});

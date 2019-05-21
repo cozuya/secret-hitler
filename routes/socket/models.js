@@ -346,7 +346,7 @@ module.exports.testIP = (IP, callback) => {
 
 				if (ip && unbannedTime > date) {
 					if (process.env.NODE_ENV === 'production') {
-						callback(ip.type);
+						callback(ip.type, unbannedTime);
 					} else {
 						console.log(`IP ban ignored: ${IP} = ${ip.type}`);
 						callback(null);
