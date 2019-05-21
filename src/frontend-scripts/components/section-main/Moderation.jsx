@@ -467,8 +467,6 @@ export default class Moderation extends React.Component {
 				>
 					Clear/delete general chat
 				</button>
-
-				<br />
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
 					onClick={() => {
@@ -478,15 +476,21 @@ export default class Moderation extends React.Component {
 					Ban user
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
 					onClick={() => {
-						takeModAction('setVerified');
+						takeModAction('timeOut3');
 					}}
-					style={{ width: '100%', background: 'aquamarine' }}
 				>
-					Set as verified
+					Timeout - 1 Hour (IP)
 				</button>
-				<br />
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('timeOut4');
+					}}
+				>
+					Timeout - 6 Hours (non-IP)
+				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
 					onClick={() => {
@@ -504,20 +508,13 @@ export default class Moderation extends React.Component {
 					Timeout - 18 Hours (non-IP)
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
-						takeModAction('timeOut3');
+						takeModAction('setVerified');
 					}}
+					style={{ width: '100%', background: 'aquamarine' }}
 				>
-					Timeout - 1 Hour (IP)
-				</button>
-				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
-					onClick={() => {
-						takeModAction('timeOut4');
-					}}
-				>
-					Timeout - 6 Hours (non-IP)
+					Set as verified
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}
