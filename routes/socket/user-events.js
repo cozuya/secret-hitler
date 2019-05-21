@@ -2946,7 +2946,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					Account.findOne({ username: data.userName })
 						.then(account => {
 							if (account) {
-								account.isTimeout = new Date();
+								account.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
 								account.save(() => {
 									logOutUser(data.userName);
 								});
@@ -2978,7 +2978,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					Account.findOne({ username: data.userName })
 						.then(account => {
 							if (account) {
-								account.isTimeout6Hour = new Date();
+								account.isTimeout = new Date(Date.now() + 6 * 60 * 60 * 1000);
 								account.save(() => {
 									logOutUser(data.userName);
 								});
@@ -3344,10 +3344,55 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					}
 			}
 
+			const niceAction = {
+				comment: 'Comment',
+				getIP: 'Get IP',
+				ban: 'Ban',
+				setSticky: 'Set Sticky',
+				ipbanlarge: '1 Week IP Ban',
+				ipban: '18 Hour IP Ban',
+				enableAccountCreation: 'Enable Account Creation',
+				disableAccountCreation: 'Disable Account Creation',
+				togglePrivate: 'Toggle Private',
+				timeOut: 'Timeout 18 Hours (IP)',
+				timeOut2: 'Timeout 18 Hours',
+				timeOut3: 'Timeout 1 Hour (IP)',
+				timeOut4: 'Timeout 6 Hours',
+				clearTimeout: 'Clear Timeout',
+				clearTimeoutIP: 'Clear IP Ban',
+				modEndGame: 'End Game',
+				deleteGame: 'Delete Game',
+				enableIpBans: 'Enable IP Bans',
+				disableIpBans: 'Disable IP Bans',
+				disableGameCreation: 'Disable Game Creation',
+				enableGameCreation: 'Enable Game Creation',
+				disableIpbans: 'Disable IP Bans',
+				enableIpbans: 'Enable IP Bans',
+				broadcast: 'Broadcast',
+				fragBanLarge: '1 Week Fragment Ban',
+				fragBanSmall: '18 Hour Fragment Ban',
+				clearGenchat: 'Clear General Chat',
+				deleteUser: 'Delete User',
+				deleteBio: 'Delete Bio',
+				deleteProfile: 'Delete Profile',
+				deleteCardback: 'Delete Cardback',
+				removeContributor: 'Remove Contributor Role',
+				resetGameName: 'Reset Game Name',
+				rainbowUser: 'Grant Rainbow',
+				removeStaffRole: 'Remove Staff Role',
+				promoteToContributor: 'Promote (Contributor)',
+				promoteToAltMod: 'Promote (AEM Alt)',
+				promoteToTrialMod: 'Promote (Trial Mod)',
+				promoteToMod: 'Promote (Mod)',
+				promoteToEditor: 'Promote (Editor)',
+				makeBypass: 'Create Bypass Key',
+				bypassKeyUsed: 'Consume Bypass Key',
+				resetServer: 'Server Restart'
+			};
+
 			const modAction = JSON.stringify({
-				content: `Date: *${new Date()}*\nStaff member: **${modaction.modUserName}**\nAction: **${modaction.actionTaken}**\nUser: **${
-					modaction.userActedOn
-				}**\nComment: **${modaction.modNotes}**.`
+				content: `Date: *${new Date()}*\nStaff member: **${modaction.modUserName}**\nAction: **${niceAction[modaction.actionTaken] ||
+					modaction.actionTaken}**\nUser: **${modaction.userActedOn}**\nComment: **${modaction.modNotes}**.`
 			});
 
 			const modOptions = {
@@ -3360,7 +3405,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				}
 			};
 
-			if (process.env.NODE_ENV === 'production') {
+			if (process.env.NODE_ENV !== 'production') {
 				try {
 					const modReq = https.request(modOptions);
 

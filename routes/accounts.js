@@ -78,6 +78,9 @@ const checkIP = config => {
 				message: 'Use of TOR is not allowed on this site.'
 			});
 		});
+	} else if (process.env.NODE_ENV !== 'production') {
+		config.vpnScore = 0;
+		next(config);
 	} else if (VPNCache[signupIP]) {
 		config.vpnScore = VPNCache[signupIP];
 		next(config);
@@ -458,7 +461,7 @@ module.exports = torIpsParam => {
 			testIP(req.expandedIP, banType => {
 				if (banType && banType != 'new') {
 					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-					else if (banType == 'small' || banType == 'tiny') {
+					else if (banType === 'small' || banType === 'tiny' || banType === 'big') {
 						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
 					} else {
 						console.log(`Unhandled IP ban type: ${banType}`);
@@ -480,7 +483,7 @@ module.exports = torIpsParam => {
 				}
 				if (player.isBanned) {
 					res.status(403).json({
-						message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
+						message: 'Your account has been banned.  If you believe this is in error, contact the moderators on Discord.'
 						// TODO: include the reason moderators provided for the account ban, if it exists
 					});
 					return next();
@@ -529,12 +532,14 @@ module.exports = torIpsParam => {
 						console.log(err, 'profile find err');
 					});
 
-				if (
-					(player.isTimeout && Date.now() - new Date(player.isTimeout).getTime() < 64800000) ||
-					(player.isTimeout6Hour && Date.now() - new Date(player.isTimeout6Hour).getTime() < 21600000)
-				) {
+				if (player.isTimeout && Date.now() < new Date(player.isTimeout)) {
 					req.logOut();
-					res.send();
+					res.status(403).json({
+						message: `Your account has been timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+							player.isTimeout
+						)}`
+						// TODO: include the reason moderators provided for the account timeout, if it exists
+					});
 				}
 				const email = player.verification.email;
 				if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
@@ -658,7 +663,7 @@ module.exports = torIpsParam => {
 		testIP(ip, banType => {
 			if (banType && banType !== 'new') {
 				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-				else if (banType == 'small' || banType == 'tiny') {
+				else if (banType === 'small' || banType === 'tiny' || banType === 'big') {
 					res
 						.status(403)
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });

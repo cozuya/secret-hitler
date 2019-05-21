@@ -493,7 +493,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut');
 					}}
 				>
-					Timeout - IP ban a player for 18 hours without scrambling password.
+					Timeout - 18 Hours (IP)
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -501,7 +501,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut2');
 					}}
 				>
-					Timeout - non-IP version.
+					Timeout - 18 Hours (non-IP)
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -509,7 +509,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut3');
 					}}
 				>
-					Timeout - 1 hour IP version.
+					Timeout - 1 Hour (IP)
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
@@ -517,7 +517,7 @@ export default class Moderation extends React.Component {
 						takeModAction('timeOut4');
 					}}
 				>
-					Timeout - 6 hour non-IP version.
+					Timeout - 6 Hours (non-IP)
 				</button>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}
@@ -978,14 +978,16 @@ export default class Moderation extends React.Component {
 			comment: 'Comment',
 			getIP: 'Get IP',
 			ban: 'Ban',
-			ipbanlarge: 'Large IP Ban',
+			setSticky: 'Set Sticky',
+			ipbanlarge: '1 Week IP Ban',
+			ipban: '18 Hour IP Ban',
 			enableAccountCreation: 'Enable Account Creation',
 			disableAccountCreation: 'Disable Account Creation',
 			togglePrivate: 'Toggle Private',
-			timeOut: 'Timeout 18 hours (IP)',
-			timeOut2: 'Timeout 18 hours',
-			timeOut3: 'Timeout 1 hour (IP)',
-			timeOut4: 'Timeout 6 hours',
+			timeOut: 'Timeout 18 Hours (IP)',
+			timeOut2: 'Timeout 18 Hours',
+			timeOut3: 'Timeout 1 Hour (IP)',
+			timeOut4: 'Timeout 6 Hours',
 			clearTimeout: 'Clear Timeout',
 			clearTimeoutIP: 'Clear IP Ban',
 			modEndGame: 'End Game',
@@ -997,6 +999,8 @@ export default class Moderation extends React.Component {
 			disableIpbans: 'Disable IP Bans',
 			enableIpbans: 'Enable IP Bans',
 			broadcast: 'Broadcast',
+			fragBanLarge: '1 Week Fragment Ban',
+			fragBanSmall: '18 Hour Fragment Ban',
 			clearGenchat: 'Clear General Chat',
 			deleteUser: 'Delete User',
 			deleteBio: 'Delete Bio',
@@ -1007,7 +1011,7 @@ export default class Moderation extends React.Component {
 			rainbowUser: 'Grant Rainbow',
 			removeStaffRole: 'Remove Staff Role',
 			promoteToContributor: 'Promote (Contributor)',
-			promoteToAltMod: 'Assign (AEM Alt)',
+			promoteToAltMod: 'Promote (AEM Alt)',
 			promoteToTrialMod: 'Promote (Trial Mod)',
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)',
