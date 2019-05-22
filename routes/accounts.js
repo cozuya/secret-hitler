@@ -202,6 +202,7 @@ const continueSignup = config => {
 							accountObj.discordDiscriminator = profile.discriminator;
 							accountObj.discordMfa_enabled = profile.mfa_enabled;
 							accountObj.discordUsername = profile.username;
+							accountObj.discordUID = profile.id;
 						} else {
 							accountObj.githubUsername = profile.username;
 							accountObj.github2FA = profile._json.two_factor_authentication;
@@ -698,6 +699,7 @@ module.exports = torIpsParam => {
 							req.user.discordUsername = profile.username;
 							req.user.discordDiscriminator = profile.discriminator;
 							req.user.discordMfa_enabled = profile.mfa_enabled;
+							req.user.discordUID = profile.id;
 						} else {
 							req.user.githubUsername = profile.username;
 							req.user.github2FA = profile.two_factor_authentication;

@@ -116,6 +116,7 @@ const Account = new Schema({
 	discordUsername: String,
 	discordDiscriminator: String,
 	discordMfa_enabled: Boolean,
+	discordUID: String,
 	githubUsername: String,
 	github2FA: Boolean
 });
