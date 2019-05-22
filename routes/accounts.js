@@ -71,7 +71,8 @@ const checkIP = config => {
 			email: config.isOAuth
 				? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
 				: Boolean(email),
-			unobfuscatedIP: signupIP
+			unobfuscatedIP: signupIP,
+			oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
 		});
 		torSignup.save(() => {
 			res.status(403).json({
@@ -134,8 +135,11 @@ const continueSignup = config => {
 				userName: username,
 				type: 'Failed - FragBanned',
 				ip: obfIP(signupIP),
-				email: isOAuth ? `${type} ${profile.username}#${profile.discriminator}` : Boolean(email),
-				unobfuscatedIP: signupIP
+				email: config.isOAuth
+					? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+					: Boolean(email),
+				unobfuscatedIP: signupIP,
+				oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
 			});
 			fragSignup.save(() => {
 				res.status(401).json({
@@ -168,14 +172,17 @@ const continueSignup = config => {
 							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
 						});
 					}
-				} else if (vpnScore >= 0.95 && !hasBypass) {
+				} else if (true || (vpnScore >= 0.95 && !hasBypass)) {
 					const vpnSignup = new Signups({
 						date: new Date(),
 						userName: username,
 						type: 'Failed - VPN',
 						ip: obfIP(signupIP),
-						email: isOAuth ? `${type} ${profile.username}#${profile.discriminator}` : Boolean(email),
-						unobfuscatedIP: signupIP
+						email: config.isOAuth
+							? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+							: Boolean(email),
+						unobfuscatedIP: signupIP,
+						oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
 					});
 					vpnSignup.save(() => {
 						res.status(403).json({
@@ -218,8 +225,11 @@ const continueSignup = config => {
 							userName: username,
 							type,
 							ip: obfIP(signupIP),
-							email: `${profile.username}#${profile.discriminator}`,
-							unobfuscatedIP: signupIP
+							email: config.isOAuth
+								? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+								: Boolean(email),
+							unobfuscatedIP: signupIP,
+							oauthID: `${config.isOAuth && config.type === 'discord' ? accountObj.discordUID : ''}`
 						});
 
 						Account.register(
@@ -277,8 +287,8 @@ const continueSignup = config => {
 										type: 'local',
 										ip: obfIP(signupIP),
 										email: Boolean(email),
-										unobfuscatedIP: signupIP
-									});
+										unobfuscatedIP: signupIP,
+										oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`									});
 									newSignup.save(() => {
 										res.send();
 									});
@@ -289,7 +299,8 @@ const continueSignup = config => {
 										type: 'private',
 										ip: obfIP(signupIP),
 										email: Boolean(email),
-										unobfuscatedIP: signupIP
+										unobfuscatedIP: signupIP,
+										oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
 									});
 
 									privSignup.save(() => {

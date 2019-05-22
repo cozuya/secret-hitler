@@ -46,7 +46,16 @@ const Signups = ({ socket }) => {
 								<td>{report.userName}</td>
 								<td>{report.ip}</td>
 								<td>{report.type}</td>
-								<td>{report.email}</td>
+								<td
+									onClick={() => {
+										if (report.email.indexOf('#') !== -1) {
+											window.alert('Discord ID: ' + report.oauthID);
+										}
+									}}
+									style={{ cursor: `${report.email.indexOf('#') !== -1 ? 'pointer' : ''}` }}
+								>
+									{report.email}
+								</td>
 							</tr>
 						))}
 					</tbody>
