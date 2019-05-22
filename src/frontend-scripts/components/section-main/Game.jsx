@@ -10,7 +10,6 @@ import PropTypes from 'prop-types';
 import playSound from '../reusable/playSound';
 
 export default class Game extends React.Component {
-
 	componentDidUpdate(prevProps) {
 		const { userInfo, gameInfo } = this.props;
 
@@ -99,55 +98,55 @@ export default class Game extends React.Component {
 		const isFlappy = true;
 
 		return (
-				<section className="game">
-					<div className="ui grid">
-						<div className="row">
-							<div className="sixteen wide column tracks-container">
-								{isFlappy ? <Flappy /> : <Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />}
-							</div>
-							<div className="chat-container game-chat transition">
-								<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
-									{gameInfo.general && gameInfo.general.status}
-								</section>
-								<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
-							</div>
+			<section className="game">
+				<div className="ui grid">
+					<div className="row">
+						<div className="sixteen wide column tracks-container">
+							{isFlappy ? <Flappy /> : <Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />}
+						</div>
+						<div className="chat-container game-chat transition">
+							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
+								{gameInfo.general && gameInfo.general.status}
+							</section>
+							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
 						</div>
 					</div>
-					{(() => {
-						const balloons = Math.random() < 0.1;
+				</div>
+				{(() => {
+					const balloons = Math.random() < 0.1;
 
-						if (
-							userInfo.userName &&
-							userInfo.gameSettings &&
-							!userInfo.gameSettings.disableConfetti &&
-							gameInfo &&
-							gameInfo.publicPlayersState &&
-							gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
-							gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti
-						) {
-							return balloons ? <Balloons /> : <Confetti />;
+					if (
+						userInfo.userName &&
+						userInfo.gameSettings &&
+						!userInfo.gameSettings.disableConfetti &&
+						gameInfo &&
+						gameInfo.publicPlayersState &&
+						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
+						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti
+					) {
+						return balloons ? <Balloons /> : <Confetti />;
+					}
+				})()}
+				<div
+					className={(() => {
+						let classes = 'row players-container';
+
+						if (userInfo.gameSettings && userInfo.gameSettings.disableRightSidebarInGame) {
+							classes += ' disabledrightsidebar';
 						}
+
+						return classes;
 					})()}
-					<div
-						className={(() => {
-							let classes = 'row players-container';
-
-							if (userInfo.gameSettings && userInfo.gameSettings.disableRightSidebarInGame) {
-								classes += ' disabledrightsidebar';
-							}
-
-							return classes;
-						})()}
-					>
-						<Players
-							onClickedTakeSeat={this.props.onClickedTakeSeat}
-							userList={this.props.userList}
-							userInfo={userInfo}
-							gameInfo={gameInfo}
-							socket={this.props.socket}
-						/>
-					</div>
-				</section>
+				>
+					<Players
+						onClickedTakeSeat={this.props.onClickedTakeSeat}
+						userList={this.props.userList}
+						userInfo={userInfo}
+						gameInfo={gameInfo}
+						socket={this.props.socket}
+					/>
+				</div>
+			</section>
 		);
 	}
 }

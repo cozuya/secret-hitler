@@ -183,7 +183,7 @@ class Gamechat extends React.Component {
 	};
 
 	handleSubmit = e => {
-		const { gameInfo, userInfo } = this.props;
+		const { gameInfo } = this.props;
 
 		e.preventDefault();
 

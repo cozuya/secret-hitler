@@ -408,7 +408,7 @@ class Settings extends React.Component {
 								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
 								<label />
 							</div>
-							
+
 							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
