@@ -59,7 +59,6 @@ general
 		queuedPlayers array of objects
 		isCancelled bool
 		isRound1TableThatFinished2nd bool
-isTyping object hashmap of seated player names
 seatedPlayers array 5-10
 	obj
 		connected bool

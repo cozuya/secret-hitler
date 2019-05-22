@@ -183,8 +183,7 @@ const continueSignup = config => {
 						const accountObj = {
 							username: username,
 							gameSettings: {
-								soundStatus: 'pack2',
-								disableTyping: true
+								soundStatus: 'pack2'
 							},
 							verified: true,
 							wins: 0,
@@ -387,7 +386,6 @@ module.exports = torIpsParam => {
 			hasNotDismissedSignupModal: true,
 			gameSettings: {
 				soundStatus: 'pack2',
-				disableTyping: true,
 				isPrivate
 			},
 			verification: {

@@ -8,7 +8,6 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import { PLAYERCOLORS, getBadWord } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
-import { IsTypingContext } from '../reusable/Context';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
@@ -144,7 +143,7 @@ class Gamechat extends React.Component {
 
 	handleTyping = e => {
 		e.preventDefault();
-		const { userInfo, gameInfo, updateIsTyping, isTyping, socket } = this.props;
+		const { gameInfo } = this.props;
 		this.setState({
 			chatValue: e.target.value
 		});
@@ -177,14 +176,6 @@ class Gamechat extends React.Component {
 				});
 			}
 		}
-
-		if (userInfo.isSeated && (Date.now() - isTyping[userInfo.userName] > 1000 || !isTyping[userInfo.userName])) {
-			updateIsTyping();
-			socket.emit('updateTyping', {
-				userName: userInfo.userName,
-				uid: gameInfo.general.uid
-			});
-		}
 	};
 
 	chatDisabled = () => {
@@ -192,7 +183,7 @@ class Gamechat extends React.Component {
 	};
 
 	handleSubmit = e => {
-		const { updateIsTyping, gameInfo, userInfo } = this.props;
+		const { gameInfo, userInfo } = this.props;
 
 		e.preventDefault();
 
@@ -203,10 +194,6 @@ class Gamechat extends React.Component {
 		const { chatValue } = this.state;
 
 		if (chatValue.length <= 300 && chatValue && !$('.expando-container + div').hasClass('disabled')) {
-			if (userInfo.gameSettings && !userInfo.gameSettings.disableTyping) {
-				updateIsTyping(true);
-			}
-
 			const chat = {
 				chat: chatValue,
 				uid: gameInfo.general.uid
@@ -1174,10 +1161,6 @@ class Gamechat extends React.Component {
 	}
 }
 
-Gamechat.defaultProps = {
-	isTyping: {}
-};
-
 Gamechat.propTypes = {
 	clickedGameRole: PropTypes.object,
 	clickedPlayer: PropTypes.object,
@@ -1189,16 +1172,12 @@ Gamechat.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	allEmotes: PropTypes.array,
-	updateIsTyping: PropTypes.func,
 	notesActive: PropTypes.bool,
 	toggleNotes: PropTypes.func,
-	isTyping: PropTypes.object
 };
 
 const GamechatContainer = props => (
-	<IsTypingContext.Consumer>
-		{({ updateIsTyping, isTyping }) => <Gamechat {...props} updateIsTyping={updateIsTyping} isTyping={isTyping} />}
-	</IsTypingContext.Consumer>
+		<Gamechat {...props}/>
 );
 
 export default connect(

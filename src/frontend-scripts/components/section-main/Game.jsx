@@ -8,31 +8,8 @@ import Balloons from './Balloons.jsx';
 import Flappy from './Flappy.jsx';
 import PropTypes from 'prop-types';
 import playSound from '../reusable/playSound';
-import { IsTypingContext } from '../reusable/Context';
 
 export default class Game extends React.Component {
-	state = {
-		isTyping: {}
-	};
-
-	componentDidMount() {
-		const { userInfo } = this.props;
-
-		if (userInfo && userInfo.userName && userInfo.gameSettings && !userInfo.gameSettings.disableTyping) {
-			const { isTyping } = this.state;
-
-			this.props.socket.on('isTypingUpdate', typing => {
-				if (!(isTyping[typing.userName] && isTyping[typing.userName] === typing.time)) {
-					this.setState({
-						isTyping: {
-							...isTyping,
-							[typing.userName]: typing.time
-						}
-					});
-				}
-			});
-		}
-	}
 
 	componentDidUpdate(prevProps) {
 		const { userInfo, gameInfo } = this.props;
@@ -117,26 +94,11 @@ export default class Game extends React.Component {
 		}
 	}
 
-	updateIsTyping = isClear => {
-		const { userInfo } = this.props;
-
-		if (userInfo.userName && !userInfo.gameSettings.disableTyping) {
-			this.setState(prevState => ({
-				isTyping: {
-					...prevState.isTyping,
-					[userInfo.userName]: isClear ? null : Date.now()
-				}
-			}));
-		}
-	};
-
 	render() {
 		const { userInfo, gameInfo } = this.props;
-		const { isTyping } = this.state;
 		const isFlappy = true;
 
 		return (
-			<IsTypingContext.Provider value={{ isTyping, updateIsTyping: this.updateIsTyping }}>
 				<section className="game">
 					<div className="ui grid">
 						<div className="row">
@@ -186,7 +148,6 @@ export default class Game extends React.Component {
 						/>
 					</div>
 				</section>
-			</IsTypingContext.Provider>
 		);
 	}
 }
