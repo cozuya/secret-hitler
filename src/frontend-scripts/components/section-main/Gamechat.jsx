@@ -1176,11 +1176,7 @@ Gamechat.propTypes = {
 	toggleNotes: PropTypes.func,
 };
 
-const GamechatContainer = props => (
-		<Gamechat {...props}/>
-);
-
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(GamechatContainer);
+)(Gamechat);

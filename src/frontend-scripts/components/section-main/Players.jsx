@@ -620,11 +620,7 @@ Players.propTypes = {
 	togglePlayerNotes: PropTypes.func
 };
 
-const PlayersContainer = props => {
-	<Players {...props} />;
-};
-
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(PlayersContainer);
+)(Players);
