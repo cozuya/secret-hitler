@@ -3383,7 +3383,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				}
 			};
 
-			if (process.env.NODE_ENV !== 'production') {
+			if (process.env.NODE_ENV === 'production') {
 				try {
 					const modReq = https.request(modOptions);
 
