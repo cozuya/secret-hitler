@@ -133,7 +133,7 @@ export default class Game extends React.Component {
 	render() {
 		const { userInfo, gameInfo } = this.props;
 		const { isTyping } = this.state;
-		// const isFlappy = true;
+		const isFlappy = true;
 
 		return (
 			<IsTypingContext.Provider value={{ isTyping, updateIsTyping: this.updateIsTyping }}>
