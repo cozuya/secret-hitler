@@ -153,7 +153,11 @@ const continueSignup = config => {
 							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
 						});
 					} else if (banType === 'tiny') {
-						res.status(403).json({ message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(unbanTime)}` });
+						res.status(403).json({
+							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+								unbanTime
+							)}`
+						});
 					} else if (banType == 'new') {
 						res.status(403).json({
 							message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
@@ -334,8 +338,8 @@ module.exports = torIpsParam => {
 	});
 
 	app.post('/account/delete-account', passport.authenticate('local'), (req, res) => {
-		Account.findOne({ username: req.user.username }).then((acc) => {
-			if (acc.isBanned || acc.isTimeout && Date.now() < new Date(acc.isTimeout)) {
+		Account.findOne({ username: req.user.username }).then(acc => {
+			if (acc.isBanned || (acc.isTimeout && Date.now() < new Date(acc.isTimeout))) {
 				res.status(403).json({ message: 'You cannot delete a banned account. ' });
 			} else {
 				Account.deleteOne({ username: req.user.username }).then(() => {
@@ -472,7 +476,9 @@ module.exports = torIpsParam => {
 						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
 					} else if (banType === 'tiny') {
 						res.status(403).json({
-							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(unbanTime)}`
+							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+								unbanTime
+							)}`
 						});
 					} else {
 						console.log(`Unhandled IP ban type: ${banType}`);
@@ -680,7 +686,9 @@ module.exports = torIpsParam => {
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
 				} else if (banType === 'tiny') {
 					res.status(403).json({
-						message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(unbanTime)}`
+						message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+							unbanTime
+						)}`
 					});
 				} else {
 					console.log(`Unhandled IP ban type: ${banType}`);
@@ -825,11 +833,11 @@ module.exports = torIpsParam => {
 						.status(403)
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
 				} else if (banType === 'tiny') {
-					res
-						.status(403)
-						.json({
-							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(unbanTime)}`
-						});
+					res.status(403).json({
+						message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+							unbanTime
+						)}`
+					});
 				} else if (banType === 'new') {
 					res.status(403).json({
 						message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
