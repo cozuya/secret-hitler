@@ -172,7 +172,7 @@ const continueSignup = config => {
 							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
 						});
 					}
-				} else if (true || (vpnScore >= 0.95 && !hasBypass)) {
+				} else if (vpnScore >= 0.95 && !hasBypass) {
 					const vpnSignup = new Signups({
 						date: new Date(),
 						userName: username,
@@ -288,7 +288,8 @@ const continueSignup = config => {
 										ip: obfIP(signupIP),
 										email: Boolean(email),
 										unobfuscatedIP: signupIP,
-										oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`									});
+										oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
+									});
 									newSignup.save(() => {
 										res.send();
 									});
