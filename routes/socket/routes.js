@@ -20,7 +20,6 @@ const {
 	handleSubscribeModChat,
 	handleModPeekVotes,
 	handleGameFreeze,
-	handleUpdateTyping,
 	handleHasSeenNewPlayerModal
 } = require('./user-events');
 const {
@@ -206,10 +205,6 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				if (authenticated && isAEM) {
 					sendPrivateSignups(socket);
 				}
-			});
-
-			socket.on('updateTyping', data => {
-				handleUpdateTyping(data);
 			});
 
 			socket.on('confirmTOU', () => {

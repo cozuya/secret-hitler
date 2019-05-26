@@ -235,6 +235,7 @@ module.exports.formattedGameList = () => {
 		isVerifiedOnly: games[gameName].general.isVerifiedOnly || undefined,
 		isTourny: games[gameName].general.isTourny || undefined,
 		timedMode: games[gameName].general.timedMode || undefined,
+		flappyMode: games[gameName].general.flappyMode || undefined,
 		tournyStatus: (() => {
 			if (games[gameName].general.isTourny) {
 				if (games[gameName].general.tournyInfo.queuedPlayers && games[gameName].general.tournyInfo.queuedPlayers.length) {
@@ -345,7 +346,7 @@ module.exports.testIP = (IP, callback) => {
 
 				if (ip && unbannedTime > date) {
 					if (process.env.NODE_ENV === 'production') {
-						callback(ip.type);
+						callback(ip.type, unbannedTime);
 					} else {
 						console.log(`IP ban ignored: ${IP} = ${ip.type}`);
 						callback(null);

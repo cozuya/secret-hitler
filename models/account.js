@@ -31,7 +31,6 @@ const Account = new Schema({
 		disableCrowns: Boolean,
 		disableSeasonal: Boolean,
 		disableAggregations: Boolean,
-		disableTyping: Boolean,
 		soundStatus: String,
 		unbanTime: Date,
 		unTimeoutTime: Date,
@@ -117,6 +116,7 @@ const Account = new Schema({
 	discordUsername: String,
 	discordDiscriminator: String,
 	discordMfa_enabled: Boolean,
+	discordUID: String,
 	githubUsername: String,
 	github2FA: Boolean
 });

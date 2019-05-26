@@ -5,34 +5,11 @@ import Gamechat from './Gamechat.jsx';
 import Players from './Players.jsx';
 import Confetti from './Confetti.jsx';
 import Balloons from './Balloons.jsx';
+import Flappy from './Flappy.jsx';
 import PropTypes from 'prop-types';
 import playSound from '../reusable/playSound';
-import { IsTypingContext } from '../reusable/Context';
 
 export default class Game extends React.Component {
-	state = {
-		isTyping: {}
-	};
-
-	componentDidMount() {
-		const { userInfo } = this.props;
-
-		if (userInfo && userInfo.userName && userInfo.gameSettings && !userInfo.gameSettings.disableTyping) {
-			const { isTyping } = this.state;
-
-			this.props.socket.on('isTypingUpdate', typing => {
-				if (!(isTyping[typing.userName] && isTyping[typing.userName] === typing.time)) {
-					this.setState({
-						isTyping: {
-							...isTyping,
-							[typing.userName]: typing.time
-						}
-					});
-				}
-			});
-		}
-	}
-
 	componentDidUpdate(prevProps) {
 		const { userInfo, gameInfo } = this.props;
 
@@ -116,75 +93,60 @@ export default class Game extends React.Component {
 		}
 	}
 
-	updateIsTyping = isClear => {
-		const { userInfo } = this.props;
-
-		if (userInfo.userName && !userInfo.gameSettings.disableTyping) {
-			this.setState(prevState => ({
-				isTyping: {
-					...prevState.isTyping,
-					[userInfo.userName]: isClear ? null : Date.now()
-				}
-			}));
-		}
-	};
-
 	render() {
 		const { userInfo, gameInfo } = this.props;
-		const { isTyping } = this.state;
+		const isFlappy = false; // true;
 
 		return (
-			<IsTypingContext.Provider value={{ isTyping, updateIsTyping: this.updateIsTyping }}>
-				<section className="game">
-					<div className="ui grid">
-						<div className="row">
-							<div className="sixteen wide column tracks-container">
-								<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />
-							</div>
-							<div className="chat-container game-chat transition">
-								<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
-									{gameInfo.general && gameInfo.general.status}
-								</section>
-								<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
-							</div>
+			<section className="game">
+				<div className="ui grid">
+					<div className="row">
+						<div className="sixteen wide column tracks-container">
+							{isFlappy ? <Flappy /> : <Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />}
+						</div>
+						<div className="chat-container game-chat transition">
+							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
+								{gameInfo.general && gameInfo.general.status}
+							</section>
+							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
 						</div>
 					</div>
-					{(() => {
-						const balloons = Math.random() < 0.1;
+				</div>
+				{(() => {
+					const balloons = Math.random() < 0.1;
 
-						if (
-							userInfo.userName &&
-							userInfo.gameSettings &&
-							!userInfo.gameSettings.disableConfetti &&
-							gameInfo &&
-							gameInfo.publicPlayersState &&
-							gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
-							gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti
-						) {
-							return balloons ? <Balloons /> : <Confetti />;
+					if (
+						userInfo.userName &&
+						userInfo.gameSettings &&
+						!userInfo.gameSettings.disableConfetti &&
+						gameInfo &&
+						gameInfo.publicPlayersState &&
+						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
+						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti
+					) {
+						return balloons ? <Balloons /> : <Confetti />;
+					}
+				})()}
+				<div
+					className={(() => {
+						let classes = 'row players-container';
+
+						if (userInfo.gameSettings && userInfo.gameSettings.disableRightSidebarInGame) {
+							classes += ' disabledrightsidebar';
 						}
+
+						return classes;
 					})()}
-					<div
-						className={(() => {
-							let classes = 'row players-container';
-
-							if (userInfo.gameSettings && userInfo.gameSettings.disableRightSidebarInGame) {
-								classes += ' disabledrightsidebar';
-							}
-
-							return classes;
-						})()}
-					>
-						<Players
-							onClickedTakeSeat={this.props.onClickedTakeSeat}
-							userList={this.props.userList}
-							userInfo={userInfo}
-							gameInfo={gameInfo}
-							socket={this.props.socket}
-						/>
-					</div>
-				</section>
-			</IsTypingContext.Provider>
+				>
+					<Players
+						onClickedTakeSeat={this.props.onClickedTakeSeat}
+						userList={this.props.userList}
+						userInfo={userInfo}
+						gameInfo={gameInfo}
+						socket={this.props.socket}
+					/>
+				</div>
+			</section>
 		);
 	}
 }

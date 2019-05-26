@@ -68,38 +68,41 @@ const checkIP = config => {
 			userName: username,
 			type: 'Failed - TOR',
 			ip: obfIP(signupIP),
-			email: config.isOAuth ? `${config.type} ${config.profile.username}#${config.profile.discriminator}` : Boolean(email),
-			unobfuscatedIP: signupIP
+			email: config.isOAuth
+				? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+				: Boolean(email),
+			unobfuscatedIP: signupIP,
+			oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
 		});
 		torSignup.save(() => {
 			res.status(403).json({
 				message: 'Use of TOR is not allowed on this site.'
 			});
 		});
+	} else if (process.env.NODE_ENV !== 'production') {
+		config.vpnScore = 0;
+		next(config);
 	} else if (VPNCache[signupIP]) {
-		vpnScore = VPNCache[signupIP];
+		config.vpnScore = VPNCache[signupIP];
 		next(config);
 	} else {
 		try {
-			https.get(
-				`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`,
-				vpnRes => {
-					let vpnScore = 0;
-					vpnRes.on('data', score => {
-						vpnScore = parseFloat(JSON.parse(score.toString('utf8')).result);
-					});
+			https.get(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`, vpnRes => {
+				let vpnScore = 0;
+				vpnRes.on('data', score => {
+					vpnScore = parseFloat(JSON.parse(score.toString('utf8')).result);
+				});
 
-					vpnRes.on('end', () => {
-						if (vpnScore < 0) {
-							res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
-							console.log('Error in Get IP Intel, score given: ', vpnScore);
-							return;
-						}
-						config.vpnScore = VPNCache[signupIP] = vpnScore;
-						next(config);
-					});
-				}
-			);
+				vpnRes.on('end', () => {
+					if (vpnScore < 0) {
+						res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
+						console.log('Error in Get IP Intel, score given: ', vpnScore, 'IP: ', signupIP);
+						return;
+					}
+					config.vpnScore = VPNCache[signupIP] = vpnScore;
+					next(config);
+				});
+			});
 		} catch (error) {
 			res.status(503).json({ message: 'There was an error processing your request. Please try again later.' });
 			console.log('Error in Get IP Intel', error);
@@ -132,8 +135,11 @@ const continueSignup = config => {
 				userName: username,
 				type: 'Failed - FragBanned',
 				ip: obfIP(signupIP),
-				email: isOAuth ? `${type} ${profile.username}#${profile.discriminator}` : Boolean(email),
-				unobfuscatedIP: signupIP
+				email: config.isOAuth
+					? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+					: Boolean(email),
+				unobfuscatedIP: signupIP,
+				oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
 			});
 			fragSignup.save(() => {
 				res.status(401).json({
@@ -142,13 +148,19 @@ const continueSignup = config => {
 				});
 			});
 		} else {
-			testIP(signupIP, banType => {
+			testIP(signupIP, (banType, unbanTime) => {
 				if (hasBypass && banType == 'new') banType = null;
-				if (banType) {
+				if (banType && !hasBypass) {
 					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-					else if (banType == 'small' || banType == 'tiny') {
+					else if (banType === 'small' || banType === 'big') {
 						res.status(403).json({
 							message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.'
+						});
+					} else if (banType === 'tiny') {
+						res.status(403).json({
+							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+								unbanTime
+							)}`
 						});
 					} else if (banType == 'new') {
 						res.status(403).json({
@@ -166,8 +178,11 @@ const continueSignup = config => {
 						userName: username,
 						type: 'Failed - VPN',
 						ip: obfIP(signupIP),
-						email: isOAuth ? `${type} ${profile.username}#${profile.discriminator}` : Boolean(email),
-						unobfuscatedIP: signupIP
+						email: config.isOAuth
+							? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+							: Boolean(email),
+						unobfuscatedIP: signupIP,
+						oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
 					});
 					vpnSignup.save(() => {
 						res.status(403).json({
@@ -179,8 +194,7 @@ const continueSignup = config => {
 						const accountObj = {
 							username: username,
 							gameSettings: {
-								soundStatus: 'pack2',
-								disableTyping: true
+								soundStatus: 'pack2'
 							},
 							verified: true,
 							wins: 0,
@@ -199,6 +213,7 @@ const continueSignup = config => {
 							accountObj.discordDiscriminator = profile.discriminator;
 							accountObj.discordMfa_enabled = profile.mfa_enabled;
 							accountObj.discordUsername = profile.username;
+							accountObj.discordUID = profile.id;
 						} else {
 							accountObj.githubUsername = profile.username;
 							accountObj.github2FA = profile._json.two_factor_authentication;
@@ -210,11 +225,12 @@ const continueSignup = config => {
 							userName: username,
 							type,
 							ip: obfIP(signupIP),
-							email: `${profile.username}#${profile.discriminator}`,
-							unobfuscatedIP: signupIP
+							email: config.isOAuth
+								? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+								: Boolean(email),
+							unobfuscatedIP: signupIP,
+							oauthID: `${config.isOAuth && config.type === 'discord' ? accountObj.discordUID : ''}`
 						});
-
-						oauthSignup.save();
 
 						Account.register(
 							new Account(accountObj),
@@ -223,17 +239,25 @@ const continueSignup = config => {
 								.substring(2),
 							(err, account) => {
 								if (err) {
-									console.log(err, 'err in creating oauth account');
-									return next();
+									console.log(err, 'err in creating oauth account', accountObj);
+									res.status(503).json({ message: 'There was an error processing your request. Please try again later.' });
+									return;
 								} else {
-									passport.authenticate(type)(req, res, () => {
-										const newPlayerBan = new BannedIP({
-											bannedDate: new Date(),
-											type: 'new',
-											signupIP
-										});
+									if (hasBypass) consumeBypass(bypassKey, username, signupIP);
+									const newPlayerBan = new BannedIP({
+										bannedDate: new Date(),
+										type: 'new',
+										signupIP
+									});
 
-										newPlayerBan.save(() => req.login(account, () => res.redirect('/account')));
+									passport.authenticate(type)(req, res, () => {
+										oauthSignup.save(() => {
+											newPlayerBan.save(() => {
+												req.login(account, () => {
+													res.redirect('/account');
+												});
+											});
+										});
 									});
 								}
 							}
@@ -263,7 +287,8 @@ const continueSignup = config => {
 										type: 'local',
 										ip: obfIP(signupIP),
 										email: Boolean(email),
-										unobfuscatedIP: signupIP
+										unobfuscatedIP: signupIP,
+										oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
 									});
 									newSignup.save(() => {
 										res.send();
@@ -275,7 +300,8 @@ const continueSignup = config => {
 										type: 'private',
 										ip: obfIP(signupIP),
 										email: Boolean(email),
-										unobfuscatedIP: signupIP
+										unobfuscatedIP: signupIP,
+										oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
 									});
 
 									privSignup.save(() => {
@@ -324,10 +350,16 @@ module.exports = torIpsParam => {
 	});
 
 	app.post('/account/delete-account', passport.authenticate('local'), (req, res) => {
-		Account.deleteOne({ username: req.user.username }).then(() => {
-			Profile.deleteOne({ _id: req.user.username }).then(() => {
-				res.send();
-			});
+		Account.findOne({ username: req.user.username }).then(acc => {
+			if (acc.isBanned || (acc.isTimeout && Date.now() < new Date(acc.isTimeout))) {
+				res.status(403).json({ message: 'You cannot delete a banned account. ' });
+			} else {
+				Account.deleteOne({ username: req.user.username }).then(() => {
+					Profile.deleteOne({ _id: req.user.username }).then(() => {
+						res.send();
+					});
+				});
+			}
 		});
 	});
 
@@ -371,7 +403,6 @@ module.exports = torIpsParam => {
 			hasNotDismissedSignupModal: true,
 			gameSettings: {
 				soundStatus: 'pack2',
-				disableTyping: true,
 				isPrivate
 			},
 			verification: {
@@ -450,14 +481,20 @@ module.exports = torIpsParam => {
 	app.post(
 		'/account/signin',
 		(req, res, next) => {
-			testIP(req.expandedIP, banType => {
+			testIP(req.expandedIP, (banType, unbanTime) => {
 				if (banType && banType != 'new') {
 					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-					else if (banType == 'small' || banType == 'tiny') {
-						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+					else if (banType === 'small' || banType === 'big') {
+						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
+					} else if (banType === 'tiny') {
+						res.status(403).json({
+							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+								unbanTime
+							)}`
+						});
 					} else {
 						console.log(`Unhandled IP ban type: ${banType}`);
-						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators.' });
+						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
 					}
 				} else return next();
 			});
@@ -475,7 +512,7 @@ module.exports = torIpsParam => {
 				}
 				if (player.isBanned) {
 					res.status(403).json({
-						message: 'You can not access this service.  If you believe this is in error, contact the moderators.'
+						message: 'Your account has been banned.  If you believe this is in error, contact the moderators on Discord.'
 						// TODO: include the reason moderators provided for the account ban, if it exists
 					});
 					return next();
@@ -524,12 +561,14 @@ module.exports = torIpsParam => {
 						console.log(err, 'profile find err');
 					});
 
-				if (
-					(player.isTimeout && Date.now() - new Date(player.isTimeout).getTime() < 64800000) ||
-					(player.isTimeout6Hour && Date.now() - new Date(player.isTimeout6Hour).getTime() < 21600000)
-				) {
+				if (player.isTimeout && Date.now() < new Date(player.isTimeout)) {
 					req.logOut();
-					res.send();
+					res.status(403).json({
+						message: `Your account has been timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+							player.isTimeout
+						)}`
+						// TODO: include the reason moderators provided for the account timeout, if it exists
+					});
 				}
 				const email = player.verification.email;
 				if (email && email.split('@')[1] && bannedEmails.includes(email.split('@')[1])) {
@@ -650,13 +689,19 @@ module.exports = torIpsParam => {
 
 	const oAuthAuthentication = (req, res, next, type) => {
 		const ip = req.expandedIP;
-		testIP(ip, banType => {
+		testIP(ip, (banType, unbanTime) => {
 			if (banType && banType !== 'new') {
 				if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-				else if (banType == 'small' || banType == 'tiny') {
+				else if (banType === 'small' || banType === 'big') {
 					res
 						.status(403)
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
+				} else if (banType === 'tiny') {
+					res.status(403).json({
+						message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+							unbanTime
+						)}`
+					});
 				} else {
 					console.log(`Unhandled IP ban type: ${banType}`);
 					res
@@ -674,6 +719,7 @@ module.exports = torIpsParam => {
 							req.user.discordUsername = profile.username;
 							req.user.discordDiscriminator = profile.discriminator;
 							req.user.discordMfa_enabled = profile.mfa_enabled;
+							req.user.discordUID = profile.id;
 						} else {
 							req.user.githubUsername = profile.username;
 							req.user.github2FA = profile.two_factor_authentication;
@@ -692,15 +738,7 @@ module.exports = torIpsParam => {
 								if (account) {
 									req.login(account, () => res.redirect('/account'));
 								} else {
-									// TODO: bypass option
-									if (banType === 'new') {
-										console.log(account, 'oath err 472: account');
-										console.log(profile, 'oath err 473: profile');
-										res.status(403).json({
-											message:
-												'You can only make accounts once per day.  If you feel you need an exception to this rule, contact the moderators on our discord server.'
-										});
-									} else if (accountCreationDisabled.status) {
+									if (accountCreationDisabled.status) {
 										res.status(403).json({
 											message:
 												'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on discord.'
@@ -794,19 +832,25 @@ module.exports = torIpsParam => {
 			return;
 		}
 		const ip = req.expandedIP;
-		testIP(ip, banType => {
+		testIP(ip, (banType, unbanTime) => {
 			if (banType) {
-				if (banType == 'new') {
+				if (banType === 'new') {
 					res.status(403).json({
 						message: 'You can only make accounts once per day. If you feel you need an exception to this rule, contact the moderators on our discord server.'
 					});
-				} else if (banType == 'nocache') {
+				} else if (banType === 'nocache') {
 					res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-				} else if (banType == 'small' || banType == 'tiny') {
+				} else if (banType === 'small' || banType === 'big') {
 					res
 						.status(403)
 						.json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on our discord channel.' });
-				} else if (banType == 'new') {
+				} else if (banType === 'tiny') {
+					res.status(403).json({
+						message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+							unbanTime
+						)}`
+					});
+				} else if (banType === 'new') {
 					res.status(403).json({
 						message: 'You can only make accounts once per day.  If you need an exception to this rule, contact the moderators on our discord channel.'
 					});

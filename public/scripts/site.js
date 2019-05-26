@@ -1,4 +1,6 @@
-$(document).ready(function() {
+/* eslint-disable */
+
+$(document).ready(function () {
 	// yay ES5
 
 	if (window.location.pathname === '/') {
@@ -254,6 +256,10 @@ $(document).ready(function() {
 				},
 				401: function() {
 					submitErr('Sorry, that was not the correct password for that username.');
+				},
+				403(xhr) {
+					submitErr(xhr.responseJSON.message);
+					console.log(xhr.responseJSON.message);
 				}
 			}
 		});
@@ -496,6 +502,13 @@ $(document).ready(function() {
 				401: function() {
 					$loader.removeClass('active');
 					$errMessage.text('Your password did not match.').removeClass('hidden');
+					if (!$successMessage.hasClass('hidden')) {
+						$successMessage.addClass('hidden');
+					}
+				},
+				403(xhr) {
+					$loader.removeClass('active');
+					$errMessage.text(xhr.responseJSON.message).removeClass('hidden');
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}

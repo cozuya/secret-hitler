@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
-import { IsTypingContext } from '../reusable/Context';
 
 $.fn.dropdown = Dropdown;
 
@@ -180,19 +179,6 @@ class Players extends React.Component {
 		}
 	}
 
-	renderTyping(player) {
-		const { isTyping } = this.props;
-
-		if (isTyping && isTyping[player.userName] && Date.now() - isTyping[player.userName] < 2000) {
-			setTimeout(() => {
-				if (Date.now() - isTyping[player.userName] >= 2000) {
-					this.forceUpdate();
-				}
-			}, 2000);
-			return <img className="is-typing" src="../images/typing.gif" />;
-		}
-	}
-
 	renderPlayers() {
 		const { gameInfo, userInfo } = this.props;
 		const { gameSettings } = userInfo;
@@ -323,7 +309,6 @@ class Players extends React.Component {
 				</div>
 				{this.renderPreviousGovtToken(i)}
 				{this.renderLoader(i)}
-				{this.renderTyping(player)}
 				{this.renderGovtToken(i)}
 				{/* {this.renderPlayerNotesIcon(i)} */}
 				<div
@@ -620,10 +605,6 @@ class Players extends React.Component {
 	}
 }
 
-Players.defaultProps = {
-	isTyping: {}
-};
-
 Players.propTypes = {
 	roles: PropTypes.array,
 	userInfo: PropTypes.object,
@@ -635,14 +616,11 @@ Players.propTypes = {
 	isReplay: PropTypes.bool,
 	toggleNotes: PropTypes.func,
 	playerNotesActive: PropTypes.string,
-	isTyping: PropTypes.object,
 	onClickedTakeSeat: PropTypes.func,
 	togglePlayerNotes: PropTypes.func
 };
 
-const PlayersContainer = props => <IsTypingContext.Consumer>{p => <Players {...props} isTyping={p ? p.isTyping : null} />}</IsTypingContext.Consumer>;
-
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(PlayersContainer);
+)(Players);

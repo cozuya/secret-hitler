@@ -33,7 +33,6 @@ class Settings extends React.Component {
 		disableSeasonal: '',
 		disableElo: '',
 		disableAggregations: '',
-		disableTyping: '',
 		soundStatus: '',
 		isPrivate: '',
 		failedNameChangeMessage: '',
@@ -61,7 +60,6 @@ class Settings extends React.Component {
 			disableSeasonal: gameSettings.disableSeasonal || '',
 			disableElo: gameSettings.disableElo || '',
 			disableAggregations: gameSettings.disableAggregations || '',
-			disableTyping: gameSettings.disableTyping || '',
 			isPrivate: gameSettings.isPrivate || '',
 			fullheight: gameSettings.fullheight || false,
 			soundSelected: gameSettings.soundStatus || 'Off',
@@ -408,13 +406,6 @@ class Settings extends React.Component {
 							<h4 className="ui header">Disable elo system</h4>
 							<div className="ui fitted toggle checkbox">
 								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
-								<label />
-							</div>
-							<h4 className="ui header" title="This feature may cause performance issues while enabled on those with lower-end computers">
-								Disable "is currently typing" indicator <i className="info circle icon" style={{ color: 'orange' }} />
-							</h4>
-							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="disableTyping" checked={this.state.disableTyping} onChange={() => this.toggleGameSettings('disableTyping')} />
 								<label />
 							</div>
 
