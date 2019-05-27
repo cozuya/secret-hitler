@@ -2,26 +2,28 @@ import React, { useEffect } from 'react';
 // import PropTypes from 'prop-types';
 
 const Flappy = props => {
-	const cb = new Image(70, 95);
+	const cb = new Image();
 
-	cb.src = 'https://secrethitler.io/images/default_cardback.png';
-	// let horz = 5;
-	// let vert = 5;
+	cb.src = '/images/default_cardback.png';
+
+	// for some unknown reason useState doesn't work here - it never updates inside of draw
+	let vert = 50;
+	let lastFlapTime = Date.now() - 1000;
 
 	const flap = () => {
-		// vert = vert + 10;
+		lastFlapTime = Date.now();
 	};
 
 	const draw = () => {
 		const ctx = document.getElementById('flappy-canvas-1').getContext('2d');
+		const timeDiff = Date.now() - lastFlapTime;
+
+		vert = vert - (1000 - timeDiff) * 0.002;
+
 		ctx.clearRect(0, 0, 650, 220);
+		ctx.drawImage(cb, 10, vert, 42, 57);
 
-		// ctx.drawImage(cb, horz * 1.5, vert);
-
-		// horz++;
-		// if (horz < 600) {
-		// window.requestAnimationFrame(draw);
-		// }
+		window.requestAnimationFrame(draw);
 	};
 
 	useEffect(() => {
