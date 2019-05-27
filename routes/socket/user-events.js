@@ -3618,3 +3618,31 @@ module.exports.checkUserStatus = (socket, callback) => {
 module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 module.exports.handleSocketDisconnect = handleSocketDisconnect;
+
+module.exports.handleFlappyEvent = (data, game) => {
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		return;
+	}
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+	const updateRoom = newData => {
+		roomSockets.forEach(sock => {
+			if (sock) {
+				sock.emit('flappyUpdate', newData);
+			}
+		});
+	};
+
+	updateRoom(data);
+
+	if (data.type === 'startFlappy') {
+		setInterval(() => {
+			const offset = Math.floor(Math.random() * 20);
+			const newData = {
+				type: 'newPylon',
+				offset
+			};
+
+			updateRoom(newData);
+		}, 3000);
+	}
+};
