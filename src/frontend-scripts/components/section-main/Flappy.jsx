@@ -9,15 +9,27 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 	// for some unknown reason useState doesn't work here - it never updates inside of draw
 	let vert = 50;
 	let lastFlapTime = Date.now() - 1000;
+	const pylonCoords = [];
 
 	const draw = () => {
 		const ctx = document.getElementById(isFacist ? 'flappy-canvas-2' : 'flappy-canvas-1').getContext('2d');
 		const timeDiff = Date.now() - lastFlapTime;
 
-		vert = vert - (1000 - timeDiff) * 0.002;
+		vert = vert - (1000 - timeDiff) * 0.0015;
 
 		ctx.clearRect(0, 0, 650, 220);
-		ctx.drawImage(cb, 10, vert, 42, 57);
+		ctx.drawImage(cb, 10, Math.floor(vert), 42, 57);
+
+		pylonCoords.forEach(coord => {
+			const pipeGradient = ctx.createLinearGradient(coord.x, 0, coord.x + 50, 50 + coord.offset);
+
+			pipeGradient.addColorStop(0, '#87B145');
+			pipeGradient.addColorStop(1, '#5B7E2C');
+			ctx.fillStyle = pipeGradient;
+			ctx.fillRect(coord.x, 0, 40, 50 + coord.offset / 2);
+			ctx.fillRect(coord.x, 40 + coord.offset / 2 + 140, 40, 220);
+			coord.x = coord.x - 1;
+		});
 
 		window.requestAnimationFrame(draw);
 	};
@@ -45,6 +57,13 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 
 			if (data.type === 'startFlappy') {
 				draw();
+			}
+
+			if (data.type === 'newPylon') {
+				pylonCoords.push({
+					offset: data.offset,
+					x: 751
+				});
 			}
 		});
 	}, []);

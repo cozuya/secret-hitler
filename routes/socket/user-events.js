@@ -3636,7 +3636,7 @@ module.exports.handleFlappyEvent = (data, game) => {
 
 	if (data.type === 'startFlappy') {
 		setInterval(() => {
-			const offset = Math.floor(Math.random() * 20);
+			const offset = Math.floor(Math.random() * 50);
 			const newData = {
 				type: 'newPylon',
 				offset
