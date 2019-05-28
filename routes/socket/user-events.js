@@ -617,7 +617,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			enabled: false
 		};
 	}
-	const uid = generateCombination(2, '', true);
+	const uid = generateCombination(3, '', true);
 
 	const newGame = {
 		gameState: {
@@ -629,7 +629,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		chats: [],
 		general: {
 			whitelistedPlayers: [],
-			uid: data.isTourny ? `${generateCombination(2, '', true)}Tournament` : uid,
+			uid: data.isTourny ? `${generateCombination(3, '', true)}Tournament` : uid,
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
