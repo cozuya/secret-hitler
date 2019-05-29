@@ -15,28 +15,28 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 		const ctx = document.getElementById(isFacist ? 'flappy-canvas-2' : 'flappy-canvas-1').getContext('2d');
 		const timeDiff = Date.now() - lastFlapTime;
 
-		vert = vert - (1000 - timeDiff) * 0.0015;
+		vert = vert - (1000 - timeDiff) * 0.001;
 
 		ctx.clearRect(0, 0, 650, 220);
 		ctx.drawImage(cb, 10, Math.floor(vert), 42, 57);
 		ctx.strokeStyle = '#555';
 
+		if (pylonCoords[0] && pylonCoords[0].x < -50) {
+			pylonCoords.shift();
+		}
+
 		pylonCoords.forEach(coord => {
-			if (coord.x < -50) {
-				// causes weird flash on furthest left pylon set
-				pylonCoords.splice(0, 1);
-				return;
-			}
 			const pipeGradient = ctx.createLinearGradient(coord.x, 52 + coord.offset / 2, coord.x + 40, 52 + coord.offset / 2);
 			ctx.fillStyle = pipeGradient;
 			pipeGradient.addColorStop(0, '#87B145');
-			pipeGradient.addColorStop(0.5, '#b5ffb2');
+			pipeGradient.addColorStop(0.4, '#b5ffb2');
 			pipeGradient.addColorStop(1, 'darkgreen');
 			ctx.fillRect(coord.x, 0, 40, 50 + coord.offset / 2);
 			ctx.fillRect(coord.x, 180 + coord.offset / 2, 40, 220);
 			ctx.strokeRect(coord.x - 1, 0, 42, 51 + coord.offset / 2);
 			ctx.strokeRect(coord.x - 1, 180 + coord.offset / 2, 42, 221);
-			// ctx.fillRect(coord.x - 2, 45 + coord.offset / 20, 41, 51 + coord.offset / 2);
+			// ctx.fillRect(coord.x - 2, 50 + coord.offset / 2 - 4, 44, 50 + coord.offset / 2);
+			// ctx.fillRect(coord.x - 2, 180 + coord.offset / 2 - 4, 44, 51 + coord.offset - 4);
 			coord.x = coord.x - 1;
 		});
 

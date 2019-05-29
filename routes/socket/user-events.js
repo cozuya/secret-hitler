@@ -3643,6 +3643,6 @@ module.exports.handleFlappyEvent = (data, game) => {
 			};
 
 			updateRoom(newData);
-		}, 3000);
+		}, 3500);
 	}
 };
