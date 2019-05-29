@@ -19,15 +19,24 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 
 		ctx.clearRect(0, 0, 650, 220);
 		ctx.drawImage(cb, 10, Math.floor(vert), 42, 57);
+		ctx.strokeStyle = '#555';
 
 		pylonCoords.forEach(coord => {
-			const pipeGradient = ctx.createLinearGradient(coord.x, 0, coord.x + 50, 50 + coord.offset);
-
-			pipeGradient.addColorStop(0, '#87B145');
-			pipeGradient.addColorStop(1, '#5B7E2C');
+			if (coord.x < -50) {
+				// causes weird flash on furthest left pylon set
+				pylonCoords.splice(0, 1);
+				return;
+			}
+			const pipeGradient = ctx.createLinearGradient(coord.x, 52 + coord.offset / 2, coord.x + 40, 52 + coord.offset / 2);
 			ctx.fillStyle = pipeGradient;
+			pipeGradient.addColorStop(0, '#87B145');
+			pipeGradient.addColorStop(0.5, '#b5ffb2');
+			pipeGradient.addColorStop(1, 'darkgreen');
 			ctx.fillRect(coord.x, 0, 40, 50 + coord.offset / 2);
-			ctx.fillRect(coord.x, 40 + coord.offset / 2 + 140, 40, 220);
+			ctx.fillRect(coord.x, 180 + coord.offset / 2, 40, 220);
+			ctx.strokeRect(coord.x - 1, 0, 42, 51 + coord.offset / 2);
+			ctx.strokeRect(coord.x - 1, 180 + coord.offset / 2, 42, 221);
+			// ctx.fillRect(coord.x - 2, 45 + coord.offset / 20, 41, 51 + coord.offset / 2);
 			coord.x = coord.x - 1;
 		});
 
@@ -44,10 +53,12 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 
 	useEffect(() => {
 		setTimeout(() => {
-			socket.emit('flappyEvent', {
-				uid: gameInfo.general.uid,
-				type: 'startFlappy'
-			});
+			if (!isFacist) {
+				socket.emit('flappyEvent', {
+					uid: gameInfo.general.uid,
+					type: 'startFlappy'
+				});
+			}
 		}, 500);
 
 		socket.on('flappyUpdate', data => {
