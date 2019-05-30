@@ -31,12 +31,14 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 			pipeGradient.addColorStop(0, '#87B145');
 			pipeGradient.addColorStop(0.4, '#b5ffb2');
 			pipeGradient.addColorStop(1, 'darkgreen');
-			ctx.fillRect(coord.x, 0, 40, 50 + coord.offset / 2);
-			ctx.fillRect(coord.x, 180 + coord.offset / 2, 40, 220);
-			ctx.strokeRect(coord.x - 1, 0, 42, 51 + coord.offset / 2);
-			ctx.strokeRect(coord.x - 1, 180 + coord.offset / 2, 42, 221);
-			// ctx.fillRect(coord.x - 2, 50 + coord.offset / 2 - 4, 44, 50 + coord.offset / 2);
-			// ctx.fillRect(coord.x - 2, 180 + coord.offset / 2 - 4, 44, 51 + coord.offset - 4);
+			ctx.fillRect(coord.x, 0, 40, 30 + coord.offset / 2);
+			ctx.fillRect(coord.x, 150 + coord.offset / 2, 40, 220);
+			ctx.strokeRect(coord.x - 1, 0, 42, 31 + coord.offset / 2);
+			ctx.strokeRect(coord.x - 1, 150 + coord.offset / 2, 42, 221);
+			ctx.fillRect(coord.x - 2, 30 + coord.offset / 2 - 12, 44, 12);
+			ctx.strokeRect(coord.x - 3, 30 + coord.offset / 2 - 13, 46, 14);
+			ctx.fillRect(coord.x - 2, 150 + coord.offset / 2, 44, 12);
+			ctx.strokeRect(coord.x - 3, 150 + coord.offset / 2, 46, 14);
 			coord.x = coord.x - 1;
 		});
 
