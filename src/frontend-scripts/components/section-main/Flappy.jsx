@@ -6,14 +6,26 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 
 	cb.src = '/images/default_cardback.png';
 
-	// for some unknown reason useState doesn't work here - it never updates inside of draw
+	// the draw function is apparently not updating from prop updates or useState
 	let vert = 50;
 	let lastFlapTime = Date.now() - 1000;
+
 	const pylonCoords = [];
+	/**
+	 * @param {number} cardY
+	 * @param {number} offset
+	 */
+	const detectCollision = (cardY, offset) => {
+		if (cardY < 30 + offset / 2 || cardY + 57 > 150 + offset / 2) {
+			console.log('collision');
+		}
+	};
 
 	const draw = () => {
 		const ctx = document.getElementById(isFacist ? 'flappy-canvas-2' : 'flappy-canvas-1').getContext('2d');
 		const timeDiff = Date.now() - lastFlapTime;
+
+		// vert = vert - (1000 * gameInfo.flappyState ? gameInfo.flappyState.flapDistance : 1 - timeDiff) * 0.001;
 
 		vert = vert - (1000 - timeDiff) * 0.001;
 
@@ -28,9 +40,13 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 		pylonCoords.forEach(coord => {
 			const pipeGradient = ctx.createLinearGradient(coord.x, 52 + coord.offset / 2, coord.x + 40, 52 + coord.offset / 2);
 			ctx.fillStyle = pipeGradient;
+			if (coord.x >= -32 && coord.x <= 52 && !isFacist) {
+				detectCollision(vert, coord.offset);
+			}
 			pipeGradient.addColorStop(0, '#87B145');
 			pipeGradient.addColorStop(0.4, '#b5ffb2');
 			pipeGradient.addColorStop(1, 'darkgreen');
+
 			ctx.fillRect(coord.x, 0, 40, 30 + coord.offset / 2);
 			ctx.fillRect(coord.x, 150 + coord.offset / 2, 40, 220);
 			ctx.strokeRect(coord.x - 1, 0, 42, 31 + coord.offset / 2);

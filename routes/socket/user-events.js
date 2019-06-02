@@ -3624,7 +3624,7 @@ module.exports.handleFlappyEvent = (data, game) => {
 		return;
 	}
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
-	const updateRoom = newData => {
+	const updateFlappyRoom = newData => {
 		roomSockets.forEach(sock => {
 			if (sock) {
 				sock.emit('flappyUpdate', newData);
@@ -3632,9 +3632,19 @@ module.exports.handleFlappyEvent = (data, game) => {
 		});
 	};
 
-	updateRoom(data);
+	updateFlappyRoom(data);
 
 	if (data.type === 'startFlappy') {
+		game.flappyState = {
+			liberalScore: 0,
+			fascistScore: 0,
+			pylonDensity: 1,
+			flapDistance: 1.2
+		};
+
+		game.general.status = 'FLAPPY HITLER: 0 - 0';
+		io.sockets.in(game.general.uid).emit('gameUpdate', game);
+
 		setInterval(() => {
 			const offset = Math.floor(Math.random() * 50);
 			const newData = {
@@ -3642,7 +3652,7 @@ module.exports.handleFlappyEvent = (data, game) => {
 				offset
 			};
 
-			updateRoom(newData);
-		}, 3500);
+			updateFlappyRoom(newData);
+		}, 1500);
 	}
 };
