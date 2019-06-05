@@ -20,7 +20,8 @@ const {
 	handleSubscribeModChat,
 	handleModPeekVotes,
 	handleGameFreeze,
-	handleHasSeenNewPlayerModal
+	handleHasSeenNewPlayerModal,
+	handleFlappyEvent
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -181,6 +182,14 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			// user-events
 			socket.on('disconnect', () => {
 				handleSocketDisconnect(socket);
+			});
+
+			socket.on('flappyEvent', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleFlappyEvent(data, game);
+				}
 			});
 
 			socket.on('hasSeenNewPlayerModal', () => {

@@ -12,6 +12,11 @@ gameState
 	undrawnPolicyCount number
 	specialElectionFormerPresidentIndex number
 	audioCue string no op - a hint for the front end to play a sound
+flappyState
+	liberalScore number
+	fascistScore number
+	pylonDensity number default 1
+	flapDistance number default 1
 chats array
 	chat string
 	type string

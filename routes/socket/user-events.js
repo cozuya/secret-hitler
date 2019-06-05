@@ -617,7 +617,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			enabled: false
 		};
 	}
-	const uid = generateCombination(2, '', true);
+	const uid = generateCombination(3, '', true);
 
 	const newGame = {
 		gameState: {
@@ -629,7 +629,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		chats: [],
 		general: {
 			whitelistedPlayers: [],
-			uid: data.isTourny ? `${generateCombination(2, '', true)}Tournament` : uid,
+			uid: data.isTourny ? `${generateCombination(3, '', true)}Tournament` : uid,
 			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
@@ -3618,3 +3618,41 @@ module.exports.checkUserStatus = (socket, callback) => {
 module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 module.exports.handleSocketDisconnect = handleSocketDisconnect;
+
+module.exports.handleFlappyEvent = (data, game) => {
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		return;
+	}
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+	const updateFlappyRoom = newData => {
+		roomSockets.forEach(sock => {
+			if (sock) {
+				sock.emit('flappyUpdate', newData);
+			}
+		});
+	};
+
+	updateFlappyRoom(data);
+
+	if (data.type === 'startFlappy') {
+		game.flappyState = {
+			liberalScore: 0,
+			fascistScore: 0,
+			pylonDensity: 1,
+			flapDistance: 1.2
+		};
+
+		game.general.status = 'FLAPPY HITLER: 0 - 0';
+		io.sockets.in(game.general.uid).emit('gameUpdate', game);
+
+		setInterval(() => {
+			const offset = Math.floor(Math.random() * 50);
+			const newData = {
+				type: 'newPylon',
+				offset
+			};
+
+			updateFlappyRoom(newData);
+		}, 1500);
+	}
+};
