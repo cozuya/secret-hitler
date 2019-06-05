@@ -525,6 +525,24 @@ const beginGame = game => {
 		},
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5400 : 9000
 	);
+
+	for(var affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber ++) {
+		const affectedSocketId = Object.keys(io.sockets.sockets).find(
+			socketId =>
+				io.sockets.sockets[socketId].handshake.session.passport &&
+				io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
+		);
+		player.pingTime = Date.now();
+		if (!io.sockets.sockets[affectedSocketId]) {
+			continue;
+		}
+		// TODO: some way to check for if the player has tabbed out?
+		// Possible meta refresh?
+		io.sockets.sockets[affectedSocketId].emit(
+			'pingPlayer',
+			'Secret Hitler IO: The game has started!'
+		);
+	}
 };
 
 /**
