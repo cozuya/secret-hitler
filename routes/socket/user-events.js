@@ -329,7 +329,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
 			const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
 
-			if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+			if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
 				game.general.isRemaking = false;
 				game.general.status = 'Game remaking has been cancelled.';
 				clearInterval(game.private.remakeTimer);
