@@ -312,6 +312,13 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	if (!president || president.userName !== passport.user) {
 		return;
 	}
@@ -469,6 +476,13 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -657,6 +671,13 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -863,6 +884,13 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -1109,6 +1137,13 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 	if (game.gameState.isGameFrozen && !force) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade && !force) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}

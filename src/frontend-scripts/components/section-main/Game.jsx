@@ -97,7 +97,7 @@ export default class Game extends React.Component {
 		const { userInfo, gameInfo, socket } = this.props;
 		let isFlappy;
 
-		isFlappy = true;
+		isFlappy = false;
 
 		return (
 			<section className="game">
