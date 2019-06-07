@@ -532,7 +532,6 @@ const beginGame = game => {
 				io.sockets.sockets[socketId].handshake.session.passport &&
 				io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
 		);
-		player.pingTime = Date.now();
 		if (!io.sockets.sockets[affectedSocketId]) {
 			continue;
 		}
