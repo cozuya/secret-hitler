@@ -535,7 +535,6 @@ const beginGame = game => {
 		if (!io.sockets.sockets[affectedSocketId]) {
 			continue;
 		}
-		// Possible meta refresh?
 		io.sockets.sockets[affectedSocketId].emit(
 			'pingPlayer',
 			'Secret Hitler IO: The game has started!'
