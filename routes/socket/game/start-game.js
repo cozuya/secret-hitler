@@ -535,7 +535,6 @@ const beginGame = game => {
 		if (!io.sockets.sockets[affectedSocketId]) {
 			continue;
 		}
-		// TODO: some way to check for if the player has tabbed out?
 		// Possible meta refresh?
 		io.sockets.sockets[affectedSocketId].emit(
 			'pingPlayer',
