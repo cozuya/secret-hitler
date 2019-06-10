@@ -457,7 +457,7 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+							{(window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod') || (window.isContributor) && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
 										Disable staff color (show elo color)
