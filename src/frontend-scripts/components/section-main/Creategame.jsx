@@ -42,6 +42,7 @@ export default class Creategame extends React.Component {
 			eloSliderValue: [1600],
 			isEloLimited: false,
 			flappyMode: false,
+			flappyOnlyMode: false,
 			customGameSettings: {
 				enabled: false,
 				// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -828,6 +829,7 @@ export default class Creategame extends React.Component {
 				rainbowgame: this.state.rainbowgame,
 				blindMode: this.state.blindMode,
 				flappyMode: this.state.flappyMode,
+				flappyOnlyMode: this.state.flappyOnlyMode,
 				timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : false,
 				casualGame: this.state.casualgame,
 				rebalance6p: this.state.checkedRebalanceValues[0],
@@ -1630,6 +1632,30 @@ export default class Creategame extends React.Component {
 							/>
 						</div>
 					</div>
+
+					{this.state.flappyMode && (
+						<div className="row flappy-force">
+							<div className="sixteen wide column">
+								<i className="big plane icon" style={{ color: 'darkred' }} />
+								<h4 className="ui header" style={{ color: 'darkred' }}>
+									Forget the policies, just play a flappy-only game
+								</h4>
+								<Switch
+									onChange={checked => {
+										this.setState({ flappyOnlyMode: checked });
+									}}
+									checked={this.state.flappyOnlyMode}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+							</div>
+						</div>
+					)}
 					{this.state.timedMode && (
 						<div className="row timedmode-slider">
 							<div className="sixteen wide column">

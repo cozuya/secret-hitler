@@ -11,6 +11,7 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 	let lastFlapTime = Date.now() - 1000;
 
 	const pylonCoords = [];
+
 	/**
 	 * @param {number} cardY
 	 * @param {number} offset
