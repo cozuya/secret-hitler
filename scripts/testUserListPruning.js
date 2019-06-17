@@ -18,6 +18,7 @@ const reduce = list => {
 				isPrivate: prune(user.isPrivate),
 				staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
 				staffDisableStaffColor: prune(user.staffDisableStaffColor),
+				contributorDisableContributorColor: prune(user.contributorDisableContributorColor),
 
 				// Tournaments are disabled, no point sending this.
 				// tournyWins: user.tournyWins,
@@ -39,7 +40,8 @@ const reduce = list => {
 				rainbowLossesSeason3: prune(user.rainbowLossesSeason3),
 				previousSeasonAward: user.previousSeasonAward,
 				timeLastGameCreated: user.timeLastGameCreated,
-				staffRole: prune(user.staffRole)
+				staffRole: prune(user.staffRole),
+				isContributor: prune(user.isContributor)
 				// oldData: user
 			}))
 		)
