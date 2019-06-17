@@ -464,6 +464,7 @@ const updateSeatedUser = (socket, passport, data) => {
 				specialTournamentStatus: account.gameSettings.specialTournamentStatus,
 				staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 				staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+				contributorDisableContributorColor: account.gameSettings.contributorDisableContributorColor,
 				cardStatus: {
 					cardDisplayed: false,
 					isFlipped: false,
