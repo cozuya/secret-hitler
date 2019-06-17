@@ -39,6 +39,7 @@ class Settings extends React.Component {
 		soundSelected: 'Pack 1',
 		staffDisableVisibleElo: '',
 		staffDisableStaffColor: '',
+		contributorDisableContributorColor: '',
 		staffIncognito: '',
 		fullheight: false
 	};
@@ -65,6 +66,7 @@ class Settings extends React.Component {
 			soundSelected: gameSettings.soundStatus || 'Off',
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
+			contributorDisableContributorColor: gameSettings.contributorDisableContributorColor || false,
 			staffIncognito: gameSettings.staffIncognito || false
 		});
 	}
@@ -460,7 +462,7 @@ class Settings extends React.Component {
 							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
-										Disable staff color (show elo color)
+										Disable staff color (show contributor or elo color)
 									</h4>
 									<div className="ui fitted toggle checkbox">
 										<input
@@ -503,6 +505,22 @@ class Settings extends React.Component {
 								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
 								<label />
 							</div>
+							{window.isContributor && (
+								<React.Fragment>
+									<h4 className="ui header" style={{ color: '#21bae0' }}>
+										Disable contributor color (show elo color)
+									</h4>
+									<div className="ui fitted toggle checkbox">
+										<input
+											type="checkbox"
+											name="contributorDisableContributorColor"
+											checked={this.state.contributorDisableContributorColor}
+											onChange={() => this.toggleGameSettings('contributorDisableContributorColor')}
+										/>
+										<label />
+									</div>
+								</React.Fragment>
+							)}
 						</div>
 					</div>
 					<div className="row centered">
