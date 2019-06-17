@@ -168,6 +168,7 @@ module.exports.formattedUserList = () => {
 		isPrivate: prune(user.isPrivate),
 		staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
 		staffDisableStaffColor: prune(user.staffDisableStaffColor),
+		contributorDisableContributorColor: prune(user.contributorDisableContributorColor),
 
 		// Tournaments are disabled, no point sending this.
 		// tournyWins: user.tournyWins,
