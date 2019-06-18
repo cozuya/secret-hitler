@@ -505,7 +505,7 @@ class Settings extends React.Component {
 								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
 								<label />
 							</div>
-							{window.isContributor && (
+							{window.staffRole && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#21bae0' }}>
 										Disable contributor color (show elo color)
