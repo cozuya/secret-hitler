@@ -561,7 +561,7 @@ module.exports = torIpsParam => {
 						console.log(err, 'profile find err');
 					});
 
-				if (player.isTimeout && (new Date() < player.isTimeout)) {
+				if (player.isTimeout && new Date() < player.isTimeout) {
 					req.logOut();
 					res.status(403).json({
 						message: `Your account has been timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(

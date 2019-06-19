@@ -3594,8 +3594,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 						if (account) {
 							if (
 								account.isBanned ||
-								(account.isTimeout && Date.now() - new Date(account.isTimeout).getTime() < 64800000) ||
-								(account.isTimeout6Hour && Date.now() - new Date(account.isTimeout6Hour).getTime() < 21600000)
+								(account.isTimeout && (new Date() < account.isTimeout))
 							) {
 								logOutUser(user);
 							} else {
