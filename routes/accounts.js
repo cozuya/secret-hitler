@@ -239,7 +239,7 @@ const continueSignup = config => {
 								.substring(2),
 							(err, account) => {
 								if (err) {
-									console.log(err, 'err in creating oauth account', accountObj);
+									// console.log(err, 'err in creating oauth account', accountObj);
 									res.status(503).json({ message: 'There was an error processing your request. Please try again later.' });
 									return;
 								} else {
