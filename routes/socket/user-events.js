@@ -1882,6 +1882,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				socket.emit('sendAlert', 'You cannot force a vote whilst playing.');
 				return;
 			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
+				return;
+			}
 			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
 			const voteString = aemForce[2].toLowerCase();
 			if (game && game.private && game.private.seatedPlayers) {
@@ -1933,6 +1937,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		if (aemSkip) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
+				return;
+			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
 				return;
 			}
 			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
@@ -2003,6 +2011,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
 				return;
 			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
+				return;
+			}
 			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
 			const chancellorPick = aemPick[2];
 			if (game && game.private && game.private.seatedPlayers) {
@@ -2066,6 +2078,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		if (aemPing) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a ping whilst playing.');
+				return;
+			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
 				return;
 			}
 			const affectedPlayerNumber = parseInt(aemPing[1]) - 1;
