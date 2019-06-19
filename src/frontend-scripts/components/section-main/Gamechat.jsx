@@ -1084,7 +1084,7 @@ class Gamechat extends React.Component {
 				>
 					<h2 className="ui header">
 						DANGER. Leaving an in-progress game will ruin it for the other players (unless you've been executed). Do this only in the case of a game already
-						ruined by an AFK/disconnected player or if someone has already left.
+						ruined by an AFK/disconnected player, if someone has already left, or if the game has been remade.
 					</h2>
 					<div className="ui green positive inverted leave-game button">
 						<i className="checkmark icon" />

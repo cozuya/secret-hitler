@@ -40,6 +40,10 @@ module.exports.selectPolicies = (passport, game, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		return;
+	}
+
 	if (!president || president.userName !== passport.user) {
 		return;
 	}
@@ -230,6 +234,13 @@ module.exports.selectOnePolicy = (passport, game) => {
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -443,6 +454,13 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	const { experiencedMode } = game.general;
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
@@ -607,6 +625,13 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -806,6 +831,13 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -1036,6 +1068,13 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	if (playerIndex === presidentIndex) {
 		return;
 	}
@@ -1186,6 +1225,13 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
