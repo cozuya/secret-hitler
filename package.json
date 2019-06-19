@@ -34,6 +34,7 @@
 		"mongodb": "^3.1.10",
 		"mongoose": "^5.3.13",
 		"morgan": "^1.8.1",
+		"node-fetch": "^2.6.0",
 		"nodemailer": "^4.6.5",
 		"nodemailer-mailgun-transport": "^1.4.0",
 		"nodemon": "^1.17.1",
