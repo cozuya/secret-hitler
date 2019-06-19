@@ -445,21 +445,28 @@ class Gamechat extends React.Component {
 		};
 
 		if (gameInfo && gameInfo.chats && (!gameInfo.general.private || userInfo.isSeated || isStaff)) {
-			let list = gameInfo.chats
-				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
-				.filter(
-					chat =>
+			let list = gameInfo.chats;
+			if (showPlayerChat && showGameChat && showObserverChat && !showFullChat) {
+				list = list.slice(-250);
+			} else {
+				let listAcc = [];
+				for (let i = list.length - 1; i >= 0; i--) {
+					if (listAcc.length >= 250 && !showFullChat) {
+						break;
+					}
+					const chat = list[i];
+					if (
 						chat.isBroadcast ||
 						(showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
 						(showGameChat && (chat.gameChat || chat.isClaim)) ||
 						(showObserverChat && !chat.gameChat && !seatedUserNames.includes(chat.userName)) ||
-						(!seatedUserNames.includes(chat.userName) &&
-							chat.staffRole &&
-							chat.staffRole !== '' &&
-							chat.staffRole !== 'trialmod' &&
-							chat.staffRole !== 'altmod')
-				);
-			if (!showFullChat) list = list.slice(-250);
+						(!seatedUserNames.includes(chat.userName) && chat.staffRole && chat.staffRole !== 'trialmod' && chat.staffRole !== 'altmod')
+					) {
+						listAcc.unshift(chat);
+					}
+				}
+				list = listAcc;
+			}
 			return list.reduce((acc, chat, i) => {
 				const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 				const isMod =
