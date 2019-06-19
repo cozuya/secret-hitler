@@ -254,7 +254,7 @@ const continueSignup = config => {
 										oauthSignup.save(() => {
 											newPlayerBan.save(() => {
 												req.login(account, () => {
-													res.redirect('/account');
+													res.redirect('/game');
 												});
 											});
 										});
@@ -726,7 +726,7 @@ module.exports = torIpsParam => {
 						}
 						req.user.verified = true;
 						req.user.save(() => {
-							res.redirect('/account');
+							res.redirect('/game');
 						});
 					} else {
 						// see if their oauth information matches an account, if so sign them in
@@ -736,7 +736,7 @@ module.exports = torIpsParam => {
 						Account.findOne(queryObj)
 							.then(account => {
 								if (account) {
-									req.login(account, () => res.redirect('/account'));
+									req.login(account, () => res.redirect('/game'));
 								} else {
 									if (accountCreationDisabled.status) {
 										res.status(403).json({
