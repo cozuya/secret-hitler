@@ -405,12 +405,6 @@ class Gamechat extends React.Component {
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
 		const { showFullChat, showPlayerChat, showGameChat, showObserverChat } = this.state;
-		const compareChatStrings = (a, b) => {
-			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
-			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
-
-			return stringA > stringB ? 1 : -1;
-		};
 		const time = new Date().getTime();
 		/**
 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
