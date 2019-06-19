@@ -3,7 +3,7 @@ const Account = require('../models/account');
 const Profile = require('../models/profile/index');
 const BannedIP = require('../models/bannedIP');
 const Signups = require('../models/signups');
-const https = require('https');
+const fetch = require('node-fetch');
 const EightEightCounter = require('../models/eightEightCounter');
 const { accountCreationDisabled, verifyBypass, consumeBypass, testIP } = require('./socket/models');
 const { verifyRoutes, setVerify } = require('./verification');
@@ -79,34 +79,30 @@ const checkIP = config => {
 				message: 'Use of TOR is not allowed on this site.'
 			});
 		});
-	} else if (process.env.NODE_ENV !== 'production') {
-		config.vpnScore = 0;
-		next(config);
+		// } else if (process.env.NODE_ENV !== 'production') {
+		// 	config.vpnScore = 0;
+		// 	next(config);
 	} else if (VPNCache[signupIP]) {
 		config.vpnScore = VPNCache[signupIP];
 		next(config);
 	} else {
-		try {
-			https.get(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`, vpnRes => {
-				let vpnScore = 0;
-				vpnRes.on('data', score => {
-					vpnScore = parseFloat(JSON.parse(score.toString('utf8')).result);
-				});
-
-				vpnRes.on('end', () => {
-					if (vpnScore < 0) {
-						res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
-						console.log('Error in Get IP Intel, score given: ', vpnScore, 'IP: ', signupIP);
-						return;
-					}
-					config.vpnScore = VPNCache[signupIP] = vpnScore;
-					next(config);
-				});
+		fetch(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`)
+			.then(res => res.json())
+			.then(json => {
+				let vpnScore = json.result;
+				if (vpnScore < 0) {
+					res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
+					console.log('Error in Get IP Intel, score given: ', vpnScore, 'IP: ', signupIP, 'Message: ', json.message);
+					return;
+				}
+				config.vpnScore = VPNCache[signupIP] = vpnScore;
+				next(config);
+			})
+			.catch(e => {
+				console.log('failed getipintel', signupIP, e);
+				res.status(501).json({ message: 'There was a fatal error in processing your request. Please contact our moderators on Discord' });
+				return;
 			});
-		} catch (error) {
-			res.status(503).json({ message: 'There was an error processing your request. Please try again later.' });
-			console.log('Error in Get IP Intel', error);
-		}
 	}
 };
 

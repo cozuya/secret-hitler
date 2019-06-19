@@ -9,7 +9,7 @@ const version = require('../version');
 const { obfIP } = require('./socket/ip-obf');
 const { ProcessImage } = require('./image-processor');
 const savedTorIps = require('../utils/savedtorips');
-const https = require('https');
+const fetch = require('node-fetch');
 const prodCacheBustToken = require('./prodCacheBustToken');
 
 /**
@@ -49,23 +49,17 @@ module.exports = () => {
 		res.render(pageName, renderObj);
 	};
 
-	try {
-		https.get('https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1', res => {
-			let data = '';
-
-			res.on('data', chunk => {
-				data += chunk;
-			});
-
-			res.on('end', () => {
-				const torIps = data.split('\n');
-
-				accounts(torIps);
-			});
+	fetch('https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1')
+		.then(res => res.text())
+		.then(text => {
+			let gatheredTorIps = text.split('\n').slice(3);
+			accounts(gatheredTorIps);
+		})
+		.catch(e => {
+			console.log('error in getting tor ips', e);
+			accounts(savedTorIps);
+			console.log('Using Cached TOR IPs');
 		});
-	} catch (error) {
-		accounts(savedTorIps);
-	}
 
 	Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] })
 		.then(accounts => {
