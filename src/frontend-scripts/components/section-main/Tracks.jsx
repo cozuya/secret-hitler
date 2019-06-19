@@ -135,6 +135,8 @@ class Tracks extends React.Component {
 		let customgameactive;
 		let flappyMode;
 		let flappyModeTooltip;
+		let flappyOnlyMode;
+		let flappyOnlyModeTooltip;
 		const customgameactiveTooltip = 'Custom Game';
 
 		if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
@@ -226,6 +228,11 @@ class Tracks extends React.Component {
 			flappyModeTooltip = 'COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler';
 		}
 
+		if (game.flappyOnlyMode) {
+			flappyOnlyMode = <i className="plane icon" style={{ color: 'darkred' }} />;
+			flappyOnlyModeTooltip = 'Flappy Only Mode: no policies, just play flappy';
+		}
+
 		return (
 			<div className="options-icons-container">
 				{gameInfo.customGameSettings && gameInfo.customGameSettings.enabled && (
@@ -291,6 +298,11 @@ class Tracks extends React.Component {
 				{flappyMode && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={flappyMode} content={flappyModeTooltip} />
+					</span>
+				)}
+				{flappyOnlyMode && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={flappyOnlyMode} content={flappyOnlyModeTooltip} />
 					</span>
 				)}
 			</div>

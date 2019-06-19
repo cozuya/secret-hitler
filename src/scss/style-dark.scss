@@ -73,6 +73,10 @@
 #main {
 	.options-icons-container .plane.icon {
 		color: orange !important;
+
+		&.flappyonly {
+			color: red !important;
+		}
 	}
 
 	height: 100%;
