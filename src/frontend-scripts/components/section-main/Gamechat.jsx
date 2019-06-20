@@ -1184,7 +1184,7 @@ Gamechat.propTypes = {
 	userList: PropTypes.object,
 	allEmotes: PropTypes.array,
 	notesActive: PropTypes.bool,
-	toggleNotes: PropTypes.func,
+	toggleNotes: PropTypes.func
 };
 
 export default connect(
