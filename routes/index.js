@@ -126,6 +126,25 @@ module.exports = () => {
 		if (req.user.isBanned) {
 			res.redirect('/logout');
 		} else {
+			let ip = req.expandedIP;
+
+			try {
+				ip = expandAndSimplify(ip);
+			} catch (e) {
+				console.log(e);
+			}
+
+			Profile.findOne({ _id: username })
+				.then(profile => {
+					if (profile) {
+						profile.lastConnectedIP = ip;
+						profile.save();
+					}
+				})
+				.catch(err => {
+					console.log(err, 'profile find err');
+				});
+
 			Account.findOne({ username }, (err, account) => {
 				if (err) {
 					console.log(err);
@@ -147,8 +166,11 @@ module.exports = () => {
 					gameObj.prodCacheBustToken = prodCacheBustToken;
 				}
 
+				account.lastConnectedIP = ip;
+				account.save(() => {
+					res.render('game', gameObj);
+				});
 				account.gameSettings.blacklist = [];
-				res.render('game', gameObj);
 			});
 		}
 	});
