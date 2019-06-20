@@ -415,6 +415,12 @@ class Gamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
+		const compareChatStrings = (a, b) => {
+			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
+			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
+
+			return stringA > stringB ? 1 : -1;
+		};
 		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
 
 		const renderPreviousSeasonAward = type => {
@@ -439,7 +445,10 @@ class Gamechat extends React.Component {
 		};
 
 		if (gameInfo && gameInfo.chats && (!gameInfo.general.private || userInfo.isSeated || isStaff)) {
-			let list = gameInfo.chats;
+			let list = gameInfo.chats
+				.sort((a, b) =>
+				a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)
+			);
 			if (showPlayerChat && showGameChat && showObserverChat && !showFullChat) {
 				list = list.slice(-250);
 			} else {
