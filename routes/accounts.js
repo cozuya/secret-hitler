@@ -542,6 +542,12 @@ module.exports = torIpsParam => {
 				}
 
 				player.lastConnectedIP = ip;
+				if (player.ipHistory && player.ipHistory[player.ipHistory.length - 1].ip !== ip) {
+					player.ipHistory.push({
+						date: new Date(),
+						ip: ip
+					});
+				}
 				player.save(() => {
 					res.send();
 				});

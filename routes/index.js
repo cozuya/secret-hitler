@@ -167,6 +167,12 @@ module.exports = () => {
 				}
 
 				account.lastConnectedIP = ip;
+				if (account.ipHistory && account.ipHistory[account.ipHistory.length - 1].ip !== ip) {
+					account.ipHistory.push({
+						date: new Date(),
+						ip: ip
+					});
+				}
 				account.save(() => {
 					res.render('game', gameObj);
 				});
