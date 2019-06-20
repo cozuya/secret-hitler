@@ -760,7 +760,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 					if (!game.general.disableGamechat && !(game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' && president.role.team === 'fascist')) {
 						president.playersState[playerIndex].nameStatus = playersTeam;
 					}
-
+					game.private.invIndex = playerIndex;
 					sendInProgressGameUpdate(game);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
