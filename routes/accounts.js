@@ -542,7 +542,11 @@ module.exports = torIpsParam => {
 				}
 
 				player.lastConnectedIP = ip;
-				if (player.ipHistory && player.ipHistory[player.ipHistory.length - 1].ip !== ip) {
+				if (
+					player.ipHistory &&
+					player.ipHistory.length === 0 ||
+					(player.ipHistory.length > 0 && player.ipHistory[player.ipHistory.length - 1].ip !== ip)
+					) {
 					player.ipHistory.push({
 						date: new Date(),
 						ip: ip
