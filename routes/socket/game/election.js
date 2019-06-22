@@ -249,6 +249,10 @@ const enactPolicy = (game, team, socket) => {
 					const { presidentIndex } = game.gameState;
 
 					game.gameState.timedModeEnabled = true;
+          if (game.private.timerId) {
+            clearTimeout(game.private.timerId);
+            game.gameState.timedModeEnabled = game.private.timerId = null;
+          }
 					game.private.timerId = setTimeout(
 						() => {
 							if (game.gameState.timedModeEnabled) {
@@ -607,6 +611,10 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 
 							if (game.general.timedMode) {
 								game.gameState.timedModeEnabled = true;
+                if (game.private.timerId) {
+                  clearTimeout(game.private.timerId);
+                  game.gameState.timedModeEnabled = game.private.timerId = null;
+						    }
 								game.private.timerId = setTimeout(
 									() => {
 										if (game.gameState.timedModeEnabled) {
@@ -821,6 +829,10 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 
 							if (game.general.timedMode) {
 								game.gameState.timedModeEnabled = true; // (passport, game, data)
+                if (game.private.timerId) {
+                  clearTimeout(game.private.timerId);
+                  game.gameState.timedModeEnabled = game.private.timerId = null;
+						    }
 								game.private.timerId = setTimeout(
 									() => {
 										if (game.gameState.timedModeEnabled) {
@@ -1100,6 +1112,10 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 
 				if (game.general.timedMode) {
 					game.gameState.timedModeEnabled = true;
+          if (game.private.timerId) {
+            clearTimeout(game.private.timerId);
+            game.gameState.timedModeEnabled = game.private.timerId = null;
+          }
 					game.private.timerId = setTimeout(
 						() => {
 							if (game.gameState.timedModeEnabled) {
@@ -1279,6 +1295,10 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 
 				if (game.general.timedMode) {
 					game.gameState.timedModeEnabled = true;
+          if (game.private.timerId) {
+            clearTimeout(game.private.timerId);
+            game.gameState.timedModeEnabled = game.private.timerId = null;
+          }
 					game.private.timerId = setTimeout(
 						() => {
 							if (game.gameState.timedModeEnabled) {
@@ -1332,6 +1352,10 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		} else {
 			if (game.general.timedMode) {
 				game.gameState.timedModeEnabled = true;
+        if (game.private.timerId) {
+          clearTimeout(game.private.timerId);
+          game.gameState.timedModeEnabled = game.private.timerId = null;
+        }
 				game.private.timerId = setTimeout(
 					() => {
 						if (game.gameState.timedModeEnabled && game.gameState.phase === 'selectingChancellor') {

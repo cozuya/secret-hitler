@@ -175,7 +175,10 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 
 				if (game.general.timedMode) {
 					game.gameState.timedModeEnabled = true;
-
+          if (game.private.timerId) {
+            clearTimeout(game.private.timerId);
+            game.gameState.timedModeEnabled = game.private.timerId = null;
+				  }
 					game.private.timerId = setTimeout(
 						() => {
 							const neededPlayers = (() => {
