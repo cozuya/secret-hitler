@@ -2,11 +2,12 @@ const passport = require('passport'); // eslint-disable-line no-unused-vars
 const Account = require('../models/account'); // eslint-disable-line no-unused-vars
 const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
+const Profile = require('../models/profile');
 const socketRoutes = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
-const { obfIP } = require('./socket/ip-obf');
+const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
 const { ProcessImage } = require('./image-processor');
 const savedTorIps = require('../utils/savedtorips');
 const fetch = require('node-fetch');
@@ -126,6 +127,25 @@ module.exports = () => {
 		if (req.user.isBanned) {
 			res.redirect('/logout');
 		} else {
+			let ip = req.expandedIP;
+
+			try {
+				ip = expandAndSimplify(ip);
+			} catch (e) {
+				console.log(e);
+			}
+
+			Profile.findOne({ _id: username })
+				.then(profile => {
+					if (profile) {
+						profile.lastConnectedIP = ip;
+						profile.save();
+					}
+				})
+				.catch(err => {
+					console.log(err, 'profile find err');
+				});
+
 			Account.findOne({ username }, (err, account) => {
 				if (err) {
 					console.log(err);
@@ -147,8 +167,20 @@ module.exports = () => {
 					gameObj.prodCacheBustToken = prodCacheBustToken;
 				}
 
+				account.lastConnectedIP = ip;
+				if (
+					(account.ipHistory && account.ipHistory.length === 0) ||
+					(account.ipHistory.length > 0 && account.ipHistory[account.ipHistory.length - 1].ip !== ip)
+				) {
+					account.ipHistory.push({
+						date: new Date(),
+						ip: ip
+					});
+				}
+				account.save(() => {
+					res.render('game', gameObj);
+				});
 				account.gameSettings.blacklist = [];
-				res.render('game', gameObj);
 			});
 		}
 	});

@@ -760,7 +760,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 					if (!game.general.disableGamechat && !(game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' && president.role.team === 'fascist')) {
 						president.playersState[playerIndex].nameStatus = playersTeam;
 					}
-
+					game.private.invIndex = playerIndex;
 					sendInProgressGameUpdate(game);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
@@ -1134,28 +1134,6 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 			});
 		}
 
-		const modOnlyChat = {
-			timestamp: new Date(),
-			gameChat: true,
-			chat: [
-				{
-					text: 'President '
-				},
-				{
-					text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
-					type: 'player'
-				},
-				{ text: ' has special-elected ' },
-				{
-					text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-					type: 'player'
-				},
-				{ text: '.' }
-			]
-		};
-
-		game.private.hiddenInfoChat.push(modOnlyChat);
-		sendInProgressModChatUpdate(game, modOnlyChat);
 		sendInProgressGameUpdate(game);
 
 		startElection(game, data.playerIndex);

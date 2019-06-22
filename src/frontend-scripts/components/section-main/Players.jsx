@@ -298,10 +298,6 @@ class Players extends React.Component {
 							classes = `${classes} disconnected`;
 						}
 
-						if (userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(player.userName)) {
-							classes = `${classes} blacklisted`;
-						}
-
 						return classes;
 					})()}
 				>
@@ -342,6 +338,9 @@ class Players extends React.Component {
 							return classes;
 						})()}
 					/>
+					{userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(player.userName) && (
+						<i title="This player is on your blacklist" className={'large file icon blacklist'} />
+					)}
 					<div
 						className={(() => {
 							let classes = 'card card-back';

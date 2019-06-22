@@ -1290,6 +1290,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 						return text;
 				}
 			case 'didInvestigateLoyalty':
+				const { invIndex } = game.private;
 				text = [
 					{
 						text: 'President '
@@ -1299,8 +1300,15 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 						type: 'player'
 					},
 					{
-						text: 'claims to see a party membership of the '
-					}
+						text: 'sees the party membership of '
+					},
+					{
+						text: blindMode ? `${replacementNames[invIndex]} {${invIndex + 1}} ` : `${game.private.seatedPlayers[invIndex].userName} {${invIndex + 1}} `,
+						type: 'player'
+					},
+					{
+						text: 'and claims to see a member of the '
+					},
 				];
 
 				game.private.summary = game.private.summary.updateLog(
