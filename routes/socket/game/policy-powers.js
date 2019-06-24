@@ -50,7 +50,8 @@ module.exports.selectPolicies = (passport, game, socket) => {
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (!game.private.lock.selectPolicies && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -251,7 +252,8 @@ module.exports.selectOnePolicy = (passport, game) => {
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (!game.private.lock.selectOnePolicy && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -409,12 +411,15 @@ module.exports.selectOnePolicy = (passport, game) => {
 								game.gameState.phase = 'presidentVoteOnBurn';
 
 								if (game.general.timedMode) {
-									game.gameState.timedModeEnabled = true; // (passport, game, data)
+									if (game.private.timerId) {
+										clearTimeout(game.private.timerId);
+										game.private.timerId = null;
+									}
+									game.gameState.timedModeEnabled = true;
 									game.private.timerId = setTimeout(
 										() => {
 											if (game.gameState.timedModeEnabled) {
 												game.gameState.timedModeEnabled = false;
-
 												selectBurnCard({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
 											}
 										},
@@ -444,7 +449,7 @@ module.exports.selectOnePolicy = (passport, game) => {
 module.exports.selectBurnCard = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
 	}
 
 	if (game.gameState.isGameFrozen) {
@@ -619,7 +624,8 @@ module.exports.investigateLoyalty = game => {
 module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (game.gameState.isGameFrozen) {
@@ -825,7 +831,8 @@ module.exports.showPlayerLoyalty = game => {
 module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (game.gameState.isGameFrozen) {
@@ -1081,7 +1088,8 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (!game.private.lock.selectSpecialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -1243,7 +1251,8 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (!game.private.lock.selectPlayerToExecute && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {

@@ -42,7 +42,8 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (!game.private.lock.selectChancellor && !Number.isInteger(game.gameState.pendingChancellorIndex) && game.gameState.phase !== 'voting') {
@@ -174,11 +175,11 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 				});
 
 				if (game.general.timedMode) {
+					if (game.private.timerId) {
+						clearTimeout(game.private.timerId);
+						game.private.timerId = null;
+					}
 					game.gameState.timedModeEnabled = true;
-          if (game.private.timerId) {
-            clearTimeout(game.private.timerId);
-            game.gameState.timedModeEnabled = game.private.timerId = null;
-				  }
 					game.private.timerId = setTimeout(
 						() => {
 							const neededPlayers = (() => {

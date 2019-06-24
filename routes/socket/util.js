@@ -23,6 +23,9 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 		return;
 	}
 
+	// DEBUG ONLY
+	console.log(game.general.status, 'TimedMode:', game.gameState.timedModeEnabled, 'TimerId:', game.private.timerId ? 'exists' : 'null');
+
 	const seatedPlayerNames = game.publicPlayersState.map(player => player.userName);
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
 	const playerSockets = roomSockets.filter(
