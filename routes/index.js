@@ -164,7 +164,7 @@ module.exports = () => {
 				};
 
 				if (process.env.NODE_ENV === 'production') {
-					gameObj.prodCacheBustToken = prodCacheBustToken;
+					gameObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
 				}
 
 				account.lastConnectedIP = ip;
@@ -208,7 +208,7 @@ module.exports = () => {
 		};
 
 		if (process.env.NODE_ENV === 'production') {
-			gameObj.prodCacheBustToken = prodCacheBustToken;
+			gameObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
 		}
 
 		res.render('game', gameObj);
