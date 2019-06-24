@@ -5,7 +5,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const labels = [];
 const data = {};
-const { CURRENTSEASONNUMBER } = require('../src/frontend-scripts/constants');
+const { CURRENTSEASONNUMBER } = require('../src/frontend-scripts/node-constants');
 
 const allPlayerGameData = {
 	fascistWinCount: 0,
@@ -241,6 +241,7 @@ Game.find({})
 		data.ninePlayerGameData = ninePlayerGameData;
 		data.tenPlayerGameData = tenPlayerGameData;
 		fs.writeFile('/var/www/secret-hitler/data/data.json', JSON.stringify(data), () => {
+			console.log('Done.');
 			mongoose.connection.close();
 		});
 	});
