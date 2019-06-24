@@ -55,8 +55,8 @@ Config.findOne({ for: 'eloRegression' })
 
           const seasonalDelta = Sdiff > 0 ? Math.min(Sdiff, Sk) : Sdiff < 0 ? Math.max(Sdiff, -Sk) : 0;
 
-          const seasonalTotal = account.eloRegressionSeason && account.eloRegressionSeason.totalAmount && account.eloRegressionSeason.totalAmount + seasonalDelta || seasonalDelta;
-          const overallTotal = account.eloRegressionSeason && account.eloRegressionSeason.totalAmount && account.eloRegressionSeason.totalAmount + overallDelta || overallDelta;
+          // const seasonalTotal = account.eloRegressionSeason && account.eloRegressionSeason.totalAmount && account.eloRegressionSeason.totalAmount + seasonalDelta || seasonalDelta;
+          // const overallTotal = account.eloRegressionSeason && account.eloRegressionSeason.totalAmount && account.eloRegressionSeason.totalAmount + overallDelta || overallDelta;
 
           // account.eloRegressionOverall = { lastDate: new Date(), lastAmount: overallDelta, totalAmount: overallTotal };
           // account.eloRegressionSeason = { lastDate: new Date(), lastAmount: seasonalDelta, totalAmount: seasonalTotal };
