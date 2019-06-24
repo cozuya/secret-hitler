@@ -120,7 +120,8 @@ const Account = new Schema({
 	discordUID: String,
 	githubUsername: String,
 	github2FA: Boolean,
-	eloRegression: Object // {lastDate: Date, lastAmount: Number, totalAmount: Number}
+	eloRegressionSeason: Object, // {lastDate: Date, lastAmount: Number, totalAmount: Number}
+	eloRegressionOverall: Object // {lastDate: Date, lastAmount: Number, totalAmount: Number}
 });
 
 Account.plugin(passportLocalMongoose);
