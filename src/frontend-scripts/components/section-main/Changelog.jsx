@@ -29,13 +29,15 @@ class Changelog extends React.Component {
 				</ul>
 
 				<h4>
+					Timed Games are Fixed!  -Vigasaurus
+				</h4>
+				<h4>
 					Flappy Hitler!
 				</h4>
 				<p>Resolve sudden death games with Flappy Hitler!</p>
 				<h4>Various new and improved game preset options -Vigasaurus</h4>
-				<p></p>
-				<p></p>
-				<p>Multiple moderation improvements.</p>
+				<p>Various Bugfixes -Vigasaurus</p>
+				<p>Multiple moderation improvements</p>
 
 				<div className="ui header">
 					<p>Version 1.5.2 released 5-23-2019</p>
