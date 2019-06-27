@@ -2765,11 +2765,16 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'deleteUser':
 					if (isSuperMod) {
-						Account.findOne({ username: data.userName }).remove(() => {
-							if (io.sockets.sockets[affectedSocketId]) {
-								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-							}
+						let account, profile;
+						Account.findOne({ username: data.userName }).then(acc => {
+							account = acc;
+							acc.delete();
+							Profile.findOne({ _id: data.userName }).then(prof => {
+								profile = prof;
+								prof.delete();
+							});
 						});
+						// TODO: Add Account and Profile Backups (for accidental deletions)
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can delete users.');
 						return;
@@ -2778,7 +2783,18 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'renameUser':
 					if (isSuperMod) {
 						let success = false;
+						let fail = false;
 						Account.findOne({ username: data.comment }).then(account => {
+							Profile.findOne({ _id: data.comment }).then(profile => {
+								if (profile) {
+									socket.emit('sendAlert', `Profile of ${data.comment} already exists`);
+									fail = true;
+									// TODO: Add Profile Backup (for accidental/bugged renames)
+								}
+							});
+							if (fail) {
+								return;	
+							}
 							if (account) {
 								socket.emit('sendAlert', `User ${data.comment} already exists`);
 							} else {
@@ -2805,7 +2821,6 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										renamedProfile.save();
 										Profile.remove({ _id: data.userName }, () => {
 											success = true;
-											console.log('Profile of user', data.userName, 'deleted, by request of', modaction.modUserName);
 										});
 									});
 								});
@@ -3018,6 +3033,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'deleteProfile':
 					if (isSuperMod) {
+						// TODO: Add Profile Backup (for accidental/bugged deletions)
 						Profile.findOne({ _id: data.userName })
 							.remove(() => {
 								logOutUser(data.userName);
