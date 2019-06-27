@@ -56,10 +56,7 @@ const version = require('../../version');
 
 let modUserNames,
 	editorUserNames,
-	adminUserNames,
-	altmodUserNames,
-	trialmodUserNames,
-	contributorUserNames;
+	adminUserNames;
 
 const gamesGarbageCollector = () => {
 	const currentTime = Date.now();
@@ -102,14 +99,11 @@ const ensureInGame = (passport, game) => {
 };
 
 const gatherStaffUsernames = () => {
-	Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] })
+	Account.find({ staffRole: { $exists: true } })
 		.then(accounts => {
 			modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
 			editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
 			adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
-			altmodUserNames = accounts.filter(account => account.staffRole === 'altmod').map(account => account.username);
-			trialmodUserNames = accounts.filter(account => account.staffRole === 'trialmod').map(account => account.username);
-			contributorUserNames = accounts.filter(account => account.isContributor).map(account => account.username);
 		})
 		.catch(err => {
 			console.log(err, 'err in finding staffroles');
