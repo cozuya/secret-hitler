@@ -16,7 +16,7 @@ export const TOU_CHANGES = [
 	}
 ];
 
-export const CURRENTSEASONNUMBER = 6;
+export const CURRENTSEASONNUMBER = 7;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
