@@ -54,6 +54,13 @@ const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
 
+let modUserNames,
+	editorUserNames,
+	adminUserNames,
+	altmodUserNames,
+	trialmodUserNames,
+	contributorUserNames;
+
 const gamesGarbageCollector = () => {
 	const currentTime = Date.now();
 	const toRemoveGameNames = Object.keys(games).filter(
@@ -94,8 +101,25 @@ const ensureInGame = (passport, game) => {
 	}
 };
 
-module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames) => {
+const gatherStaffUsernames = () => {
+	Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] })
+		.then(accounts => {
+			modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
+			editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
+			adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+			altmodUserNames = accounts.filter(account => account.staffRole === 'altmod').map(account => account.username);
+			trialmodUserNames = accounts.filter(account => account.staffRole === 'trialmod').map(account => account.username);
+			contributorUserNames = accounts.filter(account => account.isContributor).map(account => account.username);
+		})
+		.catch(err => {
+			console.log(err, 'err in finding staffroles');
+		});
+};
+
+module.exports.socketRoutes = () => {
 	setInterval(gamesGarbageCollector, 100000);
+
+	gatherStaffUsernames();
 
 	io.on('connection', socket => {
 		checkUserStatus(socket, () => {
@@ -213,6 +237,12 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			socket.on('getPrivateSignups', () => {
 				if (authenticated && isAEM) {
 					sendPrivateSignups(socket);
+				}
+			});
+
+			socket.on('regatherAEMUsernames', () => {
+				if (authenticated && isAEM) {
+					gatherStaffUsernames();
 				}
 			});
 
