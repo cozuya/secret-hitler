@@ -2765,7 +2765,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'deleteUser':
 					if (isSuperMod) {
-						let account, profile;
+						// let account, profile;
 						Account.findOne({ username: data.userName }).then(acc => {
 							account = acc;
 							acc.delete();
@@ -2793,7 +2793,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								}
 							});
 							if (fail) {
-								return;	
+								return;
 							}
 							if (account) {
 								socket.emit('sendAlert', `User ${data.comment} already exists`);
