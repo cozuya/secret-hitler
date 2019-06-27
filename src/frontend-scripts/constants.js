@@ -46,9 +46,6 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			cbell: user.userName === 'cbell',
 			jdudle3: user.userName === 'jdudle3',
 			max: user.userName === 'Max',
-			dfinn: user.userName === 'DFinn',
-			faaiz: user.userName === 'Faaiz1999',
-			invidia: user.userName === 'Invidia',
 			thejuststopo: user.userName === 'TheJustStopO'
 		});
 	} else if (
@@ -74,22 +71,22 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		return w + l >= 50
 			? eloDisabled
 				? cn(defaultClass, {
-						experienced1: w + l > 49,
-						experienced2: w + l > 99,
-						experienced3: w + l > 199,
-						experienced4: w + l > 299,
-						experienced5: w + l > 499,
-						onfire1: w / (w + l) > 0.52,
-						onfire2: w / (w + l) > 0.54,
-						onfire3: w / (w + l) > 0.56,
-						onfire4: w / (w + l) > 0.58,
-						onfire5: w / (w + l) > 0.6,
-						onfire6: w / (w + l) > 0.62,
-						onfire7: w / (w + l) > 0.64,
-						onfire8: w / (w + l) > 0.66,
-						onfire9: w / (w + l) > 0.68,
-						onfire10: w / (w + l) > 0.7
-				  })
+					experienced1: w + l > 49,
+					experienced2: w + l > 99,
+					experienced3: w + l > 199,
+					experienced4: w + l > 299,
+					experienced5: w + l > 499,
+					onfire1: w / (w + l) > 0.52,
+					onfire2: w / (w + l) > 0.54,
+					onfire3: w / (w + l) > 0.56,
+					onfire4: w / (w + l) > 0.58,
+					onfire5: w / (w + l) > 0.6,
+					onfire6: w / (w + l) > 0.62,
+					onfire7: w / (w + l) > 0.64,
+					onfire8: w / (w + l) > 0.66,
+					onfire9: w / (w + l) > 0.68,
+					onfire10: w / (w + l) > 0.7
+				})
 				: cn(defaultClass, gradeObj)
 			: defaultClass;
 	}
@@ -111,8 +108,8 @@ export const getBadWord = text => {
 
 	// let ec = 0; //for future use in auto reporting
 	let exceptedText = text;
-	for(let exception of exceptions){
-		while(exceptedText.search(exception) > -1){
+	for (let exception of exceptions) {
+		while (exceptedText.search(exception) > -1) {
 			exceptedText = exceptedText.replace(exception, '');
 			// ec++;
 		}
