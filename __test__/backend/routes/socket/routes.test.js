@@ -1,7 +1,7 @@
-import routes from '../../../../routes/socket/routes';
+import { socketRoutes } from '../../../../routes/socket/routes';
 
-describe('routes', () => {
+describe('socketRoutes', () => {
 	it('is a function', () => {
-		expect(typeof routes).toBe('function');
+		expect(typeof socketRoutes).toBe('function');
 	});
 });

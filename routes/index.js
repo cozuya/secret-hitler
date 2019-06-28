@@ -3,7 +3,7 @@ const Account = require('../models/account'); // eslint-disable-line no-unused-v
 const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
 const Profile = require('../models/profile');
-const socketRoutes = require('./socket/routes');
+const { socketRoutes } = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
@@ -62,20 +62,7 @@ module.exports = () => {
 			console.log('Using Cached TOR IPs');
 		});
 
-	Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] })
-		.then(accounts => {
-			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
-			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
-			const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
-			const altmodUserNames = accounts.filter(account => account.staffRole === 'altmod').map(account => account.username);
-			const trialmodUserNames = accounts.filter(account => account.staffRole === 'trialmod').map(account => account.username);
-			const contributorUserNames = accounts.filter(account => account.isContributor).map(account => account.username);
-
-			socketRoutes(modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames);
-		})
-		.catch(err => {
-			console.log(err, 'err in finding staffroles');
-		});
+	socketRoutes();
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');

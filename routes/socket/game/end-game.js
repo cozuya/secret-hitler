@@ -85,13 +85,13 @@ module.exports.completeGame = (game, winningTeamName) => {
 		});
 		game.unsentReports = [];
 	}
-	
+
 	if (game && game.general && game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.private.timerId = null;
 		game.gameState.timedModeEnabled = false;
 	}
-	
+
 	if (game && game.general.isRecorded) {
 		console.log('A game attempted to be re-recorded!', game.general.uid);
 		return;
@@ -166,7 +166,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 	sendInProgressGameUpdate(game);
 
 	saveGame(game);
-	
+
 	game.general.isRecorded = true;
 
 	if (!game.general.private && !game.general.casualGame) {

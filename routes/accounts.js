@@ -901,4 +901,6 @@ module.exports = torIpsParam => {
 	app.get('*', (req, res) => {
 		renderPage(req, res, '404', '404');
 	});
+
+	console.log('All Routes Successfully Initialized');
 };
