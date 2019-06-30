@@ -1510,6 +1510,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				userName: player.userName,
 				customCardback: player.customCardback,
 				customCardbackUid: player.customCardbackUid,
+				previousSeasonAward: player.previousSeasonAward,
 				connected: player.connected,
 				isRemakeVoting: false,
 				cardStatus: {
@@ -1636,7 +1637,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				if (game.general.remakeCount !== 0) {
 					game.general.status = `Game is ${game.general.isTourny ? 'cancelled ' : 'remade'} in ${game.general.remakeCount} ${
 						game.general.remakeCount === 1 ? 'second' : 'seconds'
-					}.`;
+						}.`;
 					game.general.remakeCount--;
 				} else {
 					clearInterval(game.private.remakeTimer);
@@ -1664,7 +1665,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		chat.chat.push({
 			text: ` has rescinded their vote to ${
 				game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
-			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
+				} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
 	}
 	socket.emit('updateRemakeStatus', player.isRemakeVoting);
@@ -2860,7 +2861,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					});
 
 					ipban.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+						Account.find({ lastConnectedIP: data.ip }, function (err, users) {
 							if (users && users.length > 0) {
 								users.forEach(user => {
 									if (isSuperMod) {
@@ -2911,7 +2912,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+						Account.find({ lastConnectedIP: data.ip }, function (err, users) {
 							if (users && users.length > 0) {
 								users.forEach(user => {
 									logOutUser(user.username);
@@ -2943,7 +2944,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout3.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+						Account.find({ lastConnectedIP: data.ip }, function (err, users) {
 							if (users && users.length > 0) {
 								users.forEach(user => {
 									logOutUser(user.username);
@@ -3015,7 +3016,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 					if (isSuperMod) {
 						ipbanl.save(() => {
-							Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+							Account.find({ lastConnectedIP: data.ip }, function (err, users) {
 								if (users && users.length > 0) {
 									users.forEach(user => {
 										banAccount(user.username);
@@ -3279,18 +3280,18 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						const setType = /setRWins/.test(data.action.type)
 							? 'rainbowWins'
 							: /setRLosses/.test(data.action.type)
-							? 'rainbowLosses'
-							: /setWins/.test(data.action.type)
-							? 'wins'
-							: 'losses';
+								? 'rainbowLosses'
+								: /setWins/.test(data.action.type)
+									? 'wins'
+									: 'losses';
 						const number =
 							setType === 'wins'
 								? data.action.type.substr(7)
 								: setType === 'losses'
-								? data.action.type.substr(9)
-								: setType === 'rainbowWins'
-								? data.action.type.substr(8)
-								: data.action.type.substr(10);
+									? data.action.type.substr(9)
+									: setType === 'rainbowWins'
+										? data.action.type.substr(8)
+										: data.action.type.substr(10);
 						const isPlusOrMinus = number.charAt(0) === '+' || number.charAt(0) === '-';
 
 						if (!isNaN(parseInt(number, 10)) || isPlusOrMinus) {
@@ -3388,7 +3389,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					const modReq = https.request(modOptions);
 
 					modReq.end(modAction);
-				} catch (error) {}
+				} catch (error) { }
 			}
 			modaction.save();
 		}
@@ -3454,7 +3455,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 	const body = JSON.stringify({
 		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${
 			playerReport.reason
-		}\nComment: ${httpEscapedComment}`
+			}\nComment: ${httpEscapedComment}`
 	});
 
 	const options = {
@@ -3590,7 +3591,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 			testIP(expandAndSimplify(socket.handshake.address), banType => {
 				if (banType && banType != 'new') logOutUser(user);
 				else {
-					Account.findOne({ username: user }, function(err, account) {
+					Account.findOne({ username: user }, function (err, account) {
 						if (account) {
 							if (
 								account.isBanned ||
