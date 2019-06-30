@@ -1518,6 +1518,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				userName: player.userName,
 				customCardback: player.customCardback,
 				customCardbackUid: player.customCardbackUid,
+				previousSeasonAward: player.previousSeasonAward,
 				connected: player.connected,
 				isRemakeVoting: false,
 				cardStatus: {

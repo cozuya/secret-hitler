@@ -10,6 +10,30 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
+
+				<div className="ui header">
+					<p>Version 1.6.0 released 7-1-2019</p>
+				</div>
+				<h4>The top 10 players of season 6 are:</h4>
+				<ul>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+				</ul>
+
+				<h4>
+					Timed Games are Fixed!  -Vigasaurus
+				</h4>
+				<p>Various Bugfixes -Vigasaurus</p>
+				<p>Multiple moderation improvements</p>
+
 				<div className="ui header">
 					<p>Version 1.5.2 released 5-23-2019</p>
 				</div>
