@@ -791,7 +791,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			reports: {},
 			unSeatedGameChats: [],
 			lock: {},
-			invIndex = 
+			votesPeeked = false,
+			invIndex = -1,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
 			hiddenInfoShouldNotify: true
@@ -1557,8 +1558,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			reports: {},
 			unSeatedGameChats: [],
 			lock: {},
+			votesPeeked = false,
 			invIndex = -1,
-			privatePassword: game.private.privatePassword
+			privatePassword: game.private.privatePassword,
+			hiddenInfoChat: [],
+			hiddenInfoSubscriptions: [],
+			hiddenInfoShouldNotify: true
 		};
 
 		game.publicPlayersState.forEach((player, i) => {
