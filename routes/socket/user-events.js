@@ -791,6 +791,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			reports: {},
 			unSeatedGameChats: [],
 			lock: {},
+			invIndex = 
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
 			hiddenInfoShouldNotify: true
@@ -1291,25 +1292,40 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 				}
 			case 'didInvestigateLoyalty':
 				const { invIndex } = game.private;
-				text = [
-					{
-						text: 'President '
-					},
-					{
-						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
-						type: 'player'
-					},
-					{
-						text: 'sees the party membership of '
-					},
-					{
-						text: blindMode ? `${replacementNames[invIndex]} {${invIndex + 1}} ` : `${game.private.seatedPlayers[invIndex].userName} {${invIndex + 1}} `,
-						type: 'player'
-					},
-					{
-						text: 'and claims to see a member of the '
-					},
-				];
+				if (invIndex != -1 && invIndex < game.private.seatedPlayers.length) {
+					text = [
+						{
+							text: 'President '
+						},
+						{
+							text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
+							type: 'player'
+						},
+						{
+							text: 'sees the party membership of '
+						},
+						{
+							text: blindMode ? `${replacementNames[invIndex]} {${invIndex + 1}} ` : `${game.private.seatedPlayers[invIndex] && game.private.seatedPlayers[invIndex].userName} {${invIndex + 1}} `,
+							type: 'player'
+						},
+						{
+							text: 'and claims to see a member of the '
+						},
+					];
+				} else {
+					text = [
+						{
+							text: 'President '
+						},
+						{
+							text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
+							type: 'player'
+						},
+						{
+							text: ' claims to see a member of the '
+						},
+					];
+				}
 
 				game.private.summary = game.private.summary.updateLog(
 					{
@@ -1541,6 +1557,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			reports: {},
 			unSeatedGameChats: [],
 			lock: {},
+			invIndex = -1,
 			privatePassword: game.private.privatePassword
 		};
 
