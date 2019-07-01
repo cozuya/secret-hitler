@@ -19,13 +19,13 @@ class Changelog extends React.Component {
 					<li>Roxz80: 2001</li>
 					<li>Einstein: 1997</li>
 					<li>Freakin: 1963</li>
+					<li>obama: 1952</li>
 					<li>Metalace: 1950</li>
-					<li>obama: 1949</li>
 					<li>imbapingu: 1920</li>
 					<li>StatReset: 1911</li>
 					<li>Litlefinger: 1910</li>
 					<li>Prohell: 1903</li>
-					<li>godhemzelve: 1894</li>
+					<li>acro: 1897</li>
 				</ul>
 
 				<h4>
