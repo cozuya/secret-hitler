@@ -54,9 +54,9 @@ const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
 
-let modUserNames,
-	editorUserNames,
-	adminUserNames;
+let modUserNames = [],
+	editorUserNames = [],
+	adminUserNames = [];
 
 const gamesGarbageCollector = () => {
 	const currentTime = Date.now();

@@ -1508,6 +1508,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		}
 		newGame.general.isRemade = false;
 		newGame.general.isRemaking = false;
+		newGame.general.isRecorded = false;
 		newGame.summarySaved = false;
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
@@ -1518,6 +1519,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				userName: player.userName,
 				customCardback: player.customCardback,
 				customCardbackUid: player.customCardbackUid,
+				previousSeasonAward: player.previousSeasonAward,
 				connected: player.connected,
 				isRemakeVoting: false,
 				cardStatus: {
