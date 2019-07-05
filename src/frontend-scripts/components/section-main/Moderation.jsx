@@ -377,18 +377,20 @@ export default class Moderation extends React.Component {
 
 	renderGameButtons() {
 		const takeModAction = action => {
-			this.props.socket.emit('updateModAction', {
-				modName: this.props.userInfo.userName,
-				userName:
-					action === 'deleteGame'
-						? `DELGAME${this.state.playerInputText}`
-						: action === 'resetGameName'
-						? `RESETGAMENAME${this.state.playerInputText}`
-						: this.state.playerInputText || this.state.selectedUser,
-				ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
-				comment: this.state.actionTextValue,
-				action
-			});
+			if (action) {
+				this.props.socket.emit('updateModAction', {
+					modName: this.props.userInfo.userName,
+					userName:
+						action === 'deleteGame'
+							? `DELGAME${this.state.playerInputText}`
+							: action === 'resetGameName'
+								? `RESETGAMENAME${this.state.playerInputText}`
+								: this.state.playerInputText || this.state.selectedUser,
+					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+					comment: this.state.actionTextValue,
+					action
+				});
+			}
 			this.setState({
 				selectedUser: '',
 				actionTextValue: '',
@@ -435,8 +437,8 @@ export default class Moderation extends React.Component {
 						action === 'deleteGame'
 							? `DELGAME${playerInputText}`
 							: action === 'resetGameName'
-							? `RESETGAMENAME${playerInputText}`
-							: playerInputText || selectedUser,
+								? `RESETGAMENAME${playerInputText}`
+								: playerInputText || selectedUser,
 					ip: playerInputText ? '' : selectedUser ? userList.find(user => user.userName === selectedUser).ip : '',
 					comment: actionTextValue,
 					action
@@ -929,6 +931,20 @@ export default class Moderation extends React.Component {
 					Promote to Staff Role - Editor
 				</button>
 				<button
+					style={{ background: 'grey' }}
+					className={
+						actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						socket.emit('regatherAEMUsernames');
+						takeModAction('regatherAEMList');
+					}}
+				>
+					Refresh AEM List
+				</button>
+				<button
 					style={{ background: 'black' }}
 					className={
 						actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -1014,7 +1030,8 @@ export default class Moderation extends React.Component {
 			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',
 			bypassKeyUsed: 'Consume Bypass Key',
-			resetServer: 'Server Restart'
+			resetServer: 'Server Restart',
+			regatherAEMList: 'Refresh AEM List'
 		};
 
 		return (

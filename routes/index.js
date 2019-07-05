@@ -2,14 +2,15 @@ const passport = require('passport'); // eslint-disable-line no-unused-vars
 const Account = require('../models/account'); // eslint-disable-line no-unused-vars
 const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
-const socketRoutes = require('./socket/routes');
+const Profile = require('../models/profile');
+const { socketRoutes } = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
-const { obfIP } = require('./socket/ip-obf');
+const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
 const { ProcessImage } = require('./image-processor');
 const savedTorIps = require('../utils/savedtorips');
-const https = require('https');
+const fetch = require('node-fetch');
 const prodCacheBustToken = require('./prodCacheBustToken');
 
 /**
@@ -49,38 +50,19 @@ module.exports = () => {
 		res.render(pageName, renderObj);
 	};
 
-	try {
-		https.get('https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1', res => {
-			let data = '';
-
-			res.on('data', chunk => {
-				data += chunk;
-			});
-
-			res.on('end', () => {
-				const torIps = data.split('\n');
-
-				accounts(torIps);
-			});
-		});
-	} catch (error) {
-		accounts(savedTorIps);
-	}
-
-	Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] })
-		.then(accounts => {
-			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
-			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
-			const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
-			const altmodUserNames = accounts.filter(account => account.staffRole === 'altmod').map(account => account.username);
-			const trialmodUserNames = accounts.filter(account => account.staffRole === 'trialmod').map(account => account.username);
-			const contributorUserNames = accounts.filter(account => account.isContributor).map(account => account.username);
-
-			socketRoutes(modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames);
+	fetch('https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1')
+		.then(res => res.text())
+		.then(text => {
+			let gatheredTorIps = text.split('\n').slice(3);
+			accounts(gatheredTorIps);
 		})
-		.catch(err => {
-			console.log(err, 'err in finding staffroles');
+		.catch(e => {
+			console.log('error in getting tor ips', e);
+			accounts(savedTorIps);
+			console.log('Using Cached TOR IPs');
 		});
+
+	socketRoutes();
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
@@ -132,6 +114,25 @@ module.exports = () => {
 		if (req.user.isBanned) {
 			res.redirect('/logout');
 		} else {
+			let ip = req.expandedIP;
+
+			try {
+				ip = expandAndSimplify(ip);
+			} catch (e) {
+				console.log(e);
+			}
+
+			Profile.findOne({ _id: username })
+				.then(profile => {
+					if (profile) {
+						profile.lastConnectedIP = ip;
+						profile.save();
+					}
+				})
+				.catch(err => {
+					console.log(err, 'profile find err');
+				});
+
 			Account.findOne({ username }, (err, account) => {
 				if (err) {
 					console.log(err);
@@ -150,11 +151,23 @@ module.exports = () => {
 				};
 
 				if (process.env.NODE_ENV === 'production') {
-					gameObj.prodCacheBustToken = prodCacheBustToken;
+					gameObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
 				}
 
-				account.gameSettings.blacklist = [];
-				res.render('game', gameObj);
+				account.lastConnectedIP = ip;
+				if (
+					(account.ipHistory && account.ipHistory.length === 0) ||
+					(account.ipHistory.length > 0 && account.ipHistory[account.ipHistory.length - 1].ip !== ip)
+				) {
+					account.ipHistory.push({
+						date: new Date(),
+						ip: ip
+					});
+				}
+				account.save(() => {
+					res.render('game', gameObj);
+				});
+				// account.gameSettings.blacklist = [];
 			});
 		}
 	});
@@ -182,7 +195,7 @@ module.exports = () => {
 		};
 
 		if (process.env.NODE_ENV === 'production') {
-			gameObj.prodCacheBustToken = prodCacheBustToken;
+			gameObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
 		}
 
 		res.render('game', gameObj);

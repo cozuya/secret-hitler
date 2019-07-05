@@ -20,7 +20,8 @@ const {
 	handleSubscribeModChat,
 	handleModPeekVotes,
 	handleGameFreeze,
-	handleHasSeenNewPlayerModal
+	handleHasSeenNewPlayerModal,
+	handleFlappyEvent
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -52,6 +53,10 @@ const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
+
+let modUserNames = [],
+	editorUserNames = [],
+	adminUserNames = [];
 
 const gamesGarbageCollector = () => {
 	const currentTime = Date.now();
@@ -93,8 +98,22 @@ const ensureInGame = (passport, game) => {
 	}
 };
 
-module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames) => {
+const gatherStaffUsernames = () => {
+	Account.find({ staffRole: { $exists: true } })
+		.then(accounts => {
+			modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
+			editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
+			adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+		})
+		.catch(err => {
+			console.log(err, 'err in finding staffroles');
+		});
+};
+
+module.exports.socketRoutes = () => {
 	setInterval(gamesGarbageCollector, 100000);
+
+	gatherStaffUsernames();
 
 	io.on('connection', socket => {
 		checkUserStatus(socket, () => {
@@ -183,6 +202,14 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				handleSocketDisconnect(socket);
 			});
 
+			socket.on('flappyEvent', data => {
+				if (isRestricted) return;
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleFlappyEvent(data, game);
+				}
+			});
+
 			socket.on('hasSeenNewPlayerModal', () => {
 				if (authenticated) {
 					handleHasSeenNewPlayerModal(socket);
@@ -204,6 +231,12 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 			socket.on('getPrivateSignups', () => {
 				if (authenticated && isAEM) {
 					sendPrivateSignups(socket);
+				}
+			});
+
+			socket.on('regatherAEMUsernames', () => {
+				if (authenticated && isAEM) {
+					gatherStaffUsernames();
 				}
 			});
 

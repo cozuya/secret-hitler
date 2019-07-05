@@ -177,6 +177,10 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	game.gameState.phase = 'selectingChancellor';
 
 	if (game.general.timedMode) {
+		if (game.private.timerId) {
+			clearTimeout(game.private.timerId);
+			game.private.timerId = null;
+		}
 		game.gameState.timedModeEnabled = true;
 		game.private.timerId = setTimeout(
 			() => {

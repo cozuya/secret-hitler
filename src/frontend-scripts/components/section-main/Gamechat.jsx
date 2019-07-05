@@ -405,12 +405,6 @@ class Gamechat extends React.Component {
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
 		const { showFullChat, showPlayerChat, showGameChat, showObserverChat } = this.state;
-		const compareChatStrings = (a, b) => {
-			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
-			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
-
-			return stringA > stringB ? 1 : -1;
-		};
 		const time = new Date().getTime();
 		/**
 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
@@ -420,6 +414,12 @@ class Gamechat extends React.Component {
 			return tournyWins
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
+		};
+		const compareChatStrings = (a, b) => {
+			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
+			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
+
+			return stringA > stringB ? 1 : -1;
 		};
 		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
 
@@ -446,20 +446,30 @@ class Gamechat extends React.Component {
 
 		if (gameInfo && gameInfo.chats && (!gameInfo.general.private || userInfo.isSeated || isStaff)) {
 			let list = gameInfo.chats
-				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
-				.filter(
-					chat =>
+				.sort((a, b) =>
+				a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)
+			);
+			if (showPlayerChat && showGameChat && showObserverChat && !showFullChat) {
+				list = list.slice(-250);
+			} else {
+				let listAcc = [];
+				for (let i = list.length - 1; i >= 0; i--) {
+					if (listAcc.length >= 250 && !showFullChat) {
+						break;
+					}
+					const chat = list[i];
+					if (
 						chat.isBroadcast ||
 						(showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
 						(showGameChat && (chat.gameChat || chat.isClaim)) ||
 						(showObserverChat && !chat.gameChat && !seatedUserNames.includes(chat.userName)) ||
-						(!seatedUserNames.includes(chat.userName) &&
-							chat.staffRole &&
-							chat.staffRole !== '' &&
-							chat.staffRole !== 'trialmod' &&
-							chat.staffRole !== 'altmod')
-				);
-			if (!showFullChat) list = list.slice(-250);
+						(!seatedUserNames.includes(chat.userName) && chat.staffRole && chat.staffRole !== 'trialmod' && chat.staffRole !== 'altmod')
+					) {
+						listAcc.unshift(chat);
+					}
+				}
+				list = listAcc;
+			}
 			return list.reduce((acc, chat, i) => {
 				const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 				const isMod =
@@ -732,7 +742,7 @@ class Gamechat extends React.Component {
 		};
 
 		return (
-			<section className="gamechat">
+			<section className={isStaff ? 'gamechat aem' : 'gamechat'}>
 				<section className="ui pointing menu">
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: '5px' }}>
 						<i
@@ -813,7 +823,8 @@ class Gamechat extends React.Component {
 				<section
 					style={{
 						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px',
-						height: '100%'
+						height: '100%',
+						cursor: `${isStaff ? 'text' : 'not-allowed'}`
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
@@ -1083,7 +1094,7 @@ class Gamechat extends React.Component {
 				>
 					<h2 className="ui header">
 						DANGER. Leaving an in-progress game will ruin it for the other players (unless you've been executed). Do this only in the case of a game already
-						ruined by an AFK/disconnected player or if someone has already left.
+						ruined by an AFK/disconnected player, if someone has already left, or if the game has been remade.
 					</h2>
 					<div className="ui green positive inverted leave-game button">
 						<i className="checkmark icon" />
@@ -1173,7 +1184,7 @@ Gamechat.propTypes = {
 	userList: PropTypes.object,
 	allEmotes: PropTypes.array,
 	notesActive: PropTypes.bool,
-	toggleNotes: PropTypes.func,
+	toggleNotes: PropTypes.func
 };
 
 export default connect(

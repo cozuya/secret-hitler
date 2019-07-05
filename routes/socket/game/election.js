@@ -248,6 +248,10 @@ const enactPolicy = (game, team, socket) => {
 				if (game.general.timedMode) {
 					const { presidentIndex } = game.gameState;
 
+					if (game.private.timerId) {
+						clearTimeout(game.private.timerId);
+						game.private.timerId = null;
+					}
 					game.gameState.timedModeEnabled = true;
 					game.private.timerId = setTimeout(
 						() => {
@@ -308,6 +312,13 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -473,6 +484,13 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	if (!publicChancellor || !publicChancellor.userName || passport.user !== publicChancellor.userName) {
 		return;
 	}
@@ -592,6 +610,10 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 							sendInProgressGameUpdate(game);
 
 							if (game.general.timedMode) {
+								if (game.private.timerId) {
+									clearTimeout(game.private.timerId);
+									game.private.timerId = null;
+								}
 								game.gameState.timedModeEnabled = true;
 								game.private.timerId = setTimeout(
 									() => {
@@ -661,6 +683,13 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	if (!chancellor || chancellor.userName !== passport.user) {
 		return;
 	}
@@ -726,7 +755,8 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 
 		if (game.general.timedMode && game.private.timerId) {
 			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
+			game.private.timerId = null;
+			game.gameState.timedModeEnabled = false;
 		}
 
 		game.private.lock.selectChancellorPolicy = true;
@@ -799,7 +829,11 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 							game.gameState.phase = 'chancellorVoteOnVeto';
 
 							if (game.general.timedMode) {
-								game.gameState.timedModeEnabled = true; // (passport, game, data)
+								if (game.private.timerId) {
+									clearTimeout(game.private.timerId);
+									game.private.timerId = null;
+								}
+								game.gameState.timedModeEnabled = true;
 								game.private.timerId = setTimeout(
 									() => {
 										if (game.gameState.timedModeEnabled) {
@@ -867,6 +901,13 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	if (!president || president.userName !== passport.user || nonDiscardedPolicies.length !== 2) {
 		return;
 	}
@@ -882,7 +923,8 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 	) {
 		if (game.general.timedMode && game.private.timerId) {
 			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
+			game.private.timerId = null;
+			game.gameState.timedModeEnabled = false;
 		}
 
 		const discarded = game.private.currentElectionPolicies[data.selection];
@@ -1071,6 +1113,10 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 				});
 
 				if (game.general.timedMode) {
+					if (game.private.timerId) {
+						clearTimeout(game.private.timerId);
+						game.private.timerId = null;
+					}
 					game.gameState.timedModeEnabled = true;
 					game.private.timerId = setTimeout(
 						() => {
@@ -1109,6 +1155,13 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 	if (game.gameState.isGameFrozen && !force) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade && !force) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -1243,6 +1296,10 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 				game.gameState.previousElectedGovernment = [presidentIndex, chancellorIndex];
 
 				if (game.general.timedMode) {
+					if (game.private.timerId) {
+						clearTimeout(game.private.timerId);
+						game.private.timerId = null;
+					}
 					game.gameState.timedModeEnabled = true;
 					game.private.timerId = setTimeout(
 						() => {
@@ -1296,6 +1353,10 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 			);
 		} else {
 			if (game.general.timedMode) {
+				if (game.private.timerId) {
+					clearTimeout(game.private.timerId);
+					game.private.timerId = null;
+				}
 				game.gameState.timedModeEnabled = true;
 				game.private.timerId = setTimeout(
 					() => {
@@ -1548,7 +1609,8 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 				() => {
 					if (game.general.timedMode && game.private.timerId) {
 						clearTimeout(game.private.timerId);
-						game.gameState.timedModeEnabled = game.private.timerId = null;
+						game.private.timerId = null;
+						game.gameState.timedModeEnabled = false;
 					}
 					flipBallotCards(socket);
 				},

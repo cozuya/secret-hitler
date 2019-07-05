@@ -94,21 +94,31 @@ export default class Game extends React.Component {
 	}
 
 	render() {
-		const { userInfo, gameInfo } = this.props;
-		const isFlappy = false; // true;
+		const { userInfo, gameInfo, socket } = this.props;
+		let isFlappy;
+
+		// Not Yet Ready
+		isFlappy = false;
 
 		return (
 			<section className="game">
 				<div className="ui grid">
 					<div className="row">
 						<div className="sixteen wide column tracks-container">
-							{isFlappy ? <Flappy /> : <Tracks userInfo={userInfo} gameInfo={gameInfo} socket={this.props.socket} />}
+							{isFlappy ? (
+								<React.Fragment>
+									<Flappy isFacist={false} userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+									<Flappy isFacist userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+								</React.Fragment>
+							) : (
+									<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+								)}
 						</div>
 						<div className="chat-container game-chat transition">
 							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
 								{gameInfo.general && gameInfo.general.status}
 							</section>
-							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={this.props.socket} allEmotes={this.props.allEmotes} />
+							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={socket} allEmotes={this.props.allEmotes} />
 						</div>
 					</div>
 				</div>

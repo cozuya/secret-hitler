@@ -1,39 +1,119 @@
 import React, { useEffect } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
-const Flappy = props => {
-	const cb = new Image(70, 95);
+const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
+	const cb = new Image();
 
-	cb.src = 'https://secrethitler.io/images/default_cardback.png';
-	// let horz = 5;
-	// let vert = 5;
+	cb.src = '/images/default_cardback.png';
 
-	const flap = () => {
-		// vert = vert + 10;
+	// the draw function is apparently not updating from prop updates or useState
+	let vert = 50;
+	let lastFlapTime = Date.now() - 1000;
+
+	const pylonCoords = [];
+
+	/**
+	 * @param {number} cardY
+	 * @param {number} offset
+	 */
+	const detectCollision = (cardY, offset) => {
+		if (cardY < 30 + offset / 2 || cardY + 57 > 150 + offset / 2) {
+			console.log('collision');
+		}
 	};
 
 	const draw = () => {
-		const ctx = document.getElementById('flappy-canvas-1').getContext('2d');
+		const ctx = document.getElementById(isFacist ? 'flappy-canvas-2' : 'flappy-canvas-1').getContext('2d');
+		const timeDiff = Date.now() - lastFlapTime;
+
+		// vert = vert - (1000 * gameInfo.flappyState ? gameInfo.flappyState.flapDistance : 1 - timeDiff) * 0.001;
+
+		vert = vert - (1000 - timeDiff) * 0.001;
+
 		ctx.clearRect(0, 0, 650, 220);
+		ctx.drawImage(cb, 10, Math.floor(vert), 42, 57);
+		ctx.strokeStyle = '#555';
 
-		// ctx.drawImage(cb, horz * 1.5, vert);
+		if (pylonCoords[0] && pylonCoords[0].x < -50) {
+			pylonCoords.shift();
+		}
 
-		// horz++;
-		// if (horz < 600) {
-		// window.requestAnimationFrame(draw);
-		// }
+		pylonCoords.forEach(coord => {
+			const pipeGradient = ctx.createLinearGradient(coord.x, 52 + coord.offset / 2, coord.x + 40, 52 + coord.offset / 2);
+			ctx.fillStyle = pipeGradient;
+			if (coord.x >= -32 && coord.x <= 52 && !isFacist) {
+				detectCollision(vert, coord.offset);
+			}
+			pipeGradient.addColorStop(0, '#87B145');
+			pipeGradient.addColorStop(0.4, '#b5ffb2');
+			pipeGradient.addColorStop(1, 'darkgreen');
+
+			ctx.fillRect(coord.x, 0, 40, 30 + coord.offset / 2);
+			ctx.fillRect(coord.x, 150 + coord.offset / 2, 40, 220);
+			ctx.strokeRect(coord.x - 1, 0, 42, 31 + coord.offset / 2);
+			ctx.strokeRect(coord.x - 1, 150 + coord.offset / 2, 42, 221);
+			ctx.fillRect(coord.x - 2, 30 + coord.offset / 2 - 12, 44, 12);
+			ctx.strokeRect(coord.x - 3, 30 + coord.offset / 2 - 13, 46, 14);
+			ctx.fillRect(coord.x - 2, 150 + coord.offset / 2, 44, 12);
+			ctx.strokeRect(coord.x - 3, 150 + coord.offset / 2, 46, 14);
+			coord.x = coord.x - 1;
+		});
+
+		window.requestAnimationFrame(draw);
+	};
+
+	const flap = () => {
+		socket.emit('flappyEvent', {
+			uid: gameInfo.general.uid,
+			team: isFacist ? 'fascist' : 'liberal',
+			type: 'flap'
+		});
 	};
 
 	useEffect(() => {
 		setTimeout(() => {
-			window.requestAnimationFrame(draw);
-			document.getElementById('flappy-canvas-1').addEventListener('click', flap);
-		}, 0);
+			if (!isFacist) {
+				socket.emit('flappyEvent', {
+					uid: gameInfo.general.uid,
+					type: 'startFlappy'
+				});
+			}
+		}, 500);
+
+		socket.on('flappyUpdate', data => {
+			if (data.type === 'flap' && ((isFacist && data.team == 'fascist') || (!isFacist && data.team === 'liberal'))) {
+				lastFlapTime = Date.now();
+			}
+
+			if (data.type === 'startFlappy') {
+				draw();
+			}
+
+			if (data.type === 'newPylon') {
+				pylonCoords.push({
+					offset: data.offset,
+					x: 751
+				});
+			}
+		});
 	}, []);
 
-	return <canvas width="750" height="220" id="flappy-canvas-1" />;
+	return (
+		<canvas
+			width="750"
+			height="220"
+			id={isFacist ? 'flappy-canvas-2' : 'flappy-canvas-1'}
+			style={{ background: 'linear-gradient(to bottom, #7db9e8 0%, #1e5799 100%)' }}
+			onClick={flap}
+		/>
+	);
 };
 
-Flappy.propTypes = {};
+Flappy.propTypes = {
+	userInfo: PropTypes.object,
+	gameInfo: PropTypes.object,
+	socket: PropTypes.object,
+	isFacist: PropTypes.bool
+};
 
 export default Flappy;

@@ -108,18 +108,6 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		box-shadow: 0 0 5px 2px #b7ae0b !important;
 	}
 
-	.player-container.dfinn {
-		box-shadow: 0 0 5px 2px #00ffd8 !important;
-	}
-
-	.player-container.invidia {
-		box-shadow: 0 0 5px 2px #ec7d04 !important;
-	}
-
-	.player-container.faaiz {
-		box-shadow: 0 0 5px 2px #c7c1ff !important;
-	}
-
 	.player-container {
 		user-select: none;
 		max-width: 70px;
@@ -156,10 +144,6 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			color: #ddd;
 			text-align: center;
 			font-size: 13px;
-			&.blacklisted {
-				color: $blacklist !important;
-				opacity: 0.8;
-			}
 			&:hover {
 				color: yellow;
 			}
@@ -280,6 +264,16 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 				backface-visibility: hidden;
 				transform: rotateY(180deg);
 			}
+			.blacklist {
+				top: -100px !important;
+				position: absolute !important;
+				z-index: 99999 !important;
+				color: #444 !important;
+				right: -5px !important;
+				&:hover {
+					color: #444 !important;
+				}
+			}
 		}
 		.card-container.showing {
 			// prevents 1px gap showing below card
@@ -301,7 +295,6 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		.player-name.fascist,
 		.player-number.fascist {
 			color: #c36563;
-			
 		}
 		.player-name.hitler,
 		.player-number.hitler {
@@ -438,4 +431,3 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 .error {
 	color: red;
 }
-
