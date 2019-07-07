@@ -16,6 +16,10 @@ jobs:
 
     working_directory: ~/repo
 
+    branches:
+      only:
+        - circleci
+
     steps:
       - checkout
 
