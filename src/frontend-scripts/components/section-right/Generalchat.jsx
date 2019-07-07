@@ -139,7 +139,9 @@ export default class Generalchat extends React.Component {
 	};
 
 	renderInput() {
-		const { userInfo } = this.props;
+		// Add userList and define user. Currently should error? -> VIG ANSWER PLZ
+		const { userInfo, userList } = this.props;
+		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
 
 		return this.state.discordEnabled ? null : (
 			<div className={userInfo.userName ? 'ui action input' : 'ui action input disabled'}>
@@ -173,6 +175,25 @@ export default class Generalchat extends React.Component {
 						{`This message is too long ${300 - this.state.chatValue.length}`}
 					</span>
 				)}
+
+				{/*TODO define user. Talk to vig and maybe bring in userList?*/}
+
+				{ userInfo.userName && user.wins + user.losses <= 10 && (
+					<span
+						style={{
+							position: 'absolute',
+							top: '-22px',
+							height: '40px',
+							backgroundColor: 'indianred',
+							padding: '7px',
+							borderRadius: '10px 10px 0px 0px',
+							border: '1px solid #8c8c8c'
+						}}
+					>
+						{`You need to play ${10 - (user.wins + user.losses)} more games.`}
+					</span>
+					)}
+
 				<textarea
 					style={{ zIndex: 1 }}
 					disabled={!userInfo.userName || (userInfo.gameSettings && userInfo.gameSettings.isPrivate)}
