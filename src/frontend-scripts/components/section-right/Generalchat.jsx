@@ -176,7 +176,7 @@ export default class Generalchat extends React.Component {
 					</span>
 				)}
 
-				{/*TODO define user. Talk to vig and maybe bring in userList?*/}
+				{/* TODO define user. Talk to vig and maybe bring in userList? */}
 
 				{ userInfo.userName && user.wins + user.losses <= 10 && (
 					<span
