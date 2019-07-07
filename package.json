@@ -151,7 +151,10 @@
 		],
 		"moduleNameMapper": {
 			"\\.(css|scss)$": "<rootDir>/__test__/mocks/styleMock.js"
-		}
+		},
+		"moduleFileExtensions": [
+			"", "js", "json", "jsx", "ts", "tsx", "node"
+		]
 	},
 	"resolutions": {
 		"**/event-stream": "^4.0.1",
