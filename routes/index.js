@@ -167,7 +167,7 @@ module.exports = () => {
 				account.save(() => {
 					res.render('game', gameObj);
 				});
-				account.gameSettings.blacklist = [];
+				// account.gameSettings.blacklist = [];
 			});
 		}
 	});
