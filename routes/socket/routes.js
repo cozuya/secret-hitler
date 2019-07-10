@@ -118,8 +118,6 @@ module.exports.socketRoutes = () => {
 	io.on('connection', socket => {
 		checkUserStatus(socket, () => {
 			socket.emit('version', { current: version });
-			sendGeneralChats(socket);
-			sendGameList(socket);
 
 			// defensively check if game exists
 			socket.use((packet, next) => {
@@ -148,6 +146,9 @@ module.exports.socketRoutes = () => {
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
 				});
 			}
+
+			sendGeneralChats(socket);
+			sendGameList(socket, isAEM);
 
 			let isRestricted = true;
 

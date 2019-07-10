@@ -338,6 +338,7 @@ export default class Moderation extends React.Component {
 		};
 		const { gameList, gameSort } = this.state;
 		const getGameType = game => {
+			if (game.unlisted) return 'unlisted';
 			if (game.custom) return 'custom';
 			if (game.casual) return 'casual';
 			if (game.private) return 'private';
@@ -1307,6 +1308,8 @@ export default class Moderation extends React.Component {
 								<span className="private">This game is private</span>
 								<br />
 								<span className="custom">This game is custom</span>
+								<br />
+								<span className="unlisted">This game is unlisted</span>
 							</div>
 							{!hideActions && (
 								<span>

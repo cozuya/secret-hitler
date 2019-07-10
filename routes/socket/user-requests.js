@@ -84,7 +84,8 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 						electionNum: game.general.electionCount,
 						casual: game.general.casualGame,
 						private: game.general.private,
-						custom: game.customGameSettings.enabled
+						custom: game.customGameSettings.enabled,
+						unlisted: game.general.unlisted
 					});
 				});
 			}
@@ -257,11 +258,14 @@ module.exports.sendReplayGameChats = (socket, uid) => {
 
 /**
  * @param {object} socket - user socket reference.
+ * @param {boolean} isAEM - user AEM designation
  */
-module.exports.sendGameList = socket => {
+module.exports.sendGameList = (socket, isAEM) => {
 	// eslint-disable-line one-var
 	if (socket) {
-		socket.emit('gameList', formattedGameList());
+		let gameList = formattedGameList();
+		gameList = gameList.filter(game => isAEM || (game && !game.isUnlisted));
+		socket.emit('gameList', gameList);
 	} else {
 		gameListEmitter.send = true;
 	}

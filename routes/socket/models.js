@@ -223,8 +223,8 @@ module.exports.formattedGameList = () => {
 		gameStatus: games[gameName].gameState.isCompleted
 			? games[gameName].gameState.isCompleted
 			: games[gameName].gameState.isTracksFlipped
-			? 'isStarted'
-			: 'notStarted',
+				? 'isStarted'
+				: 'notStarted',
 		seatedCount: games[gameName].publicPlayersState.length,
 		gameCreatorName: games[gameName].general.gameCreatorName,
 		minPlayersCount: games[gameName].general.minPlayersCount,
@@ -261,7 +261,8 @@ module.exports.formattedGameList = () => {
 		private: games[gameName].general.private || undefined,
 		uid: games[gameName].general.uid,
 		rainbowgame: games[gameName].general.rainbowgame || undefined,
-		isCustomGame: games[gameName].customGameSettings.enabled
+		isCustomGame: games[gameName].customGameSettings.enabled,
+		isUnlisted: games[gameName].general.unlisted || undefined
 	}));
 };
 
@@ -311,8 +312,8 @@ module.exports.createNewBypass = () => {
 		key = `${Math.random()
 			.toString(36)
 			.substring(2)}${Math.random()
-			.toString(36)
-			.substring(2)}`.trim();
+				.toString(36)
+				.substring(2)}`.trim();
 	} while (bypassKeys.indexOf(key) >= 0);
 	bypassKeys.push(key);
 	return key;
