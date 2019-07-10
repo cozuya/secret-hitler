@@ -23,9 +23,9 @@ class Changelog extends React.Component {
 					<li>Metalace: 1950</li>
 					<li>imbapingu: 1920</li>
 					<li>StatReset: 1911</li>
-					<li>Litlefinger: 1910</li>
 					<li>Prohell: 1903</li>
 					<li>acro: 1897</li>
+					<li>wenshan: 1894</li>
 				</ul>
 
 				<h4>
