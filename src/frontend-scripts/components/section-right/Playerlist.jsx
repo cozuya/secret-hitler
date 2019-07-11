@@ -189,7 +189,7 @@ class Playerlist extends React.Component {
 			case 'gold':
 				return <span title="This player was in the top tier of ranks in the previous season" className="season-award gold" />;
 			case 'gold1':
-				return <span title="This player was the top player of the previous season" className="season-award gold1" />;
+				return <span title="This player snuggled his way to being the top player of the previous season" className="season-award gold1" />;
 			case 'gold2':
 				return <span title="This player was 2nd highest player of the previous season" className="season-award gold2" />;
 			case 'gold3':

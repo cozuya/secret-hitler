@@ -447,8 +447,8 @@ class Gamechat extends React.Component {
 		if (gameInfo && gameInfo.chats && (!gameInfo.general.private || userInfo.isSeated || isStaff)) {
 			let list = gameInfo.chats
 				.sort((a, b) =>
-				a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)
-			);
+					a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)
+				);
 			if (showPlayerChat && showGameChat && showObserverChat && !showFullChat) {
 				list = list.slice(-250);
 			} else {
@@ -543,64 +543,61 @@ class Gamechat extends React.Component {
 							<span className="broadcast-chat">{processEmotes(chat.chat, true, this.props.allEmotes)}</span>
 						</div>
 					) : (
-						<div className="item" key={i}>
-							{this.handleTimestamps(chat.timestamp)}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
-								chat.tournyWins &&
-								!isBlind &&
-								renderCrowns(chat.tournyWins)}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
-								chat.previousSeasonAward &&
-								!isBlind &&
-								renderPreviousSeasonAward(chat.previousSeasonAward)}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.specialTournamentStatus && !isBlind && (
-								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
-							)}
-							<span
-								className={
-									!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
-										? isMod && (!isBlind || !isSeated)
-											? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
-											: 'chat-user'
-										: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
-								}
-							>
-								{isSeated ? (
-									''
-								) : chat.staffRole === 'moderator' ? (
-									<span data-tooltip="Moderator" data-inverted>
-										<span className="observer-chat">(Observer) </span>
-										<span className="moderator-name">(M) </span>
-									</span>
-								) : chat.staffRole === 'editor' ? (
-									<span data-tooltip="Editor" data-inverted>
-										<span className="observer-chat">(Observer) </span>
-										<span className="editor-name">(E) </span>
-									</span>
-								) : chat.staffRole === 'admin' ? (
-									<span data-tooltip="Admin" data-inverted>
-										<span className="observer-chat">(Observer) </span>
-										<span className="admin-name">(A) </span>
-									</span>
-								) : (
-									<span className="observer-chat">(Observer) </span>
-								)}
-								{gameInfo.gameState.isTracksFlipped
-									? isSeated
-										? isBlind
-											? `${
-													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-										: chat.userName
-									: isBlind && isSeated
-									? '?'
-									: chat.userName}
-								{': '}
-							</span>
-							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
-						</div>
-					)
+									<div className="item" key={i}>
+										{this.handleTimestamps(chat.timestamp)}
+										{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+											chat.tournyWins &&
+											!isBlind &&
+											renderCrowns(chat.tournyWins)}
+										{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+											chat.previousSeasonAward &&
+											!isBlind &&
+											renderPreviousSeasonAward(chat.previousSeasonAward)}
+										{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.specialTournamentStatus && !isBlind && (
+											<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+										)}
+										<span
+											className={
+												!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
+													? isMod && (!isBlind || !isSeated)
+														? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+														: 'chat-user'
+													: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+											}
+										>
+											{isSeated ? (
+												''
+											) : chat.staffRole === 'moderator' ? (
+												<span data-tooltip="Moderator" data-inverted>
+													<span className="editor-name">(Moderator) </span>
+												</span>
+											) : chat.staffRole === 'editor' ? (
+												<span data-tooltip="Editor" data-inverted>
+													<span className="editor-name">(Editor) </span>
+												</span>
+											) : chat.staffRole === 'admin' ? (
+												<span data-tooltip="Admin" data-inverted>
+													<span className="admin-name">(Admin) </span>
+												</span>
+											) : (
+																<span className="observer-chat">(Observer) </span>
+															)}
+											{gameInfo.gameState.isTracksFlipped
+												? isSeated
+													? isBlind
+														? `${
+														gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
+														} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+														: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+													: chat.userName
+												: isBlind && isSeated
+													? '?'
+													: chat.userName}
+											{': '}
+										</span>
+										<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
+									</div>
+								)
 				);
 				return acc;
 			}, []);
@@ -700,8 +697,8 @@ class Gamechat extends React.Component {
 			window.location.hash = isRound1TableThatFinished2nd
 				? `${hash.substr(0, hash.length - 1)}Final`
 				: tableUidLastLetter === 'A'
-				? `${hash.substr(0, hash.length - 1)}B`
-				: `${hash.substr(0, hash.length - 1)}A`;
+					? `${hash.substr(0, hash.length - 1)}B`
+					: `${hash.substr(0, hash.length - 1)}A`;
 		};
 		const isStaff = Boolean(
 			userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod'
