@@ -32,6 +32,7 @@ const {
 	sendGameList,
 	sendGeneralChats,
 	sendUserList,
+	sendSpecificUserList,
 	sendReplayGameChats,
 	sendSignups,
 	sendAllSignups,
@@ -201,6 +202,11 @@ module.exports.socketRoutes = () => {
 			// user-events
 			socket.on('disconnect', () => {
 				handleSocketDisconnect(socket);
+			});
+
+			socket.on('sendUser', user => {
+				console.log(user.userName);
+				sendSpecificUserList(socket, user.staffRole);
 			});
 
 			socket.on('flappyEvent', data => {

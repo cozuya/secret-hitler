@@ -204,9 +204,9 @@ const userListEmitter = {
 		if (userListEmitter.state > 0) userListEmitter.state--;
 		else {
 			userListEmitter.send = false;
-			io.sockets.emit('userList', {
-				list: module.exports.formattedUserList()
-			});
+			io.sockets.emit('fetchUser'); // , {
+			// 	list: module.exports.formattedUserList()
+			// });
 		}
 	}, 100)
 };

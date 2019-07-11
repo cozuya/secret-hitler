@@ -55,8 +55,8 @@ class TopLevelErrorBoundry extends React.Component {
 				</details>
 			</div>
 		) : (
-			this.props.children
-		);
+				this.props.children
+			);
 	}
 }
 
@@ -198,6 +198,10 @@ export class App extends React.Component {
 
 			_game.chats.push(chat);
 			dispatch(updateGameInfo(_game));
+		});
+
+		socket.on('fetchUser', () => {
+			socket.emit('sendUser', this.props.userInfo);
 		});
 
 		socket.on('userList', list => {

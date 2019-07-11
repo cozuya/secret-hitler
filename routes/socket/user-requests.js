@@ -30,6 +30,7 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
 const sendUserList = (module.exports.sendUserList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
+		socket.emit('fetchUser');
 		socket.emit('userList', {
 			list: formattedUserList()
 		});
@@ -37,6 +38,18 @@ const sendUserList = (module.exports.sendUserList = socket => {
 		userListEmitter.send = true;
 	}
 });
+
+module.exports.sendSpecificUserList = (socket, staffRole) => {
+	// eslint-disable-line one-var
+	if (socket) {
+		console.log(staffRole);
+		socket.emit('userList', {
+			list: formattedUserList()
+		});
+	} else {
+		userListEmitter.send = true;
+	}
+};
 
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 	const maskEmail = email => (email && email.split('@')[1]) || '';

@@ -2239,6 +2239,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				return 'admin';
 			}
 		})();
+		if (AEM && user.staffIncognito) {
+			data.staffRole = 'moderator';
+			data.userName = 'Incognito';
+		}
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
