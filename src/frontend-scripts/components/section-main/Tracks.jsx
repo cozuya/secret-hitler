@@ -137,6 +137,8 @@ class Tracks extends React.Component {
 		let flappyModeTooltip;
 		let flappyOnlyMode;
 		let flappyOnlyModeTooltip;
+		let unlisted;
+		let unlistedTooltip;
 		const customgameactiveTooltip = 'Custom Game';
 
 		if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
@@ -145,16 +147,16 @@ class Tracks extends React.Component {
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
 				? ((rebalance69p = <div> R679 </div>), (rebalance69pTooltip = 'Rebalanced 6, 7, & 9 player games'))
 				: game.rebalance6p && game.rebalance7p
-				? ((rebalance69p = <div> R67 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 7 player games'))
-				: game.rebalance6p && game.rebalance9p
-				? ((rebalance69p = <div> R69 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 9 player games'))
-				: game.rebalance7p && game.rebalance9p
-				? ((rebalance69p = <div> R79 </div>), (rebalance69pTooltip = 'Rebalanced 7 & 9 player games'))
-				: game.rebalance6p
-				? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
-				: game.rebalance7p
-				? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
-				: ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'));
+					? ((rebalance69p = <div> R67 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 7 player games'))
+					: game.rebalance6p && game.rebalance9p
+						? ((rebalance69p = <div> R69 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 9 player games'))
+						: game.rebalance7p && game.rebalance9p
+							? ((rebalance69p = <div> R79 </div>), (rebalance69pTooltip = 'Rebalanced 7 & 9 player games'))
+							: game.rebalance6p
+								? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
+								: game.rebalance7p
+									? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
+									: ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'));
 		}
 
 		if (game.disableChat) {
@@ -233,6 +235,11 @@ class Tracks extends React.Component {
 			flappyOnlyModeTooltip = 'Flappy Only Mode: no policies, just play flappy';
 		}
 
+		if (game.unlisted) {
+			unlisted = <i className="lock icon green" />;
+			unlistedTooltip = 'Unlisted Game - Not Visible in Game List';
+		}
+
 		return (
 			<div className="options-icons-container">
 				{gameInfo.customGameSettings && gameInfo.customGameSettings.enabled && (
@@ -303,6 +310,11 @@ class Tracks extends React.Component {
 				{flappyOnlyMode && (
 					<span>
 						<Popup style={{ zIndex: 999999 }} inverted trigger={flappyOnlyMode} content={flappyOnlyModeTooltip} />
+					</span>
+				)}
+				{unlisted && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={unlisted} content={unlistedTooltip} />
 					</span>
 				)}
 			</div>

@@ -153,7 +153,7 @@ module.exports.profiles = (() => {
 	return { get, push };
 })();
 
-module.exports.formattedUserList = () => {
+module.exports.formattedUserList = isAEM => {
 	const prune = value => {
 		// Converts things like zero and null to undefined to remove it from the sent data.
 		return value ? value : undefined;
@@ -187,9 +187,10 @@ module.exports.formattedUserList = () => {
 		specialTournamentStatus: user.specialTournamentStatus,
 		timeLastGameCreated: user.timeLastGameCreated,
 		staffRole: prune(user.staffRole),
+		staffIncognito: prune(user.staffIncognito),
 		isContributor: prune(user.isContributor)
 		// oldData: user
-	}));
+	})).filter(user => isAEM || !user.staffIncognito);
 };
 
 const userListEmitter = {
@@ -204,9 +205,9 @@ const userListEmitter = {
 		if (userListEmitter.state > 0) userListEmitter.state--;
 		else {
 			userListEmitter.send = false;
-			io.sockets.emit('userList', {
-				list: module.exports.formattedUserList()
-			});
+			io.sockets.emit('fetchUser'); // , {
+			// 	list: module.exports.formattedUserList()
+			// });
 		}
 	}, 100)
 };
@@ -223,8 +224,8 @@ module.exports.formattedGameList = () => {
 		gameStatus: games[gameName].gameState.isCompleted
 			? games[gameName].gameState.isCompleted
 			: games[gameName].gameState.isTracksFlipped
-			? 'isStarted'
-			: 'notStarted',
+				? 'isStarted'
+				: 'notStarted',
 		seatedCount: games[gameName].publicPlayersState.length,
 		gameCreatorName: games[gameName].general.gameCreatorName,
 		minPlayersCount: games[gameName].general.minPlayersCount,
@@ -261,7 +262,8 @@ module.exports.formattedGameList = () => {
 		private: games[gameName].general.private || undefined,
 		uid: games[gameName].general.uid,
 		rainbowgame: games[gameName].general.rainbowgame || undefined,
-		isCustomGame: games[gameName].customGameSettings.enabled
+		isCustomGame: games[gameName].customGameSettings.enabled,
+		isUnlisted: games[gameName].general.unlisted || undefined
 	}));
 };
 
@@ -311,8 +313,8 @@ module.exports.createNewBypass = () => {
 		key = `${Math.random()
 			.toString(36)
 			.substring(2)}${Math.random()
-			.toString(36)
-			.substring(2)}`.trim();
+				.toString(36)
+				.substring(2)}`.trim();
 	} while (bypassKeys.indexOf(key) >= 0);
 	bypassKeys.push(key);
 	return key;

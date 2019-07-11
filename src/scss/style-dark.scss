@@ -79,6 +79,10 @@
 		}
 	}
 
+	.lock.icon.green {
+		color: green !important;
+	}
+
 	height: 100%;
 	.greentext {
 		color: #386e29 !important;
@@ -1055,10 +1059,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .jdudle3 {
-	color: #fbbc13 !important;
+	color: #997fff !important;
 }
 .player-small-cardback.jdudle3 {
-	box-shadow: 0 0 5px 2px #fbbc13 !important;
+	box-shadow: 0 0 5px 2px #997fff !important;
 }
 
 .max {
