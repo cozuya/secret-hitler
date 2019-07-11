@@ -342,7 +342,7 @@ export default class Moderation extends React.Component {
 			if (game.custom) return 'custom';
 			if (game.casual) return 'casual';
 			if (game.private) return 'private';
-			return '';
+			return 'ranked';
 		};
 		return gameList
 			.sort((a, b) =>
@@ -1303,6 +1303,8 @@ export default class Moderation extends React.Component {
 							<h3>Current Game List</h3>
 							<div className="ui table">
 								<h4>Color chart:</h4>
+								<span className="ranked">This game is ranked</span>
+								<br />
 								<span className="casual">This game is casual</span>
 								<br />
 								<span className="private">This game is private</span>

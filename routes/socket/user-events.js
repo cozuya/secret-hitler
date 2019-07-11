@@ -1540,6 +1540,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				previousSeasonAward: player.previousSeasonAward,
 				connected: player.connected,
 				isRemakeVoting: false,
+				pingTime: undefined,
 				cardStatus: {
 					cardDisplayed: false,
 					isFlipped: false,
