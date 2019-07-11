@@ -2364,41 +2364,38 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				}
 
 				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') {
-					if (data.staffIncognito) {
-						if (userIdx != -1) userList.splice(userIdx, 1);
-					} else {
-						const userListInfo = {
-							userName: passport.user,
-							staffRole: account.staffRole || '',
-							isContributor: account.isContributor || false,
-							staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
-							staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
-							wins: account.wins,
-							losses: account.losses,
-							rainbowWins: account.rainbowWins,
-							rainbowLosses: account.rainbowLosses,
-							isPrivate: account.gameSettings.isPrivate,
-							tournyWins: account.gameSettings.tournyWins,
-							blacklist: account.gameSettings.blacklist,
-							customCardback: account.gameSettings.customCardback,
-							customCardbackUid: account.gameSettings.customCardbackUid,
-							previousSeasonAward: account.gameSettings.previousSeasonAward,
-							specialTournamentStatus: account.gameSettings.specialTournamentStatus,
-							eloOverall: account.eloOverall,
-							eloSeason: account.eloSeason,
-							status: {
-								type: 'none',
-								gameId: null
-							}
-						};
+					const userListInfo = {
+						userName: passport.user,
+						staffRole: account.staffRole || '',
+						isContributor: account.isContributor || false,
+						staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+						staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+						staffIncognito: account.gameSettings.staffIncognito,
+						wins: account.wins,
+						losses: account.losses,
+						rainbowWins: account.rainbowWins,
+						rainbowLosses: account.rainbowLosses,
+						isPrivate: account.gameSettings.isPrivate,
+						tournyWins: account.gameSettings.tournyWins,
+						blacklist: account.gameSettings.blacklist,
+						customCardback: account.gameSettings.customCardback,
+						customCardbackUid: account.gameSettings.customCardbackUid,
+						previousSeasonAward: account.gameSettings.previousSeasonAward,
+						specialTournamentStatus: account.gameSettings.specialTournamentStatus,
+						eloOverall: account.eloOverall,
+						eloSeason: account.eloSeason,
+						status: {
+							type: 'none',
+							gameId: null
+						}
+					};
 
-						userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
-						userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
-						userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
-						userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
-						if (userIdx != -1) userList.splice(userIdx, 1);
-						userList.push(userListInfo);
-					}
+					userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
+					userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
+					userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
+					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+					if (userIdx !== -1) userList.splice(userIdx, 1);
+					userList.push(userListInfo);
 					sendUserList();
 				}
 			}
