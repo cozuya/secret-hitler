@@ -109,6 +109,7 @@ export class App extends React.Component {
 			};
 
 			socket.emit('getUserGameSettings');
+			socket.emit('sendUser', this.props.userInfo);
 
 			// ** begin devhelpers **
 			//			const devPlayers = ['Jaina', 'Rexxar', 'Malfurian', 'Thrall', 'Valeera', 'Anduin', 'aaa', 'bbb']; // eslint-disable-line one-var

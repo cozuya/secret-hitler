@@ -205,7 +205,6 @@ module.exports.socketRoutes = () => {
 			});
 
 			socket.on('sendUser', user => {
-				console.log(user.userName);
 				sendSpecificUserList(socket, user.staffRole);
 			});
 
