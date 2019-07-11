@@ -558,11 +558,12 @@ class Gamechat extends React.Component {
 										)}
 										<span
 											className={
-												!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
-													? isMod && (!isBlind || !isSeated)
-														? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
-														: 'chat-user'
-													: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+												chat.staffRole === 'moderator' && chat.userName === 'Incognito' ? 'chat-user moderatorcolor' :
+													!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
+														? isMod && (!isBlind || !isSeated)
+															? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+															: 'chat-user'
+														: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											}
 										>
 											{isSeated ? (

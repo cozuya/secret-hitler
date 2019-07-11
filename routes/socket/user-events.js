@@ -2240,6 +2240,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				return 'admin';
 			}
 		})();
+		if (AEM && user.staffIncognito) {
+			data.hiddenUsername = data.userName;
+			data.hiddenStaffRole = data.staffRole;
+			data.staffRole = 'moderator';
+			data.userName = 'Incognito';
+		}
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
@@ -2319,6 +2325,14 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			userName: passport.user,
 			staffRole: getStaffRole()
 		};
+		const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
+		const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+		if (AEM && user.staffIncognito) {
+			newChat.hiddenUsername = newChat.userName;
+			newChat.hiddenStaffRole = newChat.staffRole;
+			newChat.staffRole = 'moderator';
+			newChat.userName = 'Incognito';
+		}
 		generalChats.list.push(newChat);
 
 		if (generalChats.list.length > 99) {

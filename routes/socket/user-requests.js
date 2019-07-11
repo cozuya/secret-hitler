@@ -30,13 +30,26 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
 const sendUserList = (module.exports.sendUserList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
-		socket.emit('userList', {
-			list: formattedUserList()
-		});
+		socket.emit('fetchUser');
+		// socket.emit('userList', {
+		// 	list: formattedUserList()
+		// });
 	} else {
 		userListEmitter.send = true;
 	}
 });
+
+module.exports.sendSpecificUserList = (socket, staffRole) => {
+	// eslint-disable-line one-var
+	const isAEM = Boolean(staffRole && staffRole !== 'altmod');
+	if (socket) {
+		socket.emit('userList', {
+			list: formattedUserList(isAEM)
+		});
+	} else {
+		console.log('no socket received!');
+	}
+};
 
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 	const maskEmail = email => (email && email.split('@')[1]) || '';
@@ -178,13 +191,14 @@ module.exports.sendUserGameSettings = socket => {
 			const userListNames = userList.map(user => user.userName);
 
 			getProfile(passport.user);
-			if (!userListNames.includes(passport.user) && !account.gameSettings.staffIncognito) {
+			if (!userListNames.includes(passport.user)) {
 				const userListInfo = {
 					userName: passport.user,
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
 					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+					staffIncognito: account.gameSettings.staffIncognito,
 					wins: account.wins,
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,

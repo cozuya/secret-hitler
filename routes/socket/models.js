@@ -153,7 +153,7 @@ module.exports.profiles = (() => {
 	return { get, push };
 })();
 
-module.exports.formattedUserList = () => {
+module.exports.formattedUserList = isAEM => {
 	const prune = value => {
 		// Converts things like zero and null to undefined to remove it from the sent data.
 		return value ? value : undefined;
@@ -187,9 +187,10 @@ module.exports.formattedUserList = () => {
 		specialTournamentStatus: user.specialTournamentStatus,
 		timeLastGameCreated: user.timeLastGameCreated,
 		staffRole: prune(user.staffRole),
+		staffIncognito: prune(user.staffIncognito),
 		isContributor: prune(user.isContributor)
 		// oldData: user
-	}));
+	})).filter(user => isAEM || !user.staffIncognito);
 };
 
 const userListEmitter = {
@@ -204,9 +205,9 @@ const userListEmitter = {
 		if (userListEmitter.state > 0) userListEmitter.state--;
 		else {
 			userListEmitter.send = false;
-			io.sockets.emit('userList', {
-				list: module.exports.formattedUserList()
-			});
+			io.sockets.emit('fetchUser'); // , {
+			// 	list: module.exports.formattedUserList()
+			// });
 		}
 	}, 100)
 };
