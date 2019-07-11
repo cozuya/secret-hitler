@@ -558,8 +558,9 @@ class Gamechat extends React.Component {
 										)}
 										<span
 											className={
-												chat.staffRole === 'moderator' && chat.userName === 'Incognito' ? 'chat-user moderatorcolor' :
-													!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
+												chat.staffRole === 'moderator' && chat.userName === 'Incognito'
+													? 'chat-user moderatorcolor'
+													: !playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
 														? isMod && (!isBlind || !isSeated)
 															? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 															: 'chat-user'
@@ -568,6 +569,10 @@ class Gamechat extends React.Component {
 										>
 											{isSeated ? (
 												''
+											) : chat.staffRole === 'moderator' && chat.userName === 'Incognito' && isStaff ? (
+												<span data-tooltip="Incognito" data-inverted>
+													<span className="admincolor">(Incognito) 🚫</span>
+												</span>
 											) : chat.staffRole === 'moderator' ? (
 												<span data-tooltip="Moderator" data-inverted>
 													<span className="moderatorcolor">(Mod) 🌀</span>
@@ -587,8 +592,8 @@ class Gamechat extends React.Component {
 													<span className="admincolor">(Admin) 📛</span>
 												</span>
 											) : (
-																<span className="observer-chat">(Observer) </span>
-															)}
+																	<span className="observer-chat">(Observer) </span>
+																)}
 											{gameInfo.gameState.isTracksFlipped
 												? isSeated
 													? isBlind
@@ -599,7 +604,9 @@ class Gamechat extends React.Component {
 													: chat.userName
 												: isBlind && isSeated
 													? '?'
-													: chat.userName}
+													: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && isStaff
+														? chat.hiddenUsername
+														: chat.userName}
 											{': '}
 										</span>
 										<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}

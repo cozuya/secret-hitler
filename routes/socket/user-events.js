@@ -2242,7 +2242,6 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		})();
 		if (AEM && user.staffIncognito) {
 			data.hiddenUsername = data.userName;
-			data.hiddenStaffRole = data.staffRole;
 			data.staffRole = 'moderator';
 			data.userName = 'Incognito';
 		}
@@ -2329,7 +2328,6 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 		if (AEM && user.staffIncognito) {
 			newChat.hiddenUsername = newChat.userName;
-			newChat.hiddenStaffRole = newChat.staffRole;
 			newChat.staffRole = 'moderator';
 			newChat.userName = 'Incognito';
 		}

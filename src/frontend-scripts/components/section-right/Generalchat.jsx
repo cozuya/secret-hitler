@@ -239,7 +239,7 @@ export default class Generalchat extends React.Component {
 							{chat.staffRole === 'editor' && !userInfo.staffRole && <span className="editor-name">(E) </span>}
 							{chat.staffRole === 'admin' && !userInfo.staffRole && <span className="admin-name">(A) </span>}
 							{chat.staffRole === 'moderator' && chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod' && <span data-tooltip="Incognito" data-inverted>
-								<span className="admin-name">(I) </span>}
+								<span className="admin-name">(I) 🚫</span>
 							</span>}
 							<a
 								href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}

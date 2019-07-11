@@ -316,16 +316,18 @@ class Playerlist extends React.Component {
 							{renderStatus()}
 							{(() => {
 								const userAdminRole =
-									user.staffRole === 'admin'
-										? 'Admin'
-										: user.staffRole === 'editor'
-											? 'Editor'
-											: user.staffRole === 'moderator'
-												? 'Moderator'
-												: user.isContributor
-													? 'Contributor'
-													: null;
-								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀' };
+									user.staffIncognito
+										? 'Incognito'
+										: user.staffRole === 'admin'
+											? 'Admin'
+											: user.staffRole === 'editor'
+												? 'Editor'
+												: user.staffRole === 'moderator'
+													? 'Moderator'
+													: user.isContributor
+														? 'Contributor'
+														: null;
+								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
 									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
