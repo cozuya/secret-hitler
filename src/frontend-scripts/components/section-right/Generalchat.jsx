@@ -210,47 +210,47 @@ export default class Generalchat extends React.Component {
 
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
-					const { gameSettings } = userInfo;
-					const isMod = Boolean(chat.staffRole) || chat.userName.substring(0, 11) == '[BROADCAST]';
-					const user = chat.userName && Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
-					const userClasses =
-						!user || (gameSettings && gameSettings.disablePlayerColorsInChat)
-							? 'chat-user'
-							: PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'chat-user');
+				const { gameSettings } = userInfo;
+				const isMod = Boolean(chat.staffRole) || chat.userName.substring(0, 11) == '[BROADCAST]';
+				const user = chat.userName && Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
+				const userClasses =
+					!user || (gameSettings && gameSettings.disablePlayerColorsInChat)
+						? 'chat-user'
+						: PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'chat-user');
 
-					if (userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
-						timestamp = <span className="timestamp">{moment(chat.time).format('HH:mm')} </span>;
-					}
+				if (userInfo.gameSettings && userInfo.gameSettings.enableTimestamps) {
+					timestamp = <span className="timestamp">{moment(chat.time).format('HH:mm')} </span>;
+				}
 
-					return (
-						<div className="item" key={i}>
-							{timestamp}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
-								chat.tournyWins &&
-								renderCrowns(chat.tournyWins)}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
-								chat.previousSeasonAward &&
-								this.renderPreviousSeasonAward(chat.previousSeasonAward)}
-							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && chat.specialTournamentStatus && (
-								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
-							)}
-							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
-								{chat.staffRole === 'moderator' && <span className="moderator-name">(M) </span>}
-								{chat.staffRole === 'editor' && <span className="editor-name">(E) </span>}
-								{chat.staffRole === 'admin' && <span className="admin-name">(A) </span>}
-								<a
-									href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}
-									className={'genchat-user ' + userClasses}
-								>
-									{`${chat.userName}: `}
-								</a>
-							</span>
-							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>
-								{processEmotes(chat.chat, isMod, this.props.allEmotes)}
-							</span>
-						</div>
-					);
-			  })
+				return (
+					<div className="item" key={i}>
+						{timestamp}
+						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+							chat.tournyWins &&
+							renderCrowns(chat.tournyWins)}
+						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+							chat.previousSeasonAward &&
+							this.renderPreviousSeasonAward(chat.previousSeasonAward)}
+						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && chat.specialTournamentStatus && (
+							<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+						)}
+						<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
+							{chat.staffRole === 'moderator' && <span className="moderator-name">(M) 🌀</span>}
+							{chat.staffRole === 'editor' && <span className="editor-name">(E) 🔰</span>}
+							{chat.staffRole === 'admin' && <span className="admin-name">(A) 📛</span>}
+							<a
+								href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}
+								className={'genchat-user ' + userClasses}
+							>
+								{`${chat.userName}: `}
+							</a>
+						</span>
+						<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>
+							{processEmotes(chat.chat, isMod, this.props.allEmotes)}
+						</span>
+					</div>
+				);
+			})
 			: null;
 	}
 
@@ -298,14 +298,14 @@ export default class Generalchat extends React.Component {
 					{this.state.discordEnabled ? (
 						<embed height="100%" width="100%" src="https://discord.gg/secrethitlerio" />
 					) : (
-						<Scrollbars
-							ref={c => (this.scrollbar = c)}
-							onScroll={this.handleChatScrolled}
-							renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
-						>
-							<div className="ui list genchat-container">{this.renderChats()}</div>
-						</Scrollbars>
-					)}
+							<Scrollbars
+								ref={c => (this.scrollbar = c)}
+								onScroll={this.handleChatScrolled}
+								renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
+							>
+								<div className="ui list genchat-container">{this.renderChats()}</div>
+							</Scrollbars>
+						)}
 				</section>
 				{this.renderInput()}
 			</section>
