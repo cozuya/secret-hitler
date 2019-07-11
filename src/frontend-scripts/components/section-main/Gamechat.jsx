@@ -569,15 +569,15 @@ class Gamechat extends React.Component {
 												''
 											) : chat.staffRole === 'moderator' ? (
 												<span data-tooltip="Moderator" data-inverted>
-													<span className="editor-name">(Moderator) </span>
+													<span className="moderatorcolor">(Mod) 🌀</span>
 												</span>
 											) : chat.staffRole === 'editor' ? (
 												<span data-tooltip="Editor" data-inverted>
-													<span className="editor-name">(Editor) </span>
+													<span className={PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal))}>(Editor) 🔰</span>
 												</span>
 											) : chat.staffRole === 'admin' ? (
 												<span data-tooltip="Admin" data-inverted>
-													<span className="admin-name">(Admin) </span>
+													<span className="admincolor">(Admin) 📛</span>
 												</span>
 											) : (
 																<span className="observer-chat">(Observer) </span>
