@@ -235,9 +235,9 @@ export default class Generalchat extends React.Component {
 							<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
 						)}
 						<span className={chat.isBroadcast ? 'chat-user broadcast' : chat.staffRole === 'moderator' && chat.userName === 'Incognito' && !userInfo.staffRole ? 'chat-user moderatorcolor' : userClasses}>
-							{chat.staffRole === 'moderator' && !userInfo.staffRole && <span className="moderator-name">(M) </span>}
-							{chat.staffRole === 'editor' && !userInfo.staffRole && <span className="editor-name">(E) </span>}
-							{chat.staffRole === 'admin' && !userInfo.staffRole && <span className="admin-name">(A) </span>}
+							{chat.staffRole === 'moderator' && !(chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod') && <span className="moderator-name">(M) 🌀</span>}
+							{chat.staffRole === 'editor' && <span className="editor-name">(E) 🔰</span>}
+							{chat.staffRole === 'admin' && <span className="admin-name">(A) 📛</span>}
 							{chat.staffRole === 'moderator' && chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod' && <span data-tooltip="Incognito" data-inverted>
 								<span className="admin-name">(I) 🚫</span>
 							</span>}
