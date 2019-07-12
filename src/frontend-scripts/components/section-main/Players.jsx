@@ -244,14 +244,14 @@ class Players extends React.Component {
 				onClick={this.handlePlayerClick}
 				style={
 					player.customCardback &&
-					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+						!isBlind &&
+						(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						  }
+							backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+						}
 						: {
-								backgroundImage: `url(../images/default_cardback.png)`
-						  }
+							backgroundImage: `url(../images/default_cardback.png)`
+						}
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -388,10 +388,10 @@ class Players extends React.Component {
 					Queue for tournament
 				</div>
 			) : (
-				<div className="ui right pointing label" onClick={this.clickedTakeSeat}>
-					Take a seat
+					<div className="ui right pointing label" onClick={this.clickedTakeSeat}>
+						Take a seat
 				</div>
-			);
+				);
 		}
 	}
 
@@ -432,7 +432,9 @@ class Players extends React.Component {
 		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
 
 		if (userInfo.userName) {
-			if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
+			if (user && user.staffIncognito) {
+				$(this.incognitoModal).modal('show');
+			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 				window.alert('Sorry, this service is currently unavailable.');
 			} else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
@@ -525,6 +527,15 @@ class Players extends React.Component {
 					}}
 				>
 					<div className="ui header">You do not meet the required amount of games played (50) to play in this game.</div>
+				</div>
+
+				<div
+					className="ui basic small modal"
+					ref={c => {
+						this.incognitoModal = c;
+					}}
+				>
+					<div className="ui header">You're incognito</div>
 				</div>
 
 				<div
