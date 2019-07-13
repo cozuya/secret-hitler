@@ -481,7 +481,11 @@ class Gamechat extends React.Component {
 				const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
 				const isSeated = seatedUserNames.includes(chat.userName);
 				const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
-
+				const canSeeIncognito = playerListPlayer &&
+					playerListPlayer.staffRole &&
+					playerListPlayer.staffRole !== '' &&
+					playerListPlayer.staffRole !== 'altmod';
+				
 				acc.push(
 					chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'} key={i}>
@@ -569,7 +573,7 @@ class Gamechat extends React.Component {
 										>
 											{isSeated ? (
 												''
-											) : chat.staffRole === 'moderator' && chat.userName === 'Incognito' && isStaff ? (
+											) : chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito ? (
 												<span data-tooltip="Incognito" data-inverted>
 													<span className="admincolor">(Incognito) 🚫</span>
 												</span>
@@ -601,10 +605,12 @@ class Gamechat extends React.Component {
 														gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
 														} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 														: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-													: chat.userName
+													: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
+														? chat.hiddenUsername
+														: chat.userName
 												: isBlind && isSeated
 													? '?'
-													: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && isStaff
+													: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
 														? chat.hiddenUsername
 														: chat.userName}
 											{': '}
