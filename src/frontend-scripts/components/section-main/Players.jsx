@@ -221,7 +221,7 @@ class Players extends React.Component {
 						prependSeasonAward()}
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
-						player.specialTournamentStatus && <span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />}
+						player.specialTournamentStatus && <span title="This player was part of the winning team of the Summer 2019 tournament." className="crown-icon" />}
 					{str}
 				</span>
 			);

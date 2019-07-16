@@ -583,27 +583,27 @@ export default class Creategame extends React.Component {
 					}
 				});
 				break;
-			case 'Voice - ELO':
+			case 'Tourney Game':
 				this.setState({
-					gameName: 'Voice Chat Only',
+					gameName: 'Tourney Game ',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
-					disableobserver: false,
+					disableobserver: true,
 					privateShowing: false,
 					password: '',
 					containsBadWord: false,
-					rainbowgame: true,
+					rainbowgame: false,
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
-					unlistedGame: false,
+					unlistedGame: true,
 					isTourny: false,
-					casualgame: false,
+					casualgame: true,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: !isRainbow,
+					isVerifiedOnly: false,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
@@ -1444,8 +1444,8 @@ export default class Creategame extends React.Component {
 				<button className="preset" onClick={() => this.presetSelector('2R1H')}>
 					2R1H
 				</button>
-				<button className="preset" onClick={() => this.presetSelector('Voice - ELO')}>
-					Voice - ELO
+				<button className="preset" onClick={() => this.presetSelector('Tourney Game')}>
+					Tournament
 				</button>
 				<button className="preset" onClick={() => this.presetSelector('Meoww')}>
 					Meoww

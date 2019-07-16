@@ -232,7 +232,7 @@ export default class Generalchat extends React.Component {
 							chat.previousSeasonAward &&
 							this.renderPreviousSeasonAward(chat.previousSeasonAward)}
 						{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && chat.specialTournamentStatus && (
-							<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+							<span title="This player was part of the winning team of the Summer 2019 tournament." className="crown-icon" />
 						)}
 						<span className={chat.isBroadcast ? 'chat-user broadcast' : chat.staffRole === 'moderator' && chat.userName === 'Incognito' && !userInfo.staffRole ? 'chat-user moderatorcolor' : userClasses}>
 							{chat.staffRole === 'moderator' && !(chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod') && <span className="moderator-name">(M) 🌀</span>}
