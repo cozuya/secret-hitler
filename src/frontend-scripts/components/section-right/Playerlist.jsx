@@ -545,8 +545,9 @@ class Playerlist extends React.Component {
 													? 'Contributor'
 													: null;
 
+								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
+									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup
