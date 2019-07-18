@@ -485,7 +485,6 @@ class Gamechat extends React.Component {
 					playerListPlayer.staffRole &&
 					playerListPlayer.staffRole !== '' &&
 					playerListPlayer.staffRole !== 'altmod';
-				
 				acc.push(
 					chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'} key={i}>
