@@ -217,7 +217,7 @@ class ReplayGamechat extends React.Component {
 								!isBlind &&
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.specialTournamentStatus && !isBlind && (
-								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+								<span title="This player was part of the winning team of the Summer 2019 tournament." className="crown-icon" />
 							)}
 							<span
 								className={

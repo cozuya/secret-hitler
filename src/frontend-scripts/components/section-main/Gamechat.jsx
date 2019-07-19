@@ -485,7 +485,6 @@ class Gamechat extends React.Component {
 					playerListPlayer.staffRole &&
 					playerListPlayer.staffRole !== '' &&
 					playerListPlayer.staffRole !== 'altmod';
-				
 				acc.push(
 					chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'} key={i}>
@@ -558,7 +557,7 @@ class Gamechat extends React.Component {
 											!isBlind &&
 											renderPreviousSeasonAward(chat.previousSeasonAward)}
 										{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.specialTournamentStatus && !isBlind && (
-											<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+											<span title="This player was part of the winning team of the Summer 2019 tournament." className="crown-icon" />
 										)}
 										<span
 											className={
