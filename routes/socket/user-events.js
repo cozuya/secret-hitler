@@ -1606,7 +1606,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				if (io.sockets.sockets[id]) {
 					io.sockets.sockets[id].leave(game.general.uid);
 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-					if (io.sockets.sockets[id].handshake && io.sockets.sockets[id].handshake.session && io.sockets.sockets[id].handshake.session.passport) {
+					if (io.sockets.sockets[id] && io.sockets.sockets[id].handshake && io.sockets.sockets[id].handshake.session && io.sockets.sockets[id].handshake.session.passport) {
 						updateSeatedUser(io.sockets.sockets[id], io.sockets.sockets[id].handshake.session.passport, { uid: newGame.general.uid });
 						// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
 						if (io.sockets.sockets[id].handshake.session.passport.user === newGame.general.gameCreatorName) creatorRemade = true;
