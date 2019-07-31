@@ -871,7 +871,7 @@ module.exports = torIpsParam => {
 					req,
 					res,
 					username,
-					email: oauthType === 'discord' ? oauthProfile.email : oauthProfile._json.email,
+					email: oauthType === 'discord' ? oauthProfile && oauthProfile.email : oauthProfile && oauthProfile._json && oauthProfile._json.email,
 					signupIP: ip,
 					next: continueSignup,
 					isOAuth: true,
