@@ -35,6 +35,7 @@ class Gamechat extends React.Component {
 	};
 
 	componentDidMount() {
+		this.scrollChats();
 		setTimeout(() => this.setState({ forceProcess: true }, () => this.scrollChats()), 750);
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {
