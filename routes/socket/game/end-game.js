@@ -86,6 +86,20 @@ module.exports.completeGame = (game, winningTeamName) => {
 		game.unsentReports = [];
 	}
 
+	for (let affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber++) {
+		const affectedSocketId = Object.keys(io.sockets.sockets).find(
+			socketId =>
+				io.sockets.sockets[socketId].handshake.session.passport &&
+				io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
+		);
+		if (!io.sockets.sockets[affectedSocketId]) {
+			continue;
+		}
+		io.sockets.sockets[affectedSocketId].emit(
+			'removeClaim'
+		);
+	}
+
 	if (game && game.general && game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.private.timerId = null;
