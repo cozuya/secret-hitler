@@ -88,7 +88,7 @@ class Gamechat extends React.Component {
 
 		// DEBUG
 		// console.log(this.state.forceProcess, prevProps.gameInfo.chats.length < gameInfo.chats.length, !this.state.processedChats);
-		if (this.state.forceProcess || prevProps.gameInfo.chats.length < gameInfo.chats.length || !this.state.processedChats) {
+		if (this.state.forceProcess || prevProps.gameInfo.chats.length < gameInfo.chats.length || (!this.state.processedChats && !gameInfo.general.private)) {
 			this.setState({
 				processedChats: this.processChats(),
 				forceProcess: false
