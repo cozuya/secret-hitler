@@ -16,6 +16,8 @@ class Changelog extends React.Component {
 				</div>
 				<h4>Majorly reduces chat lag!</h4>
 				<p>Fixes Terms of Use formatting</p>
+				<p>Fixes Claim Window not Disappearing at end of game</p>
+				<p>Fixes Various Moderation Features</p>
 				<hr />
 
 				<div className="ui header">
