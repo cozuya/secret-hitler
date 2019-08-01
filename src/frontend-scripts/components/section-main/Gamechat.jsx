@@ -492,10 +492,10 @@ class Gamechat extends React.Component {
 				const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
 				const isSeated = seatedUserNames.includes(chat.userName);
 				const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
-				const canSeeIncognito = playerListPlayer &&
-					playerListPlayer.staffRole &&
-					playerListPlayer.staffRole !== '' &&
-					playerListPlayer.staffRole !== 'altmod';
+				const canSeeIncognito = userInfo &&
+					userInfo.staffRole &&
+					userInfo.staffRole !== '' &&
+					userInfo.staffRole !== 'altmod';
 				acc.push(
 					chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'} key={i}>
