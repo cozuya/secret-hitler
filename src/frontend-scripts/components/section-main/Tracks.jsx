@@ -174,6 +174,11 @@ class Tracks extends React.Component {
 			isVerifiedOnlyTooltip = 'Only email-verified players can sit in this game.';
 		}
 
+		if (game.privateOnly) {
+			priv = <i className="lock icon" />;
+			privTooltip = 'Private Only (Anonymous) players only';
+		}
+
 		if (!game.privateOnly && game.private) {
 			priv = <i className="lock icon" />;
 			privTooltip = 'Private game.';
@@ -231,7 +236,7 @@ class Tracks extends React.Component {
 		}
 
 		if (game.flappyOnlyMode) {
-			flappyOnlyMode = <i className="plane icon" style={{ color: 'darkred' }} />;
+			flappyOnlyMode = <i className="plane icon flappyonly" />;
 			flappyOnlyModeTooltip = 'Flappy Only Mode: no policies, just play flappy';
 		}
 
