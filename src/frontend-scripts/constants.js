@@ -50,7 +50,8 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			cbell: user.userName === 'cbell',
 			jdudle3: user.userName === 'jdudle3',
 			max: user.userName === 'Max',
-			thejuststopo: user.userName === 'TheJustStopO'
+			thejuststopo: user.userName === 'TheJustStopO',
+			moira: user.userName === 'moira'
 		});
 	} else if (
 		user.isContributor &&
