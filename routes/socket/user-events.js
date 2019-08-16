@@ -2740,6 +2740,15 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'modEndGame':
 					const gameToEnd = games[data.uid];
+					
+					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
+						for (player of gameToEnd.private.seatedPlayers) {
+							if (data.modName === player.userName) {
+								socket.emit('sendAlert', 'You cannot end a game whilst playing in it.');
+								return;
+							}
+						}
+					}
 
 					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
 						gameToEnd.chats.push({

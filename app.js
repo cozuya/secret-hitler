@@ -125,6 +125,7 @@ passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
 
 routesIndex();
