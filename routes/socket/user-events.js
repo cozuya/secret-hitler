@@ -653,7 +653,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
-			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : data.privatePassword,
+			unlisted: data.unlistedGame && !data.privatePassword,
+			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
 			privateOnly: user.isPrivate,
 			electionCount: 0,
 			isRemade: false,
@@ -1539,6 +1540,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				previousSeasonAward: player.previousSeasonAward,
 				connected: player.connected,
 				isRemakeVoting: false,
+				pingTime: undefined,
 				cardStatus: {
 					cardDisplayed: false,
 					isFlipped: false,
@@ -1604,7 +1606,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				if (io.sockets.sockets[id]) {
 					io.sockets.sockets[id].leave(game.general.uid);
 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-					if (io.sockets.sockets[id].handshake && io.sockets.sockets[id].handshake.session && io.sockets.sockets[id].handshake.session.passport) {
+					if (io.sockets.sockets[id] && io.sockets.sockets[id].handshake && io.sockets.sockets[id].handshake.session && io.sockets.sockets[id].handshake.session.passport) {
 						updateSeatedUser(io.sockets.sockets[id], io.sockets.sockets[id].handshake.session.passport, { uid: newGame.general.uid });
 						// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
 						if (io.sockets.sockets[id].handshake.session.passport.user === newGame.general.gameCreatorName) creatorRemade = true;
@@ -2238,6 +2240,11 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				return 'admin';
 			}
 		})();
+		if (AEM && user.staffIncognito) {
+			data.hiddenUsername = data.userName;
+			data.staffRole = 'moderator';
+			data.userName = 'Incognito';
+		}
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
@@ -2317,6 +2324,13 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			userName: passport.user,
 			staffRole: getStaffRole()
 		};
+		const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
+		const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+		if (AEM && user.staffIncognito) {
+			newChat.hiddenUsername = newChat.userName;
+			newChat.staffRole = 'moderator';
+			newChat.userName = 'Incognito';
+		}
 		generalChats.list.push(newChat);
 
 		if (generalChats.list.length > 99) {
@@ -2350,41 +2364,38 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 				}
 
 				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') {
-					if (data.staffIncognito) {
-						if (userIdx != -1) userList.splice(userIdx, 1);
-					} else {
-						const userListInfo = {
-							userName: passport.user,
-							staffRole: account.staffRole || '',
-							isContributor: account.isContributor || false,
-							staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
-							staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
-							wins: account.wins,
-							losses: account.losses,
-							rainbowWins: account.rainbowWins,
-							rainbowLosses: account.rainbowLosses,
-							isPrivate: account.gameSettings.isPrivate,
-							tournyWins: account.gameSettings.tournyWins,
-							blacklist: account.gameSettings.blacklist,
-							customCardback: account.gameSettings.customCardback,
-							customCardbackUid: account.gameSettings.customCardbackUid,
-							previousSeasonAward: account.gameSettings.previousSeasonAward,
-							specialTournamentStatus: account.gameSettings.specialTournamentStatus,
-							eloOverall: account.eloOverall,
-							eloSeason: account.eloSeason,
-							status: {
-								type: 'none',
-								gameId: null
-							}
-						};
+					const userListInfo = {
+						userName: passport.user,
+						staffRole: account.staffRole || '',
+						isContributor: account.isContributor || false,
+						staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+						staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+						staffIncognito: account.gameSettings.staffIncognito,
+						wins: account.wins,
+						losses: account.losses,
+						rainbowWins: account.rainbowWins,
+						rainbowLosses: account.rainbowLosses,
+						isPrivate: account.gameSettings.isPrivate,
+						tournyWins: account.gameSettings.tournyWins,
+						blacklist: account.gameSettings.blacklist,
+						customCardback: account.gameSettings.customCardback,
+						customCardbackUid: account.gameSettings.customCardbackUid,
+						previousSeasonAward: account.gameSettings.previousSeasonAward,
+						specialTournamentStatus: account.gameSettings.specialTournamentStatus,
+						eloOverall: account.eloOverall,
+						eloSeason: account.eloSeason,
+						status: {
+							type: 'none',
+							gameId: null
+						}
+					};
 
-						userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
-						userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
-						userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
-						userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
-						if (userIdx != -1) userList.splice(userIdx, 1);
-						userList.push(userListInfo);
-					}
+					userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
+					userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
+					userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
+					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+					if (userIdx !== -1) userList.splice(userIdx, 1);
+					userList.push(userListInfo);
 					sendUserList();
 				}
 			}
@@ -2729,6 +2740,15 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'modEndGame':
 					const gameToEnd = games[data.uid];
+
+					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
+						for (player of gameToEnd.private.seatedPlayers) {
+							if (data.modName === player.userName) {
+								socket.emit('sendAlert', 'You cannot end a game whilst playing in it.');
+								return;
+							}
+						}
+					}
 
 					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
 						gameToEnd.chats.push({

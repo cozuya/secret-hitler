@@ -189,7 +189,7 @@ class Playerlist extends React.Component {
 			case 'gold':
 				return <span title="This player was in the top tier of ranks in the previous season" className="season-award gold" />;
 			case 'gold1':
-				return <span title="This player was the top player of the previous season" className="season-award gold1" />;
+				return <span title="This player snuggled his way to being the top player of the previous season" className="season-award gold1" />;
 			case 'gold2':
 				return <span title="This player was 2nd highest player of the previous season" className="season-award gold2" />;
 			case 'gold3':
@@ -316,18 +316,20 @@ class Playerlist extends React.Component {
 							{renderStatus()}
 							{(() => {
 								const userAdminRole =
-									user.staffRole === 'admin'
-										? 'Admin'
-										: user.staffRole === 'editor'
-											? 'Editor'
-											: user.staffRole === 'moderator'
-												? 'Moderator'
-												: user.isContributor
-													? 'Contributor'
-													: null;
-
+									user.staffIncognito
+										? 'Incognito'
+										: user.staffRole === 'admin'
+											? 'Admin'
+											: user.staffRole === 'editor'
+												? 'Editor'
+												: user.staffRole === 'moderator'
+													? 'Moderator'
+													: user.isContributor
+														? 'Contributor'
+														: null;
+								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
+									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup
@@ -357,7 +359,7 @@ class Playerlist extends React.Component {
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
-								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+								<span title="This player was part of the winning team of the Summer 2019 tournament." className="crown-icon" />
 							)}
 							{user.staffRole !== 'admin' &&
 								Boolean(!user.staffDisableVisibleElo) &&
@@ -529,22 +531,25 @@ class Playerlist extends React.Component {
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
-								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+								<span title="This player was part of the winning team of the Summer 2019 tournament." className="crown-icon" />
 							)}
 							{(() => {
 								const userAdminRole =
-									user.staffRole === 'admin'
-										? 'Admin'
-										: user.staffRole === 'editor'
-											? 'Editor'
-											: user.staffRole === 'moderator'
-												? 'Moderator'
-												: user.isContributor
-													? 'Contributor'
-													: null;
+									user.staffIncognito
+										? 'Incognito'
+										: user.staffRole === 'admin'
+											? 'Admin'
+											: user.staffRole === 'editor'
+												? 'Editor'
+												: user.staffRole === 'moderator'
+													? 'Moderator'
+													: user.isContributor
+														? 'Contributor'
+														: null;
 
+								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
+									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup

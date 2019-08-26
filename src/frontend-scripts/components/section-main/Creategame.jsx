@@ -32,6 +32,7 @@ export default class Creategame extends React.Component {
 			checkedSliderValues: [false, false, true, false, false, false],
 			checkedRebalanceValues: [true, false, true],
 			privateonlygame: false,
+			unlistedGame: false,
 			isTourny: false,
 			casualgame: false,
 			blindMode: false,
@@ -409,6 +410,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [true, false, false, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: false,
 					blindMode: false,
@@ -445,6 +447,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: false,
 					blindMode: false,
@@ -481,6 +484,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: true,
 					blindMode: false,
@@ -518,6 +522,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: false,
 					blindMode: false,
@@ -555,6 +560,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: true,
 					blindMode: false,
@@ -577,26 +583,27 @@ export default class Creategame extends React.Component {
 					}
 				});
 				break;
-			case 'Voice - ELO':
+			case 'Tourney Game':
 				this.setState({
-					gameName: 'Voice Chat Only',
+					gameName: 'Tourney Game ',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
-					disableobserver: false,
+					disableobserver: true,
 					privateShowing: false,
 					password: '',
 					containsBadWord: false,
-					rainbowgame: true,
+					rainbowgame: false,
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: true,
 					isTourny: false,
-					casualgame: false,
+					casualgame: true,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: !isRainbow,
+					isVerifiedOnly: false,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
@@ -629,6 +636,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: true,
 					blindMode: false,
@@ -666,6 +674,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [true, false, false, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: true,
 					blindMode: false,
@@ -703,6 +712,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [true, false, true],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: false,
 					blindMode: false,
@@ -836,7 +846,8 @@ export default class Creategame extends React.Component {
 				rebalance7p: this.state.checkedRebalanceValues[1],
 				rebalance9p2f: this.state.checkedRebalanceValues[2],
 				eloSliderValue: this.state.isEloLimited ? this.state.eloSliderValue[0] : null,
-				privatePassword: this.state.privateShowing ? this.state.password : false,
+				unlistedGame: this.state.unlistedGame && !this.state.privateShowing,
+				privatePassword: this.state.privateShowing && !this.state.unlistedGame ? this.state.password : false,
 				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
 			};
 
@@ -902,15 +913,15 @@ export default class Creategame extends React.Component {
 						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
 					/>
 				) : (
-					<Range
-						onChange={this.sliderChange}
-						min={5}
-						max={10}
-						defaultValue={[5, 10]}
-						value={this.state.sliderValues}
-						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
-					/>
-				)}
+							<Range
+								onChange={this.sliderChange}
+								min={5}
+								max={10}
+								defaultValue={[5, 10]}
+								value={this.state.sliderValues}
+								marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
+							/>
+						)}
 				{!isTourny && !customGameSettings.enabled && (
 					<div className="checkbox-container">
 						{new Array(6).fill(true).map((el, index) => (
@@ -1433,8 +1444,8 @@ export default class Creategame extends React.Component {
 				<button className="preset" onClick={() => this.presetSelector('2R1H')}>
 					2R1H
 				</button>
-				<button className="preset" onClick={() => this.presetSelector('Voice - ELO')}>
-					Voice - ELO
+				<button className="preset" onClick={() => this.presetSelector('Tourney Game')}>
+					Tournament
 				</button>
 				<button className="preset" onClick={() => this.presetSelector('Meoww')}>
 					Meoww
@@ -1464,6 +1475,7 @@ export default class Creategame extends React.Component {
 			// Can happen when refreshing.
 			const player = userList.list.find(p => p.userName === userInfo.userName);
 			if (!player) errs.push('Not logged in, please refresh.');
+			if (player && player.staffIncognito) errs.push(`You're incognito`);
 			else if (this.state.isEloLimited) {
 				const playerElo = (player && player.eloSeason && Math.min(2000, player.eloSeason)) || 1600;
 				const playerEloNonseason = (player && player.eloOverall && Math.min(2000, player.eloOverall)) || 1600;
@@ -1557,7 +1569,7 @@ export default class Creategame extends React.Component {
 							</div>
 							{this.state.containsBadWord && <p className="contains-bad-word">This game name has a banned word or word fragment.</p>}
 						</div>
-						<div className="three wide column privategame">
+						{!this.state.unlistedGame && <div className="three wide column privategame">
 							<h4 className="ui header" style={{ marginBottom: '15px' }}>
 								Private game
 							</h4>
@@ -1575,7 +1587,8 @@ export default class Creategame extends React.Component {
 								width={48}
 								handleDiameter={21}
 							/>
-						</div>
+						</div>}
+						{this.state.unlistedGame && <div className="three wide column privategame" />}
 						{this.state.privateShowing && (
 							<div className="four wide column ui input">
 								<input
@@ -1589,6 +1602,28 @@ export default class Creategame extends React.Component {
 								/>
 							</div>
 						)}
+						{!this.state.privateShowing && <div className="three wide column privategame">
+							<h4 className="ui header" style={{ marginBottom: '15px' }}>
+								Unlisted game
+							</h4>
+							<i className="big green lock icon" />
+							<Switch
+								onChange={checked => {
+									this.setState({
+										unlistedGame: checked,
+										casualgame: checked ? true : this.state.casualgame
+									});
+								}}
+								checked={this.state.unlistedGame}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
+						</div>}
 					</div>
 					{this.renderPresetSelector()}
 					<div className="row slider">{this.renderPlayerSlider()}</div>
@@ -1682,21 +1717,6 @@ export default class Creategame extends React.Component {
 									})()}
 								</span>
 							)}
-							<span
-								title="Timed mode may glitch out - use with caution"
-								style={{
-									color: 'red',
-									position: 'absolute',
-									left: '-130px',
-									top: '40px'
-								}}
-							>
-								<i className="warning icon" style={{ color: 'red' }} />
-								Caution: <br />
-								May glitch out
-								<br />
-								Use with caution
-							</span>
 							<i className="big hourglass half icon" />
 							<h4 className="ui header">
 								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
@@ -1872,7 +1892,8 @@ export default class Creategame extends React.Component {
 									if (!checked) {
 										this.setState({
 											casualgame: checked,
-											customGameSettings: Object.assign(this.state.customGameSettings, { enabled: false })
+											customGameSettings: Object.assign(this.state.customGameSettings, { enabled: false }),
+											unlistedGame: false
 										});
 									} else {
 										this.setState({ casualgame: checked });

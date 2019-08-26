@@ -12,6 +12,22 @@ class Changelog extends React.Component {
 				</div>
 
 				<div className="ui header">
+					<p>Version 1.6.2 released 8-1-2019</p>
+				</div>
+				<h4>Majorly reduces chat lag!</h4>
+				<p>Fixes Terms of Use formatting</p>
+				<p>Fixes Claim Window not Disappearing at end of game</p>
+				<p>Fixes Various Moderation Features</p>
+				<hr />
+
+				<div className="ui header">
+					<p>Version 1.6.1 released 7-10-2019</p>
+				</div>
+				<h4>8 New Emotes!</h4>
+				<h4>New Unlisted Game Setting</h4>
+				<p>Game will be hidden from Games List, and will be only accessible via link</p>
+
+				<div className="ui header">
 					<p>Version 1.6.0 released 7-1-2019</p>
 				</div>
 				<h4>The top 10 players of season 6 are:</h4>
@@ -23,9 +39,9 @@ class Changelog extends React.Component {
 					<li>Metalace: 1950</li>
 					<li>imbapingu: 1920</li>
 					<li>StatReset: 1911</li>
-					<li>Litlefinger: 1910</li>
 					<li>Prohell: 1903</li>
 					<li>acro: 1897</li>
+					<li>wenshan: 1894</li>
 				</ul>
 
 				<h4>
