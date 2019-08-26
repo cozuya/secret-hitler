@@ -30,11 +30,13 @@ class Gamechat extends React.Component {
 		badWord: [null, null],
 		textLastChanged: 0,
 		textChangeTimer: -1,
-		chatValue: ''
+		chatValue: '',
+		processedChats: ''
 	};
 
 	componentDidMount() {
 		this.scrollChats();
+		setTimeout(() => this.setState({ forceProcess: true }, () => this.scrollChats()), 750);
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {
 			// modal methods dont seem to work.
@@ -83,6 +85,15 @@ class Gamechat extends React.Component {
 
 		if (prevProps.notesActive && !nextProps.notesActive && this.state.notesEnabled) {
 			this.setState({ notesEnabled: false });
+		}
+
+		// DEBUG
+		// console.log(this.state.forceProcess, prevProps.gameInfo.chats.length < gameInfo.chats.length, !this.state.processedChats);
+		if (this.state.forceProcess || prevProps.gameInfo.chats.length < gameInfo.chats.length || (!this.state.processedChats && !gameInfo.general.private)) {
+			this.setState({
+				processedChats: this.processChats(),
+				forceProcess: false
+			}, () => this.scrollChats());
 		}
 	}
 
@@ -400,6 +411,7 @@ class Gamechat extends React.Component {
 	};
 
 	processChats() {
+		const processStart = new Date();
 		const { gameInfo, userInfo, userList } = this.props;
 		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
@@ -470,7 +482,7 @@ class Gamechat extends React.Component {
 				}
 				list = listAcc;
 			}
-			return list.reduce((acc, chat, i) => {
+			const processedChats = list.reduce((acc, chat, i) => {
 				const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 				const isMod =
 					playerListPlayer &&
@@ -481,10 +493,10 @@ class Gamechat extends React.Component {
 				const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
 				const isSeated = seatedUserNames.includes(chat.userName);
 				const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
-				const canSeeIncognito = playerListPlayer &&
-					playerListPlayer.staffRole &&
-					playerListPlayer.staffRole !== '' &&
-					playerListPlayer.staffRole !== 'altmod';
+				const canSeeIncognito = userInfo &&
+					userInfo.staffRole &&
+					userInfo.staffRole !== '' &&
+					userInfo.staffRole !== 'altmod';
 				acc.push(
 					chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'} key={i}>
@@ -620,6 +632,12 @@ class Gamechat extends React.Component {
 				);
 				return acc;
 			}, []);
+			// DEBUG
+			const processEnd = new Date();
+			if (processEnd - processStart > 25) {
+				console.warn('It took', processEnd - processStart, 'ms to process', gameInfo.chats.length, 'chats.');
+			}
+			return processedChats;
 		}
 	}
 
