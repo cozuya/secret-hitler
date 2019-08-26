@@ -2740,7 +2740,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'modEndGame':
 					const gameToEnd = games[data.uid];
-					
+
 					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
 						for (player of gameToEnd.private.seatedPlayers) {
 							if (data.modName === player.userName) {
