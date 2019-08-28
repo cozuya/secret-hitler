@@ -10,7 +10,14 @@ class Changelog extends React.Component {
 				<div className="ui header">
 					<h2>Changelog</h2>
 				</div>
-
+				<div className="ui header">
+					<p>Version 1.6.3 released 8-28-2019</p>
+				</div>
+				<p>Temporarily disables "disable game chat" game setting due to various gamebreaking bugs</p>
+				<p>Fixes casual game setting for timed games</p>
+				<p>Adds Trivia Mode Preset</p>
+				<p>Adds User Setting to choose number of Chats shown when truncated</p>
+				<p>Multiple Moderation Improvements</p>
 				<div className="ui header">
 					<p>Version 1.6.2 released 8-1-2019</p>
 				</div>
