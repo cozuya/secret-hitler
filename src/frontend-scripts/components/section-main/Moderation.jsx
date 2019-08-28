@@ -454,7 +454,9 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="button-container">
+				<br />
 				<button
+					style={{ width: '100%'}}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
 					onClick={() => {
 						takeModAction('comment');
@@ -463,6 +465,7 @@ export default class Moderation extends React.Component {
 					Comment without action
 				</button>
 				<button
+					style={{ width: '100%'}}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
 					onClick={() => {
 						takeModAction('clearGenchat');
@@ -470,6 +473,7 @@ export default class Moderation extends React.Component {
 				>
 					Clear/delete general chat
 				</button>
+				<div className="ui horizontal divider">Punishments</div>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
 					onClick={() => {
@@ -510,6 +514,7 @@ export default class Moderation extends React.Component {
 				>
 					Timeout - 18 Hours (non-IP)
 				</button>
+				<div className="ui horizontal divider">User Actions</div>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
@@ -528,16 +533,44 @@ export default class Moderation extends React.Component {
 					Delete player cardback
 				</button>
 				<button
+					style={{ width: '100%', background: 'skyblue' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('deleteBio');
+					}}
+				>
+					Delete/clear player bio
+				</button>
+				<button
 					style={{ width: '100%', background: 'palevioletred' }}
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled convert-button'}
 					onClick={() => {
 						takeModAction('togglePrivate');
 					}}
 				>
-					Toggle player private-only and log out
+					Toggle player private-only (Permanent)
 				</button>
 				<button
-					style={{ width: '100%', background: 'lightyellow' }}
+					style={{ width: '100%', background: 'palevioletred' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled convert-button'}
+					onClick={() => {
+						takeModAction('togglePrivateEighteen');
+					}}
+				>
+					Toggle player private-only (18 Hours)
+				</button>
+				<button
+					style={{ width: '100%', background: '#e05543' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('logoutUser');
+					}}
+				>
+					Logout User
+				</button>
+				<div className="ui horizontal divider">Games</div>
+				<button
+					style={{ width: '100%', background: 'indianred' }}
 					className={playerInputText ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
 						takeModAction('deleteGame');
@@ -554,6 +587,7 @@ export default class Moderation extends React.Component {
 				>
 					Reset game name
 				</button>
+				<div className="ui horizontal divider">Miscellaneous</div>
 				<button
 					style={{ width: '100%', background: 'darkorange' }}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
@@ -564,24 +598,6 @@ export default class Moderation extends React.Component {
 					Set general chat sticky
 				</button>
 				<button
-					style={{ width: '100%', background: 'skyblue' }}
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
-					onClick={() => {
-						takeModAction('deleteBio');
-					}}
-				>
-					Delete/clear player bio
-				</button>
-				<button
-					style={{ width: '100%', background: '#e05543' }}
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
-					onClick={() => {
-						takeModAction('logoutUser');
-					}}
-				>
-					Logout User
-				</button>
-				<button
 					style={{ width: '100%', background: 'royalblue' }}
 					className={'ui button'}
 					onClick={() => {
@@ -590,6 +606,7 @@ export default class Moderation extends React.Component {
 				>
 					Create login bypass key
 				</button>
+				<div className="ui horizontal divider"> </div>
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable account creation</h4>
 					<div
@@ -601,7 +618,7 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="accountcreation" />
 					</div>
 				</div>
-				<div className="toggle-containers">
+				{/* <div className="toggle-containers">
 					<h4 className="ui header">Disable ipbans including new account restrictions</h4>
 					<div
 						className="ui fitted toggle checkbox"
@@ -611,7 +628,7 @@ export default class Moderation extends React.Component {
 					>
 						<input type="checkbox" name="ipbans" />
 					</div>
-				</div>
+				</div> */}
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable game creation</h4>
 					<div
@@ -623,7 +640,7 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="ipbans" />
 					</div>
 				</div>
-				<div className="toggle-containers">
+				{/* <div className="toggle-containers">
 					<h4 className="ui header">Limit new player actions</h4>
 					<div
 						className="ui fitted toggle checkbox"
@@ -633,8 +650,9 @@ export default class Moderation extends React.Component {
 					>
 						<input type="checkbox" name="ipbans" />
 					</div>
-				</div>
+				</div> */}
 				<br />
+				<div className="ui horizontal divider">Remove Punishments</div>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
 					onClick={() => {
@@ -652,7 +670,7 @@ export default class Moderation extends React.Component {
 				>
 					Restore IP - Remove any pre-existing IP ban.
 				</button>
-				<div className="ui horizontal divider">Editors/Admins Only</div>
+				<div className="ui horizontal divider" style={{color: 'red'}}>Editors/Admins Only</div>
 
 				<button
 					className={
@@ -725,6 +743,7 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="seasonalsetstats" />
 					</div>
 				</div>
+				<div className="ui horizontal divider">User Actions</div>
 				<button
 					style={{ background: 'lime', color: 'black' }}
 					className={
@@ -751,6 +770,46 @@ export default class Moderation extends React.Component {
 				>
 					Get user IP
 				</button>
+				<button
+					style={{ background: 'crimson' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('deleteUser');
+					}}
+				>
+					Delete user
+				</button>
+				<button
+					style={{ background: '#f78d59' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('renameUser');
+					}}
+				>
+					Rename user
+				</button>
+				<button
+					style={{ background: 'darkblue' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('deleteProfile');
+					}}
+				>
+					Delete/reset player profile
+				</button>
+				<div className="ui horizontal divider">Punishments</div>
 				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -801,45 +860,7 @@ export default class Moderation extends React.Component {
 				>
 					Ban IP fragment (xxx.xxx or xxx.xxx.xxx) for 1 week
 				</button>
-				<button
-					style={{ background: 'crimson' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('deleteUser');
-					}}
-				>
-					Delete user
-				</button>
-				<button
-					style={{ background: '#f78d59' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('renameUser');
-					}}
-				>
-					Rename user
-				</button>
-				<button
-					style={{ background: 'darkblue' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('deleteProfile');
-					}}
-				>
-					Delete/reset player profile
-				</button>
+				<div className="ui horizontal divider">Roles</div>
 				<button
 					style={{ background: '#21bae0' }}
 					className={
@@ -945,6 +966,7 @@ export default class Moderation extends React.Component {
 				>
 					Refresh AEM List
 				</button>
+				<hr />
 				<button
 					style={{ background: 'black' }}
 					className={
@@ -997,7 +1019,8 @@ export default class Moderation extends React.Component {
 			ipban: '18 Hour IP Ban',
 			enableAccountCreation: 'Enable Account Creation',
 			disableAccountCreation: 'Disable Account Creation',
-			togglePrivate: 'Toggle Private',
+			togglePrivate: 'Toggle Private (Permanent)',
+			togglePrivate: 'Toggle Private (Temporary)',
 			timeOut: 'Timeout 18 Hours (IP)',
 			timeOut2: 'Timeout 18 Hours',
 			timeOut3: 'Timeout 1 Hour (IP)',

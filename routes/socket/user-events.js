@@ -2739,7 +2739,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'modEndGame':
 					const gameToEnd = games[data.uid];
-					
+
 					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
 						for (player of gameToEnd.private.seatedPlayers) {
 							if (data.modName === player.userName) {
@@ -3058,6 +3058,25 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 								account.gameSettings.isPrivate = !isPrivate;
 								account.gameSettings.privateToggleTime = !isPrivate ? new Date('2099-01-01 00:00:00.000') : Date.now();
+								account.save(() => {
+									logOutUser(data.userName);
+								});
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err, 'private convert user err');
+						});
+					break;
+				case 'togglePrivateEighteen':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								const { isPrivate } = account.gameSettings;
+
+								account.gameSettings.isPrivate = !isPrivate;
+								account.gameSettings.privateToggleTime = Date.now();
 								account.save(() => {
 									logOutUser(data.userName);
 								});
@@ -3420,7 +3439,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				ipban: '18 Hour IP Ban',
 				enableAccountCreation: 'Enable Account Creation',
 				disableAccountCreation: 'Disable Account Creation',
-				togglePrivate: 'Toggle Private',
+				togglePrivate: 'Toggle Private (Permanent)',
+				togglePrivate: 'Toggle Private (Temporary)',
 				timeOut: 'Timeout 18 Hours (IP)',
 				timeOut2: 'Timeout 18 Hours',
 				timeOut3: 'Timeout 1 Hour (IP)',
@@ -3678,24 +3698,24 @@ module.exports.checkUserStatus = (socket, callback) => {
 				// destroySession(username);
 			};
 
-					Account.findOne({ username: user }, function (err, account) {
-						if (account) {
-							if (
-								account.isBanned ||
-								(account.isTimeout && (new Date() < account.isTimeout))
-							) {
-								logOutUser(user);
-							} else {
-								testIP(account.lastConnectedIP, banType => {
+			Account.findOne({ username: user }, function (err, account) {
+				if (account) {
+					if (
+						account.isBanned ||
+						(account.isTimeout && (new Date() < account.isTimeout))
+					) {
+						logOutUser(user);
+					} else {
+						testIP(account.lastConnectedIP, banType => {
 							if (banType && banType != 'new' && !account.gameSettings.ignoreIPBans) logOutUser(user);
-									else {
-										sendUserList();
-										callback();
-									}
-								});
+							else {
+								sendUserList();
+								callback();
 							}
-						}
-					});
+						});
+					}
+				}
+			});
 		} else callback();
 	} else callback();
 };
