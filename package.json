@@ -74,7 +74,8 @@
 		"serve-favicon": "^2.4.2",
 		"socket.io": "2.0.3",
 		"socket.io-client": "2.0.3",
-		"yamljs": "^0.3.0"
+		"yamljs": "^0.3.0",
+		"snyk": "^1.189.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.2.2",
@@ -143,7 +144,9 @@
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
 		"lint": "esw src/**/*.jsx scripts/ routes/ webpack/ models/ iso/",
 		"build-css:web": "node-sass --include-path src/scss src/scss/style-web.scss public/styles/style-web.css",
-		"build-css:dark": "node-sass --include-path src/scss src/scss/style-dark.scss public/styles/style-dark.css"
+		"build-css:dark": "node-sass --include-path src/scss src/scss/style-dark.scss public/styles/style-dark.css",
+		"snyk-protect": "snyk protect",
+		"prepublish": "npm run snyk-protect"
 	},
 	"jest": {
 		"setupFilesAfterEnv": [
@@ -162,5 +165,6 @@
 		"hooks": {
 			"pre-commit": "yarn lint"
 		}
-	}
+	},
+	"snyk": true
 }
