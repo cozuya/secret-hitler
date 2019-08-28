@@ -464,16 +464,7 @@ export default class Moderation extends React.Component {
 				>
 					Comment without action
 				</button>
-				<button
-					style={{ width: '100%' }}
-					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
-					onClick={() => {
-						takeModAction('clearGenchat');
-					}}
-				>
-					Clear/delete general chat
-				</button>
-				<div className="ui horizontal divider">Punishments</div>
+				<div className="ui horizontal divider">Revoke Access</div>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
 					onClick={() => {
@@ -530,16 +521,16 @@ export default class Moderation extends React.Component {
 						takeModAction('deleteCardback');
 					}}
 				>
-					Delete player cardback
+					Reset player cardback
 				</button>
 				<button
-					style={{ width: '100%', background: 'skyblue' }}
+					style={{ width: '100%', background: 'lilac' }}
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
 						takeModAction('deleteBio');
 					}}
 				>
-					Delete/clear player bio
+					Reset player bio
 				</button>
 				<button
 					style={{ width: '100%', background: 'palevioletred' }}
@@ -587,7 +578,7 @@ export default class Moderation extends React.Component {
 				>
 					Reset game name
 				</button>
-				<div className="ui horizontal divider">Miscellaneous</div>
+				<div className="ui horizontal divider">General Chat</div>
 				<button
 					style={{ width: '100%', background: 'darkorange' }}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
@@ -596,6 +587,32 @@ export default class Moderation extends React.Component {
 					}}
 				>
 					Set general chat sticky
+				</button>
+				<button
+					style={{ width: '100%' }}
+					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
+					onClick={() => {
+						takeModAction('clearGenchat');
+					}}
+				>
+					Clear general chat
+				</button>
+				<div className="ui horizontal divider">Grant Access</div>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('clearTimeout');
+					}}
+				>
+					Restore User - Remove any pre-existing timeout or ban.
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('clearTimeoutIP');
+					}}
+				>
+					Restore IP - Remove any pre-existing IP ban.
 				</button>
 				<button
 					style={{ width: '100%', background: 'royalblue' }}
@@ -618,6 +635,7 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="accountcreation" />
 					</div>
 				</div>
+				<br />
 				{/* <div className="toggle-containers">
 					<h4 className="ui header">Disable ipbans including new account restrictions</h4>
 					<div
@@ -652,26 +670,8 @@ export default class Moderation extends React.Component {
 					</div>
 				</div> */}
 				<br />
-				<div className="ui horizontal divider">Remove Punishments</div>
-				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
-					onClick={() => {
-						takeModAction('clearTimeout');
-					}}
-				>
-					Restore User - Remove any pre-existing timeout or ban.
-				</button>
-				<br />
-				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
-					onClick={() => {
-						takeModAction('clearTimeoutIP');
-					}}
-				>
-					Restore IP - Remove any pre-existing IP ban.
-				</button>
 				<div className="ui horizontal divider" style={{ color: 'red' }}>
-					Editors/Admins Only
+					🔰 Editors/Admins Only 📛
 				</div>
 
 				<button
