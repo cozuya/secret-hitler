@@ -40,7 +40,8 @@ class Settings extends React.Component {
 		staffDisableVisibleElo: '',
 		staffDisableStaffColor: '',
 		staffIncognito: '',
-		fullheight: false
+		fullheight: false,
+		truncatedSize: 250
 	};
 
 	componentDidMount() {
@@ -65,7 +66,8 @@ class Settings extends React.Component {
 			soundSelected: gameSettings.soundStatus || 'Off',
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
-			staffIncognito: gameSettings.staffIncognito || false
+			staffIncognito: gameSettings.staffIncognito || false,
+			truncatedSize: gameSettings.truncatedSize || 250
 		});
 	}
 
@@ -408,6 +410,27 @@ class Settings extends React.Component {
 								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
 								<label />
 							</div>
+							<h4 className="ui header">Truncated Chat Length</h4>
+							<div className="ui fitted">
+								<input
+									style={{ width: '35%' }}
+									type="text"
+									name="truncatedSize"
+									value={this.state.truncatedSize}
+									onChange={e => {
+										if (/^\d{1,}$/.test(e.target.value) || e.target.value === '') {
+											if (e.target.value === '') {
+												this.setState({ truncatedSize: e.target.value });
+												return;
+											}
+											this.props.socket.emit('updateGameSettings', { truncatedSize: e.target.value > 0 ? e.target.value : 1 });
+											this.setState({ truncatedSize: e.target.value > 0 ? e.target.value : 1 });
+										}
+									}
+									}
+								/>
+								<label />
+							</div>
 
 							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
 								<React.Fragment>
@@ -552,7 +575,7 @@ class Settings extends React.Component {
 													style={{
 														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
 															gameSettings.customCardbackUid
-														}) no-repeat`
+															}) no-repeat`
 													}}
 												/>
 											);

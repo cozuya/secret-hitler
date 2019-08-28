@@ -461,12 +461,13 @@ class Gamechat extends React.Component {
 				.sort((a, b) =>
 					a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)
 				);
+			let chatLength = (userInfo && userInfo.gameSettings && userInfo.gameSettings.truncatedSize) || 250;
 			if (showPlayerChat && showGameChat && showObserverChat && !showFullChat) {
-				list = list.slice(-250);
+				list = list.slice(-chatLength);
 			} else {
 				let listAcc = [];
 				for (let i = list.length - 1; i >= 0; i--) {
-					if (listAcc.length >= 250 && !showFullChat) {
+					if (listAcc.length >= chatLength && !showFullChat) {
 						break;
 					}
 					const chat = list[i];
