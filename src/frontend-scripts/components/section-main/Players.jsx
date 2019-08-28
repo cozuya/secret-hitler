@@ -244,14 +244,14 @@ class Players extends React.Component {
 				onClick={this.handlePlayerClick}
 				style={
 					player.customCardback &&
-					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+						!isBlind &&
+						(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
-						  }
+							backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+						}
 						: {
-								backgroundImage: `url(../images/default_cardback.png)`
-						  }
+							backgroundImage: `url(../images/default_cardback.png)`
+						}
 				}
 				className={(() => {
 					let classes = 'player-container';
@@ -388,10 +388,10 @@ class Players extends React.Component {
 					Queue for tournament
 				</div>
 			) : (
-				<div className="ui right pointing label" onClick={this.clickedTakeSeat}>
-					Take a seat
+					<div className="ui right pointing label" onClick={this.clickedTakeSeat}>
+						Take a seat
 				</div>
-			);
+				);
 		}
 	}
 
@@ -422,7 +422,8 @@ class Players extends React.Component {
 			});
 			$(this.reportModal).modal('hide');
 			this.setState({
-				maxReportLengthExceeded: false
+				maxReportLengthExceeded: false,
+				reportTextValue: ''
 			});
 		}
 	};
@@ -569,7 +570,6 @@ class Players extends React.Component {
 								<div className="item">Cheating</div>
 								<div className="item">Gamethrowing</div>
 								<div className="item">Stalling</div>
-								<div className="item">Botting</div>
 								<div className="item">Other</div>
 							</div>
 						</div>
@@ -581,6 +581,7 @@ class Players extends React.Component {
 						>
 							Submit
 						</div>
+						Pinging @Moderator on Discord (in #mod-support) may yield faster results
 					</form>
 				</div>
 
