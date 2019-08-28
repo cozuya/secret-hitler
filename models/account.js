@@ -63,7 +63,8 @@ const Account = new Schema({
 			width: Number,
 			height: Number
 		},
-		playerNotes: Array
+		playerNotes: Array,
+		ignoreIPBans: Boolean,
 	},
 	verification: {
 		email: String

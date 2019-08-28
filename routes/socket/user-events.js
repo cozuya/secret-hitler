@@ -34,7 +34,6 @@ const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants');
 const { makeReport } = require('./report.js');
-const { expandAndSimplify } = require('./ip-obf');
 
 /**
  * @param {object} game - game to act on.
@@ -3678,9 +3677,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 
 				// destroySession(username);
 			};
-			testIP(expandAndSimplify(socket.handshake.address), banType => {
-				if (banType && banType != 'new') logOutUser(user);
-				else {
+
 					Account.findOne({ username: user }, function (err, account) {
 						if (account) {
 							if (
@@ -3690,7 +3687,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 								logOutUser(user);
 							} else {
 								testIP(account.lastConnectedIP, banType => {
-									if (banType && banType != 'new') logOutUser(user);
+							if (banType && banType != 'new' && !account.gameSettings.ignoreIPBans) logOutUser(user);
 									else {
 										sendUserList();
 										callback();
@@ -3699,8 +3696,6 @@ module.exports.checkUserStatus = (socket, callback) => {
 							}
 						}
 					});
-				}
-			});
 		} else callback();
 	} else callback();
 };

@@ -26,7 +26,7 @@ const ensureAuthenticated = (req, res, next) => {
 	res.redirect('/');
 };
 const VPNCache = {};
-let torIps;
+let torIps, ipBanned, ipBanEnd;
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 const renderPage = (req, res, pageName, varName) => {
@@ -480,14 +480,10 @@ module.exports = torIpsParam => {
 			testIP(req.expandedIP, (banType, unbanTime) => {
 				if (banType && banType != 'new') {
 					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
-					else if (banType === 'small' || banType === 'big') {
-						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
-					} else if (banType === 'tiny') {
-						res.status(403).json({
-							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
-								unbanTime
-							)}`
-						});
+					else if (banType === 'small' || banType === 'big' || banType === 'tiny') {
+						ipBanned = banType;
+						ipBanEnd = unbanTime;
+						return next();
 					} else {
 						console.log(`Unhandled IP ban type: ${banType}`);
 						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
@@ -500,6 +496,20 @@ module.exports = torIpsParam => {
 			Account.findOne({
 				username: req.user.username
 			}).then(player => {
+				if (ipBanned && ipBanned !== '') {
+					if ((ipBanned === 'small' || ipBanned === 'big') && !player.gameSettings.ignoreIPBans) {
+						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
+						return next();
+					} else if (ipBanned === 'tiny') {
+						res.status(403).json({
+							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
+								ipBanEnd
+							)}`
+						});
+						return next();
+					}
+				}
+
 				if (!player) {
 					res.status(403).json({
 						message: 'There is no account with that username.'
