@@ -988,7 +988,7 @@ export default class Creategame extends React.Component {
 	}
 
 	timedSliderChange = timedSliderValue => {
-		this.setState(prevState => ({ timedSliderValue, casualgame: timedSliderValue < 30 ? true : prevState.timedSliderValue }));
+		this.setState(prevState => ({ timedSliderValue, casualgame: timedSliderValue[0] < 30 }));
 	};
 
 	eloSliderChange = eloSliderValue => {
