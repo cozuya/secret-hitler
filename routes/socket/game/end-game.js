@@ -95,9 +95,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 		if (!io.sockets.sockets[affectedSocketId]) {
 			continue;
 		}
-		io.sockets.sockets[affectedSocketId].emit(
-			'removeClaim'
-		);
+		io.sockets.sockets[affectedSocketId].emit('removeClaim');
 	}
 
 	if (game && game.general && game.general.timedMode && game.private.timerId) {

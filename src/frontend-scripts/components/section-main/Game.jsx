@@ -120,8 +120,8 @@ export default class Game extends React.Component {
 									<Flappy isFacist userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
 								</React.Fragment>
 							) : (
-									<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
-								)}
+								<Tracks userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+							)}
 						</div>
 						<div className="chat-container game-chat transition">
 							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>

@@ -385,8 +385,8 @@ export default class Moderation extends React.Component {
 						action === 'deleteGame'
 							? `DELGAME${this.state.playerInputText}`
 							: action === 'resetGameName'
-								? `RESETGAMENAME${this.state.playerInputText}`
-								: this.state.playerInputText || this.state.selectedUser,
+							? `RESETGAMENAME${this.state.playerInputText}`
+							: this.state.playerInputText || this.state.selectedUser,
 					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 					comment: this.state.actionTextValue,
 					action
@@ -438,8 +438,8 @@ export default class Moderation extends React.Component {
 						action === 'deleteGame'
 							? `DELGAME${playerInputText}`
 							: action === 'resetGameName'
-								? `RESETGAMENAME${playerInputText}`
-								: playerInputText || selectedUser,
+							? `RESETGAMENAME${playerInputText}`
+							: playerInputText || selectedUser,
 					ip: playerInputText ? '' : selectedUser ? userList.find(user => user.userName === selectedUser).ip : '',
 					comment: actionTextValue,
 					action
@@ -456,7 +456,7 @@ export default class Moderation extends React.Component {
 			<div className="button-container">
 				<br />
 				<button
-					style={{ width: '100%'}}
+					style={{ width: '100%' }}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
 					onClick={() => {
 						takeModAction('comment');
@@ -465,7 +465,7 @@ export default class Moderation extends React.Component {
 					Comment without action
 				</button>
 				<button
-					style={{ width: '100%'}}
+					style={{ width: '100%' }}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
 					onClick={() => {
 						takeModAction('clearGenchat');
@@ -670,7 +670,9 @@ export default class Moderation extends React.Component {
 				>
 					Restore IP - Remove any pre-existing IP ban.
 				</button>
-				<div className="ui horizontal divider" style={{color: 'red'}}>Editors/Admins Only</div>
+				<div className="ui horizontal divider" style={{ color: 'red' }}>
+					Editors/Admins Only
+				</div>
 
 				<button
 					className={

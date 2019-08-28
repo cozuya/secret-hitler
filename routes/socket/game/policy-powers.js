@@ -1174,12 +1174,9 @@ module.exports.executePlayer = game => {
 				(player, index) =>
 					index !== presidentIndex &&
 					!seatedPlayers[index].isDead &&
-					(
-						(!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
+					((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
 						(game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
-						(game.customGameSettings.fasCanShootHit && (president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler'))
-					)
-
+						(game.customGameSettings.fasCanShootHit && (president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')))
 			)
 			.forEach(player => {
 				player.notificationStatus = 'notification';
@@ -1192,11 +1189,9 @@ module.exports.executePlayer = game => {
 					(player, i) =>
 						i !== presidentIndex &&
 						!seatedPlayers[i].isDead &&
-						(
-							(!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
+						((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
 							(game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
-							(game.customGameSettings.fasCanShootHit && (president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler'))
-						)
+							(game.customGameSettings.fasCanShootHit && (president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')))
 				)
 				.map(player => seatedPlayers.indexOf(player))
 		];
@@ -1478,7 +1473,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 										{
 											text: ` policy has been enacted. (${
 												policy === 'liberal' ? game.trackState.liberalPolicyCount.toString() : game.trackState.fascistPolicyCount.toString()
-												}/${policy === 'liberal' ? '5' : '6'})`
+											}/${policy === 'liberal' ? '5' : '6'})`
 										}
 									]
 								};

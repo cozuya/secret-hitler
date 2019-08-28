@@ -55,7 +55,7 @@ export function processEmotes(input, isMod, allEmotes) {
 			formatedMsg.push(
 				<a
 					key={index}
-					href={isGithub ? 'https://github.com/cozuya/secret-hitler/' + data[2] : gameURL ? "/game/" + data[2].substring(5) : '/' + data[2]}
+					href={isGithub ? 'https://github.com/cozuya/secret-hitler/' + data[2] : gameURL ? '/game/' + data[2].substring(5) : '/' + data[2]}
 					className="shio-link"
 					title={isGithub ? "link to sh.io's github page" : 'link to something inside of sh.io'}
 				>

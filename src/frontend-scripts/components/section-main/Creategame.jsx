@@ -922,15 +922,15 @@ export default class Creategame extends React.Component {
 						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
 					/>
 				) : (
-							<Range
-								onChange={this.sliderChange}
-								min={5}
-								max={10}
-								defaultValue={[5, 10]}
-								value={this.state.sliderValues}
-								marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
-							/>
-						)}
+					<Range
+						onChange={this.sliderChange}
+						min={5}
+						max={10}
+						defaultValue={[5, 10]}
+						value={this.state.sliderValues}
+						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
+					/>
+				)}
 				{!isTourny && !customGameSettings.enabled && (
 					<div className="checkbox-container">
 						{new Array(6).fill(true).map((el, index) => (
@@ -1594,25 +1594,27 @@ export default class Creategame extends React.Component {
 							</div>
 							{this.state.containsBadWord && <p className="contains-bad-word">This game name has a banned word or word fragment.</p>}
 						</div>
-						{!this.state.unlistedGame && <div className="three wide column privategame">
-							<h4 className="ui header" style={{ marginBottom: '15px' }}>
-								Private game
-							</h4>
-							<i className="big yellow lock icon" />
-							<Switch
-								onChange={checked => {
-									this.setState({ privateShowing: checked });
-								}}
-								checked={this.state.privateShowing}
-								onColor="#627cc8"
-								offColor="#444444"
-								uncheckedIcon={false}
-								checkedIcon={false}
-								height={21}
-								width={48}
-								handleDiameter={21}
-							/>
-						</div>}
+						{!this.state.unlistedGame && (
+							<div className="three wide column privategame">
+								<h4 className="ui header" style={{ marginBottom: '15px' }}>
+									Private game
+								</h4>
+								<i className="big yellow lock icon" />
+								<Switch
+									onChange={checked => {
+										this.setState({ privateShowing: checked });
+									}}
+									checked={this.state.privateShowing}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+							</div>
+						)}
 						{this.state.unlistedGame && <div className="three wide column privategame" />}
 						{this.state.privateShowing && (
 							<div className="four wide column ui input">
@@ -1627,28 +1629,30 @@ export default class Creategame extends React.Component {
 								/>
 							</div>
 						)}
-						{!this.state.privateShowing && <div className="three wide column privategame">
-							<h4 className="ui header" style={{ marginBottom: '15px' }}>
-								Unlisted game
-							</h4>
-							<i className="big green lock icon" />
-							<Switch
-								onChange={checked => {
-									this.setState({
-										unlistedGame: checked,
-										casualgame: checked ? true : this.state.casualgame
-									});
-								}}
-								checked={this.state.unlistedGame}
-								onColor="#627cc8"
-								offColor="#444444"
-								uncheckedIcon={false}
-								checkedIcon={false}
-								height={21}
-								width={48}
-								handleDiameter={21}
-							/>
-						</div>}
+						{!this.state.privateShowing && (
+							<div className="three wide column privategame">
+								<h4 className="ui header" style={{ marginBottom: '15px' }}>
+									Unlisted game
+								</h4>
+								<i className="big green lock icon" />
+								<Switch
+									onChange={checked => {
+										this.setState({
+											unlistedGame: checked,
+											casualgame: checked ? true : this.state.casualgame
+										});
+									}}
+									checked={this.state.unlistedGame}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+							</div>
+						)}
 					</div>
 					{this.renderPresetSelector()}
 					<div className="row slider">{this.renderPlayerSlider()}</div>
@@ -1806,7 +1810,7 @@ export default class Creategame extends React.Component {
 						<div className="four wide column disablegamechat">
 							<i className="big game icon" />
 							<h4 className="ui header">
-								Disable game chats - { /* you're on your own to remember what happened over the course of the game */}
+								Disable game chats - {/* you're on your own to remember what happened over the course of the game */}
 								<span style={{ fontStyle: 'italic' }}>currently disabled due to multiple issues. </span>
 							</h4>
 							{/* <Switch

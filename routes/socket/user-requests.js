@@ -313,7 +313,18 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
 	const user = userList.find(user => user.userName === passport.user);
 	if (user) {
 		user.status = {
-			type: override && game && !game.general.unlisted ? override : game ? (game.general.private ? 'private' : !game.general.unlisted && game.general.rainbowgame ? 'rainbow' : !game.general.unlisted ? 'playing' : 'none') : 'none',
+			type:
+				override && game && !game.general.unlisted
+					? override
+					: game
+					? game.general.private
+						? 'private'
+						: !game.general.unlisted && game.general.rainbowgame
+						? 'rainbow'
+						: !game.general.unlisted
+						? 'playing'
+						: 'none'
+					: 'none',
 			gameId: game ? game.general.uid : false
 		};
 		sendUserList();

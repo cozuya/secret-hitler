@@ -426,8 +426,7 @@ class Settings extends React.Component {
 											this.props.socket.emit('updateGameSettings', { truncatedSize: e.target.value > 0 ? e.target.value : 1 });
 											this.setState({ truncatedSize: e.target.value > 0 ? e.target.value : 1 });
 										}
-									}
-									}
+									}}
 								/>
 								<label />
 							</div>
@@ -575,7 +574,7 @@ class Settings extends React.Component {
 													style={{
 														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
 															gameSettings.customCardbackUid
-															}) no-repeat`
+														}) no-repeat`
 													}}
 												/>
 											);

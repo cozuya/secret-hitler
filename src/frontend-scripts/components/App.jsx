@@ -55,8 +55,8 @@ class TopLevelErrorBoundry extends React.Component {
 				</details>
 			</div>
 		) : (
-				this.props.children
-			);
+			this.props.children
+		);
 	}
 }
 

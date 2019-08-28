@@ -436,8 +436,8 @@ const DisplayLobbies = props => {
 
 	return (
 		<React.Fragment>
-			{(!game.isUnlisted || (userInfo.staffRole && userInfo.staffRole !== 'altmod')) &&
-				< div
+			{(!game.isUnlisted || (userInfo.staffRole && userInfo.staffRole !== 'altmod')) && (
+				<div
 					data-uid={game.uid}
 					onClick={() => {
 						location.href = `#/table/${game.uid}`;
@@ -451,7 +451,9 @@ const DisplayLobbies = props => {
 								<div className="gamename-column">
 									{renderFlag()}
 									{game.name}
-									{userInfo.staffRole && userInfo.staffRole !== 'altmod' && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
+									{userInfo.staffRole && userInfo.staffRole !== 'altmod' && (
+										<span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>
+									)}
 								</div>
 								<div className="options-column experienced">{optionIcons()}</div>
 							</div>
@@ -459,10 +461,10 @@ const DisplayLobbies = props => {
 								{game.isTourny && game.tournyStatus && game.tournyStatus.queuedPlayers ? (
 									<span className="game-tournament-unstarted">Tournament starting soon..</span>
 								) : (
-										<div className="player-icons-column">
-											<div className="player-icons">{playerIcons()}</div>
-										</div>
-									)}
+									<div className="player-icons-column">
+										<div className="player-icons">{playerIcons()}</div>
+									</div>
+								)}
 								<div className="player-count-column">
 									<span className="seatedcount" style={{ fontWeight: 'bold' }}>
 										{game.seatedCount || (game.tournyStatus && game.tournyStatus.queuedPlayers)}{' '}
@@ -474,7 +476,7 @@ const DisplayLobbies = props => {
 						</div>
 					</div>
 				</div>
-			}
+			)}
 		</React.Fragment>
 	);
 };

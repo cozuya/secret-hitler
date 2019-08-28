@@ -51,9 +51,7 @@ class Changelog extends React.Component {
 					<li>wenshan: 1894</li>
 				</ul>
 
-				<h4>
-					Timed Games are Fixed!  -Vigasaurus
-				</h4>
+				<h4>Timed Games are Fixed! -Vigasaurus</h4>
 				<p>Various Bugfixes -Vigasaurus</p>
 				<p>Multiple moderation improvements</p>
 

@@ -159,38 +159,40 @@ module.exports.formattedUserList = isAEM => {
 		return value ? value : undefined;
 	};
 
-	return module.exports.userList.map(user => ({
-		userName: user.userName,
-		wins: prune(user.wins),
-		losses: prune(user.losses),
-		rainbowWins: prune(user.rainbowWins),
-		rainbowLosses: prune(user.rainbowLosses),
-		isPrivate: prune(user.isPrivate),
-		staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
-		staffDisableStaffColor: prune(user.staffDisableStaffColor),
+	return module.exports.userList
+		.map(user => ({
+			userName: user.userName,
+			wins: prune(user.wins),
+			losses: prune(user.losses),
+			rainbowWins: prune(user.rainbowWins),
+			rainbowLosses: prune(user.rainbowLosses),
+			isPrivate: prune(user.isPrivate),
+			staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
+			staffDisableStaffColor: prune(user.staffDisableStaffColor),
 
-		// Tournaments are disabled, no point sending this.
-		// tournyWins: user.tournyWins,
+			// Tournaments are disabled, no point sending this.
+			// tournyWins: user.tournyWins,
 
-		// Blacklists are sent in the sendUserGameSettings event.
-		// blacklist: user.blacklist,
-		customCardback: user.customCardback,
-		customCardbackUid: user.customCardbackUid,
-		eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
-		eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
-		status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
-		winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
-		lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
-		rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
-		rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
-		previousSeasonAward: user.previousSeasonAward,
-		specialTournamentStatus: user.specialTournamentStatus,
-		timeLastGameCreated: user.timeLastGameCreated,
-		staffRole: prune(user.staffRole),
-		staffIncognito: prune(user.staffIncognito),
-		isContributor: prune(user.isContributor)
-		// oldData: user
-	})).filter(user => isAEM || !user.staffIncognito);
+			// Blacklists are sent in the sendUserGameSettings event.
+			// blacklist: user.blacklist,
+			customCardback: user.customCardback,
+			customCardbackUid: user.customCardbackUid,
+			eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
+			eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
+			status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
+			winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
+			lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
+			rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
+			rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
+			previousSeasonAward: user.previousSeasonAward,
+			specialTournamentStatus: user.specialTournamentStatus,
+			timeLastGameCreated: user.timeLastGameCreated,
+			staffRole: prune(user.staffRole),
+			staffIncognito: prune(user.staffIncognito),
+			isContributor: prune(user.isContributor)
+			// oldData: user
+		}))
+		.filter(user => isAEM || !user.staffIncognito);
 };
 
 const userListEmitter = {
@@ -224,8 +226,8 @@ module.exports.formattedGameList = () => {
 		gameStatus: games[gameName].gameState.isCompleted
 			? games[gameName].gameState.isCompleted
 			: games[gameName].gameState.isTracksFlipped
-				? 'isStarted'
-				: 'notStarted',
+			? 'isStarted'
+			: 'notStarted',
 		seatedCount: games[gameName].publicPlayersState.length,
 		gameCreatorName: games[gameName].general.gameCreatorName,
 		minPlayersCount: games[gameName].general.minPlayersCount,
@@ -313,8 +315,8 @@ module.exports.createNewBypass = () => {
 		key = `${Math.random()
 			.toString(36)
 			.substring(2)}${Math.random()
-				.toString(36)
-				.substring(2)}`.trim();
+			.toString(36)
+			.substring(2)}`.trim();
 	} while (bypassKeys.indexOf(key) >= 0);
 	bypassKeys.push(key);
 	return key;

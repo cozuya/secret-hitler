@@ -3,7 +3,8 @@ const cn = require('classnames');
 export const TOU_CHANGES = [
 	{
 		changeVer: '1.3',
-		changeDesc: 'Adds specified punishments for ragequits and multi-accounting/colluding.\nRevises rules regarding sub-optimal play.\nSpecifies rules regarding unfair outside influences on games (blacklist threats, report threats, etc.).\nAdds rules regarding spoilers for TV shows, movies, etc.\nAdds general punishment timeline and protocol.\nAdds AFK policy and its specific punishments.\n'
+		changeDesc:
+			'Adds specified punishments for ragequits and multi-accounting/colluding.\nRevises rules regarding sub-optimal play.\nSpecifies rules regarding unfair outside influences on games (blacklist threats, report threats, etc.).\nAdds rules regarding spoilers for TV shows, movies, etc.\nAdds general punishment timeline and protocol.\nAdds AFK policy and its specific punishments.\n'
 	},
 	{
 		changeVer: '1.2',
@@ -76,22 +77,22 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		return w + l >= 50
 			? eloDisabled
 				? cn(defaultClass, {
-					experienced1: w + l > 49,
-					experienced2: w + l > 99,
-					experienced3: w + l > 199,
-					experienced4: w + l > 299,
-					experienced5: w + l > 499,
-					onfire1: w / (w + l) > 0.52,
-					onfire2: w / (w + l) > 0.54,
-					onfire3: w / (w + l) > 0.56,
-					onfire4: w / (w + l) > 0.58,
-					onfire5: w / (w + l) > 0.6,
-					onfire6: w / (w + l) > 0.62,
-					onfire7: w / (w + l) > 0.64,
-					onfire8: w / (w + l) > 0.66,
-					onfire9: w / (w + l) > 0.68,
-					onfire10: w / (w + l) > 0.7
-				})
+						experienced1: w + l > 49,
+						experienced2: w + l > 99,
+						experienced3: w + l > 199,
+						experienced4: w + l > 299,
+						experienced5: w + l > 499,
+						onfire1: w / (w + l) > 0.52,
+						onfire2: w / (w + l) > 0.54,
+						onfire3: w / (w + l) > 0.56,
+						onfire4: w / (w + l) > 0.58,
+						onfire5: w / (w + l) > 0.6,
+						onfire6: w / (w + l) > 0.62,
+						onfire7: w / (w + l) > 0.64,
+						onfire8: w / (w + l) > 0.66,
+						onfire9: w / (w + l) > 0.68,
+						onfire10: w / (w + l) > 0.7
+				  })
 				: cn(defaultClass, gradeObj)
 			: defaultClass;
 	}
