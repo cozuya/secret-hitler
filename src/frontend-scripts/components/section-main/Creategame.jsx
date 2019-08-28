@@ -835,7 +835,7 @@ export default class Creategame extends React.Component {
 				disableObserver: this.state.disableobserver && !this.state.isTourny,
 				isTourny: this.state.isTourny,
 				isVerifiedOnly: userInfo.verified ? this.state.isVerifiedOnly : false,
-				disableGamechat: this.state.disablegameChat,
+				disableGamechat: false, // this.state.disablegameChat,
 				rainbowgame: this.state.rainbowgame,
 				blindMode: this.state.blindMode,
 				flappyMode: this.state.flappyMode,
@@ -1780,8 +1780,11 @@ export default class Creategame extends React.Component {
 						</div>
 						<div className="four wide column disablegamechat">
 							<i className="big game icon" />
-							<h4 className="ui header">Disable game chats - you're on your own to remember what happened over the course of the game</h4>
-							<Switch
+							<h4 className="ui header">
+								Disable game chats - { /* you're on your own to remember what happened over the course of the game */}
+								<span style={{ fontStyle: 'italic' }}>currently disabled due to multiple issues. </span>
+							</h4>
+							{/* <Switch
 								onChange={checked => {
 									this.setState({ disablegameChat: checked });
 								}}
@@ -1793,7 +1796,7 @@ export default class Creategame extends React.Component {
 								height={21}
 								width={48}
 								handleDiameter={21}
-							/>
+							/> */}
 						</div>
 						<div className="four wide column experiencedmode">
 							<i className="big fast forward icon" />
