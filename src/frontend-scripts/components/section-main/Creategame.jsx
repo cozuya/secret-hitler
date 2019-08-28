@@ -428,6 +428,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -465,6 +466,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -502,6 +504,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 13 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -540,6 +543,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -578,6 +582,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -616,6 +621,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -654,15 +660,16 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 15 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
 				});
 				break;
-			case 'Dev Game':
+			case 'Trivia Mode':
 				this.setState({
-					gameName: 'TESTING',
-					sliderValues: [5, 5],
+					gameName: 'Trivia Mode',
+					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
@@ -671,7 +678,7 @@ export default class Creategame extends React.Component {
 					password: '',
 					containsBadWord: false,
 					rainbowgame: true,
-					checkedSliderValues: [true, false, false, false, false, false],
+					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
 					unlistedGame: false,
@@ -679,19 +686,20 @@ export default class Creategame extends React.Component {
 					casualgame: true,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: !isRainbow,
+					isVerifiedOnly: false,
 					timedSliderValue: [120],
-					customGameSliderValue: [5],
+					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
 					customGameSettings: {
 						enabled: true,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: ['investigate', 'deckpeek', 'bullet', 'peekdrop', 'election'], // last "power" is always a fas victory
-						hitlerZone: 1, // 1-5
-						vetoZone: 1, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
+						powers: ['bullet', 'bullet', 'bullet', 'bullet', 'bullet'], // last "power" is always a fas victory
+						hitlerZone: 4, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 2, // 1-3, does not include hit
 						hitKnowsFas: true,
+						fasCanShootHit: true,
 						deckState: { lib: 6, fas: 19 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -730,6 +738,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -1473,8 +1482,8 @@ export default class Creategame extends React.Component {
 				<button className="preset" onClick={() => this.presetSelector('Inv Game')}>
 					Inv Game
 				</button>
-				<button className="preset" onClick={() => this.presetSelector('Dev Game')}>
-					Dev Game
+				<button className="preset" onClick={() => this.presetSelector('Trivia Mode')}>
+					Trivia Mode
 				</button>
 				<button className="preset default" onClick={() => this.presetSelector('Reset')}>
 					Reset
