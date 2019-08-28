@@ -26,3 +26,5 @@ patch:
         patched: '2019-07-04T07:59:35.737Z'
     - pug > pug-code-gen > pug-attrs > constantinople > babel-types > lodash:
         patched: '2019-07-04T07:59:35.737Z'
+    - snyk > snyk-nuget-plugin > dotnet-deps-parser > lodash:
+        patched: '2019-08-28T21:51:32.003Z'
