@@ -1335,7 +1335,7 @@ export default class Creategame extends React.Component {
 				<div className="row">{this.renderFasTrack()}</div>
 				<div className="eight wide column ui grid" style={{ height: 'fit-content' }}>
 					<div className="row">
-						<div className="eight wide column">
+						<div className="six wide column">
 							<div>
 								<h4 className="ui header">Number of fascists</h4>
 								<Range
@@ -1348,13 +1348,29 @@ export default class Creategame extends React.Component {
 								/>
 							</div>
 						</div>
-						<div className="eight wide column">
+						<div className="five wide column">
 							<h4 className="ui header">Hitler sees fascists</h4>
 							<Switch
 								onChange={checked => {
-									this.setState({ customGameSettings: Object.assign(this.state.customGameSettings, { hitKnowsFas: checked }) });
+									this.setState({ customGameSettings: { ...this.state.customGameSettings, hitKnowsFas: checked } });
 								}}
 								checked={this.state.customGameSettings.hitKnowsFas}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
+						</div>
+						<div className="five wide column">
+							<h4 className="ui header">Fascists can shoot hitler</h4>
+							<Switch
+								onChange={checked => {
+									this.setState({ customGameSettings: { ...this.state.customGameSettings, fasCanShootHit: checked } });
+								}}
+								checked={this.state.customGameSettings.fasCanShootHit}
 								onColor="#627cc8"
 								offColor="#444444"
 								uncheckedIcon={false}
