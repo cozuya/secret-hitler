@@ -385,8 +385,8 @@ export default class Moderation extends React.Component {
 						action === 'deleteGame'
 							? `DELGAME${this.state.playerInputText}`
 							: action === 'resetGameName'
-							? `RESETGAMENAME${this.state.playerInputText}`
-							: this.state.playerInputText || this.state.selectedUser,
+								? `RESETGAMENAME${this.state.playerInputText}`
+								: this.state.playerInputText || this.state.selectedUser,
 					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 					comment: this.state.actionTextValue,
 					action
@@ -438,8 +438,8 @@ export default class Moderation extends React.Component {
 						action === 'deleteGame'
 							? `DELGAME${playerInputText}`
 							: action === 'resetGameName'
-							? `RESETGAMENAME${playerInputText}`
-							: playerInputText || selectedUser,
+								? `RESETGAMENAME${playerInputText}`
+								: playerInputText || selectedUser,
 					ip: playerInputText ? '' : selectedUser ? userList.find(user => user.userName === selectedUser).ip : '',
 					comment: actionTextValue,
 					action
@@ -1022,7 +1022,7 @@ export default class Moderation extends React.Component {
 			enableAccountCreation: 'Enable Account Creation',
 			disableAccountCreation: 'Disable Account Creation',
 			togglePrivate: 'Toggle Private (Permanent)',
-			togglePrivate: 'Toggle Private (Temporary)',
+			togglePrivateEighteen: 'Toggle Private (Temporary)',
 			timeOut: 'Timeout 18 Hours (IP)',
 			timeOut2: 'Timeout 18 Hours',
 			timeOut3: 'Timeout 1 Hour (IP)',
