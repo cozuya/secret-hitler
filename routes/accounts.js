@@ -26,7 +26,7 @@ const ensureAuthenticated = (req, res, next) => {
 	res.redirect('/');
 };
 const VPNCache = {};
-let torIps, ipBanned, ipBanEnd;
+let torIps;
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 const renderPage = (req, res, pageName, varName) => {
@@ -481,8 +481,8 @@ module.exports = torIpsParam => {
 				if (banType && banType != 'new') {
 					if (banType == 'nocache') res.status(403).json({ message: 'The server is still getting its bearings, try again in a few moments.' });
 					else if (banType === 'small' || banType === 'big' || banType === 'tiny') {
-						ipBanned = banType;
-						ipBanEnd = unbanTime;
+						req.ipBanned = banType;
+						req.ipBanEnd = unbanTime;
 						return next();
 					} else {
 						console.log(`Unhandled IP ban type: ${banType}`);
@@ -496,14 +496,16 @@ module.exports = torIpsParam => {
 			Account.findOne({
 				username: req.user.username
 			}).then(player => {
-				if (ipBanned && ipBanned !== '') {
-					if ((ipBanned === 'small' || ipBanned === 'big') && !player.gameSettings.ignoreIPBans) {
+				if (req.ipBanned && req.ipBanned !== '') {
+					if ((req.ipBanned === 'small' || req.ipBanned === 'big') && !player.gameSettings.ignoreIPBans) {
+						req.logOut();
 						res.status(403).json({ message: 'You can no longer access this service.  If you believe this is in error, contact the moderators on Discord.' });
 						return next();
-					} else if (ipBanned === 'tiny') {
+					} else if (req.ipBanned === 'tiny') {
+						req.logOut();
 						res.status(403).json({
 							message: `Your IP address was timed out.  If you believe this is in error, contact the moderators on Discord. Your timeout expires on ${new Date(
-								ipBanEnd
+								req.ipBanEnd
 							)}`
 						});
 						return next();
@@ -517,6 +519,7 @@ module.exports = torIpsParam => {
 					return next();
 				}
 				if (player.isBanned) {
+					req.logOut();
 					res.status(403).json({
 						message: 'Your account has been banned.  If you believe this is in error, contact the moderators on Discord.'
 						// TODO: include the reason moderators provided for the account ban, if it exists
@@ -535,11 +538,10 @@ module.exports = torIpsParam => {
 					});
 
 					torSignup.save();
-
+					req.logOut();
 					res.status(403).json({
 						message: 'Use of TOR is not allowed on this site.'
 					});
-
 					return next();
 				}
 
