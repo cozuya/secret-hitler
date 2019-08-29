@@ -864,7 +864,7 @@ export default class Moderation extends React.Component {
 				</button>
 				<div className="ui horizontal divider">Roles</div>
 				<button
-					style={{ background: '#21bae0' }}
+					style={{ background: 'grey' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
