@@ -26,6 +26,7 @@ const ensureAuthenticated = (req, res, next) => {
 	res.redirect('/');
 };
 const VPNCache = {};
+let getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999), count: 0 };
 let torIps;
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
@@ -46,6 +47,7 @@ const renderPage = (req, res, pageName, varName) => {
 };
 
 const checkIP = config => {
+	console.log(getIPIntelCounter);
 	const { res, username, email, signupIP, hasBypass, next } = config;
 	if (accountCreationDisabled.status && !hasBypass) {
 		const creationDisabledSignup = new Signups({
@@ -79,7 +81,32 @@ const checkIP = config => {
 				message: 'Use of TOR is not allowed on this site.'
 			});
 		});
+	} else if (getIPIntelCounter.count >= 500 && new Date() < getIPIntelCounter.reset) {
+		const rateLimitSignup = new Signups({
+			date: new Date(),
+			userName: username,
+			type: 'Failed - GII 429',
+			ip: obfIP(signupIP),
+			email: config.isOAuth
+				? `${config.type} ${config.profile.username}${config.type === 'discord' ? '#' + config.profile.discriminator : ''}`
+				: Boolean(email),
+			unobfuscatedIP: signupIP,
+			oauthID: `${config.isOAuth && config.type === 'discord' ? config.profile.id : ''}`
+		});
+		rateLimitSignup.save(() => {
+			res.status(403).json({
+				message: 'An internal server error occurred. Please try again later.'
+			});
+		});
 		// } else if (process.env.NODE_ENV !== 'production') {
+		// 	if (new Date() < getIPIntelCounter.reset) {
+		// 		getIPIntelCounter.count++;
+		// 		if (getIPIntelCounter.count === 1) {
+		// 			getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1, 23, 59, 59), count: 501 };
+		// 		}
+		// 	} else {
+		// 		getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59), count: 0 };
+		// 	}
 		// 	config.vpnScore = 0;
 		// 	next(config);
 	} else if (VPNCache[signupIP]) {
@@ -89,6 +116,11 @@ const checkIP = config => {
 		fetch(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`)
 			.then(res => res.json())
 			.then(json => {
+				if (new Date() < getIPIntelCounter.reset) {
+					getIPIntelCounter.count++;
+				} else {
+					getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999), count: 0 };
+				}
 				let vpnScore = json.result;
 				if (vpnScore < 0) {
 					res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
