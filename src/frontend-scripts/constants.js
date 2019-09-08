@@ -109,7 +109,7 @@ export const getBadWord = text => {
 		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
-	const exceptions = [/(i|o)f (a|4) g/gi, /underclaim on gov/gi, /big ga(e|m|y)/gi, /among/gi, /mongodb/gi, /mongolia/gi]; // This list for all exceptions to bypass swear filter
+	const exceptions = [/(i|o)f (a|4) g/gi, /underclaim on gov/gi, /bastard/gi, /big ga/gi, /among/gi, /mongod/gi, /mongolia/gi]; // This list for all exceptions to bypass swear filter
 	let foundWord = [null, null]; // Future found bad word, in format of: [blacklisted word, variation]
 
 	// let ec = 0; //for future use in auto reporting
