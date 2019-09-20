@@ -151,8 +151,8 @@ const checkIP = config => {
 						message:
 							'Creating new accounts is temporarily disabled most likely due to a spam/bot/griefing attack.  If you need an exception, please contact our moderators on Discord.'
 					});
-					ipBanned = true;
 				});
+				ipBanned = true;
 			} else {
 				testIP(signupIP, (banType, unbanTime) => {
 					if (hasBypass && banType == 'new') banType = null;
