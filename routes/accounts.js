@@ -51,8 +51,7 @@ const checkIP = config => {
 	if (hasBypass) {
 		config.vpnScore = 0;
 		next(config);
-	}
-	if (accountCreationDisabled.status && !hasBypass) {
+	} else if (accountCreationDisabled.status && !hasBypass) {
 		const creationDisabledSignup = new Signups({
 			date: new Date(),
 			userName: username,
@@ -84,10 +83,7 @@ const checkIP = config => {
 				message: 'Use of TOR is not allowed on this site.'
 			});
 		});
-	} else if (VPNCache[signupIP]) {
-		config.vpnScore = VPNCache[signupIP];
-		next(config);
-	} else if (getIPIntelCounter.count >= 495 && new Date() < getIPIntelCounter.reset) {
+	} else if (getIPIntelCounter.count >= 495 && new Date() < getIPIntelCounter.reset && !VPNCache[signupIP]) {
 		const rateLimitSignup = new Signups({
 			date: new Date(),
 			userName: username,
@@ -187,28 +183,33 @@ const checkIP = config => {
 			}
 		}).then(() => {
 			if (!ipBanned) {
-				fetch(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`)
-					.then(res => res.json())
-					.then(json => {
-						if (new Date() < getIPIntelCounter.reset) {
-							getIPIntelCounter.count++;
-						} else {
-							getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999), count: 1 };
-						}
-						let vpnScore = json.result;
-						if (vpnScore < 0) {
-							res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
-							console.log('Error in Get IP Intel, score given: ', vpnScore, 'IP: ', signupIP, 'Message: ', json.message);
+				if (VPNCache[signupIP]) {
+					config.vpnScore = VPNCache[signupIP];
+					next(config);
+				} else {
+					fetch(`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`)
+						.then(res => res.json())
+						.then(json => {
+							if (new Date() < getIPIntelCounter.reset) {
+								getIPIntelCounter.count++;
+							} else {
+								getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999), count: 1 };
+							}
+							let vpnScore = json.result;
+							if (vpnScore < 0) {
+								res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
+								console.log('Error in Get IP Intel, score given: ', vpnScore, 'IP: ', signupIP, 'Message: ', json.message);
+								return;
+							}
+							config.vpnScore = VPNCache[signupIP] = vpnScore;
+							next(config);
+						})
+						.catch(e => {
+							console.log('failed getipintel', signupIP, e);
+							res.status(501).json({ message: 'There was a fatal error in processing your request. Please contact our moderators on Discord' });
 							return;
-						}
-						config.vpnScore = VPNCache[signupIP] = vpnScore;
-						next(config);
-					})
-					.catch(e => {
-						console.log('failed getipintel', signupIP, e);
-						res.status(501).json({ message: 'There was a fatal error in processing your request. Please contact our moderators on Discord' });
-						return;
-					});
+						});
+				}
 			}
 		});
 	}
