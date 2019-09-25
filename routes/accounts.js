@@ -83,6 +83,9 @@ const checkIP = config => {
 				message: 'Use of TOR is not allowed on this site.'
 			});
 		});
+	} else if (process.env.NODE_ENV !== 'production') {
+		config.vpnScore = 0;
+		next(config);
 	} else if (getIPIntelCounter.count >= 495 && new Date() < getIPIntelCounter.reset && !VPNCache[signupIP]) {
 		const rateLimitSignup = new Signups({
 			date: new Date(),
@@ -100,17 +103,6 @@ const checkIP = config => {
 				message: 'An internal server error occurred. Please try again later.'
 			});
 		});
-		// } else if (process.env.NODE_ENV !== 'production') {
-		// 	if (new Date() < getIPIntelCounter.reset) {
-		// 		getIPIntelCounter.count++;
-		// 		if (getIPIntelCounter.count === 1) {
-		// 			getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1, 23, 59, 59), count: 501 };
-		// 		}
-		// 	} else {
-		// 		getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59), count: 0 };
-		// 	}
-		// 	config.vpnScore = 0;
-		// 	next(config);
 	} else {
 		let ipBanned = false;
 		BannedIP.find({
