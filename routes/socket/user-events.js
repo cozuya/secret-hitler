@@ -190,6 +190,9 @@ const checkStartConditions = game => {
 			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) ||
 		(game.general.isTourny && game.general.tournyInfo.queuedPlayers.length === game.general.maxPlayersCount)
 	) {
+		game.remakeData = game.publicPlayersState.map(player => (
+			{ userName: player.userName, isRemaking: false, remakeTime: 0 })
+		);
 		startCountdown(game);
 	} else if (!game.gameState.isStarted) {
 		game.general.status = displayWaitingForPlayers(game);
@@ -1408,9 +1411,9 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 	}
 
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
-	const { publicPlayersState } = game;
-	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
-	const player = publicPlayersState[playerIndex];
+	const { remakeData, publicPlayersState } = game;
+	const playerIndex = remakeData.findIndex(player => player.userName === passport.user);
+	const player = remakeData[playerIndex];
 	let chat;
 	const minimumRemakeVoteCount =
 		(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) || Math.floor(game.general.playerCount / 2) + 2;
@@ -1457,12 +1460,11 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		}
 
 		const newGame = _.cloneDeep(game);
-		const remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName);
+		const remakePlayerNames = remakeData.filter(player => player.isRemaking).map(player => player.userName);
 		const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
 			socketId =>
 				io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 		);
-
 		sendInProgressGameUpdate(game);
 
 		newGame.gameState = {
@@ -1532,7 +1534,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = Date.now();
-		newGame.publicPlayersState = game.publicPlayersState
+		newGame.publicPlayersState = game.remakeData
 			.filter(player => player.isRemaking)
 			.map(player => ({
 				userName: player.userName,
@@ -1549,6 +1551,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					cardBack: {}
 				}
 			}));
+		newGame.remakeStatus = [];
 		newGame.playersState = [];
 		newGame.cardFlingerState = [];
 		newGame.trackState = {
@@ -1654,19 +1657,18 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		}
 	};
 
-	if (!game || !player || !game.publicPlayersState) {
+	if (!game || !player || !game.remakeData) {
 		return;
 	}
 
-	player.isRemakeVoting = data.remakeStatus;
+	if (data.remakeStatus && Date.now() > player.remakeTime + 7000) {
+		player.isRemaking = true;
+		player.remakeTime = Date.now();
 
-	if (data.remakeStatus) {
-		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
-
+		const remakePlayerCount = remakeData.filter(player => player.isRemaking).length;
 		chat.chat.push({
 			text: ` has voted to ${remakeText} this ${game.general.isTourny ? 'tournament.' : 'game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
-		player.isRemaking = true;
 
 		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
 			game.general.isRemaking = true;
@@ -1691,10 +1693,11 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				sendInProgressGameUpdate(game);
 			}, 1000);
 		}
-	} else {
-		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
-
+	} else if (!data.remakeStatus && Date.now() > player.remakeTime + 2000) {
 		player.isRemaking = false;
+		player.remakeTime = Date.now();
+
+		const remakePlayerCount = remakeData.filter(player => player.isRemaking).length;
 
 		if (game.general.isRemaking && remakePlayerCount < minimumRemakeVoteCount) {
 			game.general.isRemaking = false;
@@ -1706,8 +1709,10 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
 				} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
+	} else {
+		return;
 	}
-	socket.emit('updateRemakeStatus', player.isRemakeVoting);
+	socket.emit('updateRemakeVoting', player.isRemaking);
 	game.chats.push(chat);
 	sendInProgressGameUpdate(game);
 };
