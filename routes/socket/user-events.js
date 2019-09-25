@@ -3003,7 +3003,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.find({ lastConnectedIP: data.ip }, function (err, users) {
 							if (users && users.length > 0) {
 								users.forEach(user => {
-									logOutUser(user.username);
+									user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
+									user.save(() => {
+										logOutUser(data.userName);
+									});
 								});
 							}
 						});
