@@ -183,20 +183,53 @@ module.exports.socketRoutes = () => {
 					socket.emit('touChange', TOU_CHANGES);
 					return true;
 				}
+				const warnings = account.warnings.filter(warning => !warning.acknowledged);
+				if (warnings.length > 0) {
+					const { moderator, acknowledged, ...firstWarning } = warnings[0];	// eslint-disable-line no-unused-vars
+					socket.emit('warningPopup', firstWarning);
+					return true;
+				}
 				// implement other restrictions as needed
+				socket.emit('removeAllPopups');
 				return false;
 			};
+
+			if (passport && passport.user && authenticated) {
+				Account.findOne({ username: passport.user }).then(account => {
+					isRestricted = checkRestriction(account);
+				});
+			}
 
 			// Instantly sends the userlist as soon as the websocket is created.
 			// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 			socket.conn.on('upgrade', () => {
 				sendUserList(socket);
-				if (passport && passport.user && authenticated) {
-					Account.findOne({ username: passport.user }).then(account => {
-						isRestricted = checkRestriction(account);
-					});
-				}
 				socket.emit('emoteList', emoteList);
+			});
+
+			socket.on('receiveRestrictions', () => {
+				Account.findOne({ username: passport.user }).then(account => {
+					isRestricted = checkRestriction(account);
+				});
+			});
+
+			socket.on('seeWarnings', username => {
+				if (isAEM) {
+					Account.findOne({ username: username }).then(account => {
+						if (account) {
+							if (account.warnings && account.warnings.length > 0) {
+								socket.emit('sendWarnings', { username, warnings: account.warnings });
+							} else {
+								socket.emit('sendAlert', 'That user doesn\'t have any warnings.');
+							}
+						} else {
+							socket.emit('sendAlert', 'That user doesn\'t exist.');
+						}
+					});
+				} else {
+					socket.emit('sendAlert', 'Are you sure you\'re supposed to be doing that?');
+					console.log(passport.user, 'tried to receive warnings for', username);
+				}
 			});
 
 			// user-events
@@ -255,6 +288,17 @@ module.exports.socketRoutes = () => {
 					});
 				}
 			});
+
+			socket.on('acknowledgeWarning', () => {
+				if (authenticated && isRestricted) {
+					Account.findOne({ username: passport.user }).then(acc => {
+						acc.warnings[acc.warnings.findIndex(warning => !warning.acknowledged)].acknowledged = true;
+						acc.markModified('warnings');
+						acc.save(() => isRestricted = checkRestriction(acc));
+					});
+				}
+			});
+
 			socket.on('handleUpdatedPlayerNote', data => {
 				handleUpdatedPlayerNote(socket, data);
 			});

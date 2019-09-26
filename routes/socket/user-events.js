@@ -2744,6 +2744,55 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							console.log(err, 'clearTimeout user err');
 						});
 					break;
+				case 'warn':
+					const warning = {
+						time: new Date(),
+						text: data.comment,
+						moderator: passport.user,
+						acknowledged: false
+					};
+
+					Account.findOne({ username: data.userName })
+						.then(user => {
+							if (user) {
+								if (user.warnings && user.warnings.length > 0) {
+									user.warnings.push(warning);
+								} else {
+									user.warnings = [warning];
+								}
+								user.save(() => {
+									if (io.sockets.sockets[affectedSocketId]) {
+										io.sockets.sockets[affectedSocketId].emit('checkRestrictions');
+									}
+								});
+							} else {
+								socket.emit('sendAlert', 'That user doesn\'t exist');
+								return;
+							}
+						});
+					break;
+				case 'removeWarning':
+					Account.findOne({ username: data.userName })
+						.then(user => {
+							if (user) {
+								if (user.warnings && user.warnings.length > 0) {
+									socket.emit('sendAlert', `Warning with the message: "${user.warnings.pop().text}" deleted.`);
+								} else {
+									socket.emit('sendAlert', 'That user doesn\'t have any warnings.');
+									return;
+								}
+								user.markModified('warnings');
+								user.save(() => {
+									if (io.sockets.sockets[affectedSocketId]) {
+										io.sockets.sockets[affectedSocketId].emit('checkRestrictions');
+									}
+								});
+							} else {
+								socket.emit('sendAlert', 'That user doesn\'t exist');
+								return;
+							}
+						});
+					break;
 				case 'clearTimeoutIP':
 					BannedIP.remove({ ip: data.ip }, (err, res) => {
 						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
@@ -2808,6 +2857,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									account.losses = account.losses >= 50 ? account.losses : 50;
 									account.wins = account.wins >= 1 ? account.wins : 1;
 									account.save();
+									logOutUser(data.userName);
 								} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 							})
 							.catch(err => {
@@ -2861,7 +2911,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										account.username = data.comment;
 										account.save();
 										success = true;
-										logOutUser(data.username);
+										logOutUser(data.userName);
 									} else {
 										socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 									}
@@ -3447,6 +3497,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 			const niceAction = {
 				comment: 'Comment',
+				warn: 'Issue Warning',
+				removeWarning: 'Delete Warning',
 				getIP: 'Get IP',
 				ban: 'Ban',
 				setSticky: 'Set Sticky',
