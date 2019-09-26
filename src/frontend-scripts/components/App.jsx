@@ -45,8 +45,10 @@ class TopLevelErrorBoundry extends React.Component {
 			<div style={{ padding: '20px' }}>
 				<h2>You've broken the website.</h2>
 				<p>
-					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in a recent deployment. If this continues
-					to happen, please ping @contributors in the discord channel or contact us any other way. <a href="/game">Click here to get back to safety.</a>
+					Not really, but there's been an unhandled error in the site's UI code.
+					This is probably due to a new issue in a recent deployment.
+					Please expand the details below and post a screenshot of them in #development-contribution on our Discord.{'  '}
+					<a href="/game">Click here to get back to safety.</a>
 				</p>
 				<details style={{ whiteSpace: 'pre-wrap' }}>
 					{error && (error.stack || error.toString())}
