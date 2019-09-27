@@ -3154,9 +3154,18 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						});
 					break;
 				case 'clearGenchat':
-					generalChats.list = [];
+					if (data.userName && data.userName.length > 0) {
+						generalChats.list = generalChats.list.filter(chat => chat.userName !== data.userName);
 
-					io.sockets.emit('generalChats', generalChats);
+						// clearedGeneralChats.reverse().forEach(chat => {
+						// 	generalChats.list.splice(generalChats.list.indexOf(chat), 1);
+						// });
+						io.sockets.emit('generalChats', generalChats);
+					} else {
+						generalChats.list = [];
+						io.sockets.emit('generalChats', generalChats);
+					}
+
 					break;
 				case 'deleteProfile':
 					if (isSuperMod) {
