@@ -25,6 +25,7 @@ chats array
 	isBroadcast bool
 	timestamp time
 general
+	lastModPing date
 	isVerifiedOnly bool
 	blindMode bool
 	name string
