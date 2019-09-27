@@ -31,7 +31,8 @@ class Gamechat extends React.Component {
 		textLastChanged: 0,
 		textChangeTimer: -1,
 		chatValue: '',
-		processedChats: ''
+		processedChats: '',
+		votesPeeked: false
 	};
 
 	componentDidMount() {
@@ -765,7 +766,7 @@ class Gamechat extends React.Component {
 		};
 
 		const sendModEndGame = winningTeamName => {
-			if (confirm('Are you sure you want to end this game with the ' + winningTeamName + ' team winning.')) {
+			if (confirm('Are you sure you want to end this game with the ' + winningTeamName + ' team winning?')) {
 				socket.emit('updateModAction', {
 					modName: userInfo.userName,
 					userName: userInfo.userName,
@@ -819,12 +820,19 @@ class Gamechat extends React.Component {
 						gameInfo.gameState.isStarted &&
 						!gameInfo.gameState.isCompleted &&
 						this.renderModEndGameButtons()}
-					{userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
+					{(// userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
 						<div>
 							<div
 								className="ui button primary"
 								onClick={() => {
-									if (confirm('Are you sure you want to peek votes for this game?')) {
+									if (!this.state.votesPeeked) {
+										if (confirm('Are you sure you want to peek votes for this game?')) {
+											modGetCurrentVotes();
+											this.setState({
+												votesPeeked: true
+											});
+										}
+									} else {
 										modGetCurrentVotes();
 									}
 								}}
