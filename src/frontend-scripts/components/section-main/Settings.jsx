@@ -41,7 +41,8 @@ class Settings extends React.Component {
 		staffDisableStaffColor: '',
 		staffIncognito: '',
 		fullheight: false,
-		truncatedSize: 250
+		truncatedSize: 250,
+		safeForWork: false
 	};
 
 	componentDidMount() {
@@ -67,7 +68,8 @@ class Settings extends React.Component {
 			staffDisableVisibleElo: gameSettings.staffDisableVisibleElo || false,
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
 			staffIncognito: gameSettings.staffIncognito || false,
-			truncatedSize: gameSettings.truncatedSize || 250
+			truncatedSize: gameSettings.truncatedSize || 250,
+			safeForWork: gameSettings.safeForWork
 		});
 	}
 
@@ -518,6 +520,14 @@ class Settings extends React.Component {
 								<input type="checkbox" name="fullheight" checked={this.state.fullheight} onChange={() => this.toggleGameSettings('fullheight')} />
 								<label />
 							</div>
+							<h4 className="ui header">Safe For Work Mode</h4>
+							<div className="ui fitted toggle checkbox">
+								<input type="checkbox" name="fullheight" checked={this.state.safeForWork} onChange={() => {
+									this.toggleGameSettings('safeForWork');
+									location.reload();
+								}} />
+								<label />
+							</div>
 							<h4 className="ui header" style={{ color: 'red' }}>
 								Private-games-only (this action will log you out, 18 hour cooldown)
 							</h4>
@@ -574,7 +584,7 @@ class Settings extends React.Component {
 													style={{
 														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
 															gameSettings.customCardbackUid
-														}) no-repeat`
+															}) no-repeat`
 													}}
 												/>
 											);

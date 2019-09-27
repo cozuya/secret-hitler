@@ -45,6 +45,7 @@ const Account = new Schema({
 		specialTournamentStatus: String,
 		disableElo: Boolean,
 		fullheight: Boolean,
+		safeForWork: Boolean,
 		gameFilters: {
 			pub: Boolean,
 			priv: Boolean,
