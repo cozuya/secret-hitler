@@ -11,6 +11,30 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.6.4 released 10-1-2019</p>
+				</div>
+				<h4>The top 10 players of season 7 are:</h4>
+				<ul>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+				</ul>
+
+				<p>Fixes Season End Date on Firefox</p>
+				<p>Fixes Remake Spam</p>
+				<p>Fixes Bug where users could ssnoop which other players had voted to remake</p>
+				<p>Adds the ability to simply type "@mod [message]" in game to ping a moderator on Discord automatically</p>
+				<p>Adds a Safe For Work User Setting - to minorly conceal some mentions of Hitler</p>
+				<p>Adds a new on-site warning feature for moderators</p>
+				<p>Multiple moderation improvements</p>
+				<div className="ui header">
 					<p>Version 1.6.3 released 8-28-2019</p>
 				</div>
 				<p>Temporarily disables "disable game chat" game setting due to various gamebreaking bugs</p>

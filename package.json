@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
-	"version": "1.6.3",
+	"version": "1.6.4",
 	"license": "CC-BY-NC-SA-4.0",
 	"keywords": [
 		"boardgame",
