@@ -645,6 +645,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			isVerifiedOnly: data.isVerifiedOnly,
 			disableObserver: data.disableObserver && !data.isTourny,
 			isTourny: false,
+			lastModPing: 0,
 			disableGamechat: data.disableGamechat,
 			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
@@ -1534,6 +1535,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = Date.now();
+		newGame.general.lastModPing = 0;
 		newGame.publicPlayersState = game.remakeData
 			.filter(player => player.isRemaking)
 			.map(player => ({
@@ -2178,6 +2180,39 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 	}
 
+	const pingMods = /^@(mod|moderator|editor|aem|mods) (.*)$/i.exec(chat);
+
+	if (
+		pingMods &&
+		player
+	) {
+		if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
+			game.chats.push({
+				gameChat: true,
+				timestamp: new Date(),
+				chat: [
+					{
+						text: 'Player '
+					},
+					{
+						text: `${passport.user}`,
+						type: 'player'
+					},
+					{
+						text: ` has pinged a member of AEM with the message: "${pingMods[2]}".`
+					}
+				]
+			});
+			game.lastModPing = Date.now();
+			sendPlayerChatUpdate(game, data);
+			sendInProgressGameUpdate(game, false);
+			makeReport({ player: passport.user, situation: `"${pingMods[2]}".`, election: game.general.electionCount, title: game.general.name, uid: game.general.uid, gameType: game.general.casualGame ? 'Casual' : 'Ranked' }, game, 'ping');
+		} else {
+			socket.emit('sendAlert', `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
+		}
+		return;
+	}
+
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
 
 	if (
@@ -2445,7 +2480,7 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 	if (game.private.hiddenInfoSubscriptions.includes(passport.user)) return;
 
 	if (game.private.hiddenInfoShouldNotify) {
-		makeReport(`AEM user ${passport.user} has subscribed to mod chat for a game without an auto-report.`, game);
+		makeReport({ player: passport.user, situation: `has subscribed to mod chat for a game without an auto-report.`, election: game.general.electionCount, title: game.general.name, uid: game.general.uid, gameType: game.general.casualGame ? 'Casual' : 'Ranked' }, game, 'modchat');
 		game.private.hiddenInfoShouldNotify = false;
 	}
 
