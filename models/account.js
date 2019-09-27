@@ -45,6 +45,7 @@ const Account = new Schema({
 		specialTournamentStatus: String,
 		disableElo: Boolean,
 		fullheight: Boolean,
+		safeForWork: Boolean,
 		gameFilters: {
 			pub: Boolean,
 			priv: Boolean,
@@ -111,6 +112,10 @@ const Account = new Schema({
 	lossesSeason7: Number,
 	rainbowWinsSeason7: Number,
 	rainbowLossesSeason7: Number,
+	winsSeason8: Number,
+	lossesSeason8: Number,
+	rainbowWinsSeason8: Number,
+	rainbowLossesSeason8: Number,
 	previousDayElo: Number,
 	created: Date,
 	isOnFire: Boolean,
@@ -125,7 +130,8 @@ const Account = new Schema({
 	discordMfa_enabled: Boolean,
 	discordUID: String,
 	githubUsername: String,
-	github2FA: Boolean
+	github2FA: Boolean,
+	warnings: Array // {text: String, moderator: String, time: Date, acknowledged: Boolean}
 });
 
 Account.plugin(passportLocalMongoose);

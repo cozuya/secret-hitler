@@ -464,6 +464,39 @@ export default class Moderation extends React.Component {
 				>
 					Comment without action
 				</button>
+				<div className="ui horizontal divider">Warnings</div>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					style={{ background: '#ff5865', color: 'black' }}
+					onClick={() => {
+						takeModAction('warn');
+					}}
+				>
+					Issue Warning
+				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					style={{ background: '#FFDEAD', color: 'black' }}
+					onClick={() => {
+						takeModAction('removeWarning');
+					}}
+				>
+					Delete Most Recent Warning
+				</button>
+				<button
+					className={(selectedUser || playerInputText) ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					style={{ background: '#FFA07A', color: 'black' }}
+					onClick={() => {
+						this.props.socket.emit('seeWarnings', (playerInputText || selectedUser));
+						this.setState({
+							selectedUser: '',
+							actionTextValue: '',
+							playerInputText: ''
+						});
+					}}
+				>
+					See Warnings
+				</button>
 				<div className="ui horizontal divider">Revoke Access</div>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
@@ -1014,6 +1047,8 @@ export default class Moderation extends React.Component {
 
 		const niceAction = {
 			comment: 'Comment',
+			warn: 'Issue Warning',
+			removeWarning: 'Delete Warning',
 			getIP: 'Get IP',
 			ban: 'Ban',
 			setSticky: 'Set Sticky',

@@ -45,8 +45,10 @@ class TopLevelErrorBoundry extends React.Component {
 			<div style={{ padding: '20px' }}>
 				<h2>You've broken the website.</h2>
 				<p>
-					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in a recent deployment. If this continues
-					to happen, please ping @contributors in the discord channel or contact us any other way. <a href="/game">Click here to get back to safety.</a>
+					Not really, but there's been an unhandled error in the site's UI code.
+					This is probably due to a new issue in a recent deployment.
+					Please expand the details below and post a screenshot of them in #development-contribution on our Discord.{'  '}
+					<a href="/game">Click here to get back to safety.</a>
 				</p>
 				<details style={{ whiteSpace: 'pre-wrap' }}>
 					{error && (error.stack || error.toString())}
@@ -55,8 +57,8 @@ class TopLevelErrorBoundry extends React.Component {
 				</details>
 			</div>
 		) : (
-			this.props.children
-		);
+				this.props.children
+			);
 	}
 }
 
@@ -74,6 +76,7 @@ export class App extends React.Component {
 		this.changeNotesValue = this.changeNotesValue.bind(this);
 		this.changePlayerNotesValue = this.changePlayerNotesValue.bind(this);
 		this.touConfirmButton = this.touConfirmButton.bind(this);
+		this.acknowledgeWarning = this.acknowledgeWarning.bind(this);
 
 		this.state = {
 			notesValue: '',
@@ -81,6 +84,7 @@ export class App extends React.Component {
 				type: null,
 				data: null
 			},
+			warnings: null,
 			allEmotes: []
 		};
 
@@ -132,6 +136,32 @@ export class App extends React.Component {
 				alertMsg: {
 					type: 'tou',
 					data: changeList
+				}
+			});
+		});
+
+		socket.on('warningPopup', warning => {
+			if (this.state.alertMsg.type === null) {
+				this.setState({
+					alertMsg: {
+						type: 'warning',
+						data: warning
+					}
+				});
+			}
+		});
+
+		socket.on('sendWarnings', warningData => {
+			this.setState({
+				warnings: warningData
+			});
+		});
+
+		socket.on('removeAllPopups', () => {
+			this.setState({
+				alertMsg: {
+					type: null,
+					data: null
 				}
 			});
 		});
@@ -242,18 +272,23 @@ export class App extends React.Component {
 		socket.on('sendAlert', ip => {
 			window.alert(ip);
 		});
+
+		socket.on('checkRestrictions', () => {
+			socket.emit('receiveRestrictions');
+		});
 	}
 
 	touConfirmButton(e) {
 		e.preventDefault();
-		if (document.getElementById('touCheckBox').checked) {
+		if (e.target[0].checked) {
 			socket.emit('confirmTOU');
-			this.setState({
-				alertMsg: {
-					type: null,
-					data: null
-				}
-			});
+		}
+	}
+
+	acknowledgeWarning(e) {
+		e.preventDefault();
+		if (e.target[0].checked) {
+			socket.emit('acknowledgeWarning');
 		}
 	}
 
@@ -432,7 +467,7 @@ export class App extends React.Component {
 						if (this.state.alertMsg.type) {
 							if (this.state.alertMsg.type === 'tou') {
 								return (
-									<div style={{ position: 'fixed', zIndex: 999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
+									<div style={{ position: 'fixed', zIndex: 9999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
 										<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
 											<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Terms of Use changes</h2>
 											<div
@@ -464,25 +499,117 @@ export class App extends React.Component {
 													Click here to read the full Terms of Use.
 												</a>
 											</p>
-											<input type="checkbox" id="touCheckBox" style={{ height: '16px', width: '16px' }} />
-											<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif', cursor: 'pointer' }}>
-												{' '}
-												I agree to the Terms of Use changes.
+											<form onSubmit={this.touConfirmButton}>
+												<input type="checkbox" id="touCheckBox" style={{ height: '16px', width: '16px' }} />
+												<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif', cursor: 'pointer' }}>
+													{' '}
+													I agree to the Terms of Use changes.
 											</label>
-											<br />
-											<input
-												type="button"
-												value="Dismiss"
-												style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
-												onClick={this.touConfirmButton}
-												id="touButton"
-											/>
+												<br />
+												<input
+													type="submit"
+													value="Dismiss"
+													style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
+													id="touButton"
+												/>
+											</form>
+										</div>
+									</div>
+								);
+							}
+							if (this.state.alertMsg.type === 'warning') {
+								return (
+									<div style={{ position: 'fixed', zIndex: 9999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
+										<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
+											<h2 style={{ fontFamily: '"Roboto", sans-serif', textAlign: 'center' }}>Moderator Warning</h2>
+											<div style={{ width: '450px', margin: '5px 0' }}>
+												The following is a warning from a moderator. If you believe this warning to be unjustified, you may argue your case respectfully by pinging @Moderator in #mod-support on our <a href="https://discord.gg/secrethitlerio">Discord</a>.
+												<br /><br />
+												Please read and follow the rules as laid out in the <a href="/tou">Terms of Use</a> to avoid further action on your account.
+											</div>
+											<div
+												style={{
+													height: 'auto',
+													maxHeight: '400px',
+													width: '450px',
+													border: '1px solid black',
+													borderRadius: '5px',
+													background: '#777',
+													padding: '5px',
+												}}
+											>
+												<div>
+													<h4 style={{ fontFamily: '"Roboto", sans-serif' }}>Warning: </h4>
+													<p style={{ fontFamily: '"Roboto", sans-serif' }}>
+														{new Date(this.state.alertMsg.data.time).toDateString() + ' - ' + this.state.alertMsg.data.text}
+													</p>
+													<br />
+												</div>
+											</div>
+											<form onSubmit={this.acknowledgeWarning}>
+												<div style={{ width: '450px', margin: '15px 0 5px' }}>
+													<input type="checkbox" id="warningCheckBox" style={{ marginRight: '5px' }} />
+													<label htmlFor="warningCheckBox" style={{ fontFamily: '"Roboto", sans-serif', cursor: 'pointer' }}>
+														I acknowledge this warning and understand that continuing in this behaviour may lead to further action on my account.
+												</label>
+												</div>
+												<br />
+												<input
+													type="submit"
+													value="Dismiss"
+													style={{ width: '60%', height: '25px', marginLeft: '20%', borderRadius: '5px', fontFamily: '"Roboto", sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
+													id="warningButton"
+												/>
+											</form>
 										</div>
 									</div>
 								);
 							}
 						}
 					})()}
+
+					{this.state.warnings !== null && (
+						<div style={{ position: 'fixed', zIndex: 9999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
+							<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
+								<h2 style={{ fontFamily: '"Roboto", sans-serif', textAlign: 'center' }}>Warnings log</h2>
+								<div style={{ width: '450px', margin: '5px 0' }}>
+									Previous Warnings for User: <strong>{this.state.warnings.username}</strong>
+									<br /><br />
+								</div>
+								<div
+									style={{
+										height: 'auto',
+										maxHeight: '300px',
+										width: '550px',
+										border: '1px solid black',
+										borderRadius: '5px',
+										background: '#777',
+										padding: '5px',
+										overflowY: 'scroll'
+									}}
+								>
+									{this.state.warnings.warnings.map((warning) => {
+										return (
+											<div key={warning}>
+												<p style={{ fontFamily: '"Roboto", sans-serif' }}><strong>Date:</strong> {new Date(warning.time).toDateString()} {new Date(warning.time).toTimeString()}<br /><strong>Acknowledged:</strong> {warning.acknowledged ? 'Yes' : 'No'}<br /><strong>Mod:</strong> {warning.moderator}</p>
+												<p key={warning} style={{ fontFamily: '"Roboto", sans-serif' }}>
+													{warning.text}
+												</p>
+												<hr />
+											</div>
+										);
+									})}
+								</div>
+								<input
+									type="button"
+									value="Dismiss"
+									style={{ width: '60%', height: '25px', margin: '15px 20%', borderRadius: '5px', fontFamily: '"Roboto", sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
+									id="warningLogButton"
+									onClick={() => this.setState({ warnings: null })}
+								/>
+							</div>
+						</div>
+					)}
 
 					<div className={classes}>
 						<Main

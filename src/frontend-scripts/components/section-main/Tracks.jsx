@@ -9,7 +9,6 @@ class Tracks extends React.Component {
 		super();
 		this.state = {
 			remakeStatus: false,
-			remakeStatusDisabled: false,
 			timedModeTimer: ''
 		};
 	}
@@ -26,23 +25,10 @@ class Tracks extends React.Component {
 		}
 
 		if (this.props.socket) {
-			this.props.socket.on('updateRemakeStatus', status => {
+			this.props.socket.on('updateRemakeVoting', status => {
 				this.setState(
 					{
-						remakeStatus: status,
-						remakeStatusDisabled: true
-					},
-					() => {
-						setTimeout(
-							() => {
-								if (this._ismounted) {
-									this.setState({
-										remakeStatusDisabled: false
-									});
-								}
-							},
-							this.state.remakeStatus ? 2000 : 5000
-						);
+						remakeStatus: status
 					}
 				);
 			});
@@ -147,16 +133,16 @@ class Tracks extends React.Component {
 			game.rebalance6p && game.rebalance7p && game.rebalance9p
 				? ((rebalance69p = <div> R679 </div>), (rebalance69pTooltip = 'Rebalanced 6, 7, & 9 player games'))
 				: game.rebalance6p && game.rebalance7p
-				? ((rebalance69p = <div> R67 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 7 player games'))
-				: game.rebalance6p && game.rebalance9p
-				? ((rebalance69p = <div> R69 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 9 player games'))
-				: game.rebalance7p && game.rebalance9p
-				? ((rebalance69p = <div> R79 </div>), (rebalance69pTooltip = 'Rebalanced 7 & 9 player games'))
-				: game.rebalance6p
-				? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
-				: game.rebalance7p
-				? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
-				: ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'));
+					? ((rebalance69p = <div> R67 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 7 player games'))
+					: game.rebalance6p && game.rebalance9p
+						? ((rebalance69p = <div> R69 </div>), (rebalance69pTooltip = 'Rebalanced 6 & 9 player games'))
+						: game.rebalance7p && game.rebalance9p
+							? ((rebalance69p = <div> R79 </div>), (rebalance69pTooltip = 'Rebalanced 7 & 9 player games'))
+							: game.rebalance6p
+								? ((rebalance69p = <div> R6 </div>), (rebalance69pTooltip = 'Rebalanced 6 player games'))
+								: game.rebalance7p
+									? ((rebalance69p = <div> R7 </div>), (rebalance69pTooltip = 'Rebalanced 7 player games'))
+									: ((rebalance69p = <div> R9 </div>), (rebalance69pTooltip = 'Rebalanced 9 player games'));
 		}
 
 		if (game.disableChat) {
@@ -349,12 +335,10 @@ class Tracks extends React.Component {
 		};
 
 		const updateRemake = () => {
-			if (!this.state.remakeStatusDisabled) {
-				this.props.socket.emit('updateRemake', {
-					remakeStatus: !this.state.remakeStatus,
-					uid: gameInfo.general.uid
-				});
-			}
+			this.props.socket.emit('updateRemake', {
+				remakeStatus: !this.state.remakeStatus,
+				uid: gameInfo.general.uid
+			});
 		};
 
 		const renderFasTrack = () => {

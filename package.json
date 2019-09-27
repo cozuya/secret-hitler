@@ -1,7 +1,7 @@
 {
 	"name": "secret-hitler",
 	"description": "A web adaptation of the social deduction board game Secret Hitler.",
-	"version": "1.6.3",
+	"version": "1.6.4",
 	"license": "CC-BY-NC-SA-4.0",
 	"keywords": [
 		"boardgame",
@@ -144,9 +144,7 @@
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",
 		"lint": "esw src/**/*.jsx scripts/ routes/ webpack/ models/ iso/",
 		"build-css:web": "node-sass --include-path src/scss src/scss/style-web.scss public/styles/style-web.css",
-		"build-css:dark": "node-sass --include-path src/scss src/scss/style-dark.scss public/styles/style-dark.css",
-		"snyk-protect": "snyk protect",
-		"prepublish": "npm run snyk-protect"
+		"build-css:dark": "node-sass --include-path src/scss src/scss/style-dark.scss public/styles/style-dark.css"
 	},
 	"jest": {
 		"setupFilesAfterEnv": [
@@ -165,6 +163,5 @@
 		"hooks": {
 			"pre-commit": "yarn lint"
 		}
-	},
-	"snyk": true
+	}
 }

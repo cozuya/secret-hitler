@@ -6,6 +6,7 @@ const secureGame = game => {
 	const _game = Object.assign({}, game);
 
 	delete _game.private;
+	delete _game.remakeData;
 	return _game;
 };
 
@@ -199,7 +200,7 @@ module.exports.destroySession = username => {
 				if (err) {
 					try {
 						console.log(err, 'err in logoutuser');
-					} catch (error) {}
+					} catch (error) { }
 				}
 			});
 	}
