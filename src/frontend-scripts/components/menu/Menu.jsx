@@ -197,7 +197,6 @@ class Menu extends React.Component {
 		}
 
 		if (userInfo && userInfo.gameSettings && userInfo.gameSettings.safeForWork) {
-			console.log('concealing title');
 			window.document.title = 'SH.io';
 		}
 

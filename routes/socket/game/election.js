@@ -1280,7 +1280,16 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 			!verifyCorrect(game.private.currentElectionPolicies[1]) ||
 			!verifyCorrect(game.private.currentElectionPolicies[2])
 		) {
-			console.log(`A player has just received an invalid hand!\n${JSON.stringify(game.private.currentElectionPolicies)}`, game);
+			makeReport({
+				player: 'A Player',
+				seat: presidentIndex + 1,
+				role: 'Liberal',
+				situation: `has just received an invalid hand!\n${JSON.stringify(game.private.currentElectionPolicies)}`,
+				election: game.general.electionCount,
+				title: game.general.name,
+				uid: game.general.uid,
+				gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+			}, game, 'report');
 		}
 
 		const modOnlyChat = {
