@@ -32,7 +32,8 @@ class Gamechat extends React.Component {
 		textChangeTimer: -1,
 		chatValue: '',
 		processedChats: '',
-		votesPeeked: false
+		votesPeeked: false,
+		gameFrozen: false
 	};
 
 	componentDidMount() {
@@ -765,6 +766,16 @@ class Gamechat extends React.Component {
 			});
 		};
 
+		const modDeleteGame = reason => {
+			socket.emit('updateModAction', {
+				modName: userInfo.userName,
+				userName: `DELGAME${gameInfo.general.uid}`,
+				comment: reason,
+				action: 'deleteGame'
+			});
+			location.hash = '';
+		};
+
 		const sendModEndGame = winningTeamName => {
 			if (confirm('Are you sure you want to end this game with the ' + winningTeamName + ' team winning?')) {
 				socket.emit('updateModAction', {
@@ -812,47 +823,83 @@ class Gamechat extends React.Component {
 							style={{ color: showFullChat ? '#4169e1' : 'indianred' }}
 						/>
 					</a>
-					{userInfo &&
-						!userInfo.isSeated &&
-						isStaff &&
-						gameInfo &&
-						gameInfo.gameState &&
-						gameInfo.gameState.isStarted &&
-						!gameInfo.gameState.isCompleted &&
-						this.renderModEndGameButtons()}
-					{(// userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
-						<div>
-							<div
-								className="ui button primary"
-								onClick={() => {
-									if (!this.state.votesPeeked) {
-										if (confirm('Are you sure you want to peek votes for this game?')) {
+					<div style={{ width: '40%', overflowX: 'auto', display: 'flex', flexDirection: 'row' }}>
+						{userInfo &&
+							!userInfo.isSeated &&
+							isStaff &&
+							gameInfo &&
+							gameInfo.gameState &&
+							gameInfo.gameState.isStarted &&
+							!gameInfo.gameState.isCompleted &&
+							this.renderModEndGameButtons()}
+						{userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
+							<div>
+								<div
+									className="ui button primary"
+									onClick={() => {
+										if (!this.state.votesPeeked) {
+											if (confirm('Are you sure you want to peek votes for this game?')) {
+												modGetCurrentVotes();
+												this.setState({
+													votesPeeked: true
+												});
+											}
+										} else {
 											modGetCurrentVotes();
-											this.setState({
-												votesPeeked: true
-											});
 										}
-									} else {
-										modGetCurrentVotes();
-									}
-								}}
-								style={{ width: '60px' }}
-							>
-								Peek
+									}}
+									style={{ width: '60px' }}
+								>
+									Peek
 								<br />
-								Votes
+									Votes
 							</div>
-						</div>
-					)}
-					{userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
-						<div>
-							<div className="ui button primary" onClick={() => modFreezeGame()} style={{ width: '60px' }}>
-								Freeze/
+							</div>
+						)}
+						{userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
+							<div>
+								<div
+									className="ui button primary"
+									onClick={() => {
+										if (!this.state.gameFrozen) {
+											if (confirm('Are you sure you want to freeze this game?')) {
+												modFreezeGame();
+												this.setState({
+													gameFrozen: true
+												});
+											}
+										} else {
+											modFreezeGame();
+										}
+									}}
+									style={{ width: '60px' }}
+								>
+									Freeze/
 								<br />
-								Unfreeze
+									Unfreeze
 							</div>
-						</div>
-					)}
+							</div>
+						)}
+						{userInfo && !userInfo.isSeated && isStaff && (
+							<div>
+								<div
+									className="ui button primary"
+									onClick={() => {
+										if (confirm('Are you sure you want to delete this game?')) {
+											let reason = prompt(`Enter a reason for deleting this game, leave blank if dead`);
+											reason = reason || 'Dead';
+											modDeleteGame(reason);
+										}
+									}}
+									style={{ width: '60px' }}
+								>
+									Delete
+								<br />
+									Game
+							</div>
+							</div>
+						)}
+					</div>
 					{gameInfo.general &&
 						gameInfo.general.tournyInfo &&
 						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
