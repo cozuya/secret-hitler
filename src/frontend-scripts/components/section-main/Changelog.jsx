@@ -15,16 +15,16 @@ class Changelog extends React.Component {
 				</div>
 				<h4>The top 10 players of season 7 are:</h4>
 				<ul>
-					<li></li>
-					<li></li>
-					<li></li>
-					<li></li>
-					<li></li>
-					<li></li>
-					<li></li>
-					<li></li>
-					<li></li>
-					<li></li>
+					<li>Canaris: 1956 </li>
+					<li>imbapingu: 1941 </li>
+					<li>liluzivert: 1924 </li>
+					<li>Maximovic96: 1923 </li>
+					<li>rags009: 1920 </li>
+					<li>Olk: 1897 </li>
+					<li>acro: 1887 </li>
+					<li>Freakin: 1882 </li>
+					<li>Kristy: 1882 </li>
+					<li>okboomer: 1879 </li>
 				</ul>
 
 				<p>Fixes Season End Date on Firefox</p>
