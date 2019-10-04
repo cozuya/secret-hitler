@@ -5,27 +5,31 @@ const { newStaff } = require('./models');
 module.exports.makeReport = (data, game, type = 'report') => {
 	// Custom games are strictly casual and for fun, writing proper report logic to account for it would be a massive pain.
 	if (!game || game.customGameSettings.enabled || game.general.unlisted) return;
-	const { title, player, seat, role, election, situation, uid, gameType } = data;
+	const { player, seat, role, election, situation, uid, gameType } = data;
 
 	let report;
 
 	if (type === 'ping') {
 		report = JSON.stringify({
-			'content': `${process.env.DISCORDMODPING}\n__**[${title}](<https://secrethitler.io/game/#/table/${uid}>)**__\n__**Player**__: ${player} \n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n`, 'username': '@Mod Ping'
+			'content': `${process.env.DISCORDMODPING}\n__**Player**__: ${player} \n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
+			'username': '@Mod Ping',
+			'avatar_url': 'https://cdn.discordapp.com/emojis/612042360318328842.png?v=1'
 		});
 	}
 
 	if (type === 'delayed') {
 		report = JSON.stringify({
-			'content': `${process.env.DISCORDMODPING} - **AEM DELAYED**\n__**[${title}](<https://secrethitler.io/game/#/table/${uid}>)**__\n__**Player**__: ${player}\n__**Seat**__: ${seat}\n__**Role**__: ${role}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n`,
-			'username': 'AEM Delayed'
+			'content': `${process.env.DISCORDMODPING} - **AEM DELAYED**\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${role}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
+			'username': 'Auto Report',
+			'avatar_url': 'https://cdn.discordapp.com/emojis/230161421336313857.png?v=1'
 		});
 	}
 
 	if (type === 'modchat') {
 		report = JSON.stringify({
-			'content': `${process.env.DISCORDMODPING}\n__**[${title}](<https://secrethitler.io/game/#/table/${uid}>)**__\n__**Member**__: ${player} \n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n`,
-			'username': 'Mod Chat'
+			'content': `${process.env.DISCORDMODPING}\n__**Member**__: ${player} \n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
+			'username': 'Mod Chat',
+			'avatar_url': 'https://cdn.discordapp.com/emojis/230161421311148043.png?v=1'
 		});
 		game.private.hiddenInfoShouldNotify = false;
 	}
@@ -76,8 +80,9 @@ module.exports.makeReport = (data, game, type = 'report') => {
 		}
 
 		report = JSON.stringify({
-			'content': `${process.env.DISCORDMODPING}\n__**[${title}](<https://secrethitler.io/game/#/table/${uid}>)**__\n__**Player**__: ${player}\n__**Seat**__: ${seat}\n__**Role**__: ${role}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n`,
-			'username': 'Auto Report'
+			'content': `${process.env.DISCORDMODPING}\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${role}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
+			'username': 'Auto Report',
+			'avatar_url': 'https://cdn.discordapp.com/emojis/230161421336313857.png?v=1'
 		});
 
 		if (process.env.NODE_ENV === 'production') {
