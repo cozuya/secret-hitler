@@ -29,7 +29,7 @@ class Changelog extends React.Component {
 
 				<p>Fixes Season End Date on Firefox</p>
 				<p>Fixes Remake Spam</p>
-				<p>Fixes Bug where users could ssnoop which other players had voted to remake</p>
+				<p>Fixes Bug where users could snoop which other players had voted to remake</p>
 				<p>Adds the ability to simply type "@mod [message]" in game to ping a moderator on Discord automatically</p>
 				<p>Adds a Safe For Work User Setting - to minorly conceal some mentions of Hitler</p>
 				<p>Adds a new on-site warning feature for moderators</p>
