@@ -1536,8 +1536,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = Date.now();
 		newGame.general.lastModPing = 0;
-		newGame.publicPlayersState = game.remakeData
-			.filter(player => player.isRemaking)
+		newGame.publicPlayersState = game.publicPlayersState
+			.filter(player => game.remakeData
+				.filter(rmkPlayer => rmkPlayer.isRemaking)
+				.map(rmkPlayer => rmkPlayer.userName)
+				.some(rmkPlayer => rmkPlayer === player.userName)
+			)
 			.map(player => ({
 				userName: player.userName,
 				customCardback: player.customCardback,
