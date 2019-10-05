@@ -266,6 +266,31 @@ const handleSocketDisconnect = socket => {
 				} else if (gameState.isTracksFlipped) {
 					publicPlayersState[playerIndex].connected = false;
 					publicPlayersState[playerIndex].leftGame = true;
+					if (game.remakeData && game.remakeData.find(player => player.userName === passport.user).isRemaking) {
+						const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
+						const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
+
+						if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+							game.general.isRemaking = false;
+							game.general.status = 'Game remaking has been cancelled.';
+							clearInterval(game.private.remakeTimer);
+						}
+						const chat = {
+							timestamp: new Date(),
+							gameChat: true,
+							chat: [
+								{
+									text: 'A player'
+								}
+							]
+						};
+						chat.chat.push({
+							text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
+								1}/${minimumRemakeVoteCount})`
+						});
+						game.chats.push(chat);
+						game.remakeData.find(player => player.userName === passport.user).isRemaking = false;
+					}
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 						delete games[game.general.uid];
@@ -326,10 +351,10 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (playerIndex > -1) {
-		if (game.publicPlayersState[playerIndex].isRemakeVoting) {
+		if (game.remakeData && game.remakeData.find(player => player.userName === passport.user).isRemaking) {
 			// Count leaving the game as rescinded remake vote.
 			const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
-			const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
+			const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
 
 			if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
 				game.general.isRemaking = false;
@@ -350,8 +375,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 					1}/${minimumRemakeVoteCount})`
 			});
 			game.chats.push(chat);
-			game.publicPlayersState[playerIndex].isRemakeVoting = false;
-			game.publicPlayersState[playerIndex].isRemaking = false;
+			game.remakeData.find(player => player.userName === passport.user).isRemaking = false;
 		}
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
