@@ -2,6 +2,10 @@ const cn = require('classnames');
 
 export const TOU_CHANGES = [
 	{
+		changeVer: '1.4',
+		changeDesc: 'Play as your role and try to win\nNo unfair influence: don\'t make promises as one role you wouldn\'t be able to keep as the other role\nDo not cheat\nNo hate speech or abusive/sexist/racist/discriminating language\nRespect other people\nNo attempts to harm the site, be it through hacking, ddosing, or any other malicious activity\nDo not attempt to circumvent rules or punishments\nPlease read our entire Terms of Use (linked below) for more details\n'
+	},
+	{
 		changeVer: '1.3',
 		changeDesc:
 			'Adds specified punishments for ragequits and multi-accounting/colluding.\nRevises rules regarding sub-optimal play.\nSpecifies rules regarding unfair outside influences on games (blacklist threats, report threats, etc.).\nAdds rules regarding spoilers for TV shows, movies, etc.\nAdds general punishment timeline and protocol.\nAdds AFK policy and its specific punishments.\n'
@@ -18,6 +22,10 @@ export const TOU_CHANGES = [
 	{
 		changeVer: '1.0',
 		changeDesc: 'Terms of Use fully rewritten to be more clear.'
+	},
+	{
+		changeVer: '0.0',
+		changeDesc: 'Play as your role and try to win\nNo unfair influence: don\'t make promises as one role you wouldn\'t be able to keep as the other role\nDo not cheat\nNo hate speech or abusive/sexist/racist/discriminating language\nRespect other people\nNo attempts to harm the site, be it through hacking, ddosing, or any other malicious activity\nDo not attempt to circumvent rules or punishments\n'
 	}
 ];
 
