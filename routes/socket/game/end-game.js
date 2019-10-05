@@ -81,7 +81,7 @@ const saveGame = game => {
 module.exports.completeGame = (game, winningTeamName) => {
 	if (game && game.unsentReports) {
 		game.unsentReports.forEach(report => {
-			makeReport({ ...report }, game, 'delayed');
+			makeReport({ ...report }, game, report.type === 'modchat' ? 'modchatdelayed' : 'reportdelayed');
 		});
 		game.unsentReports = [];
 	}
