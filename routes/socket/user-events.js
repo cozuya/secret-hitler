@@ -3758,7 +3758,7 @@ module.exports.handleHasSeenNewPlayerModal = socket => {
 		const { user } = passport;
 		Account.findOne({ username: user }).then(account => {
 			account.hasNotDismissedSignupModal = false;
-
+			socket.emit('checkRestrictions');
 			account.save();
 		});
 	}

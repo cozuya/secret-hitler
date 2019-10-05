@@ -10,7 +10,6 @@ const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposibleEmails');
 const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
-const { TOU_CHANGES } = require('../src/frontend-scripts/node-constants.js');
 const prodCacheBustToken = require('./prodCacheBustToken');
 
 /**
@@ -236,7 +235,6 @@ const continueSignup = config => {
 				wins: 0,
 				losses: 0,
 				created: new Date(),
-				touLastAgreed: TOU_CHANGES[0].changeVer,
 				signupIP: signupIP,
 				hasNotDismissedSignupModal: true,
 				verification: {
@@ -446,7 +444,6 @@ module.exports = torIpsParam => {
 			wins: 0,
 			losses: 0,
 			created: new Date(),
-			touLastAgreed: TOU_CHANGES[0].changeVer,
 			signupIP,
 			lastConnectedIP: signupIP
 		};

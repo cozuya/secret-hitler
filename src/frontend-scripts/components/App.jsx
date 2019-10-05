@@ -467,13 +467,13 @@ export class App extends React.Component {
 						if (this.state.alertMsg.type) {
 							if (this.state.alertMsg.type === 'tou') {
 								return (
-									<div style={{ position: 'fixed', zIndex: 9999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
+									<div style={{ position: 'fixed', zIndex: 99999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
 										<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
-											<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Terms of Use changes</h2>
+											<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{this.state.alertMsg.data[0].changeVer === '0.0' ? 'Site Rules' : 'Terms of Use changes'}</h2>
 											<div
 												style={{
-													height: '150px',
-													width: '350px',
+													height: '400px',
+													width: '450px',
 													border: '1px solid black',
 													borderRadius: '5px',
 													background: '#777',
@@ -484,7 +484,7 @@ export class App extends React.Component {
 												{this.state.alertMsg.data.map((change, index) => {
 													return (
 														<div key={index}>
-															<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>Version {change.changeVer}</h4>
+															<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{this.state.alertMsg.data[0].changeVer === '0.0' ? '' : `Version ${change.changeVer}`}</h4>
 															{change.changeDesc.split('\n').map((item, index) => (
 																<p key={index} style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
 																	{item}
@@ -503,8 +503,8 @@ export class App extends React.Component {
 												<input type="checkbox" id="touCheckBox" style={{ height: '16px', width: '16px' }} />
 												<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif', cursor: 'pointer' }}>
 													{' '}
-													I agree to the Terms of Use changes.
-											</label>
+													I agree to the {this.state.alertMsg.data[0].changeVer === '0.0' ? 'Terms of Use' : 'Terms of Use changes'}
+												</label>
 												<br />
 												<input
 													type="submit"

@@ -180,7 +180,7 @@ module.exports.socketRoutes = () => {
 						return true;
 					}
 				} else {
-					socket.emit('touChange', TOU_CHANGES);
+					socket.emit('touChange', [TOU_CHANGES[TOU_CHANGES.length - 1]]);
 					return true;
 				}
 				const warnings = account.warnings.filter(warning => !warning.acknowledged);
