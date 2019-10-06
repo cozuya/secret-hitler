@@ -11,6 +11,13 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.6.5 released 10-5-2019</p>
+				</div>
+				<p>Updates Terms of Use to version 1.4</p>
+				<p>Fixes Cardbacks not being visible in remakes</p>
+				<p>Fixes spacing issues for user names and medals in game</p>
+				<p>Fixes bug where remake votes didn't rescind automatically</p>
+				<div className="ui header">
 					<p>Version 1.6.4 released 10-1-2019</p>
 				</div>
 				<h4>The top 10 players of season 7 are:</h4>
