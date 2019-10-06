@@ -3,7 +3,7 @@ const cn = require('classnames');
 module.exports.TOU_CHANGES = [
 	{
 		changeVer: '1.4',
-		changeDesc: 'Play as your role and try to win\nNo unfair influence: don\'t make promises as one role you wouldn\'t be able to keep as the other role\nDo not cheat\nNo hate speech or abusive/sexist/racist/discriminating language\nRespect other people\nNo attempts to harm the site, be it through hacking, ddosing, or any other malicious activity\nDo not attempt to circumvent rules or punishments\nPlease read our entire Terms of Use (linked below) for more details\n'
+		changeDesc: 'Adds specified punishment template for most rule violations\nUpdates rules regarding spoilers for TV shows, movies etc.\nUpdates rules regarding room titles\nUpdates rules on misclicks\nAll rules are listed in detail in the Terms of Use (linked below)'
 	},
 	{
 		changeVer: '1.3',
