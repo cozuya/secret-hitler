@@ -39,7 +39,6 @@ module.exports.makeReport = (data, game, type = 'report') => {
 			'username': 'Mod Chat',
 			'avatar_url': 'https://cdn.discordapp.com/emojis/230161421311148043.png?v=1'
 		});
-		game.private.hiddenInfoShouldNotify = false;
 	}
 
 	if (type === 'report') {
@@ -48,7 +47,6 @@ module.exports.makeReport = (data, game, type = 'report') => {
 			'username': 'Auto Report',
 			'avatar_url': 'https://cdn.discordapp.com/emojis/230161421336313857.png?v=1'
 		});
-		game.private.hiddenInfoShouldNotify = false;
 	}
 
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
@@ -74,11 +72,15 @@ module.exports.makeReport = (data, game, type = 'report') => {
 
 		if (isStaff) {
 			if (!game.unsentReports) game.unsentReports = [];
+			data.type = type;
 			game.unsentReports[game.unsentReports.length] = data;
 			return;
 		}
 
 		if (process.env.NODE_ENV === 'production') {
+			if (type === 'report' || type === 'modchat') {
+				game.private.hiddenInfoShouldNotify = false;
+			}
 			try {
 				const req = https.request({
 					hostname: 'discordapp.com',
