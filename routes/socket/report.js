@@ -15,6 +15,25 @@ module.exports.makeReport = (data, game, type = 'report') => {
 			'username': '@Mod Ping',
 			'avatar_url': 'https://cdn.discordapp.com/emojis/612042360318328842.png?v=1'
 		});
+		if (process.env.NODE_ENV === 'production') {
+			try {
+				const req = https.request({
+					hostname: 'discordapp.com',
+					path: process.env.DISCORDREPORTURL,
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': Buffer.byteLength(report)
+					}
+				});
+				req.end(report);
+			} catch (e) {
+				console.log(e);
+			}
+		} else {
+			console.log(`${text}\n${game.general.uid}`);
+		}
+		return;
 	}
 
 	if (type === 'reportdelayed') {
@@ -49,6 +68,10 @@ module.exports.makeReport = (data, game, type = 'report') => {
 		});
 	}
 
+	if (type === 'report' || type === 'modchat') {
+		game.private.hiddenInfoShouldNotify = false;
+	}
+
 	Account.find({ staffRole: { $exists: true } }).then(accounts => {
 		const staffUserNames = accounts
 			.filter(
@@ -70,17 +93,16 @@ module.exports.makeReport = (data, game, type = 'report') => {
 				newStaff.trialmodUserNames.includes(n)
 		);
 
-		if (isStaff) {
-			if (!game.unsentReports) game.unsentReports = [];
-			data.type = type;
-			game.unsentReports[game.unsentReports.length] = data;
-			return;
+		if (type !== 'reportdelayed' && type !== 'modchatdelayed') {
+			if (isStaff) {
+				if (!game.unsentReports) game.unsentReports = [];
+				data.type = type;
+				game.unsentReports[game.unsentReports.length] = data;
+				return;
+			}
 		}
 
 		if (process.env.NODE_ENV === 'production') {
-			if (type === 'report' || type === 'modchat') {
-				game.private.hiddenInfoShouldNotify = false;
-			}
 			try {
 				const req = https.request({
 					hostname: 'discordapp.com',
