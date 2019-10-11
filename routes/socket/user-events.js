@@ -13,7 +13,7 @@ const {
 	testIP
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
-const { selectVoting } = require('./game/election.js');
+const { selectVoting, enactPolicy } = require('./game/election.js');
 const { selectChancellor } = require('./game/election-util.js');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
@@ -1744,6 +1744,114 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 	}
 	socket.emit('updateRemakeVoting', player.isRemaking);
 	game.chats.push(chat);
+	sendInProgressGameUpdate(game);
+};
+
+/**
+ * @param {object} passport - socket authentication.
+ * @param {object} game - target game.
+ * @param {object} data - from socket emit.
+ * @param {object} socket - socket
+ */
+module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
+	if (!game || !game.publicPlayersState || game.general.isRemade || game.publicPlayersState[0].cardStatus.isFlipped) {
+		return;
+	}
+
+	if (game.gameState.isGameFrozen) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	const { publicPlayersState } = game;
+	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+	const player = publicPlayersState[playerIndex];
+
+	if (!player) return;
+
+	player.isTopDeckVoting = data.topDeckStatus;
+
+	const nextPresidentIndex = index => {
+		const nextIndex = index + 1 === game.general.playerCount ? 0 : index + 1;
+
+		if (game.publicPlayersState[nextIndex].isDead) {
+			return nextPresidentIndex(nextIndex);
+		} else {
+			return nextIndex;
+		}
+	};
+	const performTopDeck = () => {
+		game.publicPlayersState[game.gameState.presidentIndex].isLoader = false;
+		game.private.seatedPlayers[game.gameState.presidentIndex].playersState.forEach(player => {
+			player.notificationStatus = '';
+		});
+		while (game.trackState.electionTrackerCount < 2) {
+			game.trackState.electionTrackerCount++;
+			game.gameState.presidentIndex = nextPresidentIndex(game.gameState.presidentIndex);
+		}
+		game.trackState.electionTrackerCount++;
+		game.gameState.previousElectedGovernment = [];
+		if (!game.gameState.undrawnPolicyCount) {
+			shufflePolicies(game);
+		}
+		game.gameState.undrawnPolicyCount--;
+		enactPolicy(game, game.private.policies.shift());
+	};
+
+	const numPlayers = publicPlayersState.length;
+
+	if (data.topDeckStatus) {
+		const topDeckPlayerCount = publicPlayersState.filter(player => player.isTopDeckVoting).length;
+
+		if (topDeckPlayerCount == numPlayers && !game.general.isTopDecking) {
+			game.general.isTopDecking = true;
+
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: 'All players have voted to top-deck until the end.'
+					}
+				]
+			};
+			game.chats.push(chat);
+
+			game.general.topDeckCounter = 5;
+			game.private.topDeckTimer = setInterval(() => {
+				if (game.general.topDeckCounter !== 0) {
+					if (game.general.topDeckCounter < 6) {
+						game.general.status = `Top-decking one card in ${game.general.topDeckCounter} ${game.general.topDeckCounter === 1 ? 'second' : 'seconds'}.`;
+					}
+					game.general.topDeckCounter--;
+					if (game.trackState.liberalPolicyCount === 5 || game.trackState.fascistPolicyCount === 6) clearInterval(game.private.topDeckTimer);
+				} else {
+					game.general.topDeckCounter = 7;
+					performTopDeck();
+				}
+				sendInProgressGameUpdate(game);
+			}, 1000);
+		}
+	} else {
+		if (game.general.isTopDecking) {
+			game.general.isTopDecking = false;
+
+			const chat = {
+				timestamp: new Date(),
+				gameChat: true,
+				chat: [
+					{
+						text: 'One or more players have rescinded their top-deck vote.'
+					}
+				]
+			};
+			game.chats.push(chat);
+			clearInterval(game.private.topDeckTimer);
+		}
+	}
+
 	sendInProgressGameUpdate(game);
 };
 

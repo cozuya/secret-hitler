@@ -296,6 +296,8 @@ const enactPolicy = (game, team, socket) => {
 	);
 };
 
+module.exports.enactPolicy = enactPolicy;
+
 /**
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.

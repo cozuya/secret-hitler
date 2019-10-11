@@ -16,6 +16,7 @@ const {
 	handlePlayerReportDismiss,
 	handleUpdatedBio,
 	handleUpdatedRemakeGame,
+	handleUpdatedTopDeck,
 	handleUpdatedPlayerNote,
 	handleSubscribeModChat,
 	handleModPeekVotes,
@@ -386,6 +387,12 @@ module.exports.socketRoutes = () => {
 				const game = findGame(data);
 				if (authenticated && ensureInGame(passport, game)) {
 					handleUpdatedRemakeGame(passport, game, data, socket);
+				}
+			});
+			socket.on('updateTopDeck', data => {
+				const game = findGame(data);
+				if (authenticated && ensureInGame(passport, game)) {
+					handleUpdatedTopDeck(passport, game, data, socket);
 				}
 			});
 			socket.on('updateBio', data => {

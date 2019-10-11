@@ -562,6 +562,30 @@ class Tracks extends React.Component {
 				);
 			}
 		};
+		const updateTopDeck = () => {
+			if (!this.state.topDeckStatusDisabled) {
+				this.setState(
+					{
+						topDeckStatus: !this.state.topDeckStatus,
+						topDeckStatusDisabled: true
+					},
+					() => {
+						this.props.socket.emit('updateTopDeck', {
+							topDeckStatus: this.state.topDeckStatus,
+							uid: gameInfo.general.uid
+						});
+					}
+				);
+
+				setTimeout(() => {
+					if (this._ismounted) {
+						this.setState({
+							topDeckStatusDisabled: false
+						});
+					}
+				}, this.state.topDeckStatus ? 10000 : 2000);
+			}
+		};
 
 		return (
 			<section className="tracks-container">
@@ -593,6 +617,17 @@ class Tracks extends React.Component {
 										? 'Enable this button to show that you would like to cancel this tournament'
 										: 'Enable this button to show that you would like to remake this game'
 								}
+							/>
+						)}
+					{userInfo.userName &&
+						userInfo.isSeated &&
+						gameInfo.gameState.isTracksFlipped &&
+						!gameInfo.general.isRemade &&
+						!(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (
+							<i
+								className={`icon topdeck ${this.state.topDeckStatus ? 'enabled' : ''}`}
+								onClick={updateTopDeck}
+								title='Enable this button to show that you would like to top-deck until the game ends'
 							/>
 						)}
 					{this.state.timedModeTimer && <div className="timed-mode-counter">{this.state.timedModeTimer}</div>}

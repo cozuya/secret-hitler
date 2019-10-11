@@ -56,6 +56,29 @@
 			color: #db2828 !important;
 		}
 	}
+	.icon.topdeck:before {
+		content: url('../../public/images/topdeck.png');
+	}
+	.icon.topdeck {
+		opacity: 1 !important;
+		position: absolute;
+		bottom: 5px;
+		left: 42px;
+		z-index: 105;
+		color: #ddd !important;
+		background: #034f61;
+		font-size: 16px !important;
+		padding: 4px;
+		opacity: 1;
+		width: 28px;
+		height: 30px;
+		border: 2px solid lightblue;
+		cursor: pointer;
+
+		&.enabled {
+			color: #db2828 !important;
+		}
+	}
 	.player-count {
 		// gameuid not used since routing update displays it in url
 		position: absolute;
