@@ -62,7 +62,7 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 			_game.chats = combineInProgressChats(_game, user);
 			sock.emit('gameUpdate', secureGame(_game));
 		}
-		if ('pendingChancellorIndex' in _game.gameState && _game.gameState.pendingChancellorIndex !== null) {
+		if (game.gameState.phase === 'voting') {
 			const publicPlayer = _game.publicPlayersState.find(player => user === player.userName);
 			if (publicPlayer && publicPlayer.isTopDeckVoting) {
 				publicPlayer.isTopDeckVoting = false;
