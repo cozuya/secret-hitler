@@ -1821,7 +1821,10 @@ module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
 
 			game.general.topDeckCounter = 5;
 			game.private.topDeckTimer = setInterval(() => {
-				if (game.general.topDeckCounter !== 0) {
+				if (game.gameState.isGameFrozen) {
+					publicPlayersState.forEach(player => {player.isTopDeckVoting = false;});
+					clearInterval(game.private.topDeckTimer);
+				} else if (game.general.topDeckCounter !== 0) {
 					if (game.general.topDeckCounter < 6) {
 						game.general.status = `Top-decking one card in ${game.general.topDeckCounter} ${game.general.topDeckCounter === 1 ? 'second' : 'seconds'}.`;
 					}
