@@ -623,6 +623,7 @@ class Tracks extends React.Component {
 						userInfo.isSeated &&
 						gameInfo.gameState.isTracksFlipped &&
 						!gameInfo.general.isRemade &&
+						!(gameInfo.summary && gameInfo.summary._id === gameInfo.general.uid) &&
 						!(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (
 							<i
 								className={`icon fast forward ${this.state.topDeckStatus ? 'enabled' : ''}`}

@@ -1555,6 +1555,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.general.isRemade = false;
 		newGame.general.isRemaking = false;
 		newGame.general.isRecorded = false;
+		newGame.general.isTopDecking = false;
 		newGame.summarySaved = false;
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
@@ -1573,6 +1574,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				previousSeasonAward: player.previousSeasonAward,
 				connected: player.connected,
 				isRemakeVoting: false,
+				isTopDeckVoting: false,
 				pingTime: undefined,
 				cardStatus: {
 					cardDisplayed: false,
