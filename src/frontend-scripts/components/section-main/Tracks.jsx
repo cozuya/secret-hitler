@@ -625,7 +625,7 @@ class Tracks extends React.Component {
 						!gameInfo.general.isRemade &&
 						!(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (
 							<i
-								className={`icon topdeck ${this.state.topDeckStatus ? 'enabled' : ''}`}
+								className={`icon fast forward ${this.state.topDeckStatus ? 'enabled' : ''}`}
 								onClick={updateTopDeck}
 								title='Enable this button to show that you would like to top-deck until the game ends'
 							/>

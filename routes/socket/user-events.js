@@ -1804,21 +1804,16 @@ module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
 
 	if (data.topDeckStatus) {
 		const topDeckPlayerCount = publicPlayersState.filter(player => player.isTopDeckVoting).length;
+		game.chats.push({
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{text: `A player has voted to top-deck this ${game.general.isTourny ? 'tournament.' : 'game.'} (${topDeckPlayerCount}/${numPlayers})`}
+			]
+		});
 
 		if (topDeckPlayerCount == numPlayers && !game.general.isTopDecking) {
 			game.general.isTopDecking = true;
-
-			const chat = {
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{
-						text: 'All players have voted to top-deck until the end.'
-					}
-				]
-			};
-			game.chats.push(chat);
-
 			game.general.topDeckCounter = 5;
 			game.private.topDeckTimer = setInterval(() => {
 				if (game.gameState.isGameFrozen) {
@@ -1838,19 +1833,16 @@ module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
 			}, 1000);
 		}
 	} else {
+		const topDeckPlayerCount = publicPlayersState.filter(player => player.isTopDeckVoting).length;
+		game.chats.push({
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{text: `A player has rescinded their vote to top-deck this ${game.general.isTourny ? 'tournament.' : 'game.'} (${topDeckPlayerCount}/${numPlayers})`}
+			]
+		});
 		if (game.general.isTopDecking) {
 			game.general.isTopDecking = false;
-
-			const chat = {
-				timestamp: new Date(),
-				gameChat: true,
-				chat: [
-					{
-						text: 'One or more players have rescinded their top-deck vote.'
-					}
-				]
-			};
-			game.chats.push(chat);
 			clearInterval(game.private.topDeckTimer);
 		}
 	}
