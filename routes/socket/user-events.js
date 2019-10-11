@@ -1817,7 +1817,6 @@ module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
 			game.general.topDeckCounter = 5;
 			game.private.topDeckTimer = setInterval(() => {
 				if (game.gameState.isGameFrozen || ('pendingChancellorIndex' in game.gameState && game.gameState.pendingChancellorIndex !== null)) {
-					publicPlayersState.forEach(player => {player.isTopDeckVoting = false;});
 					clearInterval(game.private.topDeckTimer);
 				} else if (game.general.topDeckCounter !== 0) {
 					if (game.general.topDeckCounter < 6) {
