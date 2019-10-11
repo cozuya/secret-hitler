@@ -66,6 +66,7 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 			.filter(player => !player.isDead)
 			.forEach(player => {
 				player.isLoader = true;
+				player.isTopDeckVoting = false;
 				player.cardStatus = {
 					cardDisplayed: true,
 					isFlipped: false,

@@ -1754,7 +1754,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  * @param {object} socket - socket
  */
 module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
-	if (!game || !game.publicPlayersState || game.general.isRemade || game.publicPlayersState[0].cardStatus.isFlipped) {
+	if (!game || !game.publicPlayersState || game.general.isRemade || game.publicPlayersState[0].cardStatus.isFlipped || ('pendingChancellorIndex' in game.gameState && game.gameState.pendingChancellorIndex !== null)) {
 		return;
 	}
 
@@ -1816,7 +1816,7 @@ module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
 			game.general.isTopDecking = true;
 			game.general.topDeckCounter = 5;
 			game.private.topDeckTimer = setInterval(() => {
-				if (game.gameState.isGameFrozen) {
+				if (game.gameState.isGameFrozen || ('pendingChancellorIndex' in game.gameState && game.gameState.pendingChancellorIndex !== null)) {
 					publicPlayersState.forEach(player => {player.isTopDeckVoting = false;});
 					clearInterval(game.private.topDeckTimer);
 				} else if (game.general.topDeckCounter !== 0) {
