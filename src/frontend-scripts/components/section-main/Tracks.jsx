@@ -600,7 +600,7 @@ class Tracks extends React.Component {
 				return gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead;
 			}
 		})();
-		console.log(gameInfo);
+		const anyDead = gameInfo.publicPlayersState.some(player => player.isDead);
 
 		return (
 			<section className="tracks-container">
@@ -638,6 +638,7 @@ class Tracks extends React.Component {
 						userInfo.isSeated &&
 						gameInfo.gameState.isTracksFlipped &&
 						!gameInfo.general.isRemade &&
+						(gameInfo.general.casualGame || anyDead) &&
 						!isDead &&
 						!(gameInfo.summary && gameInfo.summary._id === gameInfo.general.uid) &&
 						gameInfo.gameState.phase === 'selectingChancellor' &&

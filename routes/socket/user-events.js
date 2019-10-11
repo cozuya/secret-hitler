@@ -1801,6 +1801,16 @@ module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
 	};
 
 	const numPlayers = publicPlayersState.filter(player => !player.isDead).length;
+	if (numPlayers === publicPlayersState.length && !game.general.casualGame) {
+		game.chats.push({
+			timestamp: new Date(),
+			gameChat: true,
+			chat: [
+				{text: 'You can only vote to top-deck once a player is dead in ranked games.'}
+			]
+		});
+		return;
+	}
 
 	if (data.topDeckStatus) {
 		const topDeckPlayerCount = publicPlayersState.filter(player => player.isTopDeckVoting && !player.isDead).length;
