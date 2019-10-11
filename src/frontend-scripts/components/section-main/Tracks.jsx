@@ -9,6 +9,7 @@ class Tracks extends React.Component {
 		super();
 		this.state = {
 			remakeStatus: false,
+			topDeckStatus: false,
 			timedModeTimer: ''
 		};
 	}
@@ -32,6 +33,13 @@ class Tracks extends React.Component {
 					}
 				);
 			});
+			this.props.socket.on('updateTopDeckVoting', status => {
+				this.setState(
+					{
+						topDeckStatus: status
+					}
+				);
+			});
 		}
 	}
 
@@ -50,7 +58,8 @@ class Tracks extends React.Component {
 
 		if (!gameInfo.gameState.isStarted) {
 			this.setState({
-				remakeStatus: false
+				remakeStatus: false,
+				topDeckStatus: false
 			});
 		}
 

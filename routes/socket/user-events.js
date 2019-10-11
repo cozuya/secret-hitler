@@ -1573,8 +1573,6 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				customCardbackUid: player.customCardbackUid,
 				previousSeasonAward: player.previousSeasonAward,
 				connected: player.connected,
-				isRemakeVoting: false,
-				isTopDeckVoting: false,
 				pingTime: undefined,
 				cardStatus: {
 					cardDisplayed: false,
@@ -1849,6 +1847,7 @@ module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
 		}
 	}
 
+	socket.emit('updateTopDeckVoting', player.isTopDeckVoting);
 	sendInProgressGameUpdate(game);
 };
 
