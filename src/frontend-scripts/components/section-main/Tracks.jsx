@@ -595,6 +595,12 @@ class Tracks extends React.Component {
 				}, this.state.topDeckStatus ? 10000 : 2000);
 			}
 		};
+		const isDead = (() => {
+			if (userInfo.userName && gameInfo.publicPlayersState.length && gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName)) {
+				return gameInfo.publicPlayersState.find(player => userInfo.userName === player.userName).isDead;
+			}
+		})();
+		console.log(gameInfo);
 
 		return (
 			<section className="tracks-container">
@@ -632,6 +638,7 @@ class Tracks extends React.Component {
 						userInfo.isSeated &&
 						gameInfo.gameState.isTracksFlipped &&
 						!gameInfo.general.isRemade &&
+						!isDead &&
 						!(gameInfo.summary && gameInfo.summary._id === gameInfo.general.uid) &&
 						!(('pendingChancellorIndex' in gameInfo.gameState) && gameInfo.gameState.pendingChancellorIndex !== null) &&
 						!(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 2) && (

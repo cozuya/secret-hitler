@@ -1769,7 +1769,7 @@ module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
 	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 	const player = publicPlayersState[playerIndex];
 
-	if (!player) return;
+	if (!player || player.isDead) return;
 
 	player.isTopDeckVoting = data.topDeckStatus;
 
@@ -1800,10 +1800,10 @@ module.exports.handleUpdatedTopDeck = (passport, game, data, socket) => {
 		enactPolicy(game, game.private.policies.shift());
 	};
 
-	const numPlayers = publicPlayersState.length;
+	const numPlayers = publicPlayersState.filter(player => !player.isDead).length;
 
 	if (data.topDeckStatus) {
-		const topDeckPlayerCount = publicPlayersState.filter(player => player.isTopDeckVoting).length;
+		const topDeckPlayerCount = publicPlayersState.filter(player => player.isTopDeckVoting && !player.isDead).length;
 		game.chats.push({
 			timestamp: new Date(),
 			gameChat: true,
