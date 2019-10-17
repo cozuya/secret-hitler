@@ -11,6 +11,15 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.6.6 released 17-10-2019</p>
+				</div>
+				<p>Adds the ability to vote on top-decking cards until the game ends</p>
+				<ul>
+					<li>Requires unanimous vote</li>
+					<li>Top-decks one card every 8 seconds</li>
+					<li>Can be cancelled by unvoting or picking a chancellor</li>
+				</ul>
+				<div className="ui header">
 					<p>Version 1.6.5 released 10-5-2019</p>
 				</div>
 				<p>Updates Terms of Use to version 1.4</p>
