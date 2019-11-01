@@ -5222,6 +5222,7 @@ module.exports = [
   "dma2x7s5w96nw5soo.gq",
   "dma2x7s5w96nw5soo.ml",
   "dma2x7s5w96nw5soo.tk",
+  "dmailpro.net",
   "dmail.unrivaledtechnologies.com",
   "dmaji.ml",
   "dmarc.ro",
