@@ -358,7 +358,7 @@ class Playerlist extends React.Component {
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
-								<span title="This player was part of the winning team of the Summer 2019 tournament." className="crown-icon" />
+								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
 							)}
 							{user.staffRole !== 'admin' &&
 								Boolean(!user.staffDisableVisibleElo) &&
@@ -530,7 +530,7 @@ class Playerlist extends React.Component {
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
-								<span title="This player was part of the winning team of the Summer 2019 tournament." className="crown-icon" />
+								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
 							)}
 							{(() => {
 								const userAdminRole = user.staffIncognito

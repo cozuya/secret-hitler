@@ -232,7 +232,7 @@ export default class Generalchat extends React.Component {
 								chat.previousSeasonAward &&
 								this.renderPreviousSeasonAward(chat.previousSeasonAward)}
 							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && chat.specialTournamentStatus && (
-								<span title="This player was part of the winning team of the Summer 2019 tournament." className="crown-icon" />
+								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
 							)}
 							<span
 								className={
