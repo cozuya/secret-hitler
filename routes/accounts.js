@@ -8,7 +8,7 @@ const EightEightCounter = require('../models/eightEightCounter');
 const { accountCreationDisabled, verifyBypass, consumeBypass, testIP } = require('./socket/models');
 const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
-const bannedEmails = require('../utils/disposibleEmails');
+const bannedEmails = require('../utils/disposableEmails');
 const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
 const prodCacheBustToken = require('./prodCacheBustToken');
 
