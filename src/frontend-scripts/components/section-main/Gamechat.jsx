@@ -118,7 +118,7 @@ class Gamechat extends React.Component {
 		this.setState({
 			playersToWhitelist: this.props.userList.list
 				.filter(user => user.userName !== this.props.userInfo.userName)
-				.map(user => ({ userName: user.userName, isSelected: true }))
+				.map(user => ({ userName: user.userName, isSelected: false }))
 		});
 
 		$(this.whitelistModal).modal('show');
