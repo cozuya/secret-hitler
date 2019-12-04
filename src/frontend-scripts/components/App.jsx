@@ -45,9 +45,8 @@ class TopLevelErrorBoundry extends React.Component {
 			<div style={{ padding: '20px' }}>
 				<h2>You've broken the website.</h2>
 				<p>
-					Not really, but there's been an unhandled error in the site's UI code.
-					This is probably due to a new issue in a recent deployment.
-					Please expand the details below and post a screenshot of them in #development-contribution on our Discord.{'  '}
+					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in a recent deployment. Please expand the
+					details below and post a screenshot of them in #development-contribution on our Discord.{'  '}
 					<a href="/game">Click here to get back to safety.</a>
 				</p>
 				<details style={{ whiteSpace: 'pre-wrap' }}>
@@ -57,8 +56,8 @@ class TopLevelErrorBoundry extends React.Component {
 				</details>
 			</div>
 		) : (
-				this.props.children
-			);
+			this.props.children
+		);
 	}
 }
 
@@ -469,7 +468,9 @@ export class App extends React.Component {
 								return (
 									<div style={{ position: 'fixed', zIndex: 99999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
 										<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
-											<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{this.state.alertMsg.data[0].changeVer === '0.0' ? 'Site Rules' : 'Terms of Use changes'}</h2>
+											<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+												{this.state.alertMsg.data[0].changeVer === '0.0' ? 'Site Rules' : 'Terms of Use changes'}
+											</h2>
 											<div
 												style={{
 													height: '400px',
@@ -484,7 +485,9 @@ export class App extends React.Component {
 												{this.state.alertMsg.data.map((change, index) => {
 													return (
 														<div key={index}>
-															<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>{this.state.alertMsg.data[0].changeVer === '0.0' ? '' : `Version ${change.changeVer}`}</h4>
+															<h4 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
+																{this.state.alertMsg.data[0].changeVer === '0.0' ? '' : `Version ${change.changeVer}`}
+															</h4>
 															{change.changeDesc.split('\n').map((item, index) => (
 																<p key={index} style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
 																	{item}
@@ -523,8 +526,10 @@ export class App extends React.Component {
 										<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
 											<h2 style={{ fontFamily: '"Roboto", sans-serif', textAlign: 'center' }}>Moderator Warning</h2>
 											<div style={{ width: '450px', margin: '5px 0' }}>
-												The following is a warning from a moderator. If you believe this warning to be unjustified, you may argue your case respectfully by pinging @Moderator in #mod-support on our <a href="https://discord.gg/secrethitlerio">Discord</a>.
-												<br /><br />
+												The following is a warning from a moderator. If you believe this warning to be unjustified, you may argue your case respectfully by
+												pinging @Moderator in #mod-support on our <a href="https://discord.gg/secrethitlerio">Discord</a>.
+												<br />
+												<br />
 												Please read and follow the rules as laid out in the <a href="/tou">Terms of Use</a> to avoid further action on your account.
 											</div>
 											<div
@@ -535,7 +540,7 @@ export class App extends React.Component {
 													border: '1px solid black',
 													borderRadius: '5px',
 													background: '#777',
-													padding: '5px',
+													padding: '5px'
 												}}
 											>
 												<div>
@@ -551,13 +556,21 @@ export class App extends React.Component {
 													<input type="checkbox" id="warningCheckBox" style={{ marginRight: '5px' }} />
 													<label htmlFor="warningCheckBox" style={{ fontFamily: '"Roboto", sans-serif', cursor: 'pointer' }}>
 														I acknowledge this warning and understand that continuing in this behaviour may lead to further action on my account.
-												</label>
+													</label>
 												</div>
 												<br />
 												<input
 													type="submit"
 													value="Dismiss"
-													style={{ width: '60%', height: '25px', marginLeft: '20%', borderRadius: '5px', fontFamily: '"Roboto", sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
+													style={{
+														width: '60%',
+														height: '25px',
+														marginLeft: '20%',
+														borderRadius: '5px',
+														fontFamily: '"Roboto", sans-serif',
+														fontWeight: 'bold',
+														cursor: 'pointer'
+													}}
 													id="warningButton"
 												/>
 											</form>
@@ -574,7 +587,8 @@ export class App extends React.Component {
 								<h2 style={{ fontFamily: '"Roboto", sans-serif', textAlign: 'center' }}>Warnings log</h2>
 								<div style={{ width: '450px', margin: '5px 0' }}>
 									Previous Warnings for User: <strong>{this.state.warnings.username}</strong>
-									<br /><br />
+									<br />
+									<br />
 								</div>
 								<div
 									style={{
@@ -588,10 +602,16 @@ export class App extends React.Component {
 										overflowY: 'scroll'
 									}}
 								>
-									{this.state.warnings.warnings.map((warning) => {
+									{this.state.warnings.warnings.map(warning => {
 										return (
 											<div key={warning}>
-												<p style={{ fontFamily: '"Roboto", sans-serif' }}><strong>Date:</strong> {new Date(warning.time).toDateString()} {new Date(warning.time).toTimeString()}<br /><strong>Acknowledged:</strong> {warning.acknowledged ? 'Yes' : 'No'}<br /><strong>Mod:</strong> {warning.moderator}</p>
+												<p style={{ fontFamily: '"Roboto", sans-serif' }}>
+													<strong>Date:</strong> {new Date(warning.time).toDateString()} {new Date(warning.time).toTimeString()}
+													<br />
+													<strong>Acknowledged:</strong> {warning.acknowledged ? 'Yes' : 'No'}
+													<br />
+													<strong>Mod:</strong> {warning.moderator}
+												</p>
 												<p key={warning} style={{ fontFamily: '"Roboto", sans-serif' }}>
 													{warning.text}
 												</p>
@@ -603,7 +623,15 @@ export class App extends React.Component {
 								<input
 									type="button"
 									value="Dismiss"
-									style={{ width: '60%', height: '25px', margin: '15px 20%', borderRadius: '5px', fontFamily: '"Roboto", sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
+									style={{
+										width: '60%',
+										height: '25px',
+										margin: '15px 20%',
+										borderRadius: '5px',
+										fontFamily: '"Roboto", sans-serif',
+										fontWeight: 'bold',
+										cursor: 'pointer'
+									}}
 									id="warningLogButton"
 									onClick={() => this.setState({ warnings: null })}
 								/>

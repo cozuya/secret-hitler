@@ -164,7 +164,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	const loseFactor = -k / losingPlayerNames.length;
 	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
 	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
-	let ratingUpdates = {};
+	const ratingUpdates = {};
 	accounts.forEach(account => {
 		const eloOverall = account.eloOverall ? account.eloOverall : defaultELO;
 		const eloSeason = account.eloSeason ? account.eloSeason : defaultELO;
@@ -200,7 +200,7 @@ module.exports.destroySession = username => {
 				if (err) {
 					try {
 						console.log(err, 'err in logoutuser');
-					} catch (error) { }
+					} catch (error) {}
 				}
 			});
 	}

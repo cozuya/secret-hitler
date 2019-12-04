@@ -385,8 +385,8 @@ export default class Moderation extends React.Component {
 						action === 'deleteGame'
 							? `DELGAME${this.state.playerInputText}`
 							: action === 'resetGameName'
-								? `RESETGAMENAME${this.state.playerInputText}`
-								: this.state.playerInputText || this.state.selectedUser,
+							? `RESETGAMENAME${this.state.playerInputText}`
+							: this.state.playerInputText || this.state.selectedUser,
 					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
 					comment: this.state.actionTextValue,
 					action
@@ -438,8 +438,8 @@ export default class Moderation extends React.Component {
 						action === 'deleteGame'
 							? `DELGAME${playerInputText}`
 							: action === 'resetGameName'
-								? `RESETGAMENAME${playerInputText}`
-								: playerInputText || selectedUser,
+							? `RESETGAMENAME${playerInputText}`
+							: playerInputText || selectedUser,
 					ip: playerInputText ? '' : selectedUser ? userList.find(user => user.userName === selectedUser).ip : '',
 					comment: actionTextValue,
 					action
@@ -484,10 +484,10 @@ export default class Moderation extends React.Component {
 					Delete Most Recent Warning
 				</button>
 				<button
-					className={(selectedUser || playerInputText) ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					className={selectedUser || playerInputText ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
 					style={{ background: '#FFA07A', color: 'black' }}
 					onClick={() => {
-						this.props.socket.emit('seeWarnings', (playerInputText || selectedUser));
+						this.props.socket.emit('seeWarnings', playerInputText || selectedUser);
 						this.setState({
 							selectedUser: '',
 							actionTextValue: '',

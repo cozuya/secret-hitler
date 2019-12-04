@@ -522,10 +522,15 @@ class Settings extends React.Component {
 							</div>
 							<h4 className="ui header">Safe For Work Mode</h4>
 							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="fullheight" checked={this.state.safeForWork} onChange={() => {
-									this.toggleGameSettings('safeForWork');
-									location.reload();
-								}} />
+								<input
+									type="checkbox"
+									name="fullheight"
+									checked={this.state.safeForWork}
+									onChange={() => {
+										this.toggleGameSettings('safeForWork');
+										location.reload();
+									}}
+								/>
 								<label />
 							</div>
 							<h4 className="ui header" style={{ color: 'red' }}>
@@ -582,9 +587,7 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${
-															gameSettings.customCardbackUid
-															}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${gameSettings.customCardbackUid}) no-repeat`
 													}}
 												/>
 											);

@@ -43,7 +43,7 @@ function main() {
 
 	// Everything works - manual IP entry
 	console.log('Passed tests, enter IPs to see results.\n');
-	let stdin = process.openStdin();
+	const stdin = process.openStdin();
 	stdin.addListener('data', function(IP) {
 		try {
 			console.log(obfTrue(IP.toString().trim()));

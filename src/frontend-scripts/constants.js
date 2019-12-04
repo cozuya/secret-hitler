@@ -3,7 +3,8 @@ const cn = require('classnames');
 export const TOU_CHANGES = [
 	{
 		changeVer: '1.4',
-		changeDesc: 'Adds specified punishment template for most rule violations\nUpdates rules regarding spoilers for TV shows, movies etc.\nUpdates rules regarding room titles\nUpdates rules on misclicks\nAll rules are listed in detail in the Terms of Use (linked below)'
+		changeDesc:
+			'Adds specified punishment template for most rule violations\nUpdates rules regarding spoilers for TV shows, movies etc.\nUpdates rules regarding room titles\nUpdates rules on misclicks\nAll rules are listed in detail in the Terms of Use (linked below)'
 	},
 	{
 		changeVer: '1.3',
@@ -25,7 +26,8 @@ export const TOU_CHANGES = [
 	},
 	{
 		changeVer: '0.0',
-		changeDesc: 'Play as your role and try to win\nNo unfair influence: don\'t make promises as one role you wouldn\'t be able to keep as the other role\nDo not cheat\nNo hate speech or abusive/sexist/racist/discriminating language\nRespect other people\nNo attempts to harm the site, be it through hacking, ddosing, or any other malicious activity\nDo not attempt to circumvent rules or punishments\n'
+		changeDesc:
+			"Play as your role and try to win\nNo unfair influence: don't make promises as one role you wouldn't be able to keep as the other role\nDo not cheat\nNo hate speech or abusive/sexist/racist/discriminating language\nRespect other people\nNo attempts to harm the site, be it through hacking, ddosing, or any other malicious activity\nDo not attempt to circumvent rules or punishments\n"
 	}
 ];
 
@@ -85,22 +87,22 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 		return w + l >= 50
 			? eloDisabled
 				? cn(defaultClass, {
-					experienced1: w + l > 49,
-					experienced2: w + l > 99,
-					experienced3: w + l > 199,
-					experienced4: w + l > 299,
-					experienced5: w + l > 499,
-					onfire1: w / (w + l) > 0.52,
-					onfire2: w / (w + l) > 0.54,
-					onfire3: w / (w + l) > 0.56,
-					onfire4: w / (w + l) > 0.58,
-					onfire5: w / (w + l) > 0.6,
-					onfire6: w / (w + l) > 0.62,
-					onfire7: w / (w + l) > 0.64,
-					onfire8: w / (w + l) > 0.66,
-					onfire9: w / (w + l) > 0.68,
-					onfire10: w / (w + l) > 0.7
-				})
+						experienced1: w + l > 49,
+						experienced2: w + l > 99,
+						experienced3: w + l > 199,
+						experienced4: w + l > 299,
+						experienced5: w + l > 499,
+						onfire1: w / (w + l) > 0.52,
+						onfire2: w / (w + l) > 0.54,
+						onfire3: w / (w + l) > 0.56,
+						onfire4: w / (w + l) > 0.58,
+						onfire5: w / (w + l) > 0.6,
+						onfire6: w / (w + l) > 0.62,
+						onfire7: w / (w + l) > 0.64,
+						onfire8: w / (w + l) > 0.66,
+						onfire9: w / (w + l) > 0.68,
+						onfire10: w / (w + l) > 0.7
+				  })
 				: cn(defaultClass, gradeObj)
 			: defaultClass;
 	}

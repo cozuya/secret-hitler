@@ -318,7 +318,7 @@ export default class Creategame extends React.Component {
 		};
 
 		const findValue = val => {
-			for (let value of options) {
+			for (const value of options) {
 				if (val === value.value) {
 					return value;
 				}
@@ -361,7 +361,7 @@ export default class Creategame extends React.Component {
 		};
 
 		const findValue = val => {
-			for (let value of options) {
+			for (const value of options) {
 				if (val === value.value) {
 					return value;
 				}
@@ -375,7 +375,7 @@ export default class Creategame extends React.Component {
 				styles={style}
 				value={findValue(this.state.customGameSettings.powers[slot])}
 				onChange={(inputValue, action) => {
-					let newPowerList = this.state.customGameSettings.powers;
+					const newPowerList = this.state.customGameSettings.powers;
 					newPowerList[slot] = inputValue.value;
 					this.setState({ customGameSettings: Object.assign(this.state.customGameSettings, { powers: newPowerList }) });
 				}}

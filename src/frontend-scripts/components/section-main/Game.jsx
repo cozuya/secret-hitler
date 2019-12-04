@@ -104,10 +104,7 @@ export default class Game extends React.Component {
 
 	render() {
 		const { userInfo, gameInfo, socket } = this.props;
-		let isFlappy;
-
-		// Not Yet Ready
-		isFlappy = false;
+		const isFlappy = false;
 
 		return (
 			<section className="game">

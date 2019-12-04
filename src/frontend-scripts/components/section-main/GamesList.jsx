@@ -204,8 +204,7 @@ export class GamesList extends React.Component {
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
 					<h5 title="A season is an optional new tier of elo that is reset every 3 months.">
-						{new Date() > new Date('2019-09-30') ? `Season ends ${moment(new Date('2020-01-02')).fromNow()}` : `Welcome to season ${CURRENTSEASONNUMBER}`}
-						.
+						{new Date() > new Date('2019-09-30') ? `Season ends ${moment(new Date('2020-01-02')).fromNow()}` : `Welcome to season ${CURRENTSEASONNUMBER}`}.
 					</h5>
 				</a>
 				<h3>Game filters</h3>
@@ -220,10 +219,10 @@ export class GamesList extends React.Component {
 								Create a new game
 							</a>
 						) : (
-								<span className="disabled-create-game-button">
-									<button className="fluid ui button primary disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>
-								</span>
-							);
+							<span className="disabled-create-game-button">
+								<button className="fluid ui button primary disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>
+							</span>
+						);
 					})()}
 					<span className={this.state.filtersVisible ? 'enabled' : 'disabled'} onClick={toggleFilter}>
 						<i className="large filter icon" title="Game filters" />

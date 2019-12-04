@@ -5,7 +5,12 @@ import classnames from 'classnames';
 import { handToCards } from './replay-utils.jsx';
 
 const ElectionTracker = ({ position }) => {
-	const positionToClassName = Map([[0, 'zero'], [1, 'one'], [2, 'two'], [3, 'three']]);
+	const positionToClassName = Map([
+		[0, 'zero'],
+		[1, 'one'],
+		[2, 'two'],
+		[3, 'three']
+	]);
 	const classes = classnames('election-tracker', positionToClassName.get(position));
 
 	return <div className={classes} />;

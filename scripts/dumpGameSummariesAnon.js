@@ -14,7 +14,7 @@ if (![2, 3, 5, 6].includes(process.argv.length)) {
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
 
-let now = new Date();
+const now = new Date();
 console.log('Starting at', now);
 const OUTPUT_DIR = process.argv[3] || 'gameSummaries';
 const SUMMARY_DIR = `${OUTPUT_DIR}/games`;
