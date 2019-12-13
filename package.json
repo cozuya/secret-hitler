@@ -83,6 +83,7 @@
 		"babel-eslint": "^10.0.3",
 		"babel-jest": "^23.6.0",
 		"babel-loader": "^8.0.5",
+                "babel-polyfill": "^6.26.0",
 		"babel-plugin-named-asset-import": "^0.3.0",
 		"babel-preset-react-app": "^7.0.0",
 		"body-parser": "^1.18.2",
