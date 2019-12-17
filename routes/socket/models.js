@@ -5,7 +5,7 @@ const BannedIP = require('../../models/bannedIP');
 
 const fs = require('fs');
 const PNG = require('pngjs').PNG;
-let emotes = [];
+const emotes = [];
 fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
 	if (file.name.endsWith('.png')) emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
 });

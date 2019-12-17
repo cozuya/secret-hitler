@@ -156,7 +156,7 @@ module.exports.socketRoutes = () => {
 			const checkRestriction = account => {
 				if (!account || !passport || !passport.user || !socket) return;
 				const parseVer = ver => {
-					let vals = ver.split('.');
+					const vals = ver.split('.');
 					vals.forEach((v, i) => (vals[i] = parseInt(v)));
 					return vals;
 				};
@@ -170,8 +170,8 @@ module.exports.socketRoutes = () => {
 				};
 
 				if (account.touLastAgreed && account.touLastAgreed.length) {
-					let changesSince = [];
-					let myVer = parseVer(account.touLastAgreed);
+					const changesSince = [];
+					const myVer = parseVer(account.touLastAgreed);
 					TOU_CHANGES.forEach(change => {
 						if (!firstVerNew(myVer, parseVer(change.changeVer))) changesSince.push(change);
 					});
@@ -185,7 +185,7 @@ module.exports.socketRoutes = () => {
 				}
 				const warnings = account.warnings.filter(warning => !warning.acknowledged);
 				if (warnings.length > 0) {
-					const { moderator, acknowledged, ...firstWarning } = warnings[0];	// eslint-disable-line no-unused-vars
+					const { moderator, acknowledged, ...firstWarning } = warnings[0]; // eslint-disable-line no-unused-vars
 					socket.emit('warningPopup', firstWarning);
 					return true;
 				}
@@ -220,14 +220,14 @@ module.exports.socketRoutes = () => {
 							if (account.warnings && account.warnings.length > 0) {
 								socket.emit('sendWarnings', { username, warnings: account.warnings });
 							} else {
-								socket.emit('sendAlert', 'That user doesn\'t have any warnings.');
+								socket.emit('sendAlert', "That user doesn't have any warnings.");
 							}
 						} else {
-							socket.emit('sendAlert', 'That user doesn\'t exist.');
+							socket.emit('sendAlert', "That user doesn't exist.");
 						}
 					});
 				} else {
-					socket.emit('sendAlert', 'Are you sure you\'re supposed to be doing that?');
+					socket.emit('sendAlert', "Are you sure you're supposed to be doing that?");
 					console.log(passport.user, 'tried to receive warnings for', username);
 				}
 			});
@@ -294,7 +294,7 @@ module.exports.socketRoutes = () => {
 					Account.findOne({ username: passport.user }).then(acc => {
 						acc.warnings[acc.warnings.findIndex(warning => !warning.acknowledged)].acknowledged = true;
 						acc.markModified('warnings');
-						acc.save(() => isRestricted = checkRestriction(acc));
+						acc.save(() => (isRestricted = checkRestriction(acc)));
 					});
 				}
 			});

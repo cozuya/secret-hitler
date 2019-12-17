@@ -27,7 +27,7 @@ async function rate(game) {
 	const losingPlayerNames = game.losingPlayers.map(player => player.userName);
 	const playerNames = winningPlayerNames.concat(losingPlayerNames);
 	// Then look up account information
-	let accounts = await Account.find({ username: { $in: playerNames } }, { eloOverall: 1, eloSeason: 1, username: 1 });
+	const accounts = await Account.find({ username: { $in: playerNames } }, { eloOverall: 1, eloSeason: 1, username: 1 });
 	// Construct some basic statistics for each team
 	const b = game.winningTeam === 'liberal' ? 1 : 0;
 	const averageRatingWinners = avg(accounts, winningPlayerNames, a => a.eloOverall, 1600) + b * libAdjust[game.playerCount];
@@ -39,7 +39,7 @@ async function rate(game) {
 	const winFactor = k / winningPlayerNames.length;
 	const loseFactor = -k / losingPlayerNames.length;
 	// Apply the rating changes
-	for (let account of accounts) {
+	for (const account of accounts) {
 		let eloOverall;
 		let eloSeason;
 

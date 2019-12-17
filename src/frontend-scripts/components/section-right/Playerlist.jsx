@@ -59,16 +59,16 @@ class Playerlist extends React.Component {
 					? 'wins'
 					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-					? 'winsSeason'
-					: 'rainbowWinsSeason';
+				? 'winsSeason'
+				: 'rainbowWinsSeason';
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
 					? 'losses'
 					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-					? 'lossesSeason'
-					: 'rainbowLossesSeason';
+				? 'lossesSeason'
+				: 'rainbowLossesSeason';
 
 		return (a, b) => {
 			const awr = a[w] / a[l];
@@ -90,16 +90,16 @@ class Playerlist extends React.Component {
 					? 'wins'
 					: 'rainbowWins'
 				: this.state.userListFilter === 'all'
-					? 'winsSeason'
-					: 'rainbowWinsSeason';
+				? 'winsSeason'
+				: 'rainbowWinsSeason';
 		const l =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
 					? 'losses'
 					: 'rainbowLosses'
 				: this.state.userListFilter === 'all'
-					? 'lossesSeason'
-					: 'rainbowLossesSeason';
+				? 'lossesSeason'
+				: 'rainbowLossesSeason';
 
 		return (a, b) => {
 			const wl1 = a[w] + a[l];
@@ -170,7 +170,7 @@ class Playerlist extends React.Component {
 		const { userInfo } = this.props;
 
 		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'trialmod')) {
-			let classes = 'sign-in icon';
+			const classes = 'sign-in icon';
 
 			return (
 				<a href="#/signups">
@@ -213,16 +213,16 @@ class Playerlist extends React.Component {
 						? 'wins'
 						: 'rainbowWins'
 					: this.state.userListFilter === 'all'
-						? 'winsSeason'
-						: 'rainbowWinsSeason';
+					? 'winsSeason'
+					: 'rainbowWinsSeason';
 			const l =
 				gameSettings && gameSettings.disableSeasonal
 					? this.state.userListFilter === 'all'
 						? 'losses'
 						: 'rainbowLosses'
 					: this.state.userListFilter === 'all'
-						? 'lossesSeason'
-						: 'rainbowLossesSeason';
+					? 'lossesSeason'
+					: 'rainbowLossesSeason';
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
@@ -230,7 +230,7 @@ class Playerlist extends React.Component {
 			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
-			let aem = [...admins];
+			const aem = [...admins];
 			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
@@ -241,11 +241,11 @@ class Playerlist extends React.Component {
 			const privateUser = nonStaff.filter(user => !contributors.includes(user) && user.isPrivate);
 			const experienced = elo
 				? nonStaff
-					.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
-					.sort(this.sortByElo(this.alphabetical()))
+						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
+						.sort(this.sortByElo(this.alphabetical()))
 				: nonStaff
-					.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
-					.sort(this.winRate(this.alphabetical()));
+						.filter(user => !contributors.includes(user) && !privateUser.includes(user) && user[w] + user[l] >= 50)
+						.sort(this.winRate(this.alphabetical()));
 
 			const inexperienced = nonStaff.filter(user => !contributors.includes(user) && !experienced.includes(user) && !user.isPrivate).sort(this.alphabetical());
 
@@ -263,11 +263,11 @@ class Playerlist extends React.Component {
 				const userClasses =
 					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
 						? cn(
-							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
-							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
-							{ unclickable: !this.props.isUserClickable },
-							{ clickable: this.props.isUserClickable }
-						)
+								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
+								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
+								{ unclickable: !this.props.isUserClickable },
+								{ clickable: this.props.isUserClickable }
+						  )
 						: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
 				const renderStatus = () => {
 					const status = user.status;
@@ -318,14 +318,14 @@ class Playerlist extends React.Component {
 								const userAdminRole = user.staffIncognito
 									? 'Incognito'
 									: user.staffRole === 'admin'
-										? 'Admin'
-										: user.staffRole === 'editor'
-											? 'Editor'
-											: user.staffRole === 'moderator'
-												? 'Moderator'
-												: user.isContributor
-													? 'Contributor'
-													: null;
+									? 'Admin'
+									: user.staffRole === 'editor'
+									? 'Editor'
+									: user.staffRole === 'moderator'
+									? 'Moderator'
+									: user.isContributor
+									? 'Contributor'
+									: null;
 								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
 									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
@@ -366,11 +366,11 @@ class Playerlist extends React.Component {
 									return elo ? (
 										<span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
 									) : (
-											<span>
-												(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
-												<span className="userlist-stats"> {percentDisplay}</span>
-											</span>
-										);
+										<span>
+											(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
+											<span className="userlist-stats"> {percentDisplay}</span>
+										</span>
+									);
 								})()}
 						</div>
 					</div>
@@ -430,16 +430,16 @@ class Playerlist extends React.Component {
 						? 'wins'
 						: 'rainbowWins'
 					: this.state.userListFilter === 'all'
-						? 'winsSeason'
-						: 'rainbowWinsSeason';
+					? 'winsSeason'
+					: 'rainbowWinsSeason';
 			const l =
 				gameSettings && gameSettings.disableSeasonal
 					? this.state.userListFilter === 'all'
 						? 'losses'
 						: 'rainbowLosses'
 					: this.state.userListFilter === 'all'
-						? 'lossesSeason'
-						: 'rainbowLossesSeason';
+					? 'lossesSeason'
+					: 'rainbowLossesSeason';
 			const elo = !(gameSettings && gameSettings.disableElo) ? (gameSettings && gameSettings.disableSeasonal ? 'eloOverall' : 'eloSeason') : null;
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
@@ -447,7 +447,7 @@ class Playerlist extends React.Component {
 			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
-			let aem = [...admins];
+			const aem = [...admins];
 			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
@@ -475,11 +475,11 @@ class Playerlist extends React.Component {
 				const userClasses =
 					user[w] + user[l] > 49 || Boolean(user.staffRole && user.staffRole.length) || user.isContributor
 						? cn(
-							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
-							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
-							{ unclickable: !this.props.isUserClickable },
-							{ clickable: this.props.isUserClickable }
-						)
+								PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'username', gameSettings && gameSettings.disableElo),
+								{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
+								{ unclickable: !this.props.isUserClickable },
+								{ clickable: this.props.isUserClickable }
+						  )
 						: cn({ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) }, 'username');
 				const renderStatus = () => {
 					const status = user.status;
@@ -536,14 +536,14 @@ class Playerlist extends React.Component {
 								const userAdminRole = user.staffIncognito
 									? 'Incognito'
 									: user.staffRole === 'admin'
-										? 'Admin'
-										: user.staffRole === 'editor'
-											? 'Editor'
-											: user.staffRole === 'moderator'
-												? 'Moderator'
-												: user.isContributor
-													? 'Contributor'
-													: null;
+									? 'Admin'
+									: user.staffRole === 'editor'
+									? 'Editor'
+									: user.staffRole === 'moderator'
+									? 'Moderator'
+									: user.isContributor
+									? 'Contributor'
+									: null;
 
 								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
@@ -581,11 +581,11 @@ class Playerlist extends React.Component {
 										<span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
 									</div>
 								) : (
-										<div className="userlist-stats-container">
-											(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
-											<span className="userlist-stats"> {percentDisplay}</span>
-										</div>
-									);
+									<div className="userlist-stats-container">
+										(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
+										<span className="userlist-stats"> {percentDisplay}</span>
+									</div>
+								);
 							})()}
 					</div>
 				);
@@ -668,8 +668,4 @@ Playerlist.propTypes = {
 	fetchReplay: PropTypes.func
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-	mergeProps
-)(Playerlist);
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Playerlist);

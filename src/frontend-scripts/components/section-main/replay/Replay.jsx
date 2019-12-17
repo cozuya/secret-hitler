@@ -273,10 +273,7 @@ class ReplayWrapper extends React.Component {
 	}
 }
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(ReplayWrapper);
+export default connect(mapStateToProps, mapDispatchToProps)(ReplayWrapper);
 
 Replay.propTypes = {
 	allEmotes: PropTypes.array

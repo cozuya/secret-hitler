@@ -118,7 +118,7 @@ class Gamechat extends React.Component {
 		this.setState({
 			playersToWhitelist: this.props.userList.list
 				.filter(user => user.userName !== this.props.userInfo.userName)
-				.map(user => ({ userName: user.userName, isSelected: true }))
+				.map(user => ({ userName: user.userName, isSelected: false }))
 		});
 
 		$(this.whitelistModal).modal('show');
@@ -463,11 +463,11 @@ class Gamechat extends React.Component {
 
 		if (gameInfo && gameInfo.chats && (!gameInfo.general.private || userInfo.isSeated || isStaff)) {
 			let list = gameInfo.chats.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)));
-			let chatLength = (userInfo && userInfo.gameSettings && userInfo.gameSettings.truncatedSize) || 250;
+			const chatLength = (userInfo && userInfo.gameSettings && userInfo.gameSettings.truncatedSize) || 250;
 			if (showPlayerChat && showGameChat && showObserverChat && !showFullChat) {
 				list = list.slice(-chatLength);
 			} else {
-				let listAcc = [];
+				const listAcc = [];
 				for (let i = list.length - 1; i >= 0; i--) {
 					if (listAcc.length >= chatLength && !showFullChat) {
 						break;
@@ -558,81 +558,81 @@ class Gamechat extends React.Component {
 							<span className="broadcast-chat">{processEmotes(chat.chat, true, this.props.allEmotes)}</span>
 						</div>
 					) : (
-									<div className="item" key={i}>
-										{this.handleTimestamps(chat.timestamp)}
-										{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
-											chat.tournyWins &&
-											!isBlind &&
-											renderCrowns(chat.tournyWins)}
-										{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
-											chat.previousSeasonAward &&
-											!isBlind &&
-											renderPreviousSeasonAward(chat.previousSeasonAward)}
-										{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.specialTournamentStatus && !isBlind && (
-											<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
-										)}
+						<div className="item" key={i}>
+							{this.handleTimestamps(chat.timestamp)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								chat.tournyWins &&
+								!isBlind &&
+								renderCrowns(chat.tournyWins)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								chat.previousSeasonAward &&
+								!isBlind &&
+								renderPreviousSeasonAward(chat.previousSeasonAward)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.specialTournamentStatus && !isBlind && (
+								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
+							)}
+							<span
+								className={
+									chat.staffRole === 'moderator' && chat.userName === 'Incognito'
+										? 'chat-user moderatorcolor'
+										: !playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
+										? isMod && (!isBlind || !isSeated)
+											? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+											: 'chat-user'
+										: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+								}
+							>
+								{isSeated ? (
+									''
+								) : chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito ? (
+									<span data-tooltip="Incognito" data-inverted>
+										<span className="admincolor">(Incognito) 🚫</span>
+									</span>
+								) : chat.staffRole === 'moderator' ? (
+									<span data-tooltip="Moderator" data-inverted>
+										<span className="moderatorcolor">(Mod) 🌀</span>
+									</span>
+								) : chat.staffRole === 'editor' ? (
+									<span data-tooltip="Editor" data-inverted>
 										<span
 											className={
-												chat.staffRole === 'moderator' && chat.userName === 'Incognito'
-													? 'chat-user moderatorcolor'
-													: !playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
-														? isMod && (!isBlind || !isSeated)
-															? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
-															: 'chat-user'
-														: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+												!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
+													? isMod && (!isBlind || !isSeated)
+														? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+														: 'chat-user'
+													: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											}
 										>
-											{isSeated ? (
-												''
-											) : chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito ? (
-												<span data-tooltip="Incognito" data-inverted>
-													<span className="admincolor">(Incognito) 🚫</span>
-												</span>
-											) : chat.staffRole === 'moderator' ? (
-												<span data-tooltip="Moderator" data-inverted>
-													<span className="moderatorcolor">(Mod) 🌀</span>
-												</span>
-											) : chat.staffRole === 'editor' ? (
-												<span data-tooltip="Editor" data-inverted>
-													<span
-														className={
-															!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
-																? isMod && (!isBlind || !isSeated)
-																	? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
-																	: 'chat-user'
-																: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
-														}
-													>
-														(Editor) 🔰
+											(Editor) 🔰
 										</span>
-												</span>
-											) : chat.staffRole === 'admin' ? (
-												<span data-tooltip="Admin" data-inverted>
-													<span className="admincolor">(Admin) 📛</span>
-												</span>
-											) : (
-																	<span className="observer-chat">(Observer) </span>
-																)}
-											{gameInfo.gameState.isTracksFlipped
-												? isSeated
-													? isBlind
-														? `${
-														gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
-														} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-														: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-													: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
-														? chat.hiddenUsername
-														: chat.userName
-												: isBlind && isSeated
-													? '?'
-													: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
-														? chat.hiddenUsername
-														: chat.userName}
-											{': '}
-										</span>
-										<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
-									</div>
-								)
+									</span>
+								) : chat.staffRole === 'admin' ? (
+									<span data-tooltip="Admin" data-inverted>
+										<span className="admincolor">(Admin) 📛</span>
+									</span>
+								) : (
+									<span className="observer-chat">(Observer) </span>
+								)}
+								{gameInfo.gameState.isTracksFlipped
+									? isSeated
+										? isBlind
+											? `${
+													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
+											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+										: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
+										? chat.hiddenUsername
+										: chat.userName
+									: isBlind && isSeated
+									? '?'
+									: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
+									? chat.hiddenUsername
+									: chat.userName}
+								{': '}
+							</span>
+							<span className={isGreenText ? 'greentext' : ''}>{chatContents}</span>{' '}
+						</div>
+					)
 				);
 				return acc;
 			}, []);
@@ -738,8 +738,8 @@ class Gamechat extends React.Component {
 			window.location.hash = isRound1TableThatFinished2nd
 				? `${hash.substr(0, hash.length - 1)}Final`
 				: tableUidLastLetter === 'A'
-					? `${hash.substr(0, hash.length - 1)}B`
-					: `${hash.substr(0, hash.length - 1)}A`;
+				? `${hash.substr(0, hash.length - 1)}B`
+				: `${hash.substr(0, hash.length - 1)}A`;
 		};
 		const isStaff = Boolean(
 			userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod'
@@ -851,9 +851,9 @@ class Gamechat extends React.Component {
 									style={{ width: '60px' }}
 								>
 									Peek
-								<br />
+									<br />
 									Votes
-							</div>
+								</div>
 							</div>
 						)}
 						{userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
@@ -875,9 +875,9 @@ class Gamechat extends React.Component {
 									style={{ width: '60px' }}
 								>
 									Freeze/
-								<br />
+									<br />
 									Unfreeze
-							</div>
+								</div>
 							</div>
 						)}
 						{userInfo && !userInfo.isSeated && isStaff && (
@@ -894,9 +894,9 @@ class Gamechat extends React.Component {
 									style={{ width: '60px' }}
 								>
 									Delete
-								<br />
+									<br />
 									Game
-							</div>
+								</div>
 							</div>
 						)}
 					</div>
@@ -1289,7 +1289,4 @@ Gamechat.propTypes = {
 	toggleNotes: PropTypes.func
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(Gamechat);
+export default connect(mapStateToProps, mapDispatchToProps)(Gamechat);

@@ -255,7 +255,7 @@ class Players extends React.Component {
 				}
 				className={(() => {
 					let classes = 'player-container';
-					let user = this.props.userList.list ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+					const user = this.props.userList.list ? this.props.userList.list.find(play => play.userName === player.userName) : null;
 
 					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
@@ -437,10 +437,10 @@ class Players extends React.Component {
 				$(this.incognitoModal).modal('show');
 			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 				window.alert('Sorry, this service is currently unavailable.');
-			} else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
+			} else if (!gameInfo.general.private && userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
 			} else if (
-				(gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49)) ||
+				(gameInfo.general.rainbowgame && user && user.wins + user.losses <= 49) ||
 				(gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))
 			) {
 				$(this.notRainbowModal).modal('show');
@@ -631,7 +631,4 @@ Players.propTypes = {
 	togglePlayerNotes: PropTypes.func
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(Players);
+export default connect(mapStateToProps, mapDispatchToProps)(Players);

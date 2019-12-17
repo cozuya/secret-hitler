@@ -53,7 +53,8 @@ module.exports = () => {
 	fetch('https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1')
 		.then(res => res.text())
 		.then(text => {
-			let gatheredTorIps = text.split('\n').slice(3);
+			const gatheredTorIps = text.split('\n').slice(3);
+
 			accounts(gatheredTorIps);
 		})
 		.catch(e => {

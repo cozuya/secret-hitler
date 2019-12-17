@@ -183,7 +183,8 @@ const checkIP = config => {
 									} else {
 										getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999), count: 1 };
 									}
-									let vpnScore = json.result;
+									const vpnScore = json.result;
+
 									if (vpnScore < 0) {
 										res.status(501).json({ message: 'There was an error processing your request. Please contact our moderators on Discord.' });
 										console.log('Error in Get IP Intel, score given: ', vpnScore, 'IP: ', signupIP, 'Message: ', json.message);
@@ -732,7 +733,9 @@ module.exports = torIpsParam => {
 	});
 
 	app.get('/getipintel-status', (req, res) => {
-		res.send(`Current GetIPIntel counter is at ${getIPIntelCounter.count} out of 500 - resets in ${(getIPIntelCounter.reset - new Date()) / 1000 / 60} minutes`);
+		res.send(
+			`Current GetIPIntel counter is at ${getIPIntelCounter.count} out of 500 - resets in ${(getIPIntelCounter.reset - new Date()) / 1000 / 60} minutes`
+		);
 	});
 
 	app.get('/discord-login', passport.authenticate('discord'));

@@ -1,6 +1,6 @@
 {
 	"parser": "babel-eslint",
-	"extends": ["google", "plugin:react/recommended"],
+	"extends": ["google", "plugin:react/recommended", "prettier"],
 	"rules": {
 		"linebreak-style": "off",
 		"eol-last": "off",
@@ -33,7 +33,8 @@
 		"react/no-deprecated": "off",
 		"object-curly-spacing": "off",
 		"array-bracket-spacing": "off",
-		"no-invalid-this": 0
+		"no-invalid-this": 0,
+		"indent": 0
 	},
 	"globals": {
 		"io": true,

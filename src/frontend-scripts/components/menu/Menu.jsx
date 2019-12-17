@@ -178,7 +178,6 @@ class Menu extends React.Component {
 		// 	};
 		// })();
 		/* eslint-enable */
-
 		// $('section.nav-menu > a').textEffect({
 		// 	effect: 'random',
 		// 	effectSpeed: 150,
@@ -264,29 +263,29 @@ class Menu extends React.Component {
 										</div>
 									</div>
 								) : (
-										<div>
-											<Popup
-												inverted
-												className="loggedin"
-												trigger={
-													<a href={`#/profile/${userInfo.userName}`}>
-														<span className="playername">{userInfo.userName}</span>
-													</a>
-												}
-												content="Profile"
-											/>
-											<Popup
-												inverted
-												className="settings-popup"
-												trigger={
-													<a href="#/settings">
-														<i className={iconClasses()} />
-													</a>
-												}
-												content="Settings"
-											/>
-										</div>
-									);
+									<div>
+										<Popup
+											inverted
+											className="loggedin"
+											trigger={
+												<a href={`#/profile/${userInfo.userName}`}>
+													<span className="playername">{userInfo.userName}</span>
+												</a>
+											}
+											content="Profile"
+										/>
+										<Popup
+											inverted
+											className="settings-popup"
+											trigger={
+												<a href="#/settings">
+													<i className={iconClasses()} />
+												</a>
+											}
+											content="Settings"
+										/>
+									</div>
+								);
 							})()}
 							{this.props.userInfo.userName && (
 								<div className="item right">
@@ -363,29 +362,29 @@ class Menu extends React.Component {
 										</div>
 									</div>
 								) : (
-										<div>
-											<Popup
-												inverted
-												className="loggedin"
-												trigger={
-													<a href={`#/profile/${userInfo.userName}`}>
-														<span className="playername">{userInfo.userName}</span>
-													</a>
-												}
-												content="Profile"
-											/>
-											<Popup
-												inverted
-												className="settings-popup"
-												trigger={
-													<a href="#/settings">
-														<i className={iconClasses()} />
-													</a>
-												}
-												content="Settings"
-											/>
-										</div>
-									);
+									<div>
+										<Popup
+											inverted
+											className="loggedin"
+											trigger={
+												<a href={`#/profile/${userInfo.userName}`}>
+													<span className="playername">{userInfo.userName}</span>
+												</a>
+											}
+											content="Profile"
+										/>
+										<Popup
+											inverted
+											className="settings-popup"
+											trigger={
+												<a href="#/settings">
+													<i className={iconClasses()} />
+												</a>
+											}
+											content="Settings"
+										/>
+									</div>
+								);
 							})()}
 							{this.props.userInfo.userName && (
 								<div className="item right">
@@ -415,7 +414,4 @@ Menu.propTypes = {
 	readPatchNotes: PropTypes.func
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(Menu);
+export default connect(mapStateToProps, mapDispatchToProps)(Menu);

@@ -570,8 +570,10 @@ module.exports.investigateLoyalty = game => {
 	const hasTarget =
 		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).length > 0;
 	if (!hasTarget) {
-		let t = new Date();
+		const t = new Date();
+
 		t.setMilliseconds(t.getMilliseconds + 1);
+
 		const chat = {
 			timestamp: t,
 			gameChat: true,
@@ -1057,7 +1059,7 @@ module.exports.specialElection = game => {
 module.exports.selectSpecialElection = (passport, game, data, socket) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
-	let gameChat = {
+	const gameChat = {
 		timestamp: new Date(),
 		gameChat: true,
 		chat: []
@@ -1176,7 +1178,7 @@ module.exports.executePlayer = game => {
 					!seatedPlayers[index].isDead &&
 					((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
 						(game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
-						(game.customGameSettings.fasCanShootHit && (president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')))
+						(game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler'))
 			)
 			.forEach(player => {
 				player.notificationStatus = 'notification';
@@ -1191,7 +1193,7 @@ module.exports.executePlayer = game => {
 						!seatedPlayers[i].isDead &&
 						((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
 							(game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
-							(game.customGameSettings.fasCanShootHit && (president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')))
+							(game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler'))
 				)
 				.map(player => seatedPlayers.indexOf(player))
 		];
@@ -1232,7 +1234,7 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	if (
 		playerIndex === presidentIndex ||
 		selectedPlayer.isDead ||
-		(!game.customGameSettings.fasCanShootHit && (president.role.cardName === 'fascist' && seatedPlayers[playerIndex].role.cardName === 'hitler'))
+		(!game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[playerIndex].role.cardName === 'hitler')
 	) {
 		return;
 	}

@@ -412,7 +412,4 @@ ProfileWrapper.propTypes = {
 	isUserClickable: PropTypes.bool
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(ProfileWrapper);
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileWrapper);

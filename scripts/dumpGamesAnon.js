@@ -41,7 +41,7 @@ Game.find()
 			.lean()
 			.cursor()
 			.eachAsync(account => {
-				let hashUid = account.hashUid;
+				const hashUid = account.hashUid;
 
 				// remove pii from player now that we know the hashUid
 				// according to schema in /routes/socket/game/end-game.js:27
@@ -52,7 +52,7 @@ Game.find()
 				player.hashUid = hashUid;
 
 				// sanitize the chats of mentions of this user
-				let unameRegex = new RegExp('\\b' + account.username + '\\b', 'gi');
+				const unameRegex = new RegExp('\\b' + account.username + '\\b', 'gi');
 
 				// chat schema is inferred from /routes/socket/game/{election, user-events}.js
 				if (!game || !game.chats) {

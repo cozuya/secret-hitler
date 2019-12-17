@@ -15,7 +15,7 @@ describe('App', () => {
 			},
 			allEmotes: [],
 			notesValue: '',
-			"warnings": null
+			warnings: null
 		};
 		const component = shallow(<App userInfo={{ gameSettings: {} }} />);
 
