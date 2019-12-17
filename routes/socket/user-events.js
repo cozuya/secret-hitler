@@ -190,9 +190,7 @@ const checkStartConditions = game => {
 			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) ||
 		(game.general.isTourny && game.general.tournyInfo.queuedPlayers.length === game.general.maxPlayersCount)
 	) {
-		game.remakeData = game.publicPlayersState.map(player => (
-			{ userName: player.userName, isRemaking: false, remakeTime: 0 })
-		);
+		game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, remakeTime: 0 }));
 		startCountdown(game);
 	} else if (!game.gameState.isStarted) {
 		game.general.status = displayWaitingForPlayers(game);
@@ -1561,7 +1559,8 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.timeCreated = Date.now();
 		newGame.general.lastModPing = 0;
 		newGame.publicPlayersState = game.publicPlayersState
-			.filter(player => game.remakeData
+			.filter(player =>
+				game.remakeData
 				.filter(rmkPlayer => rmkPlayer.isRemaking)
 				.map(rmkPlayer => rmkPlayer.userName)
 				.some(rmkPlayer => rmkPlayer === player.userName)
