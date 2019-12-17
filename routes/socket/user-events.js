@@ -268,7 +268,8 @@ const handleSocketDisconnect = socket => {
 						const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
 						const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
 
-						if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+						const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
+						if (playerRemakeData && playerRemakeData.isRemaking) {
 							game.general.isRemaking = false;
 							game.general.status = 'Game remaking has been cancelled.';
 							clearInterval(game.private.remakeTimer);
@@ -349,7 +350,8 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (playerIndex > -1) {
-		if (game.remakeData && game.remakeData.find(player => player.userName === passport.user).isRemaking) {
+		const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
+		if (playerRemakeData && playerRemakeData.isRemaking) {
 			// Count leaving the game as rescinded remake vote.
 			const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
 			const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
@@ -1580,7 +1582,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					cardBack: {}
 				}
 			}));
-		newGame.remakeStatus = [];
+		newGame.remakeData = [];
 		newGame.playersState = [];
 		newGame.cardFlingerState = [];
 		newGame.trackState = {
