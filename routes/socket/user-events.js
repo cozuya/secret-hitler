@@ -2209,31 +2209,22 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 	const pingMods = /^@(mod|moderator|editor|aem|mods) (.*)$/i.exec(chat);
 
-	if (
-		pingMods &&
-		player
-	) {
+	if (pingMods && player) {
 		if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
-			game.chats.push({
-				gameChat: true,
-				timestamp: new Date(),
-				chat: [
-					{
-						text: 'Player '
-					},
-					{
-						text: `${passport.user}`,
-						type: 'player'
-					},
-					{
-						text: ` has pinged a member of AEM with the message: "${pingMods[2]}".`
-					}
-				]
-			});
 			game.lastModPing = Date.now();
-			sendPlayerChatUpdate(game, data);
 			sendInProgressGameUpdate(game, false);
-			makeReport({ player: passport.user, situation: `"${pingMods[2]}".`, election: game.general.electionCount, title: game.general.name, uid: game.general.uid, gameType: game.general.casualGame ? 'Casual' : 'Ranked' }, game, 'ping');
+			makeReport(
+				{
+					player: passport.user,
+					situation: `"${pingMods[2]}".`,
+					election: game.general.electionCount,
+					title: game.general.name,
+					uid: game.general.uid,
+					gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+				},
+				game,
+				'ping'
+			);
 		} else {
 			socket.emit('sendAlert', `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
 		}
