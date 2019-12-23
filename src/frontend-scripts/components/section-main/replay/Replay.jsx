@@ -171,24 +171,23 @@ const Replay = ({ replay, isSmall, to, replayChats, allEmotes }) => {
 						<Tracks gameInfo={gameInfo} userInfo={userInfo} />
 					</div>
 					<div className="right-side">
-						{replayChats.length ? (
-							<ReplayGamechat
-								userInfo={{}}
-								userList={{}}
-								gameInfo={{
-									chats: replayChats
-								}}
-								allEmotes={allEmotes}
-							/>
-						) : (
-							<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
-						)}
+						<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
 					</div>
 				</div>
 			</div>
 			<div className="row players-container">
 				<Players userList={{}} onClickedTakeSeat={null} userInfo={userInfo} gameInfo={gameInfo} isReplay socket={socket} />
 			</div>
+			{replayChats.length && (
+				<ReplayGamechat
+					userInfo={{}}
+					userList={{}}
+					gameInfo={{
+						chats: replayChats
+					}}
+					allEmotes={allEmotes}
+				/>
+			)}
 		</section>
 	);
 };
