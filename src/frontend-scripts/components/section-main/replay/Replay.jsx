@@ -197,7 +197,6 @@ class ReplayWrapper extends React.Component {
 		super();
 
 		this.state = {
-			chatsShown: false,
 			replayChats: []
 		};
 	}
@@ -219,13 +218,10 @@ class ReplayWrapper extends React.Component {
 			window.location.hash = '#/';
 			this.props.exit();
 		};
-		const toggleChats = () => {
+		const loadChats = () => {
 			if (!this.state.replayChats.length) {
 				socket.emit('getReplayGameChats', this.props.replay.game.id);
 			}
-			this.setState({
-				chatsShown: !this.state.chatsShown
-			});
 		};
 
 		const children = (() => {
@@ -245,12 +241,13 @@ class ReplayWrapper extends React.Component {
 						</h1>
 					);
 				case 'READY':
+					loadChats();
 					return (
 						<Replay
 							replay={this.props.replay}
 							isSmall={this.props.isSmall}
 							to={this.props.to}
-							replayChats={this.state.chatsShown && this.state.replayChats.length ? this.state.replayChats : []}
+							replayChats={this.state.replayChats}
 							allEmotes={this.props.allEmotes}
 						/>
 					);
@@ -259,9 +256,6 @@ class ReplayWrapper extends React.Component {
 
 		return (
 			<section id="replay" className="ui segment">
-				<button className="displaychats ui inverted blue button" onClick={toggleChats}>
-					{this.state.chatsShown ? 'Hide chats' : 'Show chats'}
-				</button>
 				<button className="exit ui inverted red button" onClick={toExit}>
 					<i className="sign out icon" />
 					Exit Replay
