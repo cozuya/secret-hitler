@@ -251,7 +251,7 @@ export class Main extends React.Component {
 				case 'profile':
 					return <Profile userInfo={userInfo} socket={socket} userList={userList} />;
 				case 'replay':
-					return <Replay allEmotes={this.props.allEmotes} />;
+					return <Replay allEmotes={this.props.allEmotes} userList={userList} />;
 				case 'reports':
 					return <Reports socket={socket} userInfo={userInfo} />;
 				case 'leaderboards':

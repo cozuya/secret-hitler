@@ -147,7 +147,7 @@ const buildPlayback = (replay, to) => {
 	};
 };
 
-const Replay = ({ replay, isSmall, userInfo, to, replayChats, allEmotes }) => {
+const Replay = ({ replay, isSmall, userInfo, userList, to, replayChats, allEmotes }) => {
 	const { ticks, position, game } = replay;
 	const snapshot = ticks.get(position);
 	const playback = buildPlayback(replay, to);
@@ -160,6 +160,7 @@ const Replay = ({ replay, isSmall, userInfo, to, replayChats, allEmotes }) => {
 	const description = toDescription(snapshot, game);
 
 	gameInfo.general.uid = game.id;
+	gameInfo.chats = replayChats;
 
 	return (
 		<section className={classnames({ small: false /*isSmall*/, big: true /*!isSmall*/ }, 'game')}>
@@ -172,14 +173,7 @@ const Replay = ({ replay, isSmall, userInfo, to, replayChats, allEmotes }) => {
 					</div>
 					<div className="right-side">
 						{replayChats.length ? (
-							<ReplayGamechat
-								userInfo={userInfo}
-								userList={{}}
-								gameInfo={{
-									chats: replayChats
-								}}
-								allEmotes={allEmotes}
-							/>
+							<ReplayGamechat userInfo={userInfo} userList={userList} gameInfo={gameInfo} allEmotes={allEmotes} />
 						) : (
 							<ReplayControls turnsSize={ticks.last().turnNum + 1} turnNum={snapshot.turnNum} phase={phase} description={description} playback={playback} />
 						)}
@@ -187,7 +181,7 @@ const Replay = ({ replay, isSmall, userInfo, to, replayChats, allEmotes }) => {
 				</div>
 			</div>
 			<div className="row players-container">
-				<Players userList={{}} onClickedTakeSeat={null} userInfo={userInfo} gameInfo={gameInfo} isReplay socket={socket} />
+				<Players userList={userList} onClickedTakeSeat={null} userInfo={userInfo} gameInfo={gameInfo} isReplay socket={socket} />
 			</div>
 		</section>
 	);
@@ -251,6 +245,7 @@ class ReplayWrapper extends React.Component {
 							replay={this.props.replay}
 							isSmall={this.props.isSmall}
 							userInfo={this.props.userInfo}
+							userList={this.props.userList}
 							to={this.props.to}
 							replayChats={this.state.chatsShown && this.state.replayChats.length ? this.state.replayChats : []}
 							allEmotes={this.props.allEmotes}
@@ -277,5 +272,7 @@ class ReplayWrapper extends React.Component {
 export default connect(mapStateToProps, mapDispatchToProps)(ReplayWrapper);
 
 Replay.propTypes = {
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.array,
+	userInfo: PropTypes.object,
+	userList: PropTypes.object
 };
