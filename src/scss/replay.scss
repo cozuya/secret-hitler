@@ -35,6 +35,53 @@
 					max-width: 90%;
 				}
 			}
+			.chat-user {
+				color: #adabab;
+				white-space: nowrap;
+			}
+			.chat-user--game .chat-timestamp {
+				font-size: 12px;
+			}
+			.chat-user--game,
+			.game-chat,
+			.chat-user--game .chat-timestamp {
+				color: #6f6f6f;
+			}
+
+			.chat-user--claim,
+			.claim-chat {
+				color: #fbbd08;
+			}
+			.chat-user.broadcast {
+				color: lightsalmon;
+			}
+			.broadcast-chat {
+				color: lightskyblue !important;
+			}
+			.chat-role--liberal {
+				font-weight: 700;
+				color: $darkliberalteam;
+			}
+			.chat-role--hitler {
+				font-weight: 700;
+				color: #be0804;
+			}
+			.chat-role--fascist {
+				font-weight: 700;
+				color: $darkfascistteam;
+			}
+			.chat-player {
+				color: #eee;
+				font-weight: 700;
+			}
+			.chat-timestamp {
+				//margin-top: 3px;
+				//color: #848484;
+				color: #565656;
+				font-size: 12px;
+				white-space: nowrap;
+				font-family: arial;
+			}
 		}
 	}
 
