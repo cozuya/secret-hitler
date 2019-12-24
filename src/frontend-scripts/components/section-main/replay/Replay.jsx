@@ -17,7 +17,8 @@ import PropTypes from 'prop-types';
 
 const mapStateToProps = ({ replay, userInfo }) => ({
 	replay,
-	isSmall: userInfo.gameSettings && userInfo.gameSettings.enableRightSidebarInGame
+	isSmall: userInfo.gameSettings && userInfo.gameSettings.enableRightSidebarInGame,
+	userInfo: userInfo
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -146,7 +147,7 @@ const buildPlayback = (replay, to) => {
 	};
 };
 
-const Replay = ({ replay, isSmall, to, replayChats, allEmotes }) => {
+const Replay = ({ replay, isSmall, userInfo, to, replayChats, allEmotes }) => {
 	const { ticks, position, game } = replay;
 	const snapshot = ticks.get(position);
 	const playback = buildPlayback(replay, to);
@@ -155,7 +156,6 @@ const Replay = ({ replay, isSmall, to, replayChats, allEmotes }) => {
 	if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
 		if (gameInfo.customGameSettings.powers._tail) gameInfo.customGameSettings.powers = gameInfo.customGameSettings.powers._tail.array;
 	}
-	const userInfo = { username: '' };
 	const { phase } = snapshot;
 	const description = toDescription(snapshot, game);
 
@@ -173,7 +173,7 @@ const Replay = ({ replay, isSmall, to, replayChats, allEmotes }) => {
 					<div className="right-side">
 						{replayChats.length ? (
 							<ReplayGamechat
-								userInfo={{}}
+								userInfo={userInfo}
 								userList={{}}
 								gameInfo={{
 									chats: replayChats
@@ -250,6 +250,7 @@ class ReplayWrapper extends React.Component {
 						<Replay
 							replay={this.props.replay}
 							isSmall={this.props.isSmall}
+							userInfo={this.props.userInfo}
 							to={this.props.to}
 							replayChats={this.state.chatsShown && this.state.replayChats.length ? this.state.replayChats : []}
 							allEmotes={this.props.allEmotes}
