@@ -103,7 +103,7 @@ export default class Game extends React.Component {
 	}
 
 	render() {
-		const { userInfo, gameInfo, socket } = this.props;
+		const { allEmotes, gameInfo, onClickedTakeSeat, userInfo, userList, socket } = this.props;
 		const isFlappy = false;
 
 		return (
@@ -124,7 +124,7 @@ export default class Game extends React.Component {
 							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
 								{gameInfo.general && gameInfo.general.status}
 							</section>
-							<Gamechat userList={this.props.userList} gameInfo={gameInfo} userInfo={userInfo} socket={socket} allEmotes={this.props.allEmotes} />
+							<Gamechat gameInfo={gameInfo} userInfo={userInfo} userList={userList} socket={socket} allEmotes={allEmotes} />
 						</div>
 					</div>
 				</div>
@@ -154,13 +154,7 @@ export default class Game extends React.Component {
 						return classes;
 					})()}
 				>
-					<Players
-						onClickedTakeSeat={this.props.onClickedTakeSeat}
-						userList={this.props.userList}
-						userInfo={userInfo}
-						gameInfo={gameInfo}
-						socket={this.props.socket}
-					/>
+					<Players onClickedTakeSeat={onClickedTakeSeat} userList={userList} userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
 				</div>
 			</section>
 		);
