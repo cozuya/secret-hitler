@@ -264,12 +264,12 @@ const handleSocketDisconnect = socket => {
 				} else if (gameState.isTracksFlipped) {
 					publicPlayersState[playerIndex].connected = false;
 					publicPlayersState[playerIndex].leftGame = true;
-					if (game.remakeData && game.remakeData.find(player => player.userName === passport.user).isRemaking) {
+					const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
+					if (playerRemakeData && playerRemakeData.isRemaking) {
 						const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
 						const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
 
-						const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
-						if (playerRemakeData && playerRemakeData.isRemaking) {
+						if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
 							game.general.isRemaking = false;
 							game.general.status = 'Game remaking has been cancelled.';
 							clearInterval(game.private.remakeTimer);
