@@ -225,10 +225,6 @@ class ReplayGamechat extends React.Component {
 							>
 								{isSeated ? (
 									''
-								) : chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito ? (
-									<span data-tooltip="Incognito" data-inverted>
-										<span className="admincolor">(Incognito) 🚫</span>
-									</span>
 								) : chat.staffRole === 'moderator' ? (
 									<span data-tooltip="Moderator" data-inverted>
 										<span className="moderatorcolor">(Mod) 🌀</span>
@@ -256,8 +252,6 @@ class ReplayGamechat extends React.Component {
 								)}
 								{isSeated
 									? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
-									: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
-									? chat.hiddenUsername
 									: chat.userName}
 								{': '}
 							</span>
