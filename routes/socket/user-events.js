@@ -209,7 +209,10 @@ const playerLeavePretourny = (game, playerName) => {
 		return;
 	}
 
-	queuedPlayers.splice(queuedPlayers.findIndex(player => player.userName === playerName), 1);
+	queuedPlayers.splice(
+		queuedPlayers.findIndex(player => player.userName === playerName),
+		1
+	);
 
 	game.chats.push({
 		timestamp: new Date(),
@@ -384,7 +387,10 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			delete games[game.general.uid];
 		}
 		if (!game.gameState.isTracksFlipped) {
-			game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
+			game.publicPlayersState.splice(
+				game.publicPlayersState.findIndex(player => player.userName === passport.user),
+				1
+			);
 			checkStartConditions(game);
 			io.sockets.in(game.general.uid).emit('gameUpdate', game);
 		}
@@ -2424,12 +2430,22 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					setting !== 'blacklist' ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
 					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') ||
-					(setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod')
+					(setting === 'staffIncognito' &&
+						account.staffRole &&
+						account.staffRole !== 'altmod' &&
+						account.staffRole !== 'trialmod' &&
+						account.staffRole !== 'veteran')
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') {
+				if (
+					setting === 'staffIncognito' &&
+					account.staffRole &&
+					account.staffRole !== 'altmod' &&
+					account.staffRole !== 'trialmod' &&
+					account.staffRole !== 'veteran'
+				) {
 					const userListInfo = {
 						userName: passport.user,
 						staffRole: account.staffRole || '',
@@ -2831,7 +2847,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								}
 							});
 						} else {
-							socket.emit('sendAlert', "That user doesn't exist");
+							socket.emit('sendAlert', `That user doesn't exist`);
 							return;
 						}
 					});
@@ -2842,7 +2858,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							if (user.warnings && user.warnings.length > 0) {
 								socket.emit('sendAlert', `Warning with the message: "${user.warnings.pop().text}" deleted.`);
 							} else {
-								socket.emit('sendAlert', "That user doesn't have any warnings.");
+								socket.emit('sendAlert', `That user doesn't have any warnings.`);
 								return;
 							}
 							user.markModified('warnings');
@@ -2852,7 +2868,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								}
 							});
 						} else {
-							socket.emit('sendAlert', "That user doesn't exist");
+							socket.emit('sendAlert', `That user doesn't exist`);
 							return;
 						}
 					});
@@ -3465,6 +3481,24 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							});
 					}
 					break;
+				case 'promoteToVeteran':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'veteran';
+									account.save(() => {
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
 				case 'regatherAEMList':
 					if (!isSuperMod) {
 						socket.emit('sendAlert', 'Only editors and admins can refresh the AEM usernames list.');
@@ -3610,6 +3644,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				promoteToContributor: 'Promote (Contributor)',
 				promoteToAltMod: 'Promote (AEM Alt)',
 				promoteToTrialMod: 'Promote (Trial Mod)',
+				promoteToVeteran: 'Promote (Veteran AEM)',
 				promoteToMod: 'Promote (Mod)',
 				promoteToEditor: 'Promote (Editor)',
 				makeBypass: 'Create Bypass Key',
@@ -3702,9 +3737,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 			: 'Anonymous'
 		: data.reportedPlayer;
 	const body = JSON.stringify({
-		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${
-			playerReport.reason
-		}\nComment: ${httpEscapedComment}`
+		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`
 	});
 
 	const options = {
@@ -3741,7 +3774,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 			return;
 		}
 
-		Account.find({ staffRole: { $exists: true } }).then(accounts => {
+		Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
 			accounts.forEach(account => {
 				const onlineSocketId = Object.keys(io.sockets.sockets).find(
 					socketId =>
@@ -3760,7 +3793,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 };
 
 module.exports.handlePlayerReportDismiss = () => {
-	Account.find({ staffRole: { $exists: true } }).then(accounts => {
+	Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
 		accounts.forEach(account => {
 			const onlineSocketId = Object.keys(io.sockets.sockets).find(
 				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username

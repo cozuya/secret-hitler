@@ -129,7 +129,8 @@ class ReplayGamechat extends React.Component {
 							chat.staffRole &&
 							chat.staffRole !== '' &&
 							chat.staffRole !== 'trialmod' &&
-							chat.staffRole !== 'altmod')
+							chat.staffRole !== 'altmod' &&
+							chat.staffRole !== 'veteran')
 				);
 			if (!showFullChat) list = list.slice(-250);
 			return list.reduce((acc, chat, i) => {
@@ -139,7 +140,8 @@ class ReplayGamechat extends React.Component {
 					playerListPlayer.staffRole &&
 					playerListPlayer.staffRole !== '' &&
 					playerListPlayer.staffRole !== 'trialmod' &&
-					playerListPlayer.staffRole !== 'altmod';
+					playerListPlayer.staffRole !== 'altmod' &&
+					playerListPlayer.staffRole !== 'veteran';
 				const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
 				const isSeated = seatedUserNames.includes(chat.userName);
 				const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;

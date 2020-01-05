@@ -436,7 +436,7 @@ const DisplayLobbies = props => {
 
 	return (
 		<React.Fragment>
-			{(!game.isUnlisted || (userInfo.staffRole && userInfo.staffRole !== 'altmod')) && (
+			{(!game.isUnlisted || (userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran')) && (
 				<div
 					data-uid={game.uid}
 					onClick={() => {
@@ -451,7 +451,7 @@ const DisplayLobbies = props => {
 								<div className="gamename-column">
 									{renderFlag()}
 									{game.name}
-									{userInfo.staffRole && userInfo.staffRole !== 'altmod' && (
+									{userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran' && (
 										<span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>
 									)}
 								</div>

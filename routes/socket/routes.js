@@ -141,7 +141,13 @@ module.exports.socketRoutes = () => {
 
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
-					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'trialmod' && account.staffRole !== 'altmod') {
+					if (
+						account.staffRole &&
+						account.staffRole.length > 0 &&
+						account.staffRole !== 'trialmod' &&
+						account.staffRole !== 'altmod' &&
+						account.staffRole !== 'veteran'
+					) {
 						isAEM = true;
 					}
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
@@ -220,14 +226,14 @@ module.exports.socketRoutes = () => {
 							if (account.warnings && account.warnings.length > 0) {
 								socket.emit('sendWarnings', { username, warnings: account.warnings });
 							} else {
-								socket.emit('sendAlert', "That user doesn't have any warnings.");
+								socket.emit('sendAlert', `That user doesn't have any warnings.`);
 							}
 						} else {
-							socket.emit('sendAlert', "That user doesn't exist.");
+							socket.emit('sendAlert', `That user doesn't exist.`);
 						}
 					});
 				} else {
-					socket.emit('sendAlert', "Are you sure you're supposed to be doing that?");
+					socket.emit('sendAlert', `Are you sure you're supposed to be doing that?`);
 					console.log(passport.user, 'tried to receive warnings for', username);
 				}
 			});
@@ -430,7 +436,7 @@ module.exports.socketRoutes = () => {
 					const game = findGame({ uid });
 					if (game && game.private && game.private.seatedPlayers) {
 						const players = game.private.seatedPlayers.map(player => player.userName);
-						Account.find({ staffRole: { $exists: true } }).then(accounts => {
+						Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
 							const staff = accounts
 								.filter(acc => {
 									acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username);

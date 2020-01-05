@@ -224,7 +224,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (!acc || !acc.staffRole || acc.staffRole === 'altmod') {
+							if (!acc || !acc.staffRole || acc.staffRole === 'altmod' || acc.staffRole === 'veteran') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {

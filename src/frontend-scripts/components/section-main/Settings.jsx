@@ -374,7 +374,7 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && (
+							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && window.staffRole !== 'veteran' && (
 								<React.Fragment>
 									<h4 className="ui header" style={{ color: '#05bba0' }}>
 										Incognito (hide from userlist)

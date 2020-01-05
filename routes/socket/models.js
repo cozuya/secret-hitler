@@ -286,7 +286,7 @@ const gameListEmitter = {
 
 module.exports.gameListEmitter = gameListEmitter;
 
-module.exports.AEM = Account.find({ staffRole: { $exists: true } });
+module.exports.AEM = Account.find({ staffRole: { $exists: true, $ne: 'veteran' } });
 
 const bypassKeys = [];
 

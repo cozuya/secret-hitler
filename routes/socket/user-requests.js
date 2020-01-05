@@ -41,7 +41,7 @@ const sendUserList = (module.exports.sendUserList = socket => {
 
 module.exports.sendSpecificUserList = (socket, staffRole) => {
 	// eslint-disable-line one-var
-	const isAEM = Boolean(staffRole && staffRole !== 'altmod');
+	const isAEM = Boolean(staffRole && staffRole !== 'altmod' && staffRole !== 'veteran');
 	if (socket) {
 		socket.emit('userList', {
 			list: formattedUserList(isAEM)

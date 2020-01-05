@@ -988,6 +988,19 @@ export default class Moderation extends React.Component {
 					Promote to Staff Role - Editor
 				</button>
 				<button
+					style={{ background: '#4d949e' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToVeteran');
+					}}
+				>
+					Promote to Role - Veteran AEM
+				</button>
+				<button
 					style={{ background: 'grey' }}
 					className={
 						actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -1087,6 +1100,7 @@ export default class Moderation extends React.Component {
 			promoteToContributor: 'Promote (Contributor)',
 			promoteToAltMod: 'Promote (AEM Alt)',
 			promoteToTrialMod: 'Promote (Trial Mod)',
+			promoteToVeteran: 'Promote (Veteran AEM)',
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',

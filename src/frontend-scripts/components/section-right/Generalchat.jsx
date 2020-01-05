@@ -243,16 +243,21 @@ export default class Generalchat extends React.Component {
 										: userClasses
 								}
 							>
-								{chat.staffRole === 'moderator' && !(chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod') && (
-									<span className="moderator-name">(M) 🌀</span>
-								)}
+								{chat.staffRole === 'moderator' &&
+									!(chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran') && (
+										<span className="moderatorcolor">(M) 🌀</span>
+									)}
 								{chat.staffRole === 'editor' && <span className="editor-name">(E) 🔰</span>}
 								{chat.staffRole === 'admin' && <span className="admin-name">(A) 📛</span>}
-								{chat.staffRole === 'moderator' && chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod' && (
-									<span data-tooltip="Incognito" data-inverted>
-										<span className="admin-name">(I) 🚫</span>
-									</span>
-								)}
+								{chat.staffRole === 'moderator' &&
+									chat.userName === 'Incognito' &&
+									userInfo.staffRole &&
+									userInfo.staffRole !== 'altmod' &&
+									userInfo.staffRole !== 'veteran' && (
+										<span data-tooltip="Incognito" data-inverted>
+											<span className="admin-name">(I) 🚫</span>
+										</span>
+									)}
 								<a
 									href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}
 									className={
@@ -260,7 +265,11 @@ export default class Generalchat extends React.Component {
 									}
 								>
 									{`${
-										chat.staffRole === 'moderator' && chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod'
+										chat.staffRole === 'moderator' &&
+										chat.userName === 'Incognito' &&
+										userInfo.staffRole &&
+										userInfo.staffRole !== 'altmod' &&
+										userInfo.staffRole !== 'veteran'
 											? chat.hiddenUsername
 											: chat.userName
 									}: `}
