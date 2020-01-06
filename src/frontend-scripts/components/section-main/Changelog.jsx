@@ -11,6 +11,16 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.6.6 released 1-5-2020</p>
+				</div>
+				<p>Adds 10 New Emotes</p>
+				<p>Adds Color to Replay Chat</p>
+				<p>Fixes Remake Visual Bugs</p>
+				<p>Fixes Leaderboard Caching</p>
+				<p>Adds Veteran AEM Role</p>
+				<p>Multiple Bug Fixes</p>
+				<hr />
+				<div className="ui header">
 					<p>Welcome to 2020 and to Season 9!</p>
 				</div>
 				<h4>The top 10 players of season 8 are:</h4>
@@ -26,7 +36,7 @@ class Changelog extends React.Component {
 					<li> trump: 1872</li>
 					<li> IThanosI: 1870</li>
 				</ul>
-				
+
 				<div className="ui header">
 					<p>Version 1.6.5 released 10-5-2019</p>
 				</div>
