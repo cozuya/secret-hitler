@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: SH Moderation Issues
     url: https://discord.gg/secrethitlerio
-    about: Get in touch with on-site moderators in the \#mod-support channel
+    about: Get in touch with on-site moderators in the #mod-support channel
   - name: SH Development Questions/Help
     url: https://discord.gg/secrethitlerio
-    about: Get in touch with contributors for informal issues, or questions in the \#development-contribution channel
+    about: Get in touch with contributors for informal issues, or questions in the #development-contribution channel
