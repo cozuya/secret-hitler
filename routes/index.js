@@ -148,7 +148,10 @@ module.exports = () => {
 					hasNotDismissedSignupModal: account.hasNotDismissedSignupModal,
 					username,
 					gameSettings: account.gameSettings,
-					blacklist
+					blacklist,
+					primaryColor: account.primaryColor || '#4169e1',
+					secondaryColor: account.secondaryColor || '#627cc8',
+					tertiaryColor: account.tertiaryColor || '#7f41e1'
 				};
 
 				if (process.env.NODE_ENV === 'production') {

@@ -29,7 +29,7 @@
 			padding: 5px 0 3px;
 			display: flex;
 			justify-content: space-between;
-			color: $primary;
+			color: var(--theme-primary);
 			border-bottom: 1px solid #262626;
 			.mod-button,
 			.report-button {
@@ -188,9 +188,9 @@
 				button {
 					padding: 2px;
 					float: right;
-					background: $primary;
+					background: var(--theme-primary);
 					&:hover {
-						background: $secondary;
+						background: var(--theme-secondary);
 					}
 				}
 			}
@@ -209,8 +209,8 @@
 				height: 44px;
 				&:focus {
 					outline: none;
-					border: 1px solid $secondary;
-					box-shadow: 0 0 3px $secondary;
+					border: 1px solid var(--theme-secondary);
+					box-shadow: 0 0 3px var(--theme-secondary);
 				}
 			}
 			input {
@@ -283,7 +283,7 @@
 			}
 			.sticky {
 				position: absolute;
-				background: $secondary;
+				background: var(--theme-secondary);
 				top: -2px;
 				left: 0;
 				color: white;

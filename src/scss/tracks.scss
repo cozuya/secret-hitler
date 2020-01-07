@@ -14,7 +14,7 @@
 		left: 10px;
 		z-index: 105;
 		color: #ddd;
-		background: $secondary;
+		background: var(--theme-secondary);
 		font-size: 16px;
 		padding: 4px;
 		opacity: 1;
@@ -63,7 +63,7 @@
 		right: 10px;
 		z-index: 105;
 		color: #ddd;
-		background: $secondary;
+		background: var(--theme-secondary);
 		font-size: 16px;
 		padding: 4px;
 		opacity: 1;
@@ -75,7 +75,7 @@
 		right: 95px;
 		left: auto;
 		top: 10px;
-		background: $secondary;
+		background: var(--theme-secondary);
 		border: 2px solid lightblue;
 		padding: 4px;
 		height: 31px;

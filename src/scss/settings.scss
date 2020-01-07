@@ -48,14 +48,14 @@
 	.font-container {
 		input:active ~ label,
 		input:focus ~ label {
-			color: $secondary;
+			color: var(--theme-secondary);
 		}
 		label {
-			color: $primary;
+			color: var(--theme-primary);
 			line-height: 1.3;
 
 			&:hover {
-				color: $secondary;
+				color: var(--theme-secondary);
 				cursor: pointer;
 			}
 

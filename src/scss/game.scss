@@ -29,7 +29,7 @@
 		.gamestatus {
 			font-size: 22px;
 			font-style: italic;
-			color: $primary;
+			color: var(--theme-primary);
 			background: #1b1b1b;
 			padding: 7px 0px 3px 2px;
 
@@ -69,7 +69,7 @@
 			.gamechat-filters-container {
 				padding: 0 2px;
 				margin-top: 6px;
-				color: $secondary;
+				color: var(--theme-secondary);
 			}
 
 			.pointing.menu {
@@ -102,10 +102,10 @@
 					font-size: 12px;
 					width: 52.5px;
 					font-size: 11px;
-					background: $secondary !important;
+					background: var(--theme-tertiary) !important;
 					color: black !important;
 					&:hover {
-						background: $tertiary !important;
+						background: var(--theme-tertiary) !important;
 					}
 				}
 
@@ -283,7 +283,7 @@
 						border: 1px solid #bbb;
 						> div:hover {
 							font-weight: bold;
-							color: $primary;
+							color: var(--theme-primary);
 						}
 						div:first-child {
 							width: 75px;
@@ -306,9 +306,9 @@
 					flex-grow: 1;
 					button {
 						padding: 0px 10px;
-						background: $primary;
+						background: var(--theme-primary);
 						&:hover {
-							background: $tertiary;
+							background: var(--theme-tertiary);
 						}
 					}
 				}

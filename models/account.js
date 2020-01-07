@@ -116,7 +116,7 @@ const Account = new Schema({
 	lossesSeason8: Number,
 	rainbowWinsSeason8: Number,
 	rainbowLossesSeason8: Number,
-        winsSeason9: Number,
+	winsSeason9: Number,
 	lossesSeason9: Number,
 	rainbowWinsSeason9: Number,
 	rainbowLossesSeason9: Number,
@@ -135,7 +135,10 @@ const Account = new Schema({
 	discordUID: String,
 	githubUsername: String,
 	github2FA: Boolean,
-	warnings: Array // {text: String, moderator: String, time: Date, acknowledged: Boolean}
+	warnings: Array, // {text: String, moderator: String, time: Date, acknowledged: Boolean},
+	primaryColor: String,
+	secondaryColor: String,
+	tertiaryColor: String
 });
 
 Account.plugin(passportLocalMongoose);

@@ -922,15 +922,15 @@ export default class Creategame extends React.Component {
 						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
 					/>
 				) : (
-							<Range
-								onChange={this.sliderChange}
-								min={5}
-								max={10}
-								defaultValue={[5, 10]}
-								value={this.state.sliderValues}
-								marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
-							/>
-						)}
+					<Range
+						onChange={this.sliderChange}
+						min={5}
+						max={10}
+						defaultValue={[5, 10]}
+						value={this.state.sliderValues}
+						marks={{ 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10' }}
+					/>
+				)}
 				{!isTourny && !customGameSettings.enabled && (
 					<div className="checkbox-container">
 						{new Array(6).fill(true).map((el, index) => (
