@@ -45,6 +45,19 @@
 		}
 	}
 
+	.themes {
+		> h4 {
+			font-size: 18px;
+		}
+	}
+
+	.themes {
+		.color-box {
+			width: 75px;
+			height: 75px;
+		}
+	}
+
 	.font-container {
 		input:active ~ label,
 		input:focus ~ label {
