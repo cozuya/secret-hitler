@@ -49,8 +49,7 @@ class Settings extends React.Component {
 	};
 
 	componentDidMount() {
-		const { userInfo } = this.props;
-		const gameSettings = userInfo.gameSettings || window.gameSettings;
+		const gameSettings = this.props.userInfo.gameSettings || window.gameSettings;
 
 		this.setState({
 			fontChecked: gameSettings.fontFamily || 'comfortaa',
@@ -217,11 +216,13 @@ class Settings extends React.Component {
 
 	renderTheme() {
 		const { primaryColor, secondaryColor, tertiaryColor } = this.state;
+		const computeAltThemeColors = () => {};
+		const resetThemeColors = () => {};
 
 		return (
 			<>
 				<div className="row centered themes-header">
-					<h4 className="ui header">Color theme</h4>
+					<h3 className="ui header">Color theme</h3>
 				</div>
 				<div className="row centered themes">
 					<div className="four wide column">
@@ -235,6 +236,14 @@ class Settings extends React.Component {
 					<div className="four wide column">
 						<h5 className="ui header">Tertiary Color</h5>
 						<div className="color-box secondary" style={{ background: tertiaryColor }}></div>
+					</div>
+					<div className="four wide column theme-buttons">
+						<button className="ui primary button" onClick={computeAltThemeColors}>
+							Compute 2nd and 3rd colors from primary
+						</button>
+						<button className="ui primary button" onClick={resetThemeColors}>
+							Reset to default theme
+						</button>
 					</div>
 				</div>
 			</>
