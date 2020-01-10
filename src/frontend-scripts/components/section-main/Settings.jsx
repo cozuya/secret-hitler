@@ -42,7 +42,10 @@ class Settings extends React.Component {
 		staffIncognito: '',
 		fullheight: false,
 		truncatedSize: 250,
-		safeForWork: false
+		safeForWork: false,
+		primaryColor: '',
+		secondaryColor: '',
+		tertiaryColor: ''
 	};
 
 	componentDidMount() {
@@ -69,7 +72,10 @@ class Settings extends React.Component {
 			staffDisableStaffColor: gameSettings.staffDisableStaffColor || false,
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
-			safeForWork: gameSettings.safeForWork
+			safeForWork: gameSettings.safeForWork,
+			primaryColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-primary'),
+			secondaryColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-secondary'),
+			tertiaryColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-tertiary')
 		});
 	}
 
@@ -86,9 +92,6 @@ class Settings extends React.Component {
 		);
 	};
 
-	/**
-	 * @param {string} value - todo
-	 */
 	toggleGameSettings = value => {
 		const obj = {};
 
@@ -101,7 +104,7 @@ class Settings extends React.Component {
 		this.setState({ fontSize: event[0] });
 	};
 
-	sliderDrop = e => {
+	sliderDrop = event => {
 		this.props.socket.emit('updateGameSettings', {
 			fontSize: this.state.fontSize
 		});
@@ -211,11 +214,43 @@ class Settings extends React.Component {
 		);
 	}
 
+	renderTheme() {
+		const { primaryColor, secondaryColor, tertiaryColor } = this.state;
+		const computeAltThemeColors = () => {};
+		const resetThemeColors = () => {};
+
+		return (
+			<>
+				<div className="row centered themes-header">
+					<h3 className="ui header">Color theme</h3>
+				</div>
+				<div className="row centered themes">
+					<div className="four wide column">
+						<h5 className="ui header">Primary Color</h5>
+						<div className="color-box primary" style={{ background: primaryColor }}></div>
+					</div>
+					<div className="four wide column">
+						<h5 className="ui header">Secondary Color</h5>
+						<div className="color-box secondary" style={{ background: secondaryColor }}></div>
+					</div>
+					<div className="four wide column">
+						<h5 className="ui header">Tertiary Color</h5>
+						<div className="color-box secondary" style={{ background: tertiaryColor }}></div>
+					</div>
+					<div className="four wide column theme-buttons">
+						<button className="ui primary button" onClick={computeAltThemeColors}>
+							Compute 2nd and 3rd colors from primary
+						</button>
+						<button className="ui primary button" onClick={resetThemeColors}>
+							Reset to default theme
+						</button>
+					</div>
+				</div>
+			</>
+		);
+	}
+
 	render() {
-		/**
-		 * @param {array} files - todo
-		 * @param {array} rejectedFile - todo
-		 */
 		const onDrop = (files, rejectedFile) => {
 			if (rejectedFile.length) {
 				this.setState({
@@ -298,8 +333,8 @@ class Settings extends React.Component {
 				});
 		};
 
-		const previewClearClick = e => {
-			e.preventDefault();
+		const previewClearClick = event => {
+			event.preventDefault();
 			this.setState({ preview: '', cardbackUploadStatus: null });
 		};
 
@@ -309,8 +344,8 @@ class Settings extends React.Component {
 
 		const gameSettings = this.props.gameSettings || window.gameSettings;
 
-		const ownProfileSubmit = e => {
-			e.preventDefault();
+		const ownProfileSubmit = event => {
+			event.preventDefault();
 
 			window.location.hash = `#/profile/${this.props.userInfo.userName}`;
 		};
@@ -545,6 +580,7 @@ class Settings extends React.Component {
 					<div className="row centered">
 						<div className="four wide column popups" />
 					</div>
+					{this.renderTheme()}
 					<div className="row centered">
 						<div className="eight wide column slider">
 							<h4

@@ -12,6 +12,7 @@ const { ProcessImage } = require('./image-processor');
 const savedTorIps = require('../utils/savedtorips');
 const fetch = require('node-fetch');
 const prodCacheBustToken = require('./prodCacheBustToken');
+const { DEFAULTTHEMECOLORS } = require('../src/frontend-scripts/node-constants');
 
 /**
  * @param {object} req - express request object.
@@ -148,7 +149,10 @@ module.exports = () => {
 					hasNotDismissedSignupModal: account.hasNotDismissedSignupModal,
 					username,
 					gameSettings: account.gameSettings,
-					blacklist
+					blacklist,
+					primaryColor: account.primaryColor || DEFAULTTHEMECOLORS.primaryColor,
+					secondaryColor: account.secondaryColor || DEFAULTTHEMECOLORS.secondaryColor,
+					tertiaryColor: account.tertiaryColor || DEFAULTTHEMECOLORS.tertiaryColor
 				};
 
 				if (process.env.NODE_ENV === 'production') {
@@ -192,7 +196,10 @@ module.exports = () => {
 		}
 
 		const gameObj = {
-			game: true
+			game: true,
+			primaryColor: DEFAULTTHEMECOLORS.primaryColor,
+			secondaryColor: DEFAULTTHEMECOLORS.secondaryColor,
+			tertiaryColor: DEFAULTTHEMECOLORS.tertiaryColor
 		};
 
 		if (process.env.NODE_ENV === 'production') {

@@ -125,7 +125,7 @@ module.exports.getBadWord = text => {
 
 	// let ec = 0; //for future use in auto reporting
 	let exceptedText = text;
-	for (let exception of exceptions) {
+	for (const exception of exceptions) {
 		while (exceptedText.search(exception) > -1) {
 			exceptedText = exceptedText.replace(exception, '');
 			// ec++;
@@ -159,4 +159,10 @@ module.exports.getBadWord = text => {
 		});
 	});*/
 	return foundWord;
+};
+
+module.exports.DEFAULTTHEMECOLORS = {
+	primaryColor: 'hsl(225, 73%, 57%)',
+	secondaryColor: 'hsl(225, 48%, 57%)',
+	tertiaryColor: 'hsl(265, 73%, 57%)'
 };

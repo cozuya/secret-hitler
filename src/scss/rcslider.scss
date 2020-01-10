@@ -17,7 +17,7 @@
 	left: 0;
 	height: 4px;
 	border-radius: 6px;
-	background-color: $secondary;
+	background-color: var(--theme-secondary);
 }
 .rc-slider-handle {
 	position: absolute;

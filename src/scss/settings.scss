@@ -45,17 +45,50 @@
 		}
 	}
 
+	.themes {
+		> h4 {
+			font-size: 18px;
+		}
+	}
+
+	.themes {
+		.theme-buttons {
+			padding-top: 30px;
+
+			button {
+				font-size: 12px;
+				background: var(--theme-primary);
+				color: #fff;
+
+				&:last-child {
+					margin-top: 5px;
+					background: var(--theme-secondary);
+
+					&:hover {
+						background: var(--theme-tertiary);
+					}
+				}
+			}
+		}
+		.color-box {
+			width: 75px;
+			height: 75px;
+			margin: 0 auto;
+			cursor: pointer;
+		}
+	}
+
 	.font-container {
 		input:active ~ label,
 		input:focus ~ label {
-			color: $secondary;
+			color: var(--theme-secondary);
 		}
 		label {
-			color: $primary;
+			color: var(--theme-primary);
 			line-height: 1.3;
 
 			&:hover {
-				color: $secondary;
+				color: var(--theme-secondary);
 				cursor: pointer;
 			}
 
