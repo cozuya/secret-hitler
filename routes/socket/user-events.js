@@ -453,6 +453,26 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
 		}
 	});
 };
+
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} data - from socket emit.
+ */
+module.exports.handleUpdatedTheme = (socket, passport, data) => {
+	Account.findOne({ username: passport.user }).then(account => {
+		if (!account) {
+			return;
+		}
+
+		for (const property in data) {
+			account[property] = data[property];
+		}
+
+		account.save();
+	});
+};
+
 /**
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.

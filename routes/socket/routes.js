@@ -21,7 +21,8 @@ const {
 	handleModPeekVotes,
 	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
-	handleFlappyEvent
+	handleFlappyEvent,
+	handleUpdatedTheme
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -306,8 +307,13 @@ module.exports.socketRoutes = () => {
 			});
 
 			socket.on('handleUpdatedPlayerNote', data => {
-				handleUpdatedPlayerNote(socket, data);
+				handleUpdatedPlayerNote(socket, passport, data);
 			});
+
+			socket.on('handleUpdatedTheme', data => {
+				handleUpdatedTheme(socket, passport, data);
+			});
+
 			socket.on('updateModAction', data => {
 				if (authenticated && isAEM) {
 					handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));

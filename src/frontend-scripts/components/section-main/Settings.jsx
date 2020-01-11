@@ -47,7 +47,9 @@ class Settings extends React.Component {
 		primaryColor: '',
 		secondaryColor: '',
 		tertiaryColor: '',
-		primaryPickerVisible: false
+		primaryPickerVisible: false,
+		secondaryPickerVisible: false,
+		tertiaryPickerVisible: false
 	};
 
 	componentDidMount() {
@@ -217,9 +219,58 @@ class Settings extends React.Component {
 	}
 
 	renderTheme() {
-		const { primaryColor, secondaryColor, tertiaryColor, primaryPickerVisible } = this.state;
+		const { primaryColor, secondaryColor, tertiaryColor, primaryPickerVisible, secondaryPickerVisible, tertiaryPickerVisible } = this.state;
+		const { socket } = this.props;
+		const renderPicker = name => (
+			<div className="picker-container">
+				<div
+					className="picker-close-button"
+					onClick={() => {
+						this.setState({ [`${name}PickerVisible`]: false });
+					}}
+				>
+					X
+				</div>
+				<SketchPicker
+					disableAlpha
+					color={`${name}Color`}
+					onChangeComplete={color => {
+						this.setState(
+							{
+								[`${name}Color`]: color.hex
+							},
+							() => {
+								document.documentElement.style.setProperty(`--theme-${name}`, color.hex);
+								socket.emit('handleUpdatedTheme', {
+									[`${name}Color`]: color.hex
+								});
+							}
+						);
+					}}
+				/>
+			</div>
+		);
+
 		const computeAltThemeColors = () => {};
-		const resetThemeColors = () => {};
+		const resetThemeColors = () => {
+			this.setState(
+				{
+					primaryColor: '#4169e1',
+					secondaryColor: '#5d77c6',
+					tertiaryColor: '#8441e1'
+				},
+				() => {
+					socket.emit('handleUpdatedTheme', {
+						primaryColor: '#4169e1',
+						secondaryColor: '#5d77c6',
+						tertiaryColor: '#8441e1'
+					});
+					document.documentElement.style.setProperty('--theme-primary', '#4169e1');
+					document.documentElement.style.setProperty('--theme-secondary', '#5d77c6');
+					document.documentElement.style.setProperty('--theme-tertiary', '#8441e1');
+				}
+			);
+		};
 
 		return (
 			<>
@@ -230,7 +281,7 @@ class Settings extends React.Component {
 					<div className="four wide column">
 						<h5 className="ui header">Primary Color</h5>
 						<div
-							className="color-box primary"
+							className="color-box"
 							onClick={() => {
 								if (!primaryPickerVisible) {
 									this.setState({
@@ -240,48 +291,47 @@ class Settings extends React.Component {
 							}}
 							style={{ background: primaryColor }}
 						></div>
-						{primaryPickerVisible && (
-							<div className="picker-container">
-								<div
-									className="picker-close-button"
-									onClick={() => {
-										this.setState({ primaryPickerVisible: false });
-									}}
-								>
-									X
-								</div>
-								<SketchPicker
-									disableAlpha
-									color={primaryColor}
-									onChangeComplete={c => {
-										this.setState(
-											{
-												primaryColor: c.hex
-											},
-											() => {
-												document.documentElement.style.setProperty('--theme-primary', c.hex);
-											}
-										);
-									}}
-								/>
-							</div>
-						)}
+						{primaryPickerVisible && renderPicker('primary')}
 					</div>
 					<div className="four wide column">
 						<h5 className="ui header">Secondary Color</h5>
-						<div className="color-box secondary" style={{ background: secondaryColor }}></div>
+						<div
+							className="color-box"
+							onClick={() => {
+								if (!secondaryPickerVisible) {
+									this.setState({
+										secondaryPickerVisible: true
+									});
+								}
+							}}
+							style={{ background: secondaryColor }}
+						></div>
+						{secondaryPickerVisible && renderPicker('secondary')}
 					</div>
 					<div className="four wide column">
 						<h5 className="ui header">Tertiary Color</h5>
-						<div className="color-box secondary" style={{ background: tertiaryColor }}></div>
+						<div
+							className="color-box"
+							onClick={() => {
+								if (!tertiaryPickerVisible) {
+									this.setState({
+										tertiaryPickerVisible: true
+									});
+								}
+							}}
+							style={{ background: tertiaryColor }}
+						></div>
+						{tertiaryPickerVisible && renderPicker('tertiary')}
 					</div>
 					<div className="four wide column theme-buttons">
 						<button className="ui primary button" onClick={computeAltThemeColors}>
 							Compute 2nd and 3rd colors from primary
 						</button>
-						<button className="ui primary button" onClick={resetThemeColors}>
-							Reset to default theme
-						</button>
+						{!(primaryColor === '#4169e1' && secondaryColor === '#5d77c6' && tertiaryColor === '#8441e1') && (
+							<button className="ui primary button" onClick={resetThemeColors}>
+								Reset to default theme
+							</button>
+						)}
 					</div>
 				</div>
 			</>
