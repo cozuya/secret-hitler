@@ -5,6 +5,7 @@ import Modal from 'semantic-ui-modal';
 import Checkbox from 'semantic-ui-checkbox';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
+import { SketchPicker } from 'react-color';
 
 $.fn.checkbox = Checkbox;
 $.fn.modal = Modal;
@@ -45,7 +46,8 @@ class Settings extends React.Component {
 		safeForWork: false,
 		primaryColor: '',
 		secondaryColor: '',
-		tertiaryColor: ''
+		tertiaryColor: '',
+		primaryPickerVisible: false
 	};
 
 	componentDidMount() {
@@ -215,7 +217,7 @@ class Settings extends React.Component {
 	}
 
 	renderTheme() {
-		const { primaryColor, secondaryColor, tertiaryColor } = this.state;
+		const { primaryColor, secondaryColor, tertiaryColor, primaryPickerVisible } = this.state;
 		const computeAltThemeColors = () => {};
 		const resetThemeColors = () => {};
 
@@ -227,7 +229,43 @@ class Settings extends React.Component {
 				<div className="row centered themes">
 					<div className="four wide column">
 						<h5 className="ui header">Primary Color</h5>
-						<div className="color-box primary" style={{ background: primaryColor }}></div>
+						<div
+							className="color-box primary"
+							onClick={() => {
+								if (!primaryPickerVisible) {
+									this.setState({
+										primaryPickerVisible: true
+									});
+								}
+							}}
+							style={{ background: primaryColor }}
+						></div>
+						{primaryPickerVisible && (
+							<div className="picker-container">
+								<div
+									className="picker-close-button"
+									onClick={() => {
+										this.setState({ primaryPickerVisible: false });
+									}}
+								>
+									X
+								</div>
+								<SketchPicker
+									disableAlpha
+									color={primaryColor}
+									onChangeComplete={c => {
+										this.setState(
+											{
+												primaryColor: c.hex
+											},
+											() => {
+												document.documentElement.style.setProperty('--theme-primary', c.hex);
+											}
+										);
+									}}
+								/>
+							</div>
+						)}
 					</div>
 					<div className="four wide column">
 						<h5 className="ui header">Secondary Color</h5>

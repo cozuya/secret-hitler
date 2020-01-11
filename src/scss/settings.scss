@@ -70,6 +70,25 @@
 				}
 			}
 		}
+		.picker-container {
+			position: absolute;
+			width: 225px;
+			z-index: 2;
+		}
+		.picker-close-button {
+			width: 30px;
+			height: 30px;
+			position: relative;
+			left: 190px;
+			top: 0px;
+			text-align: center;
+			background: white;
+			color: black;
+			cursor: pointer;
+			padding-top: 5px;
+			font-size: 26px;
+			z-index: 2;
+		}
 		.color-box {
 			width: 75px;
 			height: 75px;

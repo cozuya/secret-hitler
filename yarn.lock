@@ -723,6 +723,11 @@
   resolved "https://registry.yarnpkg.com/@emotion/utils/-/utils-0.8.2.tgz#576ff7fb1230185b619a75d258cbc98f0867a8dc"
   integrity sha512-rLu3wcBWH4P5q1CGoSSH/i9hrXs7SlbRLkoq9IGuoPYNGQvDJ3pt/wmOM+XgYjIDRMVIdkUWt0RsfzF50JfnCw==
 
+"@icons/material@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@icons/material/-/material-0.2.4.tgz#e90c9f71768b3736e76d7dd6783fc6c2afa88bc8"
+  integrity sha512-QPcGmICAPbGLGb6F/yNf/KzKqvFx8z5qx3D1yFqVAjoFmXK35EgyW+cJ57Te3CNsmzblwtzakLGFqHPqrfb4Tw==
+
 "@jimp/bmp@^0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@jimp/bmp/-/bmp-0.6.0.tgz#6eb3ad441ed3f1418a32a89a4244285914b2a15c"
@@ -1627,12 +1632,6 @@ async-series@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/async-series/-/async-series-0.0.1.tgz#5024d757f38b04296e1f8a1fca4a364b57dc52ec"
 
-async@2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
-  dependencies:
-    lodash "^4.17.10"
-
 async@^1.4.0, async@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
@@ -2219,9 +2218,14 @@ bser@^2.0.0:
   dependencies:
     node-int64 "^0.4.0"
 
-bson@^1.1.0, bson@~1.1.0:
+bson@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/bson/-/bson-1.1.0.tgz#bee57d1fb6a87713471af4e32bcae36de814b5b0"
+
+bson@^1.1.1, bson@~1.1.1:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-1.1.3.tgz#aa82cb91f9a453aaa060d6209d0675114a8154d3"
+  integrity sha512-TdiJxMVnodVS7r0BdL42y/pqC9cL2iKynVwA0Ho3qbsQYr428veL3l7BQyuqiw+Q5SqqoT0m4srSY/BlZ9AxXg==
 
 buffer-alloc-unsafe@^1.1.0:
   version "1.1.0"
@@ -6562,9 +6566,10 @@ jszip@^3.1.5:
     readable-stream "~2.3.6"
     set-immediate-shim "~1.0.1"
 
-kareem@2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/kareem/-/kareem-2.3.0.tgz#ef33c42e9024dce511eeaf440cd684f3af1fc769"
+kareem@2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/kareem/-/kareem-2.3.1.tgz#def12d9c941017fabfb00f873af95e9c99e1be87"
+  integrity sha512-l3hLhffs9zqoDe8zjmb/mAN4B8VT3L56EUvKNqLFVs9YlFA+zx7ke1DO8STAdDyYNkeSo1nKmjuvQeI12So8Xw==
 
 keyboard-key@^1.0.4:
   version "1.0.4"
@@ -6953,7 +6958,7 @@ lodash@^4.0.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.17.10, lodash@^4.17.11,
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
 
-lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.5, lodash@^4.7.14:
+lodash@^4.0.1, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.5, lodash@^4.7.14:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -7070,6 +7075,11 @@ map-visit@^1.0.0:
   resolved "https://registry.yarnpkg.com/map-visit/-/map-visit-1.0.0.tgz#ecdca8f13144e660f1b5bd41f12f3479d98dfb8f"
   dependencies:
     object-visit "^1.0.0"
+
+material-colors@^1.2.1:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/material-colors/-/material-colors-1.2.6.tgz#6d1958871126992ceecc72f4bcc4d8f010865f46"
+  integrity sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==
 
 math-expression-evaluator@^1.2.14:
   version "1.2.17"
@@ -7346,7 +7356,18 @@ mongodb-core@3.1.11:
   optionalDependencies:
     saslprep "^1.0.0"
 
-mongodb@3.1.13, mongodb@^3.1.10, mongodb@~3.1.8:
+mongodb@3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.4.1.tgz#0d15e57e0ea0fc85b7a4fb9291b374c2e71652dc"
+  integrity sha512-juqt5/Z42J4DcE7tG7UdVaTKmUC6zinF4yioPfpeOSNBieWSK6qCY+0tfGQcHLKrauWPDdMZVROHJOa8q2pWsA==
+  dependencies:
+    bson "^1.1.1"
+    require_optional "^1.0.1"
+    safe-buffer "^5.1.2"
+  optionalDependencies:
+    saslprep "^1.0.0"
+
+mongodb@^3.1.10, mongodb@~3.1.8:
   version "3.1.13"
   resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.1.13.tgz#f8cdcbb36ad7a08b570bd1271c8525753f75f9f4"
   dependencies:
@@ -7357,21 +7378,21 @@ mongoose-legacy-pluralize@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
 
-mongoose@^5.3.13:
-  version "5.4.11"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.4.11.tgz#db1cbbabbd6287cbdecdf52c2ea8d43194bc517a"
+mongoose@^5.7.5:
+  version "5.8.7"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.8.7.tgz#d175f8ac4c8ed7bf57b71aa4980aaa3525b923b2"
+  integrity sha512-PCCuTrdxpUmO86L1geXWE+9AvJRFuneIrMUT2hB/LXZ+5HIGOIfE6OSMU7cd8wFU7JRINP9V73zZ9YsmAbt+Iw==
   dependencies:
-    async "2.6.1"
-    bson "~1.1.0"
-    kareem "2.3.0"
-    mongodb "3.1.13"
-    mongodb-core "3.1.11"
+    bson "~1.1.1"
+    kareem "2.3.1"
+    mongodb "3.4.1"
     mongoose-legacy-pluralize "1.0.2"
-    mpath "0.5.1"
-    mquery "3.2.0"
-    ms "2.0.0"
-    regexp-clone "0.0.1"
+    mpath "0.6.0"
+    mquery "3.2.2"
+    ms "2.1.2"
+    regexp-clone "1.0.0"
     safe-buffer "5.1.2"
+    sift "7.0.1"
     sliced "1.0.1"
 
 moo@^0.4.3:
@@ -7403,13 +7424,19 @@ mpath@0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.5.1.tgz#17131501f1ff9e6e4fbc8ffa875aa7065b5775ab"
 
-mquery@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/mquery/-/mquery-3.2.0.tgz#e276472abd5109686a15eb2a8e0761db813c81cc"
+mpath@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.6.0.tgz#aa922029fca4f0f641f360e74c5c1b6a4c47078e"
+  integrity sha512-i75qh79MJ5Xo/sbhxrDrPSEG0H/mr1kcZXJ8dH6URU5jD/knFxCVqVC/gVSW7GIXL/9hHWlT9haLbCXWOll3qw==
+
+mquery@3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/mquery/-/mquery-3.2.2.tgz#e1383a3951852ce23e37f619a9b350f1fb3664e7"
+  integrity sha512-XB52992COp0KP230I3qloVUbkLUxJIu328HBP2t2EsxSFtf4W1HPSOBWOXf1bqxK4Xbb66lfMJ+Bpfd9/yZE1Q==
   dependencies:
     bluebird "3.5.1"
     debug "3.1.0"
-    regexp-clone "0.0.1"
+    regexp-clone "^1.0.0"
     safe-buffer "5.1.2"
     sliced "1.0.1"
 
@@ -7425,6 +7452,11 @@ ms@2.0.0:
 ms@2.1.1, ms@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
+
+ms@2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
+  integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
 multimatch@^4.0.0:
   version "4.0.0"
@@ -9301,6 +9333,18 @@ rc@^1.0.1, rc@^1.1.2, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-color@^2.18.0:
+  version "2.18.0"
+  resolved "https://registry.yarnpkg.com/react-color/-/react-color-2.18.0.tgz#34956f0bac394f6c3bc01692fd695644cc775ffd"
+  integrity sha512-FyVeU1kQiSokWc8NPz22azl1ezLpJdUyTbWL0LPUpcuuYDrZ/Y1veOk9rRK5B3pMlyDGvTk4f4KJhlkIQNRjEA==
+  dependencies:
+    "@icons/material" "^0.2.4"
+    lodash "^4.17.11"
+    material-colors "^1.2.1"
+    prop-types "^15.5.10"
+    reactcss "^1.2.0"
+    tinycolor2 "^1.4.1"
+
 react-custom-scrollbars@^4.2.1:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/react-custom-scrollbars/-/react-custom-scrollbars-4.2.1.tgz#830fd9502927e97e8a78c2086813899b2a8b66db"
@@ -9407,6 +9451,13 @@ react@16.8.1:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.13.1"
+
+reactcss@^1.2.0:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/reactcss/-/reactcss-1.2.3.tgz#c00013875e557b1cf0dfd9a368a1c3dab3b548dd"
+  integrity sha512-KiwVUcFu1RErkI97ywr8nvx8dNOpT03rbnma0SSalTYjkrPYaEajR4a/MRt6DZ46K6arDRbWMNHF+xH7G7n/8A==
+  dependencies:
+    lodash "^4.0.1"
 
 read-all-stream@^3.0.0:
   version "3.1.0"
@@ -9665,9 +9716,10 @@ regex-not@^1.0.0, regex-not@^1.0.2:
     extend-shallow "^3.0.2"
     safe-regex "^1.1.0"
 
-regexp-clone@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/regexp-clone/-/regexp-clone-0.0.1.tgz#a7c2e09891fdbf38fbb10d376fb73003e68ac589"
+regexp-clone@1.0.0, regexp-clone@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/regexp-clone/-/regexp-clone-1.0.0.tgz#222db967623277056260b992626354a04ce9bf63"
+  integrity sha512-TuAasHQNamyyJ2hb97IuBEif4qBHGjPHBS64sZwytpLEqtBQ1gPJTnOaQ6qmpET16cK14kkjbazl6+p0RRv0yw==
 
 regexp-tree@^0.1.0:
   version "0.1.1"
@@ -10303,6 +10355,11 @@ shell-quote@^1.6.1:
 shellwords@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
+
+sift@7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/sift/-/sift-7.0.1.tgz#47d62c50b159d316f1372f8b53f9c10cd21a4b08"
+  integrity sha512-oqD7PMJ+uO6jV9EQCl0LrRw1OwsiPsiFQR5AR30heR+4Dl7jBBbDLnNvWiak20tzZlSE1H7RB30SX/1j/YYT7g==
 
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
