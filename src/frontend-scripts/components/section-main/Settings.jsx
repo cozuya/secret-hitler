@@ -77,9 +77,18 @@ class Settings extends React.Component {
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
 			safeForWork: gameSettings.safeForWork,
-			primaryColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-primary'),
-			secondaryColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-secondary'),
-			tertiaryColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-tertiary')
+			primaryColor: window
+				.getComputedStyle(document.documentElement)
+				.getPropertyValue('--theme-primary')
+				.trim(),
+			secondaryColor: window
+				.getComputedStyle(document.documentElement)
+				.getPropertyValue('--theme-secondary')
+				.trim(),
+			tertiaryColor: window
+				.getComputedStyle(document.documentElement)
+				.getPropertyValue('--theme-tertiary')
+				.trim()
 		});
 	}
 
@@ -221,6 +230,8 @@ class Settings extends React.Component {
 	renderTheme() {
 		const { primaryColor, secondaryColor, tertiaryColor, primaryPickerVisible, secondaryPickerVisible, tertiaryPickerVisible } = this.state;
 		const { socket } = this.props;
+		const docStyle = document.documentElement.style;
+		const getHSLstring = color => `hsl(${Math.round(color.h)}, ${Math.round(color.s * 100)}%, ${Math.round(color.l * 100)}%)`;
 		const renderPicker = name => (
 			<div className="picker-container">
 				<div
@@ -233,16 +244,18 @@ class Settings extends React.Component {
 				</div>
 				<SketchPicker
 					disableAlpha
-					color={`${name}Color`}
+					color={this.state[`${name}Color`]}
 					onChangeComplete={color => {
+						const newColor = getHSLstring(color.hsl);
+
 						this.setState(
 							{
-								[`${name}Color`]: color.hex
+								[`${name}Color`]: newColor
 							},
 							() => {
-								document.documentElement.style.setProperty(`--theme-${name}`, color.hex);
+								docStyle.setProperty(`--theme-${name}`, newColor);
 								socket.emit('handleUpdatedTheme', {
-									[`${name}Color`]: color.hex
+									[`${name}Color`]: newColor
 								});
 							}
 						);
@@ -251,23 +264,63 @@ class Settings extends React.Component {
 			</div>
 		);
 
-		const computeAltThemeColors = () => {};
-		const resetThemeColors = () => {
+		const getAltThemeColors = () => {
+			const hue = parseInt(primaryColor.split(',')[0].split('hsl(')[1], 10);
+			const saturation = parseInt(
+				primaryColor
+					.split(',')[1]
+					.trim()
+					.split('%')[0],
+				10
+			);
+			const lightness = parseInt(
+				primaryColor
+					.split(',')[2]
+					.trim()
+					.split('%)')[0],
+				10
+			);
+
+			const secondarySaturation = saturation >= 25 ? saturation - 25 : 0;
+			const tertiaryHue = hue > 320 ? hue - 320 : hue + 40;
+
+			return {
+				secondaryColor: `hsl(${hue}, ${secondarySaturation}%, ${lightness}%)`,
+				tertiaryColor: `hsl(${tertiaryHue}, ${saturation}%, ${lightness}%)`
+			};
+		};
+		const setAltThemeColors = () => {
 			this.setState(
 				{
-					primaryColor: '#4169e1',
-					secondaryColor: '#5d77c6',
-					tertiaryColor: '#8441e1'
+					secondaryColor: getAltThemeColors().secondaryColor,
+					tertiaryColor: getAltThemeColors().tertiaryColor
 				},
 				() => {
 					socket.emit('handleUpdatedTheme', {
-						primaryColor: '#4169e1',
-						secondaryColor: '#5d77c6',
-						tertiaryColor: '#8441e1'
+						secondaryColor: getAltThemeColors().secondaryColor,
+						tertiaryColor: getAltThemeColors().tertiaryColor
 					});
-					document.documentElement.style.setProperty('--theme-primary', '#4169e1');
-					document.documentElement.style.setProperty('--theme-secondary', '#5d77c6');
-					document.documentElement.style.setProperty('--theme-tertiary', '#8441e1');
+					docStyle.setProperty('--theme-secondary', getAltThemeColors().secondaryColor);
+					docStyle.setProperty('--theme-tertiary', getAltThemeColors().tertiaryColor);
+				}
+			);
+		};
+		const resetThemeColors = () => {
+			this.setState(
+				{
+					primaryColor: 'hsl(225, 73%, 57%)',
+					secondaryColor: 'hsl(225, 48%, 57%)',
+					tertiaryColor: 'hsl(265, 73%, 57%)'
+				},
+				() => {
+					socket.emit('handleUpdatedTheme', {
+						primaryColor: 'hsl(225, 73%, 57%)',
+						secondaryColor: 'hsl(225, 48%, 57%)',
+						tertiaryColor: 'hsl(265, 73%, 57%)'
+					});
+					docStyle.setProperty('--theme-primary', 'hsl(225, 73%, 57%)');
+					docStyle.setProperty('--theme-secondary', 'hsl(225, 48%, 57%)');
+					docStyle.setProperty('--theme-tertiary', 'hsl(265, 73%, 57%)');
 				}
 			);
 		};
@@ -324,10 +377,15 @@ class Settings extends React.Component {
 						{tertiaryPickerVisible && renderPicker('tertiary')}
 					</div>
 					<div className="four wide column theme-buttons">
-						<button className="ui primary button" onClick={computeAltThemeColors}>
-							Compute 2nd and 3rd colors from primary
-						</button>
-						{!(primaryColor === '#4169e1' && secondaryColor === '#5d77c6' && tertiaryColor === '#8441e1') && (
+						{primaryColor &&
+							secondaryColor &&
+							tertiaryColor &&
+							!(secondaryColor === getAltThemeColors().secondaryColor && tertiaryColor === getAltThemeColors().tertiaryColor) && (
+								<button className="ui primary button" onClick={setAltThemeColors}>
+									Compute 2nd and 3rd colors from primary
+								</button>
+							)}
+						{!(primaryColor === 'hsl(225, 73%, 57%)' && secondaryColor === 'hsl(225, 48%, 57%)' && tertiaryColor === 'hsl(265, 73%, 57%)') && (
 							<button className="ui primary button" onClick={resetThemeColors}>
 								Reset to default theme
 							</button>

@@ -161,14 +161,8 @@ module.exports.getBadWord = text => {
 	return foundWord;
 };
 
-// module.exports.DEFAULTTHEMECOLORS = {
-// 	primaryColor: 'hsl(225, 73%, 57%)',
-// 	secondaryColor: 'hsl(225, 48%, 57%)',
-// 	tertiaryColor: 'hsl(265, 73%, 57%)'
-// };
-
 module.exports.DEFAULTTHEMECOLORS = {
-	primaryColor: '#4169e1',
-	secondaryColor: '#5d77c6',
-	tertiaryColor: '#8441e1'
+	primaryColor: 'hsl(225, 73%, 57%)',
+	secondaryColor: 'hsl(225, 48%, 57%)',
+	tertiaryColor: 'hsl(265, 73%, 57%)'
 };
