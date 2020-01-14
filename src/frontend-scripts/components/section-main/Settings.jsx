@@ -44,12 +44,16 @@ class Settings extends React.Component {
 		fullheight: false,
 		truncatedSize: 250,
 		safeForWork: false,
-		primaryColor: '',
-		secondaryColor: '',
-		tertiaryColor: '',
+		primaryColor: 'hsl(225, 73%, 57%)',
+		secondaryColor: 'hsl(225, 48%, 57%)',
+		tertiaryColor: 'hsl(265, 73%, 57%)',
+		backgroundColor: 'hsl(0, 0%, 0%)',
+		textColor: 'hsl(0, 0%, 100%)',
 		primaryPickerVisible: false,
 		secondaryPickerVisible: false,
-		tertiaryPickerVisible: false
+		tertiaryPickerVisible: false,
+		backgroundPickerVisible: false,
+		textPickerVisible: false
 	};
 
 	componentDidMount() {
@@ -88,6 +92,14 @@ class Settings extends React.Component {
 			tertiaryColor: window
 				.getComputedStyle(document.documentElement)
 				.getPropertyValue('--theme-tertiary')
+				.trim(),
+			backgroundColor: window
+				.getComputedStyle(document.documentElement)
+				.getPropertyValue('--theme-background-1')
+				.trim(),
+			textColor: window
+				.getComputedStyle(document.documentElement)
+				.getPropertyValue('--theme-text-1')
 				.trim()
 		});
 	}
@@ -228,7 +240,18 @@ class Settings extends React.Component {
 	}
 
 	renderTheme() {
-		const { primaryColor, secondaryColor, tertiaryColor, primaryPickerVisible, secondaryPickerVisible, tertiaryPickerVisible } = this.state;
+		const {
+			primaryColor,
+			secondaryColor,
+			tertiaryColor,
+			backgroundColor,
+			textColor,
+			primaryPickerVisible,
+			secondaryPickerVisible,
+			tertiaryPickerVisible,
+			backgroundPickerVisible,
+			textPickerVisible
+		} = this.state;
 		const { socket } = this.props;
 		const docStyle = document.documentElement.style;
 		const getHSLstring = color => `hsl(${Math.round(color.h)}, ${Math.round(color.s * 100)}%, ${Math.round(color.l * 100)}%)`;
@@ -246,14 +269,36 @@ class Settings extends React.Component {
 					disableAlpha
 					color={this.state[`${name}Color`]}
 					onChangeComplete={color => {
-						const newColor = getHSLstring(color.hsl);
+						const { hsl } = color;
+						const newColor = getHSLstring(hsl);
 
 						this.setState(
 							{
 								[`${name}Color`]: newColor
 							},
 							() => {
-								docStyle.setProperty(`--theme-${name}`, newColor);
+								const isBackgroundOrText = name === 'background' || name === 'text';
+
+								if (isBackgroundOrText) {
+									const newColorHSL2 = {
+										h: hsl.h,
+										s: hsl.s,
+										l: hsl.l > 0.5 ? (hsl.l <= 0.95 ? hsl.l + 0.05 : 100) : hsl.l >= 0.05 ? hsl.l - 0.05 : 0
+									};
+									console.log(JSON.parse(JSON.stringify(hsl)));
+									const newColorHSL3 = {
+										h: hsl.h,
+										s: hsl.s,
+										l: hsl.l > 0.5 ? (hsl.l <= 0.9 ? hsl.l + 0.1 : 100) : hsl.l >= 0.1 ? hsl.l - 0.1 : 0
+									};
+
+									docStyle.setProperty(`--theme-${name}-1`, newColor);
+									docStyle.setProperty(`--theme-${name}-2`, getHSLstring(newColorHSL2));
+									docStyle.setProperty(`--theme-${name}-3`, getHSLstring(newColorHSL3));
+								} else {
+									docStyle.setProperty(`--theme-${name}`, newColor);
+								}
+
 								socket.emit('handleUpdatedTheme', {
 									[`${name}Color`]: newColor
 								});
@@ -289,6 +334,7 @@ class Settings extends React.Component {
 				tertiaryColor: `hsl(${tertiaryHue}, ${saturation}%, ${lightness}%)`
 			};
 		};
+
 		const setAltThemeColors = () => {
 			this.setState(
 				{
@@ -305,22 +351,33 @@ class Settings extends React.Component {
 				}
 			);
 		};
+
 		const resetThemeColors = () => {
 			this.setState(
 				{
 					primaryColor: 'hsl(225, 73%, 57%)',
 					secondaryColor: 'hsl(225, 48%, 57%)',
-					tertiaryColor: 'hsl(265, 73%, 57%)'
+					tertiaryColor: 'hsl(265, 73%, 57%)',
+					backgroundColor: 'hsl(0, 0%, 0%)',
+					textColor: 'hsl(0, 0%, 100%)'
 				},
 				() => {
 					socket.emit('handleUpdatedTheme', {
 						primaryColor: 'hsl(225, 73%, 57%)',
 						secondaryColor: 'hsl(225, 48%, 57%)',
-						tertiaryColor: 'hsl(265, 73%, 57%)'
+						tertiaryColor: 'hsl(265, 73%, 57%)',
+						backgroundColor: 'hsl(0, 0%, 0%)',
+						textColor: 'hsl(0, 0%, 100%)'
 					});
 					docStyle.setProperty('--theme-primary', 'hsl(225, 73%, 57%)');
 					docStyle.setProperty('--theme-secondary', 'hsl(225, 48%, 57%)');
 					docStyle.setProperty('--theme-tertiary', 'hsl(265, 73%, 57%)');
+					docStyle.setProperty('--theme-background-1', 'hsl(0, 0%, 0%)');
+					docStyle.setProperty('--theme-background-2', 'hsl(0, 0%, 5%)');
+					docStyle.setProperty('--theme-background-3', 'hsl(0, 0%, 10%)');
+					docStyle.setProperty('--theme-text-1', 'hsl(0, 0%, 100%)');
+					docStyle.setProperty('--theme-text-2', 'hsl(0, 0%, 95%)');
+					docStyle.setProperty('--theme-text-3', 'hsl(0, 0%, 90%)');
 				}
 			);
 		};
@@ -331,8 +388,8 @@ class Settings extends React.Component {
 					<h3 className="ui header">Color theme</h3>
 				</div>
 				<div className="row centered themes">
-					<div className="four wide column">
-						<h5 className="ui header">Primary Color</h5>
+					<div className="two wide column">
+						<h5 className="ui header">Primary</h5>
 						<div
 							className="color-box"
 							onClick={() => {
@@ -346,8 +403,8 @@ class Settings extends React.Component {
 						></div>
 						{primaryPickerVisible && renderPicker('primary')}
 					</div>
-					<div className="four wide column">
-						<h5 className="ui header">Secondary Color</h5>
+					<div className="two wide column">
+						<h5 className="ui header">Secondary</h5>
 						<div
 							className="color-box"
 							onClick={() => {
@@ -361,8 +418,8 @@ class Settings extends React.Component {
 						></div>
 						{secondaryPickerVisible && renderPicker('secondary')}
 					</div>
-					<div className="four wide column">
-						<h5 className="ui header">Tertiary Color</h5>
+					<div className="two wide column">
+						<h5 className="ui header">Tertiary</h5>
 						<div
 							className="color-box"
 							onClick={() => {
@@ -376,20 +433,56 @@ class Settings extends React.Component {
 						></div>
 						{tertiaryPickerVisible && renderPicker('tertiary')}
 					</div>
-					<div className="four wide column theme-buttons">
+					<div className="two wide column theme-buttons">
 						{primaryColor &&
 							secondaryColor &&
 							tertiaryColor &&
 							!(secondaryColor === getAltThemeColors().secondaryColor && tertiaryColor === getAltThemeColors().tertiaryColor) && (
 								<button className="ui primary button" onClick={setAltThemeColors}>
-									Compute 2nd and 3rd colors from primary
+									Compute 2nd and 3rd
 								</button>
 							)}
-						{!(primaryColor === 'hsl(225, 73%, 57%)' && secondaryColor === 'hsl(225, 48%, 57%)' && tertiaryColor === 'hsl(265, 73%, 57%)') && (
+						{!(
+							primaryColor === 'hsl(225, 73%, 57%)' &&
+							secondaryColor === 'hsl(225, 48%, 57%)' &&
+							tertiaryColor === 'hsl(265, 73%, 57%)' &&
+							backgroundColor === 'hsl(0, 0%, 0%)' &&
+							textColor === 'hsl(0, 0%, 100%)'
+						) && (
 							<button className="ui primary button" onClick={resetThemeColors}>
-								Reset to default theme
+								Reset
 							</button>
 						)}
+					</div>
+					<div className="two wide column">
+						<h5 className="ui header">Background</h5>
+						<div
+							className="color-box"
+							onClick={() => {
+								if (!backgroundPickerVisible) {
+									this.setState({
+										backgroundPickerVisible: true
+									});
+								}
+							}}
+							style={{ background: backgroundColor }}
+						></div>
+						{backgroundPickerVisible && renderPicker('background')}
+					</div>
+					<div className="two wide column">
+						<h5 className="ui header">Text</h5>
+						<div
+							className="color-box"
+							onClick={() => {
+								if (!textPickerVisible) {
+									this.setState({
+										textPickerVisible: true
+									});
+								}
+							}}
+							style={{ background: textColor }}
+						></div>
+						{textPickerVisible && renderPicker('text')}
 					</div>
 				</div>
 			</>

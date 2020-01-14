@@ -2,13 +2,12 @@
 	position: relative;
 	padding: 2%;
 	margin: 10px;
-	//background: #100000;
 
 	.content > button {
 		position: absolute;
 		left: 50px;
 		top: 0;
-		color: #fff;
+		color: var(--theme-text-1);
 		padding: 8px;
 	}
 
@@ -41,7 +40,7 @@
 
 		button {
 			margin-top: 20px;
-			color: #fff;
+			color: var(--theme-text-1);
 		}
 	}
 
@@ -58,7 +57,7 @@
 			button {
 				font-size: 12px;
 				background: var(--theme-primary);
-				color: #fff;
+				color: var(--theme-text-1);
 
 				&:last-child {
 					margin-top: 5px;
@@ -92,6 +91,7 @@
 		.color-box {
 			width: 75px;
 			height: 75px;
+			border: 2px solid #aaa;
 			margin: 0 auto;
 			cursor: pointer;
 		}
@@ -168,10 +168,10 @@
 			width: 70px;
 			height: 95px;
 			border-width: 2px;
-			border-color: rgb(102, 102, 102);
+			border-color: var(--theme-background-3);
 			border-style: dashed;
 			border-radius: 5px;
-			color: #ddd;
+			color: var(--theme-text-2);
 			cursor: pointer;
 			font-size: 12px;
 			line-height: 1;
@@ -185,7 +185,7 @@
 		.preview-container {
 			button {
 				position: relative;
-				color: #ddd;
+				color: var(--theme-text-2);
 				top: -60px;
 				left: 10px;
 			}

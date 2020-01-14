@@ -128,7 +128,7 @@ const DisplayLobbies = props => {
 			disableChat = (
 				<i className="icons">
 					<i className="unmute icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-background-2)' }} />
 				</i>
 			);
 			disableChatTooltip = 'Player Chat Disabled';
@@ -153,7 +153,7 @@ const DisplayLobbies = props => {
 			disableGamechat = (
 				<i className="icons">
 					<i className="game icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-background-2)' }} />
 				</i>
 			);
 			disableGamechatTooltip = 'Game Chat Disabled';

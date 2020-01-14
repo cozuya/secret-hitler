@@ -147,7 +147,7 @@ class Tracks extends React.Component {
 			disableChat = (
 				<i className="icons">
 					<i className="unmute icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-primary)' }} />
 				</i>
 			);
 			disableChatTooltip = 'Player Chat Disabled';
@@ -172,7 +172,7 @@ class Tracks extends React.Component {
 			disableGamechat = (
 				<i className="icons">
 					<i className="game icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-primary)' }} />
 				</i>
 			);
 			disableGamechatTooltip = 'Game Chat Disabled';

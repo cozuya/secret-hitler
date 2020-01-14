@@ -40,8 +40,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .players-container .players {
-	background: #000;
-	//height: 115px;
+	background-color: var(--theme-background-1);
 	overflow: hidden;
 	display: flex;
 	margin-top: 5px;
@@ -150,7 +149,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 			white-space: nowrap;
 			margin-top: -22px;
 			font-family: $headerfont;
-			color: #ddd;
+			color: var(--theme-text-2);
 			text-align: center;
 			font-size: 13px;
 			&:hover {
@@ -277,10 +276,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 				top: -100px !important;
 				position: absolute !important;
 				z-index: 99999 !important;
-				color: #444 !important;
+				color: var(--background-3);
 				right: -5px !important;
 				&:hover {
-					color: #444 !important;
+					color: var(--theme-background-3);
 				}
 			}
 		}
@@ -357,8 +356,8 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	.card-count {
 		position: absolute;
 		z-index: 1;
-		background: #333;
-		color: #eee;
+		background-color: var(--background-3);
+		color: var(--theme-text-2);
 		width: 18px;
 		text-align: center;
 		top: 0;
@@ -411,7 +410,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .reportmodal {
-	background-color: #111 !important;
+	background-color: var(--theme-background-1) !important;
 	padding: 20px;
 
 	.dropdown {
@@ -420,7 +419,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	}
 
 	textarea {
-		color: #000;
+		background-color: var(--theme-background-1);
 		display: block;
 		width: 100%;
 		height: 60px;

@@ -110,6 +110,24 @@ module.exports = () => {
 		res.redirect('/game/');
 	});
 
+	const getHSLcolors = hsl => [
+		parseInt(hsl.split(',')[0].split('hsl(')[1], 10),
+		parseInt(
+			hsl
+				.split(',')[1]
+				.trim()
+				.split('%')[0],
+			10
+		),
+		parseInt(
+			hsl
+				.split(',')[2]
+				.trim()
+				.split('%)')[0],
+			10
+		)
+	];
+
 	app.get('/game/', ensureAuthenticated, (req, res) => {
 		const { username } = req.user;
 
@@ -141,6 +159,12 @@ module.exports = () => {
 					return;
 				}
 				const { blacklist } = account.gameSettings;
+
+				const backgroundColor = account.backgroundColor || DEFAULTTHEMECOLORS.baseBackgroundColor;
+				const textColor = account.textColor || DEFAULTTHEMECOLORS.baseTextColor;
+				const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
+				const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
+
 				const gameObj = {
 					game: true,
 					staffRole: account.staffRole || '',
@@ -152,7 +176,17 @@ module.exports = () => {
 					blacklist,
 					primaryColor: account.primaryColor || DEFAULTTHEMECOLORS.primaryColor,
 					secondaryColor: account.secondaryColor || DEFAULTTHEMECOLORS.secondaryColor,
-					tertiaryColor: account.tertiaryColor || DEFAULTTHEMECOLORS.tertiaryColor
+					tertiaryColor: account.tertiaryColor || DEFAULTTHEMECOLORS.tertiaryColor,
+					backgroundColor,
+					secondaryBackgroundColor: `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
+						backgroundLightness > 50 ? backgroundLightness - 5 : backgroundLightness + 5
+					}%)`,
+					tertiaryBackgroundColor: `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
+						backgroundLightness > 50 ? backgroundLightness - 10 : backgroundLightness + 10
+					}%)`,
+					textColor,
+					secondaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 5 : textLightness + 5}%)`,
+					tertiaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 10 : textLightness + 10}%)`
 				};
 
 				if (process.env.NODE_ENV === 'production') {
@@ -172,7 +206,6 @@ module.exports = () => {
 				account.save(() => {
 					res.render('game', gameObj);
 				});
-				// account.gameSettings.blacklist = [];
 			});
 		}
 	});
@@ -195,11 +228,31 @@ module.exports = () => {
 			return;
 		}
 
+		const backgroundColor = DEFAULTTHEMECOLORS.baseBackgroundColor;
+		const textColor = DEFAULTTHEMECOLORS.baseTextColor;
+		const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
+		const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
+
+		const secondaryBackgroundColor = `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
+			backgroundLightness > 50 ? backgroundLightness - 5 : backgroundLightness + 5
+		}%)`;
+		const tertiaryBackgroundColor = `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
+			backgroundLightness > 50 ? backgroundLightness - 10 : backgroundLightness + 10
+		}%)`;
+		const secondaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 5 : textLightness + 5}%)`;
+		const tertiaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 10 : textLightness + 10}%)`;
+
 		const gameObj = {
 			game: true,
 			primaryColor: DEFAULTTHEMECOLORS.primaryColor,
 			secondaryColor: DEFAULTTHEMECOLORS.secondaryColor,
-			tertiaryColor: DEFAULTTHEMECOLORS.tertiaryColor
+			tertiaryColor: DEFAULTTHEMECOLORS.tertiaryColor,
+			backgroundColor,
+			secondaryBackgroundColor,
+			tertiaryBackgroundColor,
+			textColor,
+			secondaryTextColor,
+			tertiaryTextColor
 		};
 
 		if (process.env.NODE_ENV === 'production') {

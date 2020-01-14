@@ -466,8 +466,16 @@ export class App extends React.Component {
 						if (this.state.alertMsg.type) {
 							if (this.state.alertMsg.type === 'tou') {
 								return (
-									<div style={{ position: 'fixed', zIndex: 99999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
-										<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
+									<div style={{ position: 'fixed', zIndex: 99999, background: 'var(--theme-background-1)', width: '100vw', height: '100vh', display: 'flex' }}>
+										<div
+											style={{
+												margin: 'auto',
+												padding: '5px',
+												border: '1px solid var(--theme-text-1)',
+												borderRadius: '10px',
+												background: 'var(--theme-background-1)'
+											}}
+										>
 											<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
 												{this.state.alertMsg.data[0].changeVer === '0.0' ? 'Site Rules' : 'Terms of Use changes'}
 											</h2>
@@ -475,9 +483,9 @@ export class App extends React.Component {
 												style={{
 													height: '400px',
 													width: '450px',
-													border: '1px solid black',
+													border: '1px solid var(--theme-background-1)',
 													borderRadius: '5px',
-													background: '#777',
+													background: 'var(--theme-background-3)',
 													padding: '3px',
 													overflowY: 'scroll'
 												}}
@@ -522,8 +530,16 @@ export class App extends React.Component {
 							}
 							if (this.state.alertMsg.type === 'warning') {
 								return (
-									<div style={{ position: 'fixed', zIndex: 9999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
-										<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
+									<div style={{ position: 'fixed', zIndex: 9999, background: 'var(--theme-background-1)', width: '100vw', height: '100vh', display: 'flex' }}>
+										<div
+											style={{
+												margin: 'auto',
+												padding: '5px',
+												border: '1px solid var(--theme-text-1)',
+												borderRadius: '10px',
+												background: 'var(--theme-background-1)'
+											}}
+										>
 											<h2 style={{ fontFamily: '"Roboto", sans-serif', textAlign: 'center' }}>Moderator Warning</h2>
 											<div style={{ width: '450px', margin: '5px 0' }}>
 												The following is a warning from a moderator. If you believe this warning to be unjustified, you may argue your case respectfully by
@@ -537,9 +553,9 @@ export class App extends React.Component {
 													height: 'auto',
 													maxHeight: '400px',
 													width: '450px',
-													border: '1px solid black',
+													border: '1px solid var(--theme-background-1)',
 													borderRadius: '5px',
-													background: '#777',
+													background: 'var(--theme-background-3)',
 													padding: '5px'
 												}}
 											>
@@ -582,8 +598,16 @@ export class App extends React.Component {
 					})()}
 
 					{this.state.warnings !== null && (
-						<div style={{ position: 'fixed', zIndex: 9999, background: '#0008', width: '100vw', height: '100vh', display: 'flex' }}>
-							<div style={{ margin: 'auto', padding: '5px', border: '1px solid white', borderRadius: '10px', background: '#000' }}>
+						<div style={{ position: 'fixed', zIndex: 9999, background: 'var(--theme-background-1)', width: '100vw', height: '100vh', display: 'flex' }}>
+							<div
+								style={{
+									margin: 'auto',
+									padding: '5px',
+									border: '1px solid var(--theme-text-1)',
+									borderRadius: '10px',
+									background: 'var(--theme-background-1)'
+								}}
+							>
 								<h2 style={{ fontFamily: '"Roboto", sans-serif', textAlign: 'center' }}>Warnings log</h2>
 								<div style={{ width: '450px', margin: '5px 0' }}>
 									Previous Warnings for User: <strong>{this.state.warnings.username}</strong>
@@ -595,9 +619,9 @@ export class App extends React.Component {
 										height: 'auto',
 										maxHeight: '300px',
 										width: '550px',
-										border: '1px solid black',
+										border: '1px solid var(--theme-background-1)',
 										borderRadius: '5px',
-										background: '#777',
+										background: 'var(--theme-background-3)',
 										padding: '5px',
 										overflowY: 'scroll'
 									}}

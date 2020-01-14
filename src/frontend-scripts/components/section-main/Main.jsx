@@ -177,7 +177,11 @@ export class Main extends React.Component {
 					})()}
 				</Modal.Content>
 				<Modal.Actions>
-					<Button onClick={this.handleDismissSignupModal} inverted style={{ background: newPlayerModalPageIndex === 4 ? '#db2828' : 'inherit' }}>
+					<Button
+						onClick={this.handleDismissSignupModal}
+						inverted
+						style={{ background: newPlayerModalPageIndex === 4 ? '#db2828' : 'var(--theme-tertiary)', color: '#fff' }}
+					>
 						<Icon name="checkmark" />
 						{newPlayerModalPageIndex === 4 ? 'Close' : 'Skip and dismiss forever'}
 					</Button>

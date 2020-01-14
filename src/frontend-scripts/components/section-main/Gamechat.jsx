@@ -824,33 +824,20 @@ class Gamechat extends React.Component {
 			<section className={isStaff ? 'gamechat aem' : 'gamechat'}>
 				<section className="ui pointing menu">
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: '5px' }}>
-						<i
-							className={`large comment icon${showPlayerChat ? ' alternate' : ''}`}
-							title={showPlayerChat ? 'Hide player chats' : 'Show player chats'}
-							style={{ color: showPlayerChat ? '#4169e1' : 'indianred' }}
-						/>
+						<i className={`large comment icon${showPlayerChat ? ' alternate' : ''}`} title={showPlayerChat ? 'Hide player chats' : 'Show player chats'} />
 					</a>
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Game">
-						<i
-							className={`large circle icon${showGameChat ? ' info' : ''}`}
-							title={showGameChat ? 'Hide game chats' : 'Show game chats'}
-							style={{ color: showGameChat ? '#4169e1' : 'indianred' }}
-						/>
+						<i className={`large circle icon${showGameChat ? ' info' : ''}`} title={showGameChat ? 'Hide game chats' : 'Show game chats'} />
 					</a>
 					{gameInfo.general && !gameInfo.general.disableObserver && (
 						<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Spectator">
-							<i
-								className={`large eye icon${!showObserverChat ? ' slash' : ''}`}
-								title={showObserverChat ? 'Hide observer chats' : 'Show observer chats'}
-								style={{ color: showObserverChat ? '#4169e1' : 'indianred' }}
-							/>
+							<i className={`large eye icon${!showObserverChat ? ' slash' : ''}`} title={showObserverChat ? 'Hide observer chats' : 'Show observer chats'} />
 						</a>
 					)}
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="History">
 						<i
 							className={`large file icon${showFullChat ? ' alternate' : ''}`}
 							title={showFullChat ? 'Truncate chats to 250 lines' : 'Show entire history (might lag in longer games)'}
-							style={{ color: showFullChat ? '#4169e1' : 'indianred' }}
 						/>
 					</a>
 					<div style={{ width: '40%', overflowX: 'auto', display: 'flex', flexDirection: 'row' }}>

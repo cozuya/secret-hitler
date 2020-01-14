@@ -121,7 +121,7 @@ const SidebarGame = ({ game, socket }) => {
 					})()}
 					<div className="lower-row">
 						<span className="allowed-players">{playersCount()} </span>
-						<span className="divider" style={{ color: '#ddd' }}>
+						<span className="divider" style={{ color: 'var(--theme-text-2)' }}>
 							|
 						</span>
 						<span className="seatedcount">

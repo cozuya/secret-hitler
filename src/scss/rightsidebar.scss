@@ -1,5 +1,5 @@
 .playerlistinfo {
-	background-color: #111 !important;
+	background-color: var(--theme-background-2) !important;
 	padding: 20px;
 }
 
@@ -8,15 +8,15 @@
 	padding-right: 0 !important;
 	padding-bottom: 0 !important;
 	.playerlist {
-		background: #181818;
-		border: 1px solid #262626;
+		background: var(--theme-background-2);
+		border: 1px solid var(--theme-background-3);
 		border-bottom: 0;
 		flex: 1;
 		display: flex;
 		flex-direction: column;
 		.userlist-stats-container {
 			font-size: 12px;
-			color: #bdbdbd;
+			color: var(--theme-text-3);
 			margin-right: 3px;
 			width: 40%;
 			white-space: nowrap;
@@ -30,7 +30,7 @@
 			display: flex;
 			justify-content: space-between;
 			color: var(--theme-primary);
-			border-bottom: 1px solid #262626;
+			border-bottom: 1px solid var(--theme-background-2);
 			.mod-button,
 			.report-button {
 				cursor: pointer;
@@ -111,14 +111,14 @@
 			display: flex;
 			justify-content: space-between;
 			&.hover {
-				background: #2f2f2f;
+				background: var(--theme-background-3);
 			}
 
 			.userlist-username {
 				width: 75%;
 				white-space: nowrap;
 				overflow-x: hidden;
-				color: #bfbfbf;
+				color: var(--theme-text-3);
 
 				.blacklisted {
 					color: $blacklist !important;
@@ -149,7 +149,7 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		border: 1px solid #262626;
+		border: 1px solid var(--theme-background-3);
 
 		img {
 			vertical-align: middle;
@@ -160,12 +160,12 @@
 			padding: 4px;
 			cursor: pointer;
 			&.active {
-				background: #555;
+				background: var(--theme-background-3);
 			}
 		}
 		.generalchat-header {
 			min-height: 32px;
-			border-bottom: 1px solid #262626;
+			border-bottom: 1px solid var(--theme-background-2);
 			padding: 5px 0px 3px;
 			h3 {
 				float: left;
@@ -182,7 +182,7 @@
 			display: flex;
 			flex-direction: column;
 			padding: 10px 10px 5px 10px;
-			background: #181818;
+			background: var(--theme-background-2);
 			.chat-button {
 				margin-top: 5px;
 				button {
@@ -202,10 +202,10 @@
 			.chat-input-box {
 				resize: none;
 				width: 100%;
-				background: #181818;
+				background: var(--theme-background-1);
 				color: white;
 				padding-right: 25px;
-				border: solid 1px #8c8c8c;
+				border: solid 1px var(--theme-background-3);
 				height: 44px;
 				&:focus {
 					outline: none;
@@ -224,7 +224,7 @@
 		.segment.chats {
 			position: relative;
 			flex: 1;
-			background: #181818;
+			background: var(--theme-background-2);
 			.ui.list.genchat-container {
 				position: absolute;
 				bottom: 0;
@@ -251,7 +251,6 @@
 						padding: 0;
 					}
 					a.genchat-user:hover {
-						//text-decoration: underline;
 						color: #608cb3 !important;
 					}
 
@@ -352,10 +351,9 @@
 .emotes-popup {
 	min-width: 240px !important;
 	max-width: 240px !important;
-	//padding: 10px !important;
-	background: #181818 !important;
+	background: var(--theme-background-2) !important;
 	&:before {
-		background: #181818 !important;
+		background: var(--theme-background-2) !important;
 	}
 }
 

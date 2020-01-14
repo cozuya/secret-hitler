@@ -338,7 +338,7 @@ class ProfileWrapper extends React.Component {
 		return (
 			<h1 className="not-found ui icon center aligned header">
 				<i className="settings icon" />
-				<div className="content">No profile - go play some games!</div>
+				<div className="content">No profile</div>
 			</h1>
 		);
 	}

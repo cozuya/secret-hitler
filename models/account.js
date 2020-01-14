@@ -138,7 +138,9 @@ const Account = new Schema({
 	warnings: Array, // {text: String, moderator: String, time: Date, acknowledged: Boolean},
 	primaryColor: String,
 	secondaryColor: String,
-	tertiaryColor: String
+	tertiaryColor: String,
+	backgroundColor: String,
+	textColor: String
 });
 
 Account.plugin(passportLocalMongoose);

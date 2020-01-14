@@ -2,7 +2,7 @@
 	margin-top: 0px;
 	border: 0;
 	border-radius: 0;
-	background-color: #222;
+	background-color: var(theme-background-2);
 	padding: 0px;
 
 	.chats {
@@ -10,12 +10,12 @@
 		flex-direction: column-reverse;
 		height: 336px;
 		position: relative;
-		background: #f9faff;
+		background: var(theme-text-1);
 		font-size: 18px;
 		cursor: not-allowed;
 		overflow-y: scroll;
 		flex-grow: 1;
-		background: #181818;
+		background: var(theme-background-1);
 
 		.ui.list {
 			padding-left: 5px;
@@ -36,7 +36,7 @@
 				}
 			}
 			.chat-user {
-				color: #adabab;
+				color: var(theme-text-3);
 				white-space: nowrap;
 			}
 			.chat-user--game .chat-timestamp {
@@ -45,7 +45,7 @@
 			.chat-user--game,
 			.game-chat,
 			.chat-user--game .chat-timestamp {
-				color: #6f6f6f;
+				color: var(theme-background-3);
 			}
 
 			.chat-user--claim,
@@ -71,13 +71,11 @@
 				color: $darkfascistteam;
 			}
 			.chat-player {
-				color: #eee;
+				color: var(theme-text-1);
 				font-weight: 700;
 			}
 			.chat-timestamp {
-				//margin-top: 3px;
-				//color: #848484;
-				color: #565656;
+				color: var(theme-background-3);
 				font-size: 12px;
 				white-space: nowrap;
 				font-family: arial;
@@ -123,7 +121,7 @@
 
 		.replay-controls {
 			padding: 20px 30px 10px 30px;
-			background-color: black;
+			background-color: var(theme-background-1);
 
 			h1 {
 				color: #c36563;
@@ -133,7 +131,7 @@
 
 			p {
 				font-family: $headerfont;
-				color: #eee;
+				color: var(theme-text-1);
 				font-size: 20px;
 			}
 
@@ -172,7 +170,7 @@
 					}
 
 					.title {
-						color: black;
+						color: var(theme-background-1);
 						font-size: 20px;
 						font-family: inherit;
 					}
@@ -238,7 +236,7 @@
 
 			.playback {
 				button.ui.button {
-					background-color: white;
+					background-color: var(theme-text-1);
 				}
 			}
 		}
@@ -257,7 +255,7 @@
 			> h1 {
 				height: 27px;
 				white-space: nowrap;
-				color: white;
+				color: var(theme-text-1);
 				font-size: 26px;
 				font-family: $headerfont;
 				margin-bottom: 10px;
@@ -274,7 +272,7 @@
 			height: 100%;
 			background-size: contain;
 			display: inline-block;
-			box-shadow: 0 0 4px 3px #969696;
+			box-shadow: 0 0 4px 3px var(theme-text-3);
 
 			&.fascist {
 				width: 16%;

@@ -1,7 +1,5 @@
-//@import 'semantic.scss';
 @import 'variables.scss';
 @import 'creategame.scss';
-//@import 'leftsidebar.scss';
 @import 'game.scss';
 @import 'players.scss';
 @import 'settings.scss';
@@ -18,7 +16,7 @@
 .thumb-vertical {
 	cursor: pointer;
 	border-radius: inherit;
-	background-color: grey !important;
+	background-color: var(--theme-background-3);
 }
 
 @media screen and (min-width: 1920px) {
@@ -140,7 +138,7 @@
 		padding: 0;
 		z-index: 1001;
 		position: absolute;
-		background: lightyellow;
+		background-color: var(--theme-background-3);
 		display: flex;
 		flex-direction: column;
 		&.player .notes-header {
@@ -167,14 +165,14 @@
 			margin: 0;
 			font-size: 20px;
 			padding: 5px 5px 5px 10px;
-			color: white;
+			color: var(--theme-text-1);
 			background: var(--theme-secondary);
 			font-family: $headerfont;
 			position: relative;
 			cursor: move;
 			i {
 				cursor: pointer;
-				color: white !important;
+				color: var(--theme-text-1) !important;
 				font-size: 24px;
 			}
 			p {
@@ -189,12 +187,12 @@
 				margin: 0;
 				font-size: 20px;
 				padding: 5px 10px 0 5px;
-				color: white;
+				color: var(--theme-text-1);
 				background: var(--theme-secondary);
 				font-family: $headerfont;
 			}
 			&-body {
-				background: #1b1b1b;
+				background-color: var(--theme-background-2);
 				border: 2px solid var(--theme-secondary);
 				text-align: center;
 				padding: 10px;
@@ -203,7 +201,7 @@
 				background: var(--theme-secondary);
 				border-radius: 5px;
 				border: none;
-				color: white;
+				color: var(--theme-text-1);
 				padding: 4px;
 				margin: 10px 0 10px 0;
 				&:hover {
@@ -212,10 +210,10 @@
 			}
 		}
 		textarea {
-			color: white;
+			color: var(--theme-text-1);
 			width: 100%;
 			flex-grow: 1;
-			background: #1b1b1b;
+			background-color: var(--theme-background-2);
 			border-color: 2px solid var(--theme-secondary);
 			resize: none;
 			&:focus {
@@ -236,10 +234,10 @@
 		a {
 			cursor: pointer;
 			font-weight: bold;
-			color: white;
+			color: var(--theme-text-1);
 		}
 		a:hover {
-			color: #eee;
+			color: var(--theme-text-2);
 		}
 		.center-menu-links {
 			min-width: 350px;
@@ -271,10 +269,10 @@
 		a {
 			cursor: pointer;
 			font-weight: bold;
-			color: white;
+			color: var(--theme-text-1);
 		}
 		a:hover {
-			color: #eee;
+			color: var(--theme-text-2);
 		}
 		.center-menu-links {
 		}
@@ -321,7 +319,6 @@
 		@media screen and (max-width: 1079px) {
 			overflow: auto;
 		}
-		//margin: auto;
 		overflow: hidden;
 	}
 	.body-container.game {
@@ -347,7 +344,7 @@
 			.create-game-button + span {
 				cursor: pointer;
 				&.enabled {
-					color: #bbb;
+					color: var(--theme-text-3);
 					i {
 						color: var(--theme-secondary);
 					}
@@ -413,7 +410,7 @@
 			top: 90px;
 			right: 90px;
 			text-decoration: underline;
-			color: #d18c78;
+			color: var(--theme-tertiary);
 		}
 	}
 
@@ -433,7 +430,6 @@
 		i {
 			width: 16px;
 			height: 16px;
-			vertical-align: text-bottom;
 			display: block;
 			margin: 0 auto 3px;
 		}
@@ -479,7 +475,7 @@
 	}
 	.game-row {
 		display: flex;
-		border: 1px solid #1b1b1b;
+		border: 1px solid var(--theme-background-2);
 		transition: border 0.3s;
 		cursor: pointer;
 		.victory-icon {
@@ -494,8 +490,8 @@
 		}
 		.game-progress {
 			width: 15%;
-			background-color: #313030;
-			border-right: 1px solid #1b1b1b;
+			background-color: var(--theme-background-3);
+			border-right: 1px solid var(--theme-background-2);
 			display: flex;
 			flex-direction: column;
 			padding-top: 3px;
@@ -534,14 +530,14 @@
 			}
 			.liberal-box {
 				box-shadow: 0px 0px 1px 2px #5b9cc4;
-				background-color: #1b1b1b;
+				background-color: var(--theme-background-2);
 			}
 			.liberal-box.filled {
 				background-color: #5b9cc4;
 			}
 			.fascist-box {
 				box-shadow: 0px 0px 1px 2px #c36563;
-				background-color: #1b1b1b;
+				background-color: var(--theme-background-2);
 			}
 			.fascist-box.filled {
 				background-color: #c36563;
@@ -564,7 +560,7 @@
 			margin-top: -5px;
 		}
 		i {
-			color: white !important;
+			color: var(--theme-text-1) !important;
 		}
 	}
 	.game-row:hover .hidden-join-message {
@@ -577,10 +573,10 @@
 	.game-main-top-row {
 		width: 100%;
 		display: flex;
-		background-color: #525151;
+		background-color: var(--theme-background-3);
 		font-size: 16px;
 		padding-top: 3px;
-		border-bottom: 1px solid #1b1b1b;
+		border-bottom: 1px solid var(--theme-background-2);
 	}
 	.gamename-column {
 		width: 70%;
@@ -612,7 +608,7 @@
 	.game-main-bottom-row {
 		display: flex;
 		padding: 8px 5px 8px 5px;
-		background-color: #302f2f;
+		background-color: var(--theme-background-3);
 	}
 	.player-icons-column {
 		width: 80%;
@@ -623,8 +619,8 @@
 	}
 	.player-small-cardback {
 		margin-right: 15px;
-		box-shadow: 0 0 5px 2px gray;
-		border: 1px solid #313030;
+		box-shadow: 0 0 5px 2px var(--theme-background-3);
+		border: 1px solid var(--theme-background-3);
 		border-radius: 3px;
 		height: 49px;
 		width: 36.63px; // size of cardbacks once resized
@@ -642,10 +638,10 @@
 		text-align: center;
 		vertical-align: middle;
 		line-height: 70px;
-		color: #313131;
+		color: var(--theme-background-2);
 	}
 	.empty-seat-icons.included-player-count {
-		color: #b0b3b1;
+		color: var(--theme-text-3);
 	}
 	.game-tournament-unstarted {
 		color: $tourny;
@@ -705,16 +701,16 @@
 	}
 	.generalchat .inputbar input,
 	#gameChatInput {
-		background: #181818;
-		border: 1px solid #8c8c8c !important;
-		color: white;
+		background: var(--theme-background-2);
+		border: 1px solid var(--theme-background-3) !important;
+		color: var(--theme-text-1);
 		&:focus {
 			outline: none;
 			border: 1px solid var(--theme-primary) !important;
 			box-shadow: 0 0 3px var(--theme-primary);
 		}
 		&::placeholder {
-			color: #8c8c8c;
+			color: var(--theme-background-3);
 		}
 	}
 	// careful this styles both generalchat and gamechat emote buttons
@@ -737,8 +733,7 @@
 	.chats .chat-user + span,
 	.creategame .pickroles .column > span,
 	.clearroles {
-		//color: #bfbfbf;
-		color: white;
+		color: var(--theme-text-1);
 	}
 	.ui.menu,
 	.ui.button {
@@ -746,44 +741,44 @@
 	}
 	.table-container .ui.fitted.toggle.checkbox.truncate-game label,
 	.table-container .ui.fitted.toggle.checkbox.showclaims label {
-		color: #bfbfbf !important;
+		color: var(--theme-text-3) !important;
 	}
 	.game > .ui.grid .chat-container .gamechat .chats .chat-player {
-		color: #ddd;
+		color: var(--theme-text-2);
 	}
 	.chat-player {
 		white-space: nowrap;
 	}
 	.game > .ui.grid .chat-container .gamechat .chats,
 	.game-chat {
-		background: #181818;
+		background: var(--theme-background-2);
 		flex-grow: 1;
 	}
 	.game > .ui.grid .chat-container .gamechat .inputbar .expando-container .hotkey-container {
-		background: #7c7c7c;
+		background: var(--theme-background-3);
 	}
 	.gamechat .ui.pointing.menu {
-		background: #272727;
+		background: var(--theme-background-3);
 		overflow: visible;
 		.item {
-			color: #bfbfbf;
+			color: var(--theme-text-3);
 		}
 	}
 	.selectdefaults .info-popup,
 	.timeofgame .ui.dropdown {
-		background-color: #fff !important;
+		background-color: var(--theme-text-1) !important;
 	}
 	.ui.toggle.checkbox ~ input .box:before,
 	.ui.toggle.checkbox input ~ label:before {
-		background: #444;
+		background: var(--theme-background-3);
 	}
 	.ui.toggle.checkbox input:checked ~ .box:before,
 	.ui.toggle.checkbox input:checked ~ label:before {
 		background: var(--theme-secondary) !important;
 	}
 	.ui.pointing.menu .item:after {
-		border-bottom: 1px solid #111;
-		border-right: 1px solid #111;
+		border-bottom: 1px solid var(--theme-background-2);
+		border-right: 1px solid var(--theme-background-2);
 	}
 	.remove.icon {
 		cursor: pointer;
@@ -826,10 +821,15 @@
 .ui.primary.button,
 .ui.primary.buttons .button {
 	background-color: var(--theme-secondary);
+	color: var(--theme-text-1);
+
+	&:hover {
+		color: var(--theme-text-3);
+	}
 }
 
 .ui.disabled.button {
-	background: #a3c4ec;
+	background: var(--theme-background-3);
 }
 
 .ui.button {
@@ -837,7 +837,7 @@
 }
 
 body {
-	background-color: #1b1b1b;
+	background-color: var(--theme-background-1);
 	min-height: 595px;
 	overflow: auto;
 	@media screen and (max-width: 950px) {
@@ -860,11 +860,11 @@ body {
 }
 
 div {
-	color: #fff;
+	color: var(--theme-text-1);
 }
 
 #game-container .nav-menu {
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	border-bottom: 1px solid var(--theme-background-3);
 	border-radius: 0;
 	border: 0;
 	box-shadow: none;
@@ -879,12 +879,12 @@ div {
 
 		font-family: 'germania one', germania, sans-serif;
 		font-size: 38px;
-		text-shadow: 1px 1px 2px black;
+		text-shadow: 1px 1px 2px var(--theme-background-3);
 		padding: 10px 0 0 0;
 		display: inline-block;
 		letter-spacing: 2px;
 		&.hover {
-			color: black;
+			color: var(--theme-background-2);
 		}
 	}
 	> p {
@@ -897,17 +897,13 @@ div {
 		}
 	}
 	div {
-		color: #fff;
+		color: var(--theme-text-1);
 	}
 	.item.right {
 		padding: 3px 10px;
 		margin-left: 0 !important;
-		a:hover {
-			//color: #000;
-			//text-decoration: underline;
-		}
 		.setting.icon.large {
-			color: white !important;
+			color: var(--theme-text-1) !important;
 			text-decoration: none;
 			&:hover {
 				animation: icon-loading 2s linear infinite;
@@ -915,12 +911,12 @@ div {
 		}
 	}
 	.loggedin {
-		color: #000;
+		color: var(--theme-background-1);
 		display: inline-block;
 		vertical-align: middle;
+
 		.playername {
 			font-weight: bold;
-			//color: white;
 			font-size: 16px;
 		}
 	}
@@ -932,7 +928,7 @@ div {
 	}
 	.ui.button:hover,
 	.ui.button:active {
-		color: #fff;
+		color: var(--theme-text-1);
 		background: var(--theme-tertiary);
 	}
 }
@@ -941,13 +937,13 @@ div {
 	height: 100%;
 
 	> .ui.grid {
-		border-top: 1px solid #ddd;
+		border-top: 1px solid var(--theme-background-3);
 	}
 }
 
 #general-info,
 #top-menu {
-	background: #eee;
+	background: var(--theme-background-3);
 }
 
 .signinnag {
@@ -1193,7 +1189,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .tou {
-	color: black;
+	color: var(--theme-background-1);
 	text-align: center;
 	font-weight: bold;
 	margin-top: 10px;
@@ -1219,7 +1215,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .ui.dropdown > .text {
-	color: black;
+	color: var(--theme-background-1);
 }
 
 [data-tooltip][data-inverted]:after {
@@ -1254,7 +1250,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 
 	.content {
 		* {
-			color: #444;
+			color: var(--theme-background-3);
 			font-size: 16px;
 		}
 
@@ -1269,9 +1265,9 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		justify-content: space-between;
 
 		.inverted {
-			color: #333;
-			box-shadow: 0 0 0 2px #333 inset !important;
-			background: #ddd;
+			color: var(--theme-background-2);
+			box-shadow: 0 0 0 2px var(--theme-text-1) inset !important;
+			background: var(--theme-text-2);
 		}
 	}
 }
@@ -1331,44 +1327,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	}
 }
 
-// ::-webkit-scrollbar {
-// 	width: 3px;
-// 	height: 3px;
-// }
-
-// ::-webkit-scrollbar-button {
-// 	width: 0px;
-// 	height: 0px;
-// }
-
-// ::-webkit-scrollbar-thumb {
-// 	background: #717171;
-// 	border: 0px none #ffffff;
-// 	border-radius: 0px;
-// }
-
-// ::-webkit-scrollbar-thumb:hover {
-// 	background: #191919;
-// }
-
-// ::-webkit-scrollbar-thumb:active {
-// 	background: #c4c4c4;
-// }
-
-// ::-webkit-scrollbar-track {
-// 	background: #bfbfbf;
-// 	border: 0px none #ffffff;
-// 	border-radius: 0px;
-// }
-
-// ::-webkit-scrollbar-track:hover {
-// 	background: #666666;
-// }
-
-// ::-webkit-scrollbar-track:active {
-// 	background: #a4a4a4;
-// }
-
-// ::-webkit-scrollbar-corner {
-// 	background: transparent;
-// }
+.ui.toggle.checkbox .box:after,
+.ui.toggle.checkbox label:after {
+	background: var(--theme-tertiary);
+}
