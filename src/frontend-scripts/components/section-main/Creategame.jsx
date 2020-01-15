@@ -1047,6 +1047,7 @@ export default class Creategame extends React.Component {
 							onChange={checked => {
 								this.setState({ isEloLimited: checked });
 							}}
+							className="create-game-switch"
 							checked={this.state.isEloLimited}
 							onColor="#627cc8"
 							offColor="#444444"
@@ -1360,6 +1361,7 @@ export default class Creategame extends React.Component {
 						<div className="five wide column">
 							<h4 className="ui header">Hitler sees fascists</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ customGameSettings: { ...this.state.customGameSettings, hitKnowsFas: checked } });
 								}}
@@ -1376,6 +1378,7 @@ export default class Creategame extends React.Component {
 						<div className="five wide column">
 							<h4 className="ui header">Fascists can shoot hitler</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ customGameSettings: { ...this.state.customGameSettings, fasCanShootHit: checked } });
 								}}
@@ -1601,6 +1604,7 @@ export default class Creategame extends React.Component {
 								</h4>
 								<i className="big yellow lock icon" />
 								<Switch
+									className="create-game-switch"
 									onChange={checked => {
 										this.setState({ privateShowing: checked });
 									}}
@@ -1636,6 +1640,7 @@ export default class Creategame extends React.Component {
 								</h4>
 								<i className="big green lock icon" />
 								<Switch
+									className="create-game-switch"
 									onChange={checked => {
 										this.setState({
 											unlistedGame: checked,
@@ -1682,6 +1687,7 @@ export default class Creategame extends React.Component {
 								COMING SOON: Resolve sudden death games with Flappy Hitler
 							</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ flappyMode: checked });
 								}}
@@ -1705,6 +1711,7 @@ export default class Creategame extends React.Component {
 									Forget the policies, just play a flappy-only game
 								</h4>
 								<Switch
+									className="create-game-switch"
 									onChange={checked => {
 										this.setState({ flappyOnlyMode: checked });
 									}}
@@ -1751,6 +1758,7 @@ export default class Creategame extends React.Component {
 								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
 							</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ timedMode: checked });
 								}}
@@ -1773,6 +1781,7 @@ export default class Creategame extends React.Component {
 									Verified - only verified players can play in this game.
 								</h4>
 								<Switch
+									className="create-game-switch"
 									onChange={checked => {
 										this.setState({ isVerifiedOnly: checked });
 									}}
@@ -1794,6 +1803,7 @@ export default class Creategame extends React.Component {
 							<i className="big unmute icon" />
 							<h4 className="ui header">Disable player chat - use this for voice-only games</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ disablechat: checked });
 								}}
@@ -1814,6 +1824,7 @@ export default class Creategame extends React.Component {
 								<span style={{ fontStyle: 'italic' }}>currently disabled due to multiple issues. </span>
 							</h4>
 							{/* <Switch
+              className="create-game-switch"
 								onChange={checked => {
 									this.setState({ disablegameChat: checked });
 								}}
@@ -1831,6 +1842,7 @@ export default class Creategame extends React.Component {
 							<i className="big fast forward icon" />
 							<h4 className="ui header">Speed mode - most animations and pauses greatly reduced and fewer gamechats</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ experiencedmode: checked });
 								}}
@@ -1859,6 +1871,7 @@ export default class Creategame extends React.Component {
 										<img src="../images/rainbow.png" />
 										<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
 										<Switch
+											className="create-game-switch"
 											onChange={checked => {
 												this.setState({
 													rainbowgame: checked,
@@ -1884,6 +1897,7 @@ export default class Creategame extends React.Component {
 							<i className="big hide icon" />
 							<h4 className="ui header">Blind mode - player's names are replaced with random animal names, anonymizing them.</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ blindMode: checked });
 								}}
@@ -1902,6 +1916,7 @@ export default class Creategame extends React.Component {
 								<i className="big talk icon" />
 								<h4 className="ui header">Disable observer chat</h4>
 								<Switch
+									className="create-game-switch"
 									onChange={checked => {
 										this.setState({ disableobserver: checked });
 									}}
@@ -1920,6 +1935,7 @@ export default class Creategame extends React.Component {
 							<i className="big handshake icon" />
 							<h4 className="ui header">Casual game - this game will not count towards your wins and losses</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									if (!checked) {
 										this.setState({
@@ -1945,6 +1961,7 @@ export default class Creategame extends React.Component {
 							<div className="four wide column privateonlygame">
 								<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
 								<Switch
+									className="create-game-switch"
 									onChange={checked => {
 										this.setState({ privateonlyGame: checked, isVerifiedOnly: false });
 									}}
@@ -1965,6 +1982,7 @@ export default class Creategame extends React.Component {
 							<i className="big setting icon" />
 							<h4 className="ui header">Custom Game - Use a custom fascist track.</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({
 										customGameSettings: Object.assign(this.state.customGameSettings, { enabled: checked }),

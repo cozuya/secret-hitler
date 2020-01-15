@@ -39,6 +39,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	@return lerp($low, $high, $elo);
 }
 
+.players-container {
+	border-top: 1px solid var(--theme-background-3);
+}
+
 .players-container .players {
 	background-color: var(--theme-background-1);
 	overflow: hidden;

@@ -283,13 +283,12 @@ class Settings extends React.Component {
 									const newColorHSL2 = {
 										h: hsl.h,
 										s: hsl.s,
-										l: hsl.l > 0.5 ? (hsl.l <= 0.95 ? hsl.l + 0.05 : 100) : hsl.l >= 0.05 ? hsl.l - 0.05 : 0
+										l: hsl.l > 0.5 ? (hsl.l <= 0.93 ? hsl.l + 0.07 : 100) : hsl.l >= 0.07 ? hsl.l - 0.07 : 0
 									};
-									console.log(JSON.parse(JSON.stringify(hsl)));
 									const newColorHSL3 = {
 										h: hsl.h,
 										s: hsl.s,
-										l: hsl.l > 0.5 ? (hsl.l <= 0.9 ? hsl.l + 0.1 : 100) : hsl.l >= 0.1 ? hsl.l - 0.1 : 0
+										l: hsl.l > 0.5 ? (hsl.l <= 0.86 ? hsl.l + 0.14 : 100) : hsl.l >= 0.14 ? hsl.l - 0.14 : 0
 									};
 
 									docStyle.setProperty(`--theme-${name}-1`, newColor);
@@ -373,11 +372,11 @@ class Settings extends React.Component {
 					docStyle.setProperty('--theme-secondary', 'hsl(225, 48%, 57%)');
 					docStyle.setProperty('--theme-tertiary', 'hsl(265, 73%, 57%)');
 					docStyle.setProperty('--theme-background-1', 'hsl(0, 0%, 0%)');
-					docStyle.setProperty('--theme-background-2', 'hsl(0, 0%, 5%)');
-					docStyle.setProperty('--theme-background-3', 'hsl(0, 0%, 10%)');
+					docStyle.setProperty('--theme-background-2', 'hsl(0, 0%, 7%)');
+					docStyle.setProperty('--theme-background-3', 'hsl(0, 0%, 14%)');
 					docStyle.setProperty('--theme-text-1', 'hsl(0, 0%, 100%)');
-					docStyle.setProperty('--theme-text-2', 'hsl(0, 0%, 95%)');
-					docStyle.setProperty('--theme-text-3', 'hsl(0, 0%, 90%)');
+					docStyle.setProperty('--theme-text-2', 'hsl(0, 0%, 93%)');
+					docStyle.setProperty('--theme-text-3', 'hsl(0, 0%, 86%)');
 				}
 			);
 		};
