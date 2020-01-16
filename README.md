@@ -2,7 +2,6 @@
 
 [![Build Status](https://api.travis-ci.com/cozuya/secret-hitler.svg?branch=master)](https://travis-ci.com/cozuya/secret-hitler/)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-orange.svg?style=flat)](https://github.com/cozuya/secret-hitler/issues)
-[![Known Vulnerabilities](https://snyk.io/test/github/cozuya/secret-hitler/badge.svg?targetFile=package.json)](https://snyk.io/test/github/cozuya/secret-hitler?targetFile=package.json)
 [![Dependencies](https://david-dm.org/cozuya/secret-hitler.svg)](https://david-dm.org/cozuya/secret-hitler)
 [![Dev Dependencies](https://david-dm.org/cozuya/secret-hitler/dev-status.svg)](https://david-dm.org/cozuya/secret-hitler?type=dev)
 [![Styled with Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
@@ -64,7 +63,7 @@ yarn create-accounts
 **Assigning a local mod:**
 
 In order to better test all functions of the site in a local development environment it is useful to assign an admin account.
-This is done for you through the `secret-hitler/scripts/assignLocalMod.js` file courtesy of contributor Hexicube. 
+This is done for you through the `secret-hitler/scripts/assignLocalMod.js` file courtesy of contributor Hexicube.
 After running the `create-accounts` script you will have the helper accounts populated into the database.
 Running the next line below will then assign `Uther` to the `admin` staffRole to better test all site functions in testing.
 
@@ -76,7 +75,7 @@ Upon seeing the end result in the terminal of `Assigned.` you will know it worke
 
 ## Running in production mode
 
-Don't.  Respect the maintainer and contributors who have given their time for free to make SH.io as good as it is.  Running this codebase outside of SH.io may have unintended consequences.
+Don't. Respect the maintainer and contributors who have given their time for free to make SH.io as good as it is. Running this codebase outside of SH.io may have unintended consequences.
 
 ## Statistics
 

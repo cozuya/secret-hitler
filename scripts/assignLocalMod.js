@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Account = require('../models/account');
-let successfulAdmins = [];
+const successfulAdmins = [];
+
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 

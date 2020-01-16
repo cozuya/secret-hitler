@@ -1,7 +1,5 @@
-//@import 'semantic.scss';
 @import 'variables.scss';
 @import 'creategame.scss';
-//@import 'leftsidebar.scss';
 @import 'game.scss';
 @import 'players.scss';
 @import 'settings.scss';
@@ -18,7 +16,7 @@
 .thumb-vertical {
 	cursor: pointer;
 	border-radius: inherit;
-	background-color: grey !important;
+	background-color: var(--theme-background-3);
 }
 
 @media screen and (min-width: 1920px) {
@@ -73,6 +71,14 @@
 #main {
 	.options-icons-container .plane.icon {
 		color: orange !important;
+
+		&.flappyonly {
+			color: red !important;
+		}
+	}
+
+	.lock.icon.green {
+		color: green !important;
 	}
 
 	height: 100%;
@@ -96,8 +102,7 @@
 		width: 16px;
 		height: 16px;
 		display: inline-block;
-		vertical-align: text-top;
-		margin: 1px;
+		margin: 2px 4px -4px 0;
 		cursor: initial;
 		&.gold {
 			background: url('/images/season_badges.png') -32px -0px;
@@ -133,15 +138,15 @@
 		padding: 0;
 		z-index: 1001;
 		position: absolute;
-		background: lightyellow;
+		background-color: var(--theme-background-3);
 		display: flex;
 		flex-direction: column;
 		&.player .notes-header {
-			background: $secondary;
+			background: var(--theme-secondary);
 		}
 		&.player textarea:focus {
-			border-color: $secondary;
-			box-shadow: 0 0 3px $secondary;
+			border-color: var(--theme-secondary);
+			box-shadow: 0 0 3px var(--theme-secondary);
 		}
 		.drag-boundry {
 			display: none;
@@ -160,14 +165,14 @@
 			margin: 0;
 			font-size: 20px;
 			padding: 5px 5px 5px 10px;
-			color: white;
-			background: $secondary;
+			color: var(--theme-text-1);
+			background: var(--theme-secondary);
 			font-family: $headerfont;
 			position: relative;
 			cursor: move;
 			i {
 				cursor: pointer;
-				color: white !important;
+				color: var(--theme-text-1) !important;
 				font-size: 24px;
 			}
 			p {
@@ -182,39 +187,39 @@
 				margin: 0;
 				font-size: 20px;
 				padding: 5px 10px 0 5px;
-				color: white;
-				background: $secondary;
+				color: var(--theme-text-1);
+				background: var(--theme-secondary);
 				font-family: $headerfont;
 			}
 			&-body {
-				background: #1b1b1b;
-				border: 2px solid $secondary;
+				background-color: var(--theme-background-2);
+				border: 2px solid var(--theme-secondary);
 				text-align: center;
 				padding: 10px;
 			}
 			&-button {
-				background: $secondary;
+				background: var(--theme-secondary);
 				border-radius: 5px;
 				border: none;
-				color: white;
+				color: var(--theme-text-1);
 				padding: 4px;
 				margin: 10px 0 10px 0;
 				&:hover {
-					background: $tertiary;
+					background: var(--theme-tertiary);
 				}
 			}
 		}
 		textarea {
-			color: white;
+			color: var(--theme-text-1);
 			width: 100%;
 			flex-grow: 1;
-			background: #1b1b1b;
-			border-color: 2px solid $secondary;
+			background-color: var(--theme-background-2);
+			border-color: 2px solid var(--theme-secondary);
 			resize: none;
 			&:focus {
 				outline: none;
-				border-color: $primary;
-				box-shadow: 0 0 3px $primary;
+				border-color: var(--theme-primary);
+				box-shadow: 0 0 3px var(--theme-primary);
 			}
 		}
 	}
@@ -224,15 +229,15 @@
 		flex-direction: column;
 	}
 	.menu-container {
-		background-color: $primary;
+		background-color: var(--theme-primary);
 		min-height: 42px;
 		a {
 			cursor: pointer;
 			font-weight: bold;
-			color: white;
+			color: var(--theme-text-1);
 		}
 		a:hover {
-			color: #eee;
+			color: var(--theme-text-2);
 		}
 		.center-menu-links {
 			min-width: 350px;
@@ -247,7 +252,7 @@
 			}
 		}
 		.button {
-			background: $secondary;
+			background: var(--theme-secondary);
 		}
 		.patch-alert {
 			animation: blinker 2s linear infinite;
@@ -260,19 +265,19 @@
 	}
 	.menu-container-mobile {
 		display: none;
-		background-color: $primary;
+		background-color: var(--theme-primary);
 		a {
 			cursor: pointer;
 			font-weight: bold;
-			color: white;
+			color: var(--theme-text-1);
 		}
 		a:hover {
-			color: #eee;
+			color: var(--theme-text-2);
 		}
 		.center-menu-links {
 		}
 		.button {
-			background: $secondary;
+			background: var(--theme-secondary);
 		}
 		.patch-alert {
 			animation: blinker 2s linear infinite;
@@ -314,7 +319,6 @@
 		@media screen and (max-width: 1079px) {
 			overflow: auto;
 		}
-		//margin: auto;
 		overflow: hidden;
 	}
 	.body-container.game {
@@ -340,9 +344,9 @@
 			.create-game-button + span {
 				cursor: pointer;
 				&.enabled {
-					color: #bbb;
+					color: var(--theme-text-3);
 					i {
-						color: $secondary;
+						color: var(--theme-secondary);
 					}
 				}
 
@@ -398,7 +402,7 @@
 			font-size: 16px;
 			line-height: 0.9;
 			font-family: 'roboto slab', 'germania one', sans-serif;
-			color: $secondary;
+			color: var(--theme-secondary);
 		}
 
 		.leaderboard {
@@ -406,7 +410,7 @@
 			top: 90px;
 			right: 90px;
 			text-decoration: underline;
-			color: #d18c78;
+			color: var(--theme-tertiary);
 		}
 	}
 
@@ -426,7 +430,6 @@
 		i {
 			width: 16px;
 			height: 16px;
-			vertical-align: text-bottom;
 			display: block;
 			margin: 0 auto 3px;
 		}
@@ -472,14 +475,15 @@
 	}
 	.game-row {
 		display: flex;
-		border: 1px solid #1b1b1b;
+		border: 1px solid var(--theme-background-2);
+		background-color: var(--theme-background-1);
 		transition: border 0.3s;
 		cursor: pointer;
 		.victory-icon {
 			margin: auto;
 		}
 		&:hover {
-			border: 1px solid $secondary;
+			border: 1px solid var(--theme-secondary);
 			.progress-text,
 			.victory-icon {
 				display: none;
@@ -487,8 +491,7 @@
 		}
 		.game-progress {
 			width: 15%;
-			background-color: #313030;
-			border-right: 1px solid #1b1b1b;
+			border-right: 1px solid var(--theme-background-1);
 			display: flex;
 			flex-direction: column;
 			padding-top: 3px;
@@ -505,7 +508,7 @@
 			margin: auto;
 		}
 		.progress-text.fascist {
-			color: $secondary;
+			color: var(--theme-secondary);
 			margin: auto;
 		}
 		.progress-text.private {
@@ -527,14 +530,14 @@
 			}
 			.liberal-box {
 				box-shadow: 0px 0px 1px 2px #5b9cc4;
-				background-color: #1b1b1b;
+				background-color: var(--theme-background-2);
 			}
 			.liberal-box.filled {
 				background-color: #5b9cc4;
 			}
 			.fascist-box {
 				box-shadow: 0px 0px 1px 2px #c36563;
-				background-color: #1b1b1b;
+				background-color: var(--theme-background-2);
 			}
 			.fascist-box.filled {
 				background-color: #c36563;
@@ -557,7 +560,7 @@
 			margin-top: -5px;
 		}
 		i {
-			color: white !important;
+			color: var(--theme-text-1) !important;
 		}
 	}
 	.game-row:hover .hidden-join-message {
@@ -570,10 +573,10 @@
 	.game-main-top-row {
 		width: 100%;
 		display: flex;
-		background-color: #525151;
+		background-color: var(--theme-background-2);
 		font-size: 16px;
 		padding-top: 3px;
-		border-bottom: 1px solid #1b1b1b;
+		border-bottom: 1px solid var(--theme-background-1);
 	}
 	.gamename-column {
 		width: 70%;
@@ -605,7 +608,7 @@
 	.game-main-bottom-row {
 		display: flex;
 		padding: 8px 5px 8px 5px;
-		background-color: #302f2f;
+		background-color: var(--theme-background-3);
 	}
 	.player-icons-column {
 		width: 80%;
@@ -616,8 +619,8 @@
 	}
 	.player-small-cardback {
 		margin-right: 15px;
-		box-shadow: 0 0 5px 2px gray;
-		border: 1px solid #313030;
+		box-shadow: 0 0 5px 2px var(--theme-background-3);
+		border: 1px solid var(--theme-background-3);
 		border-radius: 3px;
 		height: 49px;
 		width: 36.63px; // size of cardbacks once resized
@@ -635,10 +638,10 @@
 		text-align: center;
 		vertical-align: middle;
 		line-height: 70px;
-		color: #313131;
+		color: var(--theme-background-2);
 	}
 	.empty-seat-icons.included-player-count {
-		color: #b0b3b1;
+		color: var(--theme-text-3);
 	}
 	.game-tournament-unstarted {
 		color: $tourny;
@@ -698,16 +701,16 @@
 	}
 	.generalchat .inputbar input,
 	#gameChatInput {
-		background: #181818;
-		border: 1px solid #8c8c8c !important;
-		color: white;
+		background: var(--theme-background-1);
+		border: 1px solid var(--theme-background-3) !important;
+		color: var(--theme-text-1);
 		&:focus {
 			outline: none;
-			border: 1px solid $primary !important;
-			box-shadow: 0 0 3px $primary;
+			border: 1px solid var(--theme-primary) !important;
+			box-shadow: 0 0 3px var(--theme-primary);
 		}
 		&::placeholder {
-			color: #8c8c8c;
+			color: var(--theme-background-3);
 		}
 	}
 	// careful this styles both generalchat and gamechat emote buttons
@@ -730,8 +733,7 @@
 	.chats .chat-user + span,
 	.creategame .pickroles .column > span,
 	.clearroles {
-		//color: #bfbfbf;
-		color: white;
+		color: var(--theme-text-1);
 	}
 	.ui.menu,
 	.ui.button {
@@ -739,44 +741,48 @@
 	}
 	.table-container .ui.fitted.toggle.checkbox.truncate-game label,
 	.table-container .ui.fitted.toggle.checkbox.showclaims label {
-		color: #bfbfbf !important;
+		color: var(--theme-text-3) !important;
 	}
 	.game > .ui.grid .chat-container .gamechat .chats .chat-player {
-		color: #ddd;
+		color: var(--theme-text-2);
 	}
 	.chat-player {
 		white-space: nowrap;
 	}
 	.game > .ui.grid .chat-container .gamechat .chats,
 	.game-chat {
-		background: #181818;
+		background: var(--theme-background-2);
 		flex-grow: 1;
 	}
 	.game > .ui.grid .chat-container .gamechat .inputbar .expando-container .hotkey-container {
-		background: #7c7c7c;
+		background: var(--theme-background-3);
 	}
 	.gamechat .ui.pointing.menu {
-		background: #272727;
+		background: var(--theme-background-3);
 		overflow: visible;
+
+		:before {
+			background: inherit;
+		}
 		.item {
-			color: #bfbfbf;
+			color: var(--theme-text-3);
 		}
 	}
 	.selectdefaults .info-popup,
 	.timeofgame .ui.dropdown {
-		background-color: #fff !important;
+		background-color: var(--theme-text-1) !important;
 	}
 	.ui.toggle.checkbox ~ input .box:before,
 	.ui.toggle.checkbox input ~ label:before {
-		background: #444;
+		background: var(--theme-background-3);
 	}
 	.ui.toggle.checkbox input:checked ~ .box:before,
 	.ui.toggle.checkbox input:checked ~ label:before {
-		background: $secondary !important;
+		background: var(--theme-secondary) !important;
 	}
 	.ui.pointing.menu .item:after {
-		border-bottom: 1px solid #111;
-		border-right: 1px solid #111;
+		border-bottom: 1px solid var(--theme-background-2);
+		border-right: 1px solid var(--theme-background-2);
 	}
 	.remove.icon {
 		cursor: pointer;
@@ -789,10 +795,10 @@
 	}
 
 	i.icon {
-		color: $secondary;
+		color: var(--theme-secondary);
 
 		&:hover {
-			color: $tertiary;
+			color: var(--theme-tertiary);
 		}
 	}
 }
@@ -804,7 +810,7 @@
 }
 
 .ui.header {
-	color: $primary;
+	color: var(--theme-primary);
 }
 
 .ui.primary.buttons .button:hover,
@@ -813,24 +819,29 @@
 .ui.primary.button:focus,
 .ui.primary.buttons .button:active,
 .ui.primary.button:active {
-	background-color: $tertiary;
+	background-color: var(--theme-tertiary);
 }
 
 .ui.primary.button,
 .ui.primary.buttons .button {
-	background-color: $secondary;
+	background-color: var(--theme-secondary);
+	color: var(--theme-text-1);
+
+	&:hover {
+		color: var(--theme-text-3);
+	}
 }
 
 .ui.disabled.button {
-	background: #a3c4ec;
+	background: var(--theme-background-3);
 }
 
 .ui.button {
-	background: $secondary;
+	background: var(--theme-secondary);
 }
 
 body {
-	background-color: #1b1b1b;
+	background-color: var(--theme-background-1);
 	min-height: 595px;
 	overflow: auto;
 	@media screen and (max-width: 950px) {
@@ -853,16 +864,16 @@ body {
 }
 
 div {
-	color: #fff;
+	color: var(--theme-text-1);
 }
 
 #game-container .nav-menu {
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	border-bottom: 1px solid var(--theme-background-3);
 	border-radius: 0;
 	border: 0;
 	box-shadow: none;
 	overflow: hidden;
-	background-color: $primary;
+	background-color: var(--theme-primary);
 	margin: auto;
 	width: 95%;
 	max-width: 1920px;
@@ -872,12 +883,12 @@ div {
 
 		font-family: 'germania one', germania, sans-serif;
 		font-size: 38px;
-		text-shadow: 1px 1px 2px black;
+		text-shadow: 1px 1px 2px var(--theme-background-3);
 		padding: 10px 0 0 0;
 		display: inline-block;
 		letter-spacing: 2px;
 		&.hover {
-			color: black;
+			color: var(--theme-background-2);
 		}
 	}
 	> p {
@@ -886,21 +897,17 @@ div {
 		font-size: 42px;
 		font-family: $headerfont;
 		a {
-			color: $secondary;
+			color: var(--theme-secondary);
 		}
 	}
 	div {
-		color: #fff;
+		color: var(--theme-text-1);
 	}
 	.item.right {
 		padding: 3px 10px;
 		margin-left: 0 !important;
-		a:hover {
-			//color: #000;
-			//text-decoration: underline;
-		}
 		.setting.icon.large {
-			color: white !important;
+			color: var(--theme-text-1) !important;
 			text-decoration: none;
 			&:hover {
 				animation: icon-loading 2s linear infinite;
@@ -908,12 +915,12 @@ div {
 		}
 	}
 	.loggedin {
-		color: #000;
+		color: var(--theme-background-1);
 		display: inline-block;
 		vertical-align: middle;
+
 		.playername {
 			font-weight: bold;
-			//color: white;
 			font-size: 16px;
 		}
 	}
@@ -925,8 +932,8 @@ div {
 	}
 	.ui.button:hover,
 	.ui.button:active {
-		color: #fff;
-		background: $tertiary;
+		color: var(--theme-text-1);
+		background: var(--theme-tertiary);
 	}
 }
 
@@ -934,13 +941,13 @@ div {
 	height: 100%;
 
 	> .ui.grid {
-		border-top: 1px solid #ddd;
+		border-top: 1px solid var(--theme-background-3);
 	}
 }
 
 #general-info,
 #top-menu {
-	background: #eee;
+	background: var(--theme-background-3);
 }
 
 .signinnag {
@@ -1029,6 +1036,13 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	box-shadow: 0 0 5px 2px #007fff !important;
 }
 
+.veteran {
+	color: #4d949e !important;
+}
+.player-small-cardback.veteran {
+	box-shadow: 0 0 5px 2px #4d949e !important;
+}
+
 .editorcolor {
 	color: #05bba0 !important;
 }
@@ -1051,10 +1065,10 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .jdudle3 {
-	color: #fbbc13 !important;
+	color: #997fff !important;
 }
 .player-small-cardback.jdudle3 {
-	box-shadow: 0 0 5px 2px #fbbc13 !important;
+	box-shadow: 0 0 5px 2px #997fff !important;
 }
 
 .max {
@@ -1064,18 +1078,11 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	box-shadow: 0 0 5px 2px #b7ae0b !important;
 }
 
-.dfinn {
-	color: #00ffd8 !important;
+.moira {
+	color: #ff95fb !important;
 }
-.player-small-cardback.dfinn {
-	box-shadow: 0 0 5px 2px #00ffd8 !important;
-}
-
-.invidia {
-	color: #ec7d04 !important;
-}
-.player-small-cardback.invidia {
-	box-shadow: 0 0 5px 2px #ec7d04 !important;
+.player-small-cardback.moira {
+	box-shadow: 0 0 5px 2px #ff95fb !important;
 }
 
 .thejuststopo {
@@ -1083,13 +1090,6 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 .player-small-cardback.thejuststopo {
 	box-shadow: 0 0 5px 2px #dc143c !important;
-}
-
-.faaiz {
-	color: #c7c1ff !important;
-}
-.player-small-cardback.faaiz {
-	box-shadow: 0 0 5px 2px #c7c1ff !important;
 }
 
 #confetti {
@@ -1193,7 +1193,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .tou {
-	color: black;
+	color: var(--theme-background-1);
 	text-align: center;
 	font-weight: bold;
 	margin-top: 10px;
@@ -1219,7 +1219,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 }
 
 .ui.dropdown > .text {
-	color: black;
+	color: var(--theme-background-1);
 }
 
 [data-tooltip][data-inverted]:after {
@@ -1248,13 +1248,13 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 #newplayer-modal {
 	.header {
 		font-size: 24px !important;
-		color: $primary !important;
+		color: var(--theme-primary) !important;
 		font-style: italic;
 	}
 
 	.content {
 		* {
-			color: #444;
+			color: var(--theme-background-3);
 			font-size: 16px;
 		}
 
@@ -1269,9 +1269,9 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		justify-content: space-between;
 
 		.inverted {
-			color: #333;
-			box-shadow: 0 0 0 2px #333 inset !important;
-			background: #ddd;
+			color: var(--theme-background-2);
+			box-shadow: 0 0 0 2px var(--theme-text-1) inset !important;
+			background: var(--theme-text-2);
 		}
 	}
 }
@@ -1331,44 +1331,11 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	}
 }
 
-// ::-webkit-scrollbar {
-// 	width: 3px;
-// 	height: 3px;
-// }
+.ui.toggle.checkbox .box:after,
+.ui.toggle.checkbox label:after {
+	background: var(--theme-tertiary);
+}
 
-// ::-webkit-scrollbar-button {
-// 	width: 0px;
-// 	height: 0px;
-// }
-
-// ::-webkit-scrollbar-thumb {
-// 	background: #717171;
-// 	border: 0px none #ffffff;
-// 	border-radius: 0px;
-// }
-
-// ::-webkit-scrollbar-thumb:hover {
-// 	background: #191919;
-// }
-
-// ::-webkit-scrollbar-thumb:active {
-// 	background: #c4c4c4;
-// }
-
-// ::-webkit-scrollbar-track {
-// 	background: #bfbfbf;
-// 	border: 0px none #ffffff;
-// 	border-radius: 0px;
-// }
-
-// ::-webkit-scrollbar-track:hover {
-// 	background: #666666;
-// }
-
-// ::-webkit-scrollbar-track:active {
-// 	background: #a4a4a4;
-// }
-
-// ::-webkit-scrollbar-corner {
-// 	background: transparent;
-// }
+::placeholder {
+	color: var(--theme-text-3);
+}

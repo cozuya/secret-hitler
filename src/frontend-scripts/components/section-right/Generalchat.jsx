@@ -232,17 +232,47 @@ export default class Generalchat extends React.Component {
 								chat.previousSeasonAward &&
 								this.renderPreviousSeasonAward(chat.previousSeasonAward)}
 							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) && chat.specialTournamentStatus && (
-								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
 							)}
-							<span className={chat.isBroadcast ? 'chat-user broadcast' : userClasses}>
-								{chat.staffRole === 'moderator' && <span className="moderator-name">(M) </span>}
-								{chat.staffRole === 'editor' && <span className="editor-name">(E) </span>}
-								{chat.staffRole === 'admin' && <span className="admin-name">(A) </span>}
+							<span
+								className={
+									chat.isBroadcast
+										? 'chat-user broadcast'
+										: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && !userInfo.staffRole
+										? 'chat-user moderatorcolor'
+										: userClasses
+								}
+							>
+								{chat.staffRole === 'moderator' &&
+									!(chat.userName === 'Incognito' && userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran') && (
+										<span className="moderatorcolor">(M) 🌀</span>
+									)}
+								{chat.staffRole === 'editor' && <span className="editor-name">(E) 🔰</span>}
+								{chat.staffRole === 'admin' && <span className="admin-name">(A) 📛</span>}
+								{chat.staffRole === 'moderator' &&
+									chat.userName === 'Incognito' &&
+									userInfo.staffRole &&
+									userInfo.staffRole !== 'altmod' &&
+									userInfo.staffRole !== 'veteran' && (
+										<span data-tooltip="Incognito" data-inverted>
+											<span className="admin-name">(I) 🚫</span>
+										</span>
+									)}
 								<a
 									href={chat.isBroadcast ? '#/profile/' + chat.userName.split(' ').pop() : `#/profile/${chat.userName}`}
-									className={'genchat-user ' + userClasses}
+									className={
+										chat.staffRole === 'moderator' && chat.userName === 'Incognito' && !userInfo.staffRole ? 'genchat-user moderatorcolor' : userClasses
+									}
 								>
-									{`${chat.userName}: `}
+									{`${
+										chat.staffRole === 'moderator' &&
+										chat.userName === 'Incognito' &&
+										userInfo.staffRole &&
+										userInfo.staffRole !== 'altmod' &&
+										userInfo.staffRole !== 'veteran'
+											? chat.hiddenUsername
+											: chat.userName
+									}: `}
 								</a>
 							</span>
 							<span className={chat.isBroadcast ? 'broadcast-chat' : /^>/i.test(chat.chat) ? 'greentext' : ''}>

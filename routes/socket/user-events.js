@@ -34,7 +34,6 @@ const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants');
 const { makeReport } = require('./report.js');
-const { expandAndSimplify } = require('./ip-obf');
 
 /**
  * @param {object} game - game to act on.
@@ -191,6 +190,7 @@ const checkStartConditions = game => {
 			!game.general.excludedPlayerCount.includes(game.publicPlayersState.length)) ||
 		(game.general.isTourny && game.general.tournyInfo.queuedPlayers.length === game.general.maxPlayersCount)
 	) {
+		game.remakeData = game.publicPlayersState.map(player => ({ userName: player.userName, isRemaking: false, remakeTime: 0 }));
 		startCountdown(game);
 	} else if (!game.gameState.isStarted) {
 		game.general.status = displayWaitingForPlayers(game);
@@ -209,7 +209,10 @@ const playerLeavePretourny = (game, playerName) => {
 		return;
 	}
 
-	queuedPlayers.splice(queuedPlayers.findIndex(player => player.userName === playerName), 1);
+	queuedPlayers.splice(
+		queuedPlayers.findIndex(player => player.userName === playerName),
+		1
+	);
 
 	game.chats.push({
 		timestamp: new Date(),
@@ -264,6 +267,32 @@ const handleSocketDisconnect = socket => {
 				} else if (gameState.isTracksFlipped) {
 					publicPlayersState[playerIndex].connected = false;
 					publicPlayersState[playerIndex].leftGame = true;
+					const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
+					if (playerRemakeData && playerRemakeData.isRemaking) {
+						const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
+						const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
+
+						if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+							game.general.isRemaking = false;
+							game.general.status = 'Game remaking has been cancelled.';
+							clearInterval(game.private.remakeTimer);
+						}
+						const chat = {
+							timestamp: new Date(),
+							gameChat: true,
+							chat: [
+								{
+									text: 'A player'
+								}
+							]
+						};
+						chat.chat.push({
+							text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
+								1}/${minimumRemakeVoteCount})`
+						});
+						game.chats.push(chat);
+						game.remakeData.find(player => player.userName === passport.user).isRemaking = false;
+					}
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 						delete games[game.general.uid];
@@ -324,12 +353,13 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (playerIndex > -1) {
-		if (game.publicPlayersState[playerIndex].isRemakeVoting) {
+		const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
+		if (playerRemakeData && playerRemakeData.isRemaking) {
 			// Count leaving the game as rescinded remake vote.
 			const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
-			const remakePlayerCount = game.publicPlayersState.filter(player => player.isRemakeVoting).length;
+			const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
 
-			if (game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+			if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
 				game.general.isRemaking = false;
 				game.general.status = 'Game remaking has been cancelled.';
 				clearInterval(game.private.remakeTimer);
@@ -348,8 +378,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 					1}/${minimumRemakeVoteCount})`
 			});
 			game.chats.push(chat);
-			game.publicPlayersState[playerIndex].isRemakeVoting = false;
-			game.publicPlayersState[playerIndex].isRemaking = false;
+			game.remakeData.find(player => player.userName === passport.user).isRemaking = false;
 		}
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
@@ -358,7 +387,10 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			delete games[game.general.uid];
 		}
 		if (!game.gameState.isTracksFlipped) {
-			game.publicPlayersState.splice(game.publicPlayersState.findIndex(player => player.userName === passport.user), 1);
+			game.publicPlayersState.splice(
+				game.publicPlayersState.findIndex(player => player.userName === passport.user),
+				1
+			);
 			checkStartConditions(game);
 			io.sockets.in(game.general.uid).emit('gameUpdate', game);
 		}
@@ -421,6 +453,26 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
 		}
 	});
 };
+
+/**
+ * @param {object} socket - user socket reference.
+ * @param {object} passport - socket authentication.
+ * @param {object} data - from socket emit.
+ */
+module.exports.handleUpdatedTheme = (socket, passport, data) => {
+	Account.findOne({ username: passport.user }).then(account => {
+		if (!account) {
+			return;
+		}
+
+		for (const property in data) {
+			account[property] = data[property];
+		}
+
+		account.save();
+	});
+};
+
 /**
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
@@ -553,7 +605,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		return;
 	}
 
-	let excludes = [];
+	const excludes = [];
 	for (a = playerCounts[0]; a <= playerCounts[playerCounts.length - 1]; a++) {
 		if (!playerCounts.includes(a)) excludes.push(a);
 	}
@@ -642,18 +694,20 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			disableChat: data.disableChat,
 			isVerifiedOnly: data.isVerifiedOnly,
 			disableObserver: data.disableObserver && !data.isTourny,
-			// isTourny: data.isTourny, // temp
 			isTourny: false,
+			lastModPing: 0,
 			disableGamechat: data.disableGamechat,
 			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
+			flappyOnlyMode: data.flappyMode && data.flappyOnlyMode,
 			casualGame: typeof data.timedMode === 'number' && data.timedMode < 30 && !data.casualGame ? true : data.casualGame,
 			rebalance6p: data.rebalance6p,
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
-			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : data.privatePassword,
+			unlisted: data.unlistedGame && !data.privatePassword,
+			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
 			privateOnly: user.isPrivate,
 			electionCount: 0,
 			isRemade: false,
@@ -791,6 +845,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			reports: {},
 			unSeatedGameChats: [],
 			lock: {},
+			votesPeeked: false,
+			invIndex: -1,
 			hiddenInfoChat: [],
 			hiddenInfoSubscriptions: [],
 			hiddenInfoShouldNotify: true
@@ -1290,18 +1346,43 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 						return text;
 				}
 			case 'didInvestigateLoyalty':
-				text = [
-					{
-						text: 'President '
-					},
-					{
-						text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
-						type: 'player'
-					},
-					{
-						text: 'claims to see a party membership of the '
-					}
-				];
+				const { invIndex } = game.private;
+				if (invIndex != -1 && invIndex < game.private.seatedPlayers.length) {
+					text = [
+						{
+							text: 'President '
+						},
+						{
+							text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
+							type: 'player'
+						},
+						{
+							text: 'sees the party membership of '
+						},
+						{
+							text: blindMode
+								? `${replacementNames[invIndex]} {${invIndex + 1}} `
+								: `${game.private.seatedPlayers[invIndex] && game.private.seatedPlayers[invIndex].userName} {${invIndex + 1}} `,
+							type: 'player'
+						},
+						{
+							text: 'and claims to see a member of the '
+						}
+					];
+				} else {
+					text = [
+						{
+							text: 'President '
+						},
+						{
+							text: blindMode ? `${replacementNames[playerIndex]} {${playerIndex + 1}} ` : `${passport.user} {${playerIndex + 1}} `,
+							type: 'player'
+						},
+						{
+							text: ' claims to see a member of the '
+						}
+					];
+				}
 
 				game.private.summary = game.private.summary.updateLog(
 					{
@@ -1381,9 +1462,9 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 	}
 
 	const remakeText = game.general.isTourny ? 'cancel' : 'remake';
-	const { publicPlayersState } = game;
-	const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
-	const player = publicPlayersState[playerIndex];
+	const { remakeData, publicPlayersState } = game;
+	const playerIndex = remakeData.findIndex(player => player.userName === passport.user);
+	const player = remakeData[playerIndex];
 	let chat;
 	const minimumRemakeVoteCount =
 		(game.customGameSettings.fascistCount && game.general.playerCount - game.customGameSettings.fascistCount) || Math.floor(game.general.playerCount / 2) + 2;
@@ -1430,12 +1511,11 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		}
 
 		const newGame = _.cloneDeep(game);
-		const remakePlayerNames = publicPlayersState.filter(player => player.isRemaking).map(player => player.userName);
+		const remakePlayerNames = remakeData.filter(player => player.isRemaking).map(player => player.userName);
 		const remakePlayerSocketIDs = Object.keys(io.sockets.sockets).filter(
 			socketId =>
 				io.sockets.sockets[socketId].handshake.session.passport && remakePlayerNames.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 		);
-
 		sendInProgressGameUpdate(game);
 
 		newGame.gameState = {
@@ -1500,18 +1580,27 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		}
 		newGame.general.isRemade = false;
 		newGame.general.isRemaking = false;
+		newGame.general.isRecorded = false;
 		newGame.summarySaved = false;
 		newGame.general.uid = `${game.general.uid}Remake`;
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = Date.now();
+		newGame.general.lastModPing = 0;
 		newGame.publicPlayersState = game.publicPlayersState
-			.filter(player => player.isRemaking)
+			.filter(player =>
+				game.remakeData
+					.filter(rmkPlayer => rmkPlayer.isRemaking)
+					.map(rmkPlayer => rmkPlayer.userName)
+					.some(rmkPlayer => rmkPlayer === player.userName)
+			)
 			.map(player => ({
 				userName: player.userName,
 				customCardback: player.customCardback,
 				customCardbackUid: player.customCardbackUid,
+				previousSeasonAward: player.previousSeasonAward,
 				connected: player.connected,
 				isRemakeVoting: false,
+				pingTime: undefined,
 				cardStatus: {
 					cardDisplayed: false,
 					isFlipped: false,
@@ -1519,6 +1608,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 					cardBack: {}
 				}
 			}));
+		newGame.remakeData = [];
 		newGame.playersState = [];
 		newGame.cardFlingerState = [];
 		newGame.trackState = {
@@ -1531,7 +1621,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			reports: {},
 			unSeatedGameChats: [],
 			lock: {},
-			privatePassword: game.private.privatePassword
+			votesPeeked: false,
+			invIndex: -1,
+			privatePassword: game.private.privatePassword,
+			hiddenInfoChat: [],
+			hiddenInfoSubscriptions: [],
+			hiddenInfoShouldNotify: true
 		};
 
 		game.publicPlayersState.forEach((player, i) => {
@@ -1572,7 +1667,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				if (io.sockets.sockets[id]) {
 					io.sockets.sockets[id].leave(game.general.uid);
 					sendGameInfo(io.sockets.sockets[id], newGame.general.uid);
-					if (io.sockets.sockets[id].handshake && io.sockets.sockets[id].handshake.session && io.sockets.sockets[id].handshake.session.passport) {
+					if (
+						io.sockets.sockets[id] &&
+						io.sockets.sockets[id].handshake &&
+						io.sockets.sockets[id].handshake.session &&
+						io.sockets.sockets[id].handshake.session.passport
+					) {
 						updateSeatedUser(io.sockets.sockets[id], io.sockets.sockets[id].handshake.session.passport, { uid: newGame.general.uid });
 						// handleUserLeaveGame(io.sockets.sockets[id], passport, game, {isSeated: true, isRemake: true});
 						if (io.sockets.sockets[id].handshake.session.passport.user === newGame.general.gameCreatorName) creatorRemade = true;
@@ -1614,19 +1714,18 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		}
 	};
 
-	if (!game || !player || !game.publicPlayersState) {
+	if (!game || !player || !game.remakeData) {
 		return;
 	}
 
-	player.isRemakeVoting = data.remakeStatus;
+	if (data.remakeStatus && Date.now() > player.remakeTime + 7000) {
+		player.isRemaking = true;
+		player.remakeTime = Date.now();
 
-	if (data.remakeStatus) {
-		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
-
+		const remakePlayerCount = remakeData.filter(player => player.isRemaking).length;
 		chat.chat.push({
 			text: ` has voted to ${remakeText} this ${game.general.isTourny ? 'tournament.' : 'game.'} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
-		player.isRemaking = true;
 
 		if (!game.general.isRemaking && publicPlayersState.length > 3 && remakePlayerCount >= minimumRemakeVoteCount) {
 			game.general.isRemaking = true;
@@ -1651,10 +1750,11 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				sendInProgressGameUpdate(game);
 			}, 1000);
 		}
-	} else {
-		const remakePlayerCount = publicPlayersState.filter(player => player.isRemakeVoting).length;
-
+	} else if (!data.remakeStatus && Date.now() > player.remakeTime + 2000) {
 		player.isRemaking = false;
+		player.remakeTime = Date.now();
+
+		const remakePlayerCount = remakeData.filter(player => player.isRemaking).length;
 
 		if (game.general.isRemaking && remakePlayerCount < minimumRemakeVoteCount) {
 			game.general.isRemaking = false;
@@ -1666,8 +1766,10 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 				game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'
 			} (${remakePlayerCount}/${minimumRemakeVoteCount})`
 		});
+	} else {
+		return;
 	}
-	socket.emit('updateRemakeStatus', player.isRemakeVoting);
+	socket.emit('updateRemakeVoting', player.isRemaking);
 	game.chats.push(chat);
 	sendInProgressGameUpdate(game);
 };
@@ -1819,9 +1921,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 	if (
 		player &&
-		((gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') &&
-			(publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isPresident' ||
-				publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isChancellor'))
+		(gameState.phase === 'presidentSelectingPolicy' || gameState.phase === 'chancellorSelectingPolicy') &&
+		(publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isPresident' ||
+			publicPlayersState.find(play => play.userName === player.userName).governmentStatus === 'isChancellor')
 	) {
 		return;
 	}
@@ -1831,14 +1933,14 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		const aemRigdeck = /^\/forcerigdeck (.*)$/i.exec(chat);
 		if (aemRigdeck) {
 			if (game && game.private) {
-				let deck = aemRigdeck[0].split(' ')[1];
+				const deck = aemRigdeck[0].split(' ')[1];
 				if (/^([RB]{1,27})$/i.exec(deck)) {
 					if (deck.length > 27 || deck.length === 0) {
 						socket.emit('sendAlert', 'This deck is too big (or too small).');
 						return;
 					}
 
-					let changedChat = [
+					const changedChat = [
 						{
 							text: 'An AEM member has changed the deck to '
 						}
@@ -1880,6 +1982,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		if (aemForce) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a vote whilst playing.');
+				return;
+			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
 				return;
 			}
 			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
@@ -1935,6 +2041,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
 				return;
 			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
+				return;
+			}
 			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
 			if (game && game.private && game.private.seatedPlayers) {
 				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
@@ -1947,7 +2057,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					return;
 				}
 				let chancellor = -1;
-				let currentPlayers = [];
+				const currentPlayers = [];
 				for (let i = 0; i < game.private.seatedPlayers.length; i++) {
 					currentPlayers[i] = !(
 						game.private.seatedPlayers[i].isDead ||
@@ -1985,7 +2095,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				});
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor }, true);
 				setTimeout(() => {
-					for (let p of game.private.seatedPlayers.filter(player => !player.isDead)) {
+					for (const p of game.private.seatedPlayers.filter(player => !player.isDead)) {
 						selectVoting({ user: p.userName }, game, { vote: false }, null, true);
 					}
 				}, 1000);
@@ -2001,6 +2111,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		if (aemPick) {
 			if (player) {
 				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
+				return;
+			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
 				return;
 			}
 			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
@@ -2068,6 +2182,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				socket.emit('sendAlert', 'You cannot force a ping whilst playing.');
 				return;
 			}
+			if (game.general.isRemade) {
+				socket.emit('sendAlert', 'This game has been remade.');
+				return;
+			}
 			const affectedPlayerNumber = parseInt(aemPing[1]) - 1;
 			if (game && game.private && game.private.seatedPlayers) {
 				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
@@ -2115,6 +2233,30 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			}
 			return;
 		}
+	}
+
+	const pingMods = /^@(mod|moderator|editor|aem|mods) (.*)$/i.exec(chat);
+
+	if (pingMods && player) {
+		if (!game.lastModPing || Date.now() > game.lastModPing + 180000) {
+			game.lastModPing = Date.now();
+			sendInProgressGameUpdate(game, false);
+			makeReport(
+				{
+					player: passport.user,
+					situation: `"${pingMods[2]}".`,
+					election: game.general.electionCount,
+					title: game.general.name,
+					uid: game.general.uid,
+					gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+				},
+				game,
+				'ping'
+			);
+		} else {
+			socket.emit('sendAlert', `You can't ping mods for another ${(game.lastModPing + 180000 - Date.now()) / 1000} seconds.`);
+		}
+		return;
 	}
 
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
@@ -2190,6 +2332,11 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				return 'admin';
 			}
 		})();
+		if (AEM && user.staffIncognito) {
+			data.hiddenUsername = data.userName;
+			data.staffRole = 'moderator';
+			data.userName = 'Incognito';
+		}
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
@@ -2269,6 +2416,13 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			userName: passport.user,
 			staffRole: getStaffRole()
 		};
+		const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
+		const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
+		if (AEM && user.staffIncognito) {
+			newChat.hiddenUsername = newChat.userName;
+			newChat.staffRole = 'moderator';
+			newChat.userName = 'Incognito';
+		}
 		generalChats.list.push(newChat);
 
 		if (generalChats.list.length > 99) {
@@ -2296,47 +2450,54 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					setting !== 'blacklist' ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
 					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') ||
-					(setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod')
+					(setting === 'staffIncognito' &&
+						account.staffRole &&
+						account.staffRole !== 'altmod' &&
+						account.staffRole !== 'trialmod' &&
+						account.staffRole !== 'veteran')
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (setting === 'staffIncognito' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') {
-					if (data.staffIncognito) {
-						if (userIdx != -1) userList.splice(userIdx, 1);
-					} else {
-						const userListInfo = {
-							userName: passport.user,
-							staffRole: account.staffRole || '',
-							isContributor: account.isContributor || false,
-							staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
-							staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
-							wins: account.wins,
-							losses: account.losses,
-							rainbowWins: account.rainbowWins,
-							rainbowLosses: account.rainbowLosses,
-							isPrivate: account.gameSettings.isPrivate,
-							tournyWins: account.gameSettings.tournyWins,
-							blacklist: account.gameSettings.blacklist,
-							customCardback: account.gameSettings.customCardback,
-							customCardbackUid: account.gameSettings.customCardbackUid,
-							previousSeasonAward: account.gameSettings.previousSeasonAward,
-							specialTournamentStatus: account.gameSettings.specialTournamentStatus,
-							eloOverall: account.eloOverall,
-							eloSeason: account.eloSeason,
-							status: {
-								type: 'none',
-								gameId: null
-							}
-						};
+				if (
+					setting === 'staffIncognito' &&
+					account.staffRole &&
+					account.staffRole !== 'altmod' &&
+					account.staffRole !== 'trialmod' &&
+					account.staffRole !== 'veteran'
+				) {
+					const userListInfo = {
+						userName: passport.user,
+						staffRole: account.staffRole || '',
+						isContributor: account.isContributor || false,
+						staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+						staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+						staffIncognito: account.gameSettings.staffIncognito,
+						wins: account.wins,
+						losses: account.losses,
+						rainbowWins: account.rainbowWins,
+						rainbowLosses: account.rainbowLosses,
+						isPrivate: account.gameSettings.isPrivate,
+						tournyWins: account.gameSettings.tournyWins,
+						blacklist: account.gameSettings.blacklist,
+						customCardback: account.gameSettings.customCardback,
+						customCardbackUid: account.gameSettings.customCardbackUid,
+						previousSeasonAward: account.gameSettings.previousSeasonAward,
+						specialTournamentStatus: account.gameSettings.specialTournamentStatus,
+						eloOverall: account.eloOverall,
+						eloSeason: account.eloSeason,
+						status: {
+							type: 'none',
+							gameId: null
+						}
+					};
 
-						userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
-						userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
-						userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
-						userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
-						if (userIdx != -1) userList.splice(userIdx, 1);
-						userList.push(userListInfo);
-					}
+					userListInfo[`winsSeason${currentSeasonNumber}`] = account[`winsSeason${currentSeasonNumber}`];
+					userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
+					userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
+					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
+					if (userIdx !== -1) userList.splice(userIdx, 1);
+					userList.push(userListInfo);
 					sendUserList();
 				}
 			}
@@ -2375,7 +2536,18 @@ module.exports.handleSubscribeModChat = (socket, passport, game) => {
 	if (game.private.hiddenInfoSubscriptions.includes(passport.user)) return;
 
 	if (game.private.hiddenInfoShouldNotify) {
-		makeReport(`AEM user ${passport.user} has subscribed to mod chat for a game without an auto-report.`, game);
+		makeReport(
+			{
+				player: passport.user,
+				situation: `has subscribed to mod chat for a game without an auto-report.`,
+				election: game.general.electionCount,
+				title: game.general.name,
+				uid: game.general.uid,
+				gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+			},
+			game,
+			'modchat'
+		);
 		game.private.hiddenInfoShouldNotify = false;
 	}
 
@@ -2674,6 +2846,53 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							console.log(err, 'clearTimeout user err');
 						});
 					break;
+				case 'warn':
+					const warning = {
+						time: new Date(),
+						text: data.comment,
+						moderator: passport.user,
+						acknowledged: false
+					};
+
+					Account.findOne({ username: data.userName }).then(user => {
+						if (user) {
+							if (user.warnings && user.warnings.length > 0) {
+								user.warnings.push(warning);
+							} else {
+								user.warnings = [warning];
+							}
+							user.save(() => {
+								if (io.sockets.sockets[affectedSocketId]) {
+									io.sockets.sockets[affectedSocketId].emit('checkRestrictions');
+								}
+							});
+						} else {
+							socket.emit('sendAlert', `That user doesn't exist`);
+							return;
+						}
+					});
+					break;
+				case 'removeWarning':
+					Account.findOne({ username: data.userName }).then(user => {
+						if (user) {
+							if (user.warnings && user.warnings.length > 0) {
+								socket.emit('sendAlert', `Warning with the message: "${user.warnings.pop().text}" deleted.`);
+							} else {
+								socket.emit('sendAlert', `That user doesn't have any warnings.`);
+								return;
+							}
+							user.markModified('warnings');
+							user.save(() => {
+								if (io.sockets.sockets[affectedSocketId]) {
+									io.sockets.sockets[affectedSocketId].emit('checkRestrictions');
+								}
+							});
+						} else {
+							socket.emit('sendAlert', `That user doesn't exist`);
+							return;
+						}
+					});
+					break;
 				case 'clearTimeoutIP':
 					BannedIP.remove({ ip: data.ip }, (err, res) => {
 						if (err) socket.emit('sendAlert', `IP clear failed:\n${err}`);
@@ -2681,6 +2900,15 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'modEndGame':
 					const gameToEnd = games[data.uid];
+
+					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
+						for (player of gameToEnd.private.seatedPlayers) {
+							if (data.modName === player.userName) {
+								socket.emit('sendAlert', 'You cannot end a game whilst playing in it.');
+								return;
+							}
+						}
+					}
 
 					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
 						gameToEnd.chats.push({
@@ -2729,6 +2957,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									account.losses = account.losses >= 50 ? account.losses : 50;
 									account.wins = account.wins >= 1 ? account.wins : 1;
 									account.save();
+									logOutUser(data.userName);
 								} else socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 							})
 							.catch(err => {
@@ -2741,11 +2970,16 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'deleteUser':
 					if (isSuperMod) {
-						Account.findOne({ username: data.userName }).remove(() => {
-							if (io.sockets.sockets[affectedSocketId]) {
-								io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
-							}
+						// let account, profile;
+						Account.findOne({ username: data.userName }).then(acc => {
+							account = acc;
+							acc.delete();
+							Profile.findOne({ _id: data.userName }).then(prof => {
+								profile = prof;
+								prof.delete();
+							});
 						});
+						// TODO: Add Account and Profile Backups (for accidental deletions)
 					} else {
 						socket.emit('sendAlert', 'Only editors and admins can delete users.');
 						return;
@@ -2754,7 +2988,18 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'renameUser':
 					if (isSuperMod) {
 						let success = false;
+						let fail = false;
 						Account.findOne({ username: data.comment }).then(account => {
+							Profile.findOne({ _id: data.comment }).then(profile => {
+								if (profile) {
+									socket.emit('sendAlert', `Profile of ${data.comment} already exists`);
+									fail = true;
+									// TODO: Add Profile Backup (for accidental/bugged renames)
+								}
+							});
+							if (fail) {
+								return;
+							}
 							if (account) {
 								socket.emit('sendAlert', `User ${data.comment} already exists`);
 							} else {
@@ -2766,7 +3011,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 										account.username = data.comment;
 										account.save();
 										success = true;
-										logOutUser(data.username);
+										logOutUser(data.userName);
 									} else {
 										socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
 									}
@@ -2775,13 +3020,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									}
 									success = false;
 									Profile.findOne({ _id: data.userName }).then(profile => {
-										let newProfile = JSON.parse(JSON.stringify(profile));
+										const newProfile = JSON.parse(JSON.stringify(profile));
 										newProfile._id = data.comment;
 										const renamedProfile = new Profile(newProfile);
 										renamedProfile.save();
 										Profile.remove({ _id: data.userName }, () => {
 											success = true;
-											console.log('Profile of user', data.userName, 'deleted, by request of', modaction.modUserName);
 										});
 									});
 								});
@@ -2914,7 +3158,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
 							if (users && users.length > 0) {
 								users.forEach(user => {
-									logOutUser(user.username);
+									user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
+									user.save(() => {
+										logOutUser(data.userName);
+									});
 								});
 							}
 						});
@@ -2987,13 +3234,42 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							console.log(err, 'private convert user err');
 						});
 					break;
-				case 'clearGenchat':
-					generalChats.list = [];
+				case 'togglePrivateEighteen':
+					Account.findOne({ username: data.userName })
+						.then(account => {
+							if (account) {
+								const { isPrivate } = account.gameSettings;
 
-					io.sockets.emit('generalChats', generalChats);
+								account.gameSettings.isPrivate = !isPrivate;
+								account.gameSettings.privateToggleTime = Date.now();
+								account.save(() => {
+									logOutUser(data.userName);
+								});
+							} else {
+								socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+							}
+						})
+						.catch(err => {
+							console.log(err, 'private convert user err');
+						});
+					break;
+				case 'clearGenchat':
+					if (data.userName && data.userName.length > 0) {
+						generalChats.list = generalChats.list.filter(chat => chat.userName !== data.userName);
+
+						// clearedGeneralChats.reverse().forEach(chat => {
+						// 	generalChats.list.splice(generalChats.list.indexOf(chat), 1);
+						// });
+						io.sockets.emit('generalChats', generalChats);
+					} else {
+						generalChats.list = [];
+						io.sockets.emit('generalChats', generalChats);
+					}
+
 					break;
 				case 'deleteProfile':
 					if (isSuperMod) {
+						// TODO: Add Profile Backup (for accidental/bugged deletions)
 						Profile.findOne({ _id: data.userName })
 							.remove(() => {
 								logOutUser(data.userName);
@@ -3091,7 +3367,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 								if (account) {
 									account.isContributor = false;
 									account.save(() => {
-										let idx = newStaff.contributorUserNames.indexOf(account.username);
+										const idx = newStaff.contributorUserNames.indexOf(account.username);
 										if (idx != -1) newStaff.contributorUserNames.splice(idx, 1);
 										logOutUser(account.username);
 									});
@@ -3225,6 +3501,30 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 							});
 					}
 					break;
+				case 'promoteToVeteran':
+					if (isSuperMod) {
+						Account.findOne({ username: data.userName })
+							.then(account => {
+								if (account) {
+									account.staffRole = 'veteran';
+									account.save(() => {
+										logOutUser(account.username);
+									});
+								} else {
+									socket.emit('sendAlert', `No account found with a matching username: ${data.userName}`);
+								}
+							})
+							.catch(err => {
+								console.log(err);
+							});
+					}
+					break;
+				case 'regatherAEMList':
+					if (!isSuperMod) {
+						socket.emit('sendAlert', 'Only editors and admins can refresh the AEM usernames list.');
+						return;
+					}
+					break;
 				case 'resetServer':
 					if (isSuperMod) {
 						console.log('server crashing manually via mod action');
@@ -3324,6 +3624,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 			const niceAction = {
 				comment: 'Comment',
+				warn: 'Issue Warning',
+				removeWarning: 'Delete Warning',
 				getIP: 'Get IP',
 				ban: 'Ban',
 				setSticky: 'Set Sticky',
@@ -3331,7 +3633,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				ipban: '18 Hour IP Ban',
 				enableAccountCreation: 'Enable Account Creation',
 				disableAccountCreation: 'Disable Account Creation',
-				togglePrivate: 'Toggle Private',
+				togglePrivate: 'Toggle Private (Permanent)',
+				togglePrivateEighteen: 'Toggle Private (Temporary)',
 				timeOut: 'Timeout 18 Hours (IP)',
 				timeOut2: 'Timeout 18 Hours',
 				timeOut3: 'Timeout 1 Hour (IP)',
@@ -3361,11 +3664,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				promoteToContributor: 'Promote (Contributor)',
 				promoteToAltMod: 'Promote (AEM Alt)',
 				promoteToTrialMod: 'Promote (Trial Mod)',
+				promoteToVeteran: 'Promote (Veteran AEM)',
 				promoteToMod: 'Promote (Mod)',
 				promoteToEditor: 'Promote (Editor)',
 				makeBypass: 'Create Bypass Key',
 				bypassKeyUsed: 'Consume Bypass Key',
-				resetServer: 'Server Restart'
+				resetServer: 'Server Restart',
+				regatherAEMList: 'Refresh AEM List'
 			};
 
 			const modAction = JSON.stringify({
@@ -3452,9 +3757,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 			: 'Anonymous'
 		: data.reportedPlayer;
 	const body = JSON.stringify({
-		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${
-			playerReport.reason
-		}\nComment: ${httpEscapedComment}`
+		content: `Game UID: <https://secrethitler.io/game/#/table/${data.uid}>\nReported player: ${blindModeAnonymizedPlayer}\nReason: ${playerReport.reason}\nComment: ${httpEscapedComment}`
 	});
 
 	const options = {
@@ -3491,7 +3794,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 			return;
 		}
 
-		Account.find({ staffRole: { $exists: true } }).then(accounts => {
+		Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
 			accounts.forEach(account => {
 				const onlineSocketId = Object.keys(io.sockets.sockets).find(
 					socketId =>
@@ -3510,7 +3813,7 @@ module.exports.handlePlayerReport = (passport, data) => {
 };
 
 module.exports.handlePlayerReportDismiss = () => {
-	Account.find({ staffRole: { $exists: true } }).then(accounts => {
+	Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
 		accounts.forEach(account => {
 			const onlineSocketId = Object.keys(io.sockets.sockets).find(
 				socketId => io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === account.username
@@ -3533,7 +3836,7 @@ module.exports.handleHasSeenNewPlayerModal = socket => {
 		const { user } = passport;
 		Account.findOne({ username: user }).then(account => {
 			account.hasNotDismissedSignupModal = false;
-
+			socket.emit('checkRestrictions');
 			account.save();
 		});
 	}
@@ -3556,7 +3859,8 @@ module.exports.checkUserStatus = (socket, callback) => {
 			socketID =>
 				sockets[socketID].handshake.session.passport &&
 				Object.keys(sockets[socketID].handshake.session.passport).length &&
-				(sockets[socketID].handshake.session.passport.user === user && socketID !== socket.id)
+				sockets[socketID].handshake.session.passport.user === user &&
+				socketID !== socket.id
 		);
 
 		if (oldSocketID && sockets[oldSocketID]) {
@@ -3587,28 +3891,20 @@ module.exports.checkUserStatus = (socket, callback) => {
 
 				// destroySession(username);
 			};
-			testIP(expandAndSimplify(socket.handshake.address), banType => {
-				if (banType && banType != 'new') logOutUser(user);
-				else {
-					Account.findOne({ username: user }, function(err, account) {
-						if (account) {
-							if (
-								account.isBanned ||
-								(account.isTimeout && Date.now() - new Date(account.isTimeout).getTime() < 64800000) ||
-								(account.isTimeout6Hour && Date.now() - new Date(account.isTimeout6Hour).getTime() < 21600000)
-							) {
-								logOutUser(user);
-							} else {
-								testIP(account.lastConnectedIP, banType => {
-									if (banType && banType != 'new') logOutUser(user);
-									else {
-										sendUserList();
-										callback();
-									}
-								});
+
+			Account.findOne({ username: user }, function(err, account) {
+				if (account) {
+					if (account.isBanned || (account.isTimeout && new Date() < account.isTimeout)) {
+						logOutUser(user);
+					} else {
+						testIP(account.lastConnectedIP, banType => {
+							if (banType && banType != 'new' && !account.gameSettings.ignoreIPBans) logOutUser(user);
+							else {
+								sendUserList();
+								callback();
 							}
-						}
-					});
+						});
+					}
 				}
 			});
 		} else callback();

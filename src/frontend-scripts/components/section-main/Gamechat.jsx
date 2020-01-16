@@ -30,11 +30,15 @@ class Gamechat extends React.Component {
 		badWord: [null, null],
 		textLastChanged: 0,
 		textChangeTimer: -1,
-		chatValue: ''
+		chatValue: '',
+		processedChats: '',
+		votesPeeked: false,
+		gameFrozen: false
 	};
 
 	componentDidMount() {
 		this.scrollChats();
+		setTimeout(() => this.setState({ forceProcess: true }, () => this.scrollChats()), 750);
 
 		$(this.leaveGameModal).on('click', '.leave-game.button', () => {
 			// modal methods dont seem to work.
@@ -84,6 +88,18 @@ class Gamechat extends React.Component {
 		if (prevProps.notesActive && !nextProps.notesActive && this.state.notesEnabled) {
 			this.setState({ notesEnabled: false });
 		}
+
+		// DEBUG
+		// console.log(this.state.forceProcess, prevProps.gameInfo.chats.length < gameInfo.chats.length, !this.state.processedChats);
+		if (this.state.forceProcess || prevProps.gameInfo.chats.length < gameInfo.chats.length || (!this.state.processedChats && !gameInfo.general.private)) {
+			this.setState(
+				{
+					processedChats: this.processChats(),
+					forceProcess: false
+				},
+				() => this.scrollChats()
+			);
+		}
 	}
 
 	handleChatScrolled = () => {
@@ -102,7 +118,7 @@ class Gamechat extends React.Component {
 		this.setState({
 			playersToWhitelist: this.props.userList.list
 				.filter(user => user.userName !== this.props.userInfo.userName)
-				.map(user => ({ userName: user.userName, isSelected: true }))
+				.map(user => ({ userName: user.userName, isSelected: false }))
 		});
 
 		$(this.whitelistModal).modal('show');
@@ -318,7 +334,13 @@ class Gamechat extends React.Component {
 				return player && (player.governmentStatus === 'isPresident' || player.governmentStatus === 'isChancellor');
 			}
 		})();
-		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
+		const isStaff = Boolean(
+			userInfo.staffRole &&
+				userInfo.staffRole.length &&
+				userInfo.staffRole !== 'trialmod' &&
+				userInfo.staffRole !== 'altmod' &&
+				userInfo.staffRole !== 'veteran'
+		);
 		const user = Object.keys(this.props.userList).length ? this.props.userList.list.find(play => play.userName === userName) : undefined;
 
 		if (gameSettings && gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
@@ -400,17 +422,12 @@ class Gamechat extends React.Component {
 	};
 
 	processChats() {
+		const processStart = new Date();
 		const { gameInfo, userInfo, userList } = this.props;
 		const { gameSettings } = userInfo;
 		const isBlind = gameInfo.general && gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
 		const { showFullChat, showPlayerChat, showGameChat, showObserverChat } = this.state;
-		const compareChatStrings = (a, b) => {
-			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
-			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
-
-			return stringA > stringB ? 1 : -1;
-		};
 		const time = new Date().getTime();
 		/**
 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
@@ -421,7 +438,19 @@ class Gamechat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
-		const isStaff = Boolean(userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
+		const compareChatStrings = (a, b) => {
+			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
+			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
+
+			return stringA > stringB ? 1 : -1;
+		};
+		const isStaff = Boolean(
+			userInfo.staffRole &&
+				userInfo.staffRole.length &&
+				userInfo.staffRole !== 'trialmod' &&
+				userInfo.staffRole !== 'altmod' &&
+				userInfo.staffRole !== 'veteran'
+		);
 
 		const renderPreviousSeasonAward = type => {
 			switch (type) {
@@ -445,33 +474,47 @@ class Gamechat extends React.Component {
 		};
 
 		if (gameInfo && gameInfo.chats && (!gameInfo.general.private || userInfo.isSeated || isStaff)) {
-			let list = gameInfo.chats
-				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
-				.filter(
-					chat =>
+			let list = gameInfo.chats.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)));
+			const chatLength = (userInfo && userInfo.gameSettings && userInfo.gameSettings.truncatedSize) || 250;
+			if (showPlayerChat && showGameChat && showObserverChat && !showFullChat) {
+				list = list.slice(-chatLength);
+			} else {
+				const listAcc = [];
+				for (let i = list.length - 1; i >= 0; i--) {
+					if (listAcc.length >= chatLength && !showFullChat) {
+						break;
+					}
+					const chat = list[i];
+					if (
 						chat.isBroadcast ||
 						(showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
 						(showGameChat && (chat.gameChat || chat.isClaim)) ||
 						(showObserverChat && !chat.gameChat && !seatedUserNames.includes(chat.userName)) ||
 						(!seatedUserNames.includes(chat.userName) &&
 							chat.staffRole &&
-							chat.staffRole !== '' &&
 							chat.staffRole !== 'trialmod' &&
-							chat.staffRole !== 'altmod')
-				);
-			if (!showFullChat) list = list.slice(-250);
-			return list.reduce((acc, chat, i) => {
+							chat.staffRole !== 'altmod' &&
+							chat.staffRole !== 'veteran')
+					) {
+						listAcc.unshift(chat);
+					}
+				}
+				list = listAcc;
+			}
+			const processedChats = list.reduce((acc, chat, i) => {
 				const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
 				const isMod =
 					playerListPlayer &&
 					playerListPlayer.staffRole &&
 					playerListPlayer.staffRole !== '' &&
 					playerListPlayer.staffRole !== 'trialmod' &&
-					playerListPlayer.staffRole !== 'altmod';
+					playerListPlayer.staffRole !== 'altmod' &&
+					playerListPlayer.staffRole !== 'veteran';
 				const chatContents = processEmotes(chat.chat, isMod, this.props.allEmotes);
 				const isSeated = seatedUserNames.includes(chat.userName);
 				const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
-
+				const canSeeIncognito =
+					userInfo && userInfo.staffRole && userInfo.staffRole !== '' && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran';
 				acc.push(
 					chat.gameChat ? (
 						<div className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'} key={i}>
@@ -544,11 +587,13 @@ class Gamechat extends React.Component {
 								!isBlind &&
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.specialTournamentStatus && !isBlind && (
-								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
 							)}
 							<span
 								className={
-									!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
+									chat.staffRole === 'moderator' && chat.userName === 'Incognito'
+										? 'chat-user moderatorcolor'
+										: !playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
 										? isMod && (!isBlind || !isSeated)
 											? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											: 'chat-user'
@@ -557,20 +602,31 @@ class Gamechat extends React.Component {
 							>
 								{isSeated ? (
 									''
+								) : chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito ? (
+									<span data-tooltip="Incognito" data-inverted>
+										<span className="admincolor">(Incognito) 🚫</span>
+									</span>
 								) : chat.staffRole === 'moderator' ? (
 									<span data-tooltip="Moderator" data-inverted>
-										<span className="observer-chat">(Observer) </span>
-										<span className="moderator-name">(M) </span>
+										<span className="moderatorcolor">(Mod) 🌀</span>
 									</span>
 								) : chat.staffRole === 'editor' ? (
 									<span data-tooltip="Editor" data-inverted>
-										<span className="observer-chat">(Observer) </span>
-										<span className="editor-name">(E) </span>
+										<span
+											className={
+												!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat) || isBlind
+													? isMod && (!isBlind || !isSeated)
+														? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+														: 'chat-user'
+													: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+											}
+										>
+											(Editor) 🔰
+										</span>
 									</span>
 								) : chat.staffRole === 'admin' ? (
 									<span data-tooltip="Admin" data-inverted>
-										<span className="observer-chat">(Observer) </span>
-										<span className="admin-name">(A) </span>
+										<span className="admincolor">(Admin) 📛</span>
 									</span>
 								) : (
 									<span className="observer-chat">(Observer) </span>
@@ -582,9 +638,13 @@ class Gamechat extends React.Component {
 													gameInfo.general.replacementNames[gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName)]
 											  } {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
 											: `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+										: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
+										? chat.hiddenUsername
 										: chat.userName
 									: isBlind && isSeated
 									? '?'
+									: chat.staffRole === 'moderator' && chat.userName === 'Incognito' && canSeeIncognito
+									? chat.hiddenUsername
 									: chat.userName}
 								{': '}
 							</span>
@@ -594,6 +654,12 @@ class Gamechat extends React.Component {
 				);
 				return acc;
 			}, []);
+			// DEBUG
+			const processEnd = new Date();
+			if (processEnd - processStart > 25) {
+				console.warn('It took', processEnd - processStart, 'ms to process', gameInfo.chats.length, 'chats.');
+			}
+			return processedChats;
 		}
 	}
 
@@ -694,13 +760,25 @@ class Gamechat extends React.Component {
 				: `${hash.substr(0, hash.length - 1)}A`;
 		};
 		const isStaff = Boolean(
-			userInfo && userInfo.staffRole && userInfo.staffRole.length && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod'
+			userInfo &&
+				userInfo.staffRole &&
+				userInfo.staffRole.length &&
+				userInfo.staffRole !== 'trialmod' &&
+				userInfo.staffRole !== 'altmod' &&
+				userInfo.staffRole !== 'veteran'
 		);
 		const hasNoAEM = players => {
 			if (!userList || !userList.list) return false;
 			return userList.list.every(
 				user =>
-					!(players.includes(user.userName) && user.staffRole && user.staffRole.length > 0 && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod')
+					!(
+						players.includes(user.userName) &&
+						user.staffRole &&
+						user.staffRole.length > 0 &&
+						user.staffRole !== 'trialmod' &&
+						user.staffRole !== 'altmod' &&
+						user.staffRole !== 'veteran'
+					)
 			);
 		};
 
@@ -718,76 +796,127 @@ class Gamechat extends React.Component {
 			});
 		};
 
-		const sendModEndGame = winningTeamName => {
+		const modDeleteGame = reason => {
 			socket.emit('updateModAction', {
 				modName: userInfo.userName,
-				userName: userInfo.userName,
-				comment: `End game ${gameInfo.general.uid} with team ${winningTeamName} winning`,
-				uid: gameInfo.general.uid,
-				winningTeamName,
-				action: 'modEndGame'
+				userName: `DELGAME${gameInfo.general.uid}`,
+				comment: reason,
+				action: 'deleteGame'
 			});
+			location.hash = '';
+		};
 
+		const sendModEndGame = winningTeamName => {
+			if (confirm('Are you sure you want to end this game with the ' + winningTeamName + ' team winning?')) {
+				socket.emit('updateModAction', {
+					modName: userInfo.userName,
+					userName: userInfo.userName,
+					comment: `End game ${gameInfo.general.uid} with team ${winningTeamName} winning`,
+					uid: gameInfo.general.uid,
+					winningTeamName,
+					action: 'modEndGame'
+				});
+			}
 			$(this.modendgameModal).modal('hide');
 		};
 
 		return (
-			<section className="gamechat">
+			<section className={isStaff ? 'gamechat aem' : 'gamechat'}>
 				<section className="ui pointing menu">
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Player" style={{ marginLeft: '5px' }}>
-						<i
-							className={`large comment icon${showPlayerChat ? ' alternate' : ''}`}
-							title={showPlayerChat ? 'Hide player chats' : 'Show player chats'}
-							style={{ color: showPlayerChat ? '#4169e1' : 'indianred' }}
-						/>
+						<i className={`large comment icon${showPlayerChat ? ' alternate' : ''}`} title={showPlayerChat ? 'Hide player chats' : 'Show player chats'} />
 					</a>
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Game">
-						<i
-							className={`large circle icon${showGameChat ? ' info' : ''}`}
-							title={showGameChat ? 'Hide game chats' : 'Show game chats'}
-							style={{ color: showGameChat ? '#4169e1' : 'indianred' }}
-						/>
+						<i className={`large circle icon${showGameChat ? ' info' : ''}`} title={showGameChat ? 'Hide game chats' : 'Show game chats'} />
 					</a>
 					{gameInfo.general && !gameInfo.general.disableObserver && (
 						<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Spectator">
-							<i
-								className={`large eye icon${!showObserverChat ? ' slash' : ''}`}
-								title={showObserverChat ? 'Hide observer chats' : 'Show observer chats'}
-								style={{ color: showObserverChat ? '#4169e1' : 'indianred' }}
-							/>
+							<i className={`large eye icon${!showObserverChat ? ' slash' : ''}`} title={showObserverChat ? 'Hide observer chats' : 'Show observer chats'} />
 						</a>
 					)}
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="History">
 						<i
 							className={`large file icon${showFullChat ? ' alternate' : ''}`}
 							title={showFullChat ? 'Truncate chats to 250 lines' : 'Show entire history (might lag in longer games)'}
-							style={{ color: showFullChat ? '#4169e1' : 'indianred' }}
 						/>
 					</a>
-					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) &&
-						isStaff &&
-						gameInfo &&
-						gameInfo.gameState &&
-						gameInfo.gameState.isStarted &&
-						this.renderModEndGameButtons()}
-					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
-						<div>
-							<div className="ui button primary" onClick={() => modGetCurrentVotes()} style={{ width: '60px' }}>
-								Peek
-								<br />
-								Votes
+					<div style={{ width: '40%', overflowX: 'auto', display: 'flex', flexDirection: 'row' }}>
+						{userInfo &&
+							!userInfo.isSeated &&
+							isStaff &&
+							gameInfo &&
+							gameInfo.gameState &&
+							gameInfo.gameState.isStarted &&
+							!gameInfo.gameState.isCompleted &&
+							this.renderModEndGameButtons()}
+						{userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
+							<div>
+								<div
+									className="ui button primary"
+									onClick={() => {
+										if (!this.state.votesPeeked) {
+											if (confirm('Are you sure you want to peek votes for this game?')) {
+												modGetCurrentVotes();
+												this.setState({
+													votesPeeked: true
+												});
+											}
+										} else {
+											modGetCurrentVotes();
+										}
+									}}
+									style={{ width: '60px' }}
+								>
+									Peek
+									<br />
+									Votes
+								</div>
 							</div>
-						</div>
-					)}
-					{!this.isPlayerInGame(gameInfo.publicPlayersState, userInfo.username) && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && (
-						<div>
-							<div className="ui button primary" onClick={() => modFreezeGame()} style={{ width: '60px' }}>
-								Freeze/
-								<br />
-								Unfreeze
+						)}
+						{userInfo && !userInfo.isSeated && isStaff && gameInfo && gameInfo.gameState && gameInfo.gameState.isStarted && !gameInfo.gameState.isCompleted && (
+							<div>
+								<div
+									className="ui button primary"
+									onClick={() => {
+										if (!this.state.gameFrozen) {
+											if (confirm('Are you sure you want to freeze this game?')) {
+												modFreezeGame();
+												this.setState({
+													gameFrozen: true
+												});
+											}
+										} else {
+											modFreezeGame();
+										}
+									}}
+									style={{ width: '60px' }}
+								>
+									Freeze/
+									<br />
+									Unfreeze
+								</div>
 							</div>
-						</div>
-					)}
+						)}
+						{userInfo && !userInfo.isSeated && isStaff && (
+							<div>
+								<div
+									className="ui button primary"
+									onClick={() => {
+										if (confirm('Are you sure you want to delete this game?')) {
+											let reason = prompt(`Enter a reason for deleting this game, leave blank if dead`);
+											reason = reason || 'Dead';
+											modDeleteGame(reason);
+										}
+									}}
+									style={{ width: '60px' }}
+								>
+									Delete
+									<br />
+									Game
+								</div>
+							</div>
+						)}
+					</div>
 					{gameInfo.general &&
 						gameInfo.general.tournyInfo &&
 						(gameInfo.general.tournyInfo.showOtherTournyTable || gameInfo.general.tournyInfo.isRound1TableThatFinished2nd) && (
@@ -813,7 +942,8 @@ class Gamechat extends React.Component {
 				<section
 					style={{
 						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px',
-						height: '100%'
+						height: '100%',
+						cursor: `${isStaff ? 'text' : 'not-allowed'}`
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
@@ -998,7 +1128,7 @@ class Gamechat extends React.Component {
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
 					{(() => {
-						if (gameInfo.gameState && gameInfo.gameState.isStarted && isStaff) {
+						if (gameInfo.gameState && gameInfo.gameState.isStarted && isStaff && userInfo && !userInfo.isSeated && !gameInfo.gameState.isCompleted) {
 							return (
 								<div
 									className={hasNoAEM(gameInfo.publicPlayersState.map(player => player.userName)) ? 'ui primary button' : 'ui primary button disabled'}
@@ -1083,7 +1213,7 @@ class Gamechat extends React.Component {
 				>
 					<h2 className="ui header">
 						DANGER. Leaving an in-progress game will ruin it for the other players (unless you've been executed). Do this only in the case of a game already
-						ruined by an AFK/disconnected player or if someone has already left.
+						ruined by an AFK/disconnected player, if someone has already left, or if the game has been remade.
 					</h2>
 					<div className="ui green positive inverted leave-game button">
 						<i className="checkmark icon" />
@@ -1173,10 +1303,7 @@ Gamechat.propTypes = {
 	userList: PropTypes.object,
 	allEmotes: PropTypes.array,
 	notesActive: PropTypes.bool,
-	toggleNotes: PropTypes.func,
+	toggleNotes: PropTypes.func
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(Gamechat);
+export default connect(mapStateToProps, mapDispatchToProps)(Gamechat);

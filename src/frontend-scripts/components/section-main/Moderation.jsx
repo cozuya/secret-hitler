@@ -338,10 +338,11 @@ export default class Moderation extends React.Component {
 		};
 		const { gameList, gameSort } = this.state;
 		const getGameType = game => {
+			if (game.unlisted) return 'unlisted';
 			if (game.custom) return 'custom';
 			if (game.casual) return 'casual';
 			if (game.private) return 'private';
-			return '';
+			return 'ranked';
 		};
 		return gameList
 			.sort((a, b) =>
@@ -377,18 +378,20 @@ export default class Moderation extends React.Component {
 
 	renderGameButtons() {
 		const takeModAction = action => {
-			this.props.socket.emit('updateModAction', {
-				modName: this.props.userInfo.userName,
-				userName:
-					action === 'deleteGame'
-						? `DELGAME${this.state.playerInputText}`
-						: action === 'resetGameName'
-						? `RESETGAMENAME${this.state.playerInputText}`
-						: this.state.playerInputText || this.state.selectedUser,
-				ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
-				comment: this.state.actionTextValue,
-				action
-			});
+			if (action) {
+				this.props.socket.emit('updateModAction', {
+					modName: this.props.userInfo.userName,
+					userName:
+						action === 'deleteGame'
+							? `DELGAME${this.state.playerInputText}`
+							: action === 'resetGameName'
+							? `RESETGAMENAME${this.state.playerInputText}`
+							: this.state.playerInputText || this.state.selectedUser,
+					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+					comment: this.state.actionTextValue,
+					action
+				});
+			}
 			this.setState({
 				selectedUser: '',
 				actionTextValue: '',
@@ -451,7 +454,9 @@ export default class Moderation extends React.Component {
 
 		return (
 			<div className="button-container">
+				<br />
 				<button
+					style={{ width: '100%' }}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
 					onClick={() => {
 						takeModAction('comment');
@@ -459,14 +464,40 @@ export default class Moderation extends React.Component {
 				>
 					Comment without action
 				</button>
+				<div className="ui horizontal divider">Warnings</div>
 				<button
-					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					style={{ background: '#ff5865', color: 'black' }}
 					onClick={() => {
-						takeModAction('clearGenchat');
+						takeModAction('warn');
 					}}
 				>
-					Clear/delete general chat
+					Issue Warning
 				</button>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					style={{ background: '#FFDEAD', color: 'black' }}
+					onClick={() => {
+						takeModAction('removeWarning');
+					}}
+				>
+					Delete Most Recent Warning
+				</button>
+				<button
+					className={selectedUser || playerInputText ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					style={{ background: '#FFA07A', color: 'black' }}
+					onClick={() => {
+						this.props.socket.emit('seeWarnings', playerInputText || selectedUser);
+						this.setState({
+							selectedUser: '',
+							actionTextValue: '',
+							playerInputText: ''
+						});
+					}}
+				>
+					See Warnings
+				</button>
+				<div className="ui horizontal divider">Revoke Access</div>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
 					onClick={() => {
@@ -507,6 +538,7 @@ export default class Moderation extends React.Component {
 				>
 					Timeout - 18 Hours (non-IP)
 				</button>
+				<div className="ui horizontal divider">User Actions</div>
 				<button
 					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
@@ -522,7 +554,16 @@ export default class Moderation extends React.Component {
 						takeModAction('deleteCardback');
 					}}
 				>
-					Delete player cardback
+					Reset player cardback
+				</button>
+				<button
+					style={{ width: '100%', background: 'lilac' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('deleteBio');
+					}}
+				>
+					Reset player bio
 				</button>
 				<button
 					style={{ width: '100%', background: 'palevioletred' }}
@@ -531,10 +572,29 @@ export default class Moderation extends React.Component {
 						takeModAction('togglePrivate');
 					}}
 				>
-					Toggle player private-only and log out
+					Toggle player private-only (Permanent)
 				</button>
 				<button
-					style={{ width: '100%', background: 'lightyellow' }}
+					style={{ width: '100%', background: 'palevioletred' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled convert-button'}
+					onClick={() => {
+						takeModAction('togglePrivateEighteen');
+					}}
+				>
+					Toggle player private-only (18 Hours)
+				</button>
+				<button
+					style={{ width: '100%', background: '#e05543' }}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					onClick={() => {
+						takeModAction('logoutUser');
+					}}
+				>
+					Logout User
+				</button>
+				<div className="ui horizontal divider">Games</div>
+				<button
+					style={{ width: '100%', background: 'indianred' }}
 					className={playerInputText ? 'ui button' : 'ui button disabled'}
 					onClick={() => {
 						takeModAction('deleteGame');
@@ -551,6 +611,7 @@ export default class Moderation extends React.Component {
 				>
 					Reset game name
 				</button>
+				<div className="ui horizontal divider">General Chat</div>
 				<button
 					style={{ width: '100%', background: 'darkorange' }}
 					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
@@ -561,22 +622,30 @@ export default class Moderation extends React.Component {
 					Set general chat sticky
 				</button>
 				<button
-					style={{ width: '100%', background: 'skyblue' }}
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					style={{ width: '100%' }}
+					className={!this.state.actionTextValue ? 'ui button disabled ib' : 'ui button ib'}
 					onClick={() => {
-						takeModAction('deleteBio');
+						takeModAction('clearGenchat');
 					}}
 				>
-					Delete/clear player bio
+					Clear general chat
+				</button>
+				<div className="ui horizontal divider">Grant Access</div>
+				<button
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					onClick={() => {
+						takeModAction('clearTimeout');
+					}}
+				>
+					Restore User - Remove any pre-existing timeout or ban.
 				</button>
 				<button
-					style={{ width: '100%', background: '#e05543' }}
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button' : 'ui button disabled'}
+					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
 					onClick={() => {
-						takeModAction('logoutUser');
+						takeModAction('clearTimeoutIP');
 					}}
 				>
-					Logout User
+					Restore IP - Remove any pre-existing IP ban.
 				</button>
 				<button
 					style={{ width: '100%', background: 'royalblue' }}
@@ -587,6 +656,7 @@ export default class Moderation extends React.Component {
 				>
 					Create login bypass key
 				</button>
+				<div className="ui horizontal divider"> </div>
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable account creation</h4>
 					<div
@@ -598,7 +668,8 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="accountcreation" />
 					</div>
 				</div>
-				<div className="toggle-containers">
+				<br />
+				{/* <div className="toggle-containers">
 					<h4 className="ui header">Disable ipbans including new account restrictions</h4>
 					<div
 						className="ui fitted toggle checkbox"
@@ -608,7 +679,7 @@ export default class Moderation extends React.Component {
 					>
 						<input type="checkbox" name="ipbans" />
 					</div>
-				</div>
+				</div> */}
 				<div className="toggle-containers">
 					<h4 className="ui header">Disable game creation</h4>
 					<div
@@ -620,7 +691,7 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="ipbans" />
 					</div>
 				</div>
-				<div className="toggle-containers">
+				{/* <div className="toggle-containers">
 					<h4 className="ui header">Limit new player actions</h4>
 					<div
 						className="ui fitted toggle checkbox"
@@ -630,26 +701,11 @@ export default class Moderation extends React.Component {
 					>
 						<input type="checkbox" name="ipbans" />
 					</div>
+				</div> */}
+				<br />
+				<div className="ui horizontal divider" style={{ color: 'red' }}>
+					🔰 Editors/Admins Only 📛
 				</div>
-				<br />
-				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
-					onClick={() => {
-						takeModAction('clearTimeout');
-					}}
-				>
-					Restore User - Remove any pre-existing timeout or ban.
-				</button>
-				<br />
-				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
-					onClick={() => {
-						takeModAction('clearTimeoutIP');
-					}}
-				>
-					Restore IP - Remove any pre-existing IP ban.
-				</button>
-				<div className="ui horizontal divider">Editors/Admins Only</div>
 
 				<button
 					className={
@@ -722,6 +778,7 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="seasonalsetstats" />
 					</div>
 				</div>
+				<div className="ui horizontal divider">User Actions</div>
 				<button
 					style={{ background: 'lime', color: 'black' }}
 					className={
@@ -748,6 +805,46 @@ export default class Moderation extends React.Component {
 				>
 					Get user IP
 				</button>
+				<button
+					style={{ background: 'crimson' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('deleteUser');
+					}}
+				>
+					Delete user
+				</button>
+				<button
+					style={{ background: '#f78d59' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('renameUser');
+					}}
+				>
+					Rename user
+				</button>
+				<button
+					style={{ background: 'darkblue' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('deleteProfile');
+					}}
+				>
+					Delete/reset player profile
+				</button>
+				<div className="ui horizontal divider">Punishments</div>
 				<button
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -798,47 +895,9 @@ export default class Moderation extends React.Component {
 				>
 					Ban IP fragment (xxx.xxx or xxx.xxx.xxx) for 1 week
 				</button>
+				<div className="ui horizontal divider">Roles</div>
 				<button
-					style={{ background: 'crimson' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('deleteUser');
-					}}
-				>
-					Delete user
-				</button>
-				<button
-					style={{ background: '#f78d59' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('renameUser');
-					}}
-				>
-					Rename user
-				</button>
-				<button
-					style={{ background: 'darkblue' }}
-					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
-							? 'ui button ipban-button'
-							: 'ui button disabled ipban-button'
-					}
-					onClick={() => {
-						takeModAction('deleteProfile');
-					}}
-				>
-					Delete/reset player profile
-				</button>
-				<button
-					style={{ background: '#21bae0' }}
+					style={{ background: 'grey' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -929,6 +988,34 @@ export default class Moderation extends React.Component {
 					Promote to Staff Role - Editor
 				</button>
 				<button
+					style={{ background: '#4d949e' }}
+					className={
+						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						takeModAction('promoteToVeteran');
+					}}
+				>
+					Promote to Role - Veteran AEM
+				</button>
+				<button
+					style={{ background: 'grey' }}
+					className={
+						actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
+					onClick={() => {
+						socket.emit('regatherAEMUsernames');
+						takeModAction('regatherAEMList');
+					}}
+				>
+					Refresh AEM List
+				</button>
+				<hr />
+				<button
 					style={{ background: 'black' }}
 					className={
 						actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
@@ -973,6 +1060,8 @@ export default class Moderation extends React.Component {
 
 		const niceAction = {
 			comment: 'Comment',
+			warn: 'Issue Warning',
+			removeWarning: 'Delete Warning',
 			getIP: 'Get IP',
 			ban: 'Ban',
 			setSticky: 'Set Sticky',
@@ -980,7 +1069,8 @@ export default class Moderation extends React.Component {
 			ipban: '18 Hour IP Ban',
 			enableAccountCreation: 'Enable Account Creation',
 			disableAccountCreation: 'Disable Account Creation',
-			togglePrivate: 'Toggle Private',
+			togglePrivate: 'Toggle Private (Permanent)',
+			togglePrivateEighteen: 'Toggle Private (Temporary)',
 			timeOut: 'Timeout 18 Hours (IP)',
 			timeOut2: 'Timeout 18 Hours',
 			timeOut3: 'Timeout 1 Hour (IP)',
@@ -1010,11 +1100,13 @@ export default class Moderation extends React.Component {
 			promoteToContributor: 'Promote (Contributor)',
 			promoteToAltMod: 'Promote (AEM Alt)',
 			promoteToTrialMod: 'Promote (Trial Mod)',
+			promoteToVeteran: 'Promote (Veteran AEM)',
 			promoteToMod: 'Promote (Mod)',
 			promoteToEditor: 'Promote (Editor)',
 			makeBypass: 'Create Bypass Key',
 			bypassKeyUsed: 'Consume Bypass Key',
-			resetServer: 'Server Restart'
+			resetServer: 'Server Restart',
+			regatherAEMList: 'Refresh AEM List'
 		};
 
 		return (
@@ -1285,11 +1377,15 @@ export default class Moderation extends React.Component {
 							<h3>Current Game List</h3>
 							<div className="ui table">
 								<h4>Color chart:</h4>
+								<span className="ranked">This game is ranked</span>
+								<br />
 								<span className="casual">This game is casual</span>
 								<br />
 								<span className="private">This game is private</span>
 								<br />
 								<span className="custom">This game is custom</span>
+								<br />
+								<span className="unlisted">This game is unlisted</span>
 							</div>
 							{!hideActions && (
 								<span>

@@ -32,6 +32,7 @@ export default class Creategame extends React.Component {
 			checkedSliderValues: [false, false, true, false, false, false],
 			checkedRebalanceValues: [true, false, true],
 			privateonlygame: false,
+			unlistedGame: false,
 			isTourny: false,
 			casualgame: false,
 			blindMode: false,
@@ -42,6 +43,7 @@ export default class Creategame extends React.Component {
 			eloSliderValue: [1600],
 			isEloLimited: false,
 			flappyMode: false,
+			flappyOnlyMode: false,
 			customGameSettings: {
 				enabled: false,
 				// Valid powers: investigate, deckpeek, election, bullet; null for no power
@@ -316,7 +318,7 @@ export default class Creategame extends React.Component {
 		};
 
 		const findValue = val => {
-			for (let value of options) {
+			for (const value of options) {
 				if (val === value.value) {
 					return value;
 				}
@@ -359,7 +361,7 @@ export default class Creategame extends React.Component {
 		};
 
 		const findValue = val => {
-			for (let value of options) {
+			for (const value of options) {
 				if (val === value.value) {
 					return value;
 				}
@@ -373,7 +375,7 @@ export default class Creategame extends React.Component {
 				styles={style}
 				value={findValue(this.state.customGameSettings.powers[slot])}
 				onChange={(inputValue, action) => {
-					let newPowerList = this.state.customGameSettings.powers;
+					const newPowerList = this.state.customGameSettings.powers;
 					newPowerList[slot] = inputValue.value;
 					this.setState({ customGameSettings: Object.assign(this.state.customGameSettings, { powers: newPowerList }) });
 				}}
@@ -408,6 +410,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [true, false, false, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: false,
 					blindMode: false,
@@ -425,6 +428,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -444,6 +448,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: false,
 					blindMode: false,
@@ -461,6 +466,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -480,6 +486,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: true,
 					blindMode: false,
@@ -497,6 +504,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 13 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -517,6 +525,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: false,
 					blindMode: false,
@@ -534,6 +543,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -554,6 +564,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: true,
 					blindMode: false,
@@ -571,31 +582,33 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
 				});
 				break;
-			case 'Voice - ELO':
+			case 'Tourney Game':
 				this.setState({
-					gameName: 'Voice Chat Only',
+					gameName: 'Tourney Game ',
 					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
-					disableobserver: false,
+					disableobserver: true,
 					privateShowing: false,
 					password: '',
 					containsBadWord: false,
-					rainbowgame: true,
+					rainbowgame: false,
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: true,
 					isTourny: false,
-					casualgame: false,
+					casualgame: true,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: !isRainbow,
+					isVerifiedOnly: false,
 					timedSliderValue: [120],
 					customGameSliderValue: [7],
 					eloSliderValue: [1600],
@@ -608,6 +621,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -628,6 +642,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: true,
 					blindMode: false,
@@ -645,15 +660,16 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 15 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
 				});
 				break;
-			case 'Dev Game':
+			case 'Trivia Mode':
 				this.setState({
-					gameName: 'TESTING',
-					sliderValues: [5, 5],
+					gameName: 'Trivia Mode',
+					sliderValues: [7, 7],
 					experiencedmode: true,
 					disablechat: false,
 					disablegameChat: false,
@@ -662,26 +678,28 @@ export default class Creategame extends React.Component {
 					password: '',
 					containsBadWord: false,
 					rainbowgame: true,
-					checkedSliderValues: [true, false, false, false, false, false],
+					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: true,
 					blindMode: false,
 					timedMode: false,
-					isVerifiedOnly: !isRainbow,
+					isVerifiedOnly: false,
 					timedSliderValue: [120],
-					customGameSliderValue: [5],
+					customGameSliderValue: [7],
 					eloSliderValue: [1600],
 					isEloLimited: false,
 					customGameSettings: {
 						enabled: true,
 						// Valid powers: investigate, deckpeek, election, bullet; null for no power
-						powers: ['investigate', 'deckpeek', 'bullet', 'peekdrop', 'election'], // last "power" is always a fas victory
-						hitlerZone: 1, // 1-5
-						vetoZone: 1, // 1-5, must be larger than fas track state
-						fascistCount: 1, // 1-3, does not include hit
+						powers: ['bullet', 'bullet', 'bullet', 'bullet', 'bullet'], // last "power" is always a fas victory
+						hitlerZone: 4, // 1-5
+						vetoZone: 5, // 1-5, must be larger than fas track state
+						fascistCount: 2, // 1-3, does not include hit
 						hitKnowsFas: true,
+						fasCanShootHit: true,
 						deckState: { lib: 6, fas: 19 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -702,6 +720,7 @@ export default class Creategame extends React.Component {
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [true, false, true],
 					privateonlygame: false,
+					unlistedGame: false,
 					isTourny: false,
 					casualgame: false,
 					blindMode: false,
@@ -719,6 +738,7 @@ export default class Creategame extends React.Component {
 						vetoZone: 5, // 1-5, must be larger than fas track state
 						fascistCount: 1, // 1-3, does not include hit
 						hitKnowsFas: false,
+						fasCanShootHit: false,
 						deckState: { lib: 6, fas: 11 }, // includes tracks cards; 6 deck + 1 track = 5 in deck
 						trackState: { lib: 0, fas: 0 }
 					}
@@ -824,17 +844,19 @@ export default class Creategame extends React.Component {
 				disableObserver: this.state.disableobserver && !this.state.isTourny,
 				isTourny: this.state.isTourny,
 				isVerifiedOnly: userInfo.verified ? this.state.isVerifiedOnly : false,
-				disableGamechat: this.state.disablegameChat,
+				disableGamechat: false, // this.state.disablegameChat,
 				rainbowgame: this.state.rainbowgame,
 				blindMode: this.state.blindMode,
 				flappyMode: this.state.flappyMode,
+				flappyOnlyMode: this.state.flappyOnlyMode,
 				timedMode: this.state.timedMode ? this.state.timedSliderValue[0] : false,
 				casualGame: this.state.casualgame,
 				rebalance6p: this.state.checkedRebalanceValues[0],
 				rebalance7p: this.state.checkedRebalanceValues[1],
 				rebalance9p2f: this.state.checkedRebalanceValues[2],
 				eloSliderValue: this.state.isEloLimited ? this.state.eloSliderValue[0] : null,
-				privatePassword: this.state.privateShowing ? this.state.password : false,
+				unlistedGame: this.state.unlistedGame && !this.state.privateShowing,
+				privatePassword: this.state.privateShowing && !this.state.unlistedGame ? this.state.password : false,
 				customGameSettings: this.state.customGameSettings.enabled ? this.state.customGameSettings : undefined
 			};
 
@@ -975,7 +997,7 @@ export default class Creategame extends React.Component {
 	}
 
 	timedSliderChange = timedSliderValue => {
-		this.setState(prevState => ({ timedSliderValue, casualgame: timedSliderValue < 30 ? true : prevState.timedSliderValue }));
+		this.setState(prevState => ({ timedSliderValue, casualgame: timedSliderValue[0] < 30 }));
 	};
 
 	eloSliderChange = eloSliderValue => {
@@ -1025,6 +1047,7 @@ export default class Creategame extends React.Component {
 							onChange={checked => {
 								this.setState({ isEloLimited: checked });
 							}}
+							className="create-game-switch"
 							checked={this.state.isEloLimited}
 							onColor="#627cc8"
 							offColor="#444444"
@@ -1322,7 +1345,7 @@ export default class Creategame extends React.Component {
 				<div className="row">{this.renderFasTrack()}</div>
 				<div className="eight wide column ui grid" style={{ height: 'fit-content' }}>
 					<div className="row">
-						<div className="eight wide column">
+						<div className="six wide column">
 							<div>
 								<h4 className="ui header">Number of fascists</h4>
 								<Range
@@ -1335,13 +1358,31 @@ export default class Creategame extends React.Component {
 								/>
 							</div>
 						</div>
-						<div className="eight wide column">
+						<div className="five wide column">
 							<h4 className="ui header">Hitler sees fascists</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
-									this.setState({ customGameSettings: Object.assign(this.state.customGameSettings, { hitKnowsFas: checked }) });
+									this.setState({ customGameSettings: { ...this.state.customGameSettings, hitKnowsFas: checked } });
 								}}
 								checked={this.state.customGameSettings.hitKnowsFas}
+								onColor="#627cc8"
+								offColor="#444444"
+								uncheckedIcon={false}
+								checkedIcon={false}
+								height={21}
+								width={48}
+								handleDiameter={21}
+							/>
+						</div>
+						<div className="five wide column">
+							<h4 className="ui header">Fascists can shoot hitler</h4>
+							<Switch
+								className="create-game-switch"
+								onChange={checked => {
+									this.setState({ customGameSettings: { ...this.state.customGameSettings, fasCanShootHit: checked } });
+								}}
+								checked={this.state.customGameSettings.fasCanShootHit}
 								onColor="#627cc8"
 								offColor="#444444"
 								uncheckedIcon={false}
@@ -1354,7 +1395,7 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row">
 						<div style={{ display: 'flex', width: '100%', marginBottom: '6px' }}>
-							<div className="rolecard" style={{ backgroundImage: "url('../images/cards/hitler0.png')" }} /> {/* eslint-disable-line */}
+							<div className="rolecard" style={{ backgroundImage: "url('../images/cards/hitler1.png')" }} /> {/* eslint-disable-line */}
 							{renderFas()}
 						</div>
 						<div style={{ display: 'flex', width: '100%' }}>{renderLib()}</div>
@@ -1431,8 +1472,8 @@ export default class Creategame extends React.Component {
 				<button className="preset" onClick={() => this.presetSelector('2R1H')}>
 					2R1H
 				</button>
-				<button className="preset" onClick={() => this.presetSelector('Voice - ELO')}>
-					Voice - ELO
+				<button className="preset" onClick={() => this.presetSelector('Tourney Game')}>
+					Tournament
 				</button>
 				<button className="preset" onClick={() => this.presetSelector('Meoww')}>
 					Meoww
@@ -1444,8 +1485,8 @@ export default class Creategame extends React.Component {
 				<button className="preset" onClick={() => this.presetSelector('Inv Game')}>
 					Inv Game
 				</button>
-				<button className="preset" onClick={() => this.presetSelector('Dev Game')}>
-					Dev Game
+				<button className="preset" onClick={() => this.presetSelector('Trivia Mode')}>
+					Trivia Mode
 				</button>
 				<button className="preset default" onClick={() => this.presetSelector('Reset')}>
 					Reset
@@ -1462,6 +1503,7 @@ export default class Creategame extends React.Component {
 			// Can happen when refreshing.
 			const player = userList.list.find(p => p.userName === userInfo.userName);
 			if (!player) errs.push('Not logged in, please refresh.');
+			if (player && player.staffIncognito) errs.push(`You're incognito`);
 			else if (this.state.isEloLimited) {
 				const playerElo = (player && player.eloSeason && Math.min(2000, player.eloSeason)) || 1600;
 				const playerEloNonseason = (player && player.eloOverall && Math.min(2000, player.eloOverall)) || 1600;
@@ -1555,25 +1597,29 @@ export default class Creategame extends React.Component {
 							</div>
 							{this.state.containsBadWord && <p className="contains-bad-word">This game name has a banned word or word fragment.</p>}
 						</div>
-						<div className="three wide column privategame">
-							<h4 className="ui header" style={{ marginBottom: '15px' }}>
-								Private game
-							</h4>
-							<i className="big yellow lock icon" />
-							<Switch
-								onChange={checked => {
-									this.setState({ privateShowing: checked });
-								}}
-								checked={this.state.privateShowing}
-								onColor="#627cc8"
-								offColor="#444444"
-								uncheckedIcon={false}
-								checkedIcon={false}
-								height={21}
-								width={48}
-								handleDiameter={21}
-							/>
-						</div>
+						{!this.state.unlistedGame && (
+							<div className="three wide column privategame">
+								<h4 className="ui header" style={{ marginBottom: '15px' }}>
+									Private game
+								</h4>
+								<i className="big yellow lock icon" />
+								<Switch
+									className="create-game-switch"
+									onChange={checked => {
+										this.setState({ privateShowing: checked });
+									}}
+									checked={this.state.privateShowing}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+							</div>
+						)}
+						{this.state.unlistedGame && <div className="three wide column privategame" />}
 						{this.state.privateShowing && (
 							<div className="four wide column ui input">
 								<input
@@ -1584,6 +1630,31 @@ export default class Creategame extends React.Component {
 									autoFocus
 									value={this.state.password}
 									onChange={e => this.setState({ password: e.target.value })}
+								/>
+							</div>
+						)}
+						{!this.state.privateShowing && (
+							<div className="three wide column privategame">
+								<h4 className="ui header" style={{ marginBottom: '15px' }}>
+									Unlisted game
+								</h4>
+								<i className="big green lock icon" />
+								<Switch
+									className="create-game-switch"
+									onChange={checked => {
+										this.setState({
+											unlistedGame: checked,
+											casualgame: checked ? true : this.state.casualgame
+										});
+									}}
+									checked={this.state.unlistedGame}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
 								/>
 							</div>
 						)}
@@ -1616,6 +1687,7 @@ export default class Creategame extends React.Component {
 								COMING SOON: Resolve sudden death games with Flappy Hitler
 							</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ flappyMode: checked });
 								}}
@@ -1630,6 +1702,31 @@ export default class Creategame extends React.Component {
 							/>
 						</div>
 					</div>
+
+					{this.state.flappyMode && (
+						<div className="row flappy-force">
+							<div className="sixteen wide column">
+								<i className="big plane icon" style={{ color: 'darkred' }} />
+								<h4 className="ui header" style={{ color: 'darkred' }}>
+									Forget the policies, just play a flappy-only game
+								</h4>
+								<Switch
+									className="create-game-switch"
+									onChange={checked => {
+										this.setState({ flappyOnlyMode: checked });
+									}}
+									checked={this.state.flappyOnlyMode}
+									onColor="#627cc8"
+									offColor="#444444"
+									uncheckedIcon={false}
+									checkedIcon={false}
+									height={21}
+									width={48}
+									handleDiameter={21}
+								/>
+							</div>
+						</div>
+					)}
 					{this.state.timedMode && (
 						<div className="row timedmode-slider">
 							<div className="sixteen wide column">
@@ -1656,26 +1753,12 @@ export default class Creategame extends React.Component {
 									})()}
 								</span>
 							)}
-							<span
-								title="Timed mode may glitch out - use with caution"
-								style={{
-									color: 'red',
-									position: 'absolute',
-									left: '-130px',
-									top: '40px'
-								}}
-							>
-								<i className="warning icon" style={{ color: 'red' }} />
-								Caution: <br />
-								May glitch out
-								<br />
-								Use with caution
-							</span>
 							<i className="big hourglass half icon" />
 							<h4 className="ui header">
 								Timed mode - if a player does not make an action after a certain amount of time, that action is completed for them randomly.
 							</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ timedMode: checked });
 								}}
@@ -1698,6 +1781,7 @@ export default class Creategame extends React.Component {
 									Verified - only verified players can play in this game.
 								</h4>
 								<Switch
+									className="create-game-switch"
 									onChange={checked => {
 										this.setState({ isVerifiedOnly: checked });
 									}}
@@ -1719,6 +1803,7 @@ export default class Creategame extends React.Component {
 							<i className="big unmute icon" />
 							<h4 className="ui header">Disable player chat - use this for voice-only games</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ disablechat: checked });
 								}}
@@ -1734,8 +1819,12 @@ export default class Creategame extends React.Component {
 						</div>
 						<div className="four wide column disablegamechat">
 							<i className="big game icon" />
-							<h4 className="ui header">Disable game chats - you're on your own to remember what happened over the course of the game</h4>
-							<Switch
+							<h4 className="ui header">
+								Disable game chats - {/* you're on your own to remember what happened over the course of the game */}
+								<span style={{ fontStyle: 'italic' }}>currently disabled due to multiple issues. </span>
+							</h4>
+							{/* <Switch
+              className="create-game-switch"
 								onChange={checked => {
 									this.setState({ disablegameChat: checked });
 								}}
@@ -1747,12 +1836,13 @@ export default class Creategame extends React.Component {
 								height={21}
 								width={48}
 								handleDiameter={21}
-							/>
+							/> */}
 						</div>
 						<div className="four wide column experiencedmode">
 							<i className="big fast forward icon" />
 							<h4 className="ui header">Speed mode - most animations and pauses greatly reduced and fewer gamechats</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ experiencedmode: checked });
 								}}
@@ -1781,6 +1871,7 @@ export default class Creategame extends React.Component {
 										<img src="../images/rainbow.png" />
 										<h4 className="ui header">Rainbow game - only fellow 50+ game veterans can be seated in this game</h4>
 										<Switch
+											className="create-game-switch"
 											onChange={checked => {
 												this.setState({
 													rainbowgame: checked,
@@ -1806,6 +1897,7 @@ export default class Creategame extends React.Component {
 							<i className="big hide icon" />
 							<h4 className="ui header">Blind mode - player's names are replaced with random animal names, anonymizing them.</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({ blindMode: checked });
 								}}
@@ -1824,6 +1916,7 @@ export default class Creategame extends React.Component {
 								<i className="big talk icon" />
 								<h4 className="ui header">Disable observer chat</h4>
 								<Switch
+									className="create-game-switch"
 									onChange={checked => {
 										this.setState({ disableobserver: checked });
 									}}
@@ -1842,11 +1935,13 @@ export default class Creategame extends React.Component {
 							<i className="big handshake icon" />
 							<h4 className="ui header">Casual game - this game will not count towards your wins and losses</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									if (!checked) {
 										this.setState({
 											casualgame: checked,
-											customGameSettings: Object.assign(this.state.customGameSettings, { enabled: false })
+											customGameSettings: Object.assign(this.state.customGameSettings, { enabled: false }),
+											unlistedGame: false
 										});
 									} else {
 										this.setState({ casualgame: checked });
@@ -1866,6 +1961,7 @@ export default class Creategame extends React.Component {
 							<div className="four wide column privateonlygame">
 								<h4 className="ui header">Private only game - only other anonymous players can be seated.</h4>
 								<Switch
+									className="create-game-switch"
 									onChange={checked => {
 										this.setState({ privateonlyGame: checked, isVerifiedOnly: false });
 									}}
@@ -1886,6 +1982,7 @@ export default class Creategame extends React.Component {
 							<i className="big setting icon" />
 							<h4 className="ui header">Custom Game - Use a custom fascist track.</h4>
 							<Switch
+								className="create-game-switch"
 								onChange={checked => {
 									this.setState({
 										customGameSettings: Object.assign(this.state.customGameSettings, { enabled: checked }),

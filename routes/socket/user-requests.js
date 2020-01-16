@@ -30,13 +30,26 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
 const sendUserList = (module.exports.sendUserList = socket => {
 	// eslint-disable-line one-var
 	if (socket) {
-		socket.emit('userList', {
-			list: formattedUserList()
-		});
+		socket.emit('fetchUser');
+		// socket.emit('userList', {
+		// 	list: formattedUserList()
+		// });
 	} else {
 		userListEmitter.send = true;
 	}
 });
+
+module.exports.sendSpecificUserList = (socket, staffRole) => {
+	// eslint-disable-line one-var
+	const isAEM = Boolean(staffRole && staffRole !== 'altmod' && staffRole !== 'veteran');
+	if (socket) {
+		socket.emit('userList', {
+			list: formattedUserList(isAEM)
+		});
+	} else {
+		console.log('no socket received!');
+	}
+};
 
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 	const maskEmail = email => (email && email.split('@')[1]) || '';
@@ -84,7 +97,8 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 						electionNum: game.general.electionCount,
 						casual: game.general.casualGame,
 						private: game.general.private,
-						custom: game.customGameSettings.enabled
+						custom: game.customGameSettings.enabled,
+						unlisted: game.general.unlisted
 					});
 				});
 			}
@@ -177,13 +191,14 @@ module.exports.sendUserGameSettings = socket => {
 			const userListNames = userList.map(user => user.userName);
 
 			getProfile(passport.user);
-			if (!userListNames.includes(passport.user) && !account.gameSettings.staffIncognito) {
+			if (!userListNames.includes(passport.user)) {
 				const userListInfo = {
 					userName: passport.user,
 					staffRole: account.staffRole || '',
 					isContributor: account.isContributor || false,
 					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
 					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+					staffIncognito: account.gameSettings.staffIncognito,
 					wins: account.wins,
 					losses: account.losses,
 					rainbowWins: account.rainbowWins,
@@ -257,11 +272,14 @@ module.exports.sendReplayGameChats = (socket, uid) => {
 
 /**
  * @param {object} socket - user socket reference.
+ * @param {boolean} isAEM - user AEM designation
  */
-module.exports.sendGameList = socket => {
+module.exports.sendGameList = (socket, isAEM) => {
 	// eslint-disable-line one-var
 	if (socket) {
-		socket.emit('gameList', formattedGameList());
+		let gameList = formattedGameList();
+		gameList = gameList.filter(game => isAEM || (game && !game.isUnlisted));
+		socket.emit('gameList', gameList);
 	} else {
 		gameListEmitter.send = true;
 	}
@@ -295,7 +313,18 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
 	const user = userList.find(user => user.userName === passport.user);
 	if (user) {
 		user.status = {
-			type: override ? override : game ? (game.general.private ? 'private' : game.general.rainbowgame ? 'rainbow' : 'playing') : 'none',
+			type:
+				override && game && !game.general.unlisted
+					? override
+					: game
+					? game.general.private
+						? 'private'
+						: !game.general.unlisted && game.general.rainbowgame
+						? 'rainbow'
+						: !game.general.unlisted
+						? 'playing'
+						: 'none'
+					: 'none',
 			gameId: game ? game.general.uid : false
 		};
 		sendUserList();

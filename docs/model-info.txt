@@ -25,6 +25,7 @@ chats array
 	isBroadcast bool
 	timestamp time
 general
+	lastModPing date
 	isVerifiedOnly bool
 	blindMode bool
 	name string
@@ -75,6 +76,11 @@ trackState
 	fascistPolicyCount number
 	enactedPolicies array
 		location string offscreen center liberal0 ... fascist0 ...
+remakeData array
+	obj
+		userName string
+		isRemaking bool
+		remakeTime int (Date)
 publicPlayersState array
 	obj
 		pingTime number using getTime()
@@ -84,7 +90,6 @@ publicPlayersState array
 		connected bool
 		isLoader bool
 		leftGame bool
-		isRemakeVoting bool
 		userName string
 		previousGovernmentStatus string wasPresident wasChancellor
 		cardStatus

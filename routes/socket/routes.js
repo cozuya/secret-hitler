@@ -21,7 +21,8 @@ const {
 	handleModPeekVotes,
 	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
-	handleFlappyEvent
+	handleFlappyEvent,
+	handleUpdatedTheme
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -32,6 +33,7 @@ const {
 	sendGameList,
 	sendGeneralChats,
 	sendUserList,
+	sendSpecificUserList,
 	sendReplayGameChats,
 	sendSignups,
 	sendAllSignups,
@@ -53,6 +55,10 @@ const { games, emoteList } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
+
+let modUserNames = [],
+	editorUserNames = [],
+	adminUserNames = [];
 
 const gamesGarbageCollector = () => {
 	const currentTime = Date.now();
@@ -94,14 +100,26 @@ const ensureInGame = (passport, game) => {
 	}
 };
 
-module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames) => {
+const gatherStaffUsernames = () => {
+	Account.find({ staffRole: { $exists: true } })
+		.then(accounts => {
+			modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
+			editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
+			adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+		})
+		.catch(err => {
+			console.log(err, 'err in finding staffroles');
+		});
+};
+
+module.exports.socketRoutes = () => {
 	setInterval(gamesGarbageCollector, 100000);
+
+	gatherStaffUsernames();
 
 	io.on('connection', socket => {
 		checkUserStatus(socket, () => {
 			socket.emit('version', { current: version });
-			sendGeneralChats(socket);
-			sendGameList(socket);
 
 			// defensively check if game exists
 			socket.use((packet, next) => {
@@ -124,19 +142,28 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 
 			if (authenticated && passport && passport.user) {
 				Account.findOne({ username: passport.user }).then(account => {
-					if (account.staffRole && account.staffRole.length > 0 && account.staffRole !== 'trialmod' && account.staffRole !== 'altmod') {
+					if (
+						account.staffRole &&
+						account.staffRole.length > 0 &&
+						account.staffRole !== 'trialmod' &&
+						account.staffRole !== 'altmod' &&
+						account.staffRole !== 'veteran'
+					) {
 						isAEM = true;
 					}
 					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
 				});
 			}
 
+			sendGeneralChats(socket);
+			sendGameList(socket, isAEM);
+
 			let isRestricted = true;
 
 			const checkRestriction = account => {
 				if (!account || !passport || !passport.user || !socket) return;
 				const parseVer = ver => {
-					let vals = ver.split('.');
+					const vals = ver.split('.');
 					vals.forEach((v, i) => (vals[i] = parseInt(v)));
 					return vals;
 				};
@@ -150,8 +177,8 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				};
 
 				if (account.touLastAgreed && account.touLastAgreed.length) {
-					let changesSince = [];
-					let myVer = parseVer(account.touLastAgreed);
+					const changesSince = [];
+					const myVer = parseVer(account.touLastAgreed);
 					TOU_CHANGES.forEach(change => {
 						if (!firstVerNew(myVer, parseVer(change.changeVer))) changesSince.push(change);
 					});
@@ -160,28 +187,65 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 						return true;
 					}
 				} else {
-					socket.emit('touChange', TOU_CHANGES);
+					socket.emit('touChange', [TOU_CHANGES[TOU_CHANGES.length - 1]]);
+					return true;
+				}
+				const warnings = account.warnings.filter(warning => !warning.acknowledged);
+				if (warnings.length > 0) {
+					const { moderator, acknowledged, ...firstWarning } = warnings[0]; // eslint-disable-line no-unused-vars
+					socket.emit('warningPopup', firstWarning);
 					return true;
 				}
 				// implement other restrictions as needed
+				socket.emit('removeAllPopups');
 				return false;
 			};
+
+			if (passport && passport.user && authenticated) {
+				Account.findOne({ username: passport.user }).then(account => {
+					isRestricted = checkRestriction(account);
+				});
+			}
 
 			// Instantly sends the userlist as soon as the websocket is created.
 			// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 			socket.conn.on('upgrade', () => {
 				sendUserList(socket);
-				if (passport && passport.user && authenticated) {
-					Account.findOne({ username: passport.user }).then(account => {
-						isRestricted = checkRestriction(account);
-					});
-				}
 				socket.emit('emoteList', emoteList);
+			});
+
+			socket.on('receiveRestrictions', () => {
+				Account.findOne({ username: passport.user }).then(account => {
+					isRestricted = checkRestriction(account);
+				});
+			});
+
+			socket.on('seeWarnings', username => {
+				if (isAEM) {
+					Account.findOne({ username: username }).then(account => {
+						if (account) {
+							if (account.warnings && account.warnings.length > 0) {
+								socket.emit('sendWarnings', { username, warnings: account.warnings });
+							} else {
+								socket.emit('sendAlert', `That user doesn't have any warnings.`);
+							}
+						} else {
+							socket.emit('sendAlert', `That user doesn't exist.`);
+						}
+					});
+				} else {
+					socket.emit('sendAlert', `Are you sure you're supposed to be doing that?`);
+					console.log(passport.user, 'tried to receive warnings for', username);
+				}
 			});
 
 			// user-events
 			socket.on('disconnect', () => {
 				handleSocketDisconnect(socket);
+			});
+
+			socket.on('sendUser', user => {
+				sendSpecificUserList(socket, user.staffRole);
 			});
 
 			socket.on('flappyEvent', data => {
@@ -216,6 +280,12 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 				}
 			});
 
+			socket.on('regatherAEMUsernames', () => {
+				if (authenticated && isAEM) {
+					gatherStaffUsernames();
+				}
+			});
+
 			socket.on('confirmTOU', () => {
 				if (authenticated && isRestricted) {
 					Account.findOne({ username: passport.user }).then(account => {
@@ -225,9 +295,25 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 					});
 				}
 			});
-			socket.on('handleUpdatedPlayerNote', data => {
-				handleUpdatedPlayerNote(socket, data);
+
+			socket.on('acknowledgeWarning', () => {
+				if (authenticated && isRestricted) {
+					Account.findOne({ username: passport.user }).then(acc => {
+						acc.warnings[acc.warnings.findIndex(warning => !warning.acknowledged)].acknowledged = true;
+						acc.markModified('warnings');
+						acc.save(() => (isRestricted = checkRestriction(acc)));
+					});
+				}
 			});
+
+			socket.on('handleUpdatedPlayerNote', data => {
+				handleUpdatedPlayerNote(socket, passport, data);
+			});
+
+			socket.on('handleUpdatedTheme', data => {
+				handleUpdatedTheme(socket, passport, data);
+			});
+
 			socket.on('updateModAction', data => {
 				if (authenticated && isAEM) {
 					handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));
@@ -356,7 +442,7 @@ module.exports = (modUserNames, editorUserNames, adminUserNames, altmodUserNames
 					const game = findGame({ uid });
 					if (game && game.private && game.private.seatedPlayers) {
 						const players = game.private.seatedPlayers.map(player => player.userName);
-						Account.find({ staffRole: { $exists: true } }).then(accounts => {
+						Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
 							const staff = accounts
 								.filter(acc => {
 									acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username);

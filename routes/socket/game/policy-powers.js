@@ -40,13 +40,18 @@ module.exports.selectPolicies = (passport, game, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		return;
+	}
+
 	if (!president || president.userName !== passport.user) {
 		return;
 	}
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (!game.private.lock.selectPolicies && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -234,13 +239,21 @@ module.exports.selectOnePolicy = (passport, game) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	if (!president || president.userName !== passport.user) {
 		return;
 	}
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (!game.private.lock.selectOnePolicy && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -398,12 +411,15 @@ module.exports.selectOnePolicy = (passport, game) => {
 								game.gameState.phase = 'presidentVoteOnBurn';
 
 								if (game.general.timedMode) {
-									game.gameState.timedModeEnabled = true; // (passport, game, data)
+									if (game.private.timerId) {
+										clearTimeout(game.private.timerId);
+										game.private.timerId = null;
+									}
+									game.gameState.timedModeEnabled = true;
 									game.private.timerId = setTimeout(
 										() => {
 											if (game.gameState.timedModeEnabled) {
 												game.gameState.timedModeEnabled = false;
-
 												selectBurnCard({ user: president.userName }, game, { vote: Boolean(Math.floor(Math.random() * 2)) });
 											}
 										},
@@ -433,12 +449,19 @@ module.exports.selectOnePolicy = (passport, game) => {
 module.exports.selectBurnCard = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
 	}
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -547,8 +570,10 @@ module.exports.investigateLoyalty = game => {
 	const hasTarget =
 		president.playersState.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead && !seatedPlayers[i].wasInvestigated).length > 0;
 	if (!hasTarget) {
-		let t = new Date();
+		const t = new Date();
+
 		t.setMilliseconds(t.getMilliseconds + 1);
+
 		const chat = {
 			timestamp: t,
 			gameChat: true,
@@ -601,12 +626,20 @@ module.exports.investigateLoyalty = game => {
 module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -735,7 +768,7 @@ module.exports.selectPartyMembershipInvestigate = (passport, game, data, socket)
 					if (!game.general.disableGamechat && !(game.private.seatedPlayers[playerIndex].role.cardName === 'hitler' && president.role.team === 'fascist')) {
 						president.playersState[playerIndex].nameStatus = playersTeam;
 					}
-
+					game.private.invIndex = playerIndex;
 					sendInProgressGameUpdate(game);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
@@ -800,12 +833,20 @@ module.exports.showPlayerLoyalty = game => {
 module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -1018,7 +1059,7 @@ module.exports.specialElection = game => {
 module.exports.selectSpecialElection = (passport, game, data, socket) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
-	let gameChat = {
+	const gameChat = {
 		timestamp: new Date(),
 		gameChat: true,
 		chat: []
@@ -1036,13 +1077,21 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	if (playerIndex === presidentIndex) {
 		return;
 	}
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (!game.private.lock.selectSpecialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
@@ -1095,28 +1144,6 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 			});
 		}
 
-		const modOnlyChat = {
-			timestamp: new Date(),
-			gameChat: true,
-			chat: [
-				{
-					text: 'President '
-				},
-				{
-					text: `${seatedPlayers[presidentIndex].userName} {${presidentIndex + 1}}`,
-					type: 'player'
-				},
-				{ text: ' has special-elected ' },
-				{
-					text: game.general.blindMode ? `{${playerIndex + 1}}` : `${seatedPlayers[playerIndex].userName} {${playerIndex + 1}}`,
-					type: 'player'
-				},
-				{ text: '.' }
-			]
-		};
-
-		game.private.hiddenInfoChat.push(modOnlyChat);
-		sendInProgressModChatUpdate(game, modOnlyChat);
 		sendInProgressGameUpdate(game);
 
 		startElection(game, data.playerIndex);
@@ -1149,7 +1176,9 @@ module.exports.executePlayer = game => {
 				(player, index) =>
 					index !== presidentIndex &&
 					!seatedPlayers[index].isDead &&
-					!(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')
+					((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
+						(game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler')) ||
+						(game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[index].role.cardName === 'hitler'))
 			)
 			.forEach(player => {
 				player.notificationStatus = 'notification';
@@ -1160,7 +1189,11 @@ module.exports.executePlayer = game => {
 			seatedPlayers
 				.filter(
 					(player, i) =>
-						i !== presidentIndex && !seatedPlayers[i].isDead && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')
+						i !== presidentIndex &&
+						!seatedPlayers[i].isDead &&
+						((!game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
+							(game.customGameSettings.fasCanShootHit && !(president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler')) ||
+							(game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[i].role.cardName === 'hitler'))
 				)
 				.map(player => seatedPlayers.indexOf(player))
 		];
@@ -1190,8 +1223,19 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	// Make sure the target is valid
-	if (playerIndex === presidentIndex || selectedPlayer.isDead || (selectedPlayer.role.cardName === 'hitler' && president.role.cardName === 'fascist')) {
+	if (
+		playerIndex === presidentIndex ||
+		selectedPlayer.isDead ||
+		(!game.customGameSettings.fasCanShootHit && president.role.cardName === 'fascist' && seatedPlayers[playerIndex].role.cardName === 'hitler')
+	) {
 		return;
 	}
 
@@ -1219,7 +1263,8 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
-		game.gameState.timedModeEnabled = game.private.timerId = null;
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
 	}
 
 	if (!game.private.lock.selectPlayerToExecute && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {

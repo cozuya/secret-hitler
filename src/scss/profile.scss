@@ -43,9 +43,9 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	border: 0;
 	border-radius: 0;
 	margin-top: 0;
-	background-color: #1b1b1b;
+	background-color: var(--theme-background-2);
 	padding: 20px;
-	color: #eee;
+	color: var(--theme-text-1);
 	width: 98%;
 
 	.profile-picture {
@@ -90,12 +90,16 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		box-shadow: 0 0 5px 2px #007fff !important;
 	}
 
+	.profile-picture.veteran {
+		box-shadow: 0 0 5px 2px #4d949e !important;
+	}
+
 	.profile-picture.cbell {
 		box-shadow: 0 0 5px 2px #ff1a75 !important;
 	}
 
 	.profile-picture.jdudle3 {
-		box-shadow: 0 0 5px 2px #fbbc13 !important;
+		box-shadow: 0 0 5px 2px #997fff !important;
 	}
 
 	.profile-picture.thejuststopo {
@@ -106,16 +110,8 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 		box-shadow: 0 0 5px 2px #b7ae0b !important;
 	}
 
-	.profile-picture.dfinn {
-		box-shadow: 0 0 5px 2px #00ffd8 !important;
-	}
-
-	.profile-picture.invidia {
-		box-shadow: 0 0 5px 2px #ec7d04 !important;
-	}
-
-	.profile-picture.faaiz {
-		box-shadow: 0 0 5px 2px #c7c1ff !important;
+	.profile-picture.moira {
+		box-shadow: 0 0 5px 2px #ff95fb !important;
 	}
 
 	.blacklist-button {
@@ -127,7 +123,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 
 	.ui.menu {
 		border-radius: 0.28571429rem 0.28571429rem 0em 0em !important;
-		border: 1px solid #d4d4d5 !important;
+		border: 1px solid var(--theme-text-2) !important;
 	}
 
 	.column-name {
@@ -157,9 +153,9 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	textarea {
 		width: 100%;
 		flex-grow: 1;
-		background: #fff;
+		background: var(--theme-text-1);
 		resize: none;
-		color: #333;
+		color: var(--theme-background-2);
 		min-height: 60px;
 		margin-bottom: 10px;
 	}

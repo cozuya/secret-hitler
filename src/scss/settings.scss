@@ -2,13 +2,12 @@
 	position: relative;
 	padding: 2%;
 	margin: 10px;
-	//background: #100000;
 
 	.content > button {
 		position: absolute;
 		left: 50px;
 		top: 0;
-		color: #fff;
+		color: var(--theme-text-1);
 		padding: 8px;
 	}
 
@@ -41,21 +40,74 @@
 
 		button {
 			margin-top: 20px;
-			color: #fff;
+			color: var(--theme-text-1);
+		}
+	}
+
+	.themes {
+		> h4 {
+			font-size: 18px;
+		}
+	}
+
+	.themes {
+		.theme-buttons {
+			padding-top: 30px;
+
+			button {
+				font-size: 12px;
+				background: var(--theme-primary);
+				color: var(--theme-text-1);
+
+				&:last-child {
+					margin-top: 5px;
+					background: var(--theme-secondary);
+
+					&:hover {
+						background: var(--theme-tertiary);
+					}
+				}
+			}
+		}
+		.picker-container {
+			position: absolute;
+			width: 225px;
+			z-index: 2;
+		}
+		.picker-close-button {
+			width: 30px;
+			height: 30px;
+			position: relative;
+			left: 190px;
+			top: 2px;
+			text-align: center;
+			background: white;
+			color: black;
+			cursor: pointer;
+			padding-top: 7px;
+			font-size: 24px;
+			z-index: 2;
+		}
+		.color-box {
+			width: 75px;
+			height: 75px;
+			border: 2px solid #aaa;
+			margin: 0 auto;
+			cursor: pointer;
 		}
 	}
 
 	.font-container {
 		input:active ~ label,
 		input:focus ~ label {
-			color: $secondary;
+			color: var(--theme-secondary);
 		}
 		label {
-			color: $primary;
+			color: var(--theme-primary);
 			line-height: 1.3;
 
 			&:hover {
-				color: $secondary;
+				color: var(--theme-secondary);
 				cursor: pointer;
 			}
 
@@ -116,10 +168,10 @@
 			width: 70px;
 			height: 95px;
 			border-width: 2px;
-			border-color: rgb(102, 102, 102);
+			border-color: var(--theme-background-3);
 			border-style: dashed;
 			border-radius: 5px;
-			color: #ddd;
+			color: var(--theme-text-2);
 			cursor: pointer;
 			font-size: 12px;
 			line-height: 1;
@@ -133,7 +185,7 @@
 		.preview-container {
 			button {
 				position: relative;
-				color: #ddd;
+				color: var(--theme-text-2);
 				top: -60px;
 				left: 10px;
 			}

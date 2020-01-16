@@ -124,7 +124,4 @@ Defaultmid.propTypes = {
 	readPatchNotes: PropTypes.func,
 	userInfo: PropTypes.object
 };
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(Defaultmid);
+export default connect(mapStateToProps, mapDispatchToProps)(Defaultmid);

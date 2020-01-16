@@ -37,6 +37,18 @@ html(lang="en")
     meta(name="twitter:title" content="Secret Hitler.io")
     meta(name="twitter:description" content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
     title Secret Hitler.io
+    style(type="text/css").
+      :root {
+        --theme-primary: #{primaryColor};
+        --theme-secondary: #{secondaryColor};
+        --theme-tertiary: #{tertiaryColor};
+        --theme-background-1: #{backgroundColor};
+        --theme-background-2: #{secondaryBackgroundColor};
+        --theme-background-3: #{tertiaryBackgroundColor};
+        --theme-text-1: #{textColor};
+        --theme-text-2: #{secondaryTextColor};
+        --theme-text-3: #{tertiaryTextColor};
+      }
   body
     #main
       block content

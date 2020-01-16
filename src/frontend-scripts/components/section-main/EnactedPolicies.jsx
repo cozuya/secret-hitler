@@ -16,7 +16,7 @@ const EnactedPolicies = props => {
 			{_.range(1, 12).map((num, i) => {
 				const stateObj = props.gameInfo.trackState.enactedPolicies[i];
 
-				let frontClasses = 'enactedpolicies-card front';
+				const frontClasses = 'enactedpolicies-card front';
 				let backClasses = 'enactedpolicies-card back';
 				let containerClasses = `enactedpolicies-card-container`;
 

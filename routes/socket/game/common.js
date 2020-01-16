@@ -161,7 +161,8 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			(player, index) =>
 				seatedPlayers[index] &&
 				!seatedPlayers[index].isDead &&
-				(index !== presidentIndex && (game.general.livingPlayerCount > 5 ? !previousElectedGovernment.includes(index) : previousElectedGovernment[1] !== index))
+				index !== presidentIndex &&
+				(game.general.livingPlayerCount > 5 ? !previousElectedGovernment.includes(index) : previousElectedGovernment[1] !== index)
 		)
 		.forEach(player => {
 			player.notificationStatus = 'notification';
@@ -177,6 +178,10 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	game.gameState.phase = 'selectingChancellor';
 
 	if (game.general.timedMode) {
+		if (game.private.timerId) {
+			clearTimeout(game.private.timerId);
+			game.private.timerId = null;
+		}
 		game.gameState.timedModeEnabled = true;
 		game.private.timerId = setTimeout(
 			() => {

@@ -41,9 +41,7 @@ app.use((req, res, next) => {
 	} catch (e) {
 		console.error(`Malformed URI: ${req.path}`);
 		console.error(
-			`IP data: ${req.headers['x-real-ip']} | ${req.headers['X-Real-IP']} | ${req.headers['X-Forwarded-For']} | ${req.headers['x-forwarded-for']} | ${
-				req.connection.remoteAddress
-			}`
+			`IP data: ${req.headers['x-real-ip']} | ${req.headers['X-Real-IP']} | ${req.headers['X-Forwarded-For']} | ${req.headers['x-forwarded-for']} | ${req.connection.remoteAddress}`
 		);
 		res.status(500).send('An error occurred.');
 	}
@@ -125,6 +123,7 @@ passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
 
 routesIndex();

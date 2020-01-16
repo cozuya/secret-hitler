@@ -5,7 +5,7 @@ const BannedIP = require('../../models/bannedIP');
 
 const fs = require('fs');
 const PNG = require('pngjs').PNG;
-let emotes = [];
+const emotes = [];
 fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
 	if (file.name.endsWith('.png')) emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
 });
@@ -153,43 +153,46 @@ module.exports.profiles = (() => {
 	return { get, push };
 })();
 
-module.exports.formattedUserList = () => {
+module.exports.formattedUserList = isAEM => {
 	const prune = value => {
 		// Converts things like zero and null to undefined to remove it from the sent data.
 		return value ? value : undefined;
 	};
 
-	return module.exports.userList.map(user => ({
-		userName: user.userName,
-		wins: prune(user.wins),
-		losses: prune(user.losses),
-		rainbowWins: prune(user.rainbowWins),
-		rainbowLosses: prune(user.rainbowLosses),
-		isPrivate: prune(user.isPrivate),
-		staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
-		staffDisableStaffColor: prune(user.staffDisableStaffColor),
+	return module.exports.userList
+		.map(user => ({
+			userName: user.userName,
+			wins: prune(user.wins),
+			losses: prune(user.losses),
+			rainbowWins: prune(user.rainbowWins),
+			rainbowLosses: prune(user.rainbowLosses),
+			isPrivate: prune(user.isPrivate),
+			staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
+			staffDisableStaffColor: prune(user.staffDisableStaffColor),
 
-		// Tournaments are disabled, no point sending this.
-		// tournyWins: user.tournyWins,
+			// Tournaments are disabled, no point sending this.
+			// tournyWins: user.tournyWins,
 
-		// Blacklists are sent in the sendUserGameSettings event.
-		// blacklist: user.blacklist,
-		customCardback: user.customCardback,
-		customCardbackUid: user.customCardbackUid,
-		eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
-		eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
-		status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
-		winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
-		lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
-		rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
-		rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
-		previousSeasonAward: user.previousSeasonAward,
-		specialTournamentStatus: user.specialTournamentStatus,
-		timeLastGameCreated: user.timeLastGameCreated,
-		staffRole: prune(user.staffRole),
-		isContributor: prune(user.isContributor)
-		// oldData: user
-	}));
+			// Blacklists are sent in the sendUserGameSettings event.
+			// blacklist: user.blacklist,
+			customCardback: user.customCardback,
+			customCardbackUid: user.customCardbackUid,
+			eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
+			eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
+			status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
+			winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
+			lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
+			rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
+			rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
+			previousSeasonAward: user.previousSeasonAward,
+			specialTournamentStatus: user.specialTournamentStatus,
+			timeLastGameCreated: user.timeLastGameCreated,
+			staffRole: prune(user.staffRole),
+			staffIncognito: prune(user.staffIncognito),
+			isContributor: prune(user.isContributor)
+			// oldData: user
+		}))
+		.filter(user => isAEM || !user.staffIncognito);
 };
 
 const userListEmitter = {
@@ -204,9 +207,9 @@ const userListEmitter = {
 		if (userListEmitter.state > 0) userListEmitter.state--;
 		else {
 			userListEmitter.send = false;
-			io.sockets.emit('userList', {
-				list: module.exports.formattedUserList()
-			});
+			io.sockets.emit('fetchUser'); // , {
+			// 	list: module.exports.formattedUserList()
+			// });
 		}
 	}, 100)
 };
@@ -236,6 +239,7 @@ module.exports.formattedGameList = () => {
 		isTourny: games[gameName].general.isTourny || undefined,
 		timedMode: games[gameName].general.timedMode || undefined,
 		flappyMode: games[gameName].general.flappyMode || undefined,
+		flappyOnlyMode: games[gameName].general.flappyOnlyMode || undefined,
 		tournyStatus: (() => {
 			if (games[gameName].general.isTourny) {
 				if (games[gameName].general.tournyInfo.queuedPlayers && games[gameName].general.tournyInfo.queuedPlayers.length) {
@@ -260,7 +264,8 @@ module.exports.formattedGameList = () => {
 		private: games[gameName].general.private || undefined,
 		uid: games[gameName].general.uid,
 		rainbowgame: games[gameName].general.rainbowgame || undefined,
-		isCustomGame: games[gameName].customGameSettings.enabled
+		isCustomGame: games[gameName].customGameSettings.enabled,
+		isUnlisted: games[gameName].general.unlisted || undefined
 	}));
 };
 
@@ -281,7 +286,7 @@ const gameListEmitter = {
 
 module.exports.gameListEmitter = gameListEmitter;
 
-module.exports.AEM = Account.find({ staffRole: { $exists: true } });
+module.exports.AEM = Account.find({ staffRole: { $exists: true, $ne: 'veteran' } });
 
 const bypassKeys = [];
 

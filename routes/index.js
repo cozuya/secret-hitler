@@ -2,15 +2,17 @@ const passport = require('passport'); // eslint-disable-line no-unused-vars
 const Account = require('../models/account'); // eslint-disable-line no-unused-vars
 const { getProfile } = require('../models/profile/utils');
 const GameSummary = require('../models/game-summary');
-const socketRoutes = require('./socket/routes');
+const Profile = require('../models/profile');
+const { socketRoutes } = require('./socket/routes');
 const _ = require('lodash');
 const accounts = require('./accounts');
 const version = require('../version');
-const { obfIP } = require('./socket/ip-obf');
+const { expandAndSimplify, obfIP } = require('./socket/ip-obf');
 const { ProcessImage } = require('./image-processor');
 const savedTorIps = require('../utils/savedtorips');
-const https = require('https');
+const fetch = require('node-fetch');
 const prodCacheBustToken = require('./prodCacheBustToken');
+const { DEFAULTTHEMECOLORS } = require('../src/frontend-scripts/node-constants');
 
 /**
  * @param {object} req - express request object.
@@ -49,38 +51,20 @@ module.exports = () => {
 		res.render(pageName, renderObj);
 	};
 
-	try {
-		https.get('https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1', res => {
-			let data = '';
+	fetch('https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1')
+		.then(res => res.text())
+		.then(text => {
+			const gatheredTorIps = text.split('\n').slice(3);
 
-			res.on('data', chunk => {
-				data += chunk;
-			});
-
-			res.on('end', () => {
-				const torIps = data.split('\n');
-
-				accounts(torIps);
-			});
-		});
-	} catch (error) {
-		accounts(savedTorIps);
-	}
-
-	Account.find({ $or: [{ staffRole: { $exists: true } }, { isContributor: true }] })
-		.then(accounts => {
-			const modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
-			const editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
-			const adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
-			const altmodUserNames = accounts.filter(account => account.staffRole === 'altmod').map(account => account.username);
-			const trialmodUserNames = accounts.filter(account => account.staffRole === 'trialmod').map(account => account.username);
-			const contributorUserNames = accounts.filter(account => account.isContributor).map(account => account.username);
-
-			socketRoutes(modUserNames, editorUserNames, adminUserNames, altmodUserNames, trialmodUserNames, contributorUserNames);
+			accounts(gatheredTorIps);
 		})
-		.catch(err => {
-			console.log(err, 'err in finding staffroles');
+		.catch(e => {
+			console.log('error in getting tor ips', e);
+			accounts(savedTorIps);
+			console.log('Using Cached TOR IPs');
 		});
+
+	socketRoutes();
 
 	app.get('/', (req, res) => {
 		renderPage(req, res, 'page-home', 'home');
@@ -126,18 +110,61 @@ module.exports = () => {
 		res.redirect('/game/');
 	});
 
+	const getHSLcolors = hsl => [
+		parseInt(hsl.split(',')[0].split('hsl(')[1], 10),
+		parseInt(
+			hsl
+				.split(',')[1]
+				.trim()
+				.split('%')[0],
+			10
+		),
+		parseInt(
+			hsl
+				.split(',')[2]
+				.trim()
+				.split('%)')[0],
+			10
+		)
+	];
+
 	app.get('/game/', ensureAuthenticated, (req, res) => {
 		const { username } = req.user;
 
 		if (req.user.isBanned) {
 			res.redirect('/logout');
 		} else {
+			let ip = req.expandedIP;
+
+			try {
+				ip = expandAndSimplify(ip);
+			} catch (e) {
+				console.log(e);
+			}
+
+			Profile.findOne({ _id: username })
+				.then(profile => {
+					if (profile) {
+						profile.lastConnectedIP = ip;
+						profile.save();
+					}
+				})
+				.catch(err => {
+					console.log(err, 'profile find err');
+				});
+
 			Account.findOne({ username }, (err, account) => {
 				if (err) {
 					console.log(err);
 					return;
 				}
 				const { blacklist } = account.gameSettings;
+
+				const backgroundColor = account.backgroundColor || DEFAULTTHEMECOLORS.baseBackgroundColor;
+				const textColor = account.textColor || DEFAULTTHEMECOLORS.baseTextColor;
+				const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
+				const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
+
 				const gameObj = {
 					game: true,
 					staffRole: account.staffRole || '',
@@ -146,15 +173,39 @@ module.exports = () => {
 					hasNotDismissedSignupModal: account.hasNotDismissedSignupModal,
 					username,
 					gameSettings: account.gameSettings,
-					blacklist
+					blacklist,
+					primaryColor: account.primaryColor || DEFAULTTHEMECOLORS.primaryColor,
+					secondaryColor: account.secondaryColor || DEFAULTTHEMECOLORS.secondaryColor,
+					tertiaryColor: account.tertiaryColor || DEFAULTTHEMECOLORS.tertiaryColor,
+					backgroundColor,
+					secondaryBackgroundColor: `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
+						backgroundLightness > 50 ? backgroundLightness - 7 : backgroundLightness + 7
+					}%)`,
+					tertiaryBackgroundColor: `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
+						backgroundLightness > 50 ? backgroundLightness - 14 : backgroundLightness + 14
+					}%)`,
+					textColor,
+					secondaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 7 : textLightness + 7}%)`,
+					tertiaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 14 : textLightness + 14}%)`
 				};
 
 				if (process.env.NODE_ENV === 'production') {
-					gameObj.prodCacheBustToken = prodCacheBustToken;
+					gameObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
 				}
 
-				account.gameSettings.blacklist = [];
-				res.render('game', gameObj);
+				account.lastConnectedIP = ip;
+				if (
+					(account.ipHistory && account.ipHistory.length === 0) ||
+					(account.ipHistory.length > 0 && account.ipHistory[account.ipHistory.length - 1].ip !== ip)
+				) {
+					account.ipHistory.push({
+						date: new Date(),
+						ip: ip
+					});
+				}
+				account.save(() => {
+					res.render('game', gameObj);
+				});
 			});
 		}
 	});
@@ -177,12 +228,35 @@ module.exports = () => {
 			return;
 		}
 
+		const backgroundColor = DEFAULTTHEMECOLORS.baseBackgroundColor;
+		const textColor = DEFAULTTHEMECOLORS.baseTextColor;
+		const [backgroundHue, backgroundSaturation, backgroundLightness] = getHSLcolors(backgroundColor);
+		const [textHue, textSaturation, textLightness] = getHSLcolors(textColor);
+
+		const secondaryBackgroundColor = `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
+			backgroundLightness > 50 ? backgroundLightness - 5 : backgroundLightness + 5
+		}%)`;
+		const tertiaryBackgroundColor = `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
+			backgroundLightness > 50 ? backgroundLightness - 10 : backgroundLightness + 10
+		}%)`;
+		const secondaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 7 : textLightness + 7}%)`;
+		const tertiaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 14 : textLightness + 14}%)`;
+
 		const gameObj = {
-			game: true
+			game: true,
+			primaryColor: DEFAULTTHEMECOLORS.primaryColor,
+			secondaryColor: DEFAULTTHEMECOLORS.secondaryColor,
+			tertiaryColor: DEFAULTTHEMECOLORS.tertiaryColor,
+			backgroundColor,
+			secondaryBackgroundColor,
+			tertiaryBackgroundColor,
+			textColor,
+			secondaryTextColor,
+			tertiaryTextColor
 		};
 
 		if (process.env.NODE_ENV === 'production') {
-			gameObj.prodCacheBustToken = prodCacheBustToken;
+			gameObj.prodCacheBustToken = prodCacheBustToken.prodCacheBustToken;
 		}
 
 		res.render('game', gameObj);
@@ -210,7 +284,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: requestingUser }).then(acc => {
-							if (!acc || !acc.staffRole || acc.staffRole === 'altmod') {
+							if (!acc || !acc.staffRole || acc.staffRole === 'altmod' || acc.staffRole === 'veteran') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
 								try {

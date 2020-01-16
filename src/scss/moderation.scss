@@ -5,10 +5,10 @@
 	.player-input {
 		display: flex;
 		justify-content: center;
-		color: black;
+		color: var(--theme-background-1);
 	}
 	textarea {
-		color: black;
+		color: var(--theme-background-1);
 	}
 	h2 {
 		text-align: center;
@@ -35,7 +35,7 @@
 		}
 	}
 	button {
-		color: black;
+		color: var(--theme-background-1);
 		padding: 10px;
 	}
 	> div {
@@ -87,7 +87,7 @@
 	}
 	.emailunverified {
 		// Email address has not been verified.
-		color: grey;
+		color: var(--theme-background-3);
 		font-weight: bold;
 	}
 	table {
@@ -106,7 +106,7 @@
 		}
 
 		+ button {
-			color: #fff;
+			color: var(--theme-text-1);
 		}
 	}
 	textarea {
@@ -129,7 +129,7 @@
 	.ipban-button {
 		width: 100%;
 		background: darkred;
-		color: white;
+		color: var(--theme-text-1);
 		margin: 2px 0;
 	}
 	.cardback-button {
@@ -159,7 +159,7 @@
 	}
 
 	label {
-		color: #fff;
+		color: var(--theme-text-1);
 		margin: 5px;
 		cursor: pointer;
 	}
@@ -173,7 +173,7 @@
 }
 
 .horizontal.divider {
-	color: white;
+	color: var(--theme-text-1);
 }
 
 .toggle-containers {
@@ -192,5 +192,15 @@
 .custom {
 	// This game is custom
 	color: blue;
+	font-weight: bold;
+}
+.unlisted {
+	// This game is custom
+	color: green;
+	font-weight: bold;
+}
+
+.ranked {
+	color: #d55582;
 	font-weight: bold;
 }

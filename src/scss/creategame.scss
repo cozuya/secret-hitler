@@ -1,9 +1,15 @@
 .creategame {
+	.create-game-switch {
+		.react-switch-handle {
+			background: var(--theme-tertiary) !important;
+		}
+	}
+
 	.timed-slider-value {
-		background: #eee;
+		background: var(--theme-text-1);
 		display: block;
 		padding: 5px;
-		color: #888;
+		color: var(--theme-background-3);
 		width: max-content;
 		margin: -10px auto 5px;
 	}
@@ -61,7 +67,7 @@
 	}
 
 	.ui.search.dropdown > .text {
-		color: black;
+		color: var(--theme-background-1);
 	}
 
 	.lock.icon {
@@ -223,9 +229,8 @@
 	font-family: 'Roboto', sans-serif;
 	text-transform: uppercase;
 	font-weight: 400;
-	color: #ffffff;
+	color: var(--theme-text-1);
 	background-color: #3369ff;
-	box-shadow: inset 0 -0.6em 0 -0.35em rgba(0, 0, 0, 0.17);
 	text-align: center;
 	position: relative;
 

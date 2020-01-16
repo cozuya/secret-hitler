@@ -248,6 +248,10 @@ const enactPolicy = (game, team, socket) => {
 				if (game.general.timedMode) {
 					const { presidentIndex } = game.gameState;
 
+					if (game.private.timerId) {
+						clearTimeout(game.private.timerId);
+						game.private.timerId = null;
+					}
 					game.gameState.timedModeEnabled = true;
 					game.private.timerId = setTimeout(
 						() => {
@@ -308,6 +312,13 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -390,9 +401,7 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 						timestamp: new Date(),
 						chat: [
 							{
-								text: `The President and Chancellor have voted to veto this election and the election tracker moves forward. (${
-									game.trackState.electionTrackerCount
-								}/3)`
+								text: `The President and Chancellor have voted to veto this election and the election tracker moves forward. (${game.trackState.electionTrackerCount}/3)`
 							}
 						]
 					};
@@ -469,6 +478,13 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 	if (game.gameState.isGameFrozen) {
 		if (socket) {
 			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
+		return;
+	}
+
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
 		}
 		return;
 	}
@@ -592,6 +608,10 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 							sendInProgressGameUpdate(game);
 
 							if (game.general.timedMode) {
+								if (game.private.timerId) {
+									clearTimeout(game.private.timerId);
+									game.private.timerId = null;
+								}
 								game.gameState.timedModeEnabled = true;
 								game.private.timerId = setTimeout(
 									() => {
@@ -661,6 +681,13 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	if (!chancellor || chancellor.userName !== passport.user) {
 		return;
 	}
@@ -679,7 +706,20 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 				(game.private.currentChancellorOptions[0] === 'liberal' || game.private.currentChancellorOptions[1] === 'liberal')
 			) {
 				// Liberal chancellor chose to play fascist, probably throwing.
-				makeReport(`Player ${chancellor.userName} in seat ${chancellorIndex + 1} is liberal, was given choice as chancellor, and played fascist.`, game);
+				makeReport(
+					{
+						player: chancellor.userName,
+						seat: chancellorIndex + 1,
+						role: 'Liberal',
+						situation: `was given choice as chancellor, and played fascist.`,
+						election: game.general.electionCount,
+						title: game.general.name,
+						uid: game.general.uid,
+						gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+					},
+					game,
+					'report'
+				);
 			}
 			if (
 				chancellor.role.team === 'fascist' &&
@@ -689,9 +729,18 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 			) {
 				// Fascist chancellor chose to play 5th liberal.
 				makeReport(
-					`Player ${chancellor.userName} in seat ${chancellorIndex +
-						1} is fascist, was given choice as chancellor with 4 blues on the track, and played liberal.`,
-					game
+					{
+						player: chancellor.userName,
+						seat: chancellorIndex + 1,
+						role: 'Fascist',
+						situation: `was given choice as chancellor with 4 blues on the track, and played liberal.`,
+						election: game.general.electionCount,
+						title: game.general.name,
+						uid: game.general.uid,
+						gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+					},
+					game,
+					'report'
 				);
 			}
 		}
@@ -726,7 +775,8 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 
 		if (game.general.timedMode && game.private.timerId) {
 			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
+			game.private.timerId = null;
+			game.gameState.timedModeEnabled = false;
 		}
 
 		game.private.lock.selectChancellorPolicy = true;
@@ -799,7 +849,11 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 							game.gameState.phase = 'chancellorVoteOnVeto';
 
 							if (game.general.timedMode) {
-								game.gameState.timedModeEnabled = true; // (passport, game, data)
+								if (game.private.timerId) {
+									clearTimeout(game.private.timerId);
+									game.private.timerId = null;
+								}
+								game.gameState.timedModeEnabled = true;
 								game.private.timerId = setTimeout(
 									() => {
 										if (game.gameState.timedModeEnabled) {
@@ -867,6 +921,13 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 		return;
 	}
 
+	if (game.general.isRemade) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	if (!president || president.userName !== passport.user || nonDiscardedPolicies.length !== 2) {
 		return;
 	}
@@ -882,7 +943,8 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 	) {
 		if (game.general.timedMode && game.private.timerId) {
 			clearTimeout(game.private.timerId);
-			game.gameState.timedModeEnabled = game.private.timerId = null;
+			game.private.timerId = null;
+			game.gameState.timedModeEnabled = false;
 		}
 
 		const discarded = game.private.currentElectionPolicies[data.selection];
@@ -933,25 +995,87 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 						if (passedNicer === 'RR') {
 							// tossed only blue on 4 blues
 							makeReport(
-								`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR with 4 blues on the track, and tossed the blue.`,
-								game
+								{
+									player: president.userName,
+									seat: presidentIndex + 1,
+									role: 'Liberal',
+									situation: `got BRR with 4 blues on the track, and tossed the blue.`,
+									election: game.general.electionCount,
+									title: game.general.name,
+									uid: game.general.uid,
+									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+								},
+								game,
+								'report'
 							);
 						} else if (passedNicer === 'BR') {
 							// did not force 5th blue
-							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR with 4 blues on the track, and did not force.`, game);
+							makeReport(
+								{
+									player: president.userName,
+									seat: presidentIndex + 1,
+									role: 'Liberal',
+									situation: `got BBR with 4 blues on the track, and did not force.`,
+									election: game.general.electionCount,
+									title: game.general.name,
+									uid: game.general.uid,
+									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+								},
+								game,
+								'report'
+							);
 						}
 					} else if (trackReds < 3) {
 						if (passedNicer === 'RR') {
 							// tossed only blue with no benefit
-							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR before HZ, and tossed the blue.`, game);
+							makeReport(
+								{
+									player: president.userName,
+									seat: presidentIndex + 1,
+									role: 'Liberal',
+									situation: `got BRR before HZ, and tossed the blue.`,
+									election: game.general.electionCount,
+									title: game.general.name,
+									uid: game.general.uid,
+									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+								},
+								game,
+								'report'
+							);
 						}
 					} else if (trackReds === 5) {
 						if (passedNicer === 'RR') {
 							// tossed blue in VZ
-							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BRR during veto zone, and tossed the blue.`, game);
+							makeReport(
+								{
+									player: president.userName,
+									seat: presidentIndex + 1,
+									role: 'Liberal',
+									situation: `got BRR during veto zone, and tossed the blue.`,
+									election: game.general.electionCount,
+									title: game.general.name,
+									uid: game.general.uid,
+									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+								},
+								game,
+								'report'
+							);
 						} else if (passedNicer === 'BR' && track4blue) {
 							// tossed blue in VZ
-							makeReport(`Player ${president.userName} in seat ${presidentIndex + 1} is liberal, got BBR during veto zone, and did not force 5th blue.`, game);
+							makeReport(
+								{
+									player: president.userName,
+									seat: presidentIndex + 1,
+									role: 'Liberal',
+									situation: `got BBR during veto zone, and did not force 5th blue.`,
+									election: game.general.electionCount,
+									title: game.general.name,
+									uid: game.general.uid,
+									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+								},
+								game,
+								'report'
+							);
 						}
 					}
 				}
@@ -962,32 +1086,68 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 						if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
 							// forced 5th blue on another fas
 							makeReport(
-								`Player ${president.userName} in seat ${presidentIndex +
-									1} is fascist, got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
-								game
+								{
+									player: president.userName,
+									seat: presidentIndex + 1,
+									role: 'Fascist',
+									situation: `got BBR with 4 blues on the track, and forced blues on a fascist chancellor.`,
+									election: game.general.electionCount,
+									title: game.general.name,
+									uid: game.general.uid,
+									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+								},
+								game,
+								'report'
 							);
 						} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
 							// offered 5th blue choice as fas
 							makeReport(
-								`Player ${president.userName} in seat ${presidentIndex +
-									1} is fascist, got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
-								game
+								{
+									player: president.userName,
+									seat: presidentIndex + 1,
+									role: 'Fascist',
+									situation: `got BRR with 4 blues on the track, and offered choice to a liberal chancellor.`,
+									election: game.general.electionCount,
+									title: game.general.name,
+									uid: game.general.uid,
+									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+								},
+								game,
+								'report'
 							);
 						}
 					} else if (trackReds === 5) {
 						if (passedNicer === 'BB' && chancellor.role.team !== 'liberal') {
 							// forced 5th blue as hit
 							makeReport(
-								`Player ${president.userName} in seat ${presidentIndex +
-									1} is fascist, got BBR with 5 reds on the track, and forced blues on a fascist chancellor.`,
-								game
+								{
+									player: president.userName,
+									seat: presidentIndex + 1,
+									role: 'Fascist',
+									situation: `got BBR with 5 reds on the track, and forced blues on a fascist chancellor.`,
+									election: game.general.electionCount,
+									title: game.general.name,
+									uid: game.general.uid,
+									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+								},
+								game,
+								'report'
 							);
 						} else if (passedNicer === 'BR' && chancellor.role.team === 'liberal') {
 							// offered 5th blue choice as hit
 							makeReport(
-								`Player ${president.userName} in seat ${presidentIndex +
-									1} is fascist, got BRR with 5 reds on the track, and offered choice to a liberal chancellor.`,
-								game
+								{
+									player: president.userName,
+									seat: presidentIndex + 1,
+									role: 'Fascist',
+									situation: `got BRR with 5 reds on the track, and offered choice to a liberal chancellor.`,
+									election: game.general.electionCount,
+									title: game.general.name,
+									uid: game.general.uid,
+									gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+								},
+								game,
+								'report'
 							);
 						}
 					}
@@ -1071,6 +1231,10 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 				});
 
 				if (game.general.timedMode) {
+					if (game.private.timerId) {
+						clearTimeout(game.private.timerId);
+						game.private.timerId = null;
+					}
 					game.gameState.timedModeEnabled = true;
 					game.private.timerId = setTimeout(
 						() => {
@@ -1113,6 +1277,13 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		return;
 	}
 
+	if (game.general.isRemade && !force) {
+		if (socket) {
+			socket.emit('sendAlert', 'This game has been remade and is now no longer playable.');
+		}
+		return;
+	}
+
 	const passedElection = socket => {
 		const { gameState } = game;
 		const { presidentIndex } = gameState;
@@ -1151,7 +1322,20 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 			!verifyCorrect(game.private.currentElectionPolicies[1]) ||
 			!verifyCorrect(game.private.currentElectionPolicies[2])
 		) {
-			makeReport(`A player has just received an invalid hand!\n${JSON.stringify(game.private.currentElectionPolicies)}`, game);
+			makeReport(
+				{
+					player: 'A Player',
+					seat: presidentIndex + 1,
+					role: 'Liberal',
+					situation: `has just received an invalid hand!\n${JSON.stringify(game.private.currentElectionPolicies)}`,
+					election: game.general.electionCount,
+					title: game.general.name,
+					uid: game.general.uid,
+					gameType: game.general.casualGame ? 'Casual' : 'Ranked'
+				},
+				game,
+				'report'
+			);
 		}
 
 		const modOnlyChat = {
@@ -1243,6 +1427,10 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 				game.gameState.previousElectedGovernment = [presidentIndex, chancellorIndex];
 
 				if (game.general.timedMode) {
+					if (game.private.timerId) {
+						clearTimeout(game.private.timerId);
+						game.private.timerId = null;
+					}
 					game.gameState.timedModeEnabled = true;
 					game.private.timerId = setTimeout(
 						() => {
@@ -1296,6 +1484,10 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 			);
 		} else {
 			if (game.general.timedMode) {
+				if (game.private.timerId) {
+					clearTimeout(game.private.timerId);
+					game.private.timerId = null;
+				}
 				game.gameState.timedModeEnabled = true;
 				game.private.timerId = setTimeout(
 					() => {
@@ -1548,7 +1740,8 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 				() => {
 					if (game.general.timedMode && game.private.timerId) {
 						clearTimeout(game.private.timerId);
-						game.gameState.timedModeEnabled = game.private.timerId = null;
+						game.private.timerId = null;
+						game.gameState.timedModeEnabled = false;
 					}
 					flipBallotCards(socket);
 				},

@@ -81,9 +81,32 @@ const saveGame = game => {
 module.exports.completeGame = (game, winningTeamName) => {
 	if (game && game.unsentReports) {
 		game.unsentReports.forEach(report => {
-			makeReport(report, game, true);
+			makeReport({ ...report }, game, report.type === 'modchat' ? 'modchatdelayed' : 'reportdelayed');
 		});
 		game.unsentReports = [];
+	}
+
+	for (let affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber++) {
+		const affectedSocketId = Object.keys(io.sockets.sockets).find(
+			socketId =>
+				io.sockets.sockets[socketId].handshake.session.passport &&
+				io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
+		);
+		if (!io.sockets.sockets[affectedSocketId]) {
+			continue;
+		}
+		io.sockets.sockets[affectedSocketId].emit('removeClaim');
+	}
+
+	if (game && game.general && game.general.timedMode && game.private.timerId) {
+		clearTimeout(game.private.timerId);
+		game.private.timerId = null;
+		game.gameState.timedModeEnabled = false;
+	}
+
+	if (game && game.general.isRecorded) {
+		console.log('A game attempted to be re-recorded!', game.general.uid);
+		return;
 	}
 
 	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
@@ -156,7 +179,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	saveGame(game);
 
-	if (!game.general.private && !game.general.casualGame) {
+	game.general.isRecorded = true;
+
+	if (!game.general.private && !game.general.casualGame && !game.general.unlisted) {
 		Account.find({
 			username: { $in: seatedPlayers.map(player => player.userName) }
 		})

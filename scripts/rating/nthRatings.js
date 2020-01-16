@@ -26,12 +26,12 @@ avg = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
 // + Elected to governments.
 // + Using the presidential powers.
 async function influence(game) {
-	let weighting = new Array(game.playerSize).fill(0.0);
+	const weighting = new Array(game.playerSize).fill(0.0);
 	let red = 0;
-	for (let turn of game.summary.logs) {
+	for (const turn of game.summary.logs) {
 		p = passed(turn.votes);
 		if (Math.abs((await ja(turn.votes)) - (await nein(turn.votes))) === 1) {
-			for (let v of turn.votes) {
+			for (const v of turn.votes) {
 				if (turn.votes[v] === (await p)) {
 					// voting with the majority on a close vote
 					weighting[v]++;
@@ -39,7 +39,7 @@ async function influence(game) {
 			}
 		}
 		if (Math.abs((await ja(turn.votes)) - (await nein(turn.votes))) === 0) {
-			for (let v of turn.votes) {
+			for (const v of turn.votes) {
 				// even number of fascist and liberal votes: everyone gets a point
 				weighting[v]++;
 			}
@@ -63,7 +63,7 @@ async function influence(game) {
 }
 
 async function rate(summary) {
-	let game = buildEnhancedGameSummary(summary.toObject());
+	const game = buildEnhancedGameSummary(summary.toObject());
 	// Construct extra game info
 	const liberalPlayerNames = game.players
 		.filter(player => player.role === 'liberal')
@@ -79,9 +79,9 @@ async function rate(summary) {
 	const playerInfluence = await influence(game);
 	// Construct some basic statistics for each team
 	const b = game.winningTeam === 'liberal' ? 1 : 0;
-	let weightedPlayerRank = new Array(game.playerSize);
-	let weightedPlayerSeasonRank = new Array(game.playerSize);
-	for (let i in playerNames) {
+	const weightedPlayerRank = new Array(game.playerSize);
+	const weightedPlayerSeasonRank = new Array(game.playerSize);
+	for (const i in playerNames) {
 		const account = await Account.findOne({ username: playerNames[i] });
 		weightedPlayerRank[i] = playerInfluence[i] * account.eloOverall;
 		weightedPlayerSeasonRank[i] = playerInfluence[i] * account.eloSeason;
@@ -98,7 +98,7 @@ async function rate(summary) {
 	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
 	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
 	// Apply the rating changes
-	for (let account of await Account.find({ username: { $in: playerNames } }, { eloOverall: 1, eloSeason: 1, username: 1 })) {
+	for (const account of await Account.find({ username: { $in: playerNames } }, { eloOverall: 1, eloSeason: 1, username: 1 })) {
 		let eloOverall, eloSeason;
 		if (!account.eloOverall) {
 			eloOverall = 1600;

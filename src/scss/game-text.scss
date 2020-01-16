@@ -1,6 +1,6 @@
 .game-text {
 	.normal {
-		color: #8b8b8b;
+		color: var(--theme-background-3);
 	}
 
 	.liberal {
@@ -19,7 +19,7 @@
 	}
 
 	.player {
-		color: #eee;
+		color: var(--theme-background-3);
 		font-weight: 700;
 	}
 }

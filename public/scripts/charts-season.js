@@ -49,9 +49,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			);
 
 			$('#chart-fiveplayer-games-winrate').after(
-				`<p style="text-align: center">Total 5 player games played: ${
-					data.fivePlayerGameData.totalGameCountSeason
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">40%</span></p>`
+				`<p style="text-align: center">Total 5 player games played: ${data.fivePlayerGameData.totalGameCountSeason} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">40%</span></p>`
 			);
 
 			new Chartist.Pie(
@@ -64,11 +62,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			);
 
 			$('#chart-sixplayer-games-winrate').after(
-				`<p style="text-align: center">Total 6 player games played: ${
-					data.sixPlayerGameData.totalGameCountSeason
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">33%</span></p><h2 class="ui header centered">Winrate for 6 player games (rebalanced)</h2><div class="chart" id="chart-sixplayer-rebalanced-games-winrate"></div><p style="text-align: center">Total 6 player rebalanced games played: ${
-					data.sixPlayerGameData.rebalancedTotalGameCountSeason
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">33%</span></p>`
+				`<p style="text-align: center">Total 6 player games played: ${data.sixPlayerGameData.totalGameCountSeason} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">33%</span></p><h2 class="ui header centered">Winrate for 6 player games (rebalanced)</h2><div class="chart" id="chart-sixplayer-rebalanced-games-winrate"></div><p style="text-align: center">Total 6 player rebalanced games played: ${data.sixPlayerGameData.rebalancedTotalGameCountSeason} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">33%</span></p>`
 			);
 
 			new Chartist.Pie(
@@ -84,11 +78,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			);
 
 			$('#chart-sevenplayer-games-winrate').after(
-				`<p style="text-align: center">Total 7 player games played: ${
-					data.sevenPlayerGameData.totalGameCountSeason
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">43%</span></p><h2 class="ui header centered">Winrate for 7 player games (rebalanced)</h2><div class="chart" id="chart-sevenplayer-rebalanced-games-winrate"></div><p style="text-align: center">Total 7 player rebalanced games played: ${
-					data.sevenPlayerGameData.rebalancedTotalGameCountSeason
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">43%</span></p>`
+				`<p style="text-align: center">Total 7 player games played: ${data.sevenPlayerGameData.totalGameCountSeason} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">43%</span></p><h2 class="ui header centered">Winrate for 7 player games (rebalanced)</h2><div class="chart" id="chart-sevenplayer-rebalanced-games-winrate"></div><p style="text-align: center">Total 7 player rebalanced games played: ${data.sevenPlayerGameData.rebalancedTotalGameCountSeason} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">43%</span></p>`
 			);
 
 			new Chartist.Pie(
@@ -104,9 +94,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			);
 
 			$('#chart-eightplayer-games-winrate').after(
-				`<p style="text-align: center">Total 8 player games played: ${
-					data.eightPlayerGameData.totalGameCountSeason
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">38%</span></p>`
+				`<p style="text-align: center">Total 8 player games played: ${data.eightPlayerGameData.totalGameCountSeason} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">38%</span></p>`
 			);
 
 			new Chartist.Pie(
@@ -119,11 +107,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			);
 
 			$('#chart-nineplayer-games-winrate').after(
-				`<p style="text-align: center">Total 9 player games played: ${
-					data.ninePlayerGameData.totalGameCountSeason
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p><h2 class="ui header centered">Winrate for 9 player games (rebalanced)</h2><div class="chart" id="chart-nineplayer-rebalanced-games-winrate"></div><p style="text-align: center">Total 9 player rebalanced games played: ${
-					data.ninePlayerGameData.rebalanced2fFascistWinCountSeason
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p>`
+				`<p style="text-align: center">Total 9 player games played: ${data.ninePlayerGameData.totalGameCountSeason} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p><h2 class="ui header centered">Winrate for 9 player games (rebalanced)</h2><div class="chart" id="chart-nineplayer-rebalanced-games-winrate"></div><p style="text-align: center">Total 9 player rebalanced games played: ${data.ninePlayerGameData.rebalanced2fFascistWinCountSeason} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">44%</span></p>`
 			);
 
 			new Chartist.Pie(
@@ -142,9 +126,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 			);
 
 			$('#chart-tenplayer-games-winrate').after(
-				`<p style="text-align: center">Total 10 player games played: ${
-					data.tenPlayerGameData.totalGameCountSeason
-				} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">40%</span></p>`
+				`<p style="text-align: center">Total 10 player games played: ${data.tenPlayerGameData.totalGameCountSeason} | Percentage of Fascists in game: <span style="color: red; font-weight: bold">40%</span></p>`
 			);
 		}
 	});

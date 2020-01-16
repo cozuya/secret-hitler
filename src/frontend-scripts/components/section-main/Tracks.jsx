@@ -9,7 +9,6 @@ class Tracks extends React.Component {
 		super();
 		this.state = {
 			remakeStatus: false,
-			remakeStatusDisabled: false,
 			timedModeTimer: ''
 		};
 	}
@@ -26,25 +25,10 @@ class Tracks extends React.Component {
 		}
 
 		if (this.props.socket) {
-			this.props.socket.on('updateRemakeStatus', status => {
-				this.setState(
-					{
-						remakeStatus: status,
-						remakeStatusDisabled: true
-					},
-					() => {
-						setTimeout(
-							() => {
-								if (this._ismounted) {
-									this.setState({
-										remakeStatusDisabled: false
-									});
-								}
-							},
-							this.state.remakeStatus ? 2000 : 5000
-						);
-					}
-				);
+			this.props.socket.on('updateRemakeVoting', status => {
+				this.setState({
+					remakeStatus: status
+				});
 			});
 		}
 	}
@@ -135,6 +119,10 @@ class Tracks extends React.Component {
 		let customgameactive;
 		let flappyMode;
 		let flappyModeTooltip;
+		let flappyOnlyMode;
+		let flappyOnlyModeTooltip;
+		let unlisted;
+		let unlistedTooltip;
 		const customgameactiveTooltip = 'Custom Game';
 
 		if (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled) {
@@ -159,7 +147,7 @@ class Tracks extends React.Component {
 			disableChat = (
 				<i className="icons">
 					<i className="unmute icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-primary)' }} />
 				</i>
 			);
 			disableChatTooltip = 'Player Chat Disabled';
@@ -168,6 +156,11 @@ class Tracks extends React.Component {
 		if (game.isVerifiedOnly) {
 			isVerifiedOnly = <i className="spy icon" />;
 			isVerifiedOnlyTooltip = 'Only email-verified players can sit in this game.';
+		}
+
+		if (game.privateOnly) {
+			priv = <i className="lock icon" />;
+			privTooltip = 'Private Only (Anonymous) players only';
 		}
 
 		if (!game.privateOnly && game.private) {
@@ -179,7 +172,7 @@ class Tracks extends React.Component {
 			disableGamechat = (
 				<i className="icons">
 					<i className="game icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-primary)' }} />
 				</i>
 			);
 			disableGamechatTooltip = 'Game Chat Disabled';
@@ -224,6 +217,16 @@ class Tracks extends React.Component {
 		if (game.flappyMode) {
 			flappyMode = <i className="plane icon" />;
 			flappyModeTooltip = 'COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler';
+		}
+
+		if (game.flappyOnlyMode) {
+			flappyOnlyMode = <i className="plane icon flappyonly" />;
+			flappyOnlyModeTooltip = 'Flappy Only Mode: no policies, just play flappy';
+		}
+
+		if (game.unlisted) {
+			unlisted = <i className="lock icon green" />;
+			unlistedTooltip = 'Unlisted Game - Not Visible in Game List';
 		}
 
 		return (
@@ -293,6 +296,16 @@ class Tracks extends React.Component {
 						<Popup style={{ zIndex: 999999 }} inverted trigger={flappyMode} content={flappyModeTooltip} />
 					</span>
 				)}
+				{flappyOnlyMode && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={flappyOnlyMode} content={flappyOnlyModeTooltip} />
+					</span>
+				)}
+				{unlisted && (
+					<span>
+						<Popup style={{ zIndex: 999999 }} inverted trigger={unlisted} content={unlistedTooltip} />
+					</span>
+				)}
 			</div>
 		);
 	}
@@ -314,18 +327,16 @@ class Tracks extends React.Component {
 				classes += ' fail3';
 			}
 
-			if (gameInfo.gameState.isTracksFlipped && (gameInfo.trackState && !gameInfo.trackState.isHidden)) {
+			if (gameInfo.gameState.isTracksFlipped && gameInfo.trackState && !gameInfo.trackState.isHidden) {
 				return <div className={classes} />;
 			}
 		};
 
 		const updateRemake = () => {
-			if (!this.state.remakeStatusDisabled) {
-				this.props.socket.emit('updateRemake', {
-					remakeStatus: !this.state.remakeStatus,
-					uid: gameInfo.general.uid
-				});
-			}
+			this.props.socket.emit('updateRemake', {
+				remakeStatus: !this.state.remakeStatus,
+				uid: gameInfo.general.uid
+			});
 		};
 
 		const renderFasTrack = () => {

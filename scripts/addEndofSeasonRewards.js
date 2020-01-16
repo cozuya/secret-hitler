@@ -36,7 +36,10 @@ Account.find({ eloSeason: { $gte: cutoff }, isBanned: { $exists: false } })
 		console.log(bronze.length, 'bronze');
 		console.log(silver.length, 'silver');
 		console.log(gold.length, 'gold');
-		console.log(gold.sort((a, b) => a.elo - b.elo), 'gold');
+		console.log(
+			gold.sort((a, b) => a.elo - b.elo),
+			'gold'
+		);
 		mongoose.connection.close();
 
 		// if this is ok, delete all player's old season reward, then do below:

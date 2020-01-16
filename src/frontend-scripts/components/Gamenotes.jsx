@@ -149,7 +149,4 @@ Gamenotes.propTypes = {
 	changeNotesValue: PropTypes.func
 };
 
-export default connect(
-	null,
-	mapDispatchToProps
-)(Gamenotes);
+export default connect(null, mapDispatchToProps)(Gamenotes);

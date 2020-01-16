@@ -4,11 +4,10 @@
 .game > .ui.grid {
 	margin: 0;
 	> .row:first-child {
-		//height: 440px;
 		padding: 0;
 	}
 	.chat-container {
-		background: #f6f6f6;
+		background: var(--theme-text-1);
 		padding: 0;
 		display: flex;
 		flex-direction: column;
@@ -29,13 +28,22 @@
 		.gamestatus {
 			font-size: 22px;
 			font-style: italic;
-			color: $primary;
-			background: #1b1b1b;
+			color: var(--theme-primary);
+			background: var(--theme-background-2);
 			padding: 7px 0px 3px 2px;
 
 			&.tourny {
 				color: $tourny;
 			}
+		}
+
+		.aem {
+			-webkit-touch-callout: text !important;
+			-webkit-user-select: text !important;
+			-khtml-user-select: text !important;
+			-moz-user-select: text !important;
+			-ms-user-select: text !important;
+			user-select: text !important;
 		}
 
 		.gamechat {
@@ -50,7 +58,7 @@
 			-ms-user-select: none;
 			user-select: none;
 			form {
-				background: #181818;
+				background: var(--theme-background-2);
 				display: flex;
 				position: relative;
 				z-index: 100;
@@ -60,7 +68,7 @@
 			.gamechat-filters-container {
 				padding: 0 2px;
 				margin-top: 6px;
-				color: $secondary;
+				color: var(--theme-secondary);
 			}
 
 			.pointing.menu {
@@ -93,10 +101,10 @@
 					font-size: 12px;
 					width: 52.5px;
 					font-size: 11px;
-					background: $secondary !important;
-					color: black !important;
+					background: var(--theme-tertiary) !important;
+					color: var(--theme-background-1) !important;
 					&:hover {
-						background: $tertiary !important;
+						background: var(--theme-tertiary) !important;
 					}
 				}
 
@@ -116,9 +124,8 @@
 			.chats {
 				flex-grow: 1;
 				position: relative;
-				background: #f9faff;
+				background: var(--theme-text-1);
 				font-size: 18px;
-				cursor: not-allowed;
 				overflow: hidden;
 
 				img {
@@ -143,7 +150,7 @@
 					}
 				}
 				.chat-user {
-					color: #adabab;
+					color: var(--theme-text-3);
 					white-space: nowrap;
 				}
 				.chat-user--game .chat-timestamp {
@@ -152,7 +159,7 @@
 				.chat-user--game,
 				.game-chat,
 				.chat-user--game .chat-timestamp {
-					color: #6f6f6f;
+					color: var(--theme-text-3);
 				}
 
 				.chat-user--claim,
@@ -178,14 +185,14 @@
 					color: $darkfascistteam;
 				}
 				.chat-player {
-					color: #eee;
+					color: var(--theme-text-1);
 					font-weight: 700;
 				}
 			}
 			.chat-timestamp {
 				//margin-top: 3px;
 				//color: #848484;
-				color: #565656;
+				color: var(--theme-background-3);
 				font-size: 12px;
 				white-space: nowrap;
 				font-family: arial;
@@ -209,7 +216,7 @@
 				}
 				.ui.button {
 					text-align: center;
-					color: #eee;
+					color: #var(--theme-text-1);
 					display: block;
 					width: 230px;
 					margin: 0 auto 15px;
@@ -219,15 +226,15 @@
 				}
 				.twofascistoneliberal {
 					background: #e4bcba;
-					color: #333 !important;
+					color: var(--theme-background-2) !important;
 				}
 				.onefascistoneliberal {
 					background: #fff;
-					color: #333 !important;
+					color: var(--theme-background-2) !important;
 				}
 				.twoliberalonefascist {
 					background: #bfd8ee;
-					color: #333 !important;
+					color: var(--theme-background-2) !important;
 				}
 				.threeliberal {
 					background: #608cb3;
@@ -272,14 +279,14 @@
 						right: 35px;
 						background: #eee;
 						bottom: 0;
-						border: 1px solid #bbb;
+						border: 1px solid var(--theme-text-3);
 						> div:hover {
 							font-weight: bold;
-							color: $primary;
+							color: var(--theme-primary);
 						}
 						div:first-child {
 							width: 75px;
-							border-right: 1px solid #bbb;
+							border-right: 1px solid var(--theme-text-3);
 						}
 						div {
 							width: 73px;
@@ -298,9 +305,9 @@
 					flex-grow: 1;
 					button {
 						padding: 0px 10px;
-						background: $primary;
+						background: var(--theme-primary);
 						&:hover {
-							background: $tertiary;
+							background: var(--theme-tertiary);
 						}
 					}
 				}
@@ -317,7 +324,7 @@
 		}
 	}
 	.gameroles-container {
-		background: #eee;
+		background: var(--theme-text-1);
 	}
 }
 
@@ -345,7 +352,7 @@
 
 .sixteen.wide .game > .ui.grid .six.chat-container .whitelist {
 	float: right;
-	background: #fff !important;
+	background: var(--theme-text-1) !important;
 	width: 60px;
 }
 
@@ -355,7 +362,7 @@
 
 .thirteen.wide .game > .ui.grid .six.chat-container .whitelist {
 	float: right;
-	background: #fff !important;
+	background: var(--theme-text-1) !important;
 	width: 60px;
 }
 

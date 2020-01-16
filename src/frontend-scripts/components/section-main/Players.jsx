@@ -221,7 +221,7 @@ class Players extends React.Component {
 						prependSeasonAward()}
 					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
-						player.specialTournamentStatus && <span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />}
+						player.specialTournamentStatus && <span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />}
 					{str}
 				</span>
 			);
@@ -255,7 +255,7 @@ class Players extends React.Component {
 				}
 				className={(() => {
 					let classes = 'player-container';
-					let user = this.props.userList.list ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+					const user = this.props.userList.list ? this.props.userList.list.find(play => play.userName === player.userName) : null;
 
 					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
@@ -298,10 +298,6 @@ class Players extends React.Component {
 							classes = `${classes} disconnected`;
 						}
 
-						if (userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(player.userName)) {
-							classes = `${classes} blacklisted`;
-						}
-
 						return classes;
 					})()}
 				>
@@ -342,6 +338,9 @@ class Players extends React.Component {
 							return classes;
 						})()}
 					/>
+					{userInfo.gameSettings && userInfo.gameSettings.blacklist.includes(player.userName) && (
+						<i title="This player is on your blacklist" className={'large file icon blacklist'} />
+					)}
 					<div
 						className={(() => {
 							let classes = 'card card-back';
@@ -423,7 +422,8 @@ class Players extends React.Component {
 			});
 			$(this.reportModal).modal('hide');
 			this.setState({
-				maxReportLengthExceeded: false
+				maxReportLengthExceeded: false,
+				reportTextValue: ''
 			});
 		}
 	};
@@ -433,12 +433,14 @@ class Players extends React.Component {
 		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
 
 		if (userInfo.userName) {
-			if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
+			if (user && user.staffIncognito) {
+				$(this.incognitoModal).modal('show');
+			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
 				window.alert('Sorry, this service is currently unavailable.');
-			} else if (!gameInfo.general.private && (userInfo.gameSettings && userInfo.gameSettings.isPrivate)) {
+			} else if (!gameInfo.general.private && userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
 			} else if (
-				(gameInfo.general.rainbowgame && (user && user.wins + user.losses <= 49)) ||
+				(gameInfo.general.rainbowgame && user && user.wins + user.losses <= 49) ||
 				(gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))
 			) {
 				$(this.notRainbowModal).modal('show');
@@ -531,6 +533,15 @@ class Players extends React.Component {
 				<div
 					className="ui basic small modal"
 					ref={c => {
+						this.incognitoModal = c;
+					}}
+				>
+					<div className="ui header">You're incognito</div>
+				</div>
+
+				<div
+					className="ui basic small modal"
+					ref={c => {
 						this.privatePlayerInPublicGameModal = c;
 					}}
 				>
@@ -559,7 +570,6 @@ class Players extends React.Component {
 								<div className="item">Cheating</div>
 								<div className="item">Gamethrowing</div>
 								<div className="item">Stalling</div>
-								<div className="item">Botting</div>
 								<div className="item">Other</div>
 							</div>
 						</div>
@@ -571,6 +581,7 @@ class Players extends React.Component {
 						>
 							Submit
 						</div>
+						Pinging @Moderator on Discord (in #mod-support) may yield faster results
 					</form>
 				</div>
 
@@ -620,7 +631,4 @@ Players.propTypes = {
 	togglePlayerNotes: PropTypes.func
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(Players);
+export default connect(mapStateToProps, mapDispatchToProps)(Players);

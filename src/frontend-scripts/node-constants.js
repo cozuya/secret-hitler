@@ -2,6 +2,16 @@ const cn = require('classnames');
 
 module.exports.TOU_CHANGES = [
 	{
+		changeVer: '1.4',
+		changeDesc:
+			'Adds specified punishment template for most rule violations\nUpdates rules regarding spoilers for TV shows, movies etc.\nUpdates rules regarding room titles\nUpdates rules on misclicks\nAll rules are listed in detail in the Terms of Use (linked below)'
+	},
+	{
+		changeVer: '1.3',
+		changeDesc:
+			'Adds specified punishments for ragequits and multi-accounting/colluding.\nRevises rules regarding sub-optimal play.\nSpecifies rules regarding unfair outside influences on games (blacklist threats, report threats, etc.).\nAdds rules regarding spoilers for TV shows, movies, etc.\nAdds general punishment timeline and protocol.\nAdds AFK policy and its specific punishments.\n'
+	},
+	{
 		changeVer: '1.2',
 		changeDesc: 'Terms of Use now states that explicitly forbidden words may result in action without reports.'
 	},
@@ -13,10 +23,15 @@ module.exports.TOU_CHANGES = [
 	{
 		changeVer: '1.0',
 		changeDesc: 'Terms of Use fully rewritten to be more clear.'
+	},
+	{
+		changeVer: '0.0',
+		changeDesc:
+			"Play as your role and try to win\nNo unfair influence: don't make promises as one role you wouldn't be able to keep as the other role\nDo not cheat\nNo hate speech or abusive/sexist/racist/discriminating language\nRespect other people\nNo attempts to harm the site, be it through hacking, ddosing, or any other malicious activity\nDo not attempt to circumvent rules or punishments\n"
 	}
 ];
 
-module.exports.CURRENTSEASONNUMBER = 6;
+module.exports.CURRENTSEASONNUMBER = 9;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
@@ -43,13 +58,12 @@ module.exports.PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			admin: user.staffRole === 'admin',
 			moderatorcolor: user.staffRole === 'moderator',
 			editorcolor: user.staffRole === 'editor',
+			veteran: user.staffRole === 'veteran',
 			cbell: user.userName === 'cbell',
 			jdudle3: user.userName === 'jdudle3',
 			max: user.userName === 'Max',
-			dfinn: user.userName === 'DFinn',
-			faaiz: user.userName === 'Faaiz1999',
-			invidia: user.userName === 'Invidia',
-			thejuststopo: user.userName === 'TheJustStopO'
+			thejuststopo: user.userName === 'TheJustStopO',
+			moira: user.userName === 'moira'
 		});
 	} else if (
 		user.isContributor &&
@@ -106,13 +120,13 @@ module.exports.getBadWord = text => {
 		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
-	const exceptions = [/(i|o)f (a|4) g/gi, /underclaim on gov/gi, /big ga(e|m|y)/gi, /among/gi, /mongodb/gi, /mongolia/gi]; // This list for all exceptions to bypass swear filter
+	const exceptions = [/(i|o)f (a|4) g/gi, /underclaim on gov/gi, /bastard/gi, /big ga/gi, /among/gi, /mongod/gi, /mongolia/gi, /off again/gi, /pokemon game/gi]; // This list for all exceptions to bypass swear filter
 	let foundWord = [null, null]; // Future found bad word, in format of: [blacklisted word, variation]
 
 	// let ec = 0; //for future use in auto reporting
 	let exceptedText = text;
-	for(let exception of exceptions){
-		while(exceptedText.search(exception) > -1){
+	for (const exception of exceptions) {
+		while (exceptedText.search(exception) > -1) {
 			exceptedText = exceptedText.replace(exception, '');
 			// ec++;
 		}
@@ -145,4 +159,12 @@ module.exports.getBadWord = text => {
 		});
 	});*/
 	return foundWord;
+};
+
+module.exports.DEFAULTTHEMECOLORS = {
+	primaryColor: 'hsl(225, 73%, 57%)',
+	secondaryColor: 'hsl(225, 48%, 57%)',
+	tertiaryColor: 'hsl(265, 73%, 57%)',
+	baseBackgroundColor: 'hsl(0, 0%, 0%)',
+	baseTextColor: 'hsl(0, 0%, 100%)'
 };

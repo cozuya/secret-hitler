@@ -85,6 +85,10 @@ const DisplayLobbies = props => {
 		let customgameactiveTooltip;
 		let flappyMode;
 		let flappyModeTooltip;
+		let flappyOnlyMode;
+		let flappyOnlyModeTooltip;
+		let unlisted;
+		let unlistedTooltip;
 
 		if (game.casualGame) {
 			casualGame = <i className="handshake icon" />;
@@ -124,7 +128,7 @@ const DisplayLobbies = props => {
 			disableChat = (
 				<i className="icons">
 					<i className="unmute icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-background-2)' }} />
 				</i>
 			);
 			disableChatTooltip = 'Player Chat Disabled';
@@ -149,7 +153,7 @@ const DisplayLobbies = props => {
 			disableGamechat = (
 				<i className="icons">
 					<i className="game icon" />
-					<i className="large remove icon" style={{ opacity: '0.6', color: '#1b1b1b' }} />
+					<i className="large remove icon" style={{ opacity: '0.6', color: 'var(--theme-background-2)' }} />
 				</i>
 			);
 			disableGamechatTooltip = 'Game Chat Disabled';
@@ -185,9 +189,19 @@ const DisplayLobbies = props => {
 			eloMinimumTooltip = `Elo minimum: ${game.eloMinimum}`;
 		}
 
-		if (game.flappyMode) {
-			casualGame = <i className="plane icon" />;
-			casualGameTooltip = 'COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler';
+		if (game.flappyMode && !game.flappyOnlyMode) {
+			flappyMode = <i className="plane icon" />;
+			flappyModeTooltip = 'COMING SOON: Flappy Mode - sudden death games are resolved with a game of Flappy Hitler';
+		}
+
+		if (game.flappyOnlyMode) {
+			flappyOnlyMode = <i className="plane icon flappyonly" />;
+			flappyOnlyModeTooltip = 'Flappy Only Mode: no policies, just play flappy';
+		}
+
+		if (game.isUnlisted) {
+			unlisted = <i className="lock icon green" />;
+			unlistedTooltip = 'Unlisted Game - Not Visible in Game List';
 		}
 
 		return (
@@ -260,6 +274,16 @@ const DisplayLobbies = props => {
 				{flappyMode && (
 					<span data-tooltip={flappyModeTooltip} data-inverted="">
 						{flappyMode}
+					</span>
+				)}
+				{flappyOnlyMode && (
+					<span data-tooltip={flappyOnlyModeTooltip} data-inverted="">
+						{flappyOnlyMode}
+					</span>
+				)}
+				{unlisted && (
+					<span data-tooltip={unlistedTooltip} data-inverted="">
+						{unlisted}
 					</span>
 				)}
 			</div>
@@ -411,43 +435,49 @@ const DisplayLobbies = props => {
 	};
 
 	return (
-		<div
-			data-uid={game.uid}
-			onClick={() => {
-				location.href = `#/table/${game.uid}`;
-			}}
-			className={gameClasses()}
-		>
-			<div className="game-row">
-				{gameProgress()}
-				<div className="game-main">
-					<div className="game-main-top-row">
-						<div className="gamename-column">
-							{renderFlag()}
-							{game.name}
-							{userInfo.staffRole && userInfo.staffRole !== 'altmod' && <span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>}
-						</div>
-						<div className="options-column experienced">{optionIcons()}</div>
-					</div>
-					<div className="game-main-bottom-row">
-						{game.isTourny && game.tournyStatus && game.tournyStatus.queuedPlayers ? (
-							<span className="game-tournament-unstarted">Tournament starting soon..</span>
-						) : (
-							<div className="player-icons-column">
-								<div className="player-icons">{playerIcons()}</div>
+		<React.Fragment>
+			{(!game.isUnlisted || (userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran')) && (
+				<div
+					data-uid={game.uid}
+					onClick={() => {
+						location.href = `#/table/${game.uid}`;
+					}}
+					className={gameClasses()}
+				>
+					<div className="game-row">
+						{gameProgress()}
+						<div className="game-main">
+							<div className="game-main-top-row">
+								<div className="gamename-column">
+									{renderFlag()}
+									{game.name}
+									{userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran' && (
+										<span style={{ color: 'lightblue' }}>{` Created by: ${game.gameCreatorName}`}</span>
+									)}
+								</div>
+								<div className="options-column experienced">{optionIcons()}</div>
 							</div>
-						)}
-						<div className="player-count-column">
-							<span className="seatedcount" style={{ fontWeight: 'bold' }}>
-								{game.seatedCount || (game.tournyStatus && game.tournyStatus.queuedPlayers)}{' '}
-							</span>
-							<span className="divider">/</span>
-							<span className="allowed-players"> {playerCount(game)}</span>
+							<div className="game-main-bottom-row">
+								{game.isTourny && game.tournyStatus && game.tournyStatus.queuedPlayers ? (
+									<span className="game-tournament-unstarted">Tournament starting soon..</span>
+								) : (
+									<div className="player-icons-column">
+										<div className="player-icons">{playerIcons()}</div>
+									</div>
+								)}
+								<div className="player-count-column">
+									<span className="seatedcount" style={{ fontWeight: 'bold' }}>
+										{game.seatedCount || (game.tournyStatus && game.tournyStatus.queuedPlayers)}{' '}
+									</span>
+									<span className="divider">/</span>
+									<span className="allowed-players"> {playerCount(game)}</span>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
+			)}
+		</React.Fragment>
 	);
 };
 

@@ -11,6 +11,115 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
+					<p>Version 1.6.7 released 1-15-2020</p>
+				</div>
+				<p>
+					New feature: Player settable color theming. Check the settings page to change the color palettes.
+				</p>
+				<div className="ui header">
+					<p>Version 1.6.6 released 1-5-2020</p>
+				</div>
+				<p>Adds 10 New Emotes</p>
+				<p>Adds Color to Replay Chat</p>
+				<p>Fixes Remake Visual Bugs</p>
+				<p>Fixes Leaderboard Caching</p>
+				<p>Adds Veteran AEM Role</p>
+				<p>Multiple Bug Fixes</p>
+				<hr />
+				<div className="ui header">
+					<p>Welcome to 2020 and to Season 9!</p>
+				</div>
+				<h4>The top 10 players of season 8 are:</h4>
+				<ul>
+					<li> godhemzelve: 2067</li>
+					<li> Scorcha: 2024</li>
+					<li> imbapingu: 2013</li>
+					<li> wenshan: 1945</li>
+					<li> Rivstar:1937</li>
+					<li> MaximTheMeme: 1924</li>
+					<li> RetiredManu: 1906</li>
+					<li> codingwizard: 1888</li>
+					<li> trump: 1872</li>
+					<li> IThanosI: 1870</li>
+				</ul>
+
+				<div className="ui header">
+					<p>Version 1.6.5 released 10-5-2019</p>
+				</div>
+				<p>Updates Terms of Use to version 1.4</p>
+				<p>Fixes Cardbacks not being visible in remakes</p>
+				<p>Fixes spacing issues for user names and medals in game</p>
+				<p>Fixes bug where remake votes didn't rescind automatically</p>
+				<div className="ui header">
+					<p>Version 1.6.4 released 10-1-2019</p>
+				</div>
+				<h4>The top 10 players of season 7 are:</h4>
+				<ul>
+					<li>Canaris: 1956 </li>
+					<li>imbapingu: 1941 </li>
+					<li>liluzivert: 1924 </li>
+					<li>Maximovic96: 1923 </li>
+					<li>rags009: 1920 </li>
+					<li>Olk: 1897 </li>
+					<li>acro: 1887 </li>
+					<li>Freakin: 1882 </li>
+					<li>Kristy: 1882 </li>
+					<li>okboomer: 1879 </li>
+				</ul>
+
+				<p>Fixes Season End Date on Firefox</p>
+				<p>Fixes Remake Spam</p>
+				<p>Fixes Bug where users could snoop which other players had voted to remake</p>
+				<p>Adds the ability to simply type "@mod [message]" in game to ping a moderator on Discord automatically</p>
+				<p>Adds a Safe For Work User Setting - to minorly conceal some mentions of Hitler</p>
+				<p>Adds a new on-site warning feature for moderators</p>
+				<p>Multiple moderation improvements</p>
+				<div className="ui header">
+					<p>Version 1.6.3 released 8-28-2019</p>
+				</div>
+				<p>Temporarily disables "disable game chat" game setting due to various gamebreaking bugs</p>
+				<p>Fixes casual game setting for timed games</p>
+				<p>Adds Trivia Mode Preset</p>
+				<p>Adds User Setting to choose number of Chats shown when truncated</p>
+				<p>Multiple Moderation Improvements</p>
+				<div className="ui header">
+					<p>Version 1.6.2 released 8-1-2019</p>
+				</div>
+				<h4>Majorly reduces chat lag!</h4>
+				<p>Fixes Terms of Use formatting</p>
+				<p>Fixes Claim Window not Disappearing at end of game</p>
+				<p>Fixes Various Moderation Features</p>
+				<hr />
+
+				<div className="ui header">
+					<p>Version 1.6.1 released 7-10-2019</p>
+				</div>
+				<h4>8 New Emotes!</h4>
+				<h4>New Unlisted Game Setting</h4>
+				<p>Game will be hidden from Games List, and will be only accessible via link</p>
+
+				<div className="ui header">
+					<p>Version 1.6.0 released 7-1-2019</p>
+				</div>
+				<h4>The top 10 players of season 6 are:</h4>
+				<ul>
+					<li>Roxz80: 2001</li>
+					<li>Einstein: 1997</li>
+					<li>Freakin: 1963</li>
+					<li>obama: 1952</li>
+					<li>Metalace: 1950</li>
+					<li>imbapingu: 1920</li>
+					<li>StatReset: 1911</li>
+					<li>Prohell: 1903</li>
+					<li>acro: 1897</li>
+					<li>wenshan: 1894</li>
+				</ul>
+
+				<h4>Timed Games are Fixed! -Vigasaurus</h4>
+				<p>Various Bugfixes -Vigasaurus</p>
+				<p>Multiple moderation improvements</p>
+
+				<div className="ui header">
 					<p>Version 1.5.2 released 5-23-2019</p>
 				</div>
 				<p>Various Backend Fixes -Vigasaurus</p>

@@ -131,7 +131,7 @@ class Playerlist extends React.Component {
 	renderModerationButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod')) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran')) {
 			return (
 				<a href="#/moderation">
 					<i className="fire icon mod-button" />
@@ -143,7 +143,7 @@ class Playerlist extends React.Component {
 	renderPlayerReportButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod')) {
+		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran')) {
 			let classes = 'comment icon report-button';
 
 			const reportClick = () => {
@@ -169,8 +169,11 @@ class Playerlist extends React.Component {
 	renderSignupsButton() {
 		const { userInfo } = this.props;
 
-		if (Object.keys(userInfo).length && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'trialmod')) {
-			let classes = 'sign-in icon';
+		if (
+			Object.keys(userInfo).length &&
+			Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'veteran')
+		) {
+			const classes = 'sign-in icon';
 
 			return (
 				<a href="#/signups">
@@ -189,7 +192,7 @@ class Playerlist extends React.Component {
 			case 'gold':
 				return <span title="This player was in the top tier of ranks in the previous season" className="season-award gold" />;
 			case 'gold1':
-				return <span title="This player was the top player of the previous season, because they did wild shit" className="season-award gold1" />;
+				return <span title="This player is too lazy to have a special text about being top of last season" className="season-award gold1" />;
 			case 'gold2':
 				return <span title="This player was 2nd highest player of the previous season" className="season-award gold2" />;
 			case 'gold3':
@@ -227,10 +230,16 @@ class Playerlist extends React.Component {
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
-			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
+			const isStaff = Boolean(
+				Object.keys(userInfo).length &&
+					userInfo.staffRole &&
+					userInfo.staffRole !== 'trialmod' &&
+					userInfo.staffRole !== 'altmod' &&
+					userInfo.staffRole !== 'veteran'
+			);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
-			let aem = [...admins];
+			const aem = [...admins];
 			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
@@ -315,19 +324,20 @@ class Playerlist extends React.Component {
 						<div className="userlist-username">
 							{renderStatus()}
 							{(() => {
-								const userAdminRole =
-									user.staffRole === 'admin'
-										? 'Admin'
-										: user.staffRole === 'editor'
-										? 'Editor'
-										: user.staffRole === 'moderator'
-										? 'Moderator'
-										: user.isContributor
-										? 'Contributor'
-										: null;
-
+								const userAdminRole = user.staffIncognito
+									? 'Incognito'
+									: user.staffRole === 'admin'
+									? 'Admin'
+									: user.staffRole === 'editor'
+									? 'Editor'
+									: user.staffRole === 'moderator'
+									? 'Moderator'
+									: user.isContributor
+									? 'Contributor'
+									: null;
+								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
+									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup
@@ -357,7 +367,7 @@ class Playerlist extends React.Component {
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
-								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
 							)}
 							{user.staffRole !== 'admin' &&
 								Boolean(!user.staffDisableVisibleElo) &&
@@ -443,10 +453,16 @@ class Playerlist extends React.Component {
 			const routeToProfile = userName => {
 				window.location.hash = `#/profile/${userName}`;
 			};
-			const isStaff = Boolean(Object.keys(userInfo).length && userInfo.staffRole && userInfo.staffRole !== 'trialmod' && userInfo.staffRole !== 'altmod');
+			const isStaff = Boolean(
+				Object.keys(userInfo).length &&
+					userInfo.staffRole &&
+					userInfo.staffRole !== 'trialmod' &&
+					userInfo.staffRole !== 'altmod' &&
+					userInfo.staffRole !== 'veteran'
+			);
 			const visible = list.filter(user => (this.state.userListFilter === 'all' || user[w] + user[l] > 49) && (!user.isPrivate || isStaff));
 			const admins = visible.filter(user => user.staffRole === 'admin').sort(this.alphabetical());
-			let aem = [...admins];
+			const aem = [...admins];
 			const editors = visible.filter(user => user.staffRole === 'editor').sort(this.alphabetical());
 			aem.push(...editors);
 			const moderators = visible.filter(user => user.staffRole === 'moderator').sort(this.alphabetical());
@@ -529,22 +545,24 @@ class Playerlist extends React.Component {
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
-								<span title="This player was in the top 3 of the winter 2019 tournament" className="crown-icon" />
+								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
 							)}
 							{(() => {
-								const userAdminRole =
-									user.staffRole === 'admin'
-										? 'Admin'
-										: user.staffRole === 'editor'
-										? 'Editor'
-										: user.staffRole === 'moderator'
-										? 'Moderator'
-										: user.isContributor
-										? 'Contributor'
-										: null;
+								const userAdminRole = user.staffIncognito
+									? 'Incognito'
+									: user.staffRole === 'admin'
+									? 'Admin'
+									: user.staffRole === 'editor'
+									? 'Editor'
+									: user.staffRole === 'moderator'
+									? 'Moderator'
+									: user.isContributor
+									? 'Contributor'
+									: null;
 
+								const staffRolePrefixes = { Admin: '(A) 📛', Editor: '(E) 🔰', Moderator: '(M) 🌀', Incognito: '(I) 🚫' };
 								if (userAdminRole) {
-									const prefix = userAdminRole !== 'Contributor' ? `(${userAdminRole.charAt(0)})` : null;
+									const prefix = userAdminRole !== 'Contributor' ? staffRolePrefixes[userAdminRole] : null;
 
 									return (
 										<Popup
@@ -598,7 +616,7 @@ class Playerlist extends React.Component {
 				<div className="playerlist-header">
 					<span className="header-name-container">
 						<h3 className="ui header">Lobby</h3>
-						{!(Boolean(Object.keys(userInfo).length) && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod')) && (
+						{!(Boolean(Object.keys(userInfo).length) && Boolean(userInfo.staffRole && userInfo.staffRole !== 'altmod' && userInfo.staffRole !== 'veteran')) && (
 							<i className="info circle icon" onClick={this.clickInfoIcon} title="Click to get information about player colors" />
 						)}
 					</span>
@@ -618,18 +636,20 @@ class Playerlist extends React.Component {
 						</p>
 						<p>
 							Additionally, <span className="admin">Administrators</span> have a <span className="admin">red color</span> with a{' '}
-							<span className="admin-name">dark red (A)</span> and are always at the top of the list.
+							<span className="admin-name">(A)</span> and are always at the top of the list.
 							<br />
 							<span className="cbell">Ed</span>
 							<span className="max">it</span>
-							<span className="invidia">or</span>
-							<span className="faaiz">s</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special colors to
-							stand out, as well as a <span className="editor-name">red (E)</span>.<br />
+							<span className="moira">or</span>
+							<span className="thejuststopo">s</span>, placed at the top just below <span className="admin">Administrators</span>, have a range of special
+							colors to stand out, as well as a <span className="admin">(E)</span>.<br />
 							<span className="moderatorcolor">Moderators</span>, placed at the top below <span className="cbell">Ed</span>
 							<span className="max">it</span>
-							<span className="invidia">or</span>
-							<span className="faaiz">s</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
-							<span className="moderator-name">light red (M)</span>.<br />
+							<span className="moira">or</span>
+							<span className="thejuststopo">s</span>, have a <span className="moderatorcolor">blue color</span> with a{' '}
+							<span className="moderatorcolor">(M)</span>.<br />
+							AEM <span className="veteran">Veterans</span> are retired senior moderators, and are given a <span className="veteran">teal</span> color.
+							<br />
 							Lastly, <span className="contributor">Contributors</span> get a <span className="contributor">special color</span> as well! Contribute code to
 							this open source project!.
 						</p>
@@ -665,8 +685,4 @@ Playerlist.propTypes = {
 	fetchReplay: PropTypes.func
 };
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-	mergeProps
-)(Playerlist);
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Playerlist);

@@ -118,7 +118,10 @@ export default () => {
 
 				testNomination(0, 0, 1);
 
-				testElection(0, Range(0, 7).map(i => some(true)));
+				testElection(
+					0,
+					Range(0, 7).map(i => some(true))
+				);
 
 				testPresidentLegislation(0, { reds: 2, blues: 1 }, 'liberal', some({ reds: 2, blues: 1 }));
 
@@ -147,7 +150,10 @@ export default () => {
 
 				testNomination(1, 1, 3);
 
-				testElection(1, Range(0, 7).map(i => some(true)));
+				testElection(
+					1,
+					Range(0, 7).map(i => some(true))
+				);
 
 				testPresidentLegislation(1, { reds: 2, blues: 1 }, 'fascist', some({ reds: 2, blues: 1 }));
 
@@ -182,7 +188,10 @@ export default () => {
 
 				testNomination(5, 5, 4);
 
-				testElection(5, List([true, false, false, null, false, false, false]).map(x => fromNullable(x)));
+				testElection(
+					5,
+					List([true, false, false, null, false, false, false]).map(x => fromNullable(x))
+				);
 
 				testPresidentLegislation(5, null, none);
 
@@ -211,7 +220,10 @@ export default () => {
 
 				testNomination(6, 6, 2);
 
-				testElection(6, List([true, true, true, null, true, true, true]).map(x => fromNullable(x)));
+				testElection(
+					6,
+					List([true, true, true, null, true, true, true]).map(x => fromNullable(x))
+				);
 
 				testPresidentLegislation(6, { reds: 2, blues: 1 }, 'liberal', some({ reds: 2, blues: 1 }));
 
@@ -244,7 +256,10 @@ export default () => {
 
 				testChancellorLegislation(7, { reds: 2, blues: 0 }, some('fascist'), none);
 
-				testElection(7, List([true, false, null, null, true, true, true]).map(x => fromNullable(x)));
+				testElection(
+					7,
+					List([true, false, null, null, true, true, true]).map(x => fromNullable(x))
+				);
 
 				testPolicyEnaction(7, 'fascist');
 

@@ -6,6 +6,7 @@ const secureGame = game => {
 	const _game = Object.assign({}, game);
 
 	delete _game.private;
+	delete _game.remakeData;
 	return _game;
 };
 
@@ -22,6 +23,9 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 	if (!game || !io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
+
+	// DEBUG ONLY
+	// console.log(game.general.status, 'TimedMode:', game.gameState.timedModeEnabled, 'TimerId:', game.private.timerId ? 'exists' : 'null');
 
 	const seatedPlayerNames = game.publicPlayersState.map(player => player.userName);
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
@@ -160,7 +164,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	const loseFactor = -k / losingPlayerNames.length;
 	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
 	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
-	let ratingUpdates = {};
+	const ratingUpdates = {};
 	accounts.forEach(account => {
 		const eloOverall = account.eloOverall ? account.eloOverall : defaultELO;
 		const eloSeason = account.eloSeason ? account.eloSeason : defaultELO;

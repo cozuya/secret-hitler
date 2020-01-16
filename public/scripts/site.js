@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-$(document).ready(function () {
+$(document).ready(function() {
 	// yay ES5
 
 	if (window.location.pathname === '/') {

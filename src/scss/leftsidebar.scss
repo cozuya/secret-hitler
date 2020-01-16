@@ -16,11 +16,11 @@
 	}
 	.vertical.segment {
 		cursor: pointer;
-		border: 1px solid #000;
+		border: 1px solid var(--theme-background-1);
 		padding: 0;
 		margin-top: 5px;
 		margin-bottom: 5px;
-		color: #ddd;
+		color: var(--theme-text-2);
 		background: #1e1414;
 		&:hover {
 			border: 1px solid #802c2c;
@@ -35,7 +35,7 @@
 			width: 18px;
 			text-align: center;
 			height: 19px;
-			background: lightslategray;
+			background: var(--theme-text-3);
 		}
 
 		.rebalance-game {
