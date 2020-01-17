@@ -87,7 +87,7 @@ GameSummary.find()
 	})
 	.then(() => {
 		console.log('\nCompressing...');
-		const filename = 'gameSummaries';
+		const filename = 'apiDump';
 		output_file = `${path.join(OUTPUT_DIR, `${filename}`)}.tar.gz`;
 		child_process.execSync(`tar -zcf ${output_file} ${SUMMARY_DIR}`);
 		console.log('Cleaning Up...');
