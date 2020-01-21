@@ -11,10 +11,10 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Version 1.6.7 released</p>
+					<p>Version 1.6.7 released 1-15-2020</p>
 				</div>
 				<p>
-					New feature: player settable color theming. Check the settings page to change the color palettes from the current royal blue to whatever you'd like.
+					New feature: Player settable color theming. Check the settings page to change the color palettes.
 				</p>
 				<div className="ui header">
 					<p>Version 1.6.6 released 1-5-2020</p>
