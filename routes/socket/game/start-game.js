@@ -535,7 +535,9 @@ const beginGame = game => {
 		if (!io.sockets.sockets[affectedSocketId]) {
 			continue;
 		}
-		io.sockets.sockets[affectedSocketId].emit('pingPlayer', 'Secret Hitler IO: The game has started!');
+		if (process.env.NODE_ENV !== 'development') {
+			io.sockets.sockets[affectedSocketId].emit('pingPlayer', 'Secret Hitler IO: The game has started!');
+		}
 	}
 };
 

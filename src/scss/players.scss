@@ -280,7 +280,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 				top: -100px !important;
 				position: absolute !important;
 				z-index: 99999 !important;
-				color: var(--background-3);
+				color: var(--theme-background-3);
 				right: -5px !important;
 				&:hover {
 					color: var(--theme-background-3);
@@ -360,7 +360,7 @@ $eloValues: (1500 0.3 1 0.3) (1600 0.3 1 0.5) (1849 0 1 0.7) (1850 1 1 0.7) (190
 	.card-count {
 		position: absolute;
 		z-index: 1;
-		background-color: var(--background-3);
+		background-color: var(--theme-background-3);
 		color: var(--theme-text-2);
 		width: 18px;
 		text-align: center;

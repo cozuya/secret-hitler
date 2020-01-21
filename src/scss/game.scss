@@ -190,9 +190,7 @@
 				}
 			}
 			.chat-timestamp {
-				//margin-top: 3px;
-				//color: #848484;
-				color: var(--theme-background-3);
+				color: var(--theme-text-3);
 				font-size: 12px;
 				white-space: nowrap;
 				font-family: arial;
@@ -216,7 +214,7 @@
 				}
 				.ui.button {
 					text-align: center;
-					color: #var(--theme-text-1);
+					color: var(--theme-text-1);
 					display: block;
 					width: 230px;
 					margin: 0 auto 15px;

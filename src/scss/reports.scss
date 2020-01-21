@@ -14,7 +14,7 @@
 		}
 	}
 	button {
-		color: var(theme-background-1);
+		color: var(--theme-background-1);
 		padding: 10px;
 	}
 	> div {
@@ -73,7 +73,7 @@
 	.ipban-button {
 		width: 100%;
 		background: darkred;
-		color: var(theme-text-1);
+		color: var(--theme-text-1);
 		margin: 2px 0;
 	}
 	.cardback-button {
@@ -88,5 +88,5 @@
 }
 
 .horizontal.divider {
-	color: var(theme-text-1);
+	color: var(--theme-text-1);
 }
