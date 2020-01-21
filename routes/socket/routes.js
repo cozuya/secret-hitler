@@ -22,7 +22,8 @@ const {
 	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
 	handleFlappyEvent,
-	handleUpdatedTheme
+	handleUpdatedTheme,
+	sendSpecificGeneralChats
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -246,6 +247,7 @@ module.exports.socketRoutes = () => {
 
 			socket.on('sendUser', user => {
 				sendSpecificUserList(socket, user.staffRole);
+				sendSpecificGeneralChats(socket, user.staffRole);
 			});
 
 			socket.on('flappyEvent', data => {

@@ -223,7 +223,7 @@ export default class Generalchat extends React.Component {
 					}
 
 					return (
-						<div className="item" key={i}>
+						<div className="item" key={i} style={{ textDecoration: `${chat.struckThrough ? 'line-through' : ''}` }}>
 							{timestamp}
 							{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
 								chat.tournyWins &&

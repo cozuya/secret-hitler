@@ -81,6 +81,10 @@ module.exports.generalChats = {
 	sticky: '',
 	list: []
 };
+module.exports.aemGeneralChats = {
+	sticky: '',
+	list: []
+};
 module.exports.accountCreationDisabled = { status: false };
 module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
