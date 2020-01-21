@@ -3230,14 +3230,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
-							if (users && users.length > 0) {
-								users.forEach(user => {
+						Account.find({ userName: data.userName }, function (err, users) {
+							if (user) {
 									user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
 									user.save(() => {
 										logOutUser(data.userName);
 									});
-								});
 							}
 						});
 					});
