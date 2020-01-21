@@ -34,7 +34,8 @@ const { generateCombination } = require('gfycat-style-urls');
 const { obfIP } = require('./ip-obf');
 const { LEGALCHARACTERS } = require('../../src/frontend-scripts/node-constants');
 const { makeReport } = require('./report.js');
-
+const { chatReplacements } = require('./chatReplacements');
+const generalChatReplTime = Array(chatReplacements.length + 1).fill(0);
 /**
  * @param {object} game - game to act on.
  * @return {string} status text.
@@ -696,6 +697,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			disableObserver: data.disableObserver && !data.isTourny,
 			isTourny: false,
 			lastModPing: 0,
+			chatReplTime: Array(chatReplacements.length + 1).fill(0),
 			disableGamechat: data.disableGamechat,
 			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
@@ -1586,6 +1588,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 		newGame.general.electionCount = 0;
 		newGame.timeCreated = Date.now();
 		newGame.general.lastModPing = 0;
+		newGame.general.chatReplTime = Array(chatReplacements.length + 1).fill(0);
 		newGame.publicPlayersState = game.publicPlayersState
 			.filter(player =>
 				game.remakeData
@@ -2259,6 +2262,41 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		return;
 	}
 
+	for (repl of chatReplacements) {
+		const replace = repl.regex.exec(chat);
+		if (replace) {
+			if (AEM) {
+				if (game.general.chatReplTime[repl.id] === 0 || Date.now() > game.general.chatReplTime[repl.id] + repl.aemCooldown * 1000) {
+					data.chat = repl.replacement;
+					game.general.chatReplTime[repl.id] = game.general.chatReplTime[0] = Date.now();
+				} else {
+					socket.emit(
+						'sendAlert',
+						`You can do this command again in ${((game.general.chatReplTime[repl.id] + repl.aemCooldown * 1000 - Date.now()) / 1000).toFixed(2)} seconds.`
+					);
+					return;
+				}
+			} else if (user.wins + user.losses > repl.normalGames) {
+				if (
+					Date.now() > game.general.chatReplTime[0] + 30000 &&
+					(game.general.chatReplTime[repl.id] === 0 || Date.now() > game.general.chatReplTime[repl.id] + repl.normalCooldown * 1000)
+				) {
+					data.chat = repl.replacement;
+					game.general.chatReplTime[repl.id] = game.general.chatReplTime[0] = Date.now();
+				} else {
+					socket.emit(
+						'sendAlert',
+						`You can't do this right now, try again in ${Math.max(
+							(game.general.chatReplTime[0] + 30000 - Date.now()) / 1000,
+							(game.general.chatReplTime[repl.id] + repl.normalCooldown * 1000 - Date.now()) / 1000
+						).toFixed(2)} seconds.`
+					);
+					return;
+				}
+			}
+		}
+	}
+
 	const pinged = /^Ping(\d{1,2})/i.exec(chat);
 
 	if (
@@ -2320,7 +2358,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			else leniancy = 0.25;
 
 			const timeSince = data.timestamp - lastMessage.timestamp;
-			if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
+			if (!AEM && timeSince < leniancy * 1000) return; // Prior chat was too recent.
 		}
 
 		data.staffRole = (() => {
@@ -2377,8 +2415,10 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 	if (!user || user.isPrivate) return;
 
 	if (!data.chat) return;
-	data.chat = data.chat.trim();
+	const chat = (data.chat = data.chat.trim());
 	if (data.chat.length > 300 || !data.chat.length) return;
+
+	const AEM = user.staffRole && user.staffRole !== 'altmod' && user.staffRole !== 'trialmod' && user.staffRole !== 'veteran';
 
 	const curTime = new Date();
 	const lastMessage = generalChats.list
@@ -2397,6 +2437,41 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 
 		const timeSince = curTime - lastMessage.time;
 		if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
+	}
+
+	for (repl of chatReplacements) {
+		const replace = repl.regex.exec(chat);
+		if (replace) {
+			if (AEM) {
+				if (generalChatReplTime[repl.id] === 0 || Date.now() > generalChatReplTime[repl.id] + repl.aemCooldown * 1000) {
+					data.chat = repl.replacement;
+					generalChatReplTime[repl.id] = generalChatReplTime[0] = Date.now();
+				} else {
+					socket.emit(
+						'sendAlert',
+						`You can do this command again in ${((generalChatReplTime[repl.id] + repl.aemCooldown * 1000 - Date.now()) / 1000).toFixed(2)} seconds.`
+					);
+					return;
+				}
+			} else if (user.wins + user.losses > repl.normalGames) {
+				if (
+					Date.now() > generalChatReplTime[0] + 30000 &&
+					(generalChatReplTime[repl.id] === 0 || Date.now() > generalChatReplTime[repl.id] + repl.normalCooldown * 1000)
+				) {
+					data.chat = repl.replacement;
+					generalChatReplTime[repl.id] = generalChatReplTime[0] = Date.now();
+				} else {
+					socket.emit(
+						'sendAlert',
+						`You can't do this right now, try again in ${Math.max(
+							(generalChatReplTime[0] + 30000 - Date.now()) / 1000,
+							(generalChatReplTime[repl.id] + repl.normalCooldown * 1000 - Date.now()) / 1000
+						).toFixed(2)} seconds.`
+					);
+					return;
+				}
+			}
+		}
 	}
 
 	if (user.wins + user.losses >= 10) {
