@@ -283,12 +283,12 @@ class Settings extends React.Component {
 									const newColorHSL2 = {
 										h: hsl.h,
 										s: hsl.s,
-										l: hsl.l > 0.5 ? (hsl.l <= 0.93 ? hsl.l + 0.07 : 100) : hsl.l >= 0.07 ? hsl.l - 0.07 : 0
+										l: hsl.l < 0.5 ? (hsl.l <= 0.93 ? hsl.l + 0.07 : 100) : hsl.l >= 0.07 ? hsl.l - 0.07 : 0
 									};
 									const newColorHSL3 = {
 										h: hsl.h,
 										s: hsl.s,
-										l: hsl.l > 0.5 ? (hsl.l <= 0.86 ? hsl.l + 0.14 : 100) : hsl.l >= 0.14 ? hsl.l - 0.14 : 0
+										l: hsl.l < 0.5 ? (hsl.l <= 0.86 ? hsl.l + 0.14 : 100) : hsl.l >= 0.14 ? hsl.l - 0.14 : 0
 									};
 
 									docStyle.setProperty(`--theme-${name}-1`, newColor);
