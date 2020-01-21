@@ -330,6 +330,7 @@
 			// small hack to prevent hover tooltips being cut off.
 			margin-right: -50px;
 			padding-right: 50px;
+			background: var(--theme-background-2);
 		}
 		.section-main-content-container {
 			width: 870px;
@@ -710,7 +711,7 @@
 			box-shadow: 0 0 3px var(--theme-primary);
 		}
 		&::placeholder {
-			color: var(--theme-background-3);
+			color: var(--theme-text-2);
 		}
 	}
 	// careful this styles both generalchat and gamechat emote buttons
@@ -751,7 +752,7 @@
 	}
 	.game > .ui.grid .chat-container .gamechat .chats,
 	.game-chat {
-		background: var(--theme-background-2);
+		background: var(--theme-background-1);
 		flex-grow: 1;
 	}
 	.game > .ui.grid .chat-container .gamechat .inputbar .expando-container .hotkey-container {
