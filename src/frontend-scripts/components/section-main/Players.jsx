@@ -64,7 +64,13 @@ class Players extends React.Component {
 	}
 
 	handlePlayerDoubleClick = userName => {
-		if ((!this.props.gameInfo.general.private && this.props.userInfo.userName && this.props.userInfo.userName !== userName) || this.props.isReplay) {
+		if (
+			(!this.props.gameInfo.general.unlisted &&
+				!this.props.gameInfo.general.private &&
+				this.props.userInfo.userName &&
+				this.props.userInfo.userName !== userName) ||
+			this.props.isReplay
+		) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
