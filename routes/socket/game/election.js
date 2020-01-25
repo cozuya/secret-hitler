@@ -421,6 +421,15 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 						() => {
 							game.gameState.audioCue = '';
 							president.cardFlingerState = [];
+							if (game.trackState.electionTrackerCount <= 2 && game.publicPlayersState.findIndex(player => player.governmentStatus === 'isChancellor') > -1) {
+								game.publicPlayersState.forEach(player => {
+									if (player.previousGovernmentStatus) {
+										player.previousGovernmentStatus = '';
+									}
+								});
+								game.publicPlayersState[game.gameState.presidentIndex].previousGovernmentStatus = 'wasPresident';
+								game.publicPlayersState[chancellorIndex].previousGovernmentStatus = 'wasChancellor';
+							}
 							if (game.trackState.electionTrackerCount >= 3) {
 								if (!game.gameState.undrawnPolicyCount) {
 									shufflePolicies(game);
@@ -1294,18 +1303,6 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		if (game.gameState.previousElectedGovernment.length) {
 			game.private.seatedPlayers[game.gameState.previousElectedGovernment[0]].playersState[game.gameState.previousElectedGovernment[0]].claim = '';
 			game.private.seatedPlayers[game.gameState.previousElectedGovernment[1]].playersState[game.gameState.previousElectedGovernment[1]].claim = '';
-			let affectedSocketId = Object.keys(io.sockets.sockets).find(
-				socketId =>
-					io.sockets.sockets[socketId].handshake.session.passport &&
-					io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[game.gameState.previousElectedGovernment[0]].userName
-			);
-			io.sockets.sockets[affectedSocketId].emit('removeClaim');
-			affectedSocketId = Object.keys(io.sockets.sockets).find(
-				socketId =>
-					io.sockets.sockets[socketId].handshake.session.passport &&
-					io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[game.gameState.previousElectedGovernment[1]].userName
-			);
-			io.sockets.sockets[affectedSocketId].emit('removeClaim');
 		}
 
 		game.general.status = 'Waiting on presidential discard.';
