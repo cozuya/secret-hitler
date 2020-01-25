@@ -1395,7 +1395,7 @@ export default class Creategame extends React.Component {
 					</div>
 					<div className="row">
 						<div style={{ display: 'flex', width: '100%', marginBottom: '6px' }}>
-							<div className="rolecard" style={{ backgroundImage: "url('../images/cards/hitler1.png')" }} /> {/* eslint-disable-line */}
+							<div className="rolecard" style={{ backgroundImage: "url('../images/cards/hitler0.png')" }} /> {/* eslint-disable-line */}
 							{renderFas()}
 						</div>
 						<div style={{ display: 'flex', width: '100%' }}>{renderLib()}</div>
