@@ -1667,6 +1667,12 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		player.voteStatus.didVoteYes = player.voteStatus.hasVoted ? data.vote : false;
 		game.publicPlayersState[playerIndex].isLoader = !player.voteStatus.hasVoted;
 
+		if (force) {
+			player.voteStatus.hasVoted = true;
+			player.voteStatus.didVoteYes = data.vote;
+			game.publicPlayersState[playerIndex].isLoader = false;
+		}
+
 		if (data.vote) {
 			player.cardFlingerState = [
 				{

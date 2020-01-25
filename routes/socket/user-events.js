@@ -1934,6 +1934,8 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 	data.timestamp = new Date();
 	if (AEM) {
+		const { blindMode, replacementNames } = game.general;
+
 		const aemRigdeck = /^\/forcerigdeck (.*)$/i.exec(chat);
 		if (aemRigdeck) {
 			if (game && game.private) {
@@ -2000,12 +2002,18 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					socket.emit('sendAlert', `There is no seat {${affectedPlayerNumber + 1}}.`);
 					return;
 				}
-				if (affectedPlayer.voteStatus.hasVoted) {
-					socket.emit('sendAlert', `${affectedPlayer.userName} {${affectedPlayerNumber + 1}} has already voted.`);
-					return;
-				}
 				let vote = false;
 				if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
+
+				if (affectedPlayer.voteStatus.hasVoted) {
+					socket.emit(
+						'sendAlert',
+						`${affectedPlayer.userName} {${affectedPlayerNumber + 1}} has already voted.\nThey were voting: ${
+							affectedPlayer.voteStatus.didVoteYes ? 'ja' : 'nein'
+						}\nYou have set them to vote: ${vote ? 'ja' : 'nein'}
+						`
+					);
+				}
 
 				game.chats.push({
 					gameChat: true,
@@ -2015,7 +2023,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							text: 'An AEM member has forced '
 						},
 						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							text: blindMode
+								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
 							type: 'player'
 						},
 						{
@@ -2089,7 +2099,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							text: 'An AEM member has force skipped the government with '
 						},
 						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							text: blindMode
+								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
 							type: 'player'
 						},
 						{
@@ -2156,14 +2168,16 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							text: 'An AEM member has forced '
 						},
 						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							text: blindMode
+								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
 							type: 'player'
 						},
 						{
 							text: ' to pick '
 						},
 						{
-							text: `${affectedChancellor.userName} {${chancellorPick}}`,
+							text: blindMode ? `${replacementNames[chancellorPick - 1]} {${chancellorPick}} ` : `${affectedChancellor.userName} {${chancellorPick}}`,
 							type: 'player'
 						},
 						{
@@ -2206,7 +2220,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							text: 'An AEM member has pinged '
 						},
 						{
-							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+							text: blindMode
+								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
 							type: 'player'
 						},
 						{
