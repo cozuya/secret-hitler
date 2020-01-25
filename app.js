@@ -121,7 +121,7 @@ if (process.env.DISCORDCLIENTID) {
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
+mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
