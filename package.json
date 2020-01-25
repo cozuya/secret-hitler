@@ -130,7 +130,7 @@
 	},
 	"scripts": {
 		"format": "prettier --write \"**/*.js\" && prettier --write \"**/*.jsx\"",
-		"dev": "concurrently --names \"SERVER,MONGO,WEBPACK\" -c \"bgCyanBright.black,bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:db\" \"yarn:start\"",
+		"dev": "node scripts/processEmotes && concurrently --names \"SERVER,MONGO,WEBPACK\" -c \"bgCyanBright.black,bgYellowBright.black,bgMagentaBright.whiteBright\" --handle-input \"yarn:inspect\" \"yarn:db\" \"yarn:start\"",
 		"dev-no-server": "npm-run-all --parallel db start",
 		"dev-packed": "npm-run-all --parallel db inspect build",
 		"dev-docker": "npm-run-all --parallel db-docker server start",
@@ -141,7 +141,7 @@
 		"test:coverage": "jest --coverage",
 		"db": "mongod --dbpath data",
 		"db-docker": "docker run -it --rm -p 27017:27017 -v \"$(PWD)/data\":/data/db --name Secret-Hitler-Dev-MongoDB mongo:latest --port 27017",
-		"build": "webpack --config webpack/webpack.config.prod --mode production",
+		"build": "node scripts/processEmotes && webpack --config webpack/webpack.config.prod --mode production",
 		"inspect": "cross-env NODE_ENV=development nodemon --inspect=9137 bin/dev.js",
 		"server": "cross-env NODE_ENV=development nodemon bin/dev.js",
 		"start": "webpack --watch --config webpack/webpack.config.dev --mode development",

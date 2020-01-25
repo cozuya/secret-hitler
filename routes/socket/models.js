@@ -4,7 +4,6 @@ const ModAction = require('../../models/modAction');
 const BannedIP = require('../../models/bannedIP');
 
 const fs = require('fs');
-const PNG = require('pngjs').PNG;
 const emotes = [];
 fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
 	if (file.name.endsWith('.png')) emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
@@ -50,25 +49,11 @@ sizeMap.forEach(size => {
 });
 
 let curCell = 0;
-const result = new PNG({
-	width: sheetSize[0] * 28,
-	height: sheetSize[1] * 28,
-	filter: -1
-});
-let numDone = 0;
-const incrementEmote = () => {
-	numDone++;
-	if (numDone == numEmotes) result.pack().pipe(fs.createWriteStream('./public/images/emotesheet.png'));
-};
+
 emotes.forEach(emote => {
 	const thisCell = curCell;
 	curCell++;
 	const loc = [thisCell % sheetSize[0], Math.floor(thisCell / sheetSize[0])];
-	const img = new PNG();
-	img.parse(fs.readFileSync(`public/images/emotes/${emote[1].name}`)).on('parsed', () => {
-		PNG.bitblt(img, result, 0, 0, 28, 28, loc[0] * 28, loc[1] * 28);
-		incrementEmote();
-	});
 	emote[1] = loc;
 });
 
