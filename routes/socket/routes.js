@@ -490,6 +490,8 @@ module.exports.socketRoutes = () => {
 				const game = findGame({ uid: gameId });
 				if (authenticated && ensureInGame(passport, game)) {
 					updateUserStatus(passport, game);
+				} else if (authenticated) {
+					updateUserStatus(passport);
 				}
 			});
 			socket.on('getReplayGameChats', uid => {
