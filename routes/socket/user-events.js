@@ -3,7 +3,6 @@ const {
 	userList,
 	userListEmitter,
 	generalChats,
-	aemGeneralChats,
 	accountCreationDisabled,
 	ipbansNotEnforced,
 	gameCreationDisabled,
@@ -2370,12 +2369,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			);
 
 		if (lastMessage.chat) {
-			let leniency; // How much time (in seconds) must pass before allowing the message.
-			if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniency = 1.5;
-			else leniency = 0.25;
+			let leniancy; // How much time (in seconds) must pass before allowing the message.
+			if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 1.5;
+			else leniancy = 0.25;
 
 			const timeSince = data.timestamp - lastMessage.timestamp;
-			if (timeSince < leniency * 1000) return; // Prior chat was too recent.
+			if (!AEM && timeSince < leniancy * 1000) return; // Prior chat was too recent.
 		}
 
 		data.staffRole = (() => {
@@ -2448,12 +2447,12 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		);
 
 	if (lastMessage.chat) {
-		let leniency; // How much time (in seconds) must pass before allowing the message.
-		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniency = 3;
-		else leniency = 0.5;
+		let leniancy; // How much time (in seconds) must pass before allowing the message.
+		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 3;
+		else leniancy = 0.5;
 
 		const timeSince = curTime - lastMessage.time;
-		if (!AEM && timeSince < leniency * 1000) return; // Prior chat was too recent.
+		if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
 	}
 
 	for (repl of chatReplacements) {
@@ -2506,8 +2505,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			time: curTime,
 			chat: data.chat,
 			userName: passport.user,
-			staffRole: getStaffRole(),
-			struckThrough: false
+			staffRole: getStaffRole()
 		};
 		const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 		const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
@@ -2517,28 +2515,11 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 			newChat.userName = 'Incognito';
 		}
 		generalChats.list.push(newChat);
-		aemGeneralChats.list.push(newChat);
 
 		if (generalChats.list.length > 99) {
 			generalChats.list.shift();
 		}
-		if (aemGeneralChats.list.length > 499) {
-			aemGeneralChats.list.shift();
-		}
-
-		io.sockets.emit('fetchUser');
-	}
-};
-
-/**
- * @param {object} socket - socket reference
- * @param {object} staffRole - socket user's staffRole
- */
-module.exports.sendSpecificGeneralChats = (socket, staffRole) => {
-	if (staffRole && staffRole !== 'altmod' && staffRole !== 'veteran') {
-		socket.emit('generalChats', aemGeneralChats);
-	} else {
-		socket.emit('generalChats', generalChats);
+		io.sockets.emit('generalChats', generalChats);
 	}
 };
 
@@ -2929,10 +2910,9 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 
 								bannedAccountGeneralChats.reverse().forEach(chat => {
 									generalChats.list.splice(generalChats.list.indexOf(chat), 1);
-									aemGeneralChats.list[generalChats.list.indexOf(chat)].struckThrough = true;
 								});
 								logOutUser(username);
-								io.sockets.emit('fetchUser');
+								io.sockets.emit('generalChats', generalChats);
 							});
 						}
 					})
@@ -3163,8 +3143,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'setSticky':
 					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
-					aemGeneralChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
-					io.sockets.emit('fetchUser');
+					io.sockets.emit('generalChats', generalChats);
 					break;
 				case 'broadcast':
 					const discordBroadcastBody = JSON.stringify({
@@ -3201,19 +3180,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						chat: data.comment,
 						isBroadcast: true
 					});
-					aemGeneralChats.list.push({
-						userName: `[BROADCAST] ${data.modName}`,
-						time: new Date(),
-						chat: data.comment,
-						isBroadcast: true
-					});
 
 					if (data.isSticky) {
 						generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
-						aemGeneralChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
 					}
 
-					io.sockets.emit('fetchUser');
+					io.sockets.emit('generalChats', generalChats);
 					break;
 				case 'ipban':
 					const ipban = new BannedIP({
@@ -3274,12 +3246,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout.save(() => {
-						Account.find({ userName: data.userName }, function(err, users) {
+						Account.find({ userName: data.userName }, function (err, users) {
 							if (user) {
-								user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
-								user.save(() => {
-									logOutUser(data.userName);
-								});
+									user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
+									user.save(() => {
+										logOutUser(data.userName);
+									});
 							}
 						});
 					});
@@ -3373,19 +3345,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'clearGenchat':
 					if (data.userName && data.userName.length > 0) {
 						generalChats.list = generalChats.list.filter(chat => chat.userName !== data.userName);
-						aemGeneralChats.list = aemGeneralChats.list.map(chat => {
-							return { ...chat, struckThrough: chat.struckThrough || chat.userName === data.userName };
-						});
+
 						// clearedGeneralChats.reverse().forEach(chat => {
 						// 	generalChats.list.splice(generalChats.list.indexOf(chat), 1);
 						// });
-						io.sockets.emit('fetchUser');
+						io.sockets.emit('generalChats', generalChats);
 					} else {
 						generalChats.list = [];
-						aemGeneralChats.list = aemGeneralChats.list.map(chat => {
-							return { ...chat, struckThrough: true };
-						});
-						io.sockets.emit('fetchUser');
+						io.sockets.emit('generalChats', generalChats);
 					}
 
 					break;

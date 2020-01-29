@@ -8,6 +8,7 @@ const Signups = require('../../models/signups');
 const {
 	games,
 	userList,
+	generalChats,
 	accountCreationDisabled,
 	ipbansNotEnforced,
 	gameCreationDisabled,
@@ -300,7 +301,7 @@ module.exports.sendUserReports = socket => {
  * @param {object} socket - user socket reference.
  */
 module.exports.sendGeneralChats = socket => {
-	socket.emit('fetchUser');
+	socket.emit('generalChats', generalChats);
 };
 
 /**
