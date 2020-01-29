@@ -461,7 +461,7 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedTheme = (socket, passport, data) => {
-	Account.findOne({ username: passport.user }).then(account => {
+	Account.findOne({ username: passport && passport.user }).then(account => {
 		if (!account) {
 			return;
 		}
@@ -3247,11 +3247,13 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					});
 					timeout.save(() => {
 						Account.find({ userName: data.userName }, function (err, users) {
-							if (user) {
-									user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
+							if (users && users.length > 0) {
+								users.forEach(user => { user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000); });
+								users.forEach(user => {
 									user.save(() => {
 										logOutUser(data.userName);
 									});
+								});
 							}
 						});
 					});
