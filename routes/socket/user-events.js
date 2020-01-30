@@ -3246,9 +3246,11 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout.save(() => {
-						Account.find({ userName: data.userName }, function (err, users) {
+						Account.find({ userName: data.userName }, function(err, users) {
 							if (users && users.length > 0) {
-								users.forEach(user => { user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000); });
+								users.forEach(user => {
+									user.isTimeout = new Date(Date.now() + 18 * 60 * 60 * 1000);
+								});
 								users.forEach(user => {
 									user.save(() => {
 										logOutUser(data.userName);
@@ -4023,23 +4025,42 @@ module.exports.handleFlappyEvent = (data, game) => {
 
 	if (data.type === 'startFlappy') {
 		game.flappyState = {
+			controllingLibUser: '',
+			controllingFascistUser: '',
 			liberalScore: 0,
 			fascistScore: 0,
-			pylonDensity: 1,
-			flapDistance: 1.2
+			pylonDensity: 1.3,
+			flapDistance: 1,
+			pylonOffset: 1.3,
+			passedPylonCount: 0
 		};
 
 		game.general.status = 'FLAPPY HITLER: 0 - 0';
 		io.sockets.in(game.general.uid).emit('gameUpdate', game);
 
-		setInterval(() => {
-			const offset = Math.floor(Math.random() * 50);
+		game.flappyState.pylonGenerator = setInterval(() => {
+			const offset = Math.floor(Math.random() * 50 * game.flappyState.pylonOffset);
 			const newData = {
 				type: 'newPylon',
+				pylonType: 'normal',
 				offset
 			};
 
 			updateFlappyRoom(newData);
-		}, 1500);
+		}, 1500 * game.flappyState.pylonDensity);
+	}
+
+	if (data.type === 'collision') {
+		game.flappyState[`${data.team}Score`]++;
+		clearInterval(game.flappyState.pylonGenerator);
+		// game.general.status = 'FLAPPY HITLER: x - x';
+		// io.sockets.in(game.general.uid).emit('gameUpdate', game);
+	}
+
+	if (data.type === 'passedPylon') {
+		game.flappyState.passedPylonCount++;
+		game.general.status = `FLAPPY HITLER: ${game.flappyState.liberalScore} - ${game.flappyState.fascistScore} (${game.flappyState.passedPylonCount})`;
+
+		io.sockets.in(game.general.uid).emit('gameUpdate', game);
 	}
 };
