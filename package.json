@@ -73,7 +73,7 @@
 		"semantic-ui-transition": "^2.2.9",
 		"semantic-ui-visibility": "^2.2.9",
 		"serve-favicon": "^2.4.2",
-		"snyk": "^1.189.0",
+		"snyk": "^1.290.1",
 		"socket.io": "2.0.3",
 		"socket.io-client": "2.0.3",
 		"yamljs": "^0.3.0"
