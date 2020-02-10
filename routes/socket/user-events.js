@@ -1789,12 +1789,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  */
 module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
 	// Authentication Assured in routes.js
-	if (!game || !game.general || !data.chat || !data.chat.replace(/\s*(\*|~|_){2,4}\s*|\s*\*\s*/i, '')) return;
+	if (!game || !game.general || !data.chat) return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
-	if (chat.length > 300 || !chat.length) {
+	if (chat.length > 300 || !chat.length || !data.chat.replace(/(\*|~|_){2,4}|\*/i, '')) {
 		return;
 	}
 
@@ -2369,12 +2369,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			);
 
 		if (lastMessage.chat) {
-			let leniancy; // How much time (in seconds) must pass before allowing the message.
-			if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 1.5;
-			else leniancy = 0.25;
+			let leniency; // How much time (in seconds) must pass before allowing the message.
+			if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniency = 1.5;
+			else leniency = 0.25;
 
 			const timeSince = data.timestamp - lastMessage.timestamp;
-			if (!AEM && timeSince < leniancy * 1000) return; // Prior chat was too recent.
+			if (!AEM && timeSince < leniency * 1000) return; // Prior chat was too recent.
 		}
 
 		data.staffRole = (() => {
@@ -2430,9 +2430,9 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 	const user = userList.find(u => u.userName === passport.user);
 	if (!user || user.isPrivate) return;
 
-	if (!data.chat || !data.chat.replace(/\s*(\*|~|_){2,4}\s*|\s*\*\s*/i, '')) return;
+	if (!data.chat) return;
 	const chat = (data.chat = data.chat.trim());
-	if (data.chat.length > 300 || !data.chat.length) return;
+	if (data.chat.length > 300 || !data.chat.length || !data.chat.replace(/(\*|~|_){2,4}|\*/i, '')) return;
 
 	const AEM = user.staffRole && user.staffRole !== 'altmod' && user.staffRole !== 'trialmod' && user.staffRole !== 'veteran';
 
@@ -2447,12 +2447,12 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		);
 
 	if (lastMessage.chat) {
-		let leniancy; // How much time (in seconds) must pass before allowing the message.
-		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 3;
-		else leniancy = 0.5;
+		let leniency; // How much time (in seconds) must pass before allowing the message.
+		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniency = 3;
+		else leniency = 0.5;
 
 		const timeSince = curTime - lastMessage.time;
-		if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
+		if (timeSince < leniency * 1000) return; // Prior chat was too recent.
 	}
 
 	for (repl of chatReplacements) {
