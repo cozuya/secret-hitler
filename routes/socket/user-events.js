@@ -2538,9 +2538,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 
 			for (const setting in data) {
 				if (setting == 'blacklist') {
-					while (data[setting].length > 30) {
-						data[setting].shift();
-					}
+					data[setting].shift();
 				}
 
 				if (
