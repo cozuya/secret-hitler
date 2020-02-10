@@ -2537,6 +2537,12 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 			const userIdx = userList.findIndex(user => user.userName === passport.user);
 
 			for (const setting in data) {
+				if (setting == 'blacklist') {
+					while (data[setting].length > 30) {
+						data[setting].shift();
+					}
+				}
+
 				if (
 					setting !== 'blacklist' ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
