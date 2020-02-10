@@ -1794,7 +1794,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
-	if (chat.length > 300 || !chat.length || !data.chat.replace(/(\*|~|_){2,4}|\*/i, '')) {
+	if (chat.length > 300 || !chat.length || /^(\*|(\*|~|_){2,4})$/i.exec(data.chat)) {
 		return;
 	}
 
@@ -2432,7 +2432,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 
 	if (!data.chat) return;
 	const chat = (data.chat = data.chat.trim());
-	if (data.chat.length > 300 || !data.chat.length || !data.chat.replace(/(\*|~|_){2,4}|\*/i, '')) return;
+	if (data.chat.length > 300 || !data.chat.length || /^(\*|(\*|~|_){2,4})$/i.exec(data.chat)) return;
 
 	const AEM = user.staffRole && user.staffRole !== 'altmod' && user.staffRole !== 'trialmod' && user.staffRole !== 'veteran';
 
