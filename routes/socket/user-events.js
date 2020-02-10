@@ -1789,7 +1789,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  */
 module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
 	// Authentication Assured in routes.js
-	if (!game || !game.general || !data.chat) return;
+	if (!game || !game.general || !data.chat || !data.chat.replace(/\s*(\*|~|_){2,4}\s*|\s*\*\s*/i, '')) return;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
@@ -2430,7 +2430,7 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 	const user = userList.find(u => u.userName === passport.user);
 	if (!user || user.isPrivate) return;
 
-	if (!data.chat) return;
+	if (!data.chat || !data.chat.replace(/\s*(\*|~|_){2,4}\s*|\s*\*\s*/i, '')) return;
 	const chat = (data.chat = data.chat.trim());
 	if (data.chat.length > 300 || !data.chat.length) return;
 
