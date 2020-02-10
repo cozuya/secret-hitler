@@ -2028,14 +2028,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							type: 'player'
 						},
 						{
-							text: ' to vote '
-						},
-						{
-							text: `${vote ? 'ja' : 'nein'}`,
-							type: 'player'
-						},
-						{
-							text: '.'
+							text: ' to vote.'
 						}
 					]
 				});
