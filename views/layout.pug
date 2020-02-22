@@ -5,19 +5,19 @@ html(lang="en")
     meta(http-equiv="X-UA-Compatible", content="IE=edge")
     meta(name="theme-color", content="#c36563")
     meta(name="description", content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
+    meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    link(rel="stylesheet", type="text/css", href="/styles/Semantic-UI-CSS-master/semantic.min.css")
+    
     if game
       if prodCacheBustToken
         link(rel="stylesheet", type="text/css", href=`/styles/style-main.css?${prodCacheBustToken}`)
       else
         link(rel="stylesheet", type="text/css", href="/styles/style-dark.css")
     else
-      meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
-      link(rel="stylesheet", type="text/css", href="/styles/Semantic-UI-CSS-master/semantic.min.css")
-      link(rel="stylesheet", type="text/css", href="//cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css")
       if prodCacheBustToken
         link(rel="stylesheet", type="text/css", href=`/styles/style-web.css?${prodCacheBustToken}`)
       else
-        link(rel="stylesheet", type="text/css", href="/styles/style-web.css?sadb")
+        link(rel="stylesheet", type="text/css", href="/styles/style-web.css")
     link(href="//fonts.googleapis.com/css?family=Comfortaa|Cuprum:400i|Germania+One|Roboto+Slab", rel="stylesheet", type="text/css")
     link(rel="author", href="humans.txt")
     link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
@@ -36,6 +36,9 @@ html(lang="en")
     meta(name="twitter:description" content="A web adaptation of the social deduction board game Secret Hitler.  Always free and no ads.")
     title Secret Hitler.io
   body
+    #main
+      block content
+
     div.ui.left.vertical.inverted.menu.sidebar
       if home
         a.active.item Home
@@ -90,74 +93,72 @@ html(lang="en")
         a.item(href="/about") About
 
     div.pusher
-      #body
-        if !game
-          nav.ui.secondary.pointing.top.fixed.inverted.menu#top-menu
-            .left.menu#window-block
-              if username
-                a.ui.button(href="/game/") Game Lobby
-              else
-                a.ui.button(href="/observe/") Game Lobby
-            .left.menu#mobile-block
-              a.ui.button#menupopout Menu
-            if home
-              a.active.item Home
-            else
-              a.item(href="/") Home
-
-            if rules
-              a.active.item Rules
-            else
-              a.item(href="/rules") Rules
-
-            if howtoplay
-              a.active.item How to Play
-            else
-              a.item(href="/how-to-play") How to Play
-
-            if stats
-              a.active.item Stats
-            else
-              a.item(href="/stats") Stats
-
-            if wiki
-              a.active.item Wiki
-            else
-              a.item(href="https://github.com/cozuya/secret-hitler/wiki") Wiki
-
-            if discord
-              a.active.item Discord
-            else
-              a.item(href="https://discord.gg/secrethitlerio") Discord
-
-            if github
-              a.active.item GitHub
-            else
-              a.item(href="https://github.com/cozuya/secret-hitler") GitHub
-
-            if tou
-              a.active.item Terms of Use
-            else
-              a.item(href="/tou") Terms of Use
-
-            if about
-              a.active.item About
-            else
-              a.item(href="/about") About
-
-
+      if !game
+        nav.ui.secondary.pointing.top.fixed.inverted.menu#top-menu
+          .left.menu#window-block
             if username
-              div.item.right
-                a.right#logout(href="#", style="margin-right: 20px;") Logout
-                a.right(href="/account", style="color: #85d42a")
-                  = username + '\'s account'
+              a.ui.button(href="/game/") Game Lobby
             else
-              .right.menu
-                .ui.buttons
-                  button.ui.button#signin Log In
-                  .or
-                  button.ui.button#signup Sign Up
-        block content
+              a.ui.button(href="/observe/") Game Lobby
+          .left.menu#mobile-block
+            a.ui.button#menupopout Menu
+          if home
+            a.active.item Home
+          else
+            a.item(href="/") Home
+
+          if rules
+            a.active.item Rules
+          else
+            a.item(href="/rules") Rules
+
+          if howtoplay
+            a.active.item How to Play
+          else
+            a.item(href="/how-to-play") How to Play
+
+          if stats
+            a.active.item Stats
+          else
+            a.item(href="/stats") Stats
+
+          if wiki
+            a.active.item Wiki
+          else
+            a.item(href="https://github.com/cozuya/secret-hitler/wiki") Wiki
+
+          if discord
+            a.active.item Discord
+          else
+            a.item(href="https://discord.gg/secrethitlerio") Discord
+
+          if github
+            a.active.item GitHub
+          else
+            a.item(href="https://github.com/cozuya/secret-hitler") GitHub
+
+          if tou
+            a.active.item Terms of Use
+          else
+            a.item(href="/tou") Terms of Use
+
+          if about
+            a.active.item About
+          else
+            a.item(href="/about") About
+
+
+          if username
+            div.item.right
+              a.right#logout(href="#", style="margin-right: 20px;") Logout
+              a.right(href="/account", style="color: #85d42a")
+                = username + '\'s account'
+          else
+            .right.menu
+              .ui.buttons
+                button.ui.button#signin Log In
+                .or
+                button.ui.button#signup Sign Up
 
     section.add-email-modal.ui.modal.small.segment.column
       h2.header Add an email address to your account and request a verification email
@@ -291,7 +292,6 @@ html(lang="en")
       ga('create', 'UA-105770066-1', 'auto');
       ga('send', 'pageview');			
 
-
       var privateWarning = document.querySelector("input[name=privateWarning]");
 
       privateWarning.addEventListener(  'change', function() {
@@ -305,10 +305,8 @@ html(lang="en")
           }
         }
       });
-
-
     script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")
-    script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js")
+    script(src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js")
     script(src="//cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js")
-    script(src="/scripts/site.js?2f23f23ffazzazz")
+    script(src="/scripts/site.js")
   block footer
