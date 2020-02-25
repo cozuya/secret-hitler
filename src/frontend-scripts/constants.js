@@ -112,11 +112,9 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 export const getBadWord = text => {
 	const badWords = {
 		// List of all blacklisted words and their variations.
-		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga'],
-		kike: ['k1ke', 'kik3', 'k1k3'],
-		retard: ['autist', 'libtard', 'retard', 'tard'],
+		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga', 'nigg', 'niggre', 'n1gger'],
+		retard: ['libtard', 'retard', 'tard', 'ret4rd', 't4rd', 'retrd'],
 		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t', 'f4g'],
-		mongoloid: ['mong', 'm0ng'],
 		cunt: ['kunt'],
 		'Nazi Terms': ['1488', '卍', 'swastika']
 	};
