@@ -112,11 +112,11 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 export const getBadWord = text => {
 	const badWords = {
 		// List of all blacklisted words and their variations.
-		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga', 'nigg', 'niggre', 'n1gger'],
+		nigger: ['nigga', 'nibba', 'nignog', 'n1g', 'n1gger', 'n1gg3r', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga', 'nigg', 'niggre', 'n1gger'],
 		retard: ['libtard', 'retard', 'tard', 'ret4rd', 't4rd', 'retrd'],
-		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t', 'f4g'],
+		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t', 'f4g', 'f4gs'],
 		cunt: ['kunt'],
-		'Nazi Terms': ['1488', '卍', 'swastika']
+		'Nazi Terms': ['1488', '卍', 'swastika']a
 	};
 	const exceptions = [/(i|o)f (a|4) g/gi, /underclaim on gov/gi, /bastard/gi, /big ga/gi, /among/gi, /mongod/gi, /mongolia/gi, /off again/gi, /pokemon game/gi]; // This list for all exceptions to bypass swear filter
 	let foundWord = [null, null]; // Future found bad word, in format of: [blacklisted word, variation]
