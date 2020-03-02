@@ -133,41 +133,66 @@ module.exports.secureGame = secureGame;
 
 const avg = (accounts, accessor) => accounts.reduce((prev, curr) => prev + accessor(curr), 0) / accounts.length;
 
+// Calculates the bias in elo points
+const probToEloPoints = (p) => 400 * Math.log10((1/p) - 1);
+
+// The probability of this team winning in this game size, given perfectly equal teams, in terms of elo points
+const winnerBiasPoints = (game) => {
+	const liberalBias = game.gameState.isCompleted === 'liberal' ? 1 : -1;
+	const fascistBias = game.gameState.isCompleted === 'liberal' ? -1 : 1;
+	if (game.general.rebalance6p) {
+		return probToEloPoints(.5 + (0.03 * fascistBias))
+	} else if (game.general.rebalance7p) {
+		return probToEloPoints(.5 + (0.01 * fascistBias))
+	} else if (game.general.rebalance9p2f) {
+		return probToEloPoints(.5 + (0.07 * fascistBias))
+	} else {
+		switch (game.general.playerCount) {
+			case 5: return probToEloPoints(.5 + (0.04 * fascistBias));
+			case 6: return probToEloPoints(.5 + (0.07 * liberalBias));
+			case 7: return probToEloPoints(.5 + (0.02 * fascistBias));
+			case 8: return probToEloPoints(.5 + (0.04 * liberalBias));
+			case 9: return probToEloPoints(.5 + (0.08 * fascistBias));
+			case 10: return probToEloPoints(.5 + (0.04 * fascistBias));
+			default: return .5;
+		}
+	}
+};
+
 module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
-	// ELO constants
+	const size = game.general.playerCount;
+	// The default starting elo is 1600 (totally arbitrary but now we are stuck with it)
 	const defaultELO = 1600;
-	const libAdjust = {
-		5: -19.253,
-		6: 20.637,
-		7: -17.282,
-		8: 45.418,
-		9: -70.679,
-		10: -31.539
-	};
+	// The maximum change for rainbow games is rk
 	const rk = 9;
+	// The maximum change for non-rainbow games is nk
 	const nk = 4;
-	// Players
-	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
-	// Accounts
-	const winningAccounts = accounts.filter(account => winningPlayerNames.includes(account.username));
-	const loosingAccounts = accounts.filter(account => losingPlayerNames.includes(account.username));
-	// Construct some basic statistics for each team
-	const b = game.gameState.isCompleted === 'liberal' ? 1 : 0;
-	const size = game.private.seatedPlayers.length;
-	const averageRatingWinners = avg(winningAccounts, a => a.eloOverall || defaultELO) + b * libAdjust[size];
-	const averageRatingWinnersSeason = avg(winningAccounts, a => a.eloSeason || defaultELO) + b * libAdjust[size];
-	const averageRatingLosers = avg(loosingAccounts, a => a.eloOverall || defaultELO) + (1 - b) * libAdjust[size];
-	const averageRatingLosersSeason = avg(loosingAccounts, a => a.eloSeason || defaultELO) + (1 - b) * libAdjust[size];
-	// Elo Formula
+	// Choose the right factor
 	const k = size * (game.general.rainbowgame ? rk : nk); // non-rainbow games are capped at k/r
-	const winFactor = k / winningPlayerNames.length;
-	const loseFactor = -k / losingPlayerNames.length;
-	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
-	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
+	// Sort the players into winners and losers
+	const winningAccounts = accounts.filter(account => winningPlayerNames.includes(account.username));
+	const winningSize = winningPlayerNames.length;
+	const losingAccounts = accounts.filter(account => !winningPlayerNames.includes(account.username));
+	const losingSize = size - winningSize;
+	// Construct some basic statistics for each team
+	const averageRatingWinners = avg(winningAccounts, a => a.eloOverall || defaultELO);
+	const averageRatingWinnersSeason = avg(winningAccounts, a => a.eloSeason || defaultELO);
+	const averageRatingLosers = avg(losingAccounts, a => a.eloOverall || defaultELO);
+	const averageRatingLosersSeason = avg(losingAccounts, a => a.eloSeason || defaultELO);
+	// Elo Formula
+	const bias = winnerBiasPoints(game);
+	const winFactor = k / winningSize;
+	const loseFactor = -k / losingSize;
+	// P is the degree to which the new win surprised us, given our current ratings
+	// Bias is applied within the sigmoid to ensure that elo is conserved even in situations with huge team differences
+	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers + bias) / 400));
+	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason + bias) / 400));
+	// Now we will use our 'supprisedness' p to correct the player rankings
 	const ratingUpdates = {};
 	accounts.forEach(account => {
 		const eloOverall = account.eloOverall ? account.eloOverall : defaultELO;
 		const eloSeason = account.eloSeason ? account.eloSeason : defaultELO;
+		// If this player won, use the win factor. If they lost, use the lost factor.
 		const factor = winningPlayerNames.includes(account.username) ? winFactor : loseFactor;
 		const change = p * factor;
 		const changeSeason = pSeason * factor;
@@ -177,6 +202,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		ratingUpdates[account.username] = { change, changeSeason };
 	});
 	return ratingUpdates;
+	// Future work: Someone should make this a single function, applied twice: once to overall and once to seasonal.
 };
 
 module.exports.destroySession = username => {
