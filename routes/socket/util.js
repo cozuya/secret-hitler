@@ -134,7 +134,7 @@ module.exports.secureGame = secureGame;
 const avg = (accounts, accessor) => accounts.reduce((prev, curr) => prev + accessor(curr), 0) / accounts.length;
 
 // Calculates the bias in elo points
-const probToEloPoints = (p) => 400 * Math.log10((1/p) - 1);
+const probToEloPoints = (p) => -400 * Math.log10((1/p) - 1);
 
 // The probability of this team winning in this game size, given perfectly equal teams, in terms of elo points
 const winnerBiasPoints = (game) => {
@@ -154,7 +154,7 @@ const winnerBiasPoints = (game) => {
 			case 8: return probToEloPoints(.5 + (0.04 * liberalBias));
 			case 9: return probToEloPoints(.5 + (0.08 * fascistBias));
 			case 10: return probToEloPoints(.5 + (0.04 * fascistBias));
-			default: return .5;
+			default: return 0;
 		}
 	}
 };
