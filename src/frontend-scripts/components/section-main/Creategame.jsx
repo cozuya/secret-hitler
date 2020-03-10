@@ -599,7 +599,7 @@ export default class Creategame extends React.Component {
 					privateShowing: false,
 					password: '',
 					containsBadWord: false,
-					rainbowgame: false,
+					rainbowgame: true,
 					checkedSliderValues: [false, false, true, false, false, false],
 					checkedRebalanceValues: [false, false, false],
 					privateonlygame: false,
