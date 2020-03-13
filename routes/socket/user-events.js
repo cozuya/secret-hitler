@@ -4,6 +4,7 @@ const {
 	userListEmitter,
 	generalChats,
 	accountCreationDisabled,
+	bypassVPNCheck,
 	ipbansNotEnforced,
 	gameCreationDisabled,
 	limitNewPlayers,
@@ -3439,6 +3440,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'enableAccountCreation':
 					accountCreationDisabled.status = false;
 					break;
+				case 'disableVPNBypass':
+					bypassVPNCheck.status = true;
+					break;
+				case 'enableVPNBypass':
+					bypassVPNCheck.status = false;
+					break;	
 				case 'disableIpbans':
 					ipbansNotEnforced.status = true;
 					break;
@@ -3730,6 +3737,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				ipban: '18 Hour IP Ban',
 				enableAccountCreation: 'Enable Account Creation',
 				disableAccountCreation: 'Disable Account Creation',
+				enableVPNBypass: 'Enable VPN Bypass',
+				disableVPNBypass: 'Disable VPN Bypass',
 				togglePrivate: 'Toggle Private (Permanent)',
 				togglePrivateEighteen: 'Toggle Private (Temporary)',
 				timeOut: 'Timeout 18 Hours (IP)',
