@@ -5,7 +5,7 @@ const BannedIP = require('../models/bannedIP');
 const Signups = require('../models/signups');
 const fetch = require('node-fetch');
 const EightEightCounter = require('../models/eightEightCounter');
-const { accountCreationDisabled, verifyBypass, consumeBypass, testIP } = require('./socket/models');
+const { accountCreationDisabled, bypassVPNCheck, verifyBypass, consumeBypass, testIP } = require('./socket/models');
 const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposableEmails');
@@ -171,7 +171,11 @@ const checkIP = config => {
 						}
 					}
 					if (!ipBanned) {
-						if (VPNCache[signupIP]) {
+						if (bypassVPNCheck) {
+							config.vpnScore = 0;
+							next(config);
+						}
+						else if (VPNCache[signupIP]) {
 							config.vpnScore = VPNCache[signupIP];
 							next(config);
 						} else {
