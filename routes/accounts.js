@@ -171,7 +171,7 @@ const checkIP = config => {
 						}
 					}
 					if (!ipBanned) {
-						if (bypassVPNCheck) {
+						if (bypassVPNCheck.status) {
 							config.vpnScore = 0;
 							next(config);
 						}
