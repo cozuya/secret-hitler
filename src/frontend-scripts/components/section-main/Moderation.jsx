@@ -56,6 +56,7 @@ export default class Moderation extends React.Component {
 			$(this.toggleGameCreation).checkbox(info.gameCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? 'set checked' : 'set unchecked');
+			$(this.toggleBypassVPNCheck).checkbox(info.bypassVPNCheck.status ? 'set checked' : 'set unchecked');			
 		});
 
 		socket.emit('getModInfo', 1);
@@ -77,6 +78,27 @@ export default class Moderation extends React.Component {
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled account creation',
 					action: 'enableAccountCreation'
+				});
+			}
+		});
+		
+		$(this.toggleBypassVPNCheck).checkbox({
+			onChecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Disabled VPN Check Bypass',
+					action: 'disableVPNBypass'
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Enabled VPN Check Bypass',
+					action: 'enableVPNBypass'
 				});
 			}
 		});
@@ -702,6 +724,18 @@ export default class Moderation extends React.Component {
 						<input type="checkbox" name="ipbans" />
 					</div>
 				</div> */}
+				<br />
+				<div className="toggle-containers">
+					<h4 className="ui header">Disable VPN Check</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleBypassVPNCheck = c;
+						}}
+					>
+						<input type="checkbox" name="vpnbypass" />
+					</div>
+				</div>
 				<br />
 				<div className="ui horizontal divider" style={{ color: 'red' }}>
 					🔰 Editors/Admins Only 📛
