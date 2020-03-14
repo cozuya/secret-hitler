@@ -26,6 +26,7 @@ const ensureAuthenticated = (req, res, next) => {
 };
 const VPNCache = {};
 let getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999), count: 0 };
+module.exports.vpnCounter = getIPIntelCounter;
 let torIps;
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
@@ -85,7 +86,7 @@ const checkIP = config => {
 	} else if (process.env.NODE_ENV !== 'production') {
 		config.vpnScore = 0;
 		next(config);
-	} else if (getIPIntelCounter.count >= 495 && new Date() < getIPIntelCounter.reset && !VPNCache[signupIP]) {
+	} else if (getIPIntelCounter.count >= 1995 && new Date() < getIPIntelCounter.reset && !VPNCache[signupIP]) {
 		const rateLimitSignup = new Signups({
 			date: new Date(),
 			userName: username,
