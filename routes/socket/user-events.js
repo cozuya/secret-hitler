@@ -3440,10 +3440,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				case 'enableAccountCreation':
 					accountCreationDisabled.status = false;
 					break;
-				case 'disableVPNBypass':
+				case 'disableVPNCheck':
 					bypassVPNCheck.status = true;
 					break;
-				case 'enableVPNBypass':
+				case 'enableVPNCheck':
 					bypassVPNCheck.status = false;
 					break;	
 				case 'disableIpbans':
@@ -3737,8 +3737,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				ipban: '18 Hour IP Ban',
 				enableAccountCreation: 'Enable Account Creation',
 				disableAccountCreation: 'Disable Account Creation',
-				enableVPNBypass: 'Enable VPN Bypass',
-				disableVPNBypass: 'Disable VPN Bypass',
+				enableVPNCheck: 'Enable VPN Check',
+				disableVPNCheck: 'Disable VPN Check',
 				togglePrivate: 'Toggle Private (Permanent)',
 				togglePrivateEighteen: 'Toggle Private (Temporary)',
 				timeOut: 'Timeout 18 Hours (IP)',

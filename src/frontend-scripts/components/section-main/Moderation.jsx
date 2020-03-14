@@ -88,8 +88,8 @@ export default class Moderation extends React.Component {
 					modName: self.props.userInfo.userName,
 					userName: '',
 					ip: '',
-					comment: self.state.actionTextValue || 'Disabled VPN Check Bypass',
-					action: 'disableVPNBypass'
+					comment: self.state.actionTextValue || 'Disabled VPN Check',
+					action: 'disableVPNCheck'
 				});
 			},
 			onUnchecked() {
@@ -97,8 +97,8 @@ export default class Moderation extends React.Component {
 					modName: self.props.userInfo.userName,
 					userName: '',
 					ip: '',
-					comment: self.state.actionTextValue || 'Enabled VPN Check Bypass',
-					action: 'enableVPNBypass'
+					comment: self.state.actionTextValue || 'Enabled VPN Check',
+					action: 'enableVPNCheck'
 				});
 			}
 		});
@@ -1103,6 +1103,8 @@ export default class Moderation extends React.Component {
 			ipban: '18 Hour IP Ban',
 			enableAccountCreation: 'Enable Account Creation',
 			disableAccountCreation: 'Disable Account Creation',
+			enableVPNCheck: 'Enable VPN Check',
+			disableVPNCheck: 'Disable VPN Check',			
 			togglePrivate: 'Toggle Private (Permanent)',
 			togglePrivateEighteen: 'Toggle Private (Temporary)',
 			timeOut: 'Timeout 18 Hours (IP)',

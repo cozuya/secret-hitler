@@ -26,7 +26,7 @@ const ensureAuthenticated = (req, res, next) => {
 };
 const VPNCache = {};
 let getIPIntelCounter = { reset: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999), count: 0 };
-module.exports.vpnCounter = getIPIntelCounter;
+// module.exports.vpnCounter = getIPIntelCounter;
 let torIps;
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
@@ -354,7 +354,7 @@ const continueSignup = config => {
 	}
 };
 
-module.exports = torIpsParam => {
+module.exports.accounts = torIpsParam => {
 	verifyRoutes();
 	torIps = torIpsParam;
 
@@ -739,7 +739,7 @@ module.exports = torIpsParam => {
 
 	app.get('/getipintel-status', (req, res) => {
 		res.send(
-			`Current GetIPIntel counter is at ${getIPIntelCounter.count} out of 500 - resets in ${(getIPIntelCounter.reset - new Date()) / 1000 / 60} minutes`
+			`Current GetIPIntel counter is at ${getIPIntelCounter.count} - resets in ${(getIPIntelCounter.reset - new Date()) / 1000 / 60} minutes`
 		);
 	});
 
