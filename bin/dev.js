@@ -4,11 +4,41 @@ const cluster = require('cluster');
 const coreCount = require('os').cpus().length;
 
 if (cluster.isMaster) {
-	new Array(coreCount).fill(true).forEach(() => {
-		cluster.fork();
+	const { games } = require('../routes/socket/models');
+
+	new Array(coreCount).fill(true).forEach(() => cluster.fork());
+
+	const masterMsgHandler = (msg, id) => {
+		// if (msg.cmd === 'getGames') {
+		// 	cluster.workers[id].send(games);
+		// }
+		if (msg.cmg === 'createNewGame') {
+		}
+	};
+
+	for (const id in cluster.workers) {
+		cluster.workers[id].on('message', msg => {
+			masterMsgHandler(msg, cluster.workers[id].id);
+		});
+	}
+
+	Object.values(cluster.workers).forEach((worker, i) => {
+		worker.on('message', msg => {
+			masterMsgHandler(msg, worker.id);
+		});
+	});
+
+	Object.values(cluster.workers).forEach((worker, i) => {
+		worker.send('test3');
 	});
 } else {
-	console.log(`Worker ${process.pid} started`);
+	// process.send({ cmd: 'getGames', id: process.pid }, msg => {
+	// 	// console.log(msg, 'msg');
+	// });
+
+	process.on('message', msg => {
+		console.log(msg, 'msg');
+	});
 
 	const http = require('http');
 	const express = require('express');

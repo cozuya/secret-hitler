@@ -175,8 +175,7 @@ const checkIP = config => {
 						if (bypassVPNCheck.status) {
 							config.vpnScore = 0;
 							next(config);
-						}
-						else if (VPNCache[signupIP]) {
+						} else if (VPNCache[signupIP]) {
 							config.vpnScore = VPNCache[signupIP];
 							next(config);
 						} else {
@@ -738,9 +737,7 @@ module.exports.accounts = torIpsParam => {
 	});
 
 	app.get('/getipintel-status', (req, res) => {
-		res.send(
-			`Current GetIPIntel counter is at ${getIPIntelCounter.count} - resets in ${(getIPIntelCounter.reset - new Date()) / 1000 / 60} minutes`
-		);
+		res.send(`Current GetIPIntel counter is at ${getIPIntelCounter.count} - resets in ${(getIPIntelCounter.reset - new Date()) / 1000 / 60} minutes`);
 	});
 
 	app.get('/discord-login', passport.authenticate('discord'));
@@ -955,6 +952,4 @@ module.exports.accounts = torIpsParam => {
 	app.get('*', (req, res) => {
 		renderPage(req, res, '404', '404');
 	});
-
-	console.log('All Routes Successfully Initialized');
 };

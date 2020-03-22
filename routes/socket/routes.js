@@ -118,7 +118,6 @@ module.exports.socketRoutes = () => {
 	gatherStaffUsernames();
 
 	io.on('connection', socket => {
-		console.log(process.pid, 'pid');
 		checkUserStatus(socket, () => {
 			socket.emit('version', { current: version });
 
