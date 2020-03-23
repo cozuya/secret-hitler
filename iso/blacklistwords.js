@@ -36,7 +36,4 @@ module.exports = [
 	'rape',
 	'pussy',
 	'niger'
-	
-	
-	
 ];

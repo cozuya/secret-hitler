@@ -56,7 +56,7 @@ export default class Moderation extends React.Component {
 			$(this.toggleGameCreation).checkbox(info.gameCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? 'set checked' : 'set unchecked');
-			$(this.toggleBypassVPNCheck).checkbox(info.bypassVPNCheck.status ? 'set checked' : 'set unchecked');			
+			$(this.toggleBypassVPNCheck).checkbox(info.bypassVPNCheck.status ? 'set checked' : 'set unchecked');
 		});
 
 		socket.emit('getModInfo', 1);
@@ -81,7 +81,7 @@ export default class Moderation extends React.Component {
 				});
 			}
 		});
-		
+
 		$(this.toggleBypassVPNCheck).checkbox({
 			onChecked() {
 				socket.emit('updateModAction', {
@@ -1104,7 +1104,7 @@ export default class Moderation extends React.Component {
 			enableAccountCreation: 'Enable Account Creation',
 			disableAccountCreation: 'Disable Account Creation',
 			enableVPNCheck: 'Enable VPN Check',
-			disableVPNCheck: 'Disable VPN Check',			
+			disableVPNCheck: 'Disable VPN Check',
 			togglePrivate: 'Toggle Private (Permanent)',
 			togglePrivateEighteen: 'Toggle Private (Temporary)',
 			timeOut: 'Timeout 18 Hours (IP)',

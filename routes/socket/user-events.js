@@ -3445,7 +3445,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'enableVPNCheck':
 					bypassVPNCheck.status = false;
-					break;	
+					break;
 				case 'disableIpbans':
 					ipbansNotEnforced.status = true;
 					break;
