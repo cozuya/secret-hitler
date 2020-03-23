@@ -61,21 +61,70 @@ let modUserNames = [],
 	adminUserNames = [];
 
 const gamesGarbageCollector = () => {
-	const currentTime = Date.now();
-	const toRemoveGameNames = Object.keys(games).filter(
-		gameName =>
-			(games[gameName].general.timeStarted && games[gameName].general.timeStarted + 4200000 < currentTime) ||
-			(games[gameName].general.timeCreated &&
-				games[gameName].general.timeCreated + 600000 < currentTime &&
-				games[gameName].general.private &&
-				games[gameName].publicPlayersState.length < 5)
-	);
+	const currentTime = new Date();
+	let toDelete = false;
+	Object.keys(games).forEach(gameName => {
+		const currentGame = games[gameName];
+		const createdTimer =
+			currentGame &&
+			currentGame.general &&
+			currentGame.general.timeCreated &&
+			currentGame.gameState &&
+			!currentGame.gameState.isStarted &&
+			new Date(currentGame.general.timeCreated.getTime() + 600000);
+		const completedTimer = currentGame && currentGame.general && currentGame.general.timeStarted && currentGame.gameState && currentGame.gameState.isCompleted;
+		// For later addition
+		// && new Date(games[gameName].general.timeStarted + 000);
 
-	toRemoveGameNames.forEach(gameName => {
-		delete games[gameName];
+		// To come maybe later
+		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
+
+		// DEBUG
+		// console.log(
+		// 	'Name: ',
+		// 	gameName,
+		// 	// '\nDelay: ',
+		// 	// games[gameName].general.modDeleteDelay,
+		// 	'\nCurrent Time: ',
+		// 	currentTime,
+		// 	// '\nDelay Timer: ',
+		// 	// modDeleteTimer,
+		// 	'\nCompleted Timer: ',
+		// 	completedTimer,
+		// 	'\nCreated Timer: ',
+		// 	createdTimer
+		// );
+
+		if (games[gameName] && createdTimer && createdTimer < currentTime) {
+			// console.log('Created Timer Expired. Deleting... ');
+			toDelete = true;
+		}
+		if (games[gameName] && !games[gameName].general.modDeleteDelay && completedTimer && completedTimer < currentTime) {
+			// console.log('Completed Game Timer Expired. Deleting... ');
+			toDelete = true;
+		}
+		// if (games[gameName] && modDeleteTimer && modDeleteTimer < currentTime) {
+		// console.log('Mod Delete Delay Timer Expired. Deleting... ');
+		// toDelete = true;
+		// }
+
+		if (toDelete && currentGame.publicPlayersState) {
+			for (let affectedPlayerNumber = 0; affectedPlayerNumber < currentGame.publicPlayersState.length; affectedPlayerNumber++) {
+				const affectedSocketId = Object.keys(io.sockets.sockets).find(
+					socketId =>
+						io.sockets.sockets[socketId].handshake.session.passport &&
+						io.sockets.sockets[socketId].handshake.session.passport.user === currentGame.publicPlayersState[affectedPlayerNumber].userName
+				);
+				if (!io.sockets.sockets[affectedSocketId]) {
+					continue;
+				}
+				io.sockets.sockets[affectedSocketId].emit('toLobby');
+				io.sockets.sockets[affectedSocketId].leave(gameName);
+			}
+			delete games[gameName];
+			sendGameList();
+		}
 	});
-
-	sendGameList();
 };
 
 const ensureAuthenticated = socket => {
@@ -113,7 +162,7 @@ const gatherStaffUsernames = () => {
 };
 
 module.exports.socketRoutes = () => {
-	setInterval(gamesGarbageCollector, 100000);
+	setInterval(gamesGarbageCollector, 30000);
 
 	gatherStaffUsernames();
 

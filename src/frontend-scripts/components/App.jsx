@@ -272,6 +272,11 @@ export class App extends React.Component {
 			window.alert(ip);
 		});
 
+		socket.on('toLobby', () => {
+			window.location.hash = '#/';
+			window.alert('The game you were previously in was deleted automatically.');
+		});
+
 		socket.on('checkRestrictions', () => {
 			socket.emit('receiveRestrictions');
 		});
