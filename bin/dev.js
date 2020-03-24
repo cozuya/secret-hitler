@@ -28,9 +28,9 @@ if (cluster.isMaster) {
 		});
 	});
 
-	Object.values(cluster.workers).forEach((worker, i) => {
-		worker.send('test3');
-	});
+	// Object.values(cluster.workers).forEach((worker, i) => {
+	// 	worker.send('test3');
+	// });
 } else {
 	// process.send({ cmd: 'getGames', id: process.pid }, msg => {
 	// 	// console.log(msg, 'msg');
@@ -63,8 +63,17 @@ if (cluster.isMaster) {
 
 	const debug = require('debug')('app:server');
 	const server = http.createServer(app);
+	const io = require('socket.io')(server);
+	const redisAdapter = require('socket.io-redis');
 
-	global.io = require('socket.io')(server);
+	io.adapter(
+		redisAdapter({
+			host: 'localhost',
+			port: 6379
+		})
+	);
+
+	global.io = io;
 	global.notify = require('node-notifier');
 
 	app.set('port', port);

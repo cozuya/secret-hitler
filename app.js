@@ -13,10 +13,8 @@ const Account = require('./models/account');
 const routesIndex = require('./routes/index');
 const session = require('express-session');
 const { expandAndSimplify } = require('./routes/socket/ip-obf');
-
 let store;
-
-if (process.env.NODE_ENV !== 'production') {
+if (false) {
 	const MongoDBStore = require('connect-mongodb-session')(session);
 	store = new MongoDBStore({
 		uri: 'mongodb://localhost:27017/secret-hitler-app',
@@ -32,7 +30,6 @@ if (process.env.NODE_ENV !== 'production') {
 		ttl: 2 * 604800 // 2 weeks
 	});
 }
-
 // needs to be first
 app.use((req, res, next) => {
 	try {

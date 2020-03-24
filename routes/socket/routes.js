@@ -336,6 +336,7 @@ module.exports.socketRoutes = () => {
 			});
 			socket.on('addNewGameChat', data => {
 				const game = findGame(data);
+				console.log(process.pid, 'pid');
 				if (isRestricted) return;
 				if (authenticated) {
 					handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);

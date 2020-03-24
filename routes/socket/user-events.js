@@ -2392,12 +2392,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			data.staffRole = 'moderator';
 			data.userName = 'Incognito';
 		}
-		
+
 		// Attempts to cut down on overloading server resources
 		if (game.general.private && game.chats.length >= 30) {
 			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
 		}
-		
+
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
@@ -3451,7 +3451,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'enableVPNCheck':
 					bypassVPNCheck.status = false;
-					break;	
+					break;
 				case 'disableIpbans':
 					ipbansNotEnforced.status = true;
 					break;
