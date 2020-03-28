@@ -1,0 +1,23 @@
+# Default to ignoring all files and folders starting with a dot
+.*
+
+# Make an exception for .babelrc
+!.babelrc
+
+# Ignore the tests directory
+__test__/
+coverage/
+
+# Ignore node_modules
+node_modules/
+
+# Ignore documentation
+.md
+.txt
+
+# Ignore logs
+.log
+
+# Ignore initial MongoDB data
+data/
+
