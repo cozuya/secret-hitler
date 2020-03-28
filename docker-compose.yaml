@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo:latest
+    volumes:
+    - ./data:/data/db
+    ports: 
+      - 27017:27017
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+  secret-hitler:
+    build: .
+    restart: always
+    depends_on:
+      - mongodb
+      - redis
+    environment: 
+      MONGODB_URI: mongodb://mongodb:27017
+      REDIS_HOST: redis
+      SECRETSESSIONKEY: hunter2
+    ports:
+      - 8080:8080
