@@ -1,9 +1,10 @@
+require('dotenv').config();
 const Account = require('../models/account');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const emails = require('../utils/disposableEmails.js');
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
+mongoose.connect(`${process.env.MONGODB_URI || 'localhost:27017'}/secret-hitler-app`, { useNewUrlParser: true });
 
 let count = 0;
 let processed = 0;

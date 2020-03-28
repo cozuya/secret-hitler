@@ -1,8 +1,9 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const Account = require('../models/account');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
+mongoose.connect(`${process.env.MONGODB_URI || 'localhost:27017'}/secret-hitler-app`);
 
 const bronze = [];
 const silver = [];

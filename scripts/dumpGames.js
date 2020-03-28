@@ -1,3 +1,4 @@
+require('dotenv').config();
 const child_process = require('child_process');
 const fs = require('fs');
 const os = require('os');
@@ -49,7 +50,7 @@ dumpDateTo = `${endDate.getFullYear()}-${endDate.getMonth() + 1}-${endDate.getDa
 
 // Connect to mongo
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
+mongoose.connect(`${process.env.MONGODB_URI || 'localhost:27017'}/secret-hitler-app`);
 
 // Dump summaries for the day
 const summaries = [];

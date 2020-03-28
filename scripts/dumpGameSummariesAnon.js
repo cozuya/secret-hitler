@@ -1,3 +1,4 @@
+require('dotenv').config();
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -12,7 +13,7 @@ if (![2, 3, 5, 6].includes(process.argv.length)) {
 }
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`, { useNewUrlParser: true });
+mongoose.connect(`${process.env.MONGODB_URI || 'localhost:27017'}/secret-hitler-app`, { useNewUrlParser: true });
 
 const now = new Date();
 console.log('Starting at', now);

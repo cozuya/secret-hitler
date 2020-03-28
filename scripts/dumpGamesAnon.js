@@ -1,3 +1,4 @@
+require('dotenv').config();
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -8,7 +9,7 @@ const Account = require('../models/account');
 const Game = require('../models/game');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
+mongoose.connect(`${process.env.MONGODB_URI || 'localhost:27017'}/secret-hitler-app`);
 
 const OUTPUT_DIR = '/var/www/secret-hitler/public/game-dumps';
 const GAMES_DIR = `${OUTPUT_DIR}/games`;

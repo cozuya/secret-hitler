@@ -1,11 +1,12 @@
 /* eslint-disable */
+require('dotenv').config();
 const fs = require('fs');
 const mongoose = require('mongoose');
 const Game = require('../models/game-summary/index');
 const Account = require('../models/account');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
+mongoose.connect(`${process.env.MONGODB_URI || 'localhost:27017'}/secret-hitler-app`);
 
 String.prototype.hashCode = function() {
 	var hash = 0,

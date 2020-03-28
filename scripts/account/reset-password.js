@@ -1,9 +1,10 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const Account = require('../../models/account');
 
 if (process.argv.length === 3) {
 	mongoose.Promise = global.Promise;
-	mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
+	mongoose.connect(`${process.env.MONGODB_URI || 'localhost:27017'}/secret-hitler-app`);
 	const username = process.argv[2];
 	const user = Account.findOne({ username });
 	user.setPassword('ChangeMe123', () => {

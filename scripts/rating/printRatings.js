@@ -1,10 +1,11 @@
+require('dotenv').config();
 const Account = require('../../models/account'); // temp
 const mongoose = require('mongoose');
 
 async function clearRatings() {
 	try {
 		mongoose.Promise = global.Promise;
-		await mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
+		await mongoose.connect(`${process.env.MONGODB_URI || 'localhost:27017'}/secret-hitler-app`);
 		await Account.find()
 			.sort('-eloSeason')
 			.cursor()

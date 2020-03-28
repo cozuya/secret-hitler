@@ -1,8 +1,9 @@
+require('dotenv').config();
 const Account = require('../../models/account'); // temp
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
+mongoose.connect(`${process.env.MONGODB_URI || 'localhost:27017'}/secret-hitler-app`);
 
 let count = 0;
 

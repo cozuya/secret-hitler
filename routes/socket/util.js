@@ -185,7 +185,7 @@ module.exports.destroySession = username => {
 
 		let mongoClient;
 
-		Mongoclient.connect('mongodb://localhost:27017', { useNewUrlParser: true }, (err, client) => {
+		Mongoclient.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017', { useNewUrlParser: true }, (err, client) => {
 			mongoClient = client;
 		});
 
