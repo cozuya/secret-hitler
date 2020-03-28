@@ -21,47 +21,50 @@ class CardFlinger extends React.Component {
 			const { gameState } = gameInfo;
 			const { phase } = gameState;
 			const index = parseInt($(e.currentTarget).attr('data-index'), 10);
+			if (gameInfo.cardFlingerState.length == 0) {
+				return;
+			} else if (gameInfo.cardFlingerState[0].action === 'active') {
+				if (phase === 'voting') {
+					socket.emit('selectedVoting', {
+						vote: index === 1,
+						uid: gameInfo.general.uid
+					});
+				}
 
-			if (phase === 'voting' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedVoting', {
-					vote: index === 1,
-					uid: gameInfo.general.uid
-				});
-			}
+				if (phase === 'presidentSelectingPolicy') {
+					socket.emit('selectedPresidentPolicy', {
+						uid: gameInfo.general.uid,
+						selection: index ? (index === 2 ? 1 : 2) : 0
+					});
+				}
 
-			if (phase === 'presidentSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedPresidentPolicy', {
-					uid: gameInfo.general.uid,
-					selection: index ? (index === 2 ? 1 : 2) : 0
-				});
-			}
+				if (phase === 'chancellorSelectingPolicy') {
+					socket.emit('selectedChancellorPolicy', {
+						uid: gameInfo.general.uid,
+						selection: index
+					});
+				}
 
-			if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedChancellorPolicy', {
-					uid: gameInfo.general.uid,
-					selection: index
-				});
-			}
+				if (phase === 'chancellorVoteOnVeto') {
+					socket.emit('selectedChancellorVoteOnVeto', {
+						vote: index === 1,
+						uid: gameInfo.general.uid
+					});
+				}
 
-			if (phase === 'chancellorVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedChancellorVoteOnVeto', {
-					vote: index === 1,
-					uid: gameInfo.general.uid
-				});
-			}
+				if (phase === 'presidentVoteOnVeto') {
+					socket.emit('selectedPresidentVoteOnVeto', {
+						vote: index === 1,
+						uid: gameInfo.general.uid
+					});
+				}
 
-			if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedPresidentVoteOnVeto', {
-					vote: index === 1,
-					uid: gameInfo.general.uid
-				});
-			}
-
-			if (phase === 'presidentVoteOnBurn' && gameInfo.cardFlingerState[0].action === 'active') {
-				socket.emit('selectedPresidentVoteOnBurn', {
-					vote: index === 1,
-					uid: gameInfo.general.uid
-				});
+				if (phase === 'presidentVoteOnBurn') {
+					socket.emit('selectedPresidentVoteOnBurn', {
+						vote: index === 1,
+						uid: gameInfo.general.uid
+					});
+				}
 			}
 		};
 		const { cardFlingerState } = this.props.gameInfo;
@@ -77,13 +80,9 @@ class CardFlinger extends React.Component {
 
 			if (userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages) {
 				return;
-			}
-
-			if (status === 'Fascists win the game.' || status === 'Liberals win the game.') {
+			} else if (status === 'Fascists win the game.' || status === 'Liberals win the game.') {
 				return;
-			}
-
-			if (phase === 'voting' && cardFlingerState.length) {
+			} else if (phase === 'voting' && cardFlingerState.length) {
 				return (
 					<div className="help-message voting">
 						Click once to <span className="select">SELECT</span> a vote.
