@@ -323,7 +323,7 @@ const handleSocketDisconnect = socket => {
 };
 
 const crashReport = JSON.stringify({
-	content: `${process.env.DISCORDADMINPING} the site just crashed or reset.`
+	content: `${process.env.DISCORDADMINPING} the private site just crashed or reset.`
 });
 
 const crashOptions = {
@@ -2392,12 +2392,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			data.staffRole = 'moderator';
 			data.userName = 'Incognito';
 		}
-		
+
 		// Attempts to cut down on overloading server resources
 		if (game.general.private && game.chats.length >= 30) {
 			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
 		}
-		
+
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
@@ -2434,6 +2434,7 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  * @param {array} adminUserNames - list of admins
  */
 module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+	return;
 	const user = userList.find(u => u.userName === passport.user);
 	if (!user || user.isPrivate) return;
 
@@ -3157,21 +3158,21 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					io.sockets.emit('generalChats', generalChats);
 					break;
 				case 'broadcast':
-					const discordBroadcastBody = JSON.stringify({
-						content: `Text: ${data.comment}\nMod: ${passport.user}`
-					});
-					const discordBroadcastOptions = {
-						hostname: 'discordapp.com',
-						path: process.env.DISCORDBROADCASTURL,
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							'Content-Length': Buffer.byteLength(discordBroadcastBody)
-						}
-					};
+					// const discordBroadcastBody = JSON.stringify({
+					// 	content: `Text: ${data.comment}\nMod: ${passport.user}`
+					// });
+					// const discordBroadcastOptions = {
+					// 	hostname: 'discordapp.com',
+					// 	path: process.env.DISCORDBROADCASTURL,
+					// 	method: 'POST',
+					// 	headers: {
+					// 		'Content-Type': 'application/json',
+					// 		'Content-Length': Buffer.byteLength(discordBroadcastBody)
+					// 	}
+					// };
 					try {
-						const broadcastReq = https.request(discordBroadcastOptions);
-						broadcastReq.end(discordBroadcastBody);
+						// const broadcastReq = https.request(discordBroadcastOptions);
+						// broadcastReq.end(discordBroadcastBody);
 					} catch (e) {
 						console.log(e, 'err in broadcast');
 					}
@@ -3790,23 +3791,23 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					modaction.actionTaken}**\nUser: **${modaction.userActedOn}**\nComment: **${modaction.modNotes}**.`
 			});
 
-			const modOptions = {
-				hostname: 'discordapp.com',
-				path: process.env.DISCORDMODLOGURL,
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Content-Length': Buffer.byteLength(modAction)
-				}
-			};
+			// const modOptions = {
+			// 	hostname: 'discordapp.com',
+			// 	path: process.env.DISCORDMODLOGURL,
+			// 	method: 'POST',
+			// 	headers: {
+			// 		'Content-Type': 'application/json',
+			// 		'Content-Length': Buffer.byteLength(modAction)
+			// 	}
+			// };
 
-			if (process.env.NODE_ENV === 'production') {
-				try {
-					const modReq = https.request(modOptions);
+			// if (process.env.NODE_ENV === 'production') {
+			// 	try {
+			// 		const modReq = https.request(modOptions);
 
-					modReq.end(modAction);
-				} catch (error) {}
-			}
+			// 		modReq.end(modAction);
+			// 	} catch (error) {}
+			// }
 			modaction.save();
 		}
 	}
