@@ -462,6 +462,8 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedTheme = (socket, passport, data) => {
+	// Temporary - remove once fixed
+	return;
 	Account.findOne({ username: passport && passport.user }).then(account => {
 		if (!account) {
 			return;

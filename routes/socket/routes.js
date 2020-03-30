@@ -62,8 +62,8 @@ let modUserNames = [],
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date();
-	let toDelete = false;
 	Object.keys(games).forEach(gameName => {
+		let toDelete = false;
 		const currentGame = games[gameName];
 		const createdTimer =
 			currentGame &&
@@ -72,9 +72,7 @@ const gamesGarbageCollector = () => {
 			currentGame.gameState &&
 			!currentGame.gameState.isStarted &&
 			new Date(currentGame.general.timeCreated.getTime() + 600000);
-		const completedTimer = currentGame && currentGame.general && currentGame.general.timeStarted && currentGame.gameState && currentGame.gameState.isCompleted;
-		// For later addition
-		// && new Date(games[gameName].general.timeStarted + 000);
+		const completedTimer = currentGame && currentGame.general && currentGame.general.timeStarted && currentGame.gameState && currentGame.gameState.isCompleted && new Date(games[gameName].general.timeStarted + 000);
 
 		// To come maybe later
 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
@@ -118,8 +116,11 @@ const gamesGarbageCollector = () => {
 				if (!io.sockets.sockets[affectedSocketId]) {
 					continue;
 				}
-				io.sockets.sockets[affectedSocketId].emit('toLobby');
-				io.sockets.sockets[affectedSocketId].leave(gameName);
+				
+				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) {
+					io.sockets.sockets[affectedSocketId].emit('toLobby');
+					io.sockets.sockets[affectedSocketId].leave(gameName);
+				}
 			}
 			delete games[gameName];
 			sendGameList();
