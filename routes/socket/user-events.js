@@ -3299,8 +3299,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						Account.findOne({ lastConnectedIP: data.ip }, (err, users) => {
 							if (users && users.length > 0) {
 								users.forEach(user => {
-									if (user.username === data.userName)
-										user.isTimeout = new Date(Date.now() + 6 * 60 * 60 * 1000);
+									if (user.username === data.userName) user.isTimeout = new Date(Date.now() + 6 * 60 * 60 * 1000);
 									logOutUser(user.username);
 								});
 							}
