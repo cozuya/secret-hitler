@@ -409,7 +409,7 @@ module.exports.accounts = torIpsParam => {
 		})
 			.then(account => {
 				if (!account) {
-					res.status(401).json({ message: 'There is no verified account associated with that email.' });
+					res.status(404).json({ message: 'There is no verified account associated with that email.' });
 				} else {
 					setVerify({ username: account.username, email: req.body.email, res, isResetPassword: true });
 				}
