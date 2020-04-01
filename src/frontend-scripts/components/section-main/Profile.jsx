@@ -54,7 +54,9 @@ class ProfileWrapper extends React.Component {
 		const { profile } = this.props;
 		return (
 			<div>
-				<Table uiTable="top attached three column" headers={['Elo', 'Seasonal', 'Overall']} rows={[['Elo', profile.eloSeason, profile.eloOverall]]} />
+				{!isNaN(profile.eloOverall) && (
+					<Table uiTable="top attached three column" headers={['Elo', 'Seasonal', 'Overall']} rows={[['Elo', profile.eloSeason, profile.eloOverall]]} />
+				)}
 				<Table
 					uiTable="top attached three column"
 					headers={['All Matches', 'Matches', 'Winrate']}
