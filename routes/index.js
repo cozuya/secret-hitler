@@ -282,6 +282,8 @@ module.exports = () => {
 					if (account) {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
+						_profile.eloSeason = Math.floor(account.eloSeason);
+						_profile.eloOverall = Math.floor(account.eloOverall);
 
 						Account.findOne({ username: requestingUser }).then(acc => {
 							if (!acc || !acc.staffRole || acc.staffRole === 'altmod' || acc.staffRole === 'veteran') {
