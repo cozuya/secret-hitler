@@ -2394,12 +2394,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			data.staffRole = 'moderator';
 			data.userName = 'Incognito';
 		}
-		
+
 		// Attempts to cut down on overloading server resources
 		if (game.general.private && game.chats.length >= 30) {
 			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
 		}
-		
+
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
@@ -3296,9 +3296,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout3.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+						Account.findOne({ lastConnectedIP: data.ip }, (err, users) => {
 							if (users && users.length > 0) {
 								users.forEach(user => {
+									if (user.username === data.userName) user.isTimeout = new Date(Date.now() + 6 * 60 * 60 * 1000);
 									logOutUser(user.username);
 								});
 							}
