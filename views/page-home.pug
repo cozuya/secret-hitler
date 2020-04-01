@@ -2,17 +2,16 @@ extends layout
 block content
 	if username
 		a(href="/game/") Game Lobby
-			#header-container.ui.segment
-				div.online-count
-					i.chrome.icon
-					| players online now
-
-	else
+	else 
 		a(href="/observe/") Game Lobby
-			#header-container.ui.segment
-				div.online-count
-					i.chrome.icon
-					| players online now
+	#header-container.ui.segment
+		.private-callout
+			a(href="https://private.secrethitler.io") Here to play private games?  Click here to use our new new private server.
+		div.online-count
+			i.chrome.icon
+			span#player-count 
+			|  players online now
+
 
 	.ui.segment
 		.ui.grid.mainpage
