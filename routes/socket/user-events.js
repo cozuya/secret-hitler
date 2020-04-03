@@ -462,6 +462,8 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedTheme = (socket, passport, data) => {
+	// Temporary - remove once fixed
+	return;
 	Account.findOne({ username: passport && passport.user }).then(account => {
 		if (!account) {
 			return;
@@ -3295,9 +3297,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout3.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+						Account.findOne({ lastConnectedIP: data.ip }, (err, users) => {
 							if (users && users.length > 0) {
 								users.forEach(user => {
+									if (user.username === data.userName) user.isTimeout = new Date(Date.now() + 6 * 60 * 60 * 1000);
 									logOutUser(user.username);
 								});
 							}
