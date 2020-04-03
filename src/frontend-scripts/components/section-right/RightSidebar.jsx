@@ -1,6 +1,5 @@
 import React from 'react'; // eslint-disable-line
 import Playerlist from './Playerlist.jsx';
-import Generalchat from './Generalchat.jsx';
 import PropTypes from 'prop-types';
 
 const RightSidebar = props => {
@@ -12,14 +11,6 @@ const RightSidebar = props => {
 	return (
 		<section className={classes} id={'playerlist'}>
 			<Playerlist userInfo={props.userInfo} userList={props.userList} socket={props.socket} />
-			<Generalchat
-				gameInfo={props.gameInfo}
-				socket={props.socket}
-				generalChats={props.generalChats}
-				userInfo={props.userInfo}
-				userList={props.userList}
-				allEmotes={props.allEmotes}
-			/>
 		</section>
 	);
 };

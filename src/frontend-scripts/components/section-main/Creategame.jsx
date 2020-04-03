@@ -25,7 +25,7 @@ export default class Creategame extends React.Component {
 			disablechat: false,
 			disablegameChat: false,
 			disableobserver: false,
-			privateShowing: false,
+			privateShowing: true,
 			password: '',
 			containsBadWord: false,
 			rainbowgame: isRainbow,
@@ -821,9 +821,9 @@ export default class Creategame extends React.Component {
 
 	createNewGame = () => {
 		const { userInfo } = this.props;
-		const { customGameSettings, customGameSliderValue } = this.state;
+		const { customGameSettings, customGameSliderValue, privateShowing, password } = this.state;
 
-		if (userInfo.gameSettings.isPrivate && !this.state.privateShowing) {
+		if (!privateShowing || !password || (userInfo.gameSettings.isPrivate && !this.state.privateShowing)) {
 			return;
 		}
 
@@ -1630,31 +1630,6 @@ export default class Creategame extends React.Component {
 									autoFocus
 									value={this.state.password}
 									onChange={e => this.setState({ password: e.target.value })}
-								/>
-							</div>
-						)}
-						{!this.state.privateShowing && (
-							<div className="three wide column privategame">
-								<h4 className="ui header" style={{ marginBottom: '15px' }}>
-									Unlisted game
-								</h4>
-								<i className="big green lock icon" />
-								<Switch
-									className="create-game-switch"
-									onChange={checked => {
-										this.setState({
-											unlistedGame: checked,
-											casualgame: checked ? true : this.state.casualgame
-										});
-									}}
-									checked={this.state.unlistedGame}
-									onColor="#627cc8"
-									offColor="#444444"
-									uncheckedIcon={false}
-									checkedIcon={false}
-									height={21}
-									width={48}
-									handleDiameter={21}
 								/>
 							</div>
 						)}

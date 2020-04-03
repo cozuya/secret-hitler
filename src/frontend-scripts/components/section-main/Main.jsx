@@ -114,42 +114,16 @@ export class Main extends React.Component {
 							case 2:
 								return (
 									<React.Fragment>
-										<h4>If you're only here to play in private games:</h4>
 										<p>
-											Welcome! You may want to toggle off the public games filter. This can be found on the <Icon name="filter" /> icon next to the "create a
-											new game" button. If you have insisted on naming yourself something NSFW, you will want to toggle on the "private-games-only" setting (if
-											you did not check that box while signing up) found by clicking on the upper right corner button that looks like <Icon name="setting" />.
-											There are many other interesting account settings that can be found there as well.
-										</p>
-										<h4>Public game players:</h4>
-										<p>Also welcome! You'll probably want to filter off of private games as well. These filters save on application.</p>
-										<p>
-											Please familiarize yourself with the{' '}
-											<a href="/how-to-play" target="_blank" rel="noopener noreferrer">
-												how to play
-											</a>{' '}
-											section of the site. Our{' '}
-											<a href="https://github.com/cozuya/secret-hitler/wiki" target="_blank" rel="noopener noreferrer">
-												wiki
-											</a>{' '}
-											is a great read on how the site works and how to be successful while playing here. Ranked games (this site uses an "ELO" system - cliffs:
-											your ELO points go up more if you win against better players by aggregate ELO than if you win against worse players) are taken seriously
-											by many so you might want to play in some casual (often custom) games to learn how this game works online and the basics of the
-											established metagame before jumping into ranked. They will have this <Icon name="handshake outline" /> icon in the game list.
+											Welcome! If you have insisted on naming yourself something NSFW, you will want to toggle on the "private-games-only" setting (if you did
+											not check that box while signing up) found by clicking on the upper right corner button that looks like <Icon name="setting" />. There are
+											many other interesting account settings that can be found there as well.
 										</p>
 									</React.Fragment>
 								);
 							case 3:
 								return (
 									<React.Fragment>
-										<h5>How do you get a cool player color or upload your own personal cardback?</h5>
-										<p>
-											Play 50 games to attain "rainbow" status and have a color based off your ELO. Click on the info icon next to "Lobby" in the upper right
-											corner to learn more. These games must be ranked (not private or casual). You can check to see where you're at in your profile page -
-											click on your name in the upper right corner.
-										</p>
-										<h5>How do you get a medal (seasonal reward)?</h5>
-										<p>Be a top performing player by ELO at the end of a season. Seasons last for 3 months and start at the first of the year.</p>
 										<h5>Is my information secure?</h5>
 										<p>
 											As per our{' '}
