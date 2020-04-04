@@ -203,7 +203,7 @@ class Menu extends React.Component {
 			<div>
 				<div className="menu-container" style={{ zIndex: 9999 }}>
 					<section className={classes}>
-						<a href="/">{userInfo && userInfo.gameSettings && userInfo.gameSettings.safeForWork ? 'SH.io' : 'SECRET HITLER.io'}</a>
+						<a href="/game/#/">{userInfo && userInfo.gameSettings && userInfo.gameSettings.safeForWork ? 'SH.io' : 'SECRET HITLER.io'}</a>
 						<div className="center-menu-links">
 							<span>
 								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
