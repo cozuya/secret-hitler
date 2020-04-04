@@ -1,7 +1,15 @@
+const { promisify } = require('util');
+const r = require('redis');
+
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const BannedIP = require('../../models/bannedIP');
+
+const redis = r.createClient();
+
+module.exports.getAsync = promisify(redis.get).bind(redis);
+module.exports.setAsync = promisify(redis.set).bind(redis);
 
 const fs = require('fs');
 const emotes = [];

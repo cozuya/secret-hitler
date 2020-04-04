@@ -51,14 +51,14 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
-const { games, emoteList } = require('./models');
+const { games, emoteList, getAsync } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
 
-let modUserNames = [],
-	editorUserNames = [],
-	adminUserNames = [];
+let modUserNames = [];
+let editorUserNames = [];
+let adminUserNames = [];
 
 const gamesGarbageCollector = () => {
 	const currentTime = new Date();
@@ -142,11 +142,7 @@ const ensureAuthenticated = socket => {
 	}
 };
 
-const findGame = data => {
-	if (games && data && data.uid) {
-		return games[data.uid];
-	}
-};
+const findGame = (data = {}) => getAsync(data.uid);
 
 const ensureInGame = (passport, game) => {
 	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
@@ -207,7 +203,9 @@ module.exports.socketRoutes = () => {
 					) {
 						isAEM = true;
 					}
-					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') isTrial = true;
+					if (account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod') {
+						isTrial = true;
+					}
 				});
 			}
 
@@ -390,11 +388,14 @@ module.exports.socketRoutes = () => {
 			socket.on('updateTruncateGame', data => {
 				handleUpdatedTruncateGame(data);
 			});
-			socket.on('addNewGameChat', data => {
-				const game = findGame(data);
+			socket.on('addNewGameChat', async data => {
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (isRestricted) return;
+
 				if (authenticated) {
-					handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
+					handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim, new Date().getTime());
 				}
 			});
 			socket.on('updateReportGame', data => {

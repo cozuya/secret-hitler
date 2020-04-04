@@ -11,7 +11,8 @@ const {
 	currentSeasonNumber,
 	newStaff,
 	createNewBypass,
-	testIP
+	testIP,
+	setAsync
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -583,7 +584,6 @@ module.exports.handleUpdatedBio = (socket, passport, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleAddNewGame = (socket, passport, data) => {
-	// Authentication Assured in routes.js
 	if (gameCreationDisabled.status || (!data.privatePassword && limitNewPlayers.status)) {
 		return;
 	}
@@ -865,11 +865,18 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		newGame.general.timeCreated = currentTime;
 		updateUserStatus(passport, newGame);
 		games[newGame.general.uid] = newGame;
-		sendGameList();
-		socket.join(newGame.general.uid);
-		socket.emit('updateSeatForUser');
-		socket.emit('gameUpdate', newGame);
-		socket.emit('joinGameRedirect', newGame.general.uid);
+
+		setAsync(newGame.general.uid, JSON.stringify(newGame))
+			.then(e => {
+				sendGameList();
+				socket.join(newGame.general.uid);
+				socket.emit('updateSeatForUser');
+				socket.emit('gameUpdate', newGame);
+				socket.emit('joinGameRedirect', newGame.general.uid);
+			})
+			.catch(err => {
+				console.log(err, 'caught redis error');
+			});
 	});
 };
 
@@ -2402,11 +2409,13 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 		game.chats.push(data);
 
-		if (game.gameState.isTracksFlipped) {
-			sendPlayerChatUpdate(game, data);
-		} else {
-			io.in(data.uid).emit('gameUpdate', secureGame(game));
-		}
+		setAsync(game.general.uid, JSON.stringify(game)).then(() => {
+			if (game.gameState.isTracksFlipped) {
+				sendPlayerChatUpdate(game, data);
+			} else {
+				io.in(data.uid).emit('gameUpdate', secureGame(game));
+			}
+		});
 	}
 };
 
