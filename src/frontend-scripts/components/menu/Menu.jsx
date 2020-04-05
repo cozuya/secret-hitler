@@ -209,7 +209,11 @@ class Menu extends React.Component {
 								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
 									Site Rules
 								</a>{' '}
-								| <a href="/game">Lobby</a> |{' '}
+								|{' '}
+								<a href="/game">
+									Lobby
+								</a>{' '}
+								|{' '}
 								<a
 									className={
 										this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
@@ -304,7 +308,11 @@ class Menu extends React.Component {
 								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
 									Site Rules
 								</a>{' '}
-								| <a href="/game">Lobby</a> |{' '}
+								|{' '}
+								<a href="/game">
+									Lobby
+								</a>{' '}
+								|{' '}
 								<a
 									className={
 										this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
