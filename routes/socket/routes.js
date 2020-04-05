@@ -51,7 +51,7 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
-const { emoteList, gamesGetAsync } = require('./models');
+const { emoteList, getGamesAsync } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
@@ -144,7 +144,7 @@ const ensureAuthenticated = socket => {
 	}
 };
 
-const findGame = (data = {}) => data.uid && gamesGetAsync(data.uid);
+const findGame = (data = {}) => data.uid && getGamesAsync(data.uid);
 
 const ensureInGame = (passport, game) => {
 	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
@@ -286,7 +286,8 @@ module.exports.socketRoutes = () => {
 			// Instantly sends the userlist as soon as the websocket is created.
 			// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 			socket.conn.on('upgrade', () => {
-				sendUserList(socket);
+				// todo
+				// sendUserList(socket);
 				socket.emit('emoteList', emoteList);
 			});
 
@@ -321,7 +322,7 @@ module.exports.socketRoutes = () => {
 			});
 
 			socket.on('sendUser', user => {
-				sendSpecificUserList(socket, user.staffRole);
+				// sendSpecificUserList(socket, user.staffRole);
 			});
 
 			socket.on('flappyEvent', async data => {
@@ -509,7 +510,8 @@ module.exports.socketRoutes = () => {
 				sendGameInfo(socket, uid);
 			});
 			socket.on('getUserList', () => {
-				sendUserList(socket);
+				// todo
+				// sendUserList(socket);
 			});
 			socket.on('getGeneralChats', () => {
 				sendGeneralChats(socket);

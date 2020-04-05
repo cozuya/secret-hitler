@@ -50,8 +50,12 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
 	const IP =
 		req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	if (IP.includes(',')) req.expandedIP = expandAndSimplify(IP.split(',')[0].trim());
-	else req.expandedIP = expandAndSimplify(IP.trim());
+	if (IP.includes(',')) {
+		req.expandedIP = expandAndSimplify(IP.split(',')[0].trim());
+	} else {
+		req.expandedIP = expandAndSimplify(IP.trim());
+	}
+
 	next();
 });
 

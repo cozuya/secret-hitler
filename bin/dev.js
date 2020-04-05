@@ -2,7 +2,9 @@
 
 const http = require('http');
 const express = require('express');
+
 require('dotenv').config();
+
 const port = (() => {
 	const val = process.env.PORT || '8080';
 	const port = parseInt(val, 10);

@@ -7,6 +7,7 @@ const secureGame = game => {
 
 	delete _game.private;
 	delete _game.remakeData;
+
 	return _game;
 };
 
@@ -19,6 +20,7 @@ const combineInProgressChats = (game, userName) =>
  * @param {object} game - game to act on.
  * @param {boolean} noChats - remove chats for client to handle.
  */
+// FFS this is the most important function in the game if you have the need to modify it please be very careful/ask for help
 module.exports.sendInProgressGameUpdate = (game, noChats) => {
 	if (!game || !io.sockets.adapter.rooms[game.general.uid]) {
 		return;

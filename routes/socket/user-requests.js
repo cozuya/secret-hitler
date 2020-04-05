@@ -6,8 +6,7 @@ const Game = require('../../models/game');
 const Signups = require('../../models/signups');
 
 const {
-	getGamesAsync,
-	userList,
+	gamesGetAsync,
 	generalChats,
 	accountCreationDisabled,
 	ipbansNotEnforced,
@@ -15,8 +14,9 @@ const {
 	limitNewPlayers,
 	userListEmitter,
 	formattedUserList,
-	gameListEmitter,
-	formattedGameList
+	formattedGameList,
+	scanGamesAsync,
+	getGamesAsync
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
@@ -27,24 +27,26 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
 /**
  * @param {object} socket - user socket reference.
  */
-const sendUserList = (module.exports.sendUserList = socket => {
-	if (socket) {
-		socket.emit('fetchUser');
-	} else {
-		userListEmitter.send = true;
-	}
-});
+// todo
+// const sendUserList = (module.exports.sendUserList = socket => {
+// 	if (socket) {
+// 		socket.emit('fetchUser');
+// 	} else {
+// 		userListEmitter.send = true;
+// 	}
+// });
 
-module.exports.sendSpecificUserList = (socket, staffRole) => {
-	const isAEM = Boolean(staffRole && staffRole !== 'altmod' && staffRole !== 'veteran');
-	if (socket) {
-		socket.emit('userList', {
-			list: formattedUserList(isAEM)
-		});
-	} else {
-		console.log('no socket received!');
-	}
-};
+// todo
+// module.exports.sendSpecificUserList = (socket, staffRole) => {
+// 	const isAEM = Boolean(staffRole && staffRole !== 'altmod' && staffRole !== 'veteran');
+// 	if (socket) {
+// 		socket.emit('userList', {
+// 			list: formattedUserList(isAEM)
+// 		});
+// 	} else {
+// 		console.log('no socket received!');
+// 	}
+// };
 
 // todo fix this
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
@@ -160,17 +162,17 @@ module.exports.sendPrivateSignups = socket => {
  */
 
 // todo fix this
-module.exports.sendModInfo = (games, socket, count, isTrial) => {
-	const userNames = userList.map(user => user.userName);
+// module.exports.sendModInfo = (games, socket, count, isTrial) => {
+// 	const userNames = userList.map(user => user.userName);
 
-	Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
-		.then(users => {
-			getModInfo(games, users, socket, {}, count, isTrial);
-		})
-		.catch(err => {
-			console.log(err, 'err in sending mod info');
-		});
-};
+// 	Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
+// 		.then(users => {
+// 			getModInfo(games, users, socket, {}, count, isTrial);
+// 		})
+// 		.catch(err => {
+// 			console.log(err, 'err in sending mod info');
+// 		});
+// };
 
 /**
  * @param {object} socket - user socket reference.
@@ -186,43 +188,44 @@ module.exports.sendUserGameSettings = socket => {
 		.then(account => {
 			socket.emit('gameSettings', account.gameSettings);
 
-			const userListNames = userList.map(user => user.userName);
+			// todo
+			// const userListNames = userList.map(user => user.userName);
 
 			getProfile(passport.user);
-			if (!userListNames.includes(passport.user)) {
-				const userListInfo = {
-					userName: passport.user,
-					staffRole: account.staffRole || '',
-					isContributor: account.isContributor || false,
-					staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
-					staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
-					staffIncognito: account.gameSettings.staffIncognito,
-					wins: account.wins,
-					losses: account.losses,
-					rainbowWins: account.rainbowWins,
-					rainbowLosses: account.rainbowLosses,
-					isPrivate: account.gameSettings.isPrivate,
-					tournyWins: account.gameSettings.tournyWins,
-					blacklist: account.gameSettings.blacklist,
-					customCardback: account.gameSettings.customCardback,
-					customCardbackUid: account.gameSettings.customCardbackUid,
-					previousSeasonAward: account.gameSettings.previousSeasonAward,
-					specialTournamentStatus: account.gameSettings.specialTournamentStatus,
-					eloOverall: account.eloOverall,
-					eloSeason: account.eloSeason,
-					status: {
-						type: 'none',
-						gameId: null
-					}
-				};
+			// if (!userListNames.includes(passport.user)) {
+			// 	const userListInfo = {
+			// 		userName: passport.user,
+			// 		staffRole: account.staffRole || '',
+			// 		isContributor: account.isContributor || false,
+			// 		staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
+			// 		staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
+			// 		staffIncognito: account.gameSettings.staffIncognito,
+			// 		wins: account.wins,
+			// 		losses: account.losses,
+			// 		rainbowWins: account.rainbowWins,
+			// 		rainbowLosses: account.rainbowLosses,
+			// 		isPrivate: account.gameSettings.isPrivate,
+			// 		tournyWins: account.gameSettings.tournyWins,
+			// 		blacklist: account.gameSettings.blacklist,
+			// 		customCardback: account.gameSettings.customCardback,
+			// 		customCardbackUid: account.gameSettings.customCardbackUid,
+			// 		previousSeasonAward: account.gameSettings.previousSeasonAward,
+			// 		specialTournamentStatus: account.gameSettings.specialTournamentStatus,
+			// 		eloOverall: account.eloOverall,
+			// 		eloSeason: account.eloSeason,
+			// 		status: {
+			// 			type: 'none',
+			// 			gameId: null
+			// 		}
+			// 	};
 
-				userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
-				userListInfo[`lossesSeason${CURRENTSEASONNUMBER}`] = account[`lossesSeason${CURRENTSEASONNUMBER}`];
-				userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
-				userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
-				userList.push(userListInfo);
-				sendUserList();
-			}
+			// 	userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
+			// 	userListInfo[`lossesSeason${CURRENTSEASONNUMBER}`] = account[`lossesSeason${CURRENTSEASONNUMBER}`];
+			// 	userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
+			// 	userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
+			// 	userList.push(userListInfo);
+			// 	sendUserList();
+			// }
 
 			getProfile(passport.user);
 
@@ -272,14 +275,61 @@ module.exports.sendReplayGameChats = (socket, uid) => {
  * @param {object} socket - user socket reference.
  * @param {boolean} isAEM - user AEM designation
  */
-module.exports.sendGameList = (socket, isAEM) => {
-	// eslint-disable-line one-var
+module.exports.sendGameList = async (socket, isAEM) => {
+	const g = await scanGamesAsync(0);
+	const gameUids = g[1];
+	const formattedGameList = [];
+
+	for (let index = 0; index < gameUids.length; index++) {
+		const g = await getGamesAsync(gameUids[index]);
+		const game = JSON.parse(g);
+
+		formattedGameList.push({
+			name: game.general.name,
+			flag: game.general.flag,
+			userNames: game.publicPlayersState.map(val => val.userName),
+			customCardback: game.publicPlayersState.map(val => val.customCardback),
+			customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
+			gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
+			seatedCount: game.publicPlayersState.length,
+			gameCreatorName: game.general.gameCreatorName,
+			minPlayersCount: game.general.minPlayersCount,
+			maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
+			excludedPlayerCount: game.general.excludedPlayerCount,
+			casualGame: game.general.casualGame || undefined,
+			eloMinimum: game.general.eloMinimum || undefined,
+			isVerifiedOnly: game.general.isVerifiedOnly || undefined,
+			isTourny: game.general.isTourny || undefined,
+			timedMode: game.general.timedMode || undefined,
+			flappyMode: game.general.flappyMode || undefined,
+			flappyOnlyMode: game.general.flappyOnlyMode || undefined,
+			tournyStatus: game.general.isTourny && game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length,
+			experiencedMode: game.general.experiencedMode || undefined,
+			disableChat: game.general.disableChat || undefined,
+			disableGamechat: game.general.disableGamechat || undefined,
+			blindMode: game.general.blindMode || undefined,
+			enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
+			enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
+			electionCount: game.general.electionCount,
+			rebalance6p: game.general.rebalance6p || undefined,
+			rebalance7p: game.general.rebalance7p || undefined,
+			rebalance9p: game.general.rerebalance9p || undefined,
+			privateOnly: game.general.privateOnly || undefined,
+			private: game.general.private || undefined,
+			uid: game.general.uid,
+			rainbowgame: game.general.rainbowgame || undefined,
+			isCustomGame: game.customGameSettings.enabled,
+			isUnlisted: game.general.unlisted || undefined
+		});
+	}
+
 	if (socket) {
-		let gameList = formattedGameList();
-		gameList = gameList.filter(game => isAEM || (game && !game.isUnlisted));
-		socket.emit('gameList', gameList);
+		socket.emit(
+			'gameList',
+			formattedGameList.filter(game => isAEM || (game && !game.isUnlisted))
+		);
 	} else {
-		gameListEmitter.send = true;
+		// todo
 	}
 };
 
@@ -308,7 +358,9 @@ module.exports.sendGeneralChats = socket => {
  * @param {string} override - type of user status to be displayed.
  */
 const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
-	const user = userList.find(user => user.userName === passport.user);
+	// const user = userList.find(user => user.userName === passport.user);
+	const user = '';
+
 	if (user) {
 		user.status = {
 			type:
@@ -334,7 +386,7 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
  * @param {string} uid - uid of game.
  */
 module.exports.sendGameInfo = async (socket, uid) => {
-	const g = await getGamesAsync(uid);
+	const g = await gamesGetAsync(uid);
 	const game = JSON.parse(g);
 
 	const { passport } = socket.handshake.session;

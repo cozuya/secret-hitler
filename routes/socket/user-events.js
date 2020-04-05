@@ -1,5 +1,4 @@
 const {
-	userList,
 	userListEmitter,
 	generalChats,
 	accountCreationDisabled,
@@ -11,8 +10,8 @@ const {
 	newStaff,
 	createNewBypass,
 	testIP,
-	gamesSetAsync,
-	gamesDeleteAsync
+	setGameAsync,
+	deleteGameAsync
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -242,17 +241,17 @@ const handleSocketDisconnect = socket => {
 
 	let listUpdate = false;
 	if (passport && Object.keys(passport).length) {
-		const userIndex = userList.findIndex(user => user.userName === passport.user);
+		// const userIndex = userList.findIndex(user => user.userName === passport.user);
 		// todo fix this
 		// const gameNamesPlayerSeatedIn = Object.keys(games).filter(gameName =>
 		// 	games[gameName].publicPlayersState.find(player => player.userName === passport.user && !player.leftGame)
 		// );
 		const gameNamesPlayerSeatedIn = [];
 
-		if (userIndex !== -1) {
-			userList.splice(userIndex, 1);
-			listUpdate = true;
-		}
+		// if (userIndex !== -1) {
+		// 	userList.splice(userIndex, 1);
+		// 	listUpdate = true;
+		// }
 
 		if (gameNamesPlayerSeatedIn.length) {
 			gameNamesPlayerSeatedIn.forEach(gameName => {
@@ -309,7 +308,7 @@ const handleSocketDisconnect = socket => {
 		}
 	}
 	if (listUpdate) {
-		sendUserList();
+		// sendUserList();
 	}
 };
 
@@ -574,62 +573,77 @@ module.exports.handleUpdatedBio = (socket, passport, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleAddNewGame = (socket, passport, data) => {
-	if (gameCreationDisabled.status || (!data.privatePassword && limitNewPlayers.status)) {
+	if (
+		// gameCreationDisabled.status ||
+		// (!data.privatePassword && limitNewPlayers.status) ||
+		!data ||
+		!data.gameName ||
+		data.gameName.length > 20 ||
+		!LEGALCHARACTERS(data.gameName)
+	) {
 		return;
 	}
 
-	const user = userList.find(obj => obj.userName === passport.user);
+	// const user = userList.find(obj => obj.userName === passport.user);
 	const currentTime = new Date();
 
-	if (!user || currentTime - user.timeLastGameCreated < 8000 || user.status.type !== 'none') {
-		// Check if !user here in case of bug where user doesn't appear on userList
-		return;
-	}
-
-	// Make sure it exists
-	if (!data) return;
+	// if (!user || currentTime - user.timeLastGameCreated < 8000 || user.status.type !== 'none') {
+	// 	// Check if !user here in case of bug where user doesn't appear on userList
+	// 	return;
+	// }
 
 	let a;
 	let playerCounts = [];
+
 	for (a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
-		if (!data.excludedPlayerCount.includes(a)) playerCounts.push(a);
+		if (!data.excludedPlayerCount.includes(a)) {
+			playerCounts.push(a);
+		}
 	}
+
 	if (playerCounts.length === 0) {
 		// Someone is messing with the data, ignore it
 		return;
 	}
 
 	const excludes = [];
+
 	for (a = playerCounts[0]; a <= playerCounts[playerCounts.length - 1]; a++) {
-		if (!playerCounts.includes(a)) excludes.push(a);
+		if (!playerCounts.includes(a)) {
+			excludes.push(a);
+		}
 	}
 
-	if (!data.gameName || data.gameName.length > 20 || !LEGALCHARACTERS(data.gameName)) {
-		// Should be enforced on the client. Copy-pasting characters can get past the LEGALCHARACTERS client check.
-		return;
-	}
-
-	if (data.eloSliderValue && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
-		return;
-	}
+	// todo
+	// if (data.eloSliderValue && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
+	// 	return;
+	// }
 
 	if (data.customGameSettings && data.customGameSettings.enabled) {
-		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) return;
-
-		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet', 'reverseinv', 'peekdrop'];
-		if (!data.customGameSettings.powers || data.customGameSettings.powers.length != 5) return;
-		for (let a = 0; a < 5; a++) {
-			if (data.customGameSettings.powers[a] == '' || data.customGameSettings.powers[a] == 'null') data.customGameSettings.powers[a] = null;
-			else if (data.customGameSettings.powers[a] && !validPowers.includes(data.customGameSettings.powers[a])) return;
+		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) {
+			return;
 		}
 
-		if (!(data.customGameSettings.hitlerZone >= 1) || data.customGameSettings.hitlerZone > 5) return;
+		const validPowers = ['investigate', 'deckpeek', 'election', 'bullet', 'reverseinv', 'peekdrop'];
+
 		if (
+			!data.customGameSettings.powers ||
+			data.customGameSettings.powers.length !== 5 ||
+			!(data.customGameSettings.hitlerZone >= 1) ||
+			data.customGameSettings.hitlerZone > 5 ||
 			!data.customGameSettings.vetoZone ||
 			data.customGameSettings.vetoZone <= data.customGameSettings.trackState.fas ||
 			data.customGameSettings.vetoZone > 5
 		) {
 			return;
+		}
+
+		for (let a = 0; a < 5; a++) {
+			if (data.customGameSettings.powers[a] == '' || data.customGameSettings.powers[a] == 'null') {
+				data.customGameSettings.powers[a] = null;
+			} else if (data.customGameSettings.powers[a] && !validPowers.includes(data.customGameSettings.powers[a])) {
+				return;
+			}
 		}
 
 		// Ensure that there is never a fas majority at the start.
@@ -676,11 +690,14 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		general: {
 			whitelistedPlayers: [],
 			uid: data.isTourny ? `${generateCombination(3, '', true)}Tournament` : uid,
-			name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
+			// name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
+			name: 'temp',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
-			gameCreatorName: user.userName,
-			gameCreatorBlacklist: user.blacklist,
+			// gameCreatorName: user.userName,
+			gameCreatorName: 'Uther',
+			// gameCreatorBlacklist: user.blacklist,
+			gameCreatorBlacklist: [],
 			excludedPlayerCount: excludes,
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
@@ -692,7 +709,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			lastModPing: 0,
 			chatReplTime: Array(chatReplacements.length + 1).fill(0),
 			disableGamechat: data.disableGamechat,
-			rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
+			// rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
+			rainbowgame: false,
 			blindMode: data.blindMode,
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
@@ -702,8 +720,10 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
 			unlisted: data.unlistedGame && !data.privatePassword,
-			private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
-			privateOnly: user.isPrivate,
+			// private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
+			private: '',
+			// privateOnly: user.isPrivate,
+			privateOnly: false,
 			electionCount: 0,
 			isRemade: false,
 			eloMinimum: data.eloSliderValue
@@ -795,14 +815,22 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	} else {
 		newGame.publicPlayersState = [
 			{
-				userName: user.userName,
-				customCardback: user.customCardback,
-				customCardbackUid: user.customCardbackUid,
-				previousSeasonAward: user.previousSeasonAward,
-				specialTournamentStatus: user.specialTournamentStatus,
-				tournyWins: user.tournyWins,
+				// userName: user.userName,
+				// customCardback: user.customCardback,
+				// customCardbackUid: user.customCardbackUid,
+				// previousSeasonAward: user.previousSeasonAward,
+				// specialTournamentStatus: user.specialTournamentStatus,
+				// tournyWins: user.tournyWins,
+				// connected: true,
+				// isPrivate: user.isPrivate,
+				userName: 'Uther',
+				customCardback: '',
+				customCardbackUid: '',
+				previousSeasonAward: '',
+				specialTournamentStatus: '',
+				tournyWins: '',
 				connected: true,
-				isPrivate: user.isPrivate,
+				isPrivate: false,
 				cardStatus: {
 					cardDisplayed: false,
 					isFlipped: false,
@@ -833,40 +861,40 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		});
 	}
 
-	user.timeLastGameCreated = currentTime;
+	// user.timeLastGameCreated = currentTime;
 
-	Account.findOne({ username: user.userName }).then(account => {
-		newGame.private = {
-			reports: {},
-			unSeatedGameChats: [],
-			lock: {},
-			votesPeeked: false,
-			invIndex: -1,
-			hiddenInfoChat: [],
-			hiddenInfoSubscriptions: [],
-			hiddenInfoShouldNotify: true
-		};
+	// Account.findOne({ username: user.userName }).then(account => {
+	newGame.private = {
+		reports: {},
+		unSeatedGameChats: [],
+		lock: {},
+		votesPeeked: false,
+		invIndex: -1,
+		hiddenInfoChat: [],
+		hiddenInfoSubscriptions: [],
+		hiddenInfoShouldNotify: true
+	};
 
-		if (newGame.general.private) {
-			newGame.private.privatePassword = newGame.general.private;
-			newGame.general.private = true;
-		}
+	if (newGame.general.private) {
+		newGame.private.privatePassword = newGame.general.private;
+		newGame.general.private = true;
+	}
 
-		newGame.general.timeCreated = currentTime;
-		updateUserStatus(passport, newGame);
+	newGame.general.timeCreated = currentTime;
+	updateUserStatus(passport, newGame);
 
-		gamesSetAsync(newGame.general.uid, JSON.stringify(newGame))
-			.then(e => {
-				sendGameList();
-				socket.join(newGame.general.uid);
-				socket.emit('updateSeatForUser');
-				socket.emit('gameUpdate', newGame);
-				socket.emit('joinGameRedirect', newGame.general.uid);
-			})
-			.catch(err => {
-				console.log(err, 'caught redis error');
-			});
-	});
+	gamesSetAsync(newGame.general.uid, JSON.stringify(newGame))
+		.then(e => {
+			sendGameList();
+			socket.join(newGame.general.uid);
+			socket.emit('updateSeatForUser');
+			socket.emit('gameUpdate', newGame);
+			socket.emit('joinGameRedirect', newGame.general.uid);
+		})
+		.catch(err => {
+			console.log(err, 'caught redis error');
+		});
+	// });
 };
 
 /**
@@ -2603,7 +2631,9 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
 					userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
 					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
-					if (userIdx !== -1) userList.splice(userIdx, 1);
+					if (userIdx !== -1) {
+						userList.splice(userIdx, 1);
+					}
 					userList.push(userListInfo);
 					sendUserList();
 				}
@@ -3952,6 +3982,7 @@ module.exports.handleHasSeenNewPlayerModal = socket => {
 
 	if (passport && Object.keys(passport).length) {
 		const { user } = passport;
+
 		Account.findOne({ username: user }).then(account => {
 			account.hasNotDismissedSignupModal = false;
 			socket.emit('checkRestrictions');
@@ -3964,7 +3995,7 @@ module.exports.handleHasSeenNewPlayerModal = socket => {
  * @param {object} socket - socket reference.
  * @param {function} callback - success callback.
  */
-module.exports.checkUserStatus = (socket, callback) => {
+module.exports.checkUserStatus = async (socket, callback) => {
 	const { passport } = socket.handshake.session;
 
 	if (passport && Object.keys(passport).length) {
@@ -3986,7 +4017,7 @@ module.exports.checkUserStatus = (socket, callback) => {
 			delete sockets[oldSocketID];
 		}
 
-		const reconnectingUser = game ? game.publicPlayersState.find(player => player.userName === user) : undefined;
+		const reconnectingUser = game && game.publicPlayersState.find(player => player.userName === user);
 
 		if (game && game.gameState.isStarted && !game.gameState.isCompleted && reconnectingUser) {
 			reconnectingUser.connected = true;
@@ -4004,10 +4035,9 @@ module.exports.checkUserStatus = (socket, callback) => {
 				socket.disconnect(true);
 
 				if (bannedUserlistIndex >= 0) {
+					// todo
 					userList.splice(bannedUserlistIndex, 1);
 				}
-
-				// destroySession(username);
 			};
 
 			Account.findOne({ username: user }, function(err, account) {
@@ -4016,17 +4046,23 @@ module.exports.checkUserStatus = (socket, callback) => {
 						logOutUser(user);
 					} else {
 						testIP(account.lastConnectedIP, banType => {
-							if (banType && banType != 'new' && !account.gameSettings.ignoreIPBans) logOutUser(user);
-							else {
-								sendUserList();
+							if (banType && banType !== 'new' && !account.gameSettings.ignoreIPBans) {
+								logOutUser(user);
+							} else {
+								// todo
+								// sendUserList();
 								callback();
 							}
 						});
 					}
 				}
 			});
-		} else callback();
-	} else callback();
+		} else {
+			callback();
+		}
+	} else {
+		callback();
+	}
 };
 
 module.exports.handleUserLeaveGame = handleUserLeaveGame;

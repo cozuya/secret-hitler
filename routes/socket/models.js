@@ -10,13 +10,46 @@ const games = redis.createClient({
 	db: 1
 });
 
-module.exports.gamesGetAsync = promisify(games.get).bind(games);
-module.exports.gamesSetAsync = promisify(games.set).bind(games);
-module.exports.gamesDeleteAsync = promisify(games.del).bind(games);
-// module.exports.getKeysAsync = promisify(games.keys).bind(games);
+module.exports.getGamesAsync = promisify(games.get).bind(games);
+module.exports.setGameAsync = promisify(games.set).bind(games);
+module.exports.deleteGameAsync = promisify(games.del).bind(games);
+module.exports.scanGamesAsync = promisify(games.scan).bind(games);
+
+const gameChats = redis.createClient({
+	db: 2
+});
+
+const userList = redis.createClient({
+	db: 3
+});
+
+// module.exports.userList = [];
+
+module.exports.userListGetAsync = promisify(userList.get).bind(userList);
+
+const generalChats = redis.createClient({
+	db: 4
+});
+
+const serverSettings = redis.createClient({
+	db: 5
+});
+
+// module.exports.accountCreationDisabled = { status: false };
+// module.exports.bypassVPNCheck = { status: false };
+// module.exports.ipbansNotEnforced = { status: false };
+// module.exports.gameCreationDisabled = { status: false };
+// module.exports.limitNewPlayers = { status: false };
+
+module.exports.generalChats = generalChats;
+// module.exports.generalChats = {
+// 	sticky: '',
+// 	list: []
+// };
 
 const fs = require('fs');
 const emotes = [];
+
 fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
 	if (file.name.endsWith('.png')) emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
 });
@@ -71,18 +104,6 @@ emotes.forEach(emote => {
 
 module.exports.emoteList = emotes;
 
-// const games = {};
-// module.exports.games = games;
-module.exports.userList = [];
-module.exports.generalChats = {
-	sticky: '',
-	list: []
-};
-module.exports.accountCreationDisabled = { status: false };
-module.exports.bypassVPNCheck = { status: false };
-module.exports.ipbansNotEnforced = { status: false };
-module.exports.gameCreationDisabled = { status: false };
-module.exports.limitNewPlayers = { status: false };
 module.exports.newStaff = {
 	modUserNames: [],
 	editorUserNames: [],
@@ -92,6 +113,7 @@ module.exports.newStaff = {
 };
 
 const staffList = [];
+
 Account.find({ staffRole: { $exists: true } }).then(accounts => {
 	accounts.forEach(user => (staffList[user.username] = user.staffRole));
 });
@@ -151,142 +173,74 @@ module.exports.profiles = (() => {
 	return { get, push };
 })();
 
-module.exports.formattedUserList = isAEM => {
-	const prune = value => {
-		// Converts things like zero and null to undefined to remove it from the sent data.
-		return value ? value : undefined;
-	};
+// todo
+// module.exports.formattedUserList = isAEM => {
+// 	const prune = value => {
+// 		// Converts things like zero and null to undefined to remove it from the sent data.
+// 		return value ? value : undefined;
+// 	};
 
-	return module.exports.userList
-		.map(user => ({
-			userName: user.userName,
-			wins: prune(user.wins),
-			losses: prune(user.losses),
-			rainbowWins: prune(user.rainbowWins),
-			rainbowLosses: prune(user.rainbowLosses),
-			isPrivate: prune(user.isPrivate),
-			staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
-			staffDisableStaffColor: prune(user.staffDisableStaffColor),
+// 	return module.exports.userList
+// 		.map(user => ({
+// 			userName: user.userName,
+// 			wins: prune(user.wins),
+// 			losses: prune(user.losses),
+// 			rainbowWins: prune(user.rainbowWins),
+// 			rainbowLosses: prune(user.rainbowLosses),
+// 			isPrivate: prune(user.isPrivate),
+// 			staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
+// 			staffDisableStaffColor: prune(user.staffDisableStaffColor),
 
-			// Tournaments are disabled, no point sending this.
-			// tournyWins: user.tournyWins,
+// 			// Tournaments are disabled, no point sending this.
+// 			// tournyWins: user.tournyWins,
 
-			// Blacklists are sent in the sendUserGameSettings event.
-			// blacklist: user.blacklist,
-			customCardback: user.customCardback,
-			customCardbackUid: user.customCardbackUid,
-			eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
-			eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
-			status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
-			winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
-			lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
-			rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
-			rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
-			previousSeasonAward: user.previousSeasonAward,
-			specialTournamentStatus: user.specialTournamentStatus,
-			timeLastGameCreated: user.timeLastGameCreated,
-			staffRole: prune(user.staffRole),
-			staffIncognito: prune(user.staffIncognito),
-			isContributor: prune(user.isContributor)
-			// oldData: user
-		}))
-		.filter(user => isAEM || !user.staffIncognito);
-};
-
-const userListEmitter = {
-	state: 0,
-	send: false,
-	timer: setInterval(() => {
-		// 0.01s delay per user (1s per 100), always delay
-		if (!userListEmitter.send) {
-			userListEmitter.state = module.exports.userList.length / 10;
-			return;
-		}
-		if (userListEmitter.state > 0) userListEmitter.state--;
-		else {
-			userListEmitter.send = false;
-			io.sockets.emit('fetchUser'); // , {
-			// 	list: module.exports.formattedUserList()
-			// });
-		}
-	}, 100)
-};
-
-module.exports.userListEmitter = userListEmitter;
-
-module.exports.formattedGameList = () => [];
-// module.exports.formattedGameList = () => {
-// 	return Object.keys(module.exports.games).map(gameName => ({
-// 		name: games[gameName].general.name,
-// 		flag: games[gameName].general.flag,
-// 		userNames: games[gameName].publicPlayersState.map(val => val.userName),
-// 		customCardback: games[gameName].publicPlayersState.map(val => val.customCardback),
-// 		customCardbackUid: games[gameName].publicPlayersState.map(val => val.customCardbackUid),
-// 		gameStatus: games[gameName].gameState.isCompleted
-// 			? games[gameName].gameState.isCompleted
-// 			: games[gameName].gameState.isTracksFlipped
-// 			? 'isStarted'
-// 			: 'notStarted',
-// 		seatedCount: games[gameName].publicPlayersState.length,
-// 		gameCreatorName: games[gameName].general.gameCreatorName,
-// 		minPlayersCount: games[gameName].general.minPlayersCount,
-// 		maxPlayersCount: games[gameName].general.maxPlayersCount || games[gameName].general.minPlayersCount,
-// 		excludedPlayerCount: games[gameName].general.excludedPlayerCount,
-// 		casualGame: games[gameName].general.casualGame || undefined,
-// 		eloMinimum: games[gameName].general.eloMinimum || undefined,
-// 		isVerifiedOnly: games[gameName].general.isVerifiedOnly || undefined,
-// 		isTourny: games[gameName].general.isTourny || undefined,
-// 		timedMode: games[gameName].general.timedMode || undefined,
-// 		flappyMode: games[gameName].general.flappyMode || undefined,
-// 		flappyOnlyMode: games[gameName].general.flappyOnlyMode || undefined,
-// 		tournyStatus: (() => {
-// 			if (games[gameName].general.isTourny) {
-// 				if (games[gameName].general.tournyInfo.queuedPlayers && games[gameName].general.tournyInfo.queuedPlayers.length) {
-// 					return {
-// 						queuedPlayers: games[gameName].general.tournyInfo.queuedPlayers.length
-// 					};
-// 				}
-// 			}
-// 			return undefined;
-// 		})(),
-// 		experiencedMode: games[gameName].general.experiencedMode || undefined,
-// 		disableChat: games[gameName].general.disableChat || undefined,
-// 		disableGamechat: games[gameName].general.disableGamechat || undefined,
-// 		blindMode: games[gameName].general.blindMode || undefined,
-// 		enactedLiberalPolicyCount: games[gameName].trackState.liberalPolicyCount,
-// 		enactedFascistPolicyCount: games[gameName].trackState.fascistPolicyCount,
-// 		electionCount: games[gameName].general.electionCount,
-// 		rebalance6p: games[gameName].general.rebalance6p || undefined,
-// 		rebalance7p: games[gameName].general.rebalance7p || undefined,
-// 		rebalance9p: games[gameName].general.rerebalance9p || undefined,
-// 		privateOnly: games[gameName].general.privateOnly || undefined,
-// 		private: games[gameName].general.private || undefined,
-// 		uid: games[gameName].general.uid,
-// 		rainbowgame: games[gameName].general.rainbowgame || undefined,
-// 		isCustomGame: games[gameName].customGameSettings.enabled,
-// 		isUnlisted: games[gameName].general.unlisted || undefined
-// 	}));
+// 			// Blacklists are sent in the sendUserGameSettings event.
+// 			// blacklist: user.blacklist,
+// 			customCardback: user.customCardback,
+// 			customCardbackUid: user.customCardbackUid,
+// 			eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
+// 			eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
+// 			status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
+// 			winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
+// 			lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
+// 			rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
+// 			rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
+// 			previousSeasonAward: user.previousSeasonAward,
+// 			specialTournamentStatus: user.specialTournamentStatus,
+// 			timeLastGameCreated: user.timeLastGameCreated,
+// 			staffRole: prune(user.staffRole),
+// 			staffIncognito: prune(user.staffIncognito),
+// 			isContributor: prune(user.isContributor)
+// 			// oldData: user
+// 		}))
+// 		.filter(user => isAEM || !user.staffIncognito);
 // };
 
-const gameListEmitter = {
-	state: 0,
-	send: false,
-	timer: setInterval(() => {
-		// 3 second delay, instant send
-		if (gameListEmitter.state > 0) gameListEmitter.state--;
-		else {
-			if (!gameListEmitter.send) return;
-			gameListEmitter.send = false;
-			io.sockets.emit('gameList', module.exports.formattedGameList());
-			gameListEmitter.state = 30;
-		}
-	}, 100)
-};
+// todo
+// const userListEmitter = {
+// 	state: 0,
+// 	send: false,
+// 	timer: setInterval(() => {
+// 		// 0.01s delay per user (1s per 100), always delay
+// 		if (!userListEmitter.send) {
+// 			userListEmitter.state = module.exports.userList.length / 10;
+// 			return;
+// 		}
+// 		if (userListEmitter.state > 0) userListEmitter.state--;
+// 		else {
+// 			userListEmitter.send = false;
+// 			io.sockets.emit('fetchUser'); // , {
+// 			// 	list: module.exports.formattedUserList()
+// 			// });
+// 		}
+// 	}, 100)
+// };
 
-module.exports.gameListEmitter = gameListEmitter;
+// module.exports.userListEmitter = userListEmitter;
 
 module.exports.AEM = Account.find({ staffRole: { $exists: true, $ne: 'veteran' } });
 
+// todo
 const bypassKeys = [];
 
 module.exports.verifyBypass = key => {
@@ -333,12 +287,16 @@ const banLength = {
 	big: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
 module.exports.testIP = (IP, callback) => {
-	if (!IP) callback('Bad IP!');
-	else if (module.exports.ipbansNotEnforced.status) callback(null);
-	else {
+	if (!IP) {
+		callback('Bad IP!');
+		// todo
+		// } else if (module.exports.ipbansNotEnforced.status) {
+		// 	callback(null);
+	} else {
 		BannedIP.find({ ip: IP }, (err, ips) => {
-			if (err) callback(err);
-			else {
+			if (err) {
+				callback(err);
+			} else {
 				let date;
 				let unbannedTime;
 				const ip = ips.sort((a, b) => b.bannedDate - a.bannedDate)[0];
