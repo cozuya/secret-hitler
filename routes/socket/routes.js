@@ -51,7 +51,7 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
-const { games, emoteList, getAsync } = require('./models');
+const { emoteList, gamesGetAsync } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
@@ -60,79 +60,81 @@ let modUserNames = [];
 let editorUserNames = [];
 let adminUserNames = [];
 
-const gamesGarbageCollector = () => {
-	const currentTime = new Date();
-	Object.keys(games).forEach(gameName => {
-		let toDelete = false;
-		const currentGame = games[gameName];
-		const createdTimer =
-			currentGame &&
-			currentGame.general &&
-			currentGame.general.timeCreated &&
-			currentGame.gameState &&
-			!currentGame.gameState.isStarted &&
-			new Date(currentGame.general.timeCreated.getTime() + 600000);
-		const completedTimer =
-			currentGame &&
-			currentGame.general &&
-			currentGame.general.timeStarted &&
-			currentGame.gameState &&
-			currentGame.gameState.isCompleted &&
-			new Date(games[gameName].general.timeStarted + 0);
+// todo fix this
+// const gamesGarbageCollector = () => {
+// 	const currentTime = new Date();
 
-		// To come maybe later
-		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
+// 	Object.keys(games).forEach(gameName => {
+// 		let toDelete = false;
+// 		const currentGame = games[gameName];
+// 		const createdTimer =
+// 			currentGame &&
+// 			currentGame.general &&
+// 			currentGame.general.timeCreated &&
+// 			currentGame.gameState &&
+// 			!currentGame.gameState.isStarted &&
+// 			new Date(currentGame.general.timeCreated.getTime() + 600000);
+// 		const completedTimer =
+// 			currentGame &&
+// 			currentGame.general &&
+// 			currentGame.general.timeStarted &&
+// 			currentGame.gameState &&
+// 			currentGame.gameState.isCompleted &&
+// 			new Date(games[gameName].general.timeStarted + 0);
 
-		// DEBUG
-		// console.log(
-		// 	'Name: ',
-		// 	gameName,
-		// 	// '\nDelay: ',
-		// 	// games[gameName].general.modDeleteDelay,
-		// 	'\nCurrent Time: ',
-		// 	currentTime,
-		// 	// '\nDelay Timer: ',
-		// 	// modDeleteTimer,
-		// 	'\nCompleted Timer: ',
-		// 	completedTimer,
-		// 	'\nCreated Timer: ',
-		// 	createdTimer
-		// );
+// 		// To come maybe later
+// 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
 
-		if (games[gameName] && createdTimer && createdTimer < currentTime) {
-			// console.log('Created Timer Expired. Deleting... ');
-			toDelete = true;
-		}
-		if (games[gameName] && !games[gameName].general.modDeleteDelay && completedTimer && completedTimer < currentTime) {
-			// console.log('Completed Game Timer Expired. Deleting... ');
-			toDelete = true;
-		}
-		// if (games[gameName] && modDeleteTimer && modDeleteTimer < currentTime) {
-		// console.log('Mod Delete Delay Timer Expired. Deleting... ');
-		// toDelete = true;
-		// }
+// 		// DEBUG
+// 		// console.log(
+// 		// 	'Name: ',
+// 		// 	gameName,
+// 		// 	// '\nDelay: ',
+// 		// 	// games[gameName].general.modDeleteDelay,
+// 		// 	'\nCurrent Time: ',
+// 		// 	currentTime,
+// 		// 	// '\nDelay Timer: ',
+// 		// 	// modDeleteTimer,
+// 		// 	'\nCompleted Timer: ',
+// 		// 	completedTimer,
+// 		// 	'\nCreated Timer: ',
+// 		// 	createdTimer
+// 		// );
 
-		if (toDelete && currentGame.publicPlayersState) {
-			for (let affectedPlayerNumber = 0; affectedPlayerNumber < currentGame.publicPlayersState.length; affectedPlayerNumber++) {
-				const affectedSocketId = Object.keys(io.sockets.sockets).find(
-					socketId =>
-						io.sockets.sockets[socketId].handshake.session.passport &&
-						io.sockets.sockets[socketId].handshake.session.passport.user === currentGame.publicPlayersState[affectedPlayerNumber].userName
-				);
-				if (!io.sockets.sockets[affectedSocketId]) {
-					continue;
-				}
+// 		if (games[gameName] && createdTimer && createdTimer < currentTime) {
+// 			// console.log('Created Timer Expired. Deleting... ');
+// 			toDelete = true;
+// 		}
+// 		if (games[gameName] && !games[gameName].general.modDeleteDelay && completedTimer && completedTimer < currentTime) {
+// 			// console.log('Completed Game Timer Expired. Deleting... ');
+// 			toDelete = true;
+// 		}
+// 		// if (games[gameName] && modDeleteTimer && modDeleteTimer < currentTime) {
+// 		// console.log('Mod Delete Delay Timer Expired. Deleting... ');
+// 		// toDelete = true;
+// 		// }
 
-				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) {
-					io.sockets.sockets[affectedSocketId].emit('toLobby');
-					io.sockets.sockets[affectedSocketId].leave(gameName);
-				}
-			}
-			delete games[gameName];
-			sendGameList();
-		}
-	});
-};
+// 		if (toDelete && currentGame.publicPlayersState) {
+// 			for (let affectedPlayerNumber = 0; affectedPlayerNumber < currentGame.publicPlayersState.length; affectedPlayerNumber++) {
+// 				const affectedSocketId = Object.keys(io.sockets.sockets).find(
+// 					socketId =>
+// 						io.sockets.sockets[socketId].handshake.session.passport &&
+// 						io.sockets.sockets[socketId].handshake.session.passport.user === currentGame.publicPlayersState[affectedPlayerNumber].userName
+// 				);
+// 				if (!io.sockets.sockets[affectedSocketId]) {
+// 					continue;
+// 				}
+
+// 				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) {
+// 					io.sockets.sockets[affectedSocketId].emit('toLobby');
+// 					io.sockets.sockets[affectedSocketId].leave(gameName);
+// 				}
+// 			}
+// 			delete games[gameName];
+// 			sendGameList();
+// 		}
+// 	});
+// };
 
 const ensureAuthenticated = socket => {
 	if (socket.handshake && socket.handshake.session) {
@@ -142,7 +144,7 @@ const ensureAuthenticated = socket => {
 	}
 };
 
-const findGame = (data = {}) => getAsync(data.uid);
+const findGame = (data = {}) => data.uid && gamesGetAsync(data.uid);
 
 const ensureInGame = (passport, game) => {
 	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
@@ -165,7 +167,7 @@ const gatherStaffUsernames = () => {
 };
 
 module.exports.socketRoutes = () => {
-	setInterval(gamesGarbageCollector, 30000);
+	// setInterval(gamesGarbageCollector, 30000);
 
 	gatherStaffUsernames();
 
@@ -174,10 +176,11 @@ module.exports.socketRoutes = () => {
 			socket.emit('version', { current: version });
 
 			// defensively check if game exists
-			socket.use((packet, next) => {
+			socket.use(async (packet, next) => {
 				const data = packet[1];
 				const uid = data && data.uid;
-				const isGameFound = uid && findGame(data);
+
+				const isGameFound = await findGame(data);
 
 				if (!uid || isGameFound) {
 					return next();
@@ -215,17 +218,30 @@ module.exports.socketRoutes = () => {
 			let isRestricted = true;
 
 			const checkRestriction = account => {
-				if (!account || !passport || !passport.user || !socket) return;
+				if (!account || !passport || !passport.user || !socket) {
+					return;
+				}
+
 				const parseVer = ver => {
 					const vals = ver.split('.');
 					vals.forEach((v, i) => (vals[i] = parseInt(v)));
+
 					return vals;
 				};
+
 				const firstVerNew = (v1, v2) => {
 					for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
-						if (!v2[i]) return true;
-						if (!v1[i] || isNaN(v1[i]) || v1[i] < v2[i]) return false;
-						if (v1[i] > v2[i]) return true;
+						if (!v2[i]) {
+							return true;
+						}
+
+						if (!v1[i] || isNaN(v1[i]) || v1[i] < v2[i]) {
+							return false;
+						}
+
+						if (v1[i] > v2[i]) {
+							return true;
+						}
 					}
 					return true;
 				};
@@ -233,9 +249,13 @@ module.exports.socketRoutes = () => {
 				if (account.touLastAgreed && account.touLastAgreed.length) {
 					const changesSince = [];
 					const myVer = parseVer(account.touLastAgreed);
+
 					TOU_CHANGES.forEach(change => {
-						if (!firstVerNew(myVer, parseVer(change.changeVer))) changesSince.push(change);
+						if (!firstVerNew(myVer, parseVer(change.changeVer))) {
+							changesSince.push(change);
+						}
 					});
+
 					if (changesSince.length) {
 						socket.emit('touChange', changesSince);
 						return true;
@@ -245,8 +265,10 @@ module.exports.socketRoutes = () => {
 					return true;
 				}
 				const warnings = account.warnings.filter(warning => !warning.acknowledged);
+
 				if (warnings.length > 0) {
 					const { moderator, acknowledged, ...firstWarning } = warnings[0]; // eslint-disable-line no-unused-vars
+
 					socket.emit('warningPopup', firstWarning);
 					return true;
 				}
@@ -281,14 +303,14 @@ module.exports.socketRoutes = () => {
 							if (account.warnings && account.warnings.length > 0) {
 								socket.emit('sendWarnings', { username, warnings: account.warnings });
 							} else {
-								socket.emit('sendAlert', `That user doesn't have any warnings.`);
+								socket.emit('sendAlert', "That user doesn't have any warnings.");
 							}
 						} else {
-							socket.emit('sendAlert', `That user doesn't exist.`);
+							socket.emit('sendAlert', "That user doesn't exist.");
 						}
 					});
 				} else {
-					socket.emit('sendAlert', `Are you sure you're supposed to be doing that?`);
+					socket.emit('sendAlert', "Are you sure you're supposed to be doing that?");
 					console.log(passport.user, 'tried to receive warnings for', username);
 				}
 			});
@@ -302,9 +324,11 @@ module.exports.socketRoutes = () => {
 				sendSpecificUserList(socket, user.staffRole);
 			});
 
-			socket.on('flappyEvent', data => {
+			socket.on('flappyEvent', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+				const g = await findGame(data);
+
+				const game = JSON.parse(g);
 				if (authenticated && ensureInGame(passport, game)) {
 					handleFlappyEvent(data, game);
 				}
@@ -373,14 +397,18 @@ module.exports.socketRoutes = () => {
 					handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));
 				}
 			});
-			socket.on('addNewClaim', data => {
-				const game = findGame(data);
+			socket.on('addNewClaim', async data => {
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					handleAddNewClaim(socket, passport, game, data);
 				}
 			});
-			socket.on('updateGameWhitelist', data => {
-				const game = findGame(data);
+			socket.on('updateGameWhitelist', async data => {
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					handleUpdateWhitelist(passport, game, data);
 				}
@@ -395,7 +423,7 @@ module.exports.socketRoutes = () => {
 				if (isRestricted) return;
 
 				if (authenticated) {
-					handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim, new Date().getTime());
+					handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
 				}
 			});
 			socket.on('updateReportGame', data => {
@@ -423,8 +451,9 @@ module.exports.socketRoutes = () => {
 					handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 				}
 			});
-			socket.on('leaveGame', data => {
-				const game = findGame(data);
+			socket.on('leaveGame', async data => {
+				const g = await findGame(data);
+				const game = JSON.parse(g);
 
 				if (game && io.sockets.adapter.rooms[game.general.uid] && socket) {
 					socket.leave(game.general.uid);
@@ -434,10 +463,14 @@ module.exports.socketRoutes = () => {
 					handleUserLeaveGame(socket, game, data, passport);
 				}
 			});
-			socket.on('updateSeatedUser', data => {
+			socket.on('updateSeatedUser', async data => {
 				if (isRestricted) return;
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated) {
-					updateSeatedUser(socket, passport, data);
+					updateSeatedUser(game, socket, passport, data);
 				}
 			});
 			socket.on('playerReport', data => {
@@ -451,8 +484,10 @@ module.exports.socketRoutes = () => {
 					handlePlayerReportDismiss();
 				}
 			});
-			socket.on('updateRemake', data => {
-				const game = findGame(data);
+			socket.on('updateRemake', async data => {
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					handleUpdatedRemakeGame(passport, game, data, socket);
 				}
@@ -482,9 +517,12 @@ module.exports.socketRoutes = () => {
 			socket.on('getUserGameSettings', () => {
 				sendUserGameSettings(socket);
 			});
-			socket.on('selectedChancellorVoteOnVeto', data => {
+			socket.on('selectedChancellorVoteOnVeto', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellorVoteOnVeto(passport, game, data);
 				}
@@ -494,9 +532,11 @@ module.exports.socketRoutes = () => {
 					sendModInfo(games, socket, count, isTrial && !isAEM);
 				}
 			});
-			socket.on('subscribeModChat', uid => {
+			socket.on('subscribeModChat', async uid => {
 				if (authenticated && isAEM) {
-					const game = findGame({ uid });
+					const g = await findGame(data);
+					const game = JSON.parse(g);
+
 					if (game && game.private && game.private.seatedPlayers) {
 						const players = game.private.seatedPlayers.map(player => player.userName);
 						Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
@@ -511,13 +551,16 @@ module.exports.socketRoutes = () => {
 							}
 							handleSubscribeModChat(socket, passport, game);
 						});
-					} else socket.emit('sendAlert', 'Game is missing.');
+					} else {
+						socket.emit('sendAlert', 'Game is missing.');
+					}
 				}
 			});
-			socket.on('modPeekVotes', data => {
-				const uid = data.uid;
+			socket.on('modPeekVotes', async data => {
 				if (authenticated && isAEM) {
-					const game = findGame({ uid });
+					const g = await findGame(data);
+					const game = JSON.parse(g);
+
 					if (game && game.private && game.private.seatedPlayers) {
 						handleModPeekVotes(socket, passport, game, data.modName);
 					}
@@ -525,10 +568,11 @@ module.exports.socketRoutes = () => {
 					socket.emit('sendAlert', 'Game is missing.');
 				}
 			});
-			socket.on('modFreezeGame', data => {
-				const uid = data.uid;
+			socket.on('modFreezeGame', async data => {
 				if (authenticated && isAEM) {
-					const game = findGame({ uid });
+					const g = await findGame(data);
+					const game = JSON.parse(g);
+
 					if (game && game.private && game.private.seatedPlayers) {
 						handleGameFreeze(socket, passport, game, data.modName);
 					}
@@ -554,81 +598,114 @@ module.exports.socketRoutes = () => {
 			});
 			// election
 
-			socket.on('presidentSelectedChancellor', data => {
+			socket.on('presidentSelectedChancellor', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellor(socket, passport, game, data);
 				}
 			});
-			socket.on('selectedVoting', data => {
+			socket.on('selectedVoting', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectVoting(passport, game, data, socket);
 				}
 			});
-			socket.on('selectedPresidentPolicy', data => {
+			socket.on('selectedPresidentPolicy', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPresidentPolicy(passport, game, data, false, socket);
 				}
 			});
-			socket.on('selectedChancellorPolicy', data => {
+			socket.on('selectedChancellorPolicy', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellorPolicy(passport, game, data, false, socket);
 				}
 			});
-			socket.on('selectedPresidentVoteOnVeto', data => {
+			socket.on('selectedPresidentVoteOnVeto', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPresidentVoteOnVeto(passport, game, data, socket);
 				}
 			});
 			// policy-powers
-			socket.on('selectPartyMembershipInvestigate', data => {
+			socket.on('selectPartyMembershipInvestigate', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPartyMembershipInvestigate(passport, game, data, socket);
 				}
 			});
-			socket.on('selectPartyMembershipInvestigateReverse', data => {
+			socket.on('selectPartyMembershipInvestigateReverse', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPartyMembershipInvestigateReverse(passport, game, data, socket);
 				}
 			});
-			socket.on('selectedPolicies', data => {
+			socket.on('selectedPolicies', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					if (game.private.lock.policyPeekAndDrop) selectOnePolicy(passport, game);
 					else selectPolicies(passport, game, socket);
 				}
 			});
-			socket.on('selectedPresidentVoteOnBurn', data => {
+			socket.on('selectedPresidentVoteOnBurn', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectBurnCard(passport, game, data, socket);
 				}
 			});
-			socket.on('selectedPlayerToExecute', data => {
+			socket.on('selectedPlayerToExecute', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPlayerToExecute(passport, game, data, socket);
 				}
 			});
-			socket.on('selectedSpecialElection', data => {
+			socket.on('selectedSpecialElection', async data => {
 				if (isRestricted) return;
-				const game = findGame(data);
+
+				const g = await findGame(data);
+				const game = JSON.parse(g);
+
 				if (authenticated && ensureInGame(passport, game)) {
 					selectSpecialElection(passport, game, data, socket);
 				}

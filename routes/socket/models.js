@@ -1,15 +1,19 @@
 const { promisify } = require('util');
-const r = require('redis');
+const redis = require('redis');
 
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 const Account = require('../../models/account');
 const ModAction = require('../../models/modAction');
 const BannedIP = require('../../models/bannedIP');
 
-const redis = r.createClient();
+const games = redis.createClient({
+	db: 1
+});
 
-module.exports.getAsync = promisify(redis.get).bind(redis);
-module.exports.setAsync = promisify(redis.set).bind(redis);
+module.exports.gamesGetAsync = promisify(games.get).bind(games);
+module.exports.gamesSetAsync = promisify(games.set).bind(games);
+module.exports.gamesDeleteAsync = promisify(games.del).bind(games);
+// module.exports.getKeysAsync = promisify(games.keys).bind(games);
 
 const fs = require('fs');
 const emotes = [];
@@ -67,8 +71,8 @@ emotes.forEach(emote => {
 
 module.exports.emoteList = emotes;
 
-const games = {};
-module.exports.games = games;
+// const games = {};
+// module.exports.games = games;
 module.exports.userList = [];
 module.exports.generalChats = {
 	sticky: '',
@@ -210,58 +214,59 @@ const userListEmitter = {
 
 module.exports.userListEmitter = userListEmitter;
 
-module.exports.formattedGameList = () => {
-	return Object.keys(module.exports.games).map(gameName => ({
-		name: games[gameName].general.name,
-		flag: games[gameName].general.flag,
-		userNames: games[gameName].publicPlayersState.map(val => val.userName),
-		customCardback: games[gameName].publicPlayersState.map(val => val.customCardback),
-		customCardbackUid: games[gameName].publicPlayersState.map(val => val.customCardbackUid),
-		gameStatus: games[gameName].gameState.isCompleted
-			? games[gameName].gameState.isCompleted
-			: games[gameName].gameState.isTracksFlipped
-			? 'isStarted'
-			: 'notStarted',
-		seatedCount: games[gameName].publicPlayersState.length,
-		gameCreatorName: games[gameName].general.gameCreatorName,
-		minPlayersCount: games[gameName].general.minPlayersCount,
-		maxPlayersCount: games[gameName].general.maxPlayersCount || games[gameName].general.minPlayersCount,
-		excludedPlayerCount: games[gameName].general.excludedPlayerCount,
-		casualGame: games[gameName].general.casualGame || undefined,
-		eloMinimum: games[gameName].general.eloMinimum || undefined,
-		isVerifiedOnly: games[gameName].general.isVerifiedOnly || undefined,
-		isTourny: games[gameName].general.isTourny || undefined,
-		timedMode: games[gameName].general.timedMode || undefined,
-		flappyMode: games[gameName].general.flappyMode || undefined,
-		flappyOnlyMode: games[gameName].general.flappyOnlyMode || undefined,
-		tournyStatus: (() => {
-			if (games[gameName].general.isTourny) {
-				if (games[gameName].general.tournyInfo.queuedPlayers && games[gameName].general.tournyInfo.queuedPlayers.length) {
-					return {
-						queuedPlayers: games[gameName].general.tournyInfo.queuedPlayers.length
-					};
-				}
-			}
-			return undefined;
-		})(),
-		experiencedMode: games[gameName].general.experiencedMode || undefined,
-		disableChat: games[gameName].general.disableChat || undefined,
-		disableGamechat: games[gameName].general.disableGamechat || undefined,
-		blindMode: games[gameName].general.blindMode || undefined,
-		enactedLiberalPolicyCount: games[gameName].trackState.liberalPolicyCount,
-		enactedFascistPolicyCount: games[gameName].trackState.fascistPolicyCount,
-		electionCount: games[gameName].general.electionCount,
-		rebalance6p: games[gameName].general.rebalance6p || undefined,
-		rebalance7p: games[gameName].general.rebalance7p || undefined,
-		rebalance9p: games[gameName].general.rerebalance9p || undefined,
-		privateOnly: games[gameName].general.privateOnly || undefined,
-		private: games[gameName].general.private || undefined,
-		uid: games[gameName].general.uid,
-		rainbowgame: games[gameName].general.rainbowgame || undefined,
-		isCustomGame: games[gameName].customGameSettings.enabled,
-		isUnlisted: games[gameName].general.unlisted || undefined
-	}));
-};
+module.exports.formattedGameList = () => [];
+// module.exports.formattedGameList = () => {
+// 	return Object.keys(module.exports.games).map(gameName => ({
+// 		name: games[gameName].general.name,
+// 		flag: games[gameName].general.flag,
+// 		userNames: games[gameName].publicPlayersState.map(val => val.userName),
+// 		customCardback: games[gameName].publicPlayersState.map(val => val.customCardback),
+// 		customCardbackUid: games[gameName].publicPlayersState.map(val => val.customCardbackUid),
+// 		gameStatus: games[gameName].gameState.isCompleted
+// 			? games[gameName].gameState.isCompleted
+// 			: games[gameName].gameState.isTracksFlipped
+// 			? 'isStarted'
+// 			: 'notStarted',
+// 		seatedCount: games[gameName].publicPlayersState.length,
+// 		gameCreatorName: games[gameName].general.gameCreatorName,
+// 		minPlayersCount: games[gameName].general.minPlayersCount,
+// 		maxPlayersCount: games[gameName].general.maxPlayersCount || games[gameName].general.minPlayersCount,
+// 		excludedPlayerCount: games[gameName].general.excludedPlayerCount,
+// 		casualGame: games[gameName].general.casualGame || undefined,
+// 		eloMinimum: games[gameName].general.eloMinimum || undefined,
+// 		isVerifiedOnly: games[gameName].general.isVerifiedOnly || undefined,
+// 		isTourny: games[gameName].general.isTourny || undefined,
+// 		timedMode: games[gameName].general.timedMode || undefined,
+// 		flappyMode: games[gameName].general.flappyMode || undefined,
+// 		flappyOnlyMode: games[gameName].general.flappyOnlyMode || undefined,
+// 		tournyStatus: (() => {
+// 			if (games[gameName].general.isTourny) {
+// 				if (games[gameName].general.tournyInfo.queuedPlayers && games[gameName].general.tournyInfo.queuedPlayers.length) {
+// 					return {
+// 						queuedPlayers: games[gameName].general.tournyInfo.queuedPlayers.length
+// 					};
+// 				}
+// 			}
+// 			return undefined;
+// 		})(),
+// 		experiencedMode: games[gameName].general.experiencedMode || undefined,
+// 		disableChat: games[gameName].general.disableChat || undefined,
+// 		disableGamechat: games[gameName].general.disableGamechat || undefined,
+// 		blindMode: games[gameName].general.blindMode || undefined,
+// 		enactedLiberalPolicyCount: games[gameName].trackState.liberalPolicyCount,
+// 		enactedFascistPolicyCount: games[gameName].trackState.fascistPolicyCount,
+// 		electionCount: games[gameName].general.electionCount,
+// 		rebalance6p: games[gameName].general.rebalance6p || undefined,
+// 		rebalance7p: games[gameName].general.rebalance7p || undefined,
+// 		rebalance9p: games[gameName].general.rerebalance9p || undefined,
+// 		privateOnly: games[gameName].general.privateOnly || undefined,
+// 		private: games[gameName].general.private || undefined,
+// 		uid: games[gameName].general.uid,
+// 		rainbowgame: games[gameName].general.rainbowgame || undefined,
+// 		isCustomGame: games[gameName].customGameSettings.enabled,
+// 		isUnlisted: games[gameName].general.unlisted || undefined
+// 	}));
+// };
 
 const gameListEmitter = {
 	state: 0,

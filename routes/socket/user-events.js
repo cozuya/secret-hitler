@@ -1,5 +1,4 @@
 const {
-	games,
 	userList,
 	userListEmitter,
 	generalChats,
@@ -12,7 +11,8 @@ const {
 	newStaff,
 	createNewBypass,
 	testIP,
-	setAsync
+	gamesSetAsync,
+	gamesDeleteAsync
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -243,9 +243,11 @@ const handleSocketDisconnect = socket => {
 	let listUpdate = false;
 	if (passport && Object.keys(passport).length) {
 		const userIndex = userList.findIndex(user => user.userName === passport.user);
-		const gameNamesPlayerSeatedIn = Object.keys(games).filter(gameName =>
-			games[gameName].publicPlayersState.find(player => player.userName === passport.user && !player.leftGame)
-		);
+		// todo fix this
+		// const gameNamesPlayerSeatedIn = Object.keys(games).filter(gameName =>
+		// 	games[gameName].publicPlayersState.find(player => player.userName === passport.user && !player.leftGame)
+		// );
+		const gameNamesPlayerSeatedIn = [];
 
 		if (userIndex !== -1) {
 			userList.splice(userIndex, 1);
@@ -305,18 +307,6 @@ const handleSocketDisconnect = socket => {
 			sendGameList();
 			listUpdate = true;
 		}
-		//  else {
-		// 	const tournysPlayerQueuedIn = games.filter(
-		// 		game =>
-		// 			game.general.isTourny &&
-		// 			game.general.tournyInfo.queuedPlayers &&
-		// 			game.general.tournyInfo.queuedPlayers.map(player => player.userName).includes(passport.user)
-		// 	);
-
-		// 	tournysPlayerQueuedIn.forEach(game => {
-		// 		playerLeavePretourny(game, passport.user);
-		// 	});
-		// }
 	}
 	if (listUpdate) {
 		sendUserList();
@@ -349,10 +339,7 @@ if (process.env.NODE_ENV === 'production') {
  * @param {object} data - from socket emit.
  * @param {object} passport - socket authentication.
  */
-const handleUserLeaveGame = (socket, game, data, passport) => {
-	// Authentication Assured in routes.js
-	// In-game Assured in routes.js
-
+const handleUserLeaveGame = async (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
 
 	if (playerIndex > -1) {
@@ -387,7 +374,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			delete games[game.general.uid];
+			await gamesDeleteAsync(game.general.uid);
 		}
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(
@@ -420,7 +407,8 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				game.summarySaved = true;
 			}
 		}
-		delete games[game.general.uid];
+
+		await gamesDeleteAsync(game.general.uid);
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
@@ -479,16 +467,12 @@ module.exports.handleUpdatedTheme = (socket, passport, data) => {
 };
 
 /**
+ * @param {object} game - game reference.
  * @param {object} socket - user socket reference.
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-const updateSeatedUser = (socket, passport, data) => {
-	// Authentication Assured in routes.js
-	// In-game Assured in routes.js
-	const game = games[data.uid];
-	// prevents race condition between 1) taking a seat and 2) the game starting
-
+const updateSeatedUser = (game, socket, passport, data) => {
 	if (!game || game.gameState.isTracksFlipped) {
 		return; // Game already started
 	}
@@ -554,11 +538,17 @@ const updateSeatedUser = (socket, passport, data) => {
 				publicPlayersState.unshift(player);
 			}
 
-			socket.emit('updateSeatForUser', true);
-			checkStartConditions(game);
-			updateUserStatus(passport, game);
-			io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
-			sendGameList();
+			gamesSetAsync(game.general.uid, JSON.stringify(game))
+				.then(() => {
+					socket.emit('updateSeatForUser', true);
+					checkStartConditions(game);
+					updateUserStatus(passport, game);
+					io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
+					sendGameList();
+				})
+				.catch(err => {
+					console.log(err, 'err in setting game async');
+				});
 		}
 	});
 };
@@ -864,9 +854,8 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 
 		newGame.general.timeCreated = currentTime;
 		updateUserStatus(passport, newGame);
-		games[newGame.general.uid] = newGame;
 
-		setAsync(newGame.general.uid, JSON.stringify(newGame))
+		gamesSetAsync(newGame.general.uid, JSON.stringify(newGame))
 			.then(e => {
 				sendGameList();
 				socket.join(newGame.general.uid);
@@ -1436,7 +1425,7 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 		game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim !== ''
 	) {
 		const claimChat = {
-			chat: chat,
+			chat,
 			isClaim: true,
 			timestamp: new Date(),
 			uid: game.general.uid,
@@ -1445,10 +1434,14 @@ module.exports.handleAddNewClaim = (socket, passport, game, data) => {
 			claimState: data.claimState
 		};
 		if (claimChat && claimChat.chat) {
-			if (game.private.seatedPlayers[playerIndex]) game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+			if (game.private.seatedPlayers[playerIndex]) {
+				game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim = '';
+			}
+
 			game.chats.push(claimChat);
 			socket.emit('removeClaim');
 			sendInProgressGameUpdate(game);
+
 			return true;
 		}
 		return false;
@@ -1798,8 +1791,9 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  * @param {function} addNewClaim - links to handleAddNewClaim
  */
 module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
-	// Authentication Assured in routes.js
-	if (!game || !game.general || !data.chat) return;
+	if (!game || !game.general || !data.chat) {
+		return;
+	}
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
@@ -2409,7 +2403,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 		game.chats.push(data);
 
-		setAsync(game.general.uid, JSON.stringify(game)).then(() => {
+		gamesSetAsync(game.general.uid, JSON.stringify(game)).then(() => {
 			if (game.gameState.isTracksFlipped) {
 				sendPlayerChatUpdate(game, data);
 			} else {
@@ -3976,8 +3970,8 @@ module.exports.checkUserStatus = (socket, callback) => {
 	if (passport && Object.keys(passport).length) {
 		const { user } = passport;
 		const { sockets } = io.sockets;
-
-		const game = games[Object.keys(games).find(gameName => games[gameName].publicPlayersState.find(player => player.userName === user && !player.leftGame))];
+		// const game = games[Object.keys(games).find(gameName => games[gameName].publicPlayersState.find(player => player.userName === user && !player.leftGame))];
+		const game = null;
 
 		const oldSocketID = Object.keys(sockets).find(
 			socketID =>

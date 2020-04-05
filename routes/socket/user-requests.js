@@ -6,7 +6,7 @@ const Game = require('../../models/game');
 const Signups = require('../../models/signups');
 
 const {
-	games,
+	getGamesAsync,
 	userList,
 	generalChats,
 	accountCreationDisabled,
@@ -28,19 +28,14 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
  * @param {object} socket - user socket reference.
  */
 const sendUserList = (module.exports.sendUserList = socket => {
-	// eslint-disable-line one-var
 	if (socket) {
 		socket.emit('fetchUser');
-		// socket.emit('userList', {
-		// 	list: formattedUserList()
-		// });
 	} else {
 		userListEmitter.send = true;
 	}
 });
 
 module.exports.sendSpecificUserList = (socket, staffRole) => {
-	// eslint-disable-line one-var
 	const isAEM = Boolean(staffRole && staffRole !== 'altmod' && staffRole !== 'veteran');
 	if (socket) {
 		socket.emit('userList', {
@@ -51,6 +46,7 @@ module.exports.sendSpecificUserList = (socket, staffRole) => {
 	}
 };
 
+// todo fix this
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 	const maskEmail = email => (email && email.split('@')[1]) || '';
 	ModAction.find(queryObj)
@@ -140,7 +136,7 @@ module.exports.sendAllSignups = socket => {
 			socket.emit('signupsInfo', signups);
 		})
 		.catch(err => {
-			console.log(err, 'err in finding signups');
+			console.log(err, 'err in finding all signups');
 		});
 };
 
@@ -152,7 +148,7 @@ module.exports.sendPrivateSignups = socket => {
 			socket.emit('signupsInfo', signups);
 		})
 		.catch(err => {
-			console.log(err, 'err in finding signups');
+			console.log(err, 'err in finding private signups');
 		});
 };
 
@@ -162,6 +158,8 @@ module.exports.sendPrivateSignups = socket => {
  * @param {number} count - depth of modinfo requested.
  * @param {boolean} isTrial - true if the user is a trial mod.
  */
+
+// todo fix this
 module.exports.sendModInfo = (games, socket, count, isTrial) => {
 	const userNames = userList.map(user => user.userName);
 
@@ -335,8 +333,10 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
  * @param {object} socket - user socket reference.
  * @param {string} uid - uid of game.
  */
-module.exports.sendGameInfo = (socket, uid) => {
-	const game = games[uid];
+module.exports.sendGameInfo = async (socket, uid) => {
+	const g = await getGamesAsync(uid);
+	const game = JSON.parse(g);
+
 	const { passport } = socket.handshake.session;
 
 	if (game) {
