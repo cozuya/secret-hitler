@@ -301,9 +301,6 @@ class Menu extends React.Component {
 					<section className="nav-menu">
 						<div className="center-menu-links">
 							<span>
-								<a style={{ textDecoration: 'underline' }} target="_blank" href="/game">
-									Lobby
-								</a>{' '}
 								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
 									Site Rules
 								</a>{' '}
