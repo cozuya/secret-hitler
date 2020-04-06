@@ -11,7 +11,9 @@ const {
 	createNewBypass,
 	testIP,
 	setGameAsync,
-	deleteGameAsync
+	deleteGameAsync,
+	getGamesAsync,
+	pushGameChatsAsync
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -254,8 +256,8 @@ const handleSocketDisconnect = socket => {
 		// }
 
 		if (gameNamesPlayerSeatedIn.length) {
-			gameNamesPlayerSeatedIn.forEach(gameName => {
-				const game = games[gameName];
+			gameNamesPlayerSeatedIn.forEach(async gameName => {
+				const game = JSON.parse(await getGamesAsync(gameName));
 				const { gameState, publicPlayersState } = game;
 				const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
@@ -263,7 +265,7 @@ const handleSocketDisconnect = socket => {
 					(!gameState.isStarted && publicPlayersState.length === 1) ||
 					(gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
 				) {
-					delete games[gameName];
+					deleteGameAsync(gameName);
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 					publicPlayersState.splice(playerIndex, 1);
 					checkStartConditions(game);
@@ -299,7 +301,7 @@ const handleSocketDisconnect = socket => {
 					}
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-						delete games[game.general.uid];
+						deleteGameAsync(game.general.uid);
 					}
 				}
 			});
@@ -537,7 +539,7 @@ const updateSeatedUser = (game, socket, passport, data) => {
 				publicPlayersState.unshift(player);
 			}
 
-			gamesSetAsync(game.general.uid, JSON.stringify(game))
+			setGameAsync(game.general.uid, JSON.stringify(game))
 				.then(() => {
 					socket.emit('updateSeatForUser', true);
 					checkStartConditions(game);
@@ -883,7 +885,7 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 	newGame.general.timeCreated = currentTime;
 	updateUserStatus(passport, newGame);
 
-	gamesSetAsync(newGame.general.uid, JSON.stringify(newGame))
+	setGameAsync(newGame.general.uid, JSON.stringify(newGame))
 		.then(e => {
 			sendGameList();
 			socket.join(newGame.general.uid);
@@ -1688,12 +1690,12 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			});
 
 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-				delete games[game.general.uid];
+				deleteGameAsync(game.general.uid);
 			} else {
 				sendInProgressGameUpdate(game);
 			}
 
-			games[newGame.general.uid] = newGame;
+			setGameAsync(newGame.general.uid, JSON.stringify(newGame));
 			sendGameList();
 
 			let creatorRemade = false;
@@ -2431,7 +2433,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 		game.chats.push(data);
 
-		gamesSetAsync(game.general.uid, JSON.stringify(game)).then(() => {
+		setGameAsync(game.general.uid, JSON.stringify(game)).then(() => {
 			if (game.gameState.isTracksFlipped) {
 				sendPlayerChatUpdate(game, data);
 			} else {
@@ -2816,7 +2818,7 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
  * @param {array} modUserNames - list of usernames that are mods
  * @param {array} superModUserNames - list of usernames that are editors and admins
  */
-module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
+module.exports.handleModerationAction = async (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
 	// Authentication Assured in routes.js
 
 	if (data.userName) {
@@ -3036,7 +3038,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					});
 					break;
 				case 'modEndGame':
-					const gameToEnd = games[data.uid];
+					const gameToEnd = JSON.parse(await getGamesAsync(data.uid));
 
 					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
 						for (player of gameToEnd.private.seatedPlayers) {
@@ -3057,7 +3059,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						completeGame(gameToEnd, data.winningTeamName);
 						setTimeout(() => {
 							gameToEnd.publicPlayersState.forEach(player => (player.leftGame = true));
-							delete games[gameToEnd.general.uid];
+							deleteGameAsync(gameToEnd.general.uid);
 							sendGameList();
 						}, 5000);
 					}
@@ -3211,8 +3213,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						console.log(e, 'err in broadcast');
 					}
 
-					Object.keys(games).forEach(gameName => {
-						games[gameName].chats.push({
+					Object.keys(games).forEach(async gameName => {
+						pushGameChatsAsync(gameName, {
 							userName: `[BROADCAST] ${data.modName}`,
 							chat: data.comment,
 							isBroadcast: true,
@@ -3454,8 +3456,8 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 									user.customCardback = '';
 									userListEmitter.send = true;
 								}
-								Object.keys(games).forEach(uid => {
-									const game = games[uid];
+								Object.keys(games).forEach(async uid => {
+									const game = JSON.parse(await getGamesAsync(uid));
 									const foundUser = game.publicPlayersState.find(user => user.userName === data.userName);
 									if (foundUser) {
 										foundUser.customCardback = '';
@@ -3703,22 +3705,28 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				default:
 					if (data.userName.substr(0, 7) === 'DELGAME') {
-						const game = games[data.userName.slice(7)];
+						const game = JSON.parse(await getGamesAsync(data.userName.slice(7)));
 
 						if (game) {
-							delete games[game.general.uid];
+							deleteGameAsync(game.general.uid);
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}
 					} else if (data.userName.substr(0, 13) === 'RESETGAMENAME') {
-						const game = games[data.userName.slice(13)];
+						const game = JSON.parse(await getGamesAsync(data.userName.slice(13)));
 						if (game) {
 							if (modaction.modNotes.length > 0) {
 								modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
 							} else {
 								modaction.modNotes = `Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
 							}
-							games[game.general.uid].general.name = 'New Game';
+							setGameAsync(
+								game.general.uid,
+								JSON.stringify({
+									...game,
+									general: { ...game.general, name: 'New Game' }
+								})
+							);
 							sendGameList();
 						}
 					} else if (isSuperMod && data.action.type) {
@@ -3852,7 +3860,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handlePlayerReport = (passport, data) => {
+module.exports.handlePlayerReport = async (passport, data) => {
 	const user = userList.find(u => u.userName === passport.user);
 
 	if (data.userName !== 'from replay' && (!user || user.wins + user.losses < 2) && process.env.NODE_ENV === 'production') {
@@ -3899,8 +3907,9 @@ module.exports.handlePlayerReport = (passport, data) => {
 	}
 
 	const httpEscapedComment = data.comment.replace(/( |^)(https?:\/\/\S+)( |$)/gm, '$1<$2>$3').replace(/@/g, '`@`');
-	const blindModeAnonymizedPlayer = games[data.uid].general.blindMode
-		? games[data.uid].gameState.isStarted
+	const game = JSON.parse(await getGamesAsync(data.uid));
+	const blindModeAnonymizedPlayer = game.general.blindMode
+		? game.gameState.isStarted
 			? `${data.reportedPlayer.split(' ')[0]} Anonymous`
 			: 'Anonymous'
 		: data.reportedPlayer;
@@ -3917,8 +3926,6 @@ module.exports.handlePlayerReport = (passport, data) => {
 			'Content-Length': Buffer.byteLength(body)
 		}
 	};
-
-	const game = games[data.uid];
 
 	if (game) {
 		if (!game.reportCounts) game.reportCounts = {};

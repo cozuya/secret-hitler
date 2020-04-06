@@ -144,7 +144,9 @@ const ensureAuthenticated = socket => {
 	}
 };
 
-const findGame = (data = {}) => data.uid && getGamesAsync(data.uid);
+const findGame = async (data = {}) => {
+	data.uid && JSON.parse(await getGamesAsync(data.uid));
+};
 
 const ensureInGame = (passport, game) => {
 	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
@@ -327,9 +329,8 @@ module.exports.socketRoutes = () => {
 
 			socket.on('flappyEvent', async data => {
 				if (isRestricted) return;
-				const g = await findGame(data);
+				const game = await findGame(data);
 
-				const game = JSON.parse(g);
 				if (authenticated && ensureInGame(passport, game)) {
 					handleFlappyEvent(data, game);
 				}
@@ -399,16 +400,14 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('addNewClaim', async data => {
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					handleAddNewClaim(socket, passport, game, data);
 				}
 			});
 			socket.on('updateGameWhitelist', async data => {
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					handleUpdateWhitelist(passport, game, data);
@@ -418,8 +417,7 @@ module.exports.socketRoutes = () => {
 				handleUpdatedTruncateGame(data);
 			});
 			socket.on('addNewGameChat', async data => {
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (isRestricted) return;
 
@@ -453,8 +451,7 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('leaveGame', async data => {
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (game && io.sockets.adapter.rooms[game.general.uid] && socket) {
 					socket.leave(game.general.uid);
@@ -467,8 +464,7 @@ module.exports.socketRoutes = () => {
 			socket.on('updateSeatedUser', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated) {
 					updateSeatedUser(game, socket, passport, data);
@@ -486,8 +482,7 @@ module.exports.socketRoutes = () => {
 				}
 			});
 			socket.on('updateRemake', async data => {
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					handleUpdatedRemakeGame(passport, game, data, socket);
@@ -522,22 +517,21 @@ module.exports.socketRoutes = () => {
 			socket.on('selectedChancellorVoteOnVeto', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellorVoteOnVeto(passport, game, data);
 				}
 			});
-			socket.on('getModInfo', count => {
-				if (authenticated && (isAEM || isTrial)) {
-					sendModInfo(games, socket, count, isTrial && !isAEM);
-				}
-			});
+			// todo
+			// socket.on('getModInfo', count => {
+			// 	if (authenticated && (isAEM || isTrial)) {
+			// 		sendModInfo(games, socket, count, isTrial && !isAEM);
+			// 	}
+			// });
 			socket.on('subscribeModChat', async uid => {
 				if (authenticated && isAEM) {
-					const g = await findGame(data);
-					const game = JSON.parse(g);
+					const game = await findGame(data);
 
 					if (game && game.private && game.private.seatedPlayers) {
 						const players = game.private.seatedPlayers.map(player => player.userName);
@@ -560,8 +554,7 @@ module.exports.socketRoutes = () => {
 			});
 			socket.on('modPeekVotes', async data => {
 				if (authenticated && isAEM) {
-					const g = await findGame(data);
-					const game = JSON.parse(g);
+					const game = await findGame(data);
 
 					if (game && game.private && game.private.seatedPlayers) {
 						handleModPeekVotes(socket, passport, game, data.modName);
@@ -572,8 +565,7 @@ module.exports.socketRoutes = () => {
 			});
 			socket.on('modFreezeGame', async data => {
 				if (authenticated && isAEM) {
-					const g = await findGame(data);
-					const game = JSON.parse(g);
+					const game = await findGame(data);
 
 					if (game && game.private && game.private.seatedPlayers) {
 						handleGameFreeze(socket, passport, game, data.modName);
@@ -603,8 +595,7 @@ module.exports.socketRoutes = () => {
 			socket.on('presidentSelectedChancellor', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellor(socket, passport, game, data);
@@ -613,8 +604,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectedVoting', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectVoting(passport, game, data, socket);
@@ -623,8 +613,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectedPresidentPolicy', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPresidentPolicy(passport, game, data, false, socket);
@@ -633,8 +622,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectedChancellorPolicy', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectChancellorPolicy(passport, game, data, false, socket);
@@ -643,8 +631,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectedPresidentVoteOnVeto', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPresidentVoteOnVeto(passport, game, data, socket);
@@ -654,8 +641,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectPartyMembershipInvestigate', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPartyMembershipInvestigate(passport, game, data, socket);
@@ -664,8 +650,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectPartyMembershipInvestigateReverse', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPartyMembershipInvestigateReverse(passport, game, data, socket);
@@ -674,8 +659,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectedPolicies', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					if (game.private.lock.policyPeekAndDrop) selectOnePolicy(passport, game);
@@ -685,8 +669,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectedPresidentVoteOnBurn', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectBurnCard(passport, game, data, socket);
@@ -695,8 +678,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectedPlayerToExecute', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectPlayerToExecute(passport, game, data, socket);
@@ -705,8 +687,7 @@ module.exports.socketRoutes = () => {
 			socket.on('selectedSpecialElection', async data => {
 				if (isRestricted) return;
 
-				const g = await findGame(data);
-				const game = JSON.parse(g);
+				const game = await findGame(data);
 
 				if (authenticated && ensureInGame(passport, game)) {
 					selectSpecialElection(passport, game, data, socket);

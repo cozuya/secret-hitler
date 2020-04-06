@@ -19,21 +19,35 @@ const gameChats = redis.createClient({
 	db: 2
 });
 
+module.exports.getGameChatsAsync = promisify(gameChats.get).bind(gameChats);
+module.exports.setGameChatsAsync = promisify(gameChats.set).bind(gameChats); // shouldn't really ever be used
+module.exports.deleteGameChatsAsync = promisify(gameChats.del).bind(gameChats);
+module.exports.pushGameChatsAsync = promisify(gameChats.rpush).bind(gameChats);
+
 const userList = redis.createClient({
 	db: 3
 });
 
-// module.exports.userList = [];
+module.exports.getUserlistAsync = promisify(userList.get).bind(userList);
+module.exports.setUserlistAsync = promisify(userList.set).bind(userList); // shouldn't really ever be used
+module.exports.pushUserlistAsync = promisify(userList.rpush).bind(userList);
 
-module.exports.userListGetAsync = promisify(userList.get).bind(userList);
+// module.exports.userList = [];
 
 const generalChats = redis.createClient({
 	db: 4
 });
 
+module.exports.getGeneralAsync = promisify(generalChats.get).bind(generalChats);
+module.exports.setGeneralAsync = promisify(generalChats.set).bind(generalChats); // shouldn't really ever be used
+module.exports.pushGeneralAsync = promisify(generalChats.rpush).bind(generalChats);
+
 const serverSettings = redis.createClient({
 	db: 5
 });
+
+module.exports.getSettingAsync = promisify(serverSettings.get).bind(serverSettings);
+module.exports.setSettingAsync = promisify(serverSettings.set).bind(serverSettings);
 
 // module.exports.accountCreationDisabled = { status: false };
 // module.exports.bypassVPNCheck = { status: false };

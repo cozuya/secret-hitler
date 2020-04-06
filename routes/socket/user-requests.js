@@ -6,7 +6,6 @@ const Game = require('../../models/game');
 const Signups = require('../../models/signups');
 
 const {
-	gamesGetAsync,
 	generalChats,
 	accountCreationDisabled,
 	ipbansNotEnforced,
@@ -281,8 +280,7 @@ module.exports.sendGameList = async (socket, isAEM) => {
 	const formattedGameList = [];
 
 	for (let index = 0; index < gameUids.length; index++) {
-		const g = await getGamesAsync(gameUids[index]);
-		const game = JSON.parse(g);
+		const game = JSON.parse(await getGamesAsync(gameUids[index]));
 
 		formattedGameList.push({
 			name: game.general.name,
@@ -386,8 +384,7 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
  * @param {string} uid - uid of game.
  */
 module.exports.sendGameInfo = async (socket, uid) => {
-	const g = await gamesGetAsync(uid);
-	const game = JSON.parse(g);
+	const game = JSON.parse(await getGamesAsync(uid));
 
 	const { passport } = socket.handshake.session;
 

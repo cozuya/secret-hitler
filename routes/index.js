@@ -323,7 +323,7 @@ module.exports = () => {
 		const { userList } = require('./socket/models');
 
 		res.json({
-			count: userList.length
+			count: -1 // userList.length
 		});
 	});
 
