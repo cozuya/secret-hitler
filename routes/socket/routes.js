@@ -324,6 +324,7 @@ module.exports.socketRoutes = () => {
 			});
 
 			socket.on('sendUser', user => {
+				console.log('su');
 				// sendSpecificUserList(socket, user.staffRole);
 			});
 
@@ -512,6 +513,7 @@ module.exports.socketRoutes = () => {
 				sendGeneralChats(socket);
 			});
 			socket.on('getUserGameSettings', () => {
+				console.log('gug');
 				sendUserGameSettings(socket);
 			});
 			socket.on('selectedChancellorVoteOnVeto', async data => {

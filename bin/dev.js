@@ -24,8 +24,11 @@ global.app = express();
 
 const debug = require('debug')('app:server');
 const server = http.createServer(app);
+const io = require('socket.io')(server);
+const redisAdapter = require('socket.io-redis');
+io.adapter(redisAdapter({ host: 'localhost', port: 6379 }));
 
-global.io = require('socket.io')(server);
+global.io = io;
 global.notify = require('node-notifier');
 
 app.set('port', port);
