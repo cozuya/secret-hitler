@@ -85,12 +85,12 @@ export default class Game extends React.Component {
 		}
 
 		// All players have left the game, so we will return the observer to the main screen.
-		if (
-			(!gameInfo.publicPlayersState.length && !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0)) ||
-			(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0 && !gameInfo.general.tournyInfo.queuedPlayers.length)
-		) {
-			window.location.hash = '#/';
-		}
+		// if (
+		// 	(!gameInfo.publicPlayersState.length && !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0)) ||
+		// 	(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0 && !gameInfo.general.tournyInfo.queuedPlayers.length)
+		// ) {
+		// 	window.location.hash = '#/';
+		// }
 	}
 
 	componentDidMount() {

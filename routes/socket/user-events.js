@@ -261,7 +261,7 @@ const handleSocketDisconnect = socket => {
 					(!gameState.isStarted && publicPlayersState.length === 1) ||
 					(gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
 				) {
-					delete games[gameName];
+					// delete games[gameName];
 				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 					publicPlayersState.splice(playerIndex, 1);
 					checkStartConditions(game);
@@ -297,7 +297,7 @@ const handleSocketDisconnect = socket => {
 					}
 					sendInProgressGameUpdate(game);
 					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-						delete games[game.general.uid];
+						// delete games[game.general.uid];
 					}
 				}
 			});
@@ -386,7 +386,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			delete games[game.general.uid];
+			// delete games[game.general.uid];
 		}
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(
@@ -419,7 +419,7 @@ const handleUserLeaveGame = (socket, game, data, passport) => {
 				game.summarySaved = true;
 			}
 		}
-		delete games[game.general.uid];
+		// delete games[game.general.uid];
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
@@ -1660,7 +1660,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 			});
 
 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-				delete games[game.general.uid];
+				// delete games[game.general.uid];
 			} else {
 				sendInProgressGameUpdate(game);
 			}
@@ -3024,7 +3024,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						completeGame(gameToEnd, data.winningTeamName);
 						setTimeout(() => {
 							gameToEnd.publicPlayersState.forEach(player => (player.leftGame = true));
-							delete games[gameToEnd.general.uid];
+							// delete games[gameToEnd.general.uid];
 							sendGameList();
 						}, 5000);
 					}
