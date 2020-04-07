@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
+import * as Swal from 'sweetalert2';
 
 $.fn.dropdown = Dropdown;
 
@@ -442,7 +443,7 @@ class Players extends React.Component {
 			if (user && user.staffIncognito) {
 				$(this.incognitoModal).modal('show');
 			} else if (userInfo.gameSettings.unbanTime && new Date(userInfo.gameSettings.unbanTime) > new Date()) {
-				window.alert('Sorry, this service is currently unavailable.');
+				Swal.fire('Sorry, this service is currently unavailable.');
 			} else if (!gameInfo.general.private && userInfo.gameSettings && userInfo.gameSettings.isPrivate) {
 				$(this.privatePlayerInPublicGameModal).modal('show');
 			} else if (

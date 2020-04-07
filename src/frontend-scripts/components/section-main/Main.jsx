@@ -1,4 +1,5 @@
 import React from 'react'; // eslint-disable-line
+import 'sweetalert2/src/sweetalert2.scss';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Modal, Header, Button, Icon } from 'semantic-ui-react';

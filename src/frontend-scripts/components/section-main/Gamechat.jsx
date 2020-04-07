@@ -8,6 +8,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { loadReplay, toggleNotes, updateUser } from '../../actions/actions';
 import { PLAYERCOLORS, getBadWord } from '../../constants';
 import { renderEmotesButton, processEmotes } from '../../emotes';
+import * as Swal from 'sweetalert2';
 
 const mapDispatchToProps = dispatch => ({
 	loadReplay: summary => dispatch(loadReplay(summary)),
@@ -229,10 +230,16 @@ class Gamechat extends React.Component {
 	};
 
 	handleSubscribeModChat = () => {
-		if (confirm('Are you sure you want to subscribe to mod-only chat to see private information?')) {
-			const { gameInfo } = this.props;
-			this.props.socket.emit('subscribeModChat', gameInfo.general.uid);
-		}
+		Swal.fire({
+			title: 'Are you sure you want to subscribe to mod-only chat to see private information?',
+			showCancelButton: true,
+			icon: 'warning'
+		}).then(result => {
+			if (result.value) {
+				const { gameInfo } = this.props;
+				this.props.socket.emit('subscribeModChat', gameInfo.general.uid);
+			}
+		});
 	};
 
 	scrollChats() {
@@ -902,11 +909,17 @@ class Gamechat extends React.Component {
 								<div
 									className="ui button primary"
 									onClick={() => {
-										if (confirm('Are you sure you want to delete this game?')) {
-											let reason = prompt(`Enter a reason for deleting this game, leave blank if dead`);
-											reason = reason || 'Dead';
-											modDeleteGame(reason);
-										}
+										Swal.fire({
+											title: 'Are you sure you want to delete this game?',
+											showCancelButton: true,
+											icon: 'warning'
+										}).then(result => {
+											if (result.value) {
+												let reason = prompt(`Enter a reason for deleting this game, leave blank if dead`);
+												reason = reason || 'Dead';
+												modDeleteGame(reason);
+											}
+										});
 									}}
 									style={{ width: '60px' }}
 								>
