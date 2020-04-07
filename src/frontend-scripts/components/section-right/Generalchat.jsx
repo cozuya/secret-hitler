@@ -208,8 +208,6 @@ export default class Generalchat extends React.Component {
 				.filter(winTime => time - winTime < 10800000)
 				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 
-		console.log(generalChats, 'gc');
-
 		return generalChats.list
 			? generalChats.list.map((chat, i) => {
 					const { gameSettings } = userInfo;
