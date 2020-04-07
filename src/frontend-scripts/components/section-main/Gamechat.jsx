@@ -814,16 +814,23 @@ class Gamechat extends React.Component {
 		};
 
 		const sendModEndGame = winningTeamName => {
-			if (confirm('Are you sure you want to end this game with the ' + winningTeamName + ' team winning?')) {
-				socket.emit('updateModAction', {
-					modName: userInfo.userName,
-					userName: userInfo.userName,
-					comment: `End game ${gameInfo.general.uid} with team ${winningTeamName} winning`,
-					uid: gameInfo.general.uid,
-					winningTeamName,
-					action: 'modEndGame'
-				});
-			}
+			Swal.fire({
+				title: 'Are you sure you want to end this game with the ' + winningTeamName + ' team winning?',
+				showCancelButton: true,
+				icon: 'warning'
+			}).then(result => {
+				if (result.value) {
+					socket.emit('updateModAction', {
+						modName: userInfo.userName,
+						userName: userInfo.userName,
+						comment: `End game ${gameInfo.general.uid} with team ${winningTeamName} winning`,
+						uid: gameInfo.general.uid,
+						winningTeamName,
+						action: 'modEndGame'
+					});
+				}
+			});
+
 			$(this.modendgameModal).modal('hide');
 		};
 
@@ -862,12 +869,18 @@ class Gamechat extends React.Component {
 									className="ui button primary"
 									onClick={() => {
 										if (!this.state.votesPeeked) {
-											if (confirm('Are you sure you want to peek votes for this game?')) {
-												modGetCurrentVotes();
-												this.setState({
-													votesPeeked: true
-												});
-											}
+											Swal.fire({
+												title: 'Are you sure you want to peek votes for this game?',
+												showCancelButton: true,
+												icon: 'warning'
+											}).then(result => {
+												if (result.value) {
+													modGetCurrentVotes();
+													this.setState({
+														votesPeeked: true
+													});
+												}
+											});
 										} else {
 											modGetCurrentVotes();
 										}
@@ -886,12 +899,18 @@ class Gamechat extends React.Component {
 									className="ui button primary"
 									onClick={() => {
 										if (!this.state.gameFrozen) {
-											if (confirm('Are you sure you want to freeze this game?')) {
-												modFreezeGame();
-												this.setState({
-													gameFrozen: true
-												});
-											}
+											Swal.fire({
+												title: 'Are you sure you want to freeze this game?',
+												showCancelButton: true,
+												icon: 'warning'
+											}).then(result => {
+												if (result.value) {
+													modFreezeGame();
+													this.setState({
+														gameFrozen: true
+													});
+												}
+											});
 										} else {
 											modFreezeGame();
 										}
@@ -915,9 +934,14 @@ class Gamechat extends React.Component {
 											icon: 'warning'
 										}).then(result => {
 											if (result.value) {
-												let reason = prompt(`Enter a reason for deleting this game, leave blank if dead`);
-												reason = reason || 'Dead';
-												modDeleteGame(reason);
+												Swal.fire({
+													title: 'Enter a reason for deleting this game, leave blank if dead',
+													input: 'text',
+													showCancelButton: true
+												}).then(result => {
+													const reason = result.value || 'Dead';
+													modDeleteGame(reason);
+												});
 											}
 										});
 									}}
