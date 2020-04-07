@@ -2731,8 +2731,10 @@ module.exports.handleGameFreeze = (socket, passport, game, modUserName) => {
  * @param {string} modUserName - requesting Moderator's username
  */
 module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
-	const gameToPeek = game;
-	let output = '';
+	// const gameToPeek = game;
+	// let output = '';
+	socket.emit('sendAlert', 'No, no, no. Not in the tourney. Use modchat.');
+	return;
 
 	if (gameToPeek && gameToPeek.private && gameToPeek.private.seatedPlayers) {
 		for (player of gameToPeek.private.seatedPlayers) {
