@@ -49,10 +49,11 @@ const {
 	selectOnePolicy,
 	selectBurnCard
 } = require('./game/policy-powers');
-const { emoteList, testIP, getGamesAsync, scanGamesAsync } = require('./models');
+const { emoteList, testIP, pushUserlistAsync, getRangeUserlistAsync, getGamesAsync, scanGamesAsync } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
+const { formatUserforUserlist } = require('./util');
 
 let modUserNames = [];
 let editorUserNames = [];
@@ -137,9 +138,7 @@ let adminUserNames = [];
 const ensureAuthenticated = socket =>
 	Boolean(socket.handshake && socket.handshake.session && socket.handshake.session.passport && socket.handshake.session.passport.user);
 
-const findGame = async (data = {}) => {
-	data.uid && JSON.parse(await getGamesAsync(data.uid));
-};
+const findGame = async (data = {}) => data.uid && JSON.parse(await getGamesAsync(data.uid));
 
 const ensureInGame = (passport, game) => {
 	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
@@ -189,6 +188,13 @@ module.exports.socketRoutes = () => {
 					}
 				}
 
+				if (!game) {
+					socket.join('sidebarInfoSubscription');
+					socket.join('gameListInfoSubscription');
+					sendGeneralChats(socket);
+					sendGameList(socket, isAEM);
+				}
+
 				const oldSocketID = Object.values(sockets).find(
 					sock =>
 						sock.handshake.session.passport &&
@@ -207,6 +213,7 @@ module.exports.socketRoutes = () => {
 
 				if (game && game.gameState.isStarted && !game.gameState.isCompleted && reconnectingUser) {
 					reconnectingUser.connected = true;
+					passport.gameUidUserIsSeatedIn = game.general.uid;
 					socket.join(game.general.uid);
 					socket.emit('updateSeatForUser');
 
@@ -214,7 +221,7 @@ module.exports.socketRoutes = () => {
 				}
 
 				// Double-check the user isn't sneaking past IP bans.
-				const logOutUser = username => {
+				const logOutUser = () => {
 					socket.emit('manualDisconnection');
 					socket.disconnect(true);
 
@@ -231,6 +238,7 @@ module.exports.socketRoutes = () => {
 									logOutUser(user);
 								} else {
 									socket.emit('gameSettings', account.gameSettings);
+									pushUserlistAsync('userList', JSON.stringify(formatUserforUserlist(passport, account)));
 									socket.emit('version', { current: version });
 
 									// defensively check if game exists
@@ -256,9 +264,15 @@ module.exports.socketRoutes = () => {
 									);
 									isTrial = Boolean(account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod');
 
-									socket.join('sidebarInfo');
-									sendGeneralChats(socket);
-									// sendGameList(socket, isAEM);
+									if (account.gameSettings.enableRightSidebarInGame) {
+										socket.join('sidebarInfoSubscription');
+										sendGeneralChats(socket);
+									}
+
+									if (!game) {
+										socket.join('gameListInfoSubscription');
+										sendGameList(socket, isAEM);
+									}
 
 									const parseVer = ver => {
 										const vals = ver.split('.');
@@ -325,8 +339,8 @@ module.exports.socketRoutes = () => {
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 		socket.conn.on('upgrade', () => {
-			// todo
-			// sendUserList(socket);
+			sendGameList;
+			sendUserList(socket);
 			socket.emit('emoteList', emoteList);
 		});
 

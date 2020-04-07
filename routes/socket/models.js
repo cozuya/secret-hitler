@@ -28,9 +28,18 @@ const userList = redis.createClient({
 	db: 3
 });
 
-module.exports.getUserlistAsync = promisify(userList.get).bind(userList);
+module.exports.getRangeUserlistAsync = promisify(userList.lrange).bind(userList);
 module.exports.setUserlistAsync = promisify(userList.set).bind(userList); // shouldn't really ever be used
 module.exports.pushUserlistAsync = promisify(userList.rpush).bind(userList);
+module.exports.spliceUserFromUserList = async userName => {
+	const list = await module.exports.getRangeUserlistAsync('userList', 0, -1);
+	const userL = list.map(JSON.parse);
+	const userInList = userL.find(user => user.userName === userName);
+
+	if (userInList) {
+		userList.lrem('userList', 0, JSON.stringify(userInList));
+	}
+};
 
 // module.exports.userList = [];
 
@@ -48,8 +57,8 @@ const serverSettings = redis.createClient({
 	db: 5
 });
 
-module.exports.getSettingAsync = promisify(serverSettings.get).bind(serverSettings);
-module.exports.setSettingAsync = promisify(serverSettings.set).bind(serverSettings);
+module.exports.getServerSettingAsync = promisify(serverSettings.get).bind(serverSettings);
+module.exports.setServerSettingAsync = promisify(serverSettings.set).bind(serverSettings);
 
 // module.exports.accountCreationDisabled = { status: false };
 // module.exports.bypassVPNCheck = { status: false };

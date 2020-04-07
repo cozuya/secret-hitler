@@ -16,7 +16,10 @@ const {
 	scanGamesAsync,
 	getGeneralChatsAsync,
 	setGeneralChatsAsync,
-	pushGeneralChatsAsync
+	pushGeneralChatsAsync,
+	getServerSettingAsync,
+	getRangeUserlistAsync,
+	spliceUserFromUserList
 } = require('./models');
 const {
 	sendGeneralChats,
@@ -250,80 +253,74 @@ const playerLeavePretourny = (game, playerName) => {
 /**
  * @param {object} socket - user socket reference.
  */
-const handleSocketDisconnect = socket => {
+const handleSocketDisconnect = async socket => {
 	const { passport } = socket.handshake.session;
 
-	let listUpdate = false;
 	if (passport && Object.keys(passport).length) {
-		// const userIndex = userList.findIndex(user => user.userName === passport.user);
-		// todo fix this
-		// const gameNamesPlayerSeatedIn = Object.keys(games).filter(gameName =>
-		// 	games[gameName].publicPlayersState.find(player => player.userName === passport.user && !player.leftGame)
-		// );
-		const gameNamesPlayerSeatedIn = [];
+		spliceUserFromUserList(passport.user);
 
-		// if (userIndex !== -1) {
-		// 	userList.splice(userIndex, 1);
-		// 	listUpdate = true;
-		// }
+		if (passport.gameUidUserIsSeatedIn) {
+			const game = JSON.parse(await getGamesAsync(passport.gameUidUserIsSeatedIn));
+			const { gameState, publicPlayersState } = game;
+			const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
 
-		if (gameNamesPlayerSeatedIn.length) {
-			gameNamesPlayerSeatedIn.forEach(async gameName => {
-				const game = JSON.parse(await getGamesAsync(gameName));
-				const { gameState, publicPlayersState } = game;
-				const playerIndex = publicPlayersState.findIndex(player => player.userName === passport.user);
+			if (
+				(!gameState.isStarted && publicPlayersState.length === 1) ||
+				(gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
+			) {
+				deleteGameAsync(gameName);
+			} else if (!gameState.isTracksFlipped && playerIndex > -1) {
+				publicPlayersState.splice(playerIndex, 1);
+				checkStartConditions(game);
+				io.to(game.uid).emit('gameUpdate', game);
+			} else if (gameState.isTracksFlipped) {
+				publicPlayersState[playerIndex].connected = false;
+				publicPlayersState[playerIndex].leftGame = true;
+				const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
 
-				if (
-					(!gameState.isStarted && publicPlayersState.length === 1) ||
-					(gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
-				) {
-					deleteGameAsync(gameName);
-				} else if (!gameState.isTracksFlipped && playerIndex > -1) {
-					publicPlayersState.splice(playerIndex, 1);
-					checkStartConditions(game);
-					io.sockets.in(game.uid).emit('gameUpdate', game);
-				} else if (gameState.isTracksFlipped) {
-					publicPlayersState[playerIndex].connected = false;
-					publicPlayersState[playerIndex].leftGame = true;
-					const playerRemakeData = game.remakeData && game.remakeData.find(player => player.userName === passport.user);
-					if (playerRemakeData && playerRemakeData.isRemaking) {
-						const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
-						const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
+				if (playerRemakeData && playerRemakeData.isRemaking) {
+					const minimumRemakeVoteCount = game.general.playerCount - game.customGameSettings.fascistCount;
+					const remakePlayerCount = game.remakeData.filter(player => player.isRemaking).length;
 
-						if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
-							game.general.isRemaking = false;
-							game.general.status = 'Game remaking has been cancelled.';
-							clearInterval(game.private.remakeTimer);
-						}
-						const chat = {
-							timestamp: new Date(),
-							gameChat: true,
-							chat: [
-								{
-									text: 'A player'
-								}
-							]
-						};
-						chat.chat.push({
-							text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
-								1}/${minimumRemakeVoteCount})`
-						});
-						game.chats.push(chat);
-						game.remakeData.find(player => player.userName === passport.user).isRemaking = false;
+					if (!game.general.isRemade && game.general.isRemaking && remakePlayerCount <= minimumRemakeVoteCount) {
+						game.general.isRemaking = false;
+						game.general.status = 'Game remaking has been cancelled.';
+						clearInterval(game.private.remakeTimer);
 					}
-					sendInProgressGameUpdate(game);
-					if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-						deleteGameAsync(game.general.uid);
-					}
+
+					const chat = {
+						timestamp: new Date(),
+						gameChat: true,
+						chat: [
+							{
+								text: 'A player'
+							}
+						]
+					};
+
+					chat.chat.push({
+						text: ` has left and rescinded their vote to ${game.general.isTourny ? 'cancel this tournament.' : 'remake this game.'} (${remakePlayerCount -
+							1}/${minimumRemakeVoteCount})`
+					});
+
+					// todo
+					game.chats.push(chat);
+					game.remakeData.find(player => player.userName === passport.user).isRemaking = false;
 				}
-			});
+
+				sendInProgressGameUpdate(game);
+				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
+					deleteGameAsync(game.general.uid);
+
+					// todo
+					// deleteGameChatsAsync(game.general.uid);
+				}
+			}
 			sendGameList();
-			listUpdate = true;
+			passport.gameUidUserIsSeatedIn = null;
 		}
 	}
-	if (listUpdate) {
-		// sendUserList();
-	}
+	sendUserList();
 };
 
 const crashReport = JSON.stringify({
@@ -557,7 +554,6 @@ const updateSeatedUser = (game, socket, passport, data) => {
 					checkStartConditions(game);
 					updateUserStatus(passport, game);
 					io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
-					sendGameList();
 				})
 				.catch(err => {
 					console.log(err, 'err in setting game async');
@@ -586,7 +582,7 @@ module.exports.handleUpdatedBio = (socket, passport, data) => {
  * @param {object} passport - socket authentication.
  * @param {object} data - from socket emit.
  */
-module.exports.handleAddNewGame = (socket, passport, data) => {
+module.exports.handleAddNewGame = async (socket, passport, data) => {
 	if (
 		// gameCreationDisabled.status ||
 		// (!data.privatePassword && limitNewPlayers.status) ||

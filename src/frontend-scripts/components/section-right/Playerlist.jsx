@@ -373,7 +373,7 @@ class Playerlist extends React.Component {
 								Boolean(!user.staffDisableVisibleElo) &&
 								(() => {
 									return elo ? (
-										<span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
+										<span className="userlist-stats">{user[elo] ? Math.round(user[elo]) : 1600}</span>
 									) : (
 										<span>
 											(<span className="userlist-stats">{user[w] ? user[w] : '0'}</span> / <span className="userlist-stats">{user[l] ? user[l] : '0'}</span>){' '}
@@ -593,7 +593,7 @@ class Playerlist extends React.Component {
 							(() => {
 								return elo ? (
 									<div className="userlist-stats-container">
-										<span className="userlist-stats">{user[elo] ? user[elo] : 1600}</span>
+										<span className="userlist-stats">{user[elo] ? Math.round(user[elo]) : 1600}</span>
 									</div>
 								) : (
 									<div className="userlist-stats-container">

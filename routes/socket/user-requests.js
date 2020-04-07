@@ -19,25 +19,31 @@ const {
 	getGamesAsync,
 	getGeneralChatsAsync,
 	getRangeGeneralChatsAsync,
-	trimGeneralChatsAsync
+	trimGeneralChatsAsync,
+	getRangeUserlistAsync
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
 const { obfIP } = require('./ip-obf');
+const _ = require('lodash');
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 
 /**
  * @param {object} socket - user socket reference.
  */
-// todo
-// const sendUserList = (module.exports.sendUserList = socket => {
-// 	if (socket) {
-// 		socket.emit('fetchUser');
-// 	} else {
-// 		userListEmitter.send = true;
-// 	}
-// });
+const sendUserList = async socket => {
+	const list = await getRangeUserlistAsync('userList', 0, -1);
+	const userList = list.map(JSON.parse);
+
+	if (socket) {
+		socket.emit('userList', { list: userList });
+	} else {
+		_.throttle(() => io.to('sidebarInfoSubscription').emit('userList', { list: userList }), 2000);
+	}
+};
+
+module.exports.sendUserList = sendUserList;
 
 // todo fix this
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
@@ -267,7 +273,7 @@ module.exports.sendReplayGameChats = (socket, uid) => {
  * @param {object} socket - user socket reference.
  * @param {boolean} isAEM - user AEM designation
  */
-module.exports.sendGameList = async (socket, isAEM) => {
+const sendGameList = async (socket, isAEM) => {
 	const g = await scanGamesAsync(0);
 	const gameUids = g[1];
 	const formattedGameList = [];
@@ -324,6 +330,8 @@ module.exports.sendGameList = async (socket, isAEM) => {
 	}
 };
 
+module.exports.sendGameList = sendGameList;
+
 /**
  * @param {object} socket - user socket reference.
  */
@@ -350,7 +358,7 @@ module.exports.sendGeneralChats = async (socket, toRoom) => {
 	};
 
 	if (toRoom) {
-		io.to('sidebarInfo').emit('generalChats', genChat);
+		io.to('sidebarInfoSubscription').emit('generalChats', genChat);
 	} else {
 		socket.emit('generalChats', genChat);
 	}
