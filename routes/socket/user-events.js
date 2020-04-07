@@ -8,6 +8,7 @@ const {
 	ipbansNotEnforced,
 	gameCreationDisabled,
 	limitNewPlayers,
+	disableGeneralChat,
 	currentSeasonNumber,
 	newStaff,
 	createNewBypass,
@@ -2445,6 +2446,11 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 
 	const AEM = user.staffRole && user.staffRole !== 'altmod' && user.staffRole !== 'trialmod' && user.staffRole !== 'veteran';
 
+	if (disableGeneralChat.status && !AEM) {
+		socket.emit('sendAlert', 'General Chat is disabled, please use #tournament-chat in the Discord.');
+		return;
+	}
+
 	const curTime = new Date();
 	const lastMessage = generalChats.list
 		.filter(chat => chat.userName === user.userName)
@@ -3456,6 +3462,12 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					break;
 				case 'enableVPNCheck':
 					bypassVPNCheck.status = false;
+					break;
+				case 'disableGeneral':
+					disableGeneralChat.status = true;
+					break;
+				case 'enableGeneral':
+					disableGeneralChat.status = false;
 					break;
 				case 'disableIpbans':
 					ipbansNotEnforced.status = true;

@@ -71,6 +71,7 @@ module.exports.bypassVPNCheck = { status: false };
 module.exports.ipbansNotEnforced = { status: false };
 module.exports.gameCreationDisabled = { status: false };
 module.exports.limitNewPlayers = { status: false };
+module.exports.disableGeneralChat = { status: true };
 module.exports.newStaff = {
 	modUserNames: [],
 	editorUserNames: [],

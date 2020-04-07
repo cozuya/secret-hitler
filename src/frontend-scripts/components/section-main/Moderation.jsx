@@ -57,6 +57,7 @@ export default class Moderation extends React.Component {
 			$(this.toggleAccountCreation).checkbox(info.accountCreationDisabled.status ? 'set checked' : 'set unchecked');
 			$(this.toggleLimitNewPlayers).checkbox(info.limitNewPlayers.status ? 'set checked' : 'set unchecked');
 			$(this.toggleBypassVPNCheck).checkbox(info.bypassVPNCheck.status ? 'set checked' : 'set unchecked');
+			$(this.toggleGeneralChat).checkbox(info.disableGeneralChat.status ? 'set checked' : 'set unchecked');
 		});
 
 		socket.emit('getModInfo', 1);
@@ -99,6 +100,27 @@ export default class Moderation extends React.Component {
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled VPN Check',
 					action: 'enableVPNCheck'
+				});
+			}
+		});
+
+		$(this.toggleGeneralChat).checkbox({
+			onChecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Disabled General Chat',
+					action: 'disableGeneral'
+				});
+			},
+			onUnchecked() {
+				socket.emit('updateModAction', {
+					modName: self.props.userInfo.userName,
+					userName: '',
+					ip: '',
+					comment: self.state.actionTextValue || 'Enabled General Chat',
+					action: 'enableGeneral'
 				});
 			}
 		});
@@ -726,6 +748,18 @@ export default class Moderation extends React.Component {
 				</div> */}
 				<br />
 				<div className="toggle-containers">
+					<h4 className="ui header">Disable General Chat</h4>
+					<div
+						className="ui fitted toggle checkbox"
+						ref={c => {
+							this.toggleGeneralChat = c;
+						}}
+					>
+						<input type="checkbox" name="generalchat" />
+					</div>
+				</div>
+				<br />
+				<div className="toggle-containers">
 					<h4 className="ui header">Disable VPN Check</h4>
 					<div
 						className="ui fitted toggle checkbox"
@@ -1121,6 +1155,8 @@ export default class Moderation extends React.Component {
 			enableGameCreation: 'Enable Game Creation',
 			disableIpbans: 'Disable IP Bans',
 			enableIpbans: 'Enable IP Bans',
+			disableGeneral: 'Disable General Chat',
+			enableGeneral: 'Enable General Chat',
 			broadcast: 'Broadcast',
 			fragBanLarge: '1 Week Fragment Ban',
 			fragBanSmall: '18 Hour Fragment Ban',
