@@ -1,10 +1,10 @@
 const https = require('https');
-const Account = require('../../models/account');
-const { newStaff } = require('./models');
+// const Account = require('../../models/account');
+// const { newStaff } = require('./models');
 
 module.exports.makeReport = (data, game, type = 'report') => {
-	// No Auto-Reports, or Mod Pings from Custom, Unlisted, or Private Games
-	if (!game || game.customGameSettings.enabled || game.general.unlisted || game.general.private) return;
+	// No Auto-Reports, or Mod Pings from Custom, or Private Games
+	if (!game || game.customGameSettings.enabled || game.general.private) return;
 	const { player, seat, role, election, situation, uid, gameType } = data;
 
 	let report;
@@ -68,57 +68,57 @@ module.exports.makeReport = (data, game, type = 'report') => {
 		});
 	}
 
-	if (type === 'report' || type === 'modchat') {
-		game.private.hiddenInfoShouldNotify = false;
+	// if (type === 'report' || type === 'modchat') {
+	// 	game.private.hiddenInfoShouldNotify = false;
+	// }
+
+	// Account.find({ staffRole: { $exists: true } }).then(accounts => {
+	// 	const staffUserNames = accounts
+	// 		.filter(
+	// 			account =>
+	// 				account.staffRole === 'altmod' ||
+	// 				account.staffRole === 'moderator' ||
+	// 				account.staffRole === 'editor' ||
+	// 				account.staffRole === 'admin' ||
+	// 				account.staffRole === 'trialmod'
+	// 		)
+	// 		.map(account => account.username);
+	// 	const players = game.private.seatedPlayers.map(player => player.userName);
+	// 	const isStaff = players.some(
+	// 		n =>
+	// 			staffUserNames.includes(n) ||
+	// 			newStaff.altmodUserNames.includes(n) ||
+	// 			newStaff.modUserNames.includes(n) ||
+	// 			newStaff.editorUserNames.includes(n) ||
+	// 			newStaff.trialmodUserNames.includes(n)
+	// 	);
+
+	// 	if (type !== 'reportdelayed' && type !== 'modchatdelayed') {
+	// 		if (isStaff) {
+	// 			if (!game.unsentReports) game.unsentReports = [];
+	// 			data.type = type;
+	// 			game.unsentReports[game.unsentReports.length] = data;
+	// 			return;
+	// 		}
+	// 	}
+
+	if (process.env.NODE_ENV === 'production') {
+		try {
+			const req = https.request({
+				hostname: 'discordapp.com',
+				path: process.env.DISCORDREPORTURL,
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Content-Length': Buffer.byteLength(report)
+				}
+			});
+			req.end(report);
+		} catch (e) {
+			console.log(e);
+		}
+	} else {
+		console.log(`${text}\n${game.general.uid}`);
 	}
-
-	Account.find({ staffRole: { $exists: true } }).then(accounts => {
-		const staffUserNames = accounts
-			.filter(
-				account =>
-					account.staffRole === 'altmod' ||
-					account.staffRole === 'moderator' ||
-					account.staffRole === 'editor' ||
-					account.staffRole === 'admin' ||
-					account.staffRole === 'trialmod'
-			)
-			.map(account => account.username);
-		const players = game.private.seatedPlayers.map(player => player.userName);
-		const isStaff = players.some(
-			n =>
-				staffUserNames.includes(n) ||
-				newStaff.altmodUserNames.includes(n) ||
-				newStaff.modUserNames.includes(n) ||
-				newStaff.editorUserNames.includes(n) ||
-				newStaff.trialmodUserNames.includes(n)
-		);
-
-		if (type !== 'reportdelayed' && type !== 'modchatdelayed') {
-			if (isStaff) {
-				if (!game.unsentReports) game.unsentReports = [];
-				data.type = type;
-				game.unsentReports[game.unsentReports.length] = data;
-				return;
-			}
-		}
-
-		if (process.env.NODE_ENV === 'production') {
-			try {
-				const req = https.request({
-					hostname: 'discordapp.com',
-					path: process.env.DISCORDREPORTURL,
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Content-Length': Buffer.byteLength(report)
-					}
-				});
-				req.end(report);
-			} catch (e) {
-				console.log(e);
-			}
-		} else {
-			console.log(`${text}\n${game.general.uid}`);
-		}
-	});
+	// });
 };
