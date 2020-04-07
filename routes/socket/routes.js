@@ -33,7 +33,6 @@ const {
 	sendGameList,
 	sendGeneralChats,
 	sendUserList,
-	sendSpecificUserList,
 	sendReplayGameChats,
 	sendSignups,
 	sendAllSignups,
@@ -170,7 +169,6 @@ const gatherStaffUsernames = () => {
 
 module.exports.socketRoutes = () => {
 	// setInterval(gamesGarbageCollector, 30000);
-
 	gatherStaffUsernames();
 
 	io.on('connection', socket => {
@@ -214,6 +212,7 @@ module.exports.socketRoutes = () => {
 				});
 			}
 
+			socket.join('sidebarInfo');
 			sendGeneralChats(socket);
 			sendGameList(socket, isAEM);
 
@@ -321,11 +320,6 @@ module.exports.socketRoutes = () => {
 			// user-events
 			socket.on('disconnect', () => {
 				handleSocketDisconnect(socket);
-			});
-
-			socket.on('sendUser', user => {
-				console.log('su');
-				// sendSpecificUserList(socket, user.staffRole);
 			});
 
 			socket.on('flappyEvent', async data => {
@@ -509,11 +503,7 @@ module.exports.socketRoutes = () => {
 				// todo
 				// sendUserList(socket);
 			});
-			socket.on('getGeneralChats', () => {
-				sendGeneralChats(socket);
-			});
 			socket.on('getUserGameSettings', () => {
-				console.log('gug');
 				sendUserGameSettings(socket);
 			});
 			socket.on('selectedChancellorVoteOnVeto', async data => {

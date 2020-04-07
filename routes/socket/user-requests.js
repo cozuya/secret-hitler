@@ -15,7 +15,8 @@ const {
 	formattedUserList,
 	formattedGameList,
 	scanGamesAsync,
-	getGamesAsync
+	getGamesAsync,
+	getGeneralChatsAsync
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
@@ -34,18 +35,6 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
 // 		userListEmitter.send = true;
 // 	}
 // });
-
-// todo
-// module.exports.sendSpecificUserList = (socket, staffRole) => {
-// 	const isAEM = Boolean(staffRole && staffRole !== 'altmod' && staffRole !== 'veteran');
-// 	if (socket) {
-// 		socket.emit('userList', {
-// 			list: formattedUserList(isAEM)
-// 		});
-// 	} else {
-// 		console.log('no socket received!');
-// 	}
-// };
 
 // todo fix this
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
@@ -344,10 +333,22 @@ module.exports.sendUserReports = socket => {
 };
 
 /**
- * @param {object} socket - user socket reference.
+ * @param {object} socket - user socket reference
+ * @param {boolean} toRoom - send chats to the room not the socket
  */
-module.exports.sendGeneralChats = socket => {
-	socket.emit('generalChats', generalChats);
+module.exports.sendGeneralChats = async (socket, toRoom) => {
+	const list = JSON.parse(await getGeneralChatsAsync('list')) || [];
+	const sticky = JSON.parse(await getGeneralChatsAsync('sticky')) || '';
+	const genChat = {
+		list,
+		sticky
+	};
+
+	if (toRoom) {
+		io.to('sidebarInfo').emit('generalChats', genChat);
+	} else {
+		socket.emit('generalChats', genChat);
+	}
 };
 
 /**

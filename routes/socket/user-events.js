@@ -13,7 +13,8 @@ const {
 	setGameAsync,
 	deleteGameAsync,
 	getGamesAsync,
-	pushGameChatsAsync
+	pushGameChatsAsync,
+	scanGamesAsync
 } = require('./models');
 const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
@@ -896,7 +897,6 @@ module.exports.handleAddNewGame = (socket, passport, data) => {
 		.catch(err => {
 			console.log(err, 'caught redis error');
 		});
-	// });
 };
 
 /**
@@ -2469,14 +2469,19 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  * @param {array} adminUserNames - list of admins
  */
 module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
-	const user = userList.find(u => u.userName === passport.user);
-	if (!user || user.isPrivate) return;
+	// const user = userList.find(u => u.userName === passport.user);
+	// if (!user || user.isPrivate) return;
 
-	if (!data.chat) return;
+	if (!data.chat) {
+		return;
+	}
+
 	const chat = (data.chat = data.chat.trim());
-	if (data.chat.length > 300 || !data.chat.length) return;
+	if (data.chat.length > 300 || !data.chat.length) {
+		return;
+	}
 
-	const AEM = user.staffRole && user.staffRole !== 'altmod' && user.staffRole !== 'trialmod' && user.staffRole !== 'veteran';
+	// const AEM = user.staffRole && user.staffRole !== 'altmod' && user.staffRole !== 'trialmod' && user.staffRole !== 'veteran';
 
 	const curTime = new Date();
 	const lastMessage = generalChats.list
@@ -2576,7 +2581,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 	Account.findOne({ username: passport.user })
 		.then(account => {
 			const currentPrivate = account.gameSettings.isPrivate;
-			const userIdx = userList.findIndex(user => user.userName === passport.user);
+			// const userIdx = userList.findIndex(user => user.userName === passport.user);
 
 			for (const setting in data) {
 				if (setting == 'blacklist') {
@@ -2633,16 +2638,16 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					userListInfo[`lossesSeason${currentSeasonNumber}`] = account[`lossesSeason${currentSeasonNumber}`];
 					userListInfo[`rainbowWinsSeason${currentSeasonNumber}`] = account[`rainbowWinsSeason${currentSeasonNumber}`];
 					userListInfo[`rainbowLossesSeason${currentSeasonNumber}`] = account[`rainbowLossesSeason${currentSeasonNumber}`];
-					if (userIdx !== -1) {
-						userList.splice(userIdx, 1);
-					}
-					userList.push(userListInfo);
-					sendUserList();
+					// if (userIdx !== -1) {
+					// 	userList.splice(userIdx, 1);
+					// }
+					// userList.push(userListInfo);
+					// sendUserList();
 				}
 			}
 
-			const user = userList.find(u => u.userName === passport.user);
-			if (user) user.blacklist = account.gameSettings.blacklist;
+			// const user = userList.find(u => u.userName === passport.user);
+			// if (user) user.blacklist = account.gameSettings.blacklist;
 
 			if (
 				((data.isPrivate && !currentPrivate) || (!data.isPrivate && currentPrivate)) &&
@@ -4008,15 +4013,25 @@ module.exports.checkUserStatus = async (socket, callback) => {
 	if (passport && Object.keys(passport).length) {
 		const { user } = passport;
 		const { sockets } = io.sockets;
-		// const game = games[Object.keys(games).find(gameName => games[gameName].publicPlayersState.find(player => player.userName === user && !player.leftGame))];
-		const game = null;
+		const gu = await scanGamesAsync(0);
+		const gameUids = gu[1];
+		let game;
 
-		const oldSocketID = Object.keys(sockets).find(
-			socketID =>
-				sockets[socketID].handshake.session.passport &&
-				Object.keys(sockets[socketID].handshake.session.passport).length &&
-				sockets[socketID].handshake.session.passport.user === user &&
-				socketID !== socket.id
+		for (let index = 0; index < gameUids.length; index++) {
+			const g = JSON.parse(await getGamesAsync(gameUids[index]));
+
+			if (g.publicPlayersState.find(player => player.userName === user && !player.leftGame)) {
+				game = g;
+				break;
+			}
+		}
+
+		const oldSocketID = Object.values(sockets).find(
+			sock =>
+				sock.handshake.session.passport &&
+				Object.keys(sock.handshake.session.passport).length &&
+				sock.handshake.session.passport.user === user &&
+				sock.id !== socket.id
 		);
 
 		if (oldSocketID && sockets[oldSocketID]) {
@@ -4036,13 +4051,14 @@ module.exports.checkUserStatus = async (socket, callback) => {
 		if (user) {
 			// Double-check the user isn't sneaking past IP bans.
 			const logOutUser = username => {
+				// todo
+
 				const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
 
 				socket.emit('manualDisconnection');
 				socket.disconnect(true);
 
 				if (bannedUserlistIndex >= 0) {
-					// todo
 					userList.splice(bannedUserlistIndex, 1);
 				}
 			};
@@ -4056,8 +4072,8 @@ module.exports.checkUserStatus = async (socket, callback) => {
 							if (banType && banType !== 'new' && !account.gameSettings.ignoreIPBans) {
 								logOutUser(user);
 							} else {
+								socket.emit('gameSettings', account.gameSettings);
 								// todo
-								// sendUserList();
 								callback();
 							}
 						});
