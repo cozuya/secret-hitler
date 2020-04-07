@@ -38,8 +38,9 @@ const generalChats = redis.createClient({
 	db: 4
 });
 
-module.exports.getGeneralChatsAsync = promisify(generalChats.lrange).bind(generalChats);
-module.exports.setGeneralChatsAsync = promisify(generalChats.set).bind(generalChats); // shouldn't really ever be used
+module.exports.getGeneralChatsAsync = promisify(generalChats.get).bind(generalChats);
+module.exports.getRangeGeneralChatsAsync = promisify(generalChats.lrange).bind(generalChats);
+module.exports.setGeneralChatsAsync = promisify(generalChats.set).bind(generalChats); // set sticky
 module.exports.pushGeneralChatsAsync = promisify(generalChats.lpush).bind(generalChats);
 module.exports.trimGeneralChatsAsync = promisify(generalChats.ltrim).bind(generalChats);
 

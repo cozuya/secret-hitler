@@ -13,8 +13,9 @@ const {
 	deleteGameAsync,
 	getGamesAsync,
 	pushGameChatsAsync,
+	scanGamesAsync,
 	getGeneralChatsAsync,
-	countGeneralChatsAsync,
+	setGeneralChatsAsync,
 	pushGeneralChatsAsync
 } = require('./models');
 const {
@@ -2840,8 +2841,6 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
  * @param {array} superModUserNames - list of usernames that are editors and admins
  */
 module.exports.handleModerationAction = async (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
-	// Authentication Assured in routes.js
-
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
@@ -3211,8 +3210,9 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 					logOutUser(data.username);
 					break;
 				case 'setSticky':
-					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
-					io.sockets.emit('generalChats', generalChats);
+					await setGeneralChatsAsync('sticky', data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '');
+
+					sendGeneralChats(null, true);
 					break;
 				case 'broadcast':
 					const discordBroadcastBody = JSON.stringify({
@@ -3234,27 +3234,33 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 						console.log(e, 'err in broadcast');
 					}
 
-					Object.keys(games).forEach(async gameName => {
-						pushGameChatsAsync(gameName, {
-							userName: `[BROADCAST] ${data.modName}`,
-							chat: data.comment,
-							isBroadcast: true,
-							timestamp: new Date()
-						});
-					});
+					const gu = await scanGamesAsync(0);
+					const gameUids = gu[1];
 
-					generalChats.list.push({
-						userName: `[BROADCAST] ${data.modName}`,
-						time: new Date(),
-						chat: data.comment,
-						isBroadcast: true
-					});
-
-					if (data.isSticky) {
-						generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+					for (let index = 0; index < gameUids.length; index++) {
+						// pushGameChatsAsync(gameUids[index], {
+						//   userName: `[BROADCAST] ${data.modName}`,
+						//   chat: data.comment,
+						//   isBroadcast: true,
+						//   timestamp: new Date()
+						// });
 					}
 
-					io.sockets.emit('generalChats', generalChats);
+					if (data.isSticky) {
+						await setGeneralChatsAsync('sticky', data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '');
+					}
+
+					await pushGeneralChatsAsync(
+						'list',
+						JSON.stringify({
+							userName: `[BROADCAST] ${data.modName}`,
+							time: new Date(),
+							chat: data.comment,
+							isBroadcast: true
+						})
+					);
+
+					sendGeneralChats(null, true);
 					break;
 				case 'ipban':
 					const ipban = new BannedIP({
