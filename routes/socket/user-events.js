@@ -15,7 +15,7 @@ const {
 	pushGameChatsAsync,
 	getGeneralChatsAsync,
 	countGeneralChatsAsync,
-	xx
+	pushGeneralChatsAsync
 } = require('./models');
 const {
 	sendGeneralChats,
@@ -2573,7 +2573,7 @@ module.exports.handleNewGeneralChat = async (socket, passport, data, modUserName
 		// 	newChat.userName = 'Incognito';
 		// }
 
-		const x = await xx('list', JSON.stringify(newChat));
+		await pushGeneralChatsAsync('list', JSON.stringify(newChat));
 
 		sendGeneralChats(null, true);
 

@@ -17,7 +17,8 @@ const {
 	formattedGameList,
 	scanGamesAsync,
 	getGamesAsync,
-	getGeneralChatsAsync
+	getGeneralChatsAsync,
+	trimGeneralChatsAsync
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
@@ -339,6 +340,7 @@ module.exports.sendUserReports = socket => {
  * @param {boolean} toRoom - send chats to the room not the socket
  */
 module.exports.sendGeneralChats = async (socket, toRoom) => {
+	await trimGeneralChatsAsync('list', 0, 99);
 	const list = ((await getGeneralChatsAsync('list', 0, -1)) || []).map(JSON.parse).reverse();
 	// const sticky = JSON.parse(await getGeneralChatsAsync('sticky')) || '';
 	const genChat = {
