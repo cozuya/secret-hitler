@@ -337,11 +337,11 @@ module.exports.sendUserReports = socket => {
  * @param {boolean} toRoom - send chats to the room not the socket
  */
 module.exports.sendGeneralChats = async (socket, toRoom) => {
-	const list = JSON.parse(await getGeneralChatsAsync('list')) || [];
-	const sticky = JSON.parse(await getGeneralChatsAsync('sticky')) || '';
+	const list = ((await getGeneralChatsAsync('list', 0, -1)) || []).map(JSON.parse).reverse();
+	// const sticky = JSON.parse(await getGeneralChatsAsync('sticky')) || '';
 	const genChat = {
-		list,
-		sticky
+		list
+		// sticky
 	};
 
 	if (toRoom) {

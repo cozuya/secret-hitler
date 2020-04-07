@@ -9,14 +9,24 @@ const {
 	currentSeasonNumber,
 	newStaff,
 	createNewBypass,
-	testIP,
 	setGameAsync,
 	deleteGameAsync,
 	getGamesAsync,
 	pushGameChatsAsync,
-	scanGamesAsync
+	getGeneralChatsAsync,
+	countGeneralChatsAsync,
+	xx
 } = require('./models');
-const { getModInfo, sendGameList, sendUserList, updateUserStatus, sendGameInfo, sendUserReports, sendPlayerNotes } = require('./user-requests');
+const {
+	sendGeneralChats,
+	getModInfo,
+	sendGameList,
+	sendUserList,
+	updateUserStatus,
+	sendGameInfo,
+	sendUserReports,
+	sendPlayerNotes
+} = require('./user-requests');
 const { selectVoting } = require('./game/election.js');
 const { selectChancellor } = require('./game/election-util.js');
 const Account = require('../../models/account');
@@ -2468,7 +2478,7 @@ module.exports.handleUpdateWhitelist = (passport, game, data) => {
  * @param {array} editorUserNames - list of editors
  * @param {array} adminUserNames - list of admins
  */
-module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
+module.exports.handleNewGeneralChat = async (socket, passport, data, modUserNames, editorUserNames, adminUserNames) => {
 	// const user = userList.find(u => u.userName === passport.user);
 	// if (!user || user.isPrivate) return;
 
@@ -2484,23 +2494,23 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 	// const AEM = user.staffRole && user.staffRole !== 'altmod' && user.staffRole !== 'trialmod' && user.staffRole !== 'veteran';
 
 	const curTime = new Date();
-	const lastMessage = generalChats.list
-		.filter(chat => chat.userName === user.userName)
-		.reduce(
-			(acc, cur) => {
-				return acc.time > cur.time ? acc : cur;
-			},
-			{ time: new Date(0) }
-		);
+	// const lastMessage = generalChats.list
+	// 	.filter(chat => chat.userName === user.userName)
+	// 	.reduce(
+	// 		(acc, cur) => {
+	// 			return acc.time > cur.time ? acc : cur;
+	// 		},
+	// 		{ time: new Date(0) }
+	// 	);
 
-	if (lastMessage.chat) {
-		let leniancy; // How much time (in seconds) must pass before allowing the message.
-		if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 3;
-		else leniancy = 0.5;
+	// if (lastMessage.chat) {
+	// 	let leniancy; // How much time (in seconds) must pass before allowing the message.
+	// 	if (lastMessage.chat.toLowerCase() === data.chat.toLowerCase()) leniancy = 3;
+	// 	else leniancy = 0.5;
 
-		const timeSince = curTime - lastMessage.time;
-		if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
-	}
+	// 	const timeSince = curTime - lastMessage.time;
+	// 	if (timeSince < leniancy * 1000) return; // Prior chat was too recent.
+	// }
 
 	for (repl of chatReplacements) {
 		const replace = repl.regex.exec(chat);
@@ -2537,7 +2547,8 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		}
 	}
 
-	if (user.wins + user.losses >= 10) {
+	if (true) {
+		// if (user.wins + user.losses >= 10) {
 		const getStaffRole = () => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {
 				return 'moderator';
@@ -2556,17 +2567,22 @@ module.exports.handleNewGeneralChat = (socket, passport, data, modUserNames, edi
 		};
 		const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 		const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
-		if (AEM && user.staffIncognito) {
-			newChat.hiddenUsername = newChat.userName;
-			newChat.staffRole = 'moderator';
-			newChat.userName = 'Incognito';
-		}
-		generalChats.list.push(newChat);
+		// if (AEM && user.staffIncognito) {
+		// 	newChat.hiddenUsername = newChat.userName;
+		// 	newChat.staffRole = 'moderator';
+		// 	newChat.userName = 'Incognito';
+		// }
 
-		if (generalChats.list.length > 99) {
-			generalChats.list.shift();
-		}
-		io.sockets.emit('generalChats', generalChats);
+		const x = await xx('list', JSON.stringify(newChat));
+
+		sendGeneralChats(null, true);
+
+		// generalChats.list.push(newChat);
+
+		// if (generalChats.list.length > 99) {
+		// 	generalChats.list.shift();
+		// }
+		// io.sockets.emit('generalChats', generalChats);
 	}
 };
 
@@ -4000,91 +4016,6 @@ module.exports.handleHasSeenNewPlayerModal = socket => {
 			socket.emit('checkRestrictions');
 			account.save();
 		});
-	}
-};
-
-/**
- * @param {object} socket - socket reference.
- * @param {function} callback - success callback.
- */
-module.exports.checkUserStatus = async (socket, callback) => {
-	const { passport } = socket.handshake.session;
-
-	if (passport && Object.keys(passport).length) {
-		const { user } = passport;
-		const { sockets } = io.sockets;
-		const gu = await scanGamesAsync(0);
-		const gameUids = gu[1];
-		let game;
-
-		for (let index = 0; index < gameUids.length; index++) {
-			const g = JSON.parse(await getGamesAsync(gameUids[index]));
-
-			if (g.publicPlayersState.find(player => player.userName === user && !player.leftGame)) {
-				game = g;
-				break;
-			}
-		}
-
-		const oldSocketID = Object.values(sockets).find(
-			sock =>
-				sock.handshake.session.passport &&
-				Object.keys(sock.handshake.session.passport).length &&
-				sock.handshake.session.passport.user === user &&
-				sock.id !== socket.id
-		);
-
-		if (oldSocketID && sockets[oldSocketID]) {
-			sockets[oldSocketID].emit('manualDisconnection');
-			delete sockets[oldSocketID];
-		}
-
-		const reconnectingUser = game && game.publicPlayersState.find(player => player.userName === user);
-
-		if (game && game.gameState.isStarted && !game.gameState.isCompleted && reconnectingUser) {
-			reconnectingUser.connected = true;
-			socket.join(game.general.uid);
-			socket.emit('updateSeatForUser');
-			sendInProgressGameUpdate(game);
-		}
-
-		if (user) {
-			// Double-check the user isn't sneaking past IP bans.
-			const logOutUser = username => {
-				// todo
-
-				const bannedUserlistIndex = userList.findIndex(user => user.userName === username);
-
-				socket.emit('manualDisconnection');
-				socket.disconnect(true);
-
-				if (bannedUserlistIndex >= 0) {
-					userList.splice(bannedUserlistIndex, 1);
-				}
-			};
-
-			Account.findOne({ username: user }, function(err, account) {
-				if (account) {
-					if (account.isBanned || (account.isTimeout && new Date() < account.isTimeout)) {
-						logOutUser(user);
-					} else {
-						testIP(account.lastConnectedIP, banType => {
-							if (banType && banType !== 'new' && !account.gameSettings.ignoreIPBans) {
-								logOutUser(user);
-							} else {
-								socket.emit('gameSettings', account.gameSettings);
-								// todo
-								callback();
-							}
-						});
-					}
-				}
-			});
-		} else {
-			callback();
-		}
-	} else {
-		callback();
 	}
 };
 
