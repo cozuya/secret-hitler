@@ -320,10 +320,10 @@ module.exports = () => {
 	});
 
 	app.get('/online-playercount', (req, res) => {
-		const { userList } = require('./socket/models');
-
-		res.json({
-			count: -1 // userList.length
+		io.of('/').adapter.clients((err, clients) => {
+			res.json({
+				count: clients.length
+			});
 		});
 	});
 

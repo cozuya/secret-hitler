@@ -147,3 +147,7 @@ private
 					isFlipped bool
 					cardFront string
 					cardBack string
+
+** passport special models **
+// these are things that are added to the passport object of a user's socket to avoid the need to for yet another mongo hit to get info
+gameUidUserIsSeatedIn - the game a user is seated in, can be null

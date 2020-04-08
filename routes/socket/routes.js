@@ -467,7 +467,6 @@ module.exports.socketRoutes = () => {
 			const game = await findGame(data);
 
 			if (isRestricted) return;
-
 			if (authenticated) {
 				handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
 			}

@@ -19,8 +19,7 @@ const gameChats = redis.createClient({
 	db: 2
 });
 
-module.exports.getGameChatsAsync = promisify(gameChats.get).bind(gameChats);
-module.exports.setGameChatsAsync = promisify(gameChats.set).bind(gameChats); // shouldn't really ever be used
+module.exports.getRangeGameChatsAsync = promisify(gameChats.lrange).bind(gameChats);
 module.exports.deleteGameChatsAsync = promisify(gameChats.del).bind(gameChats);
 module.exports.pushGameChatsAsync = promisify(gameChats.rpush).bind(gameChats);
 
@@ -40,8 +39,6 @@ module.exports.spliceUserFromUserList = async userName => {
 		userList.lrem('userList', 0, JSON.stringify(userInList));
 	}
 };
-
-// module.exports.userList = [];
 
 const generalChats = redis.createClient({
 	db: 4
@@ -65,12 +62,6 @@ module.exports.setServerSettingAsync = promisify(serverSettings.set).bind(server
 // module.exports.ipbansNotEnforced = { status: false };
 // module.exports.gameCreationDisabled = { status: false };
 // module.exports.limitNewPlayers = { status: false };
-
-module.exports.generalChats = generalChats;
-// module.exports.generalChats = {
-// 	sticky: '',
-// 	list: []
-// };
 
 const fs = require('fs');
 const emotes = [];

@@ -13,6 +13,7 @@ const {
 	deleteGameAsync,
 	getGamesAsync,
 	pushGameChatsAsync,
+	deleteGameChatsAsync,
 	scanGamesAsync,
 	getGeneralChatsAsync,
 	setGeneralChatsAsync,
@@ -269,6 +270,7 @@ const handleSocketDisconnect = async socket => {
 				(gameState.isCompleted && publicPlayersState.filter(player => !player.connected || player.leftGame).length === game.general.playerCount - 1)
 			) {
 				deleteGameAsync(gameName);
+				deleteGameChatsAsync(gameName);
 			} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 				publicPlayersState.splice(playerIndex, 1);
 				checkStartConditions(game);
@@ -311,9 +313,7 @@ const handleSocketDisconnect = async socket => {
 				sendInProgressGameUpdate(game);
 				if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 					deleteGameAsync(game.general.uid);
-
-					// todo
-					// deleteGameChatsAsync(game.general.uid);
+					deleteGameChatsAsync(game.general.uid);
 				}
 			}
 			sendGameList();
@@ -384,7 +384,8 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 			game.publicPlayersState[playerIndex].leftGame = true;
 		}
 		if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
-			await gamesDeleteAsync(game.general.uid);
+			deleteGameAsync(game.general.uid);
+			deleteGameChatsAsync(game.general.uid);
 		}
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(
@@ -418,7 +419,8 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 			}
 		}
 
-		await gamesDeleteAsync(game.general.uid);
+		deleteGameAsync(game.general.uid);
+		deleteGameChatsAsync(game.general.uid);
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
@@ -583,29 +585,29 @@ module.exports.handleUpdatedBio = (socket, passport, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleAddNewGame = async (socket, passport, data) => {
+	const isGameCreationDisabled = await getServerSettingAsync('gameCreationDisabled');
+	const isLimitNewPlayers = await getServerSettingAsync('limitNewPlayers');
+	const account = await Account.findOne({ username: passport.user });
+	const { user } = passport;
+
 	if (
-		// gameCreationDisabled.status ||
-		// (!data.privatePassword && limitNewPlayers.status) ||
+		!account ||
+		isGameCreationDisabled ||
+		(!data.privatePassword && isLimitNewPlayers) ||
 		!data ||
 		!data.gameName ||
 		data.gameName.length > 20 ||
-		!LEGALCHARACTERS(data.gameName)
+		!LEGALCHARACTERS(data.gameName) ||
+		(data.eloSliderValue && (account.eloSeason < data.eloSliderValue || account.eloOverall < data.eloSliderValue))
 	) {
 		return;
 	}
 
-	// const user = userList.find(obj => obj.userName === passport.user);
 	const currentTime = new Date();
 
-	// if (!user || currentTime - user.timeLastGameCreated < 8000 || user.status.type !== 'none') {
-	// 	// Check if !user here in case of bug where user doesn't appear on userList
-	// 	return;
-	// }
-
-	let a;
 	let playerCounts = [];
 
-	for (a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
+	for (let a = Math.max(data.minPlayersCount, 5); a <= Math.min(10, data.maxPlayersCount); a++) {
 		if (!data.excludedPlayerCount.includes(a)) {
 			playerCounts.push(a);
 		}
@@ -618,16 +620,11 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 
 	const excludes = [];
 
-	for (a = playerCounts[0]; a <= playerCounts[playerCounts.length - 1]; a++) {
+	for (let a = playerCounts[0]; a <= playerCounts[playerCounts.length - 1]; a++) {
 		if (!playerCounts.includes(a)) {
 			excludes.push(a);
 		}
 	}
-
-	// todo
-	// if (data.eloSliderValue && (user.eloSeason < data.eloSliderValue || user.eloOverall < data.eloSliderValue)) {
-	// 	return;
-	// }
 
 	if (data.customGameSettings && data.customGameSettings.enabled) {
 		if (!data.customGameSettings.deckState || !data.customGameSettings.trackState) {
@@ -700,14 +697,11 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		general: {
 			whitelistedPlayers: [],
 			uid: data.isTourny ? `${generateCombination(3, '', true)}Tournament` : uid,
-			// name: user.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
-			name: 'temp',
+			name: account.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
 			minPlayersCount: playerCounts[0],
-			// gameCreatorName: user.userName,
-			gameCreatorName: 'Uther',
-			// gameCreatorBlacklist: user.blacklist,
-			gameCreatorBlacklist: [],
+			gameCreatorName: user,
+			gameCreatorBlacklist: account.gameSettings.blacklist,
 			excludedPlayerCount: excludes,
 			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
@@ -719,8 +713,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			lastModPing: 0,
 			chatReplTime: Array(chatReplacements.length + 1).fill(0),
 			disableGamechat: data.disableGamechat,
-			// rainbowgame: user.wins + user.losses > 49 ? data.rainbowgame : false,
-			rainbowgame: false,
+			rainbowgame: account.wins + account.losses > 49 ? data.rainbowgame : false,
 			blindMode: data.blindMode,
 			timedMode: typeof data.timedMode === 'number' && data.timedMode >= 2 && data.timedMode <= 6000 ? data.timedMode : false,
 			flappyMode: data.flappyMode,
@@ -730,9 +723,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			rebalance7p: data.rebalance7p,
 			rebalance9p2f: data.rebalance9p2f,
 			unlisted: data.unlistedGame && !data.privatePassword,
-			// private: user.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
-			private: '',
-			// privateOnly: user.isPrivate,
+			private: account.isPrivate ? (data.privatePassword ? data.privatePassword : 'private') : !data.unlistedGame && data.privatePassword,
 			privateOnly: false,
 			electionCount: 0,
 			isRemade: false,
@@ -808,10 +799,10 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			round: 0,
 			queuedPlayers: [
 				{
-					userName: user.userName,
-					customCardback: user.customCardback,
-					customCardbackUid: user.customCardbackUid,
-					tournyWins: user.tournyWins,
+					userName: user,
+					customCardback: account.gameSettings.customCardback,
+					customCardbackUid: account.gameSettings.customCardbackUid,
+					tournyWins: account.gameSettings.tournyWins,
 					connected: true,
 					cardStatus: {
 						cardDisplayed: false,
@@ -825,22 +816,14 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	} else {
 		newGame.publicPlayersState = [
 			{
-				// userName: user.userName,
-				// customCardback: user.customCardback,
-				// customCardbackUid: user.customCardbackUid,
-				// previousSeasonAward: user.previousSeasonAward,
-				// specialTournamentStatus: user.specialTournamentStatus,
-				// tournyWins: user.tournyWins,
-				// connected: true,
-				// isPrivate: user.isPrivate,
-				userName: 'Uther',
-				customCardback: '',
-				customCardbackUid: '',
-				previousSeasonAward: '',
-				specialTournamentStatus: '',
-				tournyWins: '',
+				userName: user,
+				customCardback: account.gameSettings.customCardback,
+				customCardbackUid: account.gameSettings.customCardbackUid,
+				previousSeasonAward: account.gameSettings.previousSeasonAward,
+				specialTournamentStatus: account.gameSettings.specialTournamentStatus,
+				tournyWins: account.gameSettings.tournyWins,
 				connected: true,
-				isPrivate: false,
+				isPrivate: account.gameSettings.isPrivate,
 				cardStatus: {
 					cardDisplayed: false,
 					isFlipped: false,
@@ -861,7 +844,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			gameChat: true,
 			chat: [
 				{
-					text: `${user.userName}`,
+					text: `${user}`,
 					type: 'player'
 				},
 				{
@@ -871,9 +854,6 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		});
 	}
 
-	// user.timeLastGameCreated = currentTime;
-
-	// Account.findOne({ username: user.userName }).then(account => {
 	newGame.private = {
 		reports: {},
 		unSeatedGameChats: [],
@@ -897,12 +877,13 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		.then(e => {
 			sendGameList();
 			socket.join(newGame.general.uid);
+			socket.leave('gameListInfoSubscription');
 			socket.emit('updateSeatForUser');
 			socket.emit('gameUpdate', newGame);
 			socket.emit('joinGameRedirect', newGame.general.uid);
 		})
 		.catch(err => {
-			console.log(err, 'caught redis error');
+			console.log(err, 'caught redis error setting new game');
 		});
 };
 
@@ -1698,6 +1679,7 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
 
 			if (game.publicPlayersState.filter(publicPlayer => publicPlayer.leftGame).length === game.general.playerCount) {
 				deleteGameAsync(game.general.uid);
+				deleteGameChatsAsync(game.general.uid);
 			} else {
 				sendInProgressGameUpdate(game);
 			}
@@ -1827,10 +1809,14 @@ module.exports.handleUpdatedRemakeGame = (passport, game, data, socket) => {
  * @param {array} adminUserNames - list of admins
  * @param {function} addNewClaim - links to handleAddNewClaim
  */
-module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
+module.exports.handleAddNewGameChat = async (socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, addNewClaim) => {
+	const { user } = passport;
+
 	if (!game || !game.general || !data.chat) {
 		return;
 	}
+
+	const { uid } = game.general;
 	const chat = data.chat.trim();
 	const staffUserNames = [...modUserNames, ...editorUserNames, ...adminUserNames];
 	const playerIndex = game.publicPlayersState.findIndex(player => player.userName === passport.user);
@@ -1840,26 +1826,18 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 
 	const { publicPlayersState } = game;
-	const player = publicPlayersState.find(player => player.userName === passport.user);
+	const player = publicPlayersState.find(player => player.userName === user);
+	const AEM = staffUserNames.includes(user) || newStaff.modUserNames.includes(user) || newStaff.editorUserNames.includes(user);
 
-	const user = userList.find(u => passport.user === u.userName);
-
-	if (!user || !user.userName) {
+	if (
+		!(AEM && playerIndex === -1) &&
+		((game.general.disableChat && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) ||
+			(game.general.disableObserver && playerIndex === -1))
+	) {
 		return;
 	}
-	const AEM = staffUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
-	// if (!AEM && game.general.disableChat) return;
-	if (!(AEM && playerIndex === -1)) {
-		if (game.general.disableChat && !game.gameState.isCompleted && game.gameState.isStarted && playerIndex !== -1) {
-			return;
-		}
-		if (game.general.disableObserver && playerIndex === -1) {
-			return;
-		}
-	}
-
-	data.userName = passport.user;
+	data.userName = user;
 
 	if (
 		game &&
@@ -1878,84 +1856,89 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				.reverse()
 				.join('');
 
-			// console.log(chat, ' - ', formattedChat, ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
-
 			if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasPresident') {
 				const claimData = {
-					userName: user.userName,
+					userName: user,
 					claimState: formattedChat,
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
-					uid: data.uid
+					uid
 				};
-				if (addNewClaim(socket, passport, game, claimData)) return;
+				if (addNewClaim(socket, passport, game, claimData)) {
+					return;
+				}
 			}
 
 			if (chat.length === 2 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'wasChancellor') {
 				const claimData = {
-					userName: user.userName,
+					userName: user,
 					claimState: formattedChat,
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
-					uid: data.uid
+					uid
 				};
-				if (addNewClaim(socket, passport, game, claimData)) return;
+				if (addNewClaim(socket, passport, game, claimData)) {
+					return;
+				}
 			}
 
 			if (chat.length === 3 && 0 <= playerIndex <= 9 && game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didPolicyPeek') {
 				const claimData = {
-					userName: user.userName,
+					userName: user,
 					claimState: chat,
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
-					uid: data.uid
+					uid
 				};
-				if (addNewClaim(socket, passport, game, claimData)) return;
+				if (addNewClaim(socket, passport, game, claimData)) {
+					return;
+				}
 			}
 		}
 
 		if (/^(b|blue|l|lib|liberal)$/i.exec(chat)) {
-			// console.log(chat, ' - ', 'liberal', ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
 			if (
 				0 <= playerIndex <= 9 &&
 				(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
 					game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty')
 			) {
 				const claimData = {
-					userName: user.userName,
+					userName: user,
 					claimState: 'liberal',
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
-					uid: data.uid
+					uid
 				};
-				if (addNewClaim(socket, passport, game, claimData)) return;
+				if (addNewClaim(socket, passport, game, claimData)) {
+					return;
+				}
 			}
 		}
 
 		if (/^(r|red|fas|f|fasc|fascist)$/i.exec(chat)) {
-			// console.log(chat, ' - ', 'fascist', ' - ', game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim);
 			if (
 				0 <= playerIndex <= 9 &&
 				(game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didSinglePolicyPeek' ||
 					game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim === 'didInvestigateLoyalty')
 			) {
 				const claimData = {
-					userName: user.userName,
+					userName: user,
 					claimState: 'fascist',
 					claim: game.private.seatedPlayers[playerIndex].playersState[playerIndex].claim,
-					uid: data.uid
+					uid
 				};
-				if (addNewClaim(socket, passport, game, claimData)) return;
+				if (addNewClaim(socket, passport, game, claimData)) {
+					return;
+				}
 			}
 		}
 	}
 
 	if (!AEM) {
 		if (player) {
-			if ((player.isDead && !game.gameState.isCompleted) || player.leftGame) {
-				return;
-			}
-		} else {
-			if (game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) {
-				return;
-			}
-			if (game.general.disableObserver || user.wins + user.losses < 11) {
+			if (
+				(player.isDead && !game.gameState.isCompleted) ||
+				player.leftGame ||
+				(game.general.private && !game.general.whitelistedPlayers.includes(passport.user)) ||
+				game.general.disableObserver ||
+				user.wins + user.losses < 11
+			) {
 				return;
 			}
 		}
@@ -1973,13 +1956,15 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 	}
 
 	data.timestamp = new Date();
+
 	if (AEM) {
 		const { blindMode, replacementNames } = game.general;
-
 		const aemRigdeck = /^\/forcerigdeck (.*)$/i.exec(chat);
+
 		if (aemRigdeck) {
 			if (game && game.private) {
 				const deck = aemRigdeck[0].split(' ')[1];
+
 				if (/^([RB]{1,27})$/i.exec(deck)) {
 					if (deck.length > 27 || deck.length === 0) {
 						socket.emit('sendAlert', 'This deck is too big (or too small).');
@@ -1992,8 +1977,9 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						}
 					];
 
-					for (card of deck) {
+					for (let card of deck) {
 						card = card.toUpperCase();
+
 						if (card === 'R' || card === 'B') {
 							changedChat.push({
 								text: card,
@@ -2006,7 +1992,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						text: '.'
 					});
 
-					game.chats.push({
+					await pushGameChatsAsync(uid, {
 						gameChat: true,
 						timestamp: new Date(),
 						chat: changedChat
@@ -2025,9 +2011,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 
 		const aemForce = /^\/forcevote (\d{1,2}) (ya|ja|nein|yes|no|true|false)$/i.exec(chat);
+
 		if (aemForce) {
 			if (player) {
-				socket.emit('sendAlert', 'You cannot force a vote whilst playing.');
+				socket.emit('sendAlert', 'You cannot force a vote while playing.');
 				return;
 			}
 			if (game.general.isRemade) {
@@ -2036,14 +2023,16 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			}
 			const affectedPlayerNumber = parseInt(aemForce[1]) - 1;
 			const voteString = aemForce[2].toLowerCase();
+
 			if (game && game.private && game.private.seatedPlayers) {
 				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+
 				if (!affectedPlayer) {
 					socket.emit('sendAlert', `There is no seat {${affectedPlayerNumber + 1}}.`);
 					return;
 				}
-				let vote = false;
-				if (voteString == 'ya' || voteString == 'ja' || voteString == 'yes' || voteString == 'true') vote = true;
+
+				const vote = Boolean(voteString === 'ya' || voteString === 'ja' || voteString === 'yes' || voteString === 'true');
 
 				if (affectedPlayer.voteStatus.hasVoted) {
 					socket.emit(
@@ -2055,7 +2044,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					);
 				}
 
-				game.chats.push({
+				await pushGameChatsAsync(uid, {
 					gameChat: true,
 					timestamp: new Date(),
 					chat: [
@@ -2080,6 +2069,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						}
 					]
 				});
+
 				selectVoting({ user: affectedPlayer.userName }, game, { vote }, null, true);
 				sendPlayerChatUpdate(game, data);
 				sendInProgressGameUpdate(game, false);
@@ -2090,28 +2080,35 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 
 		const aemSkip = /^\/forceskip (\d{1,2})$/i.exec(chat);
+
 		if (aemSkip) {
 			if (player) {
-				socket.emit('sendAlert', 'You cannot force skip a government whilst playing.');
+				socket.emit('sendAlert', 'You cannot force skip a government while playing.');
 				return;
 			}
 			if (game.general.isRemade) {
 				socket.emit('sendAlert', 'This game has been remade.');
 				return;
 			}
+
 			const affectedPlayerNumber = parseInt(aemSkip[1]) - 1;
+
 			if (game && game.private && game.private.seatedPlayers) {
 				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+
 				if (!affectedPlayer) {
 					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
 					return;
 				}
+
 				if (affectedPlayerNumber !== game.gameState.presidentIndex) {
 					socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
 					return;
 				}
+
 				let chancellor = -1;
 				const currentPlayers = [];
+
 				for (let i = 0; i < game.private.seatedPlayers.length; i++) {
 					currentPlayers[i] = !(
 						game.private.seatedPlayers[i].isDead ||
@@ -2119,8 +2116,11 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						i === game.gameState.previousElectedGovernment[1]
 					);
 				}
+
 				currentPlayers[affectedPlayerNumber] = false;
+
 				let counter = affectedPlayerNumber + 1;
+
 				while (chancellor === -1) {
 					if (counter >= currentPlayers.length) {
 						counter = 0;
@@ -2131,7 +2131,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					counter++;
 				}
 
-				game.chats.push({
+				await pushGameChatsAsync(uid, {
 					gameChat: true,
 					timestamp: new Date(),
 					chat: [
@@ -2149,12 +2149,15 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						}
 					]
 				});
+
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor }, true);
+
 				setTimeout(() => {
 					for (const p of game.private.seatedPlayers.filter(player => !player.isDead)) {
 						selectVoting({ user: p.userName }, game, { vote: false }, null, true);
 					}
 				}, 1000);
+
 				sendPlayerChatUpdate(game, data);
 				sendInProgressGameUpdate(game, false);
 			} else {
@@ -2164,32 +2167,39 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 
 		const aemPick = /^\/forcepick (\d{1,2}) (\d{1,2})$/i.exec(chat);
+
 		if (aemPick) {
 			if (player) {
-				socket.emit('sendAlert', 'You cannot force a pick whilst playing.');
+				socket.emit('sendAlert', 'You cannot force a pick while playing.');
 				return;
 			}
 			if (game.general.isRemade) {
 				socket.emit('sendAlert', 'This game has been remade.');
 				return;
 			}
+
 			const affectedPlayerNumber = parseInt(aemPick[1]) - 1;
 			const chancellorPick = aemPick[2];
+
 			if (game && game.private && game.private.seatedPlayers) {
 				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
 				const affectedChancellor = game.private.seatedPlayers[chancellorPick - 1];
+
 				if (!affectedPlayer) {
 					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
 					return;
 				}
+
 				if (!affectedChancellor) {
 					socket.emit('sendAlert', `There is no seat ${chancellorPick}.`);
 					return;
 				}
+
 				if (affectedPlayerNumber !== game.gameState.presidentIndex) {
 					socket.emit('sendAlert', `The player in seat ${affectedPlayerNumber + 1} is not president.`);
 					return;
 				}
+
 				if (
 					game.publicPlayersState[chancellorPick - 1].isDead ||
 					chancellorPick - 1 === affectedPlayerNumber ||
@@ -2200,7 +2210,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					return;
 				}
 
-				game.chats.push({
+				await pushGameChatsAsync(uid, {
 					gameChat: true,
 					timestamp: new Date(),
 					chat: [
@@ -2225,6 +2235,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 						}
 					]
 				});
+
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 }, true);
 				sendPlayerChatUpdate(game, data);
 				sendInProgressGameUpdate(game, false);
@@ -2235,24 +2246,29 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 		}
 
 		const aemPing = /^\/forceping (\d{1,2})$/i.exec(chat);
+
 		if (aemPing) {
 			if (player) {
-				socket.emit('sendAlert', 'You cannot force a ping whilst playing.');
+				socket.emit('sendAlert', 'You cannot force a ping while playing.');
 				return;
 			}
+
 			if (game.general.isRemade) {
 				socket.emit('sendAlert', 'This game has been remade.');
 				return;
 			}
+
 			const affectedPlayerNumber = parseInt(aemPing[1]) - 1;
+
 			if (game && game.private && game.private.seatedPlayers) {
 				const affectedPlayer = game.private.seatedPlayers[affectedPlayerNumber];
+
 				if (!affectedPlayer) {
 					socket.emit('sendAlert', `There is no seat ${affectedPlayerNumber + 1}.`);
 					return;
 				}
 
-				game.chats.push({
+				await pushGameChatsAsync(uid, {
 					gameChat: true,
 					timestamp: new Date(),
 					chat: [
@@ -2321,6 +2337,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 
 	for (repl of chatReplacements) {
 		const replace = repl.regex.exec(chat);
+
 		if (replace) {
 			if (AEM) {
 				if (game.general.chatReplTime[repl.id] === 0 || Date.now() > game.general.chatReplTime[repl.id] + repl.aemCooldown * 1000) {
@@ -2333,6 +2350,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 					);
 					return;
 				}
+				// todo, user (passport) doesn't have this atm
 			} else if (user.wins + user.losses > repl.normalGames) {
 				if (
 					Date.now() > game.general.chatReplTime[0] + 30000 &&
@@ -2380,7 +2398,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 				game.general.blindMode ? 'Secret Hitler IO: A player has pinged you.' : `Secret Hitler IO: Player ${data.userName} just pinged you.`
 			);
 
-			game.chats.push({
+			await pushGameChatsAsync(uid, {
 				gameChat: true,
 				userName: passport.user,
 				timestamp: new Date(),
@@ -2433,12 +2451,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			data.userName = 'Incognito';
 		}
 
-		// Attempts to cut down on overloading server resources
-		if (game.general.private && game.chats.length >= 30) {
-			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
-		}
-
-		game.chats.push(data);
+		await pushGameChatsAsync(uid, data);
 
 		setGameAsync(game.general.uid, JSON.stringify(game)).then(() => {
 			if (game.gameState.isTracksFlipped) {
@@ -3076,6 +3089,7 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 						setTimeout(() => {
 							gameToEnd.publicPlayersState.forEach(player => (player.leftGame = true));
 							deleteGameAsync(gameToEnd.general.uid);
+							deleteGameChatsAsync(game.general.uid);
 							sendGameList();
 						}, 5000);
 					}
@@ -3732,6 +3746,7 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 
 						if (game) {
 							deleteGameAsync(game.general.uid);
+							deleteGameChatsAsync(game.general.uid);
 							game.publicPlayersState.forEach(player => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}
