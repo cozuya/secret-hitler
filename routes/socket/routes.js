@@ -301,7 +301,11 @@ module.exports.socketRoutes = () => {
 			});
 
 			socket.on('sendUser', user => {
-				sendSpecificUserList(socket, user.staffRole);
+				if (authenticated && isAEM) {
+					sendSpecificUserList(socket, 'moderator');
+				} else {
+					sendSpecificUserList(socket);
+				}
 			});
 
 			socket.on('flappyEvent', data => {
