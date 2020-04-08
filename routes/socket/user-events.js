@@ -2544,32 +2544,26 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 		.then(account => {
 			const currentPrivate = account.gameSettings.isPrivate;
 			const userIdx = userList.findIndex(user => user.userName === passport.user);
-
+			const aem = account.staffRole && (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin');
+			const veteran = account.staffRole && account.staffRole === 'veteran';
 			for (const setting in data) {
 				if (setting == 'blacklist') {
 					data[setting].splice(0, data[setting].length - 30);
 				}
 
+				const restrictedSettings = ['blacklist', 'staffDisableVisibleElo', 'staffDisableStaffColor', 'staffIncognito'];
+
 				if (
-					setting !== 'blacklist' ||
+					!restrictedSettings.includes(setting) ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') ||
-					(setting === 'staffIncognito' &&
-						account.staffRole &&
-						account.staffRole !== 'altmod' &&
-						account.staffRole !== 'trialmod' &&
-						account.staffRole !== 'veteran')
+					(setting === 'staffDisableVisibleElo' && (aem || veteran)) ||
+					(setting === 'staffIncognito' && aem) ||
+					(setting === 'staffDisableStaffColor' && (aem || veteran))
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (
-					setting === 'staffIncognito' &&
-					account.staffRole &&
-					account.staffRole !== 'altmod' &&
-					account.staffRole !== 'trialmod' &&
-					account.staffRole !== 'veteran'
-				) {
+				if (setting === 'staffIncognito' && aem) {
 					const userListInfo = {
 						userName: passport.user,
 						staffRole: account.staffRole || '',
