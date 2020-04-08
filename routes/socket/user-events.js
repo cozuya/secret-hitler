@@ -462,15 +462,15 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedTheme = (socket, passport, data) => {
-	// Temporary - remove once fixed
-	return;
+	const fields = ['primaryColor', 'secondaryColor', 'tertiaryColor', 'backgroundColor', 'textColor'];
+
 	Account.findOne({ username: passport && passport.user }).then(account => {
 		if (!account) {
 			return;
 		}
 
-		for (const property in data) {
-			account[property] = data[property];
+		for (const field of fields) {
+			if (data[field]) account[field] = data[field];
 		}
 
 		account.save();
