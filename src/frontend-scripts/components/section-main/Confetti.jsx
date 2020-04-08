@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 export default class Confetti extends React.Component {
 	componentDidMount() {
-		(function() {
+		(function () {
 			// globals
 			var canvas;
 			var ctx;
@@ -37,7 +37,7 @@ export default class Confetti extends React.Component {
 					'SteelBlue',
 					'SandyBrown',
 					'Chocolate',
-					'Crimson'
+					'Crimson',
 				],
 				dualColorOptions: [
 					{ main: 'DodgerBlue', alt: 'steelblue' },
@@ -49,12 +49,12 @@ export default class Confetti extends React.Component {
 					{ main: 'PaleGreen', alt: 'YellowGreen' },
 					{ main: 'SandyBrown', alt: 'Peru' },
 					{ main: 'Chocolate', alt: 'Sienna' },
-					{ main: 'Crimson', alt: 'FireBrick' }
+					{ main: 'Crimson', alt: 'FireBrick' },
 				],
 				colorIndex: 0,
 				colorIncrementer: 0,
 				colorThreshold: 10,
-				getColor: function() {
+				getColor: function () {
 					if (this.colorIncrementer >= 10) {
 						this.colorIncrementer = 0;
 						this.colorIndex++;
@@ -64,7 +64,7 @@ export default class Confetti extends React.Component {
 					}
 					this.colorIncrementer++;
 					return this.dualColorOptions[this.colorIndex];
-				}
+				},
 			};
 
 			function confettiParticle(colorOptions) {
@@ -77,7 +77,7 @@ export default class Confetti extends React.Component {
 				this.tiltAngleIncremental = Math.random() * 0.07 + 0.05;
 				this.tiltAngle = 0;
 
-				this.draw = function() {
+				this.draw = function () {
 					ctx.beginPath();
 					ctx.lineWidth = this.r / 2;
 					ctx.strokeStyle = this.color;
@@ -87,12 +87,12 @@ export default class Confetti extends React.Component {
 				};
 			}
 
-			$(document).ready(function() {
+			$(document).ready(function () {
 				SetGlobals();
 				InitializeButton();
 				InitializeConfetti();
 
-				$(window).resize(function() {
+				$(window).resize(function () {
 					W = window.innerWidth;
 					H = window.innerHeight;
 					canvas.width = W;
@@ -128,7 +128,7 @@ export default class Confetti extends React.Component {
 				ctx.clearRect(0, 0, W, H);
 				var results = [];
 				for (var i = 0; i < mp; i++) {
-					(function(j) {
+					(function (j) {
 						results.push(particles[j].draw());
 					})(i);
 				}
@@ -230,7 +230,7 @@ export default class Confetti extends React.Component {
 			function RestartConfetti() {
 				ClearTimers();
 				StopConfetti();
-				reactivationTimerHandler = setTimeout(function() {
+				reactivationTimerHandler = setTimeout(function () {
 					confettiActive = true;
 					animationComplete = false;
 					InitializeConfetti();
@@ -241,14 +241,14 @@ export default class Confetti extends React.Component {
 				DeactivateConfetti();
 			}, 3000);
 
-			window.requestAnimFrame = (function() {
+			window.requestAnimFrame = (function () {
 				return (
 					window.requestAnimationFrame ||
 					window.webkitRequestAnimationFrame ||
 					window.mozRequestAnimationFrame ||
 					window.oRequestAnimationFrame ||
 					window.msRequestAnimationFrame ||
-					function(callback) {
+					function (callback) {
 						return window.setTimeout(callback, 1000 / 60);
 					}
 				);
@@ -262,5 +262,5 @@ export default class Confetti extends React.Component {
 }
 
 Confetti.propTypes = {
-	isActive: PropTypes.bool
+	isActive: PropTypes.bool,
 };

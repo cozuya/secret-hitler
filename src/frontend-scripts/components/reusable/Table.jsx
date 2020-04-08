@@ -33,7 +33,7 @@ const Table = ({ headers, rows, uiTable }) => (
 	<table className={`ui ${uiTable} table`}>
 		<thead>
 			<tr>
-				{headers.map(h => (
+				{headers.map((h) => (
 					<th key={h}>{h}</th>
 				))}
 			</tr>

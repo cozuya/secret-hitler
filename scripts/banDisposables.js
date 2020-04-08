@@ -12,10 +12,10 @@ const bannedAccounts = [];
 
 Account.find({
 	isBanned: { $ne: true },
-	$and: [{ 'verification.email': { $ne: '' } }, { 'verification.email': /^((?!gmail.com).)*$/ }]
+	$and: [{ 'verification.email': { $ne: '' } }, { 'verification.email': /^((?!gmail.com).)*$/ }],
 })
 	.cursor()
-	.eachAsync(account => {
+	.eachAsync((account) => {
 		if (emails.indexOf(account.verification.email.split('@')[1]) !== -1) {
 			account.isBanned = true;
 			const accountData = { username: account.username, domain: account.verification.email.split('@')[1] };

@@ -1,6 +1,6 @@
 const redis = require('redis');
 
-const createClients = num => redis.createClient({ db: num });
+const createClients = (num) => redis.createClient({ db: num });
 
 Array(6)
 	.fill(true)

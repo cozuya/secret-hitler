@@ -35,5 +35,5 @@ module.exports = [
 	'KKK',
 	'rape',
 	'pussy',
-	'niger'
+	'niger',
 ];

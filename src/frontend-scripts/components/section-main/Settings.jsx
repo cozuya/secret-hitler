@@ -14,9 +14,7 @@ class Settings extends React.Component {
 	state = {
 		namechangeValue: '',
 		sliderValues: [8, 24],
-		imageUid: Math.random()
-			.toString(36)
-			.substring(6),
+		imageUid: Math.random().toString(36).substring(6),
 		preview: '',
 		cardbackUploadStatus: '',
 		isUploaded: false,
@@ -53,7 +51,7 @@ class Settings extends React.Component {
 		secondaryPickerVisible: false,
 		tertiaryPickerVisible: false,
 		backgroundPickerVisible: false,
-		textPickerVisible: false
+		textPickerVisible: false,
 	};
 
 	componentDidMount() {
@@ -81,43 +79,31 @@ class Settings extends React.Component {
 			staffIncognito: gameSettings.staffIncognito || false,
 			truncatedSize: gameSettings.truncatedSize || 250,
 			safeForWork: gameSettings.safeForWork,
-			primaryColor: window
-				.getComputedStyle(document.documentElement)
-				.getPropertyValue('--theme-primary')
-				.trim(),
-			secondaryColor: window
-				.getComputedStyle(document.documentElement)
-				.getPropertyValue('--theme-secondary')
-				.trim(),
-			tertiaryColor: window
-				.getComputedStyle(document.documentElement)
-				.getPropertyValue('--theme-tertiary')
-				.trim(),
+			primaryColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim(),
+			secondaryColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-secondary').trim(),
+			tertiaryColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-tertiary').trim(),
 			backgroundColor: window
 				.getComputedStyle(document.documentElement)
 				.getPropertyValue('--theme-background-1')
 				.trim(),
-			textColor: window
-				.getComputedStyle(document.documentElement)
-				.getPropertyValue('--theme-text-1')
-				.trim()
+			textColor: window.getComputedStyle(document.documentElement).getPropertyValue('--theme-text-1').trim(),
 		});
 	}
 
-	handleSoundChange = e => {
+	handleSoundChange = (e) => {
 		this.setState(
 			{
-				soundSelected: e.target.value
+				soundSelected: e.target.value,
 			},
 			() => {
 				this.props.socket.emit('updateGameSettings', {
-					soundStatus: this.state.soundSelected
+					soundStatus: this.state.soundSelected,
 				});
 			}
 		);
 	};
 
-	toggleGameSettings = value => {
+	toggleGameSettings = (value) => {
 		const obj = {};
 
 		obj[value] = !this.state[value];
@@ -125,30 +111,30 @@ class Settings extends React.Component {
 		this.setState(obj);
 	};
 
-	sliderChange = event => {
+	sliderChange = (event) => {
 		this.setState({ fontSize: event[0] });
 	};
 
-	sliderDrop = event => {
+	sliderDrop = (event) => {
 		this.props.socket.emit('updateGameSettings', {
-			fontSize: this.state.fontSize
+			fontSize: this.state.fontSize,
 		});
 	};
 
-	profileSearchSubmit = e => {
+	profileSearchSubmit = (e) => {
 		e.preventDefault();
 
 		window.location.hash = `#/profile/${this.state.profileSearchValue}`;
 	};
 
 	renderFonts() {
-		const changeFontSubmit = fontName => {
+		const changeFontSubmit = (fontName) => {
 			this.setState({
-				fontChecked: fontName
+				fontChecked: fontName,
 			});
 
 			this.props.socket.emit('updateGameSettings', {
-				fontFamily: fontName
+				fontFamily: fontName,
 			});
 		};
 
@@ -168,7 +154,7 @@ class Settings extends React.Component {
 						<label
 							htmlFor="comfortaa"
 							style={{
-								fontSize: this.state.fontSize
+								fontSize: this.state.fontSize,
 							}}
 						>
 							The quick brown fascist jumped over the lazy liberal. (comfortaa, default)
@@ -188,7 +174,7 @@ class Settings extends React.Component {
 						<label
 							htmlFor="lato"
 							style={{
-								fontSize: this.state.fontSize
+								fontSize: this.state.fontSize,
 							}}
 						>
 							The quick brown fascist jumped over the lazy liberal. (lato)
@@ -208,7 +194,7 @@ class Settings extends React.Component {
 						<label
 							htmlFor="germaniaone"
 							style={{
-								fontSize: this.state.fontSize
+								fontSize: this.state.fontSize,
 							}}
 						>
 							The quick brown fascist jumped over the lazy liberal. (germania one)
@@ -228,7 +214,7 @@ class Settings extends React.Component {
 						<label
 							htmlFor="robotoslab"
 							style={{
-								fontSize: this.state.fontSize
+								fontSize: this.state.fontSize,
 							}}
 						>
 							The quick brown fascist jumped over the lazy liberal. (roboto slab)
@@ -250,12 +236,13 @@ class Settings extends React.Component {
 			secondaryPickerVisible,
 			tertiaryPickerVisible,
 			backgroundPickerVisible,
-			textPickerVisible
+			textPickerVisible,
 		} = this.state;
 		const { socket } = this.props;
 		const docStyle = document.documentElement.style;
-		const getHSLstring = color => `hsl(${Math.round(color.h)}, ${Math.round(color.s * 100)}%, ${Math.round(color.l * 100)}%)`;
-		const renderPicker = name => (
+		const getHSLstring = (color) =>
+			`hsl(${Math.round(color.h)}, ${Math.round(color.s * 100)}%, ${Math.round(color.l * 100)}%)`;
+		const renderPicker = (name) => (
 			<div className="picker-container">
 				<div
 					className="picker-close-button"
@@ -268,13 +255,13 @@ class Settings extends React.Component {
 				<SketchPicker
 					disableAlpha
 					color={this.state[`${name}Color`]}
-					onChangeComplete={color => {
+					onChangeComplete={(color) => {
 						const { hsl } = color;
 						const newColor = getHSLstring(hsl);
 
 						this.setState(
 							{
-								[`${name}Color`]: newColor
+								[`${name}Color`]: newColor,
 							},
 							() => {
 								const isBackgroundOrText = name === 'background' || name === 'text';
@@ -283,12 +270,12 @@ class Settings extends React.Component {
 									const newColorHSL2 = {
 										h: hsl.h,
 										s: hsl.s,
-										l: hsl.l < 0.5 ? (hsl.l <= 0.93 ? hsl.l + 0.07 : 100) : hsl.l >= 0.07 ? hsl.l - 0.07 : 0
+										l: hsl.l < 0.5 ? (hsl.l <= 0.93 ? hsl.l + 0.07 : 100) : hsl.l >= 0.07 ? hsl.l - 0.07 : 0,
 									};
 									const newColorHSL3 = {
 										h: hsl.h,
 										s: hsl.s,
-										l: hsl.l < 0.5 ? (hsl.l <= 0.86 ? hsl.l + 0.14 : 100) : hsl.l >= 0.14 ? hsl.l - 0.14 : 0
+										l: hsl.l < 0.5 ? (hsl.l <= 0.86 ? hsl.l + 0.14 : 100) : hsl.l >= 0.14 ? hsl.l - 0.14 : 0,
 									};
 
 									docStyle.setProperty(`--theme-${name}-1`, newColor);
@@ -299,7 +286,7 @@ class Settings extends React.Component {
 								}
 
 								socket.emit('handleUpdatedTheme', {
-									[`${name}Color`]: newColor
+									[`${name}Color`]: newColor,
 								});
 							}
 						);
@@ -310,27 +297,15 @@ class Settings extends React.Component {
 
 		const getAltThemeColors = () => {
 			const hue = parseInt(primaryColor.split(',')[0].split('hsl(')[1], 10);
-			const saturation = parseInt(
-				primaryColor
-					.split(',')[1]
-					.trim()
-					.split('%')[0],
-				10
-			);
-			const lightness = parseInt(
-				primaryColor
-					.split(',')[2]
-					.trim()
-					.split('%)')[0],
-				10
-			);
+			const saturation = parseInt(primaryColor.split(',')[1].trim().split('%')[0], 10);
+			const lightness = parseInt(primaryColor.split(',')[2].trim().split('%)')[0], 10);
 
 			const secondarySaturation = saturation >= 25 ? saturation - 25 : 0;
 			const tertiaryHue = hue > 320 ? hue - 320 : hue + 40;
 
 			return {
 				secondaryColor: `hsl(${hue}, ${secondarySaturation}%, ${lightness}%)`,
-				tertiaryColor: `hsl(${tertiaryHue}, ${saturation}%, ${lightness}%)`
+				tertiaryColor: `hsl(${tertiaryHue}, ${saturation}%, ${lightness}%)`,
 			};
 		};
 
@@ -338,12 +313,12 @@ class Settings extends React.Component {
 			this.setState(
 				{
 					secondaryColor: getAltThemeColors().secondaryColor,
-					tertiaryColor: getAltThemeColors().tertiaryColor
+					tertiaryColor: getAltThemeColors().tertiaryColor,
 				},
 				() => {
 					socket.emit('handleUpdatedTheme', {
 						secondaryColor: getAltThemeColors().secondaryColor,
-						tertiaryColor: getAltThemeColors().tertiaryColor
+						tertiaryColor: getAltThemeColors().tertiaryColor,
 					});
 					docStyle.setProperty('--theme-secondary', getAltThemeColors().secondaryColor);
 					docStyle.setProperty('--theme-tertiary', getAltThemeColors().tertiaryColor);
@@ -358,7 +333,7 @@ class Settings extends React.Component {
 					secondaryColor: 'hsl(225, 48%, 57%)',
 					tertiaryColor: 'hsl(265, 73%, 57%)',
 					backgroundColor: 'hsl(0, 0%, 0%)',
-					textColor: 'hsl(0, 0%, 100%)'
+					textColor: 'hsl(0, 0%, 100%)',
 				},
 				() => {
 					socket.emit('handleUpdatedTheme', {
@@ -366,7 +341,7 @@ class Settings extends React.Component {
 						secondaryColor: 'hsl(225, 48%, 57%)',
 						tertiaryColor: 'hsl(265, 73%, 57%)',
 						backgroundColor: 'hsl(0, 0%, 0%)',
-						textColor: 'hsl(0, 0%, 100%)'
+						textColor: 'hsl(0, 0%, 100%)',
 					});
 					docStyle.setProperty('--theme-primary', 'hsl(225, 73%, 57%)');
 					docStyle.setProperty('--theme-secondary', 'hsl(225, 48%, 57%)');
@@ -394,7 +369,7 @@ class Settings extends React.Component {
 							onClick={() => {
 								if (!primaryPickerVisible) {
 									this.setState({
-										primaryPickerVisible: true
+										primaryPickerVisible: true,
 									});
 								}
 							}}
@@ -409,7 +384,7 @@ class Settings extends React.Component {
 							onClick={() => {
 								if (!secondaryPickerVisible) {
 									this.setState({
-										secondaryPickerVisible: true
+										secondaryPickerVisible: true,
 									});
 								}
 							}}
@@ -424,7 +399,7 @@ class Settings extends React.Component {
 							onClick={() => {
 								if (!tertiaryPickerVisible) {
 									this.setState({
-										tertiaryPickerVisible: true
+										tertiaryPickerVisible: true,
 									});
 								}
 							}}
@@ -436,7 +411,10 @@ class Settings extends React.Component {
 						{primaryColor &&
 							secondaryColor &&
 							tertiaryColor &&
-							!(secondaryColor === getAltThemeColors().secondaryColor && tertiaryColor === getAltThemeColors().tertiaryColor) && (
+							!(
+								secondaryColor === getAltThemeColors().secondaryColor &&
+								tertiaryColor === getAltThemeColors().tertiaryColor
+							) && (
 								<button className="ui primary button" onClick={setAltThemeColors}>
 									Compute 2nd and 3rd
 								</button>
@@ -460,7 +438,7 @@ class Settings extends React.Component {
 							onClick={() => {
 								if (!backgroundPickerVisible) {
 									this.setState({
-										backgroundPickerVisible: true
+										backgroundPickerVisible: true,
 									});
 								}
 							}}
@@ -475,7 +453,7 @@ class Settings extends React.Component {
 							onClick={() => {
 								if (!textPickerVisible) {
 									this.setState({
-										textPickerVisible: true
+										textPickerVisible: true,
 									});
 								}
 							}}
@@ -492,13 +470,13 @@ class Settings extends React.Component {
 		const onDrop = (files, rejectedFile) => {
 			if (rejectedFile.length) {
 				this.setState({
-					cardbackUploadStatus: 'The file you selected is not an image.'
+					cardbackUploadStatus: 'The file you selected is not an image.',
 				});
 				return;
 			}
 
 			this.setState({
-				cardbackUploadStatus: 'Resizing...'
+				cardbackUploadStatus: 'Resizing...',
 			});
 			try {
 				const img = new Image();
@@ -511,7 +489,7 @@ class Settings extends React.Component {
 					const data = canvas.toDataURL('image/png');
 					if (data.length > 100 * 1024) {
 						this.setState({
-							cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.'
+							cardbackUploadStatus: 'The file you selected is too big.  A maximum of 100kb is allowed.',
 						});
 						return;
 					}
@@ -520,22 +498,21 @@ class Settings extends React.Component {
 					const ratioData = targetRatio > thisRatio ? thisRatio / targetRatio : targetRatio / thisRatio;
 					this.setState({
 						preview: data,
-						cardbackUploadStatus: ratioData < 0.8 ? 'Image may be distorted. If this is a problem, manually create a 70x95px image.' : null
+						cardbackUploadStatus:
+							ratioData < 0.8 ? 'Image may be distorted. If this is a problem, manually create a 70x95px image.' : null,
 					});
 				};
 
 				img.src = URL.createObjectURL(files[0]);
 			} catch (err) {
 				this.setState({
-					cardbackUploadStatus: 'The file you selected is not an image.'
+					cardbackUploadStatus: 'The file you selected is not an image.',
 				});
 			}
 		};
 
 		const displayCardbackInfoModal = () => {
-			$('.cardbackinfo')
-				.modal('setting', 'transition', 'scale')
-				.modal('show');
+			$('.cardbackinfo').modal('setting', 'transition', 'scale').modal('show');
 		};
 
 		const previewSaveClick = () => {
@@ -543,46 +520,46 @@ class Settings extends React.Component {
 				url: '/upload-cardback',
 				method: 'POST',
 				data: {
-					image: this.state.preview
-				}
+					image: this.state.preview,
+				},
 			})
-				.then(data => {
+				.then((data) => {
 					this.setState({
 						cardbackUploadStatus: data.message,
 						isUploaded: data.message === 'Image uploaded successfully.' ? this.state.preview : '',
-						preview: ''
+						preview: '',
 					});
 				})
-				.catch(err => {
+				.catch((err) => {
 					if (err.status == 413) {
 						this.setState({
 							cardbackUploadStatus: 'Image too large.',
 							isUploaded: '',
-							preview: ''
+							preview: '',
 						});
 					} else {
 						this.setState({
 							cardbackUploadStatus: 'An unknown error occurred, refer to the console and show a dev.',
 							isUploaded: '',
-							preview: ''
+							preview: '',
 						});
 						console.log('Unknown cardback error', err);
 					}
 				});
 		};
 
-		const previewClearClick = event => {
+		const previewClearClick = (event) => {
 			event.preventDefault();
 			this.setState({ preview: '', cardbackUploadStatus: null });
 		};
 
-		const handleSearchProfileChange = e => {
+		const handleSearchProfileChange = (e) => {
 			this.setState({ profileSearchValue: e.currentTarget.value });
 		};
 
 		const gameSettings = this.props.gameSettings || window.gameSettings;
 
-		const ownProfileSubmit = event => {
+		const ownProfileSubmit = (event) => {
 			event.preventDefault();
 
 			window.location.hash = `#/profile/${this.props.userInfo.userName}`;
@@ -615,7 +592,9 @@ class Settings extends React.Component {
 									spellCheck="false"
 								/>
 							</div>
-							<button className={this.state.profileSearchValue ? 'ui primary button' : 'ui primary button disabled'}>Submit</button>
+							<button className={this.state.profileSearchValue ? 'ui primary button' : 'ui primary button disabled'}>
+								Submit
+							</button>
 						</form>
 					</div>
 				</div>
@@ -624,7 +603,12 @@ class Settings extends React.Component {
 						<div className="four wide column popups">
 							<h4 className="ui header">Add timestamps to chats</h4>
 							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="timestamps" checked={this.state.enableTimestamps} onChange={() => this.toggleGameSettings('enableTimestamps')} />
+								<input
+									type="checkbox"
+									name="timestamps"
+									checked={this.state.enableTimestamps}
+									onChange={() => this.toggleGameSettings('enableTimestamps')}
+								/>
 								<label /> {/* N.B You need a blank label tag after input for the semantic checkboxes to display! */}
 							</div>
 							<h4 className="ui header">Disable Help Messages</h4>
@@ -647,17 +631,24 @@ class Settings extends React.Component {
 								/>
 								<label />
 							</div>
-							{window.staffRole && window.staffRole !== 'altmod' && window.staffRole !== 'trialmod' && window.staffRole !== 'veteran' && (
-								<React.Fragment>
-									<h4 className="ui header" style={{ color: '#05bba0' }}>
-										Incognito (hide from userlist)
-									</h4>
-									<div className="ui fitted toggle checkbox">
-										<input type="checkbox" checked={this.state.staffIncognito} onChange={() => this.toggleGameSettings('staffIncognito')} />
-										<label />
-									</div>
-								</React.Fragment>
-							)}
+							{window.staffRole &&
+								window.staffRole !== 'altmod' &&
+								window.staffRole !== 'trialmod' &&
+								window.staffRole !== 'veteran' && (
+									<React.Fragment>
+										<h4 className="ui header" style={{ color: '#05bba0' }}>
+											Incognito (hide from userlist)
+										</h4>
+										<div className="ui fitted toggle checkbox">
+											<input
+												type="checkbox"
+												checked={this.state.staffIncognito}
+												onChange={() => this.toggleGameSettings('staffIncognito')}
+											/>
+											<label />
+										</div>
+									</React.Fragment>
+								)}
 						</div>
 						<div className="four wide column popups">
 							<h4 className="ui header">Show right sidebar in games</h4>
@@ -682,7 +673,12 @@ class Settings extends React.Component {
 							</div>
 							<h4 className="ui header">Disable elo system</h4>
 							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="disableElo" checked={this.state.disableElo} onChange={() => this.toggleGameSettings('disableElo')} />
+								<input
+									type="checkbox"
+									name="disableElo"
+									checked={this.state.disableElo}
+									onChange={() => this.toggleGameSettings('disableElo')}
+								/>
 								<label />
 							</div>
 							<h4 className="ui header">Truncated Chat Length</h4>
@@ -692,13 +688,15 @@ class Settings extends React.Component {
 									type="text"
 									name="truncatedSize"
 									value={this.state.truncatedSize}
-									onChange={e => {
+									onChange={(e) => {
 										if (/^\d{1,}$/.test(e.target.value) || e.target.value === '') {
 											if (e.target.value === '') {
 												this.setState({ truncatedSize: e.target.value });
 												return;
 											}
-											this.props.socket.emit('updateGameSettings', { truncatedSize: e.target.value > 0 ? e.target.value : 1 });
+											this.props.socket.emit('updateGameSettings', {
+												truncatedSize: e.target.value > 0 ? e.target.value : 1,
+											});
 											this.setState({ truncatedSize: e.target.value > 0 ? e.target.value : 1 });
 										}
 									}}
@@ -736,12 +734,22 @@ class Settings extends React.Component {
 							</div>
 							<h4 className="ui header">Disable confetti</h4>
 							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="confetti" checked={this.state.disableConfetti} onChange={() => this.toggleGameSettings('disableConfetti')} />
+								<input
+									type="checkbox"
+									name="confetti"
+									checked={this.state.disableConfetti}
+									onChange={() => this.toggleGameSettings('disableConfetti')}
+								/>
 								<label />
 							</div>
 							<h4 className="ui header">Disable seasonal awards</h4>
 							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="disablecrowns" checked={this.state.disableCrowns} onChange={() => this.toggleGameSettings('disableCrowns')} />
+								<input
+									type="checkbox"
+									name="disablecrowns"
+									checked={this.state.disableCrowns}
+									onChange={() => this.toggleGameSettings('disableCrowns')}
+								/>
 								<label />
 							</div>
 							<h4 className="ui header">Disable playerlist aggregations</h4>
@@ -790,7 +798,12 @@ class Settings extends React.Component {
 							</select>
 							<h4 className="ui header">UI full height in games</h4>
 							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="fullheight" checked={this.state.fullheight} onChange={() => this.toggleGameSettings('fullheight')} />
+								<input
+									type="checkbox"
+									name="fullheight"
+									checked={this.state.fullheight}
+									onChange={() => this.toggleGameSettings('fullheight')}
+								/>
 								<label />
 							</div>
 							<h4 className="ui header">Safe For Work Mode</h4>
@@ -810,7 +823,12 @@ class Settings extends React.Component {
 								Private-games-only (this action will log you out, 18 hour cooldown)
 							</h4>
 							<div className="ui fitted toggle checkbox">
-								<input type="checkbox" name="privateonly" checked={this.state.isPrivate} onChange={() => this.toggleGameSettings('isPrivate')} />
+								<input
+									type="checkbox"
+									name="privateonly"
+									checked={this.state.isPrivate}
+									onChange={() => this.toggleGameSettings('isPrivate')}
+								/>
 								<label />
 							</div>
 						</div>
@@ -824,7 +842,7 @@ class Settings extends React.Component {
 							<h4
 								className="ui header"
 								style={{
-									fontSize: this.state.fontSize
+									fontSize: this.state.fontSize,
 								}}
 							>
 								Gamechat font size
@@ -845,7 +863,11 @@ class Settings extends React.Component {
 							<div className="row centered cardback-header-container">
 								<h4 className="ui header">
 									Cardback
-									<i className="info circle icon" title="Click to get information about user uploaded cardbacks" onClick={displayCardbackInfoModal} />
+									<i
+										className="info circle icon"
+										title="Click to get information about user uploaded cardbacks"
+										onClick={displayCardbackInfoModal}
+									/>
 								</h4>
 							</div>
 							<div className="row cardbacks-container">
@@ -861,7 +883,7 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${gameSettings.customCardbackUid}) no-repeat`
+														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${gameSettings.customCardbackUid}) no-repeat`,
 													}}
 												/>
 											);
@@ -907,13 +929,13 @@ class Settings extends React.Component {
 
 Settings.defaultProps = {
 	gameInfo: {},
-	userInfo: {}
+	userInfo: {},
 };
 
 Settings.propTypes = {
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
-	gameSettings: PropTypes.object
+	gameSettings: PropTypes.object,
 };
 
 export default Settings;

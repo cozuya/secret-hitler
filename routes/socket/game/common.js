@@ -16,21 +16,21 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
 		game.trackState.enactedPolicies = [];
 		if (game.customGameSettings.trackState.lib > 0) {
 			game.trackState.liberalPolicyCount = game.customGameSettings.trackState.lib;
-			_.range(0, game.customGameSettings.trackState.lib).forEach(num => {
+			_.range(0, game.customGameSettings.trackState.lib).forEach((num) => {
 				game.trackState.enactedPolicies.push({
 					cardBack: 'liberal',
 					isFlipped: true,
-					position: `liberal${num + 1}`
+					position: `liberal${num + 1}`,
 				});
 			});
 		}
 		if (game.customGameSettings.trackState.fas > 0) {
 			game.trackState.fascistPolicyCount = game.customGameSettings.trackState.fas;
-			_.range(0, game.customGameSettings.trackState.fas).forEach(num => {
+			_.range(0, game.customGameSettings.trackState.fas).forEach((num) => {
 				game.trackState.enactedPolicies.push({
 					cardBack: 'fascist',
 					isFlipped: true,
-					position: `fascist${num + 1}`
+					position: `fascist${num + 1}`,
 				});
 			});
 		}
@@ -40,8 +40,8 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
 	const fasCount = game.customGameSettings.deckState.fas - game.trackState.fascistPolicyCount;
 	game.private.policies = _.shuffle(
 		_.range(0, libCount)
-			.map(num => 'liberal')
-			.concat(_.range(0, fasCount).map(num => 'fascist'))
+			.map((num) => 'liberal')
+			.concat(_.range(0, fasCount).map((num) => 'fascist'))
 	);
 
 	game.gameState.undrawnPolicyCount = game.private.policies.length;
@@ -52,25 +52,25 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
 			gameChat: true,
 			chat: [
 				{
-					text: 'Deck shuffled: '
+					text: 'Deck shuffled: ',
 				},
 				{
 					text: `${libCount} liberal`,
-					type: 'liberal'
+					type: 'liberal',
 				},
 				{
-					text: ' and '
+					text: ' and ',
 				},
 				{
 					text: `${fasCount} fascist`,
-					type: 'fascist'
+					type: 'fascist',
 				},
 				{
-					text: ' policies.'
-				}
-			]
+					text: ' policies.',
+				},
+			],
 		};
-		game.private.seatedPlayers.forEach(player => {
+		game.private.seatedPlayers.forEach((player) => {
 			player.gameChats.push(chat);
 		});
 		game.private.unSeatedGameChats.push(chat);
@@ -79,12 +79,12 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
 	const modOnlyChat = {
 		timestamp: new Date(),
 		gameChat: true,
-		chat: [{ text: 'The deck has been shuffled: ' }]
+		chat: [{ text: 'The deck has been shuffled: ' }],
 	};
-	game.private.policies.forEach(policy => {
+	game.private.policies.forEach((policy) => {
 		modOnlyChat.chat.push({
 			text: policy === 'liberal' ? 'B' : 'R',
-			type: policy
+			type: policy,
 		});
 	});
 	game.private.hiddenInfoChat.push(modOnlyChat);
@@ -115,7 +115,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		 * @param {number} index - index of the current president
 		 * @return {number} index of the next president
 		 */
-		const nextPresidentIndex = index => {
+		const nextPresidentIndex = (index) => {
 			const nextIndex = index + 1 === game.general.playerCount ? 0 : index + 1;
 
 			if (game.publicPlayersState[nextIndex].isDead) {
@@ -150,9 +150,9 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			timestamp: new Date(),
 			chat: [
 				{
-					text: 'You are president and must select a chancellor.'
-				}
-			]
+					text: 'You are president and must select a chancellor.',
+				},
+			],
 		});
 	}
 
@@ -162,13 +162,15 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 				seatedPlayers[index] &&
 				!seatedPlayers[index].isDead &&
 				index !== presidentIndex &&
-				(game.general.livingPlayerCount > 5 ? !previousElectedGovernment.includes(index) : previousElectedGovernment[1] !== index)
+				(game.general.livingPlayerCount > 5
+					? !previousElectedGovernment.includes(index)
+					: previousElectedGovernment[1] !== index)
 		)
-		.forEach(player => {
+		.forEach((player) => {
 			player.notificationStatus = 'notification';
 		});
 
-	game.publicPlayersState.forEach(player => {
+	game.publicPlayersState.forEach((player) => {
 		player.cardStatus.cardDisplayed = false;
 		player.governmentStatus = '';
 	});
@@ -200,14 +202,19 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 			? [
 					pendingPresidentPlayer.userName,
 					seatedPlayers
-						.filter((player, index) => !player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index))
-						.map(el => seatedPlayers.indexOf(el))
+						.filter(
+							(player, index) =>
+								!player.isDead && index !== presidentIndex && !previousElectedGovernment.includes(index)
+						)
+						.map((el) => seatedPlayers.indexOf(el)),
 			  ]
 			: [
 					pendingPresidentPlayer.userName,
 					seatedPlayers
-						.filter((player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index)
-						.map(el => seatedPlayers.indexOf(el))
+						.filter(
+							(player, index) => !player.isDead && index !== presidentIndex && previousElectedGovernment[1] !== index
+						)
+						.map((el) => seatedPlayers.indexOf(el)),
 			  ];
 
 	sendInProgressGameUpdate(game);

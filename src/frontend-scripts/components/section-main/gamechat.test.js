@@ -9,7 +9,7 @@ describe('Gamechat', () => {
 			loadReplay: () => {},
 			toggleNotes: () => {},
 			updateUser: () => {},
-			notesActive: false
+			notesActive: false,
 		};
 
 		const store = createMockStore(initialProps);

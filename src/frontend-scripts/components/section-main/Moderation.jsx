@@ -24,32 +24,32 @@ export default class Moderation extends React.Component {
 		nonSeasonalSetStats: false,
 		logSort: {
 			type: 'date',
-			direction: 'descending'
+			direction: 'descending',
 		},
 		userSort: {
 			type: 'username',
-			direction: 'descending'
+			direction: 'descending',
 		},
 		gameSort: {
 			type: 'username',
-			direction: 'descending'
+			direction: 'descending',
 		},
 		hideActions: false,
 		filterModalVisibility: false,
 		filterValue: '',
-		showGameIcons: false
+		showGameIcons: false,
 	};
 
 	componentDidMount() {
 		const self = this;
 		const { socket } = this.props;
 
-		socket.on('modInfo', info => {
+		socket.on('modInfo', (info) => {
 			this.setState({
 				userList: info.userList,
 				gameList: info.gameList,
 				log: info.modReports,
-				hideActions: info.hideActions || false
+				hideActions: info.hideActions || false,
 			});
 
 			$(this.toggleIpbans).checkbox(info.ipbansNotEnforced.status ? 'set checked' : 'set unchecked');
@@ -68,7 +68,7 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Disabled account creation',
-					action: 'disableAccountCreation'
+					action: 'disableAccountCreation',
 				});
 			},
 			onUnchecked() {
@@ -77,9 +77,9 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled account creation',
-					action: 'enableAccountCreation'
+					action: 'enableAccountCreation',
 				});
-			}
+			},
 		});
 
 		$(this.toggleBypassVPNCheck).checkbox({
@@ -89,7 +89,7 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Disabled VPN Check',
-					action: 'disableVPNCheck'
+					action: 'disableVPNCheck',
 				});
 			},
 			onUnchecked() {
@@ -98,9 +98,9 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled VPN Check',
-					action: 'enableVPNCheck'
+					action: 'enableVPNCheck',
 				});
-			}
+			},
 		});
 
 		$(this.toggleIpbans).checkbox({
@@ -110,7 +110,7 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Disabled all IP bans',
-					action: 'disableIpbans'
+					action: 'disableIpbans',
 				});
 			},
 			onUnchecked() {
@@ -119,9 +119,9 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled all IP bans',
-					action: 'enableIpbans'
+					action: 'enableIpbans',
 				});
-			}
+			},
 		});
 
 		$(this.toggleGameCreation).checkbox({
@@ -131,7 +131,7 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Disabled game creation',
-					action: 'disableGameCreation'
+					action: 'disableGameCreation',
 				});
 			},
 			onUnchecked() {
@@ -140,9 +140,9 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled game creation',
-					action: 'enableGameCreation'
+					action: 'enableGameCreation',
 				});
-			}
+			},
 		});
 
 		$(this.toggleGameCreation).checkbox({
@@ -152,7 +152,7 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Disabled game creation',
-					action: 'disableGameCreation'
+					action: 'disableGameCreation',
 				});
 			},
 			onUnchecked() {
@@ -161,9 +161,9 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled game creation',
-					action: 'enableGameCreation'
+					action: 'enableGameCreation',
 				});
-			}
+			},
 		});
 
 		$(this.toggleLimitNewPlayers).checkbox({
@@ -173,7 +173,7 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Enabled limiting new players',
-					action: 'enableLimitNewPlayers'
+					action: 'enableLimitNewPlayers',
 				});
 			},
 			onUnchecked() {
@@ -182,22 +182,22 @@ export default class Moderation extends React.Component {
 					userName: '',
 					ip: '',
 					comment: self.state.actionTextValue || 'Disabled limiting new players',
-					action: 'disableLimitNewPlayers'
+					action: 'disableLimitNewPlayers',
 				});
-			}
+			},
 		});
 
 		$(this.toggleSeasonalSetstats).checkbox({
 			onChecked() {
 				self.setState({
-					nonSeasonalSetStats: true
+					nonSeasonalSetStats: true,
 				});
 			},
 			onUnchecked() {
 				self.setState({
-					nonSeasonalSetStats: false
+					nonSeasonalSetStats: false,
 				});
-			}
+			},
 		});
 	}
 
@@ -209,25 +209,31 @@ export default class Moderation extends React.Component {
 		if (this.state.playerListState < 2) {
 			this.setState({
 				playerListState: this.state.playerListState + 1,
-				selectedUser: ''
+				selectedUser: '',
 			});
 		} else {
 			this.setState({
 				playerListState: 0,
 				selectedUser: '',
-				playerInputText: ''
+				playerInputText: '',
 			});
 		}
 	};
 
 	renderPlayerInput() {
-		const playerInputKeyup = e => {
+		const playerInputKeyup = (e) => {
 			this.setState({ playerInputText: `${e.target.value}` });
 		};
 
 		return (
 			<div className="player-input">
-				<input id="playernameelem" placeholder="Player or game name" onChange={playerInputKeyup} className="player-input" value={this.state.playerInputText} />
+				<input
+					id="playernameelem"
+					placeholder="Player or game name"
+					onChange={playerInputKeyup}
+					className="player-input"
+					value={this.state.playerInputText}
+				/>
 			</div>
 		);
 	}
@@ -241,18 +247,20 @@ export default class Moderation extends React.Component {
 	}
 
 	renderUserlist() {
-		const radioChange = userName => {
+		const radioChange = (userName) => {
 			this.setState({ selectedUser: userName });
 		};
 		const { userList, userSort } = this.state;
-		const ips = userList.map(user => user.ip);
-		const bannedips = this.state.log.filter(log => log.actionTaken === 'ban' || log.actionTaken === 'timeOut').map(log => log.ip);
-		const timednames = this.state.log.filter(log => log.actionTaken === 'timeOut2').map(log => log.userActedOn);
-		const splitIP = ip => {
+		const ips = userList.map((user) => user.ip);
+		const bannedips = this.state.log
+			.filter((log) => log.actionTaken === 'ban' || log.actionTaken === 'timeOut')
+			.map((log) => log.ip);
+		const timednames = this.state.log.filter((log) => log.actionTaken === 'timeOut2').map((log) => log.userActedOn);
+		const splitIP = (ip) => {
 			const idx = ip.lastIndexOf('.');
 			return [ip.substring(0, idx - 1), ip.substring(idx + 1)];
 		};
-		const renderStatus = user => {
+		const renderStatus = (user) => {
 			const status = user.status;
 			if (!status || status.type === 'none') {
 				return <i className={'status unclickable icon'} />;
@@ -272,14 +280,14 @@ export default class Moderation extends React.Component {
 					observing: 'This player is observing a game.',
 					rainbow: 'This player is playing in a experienced-player-only game.',
 					replay: 'This player is watching a replay.',
-					private: 'This player is playing in a private game.'
+					private: 'This player is playing in a private game.',
 				};
 				const onClick = {
 					playing: this.routeToGame,
 					observing: this.routeToGame,
 					rainbow: this.routeToGame,
 					replay: this.props.fetchReplay,
-					private: this.routeToGame
+					private: this.routeToGame,
 				};
 
 				return (
@@ -293,7 +301,7 @@ export default class Moderation extends React.Component {
 			}
 		};
 		const IPdata = {};
-		ips.forEach(ip => {
+		ips.forEach((ip) => {
 			const data = splitIP(ip);
 			if (!IPdata[data[0]]) IPdata[data[0]] = { unique: 0 };
 			if (!IPdata[data[0]][data[1]]) {
@@ -302,19 +310,19 @@ export default class Moderation extends React.Component {
 			}
 			IPdata[data[0]][data[1]]++;
 		});
-		const getIPType = user => {
+		const getIPType = (user) => {
 			const data = splitIP(user.ip);
 			if (IPdata[data[0]][data[1]] > 1) return 'multi';
 			if (IPdata[data[0]].unique > 1) return 'multi2';
 			return '';
 		};
-		const getUserType = user => {
+		const getUserType = (user) => {
 			if (user.isTor) return 'istor';
 			if (bannedips.includes(user.ip)) return 'isbannedbefore';
 			if (timednames.includes(user.userName)) return 'istimedbefore';
 			return '';
 		};
-		const checkEmail = email => {
+		const checkEmail = (email) => {
 			if (email.startsWith('-')) return 'emailunverified';
 			return '';
 		};
@@ -324,7 +332,8 @@ export default class Moderation extends React.Component {
 				(() => {
 					const getAmt = (a, b) => {
 						if (userSort.type === 'IP' && a.ip != b.ip) return a.ip > b.ip ? 1 : -1;
-						if (userSort.type === 'email' && a.email.toLowerCase() != b.email.toLowerCase()) return a.email > b.email ? 1 : -1;
+						if (userSort.type === 'email' && a.email.toLowerCase() != b.email.toLowerCase())
+							return a.email > b.email ? 1 : -1;
 						return a.userName.toLowerCase() > b.userName.toLowerCase() ? 1 : -1;
 					};
 					return getAmt(a, b) * (userSort.direction === 'descending' ? 1 : -1);
@@ -355,11 +364,11 @@ export default class Moderation extends React.Component {
 	}
 
 	renderGameList() {
-		const gameRadioChange = game => {
+		const gameRadioChange = (game) => {
 			this.setState({ playerInputText: game.uid });
 		};
 		const { gameList, gameSort } = this.state;
-		const getGameType = game => {
+		const getGameType = (game) => {
 			if (game.unlisted) return 'unlisted';
 			if (game.custom) return 'custom';
 			if (game.casual) return 'casual';
@@ -371,7 +380,8 @@ export default class Moderation extends React.Component {
 				(() => {
 					const getAmt = (a, b) => {
 						if (gameSort.type === 'uid' && a.uid != b.uid) return a.uid > b.uid ? 1 : -1;
-						if (gameSort.type === 'electionNum' && a.electionNum != b.electionNum) return a.electionNum > b.electionNum ? 1 : -1;
+						if (gameSort.type === 'electionNum' && a.electionNum != b.electionNum)
+							return a.electionNum > b.electionNum ? 1 : -1;
 						return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
 					};
 					return getAmt(a, b) * (gameSort.direction === 'descending' ? 1 : -1);
@@ -399,7 +409,7 @@ export default class Moderation extends React.Component {
 	}
 
 	renderGameButtons() {
-		const takeModAction = action => {
+		const takeModAction = (action) => {
 			if (action) {
 				this.props.socket.emit('updateModAction', {
 					modName: this.props.userInfo.userName,
@@ -409,15 +419,19 @@ export default class Moderation extends React.Component {
 							: action === 'resetGameName'
 							? `RESETGAMENAME${this.state.playerInputText}`
 							: this.state.playerInputText || this.state.selectedUser,
-					ip: this.state.playerInputText ? '' : this.state.selectedUser ? this.state.userList.find(user => user.userName === this.state.selectedUser).ip : '',
+					ip: this.state.playerInputText
+						? ''
+						: this.state.selectedUser
+						? this.state.userList.find((user) => user.userName === this.state.selectedUser).ip
+						: '',
 					comment: this.state.actionTextValue,
-					action
+					action,
 				});
 			}
 			this.setState({
 				selectedUser: '',
 				actionTextValue: '',
-				playerInputText: ''
+				playerInputText: '',
 			});
 		};
 
@@ -450,7 +464,7 @@ export default class Moderation extends React.Component {
 	renderButtons() {
 		const { socket, userInfo } = this.props;
 		const { playerInputText, selectedUser, userList, actionTextValue } = this.state;
-		const takeModAction = action => {
+		const takeModAction = (action) => {
 			if (action === 'resetServer' && !this.state.resetServerCount) {
 				this.setState({ resetServerCount: 1 });
 			} else {
@@ -462,14 +476,14 @@ export default class Moderation extends React.Component {
 							: action === 'resetGameName'
 							? `RESETGAMENAME${playerInputText}`
 							: playerInputText || selectedUser,
-					ip: playerInputText ? '' : selectedUser ? userList.find(user => user.userName === selectedUser).ip : '',
+					ip: playerInputText ? '' : selectedUser ? userList.find((user) => user.userName === selectedUser).ip : '',
 					comment: actionTextValue,
-					action
+					action,
 				});
 				this.setState({
 					selectedUser: '',
 					actionTextValue: '',
-					playerInputText: ''
+					playerInputText: '',
 				});
 			}
 		};
@@ -488,7 +502,11 @@ export default class Moderation extends React.Component {
 				</button>
 				<div className="ui horizontal divider">Warnings</div>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					style={{ background: '#ff5865', color: 'black' }}
 					onClick={() => {
 						takeModAction('warn');
@@ -497,7 +515,11 @@ export default class Moderation extends React.Component {
 					Issue Warning
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					style={{ background: '#FFDEAD', color: 'black' }}
 					onClick={() => {
 						takeModAction('removeWarning');
@@ -513,7 +535,7 @@ export default class Moderation extends React.Component {
 						this.setState({
 							selectedUser: '',
 							actionTextValue: '',
-							playerInputText: ''
+							playerInputText: '',
 						});
 					}}
 				>
@@ -521,7 +543,11 @@ export default class Moderation extends React.Component {
 				</button>
 				<div className="ui horizontal divider">Revoke Access</div>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button ipban-button' : 'ui button disabled ipban-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button ipban-button'
+							: 'ui button disabled ipban-button'
+					}
 					onClick={() => {
 						takeModAction('ban');
 					}}
@@ -529,7 +555,11 @@ export default class Moderation extends React.Component {
 					Ban user
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button timeout-button'
+							: 'ui button disabled timeout-button'
+					}
 					onClick={() => {
 						takeModAction('timeOut3');
 					}}
@@ -537,7 +567,11 @@ export default class Moderation extends React.Component {
 					Timeout - 1 Hour (IP)
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button timeout-button'
+							: 'ui button disabled timeout-button'
+					}
 					onClick={() => {
 						takeModAction('timeOut4');
 					}}
@@ -545,7 +579,11 @@ export default class Moderation extends React.Component {
 					Timeout - 6 Hours (non-IP)
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button timeout-button'
+							: 'ui button disabled timeout-button'
+					}
 					onClick={() => {
 						takeModAction('timeOut');
 					}}
@@ -553,7 +591,11 @@ export default class Moderation extends React.Component {
 					Timeout - 18 Hours (IP)
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button timeout-button'
+							: 'ui button disabled timeout-button'
+					}
 					onClick={() => {
 						takeModAction('timeOut2');
 					}}
@@ -571,7 +613,11 @@ export default class Moderation extends React.Component {
 					Set as verified
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled cardback-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button cardback-button'
+							: 'ui button disabled cardback-button'
+					}
 					onClick={() => {
 						takeModAction('deleteCardback');
 					}}
@@ -589,7 +635,11 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					style={{ width: '100%', background: 'palevioletred' }}
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled convert-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button cardback-button'
+							: 'ui button disabled convert-button'
+					}
 					onClick={() => {
 						takeModAction('togglePrivate');
 					}}
@@ -598,7 +648,11 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					style={{ width: '100%', background: 'palevioletred' }}
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button cardback-button' : 'ui button disabled convert-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button cardback-button'
+							: 'ui button disabled convert-button'
+					}
 					onClick={() => {
 						takeModAction('togglePrivateEighteen');
 					}}
@@ -654,7 +708,11 @@ export default class Moderation extends React.Component {
 				</button>
 				<div className="ui horizontal divider">Grant Access</div>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button timeout-button'
+							: 'ui button disabled timeout-button'
+					}
 					onClick={() => {
 						takeModAction('clearTimeout');
 					}}
@@ -662,7 +720,11 @@ export default class Moderation extends React.Component {
 					Restore User - Remove any pre-existing timeout or ban.
 				</button>
 				<button
-					className={(selectedUser || playerInputText) && actionTextValue ? 'ui button timeout-button' : 'ui button disabled timeout-button'}
+					className={
+						(selectedUser || playerInputText) && actionTextValue
+							? 'ui button timeout-button'
+							: 'ui button disabled timeout-button'
+					}
 					onClick={() => {
 						takeModAction('clearTimeoutIP');
 					}}
@@ -683,7 +745,7 @@ export default class Moderation extends React.Component {
 					<h4 className="ui header">Disable account creation</h4>
 					<div
 						className="ui fitted toggle checkbox"
-						ref={c => {
+						ref={(c) => {
 							this.toggleAccountCreation = c;
 						}}
 					>
@@ -706,7 +768,7 @@ export default class Moderation extends React.Component {
 					<h4 className="ui header">Disable game creation</h4>
 					<div
 						className="ui fitted toggle checkbox"
-						ref={c => {
+						ref={(c) => {
 							this.toggleGameCreation = c;
 						}}
 					>
@@ -729,7 +791,7 @@ export default class Moderation extends React.Component {
 					<h4 className="ui header">Disable VPN Check</h4>
 					<div
 						className="ui fitted toggle checkbox"
-						ref={c => {
+						ref={(c) => {
 							this.toggleBypassVPNCheck = c;
 						}}
 					>
@@ -743,14 +805,16 @@ export default class Moderation extends React.Component {
 
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button tier3'
 							: 'ui button disabled tier3'
 					}
 					onClick={() => {
 						takeModAction({
 							type: `setWins${this.state.actionTextValue}`,
-							isNonSeason: this.state.nonSeasonalSetStats
+							isNonSeason: this.state.nonSeasonalSetStats,
 						});
 					}}
 				>
@@ -758,14 +822,16 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button tier3'
 							: 'ui button disabled tier3'
 					}
 					onClick={() => {
 						takeModAction({
 							type: `setLosses${this.state.actionTextValue}`,
-							isNonSeason: this.state.nonSeasonalSetStats
+							isNonSeason: this.state.nonSeasonalSetStats,
 						});
 					}}
 				>
@@ -773,14 +839,16 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button tier3'
 							: 'ui button disabled tier3'
 					}
 					onClick={() => {
 						takeModAction({
 							type: `setRWins${this.state.actionTextValue}`,
-							isNonSeason: this.state.nonSeasonalSetStats
+							isNonSeason: this.state.nonSeasonalSetStats,
 						});
 					}}
 				>
@@ -788,14 +856,16 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button tier3'
 							: 'ui button disabled tier3'
 					}
 					onClick={() => {
 						takeModAction({
 							type: `setRLosses${this.state.actionTextValue}`,
-							isNonSeason: this.state.nonSeasonalSetStats
+							isNonSeason: this.state.nonSeasonalSetStats,
 						});
 					}}
 				>
@@ -805,7 +875,7 @@ export default class Moderation extends React.Component {
 					<h4 className="ui header">Above actions apply only to non seasonal.</h4>
 					<div
 						className="ui fitted toggle checkbox"
-						ref={c => {
+						ref={(c) => {
 							this.toggleSeasonalSetstats = c;
 						}}
 					>
@@ -816,7 +886,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'lime', color: 'black' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -828,7 +900,9 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ib'
 							: 'ui button disabled ib'
 					}
@@ -842,7 +916,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'crimson' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -855,7 +931,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: '#f78d59' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -868,7 +946,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'darkblue' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -881,7 +961,9 @@ export default class Moderation extends React.Component {
 				<div className="ui horizontal divider">Punishments</div>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -893,7 +975,9 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -905,7 +989,9 @@ export default class Moderation extends React.Component {
 				</button>
 				<button
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -919,7 +1005,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'darkmagenta' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -933,7 +1021,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'grey' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -946,7 +1036,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: '#21bae0' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -959,7 +1051,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'grey' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -972,7 +1066,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'violet' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -985,7 +1081,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: 'purple' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -998,7 +1096,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: '#007fff' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -1011,7 +1111,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: '#05bba0' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -1024,7 +1126,9 @@ export default class Moderation extends React.Component {
 				<button
 					style={{ background: '#4d949e' }}
 					className={
-						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
+						(selectedUser || playerInputText) &&
+						actionTextValue &&
+						(userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
 							: 'ui button disabled ipban-button'
 					}
@@ -1068,20 +1172,21 @@ export default class Moderation extends React.Component {
 
 	renderModLog() {
 		const { logSort, logCount } = this.state;
-		const clickSort = type => {
+		const clickSort = (type) => {
 			this.setState({
 				logSort: {
 					type,
-					direction: this.state.logSort.direction === 'descending' && type === logSort.type ? 'ascending' : 'descending'
-				}
+					direction:
+						this.state.logSort.direction === 'descending' && type === logSort.type ? 'ascending' : 'descending',
+				},
 			});
 		};
-		const modRetrieveClick = e => {
+		const modRetrieveClick = (e) => {
 			e.preventDefault();
 
 			this.setState(
 				{
-					logCount: this.state.logCount + 1
+					logCount: this.state.logCount + 1,
 				},
 				() => {
 					this.props.socket.emit('getModInfo', logCount);
@@ -1142,7 +1247,7 @@ export default class Moderation extends React.Component {
 			makeBypass: 'Create Bypass Key',
 			bypassKeyUsed: 'Consume Bypass Key',
 			resetServer: 'Server Restart',
-			regatherAEMList: 'Refresh AEM List'
+			regatherAEMList: 'Refresh AEM List',
 		};
 
 		return (
@@ -1156,7 +1261,10 @@ export default class Moderation extends React.Component {
 									clickSort('modUserName');
 								}}
 							>
-								Mod {logSort.type === 'modUserName' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Mod{' '}
+								{logSort.type === 'modUserName' && (
+									<i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								style={{ whiteSpace: 'nowrap' }}
@@ -1164,7 +1272,10 @@ export default class Moderation extends React.Component {
 									clickSort('date');
 								}}
 							>
-								Date {logSort.type === 'date' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Date{' '}
+								{logSort.type === 'date' && (
+									<i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								style={{ whiteSpace: 'nowrap' }}
@@ -1172,7 +1283,10 @@ export default class Moderation extends React.Component {
 									clickSort('actionTaken');
 								}}
 							>
-								Action {logSort.type === 'actionTaken' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Action{' '}
+								{logSort.type === 'actionTaken' && (
+									<i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								style={{ whiteSpace: 'normal' }}
@@ -1180,7 +1294,10 @@ export default class Moderation extends React.Component {
 									clickSort('userActedOn');
 								}}
 							>
-								Player {logSort.type === 'userActedOn' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Player{' '}
+								{logSort.type === 'userActedOn' && (
+									<i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								style={{ whiteSpace: 'nowrap' }}
@@ -1188,7 +1305,10 @@ export default class Moderation extends React.Component {
 									clickSort('ip');
 								}}
 							>
-								IP {logSort.type === 'ip' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								IP{' '}
+								{logSort.type === 'ip' && (
+									<i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								style={{ whiteSpace: 'nowrap' }}
@@ -1196,19 +1316,24 @@ export default class Moderation extends React.Component {
 									clickSort('modNotes');
 								}}
 							>
-								Comment {logSort.type === 'modNotes' && <i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Comment{' '}
+								{logSort.type === 'modNotes' && (
+									<i className={logSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 						</tr>
 					</thead>
 					<tbody>
 						{this.state.log
 							.filter(
-								report =>
+								(report) =>
 									(report.userActedOn && report.userActedOn.includes(name)) ||
 									(report.modUserName && report.modUserName.includes(name)) ||
 									(report.ip && report.ip.includes(name))
 							)
-							.filter(entry => (this.state.modLogToday ? new Date(entry.date).toDateString() === new Date().toDateString() : true))
+							.filter((entry) =>
+								this.state.modLogToday ? new Date(entry.date).toDateString() === new Date().toDateString() : true
+							)
 							.sort((a, b) => {
 								const { logSort } = this.state;
 								const aDate = new Date(a.date);
@@ -1237,8 +1362,12 @@ export default class Moderation extends React.Component {
 								<tr key={index}>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.modUserName}</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{moment(new Date(report.date)).format('YYYY-MM-DD HH:mm')}</td>
-									<td style={{ width: '120px', minWidth: '120px' }}>{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}</td>
-									<td style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px', minWidth: '120px' }}>{report.userActedOn}</td>
+									<td style={{ width: '120px', minWidth: '120px' }}>
+										{niceAction[report.actionTaken] ? niceAction[report.actionTaken] : report.actionTaken}
+									</td>
+									<td style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px', minWidth: '120px' }}>
+										{report.userActedOn}
+									</td>
 									<td style={{ whiteSpace: 'nowrap' }}>{report.ip}</td>
 									<td style={{ Width: '200px', minWidth: '200px' }}>
 										{report.modNotes.split('\n').map((v, index) => (
@@ -1259,20 +1388,27 @@ export default class Moderation extends React.Component {
 	}
 
 	renderActionText() {
-		const handleTextChange = e => {
+		const handleTextChange = (e) => {
 			this.setState({ actionTextValue: `${e.target.value}` });
 		};
 
-		return <textarea placeholder="Comment" value={this.state.actionTextValue} onChange={handleTextChange} spellCheck="false" />;
+		return (
+			<textarea
+				placeholder="Comment"
+				value={this.state.actionTextValue}
+				onChange={handleTextChange}
+				spellCheck="false"
+			/>
+		);
 	}
 
-	broadcastClick = e => {
+	broadcastClick = (e) => {
 		e.preventDefault();
 
 		$(this.bModal).modal('show');
 	};
 
-	handleBroadcastSubmit = e => {
+	handleBroadcastSubmit = (e) => {
 		e.preventDefault();
 		$(this.bModal).modal('hide');
 
@@ -1280,36 +1416,37 @@ export default class Moderation extends React.Component {
 			modName: this.props.userInfo.userName,
 			comment: this.state.broadcastText,
 			action: 'broadcast',
-			isSticky: $('#broadcast-sticky').is(':checked')
+			isSticky: $('#broadcast-sticky').is(':checked'),
 		});
 
 		this.setState({
-			broadcastText: ''
+			broadcastText: '',
 		});
 	};
 
 	render() {
 		const { userSort, hideActions } = this.state;
 
-		const broadcastKeyup = e => {
+		const broadcastKeyup = (e) => {
 			this.setState({
-				broadcastText: e.currentTarget.value
+				broadcastText: e.currentTarget.value,
 			});
 		};
-		const toggleModLogToday = e => {
+		const toggleModLogToday = (e) => {
 			const { modLogToday } = this.state;
 			e.preventDefault();
 
 			this.setState({
-				modLogToday: !modLogToday
+				modLogToday: !modLogToday,
 			});
 		};
-		const clickSort = type => {
+		const clickSort = (type) => {
 			this.setState({
 				userSort: {
 					type,
-					direction: this.state.userSort.direction === 'descending' && type === userSort.type ? 'ascending' : 'descending'
-				}
+					direction:
+						this.state.userSort.direction === 'descending' && type === userSort.type ? 'ascending' : 'descending',
+				},
 			});
 		};
 
@@ -1328,7 +1465,7 @@ export default class Moderation extends React.Component {
 					className="gameIcons"
 					onClick={() =>
 						this.setState({
-							showGameIcons: !this.state.showGameIcons
+							showGameIcons: !this.state.showGameIcons,
 						})
 					}
 				>
@@ -1377,7 +1514,10 @@ export default class Moderation extends React.Component {
 												clickSort('username');
 											}}
 										>
-											Username {userSort.type === 'username' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+											Username{' '}
+											{userSort.type === 'username' && (
+												<i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+											)}
 										</th>
 										<th
 											style={{ whiteSpace: 'nowrap' }}
@@ -1385,7 +1525,10 @@ export default class Moderation extends React.Component {
 												clickSort('IP');
 											}}
 										>
-											IP {userSort.type === 'IP' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+											IP{' '}
+											{userSort.type === 'IP' && (
+												<i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+											)}
 										</th>
 										<th
 											style={{ whiteSpace: 'nowrap' }}
@@ -1393,7 +1536,10 @@ export default class Moderation extends React.Component {
 												clickSort('email');
 											}}
 										>
-											Email suffix {userSort.type === 'email' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+											Email suffix{' '}
+											{userSort.type === 'email' && (
+												<i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+											)}
 										</th>
 									</tr>
 								</thead>
@@ -1440,7 +1586,10 @@ export default class Moderation extends React.Component {
 												clickSort('gamename');
 											}}
 										>
-											Game Name {userSort.type === 'gamename' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+											Game Name{' '}
+											{userSort.type === 'gamename' && (
+												<i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+											)}
 										</th>
 										<th
 											style={{ whiteSpace: 'nowrap' }}
@@ -1448,7 +1597,10 @@ export default class Moderation extends React.Component {
 												clickSort('uid');
 											}}
 										>
-											UID {userSort.type === 'uid' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+											UID{' '}
+											{userSort.type === 'uid' && (
+												<i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+											)}
 										</th>
 										<th
 											style={{ whiteSpace: 'nowrap' }}
@@ -1457,7 +1609,9 @@ export default class Moderation extends React.Component {
 											}}
 										>
 											Election #{' '}
-											{userSort.type === 'electionnum' && <i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+											{userSort.type === 'electionnum' && (
+												<i className={userSort.direction === 'descending' ? 'angle down icon' : 'angle up icon'} />
+											)}
 										</th>
 									</tr>
 								</thead>
@@ -1496,7 +1650,7 @@ export default class Moderation extends React.Component {
 								style={{ padding: '5px' }}
 								onSubmit={() => {
 									this.setState({
-										filterModalVisibility: false
+										filterModalVisibility: false,
 									});
 
 									if (!this.state.filterValue) {
@@ -1507,7 +1661,7 @@ export default class Moderation extends React.Component {
 											userName: '',
 											ip: '',
 											comment: this.state.filterValue,
-											action: 'getFilteredData'
+											action: 'getFilteredData',
 										});
 									}
 								}}
@@ -1519,9 +1673,9 @@ export default class Moderation extends React.Component {
 										<input
 											autoFocus
 											value={this.state.filterValue}
-											onChange={e => {
+											onChange={(e) => {
 												this.setState({
-													filterValue: e.target.value
+													filterValue: e.target.value,
 												});
 											}}
 										/>
@@ -1533,7 +1687,7 @@ export default class Moderation extends React.Component {
 										onClick={() => {
 											this.setState({
 												filterModalVisibility: false,
-												filterValue: ''
+												filterValue: '',
 											});
 											this.props.socket.emit('getModInfo', 1);
 										}}
@@ -1548,7 +1702,7 @@ export default class Moderation extends React.Component {
 				</div>
 				<div
 					className="ui basic fullscreen modal broadcastmodal"
-					ref={c => {
+					ref={(c) => {
 						this.bModal = c;
 					}}
 				>
@@ -1562,11 +1716,14 @@ export default class Moderation extends React.Component {
 								className="broadcast-input"
 								autoFocus
 								value={this.state.broadcastText}
-								ref={c => {
+								ref={(c) => {
 									this.broadcastText = c;
 								}}
 							/>
-							<div onClick={this.handleBroadcastSubmit} className={this.state.broadcastText ? 'ui button primary' : 'ui button primary disabled'}>
+							<div
+								onClick={this.handleBroadcastSubmit}
+								className={this.state.broadcastText ? 'ui button primary' : 'ui button primary disabled'}
+							>
 								Submit
 							</div>
 						</form>
@@ -1582,5 +1739,5 @@ export default class Moderation extends React.Component {
 Moderation.propTypes = {
 	userInfo: PropTypes.object,
 	socket: PropTypes.object,
-	fetchReplay: PropTypes.func
+	fetchReplay: PropTypes.func,
 };

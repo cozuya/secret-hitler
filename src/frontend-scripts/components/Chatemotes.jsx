@@ -7,7 +7,7 @@ export default class Generalchat extends React.Component {
 	state = {
 		lock: false,
 		inputValue: '',
-		disabled: false
+		disabled: false,
 	};
 
 	componentDidMount() {
@@ -22,23 +22,23 @@ export default class Generalchat extends React.Component {
 		this.setState({ inputValue: '' });
 	};
 
-	handleInputChange = e => {
+	handleInputChange = (e) => {
 		this.setState({ inputValue: `${e.target.value}` });
 	};
 
-	handleSubmit = e => {
+	handleSubmit = (e) => {
 		const { inputValue } = this.state;
 
 		e.preventDefault();
 		if (inputValue.length < 300 && inputValue) {
 			this.props.socket.emit('addNewGeneralChat', {
 				userName: this.props.userInfo.userName,
-				chat: inputValue
+				chat: inputValue,
 			});
 
 			this.setState({
 				inputValue: '',
-				disabled: true
+				disabled: true,
 			});
 
 			this.input.blur();
@@ -62,7 +62,7 @@ export default class Generalchat extends React.Component {
 		return this.props.generalChats.list.map((chat, i) => {
 			const userClasses = classnames(
 				{
-					[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat)
+					[chat.color]: !(userInfo.gameSettings && userInfo.gameSettings.disablePlayerColorsInChat),
 				},
 				'chat-user'
 			);
@@ -86,7 +86,9 @@ export default class Generalchat extends React.Component {
 						})()}
 						{chat.userName && ':'}{' '}
 					</span>
-					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>{processEmotes(chat.chat, this.props.allEmotes)}</span>
+					<span className={chat.isBroadcast ? 'broadcast-chat' : ''}>
+						{processEmotes(chat.chat, this.props.allEmotes)}
+					</span>
 				</div>
 			);
 		});
@@ -96,16 +98,16 @@ export default class Generalchat extends React.Component {
 		this.setState({ lock: !this.state.lock });
 	};
 
-	handleChatScrolled = e => {
+	handleChatScrolled = (e) => {
 		const el = e.currentTarget;
 
 		if (el.scrollTop === el.scrollHeight - el.offsetHeight && this.state.lock) {
 			this.setState({
-				lock: false
+				lock: false,
 			});
 		} else if (el.scrollTop !== el.scrollHeight - el.offsetHeight && !this.state.lock) {
 			this.setState({
-				lock: true
+				lock: true,
 			});
 		}
 	};
@@ -130,20 +132,31 @@ export default class Generalchat extends React.Component {
 					</div>
 				</section>
 				<form className="segment inputbar" onSubmit={this.handleSubmit}>
-					<div className={this.props.userInfo.userName ? (!this.state.disabled ? 'ui action input' : 'ui action input disabled') : 'ui action input disabled'}>
+					<div
+						className={
+							this.props.userInfo.userName
+								? !this.state.disabled
+									? 'ui action input'
+									: 'ui action input disabled'
+								: 'ui action input disabled'
+						}
+					>
 						<input
 							placeholder="Chat.."
 							value={this.state.inputValue}
 							onChange={this.handleInputChange}
 							maxLength="300"
 							spellCheck="false"
-							ref={c => {
+							ref={(c) => {
 								this.input = c;
 							}}
 						/>
 						<button className={this.state.inputValue ? 'ui primary button' : 'ui primary button disabled'}>Chat</button>
 					</div>
-					<i className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'} onClick={this.handleChatClearClick} />
+					<i
+						className={this.state.inputValue ? 'large delete icon' : 'large delete icon app-visibility-hidden'}
+						onClick={this.handleChatClearClick}
+					/>
 				</form>
 			</section>
 		);
@@ -156,5 +169,5 @@ Generalchat.propTypes = {
 	socket: PropTypes.object,
 	generalChats: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.object
+	allEmotes: PropTypes.object,
 };

@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== 'production') {
 	const MongoDBStore = require('connect-mongodb-session')(session);
 	store = new MongoDBStore({
 		uri: 'mongodb://localhost:27017/secret-hitler-app',
-		collection: 'sessions'
+		collection: 'sessions',
 	});
 } else {
 	const redis = require('redis').createClient();
@@ -29,7 +29,7 @@ if (process.env.NODE_ENV !== 'production') {
 		host: '127.0.0.1',
 		port: 6379,
 		client: redis,
-		ttl: 2 * 604800 // 2 weeks
+		ttl: 2 * 604800, // 2 weeks
 	});
 }
 
@@ -49,7 +49,11 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
 	const IP =
-		req.headers['x-real-ip'] || req.headers['X-Real-IP'] || req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		req.headers['x-real-ip'] ||
+		req.headers['X-Real-IP'] ||
+		req.headers['X-Forwarded-For'] ||
+		req.headers['x-forwarded-for'] ||
+		req.connection.remoteAddress;
 	if (IP.includes(',')) {
 		req.expandedIP = expandAndSimplify(IP.split(',')[0].trim());
 	} else {
@@ -72,16 +76,16 @@ app.use(express.static(`${__dirname}/public`, { maxAge: 86400000 * 28 }));
 const sessionSettings = {
 	secret: process.env.SECRETSESSIONKEY,
 	cookie: {
-		maxAge: 1000 * 60 * 60 * 24 * 28 // 4 weeks
+		maxAge: 1000 * 60 * 60 * 24 * 28, // 4 weeks
 	},
 	store,
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true,
 };
 
 io.use(
 	socketSession(session(sessionSettings), {
-		autoSave: true
+		autoSave: true,
 	})
 );
 
@@ -99,7 +103,7 @@ if (process.env.DISCORDCLIENTID) {
 				clientID: process.env.DISCORDCLIENTID,
 				clientSecret: process.env.DISCORDCLIENTSECRET,
 				callbackURL: '/discord/login-callback',
-				scope: ['identify', 'email']
+				scope: ['identify', 'email'],
 			},
 			(accessToken, refreshToken, profile, cb) => {
 				cb(profile);
@@ -112,7 +116,7 @@ if (process.env.DISCORDCLIENTID) {
 			{
 				clientID: process.env.GITHUBCLIENTID,
 				clientSecret: process.env.GITHUBCLIENTSECRET,
-				callbackURL: '/github/login-callback'
+				callbackURL: '/github/login-callback',
 			},
 			(accessToken, refreshToken, profile, cb) => {
 				cb(profile);

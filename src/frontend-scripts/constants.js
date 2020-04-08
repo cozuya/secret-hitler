@@ -4,44 +4,46 @@ export const TOU_CHANGES = [
 	{
 		changeVer: '1.4',
 		changeDesc:
-			'Adds specified punishment template for most rule violations\nUpdates rules regarding spoilers for TV shows, movies etc.\nUpdates rules regarding room titles\nUpdates rules on misclicks\nAll rules are listed in detail in the Terms of Use (linked below)'
+			'Adds specified punishment template for most rule violations\nUpdates rules regarding spoilers for TV shows, movies etc.\nUpdates rules regarding room titles\nUpdates rules on misclicks\nAll rules are listed in detail in the Terms of Use (linked below)',
 	},
 	{
 		changeVer: '1.3',
 		changeDesc:
-			'Adds specified punishments for ragequits and multi-accounting/colluding.\nRevises rules regarding sub-optimal play.\nSpecifies rules regarding unfair outside influences on games (blacklist threats, report threats, etc.).\nAdds rules regarding spoilers for TV shows, movies, etc.\nAdds general punishment timeline and protocol.\nAdds AFK policy and its specific punishments.\n'
+			'Adds specified punishments for ragequits and multi-accounting/colluding.\nRevises rules regarding sub-optimal play.\nSpecifies rules regarding unfair outside influences on games (blacklist threats, report threats, etc.).\nAdds rules regarding spoilers for TV shows, movies, etc.\nAdds general punishment timeline and protocol.\nAdds AFK policy and its specific punishments.\n',
 	},
 	{
 		changeVer: '1.2',
-		changeDesc: 'Terms of Use now states that explicitly forbidden words may result in action without reports.'
+		changeDesc: 'Terms of Use now states that explicitly forbidden words may result in action without reports.',
 	},
 	{
 		changeVer: '1.1',
 		changeDesc:
-			'Lying as liberal is allowed if you can prove it helps your team.\nFollowing players to comment on their games or talking about a no-chat game is now explicitly forbidden.\nMinor wording changes to forbidden language and card-backs.'
+			'Lying as liberal is allowed if you can prove it helps your team.\nFollowing players to comment on their games or talking about a no-chat game is now explicitly forbidden.\nMinor wording changes to forbidden language and card-backs.',
 	},
 	{
 		changeVer: '1.0',
-		changeDesc: 'Terms of Use fully rewritten to be more clear.'
+		changeDesc: 'Terms of Use fully rewritten to be more clear.',
 	},
 	{
 		changeVer: '0.0',
 		changeDesc:
-			"Play as your role and try to win\nNo unfair influence: don't make promises as one role you wouldn't be able to keep as the other role\nDo not cheat\nNo hate speech or abusive/sexist/racist/discriminating language\nRespect other people\nNo attempts to harm the site, be it through hacking, ddosing, or any other malicious activity\nDo not attempt to circumvent rules or punishments\n"
-	}
+			"Play as your role and try to win\nNo unfair influence: don't make promises as one role you wouldn't be able to keep as the other role\nDo not cheat\nNo hate speech or abusive/sexist/racist/discriminating language\nRespect other people\nNo attempts to harm the site, be it through hacking, ddosing, or any other malicious activity\nDo not attempt to circumvent rules or punishments\n",
+	},
 ];
 
 export const CURRENTSEASONNUMBER = 10;
 
 const ALPHANUMERIC = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'];
 const SYMBOLS = [...' -_=+!"£$%^&*()\\/.,<>?#~\'@;:[]{}'];
-const LATIN_EXT_A = [...'ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſ'];
+const LATIN_EXT_A = [
+	...'ĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſ',
+];
 
 const ALLCHARS = [...ALPHANUMERIC, ...SYMBOLS, ...LATIN_EXT_A];
 
-export const LEGALCHARACTERS = text => {
+export const LEGALCHARACTERS = (text) => {
 	const arr = [...text];
-	const pass = arr.every(c => ALLCHARS.includes(c));
+	const pass = arr.every((c) => ALLCHARS.includes(c));
 	return pass;
 };
 
@@ -53,7 +55,10 @@ export const LEGALCHARACTERS = text => {
  * @return {string} list of classes for colors.
  */
 export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
-	if (Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') && !user.staffDisableStaffColor) {
+	if (
+		Boolean(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') &&
+		!user.staffDisableStaffColor
+	) {
 		return cn(defaultClass, {
 			admin: user.staffRole === 'admin',
 			moderatorcolor: user.staffRole === 'moderator',
@@ -63,11 +68,12 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 			jdudle3: user.userName === 'jdudle3',
 			max: user.userName === 'Max',
 			thejuststopo: user.userName === 'TheJustStopO',
-			moira: user.userName === 'moira'
+			moira: user.userName === 'moira',
 		});
 	} else if (
 		user.isContributor &&
-		(!(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') || user.staffDisableStaffColor)
+		(!(user.staffRole && user.staffRole.length && user.staffRole !== 'trialmod' && user.staffRole !== 'altmod') ||
+			user.staffDisableStaffColor)
 	) {
 		return cn(defaultClass, 'contributor');
 	} else {
@@ -102,23 +108,33 @@ export const PLAYERCOLORS = (user, isSeasonal, defaultClass, eloDisabled) => {
 						onfire7: w / (w + l) > 0.64,
 						onfire8: w / (w + l) > 0.66,
 						onfire9: w / (w + l) > 0.68,
-						onfire10: w / (w + l) > 0.7
+						onfire10: w / (w + l) > 0.7,
 				  })
 				: cn(defaultClass, gradeObj)
 			: defaultClass;
 	}
 };
 
-export const getBadWord = text => {
+export const getBadWord = (text) => {
 	const badWords = {
 		// List of all blacklisted words and their variations.
 		nigger: ['nigga', 'nibba', 'nignog', 'n1bba', 'ni99a', 'n199a', 'nignug', 'bigga', 'nigg', 'niggre', 'n1gger'],
 		retard: ['libtard', 'retard', 'tard', 'ret4rd', 't4rd', 'retrd'],
 		faggot: ['fag', 'f4gg0t', 'f4ggot', 'fagg0t', 'f4g'],
 		cunt: ['kunt'],
-		'Nazi Terms': ['1488', '卍', 'swastika']
+		'Nazi Terms': ['1488', '卍', 'swastika'],
 	};
-	const exceptions = [/(i|o)f (a|4) g/gi, /underclaim on gov/gi, /bastard/gi, /big ga/gi, /among/gi, /mongod/gi, /mongolia/gi, /off again/gi, /pokemon game/gi]; // This list for all exceptions to bypass swear filter
+	const exceptions = [
+		/(i|o)f (a|4) g/gi,
+		/underclaim on gov/gi,
+		/bastard/gi,
+		/big ga/gi,
+		/among/gi,
+		/mongod/gi,
+		/mongolia/gi,
+		/off again/gi,
+		/pokemon game/gi,
+	]; // This list for all exceptions to bypass swear filter
 	let foundWord = [null, null]; // Future found bad word, in format of: [blacklisted word, variation]
 
 	// let ec = 0; //for future use in auto reporting
@@ -131,12 +147,12 @@ export const getBadWord = text => {
 	}
 
 	const flatText = exceptedText.replace(/\W/gi, '').toLowerCase();
-	Object.keys(badWords).forEach(key => {
+	Object.keys(badWords).forEach((key) => {
 		if (flatText.includes(key)) {
 			// True if spaceless text contains blacklisted word.
 			foundWord = [key, key];
 		} else {
-			badWords[key].forEach(word => {
+			badWords[key].forEach((word) => {
 				if (flatText.includes(word)) {
 					// True if spaceless text contains variation of blacklisted word.
 					foundWord = [key, word];

@@ -10,8 +10,8 @@ export default () => {
 
 	describe('Generic game', () => {
 		it('should track dead players', () => {
-			const getBeforeDead = turnNum => turns.get(turnNum).beforeDeadPlayers;
-			const getAfterDead = turnNum => turns.get(turnNum).afterDeadPlayers;
+			const getBeforeDead = (turnNum) => turns.get(turnNum).beforeDeadPlayers;
+			const getAfterDead = (turnNum) => turns.get(turnNum).afterDeadPlayers;
 
 			expect(getBeforeDead(0)).toImmutableEqual(List());
 			expect(getBeforeDead(1)).toImmutableEqual(List());
@@ -33,7 +33,7 @@ export default () => {
 		});
 
 		it('should track alive players', () => {
-			const getAlive = turnNum => turns.get(turnNum).alivePlayers;
+			const getAlive = (turnNum) => turns.get(turnNum).alivePlayers;
 			const allAlive = List([0, 1, 2, 3, 4, 5, 6]);
 			const p3Dead = List([0, 1, 2, 4, 5, 6]);
 			const p3And2Dead = List([0, 1, 4, 5, 6]);
@@ -49,7 +49,7 @@ export default () => {
 		});
 
 		it('should track players', () => {
-			const beforePlayers = turnNum => turns.get(turnNum).beforePlayers;
+			const beforePlayers = (turnNum) => turns.get(turnNum).beforePlayers;
 
 			expect(beforePlayers(0).first()).toEqual({
 				id: 0,
@@ -57,19 +57,19 @@ export default () => {
 				username: 'Uther',
 				role: 'liberal',
 				loyalty: 'liberal',
-				isDead: false
+				isDead: false,
 			});
 		});
 
 		it('should track votes', () => {
-			const getVotes = turnNum => turns.get(turnNum).votes.map(v => (v.isSome() ? v.value() : null));
+			const getVotes = (turnNum) => turns.get(turnNum).votes.map((v) => (v.isSome() ? v.value() : null));
 
 			// immutable collections don't deep compare so convert to array then check
 			const allJas = Range(0, 7)
-				.map(i => true)
+				.map((i) => true)
 				.toArray();
 
-			Range(0, 8).forEach(i => {
+			Range(0, 8).forEach((i) => {
 				expect(getVotes(i).size).toBe(7);
 			});
 
@@ -79,7 +79,7 @@ export default () => {
 		});
 
 		it('should track jas', () => {
-			const jas = turnNum => turns.get(turnNum).jas;
+			const jas = (turnNum) => turns.get(turnNum).jas;
 
 			expect(jas(0)).toBe(7);
 			expect(jas(1)).toBe(7);
@@ -92,7 +92,7 @@ export default () => {
 		});
 
 		it('should track neins', () => {
-			const neins = turnNum => turns.get(turnNum).neins;
+			const neins = (turnNum) => turns.get(turnNum).neins;
 
 			expect(neins(0)).toBe(0);
 			expect(neins(1)).toBe(0);
@@ -105,7 +105,7 @@ export default () => {
 		});
 
 		it('should track successful votes', () => {
-			const getIsVotePassed = turnNum => turns.get(turnNum).isVotePassed;
+			const getIsVotePassed = (turnNum) => turns.get(turnNum).isVotePassed;
 
 			expect(getIsVotePassed(0)).toBe(true);
 			expect(getIsVotePassed(3)).toBe(true);
@@ -114,9 +114,9 @@ export default () => {
 		});
 
 		it('should track the election tracker', () => {
-			const beforeElectionTracker = turnNum => turns.get(turnNum).beforeElectionTracker;
-			const afterElectionTracker = turnNum => turns.get(turnNum).afterElectionTracker;
-			const isElectionTrackerMaxed = turnNum => turns.get(turnNum).isElectionTrackerMaxed;
+			const beforeElectionTracker = (turnNum) => turns.get(turnNum).beforeElectionTracker;
+			const afterElectionTracker = (turnNum) => turns.get(turnNum).afterElectionTracker;
+			const isElectionTrackerMaxed = (turnNum) => turns.get(turnNum).isElectionTrackerMaxed;
 
 			expect(beforeElectionTracker(0)).toBe(0);
 			expect(beforeElectionTracker(1)).toBe(0);
@@ -147,8 +147,8 @@ export default () => {
 		});
 
 		it('should track the deck size', () => {
-			const beforeDeckSize = turnNum => turns.get(turnNum).beforeDeckSize;
-			const afterDeckSize = turnNum => turns.get(turnNum).afterDeckSize;
+			const beforeDeckSize = (turnNum) => turns.get(turnNum).beforeDeckSize;
+			const afterDeckSize = (turnNum) => turns.get(turnNum).afterDeckSize;
 
 			expect(beforeDeckSize(0)).toBe(17);
 			expect(beforeDeckSize(1)).toBe(14);
@@ -170,7 +170,7 @@ export default () => {
 		});
 
 		it('should track enacted policies', () => {
-			const getEnactedPolicy = turnNum => turns.get(turnNum).enactedPolicy;
+			const getEnactedPolicy = (turnNum) => turns.get(turnNum).enactedPolicy;
 
 			expect(getEnactedPolicy(0)).toEqual(some('fascist'));
 			expect(getEnactedPolicy(1)).toEqual(some('fascist'));
@@ -180,7 +180,7 @@ export default () => {
 		});
 
 		it('should track president hands', () => {
-			const presidentHand = turnNum => turns.get(turnNum).presidentHand;
+			const presidentHand = (turnNum) => turns.get(turnNum).presidentHand;
 
 			expect(presidentHand(0)).toEqual(some({ reds: 2, blues: 1 }));
 			expect(presidentHand(1)).toEqual(some({ reds: 2, blues: 1 }));
@@ -193,7 +193,7 @@ export default () => {
 		});
 
 		it('should track president claims', () => {
-			const presidentClaim = turnNum => turns.get(turnNum).presidentClaim;
+			const presidentClaim = (turnNum) => turns.get(turnNum).presidentClaim;
 
 			expect(presidentClaim(0)).toEqual(some({ reds: 2, blues: 1 }));
 			expect(presidentClaim(1)).toEqual(some({ reds: 2, blues: 1 }));
@@ -206,7 +206,7 @@ export default () => {
 		});
 
 		it('should track president discard', () => {
-			const presidentDiscard = turnNum => turns.get(turnNum).presidentDiscard;
+			const presidentDiscard = (turnNum) => turns.get(turnNum).presidentDiscard;
 
 			expect(presidentDiscard(0)).toEqual(some('liberal'));
 			expect(presidentDiscard(1)).toEqual(some('fascist'));
@@ -219,7 +219,7 @@ export default () => {
 		});
 
 		it('should track chancellor hands', () => {
-			const chancellorHand = turnNum => turns.get(turnNum).chancellorHand;
+			const chancellorHand = (turnNum) => turns.get(turnNum).chancellorHand;
 
 			expect(chancellorHand(0)).toEqual(some({ reds: 2, blues: 0 }));
 			expect(chancellorHand(1)).toEqual(some({ reds: 1, blues: 1 }));
@@ -232,7 +232,7 @@ export default () => {
 		});
 
 		it('should track chancellor claims', () => {
-			const chancellorClaim = turnNum => turns.get(turnNum).chancellorClaim;
+			const chancellorClaim = (turnNum) => turns.get(turnNum).chancellorClaim;
 
 			expect(chancellorClaim(0)).toEqual(some({ reds: 2, blues: 0 }));
 			expect(chancellorClaim(1)).toEqual(some({ reds: 2, blues: 0 }));
@@ -245,7 +245,7 @@ export default () => {
 		});
 
 		it('should track chancellor discard', () => {
-			const chancellorDiscard = turnNum => turns.get(turnNum).chancellorDiscard;
+			const chancellorDiscard = (turnNum) => turns.get(turnNum).chancellorDiscard;
 
 			expect(chancellorDiscard(0)).toEqual(some('fascist'));
 			expect(chancellorDiscard(1)).toEqual(some('liberal'));
@@ -258,7 +258,7 @@ export default () => {
 		});
 
 		it('should track executions', () => {
-			const execution = turnNum => turns.get(turnNum).isExecution;
+			const execution = (turnNum) => turns.get(turnNum).isExecution;
 
 			expect(execution(0)).toBe(false);
 			expect(execution(1)).toBe(false);
@@ -271,7 +271,7 @@ export default () => {
 		});
 
 		it('should track investigations', () => {
-			const investigation = turnNum => turns.get(turnNum).isInvestigation;
+			const investigation = (turnNum) => turns.get(turnNum).isInvestigation;
 
 			expect(investigation(0)).toBe(false);
 			expect(investigation(1)).toBe(true);
@@ -284,7 +284,7 @@ export default () => {
 		});
 
 		it('should track if hitler is killed', () => {
-			const isHitlerKilled = turnNum => turns.get(turnNum).isHitlerKilled;
+			const isHitlerKilled = (turnNum) => turns.get(turnNum).isHitlerKilled;
 
 			expect(isHitlerKilled(0)).toBe(false);
 			expect(isHitlerKilled(1)).toBe(false);
@@ -361,25 +361,15 @@ export default () => {
 		});
 
 		it('should track votes', () => {
-			expect(
-				game
-					.votesOf('Uther')
-					.value()
-					.get(4)
-			).toEqual(
+			expect(game.votesOf('Uther').value().get(4)).toEqual(
 				some({
 					ja: true,
 					presidentId: 4,
-					chancellorId: 2
+					chancellorId: 2,
 				})
 			);
 
-			expect(
-				game
-					.votesOf('Malfurian')
-					.value()
-					.get(5)
-			).toEqual(none);
+			expect(game.votesOf('Malfurian').value().get(5)).toEqual(none);
 		});
 
 		it('should track hitler zone', () => {

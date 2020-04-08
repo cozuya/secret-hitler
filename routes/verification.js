@@ -8,12 +8,12 @@ const _ = require('lodash');
 const fs = require('fs');
 const verifyTemplate = _.template(
 	fs.readFileSync('./routes/account-verification-email.template', {
-		encoding: 'UTF-8'
+		encoding: 'UTF-8',
 	})
 );
 const resetTemplate = _.template(
 	fs.readFileSync('./routes/reset-password-email.template', {
-		encoding: 'UTF-8'
+		encoding: 'UTF-8',
 	})
 );
 
@@ -31,9 +31,9 @@ module.exports.verifyRoutes = () => {
 		const { username, token } = req.params;
 
 		VerifyAccount.findOneAndDelete({ username, token, expirationDate: { $gte: now } })
-			.then(verify => {
+			.then((verify) => {
 				Account.findOne({ username })
-					.then(account => {
+					.then((account) => {
 						if (!account) {
 							return next();
 						}
@@ -43,12 +43,12 @@ module.exports.verifyRoutes = () => {
 							res.redirect('/account');
 						});
 					})
-					.catch(err => {
+					.catch((err) => {
 						console.log(err, 'error in account in verify');
 						return next();
 					});
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.log(err, 'err in verify get');
 				return next();
 			});
@@ -58,13 +58,13 @@ module.exports.verifyRoutes = () => {
 		const { username, token } = req.params;
 
 		ResetPassword.findOne({ username, token, expirationDate: { $gte: now } })
-			.then(reset => {
+			.then((reset) => {
 				if (!reset) {
 					return next();
 				}
 				res.render('page-resetpassword', {});
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.log(err, 'err in reset password get');
 				return next();
 			});
@@ -79,12 +79,12 @@ module.exports.verifyRoutes = () => {
 		}
 
 		ResetPassword.findOneAndDelete({ username, token: tok, expirationDate: { $gte: now } })
-			.then(reset => {
+			.then((reset) => {
 				if (!reset) {
 					res.status(400).send();
 				} else {
 					Account.findOne({ username: req.body.username })
-						.then(account => {
+						.then((account) => {
 							if (!account || account.staffRole) {
 								res.status(404).send();
 							} else {
@@ -97,23 +97,23 @@ module.exports.verifyRoutes = () => {
 								});
 							}
 						})
-						.catch(err => {
+						.catch((err) => {
 							console.log(err, 'err in reset password find');
 						});
 				}
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.log(err, 'err in reset password post');
 			});
 	});
 
-	VerifyAccount.deleteMany({ expirationDate: { $lt: now } }, err => {
+	VerifyAccount.deleteMany({ expirationDate: { $lt: now } }, (err) => {
 		if (err) {
 			console.log(err, 'err deleting verify accounts');
 		}
 	});
 
-	ResetPassword.deleteMany({ expirationDate: { $lt: now } }, err => {
+	ResetPassword.deleteMany({ expirationDate: { $lt: now } }, (err) => {
 		if (err) {
 			console.log(err, 'err deleting reset password');
 		}
@@ -121,23 +121,19 @@ module.exports.verifyRoutes = () => {
 };
 
 module.exports.setVerify = ({ username, email, res, isResetPassword }) => {
-	const token = `${Math.random()
-		.toString(36)
-		.substring(2)}${Math.random()
-		.toString(36)
-		.substring(2)}`;
+	const token = `${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}`;
 	const modelData = {
 		username,
 		token,
-		expirationDate: new Date(new Date().setDate(new Date().getDate() + 1))
+		expirationDate: new Date(new Date().setDate(new Date().getDate() + 1)),
 	};
 	const verify = isResetPassword ? new ResetPassword(modelData) : new VerifyAccount(modelData);
 	const nmMailgun = nodemailer.createTransport(
 		mg({
 			auth: {
 				api_key: process.env.MGKEY,
-				domain: process.env.MGDOMAIN
-			}
+				domain: process.env.MGDOMAIN,
+			},
 		})
 	);
 
@@ -151,7 +147,7 @@ module.exports.setVerify = ({ username, email, res, isResetPassword }) => {
 				? `Hello ${username}, a request has been made to change your password - go to the address below to change your password. https://secrethitler.io/reset-password/${username}/${token}.`
 				: `Hello ${username}, a request has been made to verify your account - go to the address below to verify it. https://secrethitler.io/verify-account/${username}/${token}`,
 			to: email,
-			subject: isResetPassword ? 'SH.io - reset your password' : 'SH.io - verify your account'
+			subject: isResetPassword ? 'SH.io - reset your password' : 'SH.io - verify your account',
 		});
 
 		// nmMailgun.sendMail({

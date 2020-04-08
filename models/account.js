@@ -5,7 +5,7 @@ const Account = new Schema({
 	username: {
 		type: String,
 		required: true,
-		unique: true
+		unique: true,
 	},
 	password: String,
 	isLocal: Boolean,
@@ -56,20 +56,20 @@ const Account = new Schema({
 			casualgame: Boolean,
 			timedMode: Boolean,
 			standard: Boolean,
-			rainbow: Boolean
+			rainbow: Boolean,
 		},
 		gameNotes: {
 			top: Number,
 			left: Number,
 			width: Number,
-			height: Number
+			height: Number,
 		},
 		playerNotes: Array,
 		ignoreIPBans: Boolean,
-		truncatedSize: Number
+		truncatedSize: Number,
 	},
 	verification: {
-		email: String
+		email: String,
 	},
 	signupIP: String,
 	lastConnectedIP: String,
@@ -140,7 +140,7 @@ const Account = new Schema({
 	secondaryColor: String,
 	tertiaryColor: String,
 	backgroundColor: String,
-	textColor: String
+	textColor: String,
 });
 
 Account.plugin(passportLocalMongoose);

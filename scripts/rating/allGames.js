@@ -3,13 +3,11 @@ const Game = require('../../models/game'); // temp
 
 let count = 0;
 
-module.exports = async rate => {
+module.exports = async (rate) => {
 	try {
 		mongoose.Promise = global.Promise;
 		await mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
-		const cursor = await Game.find({}, { chats: 0 })
-			.limit(5000)
-			.cursor();
+		const cursor = await Game.find({}, { chats: 0 }).limit(5000).cursor();
 		for (let game = await cursor.next(); game != null; game = await cursor.next()) {
 			// Ignore casual games
 			if (!game.casualGame) {

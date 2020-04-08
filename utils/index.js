@@ -8,25 +8,25 @@ const { Range, List } = require('immutable');
 
 // (opt: Option[A], predicate: A => Boolean) => Option[A]
 exports.filterOpt = (opt, predicate) => {
-	return opt.flatMap(o => (predicate(o) ? opt : none));
+	return opt.flatMap((o) => (predicate(o) ? opt : none));
 };
 
 // (xs: List[Option[A]]) => List[A]
-exports.flattenListOpts = xs => xs.filter(x => x.isSome()).map(x => x.value());
+exports.flattenListOpts = (xs) => xs.filter((x) => x.isSome()).map((x) => x.value());
 
 // (xs: List[A], opt: Option[A]) => List[A]
 exports.pushOpt = (xs, opt) => {
-	return xs.concat(opt.map(x => List([x])).valueOrElse(List()));
+	return xs.concat(opt.map((x) => List([x])).valueOrElse(List()));
 };
 
 // (x: A) => B => (x: Option[A]) => Option[B]
-exports.mapOpt1 = f => {
-	return x => x.map(xx => f(xx));
+exports.mapOpt1 = (f) => {
+	return (x) => x.map((xx) => f(xx));
 };
 
 // (x: A, y: B) => C => (x: Option[A], y: Option[B]) => Option[C]
-exports.mapOpt2 = f => {
-	return (x, y) => x.flatMap(xx => y.map(yy => f(xx, yy)));
+exports.mapOpt2 = (f) => {
+	return (x, y) => x.flatMap((xx) => y.map((yy) => f(xx, yy)));
 };
 
 /*****************
@@ -44,13 +44,13 @@ exports.mapOpt2 = f => {
 exports.handDiff = (handX, handY) => {
 	return {
 		reds: handX.reds - handY.reds,
-		blues: handX.blues - handY.blues
+		blues: handX.blues - handY.blues,
 	};
 };
 
 // expects hand to contain only a single card
 // (hand: Hand) => Policy
-exports.handToPolicy = hand => {
+exports.handToPolicy = (hand) => {
 	if (hand.reds > 0 && hand.blues > 0) {
 		throw new Error('Expected hand to contain only a single card');
 	}
@@ -59,10 +59,10 @@ exports.handToPolicy = hand => {
 
 // consistently ordered 'fascist' first, followed by 'liberal'
 // (hand: Hand) => List[Policy]
-const handToPolicies = (exports.handToPolicies = hand => {
+const handToPolicies = (exports.handToPolicies = (hand) => {
 	const toPolicies = (count, type) => {
 		return Range(0, count)
-			.map(i => type)
+			.map((i) => type)
 			.toList();
 	};
 
@@ -73,23 +73,23 @@ const handToPolicies = (exports.handToPolicies = hand => {
 });
 
 // (policy: Policy) => Hand
-exports.policyToHand = policy => {
+exports.policyToHand = (policy) => {
 	return policy === 'fascist' ? { reds: 1, blues: 0 } : { reds: 0, blues: 1 };
 };
 
 // (policy: Policy) => String ('R' | 'B')
-exports.policyToString = policy => {
+exports.policyToString = (policy) => {
 	return policy === 'fascist' ? 'R' : 'B';
 };
 
 const text = (exports.text = (type, text, space) => ({ type, text, space }));
 
 // (hand: Hand) => String ('R*B*')
-exports.handToText = hand => {
-	const policyToString = policy => (policy === 'fascist' ? 'R' : 'B');
+exports.handToText = (hand) => {
+	const policyToString = (policy) => (policy === 'fascist' ? 'R' : 'B');
 
 	return handToPolicies(hand)
-		.map(policy => text(policy, policyToString(policy), false))
+		.map((policy) => text(policy, policyToString(policy), false))
 		.concat(text('normal', ''))
 		.toArray();
 };
@@ -99,7 +99,7 @@ exports.handToText = hand => {
  ********/
 
 // (s: String) => String
-exports.capitalize = s => {
+exports.capitalize = (s) => {
 	return s.charAt(0).toUpperCase() + s.slice(1);
 };
 

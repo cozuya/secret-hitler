@@ -30,10 +30,10 @@ export class Main extends React.Component {
 				rainbow: false,
 				standard: false,
 				customgame: false,
-				casualgame: false
+				casualgame: false,
 			},
 			showNewPlayerModal: Boolean(window.hasNotDismissedSignupModal),
-			newPlayerModalPageIndex: 0
+			newPlayerModalPageIndex: 0,
 		};
 	}
 
@@ -41,7 +41,7 @@ export class Main extends React.Component {
 		const { Notification } = window;
 
 		if ('Notification' in window && Notification.permission === 'default') {
-			Notification.requestPermission(permission => {
+			Notification.requestPermission((permission) => {
 				if (permission === 'granted') {
 					new Notification('Players may now "ping" you.');
 				}
@@ -55,15 +55,15 @@ export class Main extends React.Component {
 
 	handleDismissSignupModal = () => {
 		this.setState({
-			showNewPlayerModal: false
+			showNewPlayerModal: false,
 		});
 
 		this.props.socket.emit('hasSeenNewPlayerModal');
 	};
 
-	handleChangeModalPageIndex = newPlayerModalPageIndex => {
+	handleChangeModalPageIndex = (newPlayerModalPageIndex) => {
 		this.setState({
-			newPlayerModalPageIndex
+			newPlayerModalPageIndex,
 		});
 	};
 
@@ -85,7 +85,13 @@ export class Main extends React.Component {
 		})();
 
 		return (
-			<Modal id="newplayer-modal" open={showNewPlayerModal} onClose={this.handleDismissSignupModal} closeOnEscape={false} closeOnDimmerClick={false}>
+			<Modal
+				id="newplayer-modal"
+				open={showNewPlayerModal}
+				onClose={this.handleDismissSignupModal}
+				closeOnEscape={false}
+				closeOnDimmerClick={false}
+			>
 				<Header content={headerContent} />
 				<Modal.Content>
 					{(() => {
@@ -100,7 +106,8 @@ export class Main extends React.Component {
 											<a href="/tou" target="_blank" rel="noopener noreferrer">
 												rules of the site
 											</a>{' '}
-											to play here. Cliffs: No NSFW/No hate speech/No player abuse. These rules are "relaxed" if you are only here to play private games.
+											to play here. Cliffs: No NSFW/No hate speech/No player abuse. These rules are "relaxed" if you are
+											only here to play private games.
 										</p>
 										<p>
 											If you need moderator help or support, the best way is on the <b>#mod-support</b> channel of our{' '}
@@ -116,13 +123,18 @@ export class Main extends React.Component {
 									<React.Fragment>
 										<h4>If you're only here to play in private games:</h4>
 										<p>
-											Welcome! You may want to toggle off the public games filter. This can be found on the <Icon name="filter" /> icon next to the "create a
-											new game" button. If you have insisted on naming yourself something NSFW, you will want to toggle on the "private-games-only" setting (if
-											you did not check that box while signing up) found by clicking on the upper right corner button that looks like <Icon name="setting" />.
-											There are many other interesting account settings that can be found there as well.
+											Welcome! You may want to toggle off the public games filter. This can be found on the{' '}
+											<Icon name="filter" /> icon next to the "create a new game" button. If you have insisted on naming
+											yourself something NSFW, you will want to toggle on the "private-games-only" setting (if you did
+											not check that box while signing up) found by clicking on the upper right corner button that looks
+											like <Icon name="setting" />. There are many other interesting account settings that can be found
+											there as well.
 										</p>
 										<h4>Public game players:</h4>
-										<p>Also welcome! You'll probably want to filter off of private games as well. These filters save on application.</p>
+										<p>
+											Also welcome! You'll probably want to filter off of private games as well. These filters save on
+											application.
+										</p>
 										<p>
 											Please familiarize yourself with the{' '}
 											<a href="/how-to-play" target="_blank" rel="noopener noreferrer">
@@ -132,10 +144,12 @@ export class Main extends React.Component {
 											<a href="https://github.com/cozuya/secret-hitler/wiki" target="_blank" rel="noopener noreferrer">
 												wiki
 											</a>{' '}
-											is a great read on how the site works and how to be successful while playing here. Ranked games (this site uses an "ELO" system - cliffs:
-											your ELO points go up more if you win against better players by aggregate ELO than if you win against worse players) are taken seriously
-											by many so you might want to play in some casual (often custom) games to learn how this game works online and the basics of the
-											established metagame before jumping into ranked. They will have this <Icon name="handshake outline" /> icon in the game list.
+											is a great read on how the site works and how to be successful while playing here. Ranked games
+											(this site uses an "ELO" system - cliffs: your ELO points go up more if you win against better
+											players by aggregate ELO than if you win against worse players) are taken seriously by many so you
+											might want to play in some casual (often custom) games to learn how this game works online and the
+											basics of the established metagame before jumping into ranked. They will have this{' '}
+											<Icon name="handshake outline" /> icon in the game list.
 										</p>
 									</React.Fragment>
 								);
@@ -144,29 +158,34 @@ export class Main extends React.Component {
 									<React.Fragment>
 										<h5>How do you get a cool player color or upload your own personal cardback?</h5>
 										<p>
-											Play 50 games to attain "rainbow" status and have a color based off your ELO. Click on the info icon next to "Lobby" in the upper right
-											corner to learn more. These games must be ranked (not private or casual). You can check to see where you're at in your profile page -
-											click on your name in the upper right corner.
+											Play 50 games to attain "rainbow" status and have a color based off your ELO. Click on the info
+											icon next to "Lobby" in the upper right corner to learn more. These games must be ranked (not
+											private or casual). You can check to see where you're at in your profile page - click on your name
+											in the upper right corner.
 										</p>
 										<h5>How do you get a medal (seasonal reward)?</h5>
-										<p>Be a top performing player by ELO at the end of a season. Seasons last for 3 months and start at the first of the year.</p>
+										<p>
+											Be a top performing player by ELO at the end of a season. Seasons last for 3 months and start at
+											the first of the year.
+										</p>
 										<h5>Is my information secure?</h5>
 										<p>
 											As per our{' '}
 											<a href="/about" target="_blank" rel="noopener noreferrer">
 												Privacy Policy
 											</a>{' '}
-											your password is securely encrypted per industry standards and your email address will never be used for anything other than password
-											resets and verification. Verifying your account is strongly recommended. Accounts that were created by signing up/in with discord or
-											github are automatically verified.
+											your password is securely encrypted per industry standards and your email address will never be
+											used for anything other than password resets and verification. Verifying your account is strongly
+											recommended. Accounts that were created by signing up/in with discord or github are automatically
+											verified.
 										</p>
 									</React.Fragment>
 								);
 							case 4:
 								return (
 									<h4>
-										Have fun playing this open source site. We are always looking for contributors, if you do add to this site's code, you get a cool
-										contributor color! Check out the{' '}
+										Have fun playing this open source site. We are always looking for contributors, if you do add to
+										this site's code, you get a cool contributor color! Check out the{' '}
 										<a href="https://github.com/cozuya/secret-hitler" target="_blank" rel="noopener noreferrer">
 											github repo
 										</a>{' '}
@@ -215,12 +234,12 @@ export class Main extends React.Component {
 		let classes = 'section-main';
 
 		const { midSection, userList, userInfo, socket, gameInfo } = this.props;
-		const changeGameFilter = gameFilter => {
+		const changeGameFilter = (gameFilter) => {
 			this.setState(gameFilter);
 
 			if (userInfo.gameSettings) {
 				socket.emit('updateGameSettings', {
-					gameFilters: gameFilter
+					gameFilters: gameFilter,
 				});
 			}
 		};
@@ -285,7 +304,10 @@ export class Main extends React.Component {
 				{midSection === 'game' || midSection === 'replay' ? (
 					RenderMidSection()
 				) : (
-					<Scrollbars className="scrollbar-container-main" renderThumbVertical={props => <div {...props} className="thumb-vertical" />}>
+					<Scrollbars
+						className="scrollbar-container-main"
+						renderThumbVertical={(props) => <div {...props} className="thumb-vertical" />}
+					>
 						<div className="section-main-content-container">{RenderMidSection()}</div>
 					</Scrollbars>
 				)}
@@ -304,7 +326,7 @@ Main.propTypes = {
 	allEmotes: PropTypes.array,
 	onClickedTakeSeat: PropTypes.func,
 	onSeatingUser: PropTypes.func,
-	onLeaveGame: PropTypes.func
+	onLeaveGame: PropTypes.func,
 };
 
 export default Main;

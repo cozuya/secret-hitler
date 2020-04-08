@@ -8,7 +8,7 @@ let count = 0;
 
 Account.find()
 	.lean()
-	.eachAsync(account => {
+	.eachAsync((account) => {
 		account.gameSettings.blacklist = [];
 		account.save();
 		count++;

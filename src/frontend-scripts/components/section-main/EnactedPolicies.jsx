@@ -2,7 +2,7 @@ import React from 'react'; // eslint-disable-line
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-const EnactedPolicies = props => {
+const EnactedPolicies = (props) => {
 	let classes = 'enactedpolicies-container';
 
 	const { gameInfo } = props;
@@ -46,7 +46,7 @@ const EnactedPolicies = props => {
 };
 
 EnactedPolicies.propTypes = {
-	gameInfo: PropTypes.object
+	gameInfo: PropTypes.object,
 };
 
 export default EnactedPolicies;

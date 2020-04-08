@@ -12,8 +12,8 @@ describe('Playerlist', () => {
 	});
 
 	it('should initialize correctly', () => {
-		const mapStateToProps = state => ({
-			state
+		const mapStateToProps = (state) => ({
+			state,
 		});
 		const ConnectedComponent = connect(mapStateToProps)(Playerlist);
 		const component = shallowWithStore(<ConnectedComponent />, store);

@@ -11,13 +11,13 @@ const allPlayerGameData = {
 	fascistWinCount: 0,
 	totalGameCount: 0,
 	fascistWinCountSeason: 0,
-	totalGameCountSeason: 0
+	totalGameCountSeason: 0,
 };
 const fivePlayerGameData = {
 	fascistWinCount: 0,
 	totalGameCount: 0,
 	fascistWinCountSeason: 0,
-	totalGameCountSeason: 0
+	totalGameCountSeason: 0,
 };
 const sixPlayerGameData = {
 	fascistWinCount: 0,
@@ -27,7 +27,7 @@ const sixPlayerGameData = {
 	fascistWinCountSeason: 0,
 	totalGameCountSeason: 0,
 	rebalancedFascistWinCountSeason: 0,
-	rebalancedTotalGameCountSeason: 0
+	rebalancedTotalGameCountSeason: 0,
 };
 const sevenPlayerGameData = {
 	fascistWinCount: 0,
@@ -37,13 +37,13 @@ const sevenPlayerGameData = {
 	fascistWinCountSeason: 0,
 	totalGameCountSeason: 0,
 	rebalancedFascistWinCountSeason: 0,
-	rebalancedTotalGameCountSeason: 0
+	rebalancedTotalGameCountSeason: 0,
 };
 const eightPlayerGameData = {
 	fascistWinCount: 0,
 	totalGameCount: 0,
 	fascistWinCountSeason: 0,
-	totalGameCountSeason: 0
+	totalGameCountSeason: 0,
 };
 const ninePlayerGameData = {
 	fascistWinCount: 0,
@@ -53,13 +53,13 @@ const ninePlayerGameData = {
 	fascistWinCountSeason: 0,
 	totalGameCountSeason: 0,
 	rebalanced2fFascistWinCountSeason: 0,
-	rebalanced2fTotalGameCountSeason: 0
+	rebalanced2fTotalGameCountSeason: 0,
 };
 const tenPlayerGameData = {
 	fascistWinCount: 0,
 	totalGameCount: 0,
 	fascistWinCountSeason: 0,
-	totalGameCountSeason: 0
+	totalGameCountSeason: 0,
 };
 
 mongoose.Promise = global.Promise;
@@ -67,11 +67,14 @@ mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
 Game.find({})
 	.cursor()
-	.eachAsync(game => {
+	.eachAsync((game) => {
 		const playerCount = game.losingPlayers.length + game.winningPlayers.length;
 		const fascistsWon = game.winningTeam === 'fascist';
 		const gameDate = moment(new Date(game.date)).format('l');
-		const rebalanced = (game.rebalance6p && playerCount === 6) || (game.rebalance7p && playerCount === 7) || (game.rebalance9p && playerCount === 9);
+		const rebalanced =
+			(game.rebalance6p && playerCount === 6) ||
+			(game.rebalance7p && playerCount === 7) ||
+			(game.rebalance9p && playerCount === 9);
 		const rebalanced9p2f = game.rebalance9p2f && playerCount === 9;
 
 		if (
@@ -79,7 +82,11 @@ Game.find({})
 			gameDate === moment(new Date()).format('l') ||
 			(rebalanced &&
 				playerCount === 9 &&
-				(gameDate === '10/29/2017' || gameDate === '10/30/2017' || gameDate === '10/31/2017' || gameDate === '11/1/2017' || gameDate === '11/2/2017'))
+				(gameDate === '10/29/2017' ||
+					gameDate === '10/30/2017' ||
+					gameDate === '10/31/2017' ||
+					gameDate === '11/1/2017' ||
+					gameDate === '11/2/2017'))
 		) {
 			return;
 		}
@@ -224,13 +231,13 @@ Game.find({})
 		const uLabels = _.uniq(labels),
 			series = new Array(uLabels.length).fill(0);
 
-		labels.forEach(date => {
+		labels.forEach((date) => {
 			series[uLabels.indexOf(date)]++;
 		});
 
 		data.completedGames = {
 			labels: uLabels,
-			series
+			series,
 		};
 
 		data.allPlayerGameData = allPlayerGameData;

@@ -19,7 +19,7 @@ const Game = new Schema({
 	casualGame: Boolean,
 	customGame: Boolean,
 	isVerifiedOnly: Boolean,
-	chats: Array
+	chats: Array,
 });
 
 module.exports = mongoose.model('Game', Game);

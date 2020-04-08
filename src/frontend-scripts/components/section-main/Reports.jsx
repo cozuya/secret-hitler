@@ -10,16 +10,16 @@ export default class Reports extends React.Component {
 		this.state = {
 			reports: [],
 			sortType: 'date',
-			sortDirection: 'descending'
+			sortDirection: 'descending',
 		};
 	}
 
 	componentDidMount() {
 		this.props.socket.emit('getUserReports');
 
-		this.props.socket.on('reportInfo', reports => {
+		this.props.socket.on('reportInfo', (reports) => {
 			this.setState({
-				reports
+				reports,
 			});
 		});
 	}
@@ -34,16 +34,16 @@ export default class Reports extends React.Component {
 		/**
 		 * @param {string} type - description of how to sort the reports log
 		 */
-		const sortClick = type => {
+		const sortClick = (type) => {
 			this.setState({
 				sortType: type,
-				sortDirection: sortDirection === 'descending' ? 'ascending' : 'descending'
+				sortDirection: sortDirection === 'descending' ? 'ascending' : 'descending',
 			});
 		};
-		const activeClick = report => {
+		const activeClick = (report) => {
 			this.props.socket.emit('updateModAction', {
 				isReportResolveChange: true,
-				_id: report._id
+				_id: report._id,
 			});
 		};
 
@@ -57,42 +57,60 @@ export default class Reports extends React.Component {
 									sortClick('date');
 								}}
 							>
-								Date {sortType === 'date' && <i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Date{' '}
+								{sortType === 'date' && (
+									<i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								onClick={() => {
 									sortClick('uid');
 								}}
 							>
-								UID {sortType === 'uid' && <i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								UID{' '}
+								{sortType === 'uid' && (
+									<i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								onClick={() => {
 									sortClick('userReported');
 								}}
 							>
-								User Reported {sortType === 'userReported' && <i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								User Reported{' '}
+								{sortType === 'userReported' && (
+									<i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								onClick={() => {
 									sortClick('type');
 								}}
 							>
-								Type {sortType === 'type' && <i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Type{' '}
+								{sortType === 'type' && (
+									<i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								onClick={() => {
 									sortClick('comment');
 								}}
 							>
-								Comment {sortType === 'comment' && <i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Comment{' '}
+								{sortType === 'comment' && (
+									<i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th
 								onClick={() => {
 									sortClick('reportingUser');
 								}}
 							>
-								Reporting User {sortType === 'reportingUser' && <i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />}
+								Reporting User{' '}
+								{sortType === 'reportingUser' && (
+									<i className={sortDirection === 'descending' ? 'angle down icon' : 'angle up icon'} />
+								)}
 							</th>
 							<th>Game Type</th>
 							<th>Resolved</th>
@@ -169,5 +187,5 @@ export default class Reports extends React.Component {
 
 Reports.propTypes = {
 	userInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
 };

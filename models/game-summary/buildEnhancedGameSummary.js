@@ -24,14 +24,14 @@ function buildEnhancedGameSummary(_summary) {
 			'investigationId',
 			'investigationClaim',
 			'specialElection',
-			'execution'
+			'execution',
 		];
 
 		return key === 'logs'
 			? value
-					.map(log => {
+					.map((log) => {
 						const logOptions = Map(
-							options.map(o => {
+							options.map((o) => {
 								const optValue = log[o] !== undefined ? some(log[o]) : none;
 								return [o, optValue];
 							})
@@ -55,14 +55,14 @@ function buildEnhancedGameSummary(_summary) {
 		const roleToLoyalty = Map({
 			liberal: 'liberal',
 			fascist: 'fascist',
-			hitler: 'fascist'
+			hitler: 'fascist',
 		});
 
 		return summary.players.map((p, i) => {
 			return Object.assign({}, p, {
 				id: i,
 				loyalty: roleToLoyalty.get(p.role),
-				icon: p.icon || 0
+				icon: p.icon || 0,
 			});
 		});
 	})();
@@ -75,7 +75,10 @@ function buildEnhancedGameSummary(_summary) {
 
 	// Boolean
 	const isRebalanced =
-		summary.gameSetting.rebalance6p || summary.gameSetting.rebalance7p || summary.gameSetting.rebalance9p || summary.gameSetting.rerebalance9p;
+		summary.gameSetting.rebalance6p ||
+		summary.gameSetting.rebalance7p ||
+		summary.gameSetting.rebalance9p ||
+		summary.gameSetting.rerebalance9p;
 
 	const casualGame = summary.gameSetting.casualGame;
 
@@ -98,61 +101,63 @@ function buildEnhancedGameSummary(_summary) {
 
 	// Option[Int]
 	const hitlerZone = (() => {
-		const i = turns.findIndex(t => t.beforeTrack.reds === 3);
+		const i = turns.findIndex((t) => t.beforeTrack.reds === 3);
 		return i > -1 ? some(i) : none;
 	})();
 
 	// Option[Int]
-	const indexOf = id => {
-		return fromNullable(Number.isInteger(id) ? id : players.findIndex(p => p.username === id));
+	const indexOf = (id) => {
+		return fromNullable(Number.isInteger(id) ? id : players.findIndex((p) => p.username === id));
 	};
 
 	// Option[Int]
-	const playerOf = id => {
-		return fromNullable(Number.isInteger(id) ? players.get(id) : players.find(p => p.username === id));
+	const playerOf = (id) => {
+		return fromNullable(Number.isInteger(id) ? players.get(id) : players.find((p) => p.username === id));
 	};
 
 	// Option[String]
-	const usernameOf = id => {
-		return playerOf(id).map(p => p.username);
+	const usernameOf = (id) => {
+		return playerOf(id).map((p) => p.username);
 	};
 
 	// Option[String]
-	const tagOf = id => {
-		return playerOf(id).map(p => `${p.username} [${p.id}]`);
+	const tagOf = (id) => {
+		return playerOf(id).map((p) => `${p.username} [${p.id}]`);
 	};
 
 	// Option[String]
-	const loyaltyOf = id => {
-		return playerOf(id).map(p => p.loyalty);
+	const loyaltyOf = (id) => {
+		return playerOf(id).map((p) => p.loyalty);
 	};
 
 	// Option[String]
-	const roleOf = id => {
-		return playerOf(id).map(p => p.role);
+	const roleOf = (id) => {
+		return playerOf(id).map((p) => p.role);
 	};
 
 	// Option[List[Option[{ ja: Boolean, presidentId: Int, chancellorId: Int }]]]
-	const votesOf = username => {
-		return indexOf(username).map(i =>
-			turns.map(t =>
-				t.votes.get(i).map(v => ({
+	const votesOf = (username) => {
+		return indexOf(username).map((i) =>
+			turns.map((t) =>
+				t.votes.get(i).map((v) => ({
 					ja: v,
 					presidentId: t.presidentId,
-					chancellorId: t.chancellorId
+					chancellorId: t.chancellorId,
 				}))
 			)
 		);
 	};
 
 	// Option[List[Int]]
-	const shotsOf = username => {
-		return indexOf(username).map(i => turns.filter(t => t.presidentId === i && t.execution.isSome()).map(t => t.execution.value()));
+	const shotsOf = (username) => {
+		return indexOf(username).map((i) =>
+			turns.filter((t) => t.presidentId === i && t.execution.isSome()).map((t) => t.execution.value())
+		);
 	};
 
 	// Option[Boolean]
-	const isWinner = username => {
-		return loyaltyOf(username).map(l => l === winningTeam);
+	const isWinner = (username) => {
+		return loyaltyOf(username).map((l) => l === winningTeam);
 	};
 
 	return {
@@ -173,7 +178,7 @@ function buildEnhancedGameSummary(_summary) {
 		roleOf,
 		votesOf,
 		shotsOf,
-		isWinner
+		isWinner,
 	};
 }
 

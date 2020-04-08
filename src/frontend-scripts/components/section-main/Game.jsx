@@ -14,7 +14,10 @@ export default class Game extends React.Component {
 		const { userInfo, gameInfo } = this.props;
 
 		if (
-			(userInfo.isSeated && gameInfo.gameState && gameInfo.gameState.isTracksFlipped && !prevProps.gameInfo.gameState.isTracksFlipped) ||
+			(userInfo.isSeated &&
+				gameInfo.gameState &&
+				gameInfo.gameState.isTracksFlipped &&
+				!prevProps.gameInfo.gameState.isTracksFlipped) ||
 			(gameInfo.general.isTourny &&
 				gameInfo.general.status === 'Tournament starts in 5 seconds.' &&
 				prevProps.gameInfo.general.status !== 'Tournament starts in 5 seconds.')
@@ -31,16 +34,31 @@ export default class Game extends React.Component {
 
 			if (
 				(gameInfo.gameState.audioCue === 'enactPolicyL' || gameInfo.gameState.audioCue === 'enactPolicyF') &&
-				(prevProps.gameInfo.gameState.audioCue !== 'enactPolicyL' || prevProps.gameInfo.gameState.audioCue !== 'enactPolicyF')
+				(prevProps.gameInfo.gameState.audioCue !== 'enactPolicyL' ||
+					prevProps.gameInfo.gameState.audioCue !== 'enactPolicyF')
 			) {
-				playSound(pack === 'pack1' ? 'enactpolicy' : gameInfo.gameState.audioCue === 'enactPolicyL' ? 'enactpolicyl' : 'enactpolicyf', pack, 4000);
+				playSound(
+					pack === 'pack1'
+						? 'enactpolicy'
+						: gameInfo.gameState.audioCue === 'enactPolicyL'
+						? 'enactpolicyl'
+						: 'enactpolicyf',
+					pack,
+					4000
+				);
 			}
 
-			if (gameInfo.general.status === 'Waiting on presidential discard.' && prevProps.gameInfo.general.status !== 'Waiting on presidential discard.') {
+			if (
+				gameInfo.general.status === 'Waiting on presidential discard.' &&
+				prevProps.gameInfo.general.status !== 'Waiting on presidential discard.'
+			) {
 				playSound('presidentreceivespolicies', 'pack1', 3000);
 			}
 
-			if (gameInfo.general.status === 'Waiting on chancellor enactment.' && prevProps.gameInfo.general.status !== 'Waiting on chancellor enactment.') {
+			if (
+				gameInfo.general.status === 'Waiting on chancellor enactment.' &&
+				prevProps.gameInfo.general.status !== 'Waiting on chancellor enactment.'
+			) {
 				playSound('chancellorreceivespolicies', 'pack1', 2000);
 			}
 
@@ -48,11 +66,17 @@ export default class Game extends React.Component {
 				playSound('policypeek', 'pack1', 3000);
 			}
 
-			if (gameInfo.gameState.audioCue === 'selectedExecution' && prevProps.gameInfo.gameState.audioCue !== 'selectedExecution') {
+			if (
+				gameInfo.gameState.audioCue === 'selectedExecution' &&
+				prevProps.gameInfo.gameState.audioCue !== 'selectedExecution'
+			) {
 				playSound('playershot', pack, pack === 'pack1' ? 11000 : 5000);
 			}
 
-			if (gameInfo.gameState.audioCue === 'selectedInvestigate' && prevProps.gameInfo.gameState.audioCue !== 'selectedInvestigate') {
+			if (
+				gameInfo.gameState.audioCue === 'selectedInvestigate' &&
+				prevProps.gameInfo.gameState.audioCue !== 'selectedInvestigate'
+			) {
 				playSound(pack === 'pack1' ? 'policyinvestigate' : 'policypeek', 'pack1', pack === 'pack1' ? 11000 : 3000);
 			}
 
@@ -75,7 +99,10 @@ export default class Game extends React.Component {
 				playSound('fascistswin', pack, pack === 'pack1' ? 19000 : 13000);
 			}
 
-			if (gameInfo.gameState.audioCue === 'fascistsWinHitlerElected' && prevProps.gameInfo.gameState.audioCue !== 'fascistsWinHitlerElected') {
+			if (
+				gameInfo.gameState.audioCue === 'fascistsWinHitlerElected' &&
+				prevProps.gameInfo.gameState.audioCue !== 'fascistsWinHitlerElected'
+			) {
 				playSound('fascistswinhitlerelected', pack, pack === 'pack1' ? 11000 : 13000);
 			}
 
@@ -86,16 +113,26 @@ export default class Game extends React.Component {
 
 		// All players have left the game, so we will return the observer to the main screen.
 		if (
-			(!gameInfo.publicPlayersState.length && !(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0)) ||
-			(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0 && !gameInfo.general.tournyInfo.queuedPlayers.length)
+			(!gameInfo.publicPlayersState.length &&
+				!(gameInfo.general.isTourny && gameInfo.general.tournyInfo.round === 0)) ||
+			(gameInfo.general.isTourny &&
+				gameInfo.general.tournyInfo.round === 0 &&
+				!gameInfo.general.tournyInfo.queuedPlayers.length)
 		) {
 			window.location.hash = '#/';
 		}
 	}
 
 	componentDidMount() {
-		this.props.socket.emit('updateUserStatus', '', this.props.gameInfo && this.props.gameInfo.general && this.props.gameInfo.general.uid);
-		this.props.socket.emit('getGameInfo', this.props.gameInfo && this.props.gameInfo.general && this.props.gameInfo.general.uid);
+		this.props.socket.emit(
+			'updateUserStatus',
+			'',
+			this.props.gameInfo && this.props.gameInfo.general && this.props.gameInfo.general.uid
+		);
+		this.props.socket.emit(
+			'getGameInfo',
+			this.props.gameInfo && this.props.gameInfo.general && this.props.gameInfo.general.uid
+		);
 	}
 
 	componentWillUnmount() {
@@ -124,7 +161,13 @@ export default class Game extends React.Component {
 							<section className={gameInfo.general && gameInfo.general.isTourny ? 'gamestatus tourny' : 'gamestatus'}>
 								{gameInfo.general && gameInfo.general.status}
 							</section>
-							<Gamechat gameInfo={gameInfo} userInfo={userInfo} userList={userList} socket={socket} allEmotes={allEmotes} />
+							<Gamechat
+								gameInfo={gameInfo}
+								userInfo={userInfo}
+								userList={userList}
+								socket={socket}
+								allEmotes={allEmotes}
+							/>
 						</div>
 					</div>
 				</div>
@@ -137,8 +180,8 @@ export default class Game extends React.Component {
 						!userInfo.gameSettings.disableConfetti &&
 						gameInfo &&
 						gameInfo.publicPlayersState &&
-						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName) &&
-						gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName).isConfetti
+						gameInfo.publicPlayersState.find((player) => player.userName === userInfo.userName) &&
+						gameInfo.publicPlayersState.find((player) => player.userName === userInfo.userName).isConfetti
 					) {
 						return balloons ? <Balloons /> : <Confetti />;
 					}
@@ -154,7 +197,13 @@ export default class Game extends React.Component {
 						return classes;
 					})()}
 				>
-					<Players onClickedTakeSeat={onClickedTakeSeat} userList={userList} userInfo={userInfo} gameInfo={gameInfo} socket={socket} />
+					<Players
+						onClickedTakeSeat={onClickedTakeSeat}
+						userList={userList}
+						userInfo={userInfo}
+						gameInfo={gameInfo}
+						socket={socket}
+					/>
 				</div>
 			</section>
 		);
@@ -163,7 +212,7 @@ export default class Game extends React.Component {
 
 Game.defaultProps = {
 	gameInfo: {},
-	userInfo: {}
+	userInfo: {},
 };
 
 Game.propTypes = {
@@ -179,5 +228,5 @@ Game.propTypes = {
 	dispatch: PropTypes.func,
 	userList: PropTypes.object,
 	allEmotes: PropTypes.array,
-	onClickedTakeSeat: PropTypes.func
+	onClickedTakeSeat: PropTypes.func,
 };

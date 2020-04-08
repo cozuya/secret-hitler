@@ -52,13 +52,13 @@ module.exports = () => {
 	};
 
 	fetch('https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1')
-		.then(res => res.text())
-		.then(text => {
+		.then((res) => res.text())
+		.then((text) => {
 			const gatheredTorIps = text.split('\n').slice(3);
 
 			accounts(gatheredTorIps);
 		})
-		.catch(e => {
+		.catch((e) => {
 			console.log('error in getting tor ips', e);
 			accounts(savedTorIps);
 			console.log('Using Cached TOR IPs');
@@ -110,22 +110,10 @@ module.exports = () => {
 		res.redirect('/game/');
 	});
 
-	const getHSLcolors = hsl => [
+	const getHSLcolors = (hsl) => [
 		parseInt(hsl.split(',')[0].split('hsl(')[1], 10),
-		parseInt(
-			hsl
-				.split(',')[1]
-				.trim()
-				.split('%')[0],
-			10
-		),
-		parseInt(
-			hsl
-				.split(',')[2]
-				.trim()
-				.split('%)')[0],
-			10
-		)
+		parseInt(hsl.split(',')[1].trim().split('%')[0], 10),
+		parseInt(hsl.split(',')[2].trim().split('%)')[0], 10),
 	];
 
 	app.get('/game/', ensureAuthenticated, (req, res) => {
@@ -143,13 +131,13 @@ module.exports = () => {
 			}
 
 			Profile.findOne({ _id: username })
-				.then(profile => {
+				.then((profile) => {
 					if (profile) {
 						profile.lastConnectedIP = ip;
 						profile.save();
 					}
 				})
-				.catch(err => {
+				.catch((err) => {
 					console.log(err, 'profile find err');
 				});
 
@@ -185,8 +173,12 @@ module.exports = () => {
 						backgroundLightness > 50 ? backgroundLightness - 14 : backgroundLightness + 14
 					}%)`,
 					textColor,
-					secondaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 7 : textLightness + 7}%)`,
-					tertiaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 14 : textLightness + 14}%)`
+					secondaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${
+						textLightness > 50 ? textLightness - 7 : textLightness + 7
+					}%)`,
+					tertiaryTextColor: `hsl(${textHue}, ${textSaturation}%, ${
+						textLightness > 50 ? textLightness - 14 : textLightness + 14
+					}%)`,
 				};
 
 				if (process.env.NODE_ENV === 'production') {
@@ -200,7 +192,7 @@ module.exports = () => {
 				) {
 					account.ipHistory.push({
 						date: new Date(),
-						ip: ip
+						ip: ip,
 					});
 				}
 				account.save(() => {
@@ -239,8 +231,12 @@ module.exports = () => {
 		const tertiaryBackgroundColor = `hsl(${backgroundHue}, ${backgroundSaturation}%, ${
 			backgroundLightness > 50 ? backgroundLightness - 10 : backgroundLightness + 10
 		}%)`;
-		const secondaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 7 : textLightness + 7}%)`;
-		const tertiaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${textLightness > 50 ? textLightness - 14 : textLightness + 14}%)`;
+		const secondaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${
+			textLightness > 50 ? textLightness - 7 : textLightness + 7
+		}%)`;
+		const tertiaryTextColor = `hsl(${textHue}, ${textSaturation}%, ${
+			textLightness > 50 ? textLightness - 14 : textLightness + 14
+		}%)`;
 
 		const gameObj = {
 			game: true,
@@ -252,7 +248,7 @@ module.exports = () => {
 			tertiaryBackgroundColor,
 			textColor,
 			secondaryTextColor,
-			tertiaryTextColor
+			tertiaryTextColor,
 		};
 
 		if (process.env.NODE_ENV === 'production') {
@@ -265,11 +261,18 @@ module.exports = () => {
 	app.get('/profile', (req, res) => {
 		const username = req.query.username;
 		const requestingUser = req.query.requestingUser;
-		if (req && req.user && requestingUser && requestingUser !== 'undefined' && req.user.username && requestingUser !== req.user.username) {
+		if (
+			req &&
+			req.user &&
+			requestingUser &&
+			requestingUser !== 'undefined' &&
+			req.user.username &&
+			requestingUser !== req.user.username
+		) {
 			res.status(401).send('You are not who you say you are. Please login again.');
 			return;
 		}
-		getProfile(username).then(profile => {
+		getProfile(username).then((profile) => {
 			if (!profile) {
 				res.status(404).send('Profile not found');
 			} else {
@@ -283,7 +286,7 @@ module.exports = () => {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
 
-						Account.findOne({ username: requestingUser }).then(acc => {
+						Account.findOne({ username: requestingUser }).then((acc) => {
 							if (!acc || !acc.staffRole || acc.staffRole === 'altmod' || acc.staffRole === 'veteran') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
@@ -309,26 +312,26 @@ module.exports = () => {
 		GameSummary.findById(id)
 			.lean()
 			.exec()
-			.then(gs => {
+			.then((gs) => {
 				if (!gs) {
 					res.status(404).send('Game summary not found');
 				} else {
 					res.json(gs);
 				}
 			})
-			.catch(err => debug(err));
+			.catch((err) => debug(err));
 	});
 
 	app.get('/online-playercount', (req, res) => {
 		io.of('/').adapter.clients((err, clients) => {
 			res.json({
-				count: clients.length
+				count: clients.length,
 			});
 		});
 	});
 
 	app.get('/viewPatchNotes', ensureAuthenticated, (req, res) => {
-		Account.updateOne({ username: req.user.username }, { lastVersionSeen: version.number }, err => {
+		Account.updateOne({ username: req.user.username }, { lastVersionSeen: version.number }, (err) => {
 			res.sendStatus(err ? 404 : 202);
 		});
 	});
@@ -344,17 +347,17 @@ module.exports = () => {
 			const username = req.session.passport.user;
 
 			Account.findOne({ username })
-				.then(account => {
+				.then((account) => {
 					if (account.wins + account.losses < 50) {
 						res.json({
-							message: 'You need to have played 50 games to upload a cardback.'
+							message: 'You need to have played 50 games to upload a cardback.',
 						});
 					} else if (
 						new Date(account.gameSettings.customCardbackSaveTime) &&
 						Date.now() - new Date(account.gameSettings.customCardbackSaveTime).getTime() < 30000
 					) {
 						res.json({
-							message: 'You can only change your cardback once every 30 seconds.'
+							message: 'You can only change your cardback once every 30 seconds.',
 						});
 					} else {
 						ProcessImage(username, raw, (resp, err) => {
@@ -362,7 +365,7 @@ module.exports = () => {
 						});
 					}
 				})
-				.catch(err => {
+				.catch((err) => {
 					console.log(err, 'account err in cardbacks');
 				});
 		} catch (error) {

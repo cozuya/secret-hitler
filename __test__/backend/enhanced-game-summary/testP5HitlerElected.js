@@ -23,8 +23,8 @@ export default () => {
 		});
 
 		it('should track the deck size', () => {
-			const beforeDeckSize = turnNum => turns.get(turnNum).beforeDeckSize;
-			const afterDeckSize = turnNum => turns.get(turnNum).afterDeckSize;
+			const beforeDeckSize = (turnNum) => turns.get(turnNum).beforeDeckSize;
+			const afterDeckSize = (turnNum) => turns.get(turnNum).afterDeckSize;
 
 			expect(beforeDeckSize(0)).toBe(17);
 			expect(beforeDeckSize(1)).toBe(14);

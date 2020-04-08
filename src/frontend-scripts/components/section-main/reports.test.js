@@ -7,7 +7,7 @@ describe('Reports', () => {
 		const initialState = {
 			reports: [],
 			sortType: 'date',
-			sortDirection: 'descending'
+			sortDirection: 'descending',
 		};
 
 		const component = shallow(<Reports socket={{ emit: jest.fn(), on: jest.fn() }} />);

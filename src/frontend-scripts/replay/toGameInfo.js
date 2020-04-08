@@ -3,12 +3,12 @@ import { mapOpt1 } from '../../../utils';
 export default function toGameInfo(snapshot) {
 	const gameState = {
 		isTracksFlipped: true,
-		undrawnPolicyCount: snapshot.deckSize
+		undrawnPolicyCount: snapshot.deckSize,
 	};
 
 	const general = {
 		playerCount: snapshot.players.size,
-		experiencedMode: false
+		experiencedMode: false,
 	};
 
 	const cardFlingerState = [];
@@ -25,14 +25,18 @@ export default function toGameInfo(snapshot) {
 				'isPresident'
 			);
 
-			const maybeChancellor = maybe(!isSpecialElection && snapshot.chancellorId === i, 'governmentStatus', 'isChancellor');
+			const maybeChancellor = maybe(
+				!isSpecialElection && snapshot.chancellorId === i,
+				'governmentStatus',
+				'isChancellor'
+			);
 
 			const cardStatus = (() => {
 				const f = (cardDisplayed, isFlipped, cardFront, cardBack) => ({
 					cardDisplayed,
 					isFlipped,
 					cardFront,
-					cardBack
+					cardBack,
 				});
 
 				const blank = f(false, false, '', {});
@@ -40,7 +44,7 @@ export default function toGameInfo(snapshot) {
 				if (snapshot.gameOver) {
 					return f(true, true, '', {
 						cardName: p.role,
-						icon: p.icon || 0
+						icon: p.icon || 0,
 					});
 				}
 
@@ -49,17 +53,17 @@ export default function toGameInfo(snapshot) {
 						return f(true, true, 'ballot', {
 							cardName: snapshot.votes
 								.get(i)
-								.map(x => (x ? 'ja' : 'nein'))
-								.valueOrElse(null)
+								.map((x) => (x ? 'ja' : 'nein'))
+								.valueOrElse(null),
 						});
 					case 'investigation':
 						const isInvTarget = i === snapshot.investigationId;
 
 						return f(isInvTarget, isInvTarget, 'role', {
-							cardName: isInvTarget && 'membership-' + p.loyalty
+							cardName: isInvTarget && 'membership-' + p.loyalty,
 						});
 					case 'veto':
-						const vetoCard = vote => f(true, true, 'ballot', { cardName: vote ? 'ja' : 'nein' });
+						const vetoCard = (vote) => f(true, true, 'ballot', { cardName: vote ? 'ja' : 'nein' });
 
 						if (i === snapshot.chancellorId) {
 							return vetoCard(snapshot.chancellorVeto);
@@ -78,7 +82,7 @@ export default function toGameInfo(snapshot) {
 				userName: p.username,
 				nameStatus: p.role,
 				connected: true,
-				cardStatus
+				cardStatus,
 			};
 
 			return Object.assign({}, base, maybePresident, maybeChancellor);
@@ -90,13 +94,13 @@ export default function toGameInfo(snapshot) {
 		liberalPolicyCount: snapshot.track.blues,
 		enactedPolicies: [],
 		isBlurred: ['presidentLegislation', 'chancellorLegislation', 'policyPeek'].includes(snapshot.phase),
-		isHidden: true
+		isHidden: true,
 	};
 	return {
 		gameState,
 		publicPlayersState,
 		trackState,
 		general,
-		cardFlingerState
+		cardFlingerState,
 	};
 }

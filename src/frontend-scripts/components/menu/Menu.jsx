@@ -6,14 +6,14 @@ import { Popup } from 'semantic-ui-react';
 
 const mapStateToProps = ({ version }) => ({ version });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
 	readPatchNotes: () => {
 		dispatch(viewPatchNotes());
 		fetch('/viewPatchNotes', {
-			credentials: 'same-origin'
+			credentials: 'same-origin',
 		});
 		window.location.hash = '#/changelog';
-	}
+	},
 });
 
 class Menu extends React.Component {
@@ -203,7 +203,9 @@ class Menu extends React.Component {
 			<div>
 				<div className="menu-container" style={{ zIndex: 9999 }}>
 					<section className={classes}>
-						<a href="/">{userInfo && userInfo.gameSettings && userInfo.gameSettings.safeForWork ? 'SH.io' : 'SECRET HITLER.io'}</a>
+						<a href="/">
+							{userInfo && userInfo.gameSettings && userInfo.gameSettings.safeForWork ? 'SH.io' : 'SECRET HITLER.io'}
+						</a>
 						<div className="center-menu-links">
 							<span>
 								<a style={{ textDecoration: 'underline' }} target="_blank" href="/tou">
@@ -212,7 +214,9 @@ class Menu extends React.Component {
 								|{' '}
 								<a
 									className={
-										this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
+										this.props.midSection !== 'game' &&
+										this.props.version.lastSeen &&
+										this.props.version.current.number !== this.props.version.lastSeen
 											? 'patch-alert'
 											: null
 									}
@@ -307,7 +311,9 @@ class Menu extends React.Component {
 								|{' '}
 								<a
 									className={
-										this.props.midSection !== 'game' && this.props.version.lastSeen && this.props.version.current.number !== this.props.version.lastSeen
+										this.props.midSection !== 'game' &&
+										this.props.version.lastSeen &&
+										this.props.version.current.number !== this.props.version.lastSeen
 											? 'patch-alert'
 											: null
 									}
@@ -411,7 +417,7 @@ Menu.propTypes = {
 	gameInfo: PropTypes.object,
 	midSection: PropTypes.string,
 	version: PropTypes.object,
-	readPatchNotes: PropTypes.func
+	readPatchNotes: PropTypes.func,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

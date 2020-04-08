@@ -7,7 +7,9 @@ const mongoose = require('mongoose');
 const GameSummary = require('../models/game-summary');
 
 if (![2, 3, 5, 6].includes(process.argv.length)) {
-	console.log(`Usage: node scripts/dumpGameSummariesAnon.js [limit (25000)] [output directory(./gameSummaries)] [tarball name (gameSummaries)] [skip (0)]`);
+	console.log(
+		`Usage: node scripts/dumpGameSummariesAnon.js [limit (25000)] [output directory(./gameSummaries)] [tarball name (gameSummaries)] [skip (0)]`
+	);
 	process.exit(1);
 }
 
@@ -34,7 +36,7 @@ GameSummary.find()
 	.limit(parseInt(process.argv[2], 10) || 25000)
 	.lean()
 	.cursor()
-	.eachAsync(summary => {
+	.eachAsync((summary) => {
 		count++;
 		delete summary._id;
 		delete summary.__v;

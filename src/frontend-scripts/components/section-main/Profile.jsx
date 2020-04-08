@@ -8,9 +8,9 @@ import cn from 'classnames';
 import { PLAYERCOLORS } from '../../constants';
 
 const mapStateToProps = ({ profile }) => ({ profile });
-const mapDispatchToProps = dispatch => ({
-	updateActiveStats: activeStat => dispatch(updateActiveStats(activeStat)),
-	fetchReplay: gameId => dispatch(fetchReplay(gameId))
+const mapDispatchToProps = (dispatch) => ({
+	updateActiveStats: (activeStat) => dispatch(updateActiveStats(activeStat)),
+	fetchReplay: (gameId) => dispatch(fetchReplay(gameId)),
 });
 
 class ProfileWrapper extends React.Component {
@@ -20,7 +20,7 @@ class ProfileWrapper extends React.Component {
 			bioStatus: 'displayed',
 			blacklistClicked: false,
 			blacklistShown: false,
-			openTime: Date.now()
+			openTime: Date.now(),
 		};
 	}
 
@@ -64,7 +64,7 @@ class ProfileWrapper extends React.Component {
 					headers={['Loyalty', 'Matches', 'Winrate']}
 					rows={[
 						this.successRow('Liberal', matches.liberal.events, matches.liberal.successes),
-						this.successRow('Fascist', matches.fascist.events, matches.fascist.successes)
+						this.successRow('Fascist', matches.fascist.events, matches.fascist.successes),
 					]}
 				/>
 			</div>
@@ -79,7 +79,7 @@ class ProfileWrapper extends React.Component {
 				headers={['Action', 'Instances', 'Success Rate']}
 				rows={[
 					this.successRow('Vote Accuracy', actions.voteAccuracy.events, actions.voteAccuracy.successes),
-					this.successRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes)
+					this.successRow('Shot Accuracy', actions.shotAccuracy.events, actions.shotAccuracy.successes),
 				]}
 			/>
 		);
@@ -96,7 +96,7 @@ class ProfileWrapper extends React.Component {
 					return this.Actions();
 			}
 		})();
-		const toActive = stat => (activeStat === stat ? 'active' : '');
+		const toActive = (stat) => (activeStat === stat ? 'active' : '');
 
 		return (
 			<div>
@@ -121,16 +121,16 @@ class ProfileWrapper extends React.Component {
 
 	RecentGames() {
 		const { recentGames } = this.props.profile;
-		const rows = recentGames.map(game => ({
-			onClick: e => {
+		const rows = recentGames.map((game) => ({
+			onClick: (e) => {
 				window.location.hash = `/replay/${game._id}`;
 			},
 			cells: [
 				game.loyalty === 'liberal' ? 'Liberal' : 'Fascist',
 				game.isRebalanced ? game.playerSize + 'R' : game.playerSize,
 				game.isWinner ? 'Win' : 'Loss',
-				this.formatDateString(game.date)
-			]
+				this.formatDateString(game.date),
+			],
 		}));
 
 		return (
@@ -145,13 +145,13 @@ class ProfileWrapper extends React.Component {
 		const { userInfo, profile } = this.props;
 		const editClick = () => {
 			this.setState({
-				bioStatus: this.state.bioStatus === 'editing' ? 'displayed' : 'editing'
+				bioStatus: this.state.bioStatus === 'editing' ? 'displayed' : 'editing',
 			});
 		};
-		const bioChange = e => {
+		const bioChange = (e) => {
 			this.setState({ bioValue: `${e.target.value}` });
 		};
-		const bioKeyDown = e => {
+		const bioKeyDown = (e) => {
 			if (e.keyCode === 13) {
 				this.props.socket.emit('updateBio', this.state.bioValue);
 				this.setState({ bioStatus: 'displayed' });
@@ -167,7 +167,7 @@ class ProfileWrapper extends React.Component {
 			const formatedBio = [];
 			const words = text.split(' ');
 
-			words.forEach(word => {
+			words.forEach((word) => {
 				if (/^https:\/\//i.test(word)) {
 					formatedBio.push(
 						<a key={word} href={word} title="External link" target="_blank" rel="nofollow noreferrer noopener">
@@ -191,7 +191,10 @@ class ProfileWrapper extends React.Component {
 
 		return (
 			<div>
-				<h2 className="ui header bio">Bio {userInfo.userName && userInfo.userName === profile._id && <i onClick={editClick} className="edit icon" />}</h2>
+				<h2 className="ui header bio">
+					Bio{' '}
+					{userInfo.userName && userInfo.userName === profile._id && <i onClick={editClick} className="edit icon" />}
+				</h2>
 				{(() => {
 					switch (this.state.bioStatus) {
 						case 'displayed':
@@ -214,7 +217,7 @@ class ProfileWrapper extends React.Component {
 		);
 	}
 
-	blackListClick = e => {
+	blackListClick = (e) => {
 		const { gameSettings } = this.props.userInfo;
 		const { profile } = this.props;
 		const name = profile._id;
@@ -222,7 +225,7 @@ class ProfileWrapper extends React.Component {
 
 		this.setState(
 			{
-				blacklistClicked: true
+				blacklistClicked: true,
 			},
 			() => {
 				if (gameSettings && gameSettings.blacklist.includes(name)) {
@@ -258,7 +261,7 @@ class ProfileWrapper extends React.Component {
 
 	Profile() {
 		const { gameSettings, profile, userInfo, userList } = this.props;
-		const user = userList.list ? userList.list.find(u => u.userName == profile._id) : null;
+		const user = userList.list ? userList.list.find((u) => u.userName == profile._id) : null;
 		const w =
 			gameSettings && gameSettings.disableSeasonal
 				? this.state.userListFilter === 'all'
@@ -281,7 +284,12 @@ class ProfileWrapper extends React.Component {
 			userClasses =
 				user[w] + user[l] > 49 || Boolean(user.staffRole) || user.isContributor
 					? cn(
-							PLAYERCOLORS(user, !(gameSettings && gameSettings.disableSeasonal), 'profile-picture', gameSettings && gameSettings.disableElo),
+							PLAYERCOLORS(
+								user,
+								!(gameSettings && gameSettings.disableSeasonal),
+								'profile-picture',
+								gameSettings && gameSettings.disableElo
+							),
 							{ blacklisted: gameSettings && gameSettings.blacklist.includes(user.userName) },
 							{ unclickable: !this.props.isUserClickable },
 							{ clickable: this.props.isUserClickable }
@@ -299,7 +307,7 @@ class ProfileWrapper extends React.Component {
 					<div
 						className={userClasses}
 						style={{
-							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${this.state.openTime})`
+							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${this.state.openTime})`,
 						}}
 					/>
 				)}
@@ -324,14 +332,20 @@ class ProfileWrapper extends React.Component {
 						)}
 						{profile.lastConnectedIP !== 'no looking' && <p>Last connected IP: {profile.lastConnectedIP}</p>}
 						{userInfo.userName === profile._id && (
-							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
+							<a
+								style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }}
+								onClick={this.showBlacklist}
+							>
 								Your blacklist
 							</a>
 						)}
 					</div>
 				</div>
 				{this.renderBio()}
-				{this.props.userInfo.userName && this.props.userInfo.userName !== profile._id && !this.state.blacklistClicked && this.renderBlacklist()}
+				{this.props.userInfo.userName &&
+					this.props.userInfo.userName !== profile._id &&
+					!this.state.blacklistClicked &&
+					this.renderBlacklist()}
 				<div className="ui two column grid">
 					<div className="column">{this.Stats()}</div>
 					<div className="column">{this.RecentGames()}</div>
@@ -380,13 +394,13 @@ class ProfileWrapper extends React.Component {
 				{children}
 				<div
 					className="ui basic small modal blacklistmodal"
-					ref={c => {
+					ref={(c) => {
 						this.blacklistModal = c;
 					}}
 				>
 					<div className="ui header">Your blacklist</div>
 					{this.props.userInfo.gameSettings &&
-						this.props.userInfo.gameSettings.blacklist.map(playerName => (
+						this.props.userInfo.gameSettings.blacklist.map((playerName) => (
 							<div key={playerName} className={`blacklist-${playerName}`}>
 								<i
 									onClick={() => {
@@ -413,7 +427,7 @@ class ProfileWrapper extends React.Component {
 ProfileWrapper.defaultProps = {
 	userInfo: {},
 	userList: { list: [] },
-	socket: {}
+	socket: {},
 };
 
 ProfileWrapper.propTypes = {
@@ -423,7 +437,7 @@ ProfileWrapper.propTypes = {
 	profile: PropTypes.object,
 	updateActiveStats: PropTypes.func,
 	gameSettings: PropTypes.object,
-	isUserClickable: PropTypes.bool
+	isUserClickable: PropTypes.bool,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileWrapper);

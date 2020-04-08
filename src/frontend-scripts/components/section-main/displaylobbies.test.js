@@ -4,7 +4,9 @@ import DisplayLobbies from './DisplayLobbies';
 
 describe('DisplayLobbies', () => {
 	it('should initialize correctly', () => {
-		const component = shallow(<DisplayLobbies game={{ userNames: [], customCardback: [], customCardbackUid: [], excludedPlayerCount: [] }} />);
+		const component = shallow(
+			<DisplayLobbies game={{ userNames: [], customCardback: [], customCardbackUid: [], excludedPlayerCount: [] }} />
+		);
 
 		expect(component).toHaveLength(1);
 	});

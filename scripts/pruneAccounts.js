@@ -10,10 +10,10 @@ Account.findOne({
 	created: { $lte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) },
 	isBanned: { $ne: true },
 	wins: 0,
-	losses: 0
+	losses: 0,
 })
 	.cursor()
-	.eachAsync(account => {
+	.eachAsync((account) => {
 		account.delete();
 		count++;
 		if (Number.isInteger(count / 100)) {
@@ -25,7 +25,7 @@ Account.findOne({
 		mongoose.connection.close();
 		return 0;
 	})
-	.catch(err => {
+	.catch((err) => {
 		console.log('error in pruning accounts', err);
 		return 1;
 	});

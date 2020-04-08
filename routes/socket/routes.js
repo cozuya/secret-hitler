@@ -21,7 +21,7 @@ const {
 	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
 	handleFlappyEvent,
-	handleUpdatedTheme
+	handleUpdatedTheme,
 } = require('./user-events');
 const {
 	sendPlayerNotes,
@@ -36,9 +36,15 @@ const {
 	sendSignups,
 	sendAllSignups,
 	sendPrivateSignups,
-	updateUserStatus
+	updateUserStatus,
 } = require('./user-requests');
-const { selectVoting, selectPresidentPolicy, selectChancellorPolicy, selectChancellorVoteOnVeto, selectPresidentVoteOnVeto } = require('./game/election');
+const {
+	selectVoting,
+	selectPresidentPolicy,
+	selectChancellorPolicy,
+	selectChancellorVoteOnVeto,
+	selectPresidentVoteOnVeto,
+} = require('./game/election');
 const { selectChancellor } = require('./game/election-util');
 const {
 	selectSpecialElection,
@@ -47,9 +53,16 @@ const {
 	selectPlayerToExecute,
 	selectPartyMembershipInvestigateReverse,
 	selectOnePolicy,
-	selectBurnCard
+	selectBurnCard,
 } = require('./game/policy-powers');
-const { emoteList, testIP, pushUserlistAsync, getRangeUserlistAsync, getGamesAsync, scanGamesAsync } = require('./models');
+const {
+	emoteList,
+	testIP,
+	pushUserlistAsync,
+	getRangeUserlistAsync,
+	getGamesAsync,
+	scanGamesAsync,
+} = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
@@ -135,14 +148,19 @@ let adminUserNames = [];
 // 	});
 // };
 
-const ensureAuthenticated = socket =>
-	Boolean(socket.handshake && socket.handshake.session && socket.handshake.session.passport && socket.handshake.session.passport.user);
+const ensureAuthenticated = (socket) =>
+	Boolean(
+		socket.handshake &&
+			socket.handshake.session &&
+			socket.handshake.session.passport &&
+			socket.handshake.session.passport.user
+	);
 
 const findGame = async (data = {}) => data.uid && JSON.parse(await getGamesAsync(data.uid));
 
 const ensureInGame = (passport, game) => {
 	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
-		const player = game.publicPlayersState.find(player => player.userName === passport.user);
+		const player = game.publicPlayersState.find((player) => player.userName === passport.user);
 
 		return Boolean(player);
 	}
@@ -150,12 +168,12 @@ const ensureInGame = (passport, game) => {
 
 const gatherStaffUsernames = () => {
 	Account.find({ staffRole: { $exists: true } })
-		.then(accounts => {
-			modUserNames = accounts.filter(account => account.staffRole === 'moderator').map(account => account.username);
-			editorUserNames = accounts.filter(account => account.staffRole === 'editor').map(account => account.username);
-			adminUserNames = accounts.filter(account => account.staffRole === 'admin').map(account => account.username);
+		.then((accounts) => {
+			modUserNames = accounts.filter((account) => account.staffRole === 'moderator').map((account) => account.username);
+			editorUserNames = accounts.filter((account) => account.staffRole === 'editor').map((account) => account.username);
+			adminUserNames = accounts.filter((account) => account.staffRole === 'admin').map((account) => account.username);
 		})
-		.catch(err => {
+		.catch((err) => {
 			console.log(err, 'err in finding staffroles');
 		});
 };
@@ -164,7 +182,7 @@ module.exports.socketRoutes = () => {
 	// setInterval(gamesGarbageCollector, 30000);
 	gatherStaffUsernames();
 
-	io.on('connection', socket => {
+	io.on('connection', (socket) => {
 		let isAEM;
 		let isTrial;
 		let isRestricted;
@@ -182,7 +200,7 @@ module.exports.socketRoutes = () => {
 				for (let index = 0; index < gameUids.length; index++) {
 					const g = JSON.parse(await getGamesAsync(gameUids[index]));
 
-					if (g.publicPlayersState.find(player => player.userName === user && !player.leftGame)) {
+					if (g.publicPlayersState.find((player) => player.userName === user && !player.leftGame)) {
 						game = g;
 						break;
 					}
@@ -196,7 +214,7 @@ module.exports.socketRoutes = () => {
 				}
 
 				const oldSocketID = Object.values(sockets).find(
-					sock =>
+					(sock) =>
 						sock.handshake.session.passport &&
 						Object.keys(sock.handshake.session.passport).length &&
 						sock.handshake.session.passport.user === user &&
@@ -209,7 +227,7 @@ module.exports.socketRoutes = () => {
 					delete sockets[oldSocketID];
 				}
 
-				const reconnectingUser = game && game.publicPlayersState.find(player => player.userName === user);
+				const reconnectingUser = game && game.publicPlayersState.find((player) => player.userName === user);
 
 				if (game && game.gameState.isStarted && !game.gameState.isCompleted && reconnectingUser) {
 					reconnectingUser.connected = true;
@@ -233,7 +251,7 @@ module.exports.socketRoutes = () => {
 						if (account.isBanned || (account.isTimeout && new Date() < account.isTimeout)) {
 							logOutUser(user);
 						} else {
-							testIP(account.lastConnectedIP, banType => {
+							testIP(account.lastConnectedIP, (banType) => {
 								if (banType && banType !== 'new' && !account.gameSettings.ignoreIPBans) {
 									logOutUser(user);
 								} else {
@@ -262,7 +280,9 @@ module.exports.socketRoutes = () => {
 											account.staffRole !== 'altmod' &&
 											account.staffRole !== 'veteran'
 									);
-									isTrial = Boolean(account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod');
+									isTrial = Boolean(
+										account.staffRole && account.staffRole.length > 0 && account.staffRole === 'trialmod'
+									);
 
 									if (account.gameSettings.enableRightSidebarInGame) {
 										socket.join('sidebarInfoSubscription');
@@ -274,7 +294,7 @@ module.exports.socketRoutes = () => {
 										sendGameList(socket, isAEM);
 									}
 
-									const parseVer = ver => {
+									const parseVer = (ver) => {
 										const vals = ver.split('.');
 										vals.forEach((v, i) => (vals[i] = parseInt(v)));
 
@@ -302,7 +322,7 @@ module.exports.socketRoutes = () => {
 										const changesSince = [];
 										const myVer = parseVer(account.touLastAgreed);
 
-										TOU_CHANGES.forEach(change => {
+										TOU_CHANGES.forEach((change) => {
 											if (!firstVerNew(myVer, parseVer(change.changeVer))) {
 												changesSince.push(change);
 											}
@@ -316,7 +336,7 @@ module.exports.socketRoutes = () => {
 										socket.emit('touChange', [TOU_CHANGES[TOU_CHANGES.length - 1]]);
 										isRestricted = true;
 									}
-									const warnings = account.warnings.filter(warning => !warning.acknowledged);
+									const warnings = account.warnings.filter((warning) => !warning.acknowledged);
 
 									if (warnings.length > 0) {
 										const { moderator, acknowledged, ...firstWarning } = warnings[0]; // eslint-disable-line no-unused-vars
@@ -345,14 +365,14 @@ module.exports.socketRoutes = () => {
 		});
 
 		socket.on('receiveRestrictions', () => {
-			Account.findOne({ username: passport.user }).then(account => {
+			Account.findOne({ username: passport.user }).then((account) => {
 				isRestricted = checkRestriction(account);
 			});
 		});
 
-		socket.on('seeWarnings', username => {
+		socket.on('seeWarnings', (username) => {
 			if (isAEM) {
-				Account.findOne({ username: username }).then(account => {
+				Account.findOne({ username: username }).then((account) => {
 					if (account) {
 						if (account.warnings && account.warnings.length > 0) {
 							socket.emit('sendWarnings', { username, warnings: account.warnings });
@@ -374,7 +394,7 @@ module.exports.socketRoutes = () => {
 			handleSocketDisconnect(socket);
 		});
 
-		socket.on('flappyEvent', async data => {
+		socket.on('flappyEvent', async (data) => {
 			if (isRestricted) return;
 			const game = await findGame(data);
 
@@ -415,7 +435,7 @@ module.exports.socketRoutes = () => {
 
 		socket.on('confirmTOU', () => {
 			if (authenticated && isRestricted) {
-				Account.findOne({ username: passport.user }).then(account => {
+				Account.findOne({ username: passport.user }).then((account) => {
 					account.touLastAgreed = TOU_CHANGES[0].changeVer;
 					account.save();
 					isRestricted = checkRestriction(account);
@@ -425,78 +445,87 @@ module.exports.socketRoutes = () => {
 
 		socket.on('acknowledgeWarning', () => {
 			if (authenticated && isRestricted) {
-				Account.findOne({ username: passport.user }).then(acc => {
-					acc.warnings[acc.warnings.findIndex(warning => !warning.acknowledged)].acknowledged = true;
+				Account.findOne({ username: passport.user }).then((acc) => {
+					acc.warnings[acc.warnings.findIndex((warning) => !warning.acknowledged)].acknowledged = true;
 					acc.markModified('warnings');
 					acc.save(() => (isRestricted = checkRestriction(acc)));
 				});
 			}
 		});
 
-		socket.on('handleUpdatedPlayerNote', data => {
+		socket.on('handleUpdatedPlayerNote', (data) => {
 			handleUpdatedPlayerNote(socket, passport, data);
 		});
 
-		socket.on('handleUpdatedTheme', data => {
+		socket.on('handleUpdatedTheme', (data) => {
 			handleUpdatedTheme(socket, passport, data);
 		});
 
-		socket.on('updateModAction', data => {
+		socket.on('updateModAction', (data) => {
 			if (authenticated && isAEM) {
 				handleModerationAction(socket, passport, data, false, modUserNames, editorUserNames.concat(adminUserNames));
 			}
 		});
-		socket.on('addNewClaim', async data => {
+		socket.on('addNewClaim', async (data) => {
 			const game = await findGame(data);
 
 			if (authenticated && ensureInGame(passport, game)) {
 				handleAddNewClaim(socket, passport, game, data);
 			}
 		});
-		socket.on('updateGameWhitelist', async data => {
+		socket.on('updateGameWhitelist', async (data) => {
 			const game = await findGame(data);
 
 			if (authenticated && ensureInGame(passport, game)) {
 				handleUpdateWhitelist(passport, game, data);
 			}
 		});
-		socket.on('updateTruncateGame', data => {
+		socket.on('updateTruncateGame', (data) => {
 			handleUpdatedTruncateGame(data);
 		});
-		socket.on('addNewGameChat', async data => {
+		socket.on('addNewGameChat', async (data) => {
 			const game = await findGame(data);
 
 			if (isRestricted) return;
 			if (authenticated) {
-				handleAddNewGameChat(socket, passport, data, game, modUserNames, editorUserNames, adminUserNames, handleAddNewClaim);
+				handleAddNewGameChat(
+					socket,
+					passport,
+					data,
+					game,
+					modUserNames,
+					editorUserNames,
+					adminUserNames,
+					handleAddNewClaim
+				);
 			}
 		});
-		socket.on('updateReportGame', data => {
+		socket.on('updateReportGame', (data) => {
 			try {
 				handleUpdatedReportGame(socket, data);
 			} catch (e) {
 				console.log(e, 'err in player report');
 			}
 		});
-		socket.on('addNewGame', data => {
+		socket.on('addNewGame', (data) => {
 			if (isRestricted) return;
 			if (authenticated) {
 				handleAddNewGame(socket, passport, data);
 			}
 		});
-		socket.on('updateGameSettings', data => {
+		socket.on('updateGameSettings', (data) => {
 			if (authenticated) {
 				handleUpdatedGameSettings(socket, passport, data);
 			}
 		});
 
-		socket.on('addNewGeneralChat', data => {
+		socket.on('addNewGeneralChat', (data) => {
 			if (isRestricted) return;
 			if (authenticated) {
 				handleNewGeneralChat(socket, passport, data, modUserNames, editorUserNames, adminUserNames);
 			}
 		});
-		socket.on('leaveGame', async data => {
+		socket.on('leaveGame', async (data) => {
 			const game = await findGame(data);
 
 			if (game && io.sockets.adapter.rooms[game.general.uid] && socket) {
@@ -507,7 +536,7 @@ module.exports.socketRoutes = () => {
 				handleUserLeaveGame(socket, game, data, passport);
 			}
 		});
-		socket.on('updateSeatedUser', async data => {
+		socket.on('updateSeatedUser', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -516,7 +545,7 @@ module.exports.socketRoutes = () => {
 				updateSeatedUser(game, socket, passport, data);
 			}
 		});
-		socket.on('playerReport', data => {
+		socket.on('playerReport', (data) => {
 			if (isRestricted || !data || !data.comment || data.comment.length > 140) return;
 			if (authenticated) {
 				handlePlayerReport(passport, data);
@@ -527,27 +556,27 @@ module.exports.socketRoutes = () => {
 				handlePlayerReportDismiss();
 			}
 		});
-		socket.on('updateRemake', async data => {
+		socket.on('updateRemake', async (data) => {
 			const game = await findGame(data);
 
 			if (authenticated && ensureInGame(passport, game)) {
 				handleUpdatedRemakeGame(passport, game, data, socket);
 			}
 		});
-		socket.on('updateBio', data => {
+		socket.on('updateBio', (data) => {
 			if (authenticated) {
 				handleUpdatedBio(socket, passport, data);
 			}
 		});
 		// user-requests
 
-		socket.on('getPlayerNotes', data => {
+		socket.on('getPlayerNotes', (data) => {
 			sendPlayerNotes(socket, data);
 		});
 		socket.on('getGameList', () => {
 			sendGameList(socket);
 		});
-		socket.on('getGameInfo', uid => {
+		socket.on('getGameInfo', (uid) => {
 			sendGameInfo(socket, uid);
 		});
 		socket.on('getUserList', () => {
@@ -557,7 +586,7 @@ module.exports.socketRoutes = () => {
 		socket.on('getUserGameSettings', () => {
 			sendUserGameSettings(socket);
 		});
-		socket.on('selectedChancellorVoteOnVeto', async data => {
+		socket.on('selectedChancellorVoteOnVeto', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -572,18 +601,18 @@ module.exports.socketRoutes = () => {
 		// 		sendModInfo(games, socket, count, isTrial && !isAEM);
 		// 	}
 		// });
-		socket.on('subscribeModChat', async uid => {
+		socket.on('subscribeModChat', async (uid) => {
 			if (authenticated && isAEM) {
 				const game = await findGame(data);
 
 				if (game && game.private && game.private.seatedPlayers) {
-					const players = game.private.seatedPlayers.map(player => player.userName);
-					Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then(accounts => {
+					const players = game.private.seatedPlayers.map((player) => player.userName);
+					Account.find({ staffRole: { $exists: true, $ne: 'veteran' } }).then((accounts) => {
 						const staff = accounts
-							.filter(acc => {
+							.filter((acc) => {
 								acc.staffRole && acc.staffRole.length > 0 && players.includes(acc.username);
 							})
-							.map(acc => acc.username);
+							.map((acc) => acc.username);
 						if (staff.length) {
 							socket.emit('sendAlert', `AEM members are present: ${JSON.stringify(staff)}`);
 							return;
@@ -595,7 +624,7 @@ module.exports.socketRoutes = () => {
 				}
 			}
 		});
-		socket.on('modPeekVotes', async data => {
+		socket.on('modPeekVotes', async (data) => {
 			if (authenticated && isAEM) {
 				const game = await findGame(data);
 
@@ -606,7 +635,7 @@ module.exports.socketRoutes = () => {
 				socket.emit('sendAlert', 'Game is missing.');
 			}
 		});
-		socket.on('modFreezeGame', async data => {
+		socket.on('modFreezeGame', async (data) => {
 			if (authenticated && isAEM) {
 				const game = await findGame(data);
 
@@ -630,12 +659,12 @@ module.exports.socketRoutes = () => {
 				updateUserStatus(passport);
 			}
 		});
-		socket.on('getReplayGameChats', uid => {
+		socket.on('getReplayGameChats', (uid) => {
 			sendReplayGameChats(socket, uid);
 		});
 		// election
 
-		socket.on('presidentSelectedChancellor', async data => {
+		socket.on('presidentSelectedChancellor', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -644,7 +673,7 @@ module.exports.socketRoutes = () => {
 				selectChancellor(socket, passport, game, data);
 			}
 		});
-		socket.on('selectedVoting', async data => {
+		socket.on('selectedVoting', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -653,7 +682,7 @@ module.exports.socketRoutes = () => {
 				selectVoting(passport, game, data, socket);
 			}
 		});
-		socket.on('selectedPresidentPolicy', async data => {
+		socket.on('selectedPresidentPolicy', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -662,7 +691,7 @@ module.exports.socketRoutes = () => {
 				selectPresidentPolicy(passport, game, data, false, socket);
 			}
 		});
-		socket.on('selectedChancellorPolicy', async data => {
+		socket.on('selectedChancellorPolicy', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -671,7 +700,7 @@ module.exports.socketRoutes = () => {
 				selectChancellorPolicy(passport, game, data, false, socket);
 			}
 		});
-		socket.on('selectedPresidentVoteOnVeto', async data => {
+		socket.on('selectedPresidentVoteOnVeto', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -681,7 +710,7 @@ module.exports.socketRoutes = () => {
 			}
 		});
 		// policy-powers
-		socket.on('selectPartyMembershipInvestigate', async data => {
+		socket.on('selectPartyMembershipInvestigate', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -690,7 +719,7 @@ module.exports.socketRoutes = () => {
 				selectPartyMembershipInvestigate(passport, game, data, socket);
 			}
 		});
-		socket.on('selectPartyMembershipInvestigateReverse', async data => {
+		socket.on('selectPartyMembershipInvestigateReverse', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -699,7 +728,7 @@ module.exports.socketRoutes = () => {
 				selectPartyMembershipInvestigateReverse(passport, game, data, socket);
 			}
 		});
-		socket.on('selectedPolicies', async data => {
+		socket.on('selectedPolicies', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -709,7 +738,7 @@ module.exports.socketRoutes = () => {
 				else selectPolicies(passport, game, socket);
 			}
 		});
-		socket.on('selectedPresidentVoteOnBurn', async data => {
+		socket.on('selectedPresidentVoteOnBurn', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -718,7 +747,7 @@ module.exports.socketRoutes = () => {
 				selectBurnCard(passport, game, data, socket);
 			}
 		});
-		socket.on('selectedPlayerToExecute', async data => {
+		socket.on('selectedPlayerToExecute', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);
@@ -727,7 +756,7 @@ module.exports.socketRoutes = () => {
 				selectPlayerToExecute(passport, game, data, socket);
 			}
 		});
-		socket.on('selectedSpecialElection', async data => {
+		socket.on('selectedSpecialElection', async (data) => {
 			if (isRestricted) return;
 
 			const game = await findGame(data);

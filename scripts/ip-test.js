@@ -2,7 +2,7 @@ function main() {
 	const obfBlock = require('../routes/socket/ip-obfuscator-v4').obfBlock;
 	const obfBlock2 = require('../routes/socket/ip-obfuscator-v6').obfBlock;
 	const obfTrue = require('../routes/socket/ip-obf').obfIP;
-	const convertToHex = val => {
+	const convertToHex = (val) => {
 		let output = '';
 		for (let a = 0; a < 4; a++) {
 			let sub = val % 16;
@@ -44,7 +44,7 @@ function main() {
 	// Everything works - manual IP entry
 	console.log('Passed tests, enter IPs to see results.\n');
 	const stdin = process.openStdin();
-	stdin.addListener('data', function(IP) {
+	stdin.addListener('data', function (IP) {
 		try {
 			console.log(obfTrue(IP.toString().trim()));
 		} catch (e) {

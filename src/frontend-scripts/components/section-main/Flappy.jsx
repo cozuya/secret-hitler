@@ -22,12 +22,12 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 			socket.emit('flappyEvent', {
 				uid: gameInfo.general.uid,
 				team: isFacist ? 'fascist' : 'liberal',
-				type: 'collision'
+				type: 'collision',
 			});
 		} else if (x === -32) {
 			socket.emit('flappyEvent', {
 				uid: gameInfo.general.uid,
-				type: 'passedPylon'
+				type: 'passedPylon',
 			});
 		}
 	};
@@ -49,8 +49,13 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 		}
 
 		let foo;
-		pylonCoords.forEach(coord => {
-			const pipeGradient = ctx.createLinearGradient(coord.x, 52 + coord.offset / 2, coord.x + 40, 52 + coord.offset / 2);
+		pylonCoords.forEach((coord) => {
+			const pipeGradient = ctx.createLinearGradient(
+				coord.x,
+				52 + coord.offset / 2,
+				coord.x + 40,
+				52 + coord.offset / 2
+			);
 			ctx.fillStyle = pipeGradient;
 			if (coord.x >= -32 && coord.x <= 52 && !isFacist) {
 				detectCollisionAndPass(vert, coord);
@@ -78,7 +83,7 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 		socket.emit('flappyEvent', {
 			uid: gameInfo.general.uid,
 			team: isFacist ? 'fascist' : 'liberal',
-			type: 'flap'
+			type: 'flap',
 		});
 	};
 
@@ -87,12 +92,12 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 			if (!isFacist) {
 				socket.emit('flappyEvent', {
 					uid: gameInfo.general.uid,
-					type: 'startFlappy'
+					type: 'startFlappy',
 				});
 			}
 		}, 500);
 
-		socket.on('flappyUpdate', data => {
+		socket.on('flappyUpdate', (data) => {
 			if (data.type === 'flap' && ((isFacist && data.team == 'fascist') || (!isFacist && data.team === 'liberal'))) {
 				lastFlapTime = Date.now();
 			}
@@ -105,7 +110,7 @@ const Flappy = ({ isFacist, userInfo, gameInfo, socket }) => {
 				pylonCoords.push({
 					offset: data.offset,
 					x: 751,
-					pylonType: data.pylonType
+					pylonType: data.pylonType,
 				});
 			}
 		});
@@ -126,7 +131,7 @@ Flappy.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	socket: PropTypes.object,
-	isFacist: PropTypes.bool
+	isFacist: PropTypes.bool,
 };
 
 export default Flappy;

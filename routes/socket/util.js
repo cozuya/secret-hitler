@@ -4,7 +4,7 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
  * @param {object} game - game to act on.
  * @return {object} game
  */
-const secureGame = game => {
+const secureGame = (game) => {
 	const _game = Object.assign({}, game);
 
 	delete _game.private;
@@ -36,8 +36,8 @@ module.exports.formatUserforUserlist = (passport, account) => {
 		eloSeason: account.eloSeason,
 		status: {
 			type: 'none',
-			gameId: null
-		}
+			gameId: null,
+		},
 	};
 
 	userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
@@ -50,7 +50,7 @@ module.exports.formatUserforUserlist = (passport, account) => {
 
 const combineInProgressChats = (game, userName) =>
 	userName && game.gameState.isTracksFlipped
-		? game.private.seatedPlayers.find(player => player.userName === userName).gameChats.concat(game.chats)
+		? game.private.seatedPlayers.find((player) => player.userName === userName).gameChats.concat(game.chats)
 		: game.private.unSeatedGameChats.concat(game.chats);
 
 /**
@@ -66,25 +66,29 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 	// DEBUG ONLY
 	// console.log(game.general.status, 'TimedMode:', game.gameState.timedModeEnabled, 'TimerId:', game.private.timerId ? 'exists' : 'null');
 
-	const seatedPlayerNames = game.publicPlayersState.map(player => player.userName);
-	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+	const seatedPlayerNames = game.publicPlayersState.map((player) => player.userName);
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(
+		(sockedId) => io.sockets.connected[sockedId]
+	);
 	const playerSockets = roomSockets.filter(
-		socket =>
+		(socket) =>
 			socket &&
 			socket.handshake.session.passport &&
 			Object.keys(socket.handshake.session.passport).length &&
 			seatedPlayerNames.includes(socket.handshake.session.passport.user)
 	);
 	const observerSockets = roomSockets.filter(
-		socket => (socket && !socket.handshake.session.passport) || (socket && !seatedPlayerNames.includes(socket.handshake.session.passport.user))
+		(socket) =>
+			(socket && !socket.handshake.session.passport) ||
+			(socket && !seatedPlayerNames.includes(socket.handshake.session.passport.user))
 	);
 
-	playerSockets.forEach(sock => {
+	playerSockets.forEach((sock) => {
 		const _game = Object.assign({}, game);
 		const { user } = sock.handshake.session.passport;
 
 		if (!game.gameState.isCompleted && game.gameState.isTracksFlipped) {
-			const privatePlayer = _game.private.seatedPlayers.find(player => user === player.userName);
+			const privatePlayer = _game.private.seatedPlayers.find((player) => user === player.userName);
 
 			if (!_game || !privatePlayer) {
 				return;
@@ -108,14 +112,19 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 		chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];
 	}
 	if (observerSockets.length) {
-		observerSockets.forEach(sock => {
+		observerSockets.forEach((sock) => {
 			const _game = Object.assign({}, game);
 			const user = sock.handshake.session.passport ? sock.handshake.session.passport.user : null;
 
 			if (noChats) {
 				delete _game.chats;
 				sock.emit('gameUpdate', secureGame(_game), true);
-			} else if (user && game.private && game.private.hiddenInfoSubscriptions && game.private.hiddenInfoSubscriptions.includes(user)) {
+			} else if (
+				user &&
+				game.private &&
+				game.private.hiddenInfoSubscriptions &&
+				game.private.hiddenInfoSubscriptions.includes(user)
+			) {
 				// AEM status is ensured when adding to the subscription list
 				_game.chats = chatWithHidden;
 				_game.chats = combineInProgressChats(_game);
@@ -133,10 +142,12 @@ module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
 		return;
 	}
 
-	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(
+		(sockedId) => io.sockets.connected[sockedId]
+	);
 
 	if (roomSockets.length) {
-		roomSockets.forEach(sock => {
+		roomSockets.forEach((sock) => {
 			if (sock && sock.handshake && sock.handshake.passport && sock.handshake.passport.user) {
 				const { user } = sock.handshake.session.passport;
 				if (game.private.hiddenInfoSubscriptions.includes(user)) {
@@ -146,7 +157,7 @@ module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
 						sock.emit('gameModChat', chat);
 					} else if (specificUser === user) {
 						// list of messages
-						chat.forEach(msg => sock.emit('gameModChat', msg));
+						chat.forEach((msg) => sock.emit('gameModChat', msg));
 					}
 				}
 			}
@@ -159,9 +170,11 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 		return;
 	}
 
-	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(sockedId => io.sockets.connected[sockedId]);
+	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(
+		(sockedId) => io.sockets.connected[sockedId]
+	);
 
-	roomSockets.forEach(sock => {
+	roomSockets.forEach((sock) => {
 		if (sock) {
 			sock.emit('playerChatUpdate', chat);
 		}
@@ -181,22 +194,24 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		7: -17.282,
 		8: 45.418,
 		9: -70.679,
-		10: -31.539
+		10: -31.539,
 	};
 	const rk = 9;
 	const nk = 4;
 	// Players
-	const losingPlayerNames = game.private.seatedPlayers.filter(player => !winningPlayerNames.includes(player.userName)).map(player => player.userName);
+	const losingPlayerNames = game.private.seatedPlayers
+		.filter((player) => !winningPlayerNames.includes(player.userName))
+		.map((player) => player.userName);
 	// Accounts
-	const winningAccounts = accounts.filter(account => winningPlayerNames.includes(account.username));
-	const loosingAccounts = accounts.filter(account => losingPlayerNames.includes(account.username));
+	const winningAccounts = accounts.filter((account) => winningPlayerNames.includes(account.username));
+	const loosingAccounts = accounts.filter((account) => losingPlayerNames.includes(account.username));
 	// Construct some basic statistics for each team
 	const b = game.gameState.isCompleted === 'liberal' ? 1 : 0;
 	const size = game.private.seatedPlayers.length;
-	const averageRatingWinners = avg(winningAccounts, a => a.eloOverall || defaultELO) + b * libAdjust[size];
-	const averageRatingWinnersSeason = avg(winningAccounts, a => a.eloSeason || defaultELO) + b * libAdjust[size];
-	const averageRatingLosers = avg(loosingAccounts, a => a.eloOverall || defaultELO) + (1 - b) * libAdjust[size];
-	const averageRatingLosersSeason = avg(loosingAccounts, a => a.eloSeason || defaultELO) + (1 - b) * libAdjust[size];
+	const averageRatingWinners = avg(winningAccounts, (a) => a.eloOverall || defaultELO) + b * libAdjust[size];
+	const averageRatingWinnersSeason = avg(winningAccounts, (a) => a.eloSeason || defaultELO) + b * libAdjust[size];
+	const averageRatingLosers = avg(loosingAccounts, (a) => a.eloOverall || defaultELO) + (1 - b) * libAdjust[size];
+	const averageRatingLosersSeason = avg(loosingAccounts, (a) => a.eloSeason || defaultELO) + (1 - b) * libAdjust[size];
 	// Elo Formula
 	const k = size * (game.general.rainbowgame ? rk : nk); // non-rainbow games are capped at k/r
 	const winFactor = k / winningPlayerNames.length;
@@ -204,7 +219,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
 	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
 	const ratingUpdates = {};
-	accounts.forEach(account => {
+	accounts.forEach((account) => {
 		const eloOverall = account.eloOverall ? account.eloOverall : defaultELO;
 		const eloSeason = account.eloSeason ? account.eloSeason : defaultELO;
 		const factor = winningPlayerNames.includes(account.username) ? winFactor : loseFactor;
@@ -218,7 +233,7 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 	return ratingUpdates;
 };
 
-module.exports.destroySession = username => {
+module.exports.destroySession = (username) => {
 	if (process.env.NODE_ENV !== 'production') {
 		const Mongoclient = require('mongodb').MongoClient;
 
@@ -235,7 +250,7 @@ module.exports.destroySession = username => {
 		mongoClient
 			.db('secret-hitler-app')
 			.collection('sessions')
-			.findOneAndDelete({ 'session.passport.user': username }, err => {
+			.findOneAndDelete({ 'session.passport.user': username }, (err) => {
 				if (err) {
 					try {
 						console.log(err, 'err in logoutuser');

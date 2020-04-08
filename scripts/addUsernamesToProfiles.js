@@ -6,7 +6,7 @@ mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
 Profile.find({})
 	.cursor()
-	.eachAsync(profile => {
+	.eachAsync((profile) => {
 		profile.username = profile._id;
 		profile.save();
 	})

@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		);
 	}
 
-	$(document).keydown(e => {
+	$(document).keydown((e) => {
 		if (e.ctrlKey && e.keyCode === 65) {
 			return false;
 		}

@@ -7,7 +7,7 @@ import {
 	sendGameList,
 	sendUserReports,
 	sendGeneralChats,
-	sendGameInfo
+	sendGameInfo,
 } from '../../../../routes/socket/user-requests';
 
 describe('user requests', () => {

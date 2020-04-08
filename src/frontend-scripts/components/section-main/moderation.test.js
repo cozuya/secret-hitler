@@ -19,20 +19,20 @@ describe('Moderation', () => {
 			nonSeasonalSetStats: false,
 			logSort: {
 				type: 'date',
-				direction: 'descending'
+				direction: 'descending',
 			},
 			userSort: {
 				type: 'username',
-				direction: 'descending'
+				direction: 'descending',
 			},
 			gameSort: {
 				type: 'username',
-				direction: 'descending'
+				direction: 'descending',
 			},
 			hideActions: false,
 			filterModalVisibility: false,
 			filterValue: '',
-			showGameIcons: false
+			showGameIcons: false,
 		};
 
 		const component = shallow(<Moderation socket={{ on: jest.fn(), emit: jest.fn() }} />);

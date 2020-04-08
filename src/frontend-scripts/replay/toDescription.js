@@ -1,11 +1,12 @@
 import { text, handToText, mapOpt1, capitalize } from '../../../utils';
 
-export default function(snapshot, game) {
+export default function (snapshot, game) {
 	const { isVotePassed, jas, neins } = game.turns.get(snapshot.turnNum);
-	const usernameOf = id => game.usernameOf(id).valueOrElse('');
-	const claimToText = claim => claim.valueOrElse(text('player', 'nothing'));
-	const claimHandToText = claim => claimToText(mapOpt1(handToText)(claim));
-	const gameOverText = supplied => supplied.concat([text(game.winningTeam, capitalize(game.winningTeam) + 's'), text('normal', 'win the game.')]);
+	const usernameOf = (id) => game.usernameOf(id).valueOrElse('');
+	const claimToText = (claim) => claim.valueOrElse(text('player', 'nothing'));
+	const claimHandToText = (claim) => claimToText(mapOpt1(handToText)(claim));
+	const gameOverText = (supplied) =>
+		supplied.concat([text(game.winningTeam, capitalize(game.winningTeam) + 's'), text('normal', 'win the game.')]);
 
 	switch (snapshot.phase) {
 		case 'candidacy':
@@ -15,7 +16,7 @@ export default function(snapshot, game) {
 				text('player', usernameOf(snapshot.presidentId)),
 				text('normal', 'nominates'),
 				text('player', usernameOf(snapshot.chancellorId)),
-				text('normal', 'as Chancellor')
+				text('normal', 'as Chancellor'),
 			];
 		case 'election':
 			if (snapshot.gameOver) {
@@ -26,7 +27,7 @@ export default function(snapshot, game) {
 					text('normal', isVotePassed ? 'passes' : 'fails'),
 					text('player', jas),
 					text('normal', 'to'),
-					text('player', neins)
+					text('player', neins),
 				];
 			}
 		case 'topDeck':
@@ -48,10 +49,14 @@ export default function(snapshot, game) {
 				return gameOverText([
 					text('normal', 'The last'),
 					text(snapshot.enactedPolicy, capitalize(snapshot.enactedPolicy)),
-					text('normal', 'policy is enacted.')
+					text('normal', 'policy is enacted.'),
 				]);
 			} else {
-				return [text('normal', 'A'), text(snapshot.enactedPolicy, capitalize(snapshot.enactedPolicy)), text('normal', 'policy is enacted.')];
+				return [
+					text('normal', 'A'),
+					text(snapshot.enactedPolicy, capitalize(snapshot.enactedPolicy)),
+					text('normal', 'policy is enacted.'),
+				];
 			}
 		case 'investigation':
 			return [
@@ -59,7 +64,7 @@ export default function(snapshot, game) {
 				text('normal', 'investigates'),
 				text('player', usernameOf(snapshot.investigationId)),
 				text('normal', 'and claims'),
-				claimToText(snapshot.investigationClaim.map(i => text(i, capitalize(i))))
+				claimToText(snapshot.investigationClaim.map((i) => text(i, capitalize(i)))),
 			];
 		case 'policyPeek':
 			return [text('player', usernameOf(snapshot.presidentId)), text('normal', 'peeks')]
@@ -67,12 +72,20 @@ export default function(snapshot, game) {
 				.concat([text('normal', 'and claims')])
 				.concat(claimHandToText(snapshot.policyPeekClaim));
 		case 'specialElection':
-			return [text('player', usernameOf(snapshot.presidentId)), text('normal', 'special elects'), text('player', usernameOf(snapshot.specialElection))];
+			return [
+				text('player', usernameOf(snapshot.presidentId)),
+				text('normal', 'special elects'),
+				text('player', usernameOf(snapshot.specialElection)),
+			];
 		case 'execution':
 			if (snapshot.gameOver) {
 				return gameOverText([text('hitler', 'Hitler'), text('normal', 'is killed.')]);
 			} else {
-				return [text('player', usernameOf(snapshot.presidentId)), text('normal', 'executes'), text('player', usernameOf(snapshot.execution))];
+				return [
+					text('player', usernameOf(snapshot.presidentId)),
+					text('normal', 'executes'),
+					text('player', usernameOf(snapshot.execution)),
+				];
 			}
 	}
 }

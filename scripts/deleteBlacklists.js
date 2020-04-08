@@ -8,7 +8,7 @@ let count = 0;
 
 Account.findOne({ 'blacklist.1': { $exists: true } })
 	.cursor()
-	.eachAsync(account => {
+	.eachAsync((account) => {
 		account.gameSettings.blacklist = [];
 		account.save();
 		count++;
@@ -19,6 +19,6 @@ Account.findOne({ 'blacklist.1': { $exists: true } })
 	.then(() => {
 		console.log('done');
 	})
-	.catch(err => {
+	.catch((err) => {
 		console.log(err, 'caught err');
 	});

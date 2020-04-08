@@ -9,7 +9,7 @@ async function clearRatings() {
 		await mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 		await Account.find()
 			.cursor()
-			.eachAsync(account => {
+			.eachAsync((account) => {
 				count++;
 				account.eloSeason = 1600;
 				account.save();

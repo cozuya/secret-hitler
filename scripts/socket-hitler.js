@@ -18,8 +18,8 @@
 // ///////////////////////////////////////////// //
 //                 ~ Note: Spams browser console //
 
-(function() {
-	let shorten = function(raw_data) {
+(function () {
+	let shorten = function (raw_data) {
 		let n = '"' + raw_data + '"';
 		try {
 			let data = raw_data.replace(/^(\d+)/g, '');
@@ -32,11 +32,11 @@
 
 	let SafeWebSocket = window.WebSocket;
 	let py = new SafeWebSocket('ws://localhost:3222/');
-	py.onopen = function(event) {
+	py.onopen = function (event) {
 		console.log('Backend Connection Oppened');
 		py.send('00["connection", {"status":"ok"}]');
 	};
-	py.onclose = function(event) {
+	py.onclose = function (event) {
 		console.log('Backend Connection Closed');
 	};
 	let OrigWebSocket = window.WebSocket;
@@ -56,28 +56,28 @@
 		} else {
 			ws = new OrigWebSocket();
 		}
-		wsAddListener(ws, 'message', function(event) {
+		wsAddListener(ws, 'message', function (event) {
 			console.log('Incoming <<<     ' + shorten(event.data) + ' <<< ' + ws.url);
 			wsSend(py, arguments);
 		});
-		wsAddListener(ws, 'open', function(event) {
+		wsAddListener(ws, 'open', function (event) {
 			console.log('Connection Linked');
-			py.onmessage = function(event) {
+			py.onmessage = function (event) {
 				ws.send(event.data);
 			};
 		});
-		wsAddListener(ws, 'close', function(event) {
+		wsAddListener(ws, 'close', function (event) {
 			console.log('Connection Unlinked');
-			py.onmessage = function(event) {
+			py.onmessage = function (event) {
 				console.error('Received data but is Unlinked');
 				console.error(event.data);
 			};
 		});
-		ws.send = function(data) {
+		ws.send = function (data) {
 			console.log('Outgoing     >>> ' + shorten(data) + ' >>> ' + this.url);
 			return wsSend(this, arguments);
 		};
-		window.shio = function(obj) {
+		window.shio = function (obj) {
 			ws.send('42' + JSON.stringify(obj));
 		};
 		document.ws = ws;

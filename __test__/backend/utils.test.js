@@ -11,7 +11,7 @@ import {
 	handToText,
 	capitalize,
 	pushOpt,
-	objectContains
+	objectContains,
 } from '../../utils';
 import { none, some } from 'option';
 import { List } from 'immutable';
@@ -19,15 +19,15 @@ import '../matchers';
 
 describe('filterOpt given an option x and a predicate p', () => {
 	it('if x is none, returns none', () => {
-		expect(filterOpt(none, x => x > 3)).toEqual(none);
+		expect(filterOpt(none, (x) => x > 3)).toEqual(none);
 	});
 
 	it('if x is some(value) and p(value) === false, returns none', () => {
-		expect(filterOpt(some(1), x => x > 3)).toEqual(none);
+		expect(filterOpt(some(1), (x) => x > 3)).toEqual(none);
 	});
 
 	it('if x is some(value) and p(value) === true, returns x', () => {
-		expect(filterOpt(some(5), x => x > 3)).toEqual(some(5));
+		expect(filterOpt(some(5), (x) => x > 3)).toEqual(some(5));
 	});
 });
 
@@ -50,7 +50,7 @@ describe('flattenListOpts given a List[Option]', () => {
 });
 
 describe('mapOpt1 should wrap a 1 arg function. If called with argument x', () => {
-	const f = x => x + 1;
+	const f = (x) => x + 1;
 	const g = mapOpt1(f);
 
 	it('if x is none, then returns none', () => {
@@ -110,35 +110,47 @@ describe('handToText', () => {
 		text('fascist', 'R', false),
 		text('fascist', 'R', false),
 		text('fascist', 'R', false),
-		text('normal', '')
+		text('normal', ''),
 	]);
 
 	expect(handToText({ reds: 2, blues: 1 })).toEqual([
 		text('fascist', 'R', false),
 		text('fascist', 'R', false),
 		text('liberal', 'B', false),
-		text('normal', '')
+		text('normal', ''),
 	]);
 
 	expect(handToText({ reds: 1, blues: 2 })).toEqual([
 		text('fascist', 'R', false),
 		text('liberal', 'B', false),
 		text('liberal', 'B', false),
-		text('normal', '')
+		text('normal', ''),
 	]);
 
 	expect(handToText({ reds: 0, blues: 3 })).toEqual([
 		text('liberal', 'B', false),
 		text('liberal', 'B', false),
 		text('liberal', 'B', false),
-		text('normal', '')
+		text('normal', ''),
 	]);
 
-	expect(handToText({ reds: 2, blues: 0 })).toEqual([text('fascist', 'R', false), text('fascist', 'R', false), text('normal', '')]);
+	expect(handToText({ reds: 2, blues: 0 })).toEqual([
+		text('fascist', 'R', false),
+		text('fascist', 'R', false),
+		text('normal', ''),
+	]);
 
-	expect(handToText({ reds: 1, blues: 1 })).toEqual([text('fascist', 'R', false), text('liberal', 'B', false), text('normal', '')]);
+	expect(handToText({ reds: 1, blues: 1 })).toEqual([
+		text('fascist', 'R', false),
+		text('liberal', 'B', false),
+		text('normal', ''),
+	]);
 
-	expect(handToText({ reds: 0, blues: 2 })).toEqual([text('liberal', 'B', false), text('liberal', 'B', false), text('normal', '')]);
+	expect(handToText({ reds: 0, blues: 2 })).toEqual([
+		text('liberal', 'B', false),
+		text('liberal', 'B', false),
+		text('normal', ''),
+	]);
 });
 
 describe('capitalize', () => {

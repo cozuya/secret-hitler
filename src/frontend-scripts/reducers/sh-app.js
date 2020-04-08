@@ -7,7 +7,7 @@ import {
 	UPDATE_USERLIST,
 	UPDATE_GENERALCHATS,
 	TOGGLE_NOTES,
-	TOGGLE_PLAYER_NOTES
+	TOGGLE_PLAYER_NOTES,
 } from '../actions/actions.js';
 
 const userInfo = (state = {}, action) => {
@@ -91,7 +91,7 @@ const profile = (state = { status: 'INITIAL' }, action) => {
 		case 'RECEIVE_PROFILE':
 			return Object.assign({}, action.profile, {
 				status: 'READY',
-				activeStat: 'MATCHES'
+				activeStat: 'MATCHES',
 			});
 		case 'UPDATE_ACTIVE_STATS':
 			return Object.assign({}, state, { activeStat: action.activeStat });
@@ -124,11 +124,11 @@ const replay = (state = { status: 'INITIAL' }, action) => {
 				status: 'READY',
 				ticks: action.replay,
 				game: action.game,
-				position: 0
+				position: 0,
 			};
 		case 'REPLAY_TO':
 			return Object.assign({}, state, {
-				position: action.position
+				position: action.position,
 			});
 		default:
 			return state;
@@ -146,5 +146,5 @@ export default combineReducers({
 	replay,
 	version,
 	notesActive,
-	playerNotesActive
+	playerNotesActive,
 });

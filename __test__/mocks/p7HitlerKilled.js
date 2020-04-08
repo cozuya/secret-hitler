@@ -5,7 +5,7 @@ module.exports = {
 		rebalance6p: false,
 		rebalance7p: false,
 		rebalance9p: false,
-		rerebalance9p: false
+		rerebalance9p: false,
 	},
 	logs: [
 		{
@@ -14,13 +14,13 @@ module.exports = {
 			enactedPolicy: 'fascist',
 			chancellorHand: {
 				reds: 1,
-				blues: 1
+				blues: 1,
 			},
 			presidentHand: {
 				reds: 1,
-				blues: 2
+				blues: 2,
 			},
-			votes: [true, true, true, true, true, true, true]
+			votes: [true, true, true, true, true, true, true],
 		},
 		{
 			presidentId: 1,
@@ -29,22 +29,22 @@ module.exports = {
 			investigationId: 2,
 			presidentClaim: {
 				reds: 0,
-				blues: 3
+				blues: 3,
 			},
 			chancellorHand: {
 				reds: 1,
-				blues: 1
+				blues: 1,
 			},
 			presidentHand: {
 				reds: 1,
-				blues: 2
+				blues: 2,
 			},
-			votes: [false, true, false, true, true, true, true]
+			votes: [false, true, false, true, true, true, true],
 		},
 		{
 			presidentId: 2,
 			chancellorId: 4,
-			votes: [false, false, false, false, false, true, true]
+			votes: [false, false, false, false, false, true, true],
 		},
 		{
 			presidentId: 3,
@@ -53,13 +53,13 @@ module.exports = {
 			specialElection: 4,
 			chancellorHand: {
 				reds: 1,
-				blues: 1
+				blues: 1,
 			},
 			presidentHand: {
 				reds: 2,
-				blues: 1
+				blues: 1,
 			},
-			votes: [true, true, true, false, true, false, false]
+			votes: [true, true, true, false, true, false, false],
 		},
 		{
 			presidentId: 4,
@@ -68,44 +68,44 @@ module.exports = {
 			execution: 2,
 			chancellorHand: {
 				reds: 2,
-				blues: 0
+				blues: 0,
 			},
 			presidentHand: {
 				reds: 3,
-				blues: 0
+				blues: 0,
 			},
-			votes: [true, true, false, true, false, true, true]
-		}
+			votes: [true, true, false, true, false, true, true],
+		},
 	],
 	players: [
 		{
 			username: 'Uther',
-			role: 'liberal'
+			role: 'liberal',
 		},
 		{
 			username: 'Jaina',
-			role: 'fascist'
+			role: 'fascist',
 		},
 		{
 			username: 'Malfurian',
-			role: 'hitler'
+			role: 'hitler',
 		},
 		{
 			username: 'Rexxar',
-			role: 'fascist'
+			role: 'fascist',
 		},
 		{
 			username: 'Thrall',
-			role: 'liberal'
+			role: 'liberal',
 		},
 		{
 			username: 'Valeera',
-			role: 'liberal'
+			role: 'liberal',
 		},
 		{
 			username: 'Anduin',
-			role: 'liberal'
-		}
+			role: 'liberal',
+		},
 	],
-	__v: 0
+	__v: 0,
 };

@@ -5,7 +5,7 @@ import GamesList from './GamesList';
 describe('GamesList', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
-			filtersVisible: false
+			filtersVisible: false,
 		};
 
 		const component = shallow(<GamesList />);

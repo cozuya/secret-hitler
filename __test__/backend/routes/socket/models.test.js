@@ -7,7 +7,7 @@ import {
 	gameCreationDisabled,
 	profiles,
 	formattedUserList,
-	userListEmitter
+	userListEmitter,
 } from '../../../../routes/socket/models';
 
 describe('models', () => {

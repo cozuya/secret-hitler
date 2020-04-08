@@ -15,7 +15,7 @@ module.exports = class EnhancedGameSummary {
 		// derived
 		this.playerSize = this.players.length;
 
-		this.hitlerIndex = this.players.findIndex(p => p.role === 'hitler');
+		this.hitlerIndex = this.players.findIndex((p) => p.role === 'hitler');
 
 		this.numberOfTurns = this.logs.length;
 
@@ -55,7 +55,7 @@ module.exports = class EnhancedGameSummary {
 		if (this._isId(identifier)) {
 			return this.players[identifier];
 		} else {
-			return this.players.find(p => p.username === identifier);
+			return this.players.find((p) => p.username === identifier);
 		}
 	}
 
@@ -63,14 +63,17 @@ module.exports = class EnhancedGameSummary {
 		if (this._isId(identifier)) {
 			return identifier;
 		} else {
-			return this.players.findIndex(p => p.username === identifier);
+			return this.players.findIndex((p) => p.username === identifier);
 		}
 	}
 
 	isWinner(identifier) {
 		if (this.lastTurn.execution === this.hitlerIndex) {
 			return this.loyaltyOf(identifier) === 'liberal';
-		} else if (this.lastTurn.chancellorId === this.hitlerIndex && this.lastTurn.votes.filter(v => v).length > this.playerSize / 2) {
+		} else if (
+			this.lastTurn.chancellorId === this.hitlerIndex &&
+			this.lastTurn.votes.filter((v) => v).length > this.playerSize / 2
+		) {
 			return this.loyaltyOf(identifier) === 'fascist';
 		} else {
 			return this.loyaltyOf(identifier) === this.lastTurn.enactedPolicy;
@@ -97,13 +100,13 @@ module.exports = class EnhancedGameSummary {
 	votesOf(identifier) {
 		const playerIndex = this.indexOf(identifier);
 
-		return this.logs.map(log => {
+		return this.logs.map((log) => {
 			const { presidentId, chancellorId, votes } = log;
 
 			return {
 				presidentId,
 				chancellorId,
-				vote: votes[playerIndex]
+				vote: votes[playerIndex],
 			};
 		});
 	}
@@ -111,6 +114,8 @@ module.exports = class EnhancedGameSummary {
 	shotsOf(identifier) {
 		const playerIndex = this.indexOf(identifier);
 
-		return this.logs.filter(log => log.presidentId === playerIndex && Number.isInteger(log.execution)).map(log => log.execution);
+		return this.logs
+			.filter((log) => log.presidentId === playerIndex && Number.isInteger(log.execution))
+			.map((log) => log.execution);
 	}
 };

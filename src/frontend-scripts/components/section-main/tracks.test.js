@@ -6,10 +6,12 @@ describe('Tracks', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
 			remakeStatus: false,
-			timedModeTimer: ''
+			timedModeTimer: '',
 		};
 
-		const component = shallow(<Tracks gameInfo={{ general: {}, publicPlayersState: [], cardFlingerState: [], trackState: {}, gameState: {} }} />);
+		const component = shallow(
+			<Tracks gameInfo={{ general: {}, publicPlayersState: [], cardFlingerState: [], trackState: {}, gameState: {} }} />
+		);
 
 		expect(component.state()).toEqual(initialState);
 	});

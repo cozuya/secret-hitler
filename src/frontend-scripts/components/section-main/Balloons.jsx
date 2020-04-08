@@ -14,7 +14,7 @@ export default class Balloons extends React.Component {
 		return (
 			<div
 				className="balloon-container"
-				ref={c => {
+				ref={(c) => {
 					this.container = c;
 				}}
 			>

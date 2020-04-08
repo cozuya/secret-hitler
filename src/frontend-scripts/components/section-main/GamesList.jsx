@@ -7,10 +7,10 @@ import { CURRENTSEASONNUMBER } from '../../constants';
 
 export class GamesList extends React.Component {
 	state = {
-		filtersVisible: false
+		filtersVisible: false,
 	};
 
-	toggleFilter = value => {
+	toggleFilter = (value) => {
 		const { gameFilter, changeGameFilter } = this.props;
 
 		gameFilter[value] = !gameFilter[value];
@@ -140,7 +140,7 @@ export class GamesList extends React.Component {
 			}
 		};
 
-		const thisUser = userInfo.userName && userList.list && userList.list.find(u => u.userName == userInfo.userName);
+		const thisUser = userInfo.userName && userList.list && userList.list.find((u) => u.userName == userInfo.userName);
 		const sortTypeThenName = (a, b) => {
 			const isRainbow = thisUser && !thisUser.isPrivate && thisUser.wins + thisUser.losses >= 50;
 			const isPrivate = thisUser && thisUser.isPrivate;
@@ -166,8 +166,19 @@ export class GamesList extends React.Component {
 
 		if (gameList.length) {
 			return gameList
-				.filter(game => {
-					const { pub, priv, unstarted, inprogress, completed, timedMode, rainbow, standard, customgame, casualgame } = this.props.gameFilter;
+				.filter((game) => {
+					const {
+						pub,
+						priv,
+						unstarted,
+						inprogress,
+						completed,
+						timedMode,
+						rainbow,
+						standard,
+						customgame,
+						casualgame,
+					} = this.props.gameFilter;
 
 					return !(
 						(game.private && priv) ||
@@ -184,19 +195,26 @@ export class GamesList extends React.Component {
 				})
 				.sort((a, b) => {
 					const statusSortOrder = ['notStarted', 'isStarted', 'fascist', 'liberal'];
-					const diff = Math.min(2, statusSortOrder.indexOf(a.gameStatus)) - Math.min(2, statusSortOrder.indexOf(b.gameStatus));
+					const diff =
+						Math.min(2, statusSortOrder.indexOf(a.gameStatus)) - Math.min(2, statusSortOrder.indexOf(b.gameStatus));
 					return diff || sortTypeThenName(a, b);
 				})
 				.map((game, index) => (
-					<DisplayLobbies key={game.uid} game={game} socket={this.props.socket} userList={this.props.userList} userInfo={this.props.userInfo} />
+					<DisplayLobbies
+						key={game.uid}
+						game={game}
+						socket={this.props.socket}
+						userList={this.props.userList}
+						userInfo={this.props.userInfo}
+					/>
 				));
 		}
 	}
 
 	render() {
 		const toggleFilter = () => {
-			this.setState(state => ({
-				filtersVisible: !state.filtersVisible
+			this.setState((state) => ({
+				filtersVisible: !state.filtersVisible,
 			}));
 		};
 
@@ -204,7 +222,10 @@ export class GamesList extends React.Component {
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
 				<a href="#/changelog">
 					<h5 title="A season is an optional new tier of elo that is reset every 3 months.">
-						{new Date() > new Date('2019-12-31') ? `Season ends ${moment(new Date('2020-04-02')).fromNow()}` : `Welcome to season ${CURRENTSEASONNUMBER}`}.
+						{new Date() > new Date('2019-12-31')
+							? `Season ends ${moment(new Date('2020-04-02')).fromNow()}`
+							: `Welcome to season ${CURRENTSEASONNUMBER}`}
+						.
 					</h5>
 				</a>
 				<h3>Game filters</h3>
@@ -220,7 +241,9 @@ export class GamesList extends React.Component {
 							</a>
 						) : (
 							<span className="disabled-create-game-button">
-								<button className="fluid ui button primary disabled">{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}</button>
+								<button className="fluid ui button primary disabled">
+									{gameBeingCreated ? 'Creating a new game..' : 'Log in to make games'}
+								</button>
 							</span>
 						);
 					})()}
@@ -240,7 +263,7 @@ export class GamesList extends React.Component {
 GamesList.defaultProps = {
 	gameFilter: {},
 	userInfo: {},
-	gameList: []
+	gameList: [],
 };
 
 GamesList.propTypes = {
@@ -250,7 +273,7 @@ GamesList.propTypes = {
 	socket: PropTypes.object,
 	userList: PropTypes.object,
 	gameFilter: PropTypes.object,
-	changeGameFilter: PropTypes.func
+	changeGameFilter: PropTypes.func,
 };
 
 export default GamesList;

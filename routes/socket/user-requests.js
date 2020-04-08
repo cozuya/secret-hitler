@@ -20,7 +20,7 @@ const {
 	getGeneralChatsAsync,
 	getRangeGeneralChatsAsync,
 	trimGeneralChatsAsync,
-	getRangeUserlistAsync
+	getRangeUserlistAsync,
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
@@ -32,7 +32,7 @@ const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constan
 /**
  * @param {object} socket - user socket reference.
  */
-const sendUserList = async socket => {
+const sendUserList = async (socket) => {
 	const list = await getRangeUserlistAsync('userList', 0, -1);
 	const userList = list.map(JSON.parse);
 
@@ -47,19 +47,19 @@ module.exports.sendUserList = sendUserList;
 
 // todo fix this
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
-	const maskEmail = email => (email && email.split('@')[1]) || '';
+	const maskEmail = (email) => (email && email.split('@')[1]) || '';
 	ModAction.find(queryObj)
 		.sort({ $natural: -1 })
 		.limit(500 * count)
-		.then(actions => {
-			const list = users.map(user => ({
-				status: userList.find(userListUser => user.username === userListUser.userName).status,
+		.then((actions) => {
+			const list = users.map((user) => ({
+				status: userList.find((userListUser) => user.username === userListUser.userName).status,
 				isRainbow: user.wins + user.losses > 49,
 				userName: user.username,
 				ip: user.lastConnectedIP || user.signupIP,
-				email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`
+				email: `${user.verified ? '+' : '-'}${maskEmail(user.verification.email)}`,
 			}));
-			list.forEach(user => {
+			list.forEach((user) => {
 				if (user.ip && user.ip != '') {
 					try {
 						user.ip = '-' + obfIP(user.ip);
@@ -69,7 +69,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 					}
 				}
 			});
-			actions.forEach(action => {
+			actions.forEach((action) => {
 				if (action.ip && action.ip != '') {
 					if (action.ip.startsWith('-')) {
 						action.ip = 'ERROR'; // There are some bugged IPs in the list right now, need to suppress it.
@@ -85,7 +85,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 			});
 			const gList = [];
 			if (games) {
-				Object.values(games).forEach(game => {
+				Object.values(games).forEach((game) => {
 					gList.push({
 						name: game.general.name,
 						uid: game.general.uid,
@@ -93,7 +93,7 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 						casual: game.general.casualGame,
 						private: game.general.private,
 						custom: game.customGameSettings.enabled,
-						unlisted: game.general.unlisted
+						unlisted: game.general.unlisted,
 					});
 				});
 			}
@@ -106,48 +106,48 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 				bypassVPNCheck,
 				userList: list,
 				gameList: gList,
-				hideActions: isTrial || undefined
+				hideActions: isTrial || undefined,
 			});
 		})
-		.catch(err => {
+		.catch((err) => {
 			console.log(err, 'err in finding mod actions');
 		});
 };
 
 module.exports.getModInfo = getModInfo;
 
-module.exports.sendSignups = socket => {
+module.exports.sendSignups = (socket) => {
 	Signups.find({ type: { $in: ['local', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
-		.then(signups => {
+		.then((signups) => {
 			socket.emit('signupsInfo', signups);
 		})
-		.catch(err => {
+		.catch((err) => {
 			console.log(err, 'err in finding signups');
 		});
 };
 
-module.exports.sendAllSignups = socket => {
+module.exports.sendAllSignups = (socket) => {
 	Signups.find({ type: { $nin: ['local', 'private', 'discord', 'github'] } })
 		.sort({ $natural: -1 })
 		.limit(500)
-		.then(signups => {
+		.then((signups) => {
 			socket.emit('signupsInfo', signups);
 		})
-		.catch(err => {
+		.catch((err) => {
 			console.log(err, 'err in finding all signups');
 		});
 };
 
-module.exports.sendPrivateSignups = socket => {
+module.exports.sendPrivateSignups = (socket) => {
 	Signups.find({ type: 'private' })
 		.sort({ $natural: -1 })
 		.limit(500)
-		.then(signups => {
+		.then((signups) => {
 			socket.emit('signupsInfo', signups);
 		})
-		.catch(err => {
+		.catch((err) => {
 			console.log(err, 'err in finding private signups');
 		});
 };
@@ -175,7 +175,7 @@ module.exports.sendPrivateSignups = socket => {
 /**
  * @param {object} socket - user socket reference.
  */
-module.exports.sendUserGameSettings = socket => {
+module.exports.sendUserGameSettings = (socket) => {
 	const { passport } = socket.handshake.session;
 
 	if (!passport || !passport.user) {
@@ -183,7 +183,7 @@ module.exports.sendUserGameSettings = socket => {
 	}
 
 	Account.findOne({ username: passport.user })
-		.then(account => {
+		.then((account) => {
 			socket.emit('gameSettings', account.gameSettings);
 
 			// todo
@@ -229,10 +229,10 @@ module.exports.sendUserGameSettings = socket => {
 
 			socket.emit('version', {
 				current: version,
-				lastSeen: account.lastVersionSeen || 'none'
+				lastSeen: account.lastVersionSeen || 'none',
 			});
 		})
-		.catch(err => {
+		.catch((err) => {
 			console.log(err);
 		});
 };
@@ -243,12 +243,12 @@ module.exports.sendUserGameSettings = socket => {
  */
 module.exports.sendPlayerNotes = (socket, data) => {
 	PlayerNote.find({ userName: data.userName, notedUser: { $in: data.seatedPlayers } })
-		.then(notes => {
+		.then((notes) => {
 			if (notes) {
 				socket.emit('notesUpdate', notes);
 			}
 		})
-		.catch(err => {
+		.catch((err) => {
 			console.log(err, 'err in getting playernotes');
 		});
 };
@@ -284,10 +284,14 @@ const sendGameList = async (socket, isAEM) => {
 		formattedGameList.push({
 			name: game.general.name,
 			flag: game.general.flag,
-			userNames: game.publicPlayersState.map(val => val.userName),
-			customCardback: game.publicPlayersState.map(val => val.customCardback),
-			customCardbackUid: game.publicPlayersState.map(val => val.customCardbackUid),
-			gameStatus: game.gameState.isCompleted ? game.gameState.isCompleted : game.gameState.isTracksFlipped ? 'isStarted' : 'notStarted',
+			userNames: game.publicPlayersState.map((val) => val.userName),
+			customCardback: game.publicPlayersState.map((val) => val.customCardback),
+			customCardbackUid: game.publicPlayersState.map((val) => val.customCardbackUid),
+			gameStatus: game.gameState.isCompleted
+				? game.gameState.isCompleted
+				: game.gameState.isTracksFlipped
+				? 'isStarted'
+				: 'notStarted',
 			seatedCount: game.publicPlayersState.length,
 			gameCreatorName: game.general.gameCreatorName,
 			minPlayersCount: game.general.minPlayersCount,
@@ -300,7 +304,8 @@ const sendGameList = async (socket, isAEM) => {
 			timedMode: game.general.timedMode || undefined,
 			flappyMode: game.general.flappyMode || undefined,
 			flappyOnlyMode: game.general.flappyOnlyMode || undefined,
-			tournyStatus: game.general.isTourny && game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length,
+			tournyStatus:
+				game.general.isTourny && game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length,
 			experiencedMode: game.general.experiencedMode || undefined,
 			disableChat: game.general.disableChat || undefined,
 			disableGamechat: game.general.disableGamechat || undefined,
@@ -316,14 +321,14 @@ const sendGameList = async (socket, isAEM) => {
 			uid: game.general.uid,
 			rainbowgame: game.general.rainbowgame || undefined,
 			isCustomGame: game.customGameSettings.enabled,
-			isUnlisted: game.general.unlisted || undefined
+			isUnlisted: game.general.unlisted || undefined,
 		});
 	}
 
 	if (socket) {
 		socket.emit(
 			'gameList',
-			formattedGameList.filter(game => isAEM || (game && !game.isUnlisted))
+			formattedGameList.filter((game) => isAEM || (game && !game.isUnlisted))
 		);
 	} else {
 		// todo
@@ -335,11 +340,11 @@ module.exports.sendGameList = sendGameList;
 /**
  * @param {object} socket - user socket reference.
  */
-module.exports.sendUserReports = socket => {
+module.exports.sendUserReports = (socket) => {
 	PlayerReport.find()
 		.sort({ $natural: -1 })
 		.limit(500)
-		.then(reports => {
+		.then((reports) => {
 			socket.emit('reportInfo', reports);
 		});
 };
@@ -354,7 +359,7 @@ module.exports.sendGeneralChats = async (socket, toRoom) => {
 	const sticky = (await getGeneralChatsAsync('sticky')) || '';
 	const genChat = {
 		list,
-		sticky
+		sticky,
 	};
 
 	if (toRoom) {
@@ -387,7 +392,7 @@ const updateUserStatus = (module.exports.updateUserStatus = (passport, game, ove
 						? 'playing'
 						: 'none'
 					: 'none',
-			gameId: game ? game.general.uid : false
+			gameId: game ? game.general.uid : false,
 		};
 		sendUserList();
 	}
@@ -404,7 +409,7 @@ module.exports.sendGameInfo = async (socket, uid) => {
 
 	if (game) {
 		if (passport && Object.keys(passport).length) {
-			const player = game.publicPlayersState.find(player => player.userName === passport.user);
+			const player = game.publicPlayersState.find((player) => player.userName === passport.user);
 
 			if (player) {
 				player.leftGame = false;

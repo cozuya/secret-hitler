@@ -8,7 +8,7 @@ let count = 0;
 
 Account.findOne({})
 	.cursor()
-	.eachAsync(account => {
+	.eachAsync((account) => {
 		account.isLocal = true;
 		account.save();
 		count++;
@@ -20,6 +20,6 @@ Account.findOne({})
 		console.log('done');
 		monogoose.connection.close();
 	})
-	.catch(err => {
+	.catch((err) => {
 		console.log(err, 'caught err');
 	});

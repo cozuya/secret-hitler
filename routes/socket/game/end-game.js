@@ -15,7 +15,7 @@ const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-cons
 /**
  * @param {object} game - game to act on.
  */
-const saveGame = game => {
+const saveGame = (game) => {
 	const summary = game.private.summary.publish();
 	const casualBool = game.general.casualGame ? true : false; // Because Mongo is explicitly typed and integers are not truthy according to it
 	/**
@@ -28,18 +28,18 @@ const saveGame = game => {
 		isVerifiedOnly: game.general.isVerifiedOnly,
 		season: CURRENTSEASONNUMBER,
 		winningPlayers: game.private.seatedPlayers
-			.filter(player => player.wonGame)
-			.map(player => ({
+			.filter((player) => player.wonGame)
+			.map((player) => ({
 				userName: player.userName,
 				team: player.role.team,
-				role: player.role.cardName
+				role: player.role.cardName,
 			})),
 		losingPlayers: game.private.seatedPlayers
-			.filter(player => !player.wonGame)
-			.map(player => ({
+			.filter((player) => !player.wonGame)
+			.map((player) => ({
 				userName: player.userName,
 				team: player.role.team,
-				role: player.role.cardName
+				role: player.role.cardName,
 			})),
 		winningTeam: game.gameState.isCompleted,
 		playerCount: game.general.playerCount,
@@ -50,7 +50,7 @@ const saveGame = game => {
 		customGame: game.customGameSettings.enabled,
 		isRainbow: game.general.rainbowgame,
 		isTournyFirstRound: game.general.isTourny && game.general.tournyInfo.round === 1,
-		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2
+		isTournySecondRound: game.general.isTourny && game.general.tournyInfo.round === 2,
 	});
 
 	let enhanced;
@@ -80,7 +80,7 @@ const saveGame = game => {
  */
 module.exports.completeGame = (game, winningTeamName) => {
 	if (game && game.unsentReports) {
-		game.unsentReports.forEach(report => {
+		game.unsentReports.forEach((report) => {
 			makeReport({ ...report }, game, report.type === 'modchat' ? 'modchatdelayed' : 'reportdelayed');
 		});
 		game.unsentReports = [];
@@ -88,9 +88,10 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	for (let affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber++) {
 		const affectedSocketId = Object.keys(io.sockets.sockets).find(
-			socketId =>
+			(socketId) =>
 				io.sockets.sockets[socketId].handshake.session.passport &&
-				io.sockets.sockets[socketId].handshake.session.passport.user === game.publicPlayersState[affectedPlayerNumber].userName
+				io.sockets.sockets[socketId].handshake.session.passport.user ===
+					game.publicPlayersState[affectedPlayerNumber].userName
 		);
 		if (!io.sockets.sockets[affectedSocketId]) {
 			continue;
@@ -109,8 +110,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 		return;
 	}
 
-	const winningPrivatePlayers = game.private.seatedPlayers.filter(player => player.role.team === winningTeamName);
-	const winningPlayerNames = winningPrivatePlayers.map(player => player.userName);
+	const winningPrivatePlayers = game.private.seatedPlayers.filter((player) => player.role.team === winningTeamName);
+	const winningPlayerNames = winningPrivatePlayers.map((player) => player.userName);
 	const { seatedPlayers } = game.private;
 	const { publicPlayersState } = game;
 	const chat = {
@@ -119,40 +120,40 @@ module.exports.completeGame = (game, winningTeamName) => {
 		chat: [
 			{
 				text: winningTeamName === 'fascist' ? 'Fascists' : 'Liberals',
-				type: winningTeamName === 'fascist' ? 'fascist' : 'liberal'
+				type: winningTeamName === 'fascist' ? 'fascist' : 'liberal',
 			},
-			{ text: ' win the game.' }
-		]
+			{ text: ' win the game.' },
+		],
 	};
 	const remainingPoliciesChat = {
 		gameChat: true,
 		timestamp: new Date(),
 		chat: [
 			{
-				text: 'The remaining policies are '
-			}
+				text: 'The remaining policies are ',
+			},
 		].concat(
 			game.private.policies
-				.map(policyName => ({
+				.map((policyName) => ({
 					text: policyName === 'liberal' ? 'B' : 'R',
-					type: policyName === 'liberal' ? 'liberal' : 'fascist'
+					type: policyName === 'liberal' ? 'liberal' : 'fascist',
 				}))
 				.concat({
-					text: '.'
+					text: '.',
 				})
-		)
+		),
 	};
 
 	if (!(game.general.isTourny && game.general.tournyInfo.round === 1)) {
 		winningPrivatePlayers.forEach((player, index) => {
-			publicPlayersState.find(play => play.userName === player.userName).notificationStatus = 'success';
-			publicPlayersState.find(play => play.userName === player.userName).isConfetti = true;
+			publicPlayersState.find((play) => play.userName === player.userName).notificationStatus = 'success';
+			publicPlayersState.find((play) => play.userName === player.userName).isConfetti = true;
 			player.wonGame = true;
 		});
 
 		setTimeout(() => {
 			winningPrivatePlayers.forEach((player, index) => {
-				publicPlayersState.find(play => play.userName === player.userName).isConfetti = false;
+				publicPlayersState.find((play) => play.userName === player.userName).isConfetti = false;
 			});
 			sendInProgressGameUpdate(game, true);
 		}, 15000);
@@ -166,7 +167,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 		publicPlayer.nameStatus = seatedPlayers[index].role.cardName;
 	});
 
-	seatedPlayers.forEach(player => {
+	seatedPlayers.forEach((player) => {
 		player.gameChats.push(chat, remainingPoliciesChat);
 	});
 
@@ -183,22 +184,22 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	if (!game.general.private && !game.general.casualGame && !game.general.unlisted) {
 		Account.find({
-			username: { $in: seatedPlayers.map(player => player.userName) }
+			username: { $in: seatedPlayers.map((player) => player.userName) },
 		})
-			.then(results => {
+			.then((results) => {
 				const isRainbow = game.general.rainbowgame;
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
 
-				results.forEach(player => {
-					const listUser = userList.find(user => user.userName === player.username);
+				results.forEach((player) => {
+					const listUser = userList.find((user) => user.userName === player.username);
 					if (listUser) {
 						listUser.eloOverall = player.eloOverall;
 						listUser.eloSeason = player.eloSeason;
 					}
 
-					const seatedPlayer = seatedPlayers.find(p => p.userName === player.username);
-					seatedPlayers.forEach(eachPlayer => {
+					const seatedPlayer = seatedPlayers.find((p) => p.userName === player.username);
+					seatedPlayers.forEach((eachPlayer) => {
 						const playerChange = eloAdjustments[eachPlayer.userName];
 						const activeChange = player.gameSettings.disableSeasonal ? playerChange.changeSeason : playerChange.change;
 						if (!player.gameSettings.disableElo) {
@@ -208,19 +209,19 @@ module.exports.completeGame = (game, winningTeamName) => {
 								chat: [
 									{
 										text: eachPlayer.userName,
-										type: eachPlayer.role.team
+										type: eachPlayer.role.team,
 									},
 									{
-										text: ` ${activeChange > 0 ? 'increased' : 'decreased'} by `
+										text: ` ${activeChange > 0 ? 'increased' : 'decreased'} by `,
 									},
 									{
 										text: Math.abs(activeChange).toFixed(1),
-										type: 'player'
+										type: 'player',
 									},
 									{
-										text: ` points.`
-									}
-								]
+										text: ` points.`,
+									},
+								],
 							});
 						}
 					});
@@ -238,16 +239,21 @@ module.exports.completeGame = (game, winningTeamName) => {
 								: 0;
 						}
 
-						player[`winsSeason${CURRENTSEASONNUMBER}`] = player[`winsSeason${CURRENTSEASONNUMBER}`] ? player[`winsSeason${CURRENTSEASONNUMBER}`] + 1 : 1;
+						player[`winsSeason${CURRENTSEASONNUMBER}`] = player[`winsSeason${CURRENTSEASONNUMBER}`]
+							? player[`winsSeason${CURRENTSEASONNUMBER}`] + 1
+							: 1;
 						player.wins = player.wins ? player.wins + 1 : 1;
-						player[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`] ? player[`lossesSeason${CURRENTSEASONNUMBER}`] : 0;
+						player[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`]
+							? player[`lossesSeason${CURRENTSEASONNUMBER}`]
+							: 0;
 						winner = true;
 
 						if (isTournamentFinalGame && !game.general.casualGame) {
 							player.gameSettings.tournyWins.push(Date.now());
 							const playerSocketId = Object.keys(io.sockets.sockets).find(
-								socketId =>
-									io.sockets.sockets[socketId].handshake.session.passport && io.sockets.sockets[socketId].handshake.session.passport.user === player.username
+								(socketId) =>
+									io.sockets.sockets[socketId].handshake.session.passport &&
+									io.sockets.sockets[socketId].handshake.session.passport.user === player.username
 							);
 
 							io.sockets.sockets[playerSocketId].emit('gameSettings', player.gameSettings);
@@ -264,24 +270,32 @@ module.exports.completeGame = (game, winningTeamName) => {
 						}
 
 						player.losses++;
-						player[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`] ? player[`lossesSeason${CURRENTSEASONNUMBER}`] + 1 : 1;
-						player[`winsSeason${CURRENTSEASONNUMBER}`] = player[`winsSeason${CURRENTSEASONNUMBER}`] ? player[`winsSeason${CURRENTSEASONNUMBER}`] : 0;
+						player[`lossesSeason${CURRENTSEASONNUMBER}`] = player[`lossesSeason${CURRENTSEASONNUMBER}`]
+							? player[`lossesSeason${CURRENTSEASONNUMBER}`] + 1
+							: 1;
+						player[`winsSeason${CURRENTSEASONNUMBER}`] = player[`winsSeason${CURRENTSEASONNUMBER}`]
+							? player[`winsSeason${CURRENTSEASONNUMBER}`]
+							: 0;
 					}
 
 					player.games.push(game.general.uid);
 					player.lastCompletedGame = new Date();
 					player.save(() => {
-						const userEntry = userList.find(user => user.userName === player.username);
+						const userEntry = userList.find((user) => user.userName === player.username);
 
 						if (userEntry) {
 							if (winner) {
 								if (isRainbow) {
 									userEntry.rainbowWins = userEntry.rainbowWins ? userEntry.rainbowWins + 1 : 1;
 									userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses : 0;
-									userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]
+									userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = userEntry[
+										`rainbowWinsSeason${CURRENTSEASONNUMBER}`
+									]
 										? userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] + 1
 										: 1;
-									userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]
+									userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = userEntry[
+										`rainbowLossesSeason${CURRENTSEASONNUMBER}`
+									]
 										? userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]
 										: 0;
 								}
@@ -299,10 +313,14 @@ module.exports.completeGame = (game, winningTeamName) => {
 							} else {
 								if (isRainbow) {
 									userEntry.rainbowLosses = userEntry.rainbowLosses ? userEntry.rainbowLosses + 1 : 1;
-									userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]
+									userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = userEntry[
+										`rainbowLossesSeason${CURRENTSEASONNUMBER}`
+									]
 										? userEntry[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] + 1
 										: 1;
-									userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]
+									userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = userEntry[
+										`rainbowWinsSeason${CURRENTSEASONNUMBER}`
+									]
 										? userEntry[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]
 										: 0;
 								}
@@ -321,7 +339,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 				});
 				sendInProgressGameUpdate(game);
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.log(err, 'error in updating accounts at end of game');
 			});
 	}
@@ -330,8 +348,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 		if (game.general.tournyInfo.round === 1) {
 			const { uid } = game.general;
 			const tableUidLastLetter = uid.charAt(uid.length - 1);
-			const otherUid = tableUidLastLetter === 'A' ? `${uid.substr(0, uid.length - 1)}B` : `${uid.substr(0, uid.length - 1)}A`;
-			const otherGame = games.find(g => g.general.uid === otherUid);
+			const otherUid =
+				tableUidLastLetter === 'A' ? `${uid.substr(0, uid.length - 1)}B` : `${uid.substr(0, uid.length - 1)}A`;
+			const otherGame = games.find((g) => g.general.uid === otherUid);
 
 			if (!otherGame || otherGame.gameState.isCompleted) {
 				const finalGame = _.cloneDeep(game);
@@ -344,13 +363,13 @@ module.exports.completeGame = (game, winningTeamName) => {
 					undrawnPolicyCount: 17,
 					discardedPolicyCount: 0,
 					presidentIndex: -1,
-					isStarted: true
+					isStarted: true,
 				};
 				finalGame.trackState = {
 					liberalPolicyCount: 0,
 					fascistPolicyCount: 0,
 					electionTrackerCount: 0,
-					enactedPolicies: []
+					enactedPolicies: [],
 				};
 
 				const countDown = setInterval(() => {
@@ -372,26 +391,28 @@ module.exports.completeGame = (game, winningTeamName) => {
 						game.general.tournyInfo.isRound1TableThatFinished2nd = true;
 						sendInProgressGameUpdate(game);
 						const winningPlayerSocketIds = Object.keys(io.sockets.sockets).filter(
-							socketId =>
+							(socketId) =>
 								io.sockets.sockets[socketId].handshake.session.passport &&
-								winningPrivatePlayers.map(player => player.userName).includes(io.sockets.sockets[socketId].handshake.session.passport.user)
+								winningPrivatePlayers
+									.map((player) => player.userName)
+									.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 						);
 
 						// crash here line 302 map of undefined.  Not sure how this didn't exist at this time.  Race condition in settimeout/interval?  Both games completed at almost the same time?  Dunno.
 						const otherGameWinningPlayerSocketIds = Object.keys(io.sockets.sockets).filter(
-							socketId =>
+							(socketId) =>
 								io.sockets.sockets[socketId].handshake.session.passport &&
 								game.general.tournyInfo.winningPlayersFirstCompletedGame
-									.map(player => player.userName)
+									.map((player) => player.userName)
 									.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 						);
 
 						const socketIds = winningPlayerSocketIds.concat(otherGameWinningPlayerSocketIds);
 
-						socketIds.forEach(id => {
+						socketIds.forEach((id) => {
 							const socket = io.sockets.sockets[id];
 
-							Object.keys(socket.rooms).forEach(roomUid => {
+							Object.keys(socket.rooms).forEach((roomUid) => {
 								socket.leave(roomUid);
 							});
 							socket.join(finalGame.general.uid);
@@ -401,13 +422,13 @@ module.exports.completeGame = (game, winningTeamName) => {
 						finalGame.general.tournyInfo.round = 2;
 						finalGame.general.electionCount = 0;
 						finalGame.publicPlayersState = game.general.tournyInfo.winningPlayersFirstCompletedGame
-							.concat(game.private.seatedPlayers.filter(player => player.role.team === winningTeamName))
-							.map(player => {
+							.concat(game.private.seatedPlayers.filter((player) => player.role.team === winningTeamName))
+							.map((player) => {
 								player.cardStatus = {
 									cardDisplayed: false,
 									isFlipped: false,
 									cardFront: 'secretrole',
-									cardBack: {}
+									cardBack: {},
 								};
 
 								player.isDead = false;
@@ -420,7 +441,12 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 							finalGame.general.replacementNames = _.shuffle(animals)
 								.slice(0, finalGame.publicPlayersState.length)
-								.map((animal, index) => `${_shuffledAdjectives[index].charAt(0).toUpperCase()}${_shuffledAdjectives[index].slice(1)} ${animal}`);
+								.map(
+									(animal, index) =>
+										`${_shuffledAdjectives[index].charAt(0).toUpperCase()}${_shuffledAdjectives[index].slice(
+											1
+										)} ${animal}`
+								);
 						}
 
 						finalGame.private.lock = {};
@@ -437,18 +463,19 @@ module.exports.completeGame = (game, winningTeamName) => {
 					timestamp: new Date(),
 					chat: [
 						{
-							text: 'This tournament game has finished first.  Winning players will be pulled into the final round when it starts.'
-						}
-					]
+							text:
+								'This tournament game has finished first.  Winning players will be pulled into the final round when it starts.',
+						},
+					],
 				});
 				otherGame.general.tournyInfo.winningPlayersFirstCompletedGame = _.cloneDeep(game.private.seatedPlayers).filter(
-					player => player.role.team === winningTeamName
+					(player) => player.role.team === winningTeamName
 				);
 				sendInProgressGameUpdate(game);
 			}
 		} else {
 			if (!game.general.casualGame) {
-				game.publicPlayersState.forEach(player => {
+				game.publicPlayersState.forEach((player) => {
 					if (winningPlayerNames.includes(player.userName)) {
 						player.tournyWins.push(new Date().getTime());
 					}
@@ -459,9 +486,9 @@ module.exports.completeGame = (game, winningTeamName) => {
 				timestamp: new Date(),
 				chat: [
 					{
-						text: 'The tournament has ended.'
-					}
-				]
+						text: 'The tournament has ended.',
+					},
+				],
 			});
 			game.general.status = 'The tournament has ended.';
 			sendInProgressGameUpdate(game);

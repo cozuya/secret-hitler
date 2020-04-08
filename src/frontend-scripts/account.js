@@ -11,15 +11,13 @@ $.fn.modal = Modal;
 $.fn.dimmer = Dimmer;
 
 export default () => {
-	$('body').on('click', '#signup', function(event) {
+	$('body').on('click', '#signup', function (event) {
 		event.preventDefault();
 
-		$('section.signup-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('show');
+		$('section.signup-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 	});
 
-	$('button.signup-submit').on('click', function(event) {
+	$('button.signup-submit').on('click', function (event) {
 		event.preventDefault();
 		const username = $('#signup-username').val();
 		const password = $('#signup-password1').val();
@@ -29,7 +27,7 @@ export default () => {
 		const $loader = $(this).next();
 		const $message = $loader.next();
 		const isPrivate = $('#private-player').is(':checked');
-		const submitErr = message => {
+		const submitErr = (message) => {
 			$loader.removeClass('active');
 			$message.text(message).removeClass('hidden');
 		};
@@ -50,7 +48,7 @@ export default () => {
 				password2,
 				email,
 				isPrivate,
-				bypassKey
+				bypassKey,
 			}),
 			statusCode: {
 				200() {
@@ -90,57 +88,40 @@ export default () => {
 					const message = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON.message : '';
 
 					submitErr(`Internal error: ${message}`);
-				}
-			}
+				},
+			},
 		});
 	});
 
-	$('body').on('click', '#signin', function(event) {
+	$('body').on('click', '#signin', function (event) {
 		event.preventDefault();
 
-		$('section.signin-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('show');
+		$('section.signin-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 	});
 
-	$('body').on('focus', '#signup-username', function() {
-		$(this)
-			.parent()
-			.next()
-			.text('3-12 alphanumeric characters.')
-			.slideDown();
+	$('body').on('focus', '#signup-username', function () {
+		$(this).parent().next().text('3-12 alphanumeric characters.').slideDown();
 	});
 
-	$('body').on('focus', '#signup-password1', function() {
-		$(this)
-			.parent()
-			.next()
-			.text('6-255 characters.')
-			.slideDown();
+	$('body').on('focus', '#signup-password1', function () {
+		$(this).parent().next().text('6-255 characters.').slideDown();
 	});
 
-	$('body').on('focus', '#signup-bypass', function() {
-		$(this)
-			.parent()
-			.next()
-			.text('Only fill this in if instructed to do so.')
-			.slideDown();
+	$('body').on('focus', '#signup-bypass', function () {
+		$(this).parent().next().text('Only fill this in if instructed to do so.').slideDown();
 	});
 
-	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function() {
-		$(this)
-			.parent()
-			.next()
-			.slideUp();
+	$('body').on('blur', '.signup-modal .ui.left.icon.input input', function () {
+		$(this).parent().next().slideUp();
 	});
 
-	$('button.signin-submit').on('click', function(event) {
+	$('button.signin-submit').on('click', function (event) {
 		event.preventDefault();
 		const username = $('#signin-username').val();
 		const password = $('#signin-password').val();
 		const $loader = $(this).next();
 		const $message = $loader.next();
-		const submitErr = message => {
+		const submitErr = (message) => {
 			$loader.removeClass('active');
 			$message.text(message).removeClass('hidden');
 		};
@@ -168,12 +149,12 @@ export default () => {
 				},
 				403(xhr) {
 					submitErr(xhr.responseJSON.message);
-				}
-			}
+				},
+			},
 		});
 	});
 
-	$('a#logout').on('click', function(event) {
+	$('a#logout').on('click', function (event) {
 		event.preventDefault();
 
 		$.ajax({
@@ -181,17 +162,15 @@ export default () => {
 			method: 'POST',
 			success() {
 				window.location.reload();
-			}
+			},
 		});
 	});
 
-	$('button#change-password').on('click', function(event) {
-		$('section.passwordchange-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('show');
+	$('button#change-password').on('click', function (event) {
+		$('section.passwordchange-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 	});
 
-	$('button#passwordchange-submit').on('click', function(event) {
+	$('button#passwordchange-submit').on('click', function (event) {
 		event.preventDefault();
 
 		const newPassword = $('#passwordchange-password').val();
@@ -201,7 +180,7 @@ export default () => {
 		const $successMessage = $errMessage.next();
 		const data = JSON.stringify({
 			newPassword,
-			newPasswordConfirm
+			newPasswordConfirm,
 		});
 
 		$loader.addClass('active');
@@ -225,18 +204,16 @@ export default () => {
 					if (!$successMessage.hasClass('hidden')) {
 						$successMessage.addClass('hidden');
 					}
-				}
-			}
+				},
+			},
 		});
 	});
 
-	$('button#delete-account').on('click', function(event) {
-		$('section.deleteaccount-modal')
-			.modal('setting', 'transition', 'horizontal flip')
-			.modal('show');
+	$('button#delete-account').on('click', function (event) {
+		$('section.deleteaccount-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 	});
 
-	$('button#deleteaccount-submit').on('click', function(event) {
+	$('button#deleteaccount-submit').on('click', function (event) {
 		// todo-release
 		// event.preventDefault();
 		// const password = $('#deleteaccount-password').val(),
@@ -272,26 +249,22 @@ export default () => {
 		// });
 	});
 
-	$('a#reset-password').on('click', function(event) {
+	$('a#reset-password').on('click', function (event) {
 		event.preventDefault();
 		$('.signin-modal')
 			.modal('setting', 'transition', 'horizontal flip')
-			.modal('hide', function() {
-				$('.password-reset-modal')
-					.modal('setting', 'transition', 'horizontal flip')
-					.modal('show');
+			.modal('hide', function () {
+				$('.password-reset-modal').modal('setting', 'transition', 'horizontal flip').modal('show');
 			});
 	});
 
-	$('button#password-reset-submit').on('click', function(event) {
+	$('button#password-reset-submit').on('click', function (event) {
 		event.preventDefault();
 
 		var email = $('#password-reset-email').val(),
 			$loader = $(this).next(),
-			$message = $(this)
-				.next()
-				.next(),
-			submitErr = function(message) {
+			$message = $(this).next().next(),
+			submitErr = function (message) {
 				$loader.removeClass('active');
 				$message.text(message).removeClass('hidden');
 			};
@@ -304,7 +277,7 @@ export default () => {
 			contentType: 'application/json; charset=UTF-8',
 			data: JSON.stringify({ email: email }),
 			statusCode: {
-				200: function() {
+				200: function () {
 					$message.addClass('hidden');
 					$loader.removeClass('active');
 					$('#password-reset-submit').hide();
@@ -312,19 +285,19 @@ export default () => {
 						.removeClass('hidden')
 						.html("We've sent you a password reset email, please check your email for a link to reset your password.");
 				},
-				400: function() {
+				400: function () {
 					submitErr('Sorry, that request did not look right.');
 				},
-				404: function() {
+				404: function () {
 					submitErr("Sorry, we don't have an account associated with that verified email address.");
-				}
-			}
+				},
+			},
 		});
 	});
 
 	// dev: autologin crap remove later
 
-	$('body').on('click', '.loginquick', function(event) {
+	$('body').on('click', '.loginquick', function (event) {
 		event.preventDefault();
 		const user = $(this).attr('data-name');
 
@@ -340,8 +313,8 @@ export default () => {
 					} else {
 						window.location.reload();
 					}
-				}
-			}
+				},
+			},
 		});
 	});
 };

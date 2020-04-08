@@ -12,27 +12,27 @@ const profileSchema = new Schema({
 		matches: {
 			allMatches: {
 				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
+				successes: { type: Number, default: 0 },
 			},
 			liberal: {
 				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
+				successes: { type: Number, default: 0 },
 			},
 			fascist: {
 				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
-			}
+				successes: { type: Number, default: 0 },
+			},
 		},
 		actions: {
 			voteAccuracy: {
 				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
+				successes: { type: Number, default: 0 },
 			},
 			shotAccuracy: {
 				events: { type: Number, default: 0 },
-				successes: { type: Number, default: 0 }
-			}
-		}
+				successes: { type: Number, default: 0 },
+			},
+		},
 	},
 	recentGames: {
 		type: [
@@ -42,11 +42,11 @@ const profileSchema = new Schema({
 				playerSize: Number,
 				isWinner: Boolean,
 				isRebalanced: Boolean,
-				date: Date
-			}
+				date: Date,
+			},
 		],
-		default: []
-	}
+		default: [],
+	},
 });
 
 module.exports = mongoose.model('Profile', profileSchema);

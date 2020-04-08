@@ -7,7 +7,7 @@ const Account = require('../models/account');
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 
-String.prototype.hashCode = function() {
+String.prototype.hashCode = function () {
 	var hash = 0,
 		i,
 		chr;
@@ -24,11 +24,7 @@ const games = [];
 const nameHashes = [];
 
 function genHash() {
-	return `${Math.random()
-		.toString(36)
-		.substring(2)}${Math.random()
-		.toString(36)
-		.substring(2)}`;
+	return `${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}`;
 }
 
 function getHash(name) {
@@ -41,11 +37,11 @@ Game.find({}, { chats: 0 })
 	//.limit(1)
 	//.lean()
 	.cursor()
-	.eachAsync(game => {
-		game.players.map(player => (player.username = getHash(player.username)));
-		game.players.map(player => (player.icon = null));
-		game.players.map(player => (player._id = null));
-		game.logs.map(log => (log._id = null));
+	.eachAsync((game) => {
+		game.players.map((player) => (player.username = getHash(player.username)));
+		game.players.map((player) => (player.icon = null));
+		game.players.map((player) => (player._id = null));
+		game.logs.map((log) => (log._id = null));
 
 		games.push(game);
 
@@ -58,14 +54,14 @@ Game.find({}, { chats: 0 })
 			JSON.stringify(games, (key, value) => {
 				if (value !== null) return value;
 			}),
-			err => {
+			(err) => {
 				if (err) console.log(err);
 				else console.log('File written.');
 				mongoose.connection.close();
 			}
 		);
 	})
-	.catch(err => {
+	.catch((err) => {
 		console.log(err, 'err');
 		mongoose.connection.close();
 	});

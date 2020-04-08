@@ -4,10 +4,10 @@ const Bias = new Schema({
 	nickname: {
 		type: String,
 		required: true,
-		unique: true
+		unique: true,
 	},
 	eloLiberal: Number,
-	eloFascist: Number
+	eloFascist: Number,
 });
 
 module.exports = mongoose.model('Account', Bias);

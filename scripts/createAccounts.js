@@ -8,19 +8,19 @@ const options = {
 	port: '8080',
 	path: '/account/signup',
 	headers: {
-		'content-type': 'application/json; charset=UTF-8'
-	}
+		'content-type': 'application/json; charset=UTF-8',
+	},
 };
 
-const createUser = function(username) {
-	const req = http.request(options, function(res) {
+const createUser = function (username) {
+	const req = http.request(options, function (res) {
 		const chunks = [];
 
-		res.on('data', function(chunk) {
+		res.on('data', function (chunk) {
 			chunks.push(chunk);
 		});
 
-		res.on('end', function() {
+		res.on('end', function () {
 			if (res.statusCode == 200) {
 				console.log(`Successfully created ${username}`);
 			} else if (res.statusCode == 401) {

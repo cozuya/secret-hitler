@@ -8,7 +8,7 @@ const playerReport = new Schema({
 	reportingPlayer: String,
 	gameType: String,
 	comment: String,
-	isActive: Boolean
+	isActive: Boolean,
 });
 
 module.exports = mongoose.model('PlayerReport', playerReport);

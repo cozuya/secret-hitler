@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
+db.once('open', function () {
 	const pageSize = 250;
 	let skipAmt = 0;
 	const data = {};
@@ -13,7 +13,7 @@ db.once('open', function() {
 
 	const parseData = () => {
 		mongoose.connection.close();
-		fs.writeFile('./out/data.json', JSON.stringify(data), function(err) {
+		fs.writeFile('./out/data.json', JSON.stringify(data), function (err) {
 			if (err) {
 				return console.log(err);
 			}
@@ -23,7 +23,10 @@ db.once('open', function() {
 	};
 	const getMoreData = () => {
 		console.log(`Block: ${skipAmt / pageSize} (${skipAmt}-${skipAmt + pageSize})`);
-		Account.find({ wins: { $gte: 25 }, losses: { $gte: 25 }, isBanned: { $ne: true }, eloSeason: { $ne: 1600 } }, { username: 1, eloOverall: 1, eloSeason: 1 })
+		Account.find(
+			{ wins: { $gte: 25 }, losses: { $gte: 25 }, isBanned: { $ne: true }, eloSeason: { $ne: 1600 } },
+			{ username: 1, eloOverall: 1, eloSeason: 1 }
+		)
 			.skip(skipAmt)
 			.limit(pageSize)
 			.exec((err, accounts) => {
@@ -35,7 +38,7 @@ db.once('open', function() {
 					parseData();
 					return;
 				}
-				accounts.forEach(acc => {
+				accounts.forEach((acc) => {
 					if (acc.eloOverall && acc.eloSeason) {
 						data[acc.username] = [acc.eloOverall, acc.eloSeason];
 					}

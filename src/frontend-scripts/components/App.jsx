@@ -11,7 +11,7 @@ import {
 	updateGeneralChats,
 	updateVersion,
 	fetchProfile,
-	fetchReplay
+	fetchReplay,
 } from '../actions/actions.js';
 import socket from '../socket';
 import PropTypes from 'prop-types';
@@ -20,21 +20,21 @@ import Menu from './menu/Menu.jsx';
 import DevHelpers from './DevHelpers.jsx';
 import '../../scss/style-dark.scss';
 
-const select = state => state;
+const select = (state) => state;
 
 class TopLevelErrorBoundry extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			error: null,
-			errorInfo: null
+			errorInfo: null,
 		};
 	}
 
 	componentDidCatch(error, errorInfo) {
 		this.setState({
 			error,
-			errorInfo
+			errorInfo,
 		});
 	}
 
@@ -45,8 +45,9 @@ class TopLevelErrorBoundry extends React.Component {
 			<div style={{ padding: '20px' }}>
 				<h2>You've broken the website.</h2>
 				<p>
-					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in a recent deployment. Please expand the
-					details below and post a screenshot of them in #development-contribution on our Discord.{'  '}
+					Not really, but there's been an unhandled error in the site's UI code. This is probably due to a new issue in
+					a recent deployment. Please expand the details below and post a screenshot of them in
+					#development-contribution on our Discord.{'  '}
 					<a href="/game">Click here to get back to safety.</a>
 				</p>
 				<details style={{ whiteSpace: 'pre-wrap' }}>
@@ -62,7 +63,7 @@ class TopLevelErrorBoundry extends React.Component {
 }
 
 TopLevelErrorBoundry.propTypes = {
-	children: PropTypes.object
+	children: PropTypes.object,
 };
 
 export class App extends React.Component {
@@ -81,10 +82,10 @@ export class App extends React.Component {
 			notesValue: '',
 			alertMsg: {
 				type: null,
-				data: null
+				data: null,
 			},
 			warnings: null,
-			allEmotes: []
+			allEmotes: [],
 		};
 
 		this.prevHash = '';
@@ -108,7 +109,7 @@ export class App extends React.Component {
 				userName: username,
 				verified: window.verified,
 				staffRole: window.staffRole,
-				hasNotDismissedSignupModal: window.hasNotDismissedSignupModal
+				hasNotDismissedSignupModal: window.hasNotDismissedSignupModal,
 			};
 
 			// ** begin devhelpers **
@@ -127,29 +128,29 @@ export class App extends React.Component {
 			dispatch(updateUser(info));
 		}
 
-		socket.on('touChange', changeList => {
+		socket.on('touChange', (changeList) => {
 			this.setState({
 				alertMsg: {
 					type: 'tou',
-					data: changeList
-				}
+					data: changeList,
+				},
 			});
 		});
 
-		socket.on('warningPopup', warning => {
+		socket.on('warningPopup', (warning) => {
 			if (this.state.alertMsg.type === null) {
 				this.setState({
 					alertMsg: {
 						type: 'warning',
-						data: warning
-					}
+						data: warning,
+					},
 				});
 			}
 		});
 
-		socket.on('sendWarnings', warningData => {
+		socket.on('sendWarnings', (warningData) => {
 			this.setState({
-				warnings: warningData
+				warnings: warningData,
 			});
 		});
 
@@ -157,14 +158,14 @@ export class App extends React.Component {
 			this.setState({
 				alertMsg: {
 					type: null,
-					data: null
-				}
+					data: null,
+				},
 			});
 		});
 
-		socket.on('emoteList', list => {
+		socket.on('emoteList', (list) => {
 			this.setState({
-				allEmotes: list
+				allEmotes: list,
 			});
 		});
 
@@ -172,7 +173,7 @@ export class App extends React.Component {
 			window.location.pathname = '/logout';
 		});
 
-		socket.on('manualReplayRequest', uid => {
+		socket.on('manualReplayRequest', (uid) => {
 			window.location.hash = uid ? `#/replay/${uid}` : /#/;
 		});
 
@@ -180,7 +181,7 @@ export class App extends React.Component {
 			window.location.reload();
 		});
 
-		socket.on('gameSettings', settings => {
+		socket.on('gameSettings', (settings) => {
 			const { userInfo } = this.props;
 
 			userInfo.gameSettings = settings;
@@ -188,15 +189,15 @@ export class App extends React.Component {
 			this.forceUpdate(); // dunno why I need this to make it work I'm bad at this.
 		});
 
-		socket.on('gameList', list => {
+		socket.on('gameList', (list) => {
 			dispatch(updateGameList(list));
 		});
 
-		socket.on('version', v => {
+		socket.on('version', (v) => {
 			dispatch(updateVersion(v));
 		});
 
-		socket.on('joinGameRedirect', uid => {
+		socket.on('joinGameRedirect', (uid) => {
 			dispatch(updateMidsection('game'));
 			window.location.hash = `#/table/${uid}`;
 		});
@@ -211,7 +212,7 @@ export class App extends React.Component {
 			}
 		});
 
-		socket.on('playerChatUpdate', chat => {
+		socket.on('playerChatUpdate', (chat) => {
 			const { gameInfo } = this.props;
 			const _game = Object.assign({}, gameInfo);
 
@@ -219,7 +220,7 @@ export class App extends React.Component {
 			dispatch(updateGameInfo(_game));
 		});
 
-		socket.on('gameModChat', chat => {
+		socket.on('gameModChat', (chat) => {
 			const { gameInfo } = this.props;
 			const _game = _.cloneDeep(gameInfo);
 
@@ -227,7 +228,7 @@ export class App extends React.Component {
 			dispatch(updateGameInfo(_game));
 		});
 
-		socket.on('userList', list => {
+		socket.on('userList', (list) => {
 			dispatch(updateUserList(list));
 			const now = new Date();
 			const since = now - this.lastReconnectAttempt;
@@ -235,7 +236,7 @@ export class App extends React.Component {
 				this.lastReconnectAttempt = now;
 				const { userInfo } = this.props;
 				if (userInfo && userInfo.userName) {
-					if (!list.list.map(user => user.userName).includes(userInfo.userName)) {
+					if (!list.list.map((user) => user.userName).includes(userInfo.userName)) {
 						console.log('Detected own user not in list, attempting to reconnect...');
 						socket.emit('getUserGameSettings');
 					}
@@ -250,18 +251,18 @@ export class App extends React.Component {
 			dispatch(updateUser(userInfo));
 		});
 
-		socket.on('generalChats', chats => {
+		socket.on('generalChats', (chats) => {
 			dispatch(updateGeneralChats(chats));
 		});
 
-		socket.on('reportUpdate', reportStatus => {
+		socket.on('reportUpdate', (reportStatus) => {
 			const { userInfo } = this.props;
 
 			userInfo.gameSettings.newReport = reportStatus;
 			dispatch(updateUser(userInfo));
 		});
 
-		socket.on('sendAlert', ip => {
+		socket.on('sendAlert', (ip) => {
 			window.alert(ip);
 		});
 
@@ -313,7 +314,7 @@ export class App extends React.Component {
 			userInfo.userName &&
 			userInfo.isSeated &&
 			gameInfo.publicPlayersState.length &&
-			gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName)
+			gameInfo.publicPlayersState.find((player) => player.userName === userInfo.userName)
 		) {
 			if (hash === '#/') {
 				this.handleLeaveGame();
@@ -386,7 +387,7 @@ export class App extends React.Component {
 			blindMode: false,
 			timedMode: false,
 			casualGame: false,
-			privatePassword: false
+			privatePassword: false,
 		};
 
 		this.props.socket.emit('addNewGame', data);
@@ -398,7 +399,7 @@ export class App extends React.Component {
 		const { gameInfo } = this.props;
 		const data = {
 			uid: gameInfo.general.uid,
-			password
+			password,
 		};
 
 		socket.emit('updateSeatedUser', data);
@@ -414,19 +415,19 @@ export class App extends React.Component {
 
 		socket.emit('leaveGame', {
 			userName: userInfo.userName,
-			uid: manualLeaveGame || gameInfo.general.uid
+			uid: manualLeaveGame || gameInfo.general.uid,
 		});
 	}
 
 	changeNotesValue(value) {
 		this.setState({
-			notesValue: value
+			notesValue: value,
 		});
 	}
 
 	changePlayerNotesValue(value) {
 		this.setState({
-			playerNotesValue: value
+			playerNotesValue: value,
 		});
 	}
 
@@ -451,10 +452,12 @@ export class App extends React.Component {
 							? gameSettings.fontFamily
 								? `'${gameSettings.fontFamily}', Lato, sans-serif`
 								: '"Comfortaa", Lato, sans-serif'
-							: '"Comfortaa", Lato, sans-serif'
+							: '"Comfortaa", Lato, sans-serif',
 					}}
 				>
-					{this.props.notesActive && <Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />}
+					{this.props.notesActive && (
+						<Gamenotes value={this.state.notesValue} changeNotesValue={this.changeNotesValue} />
+					)}
 
 					{process.env.NODE_ENV !== 'production' && <DevHelpers />}
 
@@ -464,14 +467,23 @@ export class App extends React.Component {
 						if (this.state.alertMsg.type) {
 							if (this.state.alertMsg.type === 'tou') {
 								return (
-									<div style={{ position: 'fixed', zIndex: 99999, background: 'var(--theme-background-1)', width: '100vw', height: '100vh', display: 'flex' }}>
+									<div
+										style={{
+											position: 'fixed',
+											zIndex: 99999,
+											background: 'var(--theme-background-1)',
+											width: '100vw',
+											height: '100vh',
+											display: 'flex',
+										}}
+									>
 										<div
 											style={{
 												margin: 'auto',
 												padding: '5px',
 												border: '1px solid var(--theme-text-1)',
 												borderRadius: '10px',
-												background: 'var(--theme-background-1)'
+												background: 'var(--theme-background-1)',
 											}}
 										>
 											<h2 style={{ fontFamily: '"Comfortaa", Lato, sans-serif' }}>
@@ -485,7 +497,7 @@ export class App extends React.Component {
 													borderRadius: '5px',
 													background: 'var(--theme-background-3)',
 													padding: '3px',
-													overflowY: 'scroll'
+													overflowY: 'scroll',
 												}}
 											>
 												{this.state.alertMsg.data.map((change, index) => {
@@ -510,15 +522,25 @@ export class App extends React.Component {
 											</p>
 											<form onSubmit={this.touConfirmButton}>
 												<input type="checkbox" id="touCheckBox" style={{ height: '16px', width: '16px' }} />
-												<label htmlFor="touCheckBox" style={{ fontFamily: '"Comfortaa", Lato, sans-serif', cursor: 'pointer' }}>
+												<label
+													htmlFor="touCheckBox"
+													style={{ fontFamily: '"Comfortaa", Lato, sans-serif', cursor: 'pointer' }}
+												>
 													{' '}
-													I agree to the {this.state.alertMsg.data[0].changeVer === '0.0' ? 'Terms of Use' : 'Terms of Use changes'}
+													I agree to the{' '}
+													{this.state.alertMsg.data[0].changeVer === '0.0' ? 'Terms of Use' : 'Terms of Use changes'}
 												</label>
 												<br />
 												<input
 													type="submit"
 													value="Dismiss"
-													style={{ width: '100%', borderRadius: '5px', fontFamily: '"Comfortaa", Lato, sans-serif', fontWeight: 'bold', cursor: 'pointer' }}
+													style={{
+														width: '100%',
+														borderRadius: '5px',
+														fontFamily: '"Comfortaa", Lato, sans-serif',
+														fontWeight: 'bold',
+														cursor: 'pointer',
+													}}
 													id="touButton"
 												/>
 											</form>
@@ -528,23 +550,34 @@ export class App extends React.Component {
 							}
 							if (this.state.alertMsg.type === 'warning') {
 								return (
-									<div style={{ position: 'fixed', zIndex: 9999, background: 'var(--theme-background-1)', width: '100vw', height: '100vh', display: 'flex' }}>
+									<div
+										style={{
+											position: 'fixed',
+											zIndex: 9999,
+											background: 'var(--theme-background-1)',
+											width: '100vw',
+											height: '100vh',
+											display: 'flex',
+										}}
+									>
 										<div
 											style={{
 												margin: 'auto',
 												padding: '5px',
 												border: '1px solid var(--theme-text-1)',
 												borderRadius: '10px',
-												background: 'var(--theme-background-1)'
+												background: 'var(--theme-background-1)',
 											}}
 										>
 											<h2 style={{ fontFamily: '"Roboto", sans-serif', textAlign: 'center' }}>Moderator Warning</h2>
 											<div style={{ width: '450px', margin: '5px 0' }}>
-												The following is a warning from a moderator. If you believe this warning to be unjustified, you may argue your case respectfully by
-												pinging @Moderator in #mod-support on our <a href="https://discord.gg/secrethitlerio">Discord</a>.
+												The following is a warning from a moderator. If you believe this warning to be unjustified, you
+												may argue your case respectfully by pinging @Moderator in #mod-support on our{' '}
+												<a href="https://discord.gg/secrethitlerio">Discord</a>.
 												<br />
 												<br />
-												Please read and follow the rules as laid out in the <a href="/tou">Terms of Use</a> to avoid further action on your account.
+												Please read and follow the rules as laid out in the <a href="/tou">Terms of Use</a> to avoid
+												further action on your account.
 											</div>
 											<div
 												style={{
@@ -554,13 +587,15 @@ export class App extends React.Component {
 													border: '1px solid var(--theme-background-1)',
 													borderRadius: '5px',
 													background: 'var(--theme-background-3)',
-													padding: '5px'
+													padding: '5px',
 												}}
 											>
 												<div>
 													<h4 style={{ fontFamily: '"Roboto", sans-serif' }}>Warning: </h4>
 													<p style={{ fontFamily: '"Roboto", sans-serif' }}>
-														{new Date(this.state.alertMsg.data.time).toDateString() + ' - ' + this.state.alertMsg.data.text}
+														{new Date(this.state.alertMsg.data.time).toDateString() +
+															' - ' +
+															this.state.alertMsg.data.text}
 													</p>
 													<br />
 												</div>
@@ -568,8 +603,12 @@ export class App extends React.Component {
 											<form onSubmit={this.acknowledgeWarning}>
 												<div style={{ width: '450px', margin: '15px 0 5px' }}>
 													<input type="checkbox" id="warningCheckBox" style={{ marginRight: '5px' }} />
-													<label htmlFor="warningCheckBox" style={{ fontFamily: '"Roboto", sans-serif', cursor: 'pointer' }}>
-														I acknowledge this warning and understand that continuing in this behaviour may lead to further action on my account.
+													<label
+														htmlFor="warningCheckBox"
+														style={{ fontFamily: '"Roboto", sans-serif', cursor: 'pointer' }}
+													>
+														I acknowledge this warning and understand that continuing in this behaviour may lead to
+														further action on my account.
 													</label>
 												</div>
 												<br />
@@ -583,7 +622,7 @@ export class App extends React.Component {
 														borderRadius: '5px',
 														fontFamily: '"Roboto", sans-serif',
 														fontWeight: 'bold',
-														cursor: 'pointer'
+														cursor: 'pointer',
 													}}
 													id="warningButton"
 												/>
@@ -596,14 +635,23 @@ export class App extends React.Component {
 					})()}
 
 					{this.state.warnings !== null && (
-						<div style={{ position: 'fixed', zIndex: 9999, background: 'var(--theme-background-1)', width: '100vw', height: '100vh', display: 'flex' }}>
+						<div
+							style={{
+								position: 'fixed',
+								zIndex: 9999,
+								background: 'var(--theme-background-1)',
+								width: '100vw',
+								height: '100vh',
+								display: 'flex',
+							}}
+						>
 							<div
 								style={{
 									margin: 'auto',
 									padding: '5px',
 									border: '1px solid var(--theme-text-1)',
 									borderRadius: '10px',
-									background: 'var(--theme-background-1)'
+									background: 'var(--theme-background-1)',
 								}}
 							>
 								<h2 style={{ fontFamily: '"Roboto", sans-serif', textAlign: 'center' }}>Warnings log</h2>
@@ -621,14 +669,15 @@ export class App extends React.Component {
 										borderRadius: '5px',
 										background: 'var(--theme-background-3)',
 										padding: '5px',
-										overflowY: 'scroll'
+										overflowY: 'scroll',
 									}}
 								>
-									{this.state.warnings.warnings.map(warning => {
+									{this.state.warnings.warnings.map((warning) => {
 										return (
 											<div key={warning}>
 												<p style={{ fontFamily: '"Roboto", sans-serif' }}>
-													<strong>Date:</strong> {new Date(warning.time).toDateString()} {new Date(warning.time).toTimeString()}
+													<strong>Date:</strong> {new Date(warning.time).toDateString()}{' '}
+													{new Date(warning.time).toTimeString()}
 													<br />
 													<strong>Acknowledged:</strong> {warning.acknowledged ? 'Yes' : 'No'}
 													<br />
@@ -652,7 +701,7 @@ export class App extends React.Component {
 										borderRadius: '5px',
 										fontFamily: '"Roboto", sans-serif',
 										fontWeight: 'bold',
-										cursor: 'pointer'
+										cursor: 'pointer',
 									}}
 									id="warningLogButton"
 									onClick={() => this.setState({ warnings: null })}
@@ -711,7 +760,7 @@ App.propTypes = {
 	userList: PropTypes.object,
 	version: PropTypes.object,
 	socket: PropTypes.object,
-	notesActive: PropTypes.bool
+	notesActive: PropTypes.bool,
 };
 
 export default connect(select)(App);

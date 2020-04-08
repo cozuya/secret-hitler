@@ -21,12 +21,12 @@ Game.find()
 	.limit(25000)
 	.lean()
 	.cursor()
-	.eachAsync(game => {
+	.eachAsync((game) => {
 		// first collect all usernames
 		const playersByName = new Map(); // cache players here for removing pii later
 		const usernames = [].concat(
-			...['winning', 'losing'].map(gameResult => {
-				return game[gameResult + 'Players'].map(player => {
+			...['winning', 'losing'].map((gameResult) => {
+				return game[gameResult + 'Players'].map((player) => {
 					const uname = player.username || player.userName;
 					playersByName[uname] = player;
 					return uname;
@@ -35,12 +35,12 @@ Game.find()
 		);
 
 		// then find all hashUids at once, for efficiency
-		const usernameClauses = usernames.map(username => ({ username }));
+		const usernameClauses = usernames.map((username) => ({ username }));
 
 		Account.find({ $or: usernameClauses }, 'username hashUid')
 			.lean()
 			.cursor()
-			.eachAsync(account => {
+			.eachAsync((account) => {
 				const hashUid = account.hashUid;
 
 				// remove pii from player now that we know the hashUid
@@ -58,7 +58,7 @@ Game.find()
 				if (!game || !game.chats) {
 					return;
 				}
-				game.chats.forEach(chat => {
+				game.chats.forEach((chat) => {
 					const chatUname = chat.username || chat.userName;
 					// replace username of any chats made by this user
 					if (chatUname === account.username) {
@@ -70,7 +70,7 @@ Game.find()
 					// replace mentions of this user in the text of all chats
 					if (Array.isArray(chat.chat)) {
 						// more robust than `if (chat.gameChat || chat.isClaim)`
-						chat.chat.forEach(chunk => {
+						chat.chat.forEach((chunk) => {
 							chunk.text = chunk.text.replace(unameRegex, hashUid);
 						});
 					} else {

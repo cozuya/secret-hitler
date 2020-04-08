@@ -8,7 +8,7 @@ let count = 0;
 
 Account.findOne({})
 	.cursor()
-	.eachAsync(account => {
+	.eachAsync((account) => {
 		account.eloSeason = 1600;
 		account.save();
 		count++;
@@ -16,6 +16,6 @@ Account.findOne({})
 			console.log('processed account ' + count);
 		}
 	})
-	.catch(err => {
+	.catch((err) => {
 		console.log(err, 'caught err');
 	});

@@ -14,7 +14,7 @@ import {
 	handlePlayerReportDismiss,
 	checkUserStatus,
 	handleUserLeaveGame,
-	handleSocketDisconnect
+	handleSocketDisconnect,
 } from '../../../../routes/socket/user-events';
 
 describe('user events', () => {

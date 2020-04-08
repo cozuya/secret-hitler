@@ -3,7 +3,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractSass = new ExtractTextPlugin({
 	filename: '../styles/style-main.css',
-	disable: process.env.NODE_ENV === 'development'
+	disable: process.env.NODE_ENV === 'development',
 });
 const Dotenv = require('dotenv-webpack');
 
@@ -13,13 +13,13 @@ module.exports = {
 	entry: './src/frontend-scripts/game-app.js',
 	output: {
 		filename: `bundle.js`,
-		path: path.resolve(__dirname, '../public/scripts')
+		path: path.resolve(__dirname, '../public/scripts'),
 	},
 	plugins: [
 		extractSass,
 		new Dotenv({
-			path: path.resolve(__dirname, '..', '.env')
-		})
+			path: path.resolve(__dirname, '..', '.env'),
+		}),
 	],
 	optimization: {
 		minimizer: [
@@ -28,10 +28,10 @@ module.exports = {
 				uglifyOptions: {
 					mangle: false,
 					keep_classnames: true,
-					keep_fnames: true
-				}
-			})
-		]
+					keep_fnames: true,
+				},
+			}),
+		],
 	},
 	devtool: 'cheap-module-source-map',
 	module: {
@@ -41,23 +41,23 @@ module.exports = {
 				use: {
 					loader: 'html-loader',
 					options: {
-						attrs: [':data-src']
-					}
-				}
+						attrs: [':data-src'],
+					},
+				},
 			},
 			{
 				test: /\.(png|svg|jpg|gif)$/,
 				use: {
 					loader: 'file-loader',
 					options: {
-						useRelativePath: true
-					}
-				}
+						useRelativePath: true,
+					},
+				},
 			},
 			{
 				test: /\.(js|jsx)$/,
 				use: ['babel-loader'],
-				exclude: /node_modules/
+				exclude: /node_modules/,
 			},
 			{
 				test: /\.scss$/,
@@ -65,21 +65,21 @@ module.exports = {
 					use: [
 						{
 							loader: 'css-loader',
-							options: { minimize: true }
+							options: { minimize: true },
 						},
 						{
-							loader: 'sass-loader'
-						}
+							loader: 'sass-loader',
+						},
 					],
-					fallback: 'style-loader'
-				})
-			}
-		]
+					fallback: 'style-loader',
+				}),
+			},
+		],
 	},
 	resolve: {
 		alias: {
 			'react-dom$': 'react-dom/profiling',
-			'scheduler/tracing': 'scheduler/tracing-profiling'
-		}
-	}
+			'scheduler/tracing': 'scheduler/tracing-profiling',
+		},
+	},
 };

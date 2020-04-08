@@ -11,7 +11,7 @@ describe('Generalchat', () => {
 			badWord: [null, null],
 			textLastChanged: 0,
 			textChangeTimer: -1,
-			chatValue: ''
+			chatValue: '',
 		};
 
 		const component = shallow(<Generalchat />);

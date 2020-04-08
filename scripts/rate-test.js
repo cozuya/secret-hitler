@@ -5,7 +5,7 @@ const rateEloGame = (size, libElo, fasElo, libWin) => {
 		7: -17.282,
 		8: 45.418,
 		9: -70.679,
-		10: -31.539
+		10: -31.539,
 	};
 
 	const fasSize = () => {
@@ -33,16 +33,13 @@ const rateEloGame = (size, libElo, fasElo, libWin) => {
 
 const stdin = process.openStdin();
 
-const parseBoolean = val => {
+const parseBoolean = (val) => {
 	if (val.toLowerCase() === 'true') return true;
 	return false;
 };
 
-stdin.addListener('data', function(d) {
-	const data = d
-		.toString()
-		.trim()
-		.split(' ');
+stdin.addListener('data', function (d) {
+	const data = d.toString().trim().split(' ');
 	rateEloGame(parseInt(data[0]), parseFloat(data[1]), parseFloat(data[2]), parseBoolean(data[3]));
 });
 

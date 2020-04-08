@@ -16,7 +16,7 @@ module.exports = {
 	],
 	output: {
 		filename: 'bundle.js',
-		path: path.resolve(__dirname, '../public/scripts')
+		path: path.resolve(__dirname, '../public/scripts'),
 	},
 	devtool: 'inline-source-map',
 	module: {
@@ -26,49 +26,49 @@ module.exports = {
 				use: {
 					loader: 'html-loader',
 					options: {
-						attrs: [':data-src']
-					}
-				}
+						attrs: [':data-src'],
+					},
+				},
 			},
 			{
 				test: /\.(png|svg|jpg|gif)$/,
 				use: {
 					loader: 'file-loader',
 					options: {
-						useRelativePath: true
-					}
-				}
+						useRelativePath: true,
+					},
+				},
 			},
 			{
 				test: /\.(js|jsx)$/,
 				use: {
 					loader: 'babel-loader',
 					query: {
-						presets: ['react-app']
-					}
+						presets: ['react-app'],
+					},
 				},
-				exclude: /node_modules/
+				exclude: /node_modules/,
 			},
 			{
 				test: /\.scss$/,
 				use: [
 					{
-						loader: 'style-loader'
+						loader: 'style-loader',
 					},
 					{
 						loader: 'css-loader',
 						options: {
-							sourceMap: true
-						}
+							sourceMap: true,
+						},
 					},
 					{
 						loader: 'sass-loader',
 						options: {
-							sourceMap: true
-						}
-					}
-				]
-			}
-		]
-	}
+							sourceMap: true,
+						},
+					},
+				],
+			},
+		],
+	},
 };

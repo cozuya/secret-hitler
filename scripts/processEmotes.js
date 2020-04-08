@@ -4,7 +4,7 @@ const emotes = [];
 
 // !!! Must be run from base directory !!!
 
-fs.readdirSync(`public/images/emotes`, { withFileTypes: true }).forEach(file => {
+fs.readdirSync(`public/images/emotes`, { withFileTypes: true }).forEach((file) => {
 	if (file.name.endsWith('.png')) emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
 });
 
@@ -37,12 +37,12 @@ const sizeMap = [
 	[10, 8], // 80
 	[9, 9], // 81
 	[10, 9], // 90
-	[10, 10] // 100
+	[10, 10], // 100
 ];
 
 const numEmotes = emotes.length;
 let sheetSize = [10, 10];
-sizeMap.forEach(size => {
+sizeMap.forEach((size) => {
 	const space = size[0] * size[1];
 	if (space >= numEmotes && space < sheetSize[0] * sheetSize[1]) sheetSize = size;
 });
@@ -51,14 +51,14 @@ let curCell = 0;
 const result = new PNG({
 	width: sheetSize[0] * 28,
 	height: sheetSize[1] * 28,
-	filter: -1
+	filter: -1,
 });
 let numDone = 0;
 const incrementEmote = () => {
 	numDone++;
 	if (numDone == numEmotes) result.pack().pipe(fs.createWriteStream(`public/images/emotesheet.png`));
 };
-emotes.forEach(emote => {
+emotes.forEach((emote) => {
 	const thisCell = curCell;
 	curCell++;
 	const loc = [thisCell % sheetSize[0], Math.floor(thisCell / sheetSize[0])];

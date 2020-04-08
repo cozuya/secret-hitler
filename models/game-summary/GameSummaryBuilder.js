@@ -20,7 +20,16 @@ module.exports = class GameSummaryBuilder {
 
 	publish() {
 		const { _id, date, gameSetting, customGameSettings, players, libElo, fasElo, logs } = this;
-		return new GameSummary({ _id, date, gameSetting, customGameSettings, players, libElo, fasElo, logs: logs.toArray() });
+		return new GameSummary({
+			_id,
+			date,
+			gameSetting,
+			customGameSettings,
+			players,
+			libElo,
+			fasElo,
+			logs: logs.toArray(),
+		});
 	}
 
 	// (update: Object, targetAttrs: (?) Object) => GameSummaryBuilder
@@ -29,7 +38,9 @@ module.exports = class GameSummaryBuilder {
 		const { logs } = this;
 		const targetAttrs = fromNullable(_targetAttrs);
 
-		const targetIndex = targetAttrs.map(attrs => logs.findLastIndex(log => objectContains(log, attrs))).valueOrElse(logs.size - 1);
+		const targetIndex = targetAttrs
+			.map((attrs) => logs.findLastIndex((log) => objectContains(log, attrs)))
+			.valueOrElse(logs.size - 1);
 
 		const nextTarget = Object.assign({}, logs.get(targetIndex), update);
 
@@ -38,10 +49,28 @@ module.exports = class GameSummaryBuilder {
 			.push(nextTarget)
 			.concat(logs.slice(targetIndex + 1));
 
-		return new GameSummaryBuilder(this._id, this.date, this.gameSetting, this.customGameSettings, this.players, this.libElo, this.fasElo, nextLogs);
+		return new GameSummaryBuilder(
+			this._id,
+			this.date,
+			this.gameSetting,
+			this.customGameSettings,
+			this.players,
+			this.libElo,
+			this.fasElo,
+			nextLogs
+		);
 	}
 
 	nextTurn() {
-		return new GameSummaryBuilder(this._id, this.date, this.gameSetting, this.customGameSettings, this.players, this.libElo, this.fasElo, this.logs.push({}));
+		return new GameSummaryBuilder(
+			this._id,
+			this.date,
+			this.gameSetting,
+			this.customGameSettings,
+			this.players,
+			this.libElo,
+			this.fasElo,
+			this.logs.push({})
+		);
 	}
 };

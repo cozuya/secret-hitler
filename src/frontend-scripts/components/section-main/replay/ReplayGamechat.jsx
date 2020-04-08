@@ -6,9 +6,9 @@ import { loadReplay, updateUser } from '../../../actions/actions';
 import { processEmotes } from '../../../emotes';
 import { PLAYERCOLORS } from '../../../constants';
 
-const mapDispatchToProps = dispatch => ({
-	loadReplay: summary => dispatch(loadReplay(summary)),
-	updateUser: userInfo => dispatch(updateUser(userInfo))
+const mapDispatchToProps = (dispatch) => ({
+	loadReplay: (summary) => dispatch(loadReplay(summary)),
+	updateUser: (userInfo) => dispatch(updateUser(userInfo)),
 });
 
 class ReplayGamechat extends React.Component {
@@ -16,7 +16,7 @@ class ReplayGamechat extends React.Component {
 		showFullChat: false,
 		showPlayerChat: true,
 		showGameChat: true,
-		showObserverChat: true
+		showObserverChat: true,
 	};
 
 	componentDidUpdate() {
@@ -25,7 +25,8 @@ class ReplayGamechat extends React.Component {
 
 	handleChatScrolled = () => {
 		const bar = this.scrollbar;
-		const scrolledFromBottom = bar.getValues().scrollHeight - (bar.getValues().scrollTop + bar.getValues().clientHeight - 1);
+		const scrolledFromBottom =
+			bar.getValues().scrollHeight - (bar.getValues().scrollTop + bar.getValues().clientHeight - 1);
 
 		if (this.state.lock && scrolledFromBottom < 20) {
 			this.setState({ lock: false });
@@ -41,7 +42,7 @@ class ReplayGamechat extends React.Component {
 		}
 	}
 
-	handleChatFilterClick = e => {
+	handleChatFilterClick = (e) => {
 		const filter = e.currentTarget.getAttribute('data-filter');
 		switch (filter) {
 			case 'Player':
@@ -76,11 +77,13 @@ class ReplayGamechat extends React.Component {
 	processChats() {
 		const { gameInfo, userInfo, userList } = this.props;
 		const { gameSettings } = userInfo;
-		const seatedUserNames = gameInfo.publicPlayersState ? gameInfo.publicPlayersState.map(player => player.userName) : [];
+		const seatedUserNames = gameInfo.publicPlayersState
+			? gameInfo.publicPlayersState.map((player) => player.userName)
+			: [];
 		const { showFullChat, showPlayerChat, showGameChat, showObserverChat } = this.state;
 		const compareChatStrings = (a, b) => {
-			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map(object => object.text).join('');
-			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map(object => object.text).join('');
+			const stringA = typeof a.chat === 'string' ? a.chat : a.chat.map((object) => object.text).join('');
+			const stringB = typeof b.chat === 'string' ? b.chat : b.chat.map((object) => object.text).join('');
 
 			return stringA > stringB ? 1 : -1;
 		};
@@ -89,38 +92,63 @@ class ReplayGamechat extends React.Component {
 		 * @param {array} tournyWins - array of tournywins in epoch ms numbers (date.getTime())
 		 * @return {jsx}
 		 */
-		const renderCrowns = tournyWins => {
+		const renderCrowns = (tournyWins) => {
 			return tournyWins
-				.filter(winTime => time - winTime < 10800000)
-				.map(crown => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
+				.filter((winTime) => time - winTime < 10800000)
+				.map((crown) => <span key={crown} title="This player has recently won a tournament." className="crown-icon" />);
 		};
 
-		const renderPreviousSeasonAward = type => {
+		const renderPreviousSeasonAward = (type) => {
 			switch (type) {
 				case 'bronze':
-					return <span title="This player was in the 3rd tier of ranks in the previous season" className="season-award bronze" />;
+					return (
+						<span
+							title="This player was in the 3rd tier of ranks in the previous season"
+							className="season-award bronze"
+						/>
+					);
 				case 'silver':
-					return <span title="This player was in the 2nd tier of ranks in the previous season" className="season-award silver" />;
+					return (
+						<span
+							title="This player was in the 2nd tier of ranks in the previous season"
+							className="season-award silver"
+						/>
+					);
 				case 'gold':
-					return <span title="This player was in the top tier of ranks in the previous season" className="season-award gold" />;
+					return (
+						<span
+							title="This player was in the top tier of ranks in the previous season"
+							className="season-award gold"
+						/>
+					);
 				case 'gold1':
 					return <span title="This player was the top player of the previous season" className="season-award gold1" />;
 				case 'gold2':
-					return <span title="This player was 2nd highest player of the previous season" className="season-award gold2" />;
+					return (
+						<span title="This player was 2nd highest player of the previous season" className="season-award gold2" />
+					);
 				case 'gold3':
-					return <span title="This player was 3rd highest player of the previous season" className="season-award gold3" />;
+					return (
+						<span title="This player was 3rd highest player of the previous season" className="season-award gold3" />
+					);
 				case 'gold4':
-					return <span title="This player was 4th highest player of the previous season" className="season-award gold4" />;
+					return (
+						<span title="This player was 4th highest player of the previous season" className="season-award gold4" />
+					);
 				case 'gold5':
-					return <span title="This player was 5th highest player of the previous season" className="season-award gold5" />;
+					return (
+						<span title="This player was 5th highest player of the previous season" className="season-award gold5" />
+					);
 			}
 		};
 
 		if (gameInfo && gameInfo.chats) {
 			let list = gameInfo.chats
-				.sort((a, b) => (a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)))
+				.sort((a, b) =>
+					a.timestamp === b.timestamp ? compareChatStrings(a, b) : new Date(a.timestamp) - new Date(b.timestamp)
+				)
 				.filter(
-					chat =>
+					(chat) =>
 						chat.isBroadcast ||
 						(showPlayerChat && !chat.gameChat && !chat.isClaim && seatedUserNames.includes(chat.userName)) ||
 						(showGameChat && (chat.gameChat || chat.isClaim)) ||
@@ -134,7 +162,9 @@ class ReplayGamechat extends React.Component {
 				);
 			if (!showFullChat) list = list.slice(-250);
 			return list.reduce((acc, chat, i) => {
-				const playerListPlayer = Object.keys(userList).length ? userList.list.find(player => player.userName === chat.userName) : undefined;
+				const playerListPlayer = Object.keys(userList).length
+					? userList.list.find((player) => player.userName === chat.userName)
+					: undefined;
 				const isMod =
 					playerListPlayer &&
 					playerListPlayer.staffRole &&
@@ -147,7 +177,10 @@ class ReplayGamechat extends React.Component {
 				const isGreenText = chatContents && chatContents[0] ? /^>/i.test(chatContents[0]) : false;
 				acc.push(
 					chat.gameChat ? (
-						<div className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'} key={i}>
+						<div
+							className={chat.chat[1] && chat.chat[1].type ? `item game-chat ${chat.chat[1].type}` : 'item game-chat'}
+							key={i}
+						>
 							{this.handleTimestamps(chat.timestamp)}
 							<span className="game-chat">
 								{chatContents.map((chatSegment, index) => {
@@ -208,7 +241,9 @@ class ReplayGamechat extends React.Component {
 					) : (
 						<div className="item" key={i}>
 							{this.handleTimestamps(chat.timestamp)}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.tournyWins && renderCrowns(chat.tournyWins)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								chat.tournyWins &&
+								renderCrowns(chat.tournyWins)}
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								chat.previousSeasonAward &&
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
@@ -235,7 +270,11 @@ class ReplayGamechat extends React.Component {
 											className={
 												!playerListPlayer || (gameSettings && gameSettings.disablePlayerColorsInChat)
 													? isMod && !isSeated
-														? PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
+														? PLAYERCOLORS(
+																playerListPlayer,
+																!(gameSettings && gameSettings.disableSeasonal),
+																'chat-user'
+														  )
 														: 'chat-user'
 													: PLAYERCOLORS(playerListPlayer, !(gameSettings && gameSettings.disableSeasonal), 'chat-user')
 											}
@@ -251,7 +290,10 @@ class ReplayGamechat extends React.Component {
 									<span className="observer-chat">(Observer) </span>
 								)}
 								{isSeated
-									? `${chat.userName} {${gameInfo.publicPlayersState.findIndex(publicPlayer => publicPlayer.userName === chat.userName) + 1}}`
+									? `${chat.userName} {${
+											gameInfo.publicPlayersState.findIndex((publicPlayer) => publicPlayer.userName === chat.userName) +
+											1
+									  }}`
 									: chat.userName}
 								{': '}
 							</span>
@@ -305,14 +347,15 @@ class ReplayGamechat extends React.Component {
 				</section>
 				<section
 					style={{
-						fontSize: userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px'
+						fontSize:
+							userInfo.gameSettings && userInfo.gameSettings.fontSize ? `${userInfo.gameSettings.fontSize}px` : '16px',
 					}}
 					className={this.state.claim ? 'segment chats blurred' : 'segment chats'}
 				>
 					<Scrollbars
-						ref={c => (this.scrollbar = c)}
+						ref={(c) => (this.scrollbar = c)}
 						onScroll={this.handleChatScrolled}
-						renderThumbVertical={props => <div {...props} className="thumb-vertical" />}
+						renderThumbVertical={(props) => <div {...props} className="thumb-vertical" />}
 					>
 						<div className="ui list">{this.processChats()}</div>
 					</Scrollbars>
@@ -326,9 +369,9 @@ ReplayGamechat.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
 	userList: PropTypes.object,
-	allEmotes: PropTypes.array
+	allEmotes: PropTypes.array,
 };
 
-const GamechatContainer = props => <ReplayGamechat {...props} />;
+const GamechatContainer = (props) => <ReplayGamechat {...props} />;
 
 export default connect(mapDispatchToProps)(GamechatContainer);

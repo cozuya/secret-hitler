@@ -1,15 +1,15 @@
 const data = ['userlist', { list: [] }]; // Paste list here from network monitor
 console.log(JSON.stringify(data[1].list).length);
 
-const prune = value => {
+const prune = (value) => {
 	// Converts things like zero and null to undefined to remove it from the sent data.
 	return value ? value : undefined;
 };
 
-const reduce = list => {
+const reduce = (list) => {
 	return JSON.parse(
 		JSON.stringify(
-			list.map(user => ({
+			list.map((user) => ({
 				userName: user.userName,
 				wins: prune(user.wins),
 				losses: prune(user.losses),
@@ -39,7 +39,7 @@ const reduce = list => {
 				rainbowLossesSeason3: prune(user.rainbowLossesSeason3),
 				previousSeasonAward: user.previousSeasonAward,
 				timeLastGameCreated: user.timeLastGameCreated,
-				staffRole: prune(user.staffRole)
+				staffRole: prune(user.staffRole),
 				// oldData: user
 			}))
 		)
@@ -50,16 +50,16 @@ const list = reduce(data[1].list);
 console.log(JSON.stringify(list).length);
 
 const counts = {};
-list.forEach(user => {
+list.forEach((user) => {
 	if (user.isPrivate || user.wins + user.losses < 10) {
-		Object.keys(user).forEach(key => {
+		Object.keys(user).forEach((key) => {
 			if (key !== undefined) counts[key] = counts[key] ? counts[key] + 1 : 1;
 		});
 	}
 	// counts[amt] = counts[amt] ? (counts[amt]+1) : 1;
 });
 
-Object.keys(counts).forEach(key => console.log(`${key}: ${counts[key]}`));
+Object.keys(counts).forEach((key) => console.log(`${key}: ${counts[key]}`));
 
 list.forEach((user, index) => {
 	if (user.isPrivate || user.wins + user.losses < 10) {

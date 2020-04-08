@@ -220,5 +220,5 @@ module.exports = [
 	'Worm',
 	'Wren',
 	'Yak',
-	'Zebra'
+	'Zebra',
 ];

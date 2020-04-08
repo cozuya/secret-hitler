@@ -6,24 +6,24 @@ class Leaderboard extends React.Component {
 
 		this.state = {
 			seasonalLeaderboard: [],
-			dailyLeaderboard: []
+			dailyLeaderboard: [],
 		};
 	}
 
 	componentDidMount() {
 		fetch('../leaderboardData.json', { cache: 'no-store' })
-			.then(res => res.json())
-			.then(data => {
+			.then((res) => res.json())
+			.then((data) => {
 				this.setState({
 					seasonalLeaderboard: data.seasonalLeaderboard || [],
 					dailyLeaderboard: data.dailyLeaderboard || [],
-					errored: false
+					errored: false,
 				});
 			})
-			.catch(e => {
+			.catch((e) => {
 				console.log('Error in Getting Current Leaderboard', e);
 				this.setState({
-					errored: true
+					errored: true,
 				});
 			});
 	}
@@ -41,7 +41,7 @@ class Leaderboard extends React.Component {
 								<>
 									<h2 className="ui header">Seasonal leaders</h2>
 									<ul>
-										{this.state.seasonalLeaderboard.map(user => (
+										{this.state.seasonalLeaderboard.map((user) => (
 											<li key={user.userName}>
 												<p>
 													<a href={`#/profile/${user.userName}`}>{user.userName}</a>
@@ -59,7 +59,7 @@ class Leaderboard extends React.Component {
 									<h2 className="ui header">Daily leaders</h2>
 									<ul>
 										{this.state.dailyLeaderboard.map(
-											user =>
+											(user) =>
 												user.dailyEloDifference.toFixed(0) >= 0 && (
 													<li key={user.userName}>
 														<p>

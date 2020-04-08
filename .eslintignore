@@ -1,0 +1,8 @@
+node_modules/
+public/styles/Semantic-UI-CSS-master/
+data/
+.git/
+logs/
+public/styles/style-dark2.css
+public/styles/style-main.css
+public/scripts/bundle.js

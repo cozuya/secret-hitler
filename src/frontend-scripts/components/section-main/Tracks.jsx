@@ -9,7 +9,7 @@ class Tracks extends React.Component {
 		super();
 		this.state = {
 			remakeStatus: false,
-			timedModeTimer: ''
+			timedModeTimer: '',
 		};
 	}
 
@@ -19,15 +19,15 @@ class Tracks extends React.Component {
 		this._ismounted = true;
 
 		if (Notification && Notification.permission === 'granted' && this.props.socket) {
-			this.props.socket.on('pingPlayer', data => {
+			this.props.socket.on('pingPlayer', (data) => {
 				new Notification(data);
 			});
 		}
 
 		if (this.props.socket) {
-			this.props.socket.on('updateRemakeVoting', status => {
+			this.props.socket.on('updateRemakeVoting', (status) => {
 				this.setState({
-					remakeStatus: status
+					remakeStatus: status,
 				});
 			});
 		}
@@ -48,7 +48,7 @@ class Tracks extends React.Component {
 
 		if (!gameInfo.gameState.isStarted) {
 			this.setState({
-				remakeStatus: false
+				remakeStatus: false,
 			});
 		}
 
@@ -77,16 +77,21 @@ class Tracks extends React.Component {
 					});
 				} else {
 					this.setState({
-						timedModeTimer: `Action forced in ${minutes}:${seconds > 9 ? seconds : `0${seconds}`}`
+						timedModeTimer: `Action forced in ${minutes}:${seconds > 9 ? seconds : `0${seconds}`}`,
 					});
 				}
 			}, 1000);
 		}
 
-		if (gameInfo.gameState && gameInfo.gameState.timedModeEnabled && nextProps.gameInfo.gameState && !nextProps.gameInfo.gameState.timedModeEnabled) {
+		if (
+			gameInfo.gameState &&
+			gameInfo.gameState.timedModeEnabled &&
+			nextProps.gameInfo.gameState &&
+			!nextProps.gameInfo.gameState.timedModeEnabled
+		) {
 			window.clearInterval(this.intervalId);
 			this.setState({
-				timedModeTimer: ''
+				timedModeTimer: '',
 			});
 		}
 	}
@@ -198,11 +203,15 @@ class Tracks extends React.Component {
 				<span>
 					<i className="hourglass half icon" />
 					<span style={{ color: 'peru' }}>
-						{`${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`}
+						{`${Math.floor(game.timedMode / 60)}: ${
+							game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60
+						}`}
 					</span>
 				</span>
 			);
-			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60}`;
+			timedModeTooltip = `Timed Mode: ${Math.floor(game.timedMode / 60)}: ${
+				game.timedMode % 60 < 10 ? `0${game.timedMode % 60}` : game.timedMode % 60
+			}`;
 		}
 
 		if (game.eloMinimum) {
@@ -335,7 +344,7 @@ class Tracks extends React.Component {
 		const updateRemake = () => {
 			this.props.socket.emit('updateRemake', {
 				remakeStatus: !this.state.remakeStatus,
-				uid: gameInfo.general.uid
+				uid: gameInfo.general.uid,
 			});
 		};
 
@@ -352,7 +361,7 @@ class Tracks extends React.Component {
 
 				if (gameInfo.customGameSettings.powers) {
 					// Only need to detect one property, either they're all there or none are.
-					powers = gameInfo.customGameSettings.powers.map(p => {
+					powers = gameInfo.customGameSettings.powers.map((p) => {
 						if (p == null) return 'None';
 						if (p == 'investigate') return 'Inv';
 						if (p == 'deckpeek') return 'Peek';
@@ -383,7 +392,7 @@ class Tracks extends React.Component {
 					}
 				}
 
-				const getHZ = pos => {
+				const getHZ = (pos) => {
 					if (pos < hzStart) return 'Off';
 					if (pos > hzStart) return 'On';
 					return 'Start';
@@ -398,7 +407,7 @@ class Tracks extends React.Component {
 								left: `${offX + 137}px`,
 								top: `${offY + 58}px`,
 								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(1)}.png)`
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(1)}.png)`,
 							}}
 						/>
 						<span
@@ -408,7 +417,7 @@ class Tracks extends React.Component {
 								left: `${offX + 229}px`,
 								top: `${offY + 58}px`,
 								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(2)}.png)`
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(2)}.png)`,
 							}}
 						/>
 						<span
@@ -418,7 +427,7 @@ class Tracks extends React.Component {
 								left: `${offX + 321}px`,
 								top: `${offY + 58}px`,
 								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(3)}.png)`
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(3)}.png)`,
 							}}
 						/>
 						<span
@@ -428,7 +437,7 @@ class Tracks extends React.Component {
 								left: `${offX + 413}px`,
 								top: `${offY + 58}px`,
 								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(4)}.png)`
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(4)}.png)`,
 							}}
 						/>
 						<span
@@ -438,7 +447,7 @@ class Tracks extends React.Component {
 								left: `${offX + 505}px`,
 								top: `${offY + 58}px`,
 								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(5)}.png)`
+								backgroundImage: `url(../images/customtracks/fasTrackHZ${getHZ(5)}.png)`,
 							}}
 						/>
 
@@ -447,11 +456,16 @@ class Tracks extends React.Component {
 							style={{
 								left: `${offX + 58}px`,
 								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[0]}${hzStart <= 0 ? 'Light' : ''}.png)`
+								backgroundImage: `url(../images/customtracks/fasPower${powers[0]}${hzStart <= 0 ? 'Light' : ''}.png)`,
 							}}
 						>
 							{vzPoint == 1 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 0 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+								<span
+									className={
+										'custom-fastrack-powerslot ' +
+										(hzStart <= 0 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')
+									}
+								/>
 							)}
 						</span>
 						<span
@@ -459,11 +473,16 @@ class Tracks extends React.Component {
 							style={{
 								left: `${offX + 150}px`,
 								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[1]}${hzStart <= 1 ? 'Light' : ''}.png)`
+								backgroundImage: `url(../images/customtracks/fasPower${powers[1]}${hzStart <= 1 ? 'Light' : ''}.png)`,
 							}}
 						>
 							{vzPoint == 2 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 1 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+								<span
+									className={
+										'custom-fastrack-powerslot ' +
+										(hzStart <= 1 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')
+									}
+								/>
 							)}
 						</span>
 						<span
@@ -471,11 +490,16 @@ class Tracks extends React.Component {
 							style={{
 								left: `${offX + 242}px`,
 								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[2]}${hzStart <= 2 ? 'Light' : ''}.png)`
+								backgroundImage: `url(../images/customtracks/fasPower${powers[2]}${hzStart <= 2 ? 'Light' : ''}.png)`,
 							}}
 						>
 							{vzPoint == 3 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 2 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+								<span
+									className={
+										'custom-fastrack-powerslot ' +
+										(hzStart <= 2 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')
+									}
+								/>
 							)}
 						</span>
 						<span
@@ -483,11 +507,16 @@ class Tracks extends React.Component {
 							style={{
 								left: `${offX + 334}px`,
 								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[3]}${hzStart <= 3 ? 'Light' : ''}.png)`
+								backgroundImage: `url(../images/customtracks/fasPower${powers[3]}${hzStart <= 3 ? 'Light' : ''}.png)`,
 							}}
 						>
 							{vzPoint == 4 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 3 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+								<span
+									className={
+										'custom-fastrack-powerslot ' +
+										(hzStart <= 3 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')
+									}
+								/>
 							)}
 						</span>
 						<span
@@ -495,16 +524,25 @@ class Tracks extends React.Component {
 							style={{
 								left: `${offX + 426}px`,
 								top: `${offY + 58}px`,
-								backgroundImage: `url(../images/customtracks/fasPower${powers[4]}${hzStart <= 4 ? 'Light' : ''}.png)`
+								backgroundImage: `url(../images/customtracks/fasPower${powers[4]}${hzStart <= 4 ? 'Light' : ''}.png)`,
 							}}
 						>
 							{vzPoint == 5 && (
-								<span className={'custom-fastrack-powerslot ' + (hzStart <= 4 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')} />
+								<span
+									className={
+										'custom-fastrack-powerslot ' +
+										(hzStart <= 4 ? 'custom-fastrack-vetozone-light' : 'custom-fastrack-vetozone')
+									}
+								/>
 							)}
 						</span>
 						<span
 							className="custom-fastrack-powerslot"
-							style={{ left: `${offX + 518}px`, top: `${offY + 58}px`, backgroundImage: 'url(../images/customtracks/fasPowerEndGame.png)' }}
+							style={{
+								left: `${offX + 518}px`,
+								top: `${offY + 58}px`,
+								backgroundImage: 'url(../images/customtracks/fasPowerEndGame.png)',
+							}}
 						/>
 
 						<span
@@ -514,7 +552,7 @@ class Tracks extends React.Component {
 								left: `${offX + 336}px`,
 								top: `${offY + 60}px`,
 								position: 'absolute',
-								backgroundImage: 'url(../images/customtracks/fasTrackHZText.png)'
+								backgroundImage: 'url(../images/customtracks/fasTrackHZText.png)',
 							}}
 						/>
 
@@ -525,7 +563,7 @@ class Tracks extends React.Component {
 								left: `${offX + 220}px`,
 								top: `${offY + 186}px`,
 								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrack${numFas}fas.png)`
+								backgroundImage: `url(../images/customtracks/fasTrack${numFas}fas.png)`,
 							}}
 						/>
 						<span
@@ -535,7 +573,9 @@ class Tracks extends React.Component {
 								left: `${offX + 220}px`,
 								top: `${offY + 196}px`,
 								position: 'absolute',
-								backgroundImage: `url(../images/customtracks/fasTrack${numFas > 1 ? 'Multi' : 'Single'}${hitKnowsFas ? 'Known' : 'Unknown'}.png)`
+								backgroundImage: `url(../images/customtracks/fasTrack${numFas > 1 ? 'Multi' : 'Single'}${
+									hitKnowsFas ? 'Known' : 'Unknown'
+								}.png)`,
 							}}
 						/>
 					</div>
@@ -624,7 +664,10 @@ class Tracks extends React.Component {
 						className={(() => {
 							let classes = 'track-flipper track-flipper-bottom';
 
-							if (gameInfo.gameState.isTracksFlipped || (gameInfo.customGameSettings && gameInfo.customGameSettings.enabled)) {
+							if (
+								gameInfo.gameState.isTracksFlipped ||
+								(gameInfo.customGameSettings && gameInfo.customGameSettings.enabled)
+							) {
 								classes += ' flipped';
 							}
 
@@ -643,14 +686,14 @@ class Tracks extends React.Component {
 
 Tracks.defaultProps = {
 	gameInfo: {},
-	userInfo: {}
+	userInfo: {},
 };
 
 Tracks.propTypes = {
 	onSeatingUser: PropTypes.func,
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
 };
 
 export default Tracks;

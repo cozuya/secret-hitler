@@ -15,10 +15,10 @@ describe('Main', () => {
 				rainbow: false,
 				standard: false,
 				customgame: false,
-				casualgame: false
+				casualgame: false,
 			},
 			showNewPlayerModal: Boolean(window.hasNotDismissedSignupModal),
-			newPlayerModalPageIndex: 0
+			newPlayerModalPageIndex: 0,
 		};
 
 		const component = shallow(<Main userInfo={{}} />);

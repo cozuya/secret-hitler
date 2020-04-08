@@ -54,11 +54,11 @@ mongoose.connect(`mongodb://localhost:27017/secret-hitler-app`);
 // Dump summaries for the day
 const summaries = [];
 GameSummary.find({
-	date: { $gte: new Date(dumpDateFrom), $lt: new Date(dumpDateTo) }
+	date: { $gte: new Date(dumpDateFrom), $lt: new Date(dumpDateTo) },
 })
 	.lean()
 	.cursor()
-	.eachAsync(summary => {
+	.eachAsync((summary) => {
 		// ... strip personally identifiable information
 		for (i = 0; i < summary.players.length; i++) {
 			delete summary.players[i]._id;
@@ -78,7 +78,7 @@ GameSummary.find({
 		// "2017-01-01/gameFoo", "2017-01-01/gameBar").
 		fs.mkdtemp(path.join(os.tmpdir(), 'game-summaries-'), (err, tmpFolder) => {
 			const folder = path.join(tmpFolder, dumpDateFrom);
-			fs.mkdir(folder, err => {
+			fs.mkdir(folder, (err) => {
 				for (const summary of summaries) {
 					debugger;
 					fs.writeFileSync(path.join(folder, summary._id), JSON.stringify(summary));

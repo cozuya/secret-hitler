@@ -5,18 +5,18 @@ import PropTypes from 'prop-types';
 class CardFlinger extends React.Component {
 	state = {
 		isHovered: false,
-		hoveredClass: null
+		hoveredClass: null,
 	};
 
-	handleHover = classes => {
+	handleHover = (classes) => {
 		this.setState({
 			isHovered: !this.state.isHovered,
-			hoveredClass: classes
+			hoveredClass: classes,
 		});
 	};
 
 	render() {
-		const handleCardClick = e => {
+		const handleCardClick = (e) => {
 			const { gameInfo, socket } = this.props;
 			const { gameState } = gameInfo;
 			const { phase } = gameState;
@@ -25,42 +25,42 @@ class CardFlinger extends React.Component {
 			if (phase === 'voting' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedVoting', {
 					vote: index === 1,
-					uid: gameInfo.general.uid
+					uid: gameInfo.general.uid,
 				});
 			}
 
 			if (phase === 'presidentSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedPresidentPolicy', {
 					uid: gameInfo.general.uid,
-					selection: index ? (index === 2 ? 1 : 2) : 0
+					selection: index ? (index === 2 ? 1 : 2) : 0,
 				});
 			}
 
 			if (phase === 'chancellorSelectingPolicy' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedChancellorPolicy', {
 					uid: gameInfo.general.uid,
-					selection: index
+					selection: index,
 				});
 			}
 
 			if (phase === 'chancellorVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedChancellorVoteOnVeto', {
 					vote: index === 1,
-					uid: gameInfo.general.uid
+					uid: gameInfo.general.uid,
 				});
 			}
 
 			if (phase === 'presidentVoteOnVeto' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedPresidentVoteOnVeto', {
 					vote: index === 1,
-					uid: gameInfo.general.uid
+					uid: gameInfo.general.uid,
 				});
 			}
 
 			if (phase === 'presidentVoteOnBurn' && gameInfo.cardFlingerState[0].action === 'active') {
 				socket.emit('selectedPresidentVoteOnBurn', {
 					vote: index === 1,
-					uid: gameInfo.general.uid
+					uid: gameInfo.general.uid,
 				});
 			}
 		};
@@ -72,7 +72,7 @@ class CardFlinger extends React.Component {
 			const { phase } = gameState;
 			const { status } = general;
 			const { userName } = userInfo;
-			const currentPlayer = publicPlayersState.find(player => player.userName === userName);
+			const currentPlayer = publicPlayersState.find((player) => player.userName === userName);
 			const currentPlayerStatus = currentPlayer ? currentPlayer.governmentStatus : null;
 
 			if (userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages) {
@@ -141,13 +141,17 @@ class CardFlinger extends React.Component {
 			<section className="cardflinger-container">
 				{renderHelpMessage()}
 				{positions.map((position, i) => {
-					const stateObj = cardFlingerState.find(flinger => flinger.position === position);
+					const stateObj = cardFlingerState.find((flinger) => flinger.position === position);
 
 					let frontClasses = 'cardflinger-card front';
 					let backClasses = 'cardflinger-card back';
 					let containerClasses = `cardflinger-card-container ${position}`;
 
-					if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
+					if (
+						this.props.userInfo.userName &&
+						this.props.userInfo.gameSettings &&
+						this.props.userInfo.gameSettings.disableHelpIcons !== true
+					) {
 						containerClasses += ' display-help-icons';
 					}
 
@@ -173,7 +177,11 @@ class CardFlinger extends React.Component {
 						}
 					}
 
-					if (this.props.userInfo.userName && this.props.userInfo.gameSettings && this.props.userInfo.gameSettings.disableHelpIcons !== true) {
+					if (
+						this.props.userInfo.userName &&
+						this.props.userInfo.gameSettings &&
+						this.props.userInfo.gameSettings.disableHelpIcons !== true
+					) {
 						if (this.state.isHovered && this.state.hoveredClass === containerClasses) {
 							containerClasses += ' hovered';
 						} else if (this.state.isHovered) {
@@ -203,7 +211,7 @@ class CardFlinger extends React.Component {
 CardFlinger.propTypes = {
 	userInfo: PropTypes.object,
 	gameInfo: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
 };
 
 export default CardFlinger;

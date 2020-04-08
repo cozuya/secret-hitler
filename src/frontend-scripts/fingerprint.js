@@ -23,7 +23,11 @@ const getWebglVendorAndRenderer = () => {
 		} catch (e) {}
 		if (!gl) return null;
 		let extensionDebugRendererInfo = gl.getExtension('WEBGL_debug_renderer_info');
-		return gl.getParameter(extensionDebugRendererInfo.UNMASKED_VENDOR_WEBGL) + '~' + gl.getParameter(extensionDebugRendererInfo.UNMASKED_RENDERER_WEBGL);
+		return (
+			gl.getParameter(extensionDebugRendererInfo.UNMASKED_VENDOR_WEBGL) +
+			'~' +
+			gl.getParameter(extensionDebugRendererInfo.UNMASKED_RENDERER_WEBGL)
+		);
 	} catch (e) {
 		return null;
 	}
@@ -32,7 +36,10 @@ const getWebglVendorAndRenderer = () => {
 module.exports.simpleFingerprint = () => {
 	let keys = [];
 	keys.push({ key: 'user_agent', value: navigator.userAgent });
-	keys.push({ key: 'language', value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage || '' });
+	keys.push({
+		key: 'language',
+		value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage || '',
+	});
 	keys.push({ key: 'device_memory', value: navigator.deviceMemory || -1 });
 	keys.push({ key: 'pixel_ratio', value: window.devicePixelRatio || '' });
 	keys.push({ key: 'hardware_concurrency', value: navigator.hardwareConcurrency || 'unknown' });
@@ -44,7 +51,10 @@ module.exports.simpleFingerprint = () => {
 				? [window.screen.availHeight, window.screen.availWidth]
 				: [window.screen.availWidth, window.screen.availHeight];
 	} else {
-		res = window.screen.height > window.screen.width ? [window.screen.height, window.screen.width] : [window.screen.width, window.screen.height];
+		res =
+			window.screen.height > window.screen.width
+				? [window.screen.height, window.screen.width]
+				: [window.screen.width, window.screen.height];
 	}
 	keys.push({ key: 'resolution', value: res[0] + 'x' + res[1] + '@' + (window.screen.colorDepth || -1) });
 

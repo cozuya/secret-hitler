@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { toggleNotes } from '../actions/actions';
 import PropTypes from 'prop-types';
 
-const mapDispatchToProps = dispatch => ({
-		toggleNotes: notesStatus => dispatch(toggleNotes(notesStatus))
+const mapDispatchToProps = (dispatch) => ({
+		toggleNotes: (notesStatus) => dispatch(toggleNotes(notesStatus)),
 	}),
-	dragOverFn = e => {
+	dragOverFn = (e) => {
 		e.preventDefault();
 	};
 
@@ -17,7 +17,7 @@ class Gamenotes extends React.Component {
 		width: 400,
 		height: 320,
 		isResizing: false,
-		clearConfirmationShown: false
+		clearConfirmationShown: false,
 	};
 
 	clearNotes = () => {
@@ -31,14 +31,14 @@ class Gamenotes extends React.Component {
 
 	resizeDragStart = () => {};
 
-	noteDrop = e => {
+	noteDrop = (e) => {
 		e.preventDefault();
 		if (!this.state.isResizing) {
 			const offset = e.dataTransfer.getData('coordinates/text').split(',');
 
 			this.setState({
 				top: e.clientY + parseInt(offset[1], 10),
-				left: e.clientX + parseInt(offset[0], 10)
+				left: e.clientX + parseInt(offset[0], 10),
 			});
 		}
 	};
@@ -53,17 +53,20 @@ class Gamenotes extends React.Component {
 		document.body.removeEventListener('drop', this.noteDrop);
 	}
 
-	noteDragStart = e => {
+	noteDragStart = (e) => {
 		const style = window.getComputedStyle(e.target, null);
 
 		e.dataTransfer.setData(
 			'coordinates/text',
-			parseInt(style.getPropertyValue('left'), 10) - e.clientX + ',' + (parseInt(style.getPropertyValue('top'), 10) - e.clientY)
+			parseInt(style.getPropertyValue('left'), 10) -
+				e.clientX +
+				',' +
+				(parseInt(style.getPropertyValue('top'), 10) - e.clientY)
 		);
 	};
 
 	render() {
-		const notesChange = e => {
+		const notesChange = (e) => {
 			this.props.changeNotesValue(`${e.target.value}`);
 		};
 
@@ -76,7 +79,7 @@ class Gamenotes extends React.Component {
 					top: `${this.state.top}px`,
 					left: `${this.state.left}px`,
 					height: `${this.state.height}px`,
-					width: `${this.state.width}px`
+					width: `${this.state.width}px`,
 				}}
 			>
 				{this.state.clearConfirmationShown && (
@@ -86,7 +89,7 @@ class Gamenotes extends React.Component {
 							top: '85px',
 							left: '20px',
 							height: '150px',
-							width: `${this.state.width - 40}px`
+							width: `${this.state.width - 40}px`,
 						}}
 					>
 						<div className="notes-container_confirm-header">Confirm Clear?</div>
@@ -98,7 +101,7 @@ class Gamenotes extends React.Component {
 								onClick={() => {
 									this.clearNotes();
 									this.setState({
-										clearConfirmationShown: false
+										clearConfirmationShown: false,
 									});
 								}}
 							>
@@ -108,7 +111,7 @@ class Gamenotes extends React.Component {
 								className="notes-container_confirm-button"
 								onClick={() => {
 									this.setState({
-										clearConfirmationShown: false
+										clearConfirmationShown: false,
 									});
 								}}
 							>
@@ -118,7 +121,12 @@ class Gamenotes extends React.Component {
 					</div>
 				)}
 				<div className="notes-header">
-					<div className="drag-boundry 1d top" onDragStart={this.resizeDragStart} draggable="true" style={{ width: `${this.state.width - 30}px` }} />
+					<div
+						className="drag-boundry 1d top"
+						onDragStart={this.resizeDragStart}
+						draggable="true"
+						style={{ width: `${this.state.width - 30}px` }}
+					/>
 					<div className="drag-boundry 2d top-left" />
 					<div className="drag-boundry 2d top-right" />
 					<p>Game Notes</p>
@@ -128,7 +136,7 @@ class Gamenotes extends React.Component {
 							onClick={() => {
 								if (this.props.value !== '') {
 									this.setState({
-										clearConfirmationShown: true
+										clearConfirmationShown: true,
 									});
 								}
 							}}
@@ -137,7 +145,13 @@ class Gamenotes extends React.Component {
 						<i className="large window minus icon" onClick={this.dismissNotes} title="Click here to collapse notes" />
 					</div>
 				</div>
-				<textarea style={{ height: this.state.height }} autoFocus spellCheck="false" value={this.props.value} onChange={notesChange} />
+				<textarea
+					style={{ height: this.state.height }}
+					autoFocus
+					spellCheck="false"
+					value={this.props.value}
+					onChange={notesChange}
+				/>
 			</section>
 		);
 	}
@@ -146,7 +160,7 @@ class Gamenotes extends React.Component {
 Gamenotes.propTypes = {
 	toggleNotes: PropTypes.func,
 	value: PropTypes.string,
-	changeNotesValue: PropTypes.func
+	changeNotesValue: PropTypes.func,
 };
 
 export default connect(null, mapDispatchToProps)(Gamenotes);

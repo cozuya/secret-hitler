@@ -7,7 +7,7 @@ const ModAction = require('../../models/modAction');
 const BannedIP = require('../../models/bannedIP');
 
 const games = redis.createClient({
-	db: 1
+	db: 1,
 });
 
 module.exports.getGamesAsync = promisify(games.get).bind(games);
@@ -16,7 +16,7 @@ module.exports.deleteGameAsync = promisify(games.del).bind(games);
 module.exports.scanGamesAsync = promisify(games.scan).bind(games);
 
 const gameChats = redis.createClient({
-	db: 2
+	db: 2,
 });
 
 module.exports.getRangeGameChatsAsync = promisify(gameChats.lrange).bind(gameChats);
@@ -24,16 +24,16 @@ module.exports.deleteGameChatsAsync = promisify(gameChats.del).bind(gameChats);
 module.exports.pushGameChatsAsync = promisify(gameChats.rpush).bind(gameChats);
 
 const userList = redis.createClient({
-	db: 3
+	db: 3,
 });
 
 module.exports.getRangeUserlistAsync = promisify(userList.lrange).bind(userList);
 module.exports.setUserlistAsync = promisify(userList.set).bind(userList); // shouldn't really ever be used
 module.exports.pushUserlistAsync = promisify(userList.rpush).bind(userList);
-module.exports.spliceUserFromUserList = async userName => {
+module.exports.spliceUserFromUserList = async (userName) => {
 	const list = await module.exports.getRangeUserlistAsync('userList', 0, -1);
 	const userL = list.map(JSON.parse);
-	const userInList = userL.find(user => user.userName === userName);
+	const userInList = userL.find((user) => user.userName === userName);
 
 	if (userInList) {
 		userList.lrem('userList', 0, JSON.stringify(userInList));
@@ -41,7 +41,7 @@ module.exports.spliceUserFromUserList = async userName => {
 };
 
 const generalChats = redis.createClient({
-	db: 4
+	db: 4,
 });
 
 module.exports.getGeneralChatsAsync = promisify(generalChats.get).bind(generalChats);
@@ -51,7 +51,7 @@ module.exports.pushGeneralChatsAsync = promisify(generalChats.lpush).bind(genera
 module.exports.trimGeneralChatsAsync = promisify(generalChats.ltrim).bind(generalChats);
 
 const serverSettings = redis.createClient({
-	db: 5
+	db: 5,
 });
 
 module.exports.getServerSettingAsync = promisify(serverSettings.get).bind(serverSettings);
@@ -66,7 +66,7 @@ module.exports.setServerSettingAsync = promisify(serverSettings.set).bind(server
 const fs = require('fs');
 const emotes = [];
 
-fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach(file => {
+fs.readdirSync('public/images/emotes', { withFileTypes: true }).forEach((file) => {
 	if (file.name.endsWith('.png')) emotes[emotes.length] = [file.name.substring(0, file.name.length - 4), file];
 });
 
@@ -99,19 +99,19 @@ const sizeMap = [
 	[10, 8], // 80
 	[9, 9], // 81
 	[10, 9], // 90
-	[10, 10] // 100
+	[10, 10], // 100
 ];
 
 const numEmotes = emotes.length;
 let sheetSize = [10, 10];
-sizeMap.forEach(size => {
+sizeMap.forEach((size) => {
 	const space = size[0] * size[1];
 	if (space >= numEmotes && space < sheetSize[0] * sheetSize[1]) sheetSize = size;
 });
 
 let curCell = 0;
 
-emotes.forEach(emote => {
+emotes.forEach((emote) => {
 	const thisCell = curCell;
 	curCell++;
 	const loc = [thisCell % sheetSize[0], Math.floor(thisCell / sheetSize[0])];
@@ -125,16 +125,16 @@ module.exports.newStaff = {
 	editorUserNames: [],
 	altmodUserNames: [],
 	trialmodUserNames: [],
-	contributorUserNames: []
+	contributorUserNames: [],
 };
 
 const staffList = [];
 
-Account.find({ staffRole: { $exists: true } }).then(accounts => {
-	accounts.forEach(user => (staffList[user.username] = user.staffRole));
+Account.find({ staffRole: { $exists: true } }).then((accounts) => {
+	accounts.forEach((user) => (staffList[user.username] = user.staffRole));
 });
 
-module.exports.getPowerFromRole = role => {
+module.exports.getPowerFromRole = (role) => {
 	if (role === 'admin') return 3;
 	if (role === 'editor') return 2;
 	if (role === 'moderator') return 1;
@@ -144,20 +144,20 @@ module.exports.getPowerFromRole = role => {
 	return -1;
 };
 
-module.exports.getPowerFromName = name => {
+module.exports.getPowerFromName = (name) => {
 	if (module.exports.newStaff.editorUserNames.includes(name)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(name)) return getPowerFromRole('moderator');
 	if (module.exports.newStaff.altmodUserNames.includes(name)) return getPowerFromRole('altmod');
 	if (module.exports.newStaff.trialmodUserNames.includes(name)) return getPowerFromRole('trialmod');
 	if (module.exports.newStaff.contributorUserNames.includes(name)) return getPowerFromRole('contributor');
 
-	const user = module.exports.userList.find(user => user.userName === name);
+	const user = module.exports.userList.find((user) => user.userName === name);
 	if (user) return getPowerFromRole(user.staffRole);
 	else if (staffList[name]) return getPowerFromRole(staffList[name]);
 	else return -1;
 };
 
-module.exports.getPowerFromUser = user => {
+module.exports.getPowerFromUser = (user) => {
 	if (module.exports.newStaff.editorUserNames.includes(user.userName)) return getPowerFromRole('editor');
 	if (module.exports.newStaff.modUserNames.includes(user.userName)) return getPowerFromRole('moderator');
 	if (module.exports.newStaff.altmodUserNames.includes(user.userName)) return getPowerFromRole('altmod');
@@ -173,12 +173,12 @@ module.exports.getPowerFromUser = user => {
 module.exports.profiles = (() => {
 	const profiles = [];
 	const MAX_SIZE = 100;
-	const get = username => profiles.find(p => p._id === username);
-	const remove = username => {
-		const i = profiles.findIndex(p => p._id === username);
+	const get = (username) => profiles.find((p) => p._id === username);
+	const remove = (username) => {
+		const i = profiles.findIndex((p) => p._id === username);
 		if (i > -1) return profiles.splice(i, 1)[0];
 	};
-	const push = profile => {
+	const push = (profile) => {
 		if (!profile) return profile;
 		remove(profile._id);
 		profiles.unshift(profile);
@@ -259,7 +259,7 @@ module.exports.AEM = Account.find({ staffRole: { $exists: true, $ne: 'veteran' }
 // todo
 const bypassKeys = [];
 
-module.exports.verifyBypass = key => {
+module.exports.verifyBypass = (key) => {
 	return bypassKeys.indexOf(key) >= 0;
 };
 
@@ -273,7 +273,7 @@ module.exports.consumeBypass = (key, user, ip) => {
 			userActedOn: user,
 			modNotes: `Bypass key used: ${key}`,
 			ip: ip,
-			actionTaken: 'bypassKeyUsed'
+			actionTaken: 'bypassKeyUsed',
 		}).save();
 	}
 };
@@ -281,11 +281,7 @@ module.exports.consumeBypass = (key, user, ip) => {
 module.exports.createNewBypass = () => {
 	let key;
 	do {
-		key = `${Math.random()
-			.toString(36)
-			.substring(2)}${Math.random()
-			.toString(36)
-			.substring(2)}`.trim();
+		key = `${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}`.trim();
 	} while (bypassKeys.indexOf(key) >= 0);
 	bypassKeys.push(key);
 	return key;
@@ -300,7 +296,7 @@ const banLength = {
 	small: 18 * 60 * 60 * 1000, // 18 hours
 	new: 18 * 60 * 60 * 1000, // 18 hours
 	tiny: 1 * 60 * 60 * 1000, // 1 hour
-	big: 7 * 24 * 60 * 60 * 1000 // 7 days
+	big: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 module.exports.testIP = (IP, callback) => {
 	if (!IP) {

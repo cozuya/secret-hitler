@@ -6,7 +6,7 @@ const ModAction = new Schema({
 	ip: String,
 	userActedOn: String,
 	modNotes: String,
-	actionTaken: String
+	actionTaken: String,
 });
 
 module.exports = mongoose.model('ModAction', ModAction);

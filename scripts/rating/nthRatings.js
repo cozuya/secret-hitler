@@ -10,15 +10,15 @@ const libAdjust = {
 	7: -17.282,
 	8: 45.418,
 	9: -70.679,
-	10: -31.539
+	10: -31.539,
 };
 
-ja = async votes => votes.toArray().filter(b => b).length;
-nein = async votes => votes.toArray().filter(b => !b).length;
-passed = async votes => (await ja(votes)) > (await nein(votes));
+ja = async (votes) => votes.toArray().filter((b) => b).length;
+nein = async (votes) => votes.toArray().filter((b) => !b).length;
+passed = async (votes) => (await ja(votes)) > (await nein(votes));
 
-softmax = arr => arr.map((value, index) => Math.exp(value) / arr.map(Math.exp).reduce((a, b) => a + b));
-avg = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
+softmax = (arr) => arr.map((value, index) => Math.exp(value) / arr.map(Math.exp).reduce((a, b) => a + b));
+avg = (arr) => arr.reduce((p, c) => p + c, 0) / arr.length;
 
 // This function approximates the degree to wich each player may have influenced the end game result.
 // Players will be considered more influential when:
@@ -58,24 +58,24 @@ async function influence(game) {
 		}
 	}
 	return softmax(weighting)
-		.map(v => (v + 5 / game.playerSize) / 6) // Dampen so as to only account for 16% of ELO
-		.map(v => game.playerSize * v); // Normalise
+		.map((v) => (v + 5 / game.playerSize) / 6) // Dampen so as to only account for 16% of ELO
+		.map((v) => game.playerSize * v); // Normalise
 }
 
 async function rate(summary) {
 	const game = buildEnhancedGameSummary(summary.toObject());
 	// Construct extra game info
 	const liberalPlayerNames = game.players
-		.filter(player => player.role === 'liberal')
-		.map(player => player.username)
+		.filter((player) => player.role === 'liberal')
+		.map((player) => player.username)
 		.toArray();
 	const fascistPlayerNames = game.players
-		.filter(player => liberalPlayerNames.indexOf(player.username) === -1)
-		.map(player => player.username)
+		.filter((player) => liberalPlayerNames.indexOf(player.username) === -1)
+		.map((player) => player.username)
 		.toArray();
 	const winningPlayerNames = game.winningTeam === 'liberal' ? liberalPlayerNames : fascistPlayerNames;
 	const losingPlayerNames = game.winningTeam === 'liberal' ? fascistPlayerNames : liberalPlayerNames;
-	const playerNames = game.players.map(player => player.username).toArray();
+	const playerNames = game.players.map((player) => player.username).toArray();
 	const playerInfluence = await influence(game);
 	// Construct some basic statistics for each team
 	const b = game.winningTeam === 'liberal' ? 1 : 0;
@@ -86,10 +86,14 @@ async function rate(summary) {
 		weightedPlayerRank[i] = playerInfluence[i] * account.eloOverall;
 		weightedPlayerSeasonRank[i] = playerInfluence[i] * account.eloSeason;
 	}
-	const averageRatingWinners = avg(weightedPlayerRank.filter((_, i) => game.isWinner(i)._value)) + b * libAdjust[game.playerSize];
-	const averageRatingWinnersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => game.isWinner(i)._value)) + b * libAdjust[game.playerSize];
-	const averageRatingLosers = avg(weightedPlayerRank.filter((_, i) => !game.isWinner(i)._value)) + (1 - b) * libAdjust[game.playerSize];
-	const averageRatingLosersSeason = avg(weightedPlayerSeasonRank.filter((_, i) => !game.isWinner(i)._value)) + (1 - b) * libAdjust[game.playerSize];
+	const averageRatingWinners =
+		avg(weightedPlayerRank.filter((_, i) => game.isWinner(i)._value)) + b * libAdjust[game.playerSize];
+	const averageRatingWinnersSeason =
+		avg(weightedPlayerSeasonRank.filter((_, i) => game.isWinner(i)._value)) + b * libAdjust[game.playerSize];
+	const averageRatingLosers =
+		avg(weightedPlayerRank.filter((_, i) => !game.isWinner(i)._value)) + (1 - b) * libAdjust[game.playerSize];
+	const averageRatingLosersSeason =
+		avg(weightedPlayerSeasonRank.filter((_, i) => !game.isWinner(i)._value)) + (1 - b) * libAdjust[game.playerSize];
 
 	// Elo Formula
 	const k = 64;
@@ -98,7 +102,10 @@ async function rate(summary) {
 	const p = 1 / (1 + Math.pow(10, (averageRatingWinners - averageRatingLosers) / 400));
 	const pSeason = 1 / (1 + Math.pow(10, (averageRatingWinnersSeason - averageRatingLosersSeason) / 400));
 	// Apply the rating changes
-	for (const account of await Account.find({ username: { $in: playerNames } }, { eloOverall: 1, eloSeason: 1, username: 1 })) {
+	for (const account of await Account.find(
+		{ username: { $in: playerNames } },
+		{ eloOverall: 1, eloSeason: 1, username: 1 }
+	)) {
 		let eloOverall, eloSeason;
 		if (!account.eloOverall) {
 			eloOverall = 1600;

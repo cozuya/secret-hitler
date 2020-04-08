@@ -9,7 +9,7 @@ const ElectionTracker = ({ position }) => {
 		[0, 'zero'],
 		[1, 'one'],
 		[2, 'two'],
-		[3, 'three']
+		[3, 'three'],
 	]);
 	const classes = classnames('election-tracker', positionToClassName.get(position));
 
@@ -21,7 +21,7 @@ const TrackPieces = ({ phase, track, electionTracker }) => {
 	const redCards = cards.slice(0, track.reds);
 	const blueCards = cards.slice(track.reds);
 	const classes = classnames('track-pieces', {
-		blurred: ['presidentLegislation', 'chancellorLegislation', 'policyPeek'].includes(phase)
+		blurred: ['presidentLegislation', 'chancellorLegislation', 'policyPeek'].includes(phase),
 	});
 
 	return (

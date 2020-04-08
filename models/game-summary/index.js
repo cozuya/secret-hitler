@@ -15,23 +15,23 @@ const gameSummary = new Schema({
 		rebalance7p: Boolean,
 		rebalance9p: Boolean,
 		rerebalance9p: Boolean,
-		casualGame: Boolean
+		casualGame: Boolean,
 	},
 	players: [
 		{
 			username: String,
 			role: String,
 			icon: Number,
-			hashUid: String
-		}
+			hashUid: String,
+		},
 	],
 	libElo: {
 		overall: Number,
-		season: Number
+		season: Number,
 	},
 	fasElo: {
 		overall: Number,
-		season: Number
+		season: Number,
 	},
 	logs: [
 		{
@@ -43,21 +43,21 @@ const gameSummary = new Schema({
 			// policy enaction
 			presidentHand: {
 				reds: Number,
-				blues: Number
+				blues: Number,
 			},
 			chancellorHand: {
 				reds: Number,
-				blues: Number
+				blues: Number,
 			},
 			enactedPolicy: String,
 
 			presidentClaim: {
 				reds: Number,
-				blues: Number
+				blues: Number,
 			},
 			chancellorClaim: {
 				reds: Number,
-				blues: Number
+				blues: Number,
 			},
 
 			presidentVeto: Boolean,
@@ -66,17 +66,17 @@ const gameSummary = new Schema({
 			// actions
 			policyPeek: {
 				reds: Number,
-				blues: Number
+				blues: Number,
 			},
 			policyPeekClaim: {
 				reds: Number,
-				blues: Number
+				blues: Number,
 			},
 			investigationId: Number,
 			investigationClaim: String,
 			specialElection: Number,
-			execution: Number
-		}
+			execution: Number,
+		},
 	],
 	customGameSettings: {
 		enabled: Boolean,
@@ -87,13 +87,13 @@ const gameSummary = new Schema({
 		hitKnowsFas: Boolean,
 		deckState: {
 			lib: Number,
-			fas: Number
+			fas: Number,
 		},
 		trackState: {
 			lib: Number,
-			fas: Number
-		}
-	}
+			fas: Number,
+		},
+	},
 });
 
 module.exports = mongoose.model('GameSummary', gameSummary);

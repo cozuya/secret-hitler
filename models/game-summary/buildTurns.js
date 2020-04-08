@@ -1,7 +1,16 @@
 /* eslint-disable no-use-before-define */
 const { List, Range } = require('immutable');
 const { some, none, fromNullable } = require('option');
-const { filterOpt, flattenListOpts, pushOpt, mapOpt1, mapOpt2, handDiff, policyToHand, handToPolicy } = require('../../utils');
+const {
+	filterOpt,
+	flattenListOpts,
+	pushOpt,
+	mapOpt1,
+	mapOpt2,
+	handDiff,
+	policyToHand,
+	handToPolicy,
+} = require('../../utils');
 
 module.exports = (
 	logs,
@@ -10,7 +19,7 @@ module.exports = (
 		rebalance6p: false,
 		rebalance7p: false,
 		rebalance9p: false,
-		rerebalance9p: false
+		rerebalance9p: false,
 	}
 ) => buildTurns(List(), logs, players, gameSetting);
 
@@ -22,7 +31,7 @@ const buildTurns = (turns, logs, players, gameSetting) => {
 	return buildTurns(turns.push(nextTurn), logs.rest(), players, gameSetting);
 };
 
-const initialDeckSize = gameSetting => {
+const initialDeckSize = (gameSetting) => {
 	if (gameSetting.rebalance6p || gameSetting.rebalance7p || gameSetting.rebalance9p) {
 		return 16;
 	} else if (gameSetting.rebalance9p2f) {
@@ -31,21 +40,21 @@ const initialDeckSize = gameSetting => {
 	return 17;
 };
 
-const initialTrack = gameSetting => {
+const initialTrack = (gameSetting) => {
 	if (gameSetting.rebalance6p) {
 		return {
 			reds: 1,
-			blues: 0
+			blues: 0,
 		};
 	} else if (gameSetting.rebalance9p) {
 		return {
 			reds: 0,
-			blues: 1
+			blues: 1,
 		};
 	}
 	return {
 		reds: 0,
-		blues: 0
+		blues: 0,
 	};
 };
 
@@ -57,7 +66,7 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		afterDeckSize: initialDeckSize(gameSetting),
 		afterTrack: initialTrack(gameSetting),
 		afterElectionTracker: 0,
-		enactedPolicy: none
+		enactedPolicy: none,
 	});
 
 	// List[Int]
@@ -68,24 +77,24 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 
 	// List[Int]
 	const { beforePlayers, afterPlayers } = (() => {
-		const p = deadPlayers => players.map((p, i) => Object.assign({}, p, { isDead: deadPlayers.includes(i) }));
+		const p = (deadPlayers) => players.map((p, i) => Object.assign({}, p, { isDead: deadPlayers.includes(i) }));
 
 		return {
 			beforePlayers: p(beforeDeadPlayers),
-			afterPlayers: p(afterDeadPlayers)
+			afterPlayers: p(afterDeadPlayers),
 		};
 	})();
 
 	// List[Int]
 	const alivePlayers = Range(0, players.size)
-		.filterNot(i => beforeDeadPlayers.includes(i))
+		.filterNot((i) => beforeDeadPlayers.includes(i))
 		.toList();
 
 	// List[Option[Boolean]]
 	const votes = log.votes.map((v, i) => (beforeDeadPlayers.includes(i) ? none : some(v)));
 
 	// Int
-	const jas = flattenListOpts(votes).count(v => v);
+	const jas = flattenListOpts(votes).count((v) => v);
 
 	// Int
 	const neins = players.size - jas - beforeDeadPlayers.size;
@@ -138,8 +147,8 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 	// { reds: Int, blues: Int }
 	const { beforeTrack, afterTrack } = (() => {
 		const f = (count, policy, type) => {
-			const inc = filterOpt(policy, x => x === type)
-				.map(x => 1)
+			const inc = filterOpt(policy, (x) => x === type)
+				.map((x) => 1)
 				.valueOrElse(0);
 
 			return count + inc;
@@ -148,7 +157,7 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		const beforeTrack = prevTurn.afterTrack;
 		const afterTrack = {
 			reds: f(beforeTrack.reds, log.enactedPolicy, 'fascist'),
-			blues: f(beforeTrack.blues, log.enactedPolicy, 'liberal')
+			blues: f(beforeTrack.blues, log.enactedPolicy, 'liberal'),
 		};
 
 		return { beforeTrack, afterTrack };
@@ -159,16 +168,16 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 
 	// Boolean
 	const isHitlerElected = (() => {
-		const hitlerIndex = players.findIndex(p => p.role === 'hitler');
+		const hitlerIndex = players.findIndex((p) => p.role === 'hitler');
 
 		return beforeTrack.reds >= 3 && log.chancellorId === hitlerIndex && isVotePassed;
 	})();
 
 	// Boolean
 	const isHitlerKilled = (() => {
-		const hitlerIndex = players.findIndex(p => p.role === 'hitler');
+		const hitlerIndex = players.findIndex((p) => p.role === 'hitler');
 
-		return log.execution.map(e => e === hitlerIndex).valueOrElse(false);
+		return log.execution.map((e) => e === hitlerIndex).valueOrElse(false);
 	})();
 
 	// Option[String]
@@ -241,6 +250,6 @@ const buildTurn = (prevTurnOpt, log, players, gameSetting) => {
 		isVeto,
 		isVetoSuccessful,
 		presidentVeto,
-		chancellorVeto
+		chancellorVeto,
 	});
 };

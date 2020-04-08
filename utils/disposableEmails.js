@@ -22007,5 +22007,5 @@ module.exports = [
 	'zyyu6mute9qn.ml',
 	'zyyu6mute9qn.tk',
 	'zzi.us',
-	'zzz.com'
+	'zzz.com',
 ];

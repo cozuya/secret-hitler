@@ -4,14 +4,22 @@ import Linkify from 'react-linkify';
 
 export function renderEmotesButton(handleInsertEmote, allEmotes) {
 	return (
-		<Popup on="click" className="emotes-popup" trigger={<Button type="button" icon="smile" primary className="emotes-button" />}>
+		<Popup
+			on="click"
+			className="emotes-popup"
+			trigger={<Button type="button" icon="smile" primary className="emotes-button" />}
+		>
 			<Popup.Content>
 				<div className="emotes-popup-content">
 					{allEmotes.map((el, index) => (
 						<div key={index} data-tooltip={el[0]} data-inverted onClick={() => handleInsertEmote(el[0])}>
 							<img
 								src="../images/blank.png"
-								style={{ background: `url("../images/emotesheet.png") -${el[1][0] * 28}px -${el[1][1] * 28}px`, width: '28px', height: '28px' }}
+								style={{
+									background: `url("../images/emotesheet.png") -${el[1][0] * 28}px -${el[1][1] * 28}px`,
+									width: '28px',
+									height: '28px',
+								}}
 							/>
 						</div>
 					))}
@@ -23,7 +31,7 @@ export function renderEmotesButton(handleInsertEmote, allEmotes) {
 
 export function processEmotes(input, isMod, allEmotes) {
 	const mapping = {};
-	allEmotes.forEach(e => (mapping[e[0]] = e[1]));
+	allEmotes.forEach((e) => (mapping[e[0]] = e[1]));
 	if (typeof input !== 'string') {
 		return input;
 	}
@@ -42,7 +50,7 @@ export function processEmotes(input, isMod, allEmotes) {
 							background: `url("../images/emotesheet.png") -${mapping[word][0] * 28}px -${mapping[word][1] * 28}px`,
 							width: '28px',
 							height: '28px',
-							marginRight: '2px'
+							marginRight: '2px',
 						}}
 					/>
 				</span>
@@ -55,7 +63,13 @@ export function processEmotes(input, isMod, allEmotes) {
 			formatedMsg.push(
 				<a
 					key={index}
-					href={isGithub ? 'https://github.com/cozuya/secret-hitler/' + data[2] : gameURL ? '/game/' + data[2].substring(5) : '/' + data[2]}
+					href={
+						isGithub
+							? 'https://github.com/cozuya/secret-hitler/' + data[2]
+							: gameURL
+							? '/game/' + data[2].substring(5)
+							: '/' + data[2]
+					}
 					className="shio-link"
 					title={isGithub ? "link to sh.io's github page" : 'link to something inside of sh.io'}
 				>
@@ -89,7 +103,14 @@ export function processEmotes(input, isMod, allEmotes) {
 	});
 	if (isMod) {
 		return (
-			<Linkify properties={{ target: '_blank', rel: 'noopener noreferrer', title: 'External Link', style: { color: 'inherit', textDecoration: 'underline' } }}>
+			<Linkify
+				properties={{
+					target: '_blank',
+					rel: 'noopener noreferrer',
+					title: 'External Link',
+					style: { color: 'inherit', textDecoration: 'underline' },
+				}}
+			>
 				{formatedMsg}
 			</Linkify>
 		);

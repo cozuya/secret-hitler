@@ -13,7 +13,7 @@ const Signups = ({ socket }) => {
 			socket.emit(signupType);
 		}, 10000);
 
-		socket.on('signupsInfo', info => {
+		socket.on('signupsInfo', (info) => {
 			updateSignuplog(info);
 		});
 
@@ -27,7 +27,11 @@ const Signups = ({ socket }) => {
 		return (
 			<div>
 				<h2 style={{ textAlign: 'center' }}>
-					{signupType === 'getSignups' ? 'Successful Signups' : signupType === 'getAllSignups' ? 'Failed Signups' : 'Private Signups'}
+					{signupType === 'getSignups'
+						? 'Successful Signups'
+						: signupType === 'getAllSignups'
+						? 'Failed Signups'
+						: 'Private Signups'}
 				</h2>
 				<table className="ui celled table" style={{ background: 'gainsboro' }}>
 					<thead>
@@ -72,13 +76,18 @@ const Signups = ({ socket }) => {
 					style={{
 						position: 'absolute',
 						top: '10px',
-						right: '10px'
+						right: '10px',
 					}}
 				/>
 			</a>
 			<span
 				onClick={() => {
-					signupType = signupType === 'getSignups' ? 'getAllSignups' : signupType === 'getAllSignups' ? 'getPrivateSignups' : 'getSignups';
+					signupType =
+						signupType === 'getSignups'
+							? 'getAllSignups'
+							: signupType === 'getAllSignups'
+							? 'getPrivateSignups'
+							: 'getSignups';
 					socket.emit(signupType);
 				}}
 				style={{
@@ -90,7 +99,7 @@ const Signups = ({ socket }) => {
 					textDecoration: 'underline',
 					left: '0',
 					top: '10px',
-					cursor: 'pointer'
+					cursor: 'pointer',
 				}}
 			>
 				Toggle Signup Type
@@ -101,7 +110,7 @@ const Signups = ({ socket }) => {
 };
 
 Signups.propTypes = {
-	socket: PropTypes.object
+	socket: PropTypes.object,
 };
 
 export default Signups;

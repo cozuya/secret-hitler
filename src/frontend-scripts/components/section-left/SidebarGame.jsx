@@ -22,11 +22,11 @@ const SidebarGame = ({ game, socket }) => {
 		const availableSeatCounts = new Array(game.maxPlayersCount)
 			.fill(true)
 			.map((el, i) => (game.excludedPlayerCount.includes(i + 1) || i + 1 < game.minPlayersCount ? false : i + 1))
-			.filter(el => el);
+			.filter((el) => el);
 
 		let str = '';
 
-		availableSeatCounts.forEach(el => {
+		availableSeatCounts.forEach((el) => {
 			if (availableSeatCounts.includes(el)) {
 				if (el === game.maxPlayersCount) {
 					str = `${str}${el} players`;
@@ -60,7 +60,10 @@ const SidebarGame = ({ game, socket }) => {
 			{game.gameStatus === 'notStarted' ? (
 				<div>
 					{game.private && (
-						<div className="private-game" title="This is a private game.  You can only be seated if you know the password, or are whitelisted">
+						<div
+							className="private-game"
+							title="This is a private game.  You can only be seated if you know the password, or are whitelisted"
+						>
 							P
 						</div>
 					)}
@@ -87,7 +90,9 @@ const SidebarGame = ({ game, socket }) => {
 					<div
 						className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
 						title={
-							(game.rainbowgame ? 'Rainbow game - only players with 50+ games played can be seated in this game.' : 'Click here to enter this game table.') +
+							(game.rainbowgame
+								? 'Rainbow game - only players with 50+ games played can be seated in this game.'
+								: 'Click here to enter this game table.') +
 							' Already in game: ' +
 							game.userNames.join(', ')
 						}
@@ -145,17 +150,30 @@ const SidebarGame = ({ game, socket }) => {
 							R
 						</div>
 					)}
-					<div className={game.rainbowgame ? 'gamename rainbow' : 'gamename'} title={'Playing: ' + game.userNames.join(', ')}>
+					<div
+						className={game.rainbowgame ? 'gamename rainbow' : 'gamename'}
+						title={'Playing: ' + game.userNames.join(', ')}
+					>
 						{game.name}
 					</div>
 					<div className="liberal-count">
-						{_.range(1, 6).map(num => (
-							<div key={num} className={num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'} />
+						{_.range(1, 6).map((num) => (
+							<div
+								key={num}
+								className={
+									num <= game.enactedLiberalPolicyCount ? 'box liberal-box filled' : 'box liberal-box unfilled'
+								}
+							/>
 						))}
 					</div>
 					<div className="fascist-count">
-						{_.range(1, 7).map(num => (
-							<div key={num} className={num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'} />
+						{_.range(1, 7).map((num) => (
+							<div
+								key={num}
+								className={
+									num <= game.enactedFascistPolicyCount ? 'box fascist-box filled' : 'box fascist-box unfilled'
+								}
+							/>
 						))}
 					</div>
 					<div className="lower-row">
@@ -174,7 +192,7 @@ const SidebarGame = ({ game, socket }) => {
 
 SidebarGame.propTypes = {
 	game: PropTypes.object,
-	socket: PropTypes.object
+	socket: PropTypes.object,
 };
 
 export default SidebarGame;

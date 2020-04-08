@@ -6,10 +6,13 @@ describe('CardFlinger', () => {
 	it('should initialize correctly', () => {
 		const initialState = {
 			isHovered: false,
-			hoveredClass: null
+			hoveredClass: null,
 		};
 		const component = shallow(
-			<CardFlinger userInfo={{ userName: '' }} gameInfo={{ cardFlingerState: [], publicPlayersState: [], general: { status: '' }, gameState: { phase: '' } }} />
+			<CardFlinger
+				userInfo={{ userName: '' }}
+				gameInfo={{ cardFlingerState: [], publicPlayersState: [], general: { status: '' }, gameState: { phase: '' } }}
+			/>
 		);
 
 		expect(component.state()).toEqual(initialState);

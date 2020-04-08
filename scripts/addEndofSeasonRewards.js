@@ -18,7 +18,7 @@ const cutoff = 1737;
 
 Account.find({ eloSeason: { $gte: cutoff }, isBanned: { $exists: false } })
 	.cursor()
-	.eachAsync(account => {
+	.eachAsync((account) => {
 		const { eloSeason } = account;
 
 		if (eloSeason >= cutoff && eloSeason < cutoff + 30) {

@@ -10,12 +10,12 @@ import { PLAYERCOLORS } from '../../constants';
 
 $.fn.dropdown = Dropdown;
 
-const mapDispatchToProps = dispatch => ({
-	togglePlayerNotes: playerName => dispatch(togglePlayerNotes(playerName))
+const mapDispatchToProps = (dispatch) => ({
+	togglePlayerNotes: (playerName) => dispatch(togglePlayerNotes(playerName)),
 });
 
 const mapStateToProps = ({ playerNotesActive }) => ({
-	playerNotesActive
+	playerNotesActive,
 });
 
 class Players extends React.Component {
@@ -25,7 +25,7 @@ class Players extends React.Component {
 		reportTextValue: '',
 		playerNotes: [],
 		playerNoteSeatEnabled: false,
-		reportLength: 0
+		reportLength: 0,
 	};
 
 	// componentWillReceiveProps(nextProps) {
@@ -44,16 +44,18 @@ class Players extends React.Component {
 		const { socket, userInfo } = this.props;
 
 		if (userInfo.gameSettings && !userInfo.gameSettings.disablePlayerNotes) {
-			socket.on('notesUpdate', notes => {
+			socket.on('notesUpdate', (notes) => {
 				this.setState({ playerNotes: notes });
 			});
 
-			const seatedPlayers = this.props.gameInfo.publicPlayersState.filter(player => player.userName !== userInfo.userName).map(player => player.userName);
+			const seatedPlayers = this.props.gameInfo.publicPlayersState
+				.filter((player) => player.userName !== userInfo.userName)
+				.map((player) => player.userName);
 
 			if (seatedPlayers.length) {
 				socket.emit('getPlayerNotes', {
 					userName: userInfo.userName,
-					seatedPlayers
+					seatedPlayers,
 				});
 			}
 		}
@@ -63,7 +65,7 @@ class Players extends React.Component {
 		this.props.socket.off('notesUpdate');
 	}
 
-	handlePlayerDoubleClick = userName => {
+	handlePlayerDoubleClick = (userName) => {
 		if (
 			(!this.props.gameInfo.general.unlisted &&
 				!this.props.gameInfo.general.private &&
@@ -77,7 +79,7 @@ class Players extends React.Component {
 		}
 	};
 
-	handlePlayerClick = e => {
+	handlePlayerClick = (e) => {
 		const { userInfo, gameInfo, socket } = this.props;
 		const { gameState } = gameInfo;
 		const { phase, clickActionInfo } = gameState;
@@ -87,7 +89,7 @@ class Players extends React.Component {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('presidentSelectedChancellor', {
 					chancellorIndex: index,
-					uid: gameInfo.general.uid
+					uid: gameInfo.general.uid,
 				});
 			}
 		}
@@ -96,7 +98,7 @@ class Players extends React.Component {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectPartyMembershipInvestigate', {
 					playerIndex: index,
-					uid: gameInfo.general.uid
+					uid: gameInfo.general.uid,
 				});
 			}
 		}
@@ -105,7 +107,7 @@ class Players extends React.Component {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectPartyMembershipInvestigateReverse', {
 					playerIndex: index,
-					uid: gameInfo.general.uid
+					uid: gameInfo.general.uid,
 				});
 			}
 		}
@@ -114,7 +116,7 @@ class Players extends React.Component {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedPlayerToExecute', {
 					playerIndex: index,
-					uid: gameInfo.general.uid
+					uid: gameInfo.general.uid,
 				});
 			}
 		}
@@ -123,7 +125,7 @@ class Players extends React.Component {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
 				socket.emit('selectedSpecialElection', {
 					playerIndex: index,
-					uid: gameInfo.general.uid
+					uid: gameInfo.general.uid,
 				});
 			}
 		}
@@ -133,7 +135,11 @@ class Players extends React.Component {
 		const { publicPlayersState } = this.props.gameInfo;
 
 		if (publicPlayersState && publicPlayersState[i].previousGovernmentStatus) {
-			return <div className={`government-token previous-government-token ${publicPlayersState[i].previousGovernmentStatus}`} />;
+			return (
+				<div
+					className={`government-token previous-government-token ${publicPlayersState[i].previousGovernmentStatus}`}
+				/>
+			);
 		}
 	}
 
@@ -156,19 +162,19 @@ class Players extends React.Component {
 	renderPlayerNotesIcon(index) {
 		const { userInfo, gameInfo, togglePlayerNotes, playerNotesActive } = this.props;
 		const { userName } = gameInfo.publicPlayersState[index];
-		const clickedPlayerNote = playerNoteSeatEnabled => {
+		const clickedPlayerNote = (playerNoteSeatEnabled) => {
 			togglePlayerNotes(!playerNotesActive ? userName : '');
 
 			this.setState({
-				playerNoteSeatEnabled
+				playerNoteSeatEnabled,
 			});
 		};
-		const note = this.state.playerNotes.find(note => note.notedUser === userName);
+		const note = this.state.playerNotes.find((note) => note.notedUser === userName);
 
 		if (userInfo.userName && userName !== userInfo.userName) {
 			return (
 				<i
-					onClick={e => {
+					onClick={(e) => {
 						e.stopPropagation();
 						clickedPlayerNote(index);
 					}}
@@ -192,42 +198,90 @@ class Players extends React.Component {
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
 		const time = Date.now();
 		const renderPlayerName = (player, i) => {
-			const userName = isBlind ? (gameInfo.gameState.isTracksFlipped ? gameInfo.general.replacementNames[i] : '?') : player.userName;
+			const userName = isBlind
+				? gameInfo.gameState.isTracksFlipped
+					? gameInfo.general.replacementNames[i]
+					: '?'
+				: player.userName;
 			const prependSeasonAward = () => {
 				switch (player.previousSeasonAward) {
 					case 'bronze':
-						return <span title="This player was in the 3rd tier of ranks in the previous season" className="season-award bronze" />;
+						return (
+							<span
+								title="This player was in the 3rd tier of ranks in the previous season"
+								className="season-award bronze"
+							/>
+						);
 					case 'silver':
-						return <span title="This player was in the 2nd tier of ranks in the previous season" className="season-award silver" />;
+						return (
+							<span
+								title="This player was in the 2nd tier of ranks in the previous season"
+								className="season-award silver"
+							/>
+						);
 					case 'gold':
-						return <span title="This player was in the top tier of ranks in the previous season" className="season-award gold" />;
+						return (
+							<span
+								title="This player was in the top tier of ranks in the previous season"
+								className="season-award gold"
+							/>
+						);
 					case 'gold1':
-						return <span title="This player was the top player of the previous season" className="season-award gold1" />;
+						return (
+							<span title="This player was the top player of the previous season" className="season-award gold1" />
+						);
 					case 'gold2':
-						return <span title="This player was 2nd highest player of the previous season" className="season-award gold2" />;
+						return (
+							<span title="This player was 2nd highest player of the previous season" className="season-award gold2" />
+						);
 					case 'gold3':
-						return <span title="This player was 3rd highest player of the previous season" className="season-award gold3" />;
+						return (
+							<span title="This player was 3rd highest player of the previous season" className="season-award gold3" />
+						);
 					case 'gold4':
-						return <span title="This player was 4th highest player of the previous season" className="season-award gold4" />;
+						return (
+							<span title="This player was 4th highest player of the previous season" className="season-award gold4" />
+						);
 					case 'gold5':
-						return <span title="This player was 5th highest player of the previous season" className="season-award gold5" />;
+						return (
+							<span title="This player was 5th highest player of the previous season" className="season-award gold5" />
+						);
 				}
 			};
 
-			const prependCrowns = str => (
+			const prependCrowns = (str) => (
 				<span>
-					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+					{!(
+						userInfo.gameSettings &&
+						Object.keys(userInfo.gameSettings).length &&
+						userInfo.gameSettings.disableCrowns
+					) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.tournyWins &&
-						player.tournyWins.filter(winTime => time - winTime < 10800000).map((crown, ind) => <span className="crown-icon" key={player.tournyWins[ind]} />)}
+						player.tournyWins
+							.filter((winTime) => time - winTime < 10800000)
+							.map((crown, ind) => <span className="crown-icon" key={player.tournyWins[ind]} />)}
 
-					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+					{!(
+						userInfo.gameSettings &&
+						Object.keys(userInfo.gameSettings).length &&
+						userInfo.gameSettings.disableCrowns
+					) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
 						player.previousSeasonAward &&
 						prependSeasonAward()}
-					{!(userInfo.gameSettings && Object.keys(userInfo.gameSettings).length && userInfo.gameSettings.disableCrowns) &&
+					{!(
+						userInfo.gameSettings &&
+						Object.keys(userInfo.gameSettings).length &&
+						userInfo.gameSettings.disableCrowns
+					) &&
 						(!gameInfo.general.blindMode || gameInfo.gameState.isCompleted) &&
-						player.specialTournamentStatus && <span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />}
+						player.specialTournamentStatus && (
+							<span
+								title="This player was part of the winning team of the Fall 2019 tournament."
+								className="crown-icon"
+							/>
+						)}
 					{str}
 				</span>
 			);
@@ -251,21 +305,33 @@ class Players extends React.Component {
 				style={
 					player.customCardback &&
 					!isBlind &&
-					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
+					(!userInfo.userName ||
+						!(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`,
 						  }
 						: {
-								backgroundImage: `url(../images/default_cardback.png)`
+								backgroundImage: `url(../images/default_cardback.png)`,
 						  }
 				}
 				className={(() => {
 					let classes = 'player-container';
-					const user = this.props.userList.list ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+					const user = this.props.userList.list
+						? this.props.userList.list.find((play) => play.userName === player.userName)
+						: null;
 
-					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
+					if (
+						playersState &&
+						Object.keys(playersState).length &&
+						playersState[i] &&
+						playersState[i].notificationStatus
+					) {
 						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
-					} else if (publicPlayersState && Object.keys(publicPlayersState).length && publicPlayersState[i].notificationStatus) {
+					} else if (
+						publicPlayersState &&
+						Object.keys(publicPlayersState).length &&
+						publicPlayersState[i].notificationStatus
+					) {
 						classes = `${classes} notifier ${publicPlayersState[i].notificationStatus}`;
 					}
 
@@ -318,14 +384,20 @@ class Players extends React.Component {
 						let classes = 'card-container';
 
 						if (
-							(playersState && Object.keys(playersState).length && playersState[i] && playersState[i].cardStatus.cardDisplayed) ||
+							(playersState &&
+								Object.keys(playersState).length &&
+								playersState[i] &&
+								playersState[i].cardStatus.cardDisplayed) ||
 							(publicPlayersState && publicPlayersState[i].cardStatus.cardDisplayed)
 						) {
 							classes += ' showing';
 						}
 
 						if (
-							(playersState && Object.keys(playersState).length && playersState[i] && playersState[i].cardStatus.isFlipped) ||
+							(playersState &&
+								Object.keys(playersState).length &&
+								playersState[i] &&
+								playersState[i].cardStatus.isFlipped) ||
 							(publicPlayersState && publicPlayersState[i].cardStatus.isFlipped)
 						) {
 							classes += ' flipped';
@@ -337,7 +409,11 @@ class Players extends React.Component {
 						className={(() => {
 							let classes = 'card card-front';
 
-							if (publicPlayersState[i] && Object.keys(publicPlayersState[i]).length && publicPlayersState[i].cardStatus.cardFront) {
+							if (
+								publicPlayersState[i] &&
+								Object.keys(publicPlayersState[i]).length &&
+								publicPlayersState[i].cardStatus.cardFront
+							) {
 								classes = `${classes} ${publicPlayersState[i].cardStatus.cardFront}`;
 							}
 
@@ -359,13 +435,20 @@ class Players extends React.Component {
 								Object.keys(playersState[i].cardStatus.cardBack).length
 							) {
 								if (playersState[i].cardStatus.cardBack.icon || playersState[i].cardStatus.cardBack.icon === 0) {
-									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[i].cardStatus.cardBack.icon.toString()}`;
+									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}${playersState[
+										i
+									].cardStatus.cardBack.icon.toString()}`;
 								} else {
 									classes = `${classes} ${playersState[i].cardStatus.cardBack.cardName}`;
 								}
 							} else if (publicPlayersState && Object.keys(publicPlayersState[i].cardStatus.cardBack).length) {
-								if (publicPlayersState[i].cardStatus.cardBack.icon || publicPlayersState[i].cardStatus.cardBack.icon === 0) {
-									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[i].cardStatus.cardBack.icon.toString()}`;
+								if (
+									publicPlayersState[i].cardStatus.cardBack.icon ||
+									publicPlayersState[i].cardStatus.cardBack.icon === 0
+								) {
+									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}${publicPlayersState[
+										i
+									].cardStatus.cardBack.icon.toString()}`;
 								} else {
 									classes = `${classes} ${publicPlayersState[i].cardStatus.cardBack.cardName}`;
 								}
@@ -387,7 +470,7 @@ class Players extends React.Component {
 			userInfo.userName &&
 			!gameInfo.gameState.isTracksFlipped &&
 			gameInfo.publicPlayersState.length < gameInfo.general.maxPlayersCount &&
-			(!userInfo.userName || !gameInfo.publicPlayersState.find(player => player.userName === userInfo.userName))
+			(!userInfo.userName || !gameInfo.publicPlayersState.find((player) => player.userName === userInfo.userName))
 		) {
 			return gameInfo.general.isTourny ? (
 				<div className="ui left pointing label tourny" onClick={this.clickedTakeSeat}>
@@ -401,14 +484,14 @@ class Players extends React.Component {
 		}
 	}
 
-	handlePasswordSubmit = e => {
+	handlePasswordSubmit = (e) => {
 		e.preventDefault();
 
 		this.props.onClickedTakeSeat(this.state.passwordValue);
 		$(this.passwordModal).modal('hide');
 	};
 
-	handleReportSubmit = e => {
+	handleReportSubmit = (e) => {
 		const { gameInfo } = this.props;
 		e.preventDefault();
 
@@ -416,7 +499,9 @@ class Players extends React.Component {
 			return;
 		}
 
-		const index = gameInfo.gameState.isStarted && gameInfo.publicPlayersState.findIndex(player => player.userName === this.state.reportedPlayer);
+		const index =
+			gameInfo.gameState.isStarted &&
+			gameInfo.publicPlayersState.findIndex((player) => player.userName === this.state.reportedPlayer);
 		if (this.state.reportLength <= 140) {
 			this.props.socket.emit('playerReport', {
 				uid: gameInfo.general.uid,
@@ -424,19 +509,19 @@ class Players extends React.Component {
 				gameType: gameInfo.general.isTourny ? 'tournament' : gameInfo.general.casualGame ? 'casual' : 'standard',
 				reportedPlayer: `${index ? `{${index + 1}} ${this.state.reportedPlayer}` : this.state.reportedPlayer}`,
 				reason: $('input[name="reason"]').attr('value'),
-				comment: this.state.reportTextValue
+				comment: this.state.reportTextValue,
 			});
 			$(this.reportModal).modal('hide');
 			this.setState({
 				maxReportLengthExceeded: false,
-				reportTextValue: ''
+				reportTextValue: '',
 			});
 		}
 	};
 
 	clickedTakeSeat = () => {
 		const { gameInfo, userInfo, onClickedTakeSeat, userList } = this.props;
-		const user = userList.list ? userList.list.find(user => user.userName === userInfo.userName) : null;
+		const user = userList.list ? userList.list.find((user) => user.userName === userInfo.userName) : null;
 
 		if (userInfo.userName) {
 			if (user && user.staffIncognito) {
@@ -450,14 +535,21 @@ class Players extends React.Component {
 				(gameInfo.general.rainbowgame && (!user || !user.wins || !user.losses))
 			) {
 				$(this.notRainbowModal).modal('show');
-			} else if (gameInfo.general.gameCreatorBlacklist && gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)) {
+			} else if (
+				gameInfo.general.gameCreatorBlacklist &&
+				gameInfo.general.gameCreatorBlacklist.includes(userInfo.userName)
+			) {
 				$(this.blacklistModal).modal('show');
 			} else if (gameInfo.general.isVerifiedOnly && !userInfo.verified) {
 				$(this.verifiedModal).modal('show');
 			} else if (gameInfo.general.eloMinimum) {
-				const user = userList.list.find(user => user.userName === userInfo.userName);
+				const user = userList.list.find((user) => user.userName === userInfo.userName);
 
-				if (user && (parseInt(user.eloSeason, 10) >= gameInfo.general.eloMinimum || parseInt(user.eloOverall, 10) >= gameInfo.general.eloMinimum)) {
+				if (
+					user &&
+					(parseInt(user.eloSeason, 10) >= gameInfo.general.eloMinimum ||
+						parseInt(user.eloOverall, 10) >= gameInfo.general.eloMinimum)
+				) {
 					onClickedTakeSeat();
 				} else {
 					$(this.elominimumModal).modal('show');
@@ -473,13 +565,13 @@ class Players extends React.Component {
 	};
 
 	render() {
-		const handlePasswordInputChange = e => {
+		const handlePasswordInputChange = (e) => {
 			this.setState({ passwordValue: `${e.target.value}` });
 		};
-		const handleReportTextChange = e => {
+		const handleReportTextChange = (e) => {
 			this.setState({
 				reportLength: Number(e.target.value.length),
-				reportTextValue: `${e.target.value}`
+				reportTextValue: `${e.target.value}`,
 			});
 		};
 		const isBlind = this.props.gameInfo.general.blindMode && !this.props.gameInfo.gameState.isCompleted;
@@ -491,7 +583,7 @@ class Players extends React.Component {
 
 				<div
 					className="ui basic small modal signinnag"
-					ref={c => {
+					ref={(c) => {
 						this.signinModal = c;
 					}}
 				>
@@ -500,7 +592,7 @@ class Players extends React.Component {
 
 				<div
 					className="ui basic small modal"
-					ref={c => {
+					ref={(c) => {
 						this.blacklistModal = c;
 					}}
 				>
@@ -509,18 +601,19 @@ class Players extends React.Component {
 
 				<div
 					className="ui basic small modal"
-					ref={c => {
+					ref={(c) => {
 						this.verifiedModal = c;
 					}}
 				>
 					<div className="ui header">
-						This game is for email-verified only accounts. Have your account become verified by adding an email address in your <a href="/account">settings.</a>
+						This game is for email-verified only accounts. Have your account become verified by adding an email address
+						in your <a href="/account">settings.</a>
 					</div>
 				</div>
 
 				<div
 					className="ui basic small modal"
-					ref={c => {
+					ref={(c) => {
 						this.elominimumModal = c;
 					}}
 				>
@@ -529,16 +622,18 @@ class Players extends React.Component {
 
 				<div
 					className="ui basic small modal"
-					ref={c => {
+					ref={(c) => {
 						this.notRainbowModal = c;
 					}}
 				>
-					<div className="ui header">You do not meet the required amount of games played (50) to play in this game.</div>
+					<div className="ui header">
+						You do not meet the required amount of games played (50) to play in this game.
+					</div>
 				</div>
 
 				<div
 					className="ui basic small modal"
-					ref={c => {
+					ref={(c) => {
 						this.incognitoModal = c;
 					}}
 				>
@@ -547,24 +642,29 @@ class Players extends React.Component {
 
 				<div
 					className="ui basic small modal"
-					ref={c => {
+					ref={(c) => {
 						this.privatePlayerInPublicGameModal = c;
 					}}
 				>
 					<div className="ui header">
-						Your account can only play in private games. This is a public game. You can change this in your <a href="/game/#/settings">settings.</a>
+						Your account can only play in private games. This is a public game. You can change this in your{' '}
+						<a href="/game/#/settings">settings.</a>
 					</div>
 				</div>
 
 				<div
 					className="ui basic small modal reportmodal"
-					ref={c => {
+					ref={(c) => {
 						this.reportModal = c;
 					}}
 				>
 					<form onSubmit={this.handleReportSubmit}>
 						<div className="ui header">
-							Report player <span style={{ color: 'red' }}>{isBlind ? '(blind player, mods will know)' : this.state.reportedPlayer}</span> to the moderators
+							Report player{' '}
+							<span style={{ color: 'red' }}>
+								{isBlind ? '(blind player, mods will know)' : this.state.reportedPlayer}
+							</span>{' '}
+							to the moderators
 						</div>
 						<div className="ui selection dropdown">
 							<input type="hidden" name="reason" />
@@ -579,11 +679,23 @@ class Players extends React.Component {
 								<div className="item">Other</div>
 							</div>
 						</div>
-						<textarea placeholder="Comment" value={this.state.reportTextValue} onChange={handleReportTextChange} spellCheck="false" maxLength="500" />
-						<span className={this.state.reportLength > 140 ? 'counter error' : 'counter'}>{140 - this.state.reportLength}</span>
+						<textarea
+							placeholder="Comment"
+							value={this.state.reportTextValue}
+							onChange={handleReportTextChange}
+							spellCheck="false"
+							maxLength="500"
+						/>
+						<span className={this.state.reportLength > 140 ? 'counter error' : 'counter'}>
+							{140 - this.state.reportLength}
+						</span>
 						<div
 							onClick={this.handleReportSubmit}
-							className={this.state.reportTextValue && this.state.reportLength <= 140 ? 'ui button primary' : 'ui' + ' button primary disabled'}
+							className={
+								this.state.reportTextValue && this.state.reportLength <= 140
+									? 'ui button primary'
+									: 'ui' + ' button primary disabled'
+							}
 						>
 							Submit
 						</div>
@@ -593,7 +705,7 @@ class Players extends React.Component {
 
 				<div
 					className="ui basic small modal passwordmodal"
-					ref={c => {
+					ref={(c) => {
 						this.passwordModal = c;
 					}}
 				>
@@ -606,7 +718,7 @@ class Players extends React.Component {
 								onChange={handlePasswordInputChange}
 								value={this.state.passwordValue}
 								autoFocus
-								ref={c => {
+								ref={(c) => {
 									this.privategamepassword = c;
 								}}
 							/>
@@ -634,7 +746,7 @@ Players.propTypes = {
 	toggleNotes: PropTypes.func,
 	playerNotesActive: PropTypes.string,
 	onClickedTakeSeat: PropTypes.func,
-	togglePlayerNotes: PropTypes.func
+	togglePlayerNotes: PropTypes.func,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Players);

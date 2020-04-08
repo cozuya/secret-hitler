@@ -25,7 +25,7 @@ export default () => {
 		};
 
 		const findPhase = (phase, turnNum) =>
-			replay.find(t => {
+			replay.find((t) => {
 				return t.turnNum === turnNum && t.phase === phase;
 			});
 
@@ -109,7 +109,7 @@ export default () => {
 					'candidacy',
 					{
 						reds: 0,
-						blues: 0
+						blues: 0,
 					},
 					[],
 					0,
@@ -120,7 +120,7 @@ export default () => {
 
 				testElection(
 					0,
-					Range(0, 7).map(i => some(true))
+					Range(0, 7).map((i) => some(true))
 				);
 
 				testPresidentLegislation(0, { reds: 2, blues: 1 }, 'liberal', some({ reds: 2, blues: 1 }));
@@ -141,7 +141,7 @@ export default () => {
 					'candidacy',
 					{
 						reds: 1,
-						blues: 0
+						blues: 0,
 					},
 					[],
 					0,
@@ -152,7 +152,7 @@ export default () => {
 
 				testElection(
 					1,
-					Range(0, 7).map(i => some(true))
+					Range(0, 7).map((i) => some(true))
 				);
 
 				testPresidentLegislation(1, { reds: 2, blues: 1 }, 'fascist', some({ reds: 2, blues: 1 }));
@@ -179,7 +179,7 @@ export default () => {
 					'candidacy',
 					{
 						reds: 4,
-						blues: 0
+						blues: 0,
 					},
 					[3],
 					1,
@@ -190,7 +190,7 @@ export default () => {
 
 				testElection(
 					5,
-					List([true, false, false, null, false, false, false]).map(x => fromNullable(x))
+					List([true, false, false, null, false, false, false]).map((x) => fromNullable(x))
 				);
 
 				testPresidentLegislation(5, null, none);
@@ -211,7 +211,7 @@ export default () => {
 					'candidacy',
 					{
 						reds: 4,
-						blues: 0
+						blues: 0,
 					},
 					[3],
 					2,
@@ -222,7 +222,7 @@ export default () => {
 
 				testElection(
 					6,
-					List([true, true, true, null, true, true, true]).map(x => fromNullable(x))
+					List([true, true, true, null, true, true, true]).map((x) => fromNullable(x))
 				);
 
 				testPresidentLegislation(6, { reds: 2, blues: 1 }, 'liberal', some({ reds: 2, blues: 1 }));
@@ -243,7 +243,7 @@ export default () => {
 					'candidacy',
 					{
 						reds: 5,
-						blues: 0
+						blues: 0,
 					},
 					[2, 3],
 					0,
@@ -258,7 +258,7 @@ export default () => {
 
 				testElection(
 					7,
-					List([true, false, null, null, true, true, true]).map(x => fromNullable(x))
+					List([true, false, null, null, true, true, true]).map((x) => fromNullable(x))
 				);
 
 				testPolicyEnaction(7, 'fascist');
