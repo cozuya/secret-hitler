@@ -2551,7 +2551,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					data[setting].splice(0, data[setting].length - 30);
 				}
 
-				const restrictedSettings = ['blacklist', 'staffDisableVisibleElo', 'staffDisableStaffColor', 'staffIncognito'];
+				const restrictedSettings = ['blacklist', 'staffDisableVisibleElo', 'staffDisableStaffColor', 'staffIncognito', 'newReport', 'previousSeasonAward', 'specialTournamentStatus', 'ignoreIPBans', 'tournyWins'];
 
 				if (
 					!restrictedSettings.includes(setting) ||
