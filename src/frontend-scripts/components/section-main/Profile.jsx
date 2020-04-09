@@ -322,7 +322,7 @@ class ProfileWrapper extends React.Component {
 								<span>{gamesUntilRainbow}</span>
 							</div>
 						)}
-						{profile.lastConnectedIP !== 'no looking' && <p>Last connected IP: {profile.lastConnectedIP}</p>}
+						{profile.lastConnectedIP && <p>Last connected IP: {profile.lastConnectedIP}</p>}
 						{userInfo.userName === profile._id && (
 							<a style={{ display: 'block', color: 'yellow', textDecoration: 'underline', cursor: 'pointer' }} onClick={this.showBlacklist}>
 								Your blacklist
