@@ -11,7 +11,8 @@ const games = redis.createClient({
 });
 
 module.exports.getGamesAsync = promisify(games.get).bind(games);
-module.exports.setGameAsync = promisify(games.set).bind(games);
+const setGame = promisify(games.set).bind(games);
+module.exports.setGameAsync = (game) => setGame(game.general.uid, JSON.stringify(game));
 module.exports.deleteGameAsync = promisify(games.del).bind(games);
 module.exports.scanGamesAsync = promisify(games.scan).bind(games);
 
@@ -21,7 +22,8 @@ const gameChats = redis.createClient({
 
 module.exports.getRangeGameChatsAsync = promisify(gameChats.lrange).bind(gameChats);
 module.exports.deleteGameChatsAsync = promisify(gameChats.del).bind(gameChats);
-module.exports.pushGameChatsAsync = promisify(gameChats.rpush).bind(gameChats);
+const pushGameChats = promisify(gameChats.rpush).bind(gameChats);
+module.exports.pushGameChatAsync = (game) => pushGameChats(game.general.uid, game);
 
 const userList = redis.createClient({
 	db: 3,

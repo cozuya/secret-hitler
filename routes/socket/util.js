@@ -1,4 +1,5 @@
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
+const { pushGameChatsAsync, getRangeGameChatsAsync } = require('./models');
 
 /**
  * @param {object} game - game to act on.
@@ -48,10 +49,13 @@ module.exports.formatUserforUserlist = (passport, account) => {
 	return userListInfo;
 };
 
-const combineInProgressChats = (game, userName) =>
-	userName && game.gameState.isTracksFlipped
-		? game.private.seatedPlayers.find((player) => player.userName === userName).gameChats.concat(game.chats)
-		: game.private.unSeatedGameChats.concat(game.chats);
+const combineInProgressChats = async (game, userName) => {
+	const playerChats = await getRangeGameChatsAsync(game.general.uid, 0, -1);
+
+	return userName && game.gameState.isTracksFlipped
+		? game.private.seatedPlayers.find((player) => player.userName === userName).gameChats.concat(playerChats)
+		: game.private.unSeatedGameChats.concat(playerChats);
+};
 
 /**
  * @param {object} game - game to act on.
@@ -59,17 +63,23 @@ const combineInProgressChats = (game, userName) =>
  */
 // FFS this is the most important function in the game if you have the need to modify it please be very careful/ask for help
 module.exports.sendInProgressGameUpdate = (game, noChats) => {
-	if (!game || !io.sockets.adapter.rooms[game.general.uid]) {
+	if (!game) {
 		return;
 	}
 
-	// DEBUG ONLY
-	// console.log(game.general.status, 'TimedMode:', game.gameState.timedModeEnabled, 'TimerId:', game.private.timerId ? 'exists' : 'null');
+	if (!io.sockets.adapter.rooms[game.general.uid]) {
+		// may need adjustment via redis
+		console.log('sendinprogressgameupdate returned as there was no room found');
+		return;
+	}
 
 	const seatedPlayerNames = game.publicPlayersState.map((player) => player.userName);
+	// io.sockets.adapter.clients
+
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(
 		(sockedId) => io.sockets.connected[sockedId]
 	);
+
 	const playerSockets = roomSockets.filter(
 		(socket) =>
 			socket &&
@@ -77,6 +87,7 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 			Object.keys(socket.handshake.session.passport).length &&
 			seatedPlayerNames.includes(socket.handshake.session.passport.user)
 	);
+
 	const observerSockets = roomSockets.filter(
 		(socket) =>
 			(socket && !socket.handshake.session.passport) ||
@@ -99,25 +110,25 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 		}
 
 		if (noChats) {
-			delete _game.chats;
 			sock.emit('gameUpdate', secureGame(_game), true);
 		} else {
+			// todo
 			_game.chats = combineInProgressChats(_game, user);
 			sock.emit('gameUpdate', secureGame(_game));
 		}
 	});
 
-	let chatWithHidden = game.chats;
-	if (!noChats && game.private && game.private.hiddenInfoChat && game.private.hiddenInfoSubscriptions.length) {
-		chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];
-	}
+	// todo look at this
+	// let chatWithHidden = game.chats;
+	// if (!noChats && game.private && game.private.hiddenInfoChat && game.private.hiddenInfoSubscriptions.length) {
+	// 	chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];
+	// }
 	if (observerSockets.length) {
 		observerSockets.forEach((sock) => {
 			const _game = Object.assign({}, game);
 			const user = sock.handshake.session.passport ? sock.handshake.session.passport.user : null;
 
 			if (noChats) {
-				delete _game.chats;
 				sock.emit('gameUpdate', secureGame(_game), true);
 			} else if (
 				user &&
@@ -165,7 +176,7 @@ module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
 	}
 };
 
-module.exports.sendPlayerChatUpdate = (game, chat) => {
+module.exports.sendPlayerChatUpdate = async (game, chat) => {
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
@@ -179,6 +190,8 @@ module.exports.sendPlayerChatUpdate = (game, chat) => {
 			sock.emit('playerChatUpdate', chat);
 		}
 	});
+
+	pushGameChatsAsync(game.general.uid, JSON.stringify(chat));
 };
 
 module.exports.secureGame = secureGame;
@@ -231,31 +244,4 @@ module.exports.rateEloGame = (game, accounts, winningPlayerNames) => {
 		ratingUpdates[account.username] = { change, changeSeason };
 	});
 	return ratingUpdates;
-};
-
-module.exports.destroySession = (username) => {
-	if (process.env.NODE_ENV !== 'production') {
-		const Mongoclient = require('mongodb').MongoClient;
-
-		let mongoClient;
-
-		Mongoclient.connect('mongodb://localhost:27017', { useNewUrlParser: true }, (err, client) => {
-			mongoClient = client;
-		});
-
-		if (!mongoClient) {
-			console.log('WARN: No mongo connection, cannot destroy user session.');
-			return;
-		}
-		mongoClient
-			.db('secret-hitler-app')
-			.collection('sessions')
-			.findOneAndDelete({ 'session.passport.user': username }, (err) => {
-				if (err) {
-					try {
-						console.log(err, 'err in logoutuser');
-					} catch (error) {}
-				}
-			});
-	}
 };

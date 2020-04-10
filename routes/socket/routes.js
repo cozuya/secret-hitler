@@ -10,19 +10,20 @@ const {
 	updateSeatedUser,
 	handleUpdateWhitelist,
 	handleAddNewClaim,
-	handleModerationAction,
-	handlePlayerReport,
-	handlePlayerReportDismiss,
 	handleUpdatedBio,
 	handleUpdatedRemakeGame,
-	handleUpdatedPlayerNote,
-	handleSubscribeModChat,
-	handleModPeekVotes,
-	handleGameFreeze,
 	handleHasSeenNewPlayerModal,
 	handleFlappyEvent,
 	handleUpdatedTheme,
 } = require('./user-events');
+const {
+	handleSubscribeModChat,
+	handleGameFreeze,
+	handleModPeekVotes,
+	handleModerationAction,
+	handlePlayerReport,
+	handlePlayerReportDismiss,
+} = require('./user-events-moderation');
 const {
 	sendPlayerNotes,
 	sendUserReports,
@@ -221,10 +222,9 @@ module.exports.socketRoutes = () => {
 						sock.id !== socket.id
 				);
 
-				// This is missing a way to disconnect a socket on a different process
 				if (oldSocketID && sockets[oldSocketID]) {
-					sockets[oldSocketID].emit('manualDisconnection');
-					delete sockets[oldSocketID];
+					io.sockets.clients(oldSocketID).emit('manualDisconnection');
+					io.of('/').adapter.remoteDisconnect(oldSocketID, true);
 				}
 
 				const reconnectingUser = game && game.publicPlayersState.find((player) => player.userName === user);
@@ -451,10 +451,6 @@ module.exports.socketRoutes = () => {
 					acc.save(() => (isRestricted = checkRestriction(acc)));
 				});
 			}
-		});
-
-		socket.on('handleUpdatedPlayerNote', (data) => {
-			handleUpdatedPlayerNote(socket, passport, data);
 		});
 
 		socket.on('handleUpdatedTheme', (data) => {

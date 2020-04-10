@@ -324,6 +324,7 @@ module.exports = () => {
 
 	app.get('/online-playercount', (req, res) => {
 		io.of('/').adapter.clients((err, clients) => {
+			// maybe io.engine.clientsCount ?
 			res.json({
 				count: clients.length,
 			});
