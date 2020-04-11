@@ -80,9 +80,13 @@ class CardFlinger extends React.Component {
 
 			if (userInfo.gameSettings && userInfo.gameSettings.disableHelpMessages) {
 				return;
-			} else if (status === 'Fascists win the game.' || status === 'Liberals win the game.') {
+			} 
+			
+			if (status === 'Fascists win the game.' || status === 'Liberals win the game.') {
 				return;
-			} else if (phase === 'voting' && cardFlingerState.length) {
+			} 
+			
+			if (phase === 'voting' && cardFlingerState.length) {
 				return (
 					<div className="help-message voting">
 						Click once to <span className="select">SELECT</span> a vote.
@@ -91,9 +95,13 @@ class CardFlinger extends React.Component {
 						</div>
 					</div>
 				);
-			} else if (phase === 'selectingChancellor' && currentPlayerStatus === 'isPendingPresident') {
+			} 
+			
+			if (phase === 'selectingChancellor' && currentPlayerStatus === 'isPendingPresident') {
 				return <div className="help-message nominate-chanc">You must select a player to be your Chancellor</div>;
-			} else if (phase === 'presidentSelectingPolicy' && currentPlayerStatus === 'isPresident') {
+			} 
+			
+			if (phase === 'presidentSelectingPolicy' && currentPlayerStatus === 'isPresident') {
 				return (
 					<div className="help-message pres-select">
 						Choose 1 policy to <span>DISCARD</span>.
@@ -102,21 +110,33 @@ class CardFlinger extends React.Component {
 						</div>
 					</div>
 				);
-			} else if (phase === 'chancellorSelectingPolicy' && currentPlayerStatus === 'isChancellor') {
+			} 
+			
+			if (phase === 'chancellorSelectingPolicy' && currentPlayerStatus === 'isChancellor') {
 				return (
 					<div className="help-message chanc-select">
 						Choose 1 policy to <span>PLAY</span>.
 					</div>
 				);
-			} else if (phase === 'selectPartyMembershipInvestigate' && currentPlayerStatus === 'isPresident') {
+			} 
+			
+			if (phase === 'selectPartyMembershipInvestigate' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message investigate">You must investigate another players party membership.</div>;
-			} else if (phase === 'selectPartyMembershipInvestigateReverse' && currentPlayerStatus === 'isPresident') {
+			} 
+			
+			if (phase === 'selectPartyMembershipInvestigateReverse' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message investigate">You must show another player your party membership.</div>;
-			} else if (phase === 'specialElection' && currentPlayerStatus === 'isPresident') {
+			} 
+			
+			if (phase === 'specialElection' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message special-election">Choose 1 player to become the next President.</div>;
-			} else if (phase === 'execution' && currentPlayerStatus === 'isPresident') {
+			} 
+			
+			if (phase === 'execution' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message execute">You must select a player to execute.</div>;
-			} else if (
+			} 
+			
+			if (
 				(phase === 'chancellorVoteOnVeto' && currentPlayerStatus === 'isChancellor') ||
 				(phase === 'presidentVoteOnVeto' && currentPlayerStatus === 'isPresident')
 			) {
@@ -125,13 +145,17 @@ class CardFlinger extends React.Component {
 						Would you like to <span>VETO</span> both of these policies?
 					</div>
 				);
-			} else if (phase === 'presidentVoteOnBurn' && currentPlayerStatus === 'isPresident') {
+			} 
+			
+			if (phase === 'presidentVoteOnBurn' && currentPlayerStatus === 'isPresident') {
 				return (
 					<div className="help-message veto">
 						Would you like to <span>DISCARD</span> the top policy?
 					</div>
 				);
-			} else if (status === 'President to peek at policies.' && currentPlayerStatus === 'isPresident') {
+			}
+			
+			if (status === 'President to peek at policies.' && currentPlayerStatus === 'isPresident') {
 				return <div className="help-message policy-peak">Click on the draw deck to peek at the top 3 policies.</div>;
 			}
 		};
