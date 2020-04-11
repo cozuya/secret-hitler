@@ -22,7 +22,7 @@ module.exports.chatReplacements = [
 		id: 3,
 		regex: /^mod.support/i,
 		replacement:
-			'The  most effective way to contact a mod is through our discord server in #mod-support. Join here:https://discord.gg/secrethitlerio. Make sure to agree to our rules to access the channel. Once there, just ping @Moderator and explain the situation. Provide game links and images when possible.',
+			'The most effective way to contact a mod is through our discord server in #mod-support. Join here:https://discord.gg/secrethitlerio. Make sure to agree to our rules to access the channel. Once there, just ping @Moderator and explain the situation. Provide game links and images when possible.',
 		aemCooldown: 15,
 		normalCooldown: 180,
 		normalGames: 50,

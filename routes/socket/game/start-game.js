@@ -506,14 +506,13 @@ const beginGame = async (game) => {
 
 				player.playersState[i].cardStatus.isFlipped = true;
 			});
-			await setGameAsync(game);
 			sendInProgressGameUpdate(game);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
 	);
 
 	setTimeout(
-		async () => {
+		() => {
 			game.private.seatedPlayers.forEach((player, i) => {
 				if (!player.playersState) {
 					return;
@@ -523,32 +522,29 @@ const beginGame = async (game) => {
 					play.notificationStatus = '';
 				});
 			});
-			await setGameAsync(game);
 			sendInProgressGameUpdate(game, true);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : 5000
 	);
 
 	setTimeout(
-		async () => {
+		() => {
 			game.publicPlayersState.forEach((player) => {
 				player.cardStatus.cardDisplayed = false;
 			});
-			await setGameAsync(game);
 			sendInProgressGameUpdate(game, true);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5200 : 7000
 	);
 
 	setTimeout(
-		async () => {
+		() => {
 			game.private.seatedPlayers.forEach((player) => {
 				player.playersState.forEach((state) => {
 					state.cardStatus = {};
 				});
 			});
 			game.gameState.presidentIndex = -1;
-			await setGameAsync(game);
 			startElection(game);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5400 : 9000
@@ -579,13 +575,12 @@ module.exports = async (game) => {
 
 	let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 5;
 
-	const countDown = setInterval(async () => {
+	const countDown = setInterval(() => {
 		if (!startGamePause) {
 			clearInterval(countDown);
 			beginGame(game);
 		} else {
 			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
-			await setGameAsync(game);
 			sendInProgressGameUpdate(game, true);
 			startGamePause--;
 		}

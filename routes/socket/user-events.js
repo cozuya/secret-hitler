@@ -341,7 +341,6 @@ const handleSocketDisconnect = async (socket) => {
 					game.remakeData.find((player) => player.userName === passport.user).isRemaking = false;
 				}
 
-				await setGameAsync(game);
 				sendInProgressGameUpdate(game);
 				if (
 					game.publicPlayersState.filter((publicPlayer) => publicPlayer.leftGame).length === game.general.playerCount
@@ -457,7 +456,8 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 		await setGameAsync(game);
 	}
 
-	sendGameList();
+	// todo
+	// sendGameList();
 };
 
 /**
@@ -1686,7 +1686,7 @@ module.exports.handleUpdatedRemakeGame = async (passport, game, data, socket) =>
 				game.summarySaved = true;
 			}
 		}
-		await setGameAsync(game);
+
 		sendInProgressGameUpdate(game);
 
 		setTimeout(async () => {
@@ -1819,7 +1819,7 @@ module.exports.handleUpdatedRemakeGame = async (passport, game, data, socket) =>
 	}
 	socket.emit('updateRemakeVoting', player.isRemaking);
 	await pushGameChatsAsync(game, chat);
-	await setGameAsync(game);
+
 	sendInProgressGameUpdate(game);
 };
 

@@ -17,7 +17,7 @@ const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-cons
  */
 const saveGame = (game) => {
 	const summary = game.private.summary.publish();
-	const casualBool = game.general.casualGame ? true : false; // Because Mongo is explicitly typed and integers are not truthy according to it
+	const casualBool = Boolean(game.general.casualGame);
 	/**
 	 * @param {object} - object describing game model.
 	 */
@@ -87,6 +87,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 	}
 
 	for (let affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber++) {
+		// todo
 		const affectedSocketId = Object.keys(io.sockets.sockets).find(
 			(socketId) =>
 				io.sockets.sockets[socketId].handshake.session.passport &&
@@ -161,7 +162,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	game.general.status = winningTeamName === 'fascist' ? 'Fascists win the game.' : 'Liberals win the game.';
 	game.gameState.isCompleted = winningTeamName;
-	sendGameList();
 
 	publicPlayersState.forEach((publicPlayer, index) => {
 		publicPlayer.nameStatus = seatedPlayers[index].role.cardName;
@@ -398,7 +398,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 									.includes(io.sockets.sockets[socketId].handshake.session.passport.user)
 						);
 
-						// crash here line 302 map of undefined.  Not sure how this didn't exist at this time.  Race condition in settimeout/interval?  Both games completed at almost the same time?  Dunno.
 						const otherGameWinningPlayerSocketIds = Object.keys(io.sockets.sockets).filter(
 							(socketId) =>
 								io.sockets.sockets[socketId].handshake.session.passport &&
@@ -453,7 +452,6 @@ module.exports.completeGame = (game, winningTeamName) => {
 						finalGame.general.name = `${game.general.name.slice(0, game.general.name.length - 7)}-tableFINAL`;
 						games.push(finalGame);
 						require('./start-game.js')(finalGame); // circular dep.
-						sendGameList();
 					}
 				}, 1000);
 			} else {
@@ -481,6 +479,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 					}
 				});
 			}
+			// todo
 			game.chats.push({
 				gameChat: true,
 				timestamp: new Date(),

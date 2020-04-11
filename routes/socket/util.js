@@ -1,5 +1,5 @@
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
-const { pushGameChatsAsync, getRangeGameChatsAsync } = require('./models');
+const { setGameAsync, pushGameChatsAsync, getRangeGameChatsAsync } = require('./models');
 
 /**
  * @param {object} game - game to act on.
@@ -62,10 +62,12 @@ const combineInProgressChats = async (game, userName) => {
  * @param {boolean} noChats - remove chats for client to handle.
  */
 // FFS this is the most important function in the game if you have the need to modify it please be very careful/ask for help
-module.exports.sendInProgressGameUpdate = (game, noChats) => {
+module.exports.sendInProgressGameUpdate = async (game, noChats) => {
 	if (!game) {
 		return;
 	}
+
+	await setGameAsync(game);
 
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		// may need adjustment via redis
@@ -148,10 +150,12 @@ module.exports.sendInProgressGameUpdate = (game, noChats) => {
 	}
 };
 
-module.exports.sendInProgressModChatUpdate = (game, chat, specificUser) => {
+module.exports.sendInProgressModChatUpdate = async (game, chat, specificUser) => {
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		return;
 	}
+
+	await setGameAsync(game);
 
 	const roomSockets = Object.keys(io.sockets.adapter.rooms[game.general.uid].sockets).map(
 		(sockedId) => io.sockets.connected[sockedId]

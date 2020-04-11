@@ -54,6 +54,7 @@ const checkIP = (config) => {
 	if (hasBypass) {
 		config.vpnScore = 0;
 		next(config);
+		// todo
 	} else if (accountCreationDisabled.status && !hasBypass) {
 		const creationDisabledSignup = new Signups({
 			date: new Date(),

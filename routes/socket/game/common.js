@@ -95,7 +95,7 @@ const shufflePolicies = (module.exports.shufflePolicies = (game, isStart) => {
  * @param {object} game - game to act on.
  * @param {number} specialElectionPresidentIndex - number of index of the special election player (optional)
  */
-module.exports.startElection = async (game, specialElectionPresidentIndex) => {
+module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const { experiencedMode } = game.general;
 
 	if (game.trackState.fascistPolicyCount >= game.customGameSettings.vetoZone) {
@@ -139,7 +139,8 @@ module.exports.startElection = async (game, specialElectionPresidentIndex) => {
 	const pendingPresidentPlayer = seatedPlayers[presidentIndex];
 
 	game.general.electionCount++;
-	sendGameList();
+	// todo
+	// sendGameList();
 	game.general.status = `Election #${game.general.electionCount}: president to select chancellor.`;
 
 	if (!experiencedMode && !game.general.disableGamechat) {
@@ -177,8 +178,6 @@ module.exports.startElection = async (game, specialElectionPresidentIndex) => {
 	game.publicPlayersState[presidentIndex].isLoader = true;
 	game.gameState.phase = 'selectingChancellor';
 
-	await setGameAsync(game);
-
 	if (game.general.timedMode) {
 		if (game.private.timerId) {
 			clearTimeout(game.private.timerId);
@@ -186,11 +185,10 @@ module.exports.startElection = async (game, specialElectionPresidentIndex) => {
 		}
 		game.gameState.timedModeEnabled = true;
 		game.private.timerId = setTimeout(
-			async () => {
+			() => {
 				if (game.gameState.timedModeEnabled) {
 					const chancellorIndex = _.shuffle(game.gameState.clickActionInfo[1])[0];
 
-					await setGameAsync(game);
 					selectChancellor(null, { user: pendingPresidentPlayer.userName }, game, { chancellorIndex });
 				}
 			},
@@ -218,6 +216,5 @@ module.exports.startElection = async (game, specialElectionPresidentIndex) => {
 						.map((el) => seatedPlayers.indexOf(el)),
 			  ];
 
-	await setGameAsync(game);
 	sendInProgressGameUpdate(game);
 };

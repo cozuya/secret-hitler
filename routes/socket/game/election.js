@@ -16,7 +16,8 @@ const {
 } = require('./policy-powers');
 const { completeGame } = require('./end-game');
 const _ = require('lodash');
-const { makeReport } = require('../report.js');
+const { makeReport } = require('../report');
+const { setGameAsync } = require('../models');
 
 const powerMapping = {
 	investigate: [investigateLoyalty, 'The president must investigate the party membership of another player.'],
@@ -56,7 +57,7 @@ const presidentPowers = [
  * @param {string} team - name of team that is enacting policy.
  * @param {object} socket - socket
  */
-const enactPolicy = (game, team, socket) => {
+const enactPolicy = async (game, team, socket) => {
 	const index = game.trackState.enactedPolicies.length;
 	const { experiencedMode } = game.general;
 
@@ -132,7 +133,6 @@ const enactPolicy = (game, team, socket) => {
 
 	game.general.status = 'A policy is being enacted.';
 	game.trackState[`${team}PolicyCount`]++;
-	sendGameList();
 
 	game.trackState.enactedPolicies.push({
 		position: 'middle',
@@ -146,13 +146,14 @@ const enactPolicy = (game, team, socket) => {
 		() => {
 			game.trackState.enactedPolicies[index].isFlipped = true;
 			game.gameState.audioCue = team === 'liberal' ? 'enactPolicyL' : 'enactPolicyF';
+
 			sendInProgressGameUpdate(game, true);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 300 : 2000
 	);
 
 	setTimeout(
-		() => {
+		async () => {
 			game.gameState.audioCue = '';
 			const chat = {
 				timestamp: new Date(),
@@ -226,6 +227,7 @@ const enactPolicy = (game, team, socket) => {
 							player.cardStatus.isFlipped = true;
 						});
 						game.gameState.audioCue = '';
+
 						if (process.env.NODE_ENV === 'development') {
 							completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
 						} else {
@@ -251,6 +253,7 @@ const enactPolicy = (game, team, socket) => {
 					game.private.unSeatedGameChats.push(chat);
 				}
 				powerToEnact[0](game);
+
 				addPreviousGovernmentStatus();
 
 				if (game.general.timedMode) {
@@ -314,6 +317,7 @@ const enactPolicy = (game, team, socket) => {
 			}
 
 			game.trackState.electionTrackerCount = 0;
+			await setGameAsync(game);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 4000
 	);
@@ -696,11 +700,10 @@ module.exports.selectChancellorVoteOnVeto = selectChancellorVoteOnVeto;
 // todo check this argument for jsdoc
 const handToLog = (hand) =>
 	hand.reduce(
-		(hand, policy) => {
-			return policy === 'fascist'
+		(hand, policy) =>
+			policy === 'fascist'
 				? Object.assign({}, hand, { reds: hand.reds + 1 })
-				: Object.assign({}, hand, { blues: hand.blues + 1 });
-		},
+				: Object.assign({}, hand, { blues: hand.blues + 1 }),
 		{ reds: 0, blues: 0 }
 	);
 
@@ -711,7 +714,7 @@ const handToLog = (hand) =>
  * @param {boolean} wasTimer - came from timer
  * @param {object} socket - socket
  */
-const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
+const selectChancellorPolicy = async (passport, game, data, wasTimer, socket) => {
 	const { experiencedMode } = game.general;
 	const presidentIndex = game.publicPlayersState.findIndex((player) => player.governmentStatus === 'isPresident');
 	const president = game.private.seatedPlayers[presidentIndex];
@@ -941,6 +944,7 @@ const selectChancellorPolicy = (passport, game, data, wasTimer, socket) => {
 		if (experiencedMode) {
 			president.playersState[presidentIndex].claim = 'wasPresident';
 			chancellor.playersState[chancellorIndex].claim = 'wasChancellor';
+			await setGameAsync(game);
 		} else {
 			setTimeout(() => {
 				president.playersState[presidentIndex].claim = 'wasPresident';
@@ -960,7 +964,7 @@ module.exports.selectChancellorPolicy = selectChancellorPolicy;
  * @param {boolean} wasTimer - came from timer
  * @param {object} socket - socket
  */
-const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
+const selectPresidentPolicy = async (passport, game, data, wasTimer, socket) => {
 	const { presidentIndex } = game.gameState;
 	const president = game.private.seatedPlayers[presidentIndex];
 	const chancellorIndex = game.publicPlayersState.findIndex((player) => player.governmentStatus === 'isChancellor');
@@ -1029,7 +1033,6 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 		sendInProgressModChatUpdate(game, modOnlyChat);
 
 		if (!wasTimer && !game.general.private) {
-			// const presGetsPower = presidentPowers[game.general.type][game.trackState.fascistPolicyCount] ? true : false;
 			const track4blue = game.trackState.liberalPolicyCount >= 4;
 			const trackReds = game.trackState.fascistPolicyCount;
 
@@ -1227,6 +1230,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 				president.cardFlingerState[2].notificationStatus = 'selected';
 			}
 		} catch (error) {
+			await setGameAsync(game);
 			console.log(error, 'caught exception in president cardflinger');
 			return;
 		}
@@ -1278,7 +1282,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 		sendInProgressGameUpdate(game);
 
 		setTimeout(
-			() => {
+			async () => {
 				president.cardFlingerState = [];
 				chancellor.cardFlingerState.forEach((cardFlinger) => {
 					cardFlinger.cardStatus.isFlipped = true;
@@ -1293,6 +1297,7 @@ const selectPresidentPolicy = (passport, game, data, wasTimer, socket) => {
 						game.private.timerId = null;
 					}
 					game.gameState.timedModeEnabled = true;
+					await setGameAsync(game);
 					game.private.timerId = setTimeout(
 						() => {
 							if (game.gameState.timedModeEnabled) {
@@ -1383,6 +1388,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 
 		game.general.status = 'Waiting on presidential discard.';
 		game.publicPlayersState[presidentIndex].isLoader = true;
+
 		if (!experiencedMode && !game.general.disableGamechat) {
 			seatedPlayers[presidentIndex].gameChats.push({
 				timestamp: new Date(),
@@ -1401,11 +1407,9 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 			game.private.policies.shift(),
 			game.private.policies.shift(),
 		];
-		const verifyCorrect = (policy) => {
-			if (policy === 'liberal') return true;
-			if (policy === 'fascist') return true;
-			return false;
-		};
+
+		const verifyCorrect = (policy) => Boolean(policy === 'liberal' || policy === 'fascist');
+
 		if (
 			!verifyCorrect(game.private.currentElectionPolicies[0]) ||
 			!verifyCorrect(game.private.currentElectionPolicies[1]) ||
@@ -1546,6 +1550,7 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 			experiencedMode ? 200 : 600
 		);
 	};
+
 	const failedElection = () => {
 		game.trackState.electionTrackerCount++;
 

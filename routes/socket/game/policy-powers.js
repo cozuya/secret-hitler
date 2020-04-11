@@ -7,7 +7,7 @@ const { setGameAsync } = require('../models');
 /**
  * @param {object} game - game to act on.
  */
-module.exports.policyPeek = async (game) => {
+module.exports.policyPeek = (game) => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
@@ -23,7 +23,6 @@ module.exports.policyPeek = async (game) => {
 		game.publicPlayersState[presidentIndex].isLoader = true;
 		president.playersState[presidentIndex].policyNotification = true;
 
-		await setGameAsync(game);
 		sendInProgressGameUpdate(game, true);
 	}
 };
@@ -33,7 +32,7 @@ module.exports.policyPeek = async (game) => {
  * @param {object} game - target game.
  * @param {object} socket - socket
  */
-module.exports.selectPolicies = async (passport, game, socket) => {
+module.exports.selectPolicies = (passport, game, socket) => {
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
@@ -100,32 +99,31 @@ module.exports.selectPolicies = async (passport, game, socket) => {
 		game.gameState.audioCue = 'policyPeek';
 		president.playersState[presidentIndex].policyNotification = false;
 
-		await setGameAsync(game);
 		sendInProgressGameUpdate(game, true);
 
 		setTimeout(
-			async () => {
+			() => {
 				president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = true;
-				await setGameAsync(game);
+
 				sendInProgressGameUpdate(game, true);
 			},
 			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000
 		);
 
 		setTimeout(
-			async () => {
+			() => {
 				president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
 				president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action =
 					'';
 				sendInProgressGameUpdate(game, true);
-				await setGameAsync(game);
+
 				game.gameState.audioCue = '';
 			},
 			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 3500 : 6000
 		);
 
 		setTimeout(
-			async () => {
+			() => {
 				president.cardFlingerState = [];
 
 				const modOnlyChat = {
@@ -187,11 +185,10 @@ module.exports.selectPolicies = async (passport, game, socket) => {
 					});
 				}
 
-				await setGameAsync(game);
 				sendInProgressGameUpdate(game);
 				game.trackState.electionTrackerCount = 0;
 				president.playersState[presidentIndex].claim = 'didPolicyPeek';
-				await setGameAsync(game);
+
 				startElection(game);
 			},
 			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4500 : 7000
@@ -202,7 +199,7 @@ module.exports.selectPolicies = async (passport, game, socket) => {
 /**
  * @param {object} game - game to act on.
  */
-module.exports.policyPeekAndDrop = async (game) => {
+module.exports.policyPeekAndDrop = (game) => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
@@ -217,7 +214,7 @@ module.exports.policyPeekAndDrop = async (game) => {
 		game.general.status = 'President to peek at one policy.';
 		game.publicPlayersState[presidentIndex].isLoader = true;
 		president.playersState[presidentIndex].policyNotification = true;
-		await setGameAsync(game);
+
 		sendInProgressGameUpdate(game, true);
 	}
 };
@@ -226,7 +223,7 @@ module.exports.policyPeekAndDrop = async (game) => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  */
-module.exports.selectOnePolicy = async (passport, game) => {
+module.exports.selectOnePolicy = (passport, game) => {
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
@@ -290,23 +287,23 @@ module.exports.selectOnePolicy = async (passport, game) => {
 
 		game.gameState.audioCue = 'policyPeek';
 		president.playersState[presidentIndex].policyNotification = false;
-		await setGameAsync(game);
+
 		sendInProgressGameUpdate(game, true);
 
 		setTimeout(
-			async () => {
+			() => {
 				president.cardFlingerState[0].cardStatus.isFlipped = true;
-				await setGameAsync(game);
+
 				sendInProgressGameUpdate(game, true);
 			},
 			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000
 		);
 
 		setTimeout(
-			async () => {
+			() => {
 				president.cardFlingerState[0].cardStatus.isFlipped = false;
 				president.cardFlingerState[0].action = '';
-				await setGameAsync(game);
+
 				sendInProgressGameUpdate(game, true);
 				game.gameState.audioCue = '';
 			},
@@ -314,7 +311,7 @@ module.exports.selectOnePolicy = async (passport, game) => {
 		);
 
 		setTimeout(
-			async () => {
+			() => {
 				president.cardFlingerState = [];
 
 				const modOnlyChat = {
@@ -359,12 +356,11 @@ module.exports.selectOnePolicy = async (passport, game) => {
 					});
 				}
 
-				await setGameAsync(game);
 				sendInProgressGameUpdate(game);
 				game.trackState.electionTrackerCount = 0;
 				president.playersState[presidentIndex].claim = 'didSinglePolicyPeek';
 				setTimeout(
-					async () => {
+					() => {
 						const chat = {
 							gameChat: true,
 							timestamp: new Date(),
@@ -404,11 +400,11 @@ module.exports.selectOnePolicy = async (passport, game) => {
 						if (!game.general.disableGamechat) {
 							president.gameChats.push(chat);
 						}
-						await setGameAsync(game);
+
 						sendInProgressGameUpdate(game);
 
 						setTimeout(
-							async () => {
+							() => {
 								president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = true;
 								president.cardFlingerState[0].notificationStatus = president.cardFlingerState[1].notificationStatus =
 									'notification';
@@ -433,7 +429,6 @@ module.exports.selectOnePolicy = async (passport, game) => {
 									);
 								}
 
-								await setGameAsync(game);
 								sendInProgressGameUpdate(game);
 							},
 							process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 1000
@@ -453,7 +448,7 @@ module.exports.selectOnePolicy = async (passport, game) => {
  * @param {object} data from socket emit
  * @param {object} socket - socket
  */
-module.exports.selectBurnCard = async (passport, game, data, socket) => {
+module.exports.selectBurnCard = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.private.timerId = null;
@@ -509,11 +504,10 @@ module.exports.selectBurnCard = async (passport, game, data, socket) => {
 			},
 		};
 
-		await setGameAsync(game);
 		sendInProgressGameUpdate(game);
 
 		setTimeout(
-			async () => {
+			() => {
 				const chat = {
 					timestamp: new Date(),
 					gameChat: true,
@@ -549,12 +543,10 @@ module.exports.selectBurnCard = async (passport, game, data, socket) => {
 					}
 				}
 
-				await setGameAsync(game);
 				sendInProgressGameUpdate(game);
 
 				setTimeout(
-					async () => {
-						await setGameAsync(game);
+					() => {
 						startElection(game);
 					},
 					process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 1000 : 3000
@@ -568,7 +560,7 @@ module.exports.selectBurnCard = async (passport, game, data, socket) => {
 /**
  * @param {object} game - game to act on.
  */
-module.exports.investigateLoyalty = async (game) => {
+module.exports.investigateLoyalty = (game) => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
@@ -606,7 +598,6 @@ module.exports.investigateLoyalty = async (game) => {
 		});
 
 		game.private.unSeatedGameChats.push(chat);
-		await setGameAsync(game);
 		startElection(game);
 		return;
 	}
@@ -628,7 +619,7 @@ module.exports.investigateLoyalty = async (game) => {
 				.map((player) => seatedPlayers.indexOf(player)),
 		];
 		game.gameState.phase = 'selectPartyMembershipInvestigate';
-		await setGameAsync(game);
+
 		sendInProgressGameUpdate(game, true);
 	}
 };
@@ -699,11 +690,10 @@ module.exports.selectPartyMembershipInvestigate = async (passport, game, data, s
 				cardBack: {},
 			};
 
-			await setGameAsync(game);
 			sendInProgressGameUpdate(game, true);
 
 			setTimeout(
-				async () => {
+				() => {
 					const chat = {
 						timestamp: new Date(),
 						gameChat: true,
@@ -798,29 +788,27 @@ module.exports.selectPartyMembershipInvestigate = async (passport, game, data, s
 					}
 					game.private.invIndex = playerIndex;
 
-					await setGameAsync(game);
 					sendInProgressGameUpdate(game);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
 			);
 
 			setTimeout(
-				async () => {
+				() => {
 					game.gameState.audioCue = '';
 					president.playersState[playerIndex].cardStatus.isFlipped = false;
-					await setGameAsync(game);
+
 					sendInProgressGameUpdate(game, true);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4000 : 6000
 			);
 
 			setTimeout(
-				async () => {
+				() => {
 					game.publicPlayersState[playerIndex].cardStatus.cardDisplayed = false;
 					president.playersState[playerIndex].cardStatus.cardBack = {};
 					president.playersState[presidentIndex].claim = 'didInvestigateLoyalty';
 
-					await setGameAsync(game);
 					sendInProgressGameUpdate(game, true);
 					startElection(game);
 				},
@@ -833,7 +821,7 @@ module.exports.selectPartyMembershipInvestigate = async (passport, game, data, s
 /**
  * @param {object} game - game to act on.
  */
-module.exports.showPlayerLoyalty = async (game) => {
+module.exports.showPlayerLoyalty = (game) => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
@@ -855,7 +843,7 @@ module.exports.showPlayerLoyalty = async (game) => {
 				.map((player) => seatedPlayers.indexOf(player)),
 		];
 		game.gameState.phase = 'selectPartyMembershipInvestigateReverse';
-		await setGameAsync(game);
+
 		sendInProgressGameUpdate(game, true);
 	}
 };
@@ -866,7 +854,7 @@ module.exports.showPlayerLoyalty = async (game) => {
  * @param {object} data from socket emit
  * @param {object} socket - socket
  */
-module.exports.selectPartyMembershipInvestigateReverse = async (passport, game, data, socket) => {
+module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, socket) => {
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.private.timerId = null;
@@ -924,11 +912,10 @@ module.exports.selectPartyMembershipInvestigateReverse = async (passport, game, 
 				cardBack: {},
 			};
 
-			await setGameAsync(game);
 			sendInProgressGameUpdate(game, true);
 
 			setTimeout(
-				async () => {
+				() => {
 					const chat = {
 						timestamp: new Date(),
 						gameChat: true,
@@ -1040,28 +1027,27 @@ module.exports.selectPartyMembershipInvestigateReverse = async (passport, game, 
 						targetPlayer.playersState[presidentIndex].nameStatus = playersTeam;
 					}
 
-					await setGameAsync(game);
 					sendInProgressGameUpdate(game);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
 			);
 
 			setTimeout(
-				async () => {
+				() => {
 					game.gameState.audioCue = '';
 					targetPlayer.playersState[presidentIndex].cardStatus.isFlipped = false;
-					await setGameAsync(game);
+
 					sendInProgressGameUpdate(game, true);
 				},
 				process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4000 : 6000
 			);
 
 			setTimeout(
-				async () => {
+				() => {
 					game.publicPlayersState[presidentIndex].cardStatus.cardDisplayed = false;
 					targetPlayer.playersState[presidentIndex].cardStatus.cardBack = {};
 					targetPlayer.playersState[playerIndex].claim = 'didInvestigateLoyalty';
-					await setGameAsync(game);
+
 					sendInProgressGameUpdate(game, true);
 					startElection(game);
 				},
@@ -1074,7 +1060,7 @@ module.exports.selectPartyMembershipInvestigateReverse = async (passport, game, 
 /**
  * @param {object} game - game to act on.
  */
-module.exports.specialElection = async (game) => {
+module.exports.specialElection = (game) => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
@@ -1098,7 +1084,7 @@ module.exports.specialElection = async (game) => {
 				.filter((player, i) => i !== presidentIndex && !seatedPlayers[i].isDead)
 				.map((player) => seatedPlayers.indexOf(player)),
 		];
-		await setGameAsync(game);
+
 		sendInProgressGameUpdate(game, true);
 	}
 };
@@ -1109,7 +1095,7 @@ module.exports.specialElection = async (game) => {
  * @param {object} data from socket emit
  * @param {object} socket - socket
  */
-module.exports.selectSpecialElection = async (passport, game, data, socket) => {
+module.exports.selectSpecialElection = (passport, game, data, socket) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const gameChat = {
@@ -1200,7 +1186,6 @@ module.exports.selectSpecialElection = async (passport, game, data, socket) => {
 			});
 		}
 
-		await setGameAsync(game);
 		sendInProgressGameUpdate(game);
 
 		startElection(game, data.playerIndex);
@@ -1210,7 +1195,7 @@ module.exports.selectSpecialElection = async (passport, game, data, socket) => {
 /**
  * @param {object} game - game to act on.
  */
-module.exports.executePlayer = async (game) => {
+module.exports.executePlayer = (game) => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
@@ -1263,7 +1248,7 @@ module.exports.executePlayer = async (game) => {
 				.map((player) => seatedPlayers.indexOf(player)),
 		];
 		game.gameState.phase = 'execution';
-		await setGameAsync(game);
+
 		sendInProgressGameUpdate(game);
 	}
 };
@@ -1274,7 +1259,7 @@ module.exports.executePlayer = async (game) => {
  * @param {object} data from socket emit
  * @param {object} socket - socket
  */
-module.exports.selectPlayerToExecute = async (passport, game, data, socket) => {
+module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 	const { playerIndex } = data;
 	const { presidentIndex } = game.gameState;
 	const { seatedPlayers } = game.private;
@@ -1374,17 +1359,15 @@ module.exports.selectPlayerToExecute = async (passport, game, data, socket) => {
 		publicSelectedPlayer.cardStatus.cardFront = 'secretrole';
 		publicSelectedPlayer.notificationStatus = 'danger';
 		publicSelectedPlayer.isDead = true;
-		await setGameAsync(game);
 		sendInProgressGameUpdate(game);
 
 		setTimeout(
-			async () => {
+			() => {
 				game.gameState.audioCue = '';
 				selectedPlayer.isDead = publicSelectedPlayer.isDead = true;
 				publicSelectedPlayer.notificationStatus = '';
 				game.general.livingPlayerCount--;
 
-				await setGameAsync(game);
 				sendInProgressGameUpdate(game, true);
 
 				if (selectedPlayer.role.cardName === 'hitler') {
@@ -1410,7 +1393,7 @@ module.exports.selectPlayerToExecute = async (passport, game, data, socket) => {
 					game.private.unSeatedGameChats.push(chat);
 
 					setTimeout(
-						async () => {
+						() => {
 							game.publicPlayersState.forEach((player, i) => {
 								player.cardStatus.cardFront = 'secretrole';
 								player.cardStatus.cardDisplayed = true;
@@ -1418,20 +1401,18 @@ module.exports.selectPlayerToExecute = async (passport, game, data, socket) => {
 							});
 							game.gameState.audioCue = 'hitlerShot';
 
-							await setGameAsync(game);
 							sendInProgressGameUpdate(game);
 						},
 						process.env.NODE_ENV === 'development' ? 100 : 1000
 					);
 
 					setTimeout(
-						async () => {
+						() => {
 							game.publicPlayersState.forEach((player) => {
 								player.cardStatus.isFlipped = true;
 							});
 
 							game.gameState.audioCue = '';
-							await setGameAsync(game);
 							completeGame(game, 'liberal');
 						},
 						process.env.NODE_ENV === 'development' ? 100 : 2000
@@ -1465,7 +1446,7 @@ module.exports.selectPlayerToExecute = async (passport, game, data, socket) => {
 						game.private.unSeatedGameChats.push(chat);
 
 						setTimeout(
-							async () => {
+							() => {
 								game.publicPlayersState.forEach((player, i) => {
 									player.cardStatus.cardFront = 'secretrole';
 									player.cardStatus.cardDisplayed = true;
@@ -1473,21 +1454,19 @@ module.exports.selectPlayerToExecute = async (passport, game, data, socket) => {
 								});
 								game.gameState.audioCue = 'hitlerShot';
 
-								await setGameAsync(game);
 								sendInProgressGameUpdate(game);
 							},
 							process.env.NODE_ENV === 'development' ? 100 : 1000
 						);
 
 						setTimeout(
-							async () => {
+							() => {
 								game.publicPlayersState.forEach((player) => {
 									player.cardStatus.isFlipped = true;
 								});
 
 								game.gameState.audioCue = '';
 
-								await setGameAsync(game);
 								completeGame(game, 'fascist');
 							},
 							process.env.NODE_ENV === 'development' ? 100 : 2000
@@ -1526,10 +1505,9 @@ module.exports.selectPlayerToExecute = async (passport, game, data, socket) => {
 							game.private.unSeatedGameChats.push(chat);
 							game.general.status = 'Top-decking to the end...';
 
-							await setGameAsync(game);
 							sendInProgressGameUpdate(game);
 
-							const playCard = async () => {
+							const playCard = () => {
 								if (game.private.policies.length < 3) {
 									shufflePolicies(game);
 								}
@@ -1583,16 +1561,14 @@ module.exports.selectPlayerToExecute = async (passport, game, data, socket) => {
 									});
 									game.gameState.audioCue = game.trackState.liberalPolicyCount === 5 ? 'liberalsWin' : 'fascistsWin';
 									setTimeout(
-										async () => {
+										() => {
 											game.publicPlayersState.forEach((player, i) => {
 												player.cardStatus.isFlipped = true;
 											});
 											game.gameState.audioCue = '';
 											if (process.env.NODE_ENV === 'development') {
-												await setGameAsync(game);
 												completeGame(game, game.trackState.liberalPolicyCount === 1 ? 'liberal' : 'fascist');
 											} else {
-												await setGameAsync(game);
 												completeGame(game, game.trackState.liberalPolicyCount === 5 ? 'liberal' : 'fascist');
 											}
 										},
@@ -1601,20 +1577,17 @@ module.exports.selectPlayerToExecute = async (passport, game, data, socket) => {
 								} else {
 									setTimeout(playCard, 2500);
 								}
-								await setGameAsync(game);
 								sendInProgressGameUpdate(game);
 							};
 							setTimeout(playCard, 2500);
 						} else {
 							publicSelectedPlayer.cardStatus.cardDisplayed = false;
 
-							await setGameAsync(game);
 							sendInProgressGameUpdate(game, true);
 							setTimeout(
-								async () => {
+								() => {
 									game.trackState.electionTrackerCount = 0;
 
-									await setGameAsync(game);
 									startElection(game);
 								},
 								process.env.NODE_ENV === 'development' ? 100 : 2000

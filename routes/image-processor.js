@@ -34,6 +34,7 @@ module.exports.ProcessImage = (username, raw, callback) => {
 						user.customCardbackUid = account.gameSettings.customCardbackUid;
 						userListEmitter.send = true;
 					}
+					// todo
 					Object.keys(games).forEach((uid) => {
 						const game = games[uid];
 						const foundUser = game.publicPlayersState.find((user) => user.userName === username);

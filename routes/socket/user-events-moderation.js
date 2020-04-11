@@ -107,7 +107,6 @@ module.exports.handleSubscribeModChat = async (socket, passport, game) => {
 	game.private.hiddenInfoChat.push(modOnlyChat);
 	game.private.hiddenInfoSubscriptions.push(passport.user);
 
-	await setGameAsync(game);
 	sendInProgressGameUpdate(game);
 };
 
@@ -162,6 +161,7 @@ module.exports.handleGameFreeze = async (socket, passport, game, modUserName) =>
 		isBroadcast: true,
 		timestamp: new Date(),
 	});
+
 	await setGameAsync(gameToFreeze);
 	sendInProgressGameUpdate(game);
 };
