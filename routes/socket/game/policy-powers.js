@@ -2,11 +2,12 @@ const { sendInProgressGameUpdate, sendInProgressModChatUpdate } = require('../ut
 const { startElection, shufflePolicies } = require('./common.js');
 const { sendGameList } = require('../user-requests');
 const { completeGame } = require('./end-game.js');
+const { setGameAsync } = require('../models');
 
 /**
  * @param {object} game - game to act on.
  */
-module.exports.policyPeek = (game) => {
+module.exports.policyPeek = async (game) => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
@@ -21,6 +22,8 @@ module.exports.policyPeek = (game) => {
 		game.general.status = 'President to peek at policies.';
 		game.publicPlayersState[presidentIndex].isLoader = true;
 		president.playersState[presidentIndex].policyNotification = true;
+
+		await setGameAsync(game);
 		sendInProgressGameUpdate(game, true);
 	}
 };
@@ -30,24 +33,15 @@ module.exports.policyPeek = (game) => {
  * @param {object} game - target game.
  * @param {object} socket - socket
  */
-module.exports.selectPolicies = (passport, game, socket) => {
+module.exports.selectPolicies = async (passport, game, socket) => {
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
 
-	if (game.gameState.isGameFrozen) {
+	if (game.gameState.isGameFrozen || game.general.isRemade || !president || president.userName !== passport.user) {
 		return;
 	}
-
-	if (game.general.isRemade) {
-		return;
-	}
-
-	if (!president || president.userName !== passport.user) {
-		return;
-	}
-
 	if (game.general.timedMode && game.private.timerId) {
 		clearTimeout(game.private.timerId);
 		game.private.timerId = null;
@@ -64,13 +58,11 @@ module.exports.selectPolicies = (passport, game, socket) => {
 
 		game.private.summary = game.private.summary.updateLog({
 			policyPeek: game.private.policies.slice(0, 3).reduce(
-				(peek, policy) => {
-					if (policy === 'fascist') {
-						return Object.assign({}, peek, { reds: peek.reds + 1 });
-					} else {
-						return Object.assign({}, peek, { blues: peek.blues + 1 });
-					}
-				},
+				(accumulator, policy) =>
+					policy === 'fascist'
+						? Object.assign({}, accumulator, { reds: accumulator.reds + 1 })
+						: Object.assign({}, accumulator, { blues: accumulator.blues + 1 }),
+
 				{ reds: 0, blues: 0 }
 			),
 		});
@@ -107,29 +99,33 @@ module.exports.selectPolicies = (passport, game, socket) => {
 
 		game.gameState.audioCue = 'policyPeek';
 		president.playersState[presidentIndex].policyNotification = false;
+
+		await setGameAsync(game);
 		sendInProgressGameUpdate(game, true);
 
 		setTimeout(
-			() => {
+			async () => {
 				president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = true;
+				await setGameAsync(game);
 				sendInProgressGameUpdate(game, true);
 			},
 			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 500 : 2000
 		);
 
 		setTimeout(
-			() => {
+			async () => {
 				president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = president.cardFlingerState[2].cardStatus.isFlipped = false;
 				president.cardFlingerState[0].action = president.cardFlingerState[1].action = president.cardFlingerState[2].action =
 					'';
 				sendInProgressGameUpdate(game, true);
+				await setGameAsync(game);
 				game.gameState.audioCue = '';
 			},
 			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 3500 : 6000
 		);
 
 		setTimeout(
-			() => {
+			async () => {
 				president.cardFlingerState = [];
 
 				const modOnlyChat = {
@@ -191,9 +187,11 @@ module.exports.selectPolicies = (passport, game, socket) => {
 					});
 				}
 
+				await setGameAsync(game);
 				sendInProgressGameUpdate(game);
 				game.trackState.electionTrackerCount = 0;
 				president.playersState[presidentIndex].claim = 'didPolicyPeek';
+				await setGameAsync(game);
 				startElection(game);
 			},
 			process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 4500 : 7000
@@ -204,7 +202,7 @@ module.exports.selectPolicies = (passport, game, socket) => {
 /**
  * @param {object} game - game to act on.
  */
-module.exports.policyPeekAndDrop = (game) => {
+module.exports.policyPeekAndDrop = async (game) => {
 	const { seatedPlayers } = game.private;
 	const { presidentIndex } = game.gameState;
 	const president = seatedPlayers[presidentIndex];
@@ -219,6 +217,7 @@ module.exports.policyPeekAndDrop = (game) => {
 		game.general.status = 'President to peek at one policy.';
 		game.publicPlayersState[presidentIndex].isLoader = true;
 		president.playersState[presidentIndex].policyNotification = true;
+		await setGameAsync(game);
 		sendInProgressGameUpdate(game, true);
 	}
 };
@@ -227,18 +226,11 @@ module.exports.policyPeekAndDrop = (game) => {
  * @param {object} passport - socket authentication.
  * @param {object} game - target game.
  */
-module.exports.selectOnePolicy = (passport, game) => {
+module.exports.selectOnePolicy = async (passport, game) => {
 	const { presidentIndex } = game.gameState;
 	const { experiencedMode } = game.general;
 	const { seatedPlayers } = game.private;
 	const president = seatedPlayers[presidentIndex];
-
-	if (game.gameState.isGameFrozen) {
-		if (socket) {
-			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
-		}
-		return;
-	}
 
 	if (game.general.isRemade) {
 		if (socket) {
@@ -248,6 +240,13 @@ module.exports.selectOnePolicy = (passport, game) => {
 	}
 
 	if (!president || president.userName !== passport.user) {
+		return;
+	}
+
+	if (game.gameState.isGameFrozen) {
+		if (socket) {
+			socket.emit('sendAlert', 'An AEM member has prevented this game from proceeding. Please wait.');
+		}
 		return;
 	}
 
@@ -267,13 +266,11 @@ module.exports.selectOnePolicy = (passport, game) => {
 
 		game.private.summary = game.private.summary.updateLog({
 			policyPeek: game.private.policies.slice(0, 1).reduce(
-				(peek, policy) => {
-					if (policy === 'fascist') {
-						return Object.assign({}, peek, { reds: peek.reds + 1 });
-					} else {
-						return Object.assign({}, peek, { blues: peek.blues + 1 });
-					}
-				},
+				(peek, policy) =>
+					policy === 'fascist'
+						? Object.assign({}, peek, { reds: peek.reds + 1 })
+						: Object.assign({}, peek, { blues: peek.blues + 1 }),
+
 				{ reds: 0, blues: 0 }
 			),
 		});

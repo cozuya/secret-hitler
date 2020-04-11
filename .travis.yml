@@ -9,3 +9,6 @@ install:
 script:
   - yarn test
   - yarn lint
+services:
+  - redis-server
+  - mongodb

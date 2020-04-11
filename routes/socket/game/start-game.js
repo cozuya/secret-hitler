@@ -4,11 +4,12 @@ const { startElection } = require('./election.js');
 const { shufflePolicies } = require('./common.js');
 const GameSummaryBuilder = require('../../../models/game-summary/GameSummaryBuilder');
 const Account = require('../../../models/account.js');
+const { setGameAsync } = require('../models');
 
 /**
  * @param {object} game - game to act on.
  */
-const beginGame = (game) => {
+const beginGame = async (game) => {
 	const { experiencedMode } = game.general;
 
 	game.general.timeStarted = Date.now();
@@ -157,6 +158,7 @@ const beginGame = (game) => {
 	const fas = fasPlayers.map((player) => player.userName);
 	const libElo = { overall: 1600, season: 1600 };
 	const fasElo = { overall: 1600, season: 1600 };
+
 	Account.find({
 		username: { $in: game.private.seatedPlayers.map((player) => player.userName) },
 	}).then((accounts) => {
@@ -227,6 +229,7 @@ const beginGame = (game) => {
 	];
 
 	sendInProgressGameUpdate(game);
+
 	const hitlerPlayer = game.private.seatedPlayers.find((player) => player.role.cardName === 'hitler');
 
 	if (!hitlerPlayer) {
@@ -234,7 +237,7 @@ const beginGame = (game) => {
 	}
 
 	setTimeout(
-		() => {
+		async () => {
 			game.private.seatedPlayers.forEach((player, i) => {
 				const { seatedPlayers } = game.private;
 				const { cardName } = player.role;
@@ -503,13 +506,14 @@ const beginGame = (game) => {
 
 				player.playersState[i].cardStatus.isFlipped = true;
 			});
+			await setGameAsync(game);
 			sendInProgressGameUpdate(game);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 200 : 2000
 	);
 
 	setTimeout(
-		() => {
+		async () => {
 			game.private.seatedPlayers.forEach((player, i) => {
 				if (!player.playersState) {
 					return;
@@ -519,35 +523,39 @@ const beginGame = (game) => {
 					play.notificationStatus = '';
 				});
 			});
+			await setGameAsync(game);
 			sendInProgressGameUpdate(game, true);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : 5000
 	);
 
 	setTimeout(
-		() => {
+		async () => {
 			game.publicPlayersState.forEach((player) => {
 				player.cardStatus.cardDisplayed = false;
 			});
+			await setGameAsync(game);
 			sendInProgressGameUpdate(game, true);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5200 : 7000
 	);
 
 	setTimeout(
-		() => {
+		async () => {
 			game.private.seatedPlayers.forEach((player) => {
 				player.playersState.forEach((state) => {
 					state.cardStatus = {};
 				});
 			});
 			game.gameState.presidentIndex = -1;
+			await setGameAsync(game);
 			startElection(game);
 		},
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5400 : 9000
 	);
 
 	for (let affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber++) {
+		// todo
 		const affectedSocketId = Object.keys(io.sockets.sockets).find(
 			(socketId) =>
 				io.sockets.sockets[socketId].handshake.session.passport &&
@@ -566,16 +574,18 @@ const beginGame = (game) => {
 /**
  * @param {object} game - game to act on.
  */
-module.exports = (game) => {
+module.exports = async (game) => {
 	game.gameState.isTracksFlipped = true;
+
 	let startGamePause = process.env.NODE_ENV === 'development' ? 1 : 5;
 
-	const countDown = setInterval(() => {
+	const countDown = setInterval(async () => {
 		if (!startGamePause) {
 			clearInterval(countDown);
 			beginGame(game);
 		} else {
 			game.general.status = `Game starts in ${startGamePause} second${startGamePause === 1 ? '' : 's'}.`;
+			await setGameAsync(game);
 			sendInProgressGameUpdate(game, true);
 			startGamePause--;
 		}
@@ -596,4 +606,6 @@ module.exports = (game) => {
 	});
 	game.gameState.audioCue = '';
 	game.private.policies = [];
+
+	await setGameAsync(game);
 };

@@ -4,7 +4,6 @@ const PlayerReport = require('../../models/playerReport');
 const PlayerNote = require('../../models/playerNote');
 const Game = require('../../models/game');
 const Signups = require('../../models/signups');
-
 const {
 	generalChats,
 	accountCreationDisabled,
@@ -26,8 +25,9 @@ const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
 const version = require('../../version');
 const { obfIP } = require('./ip-obf');
-const _ = require('lodash');
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
+
+const _ = require('lodash');
 
 /**
  * @param {object} socket - user socket reference.
@@ -186,45 +186,6 @@ module.exports.sendUserGameSettings = (socket) => {
 		.then((account) => {
 			socket.emit('gameSettings', account.gameSettings);
 
-			// todo
-			// const userListNames = userList.map(user => user.userName);
-
-			getProfile(passport.user);
-			// if (!userListNames.includes(passport.user)) {
-			// 	const userListInfo = {
-			// 		userName: passport.user,
-			// 		staffRole: account.staffRole || '',
-			// 		isContributor: account.isContributor || false,
-			// 		staffDisableVisibleElo: account.gameSettings.staffDisableVisibleElo,
-			// 		staffDisableStaffColor: account.gameSettings.staffDisableStaffColor,
-			// 		staffIncognito: account.gameSettings.staffIncognito,
-			// 		wins: account.wins,
-			// 		losses: account.losses,
-			// 		rainbowWins: account.rainbowWins,
-			// 		rainbowLosses: account.rainbowLosses,
-			// 		isPrivate: account.gameSettings.isPrivate,
-			// 		tournyWins: account.gameSettings.tournyWins,
-			// 		blacklist: account.gameSettings.blacklist,
-			// 		customCardback: account.gameSettings.customCardback,
-			// 		customCardbackUid: account.gameSettings.customCardbackUid,
-			// 		previousSeasonAward: account.gameSettings.previousSeasonAward,
-			// 		specialTournamentStatus: account.gameSettings.specialTournamentStatus,
-			// 		eloOverall: account.eloOverall,
-			// 		eloSeason: account.eloSeason,
-			// 		status: {
-			// 			type: 'none',
-			// 			gameId: null
-			// 		}
-			// 	};
-
-			// 	userListInfo[`winsSeason${CURRENTSEASONNUMBER}`] = account[`winsSeason${CURRENTSEASONNUMBER}`];
-			// 	userListInfo[`lossesSeason${CURRENTSEASONNUMBER}`] = account[`lossesSeason${CURRENTSEASONNUMBER}`];
-			// 	userListInfo[`rainbowWinsSeason${CURRENTSEASONNUMBER}`] = account[`rainbowWinsSeason${CURRENTSEASONNUMBER}`];
-			// 	userListInfo[`rainbowLossesSeason${CURRENTSEASONNUMBER}`] = account[`rainbowLossesSeason${CURRENTSEASONNUMBER}`];
-			// 	userList.push(userListInfo);
-			// 	sendUserList();
-			// }
-
 			getProfile(passport.user);
 
 			socket.emit('version', {
@@ -374,28 +335,28 @@ module.exports.sendGeneralChats = async (socket, toRoom) => {
  * @param {object} game - target game.
  * @param {string} override - type of user status to be displayed.
  */
+// todo
 const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
 	// const user = userList.find(user => user.userName === passport.user);
-	const user = '';
-
-	if (user) {
-		user.status = {
-			type:
-				override && game && !game.general.unlisted
-					? override
-					: game
-					? game.general.private
-						? 'private'
-						: !game.general.unlisted && game.general.rainbowgame
-						? 'rainbow'
-						: !game.general.unlisted
-						? 'playing'
-						: 'none'
-					: 'none',
-			gameId: game ? game.general.uid : false,
-		};
-		sendUserList();
-	}
+	// const user = '';
+	// if (user) {
+	// 	user.status = {
+	// 		type:
+	// 			override && game && !game.general.unlisted
+	// 				? override
+	// 				: game
+	// 				? game.general.private
+	// 					? 'private'
+	// 					: !game.general.unlisted && game.general.rainbowgame
+	// 					? 'rainbow'
+	// 					: !game.general.unlisted
+	// 					? 'playing'
+	// 					: 'none'
+	// 				: 'none',
+	// 		gameId: game ? game.general.uid : false,
+	// 	};
+	// 	sendUserList();
+	// }
 });
 
 /**
