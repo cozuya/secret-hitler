@@ -114,13 +114,13 @@ module.exports.sendInProgressGameUpdate = async (game, noChats) => {
 		if (noChats) {
 			sock.emit('gameUpdate', secureGame(_game), true);
 		} else {
-			// todo
+			// redis todo
 			_game.chats = combineInProgressChats(_game, user);
 			sock.emit('gameUpdate', secureGame(_game));
 		}
 	});
 
-	// todo look at this
+	// redis todo look at this
 	// let chatWithHidden = game.chats;
 	// if (!noChats && game.private && game.private.hiddenInfoChat && game.private.hiddenInfoSubscriptions.length) {
 	// 	chatWithHidden = [...chatWithHidden, ...game.private.hiddenInfoChat];

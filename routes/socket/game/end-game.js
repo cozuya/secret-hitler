@@ -87,7 +87,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 	}
 
 	for (let affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber++) {
-		// todo
+		// redis todo
 		const affectedSocketId = Object.keys(io.sockets.sockets).find(
 			(socketId) =>
 				io.sockets.sockets[socketId].handshake.session.passport &&
@@ -479,7 +479,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 					}
 				});
 			}
-			// todo
+			// redis todo
 			game.chats.push({
 				gameChat: true,
 				timestamp: new Date(),

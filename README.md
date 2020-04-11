@@ -6,12 +6,7 @@
 [![Dev Dependencies](https://david-dm.org/cozuya/secret-hitler/dev-status.svg)](https://david-dm.org/cozuya/secret-hitler?type=dev)
 [![Styled with Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-Secret Hitler is a dramatic game of political intrigue and betrayal set in 1930's Germany. Players are secretly divided into two teams - liberals and fascists.
-Known only to each other, the fascists coordinate to sow distrust and install their cold-blooded leader. The liberals must find and stop the Secret Hitler before it’s too late.
-
-Effectively this is a take on the classic social deduction/hidden role board game genre such as Werewolf and Mafia, but closer to the Resistance. Games are 5-10 players, the minority (fascists) know who everyone is and the majority (liberals) don't know anything. Over the course of the game the liberals need to try to identify the fascists to win and the fascists need to remain hidden, with an extra "superfascist" role with an additional win condition for both sides.
-
-This codebase is a "lobby style" implementation of this game - anyone can make a game which is displayed on a list on the "home" page. The game starts when enough players are seated. In addition, anyone can watch a game in progress, etc.
+This codebase is a "lobby style" implementation of the 5-10 player board game. Anyone can make a game which is displayed on a list on the "home" page. The game starts when enough players are seated.
 
 Current production/stable is found at [Secret Hitler IO](https://secrethitler.io).
 
@@ -22,7 +17,7 @@ Considering contributing to this project? Please read our brief guidelines found
 
 Front end: React, Redux, Sass, Semantic UI, jQuery, SocketIO.
 
-Back end: Node, Express, Pug, Passport, Mongodb with Mongoose, SocketIO.
+Back end: Node, Express, Pug, Passport, Redis, Mongodb with Mongoose, SocketIO.
 
 ## Installation
 
@@ -33,6 +28,8 @@ Install [git](https://git-scm.com/downloads), have it in your path.
 Install [mongodb](https://www.mongodb.com/download-center?ct=atlasheader#community), have it in your path.
 
 Install [yarn](https://yarnpkg.com/en/docs/install) for your OS.
+
+Install [redis](https://redis.io/) for your OS and run it. Windows will need some work to get it running (look to download version 2.8).
 
 then
 
@@ -45,8 +42,6 @@ yarn
 If you're receiving an error like "Found incompatible module", try using `yarn --ignore-engines`
 
 ## Running in dev mode
-
-**Start development:**
 
 ```bash
 yarn dev

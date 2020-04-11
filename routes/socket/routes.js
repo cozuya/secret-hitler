@@ -73,7 +73,7 @@ let modUserNames = [];
 let editorUserNames = [];
 let adminUserNames = [];
 
-// todo fix this
+// redis todo redo this
 // const gamesGarbageCollector = () => {
 // 	const currentTime = new Date();
 
@@ -243,7 +243,7 @@ module.exports.socketRoutes = () => {
 					socket.emit('manualDisconnection');
 					socket.disconnect(true);
 
-					// todo splice them from userlist
+					// redis todo splice them from userlist
 				};
 
 				Account.findOne({ username: user }, (err, account) => {
@@ -575,10 +575,6 @@ module.exports.socketRoutes = () => {
 		socket.on('getGameInfo', (uid) => {
 			sendGameInfo(socket, uid);
 		});
-		socket.on('getUserList', () => {
-			// todo
-			// sendUserList(socket);
-		});
 		socket.on('getUserGameSettings', () => {
 			sendUserGameSettings(socket);
 		});
@@ -591,7 +587,7 @@ module.exports.socketRoutes = () => {
 				selectChancellorVoteOnVeto(passport, game, data);
 			}
 		});
-		// todo
+		// redis todo
 		// socket.on('getModInfo', count => {
 		// 	if (authenticated && (isAEM || isTrial)) {
 		// 		sendModInfo(games, socket, count, isTrial && !isAEM);

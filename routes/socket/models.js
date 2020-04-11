@@ -56,7 +56,9 @@ const serverSettings = redis.createClient({
 	db: 5,
 });
 
-module.exports.getServerSettingAsync = promisify(serverSettings.get).bind(serverSettings);
+const getServerSettingAsync = promisify(serverSettings.get).bind(serverSettings);
+
+module.exports.getServerSettingAsync = getServerSettingAsync;
 module.exports.setServerSettingAsync = promisify(serverSettings.set).bind(serverSettings);
 
 // module.exports.accountCreationDisabled = { status: false };
@@ -169,9 +171,6 @@ module.exports.getPowerFromUser = (user) => {
 };
 
 // set of profiles, no duplicate usernames
-/**
- * @return // todo
- */
 module.exports.profiles = (() => {
 	const profiles = [];
 	const MAX_SIZE = 100;
@@ -191,7 +190,7 @@ module.exports.profiles = (() => {
 	return { get, push };
 })();
 
-// todo
+// redis todo - delete?
 // module.exports.formattedUserList = isAEM => {
 // 	const prune = value => {
 // 		// Converts things like zero and null to undefined to remove it from the sent data.
@@ -234,7 +233,6 @@ module.exports.profiles = (() => {
 // 		.filter(user => isAEM || !user.staffIncognito);
 // };
 
-// todo
 // const userListEmitter = {
 // 	state: 0,
 // 	send: false,
@@ -258,7 +256,6 @@ module.exports.profiles = (() => {
 
 module.exports.AEM = Account.find({ staffRole: { $exists: true, $ne: 'veteran' } });
 
-// todo
 const bypassKeys = [];
 
 module.exports.verifyBypass = (key) => {
@@ -292,7 +289,9 @@ module.exports.createNewBypass = () => {
 // There's a mountain of "new" type bans.
 const unbanTime = new Date() - 64800000;
 BannedIP.deleteMany({ type: 'new', bannedDate: { $lte: unbanTime } }, (err, r) => {
-	if (err) throw err;
+	if (err) {
+		throw err;
+	}
 });
 const banLength = {
 	small: 18 * 60 * 60 * 1000, // 18 hours
@@ -300,12 +299,13 @@ const banLength = {
 	tiny: 1 * 60 * 60 * 1000, // 1 hour
 	big: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
-module.exports.testIP = (IP, callback) => {
+module.exports.testIP = async (IP, callback) => {
+	const ipbansNotEnforced = JSON.parse(await getServerSettingAsync('ipbansNotEnforced'));
+
 	if (!IP) {
 		callback('Bad IP!');
-		// todo
-		// } else if (module.exports.ipbansNotEnforced.status) {
-		// 	callback(null);
+	} else if (ipbansNotEnforced && ipbansNotEnforced.status) {
+		callback(null);
 	} else {
 		BannedIP.find({ ip: IP }, (err, ips) => {
 			if (err) {

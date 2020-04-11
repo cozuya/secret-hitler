@@ -8,8 +8,12 @@ Array(6)
 		const client = createClients(index);
 
 		if (index) {
-			client.flushall();
+			client.flushdb();
 		}
 	});
+
+// const x = redis.createClient();
+
+// x.flushall();
 
 process.exit();

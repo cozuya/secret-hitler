@@ -551,7 +551,7 @@ const beginGame = async (game) => {
 	);
 
 	for (let affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber++) {
-		// todo
+		// redis todo
 		const affectedSocketId = Object.keys(io.sockets.sockets).find(
 			(socketId) =>
 				io.sockets.sockets[socketId].handshake.session.passport &&

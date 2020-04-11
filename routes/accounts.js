@@ -5,7 +5,7 @@ const BannedIP = require('../models/bannedIP');
 const Signups = require('../models/signups');
 const fetch = require('node-fetch');
 const EightEightCounter = require('../models/eightEightCounter');
-const { accountCreationDisabled, bypassVPNCheck, verifyBypass, consumeBypass, testIP } = require('./socket/models');
+const { getServerSettingAsync, bypassVPNCheck, verifyBypass, consumeBypass, testIP } = require('./socket/models');
 const { verifyRoutes, setVerify } = require('./verification');
 const blacklistedWords = require('../iso/blacklistwords');
 const bannedEmails = require('../utils/disposableEmails');
@@ -49,12 +49,13 @@ const renderPage = (req, res, pageName, varName) => {
 	res.render(pageName, renderObj);
 };
 
-const checkIP = (config) => {
+const checkIP = async (config) => {
 	const { res, username, email, signupIP, hasBypass, next } = config;
+	const accountCreationDisabled = JSON.parse(await getServerSettingAsync('accountCreationDisabled'));
+
 	if (hasBypass) {
 		config.vpnScore = 0;
 		next(config);
-		// todo
 	} else if (accountCreationDisabled.status && !hasBypass) {
 		const creationDisabledSignup = new Signups({
 			date: new Date(),

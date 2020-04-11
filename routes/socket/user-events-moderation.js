@@ -45,7 +45,7 @@ const { sendInProgressGameUpdate, sendPlayerChatUpdate } = require('./util.js');
 const { obfIP } = require('./ip-obf');
 const { makeReport } = require('./report.js');
 
-// todo most of this file
+// redis todo most of this file
 
 const crashReport = JSON.stringify({
 	content: `${process.env.DISCORDADMINPING} the site just crashed or reset.`,
@@ -293,7 +293,7 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 
 	const isSuperMod = superModUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
-	// todo
+	// redis todo
 	const affectedSocketId = Object.keys(io.sockets.sockets).find(
 		(socketId) =>
 			io.sockets.sockets[socketId].handshake.session.passport &&
@@ -357,14 +357,14 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 			const logOutUser = (username) => {
 				const bannedUserlistIndex = userList.findIndex((user) => user.userName === username);
 
-				// todo
+				// redis todo
 				if (io.sockets.sockets[affectedSocketId]) {
 					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 					io.sockets.sockets[affectedSocketId].disconnect();
 				}
 
 				if (bannedUserlistIndex >= 0) {
-					// todo
+					// redis todo
 					userList.splice(bannedUserlistIndex, 1);
 				}
 			};

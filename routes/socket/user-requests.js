@@ -45,7 +45,7 @@ const sendUserList = async (socket) => {
 
 module.exports.sendUserList = sendUserList;
 
-// todo fix this
+// redis todo fix this
 const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 	const maskEmail = (email) => (email && email.split('@')[1]) || '';
 	ModAction.find(queryObj)
@@ -159,18 +159,17 @@ module.exports.sendPrivateSignups = (socket) => {
  * @param {boolean} isTrial - true if the user is a trial mod.
  */
 
-// todo fix this
-// module.exports.sendModInfo = (games, socket, count, isTrial) => {
-// 	const userNames = userList.map(user => user.userName);
-
-// 	Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
-// 		.then(users => {
-// 			getModInfo(games, users, socket, {}, count, isTrial);
-// 		})
-// 		.catch(err => {
-// 			console.log(err, 'err in sending mod info');
-// 		});
-// };
+// redis todo fix this
+module.exports.sendModInfo = (games, socket, count, isTrial) => {
+	// const userNames = userList.map(user => user.userName);
+	// Account.find({ username: userNames, 'gameSettings.isPrivate': { $ne: true } })
+	// 	.then(users => {
+	// 		getModInfo(games, users, socket, {}, count, isTrial);
+	// 	})
+	// 	.catch(err => {
+	// 		console.log(err, 'err in sending mod info');
+	// 	});
+};
 
 /**
  * @param {object} socket - user socket reference.
@@ -292,7 +291,7 @@ const sendGameList = async (socket, isAEM) => {
 			formattedGameList.filter((game) => isAEM || (game && !game.isUnlisted))
 		);
 	} else {
-		// todo
+		// redis todo
 	}
 };
 
@@ -335,7 +334,7 @@ module.exports.sendGeneralChats = async (socket, toRoom) => {
  * @param {object} game - target game.
  * @param {string} override - type of user status to be displayed.
  */
-// todo
+// redis todo
 const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
 	// const user = userList.find(user => user.userName === passport.user);
 	// const user = '';

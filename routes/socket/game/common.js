@@ -139,7 +139,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 	const pendingPresidentPlayer = seatedPlayers[presidentIndex];
 
 	game.general.electionCount++;
-	// todo
+	// redis todo
 	// sendGameList();
 	game.general.status = `Election #${game.general.electionCount}: president to select chancellor.`;
 

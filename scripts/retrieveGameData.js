@@ -236,8 +236,8 @@ Game.find({})
 		});
 
 		data.completedGames = {
-			labels: uLabels,
-			series,
+			labels: uLabels.filter((el, index) => i % 4),
+			series: series.filter((el, indeX) => i % 4),
 		};
 
 		data.allPlayerGameData = allPlayerGameData;

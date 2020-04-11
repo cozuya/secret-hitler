@@ -456,7 +456,7 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 		await setGameAsync(game);
 	}
 
-	// todo
+	// redis todo subscribe them to game room etc
 	// sendGameList();
 };
 
@@ -2405,7 +2405,7 @@ module.exports.handleAddNewGameChat = async (
 					);
 					return;
 				}
-				// todo, user (passport) doesn't have this atm
+				// redis todo, user (passport) doesn't have this atm
 			} else if (user.wins + user.losses > repl.normalGames) {
 				if (
 					Date.now() > game.general.chatReplTime[0] + 30000 &&
