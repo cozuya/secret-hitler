@@ -58,9 +58,9 @@ module.exports.selectChancellor = (socket, passport, game, data, force = false) 
 		game.private.lock.selectChancellor = true;
 		game.publicPlayersState[presidentIndex].isLoader = false;
 
-		game.private.summary = game.private.summary.updateLog({
-			chancellorId: chancellorIndex,
-		});
+		// game.private.summary = game.private.summary.updateLog({
+		// 	chancellorId: chancellorIndex,
+		// });
 
 		presidentPlayer.playersState.forEach((player) => {
 			player.notificationStatus = '';

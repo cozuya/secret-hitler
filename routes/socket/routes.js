@@ -63,6 +63,7 @@ const {
 	getRangeUserlistAsync,
 	getGamesAsync,
 	scanGamesAsync,
+	spliceUserFromUserList,
 } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
@@ -210,6 +211,7 @@ module.exports.socketRoutes = () => {
 				if (!game) {
 					socket.join('sidebarInfoSubscription');
 					socket.join('gameListInfoSubscription');
+					sendUserList(socket);
 					sendGeneralChats(socket);
 					sendGameList(socket, isAEM);
 				}
@@ -222,9 +224,17 @@ module.exports.socketRoutes = () => {
 						sock.id !== socket.id
 				);
 
-				if (oldSocketID && sockets[oldSocketID]) {
-					io.sockets.clients(oldSocketID).emit('manualDisconnection');
-					io.of('/').adapter.remoteDisconnect(oldSocketID, true);
+				// console.log(io.of('/').adapter, 'a1');
+				// console.log(io.adapter, 'a2');
+
+				// if (oldSocketID && sockets[oldSocketID]) {
+				if (oldSocketID) {
+					const client = io.sockets.clients(oldSocketID);
+
+					if (client) {
+						io.sockets.clients(oldSocketID).emit('manualDisconnection');
+						// io.of('/').adapter.remoteDisconnect(oldSocketID, true);
+					}
 				}
 
 				const reconnectingUser = game && game.publicPlayersState.find((player) => player.userName === user);
@@ -238,12 +248,10 @@ module.exports.socketRoutes = () => {
 					sendInProgressGameUpdate(game);
 				}
 
-				// Double-check the user isn't sneaking past IP bans.
 				const logOutUser = () => {
 					socket.emit('manualDisconnection');
 					socket.disconnect(true);
-
-					// redis todo splice them from userlist
+					spliceUserFromUserList(user);
 				};
 
 				Account.findOne({ username: user }, (err, account) => {
@@ -287,11 +295,6 @@ module.exports.socketRoutes = () => {
 									if (account.gameSettings.enableRightSidebarInGame) {
 										socket.join('sidebarInfoSubscription');
 										sendGeneralChats(socket);
-									}
-
-									if (!game) {
-										socket.join('gameListInfoSubscription');
-										sendGameList(socket, isAEM);
 									}
 
 									const parseVer = (ver) => {
@@ -359,13 +362,13 @@ module.exports.socketRoutes = () => {
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.
 		socket.conn.on('upgrade', () => {
-			sendGameList;
 			sendUserList(socket);
 			socket.emit('emoteList', emoteList);
 		});
 
 		socket.on('receiveRestrictions', () => {
 			Account.findOne({ username: passport.user }).then((account) => {
+				// todo
 				isRestricted = checkRestriction(account);
 			});
 		});

@@ -127,9 +127,9 @@ const enactPolicy = async (game, team, socket) => {
 
 	game.gameState.pendingChancellorIndex = null;
 
-	game.private.summary = game.private.summary.updateLog({
-		enactedPolicy: team,
-	});
+	// game.private.summary = game.private.summary.updateLog({
+	// 	enactedPolicy: team,
+	// });
 
 	game.general.status = 'A policy is being enacted.';
 	game.trackState[`${team}PolicyCount`]++;
@@ -354,9 +354,9 @@ const selectPresidentVoteOnVeto = (passport, game, data, socket) => {
 		return;
 	}
 
-	game.private.summary = game.private.summary.updateLog({
-		presidentVeto: data.vote,
-	});
+	// game.private.summary = game.private.summary.updateLog({
+	// 	presidentVeto: data.vote,
+	// });
 
 	if (
 		!game.private.lock.selectPresidentVoteOnVeto &&
@@ -534,9 +534,9 @@ const selectChancellorVoteOnVeto = (passport, game, data, socket) => {
 		return;
 	}
 
-	game.private.summary = game.private.summary.updateLog({
-		chancellorVeto: data.vote,
-	});
+	// game.private.summary = game.private.summary.updateLog({
+	// 	chancellorVeto: data.vote,
+	// });
 
 	game.private.lock.selectPresidentVoteOnVeto = false;
 	if (
@@ -1235,9 +1235,9 @@ const selectPresidentPolicy = async (passport, game, data, wasTimer, socket) => 
 			return;
 		}
 
-		game.private.summary = game.private.summary.updateLog({
-			chancellorHand: handToLog(game.private.currentElectionPolicies.filter((p, i) => i !== data.selection)),
-		});
+		// game.private.summary = game.private.summary.updateLog({
+		// 	chancellorHand: handToLog(game.private.currentElectionPolicies.filter((p, i) => i !== data.selection)),
+		// });
 		game.private.currentChancellorOptions = [
 			game.private.currentElectionPolicies[nonDiscardedPolicies[0]],
 			game.private.currentElectionPolicies[nonDiscardedPolicies[1]],
@@ -1465,9 +1465,9 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 		game.private.hiddenInfoChat.push(modOnlyChat);
 		sendInProgressModChatUpdate(game, modOnlyChat);
 
-		game.private.summary = game.private.summary.updateLog({
-			presidentHand: handToLog(game.private.currentElectionPolicies),
-		});
+		// game.private.summary = game.private.summary.updateLog({
+		// 	presidentHand: handToLog(game.private.currentElectionPolicies),
+		// });
 
 		seatedPlayers[presidentIndex].cardFlingerState = [
 			{
@@ -1638,9 +1638,9 @@ module.exports.selectVoting = (passport, game, data, socket, force = false) => {
 			}
 		});
 
-		game.private.summary = game.private.summary.updateLog({
-			votes: seatedPlayers.map((p) => p.voteStatus.didVoteYes),
-		});
+		// game.private.summary = game.private.summary.updateLog({
+		// 	votes: seatedPlayers.map((p) => p.voteStatus.didVoteYes),
+		// });
 
 		sendInProgressGameUpdate(game, true);
 

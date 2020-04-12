@@ -11,8 +11,6 @@ const {
 	gameCreationDisabled,
 	limitNewPlayers,
 	bypassVPNCheck,
-	userListEmitter,
-	formattedUserList,
 	formattedGameList,
 	scanGamesAsync,
 	getGamesAsync,
@@ -20,6 +18,8 @@ const {
 	getRangeGeneralChatsAsync,
 	trimGeneralChatsAsync,
 	getRangeUserlistAsync,
+	setUserInListAsync,
+	setNewUserInListAsync,
 } = require('./models');
 const { getProfile } = require('../../models/profile/utils');
 const { sendInProgressGameUpdate } = require('./util');
@@ -39,7 +39,8 @@ const sendUserList = async (socket) => {
 	if (socket) {
 		socket.emit('userList', { list: userList });
 	} else {
-		_.throttle(() => io.to('sidebarInfoSubscription').emit('userList', { list: userList }), 2000);
+		// redis todo while this should work, it will be doing this on all cores which doesn't make sense i.e 4x or more sending this.  I think.  Not sure how to fix it.
+		_.throttle(() => io.to('sidebarInfoSubscription').emit('userList', { list: userList }), 4000);
 	}
 };
 
@@ -285,13 +286,23 @@ const sendGameList = async (socket, isAEM) => {
 		});
 	}
 
+	// redis todo isaem in leavegame is undef
 	if (socket) {
 		socket.emit(
 			'gameList',
 			formattedGameList.filter((game) => isAEM || (game && !game.isUnlisted))
 		);
 	} else {
-		// redis todo
+		io.to('gameListInfoSubscription').emit(
+			'gameList',
+			formattedGameList.filter((game) => isAEM || (game && !game.isUnlisted))
+		);
+		// _.throttle(() => {
+		// 	io.to('gameListInfoSubscription').emit(
+		// 		'gameList',
+		// 		formattedGameList.filter((game) => isAEM || (game && !game.isUnlisted))
+		// 	);
+		// }, 4000);
 	}
 };
 
@@ -334,28 +345,34 @@ module.exports.sendGeneralChats = async (socket, toRoom) => {
  * @param {object} game - target game.
  * @param {string} override - type of user status to be displayed.
  */
-// redis todo
-const updateUserStatus = (module.exports.updateUserStatus = (passport, game, override) => {
-	// const user = userList.find(user => user.userName === passport.user);
-	// const user = '';
-	// if (user) {
-	// 	user.status = {
-	// 		type:
-	// 			override && game && !game.general.unlisted
-	// 				? override
-	// 				: game
-	// 				? game.general.private
-	// 					? 'private'
-	// 					: !game.general.unlisted && game.general.rainbowgame
-	// 					? 'rainbow'
-	// 					: !game.general.unlisted
-	// 					? 'playing'
-	// 					: 'none'
-	// 				: 'none',
-	// 		gameId: game ? game.general.uid : false,
-	// 	};
-	// 	sendUserList();
-	// }
+const updateUserStatus = (module.exports.updateUserStatus = async (passport, game, override) => {
+	const list = await getRangeUserlistAsync('userList', 0, -1);
+	const userL = list.map(JSON.parse);
+	const userIndexInList = userL.findIndex((user) => user.userName === passport.user);
+	const status = {
+		type:
+			override && game && !game.general.unlisted
+				? override
+				: game
+				? game.general.private
+					? 'private'
+					: !game.general.unlisted && game.general.rainbowgame
+					? 'rainbow'
+					: !game.general.unlisted
+					? 'playing'
+					: 'none'
+				: 'none',
+		gameId: game ? game.general.uid : false,
+		userName: passport.user,
+	};
+
+	if (userIndexInList) {
+		await setUserInListAsync('userList', userIndexInList, JSON.stringify(status));
+	} else {
+		await setNewUserInListAsync('userList', JSON.stringify(status));
+	}
+
+	sendUserList();
 });
 
 /**
@@ -381,6 +398,7 @@ module.exports.sendGameInfo = async (socket, uid) => {
 			}
 		}
 
+		socket.leave('gameListInfoSubscription');
 		socket.join(uid);
 		sendInProgressGameUpdate(game);
 		socket.emit('joinGameRedirect', game.general.uid);

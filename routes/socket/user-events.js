@@ -1,5 +1,4 @@
 const {
-	userListEmitter,
 	generalChats,
 	accountCreationDisabled,
 	bypassVPNCheck,
@@ -431,7 +430,8 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 		(!game.publicPlayersState.length && !(game.general.isTourny && game.general.tournyInfo.round === 0)) ||
 		(game.general.isTourny && game.general.tournyInfo.round === 0 && !game.general.tournyInfo.queuedPlayers.length)
 	) {
-		io.sockets.in(game.general.uid).emit('gameUpdate', {});
+		io.to(game.general.uid).emit('gameUpdate', {});
+
 		if (!game.summarySaved && game.gameState.isTracksFlipped) {
 			const summary = game.private.summary.publish();
 			if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
@@ -442,7 +442,6 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 		}
 
 		deleteGameAsync(game.general.uid);
-		deleteGameChatsAsync(game.general.uid);
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
@@ -456,8 +455,11 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 		await setGameAsync(game);
 	}
 
-	// redis todo subscribe them to game room etc
-	// sendGameList();
+	socket.join('sidebarInfoSubscription');
+	socket.join('gameListInfoSubscription');
+	sendUserList(socket);
+	sendGeneralChats(socket);
+	sendGameList(socket);
 };
 
 /**
@@ -507,7 +509,7 @@ const updateSeatedUser = (game, socket, passport, data) => {
 			game.general.eloMinimum <= account.eloSeason ||
 			game.general.eloMinimum <= account.eloOverall;
 
-		if (account.wins + account.losses < 3 && limitNewPlayers.status && !game.general.private) {
+		if (account.wins + account.losses < 3 && limitNewPlayers && limitNewPlayers.status && !game.general.private) {
 			return;
 		}
 
@@ -595,7 +597,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	if (
 		!account ||
 		isGameCreationDisabled ||
-		(!data.privatePassword && isLimitNewPlayers) ||
+		(!data.privatePassword && isLimitNewPlayers && isLimitNewPlayers.status) ||
 		!data ||
 		!data.gameName ||
 		data.gameName.length > 20 ||
@@ -696,16 +698,20 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			discardedPolicyCount: 0,
 			presidentIndex: -1,
 		},
+		chats: [],
 		general: {
 			whitelistedPlayers: [],
 			uid: data.isTourny ? `${generateCombination(3, '', true)}Tournament` : uid,
 			name: account.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
-			minPlayersCount: playerCounts[0],
+			// minPlayersCount: playerCounts[0],
+			minPlayersCount: 5,
+			maxPlayersCount: 5,
+
+			// maxPlayersCount: playerCounts[playerCounts.length - 1],
 			gameCreatorName: user,
 			gameCreatorBlacklist: account.gameSettings.blacklist,
 			excludedPlayerCount: excludes,
-			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			status: `Waiting for ${playerCounts[0] - 1} more players..`,
 			experiencedMode: data.experiencedMode,
 			disableChat: data.disableChat,
@@ -882,7 +888,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	newGame.general.timeCreated = currentTime;
 	updateUserStatus(passport, newGame);
 
-	await setGameAsync(game);
+	await setGameAsync(newGame);
 	sendGameList();
 	socket.join(newGame.general.uid);
 	socket.leave('gameListInfoSubscription');
@@ -938,12 +944,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 				];
 				switch (data.claimState) {
 					case 'rrr':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								presidentClaim: { reds: 3, blues: 0 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		presidentClaim: { reds: 3, blues: 0 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -960,12 +966,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'rrb':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								presidentClaim: { reds: 2, blues: 1 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		presidentClaim: { reds: 2, blues: 1 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -986,12 +992,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'rbb':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								presidentClaim: { reds: 1, blues: 2 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		presidentClaim: { reds: 1, blues: 2 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1012,12 +1018,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'bbb':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								presidentClaim: { reds: 0, blues: 3 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		presidentClaim: { reds: 0, blues: 3 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1049,12 +1055,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 				];
 				switch (data.claimState) {
 					case 'rr':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								chancellorClaim: { reds: 2, blues: 0 },
-							},
-							{ chancellorId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		chancellorClaim: { reds: 2, blues: 0 },
+						// 	},
+						// 	{ chancellorId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1071,12 +1077,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'rb':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								chancellorClaim: { reds: 1, blues: 1 },
-							},
-							{ chancellorId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		chancellorClaim: { reds: 1, blues: 1 },
+						// 	},
+						// 	{ chancellorId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1097,12 +1103,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'bb':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								chancellorClaim: { reds: 0, blues: 2 },
-							},
-							{ chancellorId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		chancellorClaim: { reds: 0, blues: 2 },
+						// 	},
+						// 	{ chancellorId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1158,12 +1164,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 				];
 				switch (data.claimState) {
 					case 'rrr':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 3, blues: 0 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		policyPeekClaim: { reds: 3, blues: 0 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1180,12 +1186,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'rbr':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 2, blues: 1 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		policyPeekClaim: { reds: 2, blues: 1 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1210,12 +1216,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'brr':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 2, blues: 1 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		policyPeekClaim: { reds: 2, blues: 1 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1241,12 +1247,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'rrb':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 2, blues: 1 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		policyPeekClaim: { reds: 2, blues: 1 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1272,12 +1278,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'rbb':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 1, blues: 2 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		policyPeekClaim: { reds: 1, blues: 2 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1298,12 +1304,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'bbr':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 1, blues: 2 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		policyPeekClaim: { reds: 1, blues: 2 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1324,12 +1330,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'brb':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 1, blues: 2 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		policyPeekClaim: { reds: 1, blues: 2 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1354,12 +1360,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 
 						return text;
 					case 'bbb':
-						game.private.summary = game.private.summary.updateLog(
-							{
-								policyPeekClaim: { reds: 0, blues: 3 },
-							},
-							{ presidentId: playerIndex }
-						);
+						// game.private.summary = game.private.summary.updateLog(
+						// 	{
+						// 		policyPeekClaim: { reds: 0, blues: 3 },
+						// 	},
+						// 	{ presidentId: playerIndex }
+						// );
 
 						text.push(
 							{
@@ -1421,12 +1427,12 @@ module.exports.handleAddNewClaim = async (socket, passport, game, data) => {
 					];
 				}
 
-				game.private.summary = game.private.summary.updateLog(
-					{
-						investigationClaim: data.claimState,
-					},
-					{ presidentId: playerIndex }
-				);
+				// game.private.summary = game.private.summary.updateLog(
+				// 	{
+				// 		investigationClaim: data.claimState,
+				// 	},
+				// 	{ presidentId: playerIndex }
+				// );
 				switch (data.claimState) {
 					case 'fascist':
 						text.push(
@@ -2033,13 +2039,16 @@ module.exports.handleAddNewGameChat = async (
 						text: '.',
 					});
 
-					await pushGameChatsAsync(game, {
-						gameChat: true,
-						timestamp: new Date(),
-						chat: changedChat,
-					});
+					// redis todo
 
-					sendPlayerChatUpdate(game, data);
+					// await pushGameChatsAsync(game, {
+					// 	gameChat: true,
+					// 	timestamp: new Date(),
+					// 	chat: changedChat,
+					// });
+
+					// sendPlayerChatUpdate(game, data);
+
 					sendInProgressGameUpdate(game, false);
 				} else {
 					socket.emit('sendAlert', 'This is not a valid deck.');
@@ -2087,34 +2096,34 @@ module.exports.handleAddNewGameChat = async (
 					);
 				}
 
-				await pushGameChatsAsync(game, {
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has forced ',
-						},
-						{
-							text: blindMode
-								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
-								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player',
-						},
-						{
-							text: ' to vote ',
-						},
-						{
-							text: `${vote ? 'ja' : 'nein'}`,
-							type: 'player',
-						},
-						{
-							text: '.',
-						},
-					],
-				});
+				// await pushGameChatsAsync(game, {
+				// 	gameChat: true,
+				// 	timestamp: new Date(),
+				// 	chat: [
+				// 		{
+				// 			text: 'An AEM member has forced ',
+				// 		},
+				// 		{
+				// 			text: blindMode
+				// 				? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+				// 				: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+				// 			type: 'player',
+				// 		},
+				// 		{
+				// 			text: ' to vote ',
+				// 		},
+				// 		{
+				// 			text: `${vote ? 'ja' : 'nein'}`,
+				// 			type: 'player',
+				// 		},
+				// 		{
+				// 			text: '.',
+				// 		},
+				// 	],
+				// });
 
 				selectVoting({ user: affectedPlayer.userName }, game, { vote }, null, true);
-				sendPlayerChatUpdate(game, data);
+				// sendPlayerChatUpdate(game, data);
 				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
@@ -2174,24 +2183,24 @@ module.exports.handleAddNewGameChat = async (
 					counter++;
 				}
 
-				await pushGameChatsAsync(game, {
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has force skipped the government with ',
-						},
-						{
-							text: blindMode
-								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
-								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player',
-						},
-						{
-							text: ' as president.',
-						},
-					],
-				});
+				// await pushGameChatsAsync(game, {
+				// 	gameChat: true,
+				// 	timestamp: new Date(),
+				// 	chat: [
+				// 		{
+				// 			text: 'An AEM member has force skipped the government with ',
+				// 		},
+				// 		{
+				// 			text: blindMode
+				// 				? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+				// 				: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+				// 			type: 'player',
+				// 		},
+				// 		{
+				// 			text: ' as president.',
+				// 		},
+				// 	],
+				// });
 
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellor }, true);
 
@@ -2201,7 +2210,7 @@ module.exports.handleAddNewGameChat = async (
 					}
 				}, 1000);
 
-				sendPlayerChatUpdate(game, data);
+				// sendPlayerChatUpdate(game, data);
 				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
@@ -2253,36 +2262,36 @@ module.exports.handleAddNewGameChat = async (
 					return;
 				}
 
-				await pushGameChatsAsync(game, {
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has forced ',
-						},
-						{
-							text: blindMode
-								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
-								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player',
-						},
-						{
-							text: ' to pick ',
-						},
-						{
-							text: blindMode
-								? `${replacementNames[chancellorPick - 1]} {${chancellorPick}} `
-								: `${affectedChancellor.userName} {${chancellorPick}}`,
-							type: 'player',
-						},
-						{
-							text: ' as chancellor.',
-						},
-					],
-				});
+				// await pushGameChatsAsync(game, {
+				// 	gameChat: true,
+				// 	timestamp: new Date(),
+				// 	chat: [
+				// 		{
+				// 			text: 'An AEM member has forced ',
+				// 		},
+				// 		{
+				// 			text: blindMode
+				// 				? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+				// 				: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+				// 			type: 'player',
+				// 		},
+				// 		{
+				// 			text: ' to pick ',
+				// 		},
+				// 		{
+				// 			text: blindMode
+				// 				? `${replacementNames[chancellorPick - 1]} {${chancellorPick}} `
+				// 				: `${affectedChancellor.userName} {${chancellorPick}}`,
+				// 			type: 'player',
+				// 		},
+				// 		{
+				// 			text: ' as chancellor.',
+				// 		},
+				// 	],
+				// });
 
 				selectChancellor(null, { user: affectedPlayer.userName }, game, { chancellorIndex: chancellorPick - 1 }, true);
-				sendPlayerChatUpdate(game, data);
+				// sendPlayerChatUpdate(game, data);
 				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');
@@ -2313,24 +2322,24 @@ module.exports.handleAddNewGameChat = async (
 					return;
 				}
 
-				await pushGameChatsAsync(game, {
-					gameChat: true,
-					timestamp: new Date(),
-					chat: [
-						{
-							text: 'An AEM member has pinged ',
-						},
-						{
-							text: blindMode
-								? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
-								: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
-							type: 'player',
-						},
-						{
-							text: '.',
-						},
-					],
-				});
+				// await pushGameChatsAsync(game, {
+				// 	gameChat: true,
+				// 	timestamp: new Date(),
+				// 	chat: [
+				// 		{
+				// 			text: 'An AEM member has pinged ',
+				// 		},
+				// 		{
+				// 			text: blindMode
+				// 				? `${replacementNames[affectedPlayerNumber]} {${affectedPlayerNumber + 1}} `
+				// 				: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
+				// 			type: 'player',
+				// 		},
+				// 		{
+				// 			text: '.',
+				// 		},
+				// 	],
+				// });
 
 				try {
 					const affectedSocketId = Object.keys(io.sockets.sockets).find(
@@ -2347,7 +2356,7 @@ module.exports.handleAddNewGameChat = async (
 				} catch (e) {
 					console.log(e, 'caught exception in ping chat');
 				}
-				sendPlayerChatUpdate(game, data);
+				// sendPlayerChatUpdate(game, data);
 				sendInProgressGameUpdate(game, false);
 			} else {
 				socket.emit('sendAlert', 'The game has not started yet.');

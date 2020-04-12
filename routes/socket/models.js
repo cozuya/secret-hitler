@@ -16,24 +16,26 @@ module.exports.setGameAsync = (game) => setGame(game.general.uid, JSON.stringify
 module.exports.deleteGameAsync = promisify(games.del).bind(games);
 module.exports.scanGamesAsync = promisify(games.scan).bind(games);
 
-const gameChats = redis.createClient({
-	db: 2,
-});
+// const gameChats = redis.createClient({
+// 	db: 2,
+// });
 
-module.exports.getRangeGameChatsAsync = promisify(gameChats.lrange).bind(gameChats);
-module.exports.deleteGameChatsAsync = promisify(gameChats.del).bind(gameChats);
-const pushGameChats = promisify(gameChats.rpush).bind(gameChats);
-module.exports.pushGameChatAsync = (game) => pushGameChats(game.general.uid, game);
+// module.exports.getRangeGameChatsAsync = promisify(gameChats.lrange).bind(gameChats);
+// module.exports.deleteGameChatsAsync = promisify(gameChats.del).bind(gameChats);
+// const pushGameChats = promisify(gameChats.rpush).bind(gameChats);
+// module.exports.pushGameChatAsync = (uid, chat) => pushGameChats(uid, JSON.stringify(chat));
 
 const userList = redis.createClient({
 	db: 3,
 });
 
-module.exports.getRangeUserlistAsync = promisify(userList.lrange).bind(userList);
-module.exports.setUserlistAsync = promisify(userList.set).bind(userList); // shouldn't really ever be used
+const getRangeUserlistAsync = promisify(userList.lrange).bind(userList);
+module.exports.getRangeUserlistAsync = getRangeUserlistAsync;
+module.exports.setUserInListAsync = promisify(userList.lset).bind(userList);
+module.exports.setNewUserInListAsync = promisify(userList.rpush).bind(userList);
 module.exports.pushUserlistAsync = promisify(userList.rpush).bind(userList);
 module.exports.spliceUserFromUserList = async (userName) => {
-	const list = await module.exports.getRangeUserlistAsync('userList', 0, -1);
+	const list = await getRangeUserlistAsync('userList', 0, -1);
 	const userL = list.map(JSON.parse);
 	const userInList = userL.find((user) => user.userName === userName);
 
@@ -66,6 +68,12 @@ module.exports.setServerSettingAsync = promisify(serverSettings.set).bind(server
 // module.exports.ipbansNotEnforced = { status: false };
 // module.exports.gameCreationDisabled = { status: false };
 // module.exports.limitNewPlayers = { status: false };
+
+if (process.env.NODE_ENV === 'development') {
+	(async () => {
+		await games.flushdb();
+	})();
+}
 
 const fs = require('fs');
 const emotes = [];
@@ -189,70 +197,6 @@ module.exports.profiles = (() => {
 
 	return { get, push };
 })();
-
-// redis todo - delete?
-// module.exports.formattedUserList = isAEM => {
-// 	const prune = value => {
-// 		// Converts things like zero and null to undefined to remove it from the sent data.
-// 		return value ? value : undefined;
-// 	};
-
-// 	return module.exports.userList
-// 		.map(user => ({
-// 			userName: user.userName,
-// 			wins: prune(user.wins),
-// 			losses: prune(user.losses),
-// 			rainbowWins: prune(user.rainbowWins),
-// 			rainbowLosses: prune(user.rainbowLosses),
-// 			isPrivate: prune(user.isPrivate),
-// 			staffDisableVisibleElo: prune(user.staffDisableVisibleElo),
-// 			staffDisableStaffColor: prune(user.staffDisableStaffColor),
-
-// 			// Tournaments are disabled, no point sending this.
-// 			// tournyWins: user.tournyWins,
-
-// 			// Blacklists are sent in the sendUserGameSettings event.
-// 			// blacklist: user.blacklist,
-// 			customCardback: user.customCardback,
-// 			customCardbackUid: user.customCardbackUid,
-// 			eloOverall: user.eloOverall ? Math.floor(user.eloOverall) : undefined,
-// 			eloSeason: user.eloSeason ? Math.floor(user.eloSeason) : undefined,
-// 			status: user.status && user.status.type && user.status.type != 'none' ? user.status : undefined,
-// 			winsSeason: prune(user[`winsSeason${CURRENTSEASONNUMBER}`]),
-// 			lossesSeason: prune(user[`lossesSeason${CURRENTSEASONNUMBER}`]),
-// 			rainbowWinsSeason: prune(user[`rainbowWinsSeason${CURRENTSEASONNUMBER}`]),
-// 			rainbowLossesSeason: prune(user[`rainbowLossesSeason${CURRENTSEASONNUMBER}`]),
-// 			previousSeasonAward: user.previousSeasonAward,
-// 			specialTournamentStatus: user.specialTournamentStatus,
-// 			timeLastGameCreated: user.timeLastGameCreated,
-// 			staffRole: prune(user.staffRole),
-// 			staffIncognito: prune(user.staffIncognito),
-// 			isContributor: prune(user.isContributor)
-// 			// oldData: user
-// 		}))
-// 		.filter(user => isAEM || !user.staffIncognito);
-// };
-
-// const userListEmitter = {
-// 	state: 0,
-// 	send: false,
-// 	timer: setInterval(() => {
-// 		// 0.01s delay per user (1s per 100), always delay
-// 		if (!userListEmitter.send) {
-// 			userListEmitter.state = module.exports.userList.length / 10;
-// 			return;
-// 		}
-// 		if (userListEmitter.state > 0) userListEmitter.state--;
-// 		else {
-// 			userListEmitter.send = false;
-// 			io.sockets.emit('fetchUser'); // , {
-// 			// 	list: module.exports.formattedUserList()
-// 			// });
-// 		}
-// 	}, 100)
-// };
-
-// module.exports.userListEmitter = userListEmitter;
 
 module.exports.AEM = Account.find({ staffRole: { $exists: true, $ne: 'veteran' } });
 

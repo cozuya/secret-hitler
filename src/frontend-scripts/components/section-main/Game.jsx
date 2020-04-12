@@ -124,15 +124,11 @@ export default class Game extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.socket.emit(
-			'updateUserStatus',
-			'',
-			this.props.gameInfo && this.props.gameInfo.general && this.props.gameInfo.general.uid
-		);
-		this.props.socket.emit(
-			'getGameInfo',
-			this.props.gameInfo && this.props.gameInfo.general && this.props.gameInfo.general.uid
-		);
+		const { socket, gameInfo } = this.props;
+
+		socket.emit('updateUserStatus', '', gameInfo && gameInfo.general && gameInfo.general.uid);
+
+		socket.emit('getGameInfo', gameInfo && gameInfo.general && gameInfo.general.uid);
 	}
 
 	componentWillUnmount() {

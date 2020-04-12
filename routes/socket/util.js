@@ -1,5 +1,5 @@
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
-const { setGameAsync, pushGameChatsAsync, getRangeGameChatsAsync } = require('./models');
+const { setGameAsync, pushGameChatAsync, getRangeGameChatsAsync } = require('./models');
 
 /**
  * @param {object} game - game to act on.
@@ -49,12 +49,10 @@ module.exports.formatUserforUserlist = (passport, account) => {
 	return userListInfo;
 };
 
-const combineInProgressChats = async (game, userName) => {
-	const playerChats = await getRangeGameChatsAsync(game.general.uid, 0, -1);
-
+const combineInProgressChats = (game, userName) => {
 	return userName && game.gameState.isTracksFlipped
-		? game.private.seatedPlayers.find((player) => player.userName === userName).gameChats.concat(playerChats)
-		: game.private.unSeatedGameChats.concat(playerChats);
+		? game.private.seatedPlayers.find((player) => player.userName === userName).gameChats.concat(game.chats)
+		: game.private.unSeatedGameChats.concat(game.chats);
 };
 
 /**
@@ -68,6 +66,7 @@ module.exports.sendInProgressGameUpdate = async (game, noChats) => {
 	}
 
 	await setGameAsync(game);
+	// const playerChats = await getRangeGameChatsAsync(game.general.uid, 0, -1);
 
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		// may need adjustment via redis
@@ -181,7 +180,8 @@ module.exports.sendInProgressModChatUpdate = async (game, chat, specificUser) =>
 };
 
 module.exports.sendPlayerChatUpdate = async (game, chat) => {
-	if (!io.sockets.adapter.rooms[game.general.uid]) {
+	const { uid } = game.general;
+	if (!io.sockets.adapter.rooms[uid]) {
 		return;
 	}
 
@@ -195,7 +195,7 @@ module.exports.sendPlayerChatUpdate = async (game, chat) => {
 		}
 	});
 
-	pushGameChatsAsync(game.general.uid, JSON.stringify(chat));
+	// pushGameChatAsync(uid, chat);
 };
 
 module.exports.secureGame = secureGame;

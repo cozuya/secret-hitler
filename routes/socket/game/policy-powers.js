@@ -55,16 +55,16 @@ module.exports.selectPolicies = (passport, game, socket) => {
 			shufflePolicies(game);
 		}
 
-		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 3).reduce(
-				(accumulator, policy) =>
-					policy === 'fascist'
-						? Object.assign({}, accumulator, { reds: accumulator.reds + 1 })
-						: Object.assign({}, accumulator, { blues: accumulator.blues + 1 }),
+		// game.private.summary = game.private.summary.updateLog({
+		// 	policyPeek: game.private.policies.slice(0, 3).reduce(
+		// 		(accumulator, policy) =>
+		// 			policy === 'fascist'
+		// 				? Object.assign({}, accumulator, { reds: accumulator.reds + 1 })
+		// 				: Object.assign({}, accumulator, { blues: accumulator.blues + 1 }),
 
-				{ reds: 0, blues: 0 }
-			),
-		});
+		// 		{ reds: 0, blues: 0 }
+		// 	),
+		// });
 
 		president.cardFlingerState = [
 			{
@@ -261,16 +261,16 @@ module.exports.selectOnePolicy = (passport, game) => {
 			shufflePolicies(game);
 		}
 
-		game.private.summary = game.private.summary.updateLog({
-			policyPeek: game.private.policies.slice(0, 1).reduce(
-				(peek, policy) =>
-					policy === 'fascist'
-						? Object.assign({}, peek, { reds: peek.reds + 1 })
-						: Object.assign({}, peek, { blues: peek.blues + 1 }),
+		// game.private.summary = game.private.summary.updateLog({
+		// 	policyPeek: game.private.policies.slice(0, 1).reduce(
+		// 		(peek, policy) =>
+		// 			policy === 'fascist'
+		// 				? Object.assign({}, peek, { reds: peek.reds + 1 })
+		// 				: Object.assign({}, peek, { blues: peek.blues + 1 }),
 
-				{ reds: 0, blues: 0 }
-			),
-		});
+		// 		{ reds: 0, blues: 0 }
+		// 	),
+		// });
 
 		const policy = game.private.policies[0];
 		president.cardFlingerState = [
@@ -481,9 +481,9 @@ module.exports.selectBurnCard = (passport, game, data, socket) => {
 	if (!game.private.lock.selectBurnCard && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectBurnCard = true;
 
-		game.private.summary = game.private.summary.updateLog({
-			presidentVeto: data.vote,
-		});
+		// game.private.summary = game.private.summary.updateLog({
+		// 	presidentVeto: data.vote,
+		// });
 		game.publicPlayersState[presidentIndex].isLoader = false;
 		president.cardFlingerState[0].action = president.cardFlingerState[1].action = '';
 		president.cardFlingerState[0].cardStatus.isFlipped = president.cardFlingerState[1].cardStatus.isFlipped = false;
@@ -679,9 +679,9 @@ module.exports.selectPartyMembershipInvestigate = async (passport, game, data, s
 				player.notificationStatus = '';
 			});
 
-			game.private.summary = game.private.summary.updateLog({
-				investigationId: playerIndex,
-			});
+			// game.private.summary = game.private.summary.updateLog({
+			// 	investigationId: playerIndex,
+			// });
 
 			game.publicPlayersState[presidentIndex].isLoader = false;
 			game.publicPlayersState[playerIndex].cardStatus = {
@@ -901,9 +901,9 @@ module.exports.selectPartyMembershipInvestigateReverse = (passport, game, data, 
 				player.notificationStatus = '';
 			});
 
-			game.private.summary = game.private.summary.updateLog({
-				investigationId: playerIndex,
-			});
+			// game.private.summary = game.private.summary.updateLog({
+			// 	investigationId: playerIndex,
+			// });
 
 			game.publicPlayersState[presidentIndex].isLoader = false;
 			game.publicPlayersState[presidentIndex].cardStatus = {
@@ -1133,9 +1133,9 @@ module.exports.selectSpecialElection = (passport, game, data, socket) => {
 	if (!game.private.lock.selectSpecialElection && !(game.general.isTourny && game.general.tournyInfo.isCancelled)) {
 		game.private.lock.selectSpecialElection = true;
 
-		game.private.summary = game.private.summary.updateLog({
-			specialElection: data.playerIndex,
-		});
+		// game.private.summary = game.private.summary.updateLog({
+		// 	specialElection: data.playerIndex,
+		// });
 
 		game.publicPlayersState[game.gameState.presidentIndex].isLoader = false;
 
@@ -1322,9 +1322,9 @@ module.exports.selectPlayerToExecute = (passport, game, data, socket) => {
 		game.gameState.audioCue = 'selectedExecution';
 		game.private.lock.selectPlayerToExecute = true;
 
-		game.private.summary = game.private.summary.updateLog({
-			execution: playerIndex,
-		});
+		// game.private.summary = game.private.summary.updateLog({
+		// 	execution: playerIndex,
+		// });
 
 		if (!game.general.disableGamechat) {
 			game.private.unSeatedGameChats.push(nonPresidentChat);

@@ -3,7 +3,7 @@ const Jimp = require('jimp');
 const Stream = require('stream');
 const Account = require('../models/account');
 const fs = require('fs');
-const { userList, userListEmitter, games } = require('./socket/models');
+const { userList, games } = require('./socket/models');
 const { secureGame } = require('./socket/util');
 const { sendGameList } = require('./socket/user-requests');
 
@@ -32,7 +32,6 @@ module.exports.ProcessImage = (username, raw, callback) => {
 					if (user) {
 						user.customCardback = 'png';
 						user.customCardbackUid = account.gameSettings.customCardbackUid;
-						userListEmitter.send = true;
 					}
 					// redis todo
 					Object.keys(games).forEach((uid) => {

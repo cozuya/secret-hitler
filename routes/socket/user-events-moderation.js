@@ -1,5 +1,4 @@
 const {
-	userListEmitter,
 	generalChats,
 	accountCreationDisabled,
 	bypassVPNCheck,
@@ -892,7 +891,6 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 								const user = userList.find((u) => u.userName === data.userName);
 								if (user) {
 									user.customCardback = '';
-									userListEmitter.send = true;
 								}
 								Object.keys(games).forEach(async (uid) => {
 									const game = JSON.parse(await getGamesAsync(uid));
