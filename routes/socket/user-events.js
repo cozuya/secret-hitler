@@ -2551,7 +2551,17 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					data[setting].splice(0, data[setting].length - 30);
 				}
 
-				const restrictedSettings = ['blacklist', 'staffDisableVisibleElo', 'staffDisableStaffColor', 'staffIncognito', 'newReport', 'previousSeasonAward', 'specialTournamentStatus', 'ignoreIPBans', 'tournyWins'];
+				const restrictedSettings = [
+					'blacklist',
+					'staffDisableVisibleElo',
+					'staffDisableStaffColor',
+					'staffIncognito',
+					'newReport',
+					'previousSeasonAward',
+					'specialTournamentStatus',
+					'ignoreIPBans',
+					'tournyWins'
+				];
 
 				if (
 					!restrictedSettings.includes(setting) ||
@@ -2769,6 +2779,8 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 	socket.emit('sendAlert', output);
 };
 
+let lagTest = [];
+
 /**
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
@@ -2778,8 +2790,6 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
  * @param {array} superModUserNames - list of usernames that are editors and admins
  */
 module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
-	// Authentication Assured in routes.js
-
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
@@ -2876,14 +2886,18 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					console.log(err, 'err in sending mod info');
 				});
 		} else {
-			const modaction = new ModAction({
-				date: new Date(),
-				modUserName: passport.user,
-				userActedOn: data.userName,
-				modNotes: data.comment,
-				ip: data.ip,
-				actionTaken: typeof data.action === 'string' ? data.action : data.action.type
-			});
+			let modaction;
+
+			if (!lagTest.length) {
+				modaction = new ModAction({
+					date: new Date(),
+					modUserName: passport.user,
+					userActedOn: data.userName,
+					modNotes: data.comment,
+					ip: data.ip,
+					actionTaken: typeof data.action === 'string' ? data.action : data.action.type
+				});
+			}
 			/**
 			 * @param {string} username - name of user.
 			 */
@@ -2929,6 +2943,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			};
 
 			switch (data.action) {
+				case 'lagMeter':
+					lagTest.push(Date.now() - data.frontEndTime);
+
+					if (lagTest.length === 5) {
+						socket.emit('lagTestResults', (lagTest.reduce((acc, curr) => acc + curr, 0) / 5).toFixed(2));
+						lagTest = [];
+					}
+					break;
 				case 'clearTimeout':
 					Account.findOne({ username: data.userName })
 						.then(account => {
@@ -3782,29 +3804,32 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				regatherAEMList: 'Refresh AEM List'
 			};
 
-			const modAction = JSON.stringify({
-				content: `Date: *${new Date()}*\nStaff member: **${modaction.modUserName}**\nAction: **${niceAction[modaction.actionTaken] ||
-					modaction.actionTaken}**\nUser: **${modaction.userActedOn}**\nComment: **${modaction.modNotes}**.`
-			});
+			if (modaction) {
+				const modAction = JSON.stringify({
+					content: `Date: *${new Date()}*\nStaff member: **${modaction.modUserName}**\nAction: **${niceAction[modaction.actionTaken] ||
+						modaction.actionTaken}**\nUser: **${modaction.userActedOn}**\nComment: **${modaction.modNotes}**.`
+				});
 
-			const modOptions = {
-				hostname: 'discordapp.com',
-				path: process.env.DISCORDMODLOGURL,
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Content-Length': Buffer.byteLength(modAction)
+				const modOptions = {
+					hostname: 'discordapp.com',
+					path: process.env.DISCORDMODLOGURL,
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Content-Length': Buffer.byteLength(modAction)
+					}
+				};
+
+				if (process.env.NODE_ENV === 'production') {
+					try {
+						const modReq = https.request(modOptions);
+
+						modReq.end(modAction);
+					} catch (error) {}
 				}
-			};
 
-			if (process.env.NODE_ENV === 'production') {
-				try {
-					const modReq = https.request(modOptions);
-
-					modReq.end(modAction);
-				} catch (error) {}
+				modaction.save();
 			}
-			modaction.save();
 		}
 	}
 };
