@@ -2886,18 +2886,15 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					console.log(err, 'err in sending mod info');
 				});
 		} else {
-			let modaction;
+			const modaction = new ModAction({
+				date: new Date(),
+				modUserName: passport.user,
+				userActedOn: data.userName,
+				modNotes: data.comment,
+				ip: data.ip,
+				actionTaken: typeof data.action === 'string' ? data.action : data.action.type
+			});
 
-			if (!lagTest.length) {
-				modaction = new ModAction({
-					date: new Date(),
-					modUserName: passport.user,
-					userActedOn: data.userName,
-					modNotes: data.comment,
-					ip: data.ip,
-					actionTaken: typeof data.action === 'string' ? data.action : data.action.type
-				});
-			}
 			/**
 			 * @param {string} username - name of user.
 			 */
@@ -2950,7 +2947,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						socket.emit('lagTestResults', (lagTest.reduce((acc, curr) => acc + curr, 0) / 5).toFixed(2));
 						lagTest = [];
 					}
-					break;
+					return;
 				case 'clearTimeout':
 					Account.findOne({ username: data.userName })
 						.then(account => {
