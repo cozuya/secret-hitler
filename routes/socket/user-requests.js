@@ -366,7 +366,7 @@ const updateUserStatus = (module.exports.updateUserStatus = async (passport, gam
 		userName: passport.user,
 	};
 
-	if (userIndexInList) {
+	if (userIndexInList >= 0) {
 		await setUserInListAsync('userList', userIndexInList, JSON.stringify(status));
 	} else {
 		await setNewUserInListAsync('userList', JSON.stringify(status));

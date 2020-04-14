@@ -132,7 +132,7 @@ module.exports.startElection = (game, specialElectionPresidentIndex) => {
 		}
 	})();
 
-	game.private.summary = game.private.summary.nextTurn().updateLog({ presidentId: game.gameState.presidentIndex });
+	// game.private.summary = game.private.summary.nextTurn().updateLog({ presidentId: game.gameState.presidentIndex });
 
 	const { seatedPlayers } = game.private;
 	const { presidentIndex, previousElectedGovernment } = game.gameState;

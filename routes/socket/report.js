@@ -33,11 +33,10 @@ module.exports.makeReport = (data, game, type = 'report') => {
 				console.log(e);
 			}
 		} else {
-			console.log(`${text}\n${game.general.uid}`);
+			console.log(game.general.uid);
 		}
 		return;
 	}
-
 	if (type === 'reportdelayed') {
 		report = JSON.stringify({
 			content: `${process.env.DISCORDMODPING} - **AEM DELAYED**\n__**Player**__: ${player} {${seat}}\n__**Role**__: ${role}\n__**Situation**__: ${situation}\n__**Election #**__: ${election}\n__**Game Type**__: ${gameType}\n**<https://secrethitler.io/game/#/table/${uid}>**`,
@@ -120,7 +119,7 @@ module.exports.makeReport = (data, game, type = 'report') => {
 				console.log(e);
 			}
 		} else {
-			console.log(`${text}\n${game.general.uid}`);
+			console.log('game.general.uid');
 		}
 	});
 };

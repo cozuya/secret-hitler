@@ -160,13 +160,15 @@ const ensureAuthenticated = (socket) =>
 
 const findGame = async (data = {}) => data.uid && JSON.parse(await getGamesAsync(data.uid));
 
-const ensureInGame = (passport, game) => {
-	if (game && game.publicPlayersState && game.gameState && passport && passport.user) {
-		const player = game.publicPlayersState.find((player) => player.userName === passport.user);
-
-		return Boolean(player);
-	}
-};
+const ensureInGame = (passport, game) =>
+	Boolean(
+		game &&
+			game.publicPlayersState &&
+			game.gameState &&
+			passport &&
+			passport.user &&
+			game.publicPlayersState.find((player) => player.userName === passport.user)
+	);
 
 const gatherStaffUsernames = () => {
 	Account.find({ staffRole: { $exists: true } })
@@ -190,6 +192,47 @@ module.exports.socketRoutes = () => {
 		let isRestricted;
 		const authenticated = ensureAuthenticated(socket);
 		const { passport } = socket.handshake.session;
+
+		const checkRestriction = (account) => {
+			if (!account || !passport || !passport.user || !socket) return;
+			const parseVer = (ver) => {
+				const vals = ver.split('.');
+				vals.forEach((v, i) => (vals[i] = parseInt(v)));
+				return vals;
+			};
+			const firstVerNew = (v1, v2) => {
+				for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+					if (!v2[i]) return true;
+					if (!v1[i] || isNaN(v1[i]) || v1[i] < v2[i]) return false;
+					if (v1[i] > v2[i]) return true;
+				}
+				return true;
+			};
+
+			if (account.touLastAgreed && account.touLastAgreed.length) {
+				const changesSince = [];
+				const myVer = parseVer(account.touLastAgreed);
+				TOU_CHANGES.forEach((change) => {
+					if (!firstVerNew(myVer, parseVer(change.changeVer))) changesSince.push(change);
+				});
+				if (changesSince.length) {
+					socket.emit('touChange', changesSince);
+					return true;
+				}
+			} else {
+				socket.emit('touChange', [TOU_CHANGES[TOU_CHANGES.length - 1]]);
+				return true;
+			}
+			const warnings = account.warnings.filter((warning) => !warning.acknowledged);
+			if (warnings.length > 0) {
+				const { moderator, acknowledged, ...firstWarning } = warnings[0]; // eslint-disable-line no-unused-vars
+				socket.emit('warningPopup', firstWarning);
+				return true;
+			}
+			// implement other restrictions as needed
+			socket.emit('removeAllPopups');
+			return false;
+		};
 
 		const intialConnectionSetup = async () => {
 			if (passport && Object.keys(passport).length) {
@@ -259,12 +302,17 @@ module.exports.socketRoutes = () => {
 						if (account.isBanned || (account.isTimeout && new Date() < account.isTimeout)) {
 							logOutUser(user);
 						} else {
-							testIP(account.lastConnectedIP, (banType) => {
+							testIP(account.lastConnectedIP, async (banType) => {
 								if (banType && banType !== 'new' && !account.gameSettings.ignoreIPBans) {
 									logOutUser(user);
 								} else {
 									socket.emit('gameSettings', account.gameSettings);
-									pushUserlistAsync('userList', JSON.stringify(formatUserforUserlist(passport, account)));
+									const list = await getRangeUserlistAsync('userList', 0, -1);
+
+									if (!Boolean(list.map(JSON.parse).find((listItem) => listItem.userName === user))) {
+										pushUserlistAsync('userList', JSON.stringify(formatUserforUserlist(passport, account)));
+									}
+
 									socket.emit('version', { current: version });
 
 									// defensively check if game exists
@@ -296,59 +344,6 @@ module.exports.socketRoutes = () => {
 										socket.join('sidebarInfoSubscription');
 										sendGeneralChats(socket);
 									}
-
-									const parseVer = (ver) => {
-										const vals = ver.split('.');
-										vals.forEach((v, i) => (vals[i] = parseInt(v)));
-
-										return vals;
-									};
-
-									const firstVerNew = (v1, v2) => {
-										for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
-											if (!v2[i]) {
-												return true;
-											}
-
-											if (!v1[i] || isNaN(v1[i]) || v1[i] < v2[i]) {
-												return false;
-											}
-
-											if (v1[i] > v2[i]) {
-												return true;
-											}
-										}
-										return true;
-									};
-
-									if (account.touLastAgreed && account.touLastAgreed.length) {
-										const changesSince = [];
-										const myVer = parseVer(account.touLastAgreed);
-
-										TOU_CHANGES.forEach((change) => {
-											if (!firstVerNew(myVer, parseVer(change.changeVer))) {
-												changesSince.push(change);
-											}
-										});
-
-										if (changesSince.length) {
-											socket.emit('touChange', changesSince);
-											isRestricted = true;
-										}
-									} else {
-										socket.emit('touChange', [TOU_CHANGES[TOU_CHANGES.length - 1]]);
-										isRestricted = true;
-									}
-									const warnings = account.warnings.filter((warning) => !warning.acknowledged);
-
-									if (warnings.length > 0) {
-										const { moderator, acknowledged, ...firstWarning } = warnings[0]; // eslint-disable-line no-unused-vars
-
-										socket.emit('warningPopup', firstWarning);
-										isRestricted = true;
-									}
-									// implement other restrictions as needed
-									socket.emit('removeAllPopups');
 								}
 							});
 						}
@@ -358,6 +353,12 @@ module.exports.socketRoutes = () => {
 		};
 
 		intialConnectionSetup();
+
+		if (passport && passport.user && authenticated) {
+			Account.findOne({ username: passport.user }).then((account) => {
+				isRestricted = checkRestriction(account);
+			});
+		}
 
 		// Instantly sends the userlist as soon as the websocket is created.
 		// For some reason, sending the userlist before this happens actually doesn't work on the client. The event gets in, but is not used.

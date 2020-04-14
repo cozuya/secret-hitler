@@ -299,7 +299,7 @@ const handleSocketDisconnect = async (socket) => {
 						game.general.playerCount - 1)
 			) {
 				deleteGameAsync(gameName);
-				deleteGameChatsAsync(gameName);
+				// deleteGameChatsAsync(gameName);
 			} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 				publicPlayersState.splice(playerIndex, 1);
 				checkStartConditions(game);
@@ -345,7 +345,7 @@ const handleSocketDisconnect = async (socket) => {
 					game.publicPlayersState.filter((publicPlayer) => publicPlayer.leftGame).length === game.general.playerCount
 				) {
 					deleteGameAsync(game.general.uid);
-					deleteGameChatsAsync(game.general.uid);
+					// deleteGameChatsAsync(game.general.uid);
 				}
 			}
 			sendGameList();
@@ -404,7 +404,7 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 		}
 		if (game.publicPlayersState.filter((publicPlayer) => publicPlayer.leftGame).length === game.general.playerCount) {
 			deleteGameAsync(game.general.uid);
-			deleteGameChatsAsync(game.general.uid);
+			// deleteGameChatsAsync(game.general.uid);
 		}
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(
@@ -564,6 +564,7 @@ const updateSeatedUser = (game, socket, passport, data) => {
 			socket.emit('updateSeatForUser', true);
 			checkStartConditions(game);
 			updateUserStatus(passport, game);
+			sendGameList();
 			io.sockets.in(data.uid).emit('gameUpdate', secureGame(game));
 		}
 	});
@@ -1702,7 +1703,7 @@ module.exports.handleUpdatedRemakeGame = async (passport, game, data, socket) =>
 
 			if (game.publicPlayersState.filter((publicPlayer) => publicPlayer.leftGame).length === game.general.playerCount) {
 				deleteGameAsync(game.general.uid);
-				deleteGameChatsAsync(game.general.uid);
+				// deleteGameChatsAsync(game.general.uid);
 			} else {
 				sendInProgressGameUpdate(game);
 			}

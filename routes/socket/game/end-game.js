@@ -1,5 +1,5 @@
 const { sendInProgressGameUpdate, rateEloGame } = require('../util.js');
-const { userList, games } = require('../models.js');
+const { getRangeUserlistAsync } = require('../models.js');
 const { sendUserList, sendGameList } = require('../user-requests.js');
 const Account = require('../../../models/account.js');
 const Game = require('../../../models/game');
@@ -16,7 +16,9 @@ const { CURRENTSEASONNUMBER } = require('../../../src/frontend-scripts/node-cons
  * @param {object} game - game to act on.
  */
 const saveGame = (game) => {
-	const summary = game.private.summary.publish();
+	// redis todo replay
+	// const summary = game.private.summary.publish();
+	let summary;
 	const casualBool = Boolean(game.general.casualGame);
 	/**
 	 * @param {object} - object describing game model.
@@ -173,8 +175,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 	game.private.unSeatedGameChats.push(chat, remainingPoliciesChat);
 
-	game.summary = game.private.summary;
-	debug('Final game summary: %O', game.summary.publish().toObject());
+	// game.summary = game.private.summary;
+	// debug('Final game summary: %O', game.summary.publish().toObject());
 
 	sendInProgressGameUpdate(game);
 
@@ -186,16 +188,23 @@ module.exports.completeGame = (game, winningTeamName) => {
 		Account.find({
 			username: { $in: seatedPlayers.map((player) => player.userName) },
 		})
-			.then((results) => {
+			.then(async (results) => {
 				const isRainbow = game.general.rainbowgame;
 				const isTournamentFinalGame = game.general.isTourny && game.general.tournyInfo.round === 2;
 				const eloAdjustments = rateEloGame(game, results, winningPlayerNames);
 
-				results.forEach((player) => {
-					const listUser = userList.find((user) => user.userName === player.username);
-					if (listUser) {
-						listUser.eloOverall = player.eloOverall;
-						listUser.eloSeason = player.eloSeason;
+				const list = await getRangeUserlistAsync('userList', 0, -1);
+				const userL = list.map(JSON.parse);
+
+				results.forEach(async (player) => {
+					const userIndex = userL.findIndex((user) => user.userName === player.userName);
+					const userInList = userL.find((user) => user.userName === player.userName);
+
+					if (userInList) {
+						userInList.eloOverall = player.eloOverall;
+						userInList.eloSeason = player.eloSeason;
+
+						await setUserInListAsync('userList', userIndex, JSON.stringify(userInList));
 					}
 
 					const seatedPlayer = seatedPlayers.find((p) => p.userName === player.username);
@@ -280,8 +289,11 @@ module.exports.completeGame = (game, winningTeamName) => {
 
 					player.games.push(game.general.uid);
 					player.lastCompletedGame = new Date();
-					player.save(() => {
-						const userEntry = userList.find((user) => user.userName === player.username);
+					player.save(async () => {
+						const list = await getRangeUserlistAsync('userList', 0, -1);
+						const userL = list.map(JSON.parse);
+						const userIndex = userL.findIndex((user) => user.userName === player.userName);
+						const userEntry = userL.find((user) => user.userName === player.userName);
 
 						if (userEntry) {
 							if (winner) {
@@ -333,6 +345,8 @@ module.exports.completeGame = (game, winningTeamName) => {
 									: 0;
 							}
 
+							await setUserInListAsync('userList', userIndex, JSON.stringify(userEntry));
+
 							sendUserList();
 						}
 					});
@@ -350,6 +364,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 			const tableUidLastLetter = uid.charAt(uid.length - 1);
 			const otherUid =
 				tableUidLastLetter === 'A' ? `${uid.substr(0, uid.length - 1)}B` : `${uid.substr(0, uid.length - 1)}A`;
+			// redit todo tourny
 			const otherGame = games.find((g) => g.general.uid === otherUid);
 
 			if (!otherGame || otherGame.gameState.isCompleted) {
