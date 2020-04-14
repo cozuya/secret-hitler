@@ -3801,32 +3801,30 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				regatherAEMList: 'Refresh AEM List'
 			};
 
-			if (modaction) {
-				const modAction = JSON.stringify({
-					content: `Date: *${new Date()}*\nStaff member: **${modaction.modUserName}**\nAction: **${niceAction[modaction.actionTaken] ||
-						modaction.actionTaken}**\nUser: **${modaction.userActedOn}**\nComment: **${modaction.modNotes}**.`
-				});
+			const modAction = JSON.stringify({
+				content: `Date: *${new Date()}*\nStaff member: **${modaction.modUserName}**\nAction: **${niceAction[modaction.actionTaken] ||
+					modaction.actionTaken}**\nUser: **${modaction.userActedOn}**\nComment: **${modaction.modNotes}**.`
+			});
 
-				const modOptions = {
-					hostname: 'discordapp.com',
-					path: process.env.DISCORDMODLOGURL,
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Content-Length': Buffer.byteLength(modAction)
-					}
-				};
-
-				if (process.env.NODE_ENV === 'production') {
-					try {
-						const modReq = https.request(modOptions);
-
-						modReq.end(modAction);
-					} catch (error) {}
+			const modOptions = {
+				hostname: 'discordapp.com',
+				path: process.env.DISCORDMODLOGURL,
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Content-Length': Buffer.byteLength(modAction)
 				}
+			};
 
-				modaction.save();
+			if (process.env.NODE_ENV === 'production') {
+				try {
+					const modReq = https.request(modOptions);
+
+					modReq.end(modAction);
+				} catch (error) {}
 			}
+
+			modaction.save();
 		}
 	}
 };
