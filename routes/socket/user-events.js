@@ -462,15 +462,15 @@ module.exports.handleUpdatedPlayerNote = (socket, data) => {
  * @param {object} data - from socket emit.
  */
 module.exports.handleUpdatedTheme = (socket, passport, data) => {
-	// Temporary - remove once fixed
-	return;
+	const fields = ['primaryColor', 'secondaryColor', 'tertiaryColor', 'backgroundColor', 'textColor'];
+
 	Account.findOne({ username: passport && passport.user }).then(account => {
 		if (!account) {
 			return;
 		}
 
-		for (const property in data) {
-			account[property] = data[property];
+		for (const field of fields) {
+			if (data[field]) account[field] = data[field];
 		}
 
 		account.save();
@@ -2394,12 +2394,12 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 			data.staffRole = 'moderator';
 			data.userName = 'Incognito';
 		}
-		
+
 		// Attempts to cut down on overloading server resources
 		if (game.general.private && game.chats.length >= 30) {
 			game.chats = game.chats.slice(game.chats.length - 30, game.chats.length);
 		}
-		
+
 		game.chats.push(data);
 
 		if (game.gameState.isTracksFlipped) {
@@ -2544,32 +2544,36 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 		.then(account => {
 			const currentPrivate = account.gameSettings.isPrivate;
 			const userIdx = userList.findIndex(user => user.userName === passport.user);
-
+			const aem = account.staffRole && (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin');
+			const veteran = account.staffRole && account.staffRole === 'veteran';
 			for (const setting in data) {
 				if (setting == 'blacklist') {
 					data[setting].splice(0, data[setting].length - 30);
 				}
 
+				const restrictedSettings = [
+					'blacklist',
+					'staffDisableVisibleElo',
+					'staffDisableStaffColor',
+					'staffIncognito',
+					'newReport',
+					'previousSeasonAward',
+					'specialTournamentStatus',
+					'ignoreIPBans',
+					'tournyWins'
+				];
+
 				if (
-					setting !== 'blacklist' ||
+					!restrictedSettings.includes(setting) ||
 					(setting === 'blacklist' && data[setting].length <= 30) ||
-					(setting === 'staffDisableVisibleElo' && account.staffRole && account.staffRole !== 'altmod' && account.staffRole !== 'trialmod') ||
-					(setting === 'staffIncognito' &&
-						account.staffRole &&
-						account.staffRole !== 'altmod' &&
-						account.staffRole !== 'trialmod' &&
-						account.staffRole !== 'veteran')
+					(setting === 'staffDisableVisibleElo' && (aem || veteran)) ||
+					(setting === 'staffIncognito' && aem) ||
+					(setting === 'staffDisableStaffColor' && (aem || veteran))
 				) {
 					account.gameSettings[setting] = data[setting];
 				}
 
-				if (
-					setting === 'staffIncognito' &&
-					account.staffRole &&
-					account.staffRole !== 'altmod' &&
-					account.staffRole !== 'trialmod' &&
-					account.staffRole !== 'veteran'
-				) {
+				if (setting === 'staffIncognito' && aem) {
 					const userListInfo = {
 						userName: passport.user,
 						staffRole: account.staffRole || '',
@@ -2775,6 +2779,8 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 	socket.emit('sendAlert', output);
 };
 
+let lagTest = [];
+
 /**
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
@@ -2784,8 +2790,6 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
  * @param {array} superModUserNames - list of usernames that are editors and admins
  */
 module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
-	// Authentication Assured in routes.js
-
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
@@ -2890,6 +2894,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				ip: data.ip,
 				actionTaken: typeof data.action === 'string' ? data.action : data.action.type
 			});
+
 			/**
 			 * @param {string} username - name of user.
 			 */
@@ -2935,6 +2940,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			};
 
 			switch (data.action) {
+				case 'lagMeter':
+					lagTest.push(Date.now() - data.frontEndTime);
+
+					if (lagTest.length === 5) {
+						socket.emit('lagTestResults', (lagTest.reduce((acc, curr) => acc + curr, 0) / 5).toFixed(2));
+						lagTest = [];
+					}
+					return;
 				case 'clearTimeout':
 					Account.findOne({ username: data.userName })
 						.then(account => {
@@ -3296,9 +3309,10 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 						ip: data.ip
 					});
 					timeout3.save(() => {
-						Account.find({ lastConnectedIP: data.ip }, function(err, users) {
+						Account.findOne({ lastConnectedIP: data.ip }, (err, users) => {
 							if (users && users.length > 0) {
 								users.forEach(user => {
+									if (user.username === data.userName) user.isTimeout = new Date(Date.now() + 6 * 60 * 60 * 1000);
 									logOutUser(user.username);
 								});
 							}
@@ -3809,6 +3823,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					modReq.end(modAction);
 				} catch (error) {}
 			}
+
 			modaction.save();
 		}
 	}

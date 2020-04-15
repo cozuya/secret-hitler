@@ -72,7 +72,13 @@ const gamesGarbageCollector = () => {
 			currentGame.gameState &&
 			!currentGame.gameState.isStarted &&
 			new Date(currentGame.general.timeCreated.getTime() + 600000);
-		const completedTimer = currentGame && currentGame.general && currentGame.general.timeStarted && currentGame.gameState && currentGame.gameState.isCompleted && new Date(games[gameName].general.timeStarted + 000);
+		const completedTimer =
+			currentGame &&
+			currentGame.general &&
+			currentGame.general.timeStarted &&
+			currentGame.gameState &&
+			currentGame.gameState.isCompleted &&
+			new Date(games[gameName].general.timeStarted + 0);
 
 		// To come maybe later
 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
@@ -116,7 +122,7 @@ const gamesGarbageCollector = () => {
 				if (!io.sockets.sockets[affectedSocketId]) {
 					continue;
 				}
-				
+
 				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) {
 					io.sockets.sockets[affectedSocketId].emit('toLobby');
 					io.sockets.sockets[affectedSocketId].leave(gameName);
@@ -295,7 +301,11 @@ module.exports.socketRoutes = () => {
 			});
 
 			socket.on('sendUser', user => {
-				sendSpecificUserList(socket, user.staffRole);
+				if (authenticated && isAEM) {
+					sendSpecificUserList(socket, 'moderator');
+				} else {
+					sendSpecificUserList(socket);
+				}
 			});
 
 			socket.on('flappyEvent', data => {
