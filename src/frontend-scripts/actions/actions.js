@@ -86,9 +86,10 @@ export function viewPatchNotes() {
 	return { type: 'VIEW_PATCH_NOTES' };
 }
 
-export const fetchProfile = username => ({
+export const fetchProfile = (username, requestingUser) => ({
 	type: 'FETCH_PROFILE',
-	username
+	username,
+	requestingUser
 });
 
 export const loadReplay = summary => ({

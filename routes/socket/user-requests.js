@@ -13,7 +13,6 @@ const {
 	ipbansNotEnforced,
 	gameCreationDisabled,
 	limitNewPlayers,
-	bypassVPNCheck,
 	userListEmitter,
 	formattedUserList,
 	gameListEmitter,
@@ -109,7 +108,6 @@ const getModInfo = (games, users, socket, queryObj, count = 1, isTrial) => {
 				ipbansNotEnforced,
 				gameCreationDisabled,
 				limitNewPlayers,
-				bypassVPNCheck,
 				userList: list,
 				gameList: gList,
 				hideActions: isTrial || undefined

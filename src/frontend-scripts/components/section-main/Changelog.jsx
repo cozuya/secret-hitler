@@ -11,23 +11,6 @@ class Changelog extends React.Component {
 					<h2>Changelog</h2>
 				</div>
 				<div className="ui header">
-					<p>Welcome to Season 10!</p>
-				</div>
-				<h5>Thanks to LoveOken for this season's medals!</h5>
-				<h4>The top 10 players of season 9 are:</h4>
-				<ol>
-					<li>rags009: 1992</li>
-					<li>ChroIIo: 1942</li>
-					<li>Scorcha: 1930</li>
-					<li>NotFat: 1929</li>
-					<li>ChillMedusa: 1899</li>
-					<li>arteezy: 1886</li>
-					<li>DanGheesling14: 1886</li>
-					<li>olly97: 1882</li>
-					<li>earring: 1854</li>
-					<li>lucaanders: 1854</li>
-				</ol>
-				<div className="ui header">
 					<p>Version 1.6.7 released 1-25-2020</p>
 				</div>
 				<p>New feature: Player settable color theming. Check the settings page to change the color palettes.</p>

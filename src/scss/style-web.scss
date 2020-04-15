@@ -49,6 +49,19 @@ html {
 	background-size: contain;
 	padding-top: 46%;
 
+	.private-callout a {
+		padding: 5px;
+		background: #000;
+		color: lightyellow;
+		text-decoration: underline;
+		width: 320px;
+		word-wrap: break-word;
+		display: inline-block;
+		text-align: center;
+		position: absolute;
+		top: 5px;
+	}
+
 	.online-count {
 		padding: 5px;
 		background: #6f3939;

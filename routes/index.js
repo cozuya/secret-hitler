@@ -263,9 +263,12 @@ module.exports = () => {
 	});
 
 	app.get('/profile', (req, res) => {
-		const authedUser = req.session && req.session.passport && req.session.passport.user;
 		const username = req.query.username;
-
+		const requestingUser = req.query.requestingUser;
+		if (req && req.user && requestingUser && requestingUser !== 'undefined' && req.user.username && requestingUser !== req.user.username) {
+			res.status(401).send('You are not who you say you are. Please login again.');
+			return;
+		}
 		getProfile(username).then(profile => {
 			if (!profile) {
 				res.status(404).send('Profile not found');
@@ -279,7 +282,7 @@ module.exports = () => {
 					if (account) {
 						_profile.customCardback = account.gameSettings.customCardback;
 						_profile.bio = account.bio;
-						if (!account.gameSettings.staffDisableVisibleElo) {
+						if (account.gameSettings.staffDisableVisibleElo !== true) {
 							_profile.eloSeason = Math.floor(account.eloSeason);
 							_profile.eloOverall = Math.floor(account.eloOverall);
 						}
@@ -287,16 +290,12 @@ module.exports = () => {
 							if (!acc || !acc.staffRole || acc.staffRole === 'altmod' || acc.staffRole === 'veteran') {
 								_profile.lastConnectedIP = 'no looking';
 							} else {
-						Account.findOne({ username: authedUser }).then(acc => {
-							if (acc && acc.staffRole && (acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin')) {
 								try {
 									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
 								} catch (e) {
-									_profile.lastConnectedIP = "Couldn't find IP";
+									_profile.lastConnectedIP = 'something went wrong';
 									console.log(e);
 								}
-							} else {
-								_profile.lastConnectedIP = undefined;
 							}
 
 							res.json(_profile);

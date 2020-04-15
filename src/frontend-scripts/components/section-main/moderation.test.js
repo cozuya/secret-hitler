@@ -32,8 +32,7 @@ describe('Moderation', () => {
 			hideActions: false,
 			filterModalVisibility: false,
 			filterValue: '',
-			showGameIcons: false,
-			​lagMeterStatus​:​ ​'​'
+			showGameIcons: false
 		};
 
 		const component = shallow(<Moderation socket={{ on: jest.fn(), emit: jest.fn() }} />);

@@ -9,7 +9,7 @@ $(document).ready(function() {
 			contentType: 'application/json; charset=UTF-8',
 			statusCode: {
 				200: function(d) {
-					$('#player-count').text(d.count);
+					$('.chrome.icon').after('<span>' + d.count + ' </span>');
 				}
 			}
 		});
