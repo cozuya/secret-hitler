@@ -46,7 +46,7 @@ module.exports.spliceUserFromUserList = async (userName) => {
 	const userInList = userL.find((user) => user.userName === userName);
 
 	if (userInList) {
-		userList.lrem('userList', 0, JSON.stringify(userInList));
+		await userList.lrem('userList', 0, JSON.stringify(userInList));
 	}
 };
 

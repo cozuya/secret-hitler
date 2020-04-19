@@ -49,7 +49,13 @@ yarn dev
 
 Navigate to: http://localhost:8080
 
-You'll most likely need a browser extension such as Chrome's [SessionBox](https://chrome.google.com/webstore/detail/sessionbox-free-multi-log/megbklhjamjbcafknkgmokldgolkdfig?hl=en) to have multiple sessions on the same browser. No, incognito will not work. When developing in Chrome, you'll want to check "disable cache" on the network tab - my webpack setup isn't great and it doesn't cache bust itself. Also it will be very helpful to make all of the "quickdefault" accounts with the default password, `snipsnap`, so that you can log in to an account in one click. There is a yarn script you may run once `server` or `dev` yarn scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
+You'll most likely need a browser extension such as Chrome's [SessionBox](https://chrome.google.com/webstore/detail/sessionbox-free-multi-log/megbklhjamjbcafknkgmokldgolkdfig?hl=en) to have multiple sessions on the same browser. No, incognito will not work. When developing in Chrome, you'll want to check "disable cache" on the network tab - my webpack setup isn't great and it doesn't cache bust itself.
+
+While this will work well for ~90% of development needed on this project, some of it will need to be developed on multiple cores. To do so, the easiest way to is to add pm2 globally `yarn global add pm2`, run `yarn dev-no-server` and then run `pm2 start bin/dev.js -i all` and its similar commands, most notably `pm2 restart all` and `pm2 log all`, you will need many open terminal windows.
+
+To reset the state of the application (games, userlist etc), go into `redis-cli` and use `flushall`.
+
+Also it will be very helpful to make all of the "quickdefault" accounts with the default password, `snipsnap`, so that you can log in to an account in one click. There is a yarn script you may run once `server` or `dev` yarn scripts are already running called `create-accounts` which will attempt to populate all of the helper accounts into the database.
 
 ```bash
 yarn create-accounts

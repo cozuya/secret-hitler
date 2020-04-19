@@ -68,7 +68,7 @@ const {
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
 const version = require('../../version');
-const { formatUserforUserlist } = require('./util');
+const { formatUserforUserlist, sendInProgressGameUpdate } = require('./util');
 
 let modUserNames = [];
 let editorUserNames = [];
@@ -254,7 +254,6 @@ module.exports.socketRoutes = () => {
 				if (!game) {
 					socket.join('sidebarInfoSubscription');
 					socket.join('gameListInfoSubscription');
-					sendUserList(socket);
 					sendGeneralChats(socket);
 					sendGameList(socket, isAEM);
 				}
@@ -310,8 +309,9 @@ module.exports.socketRoutes = () => {
 									const list = await getRangeUserlistAsync('userList', 0, -1);
 
 									if (!Boolean(list.map(JSON.parse).find((listItem) => listItem.userName === user))) {
-										pushUserlistAsync('userList', JSON.stringify(formatUserforUserlist(passport, account)));
+										await pushUserlistAsync('userList', JSON.stringify(formatUserforUserlist(passport, account)));
 									}
+									await sendUserList();
 
 									socket.emit('version', { current: version });
 
@@ -349,6 +349,10 @@ module.exports.socketRoutes = () => {
 						}
 					}
 				});
+			} else {
+				sendUserList(socket);
+				sendGameList(socket);
+				sendGeneralChats(socket);
 			}
 		};
 

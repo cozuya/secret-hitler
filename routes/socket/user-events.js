@@ -285,10 +285,14 @@ const handleSocketDisconnect = async (socket) => {
 	const { passport } = socket.handshake.session;
 
 	if (passport && Object.keys(passport).length) {
-		spliceUserFromUserList(passport.user);
+		await spliceUserFromUserList(passport.user);
 
 		if (passport.gameUidUserIsSeatedIn) {
 			const game = JSON.parse(await getGamesAsync(passport.gameUidUserIsSeatedIn));
+			console.log(game, 'game');
+			if (!game) {
+				return;
+			}
 			const { gameState, publicPlayersState } = game;
 			const playerIndex = publicPlayersState.findIndex((player) => player.userName === passport.user);
 
@@ -298,7 +302,7 @@ const handleSocketDisconnect = async (socket) => {
 					publicPlayersState.filter((player) => !player.connected || player.leftGame).length ===
 						game.general.playerCount - 1)
 			) {
-				deleteGameAsync(gameName);
+				deleteGameAsync(game.general.uid);
 				// deleteGameChatsAsync(gameName);
 			} else if (!gameState.isTracksFlipped && playerIndex > -1) {
 				publicPlayersState.splice(playerIndex, 1);
@@ -307,6 +311,7 @@ const handleSocketDisconnect = async (socket) => {
 				io.to(game.uid).emit('gameUpdate', game);
 			} else if (gameState.isTracksFlipped) {
 				publicPlayersState[playerIndex].connected = false;
+				console.log('discons in game');
 				publicPlayersState[playerIndex].leftGame = true;
 				const playerRemakeData = game.remakeData && game.remakeData.find((player) => player.userName === passport.user);
 
@@ -352,6 +357,7 @@ const handleSocketDisconnect = async (socket) => {
 			passport.gameUidUserIsSeatedIn = null;
 		}
 	}
+
 	sendUserList();
 };
 
@@ -363,7 +369,6 @@ const handleSocketDisconnect = async (socket) => {
  */
 const handleUserLeaveGame = async (socket, game, data, passport) => {
 	const playerIndex = game.publicPlayersState.findIndex((player) => player.userName === passport.user);
-	let toUpdateGame = false;
 
 	if (playerIndex > -1) {
 		const playerRemakeData = game.remakeData && game.remakeData.find((player) => player.userName === passport.user);
@@ -377,8 +382,8 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 				game.general.isRemaking = false;
 				game.general.status = 'Game remaking has been cancelled.';
 				clearInterval(game.private.remakeTimer);
-				toUpdateGame = true;
 			}
+
 			const chat = {
 				timestamp: new Date(),
 				gameChat: true,
@@ -394,25 +399,27 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 				} (${remakePlayerCount - 1}/${minimumRemakeVoteCount})`,
 			});
 
-			await pushGameChatsAsync(game, chat);
 			game.remakeData.find((player) => player.userName === passport.user).isRemaking = false;
-			toUpdateGame = true;
+			await pushGameChatsAsync(game, chat);
 		}
+
 		if (game.gameState.isTracksFlipped) {
 			game.publicPlayersState[playerIndex].leftGame = true;
-			toUpdateGame = true;
+			await setGameAsync(game);
 		}
+
 		if (game.publicPlayersState.filter((publicPlayer) => publicPlayer.leftGame).length === game.general.playerCount) {
 			deleteGameAsync(game.general.uid);
 			// deleteGameChatsAsync(game.general.uid);
 		}
+
 		if (!game.gameState.isTracksFlipped) {
 			game.publicPlayersState.splice(
 				game.publicPlayersState.findIndex((player) => player.userName === passport.user),
 				1
 			);
 			checkStartConditions(game);
-			toUpdateGame = true;
+			await setGameAsync(game);
 			io.sockets.in(game.general.uid).emit('gameUpdate', game);
 		}
 	}
@@ -437,11 +444,11 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 			if (summary && summary.toObject() && game.general.uid !== 'devgame' && !game.general.private) {
 				summary.save();
 				game.summarySaved = true;
-				toUpdateGame = true;
+				await setGameAsync(game);
 			}
 		}
 
-		deleteGameAsync(game.general.uid);
+		await deleteGameAsync(game.general.uid);
 	} else if (game.gameState.isTracksFlipped) {
 		sendInProgressGameUpdate(game);
 	}
@@ -449,10 +456,6 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 	if (!data.isRemake) {
 		updateUserStatus(passport, null);
 		socket.emit('gameUpdate', {});
-	}
-
-	if (toUpdateGame) {
-		await setGameAsync(game);
 	}
 
 	socket.join('sidebarInfoSubscription');
@@ -890,6 +893,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 	updateUserStatus(passport, newGame);
 
 	await setGameAsync(newGame);
+	passport.gameUidUserIsSeatedIn = newGame.general.uid;
 	sendGameList();
 	socket.join(newGame.general.uid);
 	socket.leave('gameListInfoSubscription');

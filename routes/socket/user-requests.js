@@ -39,8 +39,10 @@ const sendUserList = async (socket) => {
 	if (socket) {
 		socket.emit('userList', { list: userList });
 	} else {
-		// redis todo while this should work, it will be doing this on all cores which doesn't make sense i.e 4x or more sending this.  I think.  Not sure how to fix it.
-		_.throttle(() => io.to('sidebarInfoSubscription').emit('userList', { list: userList }), 4000);
+		// this don't work dunno why
+		// _.throttle(() => io.to('sidebarInfoSubscription').emit('userList', { list: userList }), 4000);
+
+		io.to('sidebarInfoSubscription').emit('userList', { list: userList });
 	}
 };
 

@@ -1,3 +1,3 @@
 import io from 'socket.io-client';
 
-export default io({ reconnect: false });
+export default io({ reconnect: false, transports: ['websocket'] });
