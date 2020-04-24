@@ -241,7 +241,6 @@ module.exports.socketRoutes = () => {
 				const gu = await scanGamesAsync(0);
 				const gameUids = gu[1];
 				let game;
-				console.log(gu, 'gu');
 
 				for (let index = 0; index < gameUids.length; index++) {
 					const g = JSON.parse(await getGamesAsync(gameUids[index]));
@@ -252,7 +251,6 @@ module.exports.socketRoutes = () => {
 					}
 				}
 
-				console.log(game, 'g');
 				if (!game) {
 					socket.join('sidebarInfoSubscription');
 					socket.join('gameListInfoSubscription');
@@ -280,7 +278,6 @@ module.exports.socketRoutes = () => {
 
 				const reconnectingUser = game && game.publicPlayersState.find((player) => player.userName === user);
 
-				console.log(reconnectingUser, 'reconnectingUser');
 				if (game && game.gameState.isStarted && !game.gameState.isCompleted && reconnectingUser) {
 					reconnectingUser.connected = true;
 					passport.gameUidUserIsSeatedIn = game.general.uid;
