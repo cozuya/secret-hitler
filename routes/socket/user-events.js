@@ -289,7 +289,6 @@ const handleSocketDisconnect = async (socket) => {
 
 		if (passport.gameUidUserIsSeatedIn) {
 			const game = JSON.parse(await getGamesAsync(passport.gameUidUserIsSeatedIn));
-			console.log(game, 'game');
 			if (!game) {
 				return;
 			}
@@ -311,8 +310,6 @@ const handleSocketDisconnect = async (socket) => {
 				io.to(game.uid).emit('gameUpdate', game);
 			} else if (gameState.isTracksFlipped) {
 				publicPlayersState[playerIndex].connected = false;
-				console.log('discons in game');
-				publicPlayersState[playerIndex].leftGame = true;
 				const playerRemakeData = game.remakeData && game.remakeData.find((player) => player.userName === passport.user);
 
 				if (playerRemakeData && playerRemakeData.isRemaking) {
@@ -462,8 +459,10 @@ const handleUserLeaveGame = async (socket, game, data, passport) => {
 	socket.join('gameListInfoSubscription');
 	sendUserList(socket);
 	sendGeneralChats(socket);
-	sendGameList(socket);
+	sendGameList();
 };
+
+module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 /**
  * @param {object} socket - user socket reference.
@@ -563,6 +562,7 @@ const updateSeatedUser = (game, socket, passport, data) => {
 				publicPlayersState.unshift(player);
 			}
 
+			passport.gameUidUserIsSeatedIn = game.general.uid;
 			await setGameAsync(game);
 			socket.emit('updateSeatForUser', true);
 			checkStartConditions(game);
@@ -2787,8 +2787,6 @@ module.exports.handleHasSeenNewPlayerModal = (socket) => {
 		});
 	}
 };
-
-module.exports.handleUserLeaveGame = handleUserLeaveGame;
 
 module.exports.handleSocketDisconnect = handleSocketDisconnect;
 

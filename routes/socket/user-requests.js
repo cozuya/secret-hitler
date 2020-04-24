@@ -27,8 +27,7 @@ const version = require('../../version');
 const { obfIP } = require('./ip-obf');
 const { CURRENTSEASONNUMBER } = require('../../src/frontend-scripts/node-constants');
 
-const _ = require('lodash');
-
+let throttledLastUserListSentTime = Date.now();
 /**
  * @param {object} socket - user socket reference.
  */
@@ -39,10 +38,12 @@ const sendUserList = async (socket) => {
 	if (socket) {
 		socket.emit('userList', { list: userList });
 	} else {
-		// this don't work dunno why
-		// _.throttle(() => io.to('sidebarInfoSubscription').emit('userList', { list: userList }), 4000);
+		const now = Date.now();
 
-		io.to('sidebarInfoSubscription').emit('userList', { list: userList });
+		if (now - throttledLastUserListSentTime > 4000) {
+			io.to('sidebarInfoSubscription').emit('userList', { list: userList });
+			throttledLastUserListSentTime = now;
+		}
 	}
 };
 
@@ -232,11 +233,18 @@ module.exports.sendReplayGameChats = (socket, uid) => {
 	});
 };
 
+let throttledLastGameListSentTime = Date.now();
 /**
  * @param {object} socket - user socket reference.
  * @param {boolean} isAEM - user AEM designation
  */
 const sendGameList = async (socket, isAEM) => {
+	const now = Date.now();
+
+	if (!socket && now - throttledLastGameListSentTime < 2000) {
+		return;
+	}
+
 	const g = await scanGamesAsync(0);
 	const gameUids = g[1];
 	const formattedGameList = [];
@@ -299,12 +307,7 @@ const sendGameList = async (socket, isAEM) => {
 			'gameList',
 			formattedGameList.filter((game) => isAEM || (game && !game.isUnlisted))
 		);
-		// _.throttle(() => {
-		// 	io.to('gameListInfoSubscription').emit(
-		// 		'gameList',
-		// 		formattedGameList.filter((game) => isAEM || (game && !game.isUnlisted))
-		// 	);
-		// }, 4000);
+		throttledLastGameListSentTime = now;
 	}
 };
 
@@ -351,7 +354,7 @@ const updateUserStatus = (module.exports.updateUserStatus = async (passport, gam
 	const list = await getRangeUserlistAsync('userList', 0, -1);
 	const userL = list.map(JSON.parse);
 	const userIndexInList = userL.findIndex((user) => user.userName === passport.user);
-	const status = {
+	const status = JSON.stringify({
 		type:
 			override && game && !game.general.unlisted
 				? override
@@ -366,12 +369,12 @@ const updateUserStatus = (module.exports.updateUserStatus = async (passport, gam
 				: 'none',
 		gameId: game ? game.general.uid : false,
 		userName: passport.user,
-	};
+	});
 
 	if (userIndexInList >= 0) {
-		await setUserInListAsync('userList', userIndexInList, JSON.stringify(status));
+		await setUserInListAsync('userList', userIndexInList, status);
 	} else {
-		await setNewUserInListAsync('userList', JSON.stringify(status));
+		await setNewUserInListAsync('userList', status);
 	}
 
 	sendUserList();

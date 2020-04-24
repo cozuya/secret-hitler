@@ -12,13 +12,6 @@ import { Popup } from 'semantic-ui-react';
 
 $.fn.modal = Modal;
 
-const mapStateToProps = ({ midSection }) => ({ midSection });
-const mapDispatchToProps = (dispatch) => ({
-	fetchProfile: (username) => dispatch(fetchProfile(username)),
-	fetchReplay: (gameId) => {
-		dispatch({ type: 'FETCH_REPLAY', gameId });
-	},
-});
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
 	const isUserClickable = stateProps.midSection !== 'game' && stateProps.midSection !== 'replay';
 
@@ -812,5 +805,14 @@ Playerlist.propTypes = {
 	isUserClickable: PropTypes.bool,
 	fetchReplay: PropTypes.func,
 };
+
+const mapStateToProps = ({ midSection }) => ({ midSection });
+
+const mapDispatchToProps = (dispatch) => ({
+	fetchProfile: (username) => dispatch(fetchProfile(username)),
+	fetchReplay: (gameId) => {
+		dispatch({ type: 'FETCH_REPLAY', gameId });
+	},
+});
 
 export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Playerlist);
