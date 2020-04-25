@@ -68,7 +68,6 @@ module.exports.sendInProgressGameUpdate = async (game, noChats) => {
 	await setGameAsync(game);
 	// const playerChats = await getRangeGameChatsAsync(game.general.uid, 0, -1);
 
-	// console.log(io.sockets.adapter.rooms[game.general.uid], 'rooms');
 	if (!io.sockets.adapter.rooms[game.general.uid]) {
 		// may need adjustment via redis
 		console.log('sendinprogressgameupdate returned as there was no room found');
@@ -195,6 +194,10 @@ module.exports.sendPlayerChatUpdate = async (game, chat) => {
 			sock.emit('playerChatUpdate', chat);
 		}
 	});
+
+	game.chats.push(chat);
+
+	setGameAsync(game);
 
 	// pushGameChatAsync(uid, chat);
 };

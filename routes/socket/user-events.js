@@ -708,11 +708,11 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			uid: data.isTourny ? `${generateCombination(3, '', true)}Tournament` : uid,
 			name: account.isPrivate ? 'Private Game' : data.gameName ? data.gameName : 'New Game',
 			flag: data.flag || 'none', // TODO: verify that the flag exists, or that an invalid flag does not cause issues
-			// minPlayersCount: playerCounts[0],
-			minPlayersCount: 5,
-			maxPlayersCount: 5,
+			minPlayersCount: playerCounts[0],
+			// minPlayersCount: 5,
+			// maxPlayersCount: 5,
 
-			// maxPlayersCount: playerCounts[playerCounts.length - 1],
+			maxPlayersCount: playerCounts[playerCounts.length - 1],
 			gameCreatorName: user,
 			gameCreatorBlacklist: account.gameSettings.blacklist,
 			excludedPlayerCount: excludes,
