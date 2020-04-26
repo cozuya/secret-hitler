@@ -386,10 +386,23 @@ class Gamechat extends React.Component {
 				};
 			}
 		} else {
-			if ((gameInfo.general.disableObserver || gameInfo.general.private) && !isStaff) {
+			if (((gameInfo.general.disableObserver && gameInfo.general.disableObserverLobby) || gameInfo.general.private) && !isStaff) {
 				return {
 					isDisabled: true,
 					placeholder: 'Observer chat disabled'
+				};
+			}
+
+			if (gameState.isStarted && !gameState.isCompleted && gameInfo.general.disableObserver && !isStaff) {
+				return {
+					isDisabled: true,
+					placeholder: 'Observer chat disabled during game'
+				};
+			}
+			if ((!gameState.isStarted || gameState.isCompleted) && gameInfo.general.disableObserverLobby && !isStaff) {
+				return {
+					isDisabled: true,
+					placeholder: 'Observer chat disabled during lobby'
 				};
 			}
 
@@ -829,7 +842,7 @@ class Gamechat extends React.Component {
 					<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Game">
 						<i className={`large circle icon${showGameChat ? ' info' : ''}`} title={showGameChat ? 'Hide game chats' : 'Show game chats'} />
 					</a>
-					{gameInfo.general && !gameInfo.general.disableObserver && (
+					{gameInfo.general && (!gameInfo.general.disableObserver || !gameInfo.general.disableObserverLobby) && (
 						<a className={'item'} onClick={this.handleChatFilterClick} data-filter="Spectator">
 							<i className={`large eye icon${!showObserverChat ? ' slash' : ''}`} title={showObserverChat ? 'Hide observer chats' : 'Show observer chats'} />
 						</a>
