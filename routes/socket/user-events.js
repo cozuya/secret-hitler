@@ -308,7 +308,7 @@ const handleSocketDisconnect = async (socket) => {
 				checkStartConditions(game);
 				await setGameAsync(game);
 				io.to(game.uid).emit('gameUpdate', game);
-			} else if (gameState.isTracksFlipped) {
+			} else if (gameState.isTracksFlipped && publicPlayersState[playerIndex]) {
 				publicPlayersState[playerIndex].connected = false;
 				const playerRemakeData = game.remakeData && game.remakeData.find((player) => player.userName === passport.user);
 

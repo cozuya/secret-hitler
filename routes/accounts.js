@@ -56,7 +56,7 @@ const checkIP = async (config) => {
 	if (hasBypass) {
 		config.vpnScore = 0;
 		next(config);
-	} else if (accountCreationDisabled.status && !hasBypass) {
+	} else if (accountCreationDisabled && accountCreationDisabled.status && !hasBypass) {
 		const creationDisabledSignup = new Signups({
 			date: new Date(),
 			userName: username,
