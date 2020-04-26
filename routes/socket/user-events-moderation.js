@@ -47,7 +47,7 @@ const { makeReport } = require('./report.js');
 // redis todo most of this file
 
 const crashReport = JSON.stringify({
-	content: `${process.env.DISCORDADMINPING} the site just crashed or reset.`,
+	content: `${process.env.DISCORDADMINPING} a BETA site process just crashed or reset.`,
 });
 
 const crashOptions = {

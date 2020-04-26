@@ -550,21 +550,22 @@ const beginGame = async (game) => {
 		process.env.NODE_ENV === 'development' ? 100 : experiencedMode ? 5400 : 9000
 	);
 
-	for (let affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber++) {
-		// redis todo
-		const affectedSocketId = Object.keys(io.sockets.sockets).find(
-			(socketId) =>
-				io.sockets.sockets[socketId].handshake.session.passport &&
-				io.sockets.sockets[socketId].handshake.session.passport.user ===
-					game.publicPlayersState[affectedPlayerNumber].userName
-		);
-		if (!io.sockets.sockets[affectedSocketId]) {
-			continue;
-		}
-		if (process.env.NODE_ENV !== 'development') {
-			io.sockets.sockets[affectedSocketId].emit('pingPlayer', 'Secret Hitler IO: The game has started!');
-		}
-	}
+	// redis todo
+
+	// for (let affectedPlayerNumber = 0; affectedPlayerNumber < game.publicPlayersState.length; affectedPlayerNumber++) {
+	// 	const affectedSocketId = Object.keys(io.sockets.sockets).find(
+	// 		(socketId) =>
+	// 			io.sockets.sockets[socketId].handshake.session.passport &&
+	// 			io.sockets.sockets[socketId].handshake.session.passport.user ===
+	// 				game.publicPlayersState[affectedPlayerNumber].userName
+	// 	);
+	// 	if (!io.sockets.sockets[affectedSocketId]) {
+	// 		continue;
+	// 	}
+	// 	if (process.env.NODE_ENV !== 'development') {
+	// 		io.sockets.sockets[affectedSocketId].emit('pingPlayer', 'Secret Hitler IO: The game has started!');
+	// 	}
+	// }
 };
 
 /**

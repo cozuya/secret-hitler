@@ -113,7 +113,6 @@ module.exports.sendInProgressGameUpdate = async (game, noChats) => {
 		if (noChats) {
 			sock.emit('gameUpdate', secureGame(_game), true);
 		} else {
-			// redis todo
 			_game.chats = combineInProgressChats(_game, user);
 			sock.emit('gameUpdate', secureGame(_game));
 		}

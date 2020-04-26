@@ -2630,6 +2630,7 @@ module.exports.handleNewGeneralChat = async (socket, passport, data, modUserName
 	}
 
 	if (true) {
+		// redis todo
 		// if (user.wins + user.losses >= 10) {
 		const getStaffRole = () => {
 			if (modUserNames.includes(passport.user) || newStaff.modUserNames.includes(passport.user)) {

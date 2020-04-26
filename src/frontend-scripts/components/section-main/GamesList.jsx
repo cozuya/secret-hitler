@@ -220,14 +220,7 @@ export class GamesList extends React.Component {
 
 		return (
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
-				<a href="#/changelog">
-					<h5 title="A season is an optional new tier of elo that is reset every 3 months.">
-						{new Date() > new Date('2019-12-31')
-							? `Season ends ${moment(new Date('2020-04-02')).fromNow()}`
-							: `Welcome to season ${CURRENTSEASONNUMBER}`}
-						.
-					</h5>
-				</a>
+				<a href="https://forms.gle/up1Z9et6bkzTQx8m8">Beta feedback/bug report</a>
 				<h3>Game filters</h3>
 				{this.renderFilters()}
 				<div className="browser-header">
