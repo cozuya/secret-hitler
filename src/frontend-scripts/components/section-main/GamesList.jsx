@@ -220,7 +220,9 @@ export class GamesList extends React.Component {
 
 		return (
 			<section className={this.state.filtersVisible ? 'browser-container' : 'browser-container filters-hidden'}>
-				<a href="https://forms.gle/up1Z9et6bkzTQx8m8">Beta feedback/bug report</a>
+				<a style={{ position: 'absolute', top: '80px' }} href="https://forms.gle/up1Z9et6bkzTQx8m8">
+					Beta feedback/bug report
+				</a>
 				<h3>Game filters</h3>
 				{this.renderFilters()}
 				<div className="browser-header">
