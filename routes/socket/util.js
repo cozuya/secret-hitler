@@ -61,7 +61,7 @@ const combineInProgressChats = (game, userName) => {
  */
 // FFS this is the most important function in the game if you have the need to modify it please be very careful/ask for help
 module.exports.sendInProgressGameUpdate = async (game, noChats) => {
-	if (!game) {
+	if (!game || typeof game !== 'object') {
 		return;
 	}
 

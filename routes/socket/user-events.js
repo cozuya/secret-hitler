@@ -472,7 +472,7 @@ module.exports.handleUserLeaveGame = handleUserLeaveGame;
 module.exports.handleUpdatedTheme = (socket, passport, data) => {
 	const fields = ['primaryColor', 'secondaryColor', 'tertiaryColor', 'backgroundColor', 'textColor'];
 
-	Account.findOne({ username: passport && passport.user }).then(account => {
+	Account.findOne({ username: passport && passport.user }).then((account) => {
 		if (!account) {
 			return;
 		}
@@ -2683,14 +2683,8 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 	Account.findOne({ username: passport.user })
 		.then((account) => {
 			const currentPrivate = account.gameSettings.isPrivate;
-<<<<<<< HEAD
 			// const userIdx = userList.findIndex(user => user.userName === passport.user);
 
-=======
-			const userIdx = userList.findIndex(user => user.userName === passport.user);
-			const aem = account.staffRole && (account.staffRole === 'moderator' || account.staffRole === 'editor' || account.staffRole === 'admin');
-			const veteran = account.staffRole && account.staffRole === 'veteran';
->>>>>>> 03e4d9e00447ab4808cc6d28fd57db2543de295c
 			for (const setting in data) {
 				if (setting == 'blacklist') {
 					data[setting].splice(0, data[setting].length - 30);
@@ -2705,7 +2699,7 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					'previousSeasonAward',
 					'specialTournamentStatus',
 					'ignoreIPBans',
-					'tournyWins'
+					'tournyWins',
 				];
 
 				if (

@@ -252,48 +252,52 @@ const sendGameList = async (socket, isAEM) => {
 	for (let index = 0; index < gameUids.length; index++) {
 		const game = JSON.parse(await getGamesAsync(gameUids[index]));
 
-		formattedGameList.push({
-			name: game.general.name,
-			flag: game.general.flag,
-			userNames: game.publicPlayersState.map((val) => val.userName),
-			customCardback: game.publicPlayersState.map((val) => val.customCardback),
-			customCardbackUid: game.publicPlayersState.map((val) => val.customCardbackUid),
-			gameStatus: game.gameState.isCompleted
-				? game.gameState.isCompleted
-				: game.gameState.isTracksFlipped
-				? 'isStarted'
-				: 'notStarted',
-			seatedCount: game.publicPlayersState.length,
-			gameCreatorName: game.general.gameCreatorName,
-			minPlayersCount: game.general.minPlayersCount,
-			maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
-			excludedPlayerCount: game.general.excludedPlayerCount,
-			casualGame: game.general.casualGame || undefined,
-			eloMinimum: game.general.eloMinimum || undefined,
-			isVerifiedOnly: game.general.isVerifiedOnly || undefined,
-			isTourny: game.general.isTourny || undefined,
-			timedMode: game.general.timedMode || undefined,
-			flappyMode: game.general.flappyMode || undefined,
-			flappyOnlyMode: game.general.flappyOnlyMode || undefined,
-			tournyStatus:
-				game.general.isTourny && game.general.tournyInfo.queuedPlayers && game.general.tournyInfo.queuedPlayers.length,
-			experiencedMode: game.general.experiencedMode || undefined,
-			disableChat: game.general.disableChat || undefined,
-			disableGamechat: game.general.disableGamechat || undefined,
-			blindMode: game.general.blindMode || undefined,
-			enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
-			enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
-			electionCount: game.general.electionCount,
-			rebalance6p: game.general.rebalance6p || undefined,
-			rebalance7p: game.general.rebalance7p || undefined,
-			rebalance9p: game.general.rerebalance9p || undefined,
-			privateOnly: game.general.privateOnly || undefined,
-			private: game.general.private || undefined,
-			uid: game.general.uid,
-			rainbowgame: game.general.rainbowgame || undefined,
-			isCustomGame: game.customGameSettings.enabled,
-			isUnlisted: game.general.unlisted || undefined,
-		});
+		if (game) {
+			formattedGameList.push({
+				name: game.general.name,
+				flag: game.general.flag,
+				userNames: game.publicPlayersState.map((val) => val.userName),
+				customCardback: game.publicPlayersState.map((val) => val.customCardback),
+				customCardbackUid: game.publicPlayersState.map((val) => val.customCardbackUid),
+				gameStatus: game.gameState.isCompleted
+					? game.gameState.isCompleted
+					: game.gameState.isTracksFlipped
+					? 'isStarted'
+					: 'notStarted',
+				seatedCount: game.publicPlayersState.length,
+				gameCreatorName: game.general.gameCreatorName,
+				minPlayersCount: game.general.minPlayersCount,
+				maxPlayersCount: game.general.maxPlayersCount || game.general.minPlayersCount,
+				excludedPlayerCount: game.general.excludedPlayerCount,
+				casualGame: game.general.casualGame || undefined,
+				eloMinimum: game.general.eloMinimum || undefined,
+				isVerifiedOnly: game.general.isVerifiedOnly || undefined,
+				isTourny: game.general.isTourny || undefined,
+				timedMode: game.general.timedMode || undefined,
+				flappyMode: game.general.flappyMode || undefined,
+				flappyOnlyMode: game.general.flappyOnlyMode || undefined,
+				tournyStatus:
+					game.general.isTourny &&
+					game.general.tournyInfo.queuedPlayers &&
+					game.general.tournyInfo.queuedPlayers.length,
+				experiencedMode: game.general.experiencedMode || undefined,
+				disableChat: game.general.disableChat || undefined,
+				disableGamechat: game.general.disableGamechat || undefined,
+				blindMode: game.general.blindMode || undefined,
+				enactedLiberalPolicyCount: game.trackState.liberalPolicyCount,
+				enactedFascistPolicyCount: game.trackState.fascistPolicyCount,
+				electionCount: game.general.electionCount,
+				rebalance6p: game.general.rebalance6p || undefined,
+				rebalance7p: game.general.rebalance7p || undefined,
+				rebalance9p: game.general.rerebalance9p || undefined,
+				privateOnly: game.general.privateOnly || undefined,
+				private: game.general.private || undefined,
+				uid: game.general.uid,
+				rainbowgame: game.general.rainbowgame || undefined,
+				isCustomGame: game.customGameSettings.enabled,
+				isUnlisted: game.general.unlisted || undefined,
+			});
+		}
 	}
 
 	// redis todo isaem in leavegame is undef

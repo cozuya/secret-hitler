@@ -12,7 +12,7 @@ const games = redis.createClient({
 
 module.exports.getGamesAsync = promisify(games.get).bind(games);
 const setGame = promisify(games.set).bind(games);
-const setGameAsync = (game) => setGame(game.general.uid, JSON.stringify(game));
+const setGameAsync = (game) => game && typeof game === 'object' && setGame(game.general.uid, JSON.stringify(game));
 module.exports.setGameAsync = setGameAsync;
 module.exports.deleteGameAsync = promisify(games.del).bind(games);
 module.exports.scanGamesAsync = promisify(games.scan).bind(games);
