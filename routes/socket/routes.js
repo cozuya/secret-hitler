@@ -64,6 +64,7 @@ const {
 	getGamesAsync,
 	scanGamesAsync,
 	spliceUserFromUserList,
+	deleteGameAsync,
 } = require('./models');
 const Account = require('../../models/account');
 const { TOU_CHANGES } = require('../../src/frontend-scripts/node-constants.js');
@@ -73,82 +74,6 @@ const { formatUserforUserlist, sendInProgressGameUpdate } = require('./util');
 let modUserNames = [];
 let editorUserNames = [];
 let adminUserNames = [];
-
-// redis todo redo this
-// const gamesGarbageCollector = () => {
-// 	const currentTime = new Date();
-
-// 	Object.keys(games).forEach(gameName => {
-// 		let toDelete = false;
-// 		const currentGame = games[gameName];
-// 		const createdTimer =
-// 			currentGame &&
-// 			currentGame.general &&
-// 			currentGame.general.timeCreated &&
-// 			currentGame.gameState &&
-// 			!currentGame.gameState.isStarted &&
-// 			new Date(currentGame.general.timeCreated.getTime() + 600000);
-// 		const completedTimer =
-// 			currentGame &&
-// 			currentGame.general &&
-// 			currentGame.general.timeStarted &&
-// 			currentGame.gameState &&
-// 			currentGame.gameState.isCompleted &&
-// 			new Date(games[gameName].general.timeStarted + 0);
-
-// 		// To come maybe later
-// 		// const modDeleteTimer = games[gameName].general.modDeleteDelay && new Date(games[gameName].general.modDeleteDelay.getTime() + 900000);
-
-// 		// DEBUG
-// 		// console.log(
-// 		// 	'Name: ',
-// 		// 	gameName,
-// 		// 	// '\nDelay: ',
-// 		// 	// games[gameName].general.modDeleteDelay,
-// 		// 	'\nCurrent Time: ',
-// 		// 	currentTime,
-// 		// 	// '\nDelay Timer: ',
-// 		// 	// modDeleteTimer,
-// 		// 	'\nCompleted Timer: ',
-// 		// 	completedTimer,
-// 		// 	'\nCreated Timer: ',
-// 		// 	createdTimer
-// 		// );
-
-// 		if (games[gameName] && createdTimer && createdTimer < currentTime) {
-// 			// console.log('Created Timer Expired. Deleting... ');
-// 			toDelete = true;
-// 		}
-// 		if (games[gameName] && !games[gameName].general.modDeleteDelay && completedTimer && completedTimer < currentTime) {
-// 			// console.log('Completed Game Timer Expired. Deleting... ');
-// 			toDelete = true;
-// 		}
-// 		// if (games[gameName] && modDeleteTimer && modDeleteTimer < currentTime) {
-// 		// console.log('Mod Delete Delay Timer Expired. Deleting... ');
-// 		// toDelete = true;
-// 		// }
-
-// 		if (toDelete && currentGame.publicPlayersState) {
-// 			for (let affectedPlayerNumber = 0; affectedPlayerNumber < currentGame.publicPlayersState.length; affectedPlayerNumber++) {
-// 				const affectedSocketId = Object.keys(io.sockets.sockets).find(
-// 					socketId =>
-// 						io.sockets.sockets[socketId].handshake.session.passport &&
-// 						io.sockets.sockets[socketId].handshake.session.passport.user === currentGame.publicPlayersState[affectedPlayerNumber].userName
-// 				);
-// 				if (!io.sockets.sockets[affectedSocketId]) {
-// 					continue;
-// 				}
-
-// 				if (io.sockets.sockets && io.sockets.sockets[affectedSocketId]) {
-// 					io.sockets.sockets[affectedSocketId].emit('toLobby');
-// 					io.sockets.sockets[affectedSocketId].leave(gameName);
-// 				}
-// 			}
-// 			delete games[gameName];
-// 			sendGameList();
-// 		}
-// 	});
-// };
 
 const ensureAuthenticated = (socket) =>
 	Boolean(
@@ -182,8 +107,30 @@ const gatherStaffUsernames = () => {
 		});
 };
 
+const gamesGarbageCollector = async () => {
+	const gu = await scanGamesAsync(0);
+	const gameUids = gu[1];
+	const gamesToDelete = [];
+	const now = Date.now();
+
+	for (let index = 0; index < gameUids.length; index++) {
+		const game = JSON.parse(await getGamesAsync(gameUids[index]));
+
+		if (new Date(game.general.timeCreated).getTime() + 3600000 - now > 0) {
+			// 1 hour
+			gamesToDelete.push(gameUids[index]);
+		}
+	}
+
+	gamesToDelete.forEach((game) => {
+		deleteGameAsync(game);
+	});
+
+	sendGameList();
+};
+
 module.exports.socketRoutes = () => {
-	// setInterval(gamesGarbageCollector, 30000);
+	setInterval(gamesGarbageCollector, 500000);
 	gatherStaffUsernames();
 
 	io.on('connection', (socket) => {
