@@ -224,6 +224,8 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 	socket.emit('sendAlert', output);
 };
 
+let lagTest = [];
+
 /**
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
@@ -232,7 +234,7 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
  * @param {array} modUserNames - list of usernames that are mods
  * @param {array} superModUserNames - list of usernames that are editors and admins
  */
-module.exports.handleModerationAction = async (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
+module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
@@ -250,12 +252,8 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 				} else {
 					// Try to find the IP from the account specified if possible.
 					Account.findOne({ username: data.userName }, (err, account) => {
-						if (err) {
-							console.log(err, 'err finding user');
-						} else if (account) {
-							data.ip = account.lastConnectedIP || account.signupIP;
-						}
-
+						if (err) console.log(err, 'err finding user');
+						else if (account) data.ip = account.lastConnectedIP || account.signupIP;
 						module.exports.handleModerationAction(socket, passport, data, true, modUserNames, superModUserNames);
 					});
 					return;
@@ -292,7 +290,6 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 
 	const isSuperMod = superModUserNames.includes(passport.user) || newStaff.editorUserNames.includes(passport.user);
 
-	// redis todo
 	const affectedSocketId = Object.keys(io.sockets.sockets).find(
 		(socketId) =>
 			io.sockets.sockets[socketId].handshake.session.passport &&
@@ -350,22 +347,23 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 				ip: data.ip,
 				actionTaken: typeof data.action === 'string' ? data.action : data.action.type,
 			});
+
 			/**
 			 * @param {string} username - name of user.
 			 */
 			const logOutUser = (username) => {
 				const bannedUserlistIndex = userList.findIndex((user) => user.userName === username);
 
-				// redis todo
 				if (io.sockets.sockets[affectedSocketId]) {
 					io.sockets.sockets[affectedSocketId].emit('manualDisconnection');
 					io.sockets.sockets[affectedSocketId].disconnect();
 				}
 
 				if (bannedUserlistIndex >= 0) {
-					// redis todo
 					userList.splice(bannedUserlistIndex, 1);
 				}
+
+				// destroySession(username);
 			};
 
 			/**
@@ -375,6 +373,8 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 				Account.findOne({ username })
 					.then((account) => {
 						if (account) {
+							// account.hash = crypto.randomBytes(20).toString('hex');
+							// account.salt = crypto.randomBytes(20).toString('hex');
 							account.isBanned = true;
 							account.save(() => {
 								const bannedAccountGeneralChats = generalChats.list.filter((chat) => chat.userName === username);
@@ -393,6 +393,14 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 			};
 
 			switch (data.action) {
+				case 'lagMeter':
+					lagTest.push(Date.now() - data.frontEndTime);
+
+					if (lagTest.length === 5) {
+						socket.emit('lagTestResults', (lagTest.reduce((acc, curr) => acc + curr, 0) / 5).toFixed(2));
+						lagTest = [];
+					}
+					return;
 				case 'clearTimeout':
 					Account.findOne({ username: data.userName })
 						.then((account) => {
@@ -461,7 +469,7 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 					});
 					break;
 				case 'modEndGame':
-					const gameToEnd = JSON.parse(await getGamesAsync(data.uid));
+					const gameToEnd = games[data.uid];
 
 					if (gameToEnd && gameToEnd.private && gameToEnd.private.seatedPlayers) {
 						for (player of gameToEnd.private.seatedPlayers) {
@@ -482,8 +490,7 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 						completeGame(gameToEnd, data.winningTeamName);
 						setTimeout(() => {
 							gameToEnd.publicPlayersState.forEach((player) => (player.leftGame = true));
-							deleteGameAsync(gameToEnd.general.uid);
-							deleteGameChatsAsync(game.general.uid);
+							delete games[gameToEnd.general.uid];
 							sendGameList();
 						}, 5000);
 					}
@@ -614,12 +621,8 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 					logOutUser(data.username);
 					break;
 				case 'setSticky':
-					await setGeneralChatsAsync(
-						'sticky',
-						data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : ''
-					);
-
-					sendGeneralChats(null, true);
+					generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+					io.sockets.emit('generalChats', generalChats);
 					break;
 				case 'broadcast':
 					const discordBroadcastBody = JSON.stringify({
@@ -641,36 +644,27 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 						console.log(e, 'err in broadcast');
 					}
 
-					const gu = await scanGamesAsync(0);
-					const gameUids = gu[1];
-
-					for (let index = 0; index < gameUids.length; index++) {
-						// pushGameChatsAsync(gameUids[index], {
-						//   userName: `[BROADCAST] ${data.modName}`,
-						//   chat: data.comment,
-						//   isBroadcast: true,
-						//   timestamp: new Date()
-						// });
-					}
-
-					if (data.isSticky) {
-						await setGeneralChatsAsync(
-							'sticky',
-							data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : ''
-						);
-					}
-
-					await pushGeneralChatsAsync(
-						'list',
-						JSON.stringify({
+					Object.keys(games).forEach((gameName) => {
+						games[gameName].chats.push({
 							userName: `[BROADCAST] ${data.modName}`,
-							time: new Date(),
 							chat: data.comment,
 							isBroadcast: true,
-						})
-					);
+							timestamp: new Date(),
+						});
+					});
 
-					sendGeneralChats(null, true);
+					generalChats.list.push({
+						userName: `[BROADCAST] ${data.modName}`,
+						time: new Date(),
+						chat: data.comment,
+						isBroadcast: true,
+					});
+
+					if (data.isSticky) {
+						generalChats.sticky = data.comment.trim().length ? `(${passport.user}) ${data.comment.trim()}` : '';
+					}
+
+					io.sockets.emit('generalChats', generalChats);
 					break;
 				case 'ipban':
 					const ipban = new BannedIP({
@@ -891,9 +885,10 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 								const user = userList.find((u) => u.userName === data.userName);
 								if (user) {
 									user.customCardback = '';
+									userListEmitter.send = true;
 								}
-								Object.keys(games).forEach(async (uid) => {
-									const game = JSON.parse(await getGamesAsync(uid));
+								Object.keys(games).forEach((uid) => {
+									const game = games[uid];
 									const foundUser = game.publicPlayersState.find((user) => user.userName === data.userName);
 									if (foundUser) {
 										foundUser.customCardback = '';
@@ -1141,23 +1136,22 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 					break;
 				default:
 					if (data.userName.substr(0, 7) === 'DELGAME') {
-						const game = JSON.parse(await getGamesAsync(data.userName.slice(7)));
+						const game = games[data.userName.slice(7)];
 
 						if (game) {
-							deleteGameAsync(game.general.uid);
-							deleteGameChatsAsync(game.general.uid);
+							delete games[game.general.uid];
 							game.publicPlayersState.forEach((player) => (player.leftGame = true)); // Causes timed games to stop.
 							sendGameList();
 						}
 					} else if (data.userName.substr(0, 13) === 'RESETGAMENAME') {
-						const game = JSON.parse(await getGamesAsync(data.userName.slice(13)));
+						const game = games[data.userName.slice(13)];
 						if (game) {
 							if (modaction.modNotes.length > 0) {
 								modaction.modNotes += ` - Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
 							} else {
 								modaction.modNotes = `Name: "${game.general.name}" - Creator: "${game.general.gameCreatorName}"`;
 							}
-							setGameAsync(game);
+							games[game.general.uid].general.name = 'New Game';
 							sendGameList();
 						}
 					} else if (isSuperMod && data.action.type) {
@@ -1285,6 +1279,7 @@ module.exports.handleModerationAction = async (socket, passport, data, skipCheck
 					modReq.end(modAction);
 				} catch (error) {}
 			}
+
 			modaction.save();
 		}
 	}

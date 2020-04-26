@@ -38,11 +38,18 @@ export default class Moderation extends React.Component {
 		filterModalVisibility: false,
 		filterValue: '',
 		showGameIcons: false,
+		lagMeterStatus: '',
 	};
 
 	componentDidMount() {
 		const self = this;
 		const { socket } = this.props;
+
+		socket.on('lagTestResults', (data) => {
+			this.setState({
+				lagMeterStatus: `Average lag: ${data} ms`,
+			});
+		});
 
 		socket.on('modInfo', (info) => {
 			this.setState({
@@ -202,7 +209,10 @@ export default class Moderation extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.props.socket.off('modInfo');
+		const { socket } = this.props;
+
+		socket.off('modInfo');
+		socket.off('lagTestResults');
 	}
 
 	togglePlayerList = () => {
@@ -463,9 +473,37 @@ export default class Moderation extends React.Component {
 
 	renderButtons() {
 		const { socket, userInfo } = this.props;
-		const { playerInputText, selectedUser, userList, actionTextValue } = this.state;
+		const { playerInputText, selectedUser, userList, actionTextValue, lagMeterStatus } = this.state;
 		const takeModAction = (action) => {
-			if (action === 'resetServer' && !this.state.resetServerCount) {
+			if (action === 'lagMeter') {
+				this.setState(
+					{
+						lagMeterStatus: 'Pending...',
+					},
+					() => {
+						let count = 0;
+						const lagTimer = window.setInterval(() => {
+							if (count < 5) {
+								socket.emit('updateModAction', {
+									modName: userInfo.userName,
+									userName: playerInputText || selectedUser,
+									ip: playerInputText
+										? ''
+										: selectedUser
+										? userList.find((user) => user.userName === selectedUser).ip
+										: '',
+									comment: actionTextValue,
+									action,
+									frontEndTime: Date.now(),
+								});
+								count++;
+							} else {
+								clearInterval(lagTimer);
+							}
+						}, 1000);
+					}
+				);
+			} else if (action === 'resetServer' && !this.state.resetServerCount) {
 				this.setState({ resetServerCount: 1 });
 			} else {
 				socket.emit('updateModAction', {
@@ -500,6 +538,17 @@ export default class Moderation extends React.Component {
 				>
 					Comment without action
 				</button>
+				<div className="ui horizontal divider">lag-o-meter</div>
+				<button
+					className={lagMeterStatus ? 'ui button lagmeter disabled' : 'ui button lagmeter'}
+					style={{ background: 'turquoise', color: 'black' }}
+					onClick={() => {
+						takeModAction('lagMeter');
+					}}
+				>
+					Test lag
+				</button>
+				<span style={{ marginLeft: '10px' }}>{lagMeterStatus}</span>
 				<div className="ui horizontal divider">Warnings</div>
 				<button
 					className={

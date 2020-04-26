@@ -4,13 +4,13 @@ import buildReplay from './replay/buildReplay';
 import { updateMidsection } from './actions/actions';
 
 function* fetchProfile(action) {
-	const { username, requestingUser } = action;
+	const { username } = action;
 
 	yield put(updateMidsection('profile'));
 	yield put({ type: 'REQUEST_PROFILE' });
 
 	try {
-		const response = yield call(fetch, `/profile?username=${username}&requestingUser=${requestingUser}`);
+		const response = yield call(fetch, `/profile?username=${username}`);
 		const profile = yield call([response, 'json']);
 		yield put({ type: 'RECEIVE_PROFILE', profile });
 	} catch (err) {
