@@ -2048,7 +2048,7 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							text: ' has forced '
 						},
 						{
-							text: `${affectedPlayer.userName}`,
+							text: `${affectedPlayer.userName} {${affectedPlayerNumber + 1}}`,
 							type: 'player'
 						},
 						{
@@ -2059,7 +2059,11 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							type: 'player'
 						},
 						{
-							text: `${affectedPlayer.voteStatus.hasVoted ? ' who voted ' + (affectedPlayer.voteStatus.didVoteYes ? ' ja' : ' nein') : ' who did not vote.'}`
+							text: `${affectedPlayer.voteStatus.hasVoted ? ' who voted ' : ' who did not vote.'}`
+						},
+						{
+							text: `${affectedPlayer.voteStatus.hasVoted ? (affectedPlayer.voteStatus.didVoteYes ? ' ja' : ' nein') : ''}`,
+							type: 'player'
 						}
 					]
 				};
