@@ -323,7 +323,7 @@ const DisplayLobbies = props => {
 			if (player.customCardback && (!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))) {
 				total.push(
 					<div key={total.length} className={classes} data-tooltip={player.userName} data-inverted="">
-						<img src={`../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid}`} />
+						<img src={`${player.customCardback}?${player.customCardbackUid}`} />
 					</div>
 				);
 			} else {

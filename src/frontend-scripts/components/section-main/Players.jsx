@@ -253,7 +253,8 @@ class Players extends React.Component {
 					!isBlind &&
 					(!userInfo.userName || !(userInfo.userName && userInfo.gameSettings && userInfo.gameSettings.disablePlayerCardbacks))
 						? {
-								backgroundImage: `url(../images/custom-cardbacks/${player.userName}.${player.customCardback}?${player.customCardbackUid})`
+								backgroundImage: `url(${player.customCardback}?${player.customCardbackUid})`,
+								backgroundRepeat: 'round'
 						  }
 						: {
 								backgroundImage: `url(../images/default_cardback.png)`

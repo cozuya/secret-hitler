@@ -861,7 +861,7 @@ class Settings extends React.Component {
 												<div
 													className="current-cardback"
 													style={{
-														background: `url(../images/custom-cardbacks/${this.props.userInfo.userName}.${gameSettings.customCardback}?${gameSettings.customCardbackUid}) no-repeat`
+														background: `url(${gameSettings.customCardback}?${gameSettings.customCardbackUid}) no-repeat`
 													}}
 												/>
 											);

@@ -24,7 +24,7 @@ module.exports.ProcessImage = (username, raw, callback) => {
 				.pipe(new Crusher(['-brute', '-rem', 'alla', '-c', '2', '-force', '-fix']))
 				.pipe(fs.createWriteStream(`public/images/custom-cardbacks/${username}.png`));
 			Account.findOne({ username: username }).then(account => {
-				account.gameSettings.customCardback = 'png';
+				account.gameSettings.customCardback = `../images/custom-cardbacks/${username}.png`;
 				account.gameSettings.customCardbackSaveTime = Date.now().toString();
 				account.gameSettings.customCardbackUid = Math.random()
 					.toString(36)
@@ -32,7 +32,7 @@ module.exports.ProcessImage = (username, raw, callback) => {
 				account.save(() => {
 					const user = userList.find(u => u.userName === username);
 					if (user) {
-						user.customCardback = 'png';
+						user.customCardback = `../images/custom-cardbacks/${username}.png`;
 						user.customCardbackUid = account.gameSettings.customCardbackUid;
 						userListEmitter.send = true;
 					}

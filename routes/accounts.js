@@ -259,6 +259,9 @@ const continueSignup = config => {
 				accountObj.bio = profile._json.bio;
 			}
 
+			accountObj.gameSettings.customCardback =
+				type === 'discord' ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : `https://github.com/${profile.username}.png`;
+
 			const oauthSignup = new Signups({
 				date: new Date(),
 				userName: username,
@@ -782,6 +785,11 @@ module.exports.accounts = torIpsParam => {
 							req.user.github2FA = profile.two_factor_authentication;
 						}
 						req.user.verified = true;
+						if (!req.user.gameSettings.customCardback) {
+							req.user.customCardback =
+								type === 'discord' ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png` : `https://github.com/${profile.username}.png`;
+							req.user.save();
+						}
 						req.user.save(() => {
 							res.redirect('/game');
 						});
@@ -793,6 +801,13 @@ module.exports.accounts = torIpsParam => {
 						Account.findOne(queryObj)
 							.then(account => {
 								if (account) {
+									if (!account.gameSettings.customCardback) {
+										account.gameSettings.customCardback =
+											type === 'discord'
+												? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`
+												: `https://github.com/${profile.username}.png`;
+										account.save();
+									}
 									req.login(account, () => res.redirect('/game'));
 								} else {
 									if (accountCreationDisabled.status) {

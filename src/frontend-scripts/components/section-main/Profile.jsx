@@ -299,7 +299,7 @@ class ProfileWrapper extends React.Component {
 					<div
 						className={userClasses}
 						style={{
-							backgroundImage: `url(../images/custom-cardbacks/${profile._id}.${profile.customCardback}?${this.state.openTime})`
+							backgroundImage: `url(${profile.customCardback}?${this.state.openTime})`
 						}}
 					/>
 				)}
