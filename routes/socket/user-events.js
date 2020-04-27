@@ -2551,7 +2551,17 @@ module.exports.handleUpdatedGameSettings = (socket, passport, data) => {
 					data[setting].splice(0, data[setting].length - 30);
 				}
 
-				const restrictedSettings = ['blacklist', 'staffDisableVisibleElo', 'staffDisableStaffColor', 'staffIncognito'];
+				const restrictedSettings = [
+					'blacklist',
+					'staffDisableVisibleElo',
+					'staffDisableStaffColor',
+					'staffIncognito',
+					'newReport',
+					'previousSeasonAward',
+					'specialTournamentStatus',
+					'ignoreIPBans',
+					'tournyWins'
+				];
 
 				if (
 					!restrictedSettings.includes(setting) ||
@@ -2769,6 +2779,8 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
 	socket.emit('sendAlert', output);
 };
 
+let lagTest = [];
+
 /**
  * @param {object} socket - socket reference.
  * @param {object} passport - socket authentication.
@@ -2778,8 +2790,6 @@ module.exports.handleModPeekVotes = (socket, passport, game, modUserName) => {
  * @param {array} superModUserNames - list of usernames that are editors and admins
  */
 module.exports.handleModerationAction = (socket, passport, data, skipCheck, modUserNames, superModUserNames) => {
-	// Authentication Assured in routes.js
-
 	if (data.userName) {
 		data.userName = data.userName.trim();
 	}
@@ -2884,6 +2894,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 				ip: data.ip,
 				actionTaken: typeof data.action === 'string' ? data.action : data.action.type
 			});
+
 			/**
 			 * @param {string} username - name of user.
 			 */
@@ -2929,6 +2940,14 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 			};
 
 			switch (data.action) {
+				case 'lagMeter':
+					lagTest.push(Date.now() - data.frontEndTime);
+
+					if (lagTest.length === 5) {
+						socket.emit('lagTestResults', (lagTest.reduce((acc, curr) => acc + curr, 0) / 5).toFixed(2));
+						lagTest = [];
+					}
+					return;
 				case 'clearTimeout':
 					Account.findOne({ username: data.userName })
 						.then(account => {
@@ -3804,6 +3823,7 @@ module.exports.handleModerationAction = (socket, passport, data, skipCheck, modU
 					modReq.end(modAction);
 				} catch (error) {}
 			}
+
 			modaction.save();
 		}
 	}
