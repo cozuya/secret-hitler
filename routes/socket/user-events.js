@@ -2059,7 +2059,11 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							type: 'player'
 						},
 						{
-							text: `${affectedPlayer.voteStatus.hasVoted ? ' who voted ' : ' who did not vote.'}`
+							text: ` ${affectedPlayer.userName}`,
+							type: 'player'
+						},
+						{
+							text: `${affectedPlayer.voteStatus.hasVoted ? ' had originally voted ' : ' had not voted.'}`
 						},
 						{
 							text: `${affectedPlayer.voteStatus.hasVoted ? (affectedPlayer.voteStatus.didVoteYes ? ' ja' : ' nein') : ''}`,
