@@ -205,23 +205,24 @@ module.exports.socketRoutes = () => {
 					sendGameList(socket, isAEM);
 				}
 
-				const oldSocketID = Object.values(sockets).find(
-					(sock) =>
-						sock.handshake.session.passport &&
-						Object.keys(sock.handshake.session.passport).length &&
-						sock.handshake.session.passport.user === user &&
-						sock.id !== socket.id
-				);
+				// redis figure out how to discon other sockets
+				// const oldSocketID = Object.values(sockets).find(
+				// 	(sock) =>
+				// 		sock.handshake.session.passport &&
+				// 		Object.keys(sock.handshake.session.passport).length &&
+				// 		sock.handshake.session.passport.user === user &&
+				// 		sock.id !== socket.id
+				// );
 
 				// if (oldSocketID && sockets[oldSocketID]) {
-				if (oldSocketID) {
-					const client = io.sockets.clients(oldSocketID);
+				// if (oldSocketID) {
+				// 	const client = io.sockets.clients(oldSocketID);
 
-					if (client) {
-						io.sockets.clients(oldSocketID).emit('manualDisconnection');
-						// io.of('/').adapter.remoteDisconnect(oldSocketID, true);
-					}
-				}
+				// 	if (client) {
+				// 		io.sockets.clients(oldSocketID).emit('manualDisconnection');
+				// io.of('/').adapter.remoteDisconnect(oldSocketID, true);
+				// 	}
+				// }
 
 				const reconnectingUser = game && game.publicPlayersState.find((player) => player.userName === user);
 
