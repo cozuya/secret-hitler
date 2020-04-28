@@ -281,7 +281,7 @@ module.exports = () => {
 						_profile.bio = account.bio;
 
 						Account.findOne({ username: authedUser }).then(acc => {
-							if (acc && acc.staffRole && (acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin')) {
+							if (acc && acc.staffRole && (acc.staffRole === 'moderator' || acc.staffRole === 'editor' || acc.staffRole === 'admin' || acc.staffRole === 'trialmod')) {
 								try {
 									_profile.lastConnectedIP = '-' + obfIP(_profile.lastConnectedIP);
 								} catch (e) {
