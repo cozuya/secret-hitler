@@ -2059,7 +2059,10 @@ module.exports.handleAddNewGameChat = (socket, passport, data, game, modUserName
 							type: 'player'
 						},
 						{
-							text: ` ${affectedPlayer.userName}`,
+							text: ' ,'
+						},
+						{
+							text: `${affectedPlayer.userName}`,
 							type: 'player'
 						},
 						{
