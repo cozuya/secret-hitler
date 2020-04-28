@@ -1067,7 +1067,7 @@ export default class Moderation extends React.Component {
 					Promote to Staff Role - Editor
 				</button>
 				<button
-					style={{ background: '#4d949e' }}
+					style={{ background: '#84b8fd' }}
 					className={
 						(selectedUser || playerInputText) && actionTextValue && (userInfo.staffRole === 'editor' || userInfo.staffRole === 'admin')
 							? 'ui button ipban-button'
@@ -1338,7 +1338,7 @@ export default class Moderation extends React.Component {
 
 		const broadcastKeyup = e => {
 			this.setState({
-				broadcastText: e.currentTarget.value
+				broadcastText: e.target.value
 			});
 		};
 		const toggleModLogToday = e => {
@@ -1599,8 +1599,8 @@ export default class Moderation extends React.Component {
 				>
 					<div className="ui header">Broadcast to all games:</div>
 					<div className="ui input">
-						<form onSubmit={this.handleBroadcastSubmit}>
-							<input
+						<form onSubmit={this.handleBroadcastSubmit} style={{ marginLeft: '10vw', width: '30vw', display: 'flex', flexDirection: 'column' }}>
+							<textarea
 								maxLength="300"
 								placeholder="Broadcast"
 								onChange={broadcastKeyup}
@@ -1610,13 +1610,16 @@ export default class Moderation extends React.Component {
 								ref={c => {
 									this.broadcastText = c;
 								}}
+								style={{ height: '20vh', width: '100%' }}
 							/>
+							<div style={{ padding: '20px' }}>
+								<label htmlFor="broadcast-sticky">Also sticky this broadcast</label>
+								<input className="stickycheck" type="checkbox" id="broadcast-sticky" />
+							</div>
 							<div onClick={this.handleBroadcastSubmit} className={this.state.broadcastText ? 'ui button primary' : 'ui button primary disabled'}>
 								Submit
 							</div>
 						</form>
-						<label htmlFor="broadcast-sticky">Also sticky this broadcast</label>
-						<input className="stickycheck" type="checkbox" id="broadcast-sticky" />
 					</div>
 				</div>
 			</section>
