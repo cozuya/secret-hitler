@@ -784,7 +784,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			],
 		};
 		const t = chat.timestamp.getMilliseconds();
-		await pushGameChatsAsync(game, chat);
+		await pushGameChatsAsync(newGame, chat);
 		chat = {
 			timestamp: new Date(),
 			gameChat: true,
@@ -809,7 +809,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 			],
 		};
 		chat.timestamp.setMilliseconds(t + 1);
-		await pushGameChatsAsync(game, chat);
+		await pushGameChatsAsync(newGame, chat);
 	}
 
 	if (data.isTourny) {
@@ -858,7 +858,7 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 		newGame.general.minPlayersCount = newGame.general.maxPlayersCount =
 			minPlayersCount === 1 ? 14 : minPlayersCount === 2 ? 16 : 18;
 		newGame.general.status = `Waiting for ${newGame.general.minPlayersCount - 1} more players..`;
-		await pushGameChatsAsync(game, {
+		await pushGameChatsAsync(newGame, {
 			timestamp: new Date(),
 			gameChat: true,
 			chat: [

@@ -179,13 +179,15 @@ const checkIP = async (config) => {
 						}
 					}
 					if (!ipBanned) {
-						if (bypassVPNCheck.status) {
+						if (bypassVPNCheck && bypassVPNCheck.status) {
 							config.vpnScore = 0;
 							next(config);
 						} else if (VPNCache[signupIP]) {
 							config.vpnScore = VPNCache[signupIP];
 							next(config);
 						} else {
+							// redis todo restore this
+							return;
 							fetch(
 								`https://check.getipintel.net/check.php?ip=${signupIP}&contact=${process.env.GETIPINTELAPIEMAIL}&flags=f&format=json`
 							)
