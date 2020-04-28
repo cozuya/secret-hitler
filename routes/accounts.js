@@ -400,7 +400,7 @@ module.exports.accounts = torIpsParam => {
 	});
 
 	app.post('/account/reset-password', (req, res, next) => {
-		if (!req.body.email) {
+		if (!req.body.email || typeof req.body.email !== "string") {
 			return next();
 		}
 
