@@ -366,9 +366,16 @@ class Playerlist extends React.Component {
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
-								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
-							)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								user.specialTournamentStatus &&
+								user.specialTournamentStatus === 'spring2020captain' && (
+									<span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />
+								)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								user.specialTournamentStatus &&
+								user.specialTournamentStatus === 'spring2020' && (
+									<span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />
+								)}
 							{user.staffRole !== 'admin' &&
 								Boolean(!user.staffDisableVisibleElo) &&
 								(() => {
@@ -544,9 +551,16 @@ class Playerlist extends React.Component {
 							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
 								user.previousSeasonAward &&
 								this.renderPreviousSeasonAward(user.previousSeasonAward)}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && user.specialTournamentStatus && (
-								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
-							)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								user.specialTournamentStatus &&
+								user.specialTournamentStatus === 'spring2020captain' && (
+									<span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />
+								)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								user.specialTournamentStatus &&
+								user.specialTournamentStatus === 'spring2020' && (
+									<span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />
+								)}
 							{(() => {
 								const userAdminRole = user.staffIncognito
 									? 'Incognito'

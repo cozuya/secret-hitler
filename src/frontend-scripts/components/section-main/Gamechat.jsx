@@ -586,9 +586,14 @@ class Gamechat extends React.Component {
 								chat.previousSeasonAward &&
 								!isBlind &&
 								renderPreviousSeasonAward(chat.previousSeasonAward)}
-							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) && chat.specialTournamentStatus && !isBlind && (
-								<span title="This player was part of the winning team of the Fall 2019 tournament." className="crown-icon" />
-							)}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								chat.specialTournamentStatus &&
+								chat.specialTournamentStatus === 'spring2020captain' &&
+								!isBlind && <span title="This player was the captain of the winning team of the Spring 2020 tournament." className="crown-captain-icon" />}
+							{!(gameSettings && Object.keys(gameSettings).length && gameSettings.disableCrowns) &&
+								chat.specialTournamentStatus &&
+								chat.specialTournamentStatus === 'spring2020' &&
+								!isBlind && <span title="This player was part of the winning team of the Spring 2020 tournament." className="crown-icon" />}
 							<span
 								className={
 									chat.staffRole === 'moderator' && chat.userName === 'Incognito'
