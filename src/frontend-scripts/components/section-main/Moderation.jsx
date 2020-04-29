@@ -34,7 +34,7 @@ export default class Moderation extends React.Component {
 			type: 'username',
 			direction: 'descending'
 		},
-		showActions: false,
+		showActions: true,
 		filterModalVisibility: false,
 		filterValue: '',
 		showGameIcons: true,
