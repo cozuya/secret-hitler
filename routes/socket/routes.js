@@ -116,7 +116,7 @@ const gamesGarbageCollector = async () => {
 	for (let index = 0; index < gameUids.length; index++) {
 		const game = JSON.parse(await getGamesAsync(gameUids[index]));
 
-		if (new Date(game.general.timeCreated).getTime() + 3600000 - now > 0) {
+		if (game && new Date(game.general.timeCreated).getTime() + 3600000 - now > 0) {
 			// 1 hour
 			gamesToDelete.push(gameUids[index]);
 		}

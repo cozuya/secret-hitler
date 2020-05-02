@@ -478,7 +478,9 @@ module.exports.handleUpdatedTheme = (socket, passport, data) => {
 		}
 
 		for (const field of fields) {
-			if (data[field]) account[field] = data[field];
+			if (data[field]) {
+				account[field] = data[field];
+			}
 		}
 
 		account.save();
@@ -561,7 +563,6 @@ const updateSeatedUser = (game, socket, passport, data) => {
 			} else {
 				publicPlayersState.unshift(player);
 			}
-
 			passport.gameUidUserIsSeatedIn = game.general.uid;
 			await setGameAsync(game);
 			socket.emit('updateSeatForUser', true);
@@ -783,8 +784,10 @@ module.exports.handleAddNewGame = async (socket, passport, data) => {
 				},
 			],
 		};
+
 		const t = chat.timestamp.getMilliseconds();
 		await pushGameChatsAsync(newGame, chat);
+		
 		chat = {
 			timestamp: new Date(),
 			gameChat: true,
