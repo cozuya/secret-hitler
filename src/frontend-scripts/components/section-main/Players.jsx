@@ -3,20 +3,13 @@ import $ from 'jquery';
 import Dropdown from 'semantic-ui-dropdown';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 import Policies from './Policies.jsx';
 import { togglePlayerNotes } from '../../actions/actions';
 import { PLAYERCOLORS } from '../../constants';
 
 $.fn.dropdown = Dropdown;
-
-const mapDispatchToProps = dispatch => ({
-	togglePlayerNotes: playerName => dispatch(togglePlayerNotes(playerName))
-});
-
-const mapStateToProps = ({ playerNotesActive }) => ({
-	playerNotesActive
-});
 
 class Players extends React.Component {
 	state = {
@@ -28,27 +21,15 @@ class Players extends React.Component {
 		reportLength: 0
 	};
 
-	// componentWillReceiveProps(nextProps) {
-	// 	const { userName } = this.props;
-	// 	const { publicPlayersState } = nextProps.gameInfo;
-
-	// 	if (this.props.userInfo.userName && publicPlayersState.length > this.props.gameInfo.publicPlayersState.length) {
-	// 		this.props.socket.emit('getPlayerNotes', {
-	// 			userName,
-	// 			seatedPlayers: publicPlayersState.filter(player => player.userName !== userName).map(player => player.userName)
-	// 		});
-	// 	}
-	// }
-
 	componentDidMount() {
-		const { socket, userInfo } = this.props;
+		const { socket, userInfo, gameInfo } = this.props;
 
 		if (userInfo.gameSettings && !userInfo.gameSettings.disablePlayerNotes) {
 			socket.on('notesUpdate', notes => {
 				this.setState({ playerNotes: notes });
 			});
 
-			const seatedPlayers = this.props.gameInfo.publicPlayersState.filter(player => player.userName !== userInfo.userName).map(player => player.userName);
+			const seatedPlayers = gameInfo.publicPlayersState.filter(player => player.userName !== userInfo.userName).map(player => player.userName);
 
 			if (seatedPlayers.length) {
 				socket.emit('getPlayerNotes', {
@@ -64,24 +45,19 @@ class Players extends React.Component {
 	}
 
 	handlePlayerDoubleClick = userName => {
-		if (
-			(!this.props.gameInfo.general.unlisted &&
-				!this.props.gameInfo.general.private &&
-				this.props.userInfo.userName &&
-				this.props.userInfo.userName !== userName) ||
-			this.props.isReplay
-		) {
+		const { gameInfo, userInfo, isReplay } = this.props;
+
+		if ((!gameInfo.general.unlisted && !gameInfo.general.private && userInfo.userName && userInfo.userName !== userName) || isReplay) {
 			this.setState({ reportedPlayer: userName });
 			$(this.reportModal).modal('show');
 			$('.ui.dropdown').dropdown();
 		}
 	};
 
-	handlePlayerClick = e => {
+	handlePlayerClick = index => {
 		const { userInfo, gameInfo, socket } = this.props;
 		const { gameState } = gameInfo;
 		const { phase, clickActionInfo } = gameState;
-		const index = parseInt($(e.currentTarget).attr('data-index'), 10);
 
 		if (phase === 'selectingChancellor' && userInfo.userName) {
 			if (clickActionInfo[0] === userInfo.userName && clickActionInfo[1].includes(index)) {
@@ -133,7 +109,7 @@ class Players extends React.Component {
 		const { publicPlayersState } = this.props.gameInfo;
 
 		if (publicPlayersState && publicPlayersState[i].previousGovernmentStatus) {
-			return <div className={`government-token previous-government-token ${publicPlayersState[i].previousGovernmentStatus}`} />;
+			return <div className={classnames('government-token previous-government-token', publicPlayersState[i].previousGovernmentStatus)} />;
 		}
 	}
 
@@ -141,7 +117,7 @@ class Players extends React.Component {
 		const { publicPlayersState } = this.props.gameInfo;
 
 		if (publicPlayersState && publicPlayersState[i].governmentStatus) {
-			return <div className={`government-token ${publicPlayersState[i].governmentStatus}`} />;
+			return <div className={classnames('government-token', publicPlayersState[i].governmentStatus)} />;
 		}
 	}
 
@@ -186,7 +162,7 @@ class Players extends React.Component {
 	}
 
 	renderPlayers() {
-		const { gameInfo, userInfo } = this.props;
+		const { gameInfo, userInfo, userList } = this.props;
 		const { gameSettings } = userInfo;
 		const { playersState, gameState, publicPlayersState } = gameInfo;
 		const isBlind = gameInfo.general.blindMode && !gameInfo.gameState.isCompleted;
@@ -255,8 +231,9 @@ class Players extends React.Component {
 		return publicPlayersState.map((player, i) => (
 			<div
 				key={i}
-				data-index={i}
-				onClick={this.handlePlayerClick}
+				onClick={() => {
+					this.handlePlayerClick(i);
+				}}
 				style={
 					player.customCardback &&
 					!isBlind &&
@@ -270,7 +247,7 @@ class Players extends React.Component {
 				}
 				className={(() => {
 					let classes = 'player-container';
-					const user = this.props.userList.list ? this.props.userList.list.find(play => play.userName === player.userName) : null;
+					const user = userList.list && userList.list.find(play => play.userName === player.userName);
 
 					if (playersState && Object.keys(playersState).length && playersState[i] && playersState[i].notificationStatus) {
 						classes = `${classes} notifier ${playersState[i].notificationStatus}`;
@@ -630,6 +607,14 @@ class Players extends React.Component {
 		);
 	}
 }
+
+const mapDispatchToProps = dispatch => ({
+	togglePlayerNotes: playerName => dispatch(togglePlayerNotes(playerName))
+});
+
+const mapStateToProps = ({ playerNotesActive }) => ({
+	playerNotesActive
+});
 
 Players.propTypes = {
 	roles: PropTypes.array,
