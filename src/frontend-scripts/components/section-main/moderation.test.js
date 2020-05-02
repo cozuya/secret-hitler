@@ -29,10 +29,11 @@ describe('Moderation', () => {
 				type: 'username',
 				direction: 'descending'
 			},
-			hideActions: false,
 			filterModalVisibility: false,
 			filterValue: '',
-			showGameIcons: false,
+			showActions: true,
+			showGameIcons: true,
+			tableCollapsed: false,
 			lagMeterStatus: ''
 		};
 
