@@ -29,11 +29,12 @@ describe('Moderation', () => {
 				type: 'username',
 				direction: 'descending'
 			},
-			hideActions: false,
 			filterModalVisibility: false,
 			filterValue: '',
-			showGameIcons: false,
-			​lagMeterStatus​:​ ​'​'
+			showActions: true,
+			showGameIcons: true,
+			tableCollapsed: false,
+			lagMeterStatus: ''
 		};
 
 		const component = shallow(<Moderation socket={{ on: jest.fn(), emit: jest.fn() }} />);
