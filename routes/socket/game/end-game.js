@@ -134,7 +134,7 @@ module.exports.completeGame = (game, winningTeamName) => {
 		].concat(
 			game.private.policies
 				.map(policyName => ({
-					text: policyName === 'liberal' ? 'B' : 'R',
+					text: policyName === 'liberal' ? 'L' : 'F',
 					type: policyName === 'liberal' ? 'liberal' : 'fascist'
 				}))
 				.concat({
